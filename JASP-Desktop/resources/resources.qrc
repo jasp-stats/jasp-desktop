@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>expander-arrow-up.png</file>
+        <file>expander-arrow-up-hover.png</file>
+        <file>expander-arrow-up-disabled.png</file>
+        <file>expander-arrow-down.png</file>
+        <file>expander-arrow-down-hover.png</file>
+        <file>expander-arrow-down-disabled.png</file>
+        <file>expanded.png</file>
+        <file>arrow-right.png</file>
+        <file>arrow-left.png</file>
+    </qresource>
+</RCC>

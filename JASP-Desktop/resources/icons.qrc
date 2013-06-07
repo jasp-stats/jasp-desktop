@@ -1,0 +1,47 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/document-open.png</file>
+        <file>icons/document-save.png</file>
+        <file>icons/application-exit.png</file>
+        <file>icons/dialog-close.png</file>
+        <file>icons/preferences-system-session-services.png</file>
+        <file>icons/application-vnd.oasis.opendocument.spreadsheet.png</file>
+        <file>icons/application-x-kchart.png</file>
+        <file>icons/applications-development.png</file>
+        <file>icons/applications-education-mathematics.png</file>
+        <file>icons/applications-education.png</file>
+        <file>icons/applications-system.png</file>
+        <file>icons/applications-toys.png</file>
+        <file>icons/core.png</file>
+        <file>icons/document-save-as.png</file>
+        <file>icons/edit-delete-shred.png</file>
+        <file>icons/emblem-favorite.png</file>
+        <file>icons/folder-blue.png</file>
+        <file>icons/folder-cyan.png</file>
+        <file>icons/folder-grey.png</file>
+        <file>icons/folder-orange.png</file>
+        <file>icons/folder-red.png</file>
+        <file>icons/folder-txt.png</file>
+        <file>icons/folder-violet.png</file>
+        <file>icons/folder-yellow.png</file>
+        <file>icons/text-x-moc.png</file>
+        <file>icons/user-home.png</file>
+        <file>icons/tools-wizard.png</file>
+        <file>icons/roll.png</file>
+        <file>icons/kcoloredit.png</file>
+        <file>icons/kcmpartitions.png</file>
+        <file>icons/kchart.png</file>
+        <file>icons/kbrunch.png</file>
+        <file>icons/help-about.png</file>
+        <file>icons/edit-undo.png</file>
+        <file>icons/edit-redo.png</file>
+        <file>icons/edit-paste.png</file>
+        <file>icons/edit-find.png</file>
+        <file>icons/edit-copy.png</file>
+        <file>icons/document-print.png</file>
+        <file>icons/document-new.png</file>
+        <file>icons/bookcase.png</file>
+        <file>icons/accessories-text-editor.png</file>
+        <file>icons/accessories-calculator.png</file>
+    </qresource>
+</RCC>

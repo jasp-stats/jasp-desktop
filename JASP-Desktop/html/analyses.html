@@ -1,0 +1,134 @@
+<html>
+<head>
+	<title>JASP</title>
+
+	<!--link rel="stylesheet" href="css/jquery-ui-1.10.1.custom.min.css" type="text/css"-->
+	<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.10.1.custom.min.js"></script>
+
+	<link rel="stylesheet" href="css/analyses.css" type="text/css">
+	<script type="text/javascript" src="js/analyses.js"></script>
+
+</head>
+<body>
+
+<button>fred</button>
+<button>moose</button>
+<button>OK</button>
+<button>Remove</button>
+
+	<div id="assignment-controls-wrapper">
+		<div id="assignment-controls">
+			<select id="available-cols" multiple size="12">
+				<option>bruce</option>
+				<option>fred</option>
+				<option>jim</option>
+			</select>
+			<div id="assign-buttons">
+				<div id="assign-button" class="button">&gt;</div>
+				<div id="unassign-button" class="button">&lt;</div>
+			</div>
+			<select id="assigned-cols"  multiple size="12">
+				<option>bruce</option>
+				<option>fred</option>
+				<option>jim</option>
+			</select>
+			<div id="assignment-spacer"></div>
+		</div>
+	</div>
+	<div id="accept-controls">
+		<div id="accept-button" class="button">OK</div>
+		<div id="remove-button" class="button">Remove</div>
+	</div>
+
+	<div id="statistics" class="option-group">
+		<h2 class="button">Statistics</h2>
+		<div>
+			<div id="percentile-values-group">
+				<h3>Percentile Values</h3>
+				<div class="option">
+					<input type="checkbox" id="quantiles" value="quantiles">
+					<label for="quantiles">Quantiles</label>
+				</div>
+				<div class="option">
+					<input type="checkbox" id="equal-groups" value="equal-groups">
+					<label for="equal-groups">Cut points for</label>
+					<input type="text" id="equal-groups-number-of-groups" size="4">
+					<label for="equal-groups-number-of-groups">equal groups</label>
+				</div>
+				<div class="option">
+					<input type="checkbox" id="percentiles" value="percentiles">
+					<label for="percentiles">Percentiles</label>
+				</div>
+			</div>
+			<div id="central-tendency-group">
+				<h3>Central Tendency</h3>
+				<div class="option">
+					<input type="checkbox" id="central-tendency-mean" value="central-tendency-mean">
+					<label for="central-tendency-mean">Mean</label>
+				</div>
+				<div class="option">
+					<input type="checkbox" id="central-tendency-median" value="central-tendency-median">
+					<label for="central-tendency-median">Median</label>
+				</div>
+				<div class="option">
+					<input type="checkbox" id="central-tendency-mode" value="central-tendency-mode">
+					<label for="central-tendency-mode">Mode</label>
+				</div>
+				<div class="option">
+					<input type="checkbox" id="central-tendency-sum" value="central-tendency-sum">
+					<label for="central-tendency-sum">Sum</label>
+				</div>
+			</div>
+			<div id="dispersion-group">
+				<h3>Dispersion</h3>
+				<div class="option">
+					<input type="checkbox" id="dispersion-std-deviation" value="dispersion-std-deviation">
+					<label for="dispersion-std-deviation">Std. deviation</label>
+				</div>
+				<div class="option">
+					<input type="checkbox" id="dispersion-variance" value="dispersion-variance">
+					<label for="dispersion-variance">Variance</label>
+				</div>
+				<div class="option">
+					<input type="checkbox" id="dispersion-range" value="dispersion-range">
+					<label for="dispersion-range">Range</label>
+				</div>
+				<div class="option">
+					<input type="checkbox" id="dispersion-minimum" value="dispersion-minimum">
+					<label for="dispersion-minimum">Minimum</label>
+				</div>
+				<div class="option">
+					<input type="checkbox" id="dispersion-maximum" value="dispersion-maximum">
+					<label for="dispersion-maximum">Maximum</label>
+				</div>
+				<div class="option">
+					<input type="checkbox" id="dispersion-std-error-mean" value="dispersion-std-error-mean">
+					<label for="dispersion-std-error-mean">S. E. Mean</label>
+				</div>
+			</div>
+			<div>
+				<div class="option">
+					<input type="checkbox" id="misc-values-are-group-midpoints" value="misc-values-are-group-midpoints">
+					<label for="misc-values-are-group-midpoints">Values are group midpoints</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="charts" class="option-group">
+		<h3 class="button">Charts</h3>
+		<div>
+	the quick brown fox, jumps over the lazy dog
+		</div>
+	</div>
+
+	<div id="format" class="option-group">
+		<h3 class="button">Format</h3>
+		<div>
+	the quick brown fox, jumps over the lazy dog
+		</div>
+	</div>
+
+</body>
+</html>

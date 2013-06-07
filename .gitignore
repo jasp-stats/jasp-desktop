@@ -11,3 +11,16 @@
 *.lai
 *.la
 *.a
+
+# Generate resource headers
+*.R.h
+
+# QT files
+*.pro.user
+
+# Annoying OSX files
+*.DS_Store
+Thumbs.db
+
+# R
+JASP-Engine/R-*

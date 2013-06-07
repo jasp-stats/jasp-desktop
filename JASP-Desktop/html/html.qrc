@@ -1,0 +1,40 @@
+<RCC>
+    <qresource prefix="/core">
+        <file>index.html</file>
+        <file>css/main.css</file>
+        <file>css/jquery-ui-1.10.1.custom.css</file>
+        <file>css/jquery-ui-1.10.1.custom.min.css</file>
+        <file>css/images/animated-overlay.gif</file>
+        <file>css/images/ui-bg_flat_0_aaaaaa_40x100.png</file>
+        <file>css/images/ui-bg_flat_75_ffffff_40x100.png</file>
+        <file>css/images/ui-bg_glass_55_fbf9ee_1x400.png</file>
+        <file>css/images/ui-bg_glass_65_ffffff_1x400.png</file>
+        <file>css/images/ui-bg_glass_75_dadada_1x400.png</file>
+        <file>css/images/ui-bg_glass_75_e6e6e6_1x400.png</file>
+        <file>css/images/ui-bg_glass_95_fef1ec_1x400.png</file>
+        <file>css/images/ui-bg_highlight-soft_75_cccccc_1x100.png</file>
+        <file>css/images/ui-icons_2e83ff_256x240.png</file>
+        <file>css/images/ui-icons_222222_256x240.png</file>
+        <file>css/images/ui-icons_454545_256x240.png</file>
+        <file>css/images/ui-icons_888888_256x240.png</file>
+        <file>css/images/ui-icons_cd0a0a_256x240.png</file>
+        <file>js/underscore.js</file>
+        <file>js/underscore-min.js</file>
+        <file>js/main.js</file>
+        <file>js/jquery-1.9.1.js</file>
+        <file>js/jquery-ui-1.10.1.custom.js</file>
+        <file>js/jquery-ui-1.10.1.custom.min.js</file>
+        <file>analyses.html</file>
+        <file>css/analyses.css</file>
+        <file>js/analyses.js</file>
+        <file>js/jquery.svg.js</file>
+        <file>js/jquery.svggraph.js</file>
+        <file>js/jquery.svg.pack.js</file>
+        <file>js/table.js</file>
+        <file>js/bargraph.js</file>
+        <file>js/frequencies.js</file>
+        <file>js/nv.d3.min.js</file>
+        <file>js/nv.d3.js</file>
+        <file>js/d3.v2.js</file>
+    </qresource>
+</RCC>

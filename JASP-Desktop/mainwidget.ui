@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWidget</class>
+ <widget class="QWidget" name="MainWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0,1">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QTabBar" name="tabBar" native="true">
+     <property name="styleSheet">
+      <string notr="true">
+QTabBar {
+	border-bottom: 1.2px solid #C4C4C3;
+	background-color: #E8E8E8 ;
+}
+
+QTabBar::tab {
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	min-width: 6ex;
+	padding: 4px 16px;
+	margin: 4px 1.5px 0 1.5px;
+	/*font-family: Helvetica, sans-serif ;*/
+
+}
+
+QTabBar::tab:selected {
+	border: 1.2px solid #C4C4C3;
+	border-bottom: 1.2px solid white;
+	background-color: white ;
+}
+
+QTabBar::tab:first {
+	margin-left: 3px ;
+	color: white;
+	/*background-color: #2561b7;*/
+	border: 1.2px solid #1e47a0;
+	background: qradialgradient(cx: 0.5, cy: 2, radius: 2, fx: 0.5, fy: 1,
+																	stop: 0 #619ed7, stop: 0.4 #2561b7
+																	stop: 0.6 #2561b7, stop: 1.0 #619ed7);
+}
+
+QTabBar::tab:first:selected {
+	border-bottom: 1.2px solid #619ed7;
+	border: 1.2px solid #1e47a0;
+	background: qradialgradient(cx: 0.5, cy: -1, radius: 2, fx: 0.5, fy: 0,
+																	stop: 0 #619ed7, stop: 0.4 #2561b7
+																	stop: 0.6 #2561b7, stop: 1.0 #619ed7);
+}
+</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QWidget" name="spacer" native="true">
+     <property name="styleSheet">
+      <string notr="true">QWidget {
+	border-bottom: 1.2px solid #C4C4C3;
+	background-color: #E8E8E8 ;
+}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QStackedWidget" name="topLevelWidgets">
+     <widget class="BackStageForm" name="backStage"/>
+     <widget class="QWidget" name="mainPage">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QStackedWidget" name="ribbon">
+         <property name="styleSheet">
+          <string notr="true">#ribbon {
+	background-color: qlineargradient(spread:pad, x1:0.477833, y1:1, x2:0.468, y2:0, stop:0 rgba(224, 224, 224, 255), stop:1 rgba(255, 255, 255, 255));
+	border-bottom: 1.2px solid #C4C4C3;
+}</string>
+         </property>
+         <widget class="QWidget" name="ribbonPageHome">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="leftMargin">
+            <number>3</number>
+           </property>
+           <property name="topMargin">
+            <number>3</number>
+           </property>
+           <property name="rightMargin">
+            <number>3</number>
+           </property>
+           <property name="bottomMargin">
+            <number>3</number>
+           </property>
+           <item>
+            <widget class="RibbonHome" name="homeRibbon" native="true"/>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>353</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="RibbonAnalysis" name="ribbonAnalysis"/>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="mainWidget" native="true">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QSplitter" name="splitter">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="handleWidth">
+             <number>16</number>
+            </property>
+            <widget class="QStackedWidget" name="stackedLHS">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <widget class="QWidget" name="pageData">
+              <layout class="QGridLayout" name="gridLayout_4">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="TableView" name="tableView"/>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="pageOptions">
+              <layout class="QGridLayout" name="gridLayout_2">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QFrame" name="frame">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QWebView" name="webViewOptions">
+                    <property name="url">
+                     <url>
+                      <string>about:blank</string>
+                     </url>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="pageOptions2">
+              <layout class="QGridLayout" name="gridLayout_7">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QScrollArea" name="scrollArea">
+                 <property name="widgetResizable">
+                  <bool>true</bool>
+                 </property>
+                 <widget class="QWidget" name="optionsContentArea">
+                  <property name="geometry">
+                   <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>98</width>
+                    <height>28</height>
+                   </rect>
+                  </property>
+                  <layout class="QGridLayout" name="optionsContentAreaLayout">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <item row="0" column="0">
+                    <widget class="QWidget" name="widget" native="true"/>
+                   </item>
+                  </layout>
+                 </widget>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+            <widget class="QFrame" name="frame_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>1</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_6">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QWebView" name="webViewResults">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(250, 250, 250);</string>
+                </property>
+                <property name="url">
+                 <url>
+                  <string>about:blank</string>
+                 </url>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKitWidgets/QWebView</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QTabBar</class>
+   <extends>QWidget</extends>
+   <header location="global">qtabbar.h</header>
+   <container>1</container>
+   <slots>
+    <signal>currentChanged(int)</signal>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>BackStageForm</class>
+   <extends>QWidget</extends>
+   <header>backstageform.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RibbonHome</class>
+   <extends>QWidget</extends>
+   <header>ribbonhome.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header>tableview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RibbonAnalysis</class>
+   <extends>QWidget</extends>
+   <header>ribbonanalysis.h</header>
+   <container>1</container>
+   <slots>
+    <signal>itemSelected(QString)</signal>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>tabBar</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>MainWidget</receiver>
+   <slot>tabChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>4</x>
+     <y>7</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>backStage</sender>
+   <signal>dataSetLoaded(DataSet*)</signal>
+   <receiver>MainWidget</receiver>
+   <slot>dataSetLoaded(DataSet*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>tabChanged(int)</slot>
+  <slot>dataSetLoaded(DataSet*)</slot>
+  <slot>itemSelected(QString)</slot>
+ </slots>
+</ui>

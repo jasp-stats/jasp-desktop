@@ -1,0 +1,29 @@
+#include "expanderbutton.h"
+
+#include <QDialog>
+#include <QIcon>
+#include <QImage>
+#include <QDebug>
+
+ExpanderButton::ExpanderButton(QWidget *parent) :
+	QPushButton(parent)
+{
+	setCheckable(true);
+	setIcon(_contractedIcon);
+	setStyleSheet(QString("QPushButton { text-align: left ; /*padding: 3px 9px ;*/ }"));
+
+}
+
+void ExpanderButton::nextCheckState()
+{
+	_expanded = !_expanded;
+	setIcon(_expanded ? _expandedIcon : _contractedIcon);
+
+	QObjectList siblings = this->parentWidget()->children();
+
+	for (QObjectList::Iterator itr = siblings.begin(); itr != siblings.end(); itr++) {
+		QWidget* w = dynamic_cast<QWidget*>(*itr);
+        if (w != NULL && w != this)
+			w->setVisible(_expanded);
+	}
+}
