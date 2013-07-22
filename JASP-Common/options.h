@@ -16,6 +16,7 @@ public:
 
 	void add(Option* option);
 	Json::Value asJSON() const;
+	void set(Json::Value &json);
 
     Option *get(std::string name) const;
 
@@ -29,6 +30,7 @@ public:
 private:
 
 	static void insertValue(std::string &name, Json::Value& value, Json::Value &root);
+	static Json::Value extractValue(std::string &name, Json::Value &root);
 
 	std::map<std::string, Option*> _store;
 	std::vector<Option*> _options;

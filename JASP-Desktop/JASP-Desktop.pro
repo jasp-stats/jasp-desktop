@@ -45,7 +45,10 @@ SOURCES += main.cpp\
     widgets/expanderbutton.cpp \
     widgets/infopopup.cpp \
     widgets/ribbonbutton.cpp \
-    widgets/toolbutton.cpp
+    widgets/toolbutton.cpp \
+    analysisforms/anova.cpp \
+    widgets/boundtextbox.cpp \
+    widgets/boundgroupbox.cpp
 
 HEADERS  += mainwindow.h \
     datasettablemodel.h \
@@ -68,7 +71,10 @@ HEADERS  += mainwindow.h \
     widgets/expanderbutton.h \
     widgets/infopopup.h \
     widgets/ribbonbutton.h \
-    widgets/toolbutton.h
+    widgets/toolbutton.h \
+    analysisforms/anova.h \
+    widgets/boundtextbox.h \
+    widgets/boundgroupbox.h
 
 FORMS    += mainwindow.ui \
     backstageform.ui \
@@ -77,7 +83,8 @@ FORMS    += mainwindow.ui \
 	ribbonhome.ui \
     analysisforms/descriptives.ui \
     analysisforms/ttestonesample.ui \
-    analysisforms/anovaoneway.ui
+    analysisforms/anovaoneway.ui \
+    analysisforms/anova.ui
 
 
 RESOURCES += \
@@ -90,7 +97,6 @@ OTHER_FILES += \
     html/index.html \
     html/css/jquery-ui-1.10.1.custom.css \
     html/css/jquery-ui-1.10.1.custom.min.css \
-    html/css/main.css \
     html/css/images/animated-overlay.gif \
     html/css/images/ui-bg_flat_0_aaaaaa_40x100.png \
     html/css/images/ui-bg_flat_75_ffffff_40x100.png \
@@ -174,4 +180,7 @@ OTHER_FILES += \
     resources/icons/user-home.png \
     resources/arrow-left.png \
     resources/arrow-right.png \
-    resources/osx/ribbonbutton.css
+    resources/osx/ribbonbutton.css \
+    html/js/displaydefs.js \
+    html/css/theme-spss.css \
+    html/css/theme-jasp.css

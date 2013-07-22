@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/core">
         <file>index.html</file>
-        <file>css/main.css</file>
         <file>css/jquery-ui-1.10.1.custom.css</file>
         <file>css/jquery-ui-1.10.1.custom.min.css</file>
         <file>css/images/animated-overlay.gif</file>
@@ -36,5 +35,8 @@
         <file>js/nv.d3.min.js</file>
         <file>js/nv.d3.js</file>
         <file>js/d3.v2.js</file>
+        <file>css/theme-spss.css</file>
+        <file>css/theme-jasp.css</file>
+        <file>js/displaydefs.js</file>
     </qresource>
 </RCC>

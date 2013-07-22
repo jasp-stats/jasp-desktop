@@ -28,7 +28,7 @@ void Options::optionsChanged()
 
 Json::Value Options::asJSON() const
 {
-	Json::Value top = Json::Value(Json::objectValue);
+	Json::Value top = Json::objectValue;
 
 	BOOST_FOREACH(OptionWithName item, _store)
 	{
@@ -38,6 +38,16 @@ Json::Value Options::asJSON() const
 	}
 
 	return top;
+}
+
+void Options::set(Json::Value &json)
+{
+	BOOST_FOREACH(OptionWithName item, _store)
+	{
+		string name = item.first;
+		Json::Value value = extractValue(name, json);
+		item.second->set(value);
+	}
 }
 
 void Options::insertValue(string &name, Json::Value &value, Json::Value &root)
@@ -54,6 +64,23 @@ void Options::insertValue(string &name, Json::Value &value, Json::Value &root)
 	else
 	{
 		root[name] = value;
+	}
+}
+
+Json::Value Options::extractValue(string &name, Json::Value &root)
+{
+	size_t endPos;
+
+	if ((endPos = name.find('/', 0)) != string::npos)
+	{
+		string groupName = name.substr(0, endPos);
+		string itemName = name.substr(endPos + 1);
+
+		return extractValue(itemName, root[groupName]);
+	}
+	else
+	{
+		return root[name];
 	}
 }
 

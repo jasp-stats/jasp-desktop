@@ -8,7 +8,9 @@ using namespace std;
 class AnalysisLoader
 {
 public:
-	static Analysis *load(int id, string analysisName);
+
+	static Analysis *load(int id, string analysisName, Options* options = NULL);
+
 };
 
 #endif // ANALYSISLOADER_H

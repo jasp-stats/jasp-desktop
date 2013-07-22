@@ -287,17 +287,17 @@ void EngineSync::checkForMessages()
 		int id = json.get("id", 0).asInt();
         //string name = json.get("name", Json::nullValue).asString();
 		string perform = json.get("perform", Json::nullValue).asString();
-		Json::Value payload = json.get("analyses", Json::nullValue);
+		Json::Value payload = json.get("results", Json::nullValue);
 
 		Analysis *analysis = _analyses->get(id);
 
 		if (perform == "init")
 		{
-			analysis->initialise(payload);
+			analysis->setResults(payload);
 		}
 		else if (perform == "run")
 		{
-			analysis->initialise(payload);
+			analysis->setResults(payload);
 		}
 	}
 }

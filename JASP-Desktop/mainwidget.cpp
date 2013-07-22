@@ -71,7 +71,7 @@ MainWidget::~MainWidget()
 
 void MainWidget::analysisResultsChangedHandler(Analysis *analysis)
 {
-	string eval = "window.analysisChanged(" + analysis->results() + ")";
+	string eval = "window.analysisChanged(" + analysis->asJSON().toStyledString() + ")";
 	QString evalQString = QString::fromUtf8(eval.c_str(), eval.length());
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(evalQString);

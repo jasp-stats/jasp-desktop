@@ -1,8 +1,6 @@
 #ifndef ANALYSIS_H
 #define ANALYSIS_H
 
-#include <QObject>
-
 #include <boost/uuid/uuid.hpp>
 
 #include <map>
@@ -13,11 +11,13 @@
 
 #include "analysispart.h"
 
+#include "rinterface.h"
+
 class Analysis
 {
 
 public:
-	Analysis(int id, string name, Options *options);
+	Analysis(int id, string name);
 
 	Options *options();
 
@@ -31,8 +31,9 @@ public:
 
 	//bool isCompleted();
 
-	void setResults(std::string results);
-	std::string results();
+	void setResults(Json::Value results);
+	Json::Value results();
+	Json::Value asJSON();
 
 	int revision();
 
@@ -41,20 +42,34 @@ public:
 	std::string name();
 	int id();
 
-	void initialise(Json::Value results);
+	virtual void init() = 0;
+	virtual void run() = 0;
+
+	void setRInterface(RInterface *r);
+
+	void setDataSet(DataSet *dataSet);
+
+protected:
+
+	virtual Options *createDefaultOptions() = 0;
+
+	Options* _options;
+	DataSet *_dataSet;
+
+	RInterface *_r;
+	Json::Value _results;
 
 private:
 	int _id;
 	std::string _name;
 	int _revision;
 
-	Options* _options;
+
 	std::map<std::string, AnalysisPart *> _analysisParts;
 
 	void optionsChangedHandler();
 
 	bool _inited;
-	std::string _results;
 
 	Json::Value _data;
 };

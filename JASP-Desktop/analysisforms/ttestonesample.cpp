@@ -12,8 +12,8 @@ TTestOneSample::TTestOneSample(QWidget *parent) :
 	ui->listAvailableFields->setModel(&_availableFields);
 	ui->listAvailableFields->addAssignButton(ui->buttonAssign_main_fields);
 
-	ui->main_fields->setAssignButton(ui->buttonAssign_main_fields);
-	ui->main_fields->setAvailableFieldsListView(ui->listAvailableFields);
+	ui->variables->setAssignButton(ui->buttonAssign_main_fields);
+	ui->variables->setAvailableFieldsListView(ui->listAvailableFields);
 }
 
 TTestOneSample::~TTestOneSample()

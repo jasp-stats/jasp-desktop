@@ -7,8 +7,9 @@
 
 #include "rinterface.h"
 
-#include "analyses/frequencies.h"
-#include "analyses/ttestonesample.h"
+#include "../JASP-Common/analysisloader.h"
+#include "../JASP-Common/analyses/frequencies.h"
+#include "../JASP-Common/analyses/ttestonesample.h"
 
 using namespace std;
 using namespace boost::interprocess;
@@ -32,28 +33,27 @@ void Engine::receiveMessage(char *buffer, size_t message_size)
 	Value options = _currentAnalysis.get("options", nullValue);
 	string perform = _currentAnalysis.get("perform", "init").asString();
 
+	Analysis *analysis = AnalysisLoader::load(id, analysisName);
+	analysis->options()->set(options);
+
 	if (_dataSet == NULL)
 	{
 		managed_shared_memory *mem = SharedMemory::get();
 		_dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
 	}
 
-	AnalysisTask *analysis = NULL;
-
-    if (analysisName == "Descriptives")
-		analysis = new Frequencies(_dataSet, &options, &_R);
-	else if (analysisName == "TTestOneSample")
-        analysis = new TTestOneSample(_dataSet, &options, &_R);
-
 	if (analysis != NULL)
 	{
+		analysis->setDataSet(_dataSet);
+		analysis->setRInterface(&_R);
+
 		analysis->init();
 
 		Value results = Value(objectValue);
 
 		results["id"] = id;
 		results["name"] = analysisName;
-		results["analyses"] = analysis->results();
+		results["results"] = analysis->results();
 		results["perform"] = "init";
 
 		if (perform == "init")
@@ -61,7 +61,7 @@ void Engine::receiveMessage(char *buffer, size_t message_size)
 
 		analysis->run();
 
-		results["analyses"] = analysis->results();
+		results["results"] = analysis->results();
 		results["perform"] = "run";
 
 		send(results);

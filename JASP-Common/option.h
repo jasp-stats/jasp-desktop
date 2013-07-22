@@ -15,6 +15,7 @@ public:
     std::string name();
 
 	virtual Json::Value asJSON() const = 0;
+	virtual void set(Json::Value& value) = 0;
 
 	boost::signals2::signal<void (Option *)> changed;
 

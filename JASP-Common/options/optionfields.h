@@ -10,7 +10,10 @@ class OptionFields : public OptionI<std::vector<std::string> >
 public:
 	OptionFields(std::string name);
 
-    Json::Value asJSON()const;// override;
+	virtual Json::Value asJSON()const;// override;
+    virtual void set(Json::Value& value);// override;
+
+	void setRestrictions(int restrictions);
 
 };
 

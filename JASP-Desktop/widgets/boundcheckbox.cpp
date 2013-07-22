@@ -5,6 +5,7 @@
 BoundCheckBox::BoundCheckBox(QWidget *parent) :
     QCheckBox(parent)
 {
+	_boundTo = NULL;
 }
 
 void BoundCheckBox::bindTo(Option *option)

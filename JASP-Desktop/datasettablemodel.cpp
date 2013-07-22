@@ -25,9 +25,9 @@ void DataSetTableModel::setDataSet(DataSet* dataSet)
 {
     beginResetModel();
 
-	delete _dataSet;
-
 	_dataSet = dataSet;
+
+	// need to free the old one here
 
     endResetModel();
 }

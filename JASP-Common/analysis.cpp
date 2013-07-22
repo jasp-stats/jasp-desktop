@@ -14,47 +14,53 @@
 using namespace boost::uuids;
 using namespace boost;
 
-Analysis::Analysis(int id, string name, Options* options)
+Analysis::Analysis(int id, string name)
 {
 	_id = id;
 	_name = name;
+
 	_revision = 0;
 	_inited = false;
+	_dataSet = NULL;
+	_r = NULL;
 
-	_options = options;
-	_options->onChange.connect(boost::bind(&Analysis::optionsChangedHandler, this));
+	_options = NULL;
 
 }
 
-void Analysis::setResults(string results)
+void Analysis::setResults(Json::Value results)
 {
 	_inited = true;
 	_results = results;
+
+	resultsChanged(this);
 }
 
-string Analysis::results()
+Json::Value Analysis::results()
 {
-	typedef pair<string, AnalysisPart *> pair;
-
-	Json::Value analysisAsJson = Json::Value(Json::objectValue);
+	/*Json::Value analysisAsJson = Json::objectValue;
 
 	analysisAsJson["id"] = _id;
 	analysisAsJson["name"] = _name;
 	analysisAsJson["revision"] = _revision;
 
-	Json::Value results = Json::Value(Json::objectValue);
+	analysisAsJson["results"] = _results;
 
-	BOOST_FOREACH(pair p, _analysisParts)
-	{
-		string name = p.first;
-		Json::Value partResults = p.second->results();
+	return analysisAsJson;*/
 
-		results[name] = partResults;
-	}
+	return _results;
+}
 
-	analysisAsJson["analyses"] = results;
+Json::Value Analysis::asJSON()
+{
+	Json::Value analysisAsJson = Json::objectValue;
 
-	return analysisAsJson.toStyledString();
+	analysisAsJson["id"] = _id;
+	analysisAsJson["name"] = _name;
+	analysisAsJson["revision"] = _revision;
+	analysisAsJson["results"] = _results;
+
+	return analysisAsJson;
 }
 
 int Analysis::revision()
@@ -77,61 +83,13 @@ int Analysis::id()
 	return _id;
 }
 
-void Analysis::initialise(Json::Value results)
-{
-	for (Json::ValueIterator itr = results.begin(); itr != results.end(); itr++)
-	{
-		string name = itr.key().asString();
-		Json::Value result = results.get(name, Json::nullValue);
-
-		if (_analysisParts.find(name) != _analysisParts.end())
-		{
-			AnalysisPart *part = _analysisParts.at(name);
-			_analysisParts.erase(name);
-			delete part;
-		}
-
-		if ( ! result.isNull())
-		{
-			_analysisParts[name] = new AnalysisPart(this, name, result);
-		}
-
-	}
-
-	_inited = true;
-
-	resultsChanged(this);
-}
-
 Options *Analysis::options()
 {
-
-
-	/*_options["mainFields"] = Value(arrayValue);
-	_options["mainDisplayFrequencyTables"] = true;
-
-	_options["statisticsPercentileValuesQuartiles"] = true;
-	_options["statisticsPercentileValuesEqualGroups"] = true;
-	_options["statisticsPercentileValuesEqualGroupsNumberOfGroups"] = 10;
-	_options["statisticsPercentileValuesPercentiles"] = 10;
-	_options["statisticsPercentileValuesPercentilesPercentiles"] = Value(arrayValue);
-
-	_options["statisticsCentralTendencyMean"] = false;
-	_options["statisticsCentralTendencyMedian"] = false;
-	_options["statisticsCentralTendencyMode"] = false;
-	_options["statisticsCentralTendencySum"] = false;
-
-	_options["statisticsValuesAreGroupMeans"] = false;
-
-	_options["statisticsDispersionStdDeviation"] = false;
-	_options["statisticsDispersionVariance"] = false;
-	_options["statisticsDispersionRange"] = false;
-	_options["statisticsDispersionMinimum"] = false;
-	_options["statisticsDispersionMaximum"] = false;
-	_options["statisticsDispersionStdErrorMean"] = false;
-
-	_options["statisticsDistributionSkewness"] = false;
-	_options["statisticsDistributionKurtosis"] = false;*/
+	if (_options == NULL)
+	{
+		_options = createDefaultOptions();
+		_options->onChange.connect(boost::bind(&Analysis::optionsChangedHandler, this));
+	}
 
 	return _options;
 }
@@ -139,11 +97,6 @@ Options *Analysis::options()
 void Analysis::optionsChangedHandler()
 {
 	_revision++;
-
-	/*BOOST_FOREACH(AnalysisPart *part, *this)
-	{
-		part->revise();
-	}*/
 
 	optionsChanged(this);
 }
@@ -169,3 +122,14 @@ bool Analysis::isCompleted()
 
 	return true;
 }*/
+
+
+void Analysis::setRInterface(RInterface *r)
+{
+	_r = r;
+}
+
+void Analysis::setDataSet(DataSet *dataSet)
+{
+	_dataSet = dataSet;
+}

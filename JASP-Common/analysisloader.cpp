@@ -4,35 +4,36 @@
 #include "options/optionfields.h"
 #include "options/optionboolean.h"
 #include "options/optionfield.h"
+#include "options/optioninteger.h"
+#include "options/optionintegerarray.h"
+#include "options/optionlist.h"
+
+#include "analyses/frequencies.h"
+#include "analyses/ttestonesample.h"
 
 #include "analysispart.h"
 
-Analysis *AnalysisLoader::load(int id, string analysisName)
+Analysis *AnalysisLoader::load(int id, string analysisName, Options *options)
 {
 
 	if (analysisName == "Descriptives")
-    {
-		Options *options = new Options();
-		options->add(new OptionFields("main/fields"));
-
-		options->add(new OptionBoolean("statistics/centralTendency/mean"));
-		options->add(new OptionBoolean("statistics/centralTendency/median"));
-		options->add(new OptionBoolean("statistics/centralTendency/mode"));
-		options->add(new OptionBoolean("statistics/centralTendency/sum"));
-
-		Analysis *a = new Analysis(id, "Descriptives", options);
-
-		return a;
+	{
+		return new analyses::Frequencies(id);
     }
 	else if (analysisName == "TTestOneSample")
 	{
+		return new analyses::TTestOneSample(id);
+	}
+	/*else if (analysisName == "ANOVA")
+	{
 		Options *options = new Options();
-		options->add(new OptionFields("main/fields"));
+		options->add(new OptionFields("variables"));
+		options->add(new OptionField("groupingVariable"));
 
-		Analysis *a = new Analysis(id, "TTestOneSample", options);
+		Analysis *a = new Analysis(id);
 
 		return a;
-	}
+	}*/
 
     return NULL;
 }

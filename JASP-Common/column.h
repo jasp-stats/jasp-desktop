@@ -150,6 +150,9 @@ private:
 
 	BlockMap _blocks;
 
+	void setRowCount(int rowCount);
+	void insert(int rowCount, int index);
+
 };
 
 namespace boost

@@ -222,6 +222,40 @@ void Column::append(int rows)
 	_rowCount += rows;
 }
 
+void Column::setRowCount(int rowCount)
+{
+	if (rowCount == this->rowCount())
+		return;
+
+	if (rowCount > this->rowCount())
+	{
+		append(rowCount - this->rowCount());
+		return;
+	}
+
+	_rowCount = rowCount;
+
+	for (BlockMap::iterator itr = _blocks.upper_bound(rowCount); itr != _blocks.end(); itr++)
+	{
+		BlockEntry &entry = *itr;
+		DataBlock *block = entry.second.get();
+		_mem->destroy_ptr<DataBlock>(block);
+		entry.second = NULL;
+	}
+
+	_blocks.erase(_blocks.upper_bound(rowCount), _blocks.end());
+
+}
+
+void Column::insert(int rowCount, int index)
+{
+	BlockMap::iterator itr = _blocks.lower_bound(index);
+
+	// should check that itr != end()
+
+
+}
+
 Column::Ints::IntsStruct()
 {
 }

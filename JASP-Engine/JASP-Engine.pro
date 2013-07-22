@@ -18,11 +18,11 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 unix:INCLUDEPATH += /opt/local/include
 windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
 
-LIBS += -L.. -lJASP-Common
+INCLUDEPATH += R-3.0.0/include \
+	R-3.0.0/library/Rinside/include \
+	R-3.0.0/library/Rcpp/include
 
-resources.commands = make -C $$PWD/analyses
-QMAKE_EXTRA_TARGETS += resources
-PRE_TARGETDEPS += resources
+LIBS += -L.. -lJASP-Common
 
 unix {
 
@@ -47,6 +47,8 @@ RCPPWARNING =           -Wno-unused-parameter
 ## include headers and libraries for RInside embedding classes
 RINSIDEINCL =           $$system($$R_HOME/bin/Rscript -e \'RInside:::CxxFlags\(\)\')
 RINSIDELIBS =           $$system($$R_HOME/bin/Rscript -e \'RInside:::LdFlags\(\)\')
+
+message($$system(pwd))
 
 }
 
@@ -73,7 +75,7 @@ RLAPACK =               $$system($$R_HOME/bin/R CMD config LAPACK_LIBS)
 RCPPINCL =              $$system($$R_HOME/bin/Rscript -e Rcpp:::CxxFlags\(\))
 RCPPLIBS =              $$system($$R_HOME/bin/Rscript -e Rcpp:::LdFlags\(\))
 
-LIBS += -L$$R_HOME/library/RInside/lib/i386 -lRInside -L$$R_HOME/library/Rcpp/lib/i386 -lRcpp
+LIBS += -L$$R_HOME/library/RInside/lib/i386 -lRInside -L$$R_HOME/library/Rcpp/lib/i386 -lRcpp -L$$R_HOME/bin/i386 -lR
 
 ## for some reason when building with Qt we get this each time
 ## so we turn unused parameter warnings off
@@ -82,39 +84,21 @@ RCPPWARNING =           -Wno-unused-parameter
 RINSIDEINCL =           $$system($$R_HOME/bin/Rscript -e RInside:::CxxFlags\(\))
 RINSIDELIBS =           $$system($$R_HOME/bin/Rscript -e RInside:::LdFlags\(\))
 
-message("bruce")
-message($$RINSIDELIBS)
-
 }
 
 ## compiler etc settings used in default make rules
 QMAKE_CXXFLAGS +=       $$RCPPWARNING $$RCPPFLAGS $$RCPPINCL $$RINSIDEINCL
 QMAKE_LFLAGS +=         $$RLDFLAGS $$RBLAS $$RLAPACK $$RCPPLIBS $$RINSIDELIBS
 
-INCLUDEPATH += R-3.0.0/include \
-	R-3.0.0/library/Rinside/include \
-	R-3.0.0/library/Rcpp/include
 
-RFILES += analyses/frequencies.R
 
 SOURCES += main.cpp \
     engine.cpp \
-    analyses/frequencies.cpp \
-    rinterface.cpp \
-    analysistask.cpp \
-    analyses/ttestonesample.cpp
+    rcppbridge.cpp
 
 HEADERS += \
     engine.h \
-    analyses/frequencies.h \
 	analysistask.h \
-	rinterface.h \
-    analyses/rscripts.h \
-    analyses/ttestonesample.h
+	rcppbridge.h
 
 RESOURCES +=
-
-OTHER_FILES += \
-    analyses/frequencies.R \
-    analyses/makefile \
-    analyses/ttestonesample.R

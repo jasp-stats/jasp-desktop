@@ -7,7 +7,7 @@
 
 #include "../JASP-Common/lib_json/json.h"
 
-#include "rinterface.h"
+#include "rcppbridge.h"
 
 #define BUFFER_SIZE 1048576 // 1 meg
 
@@ -39,7 +39,7 @@ private:
 
 	DataSet *_dataSet;
 
-    RInterface _R;
+	RcppBridge _R;
 
 #ifdef __APPLE__
 	sem_t *_semaphoreIn;

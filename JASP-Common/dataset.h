@@ -28,7 +28,7 @@ public:
 
 	Columns &columns();
 
-	//void setRowCount()
+	void setRowCount(int rowCount);
 
 private:
 

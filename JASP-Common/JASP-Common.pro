@@ -13,6 +13,9 @@ windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
 
 windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
 
+resources.commands = make -C $$PWD/analyses
+QMAKE_EXTRA_TARGETS += resources
+PRE_TARGETDEPS += resources
 
 SOURCES += \
     options.cpp \
@@ -37,7 +40,12 @@ SOURCES += \
     options/optionboolean.cpp \
     options/optionfield.cpp \
     options/optionfields.cpp \
-    options/optioni.cpp
+    options/optioni.cpp \
+    options/optionintegerarray.cpp \
+    options/optioninteger.cpp \
+    options/optionlist.cpp \
+    analyses/frequencies.cpp \
+    analyses/ttestonesample.cpp
 
 HEADERS +=\
     options.h \
@@ -65,7 +73,13 @@ HEADERS +=\
     options/optionboolean.h \
     options/optionfield.h \
     options/optionfields.h \
-    options/optioni.h
+    options/optioni.h \
+    options/optionintegerarray.h \
+    options/optioninteger.h \
+    options/optionlist.h \
+    rinterface.h \
+    analyses/frequencies.h \
+    analyses/ttestonesample.h
 
 unix:!symbian {
     maemo5 {
@@ -76,6 +90,9 @@ unix:!symbian {
     INSTALLS += target
 }
 
-OTHER_FILES +=
+OTHER_FILES += \
+    analyses/frequencies.R \
+    analyses/makefile \
+    analyses/ttestonesample.R
 
 RESOURCES +=

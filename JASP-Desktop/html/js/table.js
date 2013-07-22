@@ -25,14 +25,37 @@ $.widget("jasp.table", {
 		this.refresh()
 	},
     _format : function(value, format) {
+
         if (isNaN(parseFloat(value)))
             return value;
 
-        if (_.has(format, "dp"))
-            return value.toFixed(format.dp)
+        var formats = format.split(";");
 
-        if (_.has(format, "sf"))
-            return value.toPrecision(format.sf)
+        for (var i = 0; i < formats.length; i++) {
+            var f = formats[i]
+            if (f.indexOf("p:") != -1)
+            {
+                var p = f.substring(2)
+                if (value < p)
+                    return "< " + p
+            }
+        }
+
+        for (var i = 0; i < formats.length; i++) {
+
+            var f = formats[i]
+
+            if (f.indexOf("dp:") != -1) {
+
+                var dp = f.substring(3)
+                return value.toFixed(dp)
+            }
+            if (f.indexOf("sf:") != -1) {
+
+                var sf = f.substring(3)
+                return value.toPrecision(sf)
+            }
+        }
 
         return value
     },
@@ -45,44 +68,45 @@ $.widget("jasp.table", {
 			html += '<table>'
 				html += '<thead>'
 					html += '<tr>'
-						html += '<th colspan="' + (2 + this.options.variables.length) + '">' + this.options.title + '</th>'
+                        html += '<th colspan="' + (1 + this.options.schema.fields.length) + '">' + this.options.title + '</th>'
 					html += '</tr>'
 
             if (this.options.subtitle) {
                     html += '<tr>'
-                        html += '<th colspan="2"></th><th colspan="' + this.options.variables.length + '">' + this.options.subtitle + '</th>'
+                        html += '<th></th><th colspan="' + this.options.schema.fields.length + '">' + this.options.subtitle + '</th>'
                     html += '</tr>'
             }
 
 					html += '<tr>'
-						html += '<th colspan="2"></th>'
+                        html += '<th></th>'
 					
-			for (var varNo = 0; varNo < this.options.variables.length; varNo++)
-						html += '<th>' + this.options.variables[varNo] + '</th>'
+            for (var i = 0; i < this.options.schema.fields.length; i++)
+                        html += '<th>' + this.options.schema.fields[i].id + '</th>'
 					
 					html += '</tr>'
 				html += '</thead>'
 				html += '<tbody>'
 			
-			for (var caseNo = 0; caseNo < this.options.cases.length; caseNo++) {
-					html += '<tr>'
-				if ($.isArray(this.options.cases[caseNo]) && this.options.cases[caseNo].length == 2)
-						html += '<th>' + this.options.cases[caseNo][0] + '</th><th>' + this.options.cases[caseNo][1] + '</th>'
-				else
-						html += '<th colspan="2">' + this.options.cases[caseNo] + '</th>'
+            for (var i = 0; i < this.options.cases.length; i++) {
+
+                var caze = this.options.cases[i];
+
+                html += '<tr>'
+                    html += '<th>' + caze + '</th>'
 		
 				if (this.options.data != null) {
-					for (var varNo = 0; varNo < this.options.variables.length; varNo++) {
-						var value = this.options.data[caseNo][varNo]
-                        if (this.options.formats && this.options.formats[varNo])
-                            value = this._format(value, this.options.formats[varNo])
+                    _.each(this.options.schema.fields, function(field) {
 
-						html += '<td>' + value + '</td>'
-					}
+                        var value = this.options.data[i][field.id]
+                        if (field.format)
+                            value = this._format(value, field.format)
+
+                        html += '<td>' + value + '</td>'
+                    }, this)
 				}
 					
 					html += '</tr>'
-			}
+            }
 		
 				html += '</tbody>'
 			html += '</table>'
@@ -92,46 +116,47 @@ $.widget("jasp.table", {
 			html += '<table>'
 				html += '<thead>'
 					html += '<tr>'
-						html += '<th colspan="' + (2 + this.options.cases.length) + '">' + this.options.title + '</th>'
+                        html += '<th colspan="' + (1 + this.options.cases.length) + '">' + this.options.title + '</th>'
 					html += '</tr>'
 					
 			if (this.options.subtitle) {
                     html += '<tr>'
-						html += '<th></th><th colspan="' + (1 + this.options.cases.length) + '">' + this.options.subtitle + '</th>'
+                        html += '<th></th><th colspan="' + (this.options.cases.length) + '">' + this.options.subtitle + '</th>'
                     html += '</tr>'
             }
 					
 					html += '<tr>'
-						html += '<th colspan="2"></th>'
+                        html += '<th></th>'
 					
-			for (var caseNo = 0; caseNo < this.options.cases.length; caseNo++)
-						html += '<th>' + this.options.cases[caseNo] + '</th>'
+            _.each(this.options.cases, function(caze){
+                        html += '<th>' + caze + '</th>'
+            }, this)
 					
 					html += '</tr>'
 				html += '</thead>'
 				html += '<tbody>'
 			
-			for (var varNo = 0; varNo < this.options.variables.length; varNo++) {
+            _.each(this.options.schema.fields, function(field) {
 					html += '<tr>'
-				if ($.isArray(this.options.variables[varNo]) && this.options.variables[varNo].length == 2)
-						html += '<th>' + this.options.variables[varNo][0] + '</th><th>' + this.options.variables[varNo][1] + '</th>'
-				else
-						html += '<th colspan="2">' + this.options.variables[varNo] + '</th>'
+                    html += '<th>' + field.id + '</th>'
 
-                var format;
-                if (this.options.formats)
-                    format = this.options.formats[varNo]
+                //var format;
+                //if (this.options.formats)
+                //    format = this.options.formats[varNo]
 		
-				if (this.options.data != null) {
-					for (var caseNo = 0; caseNo < this.options.cases.length; caseNo++) {
-						var value = this.options.data[caseNo][varNo]
-                        value = this._format(value, format)
+                if (this.options.data != null) {
+                    for (var i = 0; i < this.options.cases.length; i++) {
+                        var value = this.options.data[i][field.id]
+
+                        if (field.format)
+                            value = this._format(value, field.format)
+
 						html += '<td>' + value + '</td>'
-					}
+                    }
 				}
 					
 					html += '</tr>'
-			}
+            }, this)
 		
 				html += '</tbody>'
 			html += '</table>'

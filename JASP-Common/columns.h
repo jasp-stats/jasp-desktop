@@ -58,6 +58,9 @@ public:
 
 	ColumnList _columnStore;
 
+private:
+	void setRowCount(int rowCount);
+
 };
 
 namespace boost

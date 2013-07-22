@@ -47,7 +47,7 @@ DataSet::DataSet(boost::interprocess::managed_shared_memory *mem, std::vector<st
 
 	BOOST_FOREACH(string &columnName, *columnInfo)
 	{
-		Column column(mem);// = mem->construct<Column>(anonymous_instance)(mem);
+		Column column(mem);
 		column.setName(columnName);
 
 
@@ -143,6 +143,11 @@ DataSet::DataSet(boost::interprocess::managed_shared_memory *mem, std::vector<st
 Columns &DataSet::columns()
 {
 	return _columns;
+}
+
+void DataSet::setRowCount(int rowCount)
+{
+	_columns.setRowCount(rowCount);
 }
 
 int DataSet::rowCount()

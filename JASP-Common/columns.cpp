@@ -40,6 +40,14 @@ Column &Columns::operator [](int index)
 	}
 }
 
+void Columns::setRowCount(int rowCount)
+{
+	BOOST_FOREACH(Column &column, *this)
+	{
+		column.setRowCount(rowCount);
+	}
+}
+
 Column *Columns::get(int index)
 {
 	int row = 0;

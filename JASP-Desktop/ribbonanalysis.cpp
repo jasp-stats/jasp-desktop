@@ -18,10 +18,10 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	ui->TTest->setMenu(menu);
 
 	menu = new QMenu(this);
-	menu->addAction(QString("One Way"), this, SLOT(itemSelected()))->setObjectName("AnovaOneWay");
-	menu->addAction(QString("Univariate"), this, SLOT(itemSelected()))->setObjectName("AnovaUnivariate");
-	menu->addAction(QString("Bayesian"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
-	menu->addAction(QString("Multivariate"), this, SLOT(itemSelected()))->setObjectName("AnovaMultivariate");
+	menu->addAction(QString("ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaOneWay");
+	menu->addAction(QString("ANCOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
+	menu->addAction(QString("MANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaMultivariate");
+	menu->addAction(QString("Bayesian ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaMultivariate");
 
 	ui->Anova->setMenu(menu);
 }
