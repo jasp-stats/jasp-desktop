@@ -43,8 +43,15 @@ Options *TTestOneSample::createDefaultOptions()
 	Options *options = new Options();
 
 	options->add(new OptionFields("variables"));
+	options->add(new OptionNumber("testValue", 0));
+	options->add(new OptionList("tails", "twoTailed"));
+
+	options->add(new OptionBoolean("meanDifference"));
 	options->add(new OptionBoolean("confidenceInterval"));
 	options->add(new OptionNumber("confidenceIntervalInterval", .95, 0, 1, 3));
+	options->add(new OptionBoolean("descriptives"));
+
+	options->add(new OptionList("missingValues", "excludeAnalysisByAnalysis"));
 
 	return options;
 }

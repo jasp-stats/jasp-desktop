@@ -38,5 +38,6 @@
         <file>css/theme-spss.css</file>
         <file>css/theme-jasp.css</file>
         <file>js/displaydefs.js</file>
+        <file>js/tables.js</file>
     </qresource>
 </RCC>

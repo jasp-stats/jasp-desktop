@@ -7,7 +7,7 @@ $.widget("jasp.tables", {
 
         this.element.addClass("jasp-tables")
 
-
+        this.tables = $(this.element)
 
         this.refresh()
     },
@@ -26,9 +26,10 @@ $.widget("jasp.tables", {
 
         this.tables.empty()
 
-        if (this.options.tables && $.isArray(this.options.tables) && this.options.tables.length > 0) {
-
-            for (var i = 0; i < this.options.tables.length; i++) {
+        if (this.options.tables && $.isArray(this.options.tables) && this.options.tables.length > 0)
+        {
+            for (var i = 0; i < this.options.tables.length; i++)
+            {
                 var table = $('<div class="jasp-tables-table"></div>')
                 table.table(this.options.tables[i])
                 this.tables.append(table)

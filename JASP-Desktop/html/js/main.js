@@ -17,7 +17,10 @@ $(document).ready(function() {
         	item.frequencies( results )
         }
         else if (analysis.name === "TTestOneSample") {
-            item.table( results.ttest )
+            if (_.has(results, "descriptives"))
+                item.tables( { tables : [ results.ttest, results.descriptives ] } )
+            else
+                item.tables( { tables : [ results.ttest ] } )
         }
 
         $("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
