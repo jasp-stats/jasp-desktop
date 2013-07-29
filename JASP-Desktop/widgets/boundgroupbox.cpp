@@ -38,8 +38,7 @@ void BoundGroupBox::updateGroup()
 		if (radio != NULL)
 		{
 			_buttonGroup->addButton(radio);
-			std::string value = _option->value();
-			if (_option != NULL && QString(value.c_str()) == radio->objectName())
+			if (_option != NULL && QString(_option->value().c_str()) == radio->objectName())
 				radio->setChecked(true);
 		}
 	}

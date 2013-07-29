@@ -42,6 +42,7 @@ void BoundTextBox::bindTo(Option *option)
 	if (_number != NULL)
 	{
 		this->setValidator(new QDoubleValidator(_number->min(), _number->max(), _number->dp(), this));
+		this->setText(QString::number(_number->value()));
 		return;
 	}
 
