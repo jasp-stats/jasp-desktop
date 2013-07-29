@@ -45,7 +45,8 @@ SOURCES += \
     options/optioninteger.cpp \
     options/optionlist.cpp \
     analyses/frequencies.cpp \
-    analyses/ttestonesample.cpp
+    analyses/ttestonesample.cpp \
+    options/optionnumber.cpp
 
 HEADERS +=\
     options.h \
@@ -79,7 +80,8 @@ HEADERS +=\
     options/optionlist.h \
     rinterface.h \
     analyses/frequencies.h \
-    analyses/ttestonesample.h
+    analyses/ttestonesample.h \
+    options/optionnumber.h
 
 unix:!symbian {
     maemo5 {

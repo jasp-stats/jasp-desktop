@@ -5,23 +5,27 @@
 #include <boost/foreach.hpp>
 
 #include <QIntValidator>
+#include <QDoubleValidator>
+#include <QKeyEvent>
 
 BoundTextBox::BoundTextBox(QWidget *parent) :
 	QLineEdit(parent)
 {
+	_integer = NULL;
 	_integerArray = NULL;
+	_number = NULL;
 
-	connect(this, SIGNAL(textEdited(QString)), this, SLOT(textEditedHandler(QString)));
+	//connect(this, SIGNAL(textEdited(QString)), this, SLOT(textEditedHandler(QString)));
 }
 
 void BoundTextBox::bindTo(Option *option)
 {
-	OptionInteger *integer = dynamic_cast<OptionInteger *>(option);
+	_integer = dynamic_cast<OptionInteger *>(option);
 
-	if (integer != NULL)
+	if (_integer != NULL)
 	{
 		this->setValidator(new QIntValidator(this));
-		this->setText(QString::number(integer->value()));
+		this->setText(QString::number(_integer->value()));
 		return;
 	}
 
@@ -30,13 +34,58 @@ void BoundTextBox::bindTo(Option *option)
 	if (_integerArray != NULL)
 	{
 		this->setValidator(new QIntArrayValidator());
+		return;
 	}
+
+	_number = dynamic_cast<OptionNumber *>(option);
+
+	if (_number != NULL)
+	{
+		this->setValidator(new QDoubleValidator(_number->min(), _number->max(), _number->dp(), this));
+		return;
+	}
+
+}
+
+void BoundTextBox::keyPressEvent(QKeyEvent *event)
+{
+	QLineEdit::keyPressEvent(event);
+	if (event->key() == Qt::Key_Return)
+		finalise();
+}
+
+void BoundTextBox::focusOutEvent(QFocusEvent *event)
+{
+	QLineEdit::focusOutEvent(event);
+	finalise();
+}
+
+void BoundTextBox::finalise()
+{
+	QString value = text();
+
+	while (value.endsWith(","))
+		value = value.left(value.length() - 1);
+
+	if (_integerArray != NULL)
+		_integerArray->setValue(QIntArrayValidator::parse(value));
+	else if (_integer != NULL)
+		_integer->setValue(value.toInt());
+	else if (_number != NULL)
+		_number->setValue(value.toDouble());
 }
 
 void BoundTextBox::textEditedHandler(QString text)
 {
-	if (_integerArray != NULL)
+	this->validator()->fixup(text);
+	setText(text);
+
+	/*if (_integerArray != NULL)
 		_integerArray->setValue(QIntArrayValidator::parse(text));
+	else if (_integer != NULL)
+		_integer->setValue(text.toInt());
+	else if (_number != NULL)
+		_number->setValue(text.toDouble());*/
 }
 
 BoundTextBox::QIntArrayValidator::QIntArrayValidator()
@@ -46,6 +95,9 @@ BoundTextBox::QIntArrayValidator::QIntArrayValidator()
 QValidator::State BoundTextBox::QIntArrayValidator::validate(QString &input, int &pos) const
 {
 	// this needs some TLC
+
+	if (pos > input.length())
+		pos = input.length();
 
 	if (pos == 0 || input.at(pos-1) == ',')
 		return QValidator::Intermediate;
@@ -60,8 +112,13 @@ QValidator::State BoundTextBox::QIntArrayValidator::validate(QString &input, int
 
 void BoundTextBox::QIntArrayValidator::fixup(QString &input) const
 {
+	QString trimmed = input.trimmed();
+
 	std::vector<int> array = parse(input);
 	input = stringify(array);
+
+	if (trimmed.length() > 0 && trimmed.at(trimmed.length() - 1) == ',')
+		input = input + ",";
 }
 
 std::vector<int> BoundTextBox::QIntArrayValidator::parse(QString &input)

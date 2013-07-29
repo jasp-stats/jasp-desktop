@@ -13,4 +13,5 @@ Json::Value OptionInteger::asJSON() const
 
 void OptionInteger::set(Json::Value &value)
 {
+	_value = value.asInt();
 }

@@ -6,6 +6,7 @@
 
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
+#include "options/optionnumber.h"
 
 #include "bound.h"
 
@@ -19,8 +20,15 @@ public:
 	
 signals:
 	
+protected:
+	void keyPressEvent(QKeyEvent *event) override;
+	void focusOutEvent(QFocusEvent *event) override;
+	void finalise();
+
 private:
+	OptionInteger *_integer;
 	OptionIntegerArray *_integerArray;
+	OptionNumber *_number;
 
 private slots:
 	void textEditedHandler(QString text);

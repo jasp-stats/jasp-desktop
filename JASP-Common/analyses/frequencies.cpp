@@ -29,102 +29,14 @@ void Frequencies::init()
 {
 	_r->setDataSet(_dataSet);
 	_r->setOptions(_options->asJSON());
-	_results = _r->run(_script, "run");
+	_results = _r->run(_script, "init");
 }
 
 void Frequencies::run()
 {
-	/*vector<string> fields = getMainFields();
-
-	int i = 0;
-
-	Value frequencyTables = _results.get("tables", arrayValue);
-	Value frequencyPlots = _results.get("plots", arrayValue);
-
-	Columns &columns = _dataSet->columns();
-
-	BOOST_FOREACH(string field, fields)
-	{
-		Column *column = columns.get(field);
-		(void)column;
-
-		if (column->columnType() == Column::DoubleColumnType)
-			continue;
-
-		map<int, int> cases;
-
-		BOOST_FOREACH(int value, column->AsInts)
-		{
-			int count = cases[value];
-			count++;
-			cases[value] = count;
-		}
-
-		Value frequencyTable = frequencyTables[i];
-		Value frequencyPlot = frequencyPlots[i];
-
-		frequencyTable["data"] = arrayValue;
-		frequencyTable["cases"] = arrayValue;
-
-		frequencyPlot["data"] = arrayValue;
-		frequencyPlot["cases"] = arrayValue;
-
-		int total = 0;
-
-		std::pair<int, int> p;
-
-		BOOST_FOREACH(p, cases)
-			total += p.second;
-
-		int caseNo = 0;
-		int cum = 0;
-
-		BOOST_FOREACH(p, cases)
-		{
-			string caseLabel = column->displayFromValue(p.first);
-			if (caseLabel == "")
-				caseLabel = "Missing";
-
-			frequencyTable["cases"][caseNo] = caseLabel;
-			frequencyTable["data"][caseNo] = objectValue;
-
-			cum += p.second;
-
-			double percent = (double)p.second / total * 100;
-			double validPercent = percent;
-			double cumPercent = (double)cum / total * 100;
-
-			frequencyTable["data"][caseNo]["case"] = caseLabel;
-			frequencyTable["data"][caseNo]["Frequency"] = p.second;
-			frequencyTable["data"][caseNo]["Percent"] = percent;
-			frequencyTable["data"][caseNo]["Valid Percent"] = validPercent;
-			frequencyTable["data"][caseNo]["Cumulative Percent"] = cumPercent;
-
-			frequencyPlot["cases"].append(caseLabel);
-			frequencyPlot["data"].append(p.second);
-
-			caseNo++;
-		}
-
-		frequencyTable["cases"][caseNo] = "Total";
-		frequencyTable["data"][caseNo]["case"] = total;
-		frequencyTable["data"][caseNo]["Frequency"] = total;
-		frequencyTable["data"][caseNo]["Percent"] = 100.0;
-		frequencyTable["data"][caseNo]["Valid Percent"] = 100.0;
-		frequencyTable["data"][caseNo]["Cumulative Percent"] = "";
-
-		frequencyTables[i] = frequencyTable;
-		frequencyPlots[i] = frequencyPlot;
-
-		i++;
-	}
-
-	_results["tables"] = frequencyTables;
-	_results["plots"] = frequencyPlots;
-
 	_r->setDataSet(_dataSet);
-	_r->setOptions(*_options);
-	_results["stats"]["data"] = _r->run(_script, "run");*/
+	_r->setOptions(_options->asJSON());
+	_results = _r->run(_script, "run");
 }
 
 Options *Frequencies::createDefaultOptions()

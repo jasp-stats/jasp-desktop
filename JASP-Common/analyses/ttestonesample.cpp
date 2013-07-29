@@ -10,6 +10,7 @@
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
 #include "options/optionlist.h"
+#include "options/optionnumber.h"
 
 #include "rinterface.h"
 
@@ -43,7 +44,7 @@ Options *TTestOneSample::createDefaultOptions()
 
 	options->add(new OptionFields("variables"));
 	options->add(new OptionBoolean("confidenceInterval"));
-	//options->add(new OptionNumber("confidenceIntervalInterval"));
+	options->add(new OptionNumber("confidenceIntervalInterval", .95, 0, 1, 3));
 
 	return options;
 }

@@ -214,7 +214,7 @@
           </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="BoundTextBox" name="confidenceIntervalInterval">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -277,6 +277,11 @@
    <class>AvailableFieldsListView</class>
    <extends>QListView</extends>
    <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
