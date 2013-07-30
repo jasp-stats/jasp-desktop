@@ -22,6 +22,17 @@ $(document).ready(function() {
             else
                 item.tables( { tables : [ results.ttest ] } )
         }
+        else if (analysis.name === "TTestIndependentSamples") {
+
+            var ts = [ results.ttest ]
+
+            if (results.inequalityOfVariances)
+                ts.push(results.inequalityOfVariances)
+            if (results.descriptives)
+                ts.push(results.descriptives)
+
+            item.tables( { tables : ts } )
+        }
 
         $("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
     }

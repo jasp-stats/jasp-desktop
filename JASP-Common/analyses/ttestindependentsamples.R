@@ -42,7 +42,7 @@ if (perform == "run")
 }
 
 results[["ttest"]] <- ttest
-results[["equalityOfVariances"]] <- NULL  # levene's in a separate table
+results[["inequalityOfVariances"]] <- NULL  # levene's in a separate table
 results[["descriptives"]] <- NULL
 
 results
