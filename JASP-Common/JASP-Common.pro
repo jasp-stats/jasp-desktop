@@ -46,7 +46,8 @@ SOURCES += \
     options/optionlist.cpp \
     analyses/frequencies.cpp \
     analyses/ttestonesample.cpp \
-    options/optionnumber.cpp
+    options/optionnumber.cpp \
+    analyses/ttestindependentsamples.cpp
 
 HEADERS +=\
     options.h \
@@ -81,7 +82,8 @@ HEADERS +=\
     rinterface.h \
     analyses/frequencies.h \
     analyses/ttestonesample.h \
-    options/optionnumber.h
+    options/optionnumber.h \
+    analyses/ttestindependentsamples.h
 
 unix:!symbian {
     maemo5 {
@@ -95,6 +97,7 @@ unix:!symbian {
 OTHER_FILES += \
     analyses/frequencies.R \
     analyses/makefile \
-    analyses/ttestonesample.R
+    analyses/ttestonesample.R \
+    analyses/ttestindependentsamples.R
 
 RESOURCES +=

@@ -10,6 +10,7 @@
 
 #include "analyses/frequencies.h"
 #include "analyses/ttestonesample.h"
+#include "analyses/ttestindependentsamples.h"
 
 #include "analysispart.h"
 
@@ -23,6 +24,10 @@ Analysis *AnalysisLoader::load(int id, string analysisName, Options *options)
 	else if (analysisName == "TTestOneSample")
 	{
 		return new analyses::TTestOneSample(id);
+	}
+	else if (analysisName == "TTestIndependentSamples")
+	{
+		return new analyses::TTestIndependentSamples(id);
 	}
 	/*else if (analysisName == "ANOVA")
 	{

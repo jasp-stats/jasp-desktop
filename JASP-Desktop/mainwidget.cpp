@@ -3,6 +3,7 @@
 
 #include "analysisforms/descriptives.h"
 #include "analysisforms/ttestonesample.h"
+#include "analysisforms/ttestindependentsamples.h"
 
 #include <QDebug>
 #include <QWebFrame>
@@ -124,7 +125,11 @@ void MainWidget::itemSelected(const QString item)
 		analysis = _analyses->create("TTestOneSample");
 		_currentOptionsWidget = new TTestOneSample(ui->optionsContentArea);
 	}
-
+	else if (item == "TTestIndependentSamples")
+	{
+		analysis = _analyses->create("TTestIndependentSamples");
+		_currentOptionsWidget = new TTestIndependentSamples(ui->optionsContentArea);
+	}
 
 	if (_currentOptionsWidget != NULL)
 	{

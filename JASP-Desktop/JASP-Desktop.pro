@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     widgets/toolbutton.cpp \
     analysisforms/anova.cpp \
     widgets/boundtextbox.cpp \
-    widgets/boundgroupbox.cpp
+    widgets/boundgroupbox.cpp \
+    analysisforms/ttestindependentsamples.cpp
 
 HEADERS  += mainwindow.h \
     datasettablemodel.h \
@@ -74,7 +75,8 @@ HEADERS  += mainwindow.h \
     widgets/toolbutton.h \
     analysisforms/anova.h \
     widgets/boundtextbox.h \
-    widgets/boundgroupbox.h
+    widgets/boundgroupbox.h \
+    analysisforms/ttestindependentsamples.h
 
 FORMS    += mainwindow.ui \
     backstageform.ui \
@@ -84,7 +86,8 @@ FORMS    += mainwindow.ui \
     analysisforms/descriptives.ui \
     analysisforms/ttestonesample.ui \
     analysisforms/anovaoneway.ui \
-    analysisforms/anova.ui
+    analysisforms/anova.ui \
+    analysisforms/ttestindependentsamples.ui
 
 
 RESOURCES += \
