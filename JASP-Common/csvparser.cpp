@@ -33,6 +33,9 @@ void CSVParser::readNextRow(istream& stream)
 
 		getline(stream, line);
 
+		if (line.length() > 0 && line.at(line.length() - 1) == '\r')
+			line = line.substr(0, line.length() - 1);
+
         tokenizer<escaped_list_separator<char> > tk(line, escaped_list_separator<char>('\\', ',', '\"'));
 
         for (charItr itr(tk.begin()); itr != tk.end(); ++itr)

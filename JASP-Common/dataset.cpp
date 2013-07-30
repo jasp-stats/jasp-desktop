@@ -50,7 +50,6 @@ DataSet::DataSet(boost::interprocess::managed_shared_memory *mem, std::vector<st
 		Column column(mem);
 		column.setName(columnName);
 
-
 		_columns._columnStore.push_back(column);
 	}
 
@@ -67,7 +66,7 @@ DataSet::DataSet(boost::interprocess::managed_shared_memory *mem, std::vector<st
 
 		BOOST_FOREACH(string &value, columnRows)
 		{
-			if (value != "NaN")
+			if (value != "NaN" && value != "")
 			{
 				try
 				{
