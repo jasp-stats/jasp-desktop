@@ -82,6 +82,11 @@ tbody tr:last-child td
 	border-bottom: 2px solid black ;
 }
 
+tfoot td
+{
+	text-align: left;
+}
+
 /*thead tr:nth-child(1n + 2) th:first-child,
 tbody tr th:first-of-type,
 tbody tr td:first-of-type

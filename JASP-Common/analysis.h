@@ -42,8 +42,8 @@ public:
 	std::string name();
 	int id();
 
-	virtual void init() = 0;
-	virtual void run() = 0;
+	virtual void init();
+	virtual void run();
 
 	void setRInterface(RInterface *r);
 
@@ -52,6 +52,7 @@ public:
 protected:
 
 	virtual Options *createDefaultOptions() = 0;
+	virtual std::string rScript() = 0;
 
 	Options* _options;
 	DataSet *_dataSet;

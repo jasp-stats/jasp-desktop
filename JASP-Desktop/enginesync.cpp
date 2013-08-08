@@ -263,6 +263,13 @@ void EngineSync::checkForMessages()
 {
 
 #ifdef __APPLE__
+	sem_post(_semaphoreOut);
+#else
+	_semaphoreOut->post();
+#endif
+
+
+#ifdef __APPLE__
     while (sem_trywait(_semaphoreIn) == 0) // 0 = success?!
 #else
     while (_semaphoreIn->try_wait())

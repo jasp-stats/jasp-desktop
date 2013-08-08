@@ -23,20 +23,27 @@ Frequencies::Frequencies(int id)
 {
 }
 
-string Frequencies::_script((const char *)frequencies_R, frequencies_R_size);
 
-void Frequencies::init()
+
+/*void Frequencies::init()
 {
-	_r->setDataSet(_dataSet);
+	_r->setDataSetHeader(_dataSet);
 	_r->setOptions(_options->asJSON());
-	_results = _r->run(_script, "init");
+	_results = _r->run(createScript(), "init");
 }
 
 void Frequencies::run()
 {
 	_r->setDataSet(_dataSet);
 	_r->setOptions(_options->asJSON());
-	_results = _r->run(_script, "run");
+	_results = _r->run(createScript(), "run");
+}*/
+
+string Frequencies::_script = string((const char *)frequencies_R, frequencies_R_size);
+
+string Frequencies::rScript()
+{
+	return _script;
 }
 
 Options *Frequencies::createDefaultOptions()

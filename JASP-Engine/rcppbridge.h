@@ -11,7 +11,8 @@ class RcppBridge : public RInterface
 public:
 	RcppBridge();
 
-	virtual void setDataSet(DataSet *dataSet) ;//override;
+	virtual void setDataSetHeader(DataSet *dataSet); //override;
+	virtual void setDataSet(DataSet *dataSet); //override;
 	virtual void setOptions(const Json::Value &options) ;//override;
 	virtual Json::Value run(const string &script, const string &perform) ;//override;
 

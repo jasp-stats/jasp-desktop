@@ -132,6 +132,8 @@ stats.results[["title"]] <- "Descriptive Statistics"
 stats.results[["schema"]] <- list(fields=fields)
 stats.results[["cases"]] <- as.list(variables)
 
+footnotes <- list()
+
 if (perform == "run") {
 	stats.values <- list()
 
@@ -161,11 +163,29 @@ if (perform == "run") {
 			}
 		}
 		if (central.tendency["mode"]) {
+		
 			if (class(na.omitted) != "factor") {
-				field.results[["Mode"]] <- s(mean(as.numeric(names(table(na.omitted)[table(na.omitted)==max(table(na.omitted))]))))
+			
+				mode <- as.numeric(names(table(na.omitted)[table(na.omitted)==max(table(na.omitted))]))
+
+				if (length(mode) > 1) {
+
+					warning <- "More than one mode exists, only the first is reported"
+					if ( ! (warning %in% footnotes))
+						footnotes[[length(footnotes)+1]] <- warning
+					index <- which.max(footnotes == warning) - 1
+					
+					field.results[["~footnotes"]] <- list(Mode=list(index));
+				}
+			
+				field.results[["Mode"]] <- s(mode[1])
+				
 			} else {
+			
 				field.results[["Mode"]] <- ""
 			}
+			
+			
 		}
 		if (central.tendency["sum"]) {
 			if (class(na.omitted) != "factor") {
@@ -265,8 +285,11 @@ if (perform == "run") {
 		}	
 		stats.values[[length(stats.values) + 1]] <- field.results
 	}
+	
 	stats.results[["data"]] <- stats.values
+	stats.results[["footnotes"]] <- footnotes
 }
+
 results[["stats"]] <- stats.results
 
 #### FREQUENCIES TABLES
@@ -274,7 +297,9 @@ results[["stats"]] <- stats.results
 if (options$main$displayFrequencyTables) {
 	frequency.tables <- list()
 	for (variable in variables) {
+	
 		column <- dataset[[variable]]
+		
 		if (class(column) == "numeric")
 			next		
 			
@@ -294,7 +319,9 @@ if (options$main$displayFrequencyTables) {
 		} else {
 			frequency.table[["cases"]] <- list()
 		}
+		
 		if (perform == "run") {
+		
 			lvls <- c()
 
 			if (class(column) == "factor") {
@@ -337,17 +364,76 @@ if (options$main$displayFrequencyTables) {
 			frequency.table[["data"]] <- data
 
 		} else {
+		
 			if (class(column) == "factor") {
+			
 				frequency.table[["cases"]] <- levels(dataset[[variable]])
+				
 			} else {
+			
 				frequency.table[["cases"]] <- list()
+				
 			}
-			frequency.tables[[length(frequency.tables)+1]] <- frequency.table
+				
 		}
+		
+		frequency.tables[[length(frequency.tables)+1]] <- frequency.table
 	}
 	results[["tables"]] <- frequency.tables
 }
 
 #### FREQUENCY PLOTS
+
+if (options$charts$chartType != "noCharts") {
+
+	frequency.plots <- list()
+
+	for (variable in variables) {
+	
+		column <- dataset[[variable]]
+
+		if (class(column) == "numeric")
+			next
+		
+		frequency.plot <- list()
+		frequency.plot[["title"]] <- paste("Frequencies for", variable)
+
+		if (class(column) == "factor") {
+			frequency.plot[["cases"]] <- as.character(levels(column))
+		} else if (class(column) == "integer") {
+			frequency.plot[["cases"]] <- as.character(sort(unique(column)))
+		}
+
+		if (perform == "run") {
+
+			t <- table(column)
+			total <- sum(t)
+
+			freqs <- list()
+			percent <- list()
+			validPercent <- list()
+			cumPercent <- list()
+
+			cumFreq <- 0
+
+			for (n in names(t)) {
+				freq <- as.vector(t[n])
+				cumFreq <- cumFreq + freq
+	
+				freqs[[length(freqs) + 1]] <- freq
+				percent[[length(percent) + 1]] <- freq / total * 100
+				validPercent[[length(validPercent) + 1]] <- freq / total * 100
+				cumPercent[[length(cumPercent)+1]] <- cumFreq / total * 100
+			}
+			
+			frequency.plot[["data"]] <- freqs
+			
+		}
+		
+		frequency.plots[[length(frequency.plots)+1]] <- frequency.plot
+	}
+	
+	results[["plots"]] <- frequency.plots
+}
 
 results

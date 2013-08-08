@@ -24,18 +24,9 @@ TTestOneSample::TTestOneSample(int id)
 
 string TTestOneSample::_script((const char *)ttestonesample_R, ttestonesample_R_size);
 
-void TTestOneSample::init()
+string TTestOneSample::rScript()
 {
-	_r->setDataSet(_dataSet);
-	_r->setOptions(_options->asJSON());
-	_results = _r->run(_script, "init");
-}
-
-void TTestOneSample::run()
-{
-	_r->setDataSet(_dataSet);
-	_r->setOptions(_options->asJSON());
-	_results = _r->run(_script, "run");
+	return _script;
 }
 
 Options *TTestOneSample::createDefaultOptions()

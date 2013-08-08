@@ -8,19 +8,25 @@ $(document).ready(function() {
 
         var item = $("#" + id)
 
-        if (item.length == 0) {
-            item = $('<div id="' + id + '"></div>')
-            $('body').append(item)
-        }
+        if (item.length != 0)
+            item.remove();
+
+        item = $('<div id="' + id + '"></div>')
+        var spacer = $("#spacer")
+        spacer.before(item);
 
         if (analysis.name === "Descriptives") {
+        
         	item.frequencies( results )
         }
         else if (analysis.name === "TTestOneSample") {
-            if (_.has(results, "descriptives"))
-                item.tables( { tables : [ results.ttest, results.descriptives ] } )
-            else
-                item.tables( { tables : [ results.ttest ] } )
+
+			var ts = [ results.ttest ]
+			
+            if (results.descriptives)
+            	ts.push(results.descriptives)
+
+			item.tables( { tables : ts } )
         }
         else if (analysis.name === "TTestIndependentSamples") {
 

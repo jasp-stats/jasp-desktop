@@ -28,6 +28,20 @@ Analysis::Analysis(int id, string name)
 
 }
 
+void Analysis::init()
+{
+	_r->setDataSetHeader(_dataSet);
+	_r->setOptions(_options->asJSON());
+	_results = _r->run(rScript(), "init");
+}
+
+void Analysis::run()
+{
+	_r->setDataSet(_dataSet);
+	_r->setOptions(_options->asJSON());
+	_results = _r->run(rScript(), "run");
+}
+
 void Analysis::setResults(Json::Value results)
 {
 	_inited = true;
@@ -133,3 +147,4 @@ void Analysis::setDataSet(DataSet *dataSet)
 {
 	_dataSet = dataSet;
 }
+

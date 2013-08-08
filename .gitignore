@@ -14,6 +14,7 @@
 
 # Generate resource headers
 *.R.h
+*.js.h
 
 # QT files
 *.pro.user

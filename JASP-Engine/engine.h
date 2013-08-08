@@ -19,7 +19,6 @@ public:
 public:
 
 	void receiveMessage(char *buffer, size_t message_size);
-
 	void run();
 	
 private:
@@ -29,6 +28,8 @@ private:
 	char buffer[BUFFER_SIZE];
 	boost::interprocess::message_queue::size_type messageSize;
 	unsigned int priority;
+
+	boost::posix_time::ptime _lastReceive;
 
 	//std::map<std::string, Json::Value> _analyses;
 	Json::Value _currentRequest;

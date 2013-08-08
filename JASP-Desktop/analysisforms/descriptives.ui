@@ -414,32 +414,38 @@
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="groupBox_6">
+          <widget class="QGroupBox" name="chartValuesGroup">
            <property name="title">
             <string>Chart Values</string>
            </property>
            <property name="flat">
             <bool>true</bool>
            </property>
-           <layout class="QGridLayout" name="gridLayout_9">
+           <layout class="QGridLayout" name="gridLayout_17">
             <item row="0" column="0">
-             <widget class="QRadioButton" name="frequencies">
-              <property name="text">
-               <string>Frequencies</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
+             <widget class="BoundGroupBox" name="charts_chartValues" native="true">
+              <layout class="QGridLayout" name="gridLayout_9">
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="frequencies">
+                 <property name="text">
+                  <string>Frequencies</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="percentages">
+                 <property name="text">
+                  <string>Percentages</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QRadioButton" name="percentages">
-              <property name="text">
-               <string>Percentages</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>

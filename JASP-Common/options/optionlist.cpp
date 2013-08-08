@@ -13,4 +13,5 @@ Json::Value OptionList::asJSON() const
 
 void OptionList::set(Json::Value &value)
 {
+	_value = value.asString();
 }

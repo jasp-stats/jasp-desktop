@@ -11,9 +11,12 @@
 #include "../JASP-Common/analyses/frequencies.h"
 #include "../JASP-Common/analyses/ttestonesample.h"
 
+#include <sstream>
+
 using namespace std;
 using namespace boost::interprocess;
 using namespace Json;
+using namespace boost::posix_time;
 
 Engine::Engine()
 {
@@ -84,6 +87,8 @@ void Engine::run()
     _semaphoreOut = new named_semaphore(open_only, "JASPEngine_SM");
 #endif
 
+	_lastReceive = microsec_clock::universal_time();
+
 	do
 	{
 		// waiting semaphores in OSX consume 100% CPU!
@@ -92,21 +97,27 @@ void Engine::run()
 		if (sem_trywait(_semaphoreIn) == 0)  // 0 = success?!
 #else
 
-		boost::posix_time::ptime now(boost::posix_time::microsec_clock::universal_time());
-		boost::posix_time::ptime then = now + boost::posix_time::microseconds(20000);
+		ptime now(microsec_clock::universal_time());
+		ptime then = now + microseconds(20000);
 
         //if (_semaphoreIn->timed_wait(then))
         _semaphoreIn->wait();
 #endif
 		{
-			_mqIn->receive(buffer, sizeof(buffer), messageSize, priority);
-			receiveMessage(buffer, messageSize);
+			if (_mqIn->try_receive(buffer, sizeof(buffer), messageSize, priority))
+				receiveMessage(buffer, messageSize);
+			_lastReceive = microsec_clock::universal_time();
 		}
 #ifdef __APPLE__
 		else
 		{
 			usleep(20000);
 		}
+
+		time_duration elapsed = microsec_clock::universal_time() - _lastReceive;
+		if (elapsed.seconds() >= 2)
+			break;
+
 #endif
 	}
 	while(1);

@@ -62,10 +62,11 @@ $.widget("jasp.table", {
 	refresh: function () {
 		
 		var html = ''
+
+        html += '<table>'
 		
         if ( ! this.options.casesAcrossColumns) {
         
-			html += '<table>'
 				html += '<thead>'
 					html += '<tr>'
                         html += '<th colspan="' + (1 + this.options.schema.fields.length) + '">' + this.options.title + '</th>'
@@ -100,6 +101,15 @@ $.widget("jasp.table", {
                         var value = this.options.data[i][field.id]
                         if (field.format)
                             value = this._format(value, field.format)
+                        if (this.options.data[i]["~footnotes"] && this.options.data[i]["~footnotes"][field.id]) {
+                            var footnotes = this.options.data[i]["~footnotes"][field.id]
+                            var sup = "<sup>" + String.fromCharCode(97 + footnotes[0]);
+                            for (var j = 1; j < footnotes.length; j++)
+                                sup += "," + String.fromCharCode(97 + footnotes[i]);
+                            sup += "</sup>"
+
+                            value = "" + value + sup
+                        }
 
                         html += '<td>' + value + '</td>'
                     }, this)
@@ -109,11 +119,9 @@ $.widget("jasp.table", {
             }
 		
 				html += '</tbody>'
-			html += '</table>'
         }
         else
         {
-			html += '<table>'
 				html += '<thead>'
 					html += '<tr>'
                         html += '<th colspan="' + (1 + this.options.cases.length) + '">' + this.options.title + '</th>'
@@ -146,10 +154,22 @@ $.widget("jasp.table", {
 		
                 if (this.options.data != null) {
                     for (var i = 0; i < this.options.cases.length; i++) {
-                        var value = this.options.data[i][field.id]
+                        var entry = this.options.data[i]
+                        var value = entry[field.id]
 
                         if (field.format)
                             value = this._format(value, field.format)
+
+                        if (this.options.data[i]["~footnotes"] && this.options.data[i]["~footnotes"][field.id]) {
+                            var footnotes = this.options.data[i]["~footnotes"][field.id]
+
+                            var sup = "<sup>" + String.fromCharCode(97 + footnotes[0]);
+                            for (var j = 1; j < footnotes.length; j++)
+                                sup += "," + String.fromCharCode(97 + footnotes[i]);
+                            sup += "</sup>"
+
+                            value = "" + value + sup
+                        }
 
 						html += '<td>' + value + '</td>'
                     }
@@ -159,8 +179,24 @@ $.widget("jasp.table", {
             }, this)
 		
 				html += '</tbody>'
-			html += '</table>'
 		}
+
+        if (this.options.footnotes) {
+
+            html += '<tfoot>'
+
+            for (var i = 0; i < this.options.footnotes.length; i++) {
+
+                html += '<tr><td colspan="' + (1 + this.options.cases.length) + '">'
+                html += '<sup>' + String.fromCharCode(97 + i) + '</sup>'
+                html += this.options.footnotes[i]
+                html += '</td></tr>'
+            }
+
+            html += '</tfoot>'
+        }
+
+        html += '</table>'
 
 		this.element.html(html)
 		

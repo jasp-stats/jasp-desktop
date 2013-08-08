@@ -9,6 +9,7 @@ class RInterface
 public:
 	RInterface() { }
 
+	virtual void setDataSetHeader(DataSet *dataSet) = 0;
 	virtual void setDataSet(DataSet *dataSet) = 0;
 	virtual void setOptions(const Json::Value &options) = 0;
 	virtual Json::Value run(const string &script, const string &perform) = 0;

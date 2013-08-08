@@ -9,6 +9,45 @@ RcppBridge::RcppBridge()
 {
 }
 
+void RcppBridge::setDataSetHeader(DataSet *dataSet)
+{
+	Rcpp::List list(dataSet->columnCount());
+	Rcpp::CharacterVector columnNames;
+
+	int colNo = 0;
+
+	BOOST_FOREACH(Column &column, dataSet->columns())
+	{
+		columnNames.push_back(column.name());
+
+		if (column.columnType() == Column::IntColumnType)
+		{
+			Rcpp::IntegerVector v(0);
+
+			if (column.hasLabels())
+			{
+				Rcpp::CharacterVector labels;
+				typedef pair<int, string> pair;
+
+				BOOST_FOREACH(pair label, column.labels())
+					labels.push_back(label.second);
+
+				v.attr("levels") = labels;
+				v.attr("class") = "factor";
+			}
+
+			list[colNo++] = v;
+		}
+		else
+		{
+			list[colNo++] = Rcpp::NumericVector(0);
+		}
+	}
+
+	list.attr("names") = columnNames;
+	_rInside["dataset"] = Rcpp::DataFrame(list);
+}
+
 void RcppBridge::setDataSet(DataSet* dataSet)
 {
 	Rcpp::List list(dataSet->columnCount());
@@ -65,6 +104,7 @@ void RcppBridge::setOptions(const Json::Value &options)
 {
 	_rInside.parseEvalQNT("library(\"RJSONIO\")");
 	_rInside["optionsAsJson"] = options.toStyledString();
+
 	_rInside.parseEvalQNT("options <- fromJSON(optionsAsJson, asText=TRUE)");
 	_rInside["results"] = NULL;
 }

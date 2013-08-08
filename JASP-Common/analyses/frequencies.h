@@ -15,22 +15,16 @@ class Frequencies : public Analysis
 {
 public:
 	Frequencies(int id);
-    virtual void init();// override;
-    virtual void run();// override;
 
 protected:
 
+	virtual std::string rScript(); // override
     virtual Options *createDefaultOptions();// override;
 
 private:
 
-	//Json::Value initTables();
-	//Json::Value initStats();
-	//Json::Value initPlots();
-
-	//vector<string> getMainFields();
-
 	static std::string _script;
+
 };
 
 }

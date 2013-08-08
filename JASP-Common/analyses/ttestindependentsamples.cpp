@@ -23,20 +23,25 @@ TTestIndependentSamples::TTestIndependentSamples(int id)
 {
 }
 
-string TTestIndependentSamples::_script((const char *)ttestindependentsamples_R, ttestindependentsamples_R_size);
-
-void TTestIndependentSamples::init()
+/*void TTestIndependentSamples::init()
 {
 	_r->setDataSet(_dataSet);
 	_r->setOptions(_options->asJSON());
-	_results = _r->run(_script, "init");
+	_results = _r->run(createScript(), "init");
 }
 
 void TTestIndependentSamples::run()
 {
 	_r->setDataSet(_dataSet);
 	_r->setOptions(_options->asJSON());
-	_results = _r->run(_script, "run");
+	_results = _r->run(createScript(), "run");
+}*/
+
+string TTestIndependentSamples::_script((const char *)ttestindependentsamples_R, ttestindependentsamples_R_size);
+
+string TTestIndependentSamples::rScript()
+{
+	return _script;
 }
 
 Options *TTestIndependentSamples::createDefaultOptions()

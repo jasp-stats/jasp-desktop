@@ -38,7 +38,9 @@ $.widget("jasp.frequencies", {
 				casesAcrossColumns : true,
 				cases : this.options.stats.cases,
                 schema : this.options.stats.schema,
-				data : this.options.stats.data })
+                data : this.options.stats.data,
+                footnotes: this.options.stats.footnotes
+            })
 				
 			this.statistics.show()
         }

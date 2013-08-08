@@ -10,16 +10,16 @@ class TTestIndependentSamples : public Analysis
 {
 public:
 	TTestIndependentSamples(int id);
-    virtual void init();// override;
-    virtual void run();// override;
 
 protected:
 
     virtual Options *createDefaultOptions();// override;
+	virtual std::string rScript(); // override
 
 private:
 
 	static std::string _script;
+
 };
 
 }
