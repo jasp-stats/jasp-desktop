@@ -5,6 +5,8 @@
 # to native line endings on checkout.
 *.cpp text
 *.h   text
+*.js
+makefile
 
 # Declare files that will always have LF line endings on checkout.
 *.R text eol=lf
