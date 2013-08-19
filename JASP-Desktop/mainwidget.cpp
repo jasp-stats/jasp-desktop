@@ -4,6 +4,8 @@
 #include "analysisforms/descriptives.h"
 #include "analysisforms/ttestonesample.h"
 #include "analysisforms/ttestindependentsamples.h"
+#include "analysisforms/ttestbayesonesampleform.h"
+#include "analysisforms/anovaoneway.h"
 
 #include <QDebug>
 #include <QWebFrame>
@@ -129,6 +131,16 @@ void MainWidget::itemSelected(const QString item)
 	{
 		analysis = _analyses->create("TTestIndependentSamples");
 		_currentOptionsWidget = new TTestIndependentSamples(ui->optionsContentArea);
+	}
+	else if (item == "TTestBayesOneSample")
+	{
+		analysis = _analyses->create("TTestBayesOneSample");
+		_currentOptionsWidget = new TTestBayesOneSampleForm(ui->optionsContentArea);
+	}
+	else if (item == "AnovaOneWay")
+	{
+		analysis = _analyses->create("AnovaOneWay");
+		_currentOptionsWidget = new ANOVAOneWay(ui->optionsContentArea);
 	}
 
 	if (_currentOptionsWidget != NULL)

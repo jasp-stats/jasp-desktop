@@ -13,10 +13,6 @@ windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
 
 windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
 
-resources.commands = make -C $$PWD/analyses
-QMAKE_EXTRA_TARGETS += resources
-PRE_TARGETDEPS += resources
-
 SOURCES += \
     options.cpp \
     datasetloader.cpp \
@@ -44,10 +40,12 @@ SOURCES += \
     options/optionintegerarray.cpp \
     options/optioninteger.cpp \
     options/optionlist.cpp \
-    analyses/frequencies.cpp \
     analyses/ttestonesample.cpp \
     options/optionnumber.cpp \
-    analyses/ttestindependentsamples.cpp
+    analyses/ttestindependentsamples.cpp \
+    analyses/ttestbayesonesample.cpp \
+    analyses/descriptives.cpp \
+    analyses/anovaoneway.cpp
 
 HEADERS +=\
     options.h \
@@ -80,10 +78,12 @@ HEADERS +=\
     options/optioninteger.h \
     options/optionlist.h \
     rinterface.h \
-    analyses/frequencies.h \
-    analyses/ttestonesample.h \
     options/optionnumber.h \
-    analyses/ttestindependentsamples.h
+    analyses/ttestindependentsamples.h \
+    analyses/ttestonesample.h \
+    analyses/ttestbayesonesample.h \
+    analyses/descriptives.h \
+    analyses/anovaoneway.h
 
 unix:!symbian {
     maemo5 {
@@ -98,6 +98,7 @@ OTHER_FILES += \
     analyses/frequencies.R \
     analyses/makefile \
     analyses/ttestonesample.R \
-    analyses/ttestindependentsamples.R
+    analyses/ttestindependentsamples.R \
+    analyses/ttestbayesonesample.R
 
 RESOURCES +=

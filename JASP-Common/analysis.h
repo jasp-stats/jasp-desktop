@@ -13,6 +13,12 @@
 
 #include "rinterface.h"
 
+#if __GNUC__ == 4 && __GNUC_MINOR__ == 6
+#define OVERRIDE
+#else
+#define OVERRIDE override
+#endif
+
 class Analysis
 {
 
@@ -52,7 +58,6 @@ public:
 protected:
 
 	virtual Options *createDefaultOptions() = 0;
-	virtual std::string rScript() = 0;
 
 	Options* _options;
 	DataSet *_dataSet;

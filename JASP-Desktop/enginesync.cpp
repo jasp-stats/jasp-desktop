@@ -263,8 +263,10 @@ void EngineSync::checkForMessages()
 {
 
 #ifdef __APPLE__
+	sem_trywait(_semaphoreOut); // clear if not cleared by subprocess
 	sem_post(_semaphoreOut);
 #else
+	_semaphoreOut->try_wait();
 	_semaphoreOut->post();
 #endif
 
@@ -278,33 +280,33 @@ void EngineSync::checkForMessages()
 		boost::interprocess::message_queue::size_type messageSize;
 		uint priority;
 
-		if ( ! _messageQueueIn->try_receive(_buffer, sizeof(_buffer), messageSize, priority))
-			continue;
-
-		string message = string(_buffer, messageSize);
-
-		cout << message;
-		cout.flush();
-
-		Json::Reader reader;
-
-		Json::Value json;
-		reader.parse(message, json);
-
-		int id = json.get("id", 0).asInt();
-        //string name = json.get("name", Json::nullValue).asString();
-		string perform = json.get("perform", Json::nullValue).asString();
-		Json::Value payload = json.get("results", Json::nullValue);
-
-		Analysis *analysis = _analyses->get(id);
-
-		if (perform == "init")
+		while(_messageQueueIn->try_receive(_buffer, sizeof(_buffer), messageSize, priority))
 		{
-			analysis->setResults(payload);
-		}
-		else if (perform == "run")
-		{
-			analysis->setResults(payload);
+			string message = string(_buffer, messageSize);
+
+			cout << message;
+			cout.flush();
+
+			Json::Reader reader;
+
+			Json::Value json;
+			reader.parse(message, json);
+
+			int id = json.get("id", 0).asInt();
+			//string name = json.get("name", Json::nullValue).asString();
+			string perform = json.get("perform", Json::nullValue).asString();
+			Json::Value payload = json.get("results", Json::nullValue);
+
+			Analysis *analysis = _analyses->get(id);
+
+			if (perform == "init")
+			{
+				analysis->setResults(payload);
+			}
+			else if (perform == "run")
+			{
+				analysis->setResults(payload);
+			}
 		}
 	}
 }

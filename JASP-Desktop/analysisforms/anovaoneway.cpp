@@ -12,16 +12,14 @@ ANOVAOneWay::ANOVAOneWay(QWidget *parent) :
 	ui->setupUi(this);
 
 	ui->listAvailableFields->setModel(&_availableFields);
-	ui->listAvailableFields->addAssignButton(ui->buttonAssign_main_fields);
-	ui->listAvailableFields->addAssignButton(ui->buttonAssign_main_factor);
+	ui->listAvailableFields->addAssignButton(ui->assignFactor);
+	ui->listAvailableFields->addAssignButton(ui->assignVariables);
 
-	ui->main_fields->setAssignButton(ui->buttonAssign_main_fields);
-	ui->main_fields->setAvailableFieldsListView(ui->listAvailableFields);
+	ui->variables->setAssignButton(ui->assignVariables);
+	ui->variables->setAvailableFieldsListView(ui->listAvailableFields);
 
-	ui->main_factor->setAssignButton(ui->buttonAssign_main_factor);
-	ui->main_factor->setAvailableFieldsListView(ui->listAvailableFields);
-
-	connect(ui->okButton, SIGNAL(clicked()), this, SLOT(accept()));
+	ui->factor->setAssignButton(ui->assignFactor);
+	ui->factor->setAvailableFieldsListView(ui->listAvailableFields);
 }
 
 ANOVAOneWay::~ANOVAOneWay()

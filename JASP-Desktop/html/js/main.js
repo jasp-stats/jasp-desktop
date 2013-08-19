@@ -19,7 +19,7 @@ $(document).ready(function() {
         
         	item.frequencies( results )
         }
-        else if (analysis.name === "TTestOneSample") {
+        else if (analysis.name === "TTestOneSample" || analysis.name === "TTestBayesOneSample") {
 
 			var ts = [ results.ttest ]
 			
@@ -36,6 +36,12 @@ $(document).ready(function() {
                 ts.push(results.inequalityOfVariances)
             if (results.descriptives)
                 ts.push(results.descriptives)
+
+            item.tables( { tables : ts } )
+        }
+        else if (analysis.name === "AnovaOneWay") {
+
+            var ts = [ results.anova ]
 
             item.tables( { tables : ts } )
         }

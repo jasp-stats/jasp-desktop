@@ -1,4 +1,5 @@
-#include "ttestonesample.h"
+
+#include "ttestbayesonesample.h"
 
 #include "options.h"
 #include "option.h"
@@ -9,17 +10,15 @@
 #include "options/optionlist.h"
 #include "options/optionnumber.h"
 
-#include "rinterface.h"
-
-using namespace Json;
+using namespace std;
 using namespace analyses;
 
-TTestOneSample::TTestOneSample(int id)
-	: Analysis(id, "TTestOneSample")
+TTestBayesOneSample::TTestBayesOneSample(int id)
+	: Analysis(id, "TTestBayesOneSample")
 {
 }
 
-Options *TTestOneSample::createDefaultOptions()
+Options *TTestBayesOneSample::createDefaultOptions()
 {
 	Options *options = new Options();
 

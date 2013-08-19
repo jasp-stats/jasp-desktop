@@ -20,6 +20,7 @@ class Column
 {
 	friend class DataSet;
 	friend class Columns;
+	friend class DataSetLoader;
 	friend class boost::iterator_core_access;
 
 	typedef unsigned long long ull;

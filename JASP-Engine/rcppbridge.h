@@ -11,13 +11,13 @@ class RcppBridge : public RInterface
 public:
 	RcppBridge();
 
-	virtual void setDataSetHeader(DataSet *dataSet); //override;
 	virtual void setDataSet(DataSet *dataSet); //override;
-	virtual void setOptions(const Json::Value &options) ;//override;
-	virtual Json::Value run(const string &script, const string &perform) ;//override;
+	virtual Json::Value init(const int id, const string &name, const Json::Value &options); // override
+	virtual Json::Value run(const int id, const Json::Value &options); // override
 
 private:
 	RInside _rInside;
+
 };
 
 #endif // RCPPBRIDGE_H

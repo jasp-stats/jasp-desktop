@@ -8,9 +8,11 @@
 #include "options/optionintegerarray.h"
 #include "options/optionlist.h"
 
-#include "analyses/frequencies.h"
+#include "analyses/descriptives.h"
 #include "analyses/ttestonesample.h"
 #include "analyses/ttestindependentsamples.h"
+#include "analyses/ttestbayesonesample.h"
+#include "analyses/anovaoneway.h"
 
 #include "analysispart.h"
 
@@ -19,7 +21,7 @@ Analysis *AnalysisLoader::load(int id, string analysisName, Options *options)
 
 	if (analysisName == "Descriptives")
 	{
-		return new analyses::Frequencies(id);
+		return new analyses::Descriptives(id);
     }
 	else if (analysisName == "TTestOneSample")
 	{
@@ -28,6 +30,14 @@ Analysis *AnalysisLoader::load(int id, string analysisName, Options *options)
 	else if (analysisName == "TTestIndependentSamples")
 	{
 		return new analyses::TTestIndependentSamples(id);
+	}
+	else if (analysisName == "TTestBayesOneSample")
+	{
+		return new analyses::TTestBayesOneSample(id);
+	}
+	else if (analysisName == "AnovaOneWay")
+	{
+		return new analyses::AnovaOneWay(id);
 	}
 	/*else if (analysisName == "ANOVA")
 	{

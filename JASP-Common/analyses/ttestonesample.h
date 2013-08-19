@@ -13,11 +13,7 @@ public:
 
 protected:
 
-	virtual std::string rScript(); // override
-    virtual Options *createDefaultOptions();// override;
-
-private:
-	static std::string _script;
+	virtual Options *createDefaultOptions() OVERRIDE;
 
 };
 

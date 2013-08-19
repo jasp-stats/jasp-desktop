@@ -4,12 +4,8 @@
 #include <cstdio>
 
 #include "../JASP-Common/lib_json/json.h"
-
-#include "rinterface.h"
-
+#include "../JASP-Common/rinterface.h"
 #include "../JASP-Common/analysisloader.h"
-#include "../JASP-Common/analyses/frequencies.h"
-#include "../JASP-Common/analyses/ttestonesample.h"
 
 #include <sstream>
 
@@ -75,6 +71,7 @@ void Engine::receiveMessage(char *buffer, size_t message_size)
 
 void Engine::run()
 {
+	int timeouts = 0;
 
     _mqIn = new message_queue(open_only, "JASP_MQ");
     _mqOut = new message_queue(open_only, "JASPEngine_MQ");
@@ -107,6 +104,7 @@ void Engine::run()
 			if (_mqIn->try_receive(buffer, sizeof(buffer), messageSize, priority))
 				receiveMessage(buffer, messageSize);
 			_lastReceive = microsec_clock::universal_time();
+			timeouts = 0;
 		}
 #ifdef __APPLE__
 		else
@@ -115,8 +113,14 @@ void Engine::run()
 		}
 
 		time_duration elapsed = microsec_clock::universal_time() - _lastReceive;
-		if (elapsed.seconds() >= 2)
-			break;
+		if (elapsed.total_milliseconds() > 100)
+		{
+			_lastReceive = microsec_clock::universal_time();
+			timeouts++;
+
+			if (timeouts >= 10)
+				break;
+		}
 
 #endif
 	}

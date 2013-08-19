@@ -7,45 +7,9 @@ using namespace std;
 
 RcppBridge::RcppBridge()
 {
-}
-
-void RcppBridge::setDataSetHeader(DataSet *dataSet)
-{
-	Rcpp::List list(dataSet->columnCount());
-	Rcpp::CharacterVector columnNames;
-
-	int colNo = 0;
-
-	BOOST_FOREACH(Column &column, dataSet->columns())
-	{
-		columnNames.push_back(column.name());
-
-		if (column.columnType() == Column::IntColumnType)
-		{
-			Rcpp::IntegerVector v(0);
-
-			if (column.hasLabels())
-			{
-				Rcpp::CharacterVector labels;
-				typedef pair<int, string> pair;
-
-				BOOST_FOREACH(pair label, column.labels())
-					labels.push_back(label.second);
-
-				v.attr("levels") = labels;
-				v.attr("class") = "factor";
-			}
-
-			list[colNo++] = v;
-		}
-		else
-		{
-			list[colNo++] = Rcpp::NumericVector(0);
-		}
-	}
-
-	list.attr("names") = columnNames;
-	_rInside["dataset"] = Rcpp::DataFrame(list);
+	_rInside["jasp.analyses"] = Rcpp::List();
+	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"RJSONIO\"))");
+	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
 }
 
 void RcppBridge::setDataSet(DataSet* dataSet)
@@ -100,25 +64,67 @@ void RcppBridge::setDataSet(DataSet* dataSet)
 	_rInside["dataset"] = Rcpp::DataFrame(list);
 }
 
-void RcppBridge::setOptions(const Json::Value &options)
+Json::Value RcppBridge::init(const int id, const string &name, const Json::Value &options)
 {
-	_rInside.parseEvalQNT("library(\"RJSONIO\")");
-	_rInside["optionsAsJson"] = options.toStyledString();
+	stringstream ss;
+	ss << "if (\"";
+	ss << id;
+	ss << "\" %in% names(jasp.analyses) == FALSE) analysis.env <- (jasp.analyses[[\"";
+	ss << id;
+	ss << "\"]] <- new.env()) else analysis.env <- jasp.analyses[[\"";
+	ss << id;
+	ss << "\"]]; analysis.env";
 
-	_rInside.parseEvalQNT("options <- fromJSON(optionsAsJson, asText=TRUE)");
-	_rInside["results"] = NULL;
+	Rcpp::Environment env = _rInside.parseEval(ss.str());
+
+	ss.str("");
+
+	ss << "evalq(analysis.func <- JASP::";
+	ss << name;
+	ss << ", analysis.env)";
+
+	_rInside.parseEvalQNT(ss.str());
+
+	SEXP results;
+
+	env["optionsAsString"] = options.toStyledString();
+
+	_rInside.parseEvalQNT("evalq(options <- fromJSON(optionsAsString, asText=TRUE), analysis.env)");
+	_rInside.parseEval("evalq(results <- analysis.func(dataset, options, \"init\"), analysis.env)");
+	_rInside.parseEval("evalq(toJSON(results), analysis.env)", results);
+
+	string resultsAsString = Rcpp::as<string>(results);
+
+	Json::Reader r;
+	Json::Value json;
+	r.parse(resultsAsString, json);
+
+	return json;
 }
 
-Json::Value RcppBridge::run(const string &script, const string &perform)
+Json::Value RcppBridge::run(const int id, const Json::Value &options)
 {
-	SEXP results;
-	SEXP resultsAsSEXPString;
+	stringstream ss;
 
-	_rInside["perform"] = perform;
-	_rInside.parseEval(script, results);
-	_rInside["results"] = results;
-	_rInside.parseEval("toJSON(results)", resultsAsSEXPString);
-	string resultsAsString = Rcpp::as<string>(resultsAsSEXPString);
+	ss << "if (\"";
+	ss << id;
+	ss << "\" %in% names(jasp.analyses) == FALSE) analysis.env <- (jasp.analyses[[\"";
+	ss << id;
+	ss << "\"]] <- new.env()) else analysis.env <- jasp.analyses[[\"";
+	ss << id;
+	ss << "\"]]; analysis.env";
+
+	Rcpp::Environment env = _rInside.parseEval(ss.str());
+
+	SEXP results;
+
+	env["optionsAsString"] = options.toStyledString();
+
+	_rInside.parseEvalQNT("evalq(options <- fromJSON(optionsAsString, asText=TRUE), analysis.env)");
+	_rInside.parseEval("evalq(results <- analysis.func(dataset, options, \"run\"), analysis.env)");
+	_rInside.parseEval("evalq(toJSON(results), analysis.env)", results);
+
+	string resultsAsString = Rcpp::as<string>(results);
 
 	Json::Reader r;
 	Json::Value json;

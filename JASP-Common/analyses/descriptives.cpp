@@ -1,11 +1,10 @@
-#include "frequencies.h"
+#include "descriptives.h"
 
 #include <iomanip>
 
 #include <boost/foreach.hpp>
 
 #include "analysis.h"
-#include "frequencies.R.h"
 
 #include "options.h"
 #include "option.h"
@@ -18,35 +17,12 @@
 using namespace Json;
 using namespace analyses;
 
-Frequencies::Frequencies(int id)
+Descriptives::Descriptives(int id)
 	: Analysis(id, "Descriptives")
 {
 }
 
-
-
-/*void Frequencies::init()
-{
-	_r->setDataSetHeader(_dataSet);
-	_r->setOptions(_options->asJSON());
-	_results = _r->run(createScript(), "init");
-}
-
-void Frequencies::run()
-{
-	_r->setDataSet(_dataSet);
-	_r->setOptions(_options->asJSON());
-	_results = _r->run(createScript(), "run");
-}*/
-
-string Frequencies::_script = string((const char *)frequencies_R, frequencies_R_size);
-
-string Frequencies::rScript()
-{
-	return _script;
-}
-
-Options *Frequencies::createDefaultOptions()
+Options *Descriptives::createDefaultOptions()
 {
 	Options *options = new Options();
 

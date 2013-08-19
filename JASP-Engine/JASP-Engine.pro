@@ -90,7 +90,9 @@ RINSIDELIBS =           $$system($$R_HOME/bin/Rscript -e RInside:::LdFlags\(\))
 QMAKE_CXXFLAGS +=       $$RCPPWARNING $$RCPPFLAGS $$RCPPINCL $$RINSIDEINCL
 QMAKE_LFLAGS +=         $$RLDFLAGS $$RBLAS $$RLAPACK $$RCPPLIBS $$RINSIDELIBS
 
-
+RPackage.commands = $$OUT_PWD/../R-3.0.0/bin/R CMD INSTALL $$PWD/JASP
+QMAKE_EXTRA_TARGETS += RPackage
+PRE_TARGETDEPS += RPackage
 
 SOURCES += main.cpp \
     engine.cpp \

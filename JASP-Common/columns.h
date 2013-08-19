@@ -59,7 +59,11 @@ public:
 	ColumnList _columnStore;
 
 private:
+
+	boost::interprocess::managed_shared_memory *_mem;
+
 	void setRowCount(int rowCount);
+	void setColumnCount(int columnCount);
 
 };
 

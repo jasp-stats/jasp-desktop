@@ -1,7 +1,6 @@
 #include "ttestindependentsamples.h"
 
 #include "boost/foreach.hpp"
-#include "ttestindependentsamples.R.h"
 
 #include "options.h"
 #include "option.h"
@@ -21,27 +20,6 @@ using namespace analyses;
 TTestIndependentSamples::TTestIndependentSamples(int id)
 	: Analysis(id, "TTestIndependentSamples")
 {
-}
-
-/*void TTestIndependentSamples::init()
-{
-	_r->setDataSet(_dataSet);
-	_r->setOptions(_options->asJSON());
-	_results = _r->run(createScript(), "init");
-}
-
-void TTestIndependentSamples::run()
-{
-	_r->setDataSet(_dataSet);
-	_r->setOptions(_options->asJSON());
-	_results = _r->run(createScript(), "run");
-}*/
-
-string TTestIndependentSamples::_script((const char *)ttestindependentsamples_R, ttestindependentsamples_R_size);
-
-string TTestIndependentSamples::rScript()
-{
-	return _script;
 }
 
 Options *TTestIndependentSamples::createDefaultOptions()

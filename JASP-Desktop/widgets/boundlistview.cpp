@@ -98,9 +98,18 @@ void BoundListView::assign()
 			BOOST_FOREACH(QModelIndex &index, indices)
 			{
 				string toRemove = currentFields.at(index.row());
+
 				vector<string>::iterator itr = toRetain.begin();
-				itr->find(toRemove);
-				toRetain.erase(itr);
+
+				while (itr != toRetain.end())
+				{
+					if (*itr == toRemove)
+					{
+						toRetain.erase(itr);
+						break;
+					}
+					itr++;
+				}
 			}
 
 			_boundTo->setValue(toRetain);

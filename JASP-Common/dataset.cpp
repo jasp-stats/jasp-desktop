@@ -147,6 +147,13 @@ Columns &DataSet::columns()
 void DataSet::setRowCount(int rowCount)
 {
 	_columns.setRowCount(rowCount);
+	_rowCount = rowCount;
+}
+
+void DataSet::setColumnCount(int columnCount)
+{
+	_columns.setColumnCount(columnCount);
+	_columnCount = columnCount;
 }
 
 int DataSet::rowCount()

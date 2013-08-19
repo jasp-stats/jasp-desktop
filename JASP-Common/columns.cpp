@@ -8,7 +8,7 @@ using boost::interprocess::offset_ptr;
 Columns::Columns(boost::interprocess::managed_shared_memory *mem) :
 	_columnStore(mem->get_segment_manager())
 {
-
+	_mem = mem;
 }
 
 Columns::~Columns()
@@ -46,6 +46,16 @@ void Columns::setRowCount(int rowCount)
 	{
 		column.setRowCount(rowCount);
 	}
+}
+
+void Columns::setColumnCount(int columnCount)
+{
+	for (int i = _columnStore.size(); i < columnCount; i++)
+	{
+		Column column(_mem);
+		_columnStore.push_back(column);
+	}
+
 }
 
 Column *Columns::get(int index)
