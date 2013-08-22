@@ -52,7 +52,7 @@ public:
 	~Columns();
 
 	Column *get(int index);
-	Column *get(string name);
+	Column *get(std::string name);
 
 	Column &operator[](int index);
 

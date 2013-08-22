@@ -12,7 +12,7 @@ public:
 	RcppBridge();
 
 	virtual void setDataSet(DataSet *dataSet); //override;
-	virtual Json::Value init(const int id, const string &name, const Json::Value &options); // override
+	virtual Json::Value init(const int id, const std::string &name, const Json::Value &options); // override
 	virtual Json::Value run(const int id, const Json::Value &options); // override
 
 private:

@@ -11,11 +11,10 @@ class Analyses
 {
 	friend class EngineSync;
 
-
 public:
 	Analyses();
 
-	Analysis *create(string name);
+	Analysis *create(std::string name);
 	Analysis *get(int id);
 
 	boost::signals2::signal<void (Analysis *)> analysisInitialised;
@@ -28,11 +27,9 @@ private:
 	void analysisOptionsChangedHandler(Analysis *analysis);
 	void analysisResultsChangedHandler(Analysis *analysis);
 
-	typedef map<int, Analysis *> ById;
+	typedef std::map<int, Analysis *> ById;
 
 	ById _analyses;
-
-
 
 	int _nextId;
 

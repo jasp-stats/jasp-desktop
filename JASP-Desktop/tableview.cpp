@@ -5,10 +5,13 @@
 #include <QHeaderView>
 
 #include "datasettablemodel.h"
+#include "headerview.h"
 
 TableView::TableView(QWidget *parent) :
 	QTableView(parent)
 {
+	this->setHorizontalHeader(new HeaderView(Qt::Horizontal, this));
+
 	_infoPopup = new InfoPopup(this);
 	_infoPopup->setVisible(false);
 	_infoPopupVisible = false;

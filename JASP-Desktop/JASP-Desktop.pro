@@ -50,7 +50,12 @@ SOURCES += main.cpp\
     widgets/boundtextbox.cpp \
     widgets/boundgroupbox.cpp \
     analysisforms/ttestindependentsamples.cpp \
-    analysisforms/ttestbayesonesampleform.cpp
+    analysisforms/anovabayesianform.cpp \
+    analysisforms/ttestpairedsamplesform.cpp \
+    analysisforms/anovamultivariateform.cpp \
+    analysisforms/ttestbayesianonesampleform.cpp \
+    widgets/boundpairstable.cpp \
+    headerview.cpp
 
 HEADERS  += mainwindow.h \
     datasettablemodel.h \
@@ -78,7 +83,12 @@ HEADERS  += mainwindow.h \
     widgets/boundtextbox.h \
     widgets/boundgroupbox.h \
     analysisforms/ttestindependentsamples.h \
-    analysisforms/ttestbayesonesampleform.h
+    analysisforms/anovabayesianform.h \
+    analysisforms/ttestpairedsamplesform.h \
+    analysisforms/anovamultivariateform.h \
+    analysisforms/ttestbayesianonesampleform.h \
+    widgets/boundpairstable.h \
+    headerview.h
 
 FORMS    += mainwindow.ui \
     backstageform.ui \
@@ -90,7 +100,10 @@ FORMS    += mainwindow.ui \
     analysisforms/anovaoneway.ui \
     analysisforms/anova.ui \
     analysisforms/ttestindependentsamples.ui \
-    analysisforms/ttestbayesonesampleform.ui
+    analysisforms/anovabayesianform.ui \
+    analysisforms/ttestpairedsamplesform.ui \
+    analysisforms/anovamultivariateform.ui \
+    analysisforms/ttestbayesianonesampleform.ui
 
 
 RESOURCES += \
@@ -189,4 +202,7 @@ OTHER_FILES += \
     resources/osx/ribbonbutton.css \
     html/js/displaydefs.js \
     html/css/theme-spss.css \
-    html/css/theme-jasp.css
+    html/css/theme-jasp.css \
+    resources/icons/variable-nominal.png \
+    resources/icons/variable-ordinal.png \
+    resources/icons/variable-scale.png

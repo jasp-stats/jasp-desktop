@@ -8,10 +8,10 @@
 		return("NaN")
 
 	if (value == Inf)
-		return("Inf")
+		return("\u221E")
 
 	if (value == -Inf)
-		return("-Inf")
+		return("-\u221E")
 
 	NULL
 }

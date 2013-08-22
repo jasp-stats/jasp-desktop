@@ -14,8 +14,6 @@
 #include "sharedmemory.h"
 #include "datablock.h"
 
-using namespace std;
-
 class Column
 {
 	friend class DataSet;
@@ -115,30 +113,35 @@ public:
 
 	Column(boost::interprocess::managed_shared_memory *mem);
 
+	std::string name();
+	void setName(std::string name);
+
+	void setValue(int rowIndex, int value);
+	void setValue(int rowIndex, double value);
+	void setValue(int rowIndex, std::string value);
+
+	std::string operator[](int index);
+
+	void append(int rows);
+
 	Doubles AsDoubles;
 	Ints AsInts;
 
-	enum ColumnType { IntColumnType = 1, DoubleColumnType = 2 };
+	enum DataType { DataTypeInt = 1, DataTypeDouble = 2 };
+	DataType dataType() const;
 
+	enum ColumnType { ColumnTypeNominal, ColumnTypeOrdinal, ColumnTypeScale };
 	ColumnType columnType() const;
+
 	int rowCount() const;
 
 	bool hasLabels();
 	std::map<int, std::string> labels() const;
 	void setLabels(std::map<int, std::string> labels);
 
-	string displayFromValue(int value);
+	std::string displayFromValue(int value);
 
-	std::string name();
-	void setName(std::string name);
 
-	void setValue(int rowIndex, int value);
-	void setValue(int rowIndex, double value);
-	void setValue(int rowIndex, string value);
-
-	std::string operator[](int index);
-
-	void append(int rows);
 
 private:
 
@@ -146,8 +149,9 @@ private:
 
 	String _name;
 	boost::interprocess::offset_ptr<Labels> _labels;
-	ColumnType _columnType;
+	DataType _dataType;
 	int _rowCount;
+	ColumnType _columnType;
 
 	BlockMap _blocks;
 

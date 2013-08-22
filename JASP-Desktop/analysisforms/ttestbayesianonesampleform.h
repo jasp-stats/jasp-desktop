@@ -7,13 +7,13 @@ namespace Ui {
 class TTestBayesOneSampleForm;
 }
 
-class TTestBayesOneSampleForm : public AnalysisForm
+class TTestBayesianOneSampleForm : public AnalysisForm
 {
 	Q_OBJECT
 	
 public:
-	explicit TTestBayesOneSampleForm(QWidget *parent = 0);
-	~TTestBayesOneSampleForm();
+	explicit TTestBayesianOneSampleForm(QWidget *parent = 0);
+	~TTestBayesianOneSampleForm();
 	
 private:
 	Ui::TTestBayesOneSampleForm *ui;

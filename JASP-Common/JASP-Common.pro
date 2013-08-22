@@ -43,9 +43,14 @@ SOURCES += \
     analyses/ttestonesample.cpp \
     options/optionnumber.cpp \
     analyses/ttestindependentsamples.cpp \
-    analyses/ttestbayesonesample.cpp \
     analyses/descriptives.cpp \
-    analyses/anovaoneway.cpp
+    analyses/anovaoneway.cpp \
+    analyses/anova.cpp \
+    analyses/anovamultivariate.cpp \
+    analyses/ttestpairedsamples.cpp \
+    analyses/anovabayesian.cpp \
+    analyses/ttestbayesianonesample.cpp \
+    options/optionfieldpairs.cpp
 
 HEADERS +=\
     options.h \
@@ -81,9 +86,14 @@ HEADERS +=\
     options/optionnumber.h \
     analyses/ttestindependentsamples.h \
     analyses/ttestonesample.h \
-    analyses/ttestbayesonesample.h \
     analyses/descriptives.h \
-    analyses/anovaoneway.h
+    analyses/anovaoneway.h \
+    analyses/anova.h \
+    analyses/anovamultivariate.h \
+    analyses/ttestpairedsamples.h \
+    analyses/anovabayesian.h \
+    analyses/ttestbayesianonesample.h \
+    options/optionfieldpairs.h
 
 unix:!symbian {
     maemo5 {

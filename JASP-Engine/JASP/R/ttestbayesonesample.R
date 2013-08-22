@@ -1,5 +1,5 @@
 
-TTestBayesOneSample <- function(data, options, perform="run", callback=NULL, changed.options=NULL, former.options=NULL, ...) {
+TTestBayesianOneSample <- function(data, options, perform="run", callback=NULL, changed.options=NULL, former.options=NULL, ...) {
 
 	results <- list()
 

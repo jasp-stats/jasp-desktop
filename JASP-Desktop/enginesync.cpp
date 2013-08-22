@@ -8,9 +8,10 @@
 
 #include <boost/foreach.hpp>
 
-#include "../JASP-Common/lib_json/json.h"
+#include "lib_json/json.h"
 
 using namespace boost::interprocess;
+using namespace std;
 
 EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	: QObject(parent)

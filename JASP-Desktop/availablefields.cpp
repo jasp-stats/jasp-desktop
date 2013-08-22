@@ -3,9 +3,14 @@
 #include "boost/foreach.hpp"
 #include "boost/bind.hpp"
 
+using namespace std;
+
 AvailableFields::AvailableFields(QObject *parent = 0)
-	: QStringListModel(parent)
+	: QAbstractListModel(parent)
 {
+	_nominalIcon = QIcon(":/icons/variable-nominal.png");
+	_ordinalIcon = QIcon(":/icons/variable-ordinal.png");
+	_scaleIcon = QIcon(":/icons/variable-scale.png");
 }
 
 void AvailableFields::setDataSet(DataSet *dataSet)
@@ -27,7 +32,7 @@ QStringList AvailableFields::getFields(QModelIndexList indices)
 
 	BOOST_FOREACH(QModelIndex &index, indices)
 	{
-		fields.append(this->stringList().at(index.row()));
+		fields.append(_availableFields.at(index.row()));
 	}
 
 	return fields;
@@ -35,6 +40,8 @@ QStringList AvailableFields::getFields(QModelIndexList indices)
 
 void AvailableFields::updateAvailableFields()
 {
+	beginResetModel();
+
 	QStringList availableFields;
 
 	BOOST_FOREACH(Column &column, _dataSet->columns())
@@ -52,5 +59,52 @@ void AvailableFields::updateAvailableFields()
 		}
 	}
 
-	setStringList(availableFields);
+	_availableFields = availableFields;
+
+	endResetModel();
+}
+
+
+QVariant AvailableFields::data(const QModelIndex &index, int role) const
+{
+	int row = index.row();
+
+	if (role == Qt::DisplayRole)
+	{
+		return QVariant(_availableFields.at(row));
+	}
+	else if (role == Qt::DecorationRole)
+	{
+		QString variable = _availableFields.at(row);
+		QByteArray utf8 = variable.toUtf8();
+		string n(utf8.constData(), utf8.length());
+		Column *column = _dataSet->columns().get(n);
+
+		switch (column->columnType())
+		{
+		case Column::ColumnTypeNominal:
+			return QVariant(_nominalIcon);
+		case Column::ColumnTypeOrdinal:
+			return QVariant(_ordinalIcon);
+		case Column::ColumnTypeScale:
+			return QVariant(_scaleIcon);
+		default:
+			return QVariant();
+		}
+	}
+	else
+	{
+		return QVariant();
+	}
+}
+
+QStringList AvailableFields::available()
+{
+	return _availableFields;
+}
+
+
+int AvailableFields::rowCount(const QModelIndex &) const
+{
+	return _availableFields.length();
 }

@@ -16,7 +16,7 @@ TTestOneSample <- function(data, options, perform="run", callback=NULL) {
 
 	ttest[["schema"]] <- list(fields=fields)
 
-	ttest[["testValue"]] <- options$testValue
+	#ttest[["testValue"]] <- options$testValue
 
 	if (perform == "run")
 	{

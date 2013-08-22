@@ -19,8 +19,7 @@
 class DataSet
 {
 public:
-	/* columnInfo and data should be byref, but the shared memory constructor doesn't like them */
-	DataSet(boost::interprocess::managed_shared_memory *mem, std::vector<std::string> *columnInfo, std::vector<std::vector<std::string> > *data);
+
 	DataSet(boost::interprocess::managed_shared_memory *mem);
 
 	int rowCount();

@@ -19,7 +19,7 @@ $(document).ready(function() {
         
         	item.frequencies( results )
         }
-        else if (analysis.name === "TTestOneSample" || analysis.name === "TTestBayesOneSample") {
+        else if (analysis.name === "TTestOneSample" || analysis.name === "TTestBayesianOneSample" || analysis.name == "TTestPairedSamples") {
 
 			var ts = [ results.ttest ]
 			

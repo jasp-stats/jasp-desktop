@@ -115,7 +115,10 @@ DataSet* DataSetLoader::loadFile(istream &is) {
 		}
 
 		if (success)
+		{
+			column._columnType = Column::ColumnTypeOrdinal;
 			continue;
+		}
 
 		Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
 		success = true;
@@ -136,7 +139,8 @@ DataSet* DataSetLoader::loadFile(istream &is) {
 
 		if (success)
 		{
-			column._columnType = Column::DoubleColumnType;
+			column._dataType = Column::DataTypeDouble;
+			column._columnType = Column::ColumnTypeScale;
 			continue;
 		}
 
@@ -164,6 +168,8 @@ DataSet* DataSetLoader::loadFile(istream &is) {
 			*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
 			intInputItr++;
 		}
+
+		column._columnType = Column::ColumnTypeNominal;
 	}
 
 	return dataSet;

@@ -34,7 +34,7 @@ $.widget("jasp.frequencies", {
         if (this.options.stats && $.isArray(this.options.stats.cases) && this.options.stats.cases.length > 0) {
 
             this.statistics.table({
-				title : "statistics",
+                title : this.options.stats.title,
 				casesAcrossColumns : true,
 				cases : this.options.stats.cases,
                 schema : this.options.stats.schema,

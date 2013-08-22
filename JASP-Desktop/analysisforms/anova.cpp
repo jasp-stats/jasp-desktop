@@ -1,14 +1,14 @@
 #include "anova.h"
 #include "ui_anova.h"
 
-ANOVA::ANOVA(QWidget *parent) :
+Anova::Anova(QWidget *parent) :
 	AnalysisForm(parent),
 	ui(new Ui::ANOVA)
 {
 	ui->setupUi(this);
 }
 
-ANOVA::~ANOVA()
+Anova::~Anova()
 {
 	delete ui;
 }

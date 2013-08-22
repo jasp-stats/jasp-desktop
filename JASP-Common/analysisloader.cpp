@@ -1,18 +1,13 @@
 #include "analysisloader.h"
 
-#include "options.h"
-#include "options/optionfields.h"
-#include "options/optionboolean.h"
-#include "options/optionfield.h"
-#include "options/optioninteger.h"
-#include "options/optionintegerarray.h"
-#include "options/optionlist.h"
-
 #include "analyses/descriptives.h"
 #include "analyses/ttestonesample.h"
 #include "analyses/ttestindependentsamples.h"
-#include "analyses/ttestbayesonesample.h"
+#include "analyses/ttestbayesianonesample.h"
+#include "analyses/ttestpairedsamples.h"
 #include "analyses/anovaoneway.h"
+#include "analyses/anovamultivariate.h"
+#include "analyses/anova.h"
 
 #include "analysispart.h"
 
@@ -31,24 +26,26 @@ Analysis *AnalysisLoader::load(int id, string analysisName, Options *options)
 	{
 		return new analyses::TTestIndependentSamples(id);
 	}
-	else if (analysisName == "TTestBayesOneSample")
+	else if (analysisName == "TTestPairedSamples")
 	{
-		return new analyses::TTestBayesOneSample(id);
+		return new analyses::TTestPairedSamples(id);
+	}
+	else if (analysisName == "TTestBayesianOneSample")
+	{
+		return new analyses::TTestBayesianOneSample(id);
 	}
 	else if (analysisName == "AnovaOneWay")
 	{
 		return new analyses::AnovaOneWay(id);
 	}
-	/*else if (analysisName == "ANOVA")
+	else if (analysisName == "AnovaMultivariate")
 	{
-		Options *options = new Options();
-		options->add(new OptionFields("variables"));
-		options->add(new OptionField("groupingVariable"));
-
-		Analysis *a = new Analysis(id);
-
-		return a;
-	}*/
+		return new analyses::AnovaMultivariate(id);
+	}
+	else if (analysisName == "Anova")
+	{
+		return new analyses::Anova(id);
+	}
 
     return NULL;
 }

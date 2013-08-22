@@ -13,6 +13,7 @@
 
 using namespace boost::uuids;
 using namespace boost;
+using namespace std;
 
 Analysis::Analysis(int id, string name)
 {

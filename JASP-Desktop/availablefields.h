@@ -1,13 +1,14 @@
 #ifndef AVAILABLEFIELDS_H
 #define AVAILABLEFIELDS_H
 
-#include <QStringListModel>
+#include <QAbstractListModel>
 #include <QStringList>
+#include <QIcon>
 
 #include "dataset.h"
 #include "options/optionfields.h"
 
-class AvailableFields : public QStringListModel
+class AvailableFields : public QAbstractListModel
 {
 public:
 	AvailableFields(QObject *parent);
@@ -19,10 +20,20 @@ public:
 
 	boost::signals2::signal<void ()> availableFieldsChanged();
 
+	int rowCount(const QModelIndex &) const override;
+	QVariant data(const QModelIndex &index, int role) const override;
+
+	QStringList available();
+
 private:
 	DataSet *_dataSet;
-	vector<OptionFields*> _provideFor;
+	std::vector<OptionFields *> _provideFor;
 	void updateAvailableFields();
+	QStringList _availableFields;
+
+	QIcon _nominalIcon;
+	QIcon _ordinalIcon;
+	QIcon _scaleIcon;
 
 };
 

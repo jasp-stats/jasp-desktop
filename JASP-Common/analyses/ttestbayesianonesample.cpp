@@ -1,5 +1,5 @@
 
-#include "ttestbayesonesample.h"
+#include "ttestbayesianonesample.h"
 
 #include "options.h"
 #include "option.h"
@@ -13,12 +13,12 @@
 using namespace std;
 using namespace analyses;
 
-TTestBayesOneSample::TTestBayesOneSample(int id)
-	: Analysis(id, "TTestBayesOneSample")
+TTestBayesianOneSample::TTestBayesianOneSample(int id)
+	: Analysis(id, "TTestBayesianOneSample")
 {
 }
 
-Options *TTestBayesOneSample::createDefaultOptions()
+Options *TTestBayesianOneSample::createDefaultOptions()
 {
 	Options *options = new Options();
 
