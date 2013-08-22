@@ -14,6 +14,10 @@ DataSetTableModel::DataSetTableModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
 	_dataSet = new DataSet(SharedMemory::create());
+
+	_nominalIcon = QIcon(":/icons/variable-nominal.png");
+	_ordinalIcon = QIcon(":/icons/variable-ordinal.png");
+	_scaleIcon = QIcon(":/icons/variable-scale.png");
 }
 
 DataSetTableModel::~DataSetTableModel()
@@ -62,25 +66,36 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 		if (orientation == Qt::Horizontal)
 		{
 			string value = _dataSet->columns()[section].name();
-			return QVariant(QString::fromUtf8(value.c_str(), value.length()));
+			return QVariant(QString::fromUtf8(value.c_str(), value.length()) + QString("        "));
 		}
 		else
 		{
 			return QVariant(section + 1);
 		}
 	}
+	else if (role == Qt::DecorationRole && orientation == Qt::Horizontal)
+	{
+		Column &column = _dataSet->columns()[section];
+
+		switch (column.columnType())
+		{
+		case Column::ColumnTypeNominal:
+			return QVariant(_nominalIcon);
+		case Column::ColumnTypeOrdinal:
+			return QVariant(_ordinalIcon);
+		case Column::ColumnTypeScale:
+			return QVariant(_scaleIcon);
+		default:
+			return QVariant();
+		}
+	}
 	else if (role == Qt::SizeHintRole && orientation == Qt::Vertical)
 	{
-		return QVariant(QSize(80, -1));
+		return QVariant(/*QSize(80, -1)*/);
 	}
 	else if (role == Qt::TextAlignmentRole)
 	{
 		return QVariant(Qt::AlignCenter);
-	}
-	else if (role == Qt::UserRole)
-	{
-		Column &column = _dataSet->columns()[section];
-		return QVariant(column.columnType());
 	}
 
 	return QVariant();

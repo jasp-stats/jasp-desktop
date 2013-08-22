@@ -64,6 +64,9 @@ MainWidget::MainWidget(QWidget *parent) :
 	ui->stackedLHS->setCurrentWidget(ui->pageData);
 	ui->tabBar->setCurrentIndex(1);
 
+	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
+	ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
+
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, this);
 
