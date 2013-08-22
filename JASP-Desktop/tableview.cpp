@@ -5,13 +5,10 @@
 #include <QHeaderView>
 
 #include "datasettablemodel.h"
-#include "headerview.h"
 
 TableView::TableView(QWidget *parent) :
 	QTableView(parent)
 {
-	this->setHorizontalHeader(new HeaderView(Qt::Horizontal, this));
-
 	_infoPopup = new InfoPopup(this);
 	_infoPopup->setVisible(false);
 	_infoPopupVisible = false;
@@ -19,8 +16,6 @@ TableView::TableView(QWidget *parent) :
 	QLabel *label = new QLabel(QString("This column only permits numeric values"), _infoPopup);
 	label->setWordWrap(true);
 	_infoPopup->layout()->addWidget(label);
-
-
 }
 
 void TableView::setModel(QAbstractItemModel *model)

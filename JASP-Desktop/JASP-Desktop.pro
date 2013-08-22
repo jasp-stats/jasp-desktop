@@ -54,8 +54,7 @@ SOURCES += main.cpp\
     analysisforms/ttestpairedsamplesform.cpp \
     analysisforms/anovamultivariateform.cpp \
     analysisforms/ttestbayesianonesampleform.cpp \
-    widgets/boundpairstable.cpp \
-    headerview.cpp
+    widgets/boundpairstable.cpp
 
 HEADERS  += mainwindow.h \
     datasettablemodel.h \
@@ -87,8 +86,7 @@ HEADERS  += mainwindow.h \
     analysisforms/ttestpairedsamplesform.h \
     analysisforms/anovamultivariateform.h \
     analysisforms/ttestbayesianonesampleform.h \
-    widgets/boundpairstable.h \
-    headerview.h
+    widgets/boundpairstable.h
 
 FORMS    += mainwindow.ui \
     backstageform.ui \

@@ -30,7 +30,10 @@ signals:
     
 private:
 	DataSet *_dataSet;
-    
+
+	QIcon _nominalIcon;
+	QIcon _ordinalIcon;
+	QIcon _scaleIcon;
 };
 
 #endif // DATASETTABLEMODEL_H
