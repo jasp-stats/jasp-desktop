@@ -7,17 +7,17 @@
 #include <boost/lexical_cast.hpp>
 
 using namespace boost::interprocess;
+using namespace std;
 
 Column::Column(managed_shared_memory *mem) :
-	//AsInts(this),
-	//AsDoubles(this),
 	_name(mem->get_segment_manager()),
 	_blocks(std::less<ull>(), mem->get_segment_manager())
 {
 	_mem = mem;
 	_labels = NULL;
-	_columnType = Column::IntColumnType;
+	_dataType = Column::DataTypeInt;
 	_rowCount = 0;
+	_columnType = Column::ColumnTypeNominal;
 
 	ull firstId = DataBlock::capacity();
 	DataBlock *firstBlock = mem->construct<DataBlock>(anonymous_instance)();
@@ -64,6 +64,11 @@ void Column::setLabels(std::map<int, std::string> labels)
 	}
 }
 
+Column::DataType Column::dataType() const
+{
+	return _dataType;
+}
+
 Column::ColumnType Column::columnType() const
 {
 	return _columnType;
@@ -108,7 +113,7 @@ void Column::setName(string name)
 
 void Column::setValue(int rowIndex, string value)
 {
-	if (_columnType == Column::DoubleColumnType)
+	if (_dataType == Column::DataTypeDouble)
 	{
 		try
 		{
@@ -173,7 +178,7 @@ void Column::setValue(int rowIndex, double value)
 
 string Column::operator [](int index)
 {
-	if (_columnType == Column::DoubleColumnType)
+	if (_dataType == Column::DataTypeDouble)
 	{
 		stringstream s;
 		s << AsDoubles[index];
@@ -401,52 +406,3 @@ double& Column::Doubles::iterator::dereference() const
 	return _blockItr->second->Data[_currentPos].d;
 }
 
-
-/*Column::ColumnLabels::ColumnLabelsStruct(Column *parent)
-{
-	_parent = parent;
-}
-
-Column::ColumnLabels::iterator Column::ColumnLabels::begin()
-{
-	string* start = (string*) _parent->data();
-
-	iterator itr(start);
-
-	return itr;
-}
-
-Column::ColumnLabels::iterator Column::ColumnLabels::end()
-{
-	string *end = (string*) _parent->data();
-	end += _parent->rowCount();
-
-	iterator itr(end);
-
-	return itr;
-}
-
-Column::ColumnLabels::iterator::iterator()
-{
-	_current = 0;
-}
-
-Column::ColumnLabels::iterator::iterator(int index)
-{
-	_current = index;
-}
-
-void Column::ColumnLabels::iterator::increment()
-{
-	_current++;
-}
-
-bool Column::ColumnLabels::iterator::equal(iterator const& other) const
-{
-	return this->_current == other._current;
-}
-
-string& Column::ColumnLabels::iterator::dereference() const
-{
-	return _parent.;
-}*/

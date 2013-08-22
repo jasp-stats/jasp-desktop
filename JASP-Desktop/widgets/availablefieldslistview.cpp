@@ -8,6 +8,7 @@ AvailableFieldsListView::AvailableFieldsListView(QWidget *parent) :
 	QListView(parent)
 {
 	setEditTriggers(QListView::NoEditTriggers);
+	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 
 void AvailableFieldsListView::addAssignButton(AssignButton *button)
@@ -23,8 +24,9 @@ QStringList AvailableFieldsListView::selectedFields() const
 	if (availableFields == NULL)
 		return fields;
 
-	QStringList availableFieldsList = availableFields->stringList();
+	QStringList availableFieldsList = availableFields->available();
 	QModelIndexList selected = selectionModel()->selectedRows();
+	(void)selected;
 
 	BOOST_FOREACH(const QModelIndex &index, selected)
 	{

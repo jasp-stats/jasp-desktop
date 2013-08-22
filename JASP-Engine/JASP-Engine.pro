@@ -18,15 +18,15 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 unix:INCLUDEPATH += /opt/local/include
 windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
 
-INCLUDEPATH += R-3.0.0/include \
-	R-3.0.0/library/Rinside/include \
-	R-3.0.0/library/Rcpp/include
+INCLUDEPATH += $$OUT_PWD/../R-3.0.0/include \
+	$$OUT_PWD/../R-3.0.0/library/Rinside/include \
+	$$OUT_PWD/../R-3.0.0/library/Rcpp/include
 
 LIBS += -L.. -lJASP-Common
 
 unix {
 
-R_HOME = R-3.0.0
+R_HOME = $$OUT_PWD/../R-3.0.0
 
 ## include headers and libraries for R
 RCPPFLAGS =             $$system($$R_HOME/bin/R CMD config --cppflags)
@@ -48,18 +48,12 @@ RCPPWARNING =           -Wno-unused-parameter
 RINSIDEINCL =           $$system($$R_HOME/bin/Rscript -e \'RInside:::CxxFlags\(\)\')
 RINSIDELIBS =           $$system($$R_HOME/bin/Rscript -e \'RInside:::LdFlags\(\)\')
 
-message($$system(pwd))
-
 }
 
 win32 {
 
 LIBS += -lole32 -loleaut32
 
-## comment this out if you need a different version of R,
-## and set set R_HOME accordingly as an environment variable
-## R_HOME =                $$system(R RHOME)
-#R_HOME = Y:\\Documents\\build-JASP-win-Desktop_Qt_5_0_2_MinGW_32bit-Debug\\R-3.0.0
 R_HOME = Y:/Documents/build-JASPEngine-win-Rtools-Debug/R-3.0.0
 
 ## include headers and libraries for R

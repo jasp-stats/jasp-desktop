@@ -23,7 +23,7 @@ void RcppBridge::setDataSet(DataSet* dataSet)
 	{
 		columnNames.push_back(column.name());
 
-		if (column.columnType() == Column::IntColumnType)
+		if (column.dataType() == Column::DataTypeInt)
 		{
 			Rcpp::IntegerVector v(column.rowCount());
 

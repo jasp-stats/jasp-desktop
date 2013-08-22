@@ -2,10 +2,16 @@
 #include "ui_mainwidget.h"
 
 #include "analysisforms/descriptives.h"
-#include "analysisforms/ttestonesample.h"
+
+#include "analysisforms/ttestbayesianonesampleform.h"
+#include "analysisforms/ttestpairedsamplesform.h"
 #include "analysisforms/ttestindependentsamples.h"
-#include "analysisforms/ttestbayesonesampleform.h"
+#include "analysisforms/ttestonesample.h"
+
+#include "analysisforms/anovabayesianform.h"
 #include "analysisforms/anovaoneway.h"
+#include "analysisforms/anova.h"
+#include "analysisforms/anovamultivariateform.h"
 
 #include <QDebug>
 #include <QWebFrame>
@@ -122,26 +128,48 @@ void MainWidget::itemSelected(const QString item)
 		analysis = _analyses->create("Descriptives");
 		_currentOptionsWidget = new Descriptives(ui->optionsContentArea);
     }
-	else if (item == "TTestOneSample")
+	else if (item == "TTestBayesianOneSample")
 	{
-		analysis = _analyses->create("TTestOneSample");
-		_currentOptionsWidget = new TTestOneSample(ui->optionsContentArea);
+		analysis = _analyses->create("TTestBayesianOneSample");
+		_currentOptionsWidget = new TTestBayesianOneSampleForm(ui->optionsContentArea);
 	}
 	else if (item == "TTestIndependentSamples")
 	{
 		analysis = _analyses->create("TTestIndependentSamples");
 		_currentOptionsWidget = new TTestIndependentSamples(ui->optionsContentArea);
 	}
-	else if (item == "TTestBayesOneSample")
+	else if (item == "TTestPairedSamples")
 	{
-		analysis = _analyses->create("TTestBayesOneSample");
-		_currentOptionsWidget = new TTestBayesOneSampleForm(ui->optionsContentArea);
+		analysis = _analyses->create("TTestPairedSamples");
+		_currentOptionsWidget = new TTestPairedSamplesForm(ui->optionsContentArea);
+	}
+	else if (item == "TTestOneSample")
+	{
+		analysis = _analyses->create("TTestOneSample");
+		_currentOptionsWidget = new TTestOneSample(ui->optionsContentArea);
+	}
+	else if (item == "AnovaBayesian")
+	{
+		analysis = _analyses->create("AnovaBayesian");
+		_currentOptionsWidget = new AnovaBayesianForm(ui->optionsContentArea);
 	}
 	else if (item == "AnovaOneWay")
 	{
 		analysis = _analyses->create("AnovaOneWay");
-		_currentOptionsWidget = new ANOVAOneWay(ui->optionsContentArea);
+		_currentOptionsWidget = new AnovaOneWay(ui->optionsContentArea);
 	}
+	else if (item == "Anova")
+	{
+		analysis = _analyses->create("Anova");
+		_currentOptionsWidget = new Anova(ui->optionsContentArea);
+	}
+	else if (item == "AnovaMultivariate")
+	{
+		analysis = _analyses->create("AnovaMultivariate");
+		_currentOptionsWidget = new AnovaMultivariateForm(ui->optionsContentArea);
+	}
+
+
 
 	if (_currentOptionsWidget != NULL)
 	{

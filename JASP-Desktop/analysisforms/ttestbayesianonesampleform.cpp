@@ -1,7 +1,7 @@
-#include "ttestbayesonesampleform.h"
+#include "ttestbayesianonesampleform.h"
 #include "ui_ttestbayesonesampleform.h"
 
-TTestBayesOneSampleForm::TTestBayesOneSampleForm(QWidget *parent) :
+TTestBayesianOneSampleForm::TTestBayesianOneSampleForm(QWidget *parent) :
 	AnalysisForm(parent),
 	ui(new Ui::TTestBayesOneSampleForm)
 {
@@ -14,7 +14,7 @@ TTestBayesOneSampleForm::TTestBayesOneSampleForm(QWidget *parent) :
 	ui->variables->setAvailableFieldsListView(ui->listAvailableFields);
 }
 
-TTestBayesOneSampleForm::~TTestBayesOneSampleForm()
+TTestBayesianOneSampleForm::~TTestBayesianOneSampleForm()
 {
 	delete ui;
 }

@@ -23,14 +23,14 @@ class Analysis
 {
 
 public:
-	Analysis(int id, string name);
+	Analysis(int id, std::string name);
 
 	Options *options();
 
 	boost::signals2::signal<void (Analysis *source)> optionsChanged;
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
 
-	typedef vector<AnalysisPart*>::iterator iterator;
+	typedef std::vector<AnalysisPart*>::iterator iterator;
 
 	//iterator begin();
 	//iterator end();

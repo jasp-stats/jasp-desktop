@@ -5,7 +5,7 @@
 
 #include "boost/foreach.hpp"
 
-ANOVAOneWay::ANOVAOneWay(QWidget *parent) :
+AnovaOneWay::AnovaOneWay(QWidget *parent) :
 	AnalysisForm(parent),
 	ui(new Ui::ANOVAOneWay)
 {
@@ -22,7 +22,7 @@ ANOVAOneWay::ANOVAOneWay(QWidget *parent) :
 	ui->factor->setAvailableFieldsListView(ui->listAvailableFields);
 }
 
-ANOVAOneWay::~ANOVAOneWay()
+AnovaOneWay::~AnovaOneWay()
 {
 	delete ui;
 }

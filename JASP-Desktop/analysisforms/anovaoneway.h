@@ -12,13 +12,13 @@ namespace Ui {
 class ANOVAOneWay;
 }
 
-class ANOVAOneWay : public AnalysisForm
+class AnovaOneWay : public AnalysisForm
 {
 	Q_OBJECT
 	
 public:
-	explicit ANOVAOneWay(QWidget *parent = 0);
-	~ANOVAOneWay();
+	explicit AnovaOneWay(QWidget *parent = 0);
+	~AnovaOneWay();
 
 private:
 	Ui::ANOVAOneWay *ui;

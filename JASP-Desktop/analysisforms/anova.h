@@ -7,13 +7,13 @@ namespace Ui {
 class ANOVA;
 }
 
-class ANOVA : public AnalysisForm
+class Anova : public AnalysisForm
 {
 	Q_OBJECT
 	
 public:
-	explicit ANOVA(QWidget *parent = 0);
-	~ANOVA();
+	explicit Anova(QWidget *parent = 0);
+	~Anova();
 	
 private:
 	Ui::ANOVA *ui;

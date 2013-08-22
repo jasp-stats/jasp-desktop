@@ -3,16 +3,13 @@
 
 #include <QModelIndex>
 #include <QAbstractTableModel>
+#include <QIcon>
 
 #include "dataset.h"
 
 class DataSetTableModel : public QAbstractTableModel
 {
     Q_OBJECT
-
-private:
-	DataSet *_dataSet;
-
 
 public:
     explicit DataSetTableModel(QObject *parent = 0);
@@ -31,8 +28,8 @@ signals:
 
 	void badDataEntered(const QModelIndex index);
     
-public slots:
-
+private:
+	DataSet *_dataSet;
     
 };
 

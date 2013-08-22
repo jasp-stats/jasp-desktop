@@ -7,6 +7,8 @@
 #include <QLabel>
 #include <QTimer>
 #include <QResizeEvent>
+#include "widgets/boundlistview.h"
+#include "widgets/boundpairstable.h"
 
 AnalysisForm::AnalysisForm(QWidget *parent) :
 	QWidget(parent),
@@ -71,7 +73,19 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 		Bound *boundChild = dynamic_cast<Bound*>(child);
 
 		if (boundChild != NULL)
+		{
 			boundChild->bindTo(option);
+
+			BoundListView *listView = dynamic_cast<BoundListView *>(boundChild);
+			if (listView != NULL)
+				listView->setDataSet(dataSet);
+			else
+			{
+				BoundPairsTable *pairsTable = dynamic_cast<BoundPairsTable *>(boundChild);
+				if (pairsTable != NULL)
+					pairsTable->setDataSet(dataSet);
+			}
+		}
 		else
 			qDebug() << "child not found : " << name << " in FrequenciesForm::setOptions()";
 	}

@@ -43,5 +43,8 @@
         <file>icons/bookcase.png</file>
         <file>icons/accessories-text-editor.png</file>
         <file>icons/accessories-calculator.png</file>
+        <file>icons/variable-scale.png</file>
+        <file>icons/variable-ordinal.png</file>
+        <file>icons/variable-nominal.png</file>
     </qresource>
 </RCC>

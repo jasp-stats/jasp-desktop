@@ -25,11 +25,13 @@ void DataSetTableModel::setDataSet(DataSet* dataSet)
 {
     beginResetModel();
 
+	DataSet *old = _dataSet;
+
 	_dataSet = dataSet;
 
-	// need to free the old one here
-
     endResetModel();
+
+	delete old;
 }
 
 int DataSetTableModel::rowCount(const QModelIndex &parent) const
@@ -75,6 +77,11 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	{
 		return QVariant(Qt::AlignCenter);
 	}
+	else if (role == Qt::UserRole)
+	{
+		Column &column = _dataSet->columns()[section];
+		return QVariant(column.columnType());
+	}
 
 	return QVariant();
 }
@@ -84,7 +91,7 @@ bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value,
 	bool ok;
 
 	Column &column = _dataSet->columns()[index.column()];
-	if (column.columnType() == Column::IntColumnType)
+	if (column.dataType() == Column::DataTypeInt)
 	{
 		int v = value.toInt(&ok);
 		if (ok)

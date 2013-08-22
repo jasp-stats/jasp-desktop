@@ -10,7 +10,7 @@ public:
 	RInterface() { }
 
 	virtual void setDataSet(DataSet *dataSet) = 0;
-	virtual Json::Value init(const int id, const string &name, const Json::Value &options) = 0;
+	virtual Json::Value init(const int id, const  std::string &name, const Json::Value &options) = 0;
 	virtual Json::Value run(const int id, const Json::Value &options) = 0;
 };
 
