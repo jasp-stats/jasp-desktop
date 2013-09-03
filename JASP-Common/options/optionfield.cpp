@@ -7,6 +7,13 @@ OptionField::OptionField(string name)
 {
 }
 
+void OptionField::set(Json::Value &value)
+{
+	vector<string> v;
+	v.push_back(value.asString());
+	setValue(v);
+}
+
 void OptionField::setValue(std::vector<string> value)
 {
 	if (value.size() > 0)

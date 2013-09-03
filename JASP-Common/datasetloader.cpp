@@ -8,21 +8,31 @@
 #include <boost/foreach.hpp>
 
 #include "boost/lexical_cast.hpp"
+#include "sys/stat.h"
 
 using boost::lexical_cast;
 using namespace boost::interprocess;
+using namespace std;
 
 DataSetLoader::DataSetLoader()
 {
 }
 
-DataSet* DataSetLoader::loadFile(istream &is) {
+DataSet* DataSetLoader::loadDataSet(const string &locator)
+{
+	struct stat fileInfo;
+	stat(locator.c_str(), &fileInfo);
+
+	int fileSize = fileInfo.st_size;
+
+	ifstream is;
+	is.open(locator.c_str(), ios::in);
 
 	CSVParser parser;
-	std::vector<string> columns = std::vector<string>();
-	std::vector< std::vector<string> > cells = std::vector<std::vector<string> >();
+	vector<string> columns = vector<string>();
+	vector<vector<string> > cells = vector<vector<string> >();
 
-    parser.readNextRow(is);
+	parser.readNextRow(is);
 
 	/*int bufferSize = 2048;
 	char buffer[bufferSize];
@@ -51,38 +61,104 @@ DataSet* DataSetLoader::loadFile(istream &is) {
 	}*/
 
 
-    int columnCount = parser.size();
+	unsigned long long progress;
+	unsigned long long lastProgress = -1;
+
+	int columnCount = parser.size();
 
     for (int i = 0; i < columnCount; i++)
     {
 		columns.push_back(parser[i]);
-		cells.push_back(std::vector<string>());
+		cells.push_back(vector<string>());
     }
 
-    parser.readNextRow(is);
+	parser.readNextRow(is);
 
     while (parser.size() > 0)
     {
+		progress = 50 * is.tellg() / fileSize;
+		if (progress != lastProgress)
+		{
+			this->progress("Loading Data Set", progress);
+			lastProgress = progress;
+		}
+
         int i = 0;
         for (; i < parser.size() && i < columnCount; i++)
 			cells[i].push_back(parser[i]);
         for (; i < columnCount; i++)
 			cells[i].push_back(string());
 
-        parser.readNextRow(is);
-    }
+		parser.readNextRow(is);
+    }	
 
-	managed_shared_memory* mem = SharedMemory::create();
+	if (SharedMemory::isCreatedRW() == false)
+		SharedMemory::createRW();
 
-	DataSet *dataSet = mem->construct<DataSet>(boost::interprocess::unique_instance)(mem);
+	managed_shared_memory* mem = SharedMemory::get();
 
-	dataSet->setColumnCount(columnCount);
-	if (cells.size() > 0)
-		dataSet->setRowCount(cells.at(0).size());
+	DataSet *dataSet = mem->construct<DataSet>(boost::interprocess::unique_instance)();
+
+	bool success;
+
+	do
+	{
+		try {
+
+			success = true;
+
+			dataSet->setColumnCount(columnCount);
+			if (cells.size() > 0)
+				dataSet->setRowCount(cells.at(0).size());
+
+		}
+		catch (boost::interprocess::bad_alloc &e)
+		{
+			cout << "growing shared memory\n";
+			cout.flush();
+
+			try {
+
+				cout << mem->get_size() << "\n";
+				mem = SharedMemory::grow(mem->get_size());
+				cout << mem->get_size() << "\n";
+				cout.flush();
+
+				dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
+
+			}
+			catch (exception &e)
+			{
+				cout << e.what();
+				cout.flush();
+			}
+
+			cout << "memory grown\n";
+			cout.flush();
+
+			success = false;
+		}
+		catch (exception e)
+		{
+			cout << "n " << e.what();
+			cout.flush();
+		}
+		catch (...)
+		{
+			cout << "something else\n ";
+			cout.flush();
+		}
+	}
+	while ( ! success);
+
+	cout << "success!\n";
+	cout.flush();
 
 	int colNo = 0;
 	BOOST_FOREACH(Column &column, dataSet->columns())
 	{
+		this->progress("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
+
 		column.setName(columns.at(colNo));
 
 		vector<string> &columnRows = cells.at(colNo);
@@ -147,7 +223,7 @@ DataSet* DataSetLoader::loadFile(istream &is) {
 		vector<string> inColumn = columnRows;
 		sort(inColumn.begin(), inColumn.end());
 		vector<string> cases;
-		std::unique_copy(inColumn.begin(), inColumn.end(), back_inserter(cases));
+		unique_copy(inColumn.begin(), inColumn.end(), back_inserter(cases));
 
 		std::map<int, string> casesMap;
 		int i = 0;
@@ -173,6 +249,9 @@ DataSet* DataSetLoader::loadFile(istream &is) {
 	}
 
 	return dataSet;
+}
 
-	//return mem->construct<DataSet>(boost::interprocess::unique_instance)(mem, &columns, &cells);
+void DataSetLoader::freeDataSet(DataSet *dataSet)
+{
+	SharedMemory::get()->destroy_ptr(dataSet);
 }

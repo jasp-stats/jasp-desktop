@@ -20,7 +20,8 @@ class DataSet
 {
 public:
 
-	DataSet(boost::interprocess::managed_shared_memory *mem);
+	DataSet();
+	~DataSet();
 
 	int rowCount();
 	int columnCount();
@@ -28,11 +29,9 @@ public:
 	Columns &columns();
 
 	void setRowCount(int rowCount);
-	void setColumnCount(int rowCount);
+	void setColumnCount(int columnCount);
 
 private:
-
-	boost::interprocess::managed_shared_memory *_mem;
 
 	Columns _columns;
 

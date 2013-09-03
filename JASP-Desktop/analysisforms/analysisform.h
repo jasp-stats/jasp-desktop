@@ -10,6 +10,9 @@
 #include "options/optionfields.h"
 
 #include "availablefields.h"
+#include "widgets/availablefieldslistview.h"
+#include "widgets/assignbutton.h"
+#include "widgets/boundlistview.h"
 
 class AnalysisForm : public QWidget
 {
@@ -17,7 +20,9 @@ class AnalysisForm : public QWidget
 
 public:
 	explicit AnalysisForm(QWidget *parent = 0);
-	void set(Options *options, DataSet *dataSet);
+	virtual void set(Options *options, DataSet *dataSet);
+
+	static void link(AvailableFieldsListView *source, AssignButton *assign, BoundListView *target);
 
 signals:
 	void accepted();

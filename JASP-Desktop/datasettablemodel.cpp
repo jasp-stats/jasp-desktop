@@ -6,50 +6,53 @@
 #include <QSize>
 #include <QDebug>
 
-#include "sharedmemory.h"
-
 using namespace std;
 
 DataSetTableModel::DataSetTableModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
-	_dataSet = new DataSet(SharedMemory::create());
+	_dataSet = NULL;
 
 	_nominalIcon = QIcon(":/icons/variable-nominal.png");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.png");
 	_scaleIcon = QIcon(":/icons/variable-scale.png");
 }
 
-DataSetTableModel::~DataSetTableModel()
-{
-	delete _dataSet;
-}
-
 void DataSetTableModel::setDataSet(DataSet* dataSet)
 {
     beginResetModel();
-
-	DataSet *old = _dataSet;
-
 	_dataSet = dataSet;
-
     endResetModel();
+}
 
-	delete old;
+void DataSetTableModel::clearDataSet()
+{
+	beginResetModel();
+	_dataSet = NULL;
+	endResetModel();
 }
 
 int DataSetTableModel::rowCount(const QModelIndex &parent) const
 {
+	if (_dataSet == NULL)
+		return 0;
+
 	return parent.isValid() ? 0 : _dataSet->rowCount();
 }
 
 int DataSetTableModel::columnCount(const QModelIndex &parent) const
 {
+	if (_dataSet == NULL)
+		return 0;
+
 	return parent.isValid() ? 0 : _dataSet->columnCount();
 }
 
 QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
-{   
+{
+	if (_dataSet == NULL)
+		return QVariant();
+
     if (role == Qt::DisplayRole)
 	{
 		string value = _dataSet->columns()[index.column()][index.row()];
@@ -61,6 +64,9 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 
 QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientation, int role) const
 {
+	if (_dataSet == NULL)
+		return QVariant();
+
 	if (role == Qt::DisplayRole)
 	{
 		if (orientation == Qt::Horizontal)
@@ -103,6 +109,9 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 
 bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+	if (_dataSet == NULL)
+		return false;
+
 	bool ok;
 
 	Column &column = _dataSet->columns()[index.column()];

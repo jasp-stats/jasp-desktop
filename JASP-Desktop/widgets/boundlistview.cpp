@@ -87,7 +87,9 @@ void BoundListView::assign()
 			BOOST_FOREACH(QString &field, toAssign)
 			{
 				QByteArray utf8 = field.toUtf8();
-				alreadyAssigned.push_back(string(utf8.constData(), utf8.length()));
+				string v = string(utf8.constData(), utf8.length());
+				if (std::find(alreadyAssigned.begin(), alreadyAssigned.end(), v) == alreadyAssigned.end())
+					alreadyAssigned.push_back(v);
 			}
 
 			_boundTo->setValue(alreadyAssigned);
@@ -192,6 +194,16 @@ QStringList BoundListView::AssignedVariables::assigned()
 {
 	return _assignedVariables;
 }
+
+/*void BoundListView::AssignedVariables::assign()
+{
+
+}
+
+void BoundListView::AssignedVariables::unassign()
+{
+
+}*/
 
 void BoundListView::AssignedVariables::setAssigned(QStringList assigned)
 {

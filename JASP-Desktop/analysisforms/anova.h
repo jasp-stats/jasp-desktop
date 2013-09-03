@@ -14,6 +14,8 @@ class Anova : public AnalysisForm
 public:
 	explicit Anova(QWidget *parent = 0);
 	~Anova();
+
+	virtual void set(Options *options, DataSet *dataSet) override;
 	
 private:
 	Ui::ANOVA *ui;

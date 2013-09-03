@@ -7,8 +7,10 @@
 #include "datasettablemodel.h"
 #include "enginesync.h"
 #include "analyses.h"
+#include "widgets/progresswidget.h"
 
 #include "analysisforms/analysisform.h"
+#include "asyncloader.h"
 
 namespace Ui {
 class MainWidget;
@@ -34,9 +36,13 @@ private:
 
 	void analysisResultsChangedHandler(Analysis* analysis);
 
+	AsyncLoader _loader;
+	ProgressWidget *_alert;
+
 private slots:
     void tabChanged(int index);
-    void dataSetLoaded(DataSet *dataSet);
+	void dataSetSelected(const QString &filename);
+	void dataSetLoaded(DataSet *dataSet);
 	void itemSelected(const QString item);
 	void messageReceived(const QString message);
 

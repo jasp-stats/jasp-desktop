@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "option.h"
+#include "dataset.h"
 
 class Bound
 {
@@ -11,6 +12,7 @@ class Bound
 public:
 
 	virtual void bindTo(Option *option) = 0;
+	virtual void setDataSet(DataSet *) { }
 
 protected:
 

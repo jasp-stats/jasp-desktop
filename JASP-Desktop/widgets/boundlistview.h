@@ -25,7 +25,8 @@ public:
 	void setAssignButton(AssignButton *button);
 	void setAvailableFieldsListView(AvailableFieldsListView *listView);
 
-	void setDataSet(DataSet *dataSet);
+	virtual void setDataSet(DataSet *dataSet) override;
+
 protected:
 	virtual void focusInEvent(QFocusEvent *event) override;
 	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;

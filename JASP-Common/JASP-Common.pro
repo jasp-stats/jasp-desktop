@@ -50,7 +50,8 @@ SOURCES += \
     analyses/ttestpairedsamples.cpp \
     analyses/anovabayesian.cpp \
     analyses/ttestbayesianonesample.cpp \
-    options/optionfieldpairs.cpp
+    options/optionfieldpairs.cpp \
+    options/optionstring.cpp
 
 HEADERS +=\
     options.h \
@@ -93,7 +94,9 @@ HEADERS +=\
     analyses/ttestpairedsamples.h \
     analyses/anovabayesian.h \
     analyses/ttestbayesianonesample.h \
-    options/optionfieldpairs.h
+    options/optionfieldpairs.h \
+    common.h \
+    options/optionstring.h
 
 unix:!symbian {
     maemo5 {

@@ -2,14 +2,17 @@
 #define DATASETLOADER_H
 
 #include "dataset.h"
-
-using namespace std;
+#include "boost/signals2.hpp"
 
 class DataSetLoader
 {
 public:
     DataSetLoader();
-    static DataSet *loadFile(istream &is);
+	DataSet *loadDataSet(const std::string &locator);
+	void freeDataSet(DataSet *dataSet);
+
+	boost::signals2::signal<void (std::string stage, int progress)> progress;
+
 };
 
 #endif // DATASETLOADER_H

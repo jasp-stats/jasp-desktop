@@ -11,6 +11,7 @@ class OptionField : public OptionFields
 {
 public:
 	OptionField(std::string name);
+	virtual void set(Json::Value& value);// override;
     virtual void setValue(std::vector<std::string> value);// override;
     virtual Json::Value asJSON() const;// override;
 };

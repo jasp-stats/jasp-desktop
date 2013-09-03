@@ -8,11 +8,13 @@ class SharedMemory
 public:
 	SharedMemory();
 
-	static boost::interprocess::managed_shared_memory *create();
+	static bool isCreatedRW();
+	static boost::interprocess::managed_shared_memory *createRW();
 	static boost::interprocess::managed_shared_memory *get();
-
+	static boost::interprocess::managed_shared_memory *grow(int amount);
 private:
 	static boost::interprocess::managed_shared_memory *_memory;
+	static bool _isCreated;
 };
 
 #endif // SHAREDMEMORY_H

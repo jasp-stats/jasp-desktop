@@ -21,11 +21,15 @@ using namespace std;
  * DataSet is implemented as a set of columns
  */
 
-DataSet::DataSet(boost::interprocess::managed_shared_memory *mem) :
-	_columns(mem)
+DataSet::DataSet() :
+	_columns()
 {
 	_rowCount = 0;
 	_columnCount = 0;
+}
+
+DataSet::~DataSet()
+{
 }
 
 Columns &DataSet::columns()

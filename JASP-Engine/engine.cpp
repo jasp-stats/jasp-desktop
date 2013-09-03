@@ -21,7 +21,10 @@ Engine::Engine()
 
 void Engine::receiveMessage(char *buffer, size_t message_size)
 {
-    Value v;
+	cout << "Engine Receives : " << string(buffer, message_size);
+	cout.flush();
+
+	Value v;
 	Reader r;
 	r.parse(buffer, &buffer[message_size], v, false);
 
@@ -39,6 +42,7 @@ void Engine::receiveMessage(char *buffer, size_t message_size)
 	{
 		managed_shared_memory *mem = SharedMemory::get();
 		_dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
+		_R.setDataSet(_dataSet);
 	}
 
 	if (analysis != NULL)
