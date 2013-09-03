@@ -9,18 +9,17 @@
 using namespace boost::interprocess;
 using namespace std;
 
-Column::Column(managed_shared_memory *mem) :
-	_name(mem->get_segment_manager()),
-	_blocks(std::less<ull>(), mem->get_segment_manager())
+Column::Column() :
+	_name(SharedMemory::get()->get_segment_manager()),
+	_blocks(std::less<ull>(), SharedMemory::get()->get_segment_manager())
 {
-	_mem = mem;
 	_labels = NULL;
 	_dataType = Column::DataTypeInt;
 	_rowCount = 0;
 	_columnType = Column::ColumnTypeNominal;
 
 	ull firstId = DataBlock::capacity();
-	DataBlock *firstBlock = mem->construct<DataBlock>(anonymous_instance)();
+	DataBlock *firstBlock = SharedMemory::get()->construct<DataBlock>(anonymous_instance)();
 
 	_blocks.insert(BlockEntry(firstId, firstBlock));
 }
@@ -108,7 +107,7 @@ string Column::name()
 
 void Column::setName(string name)
 {
-	_name = String(name.begin(), name.end(), _mem->get_segment_manager());
+	_name = String(name.begin(), name.end(), SharedMemory::get()->get_segment_manager());
 }
 
 void Column::setValue(int rowIndex, string value)
@@ -208,6 +207,7 @@ void Column::append(int rows)
 	}
 
 	block->insert(block->rowCount(), room);
+	_rowCount += room;
 
 	int newBlocksRequired = rowsLeft / DataBlock::capacity();
 	if (rowsLeft % DataBlock::capacity())
@@ -215,20 +215,34 @@ void Column::append(int rows)
 
 	for (int i = 0; i < newBlocksRequired; i++)
 	{
-		DataBlock *newBlock = _mem->construct<DataBlock>(anonymous_instance)();
+		try {
+
+		DataBlock *newBlock = SharedMemory::get()->construct<DataBlock>(anonymous_instance)();
+
 		int toInsert = std::min(rowsLeft, DataBlock::capacity());
 		newBlock->insert(0, toInsert);
 		rowsLeft -= toInsert;
 
 		id += DataBlock::capacity();
 		_blocks.insert(BlockEntry(id, newBlock));
-	}
 
-	_rowCount += rows;
+		_rowCount += toInsert;
+
+		}
+		catch (boost::interprocess::bad_alloc &e)
+		{
+			cout << e.what();
+			cout << "setRowCount" << _rowCount << "\n";
+			throw;
+		}
+	}
 }
 
 void Column::setRowCount(int rowCount)
 {
+	std::cout << "setting row count, old " << _rowCount << " new " << rowCount << "\n";
+	std::cout.flush();
+
 	if (rowCount == this->rowCount())
 		return;
 
@@ -244,7 +258,7 @@ void Column::setRowCount(int rowCount)
 	{
 		BlockEntry &entry = *itr;
 		DataBlock *block = entry.second.get();
-		_mem->destroy_ptr<DataBlock>(block);
+		SharedMemory::get()->destroy_ptr<DataBlock>(block);
 		entry.second = NULL;
 	}
 

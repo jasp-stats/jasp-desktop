@@ -54,7 +54,12 @@ SOURCES += main.cpp\
     analysisforms/ttestpairedsamplesform.cpp \
     analysisforms/anovamultivariateform.cpp \
     analysisforms/ttestbayesianonesampleform.cpp \
-    widgets/boundpairstable.cpp
+    widgets/boundpairstable.cpp \
+    asyncloader.cpp \
+    widgets/progresswidget.cpp \
+    widgets/anovamodelwidget.cpp \
+    widgets/listviewwithfocussignal.cpp \
+    boundmodel.cpp
 
 HEADERS  += mainwindow.h \
     datasettablemodel.h \
@@ -86,7 +91,14 @@ HEADERS  += mainwindow.h \
     analysisforms/ttestpairedsamplesform.h \
     analysisforms/anovamultivariateform.h \
     analysisforms/ttestbayesianonesampleform.h \
-    widgets/boundpairstable.h
+    widgets/boundpairstable.h \
+    asyncloader.h \
+    widgets/progresswidget.h \
+    widgets/anovamodelwidget.h \
+    widgets/listviewwithfocussignal.h \
+    bound.h \
+    boundmulti.h \
+    boundmodel.h
 
 FORMS    += mainwindow.ui \
     backstageform.ui \
@@ -101,7 +113,9 @@ FORMS    += mainwindow.ui \
     analysisforms/anovabayesianform.ui \
     analysisforms/ttestpairedsamplesform.ui \
     analysisforms/anovamultivariateform.ui \
-    analysisforms/ttestbayesianonesampleform.ui
+    analysisforms/ttestbayesianonesampleform.ui \
+    widgets/progresswidget.ui \
+    widgets/anovamodelwidget.ui
 
 
 RESOURCES += \

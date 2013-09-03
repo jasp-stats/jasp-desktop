@@ -111,7 +111,7 @@ public:
 
 	} Doubles;
 
-	Column(boost::interprocess::managed_shared_memory *mem);
+	Column();
 
 	std::string name();
 	void setName(std::string name);
@@ -141,11 +141,7 @@ public:
 
 	std::string displayFromValue(int value);
 
-
-
 private:
-
-	boost::interprocess::managed_shared_memory *_mem;
 
 	String _name;
 	boost::interprocess::offset_ptr<Labels> _labels;

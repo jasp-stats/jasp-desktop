@@ -13,8 +13,9 @@ class DataSetTableModel : public QAbstractTableModel
 
 public:
     explicit DataSetTableModel(QObject *parent = 0);
-    ~DataSetTableModel();
+
     void setDataSet(DataSet *dataSet);
+	void clearDataSet();
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;

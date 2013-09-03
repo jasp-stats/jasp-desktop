@@ -75,20 +75,18 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 		if (boundChild != NULL)
 		{
 			boundChild->bindTo(option);
-
-			BoundListView *listView = dynamic_cast<BoundListView *>(boundChild);
-			if (listView != NULL)
-				listView->setDataSet(dataSet);
-			else
-			{
-				BoundPairsTable *pairsTable = dynamic_cast<BoundPairsTable *>(boundChild);
-				if (pairsTable != NULL)
-					pairsTable->setDataSet(dataSet);
-			}
+			boundChild->setDataSet(dataSet);
 		}
 		else
 			qDebug() << "child not found : " << name << " in FrequenciesForm::setOptions()";
 	}
+}
+
+void AnalysisForm::link(AvailableFieldsListView *source, AssignButton *assign, BoundListView *target)
+{
+	source->addAssignButton(assign);
+	target->setAssignButton(assign);
+	target->setAvailableFieldsListView(source);
 }
 
 

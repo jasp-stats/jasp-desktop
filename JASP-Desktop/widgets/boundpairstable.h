@@ -18,7 +18,7 @@ public:
 	
 	void setAvailableFieldsListView(AvailableFieldsListView *listView);
 	void setAssignButton(AssignButton *button);
-	void setDataSet(DataSet *dataSet);
+	virtual void setDataSet(DataSet *dataSet) override;
 
 protected:
 	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;

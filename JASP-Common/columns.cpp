@@ -2,13 +2,14 @@
 
 #include <boost/foreach.hpp>
 
+#include "sharedmemory.h"
+
 using namespace std;
 using boost::interprocess::offset_ptr;
 
-Columns::Columns(boost::interprocess::managed_shared_memory *mem) :
-	_columnStore(mem->get_segment_manager())
+Columns::Columns() :
+	_columnStore(SharedMemory::get()->get_segment_manager())
 {
-	_mem = mem;
 }
 
 Columns::~Columns()
@@ -43,19 +44,13 @@ Column &Columns::operator [](int index)
 void Columns::setRowCount(int rowCount)
 {
 	BOOST_FOREACH(Column &column, *this)
-	{
 		column.setRowCount(rowCount);
-	}
 }
 
 void Columns::setColumnCount(int columnCount)
 {
 	for (int i = _columnStore.size(); i < columnCount; i++)
-	{
-		Column column(_mem);
-		_columnStore.push_back(column);
-	}
-
+		_columnStore.push_back(Column());
 }
 
 Column *Columns::get(int index)

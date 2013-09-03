@@ -8,6 +8,8 @@ using namespace std;
 AvailableFields::AvailableFields(QObject *parent = 0)
 	: QAbstractListModel(parent)
 {
+	_shouldFilter = false;
+
 	_nominalIcon = QIcon(":/icons/variable-nominal.png");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.png");
 	_scaleIcon = QIcon(":/icons/variable-scale.png");
@@ -16,6 +18,14 @@ AvailableFields::AvailableFields(QObject *parent = 0)
 void AvailableFields::setDataSet(DataSet *dataSet)
 {
 	_dataSet = dataSet;
+
+	updateAvailableFields();
+}
+
+void AvailableFields::filter(std::vector<string> show)
+{
+	_filter = show;
+	_shouldFilter = true;
 
 	updateAvailableFields();
 }
@@ -31,9 +41,7 @@ QStringList AvailableFields::getFields(QModelIndexList indices)
 	QStringList fields;
 
 	BOOST_FOREACH(QModelIndex &index, indices)
-	{
 		fields.append(_availableFields.at(index.row()));
-	}
 
 	return fields;
 }
@@ -46,8 +54,12 @@ void AvailableFields::updateAvailableFields()
 
 	BOOST_FOREACH(Column &column, _dataSet->columns())
 	{
-		QString name = QString::fromUtf8(column.name().c_str(), column.name().length());
-		availableFields.append(name);
+		string n = column.name();
+		if (( ! _shouldFilter) || std::find(_filter.begin(), _filter.end(), n) != _filter.end())
+		{
+			QString name = QString::fromUtf8(n.c_str(), n.length());
+			availableFields.append(name);
+		}
 	}
 
 	BOOST_FOREACH(OptionFields *option, _provideFor)

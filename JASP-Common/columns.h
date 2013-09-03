@@ -48,7 +48,7 @@ public:
 	iterator begin();
 	iterator end();
 
-	Columns(boost::interprocess::managed_shared_memory *mem);
+	Columns();
 	~Columns();
 
 	Column *get(int index);
@@ -59,8 +59,6 @@ public:
 	ColumnList _columnStore;
 
 private:
-
-	boost::interprocess::managed_shared_memory *_mem;
 
 	void setRowCount(int rowCount);
 	void setColumnCount(int columnCount);

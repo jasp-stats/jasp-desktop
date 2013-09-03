@@ -9,6 +9,7 @@
 #include <QDebug>
 
 #include "../JASP-Common/datasetloader.h"
+#include "asyncloader.h"
 
 using namespace std;
 
@@ -24,20 +25,13 @@ BackStageForm::~BackStageForm()
     delete ui;
 }
 
-
 void BackStageForm::fileItemSelected()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open CSV File"), QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first(), tr("CSV Files (*.csv)"));
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open CSV File"), QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first(), tr("CSV Files (*.csv)"));
 
-    if ( ! fileName.isNull()) {
-
-        ifstream is;
-        is.open(fileName.toStdString().c_str(), ios::in);
-
-        DataSet* dataSet = DataSetLoader::loadFile(is);
-
-        emit dataSetLoaded(dataSet);
-    }
+	if ( ! filename.isNull())
+		emit dataSetSelected(filename);
 }
+
 
 

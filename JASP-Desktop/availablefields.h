@@ -5,6 +5,9 @@
 #include <QStringList>
 #include <QIcon>
 
+#include <vector>
+#include <string>
+
 #include "dataset.h"
 #include "options/optionfields.h"
 
@@ -14,6 +17,7 @@ public:
 	AvailableFields(QObject *parent);
 
 	void setDataSet(DataSet *dataSet);
+	void filter(std::vector<std::string> show);
 
 	void provideFor(OptionFields *option);
 	QStringList getFields(QModelIndexList indices);
@@ -30,6 +34,9 @@ private:
 	std::vector<OptionFields *> _provideFor;
 	void updateAvailableFields();
 	QStringList _availableFields;
+
+	std::vector<std::string> _filter;
+	bool _shouldFilter;
 
 	QIcon _nominalIcon;
 	QIcon _ordinalIcon;

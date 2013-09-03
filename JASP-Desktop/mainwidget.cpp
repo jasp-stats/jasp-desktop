@@ -73,7 +73,16 @@ MainWidget::MainWidget(QWidget *parent) :
 	_analyses->analysisResultsChanged.connect(boost::bind(&MainWidget::analysisResultsChangedHandler, this, _1));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
 
+	_alert = new ProgressWidget(ui->pageData);
+	_alert->setAutoFillBackground(true);
+	_alert->resize(400, 100);
+	_alert->move(100, 80);
+	_alert->hide();
+
+	connect(&_loader, SIGNAL(complete(DataSet*)), this, SLOT(dataSetLoaded(DataSet*)));
+	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
 }
 
 MainWidget::~MainWidget()
@@ -102,6 +111,21 @@ void MainWidget::tabChanged(int index)
 	}
 }
 
+void MainWidget::dataSetSelected(const QString &filename)
+{
+	_tableModel->clearDataSet();
+
+	if (_dataSet != NULL)
+	{
+		_loader.free(_dataSet);
+		_dataSet = NULL;
+	}
+
+	_loader.load(filename);
+	_alert->show();
+	ui->tabBar->setCurrentIndex(1);
+}
+
 void MainWidget::dataSetLoaded(DataSet *dataSet)
 {
 	_dataSet = dataSet;
@@ -110,9 +134,10 @@ void MainWidget::dataSetLoaded(DataSet *dataSet)
 
     ui->homeRibbon->setEnabled(true);
 	ui->ribbonAnalysis->setEnabled(true);
-	ui->tabBar->setCurrentIndex(1);
 
-	QToolTip::showText(ui->tableView->pos(), QString("bruce"), ui->tableView, QRect(100, 100, 200, 200));
+	_alert->hide();
+
+	//QToolTip::showText(ui->tableView->pos(), QString("bruce"), ui->tableView, QRect(100, 100, 200, 200));
 
 }
 

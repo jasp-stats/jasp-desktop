@@ -3,6 +3,7 @@
 
 #include <QWidget>
 
+#include "asyncloader.h"
 #include "dataset.h"
 
 namespace Ui {
@@ -18,15 +19,13 @@ public:
     ~BackStageForm();
 
 signals:
-    void dataSetLoaded(DataSet *dataSet);
+	void dataSetSelected(QString filename);
     
 private:
     Ui::BackStageForm *ui;
 
-
 private slots:
     void fileItemSelected();
-
 
 };
 
