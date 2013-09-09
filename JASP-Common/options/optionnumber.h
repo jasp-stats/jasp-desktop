@@ -9,7 +9,7 @@
 class OptionNumber : public OptionI<double>
 {
 public:
-	OptionNumber(std::string name, double value, double min = -1/0, double max = 1/0, int dp = 2);
+	OptionNumber(std::string name, double value, double min = -999999, double max = 999999, int dp = 2);
 
 	virtual Json::Value asJSON() const;// override;
 	virtual void set(Json::Value& value);// override;

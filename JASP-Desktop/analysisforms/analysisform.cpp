@@ -78,7 +78,7 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 			boundChild->setDataSet(dataSet);
 		}
 		else
-			qDebug() << "child not found : " << name << " in FrequenciesForm::setOptions()";
+			qDebug() << "child not found : " << name << " in AnalysisForm::setOptions()";
 	}
 }
 

@@ -15,76 +15,32 @@ DEPENDPATH = ..
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
+LIBS += -L.. -lJASP-Common
+
 unix:INCLUDEPATH += /opt/local/include
 windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
 
-INCLUDEPATH += $$OUT_PWD/../R-3.0.0/include \
-	$$OUT_PWD/../R-3.0.0/library/Rinside/include \
-	$$OUT_PWD/../R-3.0.0/library/Rcpp/include
-
-LIBS += -L.. -lJASP-Common
-
-unix {
-
 R_HOME = $$OUT_PWD/../R-3.0.0
 
-## include headers and libraries for R
-RCPPFLAGS =             $$system($$R_HOME/bin/R CMD config --cppflags)
-RLDFLAGS =              $$system($$R_HOME/bin/R CMD config --ldflags)
-RBLAS =                 $$system($$R_HOME/bin/R CMD config BLAS_LIBS)
-RLAPACK =               $$system($$R_HOME/bin/R CMD config LAPACK_LIBS)
+INCLUDEPATH += \
+	$$R_HOME/include \
+	$$R_HOME/library/Rinside/include \
+	$$R_HOME/library/Rcpp/include
 
-## if you need to set an rpath to R itself, also uncomment
-#RRPATH =               -Wl,-rpath,$$R_HOME/lib
+unix:LIBS += \
+	-L$$R_HOME/library/RInside/lib -lRInside \
+	-L$$R_HOME/library/Rcpp/lib -lRcpp \
+	-L$$R_HOME/lib -lR
 
-## include headers and libraries for Rcpp interface classes
-RCPPINCL =              $$system($$R_HOME/bin/Rscript -e \'Rcpp:::CxxFlags\(\)\')
-RCPPLIBS =              $$system($$R_HOME/bin/Rscript -e \'Rcpp:::LdFlags\(\)\')
+win32:LIBS += \
+	-L$$R_HOME/library/RInside/lib/i386 -lRInside \
+	-L$$R_HOME/library/Rcpp/lib/i386 -lRcpp \
+	-L$$R_HOME/bin/i386 -lR
 
-## for some reason when building with Qt we get this each time
-## so we turn unused parameter warnings off
-RCPPWARNING =           -Wno-unused-parameter
-## include headers and libraries for RInside embedding classes
-RINSIDEINCL =           $$system($$R_HOME/bin/Rscript -e \'RInside:::CxxFlags\(\)\')
-RINSIDELIBS =           $$system($$R_HOME/bin/Rscript -e \'RInside:::LdFlags\(\)\')
+win32:LIBS += -lole32 -loleaut32
 
-}
 
-win32 {
-
-LIBS += -lole32 -loleaut32
-
-R_HOME = Y:/Documents/build-JASPEngine-win-Rtools-Debug/R-3.0.0
-
-## include headers and libraries for R
-RCPPFLAGS =             $$system($$R_HOME/bin/R CMD config --cppflags)
-RLDFLAGS =              $$system($$R_HOME/bin/R CMD config --ldflags)
-RBLAS =                 $$system($$R_HOME/bin/R CMD config BLAS_LIBS)
-RLAPACK =               $$system($$R_HOME/bin/R CMD config LAPACK_LIBS)
-
-## if you need to set an rpath to R itself, also uncomment
-#RRPATH =               -Wl,-rpath,$$R_HOME/lib
-
-## include headers and libraries for Rcpp interface classes
-RCPPINCL =              $$system($$R_HOME/bin/Rscript -e Rcpp:::CxxFlags\(\))
-RCPPLIBS =              $$system($$R_HOME/bin/Rscript -e Rcpp:::LdFlags\(\))
-
-LIBS += -L$$R_HOME/library/RInside/lib/i386 -lRInside -L$$R_HOME/library/Rcpp/lib/i386 -lRcpp -L$$R_HOME/bin/i386 -lR
-
-## for some reason when building with Qt we get this each time
-## so we turn unused parameter warnings off
-RCPPWARNING =           -Wno-unused-parameter
-## include headers and libraries for RInside embedding classes
-RINSIDEINCL =           $$system($$R_HOME/bin/Rscript -e RInside:::CxxFlags\(\))
-RINSIDELIBS =           $$system($$R_HOME/bin/Rscript -e RInside:::LdFlags\(\))
-
-}
-
-## compiler etc settings used in default make rules
-QMAKE_CXXFLAGS +=       $$RCPPWARNING $$RCPPFLAGS $$RCPPINCL $$RINSIDEINCL
-QMAKE_LFLAGS +=         $$RLDFLAGS $$RBLAS $$RLAPACK $$RCPPLIBS $$RINSIDELIBS
-
-RPackage.commands = $$OUT_PWD/../R-3.0.0/bin/R CMD INSTALL $$PWD/JASP
+RPackage.commands = $$R_HOME/bin/R CMD INSTALL $$PWD/JASP
 QMAKE_EXTRA_TARGETS += RPackage
 PRE_TARGETDEPS += RPackage
 

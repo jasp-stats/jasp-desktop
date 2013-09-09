@@ -27,12 +27,12 @@ void RcppBridge::setDataSet(DataSet* dataSet)
 		{
 			Rcpp::IntegerVector v(column.rowCount());
 
-			int r = 0;
-			BOOST_FOREACH(int value, column.AsInts)
-				v[r++] = value;
-
 			if (column.hasLabels())
 			{
+				int r = 0;
+				BOOST_FOREACH(int value, column.AsInts)
+					v[r++] = value + 1;
+
 				Rcpp::CharacterVector labels;
 				typedef pair<int, string> pair;
 
@@ -41,6 +41,12 @@ void RcppBridge::setDataSet(DataSet* dataSet)
 
 				v.attr("levels") = labels;
 				v.attr("class") = "factor";
+			}
+			else
+			{
+				int r = 0;
+				BOOST_FOREACH(int value, column.AsInts)
+					v[r++] = value;
 			}
 
 			list[colNo++] = v;
