@@ -38,5 +38,7 @@ Options *TTestIndependentSamples::createDefaultOptions()
 
 	options->add(new OptionList("missingValues", "excludeAnalysisByAnalysis"));
 
+	options->add(new OptionList("tails", "twoTailed"));
+
 	return options;
 }

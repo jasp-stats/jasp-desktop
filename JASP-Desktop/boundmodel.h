@@ -8,7 +8,7 @@ class BoundModel
 public:
 	BoundModel();
 
-	//void setAvailableFields(AvailableFields *available);
+	void setAvailableFields(AvailableFields *available);
 
 	//virtual std::vector<std::string> &exclusiveAssignments();
 	virtual void bindTo(Option *) { }

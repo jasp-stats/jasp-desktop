@@ -4,7 +4,7 @@
 #include "analysisform.h"
 
 namespace Ui {
-class TTestBayesOneSampleForm;
+class TTestBayesianOneSampleForm;
 }
 
 class TTestBayesianOneSampleForm : public AnalysisForm
@@ -16,7 +16,7 @@ public:
 	~TTestBayesianOneSampleForm();
 	
 private:
-	Ui::TTestBayesOneSampleForm *ui;
+	Ui::TTestBayesianOneSampleForm *ui;
 };
 
 #endif // TTESTBAYESONESAMPLEFORM_H
