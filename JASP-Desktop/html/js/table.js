@@ -93,7 +93,11 @@ $.widget("jasp.table", {
                 var caze = this.options.cases[i];
 
                 html += '<tr>'
+                
+                if (i == 0 || caze != this.options.cases[i - 1])
                     html += '<th>' + caze + '</th>'
+                else
+                	html += '<th></th>'
 		
 				if (this.options.data != null) {
                     _.each(this.options.schema.fields, function(field) {
