@@ -237,9 +237,9 @@ Descriptives <- function(data, options, perform="run", callback=NULL) {
 			}
 			if (percentileValues[["quartiles"]]) { 
 				if (class(na.omitted) != "factor") {
-					field.results[["25th percentile"]] <- .clean(quantile(na.omitted, c(.25), names=F))
-					field.results[["50th percentile"]] <- .clean(quantile(na.omitted, c(.5), names=F))
-					field.results[["75th percentile"]] <- .clean(quantile(na.omitted, c(.75), names=F))
+					field.results[["25th percentile"]] <- .clean(quantile(na.omitted, c(.25), type=6, names=F))
+					field.results[["50th percentile"]] <- .clean(quantile(na.omitted, c(.5), type=6, names=F))
+					field.results[["75th percentile"]] <- .clean(quantile(na.omitted, c(.75), type=6, names=F))
 				} else {
 					field.results[["25th percentile"]] <- ""
 					field.results[["50th percentile"]] <- ""
@@ -249,7 +249,7 @@ Descriptives <- function(data, options, perform="run", callback=NULL) {
 			if (percentileValues[["equalGroups"]]) {  
 				if (class(na.omitted) != "factor") {
 					for (i in seq(equalGroupsNo - 1))
-						field.results[[paste(100 * i / equalGroupsNo, "th percentile", sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), names=F))
+						field.results[[paste(100 * i / equalGroupsNo, "th percentile", sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
 				} else {
 					for (i in seq(equalGroupsNo - 1))
 						field.results[[paste(100 * i / equalGroupsNo, "th percentile", sep="")]] <- ""
@@ -258,7 +258,7 @@ Descriptives <- function(data, options, perform="run", callback=NULL) {
 			if (percentileValues[["percentiles"]]) {  
 				if (class(na.omitted) != "factor") {
 					for (i in percentilesPercentiles)
-						field.results[[paste(i,"th percentile", sep="")]] <- .clean(quantile(na.omitted, c(i / 100), names=F))
+						field.results[[paste(i,"th percentile", sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
 				} else {
 					for (i in 1:(equalGroupsNo - 1))
 						field.results[[paste(i,"th percentile", sep="")]] <- ""
