@@ -10,6 +10,8 @@
 #include "widgets/boundlistview.h"
 #include "widgets/boundpairstable.h"
 
+using namespace std;
+
 AnalysisForm::AnalysisForm(QWidget *parent) :
 	QWidget(parent),
 	_availableFields(parent)
@@ -52,7 +54,18 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 {
 	_dataSet = dataSet;
 
-	_availableFields.setDataSet(dataSet);
+	QList<QPair<QString, int> > columnDescs;
+
+	BOOST_FOREACH(Column &column, dataSet->columns())
+	{
+		string name = column.name();
+		QString asQS = QString::fromUtf8(name.c_str(), name.length());
+		int columnType = column.columnType();
+		columnDescs.append(QPair<QString, int>(asQS, columnType));
+	}
+
+	_availableFields.setVariables(columnDescs);
+
 	_options = options;
 
 	BOOST_FOREACH(Option *option, *options)
@@ -62,7 +75,7 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 		{
 			if (fieldsOption->name() == "main/fields")
 				_mainFields = fieldsOption;
-			_availableFields.provideFor(fieldsOption);
+			//_availableFields.provideFor(fieldsOption);
 		}
 
 		QString name = QString::fromUtf8(option->name().c_str(), option->name().length());
@@ -81,14 +94,6 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 			qDebug() << "child not found : " << name << " in AnalysisForm::setOptions()";
 	}
 }
-
-void AnalysisForm::link(AvailableFieldsListView *source, AssignButton *assign, BoundListView *target)
-{
-	source->addAssignButton(assign);
-	target->setAssignButton(assign);
-	target->setAvailableFieldsListView(source);
-}
-
 
 void AnalysisForm::resizeEvent(QResizeEvent *event)
 {

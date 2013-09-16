@@ -22,8 +22,6 @@ AnovaModelWidget::AnovaModelWidget(QWidget *parent) :
 	ui->listFactorsAvailable->setModel(&_availableFields);
 	//ui->interactions->setModel(&_interactionsModel);
 
-	AnalysisForm::link(ui->listFactorsAvailable, ui->buttonAssignMainEffects, ui->mainEffects);
-	AnalysisForm::link(ui->listFactorsAvailable, ui->buttonAssignInteractions, ui->interactions);
 
 }
 

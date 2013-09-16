@@ -130,7 +130,7 @@ public:
 	enum DataType { DataTypeInt = 1, DataTypeDouble = 2 };
 	DataType dataType() const;
 
-	enum ColumnType { ColumnTypeNominal, ColumnTypeOrdinal, ColumnTypeScale };
+	enum ColumnType { ColumnTypeNominal = 1, ColumnTypeOrdinal = 2, ColumnTypeScale = 4 };
 	ColumnType columnType() const;
 
 	int rowCount() const;

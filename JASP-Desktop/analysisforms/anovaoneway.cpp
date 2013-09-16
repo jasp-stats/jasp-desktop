@@ -12,14 +12,6 @@ AnovaOneWay::AnovaOneWay(QWidget *parent) :
 	ui->setupUi(this);
 
 	ui->listAvailableFields->setModel(&_availableFields);
-	ui->listAvailableFields->addAssignButton(ui->assignFactor);
-	ui->listAvailableFields->addAssignButton(ui->assignVariables);
-
-	ui->variables->setAssignButton(ui->assignVariables);
-	ui->variables->setAvailableFieldsListView(ui->listAvailableFields);
-
-	ui->factor->setAssignButton(ui->assignFactor);
-	ui->factor->setAvailableFieldsListView(ui->listAvailableFields);
 }
 
 AnovaOneWay::~AnovaOneWay()

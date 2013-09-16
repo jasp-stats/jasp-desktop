@@ -12,10 +12,12 @@ Descriptives::Descriptives(QWidget *parent) :
 	ui->setupUi(this);
 
 	ui->listAvailableFields->setModel(&_availableFields);
-	ui->listAvailableFields->addAssignButton(ui->buttonAssign_main_fields);
+	ui->listAvailableFields->setDoubleClickTarget(ui->main_fields);
 
-	ui->main_fields->setAssignButton(ui->buttonAssign_main_fields);
-	ui->main_fields->setAvailableFieldsListView(ui->listAvailableFields);
+	ui->main_fields->setModel(new ListModelVariablesAssigned(this));
+	ui->main_fields->setDoubleClickTarget(ui->listAvailableFields);
+
+	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->main_fields);
 
 	ui->pageStatistics->hide();
 	ui->pageCharts->hide();

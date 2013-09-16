@@ -14,6 +14,8 @@
 #include "widgets/assignbutton.h"
 #include "widgets/boundlistview.h"
 
+#include "widgets/listmodelvariablesavailable.h"
+
 class AnalysisForm : public QWidget
 {
 	Q_OBJECT
@@ -21,8 +23,6 @@ class AnalysisForm : public QWidget
 public:
 	explicit AnalysisForm(QWidget *parent = 0);
 	virtual void set(Options *options, DataSet *dataSet);
-
-	static void link(AvailableFieldsListView *source, AssignButton *assign, BoundListView *target);
 
 signals:
 	void accepted();
@@ -32,7 +32,8 @@ protected:
 	DataSet *_dataSet;
 	Options *_options;
 
-	AvailableFields _availableFields;
+	//AvailableFields _availableFields;
+	ListModelVariablesAvailable _availableFields;
 
 	OptionFields *_mainFields;
 

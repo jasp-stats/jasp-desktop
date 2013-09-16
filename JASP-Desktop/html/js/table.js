@@ -123,6 +123,22 @@ $.widget("jasp.table", {
             }
 		
 				html += '</tbody>'
+				
+			if (this.options.footnotes) {
+
+				html += '<tfoot>'
+
+				for (var i = 0; i < this.options.footnotes.length; i++) {
+
+					html += '<tr><td colspan="' + (1 + this.options.schema.fields.length) + '">'
+					html += '<sup>' + String.fromCharCode(97 + i) + '</sup>'
+					html += this.options.footnotes[i]
+					html += '</td></tr>'
+				}
+
+				html += '</tfoot>'
+			}
+				
         }
         else
         {
@@ -183,22 +199,22 @@ $.widget("jasp.table", {
             }, this)
 		
 				html += '</tbody>'
+				
+			if (this.options.footnotes) {
+
+				html += '<tfoot>'
+
+				for (var i = 0; i < this.options.footnotes.length; i++) {
+
+					html += '<tr><td colspan="' + (1 + this.options.cases.length) + '">'
+					html += '<sup>' + String.fromCharCode(97 + i) + '</sup>'
+					html += this.options.footnotes[i]
+					html += '</td></tr>'
+				}
+
+				html += '</tfoot>'
+			}
 		}
-
-        if (this.options.footnotes) {
-
-            html += '<tfoot>'
-
-            for (var i = 0; i < this.options.footnotes.length; i++) {
-
-                html += '<tr><td colspan="' + (1 + this.options.cases.length) + '">'
-                html += '<sup>' + String.fromCharCode(97 + i) + '</sup>'
-                html += this.options.footnotes[i]
-                html += '</td></tr>'
-            }
-
-            html += '</tfoot>'
-        }
 
         html += '</table>'
 

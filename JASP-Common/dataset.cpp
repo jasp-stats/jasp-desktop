@@ -1,22 +1,6 @@
 
 #include "dataset.h"
 
-
-#include <QDebug>
-
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <climits>
-
-#include "boost/foreach.hpp"
-#include "boost/lexical_cast.hpp"
-
-#include "csvparser.h"
-#include "column.h"
-
-using namespace std;
-
 /*
  * DataSet is implemented as a set of columns
  */

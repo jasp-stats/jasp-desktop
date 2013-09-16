@@ -1,20 +1,7 @@
 #ifndef DATASET_H
 #define DATASET_H
 
-#include <vector>
-
 #include "columns.h"
-#include "datablock.h"
-
-#include <boost/interprocess/managed_shared_memory.hpp>
-#include <boost/interprocess/offset_ptr.hpp>
-#include <boost/iterator/iterator_facade.hpp>
-
-#include <boost/interprocess/containers/map.hpp>
-#include <boost/interprocess/containers/list.hpp>
-#include <boost/interprocess/allocators/allocator.hpp>
-#include <boost/interprocess/allocators/private_node_allocator.hpp>
-
 
 class DataSet
 {
