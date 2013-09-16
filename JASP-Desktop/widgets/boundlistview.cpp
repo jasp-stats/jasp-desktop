@@ -8,43 +8,89 @@
 
 #include "options/optionfield.h"
 
+#include "widgets/boundmodel.h"
+
+#include <QLabel>
+#include <QHBoxLayout>
+
 using namespace std;
 
 BoundListView::BoundListView(QWidget *parent)
-	: QListView(parent),
-	  _listModel(this)
+	: ListView(parent)
 {
 	_availableFieldsListView = NULL;
 	_assignButton = NULL;
+	_variablesListModel = NULL;
 
 	setEditTriggers(QListView::NoEditTriggers);
-	setModel(&_listModel);
+
+	this->setDragEnabled(true);
+	this->viewport()->setAcceptDrops(true);
+	this->setDropIndicatorShown(true);
+	this->setDragDropMode(QAbstractItemView::DragDrop);
+
+	_variableTypeKey = new QWidget(this);
+	QHBoxLayout *layout = new QHBoxLayout(_variableTypeKey);
+	layout->setSpacing(4);
+	layout->setContentsMargins(4, 4, 4, 4);
+	_variableTypeKey->setLayout(layout);
+	_variableTypeKey->resize(_variableTypeKey->sizeHint());
 }
 
-void BoundListView::setDataSet(DataSet *dataSet)
+void BoundListView::setModel(QAbstractItemModel *model)
 {
-	_listModel.setDataSet(dataSet);
+	_variablesListModel = qobject_cast<ListModelVariablesAssigned *>(model);
+
+	if (_variablesListModel != NULL)
+	{
+		if (_variablesListModel->variableTypesAllowed() & Column::ColumnTypeNominal)
+		{
+			QLabel *label = new QLabel(_variableTypeKey);
+			QIcon icon(":/icons/variable-nominal-trans.png");
+			QPixmap pixmap = icon.pixmap(16, 16);
+			label->setPixmap(pixmap);
+			_variableTypeKey->layout()->addWidget(label);
+		}
+
+		if (_variablesListModel->variableTypesAllowed() & Column::ColumnTypeOrdinal)
+		{
+			QLabel *label = new QLabel(_variableTypeKey);
+			QIcon icon(":/icons/variable-ordinal-trans.png");
+			QPixmap pixmap = icon.pixmap(16, 16);
+			label->setPixmap(pixmap);
+			_variableTypeKey->layout()->addWidget(label);
+		}
+
+		if (_variablesListModel->variableTypesAllowed() & Column::ColumnTypeScale)
+		{
+			QLabel *label = new QLabel(_variableTypeKey);
+			QIcon icon(":/icons/variable-scale-trans.png");
+			QPixmap pixmap = icon.pixmap(16, 16);
+			label->setPixmap(pixmap);
+			_variableTypeKey->layout()->addWidget(label);
+		}
+
+		_variableTypeKey->resize(_variableTypeKey->sizeHint());
+
+		repositionKey();
+	}
+
+	QListView::setModel(model);
 }
 
 void BoundListView::bindTo(Option *option)
 {
-	_boundTo = dynamic_cast<OptionFields *>(option);
-
-	if (_boundTo != NULL)
-	{
-		_boundTo->changed.connect(boost::bind(&BoundListView::updateList, this));
-		updateList();
-	}
-	else
-		qDebug() << "could not bind to OptionAssignedFields in BoundListView.cpp";
+	BoundModel *model = dynamic_cast<BoundModel *>(this->model());
+	if (model != NULL)
+		model->bindTo(option);
 }
 
 void BoundListView::setAssignButton(AssignButton *button)
 {
 	_assignButton = button;
 
-	if (button != NULL)
-		connect(button, SIGNAL(clicked()), this, SLOT(assign()));
+	//if (button != NULL)
+	//	connect(button, SIGNAL(clicked()), this, SLOT(assign()));
 }
 
 void BoundListView::setAvailableFieldsListView(AvailableFieldsListView *listView)
@@ -52,164 +98,22 @@ void BoundListView::setAvailableFieldsListView(AvailableFieldsListView *listView
 	_availableFieldsListView = listView;
 }
 
-void BoundListView::focusInEvent(QFocusEvent *event)
+void BoundListView::resizeEvent(QResizeEvent *e)
 {
-	if (selectedIndexes().length() > 0 && _assignButton != NULL)
-		_assignButton->setAssignDirection(false);
+	QListView::resizeEvent(e);
 
-	QListView::focusInEvent(event);
+	repositionKey();
 }
 
-void BoundListView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+void BoundListView::moveEvent(QMoveEvent *e)
 {
-	if (_assignButton != NULL)
-		_assignButton->setAssignDirection(false);
+	QListView::moveEvent(e);
 
-	QListView::selectionChanged(selected, deselected);
+	repositionKey();
 }
 
-
-void BoundListView::assign()
+void BoundListView::repositionKey()
 {
-	if (_boundTo != NULL)
-	{
-		if (_assignButton->isAssign())
-		{
-			if (_availableFieldsListView == NULL)
-				return;
-
-			QStringList toAssign = _availableFieldsListView->selectedFields();
-
-			vector<string> alreadyAssigned;
-			if (dynamic_cast<OptionField *>(_boundTo) == NULL)
-				alreadyAssigned = _boundTo->value();
-
-			BOOST_FOREACH(QString &field, toAssign)
-			{
-				QByteArray utf8 = field.toUtf8();
-				string v = string(utf8.constData(), utf8.length());
-				if (std::find(alreadyAssigned.begin(), alreadyAssigned.end(), v) == alreadyAssigned.end())
-					alreadyAssigned.push_back(v);
-			}
-
-			_boundTo->setValue(alreadyAssigned);
-		}
-		else
-		{
-			QModelIndexList indices = this->selectedIndexes();
-
-			vector<string> currentFields = _boundTo->value();
-			vector<string> toRetain = currentFields;
-
-			BOOST_FOREACH(QModelIndex &index, indices)
-			{
-				string toRemove = currentFields.at(index.row());
-
-				vector<string>::iterator itr = toRetain.begin();
-
-				while (itr != toRetain.end())
-				{
-					if (*itr == toRemove)
-					{
-						toRetain.erase(itr);
-						break;
-					}
-					itr++;
-				}
-			}
-
-			_boundTo->setValue(toRetain);
-		}
-	}
-
+	_variableTypeKey->move(this->width() - _variableTypeKey->width(), this->height() - _variableTypeKey->height());
 }
-
-void BoundListView::updateList()
-{
-	QStringList list;
-
-	BOOST_FOREACH(string value, _boundTo->value())
-	{
-		QString asString = QString::fromUtf8(value.c_str(), value.length());
-		list.append(asString);
-	}
-
-	_listModel.setAssigned(list);
-}
-
-BoundListView::AssignedVariables::AssignedVariables(QObject *parent) :
-	QAbstractListModel(parent)
-{
-	_dataSet = NULL;
-
-	_nominalIcon = QIcon(":/icons/variable-nominal.png");
-	_ordinalIcon = QIcon(":/icons/variable-ordinal.png");
-	_scaleIcon = QIcon(":/icons/variable-scale.png");
-}
-
-void BoundListView::AssignedVariables::setDataSet(DataSet *dataSet)
-{
-	_dataSet = dataSet;
-}
-
-int BoundListView::AssignedVariables::rowCount(const QModelIndex &) const
-{
-	return _assignedVariables.length();
-}
-
-QVariant BoundListView::AssignedVariables::data(const QModelIndex &index, int role) const
-{
-	int row = index.row();
-
-	if (role == Qt::DisplayRole)
-	{
-		return QVariant(_assignedVariables.at(row));
-	}
-	else if (role == Qt::DecorationRole)
-	{
-		QString variable = _assignedVariables.at(row);
-		QByteArray utf8 = variable.toUtf8();
-		string n(utf8.constData(), utf8.length());
-		Column *column = _dataSet->columns().get(n);
-
-		switch (column->columnType())
-		{
-		case Column::ColumnTypeNominal:
-			return QVariant(_nominalIcon);
-		case Column::ColumnTypeOrdinal:
-			return QVariant(_ordinalIcon);
-		case Column::ColumnTypeScale:
-			return QVariant(_scaleIcon);
-		default:
-			return QVariant();
-		}
-	}
-	else
-	{
-		return QVariant();
-	}
-}
-
-QStringList BoundListView::AssignedVariables::assigned()
-{
-	return _assignedVariables;
-}
-
-/*void BoundListView::AssignedVariables::assign()
-{
-
-}
-
-void BoundListView::AssignedVariables::unassign()
-{
-
-}*/
-
-void BoundListView::AssignedVariables::setAssigned(QStringList assigned)
-{
-	beginResetModel();
-	_assignedVariables = assigned;
-	endResetModel();
-}
-
 

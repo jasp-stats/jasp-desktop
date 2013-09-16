@@ -25,13 +25,13 @@ LIBS += -L.. -lJASP-Common
 windows:LIBS += -lole32 -loleaut32
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+	mainwindow.cpp \
     datasettablemodel.cpp \
     backstageform.cpp \
     enginesync.cpp \
     mainwidget.cpp \
     availablefields.cpp \
-    tableview.cpp \
+	tableview.cpp \
     ribbonanalysis.cpp \
     ribbonhome.cpp \
     analysisforms/analysisform.cpp \
@@ -58,8 +58,12 @@ SOURCES += main.cpp\
     asyncloader.cpp \
     widgets/progresswidget.cpp \
     widgets/anovamodelwidget.cpp \
-    widgets/listviewwithfocussignal.cpp \
-    boundmodel.cpp
+    widgets/listmodelvariablesavailable.cpp \
+    widgets/listmodelvariables.cpp \
+    widgets/listmodelvariablesassigned.cpp \
+    widgets/listview.cpp \
+    widgets/tablemodelvariablesassigned.cpp \
+    widgets/draganddrop.cpp
 
 HEADERS  += mainwindow.h \
     datasettablemodel.h \
@@ -95,10 +99,15 @@ HEADERS  += mainwindow.h \
     asyncloader.h \
     widgets/progresswidget.h \
     widgets/anovamodelwidget.h \
-    widgets/listviewwithfocussignal.h \
     bound.h \
     boundmulti.h \
-    boundmodel.h
+    widgets/boundmodel.h \
+    widgets/listmodelvariablesavailable.h \
+    widgets/listmodelvariables.h \
+    widgets/listmodelvariablesassigned.h \
+    widgets/listview.h \
+    widgets/tablemodelvariablesassigned.h \
+    widgets/draganddrop.h
 
 FORMS    += mainwindow.ui \
     backstageform.ui \
@@ -217,4 +226,7 @@ OTHER_FILES += \
     html/css/theme-jasp.css \
     resources/icons/variable-nominal.png \
     resources/icons/variable-ordinal.png \
-    resources/icons/variable-scale.png
+    resources/icons/variable-scale.png \
+    resources/icons/variable-scale-trans.png \
+    resources/icons/variable-nominal-trans.png \
+    resources/icons/variable-ordinal-trans.png

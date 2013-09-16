@@ -2,21 +2,29 @@
 #define LISTVIEWWITHFOCUSSIGNAL_H
 
 #include <QListView>
+#include <QAbstractItemView>
 
-class ListViewWithFocusSignal : public QListView
+class ListView : public QListView
 {
 	Q_OBJECT
 public:
-	explicit ListViewWithFocusSignal(QWidget *parent = 0);
+	explicit ListView(QWidget *parent = 0);
+
+	void setDoubleClickTarget(QAbstractItemView *target);
 	
 protected:
 	void focusInEvent(QFocusEvent *event) override;
 	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
 
 signals:
+	void selectionUpdated();
 	void focused();
-	
-public slots:
+
+private slots:
+	void doubleClickedHandler(const QModelIndex index);
+
+private:
+	QAbstractItemView *_defaultDropTarget;
 	
 };
 

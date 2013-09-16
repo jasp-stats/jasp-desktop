@@ -322,7 +322,7 @@
           <widget class="QWidget" name="widget_5" native="true"/>
          </item>
          <item row="1" column="0">
-          <widget class="QCheckBox" name="testUnequalVariances">
+          <widget class="BoundCheckBox" name="testUnequalVariances">
            <property name="text">
             <string>Test Inequality of variances</string>
            </property>

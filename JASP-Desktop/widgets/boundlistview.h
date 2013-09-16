@@ -12,8 +12,10 @@
 #include "availablefieldslistview.h"
 #include "assignbutton.h"
 #include "dataset.h"
+#include "listmodelvariablesassigned.h"
+#include "listview.h"
 
-class BoundListView : public QListView, public Bound
+class BoundListView : public ListView, public Bound
 {
 	Q_OBJECT
 
@@ -25,48 +27,23 @@ public:
 	void setAssignButton(AssignButton *button);
 	void setAvailableFieldsListView(AvailableFieldsListView *listView);
 
-	virtual void setDataSet(DataSet *dataSet) override;
+	virtual void setModel(QAbstractItemModel *model) override;
 
 protected:
-	virtual void focusInEvent(QFocusEvent *event) override;
-	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
+	virtual void resizeEvent(QResizeEvent *e) override;
+	virtual void moveEvent(QMoveEvent *e) override;
 
-private slots:
-	void assign();
+	ListModelVariablesAssigned *_variablesListModel;
 
 private:
-
-	class AssignedVariables : public QAbstractListModel
-	{
-
-	public:
-		explicit AssignedVariables(QObject *parent = 0);
-
-		void setDataSet(DataSet *dataSet);
-
-		int rowCount(const QModelIndex &) const override;
-		QVariant data(const QModelIndex &index, int role) const override;
-
-		QStringList assigned();
-		void setAssigned(QStringList assigned);
-
-	private:
-		DataSet *_dataSet;
-		QStringList _assignedVariables;
-
-		QIcon _nominalIcon;
-		QIcon _ordinalIcon;
-		QIcon _scaleIcon;
-
-	};
-
-	void updateList();
-	AssignedVariables _listModel;
-	OptionFields *_boundTo;
 
 	AvailableFieldsListView *_availableFieldsListView;
 	AssignButton *_assignButton;
 
+	QWidget *_variableTypeKey;
+
+private slots:
+	void repositionKey();
 
 };
 

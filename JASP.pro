@@ -1,3 +1,6 @@
+
+cache()
+
 TEMPLATE = subdirs
 
 CONFIG += ordered

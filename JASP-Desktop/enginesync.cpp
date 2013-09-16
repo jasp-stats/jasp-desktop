@@ -62,12 +62,12 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 		QDir programDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();
 		QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 #ifdef __APPLE__
-        env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib"));
+		env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib"));
 #else
         env.insert("PATH", programDir.absoluteFilePath("R-3.0.0\\library\\RInside\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\library\\Rcpp\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\bin\\i386"));
 #endif
 
-        env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));
+		env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));
 
 		_process->setEnvironment(env.toStringList());
 		_process->start(_engineExe, QStringList("0"));

@@ -46,5 +46,8 @@
         <file>icons/variable-scale.png</file>
         <file>icons/variable-ordinal.png</file>
         <file>icons/variable-nominal.png</file>
+        <file>icons/variable-scale-trans.png</file>
+        <file>icons/variable-ordinal-trans.png</file>
+        <file>icons/variable-nominal-trans.png</file>
     </qresource>
 </RCC>

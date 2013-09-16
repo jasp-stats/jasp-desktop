@@ -412,22 +412,6 @@ QTabBar::tab:first:selected {
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>backStage</sender>
-   <signal>dataSetLoaded(DataSet*)</signal>
-   <receiver>MainWidget</receiver>
-   <slot>dataSetLoaded(DataSet*)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
   <slot>tabChanged(int)</slot>

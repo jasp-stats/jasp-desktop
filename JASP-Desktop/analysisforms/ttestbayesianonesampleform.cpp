@@ -7,11 +7,16 @@ TTestBayesianOneSampleForm::TTestBayesianOneSampleForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	_availableFields.setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->listAvailableFields->setModel(&_availableFields);
-	ui->listAvailableFields->addAssignButton(ui->buttonAssign_main_fields);
+	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
-	ui->variables->setAssignButton(ui->buttonAssign_main_fields);
-	ui->variables->setAvailableFieldsListView(ui->listAvailableFields);
+	ListModelVariablesAssigned *variablesModel = new ListModelVariablesAssigned(this);
+	variablesModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	ui->variables->setModel(variablesModel);
+	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
+
+	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 }
 
 TTestBayesianOneSampleForm::~TTestBayesianOneSampleForm()

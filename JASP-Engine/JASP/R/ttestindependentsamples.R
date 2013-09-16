@@ -1,8 +1,8 @@
 
 TTestIndependentSamples <- function(dataset, options, perform="run", callback=NULL) {
 
-	install.packages("car",repos='http://cran.us.r-project.org')
-	library(car)
+	#install.packages("car",repos='http://cran.us.r-project.org')
+	#library(car)
 
 	results <- list()
 	ttest <- list()
@@ -78,7 +78,7 @@ TTestIndependentSamples <- function(dataset, options, perform="run", callback=NU
 
 			variableData <- dataset[[variable]][!na]
 			
-			levene <- leveneTest(variableData, groupingVar, "mean")
+			levene <- car::leveneTest(variableData, groupingVar, "mean")
 			
 			if (levene[1,3] > .05) {
 				LeveneNote <- "Levene's Test suggests variances being equal"

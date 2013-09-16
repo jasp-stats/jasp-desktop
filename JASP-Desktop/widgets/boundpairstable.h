@@ -3,10 +3,9 @@
 
 #include <QTableView>
 #include "bound.h"
-#include "options/optionfieldpairs.h"
-#include "widgets/availablefieldslistview.h"
-#include "widgets/assignbutton.h"
-#include "dataset.h"
+#include "availablefieldslistview.h"
+#include "assignbutton.h"
+#include "tablemodelvariablesassigned.h"
 
 class BoundPairsTable : public QTableView, public Bound
 {
@@ -14,48 +13,28 @@ class BoundPairsTable : public QTableView, public Bound
 public:
 	explicit BoundPairsTable(QWidget *parent = 0);
 
+	virtual void setModel(QAbstractItemModel *model);
 	virtual void bindTo(Option *option) override;
-	
-	void setAvailableFieldsListView(AvailableFieldsListView *listView);
-	void setAssignButton(AssignButton *button);
-	virtual void setDataSet(DataSet *dataSet) override;
 
 protected:
-	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
+	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
+	virtual void startDrag(Qt::DropActions supportedActions) override;
+	virtual void focusInEvent(QFocusEvent *event) override;
 
-private slots:
-	void assign();
+	void resizeEvent(QResizeEvent *e);
+	void moveEvent(QMoveEvent *e);
+
+	void setupKey();
+	void repositionKey();
+
+signals:
+	void selectionUpdated();
+	void focused();
 
 private:
-	AvailableFieldsListView *_availableFieldsListView;
-	AssignButton *_assignButton;
-	OptionFieldPairs *_boundTo;
 
-protected:
-
-	class TableModel : public QAbstractTableModel
-	{
-	public:
-		TableModel(QWidget *parent = 0);
-		void bindTo(OptionFieldPairs *option);
-		int rowCount(const QModelIndex &parent) const override;
-		int columnCount(const QModelIndex &parent) const override;
-		QVariant data(const QModelIndex &index, int role) const override;
-		Qt::ItemFlags flags(const QModelIndex &index) const override;
-		void setDataSet(DataSet *dataSet);
-		//QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-	private:
-		DataSet *_dataSet;
-		OptionFieldPairs *_boundTo;
-		std::vector<std::pair<std::string, std::string> > _value;
-		void pairsChanged();
-
-		QIcon _nominalIcon;
-		QIcon _ordinalIcon;
-		QIcon _scaleIcon;
-	};
-
-	TableModel _model;
+	TableModelVariablesAssigned *_tableModel;
+	QWidget *_variableTypeKey;
 
 };
 
