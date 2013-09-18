@@ -19,7 +19,7 @@ $(document).ready(function() {
         
         	item.frequencies( results )
         }
-        else if (analysis.name === "TTestOneSample" || analysis.name === "TTestBayesianOneSample" || analysis.name == "TTestPairedSamples") {
+        else if (analysis.name === "TTestOneSample" || analysis.name === "TTestBayesianOneSample" || analysis.name === "TTestPairedSamples") {
 
 			var ts = [ results.ttest ]
 			
@@ -40,6 +40,12 @@ $(document).ready(function() {
             item.tables( { tables : ts } )
         }
         else if (analysis.name === "AnovaOneWay") {
+
+            var ts = [ results.anova ]
+
+            item.tables( { tables : ts } )
+        }
+        else if (analysis.name === "Anova") {
 
             var ts = [ results.anova ]
 

@@ -9,7 +9,7 @@ class AnalysisLoader
 {
 public:
 
-	static Analysis *load(int id, string analysisName, Options* options = NULL);
+	static Analysis *load(int id, string analysisName);
 
 };
 

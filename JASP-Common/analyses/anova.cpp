@@ -17,7 +17,7 @@ using namespace Json;
 using namespace analyses;
 
 Anova::Anova(int id)
-	: Analysis(id, "TTestOneSample")
+	: Analysis(id, "Anova")
 {
 }
 
@@ -28,8 +28,7 @@ Options *Anova::createDefaultOptions()
 	options->add(new OptionField("dependent"));
 	options->add(new OptionFields("fixedFactors"));
 	options->add(new OptionFields("randomFactors"));
-
-	options->add(new OptionFields("mainEffects"));
+	options->add(new OptionField("wlsWeights"));
 
 	options->add(new OptionString("model"));
 

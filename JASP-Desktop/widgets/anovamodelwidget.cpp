@@ -5,24 +5,58 @@
 #include <QDebug>
 
 #include "analysisforms/analysisform.h"
+#include "draganddrop.h"
 
 using namespace std;
 
 AnovaModelWidget::AnovaModelWidget(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::AnovaModelWidget),
-	_availableFields(this)
+	ui(new Ui::AnovaModelWidget)
 {
 	ui->setupUi(this);
 
 	_boundTo = NULL;
-	_optionFixedFactors = NULL;
-	_optionRandomFactors = NULL;
+	_listModelAnovaModel = NULL;
 
-	ui->listFactorsAvailable->setModel(&_availableFields);
-	//ui->interactions->setModel(&_interactionsModel);
+	connect(ui->custom, SIGNAL(toggled(bool)), this, SLOT(setCustomModelMode(bool)));
+	setCustomModelMode(false);
 
+	_listModelVariablesAvailable = new ListModelVariablesAvailable(this);
+	_listModelVariablesAvailable->setSupportedDragActions(Qt::CopyAction);
+	_listModelVariablesAvailable->setSupportedDropActions(Qt::MoveAction);
+	_listModelVariablesAvailable->setMimeType("application/vnd.list.term");
+	ui->listFactorsAvailable->setModel(_listModelVariablesAvailable);
 
+	connect(ui->listFactorsAvailable, SIGNAL(selectionUpdated()), this, SLOT(sourceSelectionChanged()));
+
+	ui->buttonAssignCross->setSourceAndTarget(ui->listFactorsAvailable, ui->listModelTerms);
+	ui->buttonAssignMenu->setSourceAndTarget(ui->listFactorsAvailable, ui->listModelTerms);
+
+	_assignInteraction = new QAction("Interaction", this);
+	_assignMainEffects = new QAction("Main Effects", this);
+	_assign2ways = new QAction("All 2 way", this);
+	_assign3ways = new QAction("All 3 way", this);
+	_assign4ways = new QAction("All 4 way", this);
+	_assign5ways = new QAction("All 5 way", this);
+
+	connect(_assignInteraction, SIGNAL(triggered()), this, SLOT(assignInteraction()));
+	connect(_assignMainEffects, SIGNAL(triggered()), this, SLOT(assignMainEffects()));
+	connect(_assign2ways, SIGNAL(triggered()), this, SLOT(assign2ways()));
+	connect(_assign3ways, SIGNAL(triggered()), this, SLOT(assign3ways()));
+	connect(_assign4ways, SIGNAL(triggered()), this, SLOT(assign4ways()));
+	connect(_assign5ways, SIGNAL(triggered()), this, SLOT(assign5ways()));
+
+	QList<QAction *> actions;
+	actions.append(_assignInteraction);
+	actions.append(_assignMainEffects);
+	actions.append(_assign2ways);
+	actions.append(_assign3ways);
+	actions.append(_assign4ways);
+	actions.append(_assign5ways);
+
+	QMenu *menu = new QMenu(ui->buttonAssignMenu);
+	menu->addActions(actions);
+	ui->buttonAssignMenu->setMenu(menu);
 }
 
 AnovaModelWidget::~AnovaModelWidget()
@@ -33,54 +67,78 @@ AnovaModelWidget::~AnovaModelWidget()
 void AnovaModelWidget::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionString *>(option);
+
+	if (_listModelAnovaModel != NULL && _boundTo != NULL)
+		_listModelAnovaModel->bindTo(_boundTo);
 }
 
-void AnovaModelWidget::bindTo(Option *option, int item)
+void AnovaModelWidget::setModel(ListModelAnovaModel *model)
 {
-	if (item == FIXED_FACTORS)
-	{
-		_optionFixedFactors = dynamic_cast<OptionFields *>(option);
-		if (_optionFixedFactors != NULL)
-			_optionFixedFactors->changed.connect(boost::bind(&AnovaModelWidget::optionChangedHandler, this, _1));
-		else
-			qDebug() << "Option* could not be cast to OptionFields* : bindTo(Option*, int)";
-	}
-	else if (item == RANDOM_FACTORS)
-	{
-		_optionRandomFactors = dynamic_cast<OptionFields *>(option);
-		if (_optionRandomFactors != NULL)
-			_optionRandomFactors->changed.connect(boost::bind(&AnovaModelWidget::optionChangedHandler, this, _1));
-		else
-			qDebug() << "Option* could not be cast to OptionFields* : bindTo(Option*, int)";
-	}
-	else if (item == MAIN_EFFECTS)
-	{
-		ui->mainEffects->bindTo(option);
-	}
+	_listModelAnovaModel = model;
+
+	if (_boundTo != NULL)
+		_listModelAnovaModel->bindTo(_boundTo);
+
+	_listModelAnovaModel->setCustomModelMode(_customModel);
+
+	ui->listModelTerms->setModel(model);
+
+	variablesAvailableChanged();
+	connect(_listModelAnovaModel, SIGNAL(variablesAvailableChanged()), this, SLOT(variablesAvailableChanged()));
 }
 
-void AnovaModelWidget::setDataSet(DataSet *dataSet)
+void AnovaModelWidget::setCustomModelMode(bool customModel)
 {
-	_availableFields.setDataSet(dataSet);
-	_availableFields.filter(vector<string>());
-
-	ui->mainEffects->setDataSet(dataSet);
-	ui->interactions->setDataSet(dataSet);
+	_customModel = customModel;
+	if (_listModelAnovaModel != NULL)
+		_listModelAnovaModel->setCustomModelMode(customModel);
+	ui->modelBuilder->setEnabled(customModel);
 }
 
-void AnovaModelWidget::optionChangedHandler(Option *option)
+void AnovaModelWidget::variablesAvailableChanged()
 {
-	if (option == _optionFixedFactors || option == _optionRandomFactors)
-	{
-		vector<string> factors;
+	const QList<ColumnInfo> &variables = _listModelAnovaModel->variables();
+	_listModelVariablesAvailable->setVariables(variables);
+}
 
-		BOOST_FOREACH(string factor, _optionFixedFactors->value())
-			factors.push_back(factor);
+void AnovaModelWidget::sourceSelectionChanged()
+{
+	int selectedCount = ui->listFactorsAvailable->selectionModel()->selectedIndexes().size();
 
-		BOOST_FOREACH(string factor, _optionRandomFactors->value())
-			factors.push_back(factor);
+	_assignInteraction->setEnabled(selectedCount >= 2);
+	_assignMainEffects->setEnabled(selectedCount >= 1);
+	_assign2ways->setEnabled(selectedCount >= 2);
+	_assign3ways->setEnabled(selectedCount >= 3);
+	_assign4ways->setEnabled(selectedCount >= 4);
+	_assign5ways->setEnabled(selectedCount >= 5);
+}
 
-		_availableFields.filter(factors);
-	}
+void AnovaModelWidget::assignInteraction()
+{
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::Interaction);
+}
 
+void AnovaModelWidget::assignMainEffects()
+{
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::MainEffects);
+}
+
+void AnovaModelWidget::assign2ways()
+{
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::All2Way);
+}
+
+void AnovaModelWidget::assign3ways()
+{
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::All3Way);
+}
+
+void AnovaModelWidget::assign4ways()
+{
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::All4Way);
+}
+
+void AnovaModelWidget::assign5ways()
+{
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::All5Way);
 }

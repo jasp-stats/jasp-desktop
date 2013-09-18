@@ -15,6 +15,12 @@ public:
 	void setVariables(const QList<ColumnInfo> &variables);
 	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 	bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+	virtual QStringList mimeTypes() const override;
+
+	const QList<ColumnInfo> &allVariables() const;
+
+signals:
+	void variablesChanged();
 
 public slots:
 	void sendBack(QList<ColumnInfo> &variables);

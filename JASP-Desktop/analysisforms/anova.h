@@ -3,6 +3,9 @@
 
 #include "analysisform.h"
 
+#include "widgets/listmodelvariablesassigned.h"
+#include "widgets/listmodelanovamodel.h"
+
 namespace Ui {
 class ANOVA;
 }
@@ -17,8 +20,22 @@ public:
 
 	virtual void set(Options *options, DataSet *dataSet) override;
 	
+private slots:
+	void factorsChanged();
+	void dependentChanged();
+
 private:
 	Ui::ANOVA *ui;
+
+	ListModelVariablesAssigned *_dependentListModel;
+	ListModelVariablesAssigned *_fixedFactorsListModel;
+	ListModelVariablesAssigned *_randomFactorsListModel;
+	ListModelVariablesAssigned *_wlsWeightsListModel;
+
+	ListModelAnovaModel *_anovaModel;
+
+	ListModelVariablesAvailable *_factorsAvailableListModel;
+
 };
 
 #endif // ANOVA_H
