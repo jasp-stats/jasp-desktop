@@ -10,29 +10,36 @@ ListModelVariablesAvailable::ListModelVariablesAvailable(QObject *parent)
 }
 
 void ListModelVariablesAvailable::setVariables(const QList<ColumnInfo> &variables)
-{
+{	
+	beginResetModel();
+
 	if (variableTypesAllowed() == (Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeScale))
 	{
 		_variables = variables;
 		_allVariables = variables;
-		return;
 	}
-
-	QList<ColumnInfo> allowed;
-	QList<ColumnInfo> forbidden;
-
-	foreach (ColumnInfo info, variables)
+	else
 	{
-		if (isForbidden(info.second))
-			forbidden.append(info);
-		else
-			allowed.append(info);
+		QList<ColumnInfo> allowed;
+		QList<ColumnInfo> forbidden;
+
+		foreach (ColumnInfo info, variables)
+		{
+			if (isForbidden(info.second))
+				forbidden.append(info);
+			else
+				allowed.append(info);
+		}
+
+		allowed.append(forbidden);
+
+		_allVariables = allowed;
+		_variables = allowed;
 	}
 
-	allowed.append(forbidden);
+	endResetModel();
 
-	_allVariables = allowed;
-	_variables = allowed;
+	emit variablesChanged();
 }
 
 bool ListModelVariablesAvailable::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
@@ -63,6 +70,16 @@ bool ListModelVariablesAvailable::canDropMimeData(const QMimeData *data, Qt::Dro
 	return ListModelVariables::canDropMimeData(data, action, row, column, parent);
 }
 
+QStringList ListModelVariablesAvailable::mimeTypes() const
+{
+	return ListModelVariables::mimeTypes();
+}
+
+const QList<ColumnInfo> &ListModelVariablesAvailable::allVariables() const
+{
+	return _allVariables;
+}
+
 void ListModelVariablesAvailable::sendBack(QList<ColumnInfo> &variables)
 {
 	int insertionPoint = _variables.length();
@@ -71,7 +88,6 @@ void ListModelVariablesAvailable::sendBack(QList<ColumnInfo> &variables)
 		_variables[insertionPoint + i] = variables.at(i);
 
 	resort();
-	//emit dataChanged(index(insertionPoint, 0), index(insertionPoint + variables.length(), 0));
 }
 
 void ListModelVariablesAvailable::resort()

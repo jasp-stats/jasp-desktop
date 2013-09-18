@@ -74,7 +74,22 @@ bool ListModelVariablesAssigned::dropMimeData(const QMimeData *data, Qt::DropAct
 			removeRows(0, 1, QModelIndex());
 		}
 
-		return ListModelVariables::dropMimeData(data, action, row, column, parent);
+		if (ListModelVariables::dropMimeData(data, action, row, column, parent))
+		{
+			emit assignmentsChanged();
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool ListModelVariablesAssigned::removeRows(int row, int count, const QModelIndex &parent)
+{
+	if (ListModelVariables::removeRows(row, count, parent))
+	{
+		emit assignmentsChanged();
+		return true;
 	}
 
 	return false;
@@ -83,6 +98,13 @@ bool ListModelVariablesAssigned::dropMimeData(const QMimeData *data, Qt::DropAct
 void ListModelVariablesAssigned::setSource(ListModelVariablesAvailable *source)
 {
 	_source = source;
+
+	connect(source, SIGNAL(variablesChanged()), this, SLOT(sourceVariablesChanged()));
+}
+
+const QList<ColumnInfo> &ListModelVariablesAssigned::assigned() const
+{
+	return _variables;
 }
 
 void ListModelVariablesAssigned::assignToBoundOption()
@@ -105,4 +127,30 @@ void ListModelVariablesAssigned::eject()
 
 	_source->sendBack(_toEject);
 	_toEject.clear();
+}
+
+void ListModelVariablesAssigned::sourceVariablesChanged()
+{
+	const QList<ColumnInfo> &variables = _source->allVariables();
+
+	bool variableRemoved = false;
+
+	foreach (ColumnInfo variable, _variables)
+	{
+		if ( ! variables.contains(variable))
+		{
+			if ( ! variableRemoved)
+				beginResetModel();
+
+			_variables.removeOne(variable);
+			variableRemoved = true;
+		}
+	}
+
+	if (variableRemoved)
+	{
+		assignToBoundOption();
+		endResetModel();
+	}
+
 }

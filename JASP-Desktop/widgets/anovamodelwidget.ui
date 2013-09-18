@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>439</height>
+    <height>375</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,51 +30,6 @@
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <widget class="QWidget" name="widget" native="true">
-     <layout class="QGridLayout" name="gridLayout_2">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>6</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Dependent</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>~</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label_3">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="0">
     <widget class="QWidget" name="widget_13" native="true">
      <layout class="QGridLayout" name="gridLayout_10">
       <property name="leftMargin">
@@ -100,24 +55,33 @@
        </spacer>
       </item>
       <item row="0" column="1">
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="custom">
         <property name="text">
          <string>Custom</string>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="fullFactorial">
         <property name="text">
          <string>Full factorial</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QWidget" name="widget_11" native="true">
+   <item row="1" column="0">
+    <widget class="QWidget" name="modelBuilder" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <property name="leftMargin">
        <number>0</number>
@@ -178,7 +142,7 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="0" column="1" rowspan="2">
        <widget class="QWidget" name="widget_14" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
          <property name="leftMargin">
@@ -190,6 +154,9 @@
          <property name="rightMargin">
           <number>0</number>
          </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <property name="verticalSpacing">
           <number>3</number>
          </property>
@@ -199,15 +166,34 @@
          <item row="0" column="2">
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Main Effects</string>
+            <string>Model Terms</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="2" rowspan="3">
-          <widget class="BoundListView" name="mainEffects"/>
+         <item row="1" column="2" rowspan="4">
+          <widget class="ListView" name="listModelTerms">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>1</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="dragEnabled">
+            <bool>true</bool>
+           </property>
+           <property name="dragDropMode">
+            <enum>QAbstractItemView::DragDrop</enum>
+           </property>
+           <property name="defaultDropAction">
+            <enum>Qt::CopyAction</enum>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::ExtendedSelection</enum>
+           </property>
+          </widget>
          </item>
          <item row="1" column="1">
-          <widget class="AssignButton" name="buttonAssignMainEffects">
+          <widget class="AssignButton" name="buttonAssignCross">
            <property name="maximumSize">
             <size>
              <width>50</width>
@@ -219,7 +205,7 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="1" rowspan="2">
+         <item row="3" column="1" rowspan="2">
           <spacer name="verticalSpacer_4">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -232,42 +218,8 @@
            </property>
           </spacer>
          </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QWidget" name="widget_15" native="true">
-        <layout class="QGridLayout" name="gridLayout_6">
-         <property name="leftMargin">
-          <number>12</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <property name="verticalSpacing">
-          <number>3</number>
-         </property>
-         <item row="0" column="1">
-          <widget class="QWidget" name="widget_17" native="true"/>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>Interactions</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2" rowspan="3">
-          <widget class="BoundListView" name="interactions"/>
-         </item>
-         <item row="1" column="1">
-          <widget class="AssignButton" name="buttonAssignInteractions">
+         <item row="2" column="1">
+          <widget class="AssignButtonMenu" name="buttonAssignMenu">
            <property name="maximumSize">
             <size>
              <width>50</width>
@@ -278,19 +230,6 @@
             <string/>
            </property>
           </widget>
-         </item>
-         <item row="2" column="1" rowspan="2">
-          <spacer name="verticalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>35</width>
-             <height>60</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>
@@ -312,9 +251,14 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
+   <class>AssignButtonMenu</class>
+   <extends>QPushButton</extends>
+   <header>widgets/assignbuttonmenu.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ListView</class>
    <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
+   <header>widgets/listview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

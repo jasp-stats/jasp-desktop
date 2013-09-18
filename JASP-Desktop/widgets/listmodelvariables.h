@@ -45,6 +45,8 @@ public:
 
 	void setDefaultTarget(QAbstractItemView *defaultTarget);
 
+	void setMimeType(const QString &mimeType);
+
 protected:
 
 	QList<ColumnInfo> _variables;
@@ -65,6 +67,8 @@ private:
 	QIcon _nominalIcon;
 	QIcon _ordinalIcon;
 	QIcon _scaleIcon;
+
+	QString _mimeType;
 	
 };
 

@@ -26,7 +26,7 @@ windows:LIBS += -lole32 -loleaut32
 
 SOURCES += main.cpp\
 	mainwindow.cpp \
-    datasettablemodel.cpp \
+	datasettablemodel.cpp \
     backstageform.cpp \
     enginesync.cpp \
     mainwidget.cpp \
@@ -63,7 +63,9 @@ SOURCES += main.cpp\
     widgets/listmodelvariablesassigned.cpp \
     widgets/listview.cpp \
     widgets/tablemodelvariablesassigned.cpp \
-    widgets/draganddrop.cpp
+    widgets/draganddrop.cpp \
+    widgets/listmodelanovamodel.cpp \
+    widgets/assignbuttonmenu.cpp
 
 HEADERS  += mainwindow.h \
     datasettablemodel.h \
@@ -71,7 +73,6 @@ HEADERS  += mainwindow.h \
     enginesync.h \
     mainwidget.h \
     availablefields.h \
-    assignbutton.h \
     tableview.h \
     ribbonanalysis.h \
     ribbonhome.h \
@@ -100,14 +101,16 @@ HEADERS  += mainwindow.h \
     widgets/progresswidget.h \
     widgets/anovamodelwidget.h \
     bound.h \
-    boundmulti.h \
     widgets/boundmodel.h \
     widgets/listmodelvariablesavailable.h \
     widgets/listmodelvariables.h \
     widgets/listmodelvariablesassigned.h \
     widgets/listview.h \
     widgets/tablemodelvariablesassigned.h \
-    widgets/draganddrop.h
+    widgets/draganddrop.h \
+    widgets/listmodelanovamodel.h \
+    widgets/assignbuttonmenu.h \
+    widgets/enhanceddroptarget.h
 
 FORMS    += mainwindow.ui \
     backstageform.ui \

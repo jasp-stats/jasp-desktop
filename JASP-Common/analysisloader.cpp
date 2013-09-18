@@ -11,7 +11,7 @@
 
 #include "analysispart.h"
 
-Analysis *AnalysisLoader::load(int id, string analysisName, Options *options)
+Analysis *AnalysisLoader::load(int id, string analysisName)
 {
 
 	if (analysisName == "Descriptives")

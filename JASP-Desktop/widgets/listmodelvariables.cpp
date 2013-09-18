@@ -19,6 +19,8 @@ ListModelVariables::ListModelVariables(QObject *parent) :
 	_dragActions = Qt::MoveAction;
 
 	_defaultTarget = NULL;
+
+	_mimeType = "application/vnd.list.variable";
 }
 
 void ListModelVariables::setVariableTypesAllowed(int variableTypesAllowed)
@@ -109,7 +111,7 @@ QStringList ListModelVariables::mimeTypes() const
 {
 	QStringList types;
 
-	types << "application/vnd.list.variable";
+	types << _mimeType;
 
 	return types;
 }
@@ -135,7 +137,7 @@ QMimeData *ListModelVariables::mimeData(const QModelIndexList &indexes) const
 	ListModelVariables* th1s = (ListModelVariables*) this;
 	th1s->_mimeData = mimeData;
 
-	mimeData->setData("application/vnd.list.variable", encodedData);
+	mimeData->setData(_mimeType, encodedData);
 
 	return mimeData;
 }
@@ -151,9 +153,9 @@ bool ListModelVariables::dropMimeData(const QMimeData *data, Qt::DropAction acti
 	if (action == Qt::IgnoreAction)
 		return true;
 
-	if (mimeTypes().contains("application/vnd.list.variable"))
+	if (data->hasFormat(_mimeType))
 	{
-		QByteArray encodedData = data->data("application/vnd.list.variable");
+		QByteArray encodedData = data->data(_mimeType);
 		QDataStream stream(&encodedData, QIODevice::ReadOnly);
 		QList<ColumnInfo> newItems;
 		int rows = 0;
@@ -168,9 +170,16 @@ bool ListModelVariables::dropMimeData(const QMimeData *data, Qt::DropAction acti
 		{
 			ColumnInfo variable;
 			stream >> variable;
+
+			if (_variables.contains(variable))
+				continue;
+
 			newItems << variable;
 			++rows;
 		}
+
+		if (rows == 0)
+			return false;
 
 		int beginRow;
 
@@ -211,9 +220,9 @@ bool ListModelVariables::canDropMimeData(const QMimeData *data, Qt::DropAction a
 	if (_dragActions == Qt::CopyAction && _dropActions == Qt::MoveAction && action == Qt::MoveAction) // if delete
 		return true;
 
-	if (mimeTypes().contains("application/vnd.list.variable"))
+	if (data->hasFormat(_mimeType))
 	{
-		QByteArray encodedData = data->data("application/vnd.list.variable");
+		QByteArray encodedData = data->data(_mimeType);
 		QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
 		if (stream.atEnd()) // is empty
@@ -222,10 +231,7 @@ bool ListModelVariables::canDropMimeData(const QMimeData *data, Qt::DropAction a
 		int count;
 		stream >> count;
 
-		if (count == 0)
-			return false;
-
-		do
+		while (!stream.atEnd())
 		{
 			ColumnInfo variable;
 			stream >> variable;
@@ -233,7 +239,6 @@ bool ListModelVariables::canDropMimeData(const QMimeData *data, Qt::DropAction a
 			if (isForbidden(variable.second))
 				return false;
 		}
-		while (!stream.atEnd());
 
 		return true;
 	}
@@ -251,6 +256,11 @@ void ListModelVariables::setSupportedDropActions(Qt::DropActions actions)
 void ListModelVariables::setSupportedDragActions(Qt::DropActions actions)
 {
 	_dragActions = actions;
+}
+
+void ListModelVariables::setMimeType(const QString &mimeType)
+{
+	_mimeType = mimeType;
 }
 
 bool ListModelVariables::isForbidden(int variableType) const

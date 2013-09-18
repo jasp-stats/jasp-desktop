@@ -12,23 +12,36 @@ Anova::Anova(QWidget *parent) :
 
 	ui->listAvailableFields->setModel(&_availableFields);
 
-	ListModelVariablesAssigned *dependentListModel = new ListModelVariablesAssigned(this);
-	dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
-	dependentListModel->setSource(&_availableFields);
-	ui->dependent->setModel(dependentListModel);
+	_dependentListModel = new ListModelVariablesAssigned(this);
+	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	_dependentListModel->setSource(&_availableFields);
+	ui->dependent->setModel(_dependentListModel);
 
-	ListModelVariablesAssigned *fixedFactorsListModel = new ListModelVariablesAssigned(this);
-	fixedFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->fixedFactors->setModel(fixedFactorsListModel);
+	_fixedFactorsListModel = new ListModelVariablesAssigned(this);
+	_fixedFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	ui->fixedFactors->setModel(_fixedFactorsListModel);
 
-	ListModelVariablesAssigned *randomFactorsListModel = new ListModelVariablesAssigned(this);
-	randomFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->randomFactors->setModel(randomFactorsListModel);
+	_randomFactorsListModel = new ListModelVariablesAssigned(this);
+	_randomFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	ui->randomFactors->setModel(_randomFactorsListModel);
+
+	_wlsWeightsListModel = new ListModelVariablesAssigned(this);
+	_wlsWeightsListModel->setVariableTypesAllowed(Column::ColumnTypeScale);
+	_wlsWeightsListModel->setSource(&_availableFields);
+	ui->wlsWeights->setModel(_wlsWeightsListModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->fixedFactors);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->randomFactors);
+	ui->buttonAssignWLSWeights->setSourceAndTarget(ui->listAvailableFields, ui->wlsWeights);
 
+	connect(_dependentListModel, SIGNAL(assignmentsChanged()), this, SLOT(dependentChanged()));
+	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+
+	_anovaModel = new ListModelAnovaModel(this);
+	ui->model->setModel(_anovaModel);
+	ui->model->hide();
 }
 
 Anova::~Anova()
@@ -39,10 +52,23 @@ Anova::~Anova()
 void Anova::set(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::set(options, dataSet);
+}
 
-	ui->anovaModel->bindTo(options->get("fixedFactors"), AnovaModelWidget::FIXED_FACTORS);
-	ui->anovaModel->bindTo(options->get("randomFactors"), AnovaModelWidget::RANDOM_FACTORS);
-	ui->anovaModel->bindTo(options->get("mainEffects"), AnovaModelWidget::MAIN_EFFECTS);
+void Anova::factorsChanged()
+{
+	QList<ColumnInfo> factorsAvailable;
 
-	ui->anovaModel->setDataSet(dataSet);
+	factorsAvailable.append(_fixedFactorsListModel->assigned());
+	factorsAvailable.append(_randomFactorsListModel->assigned());
+
+	_anovaModel->setVariables(factorsAvailable);
+}
+
+void Anova::dependentChanged()
+{
+	const QList<ColumnInfo> &assigned = _dependentListModel->assigned();
+	if (assigned.length() == 0)
+		_anovaModel->setDependent(ColumnInfo("", 0));
+	else
+		_anovaModel->setDependent(assigned.last());
 }

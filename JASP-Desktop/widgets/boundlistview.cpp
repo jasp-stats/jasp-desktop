@@ -23,6 +23,7 @@ BoundListView::BoundListView(QWidget *parent)
 	_variablesListModel = NULL;
 
 	setEditTriggers(QListView::NoEditTriggers);
+	setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 	this->setDragEnabled(true);
 	this->viewport()->setAcceptDrops(true);

@@ -5,18 +5,19 @@
 #include <QStringListModel>
 
 #include "bound.h"
-#include "boundmulti.h"
 
 #include "options/optionstring.h"
 #include "options/optionfields.h"
 #include "availablefields.h"
 
+#include "listmodelvariablesavailable.h"
+#include "listmodelanovamodel.h"
 
 namespace Ui {
 class AnovaModelWidget;
 }
 
-class AnovaModelWidget : public QWidget, public Bound, public BoundMulti
+class AnovaModelWidget : public QWidget, public Bound
 {
 	Q_OBJECT
 	
@@ -25,26 +26,43 @@ public:
 	~AnovaModelWidget();
 
 	virtual void bindTo(Option *option) override;
-	virtual void bindTo(Option *option, int item) override;
-	virtual void setDataSet(DataSet *dataSet) override;
 
-	enum BindTo { FIXED_FACTORS, RANDOM_FACTORS, MAIN_EFFECTS, INTERACTIONS };
+	virtual void setModel(ListModelAnovaModel *model);
+
+	void setDependent(const QString dependent);
 	
+private slots:
+
+	void setCustomModelMode(bool customModel);
+
+	void variablesAvailableChanged();
+	void sourceSelectionChanged();
+
+	void assignInteraction();
+	void assignMainEffects();
+	void assign2ways();
+	void assign3ways();
+	void assign4ways();
+	void assign5ways();
+
 private:
 
-	void optionChangedHandler(Option *option);
+	bool _customModel;
+
+	QAction *_assignInteraction;
+	QAction *_assignMainEffects;
+	QAction *_assign2ways;
+	QAction *_assign3ways;
+	QAction *_assign4ways;
+	QAction *_assign5ways;
 
 	Ui::AnovaModelWidget *ui;
 
 	OptionString *_boundTo;
 
-	AvailableFields _availableFields;
+	ListModelVariablesAvailable *_listModelVariablesAvailable;
+	ListModelAnovaModel *_listModelAnovaModel;
 
-	OptionFields *_optionFixedFactors;
-	OptionFields *_optionRandomFactors;
-
-	QStringListModel _mainEffectsModel;
-	QStringListModel _interactionsModel;
 };
 
 #endif // ANOVAMODELWIDGET_H
