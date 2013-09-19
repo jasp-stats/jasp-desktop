@@ -1,6 +1,9 @@
 
 .clean <- function(value) {
 
+	if (is.null(value))
+		return ("")
+
 	if (is.finite(value))
 		return(value)
 
