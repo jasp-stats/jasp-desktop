@@ -39,7 +39,16 @@ private:
 	AsyncLoader _loader;
 	ProgressWidget *_alert;
 
+	bool _inited;
+
+	AnalysisForm* loadForm(Analysis *analysis);
+	void showForm(Analysis *analysis);
+
+signals:
+	void analysisSelected(int id);
+
 private slots:
+	void analysisSelectedHandler(int id);
     void tabChanged(int index);
 	void dataSetSelected(const QString &filename);
 	void dataSetLoaded(DataSet *dataSet);

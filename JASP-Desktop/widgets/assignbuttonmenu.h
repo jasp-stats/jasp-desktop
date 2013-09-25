@@ -13,11 +13,11 @@ class AssignButtonMenu : public QPushButton
 public:
 	AssignButtonMenu(QWidget *parent = 0);
 
-	void setSourceAndTarget(ListView *source, ListView *target);
+	void setSourceAndTarget(DropTarget *source, DropTarget *target);
 
 protected:
-	ListView *_source;
-	QAbstractItemView *_target;
+	DropTarget *_source;
+	DropTarget *_target;
 
 private:
 	bool _assignDirection;

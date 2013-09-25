@@ -6,28 +6,48 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>705</width>
+    <width>608</width>
     <height>496</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_9">
+  <layout class="QGridLayout" name="gridLayout_7">
    <item row="0" column="0">
-    <widget class="AvailableFieldsListView" name="availableFields"/>
+    <widget class="AvailableFieldsListView" name="availableFields">
+     <property name="maximumSize">
+      <size>
+       <width>210</width>
+       <height>16777215</height>
+      </size>
+     </property>
+    </widget>
    </item>
    <item row="0" column="1">
     <widget class="AssignButton" name="assignButton">
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="text">
       <string/>
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
-    <widget class="BoundPairsTable" name="pairs"/>
+   <item row="0" column="2" colspan="2">
+    <widget class="BoundPairsTable" name="pairs">
+     <property name="maximumSize">
+      <size>
+       <width>210</width>
+       <height>16777215</height>
+      </size>
+     </property>
+    </widget>
    </item>
-   <item row="0" column="3" rowspan="2">
+   <item row="0" column="4" rowspan="2">
     <widget class="QWidget" name="widget" native="true">
      <property name="minimumSize">
       <size>
@@ -37,9 +57,12 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" rowspan="2" colspan="2">
+   <item row="1" column="0" rowspan="2" colspan="3">
     <widget class="QWidget" name="widget_3" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
       <item row="0" column="0">
        <widget class="QGroupBox" name="groupBox_8">
         <property name="title">
@@ -141,6 +164,12 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>50</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>50</width>
@@ -176,7 +205,7 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="2">
+   <item row="2" column="3" colspan="2">
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -189,7 +218,7 @@
      </property>
     </spacer>
    </item>
-   <item row="3" column="0">
+   <item row="3" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox_9">
      <property name="title">
       <string>Missing values</string>
@@ -243,9 +272,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BoundPairsTable</class>
-   <extends>QTableView</extends>
-   <header>widgets/boundpairstable.h</header>
+   <class>AssignButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/assignbutton.h</header>
   </customwidget>
   <customwidget>
    <class>AvailableFieldsListView</class>
@@ -253,9 +282,9 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>AssignButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/assignbutton.h</header>
+   <class>BoundPairsTable</class>
+   <extends>QTableView</extends>
+   <header>widgets/boundpairstable.h</header>
   </customwidget>
   <customwidget>
    <class>BoundCheckBox</class>

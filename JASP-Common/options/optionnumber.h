@@ -2,6 +2,7 @@
 #define OPTIONNUMBER_H
 
 #include "optioni.h"
+#include "common.h"
 
 #include <climits>
 #include <string>
@@ -9,19 +10,22 @@
 class OptionNumber : public OptionI<double>
 {
 public:
-	OptionNumber(std::string name, double value, double min = -999999, double max = 999999, int dp = 2);
+	OptionNumber(std::string name, double value, double min = -999999, double max = 999999, std::string format = "");
 
-	virtual Json::Value asJSON() const;// override;
-	virtual void set(Json::Value& value);// override;
+	virtual Json::Value asJSON() const OVERRIDE;
+	virtual void set(Json::Value& value) OVERRIDE;
+	virtual void setValue(double value) OVERRIDE;
+	virtual double value() const OVERRIDE;
 
 	double min();
 	double max();
-	int dp();
+
+	std::string format();
 
 protected:
 	double _min;
 	double _max;
-	int _dp;
+	std::string _format;
 };
 
 #endif // OPTIONNUMBER_H

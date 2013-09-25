@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TTestOneSample</class>
- <widget class="QWidget" name="TTestOneSample">
+ <class>TTestOneSampleForm</class>
+ <widget class="QWidget" name="TTestOneSampleForm">
   <property name="geometry">
    <rect>
     <x>0</x>

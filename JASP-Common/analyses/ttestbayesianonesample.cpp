@@ -10,7 +10,6 @@
 #include "options/optionlist.h"
 #include "options/optionnumber.h"
 
-using namespace std;
 using namespace analyses;
 
 TTestBayesianOneSample::TTestBayesianOneSample(int id)
@@ -28,7 +27,7 @@ Options *TTestBayesianOneSample::createDefaultOptions()
 
 	options->add(new OptionBoolean("meanDifference"));
 	options->add(new OptionBoolean("confidenceInterval"));
-	options->add(new OptionNumber("confidenceIntervalInterval", .95, 0, 1, 3));
+	options->add(new OptionNumber("confidenceIntervalInterval", .95, 0, 1, "%"));
 	options->add(new OptionBoolean("descriptives"));
 
 	options->add(new OptionList("missingValues", "excludeAnalysisByAnalysis"));

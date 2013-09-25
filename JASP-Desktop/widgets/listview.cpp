@@ -12,7 +12,7 @@ ListView::ListView(QWidget *parent) :
 	connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(doubleClickedHandler(QModelIndex)));
 }
 
-void ListView::setDoubleClickTarget(QAbstractItemView *target)
+void ListView::setDoubleClickTarget(DropTarget *target)
 {
 	_defaultDropTarget = target;
 }
@@ -20,13 +20,13 @@ void ListView::setDoubleClickTarget(QAbstractItemView *target)
 void ListView::focusInEvent(QFocusEvent *event)
 {
 	QListView::focusInEvent(event);
-	emit focused();
+	focused();
 }
 
 void ListView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
 	QListView::selectionChanged(selected, deselected);
-	emit selectionUpdated();
+	selectionUpdated();
 }
 
 void ListView::doubleClickedHandler(const QModelIndex index)

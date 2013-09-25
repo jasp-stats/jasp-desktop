@@ -19,6 +19,8 @@ public:
 
 	const QList<ColumnInfo> &allVariables() const;
 
+	void notifyAlreadyAssigned(const QList<ColumnInfo> &variables);
+
 signals:
 	void variablesChanged();
 

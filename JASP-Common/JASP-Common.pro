@@ -36,7 +36,6 @@ SOURCES += \
     options/optionboolean.cpp \
     options/optionfield.cpp \
     options/optionfields.cpp \
-    options/optioni.cpp \
     options/optionintegerarray.cpp \
     options/optioninteger.cpp \
     options/optionlist.cpp \
@@ -51,7 +50,9 @@ SOURCES += \
     analyses/anovabayesian.cpp \
     analyses/ttestbayesianonesample.cpp \
     options/optionfieldpairs.cpp \
-    options/optionstring.cpp
+    options/optionstring.cpp \
+    analyses/ancova.cpp \
+    analyses/ancovamultivariate.cpp
 
 HEADERS +=\
     options.h \
@@ -96,7 +97,9 @@ HEADERS +=\
     analyses/ttestbayesianonesample.h \
     options/optionfieldpairs.h \
     common.h \
-    options/optionstring.h
+    options/optionstring.h \
+    analyses/ancova.h \
+    analyses/ancovamultivariate.h
 
 unix:!symbian {
     maemo5 {

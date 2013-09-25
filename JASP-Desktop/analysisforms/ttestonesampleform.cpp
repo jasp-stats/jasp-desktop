@@ -1,12 +1,12 @@
-#include "ttestonesample.h"
-#include "ui_ttestonesample.h"
+#include "ttestonesampleform.h"
+#include "ui_ttestonesampleform.h"
 
 #include "analysisform.h"
 #include "widgets/listmodelvariablesassigned.h"
 
-TTestOneSample::TTestOneSample(QWidget *parent) :
+TTestOneSampleForm::TTestOneSampleForm(QWidget *parent) :
 	AnalysisForm(parent),
-	ui(new Ui::TTestOneSample)
+	ui(new Ui::TTestOneSampleForm)
 {
 	ui->setupUi(this);
 
@@ -15,6 +15,7 @@ TTestOneSample::TTestOneSample(QWidget *parent) :
 	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
 	ListModelVariablesAssigned *variablesModel = new ListModelVariablesAssigned(this);
+	variablesModel->setSource(&_availableFields);
 	variablesModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
@@ -22,7 +23,7 @@ TTestOneSample::TTestOneSample(QWidget *parent) :
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 }
 
-TTestOneSample::~TTestOneSample()
+TTestOneSampleForm::~TTestOneSampleForm()
 {
 	delete ui;
 }

@@ -1,4 +1,4 @@
-#include "tableview.h"
+#include "maintableview.h"
 
 #include <QLabel>
 #include <QGridLayout>
@@ -6,7 +6,7 @@
 
 #include "datasettablemodel.h"
 
-TableView::TableView(QWidget *parent) :
+MainTableView::MainTableView(QWidget *parent) :
 	QTableView(parent)
 {
 	_infoPopup = new InfoPopup(this);
@@ -18,7 +18,7 @@ TableView::TableView(QWidget *parent) :
 	_infoPopup->layout()->addWidget(label);
 }
 
-void TableView::setModel(QAbstractItemModel *model)
+void MainTableView::setModel(QAbstractItemModel *model)
 {
 	DataSetTableModel *dataSetModel = dynamic_cast<DataSetTableModel *>(model);
 
@@ -28,14 +28,14 @@ void TableView::setModel(QAbstractItemModel *model)
 	QTableView::setModel(model);
 }
 
-void TableView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+void MainTableView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
 	hideInfoPopup();
 
 	QTableView::selectionChanged(selected, deselected);
 }
 
-void TableView::verticalScrollbarValueChanged(int value)
+void MainTableView::verticalScrollbarValueChanged(int value)
 {
 	if (_infoPopupVisible)
 	{
@@ -43,19 +43,19 @@ void TableView::verticalScrollbarValueChanged(int value)
 	}
 }
 
-void TableView::badDataEnteredHandler(QModelIndex index)
+void MainTableView::badDataEnteredHandler(QModelIndex index)
 {
 	showInfoPopup(index);
 }
 
-void TableView::showInfoPopup(QModelIndex &index)
+void MainTableView::showInfoPopup(QModelIndex &index)
 {
 	_infoPopupIndex = index;
 	_infoPopupVisible = true;
 	moveInfoPopup();
 }
 
-void TableView::moveInfoPopup()
+void MainTableView::moveInfoPopup()
 {
 	/*int headerWidth = this->verticalHeader()->width();
 	int headerHeight = this->horizontalHeader()->height();
@@ -100,7 +100,7 @@ void TableView::moveInfoPopup()
 	}
 }
 
-void TableView::hideInfoPopup()
+void MainTableView::hideInfoPopup()
 {
 	if (_infoPopupVisible)
 	{

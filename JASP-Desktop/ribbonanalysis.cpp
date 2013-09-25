@@ -25,8 +25,9 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addSeparator();
 	menu->addAction(QString("One Way ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaOneWay");
 	menu->addAction(QString("ANOVA"), this, SLOT(itemSelected()))->setObjectName("Anova");
-	menu->addAction(QString("ANCOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
-	menu->addAction(QString("MANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaMultivariate");
+	menu->addAction(QString("ANCOVA"), this, SLOT(itemSelected()))->setObjectName("Ancova");
+	menu->addAction(QString("MAN(C)OVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");
+	//menu->addAction(QString("MANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");
 
 	ui->Anova->setMenu(menu);
 }

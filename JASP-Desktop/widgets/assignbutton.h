@@ -19,12 +19,11 @@ public:
 	void setAssignDirection(bool assign);
 	bool isAssign();
 
-	void setSourceAndTarget(ListView *source, ListView *target);
-	void setSourceAndTarget(ListView *source, BoundPairsTable *target);
+	void setSourceAndTarget(DropTarget *source, DropTarget *target);
 
 protected:
-	ListView *_source;
-	QAbstractItemView *_target;
+	DropTarget *_source;
+	DropTarget *_target;
 
 private:
 	bool _assignDirection;

@@ -1,5 +1,7 @@
 #include "assignbuttonmenu.h"
 
+#include "droptarget.h"
+
 #include <QDebug>
 
 AssignButtonMenu::AssignButtonMenu(QWidget *parent)
@@ -15,15 +17,16 @@ AssignButtonMenu::AssignButtonMenu(QWidget *parent)
 	setEnabled(false);
 }
 
-void AssignButtonMenu::setSourceAndTarget(ListView *source, ListView *target)
+void AssignButtonMenu::setSourceAndTarget(DropTarget *source, DropTarget *target)
 {
 	_source = source;
 	_target = target;
 
-	connect(source, SIGNAL(focused()), this, SLOT(sourceChanged()));
-	connect(source, SIGNAL(selectionUpdated()), this, SLOT(sourceChanged()));
-	connect(target, SIGNAL(focused()), this, SLOT(targetChanged()));
-	connect(target, SIGNAL(selectionUpdated()), this, SLOT(targetChanged()));
+	_source->selectionUpdated.connect(boost::bind(&AssignButtonMenu::sourceChanged, this));
+	_source->focused.connect(boost::bind(&AssignButtonMenu::sourceChanged, this));
+
+	_target->selectionUpdated.connect(boost::bind(&AssignButtonMenu::targetChanged, this));
+	_target->focused.connect(boost::bind(&AssignButtonMenu::targetChanged, this));
 }
 
 void AssignButtonMenu::buttonClicked()
@@ -48,27 +51,21 @@ void AssignButtonMenu::sourceChanged()
 		return;
 	}
 
-	if (_source->selectionModel()->selectedIndexes().size() == 0)
+	if (_source->hasSelection())
 	{
-		setEnabled(false);
+		QMimeData *mimeData = _source->view()->model()->mimeData(_source->view()->selectionModel()->selectedIndexes());
+		bool canAssign = _target->view()->model()->canDropMimeData(mimeData, Qt::MoveAction, -1, 0, QModelIndex());
+		this->setEnabled(canAssign);
 	}
 	else
 	{
-		QMimeData *mimeData = _source->model()->mimeData(_source->selectionModel()->selectedIndexes());
-		bool canAssign = _target->model()->canDropMimeData(mimeData, Qt::MoveAction, -1, 0, QModelIndex());
-		this->setEnabled(canAssign);
+		setEnabled(false);
 	}
 }
 
 void AssignButtonMenu::targetChanged()
 {
 	setEnabled(false);
-
-	if (_source == NULL)
-	{
-		qDebug() << "AssignButtonMenu::targetChanged() : source not set";
-		return;
-	}
 }
 
 

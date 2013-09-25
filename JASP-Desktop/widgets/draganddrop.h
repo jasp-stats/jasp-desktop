@@ -3,12 +3,13 @@
 
 #include <QAbstractItemView>
 
+#include "droptarget.h"
 #include "enhanceddroptarget.h"
 
 class DragAndDrop
 {
 public:
-	static void perform(QAbstractItemView *source, QAbstractItemView *target, int flags = 0);
+	static void perform(DropTarget *source, DropTarget *target, int flags = 0);
 };
 
 #endif // DRAGANDDROP_H

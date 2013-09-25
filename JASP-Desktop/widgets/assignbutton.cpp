@@ -29,26 +29,16 @@ bool AssignButton::isAssign()
 	return _assignDirection;
 }
 
-void AssignButton::setSourceAndTarget(ListView *source, ListView *target)
+void AssignButton::setSourceAndTarget(DropTarget *source, DropTarget *target)
 {
 	_source = source;
 	_target = target;
 
-	connect(source, SIGNAL(focused()), this, SLOT(sourceChanged()));
-	connect(source, SIGNAL(selectionUpdated()), this, SLOT(sourceChanged()));
-	connect(target, SIGNAL(focused()), this, SLOT(targetChanged()));
-	connect(target, SIGNAL(selectionUpdated()), this, SLOT(targetChanged()));
-}
+	_source->selectionUpdated.connect(boost::bind(&AssignButton::sourceChanged, this));
+	_source->focused.connect(boost::bind(&AssignButton::sourceChanged, this));
 
-void AssignButton::setSourceAndTarget(ListView *source, BoundPairsTable *target)
-{
-	_source = source;
-	_target = target;
-
-	connect(source, SIGNAL(focused()), this, SLOT(sourceChanged()));
-	connect(source, SIGNAL(selectionUpdated()), this, SLOT(sourceChanged()));
-	connect(target, SIGNAL(focused()), this, SLOT(targetChanged()));
-	connect(target, SIGNAL(selectionUpdated()), this, SLOT(targetChanged()));
+	_target->selectionUpdated.connect(boost::bind(&AssignButton::targetChanged, this));
+	_target->focused.connect(boost::bind(&AssignButton::targetChanged, this));
 }
 
 void AssignButton::buttonClicked()
@@ -75,15 +65,15 @@ void AssignButton::sourceChanged()
 		return;
 	}
 
-	if (_source->selectionModel()->selectedIndexes().size() == 0)
+	if (_source->hasSelection())
 	{
-		this->setEnabled(false);
+		QMimeData *mimeData = _source->view()->model()->mimeData(_source->view()->selectionModel()->selectedIndexes());
+		bool canAssign = _target->view()->model()->canDropMimeData(mimeData, Qt::MoveAction, -1, 0, QModelIndex());
+		this->setEnabled(canAssign);
 	}
 	else
 	{
-		QMimeData *mimeData = _source->model()->mimeData(_source->selectionModel()->selectedIndexes());
-		bool canAssign = _target->model()->canDropMimeData(mimeData, Qt::MoveAction, -1, 0, QModelIndex());
-		this->setEnabled(canAssign);
+		this->setEnabled(false);
 	}
 }
 
@@ -97,15 +87,15 @@ void AssignButton::targetChanged()
 		return;
 	}
 
-	if (_target->selectionModel()->selectedIndexes().size() == 0)
+	if (_target->hasSelection())
 	{
-		this->setEnabled(false);
+		QMimeData *mimeData = _target->view()->model()->mimeData(_target->view()->selectionModel()->selectedIndexes());
+		bool canAssign = _source->view()->model()->canDropMimeData(mimeData, Qt::MoveAction, -1, 0, QModelIndex());
+		this->setEnabled(canAssign);
 	}
 	else
 	{
-		QMimeData *mimeData = _target->model()->mimeData(_target->selectionModel()->selectedIndexes());
-		bool canAssign = _source->model()->canDropMimeData(mimeData, Qt::MoveAction, -1, 0, QModelIndex());
-		this->setEnabled(canAssign);
+		this->setEnabled(false);
 	}
 }
 

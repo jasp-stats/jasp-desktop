@@ -6,8 +6,9 @@
 #include "availablefieldslistview.h"
 #include "assignbutton.h"
 #include "tablemodelvariablesassigned.h"
+#include "tableview.h"
 
-class BoundPairsTable : public QTableView, public Bound
+class BoundPairsTable : public TableView, public Bound
 {
 	Q_OBJECT
 public:
@@ -17,19 +18,12 @@ public:
 	virtual void bindTo(Option *option) override;
 
 protected:
-	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
-	virtual void startDrag(Qt::DropActions supportedActions) override;
-	virtual void focusInEvent(QFocusEvent *event) override;
 
 	void resizeEvent(QResizeEvent *e);
 	void moveEvent(QMoveEvent *e);
 
 	void setupKey();
 	void repositionKey();
-
-signals:
-	void selectionUpdated();
-	void focused();
 
 private:
 

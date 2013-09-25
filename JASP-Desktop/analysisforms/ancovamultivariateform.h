@@ -1,5 +1,5 @@
-#ifndef ANOVA_H
-#define ANOVA_H
+#ifndef ANCOVAMULTIVARIATEFORM_H
+#define ANCOVAMULTIVARIATEFORM_H
 
 #include "analysisform.h"
 
@@ -7,29 +7,27 @@
 #include "widgets/listmodelanovamodel.h"
 
 namespace Ui {
-class ANOVA;
+class AncovaMultivariateForm;
 }
 
-class Anova : public AnalysisForm
+class AncovaMultivariateForm : public AnalysisForm
 {
 	Q_OBJECT
-	
-public:
-	explicit Anova(QWidget *parent = 0);
-	~Anova();
 
-	virtual void set(Options *options, DataSet *dataSet) override;
-	
+public:
+	explicit AncovaMultivariateForm(QWidget *parent = 0);
+	~AncovaMultivariateForm();
+
 private slots:
 	void factorsChanged();
 	void dependentChanged();
 
 private:
-	Ui::ANOVA *ui;
+	Ui::AncovaMultivariateForm *ui;
 
 	ListModelVariablesAssigned *_dependentListModel;
 	ListModelVariablesAssigned *_fixedFactorsListModel;
-	ListModelVariablesAssigned *_randomFactorsListModel;
+	ListModelVariablesAssigned *_covariatesListModel;
 	ListModelVariablesAssigned *_wlsWeightsListModel;
 
 	ListModelAnovaModel *_anovaModel;
@@ -38,4 +36,4 @@ private:
 
 };
 
-#endif // ANOVA_H
+#endif // ANCOVAMULTIVARIATEFORM_H

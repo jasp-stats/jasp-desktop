@@ -1,7 +1,5 @@
 #include "ttestindependentsamples.h"
 
-#include "boost/foreach.hpp"
-
 #include "options.h"
 #include "option.h"
 #include "options/optionfield.h"
@@ -12,9 +10,6 @@
 #include "options/optionlist.h"
 #include "options/optionnumber.h"
 
-#include "rinterface.h"
-
-using namespace Json;
 using namespace analyses;
 
 TTestIndependentSamples::TTestIndependentSamples(int id)
@@ -33,7 +28,7 @@ Options *TTestIndependentSamples::createDefaultOptions()
 
 	options->add(new OptionBoolean("meanDifference"));
 	options->add(new OptionBoolean("confidenceInterval"));
-	options->add(new OptionNumber("confidenceIntervalInterval", .95, 0, 1, 3));
+	options->add(new OptionNumber("confidenceIntervalInterval", .95, 0, 1, "%"));
 	options->add(new OptionBoolean("descriptives"));
 
 	options->add(new OptionList("missingValues", "excludeAnalysisByAnalysis"));

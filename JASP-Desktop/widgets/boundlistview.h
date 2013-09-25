@@ -10,7 +10,6 @@
 #include "options/optionfields.h"
 
 #include "availablefieldslistview.h"
-#include "assignbutton.h"
 #include "dataset.h"
 #include "listmodelvariablesassigned.h"
 #include "listview.h"
@@ -36,9 +35,6 @@ protected:
 	ListModelVariablesAssigned *_variablesListModel;
 
 private:
-
-	AvailableFieldsListView *_availableFieldsListView;
-	AssignButton *_assignButton;
 
 	QWidget *_variableTypeKey;
 

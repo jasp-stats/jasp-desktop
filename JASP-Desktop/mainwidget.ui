@@ -196,7 +196,7 @@ QTabBar::tab:first:selected {
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="TableView" name="tableView"/>
+                <widget class="MainTableView" name="tableView"/>
                </item>
               </layout>
              </widget>
@@ -380,9 +380,9 @@ QTabBar::tab:first:selected {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>TableView</class>
+   <class>MainTableView</class>
    <extends>QTableView</extends>
-   <header>tableview.h</header>
+   <header>maintableview.h</header>
   </customwidget>
   <customwidget>
    <class>RibbonAnalysis</class>

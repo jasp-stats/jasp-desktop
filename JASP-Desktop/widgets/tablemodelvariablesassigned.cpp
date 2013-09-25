@@ -8,15 +8,9 @@
 using namespace std;
 
 TableModelVariablesAssigned::TableModelVariablesAssigned(QObject *parent)
-	: QAbstractTableModel(parent)
+	: TableModel(parent)
 {
 	_boundTo = NULL;
-
-	_nominalIcon = QIcon(":/icons/variable-nominal.png");
-	_ordinalIcon = QIcon(":/icons/variable-ordinal.png");
-	_scaleIcon = QIcon(":/icons/variable-scale.png");
-
-	_rowRemovalScheduled = false;
 
 	_variableTypesAllowed = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
 }
@@ -24,23 +18,6 @@ TableModelVariablesAssigned::TableModelVariablesAssigned(QObject *parent)
 void TableModelVariablesAssigned::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionFieldPairs *>(option);
-
-	/*vector<pair<string, string> > value = option->value();
-
-	QList<VarPair> values;
-	pair<string, string> p;
-
-	foreach (p, value)
-	{
-		VarPair n;
-		ColumnInfo
-		n.append(QString::fromUtf8(p.first.c_str(), p.first.length()));
-		n.append(QString::fromUtf8(p.second.c_str(), p.second.length()));
-
-	}
-
-	_boundTo->changed.connect(boost::bind(&TableModelVariablesAssigned::pairsChanged, this));
-	endResetModel();*/
 }
 
 int TableModelVariablesAssigned::rowCount(const QModelIndex &parent) const
@@ -59,23 +36,7 @@ QVariant TableModelVariablesAssigned::data(const QModelIndex &index, int role) c
 		return QVariant();
 
 	if (role == Qt::DisplayRole)
-	{
 		return QVariant(_values.at(index.row()).at(index.column()).first);
-	}
-	/*else if (role == Qt::DecorationRole)
-	{
-		switch (_values.at(index.row()).at(index.column()).second)
-		{
-		case Column::ColumnTypeNominal:
-			return QVariant(_nominalIcon);
-		case Column::ColumnTypeOrdinal:
-			return QVariant(_ordinalIcon);
-		case Column::ColumnTypeScale:
-			return QVariant(_scaleIcon);
-		default:
-			return QVariant();
-		}
-	}*/
 
 	return QVariant();
 }
@@ -83,12 +44,7 @@ QVariant TableModelVariablesAssigned::data(const QModelIndex &index, int role) c
 Qt::ItemFlags TableModelVariablesAssigned::flags(const QModelIndex &index) const
 {	
 	if (index.isValid())
-	{
-		//if (data(index, Qt::DisplayRole) == "")
-			return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemNeverHasChildren;
-		//else
-		//	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemNeverHasChildren;
-	}
+		return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 	else
 		return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;
 }
@@ -197,8 +153,7 @@ bool TableModelVariablesAssigned::dropMimeData(const QMimeData *data, Qt::DropAc
 			endInsertRows();
 		}
 
-		if (_boundTo != NULL)
-			_boundTo->setValue(asVector(_values));
+		assignToOption();
 
 		return true;
 	}
@@ -221,29 +176,6 @@ bool TableModelVariablesAssigned::canDropMimeData(const QMimeData *data, Qt::Dro
 		stream >> count;
 
 		return count != 0;
-	}
-
-	return false;
-}
-
-bool TableModelVariablesAssigned::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-	if (role == Qt::DisplayRole && value.isNull())
-	{
-		int row = index.row();
-
-		_values[row][index.column()] = ColumnInfo();
-
-		if ( ! _rowsToRemove.contains(row))
-			_rowsToRemove.append(row);
-
-		if ( ! _rowRemovalScheduled)
-		{
-			_rowRemovalScheduled = true;
-			QTimer::singleShot(0, this, SLOT(removeEmptyRows()));
-		}
-
-		return true;
 	}
 
 	return false;
@@ -276,7 +208,15 @@ bool TableModelVariablesAssigned::removeRows(int row, int count, const QModelInd
 		_values.removeAt(row + i);
 	endRemoveRows();
 
+	assignToOption();
+
 	return true;
+}
+
+void TableModelVariablesAssigned::assignToOption()
+{
+	if (_boundTo != NULL)
+		_boundTo->setValue(asVector(_values));
 }
 
 void TableModelVariablesAssigned::setVariableTypesAllowed(int variableTypesAllowed)
@@ -306,24 +246,3 @@ vector<pair<string, string> > TableModelVariablesAssigned::asVector(QList<VarPai
 	return vec;
 }
 
-
-void TableModelVariablesAssigned::removeEmptyRows()
-{
-	_rowRemovalScheduled = false;
-
-	qSort(_rowsToRemove);
-
-	if (_rowsToRemove.isEmpty())
-		return;
-
-	QListIterator<int> it = QListIterator<int>(_rowsToRemove);
-	it.toBack();
-
-	while (it.hasPrevious())
-	{
-		int row = it.previous();
-		this->removeRow(row);
-	}
-
-	_rowsToRemove.clear();
-}

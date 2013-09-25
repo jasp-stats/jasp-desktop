@@ -1,11 +1,11 @@
-#include "ttestindependentsamples.h"
-#include "ui_ttestindependentsamples.h"
+#include "ttestindependentsamplesform.h"
+#include "ui_ttestindependentsamplesform.h"
 
 #include "analysisform.h"
 
-TTestIndependentSamples::TTestIndependentSamples(QWidget *parent) :
+TTestIndependentSamplesForm::TTestIndependentSamplesForm(QWidget *parent) :
 	AnalysisForm(parent),
-	ui(new Ui::TTestIndependentSamples)
+	ui(new Ui::TTestIndependentSamplesForm)
 {
 	ui->setupUi(this);
 
@@ -13,6 +13,7 @@ TTestIndependentSamples::TTestIndependentSamples(QWidget *parent) :
 	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
 	ListModelVariablesAssigned *variablesModel = new ListModelVariablesAssigned(this);
+	variablesModel->setSource(&_availableFields);
 	variablesModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
@@ -27,7 +28,7 @@ TTestIndependentSamples::TTestIndependentSamples(QWidget *parent) :
 	ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
 }
 
-TTestIndependentSamples::~TTestIndependentSamples()
+TTestIndependentSamplesForm::~TTestIndependentSamplesForm()
 {
 	delete ui;
 }
