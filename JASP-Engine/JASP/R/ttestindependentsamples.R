@@ -1,7 +1,6 @@
 
 TTestIndependentSamples <- function(dataset, options, perform="run", callback=NULL) {
 
-	install.packages("car",repos='http://cran.us.r-project.org')
 	library(car)
 
 	results <- list()
@@ -27,7 +26,7 @@ TTestIndependentSamples <- function(dataset, options, perform="run", callback=NU
 		
 		# Footnote informing what confidence interval is printed 
 		CINote <- paste("The Confidence Interval is ",options$confidenceIntervalInterval*100,"%",sep="") 
-		footnotes[[2]] <- CINote
+		footnotes[[length(footnotes) +1]] <- CINote
 	}
 		
 	ttest[["schema"]] <- list(fields=fields)
@@ -46,15 +45,15 @@ TTestIndependentSamples <- function(dataset, options, perform="run", callback=NU
 		if (options$tails == "oneTailedGreaterThan") {
 			testType <- "greater"
 			hypothesisNote <- "Alternative hypothesis: true difference in means is greater than 0"
-			footnotes[[1]] <- hypothesisNote
+			footnotes[[length(footnotes) +1]] <- hypothesisNote
 		} else if (options$tails == "oneTailedLessThan") {
 			testType <- "less"
 			hypothesisNote <- "Alternative hypothesis: true difference in means is less than 0"
-			footnotes[[1]] <- hypothesisNote
+			footnotes[[length(footnotes) +1]] <- hypothesisNote
 		} else {
 			testType <- "two.sided"
 			hypothesisNote <- "Alternative hypothesis: true difference in means is not equal to 0"
-			footnotes[[1]] <- hypothesisNote
+			footnotes[[length(footnotes) +1]] <- hypothesisNote
 		}
 		
 		if (options$equalityOfVariances == "assumeEqual") { 
@@ -78,17 +77,19 @@ TTestIndependentSamples <- function(dataset, options, perform="run", callback=NU
 
 			variableData <- dataset[[variable]][!na]
 			
-			levene <- leveneTest(variableData, groupingVar, "mean")
+			result <- try (silent=TRUE, expr= {
+				levene <- leveneTest(variableData, groupingVar, "mean")
+				
+				if (levene[1,3] > .05) {
+					LeveneNote <- "Levene's Test suggests variances being equal"
+				} else {
+					LeveneNote <- "Levene's Test suggests that variances are NOT equal"
+				}
+				footnotes[[length(footnotes) +1]] <- LeveneNote
 			
-			if (levene[1,3] > .05) {
-				LeveneNote <- "Levene's Test suggests variances being equal"
-			} else {
-				LeveneNote <- "Levene's Test suggests that variances are NOT equal"
-			}
-			footnotes[[3]] <- LeveneNote
+			})
 			
 			for (rep in 1:repet) {
-				
 				
 				cases[[length(cases) + 1]] <- variable				
 				
