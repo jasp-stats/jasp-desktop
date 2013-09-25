@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Descriptives</class>
- <widget class="QWidget" name="Descriptives">
+ <class>DescriptivesForm</class>
+ <widget class="QWidget" name="DescriptivesForm">
   <property name="geometry">
    <rect>
     <x>0</x>

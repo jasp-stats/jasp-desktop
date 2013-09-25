@@ -1,16 +1,16 @@
 
 #include "draganddrop.h"
 
-void DragAndDrop::perform(QAbstractItemView *source, QAbstractItemView *target, int flags)
+void DragAndDrop::perform(DropTarget *source, DropTarget *target, int flags)
 {
-	QModelIndexList indices = source->selectionModel()->selectedIndexes();
-	QMimeData *mimeData = source->model()->mimeData(indices);
+	QModelIndexList indices = source->view()->selectionModel()->selectedIndexes();
+	QMimeData *mimeData = source->view()->model()->mimeData(indices);
 	Qt::DropAction action = Qt::CopyAction;
 
-	if (target->model()->supportedDropActions() & Qt::MoveAction)
+	if (target->view()->model()->supportedDropActions() & Qt::MoveAction)
 		action = Qt::MoveAction;
 
-	QAbstractItemModel *model = target->model();
+	QAbstractItemModel *model = target->view()->model();
 	EnhancedDropTarget *enhancedModel = dynamic_cast<EnhancedDropTarget *>(model);
 
 	bool success;
@@ -40,7 +40,7 @@ void DragAndDrop::perform(QAbstractItemView *source, QAbstractItemView *target, 
 						indices.removeOne(index);
 				}
 
-				source->model()->removeRows(lowest.row(), 1);
+				source->view()->model()->removeRows(lowest.row(), 1);
 			}
 		}
 	}

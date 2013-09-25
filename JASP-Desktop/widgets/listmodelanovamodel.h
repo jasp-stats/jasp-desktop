@@ -7,7 +7,9 @@
 #include "enhanceddroptarget.h"
 #include "options/optionstring.h"
 
-class ListModelAnovaModel : public QAbstractListModel, public EnhancedDropTarget, public BoundModel
+#include "tablemodel.h"
+
+class ListModelAnovaModel : public TableModel, public EnhancedDropTarget, public BoundModel
 {
 	Q_OBJECT
 
@@ -30,6 +32,7 @@ public:
 	virtual bool insertRows(int row, int count, const QModelIndex &parent) override;
 	virtual bool removeRows(int row, int count, const QModelIndex &parent) override;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
 	virtual Qt::DropActions supportedDropActions() const override;
 	virtual Qt::DropActions supportedDragActions() const override;
@@ -48,8 +51,8 @@ protected:
 	static QList<QList<ColumnInfo> > generateCrossCombinations(const QVector<ColumnInfo> &variables);
 	static QList<QList<ColumnInfo> > generateWayCombinations(const QVector<ColumnInfo> &variables, int ways);
 	static QString termsToString(QList<QList<ColumnInfo> > terms);
+	static QString itemsToString(QList<ColumnInfo> items);
 
-private:
 	OptionString *_boundTo;
 
 	bool _customModel;
@@ -61,6 +64,7 @@ private:
 	QList<QList<ColumnInfo> > _terms;
 
 	void assignToOption();
+
 
 };
 

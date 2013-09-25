@@ -1,17 +1,24 @@
 body {
 	font-family: sans-serif ;
 	font-size: 12px ;
+	margin: 0 ;
+}
+
+body.selected {
+	background-color: #E8E8E8 ;
 }
 
 h1 {
 	font-size: 150% ;
+	margin: .5em ;
 }
 
 table {
 	font-size: 12px ;
 	font-style: normal ;
 	border-collapse: collapse ;
-	margin: 2em 2em 4em;
+	margin-bottom: 2em ;
+	/*margin: 2em 2em 4em;*/
 }
 
 th {
@@ -110,6 +117,23 @@ svg > text
 	font-weight: bold;
 	font-size: 120% ;
 }
+
+.jasp-analysis
+{
+	margin: .7em ;
+	padding: 1em ;
+}
+
+.jasp-analysis.unselected
+{
+	background-color: #E8E8E8 ;
+}
+
+.jasp-analysis.selected
+{
+	background-color: white ;
+}
+
 
 /*div > svg
 {

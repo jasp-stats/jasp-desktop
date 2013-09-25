@@ -8,10 +8,9 @@
 #include "options/optionintegerarray.h"
 #include "options/optionlist.h"
 #include "options/optionnumber.h"
+#include "options/optionstring.h"
+#include "options/optionfield.h"
 
-#include "rinterface.h"
-
-using namespace Json;
 using namespace analyses;
 
 AnovaBayesian::AnovaBayesian(int id)
@@ -23,7 +22,13 @@ Options *AnovaBayesian::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add(new OptionFields("variables"));
+	options->add(new OptionField("dependent"));
+	options->add(new OptionFields("fixedFactors"));
+	options->add(new OptionFields("randomFactors"));
+
+	options->add(new OptionString("model"));
+
+	options->add(new OptionFields("nuisanceTerms"));
 
 	return options;
 }

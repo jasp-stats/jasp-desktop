@@ -5,11 +5,11 @@
 
 #include "widgets/infopopup.h"
 
-class TableView : public QTableView
+class MainTableView : public QTableView
 {
 	Q_OBJECT
 public:
-	explicit TableView(QWidget *parent = 0);
+	explicit MainTableView(QWidget *parent = 0);
 
 	virtual void setModel(QAbstractItemModel *model) override;
 

@@ -1,14 +1,16 @@
 #ifndef TABLEMODELVARIABLESASSIGNED_H
 #define TABLEMODELVARIABLESASSIGNED_H
 
-#include <QAbstractTableModel>
+#include <QAbstractListModel>
 
 #include "options/optionfieldpairs.h"
 #include "listmodelvariables.h"
+#include "tablemodel.h"
+#include "droptarget.h"
 
 typedef QList<ColumnInfo> VarPair;
 
-class TableModelVariablesAssigned : public QAbstractTableModel, public BoundModel
+class TableModelVariablesAssigned : public TableModel, public BoundModel, public DropTarget
 {
 	Q_OBJECT
 public:
@@ -30,35 +32,21 @@ public:
 	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
 	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 
-	virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
-	//virtual bool setItemData(const QModelIndex &index, const QMap<int, QVariant> &roles) override;
-
 	bool isForbidden(int variableType) const;
 
 	virtual bool insertRows(int row, int count, const QModelIndex &parent) override;
 	virtual bool removeRows(int row, int count, const QModelIndex &parent) override;
 
-signals:
-	void focused();
-	void selectionUpdated();
-
-private slots:
-	void removeEmptyRows();
+protected:
+	void assignToOption();
 
 private:
-	QList<int> _rowsToRemove;
-	bool _rowRemovalScheduled;
-
 	int _variableTypesAllowed;
 
 	OptionFieldPairs *_boundTo;
 	QList<VarPair> _values;
 
 	void pairsChanged();
-
-	QIcon _nominalIcon;
-	QIcon _ordinalIcon;
-	QIcon _scaleIcon;
 
 	static std::vector<std::pair<std::string, std::string> > asVector(QList<VarPair> values);
 	

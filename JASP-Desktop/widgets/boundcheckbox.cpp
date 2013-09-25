@@ -12,7 +12,9 @@ void BoundCheckBox::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionBoolean *>(option);
 
-	if (_boundTo == NULL)
+	if (_boundTo != NULL)
+		setChecked(_boundTo->value());
+	else
 		qDebug() << "could not bind to OptionBoolean in boundcheckbox.cpp";
 }
 

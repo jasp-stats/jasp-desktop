@@ -31,13 +31,9 @@ SOURCES += main.cpp\
     enginesync.cpp \
     mainwidget.cpp \
     availablefields.cpp \
-	tableview.cpp \
     ribbonanalysis.cpp \
     ribbonhome.cpp \
     analysisforms/analysisform.cpp \
-    analysisforms/descriptives.cpp \
-    analysisforms/ttestonesample.cpp \
-    analysisforms/anovaoneway.cpp \
     widgets/assignbutton.cpp \
     widgets/availablefieldslistview.cpp \
     widgets/boundcheckbox.cpp \
@@ -46,10 +42,8 @@ SOURCES += main.cpp\
     widgets/infopopup.cpp \
     widgets/ribbonbutton.cpp \
     widgets/toolbutton.cpp \
-    analysisforms/anova.cpp \
     widgets/boundtextbox.cpp \
     widgets/boundgroupbox.cpp \
-    analysisforms/ttestindependentsamples.cpp \
     analysisforms/anovabayesianform.cpp \
     analysisforms/ttestpairedsamplesform.cpp \
     analysisforms/anovamultivariateform.cpp \
@@ -65,7 +59,18 @@ SOURCES += main.cpp\
     widgets/tablemodelvariablesassigned.cpp \
     widgets/draganddrop.cpp \
     widgets/listmodelanovamodel.cpp \
-    widgets/assignbuttonmenu.cpp
+    widgets/assignbuttonmenu.cpp \
+    widgets/tableview.cpp \
+    maintableview.cpp \
+    widgets/listmodelanovamodelnuisancefactors.cpp \
+    widgets/tablemodel.cpp \
+    analysisforms/ancovaform.cpp \
+    analysisforms/anovaform.cpp \
+    analysisforms/descriptivesform.cpp \
+    analysisforms/anovaonewayform.cpp \
+    analysisforms/ttestonesampleform.cpp \
+    analysisforms/ttestindependentsamplesform.cpp \
+    analysisforms/ancovamultivariateform.cpp
 
 HEADERS  += mainwindow.h \
     datasettablemodel.h \
@@ -73,13 +78,9 @@ HEADERS  += mainwindow.h \
     enginesync.h \
     mainwidget.h \
     availablefields.h \
-    tableview.h \
     ribbonanalysis.h \
     ribbonhome.h \
     analysisforms/analysisform.h \
-    analysisforms/descriptives.h \
-    analysisforms/ttestonesample.h \
-    analysisforms/anovaoneway.h \
     widgets/assignbutton.h \
     widgets/availablefieldslistview.h \
     widgets/boundcheckbox.h \
@@ -88,10 +89,8 @@ HEADERS  += mainwindow.h \
     widgets/infopopup.h \
     widgets/ribbonbutton.h \
     widgets/toolbutton.h \
-    analysisforms/anova.h \
     widgets/boundtextbox.h \
     widgets/boundgroupbox.h \
-    analysisforms/ttestindependentsamples.h \
     analysisforms/anovabayesianform.h \
     analysisforms/ttestpairedsamplesform.h \
     analysisforms/anovamultivariateform.h \
@@ -110,24 +109,38 @@ HEADERS  += mainwindow.h \
     widgets/draganddrop.h \
     widgets/listmodelanovamodel.h \
     widgets/assignbuttonmenu.h \
-    widgets/enhanceddroptarget.h
+    widgets/enhanceddroptarget.h \
+    widgets/tableview.h \
+    maintableview.h \
+    widgets/droptarget.h \
+    widgets/listmodelanovamodelnuisancefactors.h \
+    widgets/tablemodel.h \
+    analysisforms/ancovaform.h \
+    analysisforms/anovaform.h \
+    analysisforms/descriptivesform.h \
+    analysisforms/anovaonewayform.h \
+    analysisforms/ttestindependentsamplesform.h \
+    analysisforms/ttestonesampleform.h \
+    analysisforms/ancovamultivariateform.h
 
 FORMS    += mainwindow.ui \
     backstageform.ui \
     mainwidget.ui \
     ribbonanalysis.ui \
 	ribbonhome.ui \
-    analysisforms/descriptives.ui \
-    analysisforms/ttestonesample.ui \
-    analysisforms/anovaoneway.ui \
-    analysisforms/anova.ui \
-    analysisforms/ttestindependentsamples.ui \
     analysisforms/anovabayesianform.ui \
     analysisforms/ttestpairedsamplesform.ui \
     analysisforms/anovamultivariateform.ui \
     analysisforms/ttestbayesianonesampleform.ui \
     widgets/progresswidget.ui \
-    widgets/anovamodelwidget.ui
+    widgets/anovamodelwidget.ui \
+    analysisforms/ancovaform.ui \
+    analysisforms/anovaform.ui \
+    analysisforms/descriptivesform.ui \
+    analysisforms/anovaonewayform.ui \
+    analysisforms/ttestindependentsamplesform.ui \
+    analysisforms/ttestonesampleform.ui \
+    analysisforms/ancovamultivariateform.ui
 
 
 RESOURCES += \

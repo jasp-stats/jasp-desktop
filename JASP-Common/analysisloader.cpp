@@ -8,6 +8,9 @@
 #include "analyses/anovaoneway.h"
 #include "analyses/anovamultivariate.h"
 #include "analyses/anova.h"
+#include "analyses/ancova.h"
+#include "analyses/anovabayesian.h"
+#include "analyses/ancovamultivariate.h"
 
 #include "analysispart.h"
 
@@ -42,10 +45,28 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 	{
 		return new analyses::AnovaMultivariate(id);
 	}
+	else if (analysisName == "AncovaMultivariate")
+	{
+		return new analyses::AncovaMultivariate(id);
+	}
 	else if (analysisName == "Anova")
 	{
 		return new analyses::Anova(id);
 	}
+	else if (analysisName == "Ancova")
+	{
+		return new analyses::Ancova(id);
+	}
+	else if (analysisName == "AnovaBayesian")
+	{
+		return new analyses::AnovaBayesian(id);
+	}
+	else
+	{
+		std::cout << "AnalysisLoader::laod(); Analysis not found: " << analysisName << "\n";
+		std::cout.flush();
 
-    return NULL;
+		return NULL;
+	}
+
 }

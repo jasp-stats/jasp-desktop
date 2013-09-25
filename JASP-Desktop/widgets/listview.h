@@ -4,27 +4,25 @@
 #include <QListView>
 #include <QAbstractItemView>
 
-class ListView : public QListView
+#include "droptarget.h"
+
+class ListView : public QListView, public DropTarget
 {
 	Q_OBJECT
 public:
 	explicit ListView(QWidget *parent = 0);
 
-	void setDoubleClickTarget(QAbstractItemView *target);
+	void setDoubleClickTarget(DropTarget *target);
 	
 protected:
 	void focusInEvent(QFocusEvent *event) override;
 	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
 
-signals:
-	void selectionUpdated();
-	void focused();
-
 private slots:
 	void doubleClickedHandler(const QModelIndex index);
 
 private:
-	QAbstractItemView *_defaultDropTarget;
+	DropTarget *_defaultDropTarget;
 	
 };
 

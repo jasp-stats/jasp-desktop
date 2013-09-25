@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TTestIndependentSamples</class>
- <widget class="QWidget" name="TTestIndependentSamples">
+ <class>TTestIndependentSamplesForm</class>
+ <widget class="QWidget" name="TTestIndependentSamplesForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>637</width>
-    <height>734</height>
+    <width>628</width>
+    <height>617</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -75,7 +75,7 @@
          <item row="0" column="1">
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Test Variables</string>
+            <string>Dependent Variables</string>
            </property>
           </widget>
          </item>
@@ -466,16 +466,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
    <header>widgets/assignbutton.h</header>
@@ -484,6 +474,16 @@
    <class>AvailableFieldsListView</class>
    <extends>QListView</extends>
    <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>

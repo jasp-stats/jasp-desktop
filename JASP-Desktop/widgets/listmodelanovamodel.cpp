@@ -5,7 +5,7 @@
 #include <QDebug>
 
 ListModelAnovaModel::ListModelAnovaModel(QObject *parent)
-	: QAbstractListModel(parent)
+	: TableModel(parent)
 {
 	_boundTo = NULL;
 	_customModel = false;
@@ -49,6 +49,8 @@ int ListModelAnovaModel::rowCount(const QModelIndex &) const
 
 int ListModelAnovaModel::columnCount(const QModelIndex &parent) const
 {
+	Q_UNUSED(parent);
+
 	return 1;
 }
 
@@ -65,7 +67,7 @@ void ListModelAnovaModel::setVariables(const QList<ColumnInfo> &variables)
 {
 	_variables = variables;
 
-	bool reset = false;
+	int row = 0;
 
 	foreach (const QList<ColumnInfo> &term, _terms)
 	{
@@ -81,20 +83,9 @@ void ListModelAnovaModel::setVariables(const QList<ColumnInfo> &variables)
 		}
 
 		if (shouldRemove)
-		{
-			if (reset == false)
-			{
-				beginResetModel();
-				reset = true;
-			}
-
-			_terms.removeOne(term);
-		}
-	}
-
-	if (reset)
-	{
-		endResetModel();
+			removeRow(row);
+		else
+			row++;
 	}
 
 	emit variablesAvailableChanged();
@@ -202,12 +193,10 @@ bool ListModelAnovaModel::dropMimeData(const QMimeData *data, Qt::DropAction act
 
 		foreach (const QList<ColumnInfo> term, terms)
 		{
-			int r = -1;
+			int r = 0;
 			bool added = false;
 			foreach (const QList<ColumnInfo> &existingInteraction, _terms)
 			{
-				r++;
-
 				if (term.length() == existingInteraction.length())
 				{
 					bool match = true;
@@ -228,11 +217,17 @@ bool ListModelAnovaModel::dropMimeData(const QMimeData *data, Qt::DropAction act
 					}
 
 				}
+
+				r++;
 			}
 
-
 			if ( ! added)
-				_terms.append(term);
+			{
+				r = rowCount(QModelIndex());
+				insertRow(r);
+				_terms[r] = term;
+				//_terms.append(term);
+			}
 		}
 
 		endResetModel();
@@ -296,9 +291,17 @@ bool ListModelAnovaModel::removeRows(int row, int count, const QModelIndex &pare
 Qt::ItemFlags ListModelAnovaModel::flags(const QModelIndex &index) const
 {
 	if (index.isValid())
-		return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemNeverHasChildren | Qt::ItemIsDragEnabled;
+		return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
 	else
 		return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;
+}
+
+QVariant ListModelAnovaModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (role == Qt::DisplayRole && orientation == Qt::Horizontal && section == 0)
+		return "Model Terms";
+
+	return QVariant();
 }
 
 Qt::DropActions ListModelAnovaModel::supportedDropActions() const
@@ -363,6 +366,25 @@ QList<QList<ColumnInfo> > ListModelAnovaModel::generateWayCombinations(const QVe
 	return combinations;
 }
 
+QString ListModelAnovaModel::itemsToString(QList<ColumnInfo> items)
+{
+	QString result;
+
+	bool firstItem = true;
+
+	foreach (const ColumnInfo &item, items)
+	{
+		if (firstItem)
+			firstItem = false;
+		else
+			result += ":";
+
+		result += item.first;
+	}
+
+	return result;
+}
+
 QString ListModelAnovaModel::termsToString(QList<QList<ColumnInfo> > terms)
 {
 	QString result;
@@ -376,17 +398,7 @@ QString ListModelAnovaModel::termsToString(QList<QList<ColumnInfo> > terms)
 		else
 			result += " + ";
 
-		bool firstItem = true;
-
-		foreach (const ColumnInfo &item, term)
-		{
-			if (firstItem)
-				firstItem = false;
-			else
-				result += ":";
-
-			result += item.first;
-		}
+		result += itemsToString(term);
 	}
 
 	return result;
@@ -403,7 +415,7 @@ void ListModelAnovaModel::assignToOption()
 	{
 		newModelDesc = _dependent.first + " ~ " + termsToString(_terms);
 	}
-	else if (_dependent.first != "" && _customModel == false)
+	else if (_dependent.first != "" && _customModel == false && _variables.length() > 0)
 	{
 		newModelDesc = _dependent.first + " ~ " + termsToString(generateCrossCombinations(_variables.toVector()));
 	}
@@ -415,6 +427,4 @@ void ListModelAnovaModel::assignToOption()
 		std::string value(utf8.constData(), utf8.length());
 		_boundTo->setValue(value);
 	}
-
-	qDebug() << _modelDesc;
 }

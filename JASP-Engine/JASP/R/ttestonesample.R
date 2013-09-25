@@ -116,7 +116,9 @@ TTestOneSample <- function(dataset, options, perform="run", callback=NULL) {
 	}
 	
 	results[["ttest"]] <- ttest
-	results[["descriptives"]] <- descriptives
+	
+	if (options$descriptives)
+		results[["descriptives"]] <- descriptives
 
 	
 	results

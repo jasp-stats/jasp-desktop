@@ -9,19 +9,19 @@
 #include "availablefields.h"
 
 namespace Ui {
-class ANOVAOneWay;
+class AnovaOneWayForm;
 }
 
-class AnovaOneWay : public AnalysisForm
+class AnovaOneWayForm : public AnalysisForm
 {
 	Q_OBJECT
 	
 public:
-	explicit AnovaOneWay(QWidget *parent = 0);
-	~AnovaOneWay();
+	explicit AnovaOneWayForm(QWidget *parent = 0);
+	~AnovaOneWayForm();
 
 private:
-	Ui::ANOVAOneWay *ui;
+	Ui::AnovaOneWayForm *ui;
 
 };
 

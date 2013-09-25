@@ -18,8 +18,6 @@ using namespace std;
 BoundListView::BoundListView(QWidget *parent)
 	: ListView(parent)
 {
-	_availableFieldsListView = NULL;
-	_assignButton = NULL;
 	_variablesListModel = NULL;
 
 	setEditTriggers(QListView::NoEditTriggers);
@@ -84,19 +82,6 @@ void BoundListView::bindTo(Option *option)
 	BoundModel *model = dynamic_cast<BoundModel *>(this->model());
 	if (model != NULL)
 		model->bindTo(option);
-}
-
-void BoundListView::setAssignButton(AssignButton *button)
-{
-	_assignButton = button;
-
-	//if (button != NULL)
-	//	connect(button, SIGNAL(clicked()), this, SLOT(assign()));
-}
-
-void BoundListView::setAvailableFieldsListView(AvailableFieldsListView *listView)
-{
-	_availableFieldsListView = listView;
 }
 
 void BoundListView::resizeEvent(QResizeEvent *e)

@@ -51,7 +51,7 @@ bool ListModelVariablesAvailable::dropMimeData(const QMimeData *data, Qt::DropAc
 		return true;
 
 	if (ListModelVariables::dropMimeData(data, action, row, column, parent))
-	{
+	{	
 		resort();
 		return true;
 	}
@@ -78,6 +78,18 @@ QStringList ListModelVariablesAvailable::mimeTypes() const
 const QList<ColumnInfo> &ListModelVariablesAvailable::allVariables() const
 {
 	return _allVariables;
+}
+
+void ListModelVariablesAvailable::notifyAlreadyAssigned(const QList<ColumnInfo> &variables)
+{
+	if (supportedDragActions() & Qt::CopyAction)
+		return;
+
+	foreach (const ColumnInfo &toRemove, variables)
+	{
+		int index = _variables.indexOf(toRemove);
+		removeRow(index);
+	}
 }
 
 void ListModelVariablesAvailable::sendBack(QList<ColumnInfo> &variables)

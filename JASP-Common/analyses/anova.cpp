@@ -11,9 +11,6 @@
 #include "options/optionnumber.h"
 #include "options/optionstring.h"
 
-#include "rinterface.h"
-
-using namespace Json;
 using namespace analyses;
 
 Anova::Anova(int id)

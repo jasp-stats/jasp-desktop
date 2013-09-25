@@ -160,38 +160,6 @@
          <property name="verticalSpacing">
           <number>3</number>
          </property>
-         <item row="0" column="1">
-          <widget class="QWidget" name="widget_16" native="true"/>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Model Terms</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2" rowspan="4">
-          <widget class="ListView" name="listModelTerms">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>1</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="dragEnabled">
-            <bool>true</bool>
-           </property>
-           <property name="dragDropMode">
-            <enum>QAbstractItemView::DragDrop</enum>
-           </property>
-           <property name="defaultDropAction">
-            <enum>Qt::CopyAction</enum>
-           </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::ExtendedSelection</enum>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="1">
           <widget class="AssignButton" name="buttonAssignCross">
            <property name="maximumSize">
@@ -231,6 +199,48 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="columnLabel0">
+           <property name="text">
+            <string>Model Terms</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QWidget" name="widget_16" native="true"/>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="columnLabel1">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2" rowspan="4" colspan="2">
+          <widget class="TableView" name="listModelTerms">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>1</horstretch>
+             <verstretch>1</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="dragEnabled">
+            <bool>true</bool>
+           </property>
+           <property name="dragDropMode">
+            <enum>QAbstractItemView::DragDrop</enum>
+           </property>
+           <property name="defaultDropAction">
+            <enum>Qt::CopyAction</enum>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::ExtendedSelection</enum>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -256,9 +266,9 @@
    <header>widgets/assignbuttonmenu.h</header>
   </customwidget>
   <customwidget>
-   <class>ListView</class>
-   <extends>QListView</extends>
-   <header>widgets/listview.h</header>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header>widgets/tableview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

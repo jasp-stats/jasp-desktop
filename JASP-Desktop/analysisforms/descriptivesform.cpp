@@ -1,20 +1,23 @@
-#include "descriptives.h"
-#include "ui_descriptives.h"
+#include "descriptivesform.h"
+#include "ui_descriptivesform.h"
 
 #include <boost/foreach.hpp>
 
 #include <QDebug>
 
-Descriptives::Descriptives(QWidget *parent) :
+DescriptivesForm::DescriptivesForm(QWidget *parent) :
 	AnalysisForm(parent),
-	ui(new Ui::Descriptives)
+	ui(new Ui::DescriptivesForm)
 {
 	ui->setupUi(this);
 
 	ui->listAvailableFields->setModel(&_availableFields);
 	ui->listAvailableFields->setDoubleClickTarget(ui->main_fields);
 
-	ui->main_fields->setModel(new ListModelVariablesAssigned(this));
+	ListModelVariablesAssigned *model = new ListModelVariablesAssigned(this);
+	model->setSource(&_availableFields);
+
+	ui->main_fields->setModel(model);
 	ui->main_fields->setDoubleClickTarget(ui->listAvailableFields);
 
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->main_fields);
@@ -24,7 +27,7 @@ Descriptives::Descriptives(QWidget *parent) :
 	ui->pageFormat->hide();
 }
 
-Descriptives::~Descriptives()
+DescriptivesForm::~DescriptivesForm()
 {
     delete ui;
 }

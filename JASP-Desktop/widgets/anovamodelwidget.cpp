@@ -27,7 +27,7 @@ AnovaModelWidget::AnovaModelWidget(QWidget *parent) :
 	_listModelVariablesAvailable->setMimeType("application/vnd.list.term");
 	ui->listFactorsAvailable->setModel(_listModelVariablesAvailable);
 
-	connect(ui->listFactorsAvailable, SIGNAL(selectionUpdated()), this, SLOT(sourceSelectionChanged()));
+	ui->listFactorsAvailable->selectionUpdated.connect(boost::bind(&AnovaModelWidget::sourceSelectionChanged, this));
 
 	ui->buttonAssignCross->setSourceAndTarget(ui->listFactorsAvailable, ui->listModelTerms);
 	ui->buttonAssignMenu->setSourceAndTarget(ui->listFactorsAvailable, ui->listModelTerms);
@@ -82,6 +82,10 @@ void AnovaModelWidget::setModel(ListModelAnovaModel *model)
 	_listModelAnovaModel->setCustomModelMode(_customModel);
 
 	ui->listModelTerms->setModel(model);
+
+
+	ui->columnLabel0->setText(model->headerData(0, Qt::Horizontal, Qt::DisplayRole).toString());
+	ui->columnLabel1->setText(model->headerData(1, Qt::Horizontal, Qt::DisplayRole).toString());
 
 	variablesAvailableChanged();
 	connect(_listModelAnovaModel, SIGNAL(variablesAvailableChanged()), this, SLOT(variablesAvailableChanged()));

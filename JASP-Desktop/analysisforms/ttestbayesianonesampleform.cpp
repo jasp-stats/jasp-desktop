@@ -12,6 +12,7 @@ TTestBayesianOneSampleForm::TTestBayesianOneSampleForm(QWidget *parent) :
 	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
 	ListModelVariablesAssigned *variablesModel = new ListModelVariablesAssigned(this);
+	variablesModel->setSource(&_availableFields);
 	variablesModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);

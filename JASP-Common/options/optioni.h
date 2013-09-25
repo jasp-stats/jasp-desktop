@@ -13,10 +13,9 @@ public:
 
     OptionI(std::string name) : Option(name)
 	{
-
 	}
 
-	T value() const
+	virtual T value() const
 	{
 		return _value;
 	}

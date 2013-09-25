@@ -2,13 +2,13 @@
 
 using namespace std;
 
-OptionNumber::OptionNumber(string name, double value, double min, double max, int dp)
+OptionNumber::OptionNumber(string name, double value, double min, double max, string format)
 	: OptionI(name)
 {
 	_value = value;
 	_min = min;
 	_max = max;
-	_dp = dp;
+	_format = format;
 }
 
 Json::Value OptionNumber::asJSON() const
@@ -21,6 +21,24 @@ void OptionNumber::set(Json::Value &value)
 	_value = value.asDouble();
 }
 
+void OptionNumber::setValue(double value)
+{
+	if (_format == "%")
+		value /= 100.0;
+
+	OptionI::setValue(value);
+}
+
+double OptionNumber::value() const
+{
+	double value = OptionI::value();
+
+	if (_format == "%")
+		value *= 100.0;
+
+	return value;
+}
+
 double OptionNumber::min()
 {
 	return _min;
@@ -31,7 +49,7 @@ double OptionNumber::max()
 	return _max;
 }
 
-int OptionNumber::dp()
+string OptionNumber::format()
 {
-	return _dp;
+	return _format;
 }

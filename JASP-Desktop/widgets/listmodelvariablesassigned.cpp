@@ -24,8 +24,38 @@ void ListModelVariablesAssigned::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionFields *>(option);
 
-	if (dynamic_cast<OptionField *>(option) != NULL)
-		_onlyOne = true;
+	if (_boundTo != NULL)
+	{
+		if (dynamic_cast<OptionField *>(option) != NULL)
+			_onlyOne = true;
+
+		if (_source != NULL)
+		{
+			const vector<string> assigned = _boundTo->value();
+			const QList<ColumnInfo> &allVariables = _source->allVariables();
+
+			beginInsertRows(QModelIndex(), 0, assigned.size());
+
+			foreach (const ColumnInfo &variable, allVariables)
+			{
+				string variableName = variable.first.toStdString();
+				if (find(assigned.begin(), assigned.end(), variableName) != assigned.end())
+					_variables.append(variable);
+			}
+
+			endInsertRows();
+
+			_source->notifyAlreadyAssigned(_variables);
+		}
+		else
+		{
+			qDebug() << "ListModelVariablesAssigned::bindTo(); source not set";
+		}
+	}
+	else
+	{
+		qDebug() << "ListModelVariablesAssigned::bindTo(); option not of type OptionFields*";
+	}
 }
 
 bool ListModelVariablesAssigned::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
