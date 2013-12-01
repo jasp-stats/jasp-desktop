@@ -336,7 +336,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="AnovaModelWidget" name="model" native="true">
+       <widget class="AnovaModelWidget" name="modelTerms" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
           <horstretch>0</horstretch>

@@ -1,15 +1,13 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include <boost/interprocess/ipc/message_queue.hpp>
-#include <boost/interprocess/sync/named_semaphore.hpp>
 #include <map>
 
+#include "../JASP-Common/analyses.h"
 #include "../JASP-Common/lib_json/json.h"
 
 #include "rcppbridge.h"
-
-#define BUFFER_SIZE 1048576 // 1 meg
+#include "../JASP-Common/ipcchannel.h"
 
 class Engine
 {
@@ -18,36 +16,36 @@ public:
 	
 public:
 
-	void receiveMessage(char *buffer, size_t message_size);
 	void run();
+    void setParentPID(unsigned long pid);
+	void setSlaveNo(int no);
 	
 private:
 
-	void send(Json::Value json);
+	void receiveMessages(int timeout = 0);
+	void runAnalysis();
+	void analysisResultsChanged(Analysis *analysis);
 
-	char buffer[BUFFER_SIZE];
-	boost::interprocess::message_queue::size_type messageSize;
-	unsigned int priority;
+	bool shouldISuicide();
 
-	boost::posix_time::ptime _lastReceive;
+	Analysis *_currentAnalysis;
+	Analysis *_nextAnalysis;
 
-	//std::map<std::string, Json::Value> _analyses;
+	void send(Analysis *analysis);
+
 	Json::Value _currentRequest;
-	Json::Value _currentAnalysis;
 
-	boost::interprocess::message_queue *_mqIn;
-	boost::interprocess::message_queue *_mqOut;
+	IPCChannel *_channel;
 
 	DataSet *_dataSet;
 
 	RcppBridge _R;
 
-#ifdef __APPLE__
-	sem_t *_semaphoreIn;
-	sem_t *_semaphoreOut;
-#else
-    boost::interprocess::named_semaphore *_semaphoreIn;
-    boost::interprocess::named_semaphore *_semaphoreOut;
+	unsigned long _parentPID;
+	int _slaveNo;
+
+#ifdef __WIN32__
+    void* _parentHandle;
 #endif
 
 };

@@ -6,7 +6,7 @@
 #include "widgets/listmodelanovamodelnuisancefactors.h"
 
 AncovaForm::AncovaForm(QWidget *parent) :
-	AnalysisForm(parent),
+	AnalysisForm("AncovaForm", parent),
 	ui(new Ui::AncovaForm)
 {
 	ui->setupUi(this);

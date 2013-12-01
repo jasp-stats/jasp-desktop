@@ -16,6 +16,7 @@ public:
 
 	virtual void setModel(QAbstractItemModel *model);
 	virtual void bindTo(Option *option) override;
+	virtual void notifyDragWasDropped() override;
 
 protected:
 

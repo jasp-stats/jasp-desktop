@@ -1,5 +1,14 @@
 
-TTestPairedSamples <- function(data, options, perform="run", callback=NULL) {
+TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+
+	if (is.null(dataset))
+	{
+		if (perform == "run") {
+			dataset <- read.dataset.to.end()
+		} else {
+			dataset <- read.dataset.header()
+		}
+	}
 
 	results <- list()
 

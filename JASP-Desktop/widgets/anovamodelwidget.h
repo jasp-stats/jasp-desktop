@@ -6,7 +6,6 @@
 
 #include "bound.h"
 
-#include "options/optionstring.h"
 #include "options/optionfields.h"
 #include "availablefields.h"
 
@@ -58,7 +57,7 @@ private:
 
 	Ui::AnovaModelWidget *ui;
 
-	OptionString *_boundTo;
+	OptionFields *_boundTo;
 
 	ListModelVariablesAvailable *_listModelVariablesAvailable;
 	ListModelAnovaModel *_listModelAnovaModel;

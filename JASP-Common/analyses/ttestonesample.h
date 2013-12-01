@@ -3,9 +3,6 @@
 
 #include "../JASP-Common/analysis.h"
 
-namespace analyses
-{
-
 class TTestOneSample : public Analysis
 {
 public:
@@ -16,7 +13,5 @@ protected:
 	virtual Options *createDefaultOptions() OVERRIDE;
 
 };
-
-}
 
 #endif // ONESAMPLETTEST_H

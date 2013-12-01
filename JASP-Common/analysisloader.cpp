@@ -11,6 +11,9 @@
 #include "analyses/ancova.h"
 #include "analyses/anovabayesian.h"
 #include "analyses/ancovamultivariate.h"
+#include "analyses/regressionlinear.h"
+#include "analyses/contingencytables.h"
+#include "analyses/correlation.h"
 
 #include "analysispart.h"
 
@@ -18,49 +21,33 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 {
 
 	if (analysisName == "Descriptives")
-	{
-		return new analyses::Descriptives(id);
-    }
+		return new Descriptives(id);
 	else if (analysisName == "TTestOneSample")
-	{
-		return new analyses::TTestOneSample(id);
-	}
+		return new TTestOneSample(id);
 	else if (analysisName == "TTestIndependentSamples")
-	{
-		return new analyses::TTestIndependentSamples(id);
-	}
+		return new TTestIndependentSamples(id);
 	else if (analysisName == "TTestPairedSamples")
-	{
-		return new analyses::TTestPairedSamples(id);
-	}
+		return new TTestPairedSamples(id);
 	else if (analysisName == "TTestBayesianOneSample")
-	{
-		return new analyses::TTestBayesianOneSample(id);
-	}
+		return new TTestBayesianOneSample(id);
 	else if (analysisName == "AnovaOneWay")
-	{
-		return new analyses::AnovaOneWay(id);
-	}
+		return new AnovaOneWay(id);
 	else if (analysisName == "AnovaMultivariate")
-	{
-		return new analyses::AnovaMultivariate(id);
-	}
+		return new AnovaMultivariate(id);
 	else if (analysisName == "AncovaMultivariate")
-	{
-		return new analyses::AncovaMultivariate(id);
-	}
+		return new AncovaMultivariate(id);
 	else if (analysisName == "Anova")
-	{
-		return new analyses::Anova(id);
-	}
+		return new Anova(id);
 	else if (analysisName == "Ancova")
-	{
-		return new analyses::Ancova(id);
-	}
+		return new Ancova(id);
 	else if (analysisName == "AnovaBayesian")
-	{
-		return new analyses::AnovaBayesian(id);
-	}
+		return new AnovaBayesian(id);
+	else if (analysisName == "RegressionLinear")
+		return new RegressionLinear(id);
+	else if (analysisName == "ContingencyTables")
+		return new ContingencyTables(id);
+	else if (analysisName == "Correlation")
+		return new Correlation(id);
 	else
 	{
 		std::cout << "AnalysisLoader::laod(); Analysis not found: " << analysisName << "\n";

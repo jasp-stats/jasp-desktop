@@ -85,6 +85,32 @@ void ListModelAnovaModelNuisanceFactors::setNuisanceTermsOption(OptionFields *nu
 	_nuisanceOption = nuisanceOption;
 }
 
+void ListModelAnovaModelNuisanceFactors::mimeDataMoved(const QModelIndexList &indexes)
+{
+	beginResetModel();
+
+	QModelIndexList sorted = indexes;
+
+	int lastRowDeleted = -1;
+
+	qSort(sorted.begin(), sorted.end(), qGreater<QModelIndex>());
+
+	foreach (const QModelIndex &index, sorted)
+	{
+		int row = index.row();
+		if (row != lastRowDeleted)
+		{
+			_terms.removeAt(row);
+			_nuisance.removeAt(row);
+		}
+		lastRowDeleted = row;
+	}
+
+	endResetModel();
+
+	assignToOption();
+}
+
 bool ListModelAnovaModelNuisanceFactors::insertRows(int row, int count, const QModelIndex &parent)
 {
 	beginInsertRows(parent, row, row + count - 1);
@@ -114,6 +140,8 @@ bool ListModelAnovaModelNuisanceFactors::removeRows(int row, int count, const QM
 
 	assignToOption();
 	assignToNuisanceOption();
+
+	return true;
 }
 
 bool ListModelAnovaModelNuisanceFactors::setData(const QModelIndex &index, const QVariant &value, int role)

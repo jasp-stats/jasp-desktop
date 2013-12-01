@@ -1,35 +1,322 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <iostream>
-#include <fstream>
+#include "analysisforms/descriptivesform.h"
 
-#include <QString>
-#include <QFileDialog>
-#include <QGridLayout>
-#include <QLayout>
+#include "analysisforms/ttestbayesianonesampleform.h"
+#include "analysisforms/ttestpairedsamplesform.h"
+#include "analysisforms/ttestindependentsamplesform.h"
+#include "analysisforms/ttestonesampleform.h"
+
+#include "analysisforms/anovabayesianform.h"
+#include "analysisforms/anovaonewayform.h"
+#include "analysisforms/anovaform.h"
+#include "analysisforms/anovamultivariateform.h"
+#include "analysisforms/ancovaform.h"
+#include "analysisforms/ancovamultivariateform.h"
+#include "analysisforms/regressionlinearform.h"
+#include "analysisforms/contingencytablesform.h"
+#include "analysisforms/correlationform.h"
+
 #include <QDebug>
 #include <QWebFrame>
-#include <QWebElement>
+#include <QFile>
+#include <QToolTip>
 
-#include "backstageform.h"
+#include <QStringBuilder>
 
-
-using namespace std;
+#include "analysisloader.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+	QMainWindow(parent),
+	ui(new Ui::MainWindow)
 {
+	_inited = false;
+	_dataSet = NULL;
+	_tableModel = NULL;
+	_currentOptionsWidget = NULL;
+	_currentAnalysis = NULL;
+
     ui->setupUi(this);
+
+    QList<int> sizes = QList<int>();
+    sizes.append(600);
+    sizes.append(1);
+    ui->splitter->setSizes(sizes);
+
+    ui->tabBar->setFocusPolicy(Qt::NoFocus);
+    ui->tabBar->addTab(QString("File"));
+	ui->tabBar->addTab(QString("Home"));
+	ui->tabBar->addTab(QString("Analysis"));
+
+	QFile indexPageResource(QString(":/core/analyses.html"));
+    indexPageResource.open(QFile::ReadOnly);
+    QString indexPage(indexPageResource.readAll());
+
+#ifndef QT_NO_DEBUG
+    ui->webViewOptions->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    ui->webViewOptions->page()->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
+#endif
+
+	ui->webViewOptions->setHtml(indexPage, QUrl("qrc:/core/"));
+
+    ui->homeRibbon->setEnabled(false);
+	ui->ribbonAnalysis->setEnabled(false);
+
+	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
+
+	QFile a(QString(":/core/index.html"));
+	a.open(QFile::ReadOnly);
+
+	_tableModel = new DataSetTableModel();
+	ui->tableView->setModel(_tableModel);
+	ui->stackedLHS->setCurrentWidget(ui->pageData);
+	ui->tabBar->setCurrentIndex(1);
+
+	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
+	ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
+
+	_analyses = new Analyses();
+	_engineSync = new EngineSync(_analyses, this);
+
+	_analyses->analysisResultsChanged.connect(boost::bind(&MainWindow::analysisResultsChangedHandler, this, _1));
+
+	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
+
+	_alert = new ProgressWidget(ui->pageData);
+	_alert->setAutoFillBackground(true);
+	_alert->resize(400, 100);
+	_alert->move(100, 80);
+	_alert->hide();
+
+	connect(&_loader, SIGNAL(complete(DataSet*)), this, SLOT(dataSetLoaded(DataSet*)));
+	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
+	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
+	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
+
+	_buttonPanel = new QWidget(this);
+	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
+	_buttonPanelLayout->setSpacing(6);
+	_buttonPanelLayout->setContentsMargins(0, 12, 24, 0);
+	_buttonPanel->setLayout(_buttonPanelLayout);
+
+	_okButton = new QPushButton(QString("OK"), _buttonPanel);
+	_removeButton = new QPushButton(QString("Remove"), _buttonPanel);
+
+	_buttonPanelLayout->addWidget(_okButton);
+	_buttonPanelLayout->addWidget(_removeButton);
+
+	_buttonPanel->resize(_buttonPanel->sizeHint());
+	_buttonPanel->hide();
+
+	QTimer::singleShot(0, this, SLOT(repositionButtonPanel()));
+	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
+	connect(_removeButton, SIGNAL(clicked()), this, SLOT(analysisRemoved()));
+
+	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(repositionButtonPanel()));
+}
+
+void MainWindow::open(QString filename)
+{
+	dataSetSelected(filename);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+	delete ui;
 }
 
-void MainWindow::exitSelectedHandler()
+void MainWindow::resizeEvent(QResizeEvent *event)
 {
-	QApplication::exit(0);
+	QMainWindow::resizeEvent(event);
+	repositionButtonPanel();
+}
+
+void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
+{
+	string eval = "window.analysisChanged(" + analysis->asJSON().toStyledString() + ")";
+	QString evalQString = QString::fromUtf8(eval.c_str(), eval.length());
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(evalQString);
+}
+
+AnalysisForm* MainWindow::loadForm(Analysis *analysis)
+{
+	string name = analysis->name();
+
+	if (_analysisForms.find(name) != _analysisForms.end())
+		return _analysisForms[name];
+
+	AnalysisForm *form = NULL;
+
+	QWidget *contentArea = ui->optionsContentArea;
+
+	if (name == "Descriptives")
+		form = new DescriptivesForm(contentArea);
+	else if (name == "TTestBayesianOneSample")
+		form = new TTestBayesianOneSampleForm(contentArea);
+	else if (name == "TTestIndependentSamples")
+		form = new TTestIndependentSamplesForm(contentArea);
+	else if (name == "TTestPairedSamples")
+		form = new TTestPairedSamplesForm(contentArea);
+	else if (name == "TTestOneSample")
+		form = new TTestOneSampleForm(contentArea);
+	else if (name == "AnovaBayesian")
+		form = new AnovaBayesianForm(contentArea);
+	else if (name == "AnovaOneWay")
+		form = new AnovaOneWayForm(contentArea);
+	else if (name == "Anova")
+		form = new AnovaForm(contentArea);
+	else if (name == "Ancova")
+		form = new AncovaForm(contentArea);
+	else if (name == "AnovaMultivariate")
+		form = new AnovaMultivariateForm(contentArea);
+	else if (name == "AncovaMultivariate")
+		form = new AncovaMultivariateForm(contentArea);
+	else if (name == "RegressionLinear")
+		form = new RegressionLinearForm(contentArea);
+	else if (name == "ContingencyTables")
+		form = new ContingencyTablesForm(contentArea);
+	else if (name == "Correlation")
+		form = new CorrelationForm(contentArea);
+	else
+		qDebug() << "MainWidget::loadForm(); form not found : " << name.c_str();
+
+	if (form != NULL)
+		_analysisForms[name] = form;
+
+	return form;
+}
+
+void MainWindow::showForm(Analysis *analysis)
+{
+	if (_currentOptionsWidget != NULL)
+	{
+		_currentOptionsWidget->hide();
+		_currentOptionsWidget = NULL;
+	}
+
+	_currentOptionsWidget = loadForm(analysis);
+
+	if (_currentOptionsWidget != NULL)
+	{
+		Options *options = analysis->options();
+		_currentOptionsWidget->set(options, _dataSet);
+
+		_currentOptionsWidget->show();
+		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);
+		ui->stackedLHS->setCurrentWidget(ui->pageOptions2);
+
+		_buttonPanel->raise();
+		_buttonPanel->show();
+	}
+}
+
+void MainWindow::analysisSelectedHandler(int id)
+{
+	_currentAnalysis = _analyses->get(id);
+	if (_currentAnalysis != NULL)
+		showForm(_currentAnalysis);
+}
+
+void MainWindow::analysisUnselectedHandler()
+{
+	ui->stackedLHS->setCurrentWidget(ui->pageData);
+	_buttonPanel->hide();
+}
+
+void MainWindow::tabChanged(int index)
+{
+	if (index == 0)
+	{
+		ui->topLevelWidgets->setCurrentIndex(0);
+	}
+	else
+	{
+		ui->topLevelWidgets->setCurrentIndex(1);
+		ui->ribbon->setCurrentIndex(index - 1);
+	}
+}
+
+void MainWindow::dataSetSelected(const QString &filename)
+{
+	_tableModel->clearDataSet();
+
+	if (_dataSet != NULL)
+	{
+		_loader.free(_dataSet);
+		_dataSet = NULL;
+	}
+
+	_loader.load(filename);
+	_alert->show();
+	ui->tabBar->setCurrentIndex(1);
+}
+
+void MainWindow::dataSetLoaded(DataSet *dataSet)
+{
+	_dataSet = dataSet;
+
+	_tableModel->setDataSet(dataSet);
+
+    ui->homeRibbon->setEnabled(true);
+	ui->ribbonAnalysis->setEnabled(true);
+
+	_alert->hide();
+
+	if (_inited == false)
+	{
+		ui->webViewResults->page()->mainFrame()->addToJavaScriptWindowObject("jasp", this);
+		_inited = true;
+	}
+
+	//QToolTip::showText(ui->tableView->pos(), QString("bruce"), ui->tableView, QRect(100, 100, 200, 200));
+
+}
+
+void MainWindow::itemSelected(const QString item)
+{
+	string name = item.toStdString();
+	_currentAnalysis = _analyses->create(name);
+	if (_currentAnalysis != NULL)
+	{
+		showForm(_currentAnalysis);
+		repositionButtonPanel();
+		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
+	}
+}
+
+void MainWindow::messageReceived(const QString message)
+{
+	QString eval = "window.receiveMessage(" % message % ")";
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
+}
+
+void MainWindow::repositionButtonPanel()
+{
+	int overallWidth = ui->splitter->sizes().at(0);
+	int panelWidth = _buttonPanel->width();
+
+	QPoint pos = ui->splitter->mapTo(this, QPoint());
+
+	_buttonPanel->move(overallWidth - panelWidth, pos.y());
+	_buttonPanel->raise();
+}
+
+void MainWindow::analysisOKed()
+{
+	ui->stackedLHS->setCurrentWidget(ui->pageData);
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.unselect()");
+	_buttonPanel->hide();
+}
+
+void MainWindow::analysisRemoved()
+{
+	ui->stackedLHS->setCurrentWidget(ui->pageData);
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
+	_buttonPanel->hide();
+
+	// TODO should also clean up data from the R session
 }

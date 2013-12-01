@@ -1,10 +1,7 @@
 #ifndef TTESTINDEPENDENTSAMPLES_H
 #define TTESTINDEPENDENTSAMPLES_H
 
-#include "../JASP-Common/analysis.h"
-
-namespace analyses
-{
+#include "analysis.h"
 
 class TTestIndependentSamples : public Analysis
 {
@@ -16,7 +13,5 @@ protected:
 	virtual Options *createDefaultOptions() OVERRIDE;
 
 };
-
-}
 
 #endif // TTESTINDEPENDENTSAMPLES_H

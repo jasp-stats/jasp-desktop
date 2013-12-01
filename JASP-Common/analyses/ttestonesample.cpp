@@ -9,7 +9,7 @@
 #include "options/optionlist.h"
 #include "options/optionnumber.h"
 
-using namespace analyses;
+using namespace std;
 
 TTestOneSample::TTestOneSample(int id)
 	: Analysis(id, "TTestOneSample")
@@ -22,14 +22,22 @@ Options *TTestOneSample::createDefaultOptions()
 
 	options->add(new OptionFields("variables"));
 	options->add(new OptionNumber("testValue", 0));
-	options->add(new OptionList("tails", "twoTailed"));
+
+	vector<string> tails;
+	tails.push_back("twoTailed");
+
+	options->add(new OptionList("tails", tails));
 
 	options->add(new OptionBoolean("meanDifference"));
 	options->add(new OptionBoolean("confidenceInterval"));
 	options->add(new OptionNumber("confidenceIntervalInterval", .95, 0, 1, "%"));
 	options->add(new OptionBoolean("descriptives"));
 
-	options->add(new OptionList("missingValues", "excludeAnalysisByAnalysis"));
+	vector<string> missingValues;
+	missingValues.push_back("excludeAnalysisByAnalysis");
+	missingValues.push_back("excludeListwise");
+
+	options->add(new OptionList("missingValues", missingValues));
 
 	return options;
 }

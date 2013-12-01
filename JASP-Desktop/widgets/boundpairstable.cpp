@@ -40,6 +40,12 @@ void BoundPairsTable::bindTo(Option *option)
 		_tableModel->bindTo(option);
 }
 
+void BoundPairsTable::notifyDragWasDropped()
+{
+	if (_tableModel != NULL)
+		_tableModel->mimeDataMoved(selectedIndexes());
+}
+
 void BoundPairsTable::setModel(QAbstractItemModel *model)
 {
 	_tableModel = qobject_cast<TableModelVariablesAssigned *>(model);

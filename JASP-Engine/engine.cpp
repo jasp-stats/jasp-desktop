@@ -9,6 +9,16 @@
 
 #include <sstream>
 
+#ifdef __WIN32__
+
+#undef Realloc
+#undef Free
+
+#include <windows.h>
+#include <winbase.h>
+
+#endif
+
 using namespace std;
 using namespace boost::interprocess;
 using namespace Json;
@@ -17,134 +27,172 @@ using namespace boost::posix_time;
 Engine::Engine()
 {
 	_dataSet = NULL;
+	_channel = NULL;
+    _parentPID = 0;
+	_slaveNo = 0;
+	_currentAnalysis = NULL;
+	_nextAnalysis = NULL;
 }
 
-void Engine::receiveMessage(char *buffer, size_t message_size)
+void Engine::runAnalysis()
 {
-	cout << "Engine Receives : " << string(buffer, message_size);
-	cout.flush();
-
-	Value v;
-	Reader r;
-	r.parse(buffer, &buffer[message_size], v, false);
-
-	_currentAnalysis = v;
-
-	string analysisName = _currentAnalysis.get("name", nullValue).asString();
-	int id = _currentAnalysis.get("id", nullValue).asInt();
-	Value options = _currentAnalysis.get("options", nullValue);
-	string perform = _currentAnalysis.get("perform", "init").asString();
-
-	Analysis *analysis = AnalysisLoader::load(id, analysisName);
-	analysis->options()->set(options);
-
-	if (_dataSet == NULL)
+	if (_currentAnalysis == NULL || _currentAnalysis->status() == Analysis::Complete || _currentAnalysis->status() == Analysis::Aborted)
 	{
-		managed_shared_memory *mem = SharedMemory::get();
-		_dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
-		_R.setDataSet(_dataSet);
+		if (_nextAnalysis != NULL)
+		{
+			if (_currentAnalysis != NULL)
+				delete _currentAnalysis;
+			_currentAnalysis = _nextAnalysis;
+			_nextAnalysis = NULL;
+		}
+		else
+		{
+			return;
+		}
 	}
 
-	if (analysis != NULL)
-	{
-		analysis->setDataSet(_dataSet);
-		analysis->setRInterface(&_R);
+	while (_currentAnalysis->status() == Analysis::Empty)
+		_currentAnalysis->init();
 
-		analysis->init();
+	while (_currentAnalysis->status() == Analysis::Running)
+		_currentAnalysis->run();
 
-		Value results = Value(objectValue);
+	while (_currentAnalysis->status() == Analysis::Empty)
+		_currentAnalysis->init();
+}
 
-		results["id"] = id;
-		results["name"] = analysisName;
-		results["results"] = analysis->results();
-		results["perform"] = "init";
+void Engine::analysisResultsChanged(Analysis *analysis)
+{
+	receiveMessages();
 
-		if (perform == "init")
-			send(results);
-
-		analysis->run();
-
-		results["results"] = analysis->results();
-		results["perform"] = "run";
-
-		send(results);
-
-		delete analysis;
-	}
+	if (analysis->status() != Analysis::Empty) // i.e. didn't become uninitialised by the messages received
+		send(analysis);
 }
 
 void Engine::run()
 {
-	int timeouts = 0;
-
-    _mqIn = new message_queue(open_only, "JASP_MQ");
-    _mqOut = new message_queue(open_only, "JASPEngine_MQ");
-
-#ifdef __APPLE__
-    _semaphoreIn = sem_open("JASP_SM", O_EXCL);
-    _semaphoreOut = sem_open("JASPEngine_SM", O_EXCL);
-#else
-    _semaphoreIn = new named_semaphore(open_only, "JASP_SM");
-    _semaphoreOut = new named_semaphore(open_only, "JASPEngine_SM");
+#ifdef __WIN32__
+	if (_parentPID != 0)
+        _parentHandle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, _parentPID);
 #endif
 
-	_lastReceive = microsec_clock::universal_time();
+	_channel = new IPCChannel("JASP_IPC", _slaveNo, true);
 
 	do
 	{
-		// waiting semaphores in OSX consume 100% CPU!
+		receiveMessages(20);
+		if (shouldISuicide())
+			break;
+		runAnalysis();
 
-#ifdef __APPLE__
-		if (sem_trywait(_semaphoreIn) == 0)  // 0 = success?!
-#else
-
-		ptime now(microsec_clock::universal_time());
-		ptime then = now + microseconds(20000);
-
-        //if (_semaphoreIn->timed_wait(then))
-        _semaphoreIn->wait();
-#endif
-		{
-			if (_mqIn->try_receive(buffer, sizeof(buffer), messageSize, priority))
-				receiveMessage(buffer, messageSize);
-			_lastReceive = microsec_clock::universal_time();
-			timeouts = 0;
-		}
-#ifdef __APPLE__
-		else
-		{
-			usleep(20000);
-		}
-
-		time_duration elapsed = microsec_clock::universal_time() - _lastReceive;
-		if (elapsed.total_milliseconds() > 100)
-		{
-			_lastReceive = microsec_clock::universal_time();
-			timeouts++;
-
-			if (timeouts >= 10)
-				break;
-		}
-
-#endif
 	}
-	while(1);
+    while(1);
 }
 
-void Engine::send(Json::Value json)
+void Engine::setParentPID(unsigned long pid)
 {
-	string message = json.toStyledString();
+	_parentPID = pid;
+}
 
-	cout << message;
-	cout.flush();
+void Engine::setSlaveNo(int no)
+{
+	_slaveNo = no;
+}
 
-	int length = message.length();
+void Engine::receiveMessages(int timeout)
+{
+	string data;
 
-	_mqOut->send(message.c_str(), message.length(), 0);
+	if (_channel->receive(data, timeout))
+	{
+		Value jsonRequest;
+		Reader r;
+		r.parse(data, jsonRequest, false);
 
-#ifdef __APPLE__
-	sem_post(_semaphoreOut);
+		string analysisName = jsonRequest.get("name", nullValue).asString();
+		int id = jsonRequest.get("id", -1).asInt();
+		bool run = jsonRequest.get("perform", "run").asString() == "run";
+		Value jsonOptions = jsonRequest.get("options", nullValue);
+
+		if (_currentAnalysis != NULL && _currentAnalysis->id() == id)
+		{
+			_currentAnalysis->options()->set(jsonOptions);
+			if (run)
+				_currentAnalysis->setStatus(Analysis::Running);
+		}
+		else if (_nextAnalysis != NULL && _nextAnalysis->id() == id)
+		{
+			_nextAnalysis->options()->set(jsonOptions);
+			if (run)
+				_nextAnalysis->setStatus(Analysis::Running);
+		}
+		else
+		{
+			Analysis *analysis = AnalysisLoader::load(id, analysisName);
+			analysis->options()->set(jsonOptions);
+			if (run)
+				analysis->setStatus(Analysis::Running);
+
+			if (_dataSet == NULL)
+			{
+				managed_shared_memory *mem = SharedMemory::get();
+				_dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
+				_R.setDataSet(_dataSet);
+			}
+
+			analysis->setDataSet(_dataSet);
+			analysis->setRInterface(&_R);
+			analysis->resultsChanged.connect(boost::bind(&Engine::analysisResultsChanged, this, _1));
+
+			if (_nextAnalysis != NULL)
+				delete _nextAnalysis;
+
+			_nextAnalysis = analysis;
+
+			if (_currentAnalysis != NULL)
+				_currentAnalysis->setStatus(Analysis::Aborted);
+		}
+	}
+}
+
+void Engine::send(Analysis *analysis)
+{
+	Value results = Value(objectValue);
+
+	results["id"] = analysis->id();
+	results["name"] = analysis->name();
+	results["results"] = analysis->results();
+	results["complete"] = analysis->status() == Analysis::Complete;
+
+	string message = results.toStyledString();
+
+	//cout << message;
+	//cout.flush();
+
+	_channel->send(message);
+}
+
+bool Engine::shouldISuicide()  // check if parent is dead
+{
+#ifdef __WIN32__
+
+    if (_parentHandle != NULL)
+	{
+		BOOL success;
+		DWORD exitCode;
+
+        success = GetExitCodeProcess(_parentHandle, &exitCode);
+
+		if (success && exitCode != STILL_ACTIVE)
+			return true;
+	}
+
 #else
-    _semaphoreOut->post();
+
+	if (getppid() == 1)
+		return true;
+
 #endif
+
+	return false;
 }

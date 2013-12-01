@@ -5,6 +5,9 @@
 
 #include "widgets/infopopup.h"
 
+#include "datasettablemodel.h"
+#include "maintablehorizontalheader.h"
+
 class MainTableView : public QTableView
 {
 	Q_OBJECT
@@ -24,8 +27,12 @@ public slots:
 
 private slots:
 	void badDataEnteredHandler(QModelIndex index);
+	void columnTypeChanged(int columnIndex, Column::ColumnType newColumnType);
 
 private:
+
+	DataSetTableModel *_dataSetModel;
+
 	bool _infoPopupVisible;
 	QModelIndex _infoPopupIndex;
 	InfoPopup *_infoPopup;
@@ -33,6 +40,8 @@ private:
 	void showInfoPopup(QModelIndex &index);
 	void moveInfoPopup();
 	void hideInfoPopup();
+
+	MainTableHorizontalHeader *_header;
 	
 };
 

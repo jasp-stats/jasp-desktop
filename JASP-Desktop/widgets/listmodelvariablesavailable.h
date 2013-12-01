@@ -20,6 +20,7 @@ public:
 	const QList<ColumnInfo> &allVariables() const;
 
 	void notifyAlreadyAssigned(const QList<ColumnInfo> &variables);
+	bool removeRows(int row, int count, const QModelIndex &parent) override;
 
 signals:
 	void variablesChanged();

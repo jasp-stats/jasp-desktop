@@ -15,11 +15,11 @@ protected:
 public:
 	boost::signals2::signal<void ()> focused;
 	boost::signals2::signal<void ()> selectionUpdated;
+
 	QAbstractItemView *view() { if (_view == NULL) _view = dynamic_cast<QAbstractItemView*>(this); return _view; }
 	bool hasSelection() { return view()->selectionModel()->selectedIndexes().length() > 0; }
 
-private:
-	virtual void makeVirtualSoThatTheDynamicCastWorks() {}
+	virtual void notifyDragWasDropped() { }
 
 	QAbstractItemView *_view;
 };

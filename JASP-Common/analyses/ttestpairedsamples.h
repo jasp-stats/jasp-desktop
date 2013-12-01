@@ -3,9 +3,6 @@
 
 #include "analysis.h"
 
-namespace analyses
-{
-
 class TTestPairedSamples : public Analysis
 {
 public:
@@ -16,7 +13,5 @@ protected:
 	virtual Options *createDefaultOptions() OVERRIDE;
 
 };
-
-}
 
 #endif // TTESTPAIREDSAMPLES_H

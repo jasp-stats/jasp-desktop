@@ -1,5 +1,14 @@
 
-AnovaMultivariate <- function(data, options, perform="run", callback=NULL) {
+AnovaMultivariate <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+
+	if (is.null(dataset))
+	{
+		if (perform == "run") {
+			dataset <- read.dataset.to.end()
+		} else {
+			dataset <- read.dataset.header()
+		}
+	}
 
 	results <- list()
 	

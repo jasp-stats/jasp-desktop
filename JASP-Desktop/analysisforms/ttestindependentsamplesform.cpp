@@ -4,7 +4,7 @@
 #include "analysisform.h"
 
 TTestIndependentSamplesForm::TTestIndependentSamplesForm(QWidget *parent) :
-	AnalysisForm(parent),
+	AnalysisForm("TTestIndependentSamplesForm", parent),
 	ui(new Ui::TTestIndependentSamplesForm)
 {
 	ui->setupUi(this);

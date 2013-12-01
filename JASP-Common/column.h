@@ -133,6 +133,9 @@ public:
 	enum ColumnType { ColumnTypeNominal = 1, ColumnTypeOrdinal = 2, ColumnTypeScale = 4 };
 	ColumnType columnType() const;
 
+	ColumnType columnTypesAllowed() const;
+	void changeColumnType(ColumnType newColumnType);
+
 	int rowCount() const;
 
 	bool hasLabels();
@@ -148,6 +151,7 @@ private:
 	DataType _dataType;
 	int _rowCount;
 	ColumnType _columnType;
+	ColumnType _columnTypesAllowed;
 
 	BlockMap _blocks;
 

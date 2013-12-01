@@ -20,29 +20,8 @@ void DragAndDrop::perform(DropTarget *source, DropTarget *target, int flags)
 	else
 		success = model->dropMimeData(mimeData, action, -1, 0, QModelIndex());
 
-	if (success)
-	{
-		if (action == Qt::MoveAction)
-		{
-			while (indices.length() > 0)
-			{
-				QModelIndex lowest;
+	if (success && action == Qt::MoveAction && source != target)
+		source->notifyDragWasDropped();
 
-				foreach (QModelIndex index, indices)
-				{
-					if (index.row() > lowest.row())
-						lowest = index;
-				}
-
-				foreach (QModelIndex index, indices)
-				{
-					if (index.row() == lowest.row())
-						indices.removeOne(index);
-				}
-
-				source->view()->model()->removeRows(lowest.row(), 1);
-			}
-		}
-	}
 }
 

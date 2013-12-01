@@ -26,20 +26,9 @@ public:
 	boost::signals2::signal<void (Analysis *source)> optionsChanged;
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
 
-	typedef std::vector<AnalysisPart*>::iterator iterator;
-
-	//iterator begin();
-	//iterator end();
-
-	//bool isCompleted();
-
 	void setResults(Json::Value results);
 	Json::Value results();
 	Json::Value asJSON();
-
-	int revision();
-
-	bool isInitialised();
 
 	std::string name();
 	int id();
@@ -48,10 +37,17 @@ public:
 	virtual void run();
 
 	void setRInterface(RInterface *r);
-
 	void setDataSet(DataSet *dataSet);
+	void setOptions(Options* options);
+
+	enum Status { Empty, Initing, Inited, Running, Complete, Aborted };
+
+	Status status();
+	void setStatus(Status status);
 
 protected:
+
+	Status _status;
 
 	virtual Options *createDefaultOptions() = 0;
 
@@ -61,36 +57,14 @@ protected:
 	RInterface *_r;
 	Json::Value _results;
 
+	int callback(Json::Value results);
+
 private:
 	int _id;
 	std::string _name;
-	int _revision;
-
-
-	std::map<std::string, AnalysisPart *> _analysisParts;
 
 	void optionsChangedHandler();
 
-	bool _inited;
-
-	Json::Value _data;
 };
-
-/*namespace boost
-{
-	// specialize range_mutable_iterator and range_const_iterator in namespace boost
-	template <>
-	struct range_const_iterator< Analysis >
-	{
-		typedef Analysis::iterator type;
-	};
-
-	template<>
-	struct range_mutable_iterator< Analysis >
-	{
-		typedef Analysis::iterator type;
-	};
-}*/
-
 
 #endif // ANALYSIS_H

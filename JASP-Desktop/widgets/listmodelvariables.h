@@ -28,7 +28,6 @@ public:
 	virtual int rowCount(const QModelIndex &) const override;
 	virtual QVariant data(const QModelIndex &index, int role) const override;
 
-	virtual bool removeRows(int row, int count, const QModelIndex &parent) override;
 	virtual bool insertRows(int row, int count, const QModelIndex &parent) override;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
 
@@ -47,12 +46,15 @@ public:
 
 	void setMimeType(const QString &mimeType);
 
+	virtual void mimeDataMoved(const QModelIndexList &indexes);
 protected:
 
 	QList<ColumnInfo> _variables;
 
 	bool isForbidden(int variableType) const;
 	bool isDroppingToSelf(const QMimeData *mimeData) const;
+
+	QString _mimeType;
 
 private:
 
@@ -67,8 +69,6 @@ private:
 	QIcon _nominalIcon;
 	QIcon _ordinalIcon;
 	QIcon _scaleIcon;
-
-	QString _mimeType;
 	
 };
 

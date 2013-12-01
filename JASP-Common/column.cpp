@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include <boost/lexical_cast.hpp>
+#include <cmath>
 
 using namespace boost::interprocess;
 using namespace std;
@@ -17,6 +18,7 @@ Column::Column() :
 	_dataType = Column::DataTypeInt;
 	_rowCount = 0;
 	_columnType = Column::ColumnTypeNominal;
+	_columnTypesAllowed = Column::ColumnTypeNominal;
 
 	ull firstId = DataBlock::capacity();
 	DataBlock *firstBlock = SharedMemory::get()->construct<DataBlock>(anonymous_instance)();
@@ -71,6 +73,65 @@ Column::DataType Column::dataType() const
 Column::ColumnType Column::columnType() const
 {
 	return _columnType;
+}
+
+Column::ColumnType Column::columnTypesAllowed() const
+{
+	return _columnTypesAllowed;
+}
+
+void Column::changeColumnType(Column::ColumnType newColumnType)
+{
+	if (newColumnType == _columnType)
+		return;
+
+	if ((newColumnType & _columnTypesAllowed) != 0)
+	{
+		if (_columnType != Column::ColumnTypeScale && newColumnType == Column::ColumnTypeScale)
+		{
+			Ints::iterator ints = this->AsInts.begin();
+			Ints::iterator end = this->AsInts.end();
+			Doubles::iterator doubles = this->AsDoubles.begin();
+
+			for (; ints != end; ints++, doubles++)
+			{
+				int value = *ints;
+				if (value == INT_MIN)
+					*doubles = std::numeric_limits<double>::quiet_NaN();
+				else
+					*doubles = (double)*ints;
+			}
+
+			_dataType = Column::DataTypeDouble;
+			_columnType = newColumnType;
+		}
+		else if (_columnType == Column::ColumnTypeScale && newColumnType != Column::ColumnTypeScale)
+		{
+			Ints::iterator ints = this->AsInts.begin();
+			Ints::iterator end = this->AsInts.end();
+			Doubles::iterator doubles = this->AsDoubles.begin();
+
+			for (; ints != end; ints++, doubles++)
+			{
+				double value = *doubles;
+				if (isnan(value))
+					*ints = INT_MIN;
+				else
+					*ints = (int)*doubles;
+			}
+
+			_dataType = Column::DataTypeInt;
+			_columnType = newColumnType;
+		}
+		else
+		{
+			_columnType = newColumnType;
+		}
+	}
+	else
+	{
+		//qDebug() << "Column::changeColumnType(); column type not allowed";
+	}
 }
 
 int Column::rowCount() const

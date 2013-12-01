@@ -397,15 +397,8 @@
       </sizepolicy>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderModel">
-        <property name="text">
-         <string>Model</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
-       <widget class="AnovaModelWidget" name="model" native="true">
+       <widget class="AnovaModelWidget" name="modelTerms" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -418,6 +411,45 @@
           <height>200</height>
          </size>
         </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderModel">
+        <property name="text">
+         <string>Model</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QWidget" name="sumOfSquaresContainer" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Sum or Squares</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="BoundComboBox" name="sumOfSquares"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -451,6 +483,11 @@
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

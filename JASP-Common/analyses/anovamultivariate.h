@@ -1,10 +1,7 @@
 #ifndef ANOVAMULTIVARIATE_H
 #define ANOVAMULTIVARIATE_H
 
-#include "../JASP-Common/analysis.h"
-
-namespace analyses
-{
+#include "analysis.h"
 
 class AnovaMultivariate : public Analysis
 {
@@ -16,7 +13,5 @@ protected:
 	virtual Options *createDefaultOptions() OVERRIDE;
 
 };
-
-}
 
 #endif // ANOVAMULTIVARIATE_H

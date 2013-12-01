@@ -6,7 +6,7 @@
 #include "widgets/listmodelanovamodelnuisancefactors.h"
 
 AnovaForm::AnovaForm(QWidget *parent) :
-	AnalysisForm(parent),
+	AnalysisForm("AnovaForm", parent),
 	ui(new Ui::AnovaForm)
 {
 	ui->setupUi(this);
@@ -44,8 +44,13 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
 	_anovaModel = new ListModelAnovaModel(this);
-	ui->model->setModel(_anovaModel);
-	ui->model->hide();
+	ui->modelTerms->setModel(_anovaModel);
+	ui->modelTerms->hide();
+
+	ui->sumOfSquaresContainer->hide();
+	ui->sumOfSquares->addItem("Type I");
+	ui->sumOfSquares->addItem("Type II");
+	ui->sumOfSquares->addItem("Type III");
 }
 
 AnovaForm::~AnovaForm()

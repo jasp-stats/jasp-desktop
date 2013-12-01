@@ -11,6 +11,7 @@
 TableView::TableView(QWidget *parent) :
 	QTableView(parent)
 {
+	_tableModel = NULL;
 	_defaultDropTarget = NULL;
 
 	connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(doubleClickedHandler(QModelIndex)));
@@ -24,9 +25,22 @@ TableView::TableView(QWidget *parent) :
 	verticalHeader()->setDefaultSectionSize(verticalHeader()->fontMetrics().height() + 2);
 }
 
+void TableView::setModel(QAbstractItemModel *model)
+{
+	_tableModel = qobject_cast<TableModel *>(model);
+
+	QTableView::setModel(model);
+}
+
 void TableView::setDoubleClickTarget(DropTarget *target)
 {
 	_defaultDropTarget = target;
+}
+
+void TableView::notifyDragWasDropped()
+{
+	if (_tableModel != NULL)
+		_tableModel->mimeDataMoved(selectedIndexes());
 }
 
 void TableView::focusInEvent(QFocusEvent *event)
@@ -39,6 +53,19 @@ void TableView::selectionChanged(const QItemSelection &selected, const QItemSele
 {
 	QTableView::selectionChanged(selected, deselected);
 	selectionUpdated();
+}
+
+void TableView::dropEvent(QDropEvent *event)
+{
+	QTableView::dropEvent(event);
+
+	if (event->isAccepted() && event->dropAction() == Qt::MoveAction)
+	{
+		QObject *source = event->source();
+		DropTarget *draggedFrom = dynamic_cast<DropTarget*>(source);
+		if (draggedFrom != NULL)
+			draggedFrom->notifyDragWasDropped();
+	}
 }
 
 void TableView::resizeEvent(QResizeEvent *event)

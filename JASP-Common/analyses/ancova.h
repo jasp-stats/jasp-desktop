@@ -1,10 +1,7 @@
 #ifndef ANCOVA_H
 #define ANCOVA_H
 
-#include "../JASP-Common/analysis.h"
-
-namespace analyses
-{
+#include "analysis.h"
 
 class Ancova : public Analysis
 {
@@ -16,7 +13,5 @@ protected:
 	virtual Options *createDefaultOptions() OVERRIDE;
 
 };
-
-}
 
 #endif // ANCOVA_H

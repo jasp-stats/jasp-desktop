@@ -12,24 +12,38 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	QMenu *menu = new QMenu(this);
 
-	menu->addAction(QString("Bayesian One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianOneSample");
-	menu->addSeparator();
 	menu->addAction(QString("Independent Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestIndependentSamples");
 	menu->addAction(QString("Paired Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestPairedSamples");
 	menu->addAction(QString("One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestOneSample");
 
-	ui->TTest->setMenu(menu);
+	ui->classicalTTestButton->setMenu(menu);
 
 	menu = new QMenu(this);
-	menu->addAction(QString("Bayesian ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
-	menu->addSeparator();
 	menu->addAction(QString("One Way ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaOneWay");
 	menu->addAction(QString("ANOVA"), this, SLOT(itemSelected()))->setObjectName("Anova");
 	menu->addAction(QString("ANCOVA"), this, SLOT(itemSelected()))->setObjectName("Ancova");
 	menu->addAction(QString("MAN(C)OVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");
 	//menu->addAction(QString("MANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");
 
-	ui->Anova->setMenu(menu);
+	ui->classicalAnovaButton->setMenu(menu);
+
+	menu = new QMenu(this);
+	menu->addAction(QString("Correlation"), this, SLOT(itemSelected()))->setObjectName("Correlation");
+	menu->addAction(QString("Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinear");
+	menu->addSeparator();
+	menu->addAction(QString("Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTables");
+
+	ui->classicalRegressionButton->setMenu(menu);
+
+	menu = new QMenu(this);
+	menu->addAction(QString("Bayesian One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianOneSample");
+
+	ui->bayesianTTestButton->setMenu(menu);
+
+	menu = new QMenu(this);
+	menu->addAction(QString("Bayesian ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
+
+	ui->bayesianAnovaButton->setMenu(menu);
 }
 
 RibbonAnalysis::~RibbonAnalysis()

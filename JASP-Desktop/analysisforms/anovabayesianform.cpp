@@ -2,7 +2,7 @@
 #include "ui_anovabayesianform.h"
 
 AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
-	AnalysisForm(parent),
+	AnalysisForm("AnovaBayesianForm", parent),
 	ui(new Ui::AnovaBayesianForm)
 {
 	ui->setupUi(this);
@@ -33,8 +33,8 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
 	_anovaModel = new ListModelAnovaModelNuisanceFactors(this);
-	ui->model->setModel(_anovaModel);
-	ui->model->hide();
+	ui->modelTerms->setModel(_anovaModel);
+	ui->modelTerms->hide();
 }
 
 AnovaBayesianForm::~AnovaBayesianForm()

@@ -11,8 +11,6 @@
 #include "options/optionnumber.h"
 #include "options/optionstring.h"
 
-using namespace analyses;
-
 AnovaMultivariate::AnovaMultivariate(int id)
 	: Analysis(id, "AnovaMultivariate")
 {
