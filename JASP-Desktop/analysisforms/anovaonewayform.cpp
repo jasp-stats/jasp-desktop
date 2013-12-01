@@ -3,10 +3,8 @@
 
 #include "analysisform.h"
 
-#include "boost/foreach.hpp"
-
 AnovaOneWayForm::AnovaOneWayForm(QWidget *parent) :
-	AnalysisForm(parent),
+	AnalysisForm("AnovaOneWayForm", parent),
 	ui(new Ui::AnovaOneWayForm)
 {
 	ui->setupUi(this);

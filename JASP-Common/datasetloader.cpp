@@ -170,7 +170,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 
 		BOOST_FOREACH(string &value, columnRows)
 		{
-			if (value != "NaN" && value != "")
+			if (value != "NaN" && value != "nan" && value != "")
 			{
 				try
 				{
@@ -192,7 +192,9 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 
 		if (success)
 		{
+			column._dataType = Column::DataTypeInt;
 			column._columnType = Column::ColumnTypeOrdinal;
+			column._columnTypesAllowed = (Column::ColumnType)(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 			continue;
 		}
 
@@ -217,6 +219,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 		{
 			column._dataType = Column::DataTypeDouble;
 			column._columnType = Column::ColumnTypeScale;
+			column._columnTypesAllowed = Column::ColumnTypeScale;
 			continue;
 		}
 
@@ -245,7 +248,9 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 			intInputItr++;
 		}
 
+		column._dataType = Column::DataTypeInt;
 		column._columnType = Column::ColumnTypeNominal;
+		column._columnTypesAllowed = Column::ColumnTypeNominal;
 	}
 
 	return dataSet;

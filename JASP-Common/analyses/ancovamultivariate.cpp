@@ -11,8 +11,6 @@
 #include "options/optionnumber.h"
 #include "options/optionstring.h"
 
-using namespace analyses;
-
 AncovaMultivariate::AncovaMultivariate(int id)
 	: Analysis(id, "AncovaMultivariate")
 {

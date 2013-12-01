@@ -15,9 +15,6 @@ ListModelVariablesAssigned::ListModelVariablesAssigned(QObject *parent)
 	_boundTo = NULL;
 	_onlyOne = false;
 	_source = NULL;
-
-	connect(this, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(assignToBoundOption()));
-	connect(this, SIGNAL(rowsRemoved(const QModelIndex,int,int)), this, SLOT(assignToBoundOption()));
 }
 
 void ListModelVariablesAssigned::bindTo(Option *option)
@@ -34,16 +31,22 @@ void ListModelVariablesAssigned::bindTo(Option *option)
 			const vector<string> assigned = _boundTo->value();
 			const QList<ColumnInfo> &allVariables = _source->allVariables();
 
-			beginInsertRows(QModelIndex(), 0, assigned.size());
+			beginResetModel();
 
-			foreach (const ColumnInfo &variable, allVariables)
+			_variables.clear();
+
+			foreach (const string &value, assigned)
 			{
-				string variableName = variable.first.toStdString();
-				if (find(assigned.begin(), assigned.end(), variableName) != assigned.end())
-					_variables.append(variable);
+				QString utf8 = QString::fromUtf8(value.c_str(), value.length());
+
+				foreach (const ColumnInfo &info, allVariables)
+				{
+					if (info.first == utf8)
+						_variables.append(info);
+				}
 			}
 
-			endInsertRows();
+			endResetModel();
 
 			_source->notifyAlreadyAssigned(_variables);
 		}
@@ -89,36 +92,55 @@ bool ListModelVariablesAssigned::dropMimeData(const QMimeData *data, Qt::DropAct
 
 	if (canDropMimeData(data, action, row, column, parent) && (action == Qt::MoveAction || action == Qt::CopyAction))
 	{
-		if (_variables.length() > 0 && _onlyOne)
+		if (_onlyOne)
 		{
 			if (_source != NULL)
 			{
-				_toEject = _variables;
-				QTimer::singleShot(50, this, SLOT(eject()));
+				QByteArray encodedData = data->data(_mimeType);
+				QDataStream stream(&encodedData, QIODevice::ReadOnly);
+
+				if (stream.atEnd())
+					return false;
+
+				int count;
+				stream >> count;
+
+				if (stream.atEnd())
+					return false;
+
+				ColumnInfo variable;
+				stream >> variable;
+
+				if (_variables.length() > 0)
+				{
+					_source->sendBack(_variables);
+
+					_variables.clear();
+					_variables.append(variable);
+
+					emit dataChanged(index(0), index(0));
+				}
+				else
+				{
+					beginInsertRows(parent, 0, 0);
+					_variables.append(variable);
+					endInsertRows();
+				}
+
 			}
 			else
 			{
 				qDebug() << "ListModelVariablesAssigned::dropMimeData() : No source set";
 			}
-
-			removeRows(0, 1, QModelIndex());
 		}
-
-		if (ListModelVariables::dropMimeData(data, action, row, column, parent))
+		else
 		{
-			emit assignmentsChanged();
-			return true;
+			ListModelVariables::dropMimeData(data, action, row, column, parent);
 		}
-	}
 
-	return false;
-}
-
-bool ListModelVariablesAssigned::removeRows(int row, int count, const QModelIndex &parent)
-{
-	if (ListModelVariables::removeRows(row, count, parent))
-	{
 		emit assignmentsChanged();
+		assignToBoundOption();
+
 		return true;
 	}
 
@@ -137,6 +159,13 @@ const QList<ColumnInfo> &ListModelVariablesAssigned::assigned() const
 	return _variables;
 }
 
+void ListModelVariablesAssigned::mimeDataMoved(const QModelIndexList &indexes)
+{
+	ListModelVariables::mimeDataMoved(indexes);
+	emit assignmentsChanged();
+	assignToBoundOption();
+}
+
 void ListModelVariablesAssigned::assignToBoundOption()
 {
 	if (_boundTo != NULL)
@@ -149,14 +178,6 @@ void ListModelVariablesAssigned::assignToBoundOption()
 		}
 		_boundTo->setValue(variables);
 	}
-}
-
-void ListModelVariablesAssigned::eject()
-{
-	qDebug() << "eject " << _toEject.first().first;
-
-	_source->sendBack(_toEject);
-	_toEject.clear();
 }
 
 void ListModelVariablesAssigned::sourceVariablesChanged()
@@ -180,6 +201,7 @@ void ListModelVariablesAssigned::sourceVariablesChanged()
 	if (variableRemoved)
 	{
 		assignToBoundOption();
+		emit assignmentsChanged();
 		endResetModel();
 	}
 

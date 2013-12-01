@@ -2,7 +2,7 @@
 #include "ui_ttestbayesianonesampleform.h"
 
 TTestBayesianOneSampleForm::TTestBayesianOneSampleForm(QWidget *parent) :
-	AnalysisForm(parent),
+	AnalysisForm("TTestBayesianOneSampleForm", parent),
 	ui(new Ui::TTestBayesianOneSampleForm)
 {
 	ui->setupUi(this);

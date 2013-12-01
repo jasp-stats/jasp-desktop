@@ -1,10 +1,7 @@
 #ifndef ANOVABAYESIAN_H
 #define ANOVABAYESIAN_H
 
-#include "../JASP-Common/analysis.h"
-
-namespace analyses
-{
+#include "analysis.h"
 
 class AnovaBayesian : public Analysis
 {
@@ -16,7 +13,5 @@ protected:
 	virtual Options *createDefaultOptions() OVERRIDE;
 
 };
-
-}
 
 #endif // ANOVABAYESIAN_H

@@ -25,11 +25,9 @@ LIBS += -L.. -lJASP-Common
 windows:LIBS += -lole32 -loleaut32
 
 SOURCES += main.cpp\
-	mainwindow.cpp \
 	datasettablemodel.cpp \
     backstageform.cpp \
     enginesync.cpp \
-    mainwidget.cpp \
     availablefields.cpp \
     ribbonanalysis.cpp \
     ribbonhome.cpp \
@@ -63,20 +61,24 @@ SOURCES += main.cpp\
     widgets/tableview.cpp \
     maintableview.cpp \
     widgets/listmodelanovamodelnuisancefactors.cpp \
-    widgets/tablemodel.cpp \
     analysisforms/ancovaform.cpp \
     analysisforms/anovaform.cpp \
     analysisforms/descriptivesform.cpp \
     analysisforms/anovaonewayform.cpp \
     analysisforms/ttestonesampleform.cpp \
     analysisforms/ttestindependentsamplesform.cpp \
-    analysisforms/ancovamultivariateform.cpp
+    analysisforms/ancovamultivariateform.cpp \
+    maintablehorizontalheader.cpp \
+    analysisforms/regressionlinearform.cpp \
+    mainwindow.cpp \
+    analysisforms/contingencytablesform.cpp \
+    analysisforms/correlationform.cpp \
+    widgets/boundcombobox.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     datasettablemodel.h \
     backstageform.h \
     enginesync.h \
-    mainwidget.h \
     availablefields.h \
     ribbonanalysis.h \
     ribbonhome.h \
@@ -121,11 +123,16 @@ HEADERS  += mainwindow.h \
     analysisforms/anovaonewayform.h \
     analysisforms/ttestindependentsamplesform.h \
     analysisforms/ttestonesampleform.h \
-    analysisforms/ancovamultivariateform.h
+    analysisforms/ancovamultivariateform.h \
+    maintablehorizontalheader.h \
+    analysisforms/regressionlinearform.h \
+    mainwindow.h \
+    analysisforms/contingencytablesform.h \
+    analysisforms/correlationform.h \
+    widgets/boundcombobox.h
 
-FORMS    += mainwindow.ui \
+FORMS    += \
     backstageform.ui \
-    mainwidget.ui \
     ribbonanalysis.ui \
 	ribbonhome.ui \
     analysisforms/anovabayesianform.ui \
@@ -140,7 +147,11 @@ FORMS    += mainwindow.ui \
     analysisforms/anovaonewayform.ui \
     analysisforms/ttestindependentsamplesform.ui \
     analysisforms/ttestonesampleform.ui \
-    analysisforms/ancovamultivariateform.ui
+    analysisforms/ancovamultivariateform.ui \
+    analysisforms/regressionlinearform.ui \
+    mainwindow.ui \
+    analysisforms/contingencytablesform.ui \
+    analysisforms/correlationform.ui
 
 
 RESOURCES += \
@@ -245,4 +256,5 @@ OTHER_FILES += \
     resources/icons/variable-scale.png \
     resources/icons/variable-scale-trans.png \
     resources/icons/variable-nominal-trans.png \
-    resources/icons/variable-ordinal-trans.png
+    resources/icons/variable-ordinal-trans.png \
+    resources/icons/analysis-ttest.png

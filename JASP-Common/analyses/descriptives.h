@@ -3,11 +3,6 @@
 
 #include "analysis.h"
 
-#include "../JASP-Common/lib_json/json.h"
-
-namespace analyses
-{
-
 class Descriptives : public Analysis
 {
 public:
@@ -18,8 +13,6 @@ protected:
 	virtual Options *createDefaultOptions() OVERRIDE;
 
 };
-
-}
 
 #endif // DESCRIPTIVES_H
 

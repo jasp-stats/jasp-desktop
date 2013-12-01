@@ -4,6 +4,7 @@
 
 #include <QMimeData>
 #include <QTimer>
+#include <QDebug>
 
 using namespace std;
 
@@ -11,6 +12,7 @@ TableModelVariablesAssigned::TableModelVariablesAssigned(QObject *parent)
 	: TableModel(parent)
 {
 	_boundTo = NULL;
+	_source = NULL;
 
 	_variableTypesAllowed = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
 }
@@ -18,6 +20,68 @@ TableModelVariablesAssigned::TableModelVariablesAssigned(QObject *parent)
 void TableModelVariablesAssigned::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionFieldPairs *>(option);
+
+	if (_boundTo == NULL)
+	{
+		qDebug() << "TableModelVariablesAssigned::bindTo(); Could not bind to option";
+		return;
+	}
+
+	if (_source == NULL)
+	{
+		qDebug() << "TableModelVariablesAssigned::bindTo(); source not set";
+		return;
+	}
+
+	vector<pair<string, string> > assigned = _boundTo->value();
+	const QList<ColumnInfo> &allVariables = _source->allVariables();
+
+	beginInsertRows(QModelIndex(), 0, assigned.size());
+
+	pair<string, string> p;
+
+	foreach (p, assigned)
+	{
+		ColumnInfo info1;
+		ColumnInfo info2;
+
+		string first = p.first;
+		string second = p.second;
+
+		QString firstQ = QString::fromUtf8(first.c_str(), first.size());
+		QString secondQ = QString::fromUtf8(second.c_str(), second.size());
+
+		foreach (const ColumnInfo &info, allVariables)
+		{
+			if (info.first == firstQ)
+			{
+				info1.first = info.first;
+				info1.second = info.second;
+			}
+
+			if (info.first == secondQ)
+			{
+				info2.first = info.first;
+				info2.second = info.second;
+			}
+
+			if (info1.first != "" && info2.first != "")
+				break;
+		}
+
+		VarPair newPair;
+		newPair.append(info1);
+		newPair.append(info2);
+
+		_values.append(newPair);
+	}
+
+	endInsertRows();
+}
+
+void TableModelVariablesAssigned::setSource(ListModelVariablesAvailable *source)
+{
+	_source = source;
 }
 
 int TableModelVariablesAssigned::rowCount(const QModelIndex &parent) const
@@ -201,16 +265,27 @@ bool TableModelVariablesAssigned::insertRows(int row, int count, const QModelInd
 	return true;
 }
 
-bool TableModelVariablesAssigned::removeRows(int row, int count, const QModelIndex &parent)
+void TableModelVariablesAssigned::mimeDataMoved(const QModelIndexList &indexes)
 {
-	beginRemoveRows(parent, row, row + count - 1);
-	for (int i = 0; i < count; i++)
-		_values.removeAt(row + i);
-	endRemoveRows();
+	beginResetModel();
+
+	QModelIndexList sorted = indexes;
+
+	int lastRowDeleted = -1;
+
+	qSort(sorted.begin(), sorted.end(), qGreater<QModelIndex>());
+
+	foreach (const QModelIndex &index, sorted)
+	{
+		int row = index.row();
+		if (row != lastRowDeleted)
+			_values.removeAt(row);
+		lastRowDeleted = row;
+	}
+
+	endResetModel();
 
 	assignToOption();
-
-	return true;
 }
 
 void TableModelVariablesAssigned::assignToOption()

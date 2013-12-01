@@ -1,10 +1,7 @@
 #ifndef ANOVA_H
 #define ANOVA_H
 
-#include "../JASP-Common/analysis.h"
-
-namespace analyses
-{
+#include "analysis.h"
 
 class Anova : public Analysis
 {
@@ -16,7 +13,5 @@ protected:
 	virtual Options *createDefaultOptions() OVERRIDE;
 
 };
-
-}
 
 #endif // ANOVA_H

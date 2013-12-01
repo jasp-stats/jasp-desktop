@@ -17,18 +17,17 @@ public:
 
 	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
 	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
-	virtual bool removeRows(int row, int count, const QModelIndex &parent) override;
 
 	void setSource(ListModelVariablesAvailable *source);
 
 	const QList<ColumnInfo> &assigned() const;
 
+	virtual void mimeDataMoved(const QModelIndexList &indexes) override;
 signals:
 	void assignmentsChanged();
 
 private slots:
 	void assignToBoundOption();
-	void eject();
 	void sourceVariablesChanged();
 
 private:

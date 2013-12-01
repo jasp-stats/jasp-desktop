@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayout_3">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -26,227 +26,6 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <item row="0" column="2">
-    <widget class="QWidget" name="widget_2" native="true">
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="verticalSpacing">
-       <number>0</number>
-      </property>
-      <item row="3" column="1">
-       <widget class="QLabel" name="label_2">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>T-Tests</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" colspan="3">
-       <widget class="QLabel" name="label_5">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Tests</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="Anova">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QWidget {
-	font-size: 11px;
-	text-decoration: none;
-	font-family: &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, sans-serif;
-	font-weight:normal;
-	color: #000;
-	border: none;
-
-	margin: 0 4px ;
-	padding: 4px 0 ;
-}
-
-QPushButton::menu-indicator {
-	image: none ;
-}
-
-
-QWidget::hover {
-	border-radius: 4px;
-	border:1px solid #9a9a9a;
-
-	/*background-color: qlineargradient(spread:reflect, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.5 rgba(245, 245, 245, 255), stop:0.527094 rgba(243, 243, 243, 255), stop:1 rgba(255, 255, 255, 255))*/
-}
-
-QWidget::pressed {
-	/*background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(211, 247, 253, 255), stop:0.339901 rgba(135, 197, 251, 255), stop:0.605911 rgba(161, 209, 249, 255), stop:1 rgba(212, 233, 252, 255));*/
-
-background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.389163 rgba(213, 213, 213, 255), stop:0.610837 rgba(213, 213, 213, 255), stop:1 rgba(255, 255, 255, 255))
-}</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources/icons.qrc">
-          <normaloff>:/icons/tools-wizard.png</normaloff>:/icons/tools-wizard.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>48</width>
-          <height>32</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="label_3">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>ANOVA</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="TTest">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QWidget {
-	font-size: 11px;
-	text-decoration: none;
-	font-family: &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, sans-serif;
-	font-weight:normal;
-	color: #000;
-	border: none;
-
-	margin: 0 4px ;
-	padding: 4px 0 ;
-}
-
-QPushButton::menu-indicator {
-	image: none ;
-}
-
-
-QWidget::hover {
-	border-radius: 4px;
-	border:1px solid #9a9a9a;
-
-	/*background-color: qlineargradient(spread:reflect, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.5 rgba(245, 245, 245, 255), stop:0.527094 rgba(243, 243, 243, 255), stop:1 rgba(255, 255, 255, 255))*/
-}
-
-QWidget::pressed {
-	/*background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(211, 247, 253, 255), stop:0.339901 rgba(135, 197, 251, 255), stop:0.605911 rgba(161, 209, 249, 255), stop:1 rgba(212, 233, 252, 255));*/
-
-background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.389163 rgba(213, 213, 213, 255), stop:0.610837 rgba(213, 213, 213, 255), stop:1 rgba(255, 255, 255, 255))
-}</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources/icons.qrc">
-          <normaloff>:/icons/tools-wizard.png</normaloff>:/icons/tools-wizard.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>48</width>
-          <height>32</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QWidget" name="widget_19" native="true">
-     <layout class="QGridLayout" name="gridLayout_9">
-      <property name="leftMargin">
-       <number>1</number>
-      </property>
-      <property name="topMargin">
-       <number>12</number>
-      </property>
-      <property name="rightMargin">
-       <number>1</number>
-      </property>
-      <property name="bottomMargin">
-       <number>12</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="Line" name="line_6">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>1066</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="0" column="0">
     <widget class="QWidget" name="widget" native="true">
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -350,12 +129,465 @@ background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgb
      </layout>
     </widget>
    </item>
+   <item row="0" column="2">
+    <widget class="QWidget" name="widget_2" native="true">
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>0</number>
+      </property>
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>T-Tests</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="3">
+       <widget class="QLabel" name="label_5">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Classical</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="classicalAnovaButton">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+	font-size: 11px;
+	text-decoration: none;
+	font-family: &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, sans-serif;
+	font-weight:normal;
+	color: #000;
+	border: none;
+
+	margin: 0 4px ;
+	padding: 4px 0 ;
+}
+
+QPushButton::menu-indicator {
+	image: none ;
+}
+
+
+QWidget::hover {
+	border-radius: 4px;
+	border:1px solid #9a9a9a;
+
+	/*background-color: qlineargradient(spread:reflect, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.5 rgba(245, 245, 245, 255), stop:0.527094 rgba(243, 243, 243, 255), stop:1 rgba(255, 255, 255, 255))*/
+}
+
+QWidget::pressed {
+	/*background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(211, 247, 253, 255), stop:0.339901 rgba(135, 197, 251, 255), stop:0.605911 rgba(161, 209, 249, 255), stop:1 rgba(212, 233, 252, 255));*/
+
+background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.389163 rgba(213, 213, 213, 255), stop:0.610837 rgba(213, 213, 213, 255), stop:1 rgba(255, 255, 255, 255))
+}</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/icons.qrc">
+          <normaloff>:/icons/tools-wizard.png</normaloff>:/icons/tools-wizard.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>48</width>
+          <height>32</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="label_3">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>ANOVA</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="classicalTTestButton">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+	font-size: 11px;
+	text-decoration: none;
+	font-family: &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, sans-serif;
+	font-weight:normal;
+	color: #000;
+	border: none;
+
+	margin: 0 4px ;
+	padding: 4px 0 ;
+}
+
+QPushButton::menu-indicator {
+	image: none ;
+}
+
+
+QWidget::hover {
+	border-radius: 4px;
+	border:1px solid #9a9a9a;
+
+	/*background-color: qlineargradient(spread:reflect, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.5 rgba(245, 245, 245, 255), stop:0.527094 rgba(243, 243, 243, 255), stop:1 rgba(255, 255, 255, 255))*/
+}
+
+QWidget::pressed {
+	/*background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(211, 247, 253, 255), stop:0.339901 rgba(135, 197, 251, 255), stop:0.605911 rgba(161, 209, 249, 255), stop:1 rgba(212, 233, 252, 255));*/
+
+background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.389163 rgba(213, 213, 213, 255), stop:0.610837 rgba(213, 213, 213, 255), stop:1 rgba(255, 255, 255, 255))
+}</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/icons.qrc">
+          <normaloff>:/icons/analysis-ttest.png</normaloff>:/icons/analysis-ttest.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>48</width>
+          <height>32</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QPushButton" name="classicalRegressionButton">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+	font-size: 11px;
+	text-decoration: none;
+	font-family: &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, sans-serif;
+	font-weight:normal;
+	color: #000;
+	border: none;
+
+	margin: 0 4px ;
+	padding: 4px 0 ;
+}
+
+QPushButton::menu-indicator {
+	image: none ;
+}
+
+
+QWidget::hover {
+	border-radius: 4px;
+	border:1px solid #9a9a9a;
+
+	/*background-color: qlineargradient(spread:reflect, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.5 rgba(245, 245, 245, 255), stop:0.527094 rgba(243, 243, 243, 255), stop:1 rgba(255, 255, 255, 255))*/
+}
+
+QWidget::pressed {
+	/*background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(211, 247, 253, 255), stop:0.339901 rgba(135, 197, 251, 255), stop:0.605911 rgba(161, 209, 249, 255), stop:1 rgba(212, 233, 252, 255));*/
+
+background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.389163 rgba(213, 213, 213, 255), stop:0.610837 rgba(213, 213, 213, 255), stop:1 rgba(255, 255, 255, 255))
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/icons.qrc">
+          <normaloff>:/icons/applications-development.png</normaloff>:/icons/applications-development.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>48</width>
+          <height>32</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QWidget" name="widget_19" native="true">
+     <layout class="QGridLayout" name="gridLayout_9">
+      <property name="leftMargin">
+       <number>1</number>
+      </property>
+      <property name="topMargin">
+       <number>12</number>
+      </property>
+      <property name="rightMargin">
+       <number>1</number>
+      </property>
+      <property name="bottomMargin">
+       <number>12</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="Line" name="line_6">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QWidget" name="widget_3" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>0</number>
+      </property>
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_4">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>T-Tests</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="3">
+       <widget class="QLabel" name="label_6">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Bayesian</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="bayesianAnovaButton">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+	font-size: 11px;
+	text-decoration: none;
+	font-family: &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, sans-serif;
+	font-weight:normal;
+	color: #000;
+	border: none;
+
+	margin: 0 4px ;
+	padding: 4px 0 ;
+}
+
+QPushButton::menu-indicator {
+	image: none ;
+}
+
+
+QWidget::hover {
+	border-radius: 4px;
+	border:1px solid #9a9a9a;
+
+	/*background-color: qlineargradient(spread:reflect, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.5 rgba(245, 245, 245, 255), stop:0.527094 rgba(243, 243, 243, 255), stop:1 rgba(255, 255, 255, 255))*/
+}
+
+QWidget::pressed {
+	/*background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(211, 247, 253, 255), stop:0.339901 rgba(135, 197, 251, 255), stop:0.605911 rgba(161, 209, 249, 255), stop:1 rgba(212, 233, 252, 255));*/
+
+background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.389163 rgba(213, 213, 213, 255), stop:0.610837 rgba(213, 213, 213, 255), stop:1 rgba(255, 255, 255, 255))
+}</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/icons.qrc">
+          <normaloff>:/icons/tools-wizard.png</normaloff>:/icons/tools-wizard.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>48</width>
+          <height>32</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="label_7">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>ANOVA</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="bayesianTTestButton">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+	font-size: 11px;
+	text-decoration: none;
+	font-family: &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, sans-serif;
+	font-weight:normal;
+	color: #000;
+	border: none;
+
+	margin: 0 4px ;
+	padding: 4px 0 ;
+}
+
+QPushButton::menu-indicator {
+	image: none ;
+}
+
+
+QWidget::hover {
+	border-radius: 4px;
+	border:1px solid #9a9a9a;
+
+	/*background-color: qlineargradient(spread:reflect, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.5 rgba(245, 245, 245, 255), stop:0.527094 rgba(243, 243, 243, 255), stop:1 rgba(255, 255, 255, 255))*/
+}
+
+QWidget::pressed {
+	/*background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(211, 247, 253, 255), stop:0.339901 rgba(135, 197, 251, 255), stop:0.605911 rgba(161, 209, 249, 255), stop:1 rgba(212, 233, 252, 255));*/
+
+background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.389163 rgba(213, 213, 213, 255), stop:0.610837 rgba(213, 213, 213, 255), stop:1 rgba(255, 255, 255, 255))
+}</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/icons.qrc">
+          <normaloff>:/icons/tools-wizard.png</normaloff>:/icons/tools-wizard.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>48</width>
+          <height>32</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="5">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>1066</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
   </layout>
   <zorder>widget_2</zorder>
   <zorder>widget</zorder>
   <zorder>widget_20</zorder>
   <zorder>horizontalSpacer</zorder>
   <zorder>widget_19</zorder>
+  <zorder>widget_3</zorder>
  </widget>
  <customwidgets>
   <customwidget>
@@ -385,7 +617,7 @@ background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgb
    </hints>
   </connection>
   <connection>
-   <sender>TTest</sender>
+   <sender>classicalTTestButton</sender>
    <signal>clicked()</signal>
    <receiver>RibbonAnalysis</receiver>
    <slot>menuItemSelected()</slot>
@@ -401,7 +633,7 @@ background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgb
    </hints>
   </connection>
   <connection>
-   <sender>Anova</sender>
+   <sender>classicalAnovaButton</sender>
    <signal>clicked()</signal>
    <receiver>RibbonAnalysis</receiver>
    <slot>menuItemSelected()</slot>

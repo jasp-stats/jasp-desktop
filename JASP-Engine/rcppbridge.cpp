@@ -5,8 +5,16 @@
 using namespace std;
 
 
+RcppBridge* RcppBridge::_staticRef;
+
 RcppBridge::RcppBridge()
 {
+	_staticRef = this;
+
+	_rInside[".read.dataset.native"] = Rcpp::InternalFunction(&RcppBridge::readDataSetStatic);
+	_rInside[".read.dataset.header.native"] = Rcpp::InternalFunction(&RcppBridge::readDataSetHeaderStatic);
+	_rInside[".callback.native"] = Rcpp::InternalFunction(&RcppBridge::callbackStatic);
+
 	_rInside["jasp.analyses"] = Rcpp::List();
 	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"RJSONIO\"))");
 	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
@@ -14,12 +22,55 @@ RcppBridge::RcppBridge()
 
 void RcppBridge::setDataSet(DataSet* dataSet)
 {
-	Rcpp::List list(dataSet->columnCount());
+	_dataSet = dataSet;
+}
+
+Json::Value RcppBridge::init(const string &name, const Json::Value &options)
+{
+	SEXP results;
+
+	_rInside["name"] = name;
+	_rInside["options.as.json.string"] = options.toStyledString();
+	_rInside.parseEval("init(name=name, options.as.json.string=options.as.json.string)", results);
+
+	string resultsAsString = Rcpp::as<string>(results);
+
+	Json::Reader r;
+	Json::Value json;
+	r.parse(resultsAsString, json);
+
+	return json;
+}
+
+Json::Value RcppBridge::run(const string &name, const Json::Value &options, boost::function<int (Json::Value)> callback)
+{
+	SEXP results;
+
+	_callback = callback;
+
+	_rInside["name"] = name;
+	_rInside["options.as.json.string"] = options.toStyledString();
+	_rInside.parseEval("run(name=name, options.as.json.string=options.as.json.string)", results);
+
+	_callback = NULL;
+
+	string resultsAsString = Rcpp::as<string>(results);
+
+	Json::Reader r;
+	Json::Value json;
+	r.parse(resultsAsString, json);
+
+	return json;
+}
+
+Rcpp::DataFrame RcppBridge::readDataSet()
+{
+	Rcpp::List list(_dataSet->columnCount());
 	Rcpp::CharacterVector columnNames;
 
 	int colNo = 0;
 
-	BOOST_FOREACH(Column &column, dataSet->columns())
+	BOOST_FOREACH(Column &column, _dataSet->columns())
 	{
 		columnNames.push_back(column.name());
 
@@ -67,74 +118,87 @@ void RcppBridge::setDataSet(DataSet* dataSet)
 	}
 
 	list.attr("names") = columnNames;
-	_rInside["dataset"] = Rcpp::DataFrame(list);
+
+	Rcpp::DataFrame dataFrame = Rcpp::DataFrame(list);
+
+	/*if (Rf_isNull(excludeNAsListwise))
+	{
+		wholeDataFrame = dataFrame;
+		wholeDataFrameLoaded = true;
+	}*/
+
+	return dataFrame;
 }
 
-Json::Value RcppBridge::init(const int id, const string &name, const Json::Value &options)
+Rcpp::DataFrame RcppBridge::readDataSetHeader()
 {
-	stringstream ss;
-	ss << "if (\"";
-	ss << id;
-	ss << "\" %in% names(jasp.analyses) == FALSE) analysis.env <- (jasp.analyses[[\"";
-	ss << id;
-	ss << "\"]] <- new.env()) else analysis.env <- jasp.analyses[[\"";
-	ss << id;
-	ss << "\"]]; analysis.env";
+	Rcpp::List list(_dataSet->columnCount());
+	Rcpp::CharacterVector columnNames;
 
-	Rcpp::Environment env = _rInside.parseEval(ss.str());
+	int colNo = 0;
 
-	ss.str("");
+	BOOST_FOREACH(Column &column, _dataSet->columns())
+	{
+		columnNames.push_back(column.name());
 
-	ss << "evalq(analysis.func <- JASP::";
-	ss << name;
-	ss << ", analysis.env)";
+		if (column.dataType() == Column::DataTypeInt)
+		{
+			Rcpp::IntegerVector v(0);
 
-	_rInside.parseEvalQNT(ss.str());
+			if (column.hasLabels())
+			{
+				Rcpp::CharacterVector labels;
+				typedef pair<int, string> pair;
 
-	SEXP results;
+				BOOST_FOREACH(pair label, column.labels())
+					labels.push_back(label.second);
 
-	env["optionsAsString"] = options.toStyledString();
+				v.attr("levels") = labels;
+				v.attr("class") = "factor";
+			}
 
-	_rInside.parseEvalQNT("evalq(options <- fromJSON(optionsAsString, asText=TRUE), analysis.env)");
-	_rInside.parseEval("evalq(results <- analysis.func(dataset, options, \"init\"), analysis.env)");
-	_rInside.parseEval("evalq(toJSON(results), analysis.env)", results);
+			list[colNo++] = v;
+		}
+		else
+		{
+			Rcpp::NumericVector v(0);
+			list[colNo++] = v;
+		}
+	}
 
-	string resultsAsString = Rcpp::as<string>(results);
+	list.attr("names") = columnNames;
+
+	Rcpp::DataFrame dataFrame = Rcpp::DataFrame(list);
+
+	return dataFrame;
+}
+
+int RcppBridge::callback(SEXP results)
+{
+	string jsonString = Rcpp::as<string>(results);
 
 	Json::Reader r;
 	Json::Value json;
-	r.parse(resultsAsString, json);
+	r.parse(jsonString, json);
 
-	return json;
+	return _callback(json);
 }
 
-Json::Value RcppBridge::run(const int id, const Json::Value &options)
+Rcpp::DataFrame RcppBridge::readDataSetStatic()
 {
-	stringstream ss;
-
-	ss << "if (\"";
-	ss << id;
-	ss << "\" %in% names(jasp.analyses) == FALSE) analysis.env <- (jasp.analyses[[\"";
-	ss << id;
-	ss << "\"]] <- new.env()) else analysis.env <- jasp.analyses[[\"";
-	ss << id;
-	ss << "\"]]; analysis.env";
-
-	Rcpp::Environment env = _rInside.parseEval(ss.str());
-
-	SEXP results;
-
-	env["optionsAsString"] = options.toStyledString();
-
-	_rInside.parseEvalQNT("evalq(options <- fromJSON(optionsAsString, asText=TRUE), analysis.env)");
-	_rInside.parseEval("evalq(results <- analysis.func(dataset, options, \"run\"), analysis.env)");
-	_rInside.parseEval("evalq(toJSON(results), analysis.env)", results);
-
-	string resultsAsString = Rcpp::as<string>(results);
-
-	Json::Reader r;
-	Json::Value json;
-	r.parse(resultsAsString, json);
-
-	return json;
+	return _staticRef->readDataSet();
 }
+
+Rcpp::DataFrame RcppBridge::readDataSetHeaderStatic()
+{
+	return _staticRef->readDataSetHeader();
+}
+
+SEXP RcppBridge::callbackStatic(SEXP results)
+{
+	Rcpp::NumericVector control(1);
+	control[0] = _staticRef->callback(results);
+	return control;
+}
+
+

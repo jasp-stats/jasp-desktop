@@ -2,15 +2,15 @@
 #define OPTIONSTRING_H
 
 #include "options/optioni.h"
-#include "string"
+#include "common.h"
 
 class OptionString : public OptionI<std::string>
 {
 public:
 	OptionString(std::string name);
 
-	Json::Value asJSON() const; // override
-	void set(Json::Value &value); // override
+	Json::Value asJSON() const OVERRIDE;
+	void set(Json::Value &value) OVERRIDE;
 };
 
 #endif // OPTIONSTRING_H

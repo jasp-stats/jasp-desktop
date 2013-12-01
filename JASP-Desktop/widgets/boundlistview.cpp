@@ -74,7 +74,7 @@ void BoundListView::setModel(QAbstractItemModel *model)
 		repositionKey();
 	}
 
-	QListView::setModel(model);
+	ListView::setModel(model);
 }
 
 void BoundListView::bindTo(Option *option)
@@ -86,14 +86,14 @@ void BoundListView::bindTo(Option *option)
 
 void BoundListView::resizeEvent(QResizeEvent *e)
 {
-	QListView::resizeEvent(e);
+	ListView::resizeEvent(e);
 
 	repositionKey();
 }
 
 void BoundListView::moveEvent(QMoveEvent *e)
 {
-	QListView::moveEvent(e);
+	ListView::moveEvent(e);
 
 	repositionKey();
 }

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-AvailableFields::AvailableFields(QObject *parent = 0)
+AvailableFields::AvailableFields(QObject *parent)
 	: QAbstractListModel(parent)
 {
 	_shouldFilter = false;

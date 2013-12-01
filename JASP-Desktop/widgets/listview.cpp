@@ -2,12 +2,13 @@
 
 #include "draganddrop.h"
 
-#include <QDebug>
+#include <QDropEvent>
 
 ListView::ListView(QWidget *parent) :
 	QListView(parent)
 {
 	_defaultDropTarget = NULL;
+	_listModel = NULL;
 
 	connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(doubleClickedHandler(QModelIndex)));
 }
@@ -15,6 +16,19 @@ ListView::ListView(QWidget *parent) :
 void ListView::setDoubleClickTarget(DropTarget *target)
 {
 	_defaultDropTarget = target;
+}
+
+void ListView::setModel(QAbstractItemModel *model)
+{
+	_listModel = qobject_cast<ListModelVariables*>(model);
+
+	QListView::setModel(model);
+}
+
+void ListView::notifyDragWasDropped()
+{
+	if (_listModel != NULL)
+		_listModel->mimeDataMoved(selectedIndexes());
 }
 
 void ListView::focusInEvent(QFocusEvent *event)
@@ -27,6 +41,19 @@ void ListView::selectionChanged(const QItemSelection &selected, const QItemSelec
 {
 	QListView::selectionChanged(selected, deselected);
 	selectionUpdated();
+}
+
+void ListView::dropEvent(QDropEvent *event)
+{
+	QListView::dropEvent(event);
+
+	if (event->isAccepted() && event->dropAction() == Qt::MoveAction)
+	{
+		QObject *source = event->source();
+		DropTarget *draggedFrom = dynamic_cast<DropTarget*>(source);
+		if (draggedFrom != NULL && event->source() != this)
+			draggedFrom->notifyDragWasDropped();
+	}
 }
 
 void ListView::doubleClickedHandler(const QModelIndex index)

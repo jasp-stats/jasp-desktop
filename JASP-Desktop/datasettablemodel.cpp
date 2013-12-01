@@ -103,6 +103,10 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	{
 		return QVariant(Qt::AlignCenter);
 	}
+	else if (role == Qt::UserRole)
+	{
+		return QVariant(_dataSet->columns()[section].columnTypesAllowed());
+	}
 
 	return QVariant();
 }
@@ -134,4 +138,14 @@ bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value,
 Qt::ItemFlags DataSetTableModel::flags(const QModelIndex &index) const
 {
 	return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
+}
+
+void DataSetTableModel::setColumnType(int columnIndex, Column::ColumnType newColumnType)
+{
+	if (_dataSet == NULL)
+		return;
+
+	_dataSet->columns()[columnIndex].changeColumnType(newColumnType);
+
+	emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex);
 }

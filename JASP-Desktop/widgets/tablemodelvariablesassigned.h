@@ -7,10 +7,11 @@
 #include "listmodelvariables.h"
 #include "tablemodel.h"
 #include "droptarget.h"
+#include "listmodelvariablesavailable.h"
 
 typedef QList<ColumnInfo> VarPair;
 
-class TableModelVariablesAssigned : public TableModel, public BoundModel, public DropTarget
+class TableModelVariablesAssigned : public TableModel, public BoundModel
 {
 	Q_OBJECT
 public:
@@ -35,13 +36,17 @@ public:
 	bool isForbidden(int variableType) const;
 
 	virtual bool insertRows(int row, int count, const QModelIndex &parent) override;
-	virtual bool removeRows(int row, int count, const QModelIndex &parent) override;
 
+	virtual void mimeDataMoved(const QModelIndexList &indexes) override;
+
+	void setSource(ListModelVariablesAvailable *source);
 protected:
 	void assignToOption();
 
 private:
 	int _variableTypesAllowed;
+
+	ListModelVariablesAvailable *_source;
 
 	OptionFieldPairs *_boundTo;
 	QList<VarPair> _values;

@@ -48,6 +48,8 @@ void Options::set(Json::Value &json)
 		Json::Value value = extractValue(name, json);
 		item.second->set(value);
 	}
+
+	optionsChanged();
 }
 
 void Options::insertValue(string &name, Json::Value &value, Json::Value &root)

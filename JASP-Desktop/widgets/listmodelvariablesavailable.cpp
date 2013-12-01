@@ -42,6 +42,15 @@ void ListModelVariablesAvailable::setVariables(const QList<ColumnInfo> &variable
 	emit variablesChanged();
 }
 
+bool ListModelVariablesAvailable::removeRows(int row, int count, const QModelIndex &parent)
+{
+	beginRemoveRows(parent, row, row + count - 1);
+	for (int i = 0; i < count; i++)
+		_variables.removeAt(row);
+	endRemoveRows();
+	return true;
+}
+
 bool ListModelVariablesAvailable::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
 	if ( ! canDropMimeData(data, action, row, column, parent))

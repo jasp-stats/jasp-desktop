@@ -6,6 +6,14 @@
 #include <QDir>
 #include <QDebug>
 
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/mapped_region.hpp>
+
+#ifdef __WIN32__
+#include <windows.h>
+#include <winbase.h>
+#endif
+
 #include <boost/foreach.hpp>
 
 #include "lib_json/json.h"
@@ -18,230 +26,220 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 {
 	_analyses = analyses;
 
-	_maxProcesses = 4;
-	_engineExe = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absoluteFilePath("JASPEngine");
-	_process = new QProcess(parent);
-
-	_analyses->analysisAdded.connect(boost::bind(&EngineSync::analysisAddedHandler, this, _1));
-	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::analysisOptionsChangedHandler, this, _1));
-
-	connect(_process, SIGNAL(readyReadStandardOutput()), this, SLOT(subProcessStandardOutput()));
-	connect(_process, SIGNAL(readyReadStandardError()), this, SLOT(subProcessStandardError()));
-	connect(_process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(subProcessError(QProcess::ProcessError)));
-	connect(_process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(subprocessFinished(int,QProcess::ExitStatus)));
-	connect(_process, SIGNAL(started()), this, SLOT(subProcessStarted()));
+	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
+	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
 
 	_timer = new QTimer(this);
-	connect(_timer, SIGNAL(timeout()), this, SLOT(checkForMessages()));
+	connect(_timer, SIGNAL(timeout()), this, SLOT(process()));
 	_timer->start(50);
 
     try {
 
-        message_queue::remove("JASP_MQ");
-        message_queue::remove("JASPEngine_MQ");
-
-        _messageQueueOut = new message_queue(create_only, "JASP_MQ", 4, BUFFER_SIZE);
-        _messageQueueIn = new message_queue(create_only, "JASPEngine_MQ", 4, BUFFER_SIZE);
-
-#ifdef __APPLE__
-        _semaphoreIn = sem_open("JASPEngine_SM", O_CREAT, S_IWUSR | S_IRGRP | S_IROTH, 0);
-        _semaphoreOut = sem_open("JASP_SM", O_CREAT, S_IWUSR | S_IRGRP | S_IROTH, 0);
-
-		if (_semaphoreOut == SEM_FAILED || _semaphoreIn == SEM_FAILED)
-			qDebug() << "sempahore not created!";
-#else
-
-        named_semaphore::remove("JASPEngine_SM");
-        named_semaphore::remove("JASP_SM");
-
-        _semaphoreIn = new named_semaphore(create_only, "JASPEngine_SM", 0);
-        _semaphoreOut = new named_semaphore(create_only, "JASP_SM", 0);
-
-#endif
-
-		QDir programDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();
-		QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-#ifdef __APPLE__
-		env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib"));
-#else
-        env.insert("PATH", programDir.absoluteFilePath("R-3.0.0\\library\\RInside\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\library\\Rcpp\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\bin\\i386"));
-#endif
-
-		env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));
-
-		_process->setEnvironment(env.toStringList());
-		_process->start(_engineExe, QStringList("0"));
+		shared_memory_object::remove("JASP_IPC");
+		_channels.push_back(new IPCChannel("JASP_IPC", 0));
+		//_channels.push_back(new IPCChannel("JASP_IPC", 1));
+		//_channels.push_back(new IPCChannel("JASP_IPC", 2));
+		//_channels.push_back(new IPCChannel("JASP_IPC", 3));
 
     }
     catch (interprocess_exception e)
     {
         qDebug() << "interprocess exception! " << e.what() << "\n";
-
         throw e;
     }
+
+	for (int i = 0; i < _channels.size(); i++)
+	{
+		_analysesInProgress.push_back(NULL);
+		startSlaveProcess(i);
+	}
 
 }
 
 EngineSync::~EngineSync()
 {
-	_process->terminate();
-	_process->kill();
+	for (int i = 0; i < _slaveProcesses.size(); i++)
+	{
+		_slaveProcesses[i]->terminate();
+		_slaveProcesses[i]->kill();
+	}
 }
 
-/*void EngineSync::addAnalysis(Analysis *analysis)
+void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 {
-	int id = _nextId++;
+	std::cout << "send " << analysis->id() << " to process " << processNo << "\n";
+	std::cout.flush();
 
-	bimap<int, Analysis *>::value_type item(id, analysis);
-	_analyses.insert(item);
+	bool init;
 
-	initAnalysis(analysis);
-
-	BOOST_FOREACH(AnalysisPart *part, *analysis)
+	if (analysis->status() == Analysis::Empty)
 	{
-		typedef bimap<int, AnalysisPart *>::value_type pair;
-
-		id = _nextPartId++;
-		_analysesParts.insert(pair(id, part));
+		init = true;
+		analysis->setStatus(Analysis::Initing);
+	}
+	else
+	{
+		init = false;
+		analysis->setStatus(Analysis::Running);
 	}
 
-	//processAnalyses();
-}*/
+	_analysesInProgress[processNo] = analysis;
 
-
-/*void EngineSync::processAnalyses()
-{
-	try
-	{
-		if (_currentPart != NULL && _currentPart->isCompleted() == false)
-			return;
-
-		if (_currentAnalysis == NULL || _currentAnalysis->isCompleted())
-		{
-			typedef bimap<int, Analysis*>::left_reference pair;
-
-			BOOST_FOREACH(pair pair, _analyses.left)
-			{
-				Analysis *analysis = pair.second;
-				if (analysis->isCompleted() == false)
-					_currentAnalysis = analysis;
-			}
-		}
-
-		if (_currentAnalysis == NULL)
-			return;
-
-		BOOST_FOREACH(AnalysisPart *part, *_currentAnalysis)
-		{
-			if ( ! part->isCompleted())
-				_currentPart = part;
-		}
-
-		Json::Value analysisPartAsJson = _currentPart->asJSON();
-		analysisPartAsJson["perform"] = "init";
-		analysisPartAsJson["id"] = _analyses.right.at(_currentAnalysis);
-		analysisPartAsJson["pid"] = _analysesParts.right.at(_currentPart);
-		analysisPartAsJson["revision"] = _currentPart->revision();
-
-		string asString = analysisPartAsJson.toStyledString();
-
-		qDebug() << asString.c_str();
-
-		_messageQueueOut->send(asString.c_str(), asString.length(), 0);
-
-#ifdef __APPLE__
-		sem_post(_semaphoreOut);
-#else
-		_semaphoreOut->post();
-#endif
-
-		//analysis->onChange.connect(boost::bind(&EngineSync::analysisChanged, this));
-
-	}
-	catch (interprocess_exception e)
-	{
-		qDebug() << "interprocess_exception sending message " << e.what();
-
-		throw e;
-	}
-}*/
-
-void EngineSync::analysisAddedHandler(Analysis *analysis)
-{
 	Json::Value json = Json::Value(Json::objectValue);
 
-	json["perform"] = "init";
 	json["id"] = analysis->id();
 	json["name"] = analysis->name();
 	json["options"] = analysis->options()->asJSON();
+	json["perform"] = (init ? "init" : "run");
 
-	send(json);
-}
+	string str = json.toStyledString();
 
-void EngineSync::analysisOptionsChangedHandler(Analysis *analysis)
-{
-	Json::Value json = Json::Value(Json::objectValue);
+	_channels[processNo]->send(str);
 
-	json["perform"] = "run";
-	json["id"] = analysis->id();
-	json["name"] = analysis->name();
-	json["options"] = analysis->options()->asJSON();
-
-	send(json);
-}
-
-void EngineSync::send(Json::Value json)
-{
-    string asString = json.toStyledString();
-    _messageQueueOut->send(asString.c_str(), asString.length(), 0);
-
-#ifdef __APPLE__
-	sem_post(_semaphoreOut);
-#else
-	_semaphoreOut->post();
-#endif
-
-	cout << asString;
+	cout << str << "\n";
 	cout.flush();
 
 }
 
-/*void EngineSync::analysisChanged()
+void EngineSync::process()
 {
-	Json::Value v = _analyses->get(0)->asJSON();
+	for (int i = 0; i < _channels.size(); i++)
+	{
+		Analysis *analysis = _analysesInProgress[i];
 
-	string data = v.toStyledString();
+		if (analysis == NULL)
+			continue;
 
-    try {
+		IPCChannel *channel = _channels[i];
+		string data;
 
-		_messageQueueOut->send(data.c_str(), data.length(), 0);
+		if (channel->receive(data))
+		{
+			std::cout << "message received\n";
+            std::cout << data << "\n";
+			std::cout.flush();
 
-    }
-    catch (interprocess_exception e)
-    {
-        qDebug() << "interprocess_exception sending message " << e.what();
+			Json::Reader reader;
+			Json::Value json;
+			reader.parse(data, json);
 
-        throw e;
-    }
+			int id = json.get("id", -1).asInt();
+			//bool init = json.get("perform", "init").asString() == "init";
+			Json::Value results = json.get("results", Json::nullValue);
+			bool complete = json.get("complete", false).asBool();
 
-	//_messageQueueOut->send(data.utf16(), sizeof(unsigned short) * data.size(), 0);
+			analysis->setResults(results);
+
+			if (analysis->status() == Analysis::Initing)
+			{
+				analysis->setStatus(Analysis::Inited);
+				_analysesInProgress[i] = NULL;
+				sendMessages();
+			}
+			else if (complete)
+			{
+				analysis->setStatus(Analysis::Complete);
+				_analysesInProgress[i] = NULL;
+				sendMessages();
+			}
+		}
+
+	}
+}
+
+void EngineSync::sendMessages()
+{
+	std::cout << "send messages\n";
+	std::cout.flush();
+
+	for (int i = 0; i < _analysesInProgress.size(); i++)
+	{
+		Analysis *analysis = _analysesInProgress[i];
+		if (analysis != NULL && analysis->status() == Analysis::Empty)
+			sendToProcess(i, analysis);
+	}
+
+	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
+	{
+		Analysis *analysis = *itr;
+
+		if (analysis->status() == Analysis::Empty)
+		{
+			bool sent = false;
+
+			for (int i = 0; i < _analysesInProgress.size(); i++)
+			{
+				if (_analysesInProgress[i] == NULL)
+				{
+					sendToProcess(i, analysis);
+					sent = true;
+					break;
+				}
+			}
+
+			if (sent == false)  // no free processes left
+				return;
+		}
+		else if (analysis->status() == Analysis::Inited)
+		{
+            for (int i = 0; i < _analysesInProgress.size(); i++) // don't perform 'runs' on process 0, only inits.
+			{
+				if (_analysesInProgress[i] == NULL)
+				{
+					sendToProcess(i, analysis);
+					break;
+				}
+			}
+		}
+	}
+
+}
+
+void EngineSync::startSlaveProcess(int no)
+{
+	QDir programDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();
+	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+	QString engineExe = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absoluteFilePath("JASPEngine");
+
+	QStringList args;
+	args << QString::number(no);
 
 #ifdef __APPLE__
-	sem_post(_semaphoreOut);
+	env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib"));
 #else
-    _semaphoreOut->post();
+	env.insert("PATH", programDir.absoluteFilePath("R-3.0.0\\library\\RInside\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\library\\Rcpp\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\bin\\i386"));
+
+	DWORD processId = GetCurrentProcessId();
+	args << QString::number(processId);
 #endif
-}*/
+
+	env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));
+
+	QProcess *slave = new QProcess(this);
+	slave->setProcessEnvironment(env);
+	slave->start(engineExe, args);
+
+	_slaveProcesses.push_back(slave);
+
+	connect(slave, SIGNAL(readyReadStandardOutput()), this, SLOT(subProcessStandardOutput()));
+	connect(slave, SIGNAL(readyReadStandardError()), this, SLOT(subProcessStandardError()));
+	connect(slave, SIGNAL(error(QProcess::ProcessError)), this, SLOT(subProcessError(QProcess::ProcessError)));
+	connect(slave, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(subprocessFinished(int,QProcess::ExitStatus)));
+	connect(slave, SIGNAL(started()), this, SLOT(subProcessStarted()));
+
+}
 
 void EngineSync::subProcessStandardOutput()
 {
-	QByteArray data = _process->readAllStandardOutput();
+	QProcess *process = qobject_cast<QProcess *>(this->sender());
+	QByteArray data = process->readAllStandardOutput();
 	qDebug() << QString(data);
 }
 
 void EngineSync::subProcessStandardError()
 {
-	qDebug() << _process->readAllStandardError();
+	QProcess *process = qobject_cast<QProcess *>(this->sender());
+	qDebug() << process->readAllStandardError();
 }
 
 void EngineSync::subProcessStarted()
@@ -259,55 +257,3 @@ void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatu
 	qDebug() << "subprocess finished" << exitCode;
 }
 
-
-void EngineSync::checkForMessages()
-{
-
-#ifdef __APPLE__
-	sem_trywait(_semaphoreOut); // clear if not cleared by subprocess
-	sem_post(_semaphoreOut);
-#else
-	_semaphoreOut->try_wait();
-	_semaphoreOut->post();
-#endif
-
-
-#ifdef __APPLE__
-    while (sem_trywait(_semaphoreIn) == 0) // 0 = success?!
-#else
-    while (_semaphoreIn->try_wait())
-#endif
-	{
-		boost::interprocess::message_queue::size_type messageSize;
-		uint priority;
-
-		while(_messageQueueIn->try_receive(_buffer, sizeof(_buffer), messageSize, priority))
-		{
-			string message = string(_buffer, messageSize);
-
-			cout << message;
-			cout.flush();
-
-			Json::Reader reader;
-
-			Json::Value json;
-			reader.parse(message, json);
-
-			int id = json.get("id", 0).asInt();
-			//string name = json.get("name", Json::nullValue).asString();
-			string perform = json.get("perform", Json::nullValue).asString();
-			Json::Value payload = json.get("results", Json::nullValue);
-
-			Analysis *analysis = _analyses->get(id);
-
-			if (perform == "init")
-			{
-				analysis->setResults(payload);
-			}
-			else if (perform == "run")
-			{
-				analysis->setResults(payload);
-			}
-		}
-	}
-}

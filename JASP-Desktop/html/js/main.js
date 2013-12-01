@@ -2,6 +2,7 @@
 $(document).ready(function() {
 
     var analyses = []
+	var selectedAnalysisId = -1;
     var selectedAnalysis = null
 
     window.select = function(id) {
@@ -9,7 +10,8 @@ $(document).ready(function() {
         if (selectedAnalysis != null)
             $(selectedAnalysis).removeClass("selected")
 
-        var analysis = $('#' + id)
+        var analysis = $('#id-' + id)
+        selectedAnalysisId = id
 
         if (analysis.length === 0)
             return
@@ -19,6 +21,22 @@ $(document).ready(function() {
         analysis.addClass("selected").removeClass("unselected")
         $("body").addClass("selected")
     }
+    
+    window.scrollIntoView = function(item) {
+    
+        var itemTop = item.offset().top
+        var itemBottom = itemTop + item.height() + parseInt(item.css('marginBottom')) + parseInt(item.css('marginTop'))
+        var windowTop = document.body.scrollTop
+        var windowBottom = windowTop + window.innerHeight
+
+        //console.log(itemTop, itemBottom, windowTop, windowBottom)
+
+        if (itemTop < windowTop && itemBottom < windowBottom)
+            $("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
+        else if (itemBottom > windowBottom && item.height() < window.innerHeight)
+            $("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing'});
+    
+    }
 
     window.unselect = function() {
 
@@ -26,36 +44,58 @@ $(document).ready(function() {
         $(selectedAnalysis).removeClass("selected")
         $("body").removeClass("selected")
 
+		selectedAnalysisId = -1
         selectedAnalysis = null
+    }
+
+    window.remove = function(id) {
+
+        window.unselect()
+
+        var analysis = $('#id-' + id)
+        console.log(analysis)
+        analysis.remove()
+    }
+
+    window.unselectByClickingBody = function()
+    {
+        window.unselect()
+        jasp.analysisUnselected()
     }
 
     var selectedHandler = function(event) {
 
         var id = $(event.currentTarget).attr("id")
-        window.select(id)
-
         var idAsInt = parseInt(id.substring(3))
 
-        jasp.analysisSelected(idAsInt);
+        window.select(idAsInt)
+        jasp.analysisSelected(idAsInt)
+
+        event.stopPropagation()
     }
 
     window.analysisChanged = function(analysis) {
-
-        if (selectedAnalysis != null)
-            $(selectedAnalysis).removeClass("selected")
 
         var id = "id-" + analysis.id
         var results = analysis.results
 
         var item = $("#" + id)
 
-        var newItem = $('<div id="' + id + '" class="jasp-analysis selected"></div>')
+        var newItem = $('<div id="' + id + '" class="jasp-analysis"></div>')
         newItem.click(selectedHandler)
+        
+        if (analysis.id == selectedAnalysisId)
+        {
+        	if (selectedAnalysis != null)
+        		$(selectedAnalysis).removeClass("selected")
 
-        $(analyses).addClass("unselected")
-        $("body").addClass("selected")
+        	$(analyses).addClass("unselected")
+        	$("body").addClass("selected")
 
-        selectedAnalysis = newItem[0]
+        	selectedAnalysis = newItem[0]
+        	$(selectedAnalysis).addClass("selected")
+        }
+        
         analyses.push(newItem[0])
 
         if (item.length !== 0)
@@ -107,18 +147,23 @@ $(document).ready(function() {
 
             item.tables( { tables : ts } )
         }
-
-        var itemTop = item.offset().top
-        var itemBottom = itemTop + item.height() + parseInt(item.css('marginBottom')) + parseInt(item.css('marginTop'))
-        var windowTop = document.body.scrollTop
-        var windowBottom = windowTop + window.innerHeight
-
-        //console.log(itemTop, itemBottom, windowTop, windowBottom)
-
-        if (itemTop < windowTop && itemBottom < windowBottom)
-            $("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
-        else if (itemBottom > windowBottom && item.height() < window.innerHeight)
-            $("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing'});
+        else if (analysis.name == "RegressionLinear")
+        {
+            item.tables( { tables : results.regression } )
+        }
+        else if (analysis.name == "ContingencyTables")
+        {
+            item.tables( { tables : results.tables } )
+        }
+        else if (analysis.name == "Correlation")
+        {
+            item.tables( { tables : [ results.correlations ] } )
+        }
+        
+        if (selectedAnalysisId == analysis.id)
+        {
+        	window.scrollIntoView(item);
+        }
     }
 
     var display = function(name, results, element) {
@@ -136,5 +181,7 @@ $(document).ready(function() {
         constructor(options)
 
     }
+
+    $("body").click(window.unselectByClickingBody)
 
 })

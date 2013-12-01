@@ -6,7 +6,7 @@
 #include <QDebug>
 
 DescriptivesForm::DescriptivesForm(QWidget *parent) :
-	AnalysisForm(parent),
+	AnalysisForm("DescriptivesForm", parent),
 	ui(new Ui::DescriptivesForm)
 {
 	ui->setupUi(this);

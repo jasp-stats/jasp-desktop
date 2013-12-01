@@ -4,6 +4,8 @@
 #include <QMimeData>
 #include <QDebug>
 
+using namespace std;
+
 ListModelAnovaModel::ListModelAnovaModel(QObject *parent)
 	: TableModel(parent)
 {
@@ -114,7 +116,34 @@ void ListModelAnovaModel::setCustomModelMode(bool on)
 
 void ListModelAnovaModel::bindTo(Option *option)
 {
-	_boundTo = dynamic_cast<OptionString *>(option);
+	_boundTo = dynamic_cast<OptionFields *>(option);
+
+	beginResetModel();
+	_variables.clear();
+	endResetModel();
+}
+
+void ListModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
+{
+	beginResetModel();
+
+	QModelIndexList sorted = indexes;
+
+	int lastRowDeleted = -1;
+
+	qSort(sorted.begin(), sorted.end(), qGreater<QModelIndex>());
+
+	foreach (const QModelIndex &index, sorted)
+	{
+		int row = index.row();
+		if (row != lastRowDeleted)
+			_terms.removeAt(row);
+		lastRowDeleted = row;
+	}
+
+	endResetModel();
+
+	assignToOption();
 }
 
 bool ListModelAnovaModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
@@ -276,18 +305,6 @@ bool ListModelAnovaModel::insertRows(int row, int count, const QModelIndex &pare
 	return true;
 }
 
-bool ListModelAnovaModel::removeRows(int row, int count, const QModelIndex &parent)
-{
-	beginRemoveRows(parent, row, row + count - 1);
-
-	for (int i = 0; i < count; i++)
-		_terms.removeAt(row);
-
-	endRemoveRows();
-
-	assignToOption();
-}
-
 Qt::ItemFlags ListModelAnovaModel::flags(const QModelIndex &index) const
 {
 	if (index.isValid())
@@ -385,46 +402,36 @@ QString ListModelAnovaModel::itemsToString(QList<ColumnInfo> items)
 	return result;
 }
 
-QString ListModelAnovaModel::termsToString(QList<QList<ColumnInfo> > terms)
-{
-	QString result;
-
-	bool first = true;
-
-	foreach (const QList<ColumnInfo> &term, terms)
-	{
-		if (first)
-			first = false;
-		else
-			result += " + ";
-
-		result += itemsToString(term);
-	}
-
-	return result;
-}
-
 void ListModelAnovaModel::assignToOption()
 {
 	if (_boundTo == NULL)
 		return;
 
-	QString newModelDesc;
+	vector<string> values;
 
-	if (_dependent.first != "" && _customModel && _terms.length() > 0)
+	if (_customModel)
 	{
-		newModelDesc = _dependent.first + " ~ " + termsToString(_terms);
+		foreach (QList<ColumnInfo> term, _terms)
+		{
+			QString modelTerm = itemsToString(term);
+			QByteArray utf8 = modelTerm.toUtf8();
+			string modelTermAsString(utf8.constData(), utf8.length());
+			values.push_back(modelTermAsString);
+		}
 	}
-	else if (_dependent.first != "" && _customModel == false && _variables.length() > 0)
+	else
 	{
-		newModelDesc = _dependent.first + " ~ " + termsToString(generateCrossCombinations(_variables.toVector()));
+		QList<QList<ColumnInfo> > combinations = generateCrossCombinations(_variables.toVector());
+
+		foreach (QList<ColumnInfo> term, combinations)
+		{
+			QString modelTerm = itemsToString(term);
+			QByteArray utf8 = modelTerm.toUtf8();
+			string modelTermAsString(utf8.constData(), utf8.length());
+			values.push_back(modelTermAsString);
+		}
 	}
 
-	if (_modelDesc != newModelDesc)
-	{
-		_modelDesc = newModelDesc;
-		QByteArray utf8 = _modelDesc.toUtf8();
-		std::string value(utf8.constData(), utf8.length());
-		_boundTo->setValue(value);
-	}
+	_boundTo->setValue(values);
+
 }

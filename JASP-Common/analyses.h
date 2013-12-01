@@ -10,11 +10,15 @@
 class Analyses
 {
 	friend class EngineSync;
+	friend class boost::iterator_core_access;
+
+	typedef std::map<int, Analysis *> ById;
 
 public:
 	Analyses();
 
 	Analysis *create(std::string name);
+	Analysis *create(std::string name, int id);
 	Analysis *get(int id);
 
 	boost::signals2::signal<void (Analysis *)> analysisInitialised;
@@ -22,17 +26,24 @@ public:
 	boost::signals2::signal<void (Analysis *)> analysisResultsChanged;
 	boost::signals2::signal<void (Analysis *)> analysisAdded;
 
+	typedef std::vector<Analysis*>::iterator iterator;
+	iterator begin();
+	iterator end();
+
 private:
 
 	void analysisOptionsChangedHandler(Analysis *analysis);
 	void analysisResultsChangedHandler(Analysis *analysis);
 
-	typedef std::map<int, Analysis *> ById;
-
-	ById _analyses;
+	std::vector<Analysis*> _analyses;
 
 	int _nextId;
 
+	std::map<std::string, Analysis *> _defaults;
+
+
+
 };
+
 
 #endif // ANALYSES_H

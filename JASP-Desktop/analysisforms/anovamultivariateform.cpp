@@ -6,7 +6,7 @@
 #include "widgets/listmodelanovamodelnuisancefactors.h"
 
 AnovaMultivariateForm::AnovaMultivariateForm(QWidget *parent) :
-	AnalysisForm(parent),
+	AnalysisForm("AnovaMultivariateForm", parent),
 	ui(new Ui::AnovaMultivariateForm)
 {
 	ui->setupUi(this);

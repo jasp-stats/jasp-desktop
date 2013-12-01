@@ -4,7 +4,7 @@
 #include "widgets/tablemodelvariablesassigned.h"
 
 TTestPairedSamplesForm::TTestPairedSamplesForm(QWidget *parent) :
-	AnalysisForm(parent),
+	AnalysisForm("TTestPairedSamplesForm", parent),
 	ui(new Ui::TTestPairedSamplesForm)
 {
 	ui->setupUi(this);
@@ -17,6 +17,7 @@ TTestPairedSamplesForm::TTestPairedSamplesForm(QWidget *parent) :
 	ui->availableFields->setDoubleClickTarget(ui->pairs);
 
 	TableModelVariablesAssigned *model = new TableModelVariablesAssigned(this);
+	model->setSource(&_availableFields);
 	model->setVariableTypesAllowed(Column::ColumnTypeScale);
 	ui->pairs->setModel(model);
 

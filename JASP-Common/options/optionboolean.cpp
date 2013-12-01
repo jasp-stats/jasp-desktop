@@ -1,9 +1,9 @@
 #include "optionboolean.h"
 
-OptionBoolean::OptionBoolean(std::string name)
+OptionBoolean::OptionBoolean(std::string name, bool defaultValue)
 	: OptionI(name)
 {
-	_value = false;
+	_value = defaultValue;
 }
 
 Json::Value OptionBoolean::asJSON() const

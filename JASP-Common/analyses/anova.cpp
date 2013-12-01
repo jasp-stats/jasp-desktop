@@ -11,7 +11,7 @@
 #include "options/optionnumber.h"
 #include "options/optionstring.h"
 
-using namespace analyses;
+using namespace std;
 
 Anova::Anova(int id)
 	: Analysis(id, "Anova")
@@ -27,7 +27,14 @@ Options *Anova::createDefaultOptions()
 	options->add(new OptionFields("randomFactors"));
 	options->add(new OptionField("wlsWeights"));
 
-	options->add(new OptionString("model"));
+	options->add(new OptionFields("modelTerms"));
+
+	vector<string> sumOfSquares;
+	sumOfSquares.push_back("type1");
+	sumOfSquares.push_back("type2");
+	sumOfSquares.push_back("type3");
+
+	options->add(new OptionList("sumOfSquares", sumOfSquares, "type3"));
 
 	return options;
 }

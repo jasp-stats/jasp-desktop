@@ -42,7 +42,16 @@ SEK <- function(x) {
 	return(SEK)
 } 
 
-Descriptives <- function(data, options, perform="run", callback=NULL) {
+Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+
+	if (is.null(dataset))
+	{
+		if (perform == "run") {
+			dataset <- read.dataset.to.end()
+		} else {
+			dataset <- read.dataset.header()
+		}
+	}
 
 	variables <- options$main$fields
 	stats.options <- options[["statistics"]]

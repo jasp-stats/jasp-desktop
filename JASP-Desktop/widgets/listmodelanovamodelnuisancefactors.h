@@ -20,6 +20,8 @@ public:
 	void assignToNuisanceOption();
 	void setNuisanceTermsOption(OptionFields *nuisanceOption);
 
+	virtual void mimeDataMoved(const QModelIndexList &indexes) override;
+
 protected:
 	QList<bool> _nuisance;
 	OptionFields *_nuisanceOption;

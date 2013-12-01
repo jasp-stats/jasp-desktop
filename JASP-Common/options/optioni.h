@@ -22,6 +22,9 @@ public:
 
 	virtual void setValue(T value)
 	{
+		if (_value == value)
+			return;
+
 		_value = value;
 
 		changed(this);

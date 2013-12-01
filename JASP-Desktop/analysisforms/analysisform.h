@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QMap>
 
 #include "dataset.h"
 #include "options.h"
@@ -21,37 +22,17 @@ class AnalysisForm : public QWidget
 	Q_OBJECT
 
 public:
-	explicit AnalysisForm(QWidget *parent = 0);
+	explicit AnalysisForm(QString name, QWidget *parent = 0);
 	virtual void set(Options *options, DataSet *dataSet);
-
-signals:
-	void accepted();
 
 protected:
 
 	DataSet *_dataSet;
 	Options *_options;
 
-	//AvailableFields _availableFields;
 	ListModelVariablesAvailable _availableFields;
 
 	OptionFields *_mainFields;
-
-	virtual void resizeEvent(QResizeEvent *event) override;
-
-protected slots:
-
-	void accept();
-
-private slots:
-
-	void repositionButtonPanel();
-
-private:
-	QWidget *_buttonPanel;
-	QVBoxLayout *_buttonPanelLayout;
-	QPushButton *_okButton;
-	QPushButton *_removeButton;
 	
 	
 };

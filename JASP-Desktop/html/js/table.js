@@ -99,7 +99,7 @@ $.widget("jasp.table", {
                 else
                 	html += '<th></th>'
 		
-				if (this.options.data != null) {
+				if (this.options.data != null && i < this.options.data.length) {
                     _.each(this.options.schema.fields, function(field) {
 
                         var value = this.options.data[i][field.id]

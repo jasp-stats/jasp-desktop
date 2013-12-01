@@ -66,7 +66,7 @@ AnovaModelWidget::~AnovaModelWidget()
 
 void AnovaModelWidget::bindTo(Option *option)
 {
-	_boundTo = dynamic_cast<OptionString *>(option);
+	_boundTo = dynamic_cast<OptionFields *>(option);
 
 	if (_listModelAnovaModel != NULL && _boundTo != NULL)
 		_listModelAnovaModel->bindTo(_boundTo);

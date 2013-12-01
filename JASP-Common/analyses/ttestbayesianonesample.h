@@ -3,9 +3,6 @@
 
 #include "analysis.h"
 
-namespace analyses
-{
-
 class TTestBayesianOneSample : public Analysis
 {
 public:
@@ -13,7 +10,5 @@ public:
 protected:
 	virtual Options *createDefaultOptions() OVERRIDE;
 };
-
-}
 
 #endif // TTESTBAYESIANONESAMPLE_H

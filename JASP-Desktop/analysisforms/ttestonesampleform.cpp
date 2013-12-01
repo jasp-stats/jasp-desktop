@@ -5,7 +5,7 @@
 #include "widgets/listmodelvariablesassigned.h"
 
 TTestOneSampleForm::TTestOneSampleForm(QWidget *parent) :
-	AnalysisForm(parent),
+	AnalysisForm("TTestOneSampleForm", parent),
 	ui(new Ui::TTestOneSampleForm)
 {
 	ui->setupUi(this);

@@ -7,7 +7,7 @@
 #include <boost/interprocess/sync/named_semaphore.hpp>
 #endif
 
-#include <boost/interprocess/ipc/message_queue.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
 
 #include <QProcess>
 #include <QTimer>
@@ -16,7 +16,7 @@
 #include "options.h"
 #include "analysis.h"
 #include "analyses.h"
-
+#include "ipcchannel.h"
 
 class EngineSync : public QObject
 {
@@ -32,39 +32,23 @@ signals:
 
 private:
 
-	void analysisAddedHandler(Analysis *analysis);
-	void analysisOptionsChangedHandler(Analysis *analysis);
-	void send(Json::Value json);
-	//void analysisChanged();
-
-	QProcess *_process;
-	QString _engineExe;
-	int _maxProcesses;
 	Analyses *_analyses;
+
+	std::vector<QProcess *> _slaveProcesses;
+	std::vector<IPCChannel *> _channels;
+	std::vector<Analysis *> _analysesInProgress;
+
+	IPCChannel *nextFreeProcess(Analysis *analysis);
+	void sendToProcess(int processNo, Analysis *analysis);
 
 	QTimer *_timer;
 
-    boost::interprocess::message_queue* _messageQueueIn;
-    boost::interprocess::message_queue* _messageQueueOut;
-
-#ifdef __APPLE__
-    sem_t* _semaphoreIn;
-    sem_t* _semaphoreOut;
-#else
-    boost::interprocess::named_semaphore* _semaphoreIn;
-    boost::interprocess::named_semaphore* _semaphoreOut;
-#endif
-
-	void processAnalyses();
-
-#define BUFFER_SIZE 1048576 // 1 meg
-
-	char _buffer[BUFFER_SIZE];
-
+	void sendMessages();
+	void startSlaveProcess(int no);
 
 private slots:
 
-	void checkForMessages();
+	void process();
 
 	void subProcessStandardOutput();
 	void subProcessStandardError();

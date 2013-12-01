@@ -66,15 +66,6 @@ QVariant ListModelVariables::data(const QModelIndex &index, int role) const
 	}
 }
 
-bool ListModelVariables::removeRows(int row, int count, const QModelIndex &parent)
-{
-	beginRemoveRows(parent, row, row + count - 1);
-	for (int i = 0; i < count; i++)
-		_variables.removeAt(row);
-	endRemoveRows();
-	return true;
-}
-
 bool ListModelVariables::insertRows(int row, int count, const QModelIndex &parent)
 {
 	beginInsertRows(parent, row, row + count - 1);
@@ -140,6 +131,20 @@ QMimeData *ListModelVariables::mimeData(const QModelIndexList &indexes) const
 	mimeData->setData(_mimeType, encodedData);
 
 	return mimeData;
+}
+
+void ListModelVariables::mimeDataMoved(const QModelIndexList &indexes)
+{
+	beginResetModel();
+
+	QModelIndexList sorted = indexes;
+
+	qSort(sorted.begin(), sorted.end(), qGreater<QModelIndex>());
+
+	foreach (const QModelIndex &index, sorted)
+		_variables.removeAt(index.row());
+
+	endResetModel();
 }
 
 bool ListModelVariables::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)

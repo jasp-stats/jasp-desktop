@@ -52,7 +52,11 @@ SOURCES += \
     options/optionfieldpairs.cpp \
     options/optionstring.cpp \
     analyses/ancova.cpp \
-    analyses/ancovamultivariate.cpp
+    analyses/ancovamultivariate.cpp \
+    analyses/regressionlinear.cpp \
+    analyses/contingencytables.cpp \
+    analyses/correlation.cpp \
+    ipcchannel.cpp
 
 HEADERS +=\
     options.h \
@@ -99,7 +103,11 @@ HEADERS +=\
     common.h \
     options/optionstring.h \
     analyses/ancova.h \
-    analyses/ancovamultivariate.h
+    analyses/ancovamultivariate.h \
+    analyses/regressionlinear.h \
+    analyses/contingencytables.h \
+    analyses/correlation.h \
+    ipcchannel.h
 
 unix:!symbian {
     maemo5 {

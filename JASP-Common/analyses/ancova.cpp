@@ -11,8 +11,6 @@
 #include "options/optionnumber.h"
 #include "options/optionstring.h"
 
-using namespace analyses;
-
 Ancova::Ancova(int id)
 	: Analysis(id, "Ancova")
 {
@@ -28,7 +26,7 @@ Options *Ancova::createDefaultOptions()
 	options->add(new OptionFields("covariates"));
 	options->add(new OptionField("wlsWeights"));
 
-	options->add(new OptionString("model"));
+	options->add(new OptionFields("modelTerms"));
 
 	return options;
 }
