@@ -51,10 +51,12 @@ Options *Descriptives::createDefaultOptions()
 	vector<string> chartType;
 	chartType.push_back("noCharts");
 	chartType.push_back("barCharts");
+	chartType.push_back("barCharts");
+	chartType.push_back("barCharts");
 
 	vector<string> chartValues;
-	chartType.push_back("frequencies");
-	chartType.push_back("percentages");
+	chartValues.push_back("frequencies");
+	chartValues.push_back("percentages");
 
 	options->add(new OptionList("charts/chartType", chartType));
 	options->add(new OptionBoolean("charts/showNormalCurve"));
