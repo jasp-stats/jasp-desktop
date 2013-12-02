@@ -80,9 +80,9 @@ Qt::ItemFlags ListModelVariables::flags(const QModelIndex &index) const
 	if (index.isValid())
 	{
 		if (isForbidden(_variables.at(index.row()).second))
-			return Qt::ItemNeverHasChildren;
+            return 0;
 
-		return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemNeverHasChildren | Qt::ItemIsDragEnabled;
+        return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
 	}
 	else
 		return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;
