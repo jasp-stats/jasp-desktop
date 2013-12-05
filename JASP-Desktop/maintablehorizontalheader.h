@@ -5,6 +5,7 @@
 #include <QMenu>
 
 #include "column.h"
+#include "common.h"
 
 class MainTableHorizontalHeader : public QHeaderView
 {
@@ -18,7 +19,7 @@ signals:
 public slots:
 
 protected:
-	virtual void mousePressEvent(QMouseEvent *event) override;
+	virtual void mousePressEvent(QMouseEvent *event) OVERRIDE;
 
 private slots:
 	void nominalSelected();

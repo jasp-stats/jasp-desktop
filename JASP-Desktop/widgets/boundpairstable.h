@@ -15,8 +15,8 @@ public:
 	explicit BoundPairsTable(QWidget *parent = 0);
 
 	virtual void setModel(QAbstractItemModel *model);
-	virtual void bindTo(Option *option) override;
-	virtual void notifyDragWasDropped() override;
+	virtual void bindTo(Option *option) OVERRIDE;
+	virtual void notifyDragWasDropped() OVERRIDE;
 
 protected:
 

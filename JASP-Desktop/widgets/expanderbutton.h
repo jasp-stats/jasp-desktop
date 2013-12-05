@@ -3,6 +3,8 @@
 
 #include <QPushButton>
 
+#include "common.h"
+
 class ExpanderButton : public QPushButton
 {
 	Q_OBJECT
@@ -10,12 +12,12 @@ public:
 	explicit ExpanderButton(QWidget *parent = 0);
 
 protected:
-	virtual void nextCheckState() override;
+	virtual void nextCheckState() OVERRIDE;
 
 private:
-	bool _expanded = false;
-	QIcon _expandedIcon = QIcon(QString(":/images/expander-arrow-down.png"));
-	QIcon _contractedIcon = QIcon(QString(":/images/expander-arrow-up.png"));
+    bool _expanded;
+    QIcon _expandedIcon;
+    QIcon _contractedIcon;
 	
 };
 

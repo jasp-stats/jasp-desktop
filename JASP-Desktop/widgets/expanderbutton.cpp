@@ -8,6 +8,10 @@
 ExpanderButton::ExpanderButton(QWidget *parent) :
 	QPushButton(parent)
 {
+    _expanded = false;
+    _expandedIcon = QIcon(QString(":/images/expander-arrow-down.png"));
+    _contractedIcon = QIcon(QString(":/images/expander-arrow-up.png"));
+
 	setCheckable(true);
 	setIcon(_contractedIcon);
 	setStyleSheet(QString("QPushButton { text-align: left ; /*padding: 3px 9px ;*/ }"));

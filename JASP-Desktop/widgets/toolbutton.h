@@ -4,6 +4,8 @@
 #include <QPushButton>
 #include <QString>
 
+#include "common.h"
+
 class ToolButton : public QPushButton
 {
     Q_OBJECT
@@ -15,10 +17,10 @@ signals:
 public slots:
 
 protected:
-    virtual void paintEvent(QPaintEvent *event) override;
+    virtual void paintEvent(QPaintEvent *event) OVERRIDE;
 
 private:
-    bool m_firstPaint = true;
+    bool m_firstPaint;
     
 };
 

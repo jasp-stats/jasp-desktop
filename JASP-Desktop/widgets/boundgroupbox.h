@@ -14,10 +14,10 @@ class BoundGroupBox : public QWidget, public Bound
 	Q_OBJECT
 public:
 	explicit BoundGroupBox(QWidget *parent = 0);
-	void bindTo(Option *option) override;
+	void bindTo(Option *option) OVERRIDE;
 
 protected:
-	void childEvent(QChildEvent *child) override;
+	void childEvent(QChildEvent *child) OVERRIDE;
 	
 private:
 	QButtonGroup *_buttonGroup;

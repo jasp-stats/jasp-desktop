@@ -24,7 +24,7 @@ public:
 	explicit AnovaModelWidget(QWidget *parent = 0);
 	~AnovaModelWidget();
 
-	virtual void bindTo(Option *option) override;
+	virtual void bindTo(Option *option) OVERRIDE;
 
 	virtual void setModel(ListModelAnovaModel *model);
 

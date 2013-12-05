@@ -5,7 +5,7 @@
 ToolButton::ToolButton(QWidget *parent) :
     QPushButton(parent)
 {
-
+    m_firstPaint = true;
 }
 
 void ToolButton::paintEvent(QPaintEvent *event)

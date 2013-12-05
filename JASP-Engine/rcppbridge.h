@@ -14,9 +14,9 @@ class RcppBridge : public RInterface
 public:
 	RcppBridge();
 
-	virtual void setDataSet(DataSet *dataSet) OVERRIDE;
-	virtual Json::Value init(const std::string &name, const Json::Value &options) OVERRIDE;
-	virtual Json::Value run(const std::string &name, const Json::Value &options, boost::function<int (Json::Value)> callback) OVERRIDE;
+    virtual void setDataSet(DataSet *dataSet) OVERRIDE;
+    virtual Json::Value init(const std::string &name, const Json::Value &options) OVERRIDE;
+    virtual Json::Value run(const std::string &name, const Json::Value &options, boost::function<int (Json::Value)> callback) OVERRIDE;
 
 private:
 	RInside _rInside;

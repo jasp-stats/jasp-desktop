@@ -20,30 +20,30 @@ class ListModelAnovaModel : public TableModel, public EnhancedDropTarget, public
 public:
 	ListModelAnovaModel(QObject *parent = 0);
 
-	virtual QVariant data(const QModelIndex &index, int role) const override;
-	virtual int rowCount(const QModelIndex &) const override;
-	virtual int columnCount(const QModelIndex &parent) const override;
+	virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
+	virtual int rowCount(const QModelIndex &) const OVERRIDE;
+	virtual int columnCount(const QModelIndex &parent) const OVERRIDE;
 
-	virtual QStringList mimeTypes() const override;
-	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
-	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
-	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent, int assignType) override;
-	virtual QMimeData *mimeData(const QModelIndexList &indexes) const override;
-	virtual bool insertRows(int row, int count, const QModelIndex &parent) override;
-	virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
-	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+	virtual QStringList mimeTypes() const OVERRIDE;
+	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
+	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) OVERRIDE;
+	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent, int assignType) OVERRIDE;
+	virtual QMimeData *mimeData(const QModelIndexList &indexes) const OVERRIDE;
+	virtual bool insertRows(int row, int count, const QModelIndex &parent) OVERRIDE;
+	virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const OVERRIDE;
 
-	virtual Qt::DropActions supportedDropActions() const override;
-	virtual Qt::DropActions supportedDragActions() const override;
+	virtual Qt::DropActions supportedDropActions() const OVERRIDE;
+	virtual Qt::DropActions supportedDragActions() const OVERRIDE;
 
 	void setVariables(const QList<ColumnInfo> &variables);
 	const QList<ColumnInfo> &variables() const;
 	void setDependent(const ColumnInfo dependent);
 	void setCustomModelMode(bool on);
 
-	virtual void bindTo(Option *option) override;
+	virtual void bindTo(Option *option) OVERRIDE;
 
-	virtual void mimeDataMoved(const QModelIndexList &indexes) override;
+	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
 
 signals:
 	void variablesAvailableChanged();

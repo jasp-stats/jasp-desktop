@@ -5,6 +5,8 @@
 #include <QPainterPath>
 #include <QPen>
 
+#include "common.h"
+
 class InfoPopup : public QWidget
 {
 	Q_OBJECT
@@ -22,7 +24,7 @@ public:
 signals:
 
 protected:
-	virtual void paintEvent(QPaintEvent *event) override;
+	virtual void paintEvent(QPaintEvent *event) OVERRIDE;
 	
 public slots:
 

@@ -6,6 +6,8 @@
 #include <QList>
 #include <QMimeData>
 
+#include "common.h"
+
 class ListModelVariablesAvailable : public ListModelVariables
 {
 	Q_OBJECT
@@ -14,13 +16,13 @@ public:
 
 	void setVariables(const QList<ColumnInfo> &variables);
 	bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
-	bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
-	virtual QStringList mimeTypes() const override;
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
+    virtual QStringList mimeTypes() const OVERRIDE;
 
 	const QList<ColumnInfo> &allVariables() const;
 
 	void notifyAlreadyAssigned(const QList<ColumnInfo> &variables);
-	bool removeRows(int row, int count, const QModelIndex &parent) override;
+    bool removeRows(int row, int count, const QModelIndex &parent) OVERRIDE;
 
 signals:
 	void variablesChanged();

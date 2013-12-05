@@ -11,7 +11,7 @@ class BoundComboBox : public QComboBox, public Bound
 public:
 	explicit BoundComboBox(QWidget *parent = 0);
 
-	void bindTo(Option *option) override;
+	void bindTo(Option *option) OVERRIDE;
 
 private slots:
 	void changeHandler(int index);

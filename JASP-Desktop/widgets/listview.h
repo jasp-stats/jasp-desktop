@@ -14,13 +14,13 @@ public:
 	explicit ListView(QWidget *parent = 0);
 
 	void setDoubleClickTarget(DropTarget *target);
-	virtual void setModel(QAbstractItemModel *model) override;
-	virtual void notifyDragWasDropped() override;
+	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
+	virtual void notifyDragWasDropped() OVERRIDE;
 	
 protected:
-	void focusInEvent(QFocusEvent *event) override;
-	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
-	void dropEvent(QDropEvent *event) override;
+	void focusInEvent(QFocusEvent *event) OVERRIDE;
+	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) OVERRIDE;
+	void dropEvent(QDropEvent *event) OVERRIDE;
 
 private slots:
 	void doubleClickedHandler(const QModelIndex index);

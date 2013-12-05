@@ -14,6 +14,8 @@
 #include <QIcon>
 #include <QAbstractItemView>
 
+#include "common.h"
+
 typedef QPair<QString, int> ColumnInfo;
 
 class ListModelVariables : public QAbstractListModel
@@ -25,19 +27,19 @@ public:
 	void setVariableTypesAllowed(int variableTypesAllowed);
 	int variableTypesAllowed();
 
-	virtual int rowCount(const QModelIndex &) const override;
-	virtual QVariant data(const QModelIndex &index, int role) const override;
+    virtual int rowCount(const QModelIndex &) const OVERRIDE;
+    virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
 
-	virtual bool insertRows(int row, int count, const QModelIndex &parent) override;
-	virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
+    virtual bool insertRows(int row, int count, const QModelIndex &parent) OVERRIDE;
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
 
-	virtual Qt::DropActions supportedDropActions() const override;
-	virtual Qt::DropActions supportedDragActions() const override;
+    virtual Qt::DropActions supportedDropActions() const OVERRIDE;
+    virtual Qt::DropActions supportedDragActions() const OVERRIDE;
 
-	virtual QStringList mimeTypes() const override;
-	virtual QMimeData *mimeData(const QModelIndexList &indexes) const override;
-	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
-	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+    virtual QStringList mimeTypes() const OVERRIDE;
+    virtual QMimeData *mimeData(const QModelIndexList &indexes) const OVERRIDE;
+    virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) OVERRIDE;
+    virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
 
 	void setSupportedDropActions(Qt::DropActions actions);
 	void setSupportedDragActions(Qt::DropActions actions);

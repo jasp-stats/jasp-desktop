@@ -13,10 +13,10 @@ class BoundCheckBox : public QCheckBox, public Bound
     Q_OBJECT
 public:
 	explicit BoundCheckBox(QWidget *parent = 0);
-	virtual void bindTo(Option *option) override;
+	virtual void bindTo(Option *option) OVERRIDE;
 
 protected:
-	virtual void nextCheckState() override;
+	virtual void nextCheckState() OVERRIDE;
 
 signals:
     

@@ -204,13 +204,15 @@ void EngineSync::startSlaveProcess(int no)
 	QStringList args;
 	args << QString::number(no);
 
-#ifdef __APPLE__
-	env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib"));
-#else
-	env.insert("PATH", programDir.absoluteFilePath("R-3.0.0\\library\\RInside\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\library\\Rcpp\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\bin\\i386"));
+#ifdef __WIN32__
+    env.insert("PATH", programDir.absoluteFilePath("R-3.0.0\\library\\RInside\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\library\\Rcpp\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\bin\\i386"));
 
-	DWORD processId = GetCurrentProcessId();
-	args << QString::number(processId);
+    DWORD processId = GetCurrentProcessId();
+    args << QString::number(processId);
+#elif __APPLE__
+    env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib"));
+#else
+    env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib") + ";" + programDir.absoluteFilePath("R-3.0.0/library/RInside/lib") + ";" + programDir.absoluteFilePath("R-3.0.0/library/Rcpp/lib"));
 #endif
 
 	env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));

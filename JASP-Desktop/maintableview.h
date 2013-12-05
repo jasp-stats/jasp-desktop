@@ -14,11 +14,11 @@ class MainTableView : public QTableView
 public:
 	explicit MainTableView(QWidget *parent = 0);
 
-	virtual void setModel(QAbstractItemModel *model) override;
+	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
 
 protected:
-	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;
-	virtual void verticalScrollbarValueChanged(int value) override;
+	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) OVERRIDE;
+	virtual void verticalScrollbarValueChanged(int value) OVERRIDE;
 
 
 signals:

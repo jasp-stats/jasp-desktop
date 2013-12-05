@@ -26,7 +26,7 @@ public:
 	~MainWindow();
     
 protected:
-	virtual void resizeEvent(QResizeEvent *event) override;
+	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
 
 private:
 	Ui::MainWindow *ui;

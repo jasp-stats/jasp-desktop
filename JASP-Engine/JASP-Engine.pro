@@ -24,7 +24,7 @@ R_HOME = $$OUT_PWD/../R-3.0.0
 
 INCLUDEPATH += \
 	$$R_HOME/include \
-	$$R_HOME/library/Rinside/include \
+        $$R_HOME/library/RInside/include \
 	$$R_HOME/library/Rcpp/include
 
 unix:LIBS += \

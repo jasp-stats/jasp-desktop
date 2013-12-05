@@ -24,8 +24,8 @@ public:
 
 	boost::signals2::signal<void ()> availableFieldsChanged();
 
-	int rowCount(const QModelIndex &) const override;
-	QVariant data(const QModelIndex &index, int role) const override;
+	int rowCount(const QModelIndex &) const OVERRIDE;
+	QVariant data(const QModelIndex &index, int role) const OVERRIDE;
 
 	QStringList available();
 

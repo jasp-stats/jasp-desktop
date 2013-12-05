@@ -16,13 +16,13 @@ class BoundTextBox : public QLineEdit, public Bound
 public:
 	explicit BoundTextBox(QWidget *parent = 0);
 
-	virtual void bindTo(Option *option) override;
+	virtual void bindTo(Option *option) OVERRIDE;
 	
 signals:
 	
 protected:
-	void keyPressEvent(QKeyEvent *event) override;
-	void focusOutEvent(QFocusEvent *event) override;
+	void keyPressEvent(QKeyEvent *event) OVERRIDE;
+	void focusOutEvent(QFocusEvent *event) OVERRIDE;
 	void finalise();
 
 private:
@@ -38,8 +38,8 @@ private:
 	{
 	public:
 		QIntArrayValidator();
-		QValidator::State validate(QString & input, int&pos) const override;
-		virtual void fixup(QString &input) const override;
+		QValidator::State validate(QString & input, int&pos) const OVERRIDE;
+		virtual void fixup(QString &input) const OVERRIDE;
 
 		static std::vector<int> parse(QString &input);
 		static QString stringify(std::vector<int> &input);

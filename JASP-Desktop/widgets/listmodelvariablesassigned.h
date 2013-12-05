@@ -13,16 +13,16 @@ class ListModelVariablesAssigned : public ListModelVariables, public BoundModel
 	Q_OBJECT
 public:
 	explicit ListModelVariablesAssigned(QObject *parent = 0);
-	virtual void bindTo(Option *option) override;
+	virtual void bindTo(Option *option) OVERRIDE;
 
-	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
-	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
+	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) OVERRIDE;
 
 	void setSource(ListModelVariablesAvailable *source);
 
 	const QList<ColumnInfo> &assigned() const;
 
-	virtual void mimeDataMoved(const QModelIndexList &indexes) override;
+	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
 signals:
 	void assignmentsChanged();
 

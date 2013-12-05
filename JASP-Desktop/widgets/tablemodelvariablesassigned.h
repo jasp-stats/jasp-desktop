@@ -20,24 +20,24 @@ public:
 	void setVariableTypesAllowed(int variableTypesAllowed);
 	int variableTypesAllowed();
 
-	void bindTo(Option *option) override;
-	int rowCount(const QModelIndex &parent) const override;
-	int columnCount(const QModelIndex &parent) const override;
-	QVariant data(const QModelIndex &index, int role) const override;
-	Qt::ItemFlags flags(const QModelIndex &index) const override;
+	void bindTo(Option *option) OVERRIDE;
+	int rowCount(const QModelIndex &parent) const OVERRIDE;
+	int columnCount(const QModelIndex &parent) const OVERRIDE;
+	QVariant data(const QModelIndex &index, int role) const OVERRIDE;
+	Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
 
-	virtual Qt::DropActions supportedDropActions() const override;
-	virtual Qt::DropActions supportedDragActions() const override;
-	virtual QStringList mimeTypes() const override;
-	virtual QMimeData *mimeData(const QModelIndexList &indexes) const override;
-	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
-	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+	virtual Qt::DropActions supportedDropActions() const OVERRIDE;
+	virtual Qt::DropActions supportedDragActions() const OVERRIDE;
+	virtual QStringList mimeTypes() const OVERRIDE;
+	virtual QMimeData *mimeData(const QModelIndexList &indexes) const OVERRIDE;
+	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) OVERRIDE;
+	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
 
 	bool isForbidden(int variableType) const;
 
-	virtual bool insertRows(int row, int count, const QModelIndex &parent) override;
+	virtual bool insertRows(int row, int count, const QModelIndex &parent) OVERRIDE;
 
-	virtual void mimeDataMoved(const QModelIndexList &indexes) override;
+	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
 
 	void setSource(ListModelVariablesAvailable *source);
 protected:

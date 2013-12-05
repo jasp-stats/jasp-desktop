@@ -18,7 +18,7 @@ public:
 	explicit AnovaBayesianForm(QWidget *parent = 0);
 	~AnovaBayesianForm();
 
-	virtual void set(Options *options, DataSet *dataSet) override;
+	virtual void set(Options *options, DataSet *dataSet) OVERRIDE;
 
 private slots:
 	void factorsChanged();

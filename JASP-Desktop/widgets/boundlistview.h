@@ -21,16 +21,16 @@ class BoundListView : public ListView, public Bound
 public:
 	BoundListView(QWidget *parent = 0);
 
-	virtual void bindTo(Option *option) override;
+	virtual void bindTo(Option *option) OVERRIDE;
 
 	void setAssignButton(AssignButton *button);
 	void setAvailableFieldsListView(AvailableFieldsListView *listView);
 
-	virtual void setModel(QAbstractItemModel *model) override;
+	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
 
 protected:
-	virtual void resizeEvent(QResizeEvent *e) override;
-	virtual void moveEvent(QMoveEvent *e) override;
+	virtual void resizeEvent(QResizeEvent *e) OVERRIDE;
+	virtual void moveEvent(QMoveEvent *e) OVERRIDE;
 
 	ListModelVariablesAssigned *_variablesListModel;
 

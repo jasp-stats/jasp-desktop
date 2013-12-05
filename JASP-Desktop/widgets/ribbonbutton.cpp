@@ -5,7 +5,7 @@
 RibbonButton::RibbonButton(QWidget *parent) :
     QPushButton(parent)
 {
-
+    m_firstPaint = true;
 }
 
 void RibbonButton::paintEvent(QPaintEvent *event)
