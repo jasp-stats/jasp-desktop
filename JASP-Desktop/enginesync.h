@@ -13,7 +13,7 @@
 #include <QTimer>
 #include <vector>
 
-#include "options.h"
+#include "options/options.h"
 #include "analysis.h"
 #include "analyses.h"
 #include "ipcchannel.h"

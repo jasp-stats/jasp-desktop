@@ -8,29 +8,34 @@
 
 using namespace std;
 
-typedef std::pair<std::string, Option*> OptionWithName;
-
 Options::Options()
+	: names(&_options)
 {
 
 }
 
-void Options::add(Option *option)
+Options::~Options()
 {
-	_store.insert(OptionWithName(option->name(), option));
+	BOOST_FOREACH(OptionNamed item, _options)
+		delete item.second;
+}
+
+void Options::add(string name, Option *option)
+{
+	_options.push_back(OptionNamed(name, option));
 	option->changed.connect(boost::bind(&Options::optionsChanged, this));
 }
 
 void Options::optionsChanged()
 {
-	onChange();
+	changed(this);
 }
 
 Json::Value Options::asJSON() const
 {
 	Json::Value top = Json::objectValue;
 
-	BOOST_FOREACH(OptionWithName item, _store)
+	BOOST_FOREACH(OptionNamed item, _options)
 	{
 		string name = item.first;
 		Json::Value value = item.second->asJSON();
@@ -42,7 +47,7 @@ Json::Value Options::asJSON() const
 
 void Options::set(Json::Value &json)
 {
-	BOOST_FOREACH(OptionWithName item, _store)
+	BOOST_FOREACH(OptionNamed item, _options)
 	{
 		string name = item.first;
 		Json::Value value = extractValue(name, json);
@@ -88,26 +93,43 @@ Json::Value Options::extractValue(string &name, Json::Value &root)
 
 Option *Options::get(string name) const
 {
-	return _store.at(name);
-}
-
-Options::iterator Options::begin()
-{
-	if (_options.size() == 0)
+	BOOST_FOREACH(OptionNamed p, _options)
 	{
-		BOOST_FOREACH(OptionWithName item, _store)
-		{
-			_options.push_back(item.second);
-		}
+		if (p.first == name)
+			return p.second;
 	}
 
-	return _options.begin();
+	return NULL;
 }
 
-Options::iterator Options::end()
+Option *Options::get(int index)
 {
-	if (_options.size() == 0)
-		begin();
-
-	return _options.end();
+	return _options.at(index).second;
 }
+
+void Options::get(int index, string &name, Option *&option)
+{
+	OptionNamed optionWithName = _options.at(index);
+	name = optionWithName.first;
+	option = optionWithName.second;
+}
+
+Option *Options::clone() const
+{
+	Options *c = new Options();
+
+	BOOST_FOREACH(const OptionNamed &option, _options)
+	{
+		(void)_options;
+		Option *oc = option.second->clone();
+		c->add(option.first, oc);
+	}
+
+	return c;
+}
+
+size_t Options::size()
+{
+	return _options.size();
+}
+

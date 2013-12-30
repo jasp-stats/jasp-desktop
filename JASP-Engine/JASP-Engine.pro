@@ -22,9 +22,14 @@ windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
 
 R_HOME = $$OUT_PWD/../R-3.0.0
 
+QMAKE_CXXFLAGS += -Wno-c++11-extensions
+QMAKE_CXXFLAGS += -Wno-unused-parameter
+QMAKE_CXXFLAGS += -Wno-c++11-long-long
+QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+
 INCLUDEPATH += \
 	$$R_HOME/include \
-        $$R_HOME/library/RInside/include \
+	$$R_HOME/library/RInside/include \
 	$$R_HOME/library/Rcpp/include
 
 unix:LIBS += \

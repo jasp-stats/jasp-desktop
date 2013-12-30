@@ -7,10 +7,11 @@
 class OptionString : public OptionI<std::string>
 {
 public:
-	OptionString(std::string name);
+	OptionString();
 
 	Json::Value asJSON() const OVERRIDE;
 	void set(Json::Value &value) OVERRIDE;
+	virtual Option* clone() const OVERRIDE;
 };
 
 #endif // OPTIONSTRING_H

@@ -1,7 +1,7 @@
 #include "ancova.h"
 
-#include "options.h"
-#include "option.h"
+#include "options/options.h"
+#include "options/option.h"
 #include "options/optionfield.h"
 #include "options/optionfields.h"
 #include "options/optionboolean.h"
@@ -20,13 +20,13 @@ Options *Ancova::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add(new OptionField("dependent"));
-	options->add(new OptionFields("fixedFactors"));
-	options->add(new OptionFields("randomFactors"));
-	options->add(new OptionFields("covariates"));
-	options->add(new OptionField("wlsWeights"));
+	options->add("dependent", new OptionField());
+	options->add("fixedFactors", new OptionFields());
+	options->add("randomFactors", new OptionFields());
+	options->add("covariates", new OptionFields());
+	options->add("wlsWeights", new OptionField());
 
-	options->add(new OptionFields("modelTerms"));
+	options->add("modelTerms", new OptionFields());
 
 	return options;
 }

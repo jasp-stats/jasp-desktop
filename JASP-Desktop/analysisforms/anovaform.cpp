@@ -31,7 +31,6 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	_wlsWeightsListModel = new ListModelVariablesAssigned(this);
 	_wlsWeightsListModel->setSource(&_availableFields);
 	_wlsWeightsListModel->setVariableTypesAllowed(Column::ColumnTypeScale);
-	_wlsWeightsListModel->setSource(&_availableFields);
 	ui->wlsWeights->setModel(_wlsWeightsListModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
@@ -51,6 +50,8 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->sumOfSquares->addItem("Type I");
 	ui->sumOfSquares->addItem("Type II");
 	ui->sumOfSquares->addItem("Type III");
+
+	_contrastsModel = new TableModelVariablesOptions();
 }
 
 AnovaForm::~AnovaForm()
@@ -66,6 +67,7 @@ void AnovaForm::factorsChanged()
 	factorsAvailable.append(_randomFactorsListModel->assigned());
 
 	_anovaModel->setVariables(factorsAvailable);
+	_contrastsModel->setVariables(factorsAvailable);
 }
 
 void AnovaForm::dependentChanged()

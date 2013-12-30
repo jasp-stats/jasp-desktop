@@ -2,6 +2,7 @@
 #include "contingencytables.h"
 
 #include "options/optionfields.h"
+#include "options/optionstable.h"
 
 ContingencyTables::ContingencyTables(int id)
 	: Analysis(id, "ContingencyTables")
@@ -12,8 +13,12 @@ Options *ContingencyTables::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add(new OptionFields("rows"));
-	options->add(new OptionFields("columns"));
+	options->add("rows", new OptionFields());
+	options->add("columns", new OptionFields());
+
+	OptionsRow *layerOptionsTemplate = new OptionsRow("template");
+
+	options->add("layers", new OptionsTable(layerOptionsTemplate));
 
 	return options;
 }

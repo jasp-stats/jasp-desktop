@@ -5,14 +5,14 @@
 ToolButton::ToolButton(QWidget *parent) :
     QPushButton(parent)
 {
-    m_firstPaint = true;
+	_firstPaint = true;
 }
 
 void ToolButton::paintEvent(QPaintEvent *event)
 {
-    if (m_firstPaint)
+	if (_firstPaint)
     {
-        m_firstPaint = false;
+		_firstPaint = false;
 
         QString style;
 

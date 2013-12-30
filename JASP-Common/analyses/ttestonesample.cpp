@@ -1,7 +1,7 @@
 #include "ttestonesample.h"
 
-#include "options.h"
-#include "option.h"
+#include "options/options.h"
+#include "options/option.h"
 #include "options/optionfields.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
@@ -20,24 +20,24 @@ Options *TTestOneSample::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add(new OptionFields("variables"));
-	options->add(new OptionNumber("testValue", 0));
+	options->add("variables", new OptionFields());
+	options->add("testValue", new OptionNumber(0));
 
 	vector<string> tails;
 	tails.push_back("twoTailed");
 
-	options->add(new OptionList("tails", tails));
+	options->add("tails", new OptionList(tails));
 
-	options->add(new OptionBoolean("meanDifference"));
-	options->add(new OptionBoolean("confidenceInterval"));
-	options->add(new OptionNumber("confidenceIntervalInterval", .95, 0, 1, "%"));
-	options->add(new OptionBoolean("descriptives"));
+	options->add("meanDifference", new OptionBoolean());
+	options->add("confidenceInterval", new OptionBoolean());
+	options->add("confidenceIntervalInterval", new OptionNumber(.95, 0, 1, "%"));
+	options->add("descriptives", new OptionBoolean());
 
 	vector<string> missingValues;
 	missingValues.push_back("excludeAnalysisByAnalysis");
 	missingValues.push_back("excludeListwise");
 
-	options->add(new OptionList("missingValues", missingValues));
+	options->add("missingValues", new OptionList(missingValues));
 
 	return options;
 }

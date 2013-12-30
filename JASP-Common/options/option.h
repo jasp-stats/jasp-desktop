@@ -6,22 +6,21 @@
 #include <boost/signals2.hpp>
 #include <boost/bind.hpp>
 
-#include "lib_json/json.h"
+#include "../lib_json/json.h"
+
+class Options;
 
 class Option
 {
 public:
-    Option(std::string name);
-    std::string name();
+	Option();
 
 	virtual Json::Value asJSON() const = 0;
 	virtual void set(Json::Value& value) = 0;
+	virtual Option *clone() const = 0;
 
 	boost::signals2::signal<void (Option *)> changed;
 
-private:
-
-    std::string _name;
 };
 
 #endif // OPTION_H

@@ -12,8 +12,8 @@ Options *RegressionLinear::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add(new OptionField("dependent"));
-	options->add(new OptionFields("variables"));
+	options->add("dependent", new OptionField());
+	options->add("variables", new OptionFields());
 
 	return options;
 }

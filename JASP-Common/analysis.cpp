@@ -5,7 +5,7 @@
 
 #include <boost/bind.hpp>
 
-#include "options.h"
+#include "options/options.h"
 
 #include <QStringBuilder>
 
@@ -100,7 +100,7 @@ Options *Analysis::options()
 	if (_options == NULL)
 	{
 		_options = createDefaultOptions();
-		_options->onChange.connect(boost::bind(&Analysis::optionsChangedHandler, this));
+		_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this));
 	}
 
 	return _options;

@@ -1,7 +1,6 @@
 #include "optionlist.h"
 
-OptionList::OptionList(std::string name, const std::vector<std::string> &options, std::string selected)
-	: OptionI(name)
+OptionList::OptionList(const std::vector<std::string> &options, std::string selected)
 {
 	_options = options;
 	if (selected == "")
@@ -31,4 +30,9 @@ void OptionList::set(int index)
 const std::vector<std::string> OptionList::options() const
 {
 	return _options;
+}
+
+Option *OptionList::clone() const
+{
+	return new OptionList(_options, _value);
 }

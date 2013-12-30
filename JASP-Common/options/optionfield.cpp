@@ -2,8 +2,7 @@
 
 using namespace std;
 
-OptionField::OptionField(string name)
-	: OptionFields(name)
+OptionField::OptionField()
 {
 }
 
@@ -34,4 +33,18 @@ Json::Value OptionField::asJSON() const
 		return Json::Value(_value.at(0));
 
 	return Json::Value();
+}
+
+Option *OptionField::clone() const
+{
+	OptionField *c = new OptionField();
+	c->setValue(this->value());
+	return c;
+}
+
+void OptionField::setValue(string value)
+{
+	vector<string> v;
+	v.push_back(value);
+	setValue(v);
 }

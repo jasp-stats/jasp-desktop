@@ -7,7 +7,7 @@
 #include <list>
 
 #include "dataset.h"
-#include "options.h"
+#include "options/options.h"
 
 #include "analysispart.h"
 

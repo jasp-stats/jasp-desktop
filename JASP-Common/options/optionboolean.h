@@ -7,10 +7,11 @@
 class OptionBoolean : public OptionI<bool>
 {
 public:
-	OptionBoolean(std::string name, bool defaultValue = false);
+	OptionBoolean(bool defaultValue = false);
 
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(Json::Value& value) OVERRIDE;
+	virtual Option* clone() const OVERRIDE;
 };
 
 #endif // OPTIONBOOLEAN_H

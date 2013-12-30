@@ -7,10 +7,11 @@
 class OptionIntegerArray : public OptionI<std::vector<int> >
 {
 public:
-	OptionIntegerArray(std::string name);
+	OptionIntegerArray();
 
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(Json::Value& value) OVERRIDE;
+	virtual Option* clone() const OVERRIDE;
 };
 
 #endif // OPTIONINTEGERARRAY_H

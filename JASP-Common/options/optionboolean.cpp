@@ -1,7 +1,7 @@
 #include "optionboolean.h"
 
-OptionBoolean::OptionBoolean(std::string name, bool defaultValue)
-	: OptionI(name)
+OptionBoolean::OptionBoolean(bool defaultValue)
+	: OptionI()
 {
 	_value = defaultValue;
 }
@@ -14,4 +14,9 @@ Json::Value OptionBoolean::asJSON() const
 void OptionBoolean::set(Json::Value &value)
 {
 	setValue(value.asBool());
+}
+
+Option *OptionBoolean::clone() const
+{
+	return new OptionBoolean(_value);
 }

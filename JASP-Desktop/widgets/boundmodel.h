@@ -1,13 +1,13 @@
 #ifndef BOUNDMODEL_H
 #define BOUNDMODEL_H
 
-#include "option.h"
+#include "options/option.h"
 
 class BoundModel
 {
 public:
 	virtual void bindTo(Option *) { }
-	virtual void bindTo(Option *, int) { }
+	//virtual void bindTo(Option *, int) { }
 
 };
 

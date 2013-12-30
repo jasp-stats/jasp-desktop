@@ -7,10 +7,11 @@
 class OptionInteger : public OptionI<int>
 {
 public:
-	OptionInteger(std::string name, int value = 0);
+	OptionInteger(int value = 0);
 
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(Json::Value& value) OVERRIDE;
+	virtual Option* clone() const OVERRIDE;
 };
 
 #endif // OPTIONINTEGER_H

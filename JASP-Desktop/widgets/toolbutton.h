@@ -20,7 +20,7 @@ protected:
     virtual void paintEvent(QPaintEvent *event) OVERRIDE;
 
 private:
-    bool m_firstPaint;
+    bool _firstPaint;
     
 };
 

@@ -15,7 +15,7 @@ CONFIG -= app_bundle
 
 INCLUDEPATH += ../JASP-Common/
 
-unix:INCLUDEPATH += /opt/local/include
+   unix:INCLUDEPATH += /opt/local/include
 windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
 
 PRE_TARGETDEPS += ../libJASP-Common.a
@@ -24,14 +24,22 @@ LIBS += -L.. -lJASP-Common
 
 windows:LIBS += -lole32 -loleaut32
 
+QMAKE_CXXFLAGS += -Wno-c++11-extensions
+QMAKE_CXXFLAGS += -Wno-unused-parameter
+QMAKE_CXXFLAGS += -Wno-c++11-long-long
+QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+
 SOURCES += main.cpp\
+	mainwindow.cpp \
 	datasettablemodel.cpp \
     backstageform.cpp \
     enginesync.cpp \
     availablefields.cpp \
     ribbonanalysis.cpp \
     ribbonhome.cpp \
-    analysisforms/analysisform.cpp \
+	asyncloader.cpp \
+	maintableview.cpp \
+	maintablehorizontalheader.cpp \
     widgets/assignbutton.cpp \
     widgets/availablefieldslistview.cpp \
     widgets/boundcheckbox.cpp \
@@ -42,25 +50,29 @@ SOURCES += main.cpp\
     widgets/toolbutton.cpp \
     widgets/boundtextbox.cpp \
     widgets/boundgroupbox.cpp \
+	widgets/progresswidget.cpp \
+	widgets/anovamodelwidget.cpp \
+	widgets/listmodelvariablesavailable.cpp \
+	widgets/listmodelvariables.cpp \
+	widgets/listmodelvariablesassigned.cpp \
+	widgets/listview.cpp \
+	widgets/tablemodelvariablesassigned.cpp \
+	widgets/draganddrop.cpp \
+	widgets/listmodelanovamodel.cpp \
+	widgets/assignbuttonmenu.cpp \
+	widgets/tableview.cpp \
+	widgets/boundpairstable.cpp \
+	widgets/listmodelanovamodelnuisancefactors.cpp \
+	widgets/boundcombobox.cpp \
+	widgets/tablemodelvariablesoptions.cpp \
+	widgets/boundtableview.cpp \
+	widgets/tableviewmenueditor.cpp \
+	widgets/tableviewmenueditordelegate.cpp \
+	analysisforms/analysisform.cpp \
     analysisforms/anovabayesianform.cpp \
     analysisforms/ttestpairedsamplesform.cpp \
     analysisforms/anovamultivariateform.cpp \
     analysisforms/ttestbayesianonesampleform.cpp \
-    widgets/boundpairstable.cpp \
-    asyncloader.cpp \
-    widgets/progresswidget.cpp \
-    widgets/anovamodelwidget.cpp \
-    widgets/listmodelvariablesavailable.cpp \
-    widgets/listmodelvariables.cpp \
-    widgets/listmodelvariablesassigned.cpp \
-    widgets/listview.cpp \
-    widgets/tablemodelvariablesassigned.cpp \
-    widgets/draganddrop.cpp \
-    widgets/listmodelanovamodel.cpp \
-    widgets/assignbuttonmenu.cpp \
-    widgets/tableview.cpp \
-    maintableview.cpp \
-    widgets/listmodelanovamodelnuisancefactors.cpp \
     analysisforms/ancovaform.cpp \
     analysisforms/anovaform.cpp \
     analysisforms/descriptivesform.cpp \
@@ -68,12 +80,9 @@ SOURCES += main.cpp\
     analysisforms/ttestonesampleform.cpp \
     analysisforms/ttestindependentsamplesform.cpp \
     analysisforms/ancovamultivariateform.cpp \
-    maintablehorizontalheader.cpp \
-    analysisforms/regressionlinearform.cpp \
-    mainwindow.cpp \
-    analysisforms/contingencytablesform.cpp \
-    analysisforms/correlationform.cpp \
-    widgets/boundcombobox.cpp
+	analysisforms/regressionlinearform.cpp \
+	analysisforms/contingencytablesform.cpp \
+	analysisforms/correlationform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -129,7 +138,11 @@ HEADERS  += \
     mainwindow.h \
     analysisforms/contingencytablesform.h \
     analysisforms/correlationform.h \
-    widgets/boundcombobox.h
+    widgets/boundcombobox.h \
+    widgets/tablemodelvariablesoptions.h \
+    widgets/boundtableview.h \
+    widgets/tableviewmenueditor.h \
+    widgets/tableviewmenueditordelegate.h
 
 FORMS    += \
     backstageform.ui \

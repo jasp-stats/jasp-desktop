@@ -1,7 +1,7 @@
 #ifndef ONEWAYANOVAFORM_H
 #define ONEWAYANOVAFORM_H
 
-#include "options.h"
+#include "options/options.h"
 #include "dataset.h"
 
 #include "analysisform.h"

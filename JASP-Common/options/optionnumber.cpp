@@ -2,8 +2,7 @@
 
 using namespace std;
 
-OptionNumber::OptionNumber(string name, double value, double min, double max, string format)
-	: OptionI(name)
+OptionNumber::OptionNumber(double value, double min, double max, string format)
 {
 	_value = value;
 	_min = min;
@@ -37,6 +36,11 @@ double OptionNumber::value() const
 		value *= 100.0;
 
 	return value;
+}
+
+Option *OptionNumber::clone() const
+{
+	return new OptionNumber(_value, _min, _max, _format);
 }
 
 double OptionNumber::min()

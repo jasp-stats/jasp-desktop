@@ -13,14 +13,17 @@ windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
 
 windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
 
+QMAKE_CXXFLAGS += -Wno-c++11-extensions
+QMAKE_CXXFLAGS += -Wno-unused-parameter
+QMAKE_CXXFLAGS += -Wno-c++11-long-long
+QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+
 SOURCES += \
-    options.cpp \
     datasetloader.cpp \
     dataset.cpp \
     csvparser.cpp \
     analysisloader.cpp \
     analysis.cpp \
-    option.cpp \
     columns.cpp \
     column.cpp \
     analyses.cpp \
@@ -56,16 +59,18 @@ SOURCES += \
     analyses/regressionlinear.cpp \
     analyses/contingencytables.cpp \
     analyses/correlation.cpp \
-    ipcchannel.cpp
+    ipcchannel.cpp \
+    options/options.cpp \
+    options/option.cpp \
+    options/optionsrow.cpp \
+    options/optionstable.cpp
 
 HEADERS +=\
-    options.h \
     datasetloader.h \
     dataset.h \
     csvparser.h \
     analysisloader.h \
     analysis.h \
-    option.h \
     columns.h \
     column.h \
     analyses.h \
@@ -87,7 +92,7 @@ HEADERS +=\
     options/optioni.h \
     options/optionintegerarray.h \
     options/optioninteger.h \
-    options/optionlist.h \
+	options/optionlist.h \
     rinterface.h \
     options/optionnumber.h \
     analyses/ttestindependentsamples.h \
@@ -107,7 +112,11 @@ HEADERS +=\
     analyses/regressionlinear.h \
     analyses/contingencytables.h \
     analyses/correlation.h \
-    ipcchannel.h
+    ipcchannel.h \
+    options/options.h \
+    options/option.h \
+    options/optionsrow.h \
+    options/optionstable.h
 
 unix:!symbian {
     maemo5 {

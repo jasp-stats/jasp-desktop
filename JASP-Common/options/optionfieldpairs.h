@@ -10,10 +10,11 @@ typedef std::vector<FieldPair> FieldPairs;
 class OptionFieldPairs : public OptionI<std::vector<std::pair<std::string, std::string> > >
 {
 public:
-	OptionFieldPairs(std::string name);
+	OptionFieldPairs();
 
     virtual Json::Value asJSON() const OVERRIDE;
     virtual void set(Json::Value &value) OVERRIDE;
+	virtual Option *clone() const OVERRIDE;
 };
 
 #endif // OPTIONFIELDPAIRS_H

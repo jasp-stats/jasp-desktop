@@ -1,7 +1,7 @@
 #include "anova.h"
 
-#include "options.h"
-#include "option.h"
+#include "options/options.h"
+#include "options/option.h"
 #include "options/optionfield.h"
 #include "options/optionfields.h"
 #include "options/optionboolean.h"
@@ -10,6 +10,7 @@
 #include "options/optionlist.h"
 #include "options/optionnumber.h"
 #include "options/optionstring.h"
+#include "options/optionstable.h"
 
 using namespace std;
 
@@ -22,19 +23,39 @@ Options *Anova::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add(new OptionField("dependent"));
-	options->add(new OptionFields("fixedFactors"));
-	options->add(new OptionFields("randomFactors"));
-	options->add(new OptionField("wlsWeights"));
+	options->add("dependent", new OptionField());
+	options->add("fixedFactors", new OptionFields());
+	options->add("randomFactors", new OptionFields());
+	options->add("wlsWeights", new OptionField());
 
-	options->add(new OptionFields("modelTerms"));
+	options->add("modelTerms", new OptionFields());
 
 	vector<string> sumOfSquares;
 	sumOfSquares.push_back("type1");
 	sumOfSquares.push_back("type2");
 	sumOfSquares.push_back("type3");
 
-	options->add(new OptionList("sumOfSquares", sumOfSquares, "type3"));
+	options->add("sumOfSquares", new OptionList(sumOfSquares, "type3"));
+
+	OptionsRow *contrastsTemplate = new OptionsRow("template");
+
+	vector<string> contrastTypes;
+	contrastTypes.push_back("none");
+	contrastTypes.push_back("deviation");
+	contrastTypes.push_back("simple");
+	contrastTypes.push_back("difference");
+	contrastTypes.push_back("helmert");
+	contrastTypes.push_back("repeated");
+	contrastTypes.push_back("polynomial");
+
+	vector<string> refCategories;
+	refCategories.push_back("first");
+	refCategories.push_back("last");
+
+	contrastsTemplate->add("contrast", new OptionList(contrastTypes));
+	contrastsTemplate->add("reference", new OptionList(refCategories));
+
+	options->add("contrasts", new OptionsTable(contrastsTemplate));
 
 	return options;
 }

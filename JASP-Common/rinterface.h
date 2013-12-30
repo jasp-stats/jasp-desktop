@@ -2,7 +2,7 @@
 #define RINTERFACE_H
 
 #include "../JASP-Common/dataset.h"
-#include "../JASP-Common/options.h"
+#include "../JASP-Common/options/options.h"
 #include "boost/signals2.hpp"
 
 class RInterface

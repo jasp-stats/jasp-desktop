@@ -7,11 +7,12 @@
 class OptionList : public OptionI<std::string>
 {
 public:
-	OptionList(std::string name, const std::vector<std::string> &options, std::string selected = "");
+	OptionList(const std::vector<std::string> &options, std::string selected = "");
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(Json::Value& value) OVERRIDE;
 	void set(int index);
 	const std::vector<std::string> options() const;
+	virtual Option* clone() const OVERRIDE;
 
 private:
 	std::vector<std::string> _options;

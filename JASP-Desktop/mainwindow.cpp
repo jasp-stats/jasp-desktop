@@ -272,8 +272,6 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 		_inited = true;
 	}
 
-	//QToolTip::showText(ui->tableView->pos(), QString("bruce"), ui->tableView, QRect(100, 100, 200, 200));
-
 }
 
 void MainWindow::itemSelected(const QString item)
@@ -317,6 +315,4 @@ void MainWindow::analysisRemoved()
 	ui->stackedLHS->setCurrentWidget(ui->pageData);
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
 	_buttonPanel->hide();
-
-	// TODO should also clean up data from the R session
 }

@@ -9,10 +9,11 @@
 class OptionFields : public OptionI<std::vector<std::string> >
 {
 public:
-	OptionFields(std::string name);
+	OptionFields();
 
 	virtual Json::Value asJSON()const OVERRIDE;
 	virtual void set(Json::Value& value) OVERRIDE;
+	virtual Option* clone() const OVERRIDE;
 
 	void setRestrictions(int restrictions);
 

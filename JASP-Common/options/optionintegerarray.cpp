@@ -4,8 +4,7 @@
 
 using namespace std;
 
-OptionIntegerArray::OptionIntegerArray(std::string name)
-	: OptionI(name)
+OptionIntegerArray::OptionIntegerArray()
 {
 }
 
@@ -28,4 +27,11 @@ void OptionIntegerArray::set(Json::Value &value)
 
 	_value = ints;
 
+}
+
+Option *OptionIntegerArray::clone() const
+{
+	OptionIntegerArray *c = new OptionIntegerArray();
+	c->setValue(value());
+	return c;
 }

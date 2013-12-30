@@ -1,7 +1,7 @@
 #include "anovabayesian.h"
 
-#include "options.h"
-#include "option.h"
+#include "options/options.h"
+#include "options/option.h"
 #include "options/optionfields.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
@@ -19,13 +19,13 @@ Options *AnovaBayesian::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add(new OptionField("dependent"));
-	options->add(new OptionFields("fixedFactors"));
-	options->add(new OptionFields("randomFactors"));
+	options->add("dependent", new OptionField());
+	options->add("fixedFactors", new OptionFields());
+	options->add("randomFactors", new OptionFields());
 
-	options->add(new OptionFields("modelTerms"));
+	options->add("modelTerms", new OptionFields());
 
-	options->add(new OptionFields("nuisanceTerms"));
+	options->add("nuisanceTerms", new OptionFields());
 
 	return options;
 }

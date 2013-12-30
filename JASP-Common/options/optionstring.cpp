@@ -2,8 +2,7 @@
 
 using namespace std;
 
-OptionString::OptionString(string name)
-	: OptionI(name)
+OptionString::OptionString()
 {
 }
 
@@ -15,4 +14,11 @@ Json::Value OptionString::asJSON() const
 void OptionString::set(Json::Value &value)
 {
 	setValue(value.asString());
+}
+
+Option *OptionString::clone() const
+{
+	OptionString *c = new OptionString();
+	c->setValue(_value);
+	return c;
 }

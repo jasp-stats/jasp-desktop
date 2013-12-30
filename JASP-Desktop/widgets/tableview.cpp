@@ -7,6 +7,9 @@
 #include "draganddrop.h"
 
 #include <QDebug>
+#include <QMouseEvent>
+
+#include "widgets/tableviewmenueditordelegate.h"
 
 TableView::TableView(QWidget *parent) :
 	QTableView(parent)
@@ -16,13 +19,13 @@ TableView::TableView(QWidget *parent) :
 
 	connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(doubleClickedHandler(QModelIndex)));
 
-	horizontalHeader()->hide();
-	verticalHeader()->hide();
-
 	setShowGrid(false);
-	setSelectionBehavior(QAbstractItemView::SelectRows);
 
+	verticalHeader()->hide();
 	verticalHeader()->setDefaultSectionSize(verticalHeader()->fontMetrics().height() + 2);
+
+	this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	this->setItemDelegate(new TableViewMenuEditorDelegate(this));
 }
 
 void TableView::setModel(QAbstractItemModel *model)
@@ -66,6 +69,16 @@ void TableView::dropEvent(QDropEvent *event)
 		if (draggedFrom != NULL)
 			draggedFrom->notifyDragWasDropped();
 	}
+}
+
+void TableView::mousePressEvent(QMouseEvent *event)
+{
+	QModelIndex index = indexAt(event->pos());
+
+	if (index.flags() & Qt::ItemIsEditable)
+		edit(index);
+	else
+		QTableView::mousePressEvent(event);
 }
 
 void TableView::resizeEvent(QResizeEvent *event)

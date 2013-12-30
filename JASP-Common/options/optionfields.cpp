@@ -4,8 +4,8 @@
 
 using namespace std;
 
-OptionFields::OptionFields(string name)
-	: OptionI(name)
+OptionFields::OptionFields()
+	: OptionI()
 {
 }
 
@@ -32,6 +32,13 @@ void OptionFields::set(Json::Value &value)
 	}
 
 	setValue(fields);
+}
+
+Option *OptionFields::clone() const
+{
+	OptionFields *c = new OptionFields();
+	c->setValue(value());
+	return c;
 }
 
 void OptionFields::setRestrictions(int restrictions)

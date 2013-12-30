@@ -5,6 +5,7 @@
 
 #include "widgets/listmodelvariablesassigned.h"
 #include "widgets/listmodelanovamodel.h"
+#include "widgets/tablemodelvariablesoptions.h"
 
 namespace Ui {
 class AnovaForm;
@@ -31,6 +32,7 @@ private:
 	ListModelVariablesAssigned *_wlsWeightsListModel;
 
 	ListModelAnovaModel *_anovaModel;
+	TableModelVariablesOptions *_contrastsModel;
 
 	ListModelVariablesAvailable *_factorsAvailableListModel;
 

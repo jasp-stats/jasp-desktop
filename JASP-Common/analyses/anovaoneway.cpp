@@ -1,8 +1,8 @@
 
 #include "anovaoneway.h"
 
-#include "options.h"
-#include "option.h"
+#include "options/options.h"
+#include "options/option.h"
 #include "options/optionfields.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
@@ -22,28 +22,28 @@ Options *AnovaOneWay::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add(new OptionFields("variables"));
-	options->add(new OptionField("groupingVariable"));
+	options->add("variables", new OptionFields());
+	options->add("groupingVariable", new OptionField());
 
 	vector<string> equalityOfVariances;
 	equalityOfVariances.push_back("assumeEqual");
 	equalityOfVariances.push_back("assumeUnequal");
 	equalityOfVariances.push_back("both");
 
-	options->add(new OptionList("equalityOfVariances", equalityOfVariances));
+	options->add("equalityOfVariances", new OptionList(equalityOfVariances));
 
-	options->add(new OptionBoolean("testUnequalVariances"));
+	options->add("testUnequalVariances", new OptionBoolean());
 
-	options->add(new OptionBoolean("meanDifference"));
-	options->add(new OptionBoolean("confidenceInterval"));
-	options->add(new OptionNumber("confidenceIntervalInterval", .95, 0, 1, "%"));
-	options->add(new OptionBoolean("descriptives"));
+	options->add("meanDifference", new OptionBoolean());
+	options->add("confidenceInterval", new OptionBoolean());
+	options->add("confidenceIntervalInterval", new OptionNumber(.95, 0, 1, "%"));
+	options->add("descriptives", new OptionBoolean());
 
 	vector<string> missingValues;
 	missingValues.push_back("excludeAnalysisByAnalysis");
 	missingValues.push_back("excludeListwise");
 
-	options->add(new OptionList("missingValues", missingValues));
+	options->add("missingValues", new OptionList(missingValues));
 
 	vector<string> tails;
 	tails.push_back("twoTailed");

@@ -26,6 +26,8 @@ protected:
 
 	virtual void dropEvent(QDropEvent *event) OVERRIDE;
 
+	void virtual mousePressEvent(QMouseEvent *event) OVERRIDE;
+
 private slots:
 	void doubleClickedHandler(const QModelIndex index);
 

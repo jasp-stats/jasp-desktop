@@ -11,7 +11,7 @@ class OptionI : public Option
 
 public:
 
-    OptionI(std::string name) : Option(name)
+	OptionI() : Option()
 	{
 	}
 

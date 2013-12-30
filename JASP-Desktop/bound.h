@@ -3,7 +3,7 @@
 
 #include <QString>
 
-#include "option.h"
+#include "options/option.h"
 #include "dataset.h"
 
 class Bound

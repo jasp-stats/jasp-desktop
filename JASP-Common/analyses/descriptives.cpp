@@ -2,8 +2,8 @@
 
 #include "analysis.h"
 
-#include "options.h"
-#include "option.h"
+#include "options/options.h"
+#include "options/option.h"
 #include "options/optionfields.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
@@ -21,32 +21,32 @@ Options *Descriptives::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add(new OptionFields("main/fields"));
-	options->add(new OptionBoolean("main/displayFrequencyTables"));
+	options->add("main/fields", new OptionFields());
+	options->add("main/displayFrequencyTables", new OptionBoolean());
 
-	options->add(new OptionBoolean("statistics/percentileValues/quartiles"));
-	options->add(new OptionBoolean("statistics/percentileValues/equalGroups"));
-	options->add(new OptionBoolean("statistics/percentileValues/percentiles"));
+	options->add("statistics/percentileValues/quartiles", new OptionBoolean());
+	options->add("statistics/percentileValues/equalGroups", new OptionBoolean());
+	options->add("statistics/percentileValues/percentiles", new OptionBoolean());
 
-	options->add(new OptionInteger("statistics/percentileValues/equalGroupsNo", 4));
-	options->add(new OptionIntegerArray("statistics/percentileValues/percentilesPercentiles"));
+	options->add("statistics/percentileValues/equalGroupsNo", new OptionInteger(4));
+	options->add("statistics/percentileValues/percentilesPercentiles", new OptionIntegerArray());
 
-	options->add(new OptionBoolean("statistics/centralTendency/mean", true));
-	options->add(new OptionBoolean("statistics/centralTendency/median"));
-	options->add(new OptionBoolean("statistics/centralTendency/mode"));
-	options->add(new OptionBoolean("statistics/centralTendency/sum"));
+	options->add("statistics/centralTendency/mean", new OptionBoolean(true));
+	options->add("statistics/centralTendency/median", new OptionBoolean());
+	options->add("statistics/centralTendency/mode", new OptionBoolean());
+	options->add("statistics/centralTendency/sum", new OptionBoolean());
 
-	options->add(new OptionBoolean("statistics/valuesAreGroupMidpoints"));
+	options->add("statistics/valuesAreGroupMidpoints", new OptionBoolean());
 
-	options->add(new OptionBoolean("statistics/dispersion/standardDeviation", true));
-	options->add(new OptionBoolean("statistics/dispersion/variance"));
-	options->add(new OptionBoolean("statistics/dispersion/range"));
-	options->add(new OptionBoolean("statistics/dispersion/minimum", true));
-	options->add(new OptionBoolean("statistics/dispersion/maximum", true));
-	options->add(new OptionBoolean("statistics/dispersion/standardErrorMean"));
+	options->add("statistics/dispersion/standardDeviation", new OptionBoolean(true));
+	options->add("statistics/dispersion/variance", new OptionBoolean());
+	options->add("statistics/dispersion/range", new OptionBoolean());
+	options->add("statistics/dispersion/minimum", new OptionBoolean(true));
+	options->add("statistics/dispersion/maximum", new OptionBoolean(true));
+	options->add("statistics/dispersion/standardErrorMean", new OptionBoolean());
 
-	options->add(new OptionBoolean("statistics/distribution/skewness"));
-	options->add(new OptionBoolean("statistics/distribution/kurtosis"));
+	options->add("statistics/distribution/skewness", new OptionBoolean());
+	options->add("statistics/distribution/kurtosis", new OptionBoolean());
 
 	vector<string> chartType;
 	chartType.push_back("noCharts");
@@ -58,9 +58,9 @@ Options *Descriptives::createDefaultOptions()
 	chartValues.push_back("frequencies");
 	chartValues.push_back("percentages");
 
-	options->add(new OptionList("charts/chartType", chartType));
-	options->add(new OptionBoolean("charts/showNormalCurve"));
-	options->add(new OptionList("charts/chartValues", chartValues));
+	options->add("charts/chartType", new OptionList(chartType));
+	options->add("charts/showNormalCurve", new OptionBoolean());
+	options->add("charts/chartValues", new OptionList(chartValues));
 
 	return options;
 }

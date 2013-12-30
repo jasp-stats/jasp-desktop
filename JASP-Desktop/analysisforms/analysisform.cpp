@@ -38,12 +38,14 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 
 	_options = options;
 
-	BOOST_FOREACH(Option *option, *options)
+	BOOST_FOREACH(const string &name, options->names)
 	{
-		QString name = QString::fromUtf8(option->name().c_str(), option->name().length());
-		name.replace('/', '_');
+		Option *option = options->get(name);
 
-		QWidget *child = this->findChild<QWidget*>(name);
+		QString qsName = QString::fromUtf8(name.c_str(), name.length());
+		qsName.replace('/', '_');
+
+		QWidget *child = this->findChild<QWidget*>(qsName);
 
 		Bound *boundChild = dynamic_cast<Bound*>(child);
 
@@ -54,7 +56,7 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 		}
 		else
 		{
-			qDebug() << "child not found : " << name << " in AnalysisForm::setOptions()";
+			qDebug() << "child not found : " << qsName << " in AnalysisForm::setOptions()";
 		}
 	}
 }

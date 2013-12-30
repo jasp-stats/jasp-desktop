@@ -5,8 +5,7 @@
 using namespace Json;
 using namespace std;
 
-OptionFieldPairs::OptionFieldPairs(std::string name)
-	: OptionI(name)
+OptionFieldPairs::OptionFieldPairs()
 {
 }
 
@@ -44,4 +43,11 @@ void OptionFieldPairs::set(Value &value)
 	}
 
 	setValue(vec);
+}
+
+Option *OptionFieldPairs::clone() const
+{
+	OptionFieldPairs *c = new OptionFieldPairs();
+	c->setValue(_value);
+	return c;
 }

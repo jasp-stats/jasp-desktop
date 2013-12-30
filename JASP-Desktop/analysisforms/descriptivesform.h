@@ -4,7 +4,7 @@
 #include <QWidget>
 
 #include "dataset.h"
-#include "options.h"
+#include "options/options.h"
 #include "options/optionfields.h"
 
 #include "analysisform.h"

@@ -17,6 +17,7 @@ bool DataBlock::insert(int position, int rows)
 	for (int i = _rowCount - 1; i >= position + rows; i--)
 		Data[i].d = Data[i - rows].d;
 
+	return true;
 }
 
 int DataBlock::rowCount()
