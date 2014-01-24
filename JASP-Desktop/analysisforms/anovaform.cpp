@@ -59,7 +59,7 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
 	termsChanged();
 
-	ui->marginalMeansContainer->hide();
+	//ui->marginalMeansContainer->hide();
 }
 
 AnovaForm::~AnovaForm()
@@ -93,5 +93,5 @@ void AnovaForm::termsChanged()
 {
 	QList<ColumnInfo> terms = _anovaModel->terms();
 	terms.prepend(ColumnInfo("~OVERALL", 0));
-	ui->marginalMeans->setVariables(terms);
+	//ui->marginalMeans->setVariables(terms);
 }
