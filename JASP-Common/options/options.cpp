@@ -11,7 +11,6 @@ using namespace std;
 Options::Options()
 	: names(&_options)
 {
-
 }
 
 Options::~Options()

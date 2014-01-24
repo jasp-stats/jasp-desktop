@@ -14,6 +14,7 @@
 #include "analyses/regressionlinear.h"
 #include "analyses/contingencytables.h"
 #include "analyses/correlation.h"
+#include "analyses/crosstabs.h"
 
 #include "analysispart.h"
 
@@ -48,6 +49,8 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		return new ContingencyTables(id);
 	else if (analysisName == "Correlation")
 		return new Correlation(id);
+	else if (analysisName == "Crosstabs")
+		return new Crosstabs(id);
 	else
 	{
 		std::cout << "AnalysisLoader::laod(); Analysis not found: " << analysisName << "\n";

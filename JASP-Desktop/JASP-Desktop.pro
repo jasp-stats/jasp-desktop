@@ -82,7 +82,11 @@ SOURCES += main.cpp\
     analysisforms/ancovamultivariateform.cpp \
 	analysisforms/regressionlinearform.cpp \
 	analysisforms/contingencytablesform.cpp \
-	analysisforms/correlationform.cpp
+	analysisforms/correlationform.cpp \
+    widgets/boundassignwidget.cpp \
+    analysisforms/subforms/posthoctestssub.cpp \
+    analysisforms/anovarepeatedmeasuresform.cpp \
+    analysisforms/crosstabsform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -142,7 +146,12 @@ HEADERS  += \
     widgets/tablemodelvariablesoptions.h \
     widgets/boundtableview.h \
     widgets/tableviewmenueditor.h \
-    widgets/tableviewmenueditordelegate.h
+    widgets/tableviewmenueditordelegate.h \
+    widgets/boundassignwidget.h \
+    analysisforms/subforms/posthoctestssub.h \
+    analysisforms/anovarepeatedmeasuresform.h \
+    utils.h \
+    analysisforms/crosstabsform.h
 
 FORMS    += \
     backstageform.ui \
@@ -164,7 +173,11 @@ FORMS    += \
     analysisforms/regressionlinearform.ui \
     mainwindow.ui \
     analysisforms/contingencytablesform.ui \
-    analysisforms/correlationform.ui
+    analysisforms/correlationform.ui \
+    widgets/boundassignwidget.ui \
+    analysisforms/subforms/posthoctestssub.ui \
+    analysisforms/anovarepeatedmeasuresform.ui \
+    analysisforms/crosstabsform.ui
 
 
 RESOURCES += \

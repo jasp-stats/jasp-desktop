@@ -44,8 +44,6 @@ public:
 	void setSupportedDropActions(Qt::DropActions actions);
 	void setSupportedDragActions(Qt::DropActions actions);
 
-	void setDefaultTarget(QAbstractItemView *defaultTarget);
-
 	void setMimeType(const QString &mimeType);
 
 	virtual void mimeDataMoved(const QModelIndexList &indexes);

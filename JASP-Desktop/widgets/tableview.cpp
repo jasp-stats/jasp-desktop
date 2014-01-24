@@ -21,6 +21,7 @@ TableView::TableView(QWidget *parent) :
 
 	setShowGrid(false);
 
+	horizontalHeader()->hide();
 	verticalHeader()->hide();
 	verticalHeader()->setDefaultSectionSize(verticalHeader()->fontMetrics().height() + 2);
 

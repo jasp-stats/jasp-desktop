@@ -35,6 +35,8 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	ui->classicalRegressionButton->setMenu(menu);
 
+	connect(ui->Crosstabs, SIGNAL(clicked()), this, SLOT(itemSelected()));
+
 	menu = new QMenu(this);
 	menu->addAction(QString("Bayesian One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianOneSample");
 

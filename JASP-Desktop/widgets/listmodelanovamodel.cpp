@@ -67,32 +67,58 @@ QStringList ListModelAnovaModel::mimeTypes() const
 
 void ListModelAnovaModel::setVariables(const QList<ColumnInfo> &variables)
 {
+	bool termsRemoved = false;
+
+	beginResetModel();
+
 	_variables = variables;
 
-	int row = 0;
-
-	foreach (const QList<ColumnInfo> &term, _terms)
+	if (_customModel)
 	{
-		bool shouldRemove = false;
+		int row = 0;
 
-		foreach (const ColumnInfo &item, term)
+		foreach (const QList<ColumnInfo> &term, _terms)
 		{
-			if (variables.contains(item) == false)
+			bool shouldRemove = false;
+
+			foreach (const ColumnInfo &item, term)
 			{
-				shouldRemove = true;
-				break;
+				if (variables.contains(item) == false)
+				{
+					shouldRemove = true;
+					break;
+				}
+			}
+
+			if (shouldRemove)
+			{
+				_terms.removeOne(term);
+				termsRemoved = true;
+			}
+			else
+			{
+				row++;
 			}
 		}
 
-		if (shouldRemove)
-			removeRow(row);
-		else
-			row++;
+		emit variablesAvailableChanged();
+
+		if (termsRemoved)
+		{
+			emit termsChanged();
+			assignToOption();
+		}
+	}
+	else
+	{
+		emit variablesAvailableChanged();
+		emit termsChanged();
+		assignToOption();
 	}
 
-	emit variablesAvailableChanged();
+	endResetModel();
 
-	assignToOption();
+
 }
 
 const QList<ColumnInfo> &ListModelAnovaModel::variables() const
@@ -111,6 +137,7 @@ void ListModelAnovaModel::setCustomModelMode(bool on)
 {
 	_customModel = on;
 
+	emit termsChanged();
 	assignToOption();
 }
 
@@ -143,7 +170,34 @@ void ListModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
 
 	endResetModel();
 
+	emit termsChanged();
 	assignToOption();
+}
+
+QList<ColumnInfo> ListModelAnovaModel::terms() const
+{
+	QList<ColumnInfo> t;
+
+	if (_customModel)
+	{
+		foreach (QList<ColumnInfo> term, _terms)
+		{
+			QString modelTerm = itemsToString(term);
+			t.append(ColumnInfo(modelTerm, 0));
+		}
+	}
+	else
+	{
+		QList<QList<ColumnInfo> > combinations = generateCrossCombinations(_variables.toVector());
+
+		foreach (QList<ColumnInfo> term, combinations)
+		{
+			QString modelTerm = itemsToString(term);
+			t.append(ColumnInfo(modelTerm, 0));
+		}
+	}
+
+	return t;
 }
 
 bool ListModelAnovaModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
@@ -255,12 +309,12 @@ bool ListModelAnovaModel::dropMimeData(const QMimeData *data, Qt::DropAction act
 				r = rowCount(QModelIndex());
 				insertRow(r);
 				_terms[r] = term;
-				//_terms.append(term);
 			}
 		}
 
 		endResetModel();
 
+		emit termsChanged();
 		assignToOption();
 
 		return true;
@@ -409,27 +463,12 @@ void ListModelAnovaModel::assignToOption()
 
 	vector<string> values;
 
-	if (_customModel)
+	foreach (ColumnInfo term, terms())
 	{
-		foreach (QList<ColumnInfo> term, _terms)
-		{
-			QString modelTerm = itemsToString(term);
-			QByteArray utf8 = modelTerm.toUtf8();
-			string modelTermAsString(utf8.constData(), utf8.length());
-			values.push_back(modelTermAsString);
-		}
-	}
-	else
-	{
-		QList<QList<ColumnInfo> > combinations = generateCrossCombinations(_variables.toVector());
-
-		foreach (QList<ColumnInfo> term, combinations)
-		{
-			QString modelTerm = itemsToString(term);
-			QByteArray utf8 = modelTerm.toUtf8();
-			string modelTermAsString(utf8.constData(), utf8.length());
-			values.push_back(modelTermAsString);
-		}
+		QString modelTerm = term.first;
+		QByteArray utf8 = modelTerm.toUtf8();
+		string modelTermAsString(utf8.constData(), utf8.length());
+		values.push_back(modelTermAsString);
 	}
 
 	_boundTo->setValue(values);

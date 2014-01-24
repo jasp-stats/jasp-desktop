@@ -17,6 +17,7 @@
 #include "analysisforms/regressionlinearform.h"
 #include "analysisforms/contingencytablesform.h"
 #include "analysisforms/correlationform.h"
+#include "analysisforms/crosstabsform.h"
 
 #include <QDebug>
 #include <QWebFrame>
@@ -181,6 +182,8 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new ContingencyTablesForm(contentArea);
 	else if (name == "Correlation")
 		form = new CorrelationForm(contentArea);
+	else if (name == "Crosstabs")
+		form = new CrosstabsForm(contentArea);
 	else
 		qDebug() << "MainWidget::loadForm(); form not found : " << name.c_str();
 

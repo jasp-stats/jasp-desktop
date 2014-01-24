@@ -5,7 +5,7 @@
 using namespace Json;
 using namespace std;
 
-OptionsTable::OptionsTable(OptionsRow *rowTemplate)
+OptionsTable::OptionsTable(Options *rowTemplate)
 {
 	_template = rowTemplate;
 }
@@ -23,13 +23,13 @@ Json::Value OptionsTable::asJSON() const
 
 void OptionsTable::set(Json::Value &value)
 {
-	BOOST_FOREACH(OptionsRow *row, _rows)
+	BOOST_FOREACH(Options *row, _rows)
 		delete row;
 	_rows.clear();
 
 	for (int i = 0; i < value.size(); i++)
 	{
-		OptionsRow *item = static_cast<OptionsRow *>(_template->clone());
+		Options *item = static_cast<Options *>(_template->clone());
 		item->set(value[i]);
 		_rows.push_back(item);
 	}
@@ -43,12 +43,12 @@ Option *OptionsTable::clone() const
 	return NULL;
 }
 
-OptionsRow *OptionsTable::rowTemplate()
+Options *OptionsTable::rowTemplate()
 {
 	return _template;
 }
 
-OptionsRow *OptionsTable::at(int index)
+Options *OptionsTable::at(int index)
 {
 	return _rows.at(index);
 }
@@ -58,7 +58,7 @@ size_t OptionsTable::size()
 	return _rows.size();
 }
 
-OptionsRow *OptionsTable::insertAt(std::string name, int index)
+Options *OptionsTable::insertAt(std::string name, int index)
 {
 	OptionsRow* row = dynamic_cast<OptionsRow *>(_template->clone());
 	row->setVariable(name);
@@ -66,9 +66,9 @@ OptionsRow *OptionsTable::insertAt(std::string name, int index)
 	return row;
 }
 
-void OptionsTable::insertAt(OptionsRow *row, int index)
+void OptionsTable::insertAt(Options *row, int index)
 {
-	std::vector<OptionsRow *>::iterator itr = _rows.begin();
+	std::vector<Options *>::iterator itr = _rows.begin();
 
 	for (int i = 0; i < index; i++)
 		itr++;
@@ -78,9 +78,9 @@ void OptionsTable::insertAt(OptionsRow *row, int index)
 	row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
 }
 
-OptionsRow *OptionsTable::removeAt(int index)
+Options *OptionsTable::removeAt(int index)
 {
-	std::vector<OptionsRow *>::iterator itr = _rows.begin();
+	std::vector<Options *>::iterator itr = _rows.begin();
 
 	for (int i = 0; i < index; i++)
 		itr++;
@@ -88,15 +88,17 @@ OptionsRow *OptionsTable::removeAt(int index)
 	_rows.erase(itr);
 }
 
-OptionsRow *OptionsTable::remove(string name)
+Options *OptionsTable::remove(string name)
 {
-	std::vector<OptionsRow *>::iterator itr = _rows.begin();
+	std::vector<Options *>::iterator itr = _rows.begin();
 
 	while (itr != _rows.end())
 	{
-		OptionsRow *row = *itr;
+		Options *row = *itr;
+		OptionField *option = static_cast<OptionField *>(row->get(0));
+		string variable = option->value()[0];
 
-		if (row->variable() == name)
+		if (variable == name)
 		{
 			_rows.erase(itr);
 			return *itr;
@@ -110,9 +112,12 @@ OptionsRow *OptionsTable::remove(string name)
 
 bool OptionsTable::contains(string name)
 {
-	BOOST_FOREACH(OptionsRow *row, _rows)
+	BOOST_FOREACH(Options *row, _rows)
 	{
-		if (row->variable() == name)
+		OptionField *option = static_cast<OptionField *>(row->get(0));
+		string variable = option->value()[0];
+
+		if (variable == name)
 			return true;
 	}
 

@@ -34,7 +34,7 @@ SOURCES += \
     lib_json/json_reader.cpp \
     lib_json/json_internalmap.inl \
     lib_json/json_internalarray.inl \
-    datablock.cpp \
+	datablock.cpp \
     sharedmemory.cpp \
     options/optionboolean.cpp \
     options/optionfield.cpp \
@@ -63,7 +63,8 @@ SOURCES += \
     options/options.cpp \
     options/option.cpp \
     options/optionsrow.cpp \
-    options/optionstable.cpp
+    options/optionstable.cpp \
+    analyses/crosstabs.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -116,7 +117,8 @@ HEADERS +=\
     options/options.h \
     options/option.h \
     options/optionsrow.h \
-    options/optionstable.h
+    options/optionstable.h \
+    analyses/crosstabs.h
 
 unix:!symbian {
     maemo5 {

@@ -13,25 +13,25 @@
 class OptionsTable : public Option
 {
 public:
-	OptionsTable(OptionsRow *rowTemplate);
+	OptionsTable(Options *rowTemplate);
 
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(Json::Value &value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
 
-	OptionsRow *rowTemplate();
-	OptionsRow *at(int index);
+	Options *rowTemplate();
+	Options *at(int index);
 	size_t size();
 
-	OptionsRow *insertAt(std::string name, int index);
-	void insertAt(OptionsRow *row, int index);
-	OptionsRow *removeAt(int index);
-	OptionsRow *remove(std::string name);
+	Options *insertAt(std::string name, int index);
+	void insertAt(Options *row, int index);
+	Options *removeAt(int index);
+	Options *remove(std::string name);
 	bool contains(std::string name);
 
 private:
-	OptionsRow *_template;
-	std::vector<OptionsRow *> _rows;
+	Options *_template;
+	std::vector<Options *> _rows;
 	void rowChanged();
 };
 

@@ -50,14 +50,9 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 		Bound *boundChild = dynamic_cast<Bound*>(child);
 
 		if (boundChild != NULL)
-		{
 			boundChild->bindTo(option);
-			boundChild->setDataSet(dataSet);
-		}
 		else
-		{
 			qDebug() << "child not found : " << qsName << " in AnalysisForm::setOptions()";
-		}
 	}
 }
 

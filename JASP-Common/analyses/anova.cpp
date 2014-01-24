@@ -57,6 +57,8 @@ Options *Anova::createDefaultOptions()
 
 	options->add("contrasts", new OptionsTable(contrastsTemplate));
 
+	options->add("postHocTests", new OptionFields());
+
 	return options;
 }
 

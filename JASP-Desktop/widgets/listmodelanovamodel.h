@@ -36,7 +36,6 @@ public:
 	virtual Qt::DropActions supportedDropActions() const OVERRIDE;
 	virtual Qt::DropActions supportedDragActions() const OVERRIDE;
 
-	void setVariables(const QList<ColumnInfo> &variables);
 	const QList<ColumnInfo> &variables() const;
 	void setDependent(const ColumnInfo dependent);
 	void setCustomModelMode(bool on);
@@ -45,7 +44,13 @@ public:
 
 	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
 
+	QList<ColumnInfo> terms() const;
+
+public slots:
+	void setVariables(const QList<ColumnInfo> &variables);
+
 signals:
+	void termsChanged();
 	void variablesAvailableChanged();
 
 protected:

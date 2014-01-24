@@ -5,6 +5,8 @@
 #include "widgets/listmodelvariablesassigned.h"
 #include "widgets/listmodelanovamodelnuisancefactors.h"
 
+#include "ui_posthoctestssub.h"
+
 AnovaForm::AnovaForm(QWidget *parent) :
 	AnalysisForm("AnovaForm", parent),
 	ui(new Ui::AnovaForm)
@@ -51,7 +53,13 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->sumOfSquares->addItem("Type II");
 	ui->sumOfSquares->addItem("Type III");
 
-	_contrastsModel = new TableModelVariablesOptions();
+	_contrastsModel = new TableModelVariablesOptions(this);
+
+	connect(_anovaModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
+
+	termsChanged();
+
+	ui->marginalMeansContainer->hide();
 }
 
 AnovaForm::~AnovaForm()
@@ -68,6 +76,8 @@ void AnovaForm::factorsChanged()
 
 	_anovaModel->setVariables(factorsAvailable);
 	_contrastsModel->setVariables(factorsAvailable);
+
+	//ui->postHocTestsSub->ui->postHocTests->setVariables(factorsAvailable);
 }
 
 void AnovaForm::dependentChanged()
@@ -77,4 +87,11 @@ void AnovaForm::dependentChanged()
 		_anovaModel->setDependent(ColumnInfo("", 0));
 	else
 		_anovaModel->setDependent(assigned.last());
+}
+
+void AnovaForm::termsChanged()
+{
+	QList<ColumnInfo> terms = _anovaModel->terms();
+	terms.prepend(ColumnInfo("~OVERALL", 0));
+	ui->marginalMeans->setVariables(terms);
 }

@@ -22,6 +22,7 @@ public:
 private slots:
 	void factorsChanged();
 	void dependentChanged();
+	void termsChanged();
 
 private:
 	Ui::AnovaForm *ui;

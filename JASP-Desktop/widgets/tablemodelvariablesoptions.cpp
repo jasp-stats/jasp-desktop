@@ -37,7 +37,8 @@ QVariant TableModelVariablesOptions::data(const QModelIndex &index, int role) co
 	{
 		if (role == Qt::DisplayRole)
 		{
-			string value = _boundTo->at(index.row())->variable();
+			OptionField *option = static_cast<OptionField *>(_boundTo->at(index.row())->get(0));
+			string value = option->value()[0];
 			return QString::fromUtf8(value.c_str(), value.length());
 		}
 		else
@@ -158,7 +159,8 @@ void TableModelVariablesOptions::setVariables(const QList<ColumnInfo> &variables
 	int i = 0;
 	while (i < _boundTo->size())
 	{
-		string existingName = _boundTo->at(i)->variable();
+		OptionField *option = dynamic_cast<OptionField *>(_boundTo->at(i));
+		string existingName = option->value()[0];
 
 		vector<string>::iterator itr = find(variableNames.begin(), variableNames.end(), existingName);
 
@@ -174,10 +176,13 @@ void TableModelVariablesOptions::setVariables(const QList<ColumnInfo> &variables
 
 		if (_boundTo->contains(variableName))
 		{
-			if (_boundTo->at(i)->variable() == variableName)
+			OptionField *option = dynamic_cast<OptionField *>(_boundTo->at(i));
+			string name = option->value()[0];
+
+			if (name == variableName)
 				continue;
 
-			OptionsRow *row = _boundTo->remove(variableName);
+			Options *row = _boundTo->remove(variableName);
 			_boundTo->insertAt(row, i);
 		}
 		else
