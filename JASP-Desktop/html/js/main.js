@@ -53,7 +53,6 @@ $(document).ready(function() {
         window.unselect()
 
         var analysis = $('#id-' + id)
-        console.log(analysis)
         analysis.remove()
     }
 
@@ -74,7 +73,7 @@ $(document).ready(function() {
         event.stopPropagation()
     }
 
-    window.analysisChanged = function(analysis) {
+    window.analysisChanged = function(renderer, analysis) {
 
         var id = "id-" + analysis.id
         var results = analysis.results
@@ -111,75 +110,10 @@ $(document).ready(function() {
 
         item = newItem
 
-        if (analysis.name === "Descriptives") {
-        
-        	item.frequencies( results )
-        }
-        else if (analysis.name === "TTestOneSample" || analysis.name === "TTestBayesianOneSample" || analysis.name === "TTestPairedSamples") {
-
-			var ts = [ results.ttest ]
-			
-            if (results.descriptives)
-                ts.push(results.descriptives)
-
-            item.tables( { tables : ts } )
-        }
-        else if (analysis.name === "TTestIndependentSamples") {
-
-            var ts = [ results.ttest ]
-
-            if (results.inequalityOfVariances)
-                ts.push(results.inequalityOfVariances)
-            if (results.descriptives)
-                ts.push(results.descriptives)
-
-            item.tables( { tables : ts } )
-        }
-        else if (analysis.name === "AnovaOneWay") {
-
-            var ts = [ results.anova ]
-
-            item.tables( { tables : ts } )
-        }
-        else if (analysis.name === "Anova" || analysis.name === "Ancova" || analysis.name === "AnovaBayesian" || analysis.name === "AnovaMultivariate"  || analysis.name === "AncovaMultivariate") {
-
-            var ts = [ results.anova ]
-
-            item.tables( { tables : ts } )
-        }
-        else if (analysis.name == "RegressionLinear")
-        {
-            item.tables( { tables : results.regression } )
-        }
-        else if (analysis.name == "ContingencyTables")
-        {
-            item.tables( { tables : results.tables } )
-        }
-        else if (analysis.name == "Correlation")
-        {
-            item.tables( { tables : [ results.correlations ] } )
-        }
+        renderer.render(item, results)
         
         if (selectedAnalysisId == analysis.id)
-        {
         	window.scrollIntoView(item);
-        }
-    }
-
-    var display = function(name, results, element) {
-
-        if ( ! _.has(displaydefs, name))
-            return
-
-        var displaydef = displaydefs[name]
-
-        var constructor = $(element)[displaydef.ui]
-        var options = $.jasp[displaydef.options]
-        options = _.extend(options, results)
-
-        element.empty()
-        constructor(options)
-
     }
 
     $("body").click(window.unselectByClickingBody)

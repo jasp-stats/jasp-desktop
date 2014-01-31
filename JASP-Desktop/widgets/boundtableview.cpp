@@ -5,6 +5,11 @@ BoundTableView::BoundTableView(QWidget *parent)
 	: TableView(parent)
 {
 	_model = NULL;
+
+	this->setDragEnabled(true);
+	this->viewport()->setAcceptDrops(true);
+	this->setDropIndicatorShown(true);
+	this->setDragDropMode(QAbstractItemView::DragDrop);
 }
 
 void BoundTableView::bindTo(Option *option)
@@ -15,6 +20,6 @@ void BoundTableView::bindTo(Option *option)
 
 void BoundTableView::setModel(QAbstractItemModel *model)
 {
-	_model = qobject_cast<TableModelVariablesOptions *>(model);
+	_model = dynamic_cast<BoundModel *>(model);
 	TableView::setModel(model);
 }

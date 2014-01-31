@@ -24,6 +24,8 @@ public:
 	void notifyAlreadyAssigned(const QList<ColumnInfo> &variables);
     bool removeRows(int row, int count, const QModelIndex &parent) OVERRIDE;
 
+	QList<ColumnInfo> retrieveInfo(const std::vector<std::string> &columnNames) const;
+
 signals:
 	void variablesChanged();
 

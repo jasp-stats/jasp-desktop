@@ -7,7 +7,7 @@
 class OptionString : public OptionI<std::string>
 {
 public:
-	OptionString();
+	OptionString(std::string value = "");
 
 	Json::Value asJSON() const OVERRIDE;
 	void set(Json::Value &value) OVERRIDE;

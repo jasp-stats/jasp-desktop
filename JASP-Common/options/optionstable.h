@@ -23,9 +23,8 @@ public:
 	Options *at(int index);
 	size_t size();
 
-	Options *insertAt(std::string name, int index);
-	void insertAt(Options *row, int index);
-	Options *removeAt(int index);
+	void insert(int index, Options *row);
+	Options *remove(int index);
 	Options *remove(std::string name);
 	bool contains(std::string name);
 

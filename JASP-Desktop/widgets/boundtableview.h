@@ -3,7 +3,7 @@
 
 #include "tableview.h"
 #include "bound.h"
-#include "tablemodelvariablesoptions.h"
+#include "boundmodel.h"
 
 class BoundTableView : public TableView, public Bound
 {
@@ -14,7 +14,7 @@ public:
 	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
 
 private:
-	TableModelVariablesOptions *_model;
+	BoundModel *_model;
 };
 
 #endif // BOUNDTABLEVIEW_H

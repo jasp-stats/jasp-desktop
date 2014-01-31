@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "analysisform.h"
+#include "widgets/tablemodelvariableslevels.h"
 
 namespace Ui {
 class CrosstabsForm;
@@ -18,6 +19,10 @@ public:
 
 private:
 	Ui::CrosstabsForm *ui;
+
+	ListModelVariablesAssigned *_rowsModel;
+	ListModelVariablesAssigned *_columnsModel;
+	TableModelVariablesLevels *_layersModel;
 };
 
 #endif // CROSSTABSFORM_H

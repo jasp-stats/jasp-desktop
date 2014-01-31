@@ -20,7 +20,7 @@ void ListView::setDoubleClickTarget(DropTarget *target)
 
 void ListView::setModel(QAbstractItemModel *model)
 {
-	_listModel = qobject_cast<ListModelVariables*>(model);
+	_listModel = qobject_cast<TableModel*>(model);
 
 	QListView::setModel(model);
 }

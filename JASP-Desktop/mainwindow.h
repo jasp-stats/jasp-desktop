@@ -69,7 +69,6 @@ private slots:
 	void dataSetSelected(const QString &filename);
 	void dataSetLoaded(DataSet *dataSet);
 	void itemSelected(const QString item);
-	void messageReceived(const QString message);
 
 	void repositionButtonPanel();
 

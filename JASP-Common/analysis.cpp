@@ -53,6 +53,17 @@ void Analysis::run()
 	}
 }
 
+string Analysis::js()
+{
+	return "{"
+			"    depends : [ 'tables' ],"
+			"    render  : function(element, results)"
+			"    {"
+			"        element.tables( { tables : _.toArray(results) } )"
+			"    }"
+			"}";
+}
+
 void Analysis::setResults(Json::Value results)
 {
 	_results = results;
@@ -137,4 +148,31 @@ int Analysis::callback(Json::Value results)
 	{
 		return 1;
 	}
+}
+
+std::vector<string> Analysis::list(string one, string two, string three, string four, string five, string six, string seven, string eight, string nine, string ten)
+{
+	vector<string> result;
+
+	result.push_back(one);
+	result.push_back(two);
+
+	if (three != "")
+		result.push_back(three);
+	if (four != "")
+		result.push_back(four);
+	if (five != "")
+		result.push_back(five);
+	if (six != "")
+		result.push_back(six);
+	if (seven != "")
+		result.push_back(seven);
+	if (eight != "")
+		result.push_back(eight);
+	if (nine != "")
+		result.push_back(nine);
+	if (ten != "")
+		result.push_back(ten);
+
+	return result;
 }

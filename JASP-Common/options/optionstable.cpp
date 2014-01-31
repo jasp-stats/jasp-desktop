@@ -58,15 +58,7 @@ size_t OptionsTable::size()
 	return _rows.size();
 }
 
-Options *OptionsTable::insertAt(std::string name, int index)
-{
-	OptionsRow* row = dynamic_cast<OptionsRow *>(_template->clone());
-	row->setVariable(name);
-	insertAt(row, index);
-	return row;
-}
-
-void OptionsTable::insertAt(Options *row, int index)
+void OptionsTable::insert(int index, Options *row)
 {
 	std::vector<Options *>::iterator itr = _rows.begin();
 
@@ -78,7 +70,7 @@ void OptionsTable::insertAt(Options *row, int index)
 	row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
 }
 
-Options *OptionsTable::removeAt(int index)
+Options *OptionsTable::remove(int index)
 {
 	std::vector<Options *>::iterator itr = _rows.begin();
 

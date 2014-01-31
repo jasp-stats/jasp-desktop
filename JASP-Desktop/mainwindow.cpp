@@ -27,6 +27,7 @@
 #include <QStringBuilder>
 
 #include "analysisloader.h"
+#include "utils.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -137,10 +138,12 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
-	string eval = "window.analysisChanged(" + analysis->asJSON().toStyledString() + ")";
-	QString evalQString = QString::fromUtf8(eval.c_str(), eval.length());
+	string results = analysis->asJSON().toStyledString();
+	string render = analysis->js();
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(evalQString);
+	QString eval = tq("window.analysisChanged(" + render + ", " + results + ")");
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
 }
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
@@ -287,12 +290,6 @@ void MainWindow::itemSelected(const QString item)
 		repositionButtonPanel();
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
 	}
-}
-
-void MainWindow::messageReceived(const QString message)
-{
-	QString eval = "window.receiveMessage(" % message % ")";
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
 }
 
 void MainWindow::repositionButtonPanel()

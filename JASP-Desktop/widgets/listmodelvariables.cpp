@@ -7,7 +7,7 @@
 #include <QDebug>
 
 ListModelVariables::ListModelVariables(QObject *parent) :
-	QAbstractListModel(parent)
+	TableModel(parent)
 {
 	_variableTypesAllowed = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
 
@@ -36,6 +36,11 @@ int ListModelVariables::variableTypesAllowed()
 int ListModelVariables::rowCount(const QModelIndex &) const
 {
 	return _variables.length();
+}
+
+int ListModelVariables::columnCount(const QModelIndex &parent) const
+{
+	return 1;
 }
 
 QVariant ListModelVariables::data(const QModelIndex &index, int role) const

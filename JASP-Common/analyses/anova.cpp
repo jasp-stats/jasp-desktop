@@ -37,7 +37,8 @@ Options *Anova::createDefaultOptions()
 
 	options->add("sumOfSquares", new OptionList(sumOfSquares, "type3"));
 
-	OptionsRow *contrastsTemplate = new OptionsRow("template");
+	OptionsRow *contrastsTemplate = new OptionsRow();
+	contrastsTemplate->add("variable", new OptionField());
 
 	vector<string> contrastTypes;
 	contrastTypes.push_back("none");

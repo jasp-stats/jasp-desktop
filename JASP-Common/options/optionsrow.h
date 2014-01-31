@@ -7,7 +7,7 @@
 class OptionsRow : public Options
 {
 public:
-	OptionsRow(std::string variable);
+	OptionsRow();
 
 	std::string variable() const;
 	void setVariable(std::string variable);

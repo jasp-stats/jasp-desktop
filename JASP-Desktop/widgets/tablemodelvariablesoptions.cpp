@@ -165,7 +165,7 @@ void TableModelVariablesOptions::setVariables(const QList<ColumnInfo> &variables
 		vector<string>::iterator itr = find(variableNames.begin(), variableNames.end(), existingName);
 
 		if (itr == variableNames.end())
-			_boundTo->removeAt(i);
+			_boundTo->remove(i);
 		else
 			i++;
 	}
@@ -183,11 +183,14 @@ void TableModelVariablesOptions::setVariables(const QList<ColumnInfo> &variables
 				continue;
 
 			Options *row = _boundTo->remove(variableName);
-			_boundTo->insertAt(row, i);
+			_boundTo->insert(i, row);
 		}
 		else
 		{
-			_boundTo->insertAt(variableName, i);
+			Options *row = dynamic_cast<Options *>(_boundTo->rowTemplate()->clone());
+			OptionField *variable = dynamic_cast<OptionField *>(row->get("variable"));
+			variable->setValue(variableName);
+			_boundTo->insert(i, row);
 		}
 	}
 

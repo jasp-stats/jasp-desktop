@@ -118,7 +118,7 @@ bool ListModelVariablesAssigned::dropMimeData(const QMimeData *data, Qt::DropAct
 					_variables.clear();
 					_variables.append(variable);
 
-					emit dataChanged(index(0), index(0));
+					emit dataChanged(index(0, 0), index(0, 0));
 				}
 				else
 				{

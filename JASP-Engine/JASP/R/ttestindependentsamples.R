@@ -190,7 +190,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 	results[["ttest"]] <- ttest
 	results[["inequalityOfVariances"]] <- NULL  # levene's in a separate table
-	results[["descriptives"]] <- descriptives
+	if (options$descriptives)
+		results[["descriptives"]] <- descriptives
 
 	results
 }

@@ -14,11 +14,12 @@
 #include <QIcon>
 #include <QAbstractItemView>
 
+#include "tablemodel.h"
 #include "common.h"
 
 typedef QPair<QString, int> ColumnInfo;
 
-class ListModelVariables : public QAbstractListModel
+class ListModelVariables : public TableModel
 {
 	Q_OBJECT
 public:
@@ -28,6 +29,7 @@ public:
 	int variableTypesAllowed();
 
     virtual int rowCount(const QModelIndex &) const OVERRIDE;
+	virtual int columnCount(const QModelIndex &parent) const OVERRIDE;
     virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
 
     virtual bool insertRows(int row, int count, const QModelIndex &parent) OVERRIDE;
@@ -46,7 +48,7 @@ public:
 
 	void setMimeType(const QString &mimeType);
 
-	virtual void mimeDataMoved(const QModelIndexList &indexes);
+	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
 protected:
 
 	QList<ColumnInfo> _variables;

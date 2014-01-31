@@ -27,7 +27,7 @@ private slots:
 
 private:
 	DropTarget *_defaultDropTarget;
-	ListModelVariables *_listModel;
+	TableModel *_listModel;
 	
 };
 

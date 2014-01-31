@@ -35,6 +35,7 @@ public:
 
 	virtual void init();
 	virtual void run();
+	virtual std::string js();
 
 	void setRInterface(RInterface *r);
 	void setDataSet(DataSet *dataSet);
@@ -58,6 +59,18 @@ protected:
 	Json::Value _results;
 
 	int callback(Json::Value results);
+
+	static std::vector<std::string> list(
+			std::string one,
+			std::string two,
+			std::string three = "",
+			std::string four  = "",
+			std::string five  = "",
+			std::string six   = "",
+			std::string seven = "",
+			std::string eight = "",
+			std::string nine  = "",
+			std::string ten   = "");
 
 private:
 	int _id;

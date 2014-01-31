@@ -11,6 +11,7 @@ public:
 protected:
 
 	virtual Options *createDefaultOptions() OVERRIDE;
+	virtual std::string js() OVERRIDE;
 
 };
 

@@ -2,8 +2,9 @@
 
 using namespace std;
 
-OptionString::OptionString()
+OptionString::OptionString(string value)
 {
+	_value = value;
 }
 
 Json::Value OptionString::asJSON() const

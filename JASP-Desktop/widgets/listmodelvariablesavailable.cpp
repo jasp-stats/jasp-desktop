@@ -3,6 +3,9 @@
 #include "column.h"
 
 #include <QDebug>
+#include "utils.h"
+
+using namespace std;
 
 ListModelVariablesAvailable::ListModelVariablesAvailable(QObject *parent)
 	: ListModelVariables(parent)
@@ -87,6 +90,24 @@ QStringList ListModelVariablesAvailable::mimeTypes() const
 const QList<ColumnInfo> &ListModelVariablesAvailable::allVariables() const
 {
 	return _allVariables;
+}
+
+QList<ColumnInfo> ListModelVariablesAvailable::retrieveInfo(const vector<string> &columnNames) const
+{
+	QList<ColumnInfo> columnInfo;
+
+	foreach (const string &name, columnNames)
+	{
+		QString columnName = tq(name);
+
+		foreach (const ColumnInfo &info, _allVariables)
+		{
+			if (info.first == columnName)
+				columnInfo.append(info);
+		}
+	}
+
+	return columnInfo;
 }
 
 void ListModelVariablesAvailable::notifyAlreadyAssigned(const QList<ColumnInfo> &variables)

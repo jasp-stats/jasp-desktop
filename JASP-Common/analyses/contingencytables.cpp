@@ -16,7 +16,7 @@ Options *ContingencyTables::createDefaultOptions()
 	options->add("rows", new OptionFields());
 	options->add("columns", new OptionFields());
 
-	OptionsRow *layerOptionsTemplate = new OptionsRow("template");
+	OptionsRow *layerOptionsTemplate = new OptionsRow();
 
 	options->add("layers", new OptionsTable(layerOptionsTemplate));
 

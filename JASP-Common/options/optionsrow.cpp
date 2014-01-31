@@ -5,27 +5,14 @@
 
 using namespace std;
 
-OptionsRow::OptionsRow(std::string name)
+OptionsRow::OptionsRow()
 {
-	_field = new OptionField();
-	_field->setValue(name);
 
-	add("variable", _field);
-}
-
-std::string OptionsRow::variable() const
-{
-	return _field->value()[0];
-}
-
-void OptionsRow::setVariable(string name)
-{
-	_field->setValue(name);
 }
 
 Option *OptionsRow::clone() const
 {
-	OptionsRow *row = new OptionsRow(variable());
+	OptionsRow *row = new OptionsRow();
 
 	BOOST_FOREACH(const string& name, this->names)
 	{

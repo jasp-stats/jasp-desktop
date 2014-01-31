@@ -7,7 +7,6 @@ class BoundModel
 {
 public:
 	virtual void bindTo(Option *) { }
-	//virtual void bindTo(Option *, int) { }
 
 };
 

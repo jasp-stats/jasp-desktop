@@ -64,3 +64,11 @@ Options *Descriptives::createDefaultOptions()
 
 	return options;
 }
+
+string Descriptives::js()
+{
+	return "{"
+			"    depends : ['frequencies'], "
+			"    render : function(element, results) { element.frequencies( results ) } "
+			"}";
+}
