@@ -81,7 +81,6 @@ SOURCES += main.cpp\
     analysisforms/ttestindependentsamplesform.cpp \
     analysisforms/ancovamultivariateform.cpp \
 	analysisforms/regressionlinearform.cpp \
-	analysisforms/contingencytablesform.cpp \
 	analysisforms/correlationform.cpp \
     widgets/boundassignwidget.cpp \
     analysisforms/subforms/posthoctestssub.cpp \
@@ -142,7 +141,6 @@ HEADERS  += \
     maintablehorizontalheader.h \
     analysisforms/regressionlinearform.h \
     mainwindow.h \
-    analysisforms/contingencytablesform.h \
     analysisforms/correlationform.h \
     widgets/boundcombobox.h \
     widgets/tablemodelvariablesoptions.h \
@@ -175,7 +173,6 @@ FORMS    += \
     analysisforms/ancovamultivariateform.ui \
     analysisforms/regressionlinearform.ui \
     mainwindow.ui \
-    analysisforms/contingencytablesform.ui \
     analysisforms/correlationform.ui \
     widgets/boundassignwidget.ui \
     analysisforms/subforms/posthoctestssub.ui \

@@ -15,7 +15,6 @@
 #include "analysisforms/ancovaform.h"
 #include "analysisforms/ancovamultivariateform.h"
 #include "analysisforms/regressionlinearform.h"
-#include "analysisforms/contingencytablesform.h"
 #include "analysisforms/correlationform.h"
 #include "analysisforms/crosstabsform.h"
 
@@ -181,8 +180,6 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new AncovaMultivariateForm(contentArea);
 	else if (name == "RegressionLinear")
 		form = new RegressionLinearForm(contentArea);
-	else if (name == "ContingencyTables")
-		form = new ContingencyTablesForm(contentArea);
 	else if (name == "Correlation")
 		form = new CorrelationForm(contentArea);
 	else if (name == "Crosstabs")

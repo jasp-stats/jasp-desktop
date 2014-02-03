@@ -12,7 +12,6 @@
 #include "analyses/anovabayesian.h"
 #include "analyses/ancovamultivariate.h"
 #include "analyses/regressionlinear.h"
-#include "analyses/contingencytables.h"
 #include "analyses/correlation.h"
 #include "analyses/crosstabs.h"
 
@@ -45,8 +44,6 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		return new AnovaBayesian(id);
 	else if (analysisName == "RegressionLinear")
 		return new RegressionLinear(id);
-	else if (analysisName == "ContingencyTables")
-		return new ContingencyTables(id);
 	else if (analysisName == "Correlation")
 		return new Correlation(id);
 	else if (analysisName == "Crosstabs")

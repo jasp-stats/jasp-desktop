@@ -57,7 +57,6 @@ SOURCES += \
     analyses/ancova.cpp \
     analyses/ancovamultivariate.cpp \
     analyses/regressionlinear.cpp \
-    analyses/contingencytables.cpp \
     analyses/correlation.cpp \
     ipcchannel.cpp \
     options/options.cpp \
@@ -111,7 +110,6 @@ HEADERS +=\
     analyses/ancova.h \
     analyses/ancovamultivariate.h \
     analyses/regressionlinear.h \
-    analyses/contingencytables.h \
     analyses/correlation.h \
     ipcchannel.h \
     options/options.h \
