@@ -2,6 +2,7 @@
 #define CORRELATIONFORM_H
 
 #include "analysisform.h"
+#include "widgets/listmodelvariablesassigned.h"
 
 namespace Ui {
 class CorrelationForm;
@@ -17,6 +18,8 @@ public:
 
 private:
 	Ui::CorrelationForm *ui;
+
+	ListModelVariablesAssigned *_modelVariables;
 };
 
 #endif // CORRELATIONFORM_H
