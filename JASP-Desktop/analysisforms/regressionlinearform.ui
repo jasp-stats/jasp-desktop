@@ -556,7 +556,7 @@
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButton">
+             <widget class="QRadioButton" name="outliersOutside">
               <property name="text">
                <string>Outliers outside</string>
               </property>
@@ -580,7 +580,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QRadioButton" name="radioButton_2">
+             <widget class="QRadioButton" name="allCases">
               <property name="text">
                <string>All cases</string>
               </property>
@@ -846,21 +846,21 @@
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButton_5">
+             <widget class="QRadioButton" name="excludeCasesListwise">
               <property name="text">
                <string>Exclude cases listwise</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QRadioButton" name="radioButton_6">
+             <widget class="QRadioButton" name="excludeCasesPairwise">
               <property name="text">
                <string>Exclude cases pairwise</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QRadioButton" name="radioButton_7">
+             <widget class="QRadioButton" name="replaceWithMean">
               <property name="text">
                <string>Replace with mean</string>
               </property>

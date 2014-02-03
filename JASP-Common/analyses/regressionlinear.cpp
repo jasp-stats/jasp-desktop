@@ -43,10 +43,10 @@ Options *RegressionLinear::createDefaultOptions()
 
 	options->add("residuals/durbinWatson", new OptionBoolean());
 	options->add("residuals/casewiseDiagnostics", new OptionBoolean());
-	options->add("residuals/casewiseDiagnosticsType", new OptionList(list("Outliers outside", "All cases")));
+	options->add("residuals/casewiseDiagnosticsType", new OptionList(list("outliersOutside", "allCases")));
 	options->add("residuals/casewiseDiagnosticsOutliersOutside", new OptionInteger(3));
 
-	options->add("steppingMethodCriteria/type", new OptionList(list("Use p value", "Use F value")));
+	options->add("steppingMethodCriteria/type", new OptionList(list("usePValue", "useFValue")));
 	options->add("steppingMethodCriteria/pEntry", new OptionNumber(0.05));
 	options->add("steppingMethodCriteria/pRemoval", new OptionNumber(0.10));
 	options->add("steppingMethodCriteria/fEntry", new OptionNumber(3.84));
