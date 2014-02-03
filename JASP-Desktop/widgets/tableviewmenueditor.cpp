@@ -42,9 +42,9 @@ void TableViewMenuEditor::paintEvent(QPaintEvent *event)
 	QPainter painter(this);
 
 	QPainterPath path;
-	path.moveTo(5,  rect().height() / 5);
-	path.lineTo(16, rect().height() / 2);
-	path.lineTo(5,  rect().height() * 4 / 5);
+	path.moveTo(5,  20 / 5);
+	path.lineTo(16, 20 / 2);
+	path.lineTo(5,  20 * 4 / 5);
 
 	QBrush black(QColor(0x80, 0x80, 0x80));
 	QBrush white(Qt::white);

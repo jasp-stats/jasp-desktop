@@ -12,10 +12,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	results <- list()
 	
-	an0va <- list()
+	regression <- list()
 	
-	an0va[["title"]] <- "Linear Regression w00t!"
-	an0va[["cases"]] <- c("line1", "line2", "line3")
+	regression[["title"]] <- "Linear Regression w00t!"
+	regression[["cases"]] <- c("line1", "line2", "line3")
 	
 	fields <- list(
 		list(id="col1", type="number", format="sf:4"),
@@ -24,9 +24,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 	schema <- list(fields=fields)
 	
-	an0va[["schema"]] <- schema
+	regression[["schema"]] <- schema
 	
-	results[["regression"]] <- list(an0va)
+	results[["regression"]] <- regression
 
 	results
 }

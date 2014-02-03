@@ -3,8 +3,9 @@
 #include <QMimeData>
 
 #include "options/optionstring.h"
-#include "utils.h"
+#include "options/optionlist.h"
 #include "column.h"
+
 
 typedef QPair<QString, int> ColumnInfo;
 
@@ -56,7 +57,8 @@ void TableModelVariablesLevels::mimeDataMoved(const QModelIndexList &indexes)
 		{
 			if (variables.size() == 0)
 			{
-				_boundTo->remove(i);
+				Options *options = _boundTo->remove(i);
+				delete options;
 				levelRemoved = true;
 			}
 			else
@@ -92,6 +94,9 @@ int TableModelVariablesLevels::rowCount(const QModelIndex &parent) const
 
 int TableModelVariablesLevels::columnCount(const QModelIndex &parent) const
 {
+	if (_boundTo == NULL)
+		return 0;
+
 	return 1;
 }
 
@@ -102,10 +107,38 @@ QVariant TableModelVariablesLevels::data(const QModelIndex &index, int role) con
 
 	Row row = _rows.at(index.row());
 
-	if (role == Qt::DisplayRole)
-		return row.name();
+	if (role == Qt::DisplayRole || role == Qt::EditRole)
+	{
+		if ( ! row.isOption())
+			return row.name();
 
-	if (role == Qt::DecorationRole)
+		OptionList *list = row.option();
+		string selected = list->value();
+		QString qsSelected = QString::fromUtf8(selected.c_str(), selected.length());
+
+		if (role == Qt::DisplayRole)
+			return qsSelected;
+
+		vector<string> items = list->options();
+		QStringList qsItems;
+
+		for (int i = 0; i < items.size(); i++)
+		{
+			string item = items.at(i);
+			QString qs = QString::fromUtf8(item.c_str(), item.size());
+			qsItems.append(qs);
+		}
+
+		QVariant qvSelected = QVariant(qsSelected);
+		QVariant qvItems = QVariant(qsItems);
+
+		QList<QVariant> qvValue;
+		qvValue.append(qvSelected);
+		qvValue.append(qvItems);
+
+		return qvValue;
+	}
+	else if (role == Qt::DecorationRole)
 	{
 		if (row.isLevel() == false)
 		{
@@ -129,12 +162,14 @@ QVariant TableModelVariablesLevels::data(const QModelIndex &index, int role) con
 	}
 	else if (role == Qt::TextAlignmentRole)
 	{
-		if (_rows.at(index.row()).isLevel())
+		if (row.isLevel())
 			return Qt::AlignCenter;
+		if (row.isOption())
+			return Qt::AlignTop;
 	}
 	else if (role == Qt::SizeHintRole)
 	{
-		if (_rows.at(index.row()).isLevel())
+		if (row.isLevel() || row.isOption())
 			return QSize(-1, 24);
 	}
 
@@ -152,11 +187,30 @@ Qt::ItemFlags TableModelVariablesLevels::flags(const QModelIndex &index) const
 	else
 	{
 		Row row = _rows.at(index.row());
-		if ( ! row.isLevel())
+		if (row.isOption())
+			flags |= Qt::ItemIsEditable;
+		else if (row.isVariable())
 			flags |= Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
 	}
 
 	return flags;
+}
+
+bool TableModelVariablesLevels::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+	if (_boundTo == NULL)
+		return false;
+
+	OptionList *list = _rows.at(index.row()).option();
+
+	QString qsValue = value.toString();
+	QByteArray bytes = qsValue.toUtf8();
+
+	list->setValue(string(bytes.constData(), bytes.length()));
+
+	emit dataChanged(index, index);
+
+	return true;
 }
 
 Qt::DropActions TableModelVariablesLevels::supportedDropActions() const
@@ -232,7 +286,7 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 					level++;
 					positionInLevel = 0;
 				}
-				else
+				else if (_rows[i].isOption() == false)
 				{
 					positionInLevel++;
 				}
@@ -320,6 +374,12 @@ void TableModelVariablesLevels::readFromOption()
 			vector<string> variables = variablesOption->value();
 
 			_rows.append(Row(tq(nameOption->value())));
+
+			for (int j = 2; j < level->size(); j++)
+			{
+				OptionList *list = dynamic_cast<OptionList *>(level->get(j));
+				_rows.append(Row(list));
+			}
 
 			QList<ColumnInfo> vars = _source->retrieveInfo(variables);
 

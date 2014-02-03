@@ -9,7 +9,10 @@
 #include "options/optionstable.h"
 #include "listmodelvariablesavailable.h"
 #include "options/optionstring.h"
+#include "options/optionlist.h"
 #include "tablemodel.h"
+
+ #include "utils.h"
 
 class TableModelVariablesLevels : public TableModel, public BoundModel, public DropTarget
 {
@@ -24,6 +27,7 @@ public:
 	virtual int columnCount(const QModelIndex &parent) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
+	virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
 
 	virtual Qt::DropActions supportedDropActions() const OVERRIDE;
 	virtual Qt::DropActions supportedDragActions() const OVERRIDE;
@@ -43,12 +47,20 @@ private:
 		{
 			_level = level;
 			_isLevel = true;
+			_option = NULL;
 		}
 
 		Row(ColumnInfo variable)
 		{
 			_variable = variable;
 			_isLevel = false;
+			_option = NULL;
+		}
+
+		Row(OptionList *option)
+		{
+			_isLevel = false;
+			_option = option;
 		}
 
 		ColumnInfo variable() const
@@ -58,7 +70,9 @@ private:
 
 		QString name() const
 		{
-			if (_isLevel)
+			if (_option != NULL)
+				return tq(_option->value());
+			else if (_isLevel)
 				return _level;
 			else
 				return _variable.first;
@@ -69,10 +83,26 @@ private:
 			return _isLevel;
 		}
 
+		bool isOption() const
+		{
+			return _option != NULL;
+		}
+
+		bool isVariable()
+		{
+			return _option == NULL && _isLevel == false;
+		}
+
+		OptionList *option() const
+		{
+			return _option;
+		}
+
 	private:
 		bool _isLevel;
 		QString _level;
 		ColumnInfo _variable;
+		OptionList *_option;
 	};
 
 	OptionsTable *_boundTo;

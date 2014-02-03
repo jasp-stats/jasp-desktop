@@ -9,6 +9,7 @@
 #include "options/optionfield.h"
 
 #include "widgets/boundmodel.h"
+#include "tableviewmenueditordelegate.h"
 
 #include <QLabel>
 #include <QHBoxLayout>
@@ -34,6 +35,8 @@ BoundListView::BoundListView(QWidget *parent)
 	layout->setContentsMargins(4, 4, 4, 4);
 	_variableTypeKey->setLayout(layout);
 	_variableTypeKey->resize(_variableTypeKey->sizeHint());
+
+	this->setItemDelegate(new TableViewMenuEditorDelegate(this));
 }
 
 void BoundListView::setModel(QAbstractItemModel *model)
