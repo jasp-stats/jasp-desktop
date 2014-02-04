@@ -35,8 +35,6 @@ SOURCES += main.cpp\
     backstageform.cpp \
     enginesync.cpp \
     availablefields.cpp \
-    ribbonanalysis.cpp \
-    ribbonhome.cpp \
 	asyncloader.cpp \
 	maintableview.cpp \
 	maintablehorizontalheader.cpp \
@@ -88,15 +86,19 @@ SOURCES += main.cpp\
     analysisforms/crosstabsform.cpp \
     widgets/tablemodelvariableslevels.cpp \
     utils.cpp \
-    analysisforms/correlationpartialform.cpp
+    analysisforms/correlationpartialform.cpp \
+    ribbons/ribbonwidget.cpp \
+    ribbons/ribbonsem.cpp \
+    ribbons/ribbonanalysis.cpp \
+    ribbons/ribbonhome.cpp \
+    analysisforms/semsimpleform.cpp \
+    widgets/boundtextedit.cpp
 
 HEADERS  += \
     datasettablemodel.h \
     backstageform.h \
     enginesync.h \
     availablefields.h \
-    ribbonanalysis.h \
-    ribbonhome.h \
     analysisforms/analysisform.h \
     widgets/assignbutton.h \
     widgets/availablefieldslistview.h \
@@ -154,12 +156,16 @@ HEADERS  += \
     utils.h \
     analysisforms/crosstabsform.h \
     widgets/tablemodelvariableslevels.h \
-    analysisforms/correlationpartialform.h
+    analysisforms/correlationpartialform.h \
+    ribbons/ribbonwidget.h \
+    ribbons/ribbonsem.h \
+    ribbons/ribbonanalysis.h \
+    ribbons/ribbonhome.h \
+    analysisforms/semsimpleform.h \
+    widgets/boundtextedit.h
 
 FORMS    += \
     backstageform.ui \
-    ribbonanalysis.ui \
-	ribbonhome.ui \
     analysisforms/anovabayesianform.ui \
     analysisforms/ttestpairedsamplesform.ui \
     analysisforms/anovamultivariateform.ui \
@@ -180,7 +186,11 @@ FORMS    += \
     analysisforms/subforms/posthoctestssub.ui \
     analysisforms/anovarepeatedmeasuresform.ui \
     analysisforms/crosstabsform.ui \
-    analysisforms/correlationpartialform.ui
+    analysisforms/correlationpartialform.ui \
+    ribbons/ribbonhome.ui \
+    ribbons/ribbonsem.ui \
+    ribbons/ribbonanalysis.ui \
+    analysisforms/semsimpleform.ui
 
 
 RESOURCES += \

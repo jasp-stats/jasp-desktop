@@ -2,7 +2,7 @@
 #include "ui_ribbonhome.h"
 
 RibbonHome::RibbonHome(QWidget *parent) :
-    QWidget(parent),
+	RibbonWidget(parent),
 	ui(new Ui::RibbonHome)
 {
     ui->setupUi(this);

@@ -64,7 +64,8 @@ SOURCES += \
     options/optionsrow.cpp \
     options/optionstable.cpp \
     analyses/crosstabs.cpp \
-    analyses/correlationpartial.cpp
+    analyses/correlationpartial.cpp \
+    analyses/semsimple.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -118,7 +119,8 @@ HEADERS +=\
     options/optionsrow.h \
     options/optionstable.h \
     analyses/crosstabs.h \
-    analyses/correlationpartial.h
+    analyses/correlationpartial.h \
+    analyses/semsimple.h
 
 unix:!symbian {
     maemo5 {

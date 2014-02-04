@@ -19,6 +19,8 @@
 #include "analysisforms/correlationpartialform.h"
 #include "analysisforms/crosstabsform.h"
 
+#include "analysisforms/semsimpleform.h"
+
 #include <QDebug>
 #include <QWebFrame>
 #include <QFile>
@@ -49,7 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabBar->setFocusPolicy(Qt::NoFocus);
     ui->tabBar->addTab(QString("File"));
 	ui->tabBar->addTab(QString("Home"));
-	ui->tabBar->addTab(QString("Analysis"));
+	ui->tabBar->addTab(QString("Common"));
+	ui->tabBar->addTab(QString("SEM"));
 
 	QFile indexPageResource(QString(":/core/analyses.html"));
     indexPageResource.open(QFile::ReadOnly);
@@ -62,8 +65,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->webViewOptions->setHtml(indexPage, QUrl("qrc:/core/"));
 
-    ui->homeRibbon->setEnabled(false);
+	ui->ribbonHome->setEnabled(false);
 	ui->ribbonAnalysis->setEnabled(false);
+	ui->ribbonSEM->setEnabled(false);
 
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
@@ -85,6 +89,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_analyses->analysisResultsChanged.connect(boost::bind(&MainWindow::analysisResultsChangedHandler, this, _1));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
 
 	_alert = new ProgressWidget(ui->pageData);
@@ -187,6 +192,8 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new CorrelationPartialForm(contentArea);
 	else if (name == "Crosstabs")
 		form = new CrosstabsForm(contentArea);
+	else if (name == "SEMSimple")
+		form = new SEMSimpleForm(contentArea);
 	else
 		qDebug() << "MainWidget::loadForm(); form not found : " << name.c_str();
 
@@ -267,8 +274,9 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 
 	_tableModel->setDataSet(dataSet);
 
-    ui->homeRibbon->setEnabled(true);
+	ui->ribbonHome->setEnabled(true);
 	ui->ribbonAnalysis->setEnabled(true);
+	ui->ribbonSEM->setEnabled(true);
 
 	_alert->hide();
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1356</width>
-    <height>83</height>
+    <height>86</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
     <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <item row="0" column="0">
     <widget class="QWidget" name="widget" native="true">
@@ -83,7 +83,7 @@
             <string>Descriptives</string>
            </property>
            <property name="icon">
-            <iconset resource="resources/icons.qrc">
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/icons/edit-delete-shred.png</normaloff>:/icons/edit-delete-shred.png</iconset>
            </property>
           </widget>
@@ -361,7 +361,7 @@ background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgb
 }</string>
         </property>
         <property name="icon">
-         <iconset resource="resources/icons.qrc">
+         <iconset resource="../resources/icons.qrc">
           <normaloff>:/icons/tools-wizard.png</normaloff>:/icons/tools-wizard.png</iconset>
         </property>
         <property name="iconSize">
@@ -427,7 +427,7 @@ background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgb
 }</string>
         </property>
         <property name="icon">
-         <iconset resource="resources/icons.qrc">
+         <iconset resource="../resources/icons.qrc">
           <normaloff>:/icons/tools-wizard.png</normaloff>:/icons/tools-wizard.png</iconset>
         </property>
         <property name="iconSize">
@@ -470,7 +470,7 @@ background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgb
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="resources/icons.qrc"/>
+  <include location="../resources/icons.qrc"/>
  </resources>
  <connections>
   <connection>

@@ -1,13 +1,13 @@
 #ifndef HOMERIBBON_H
 #define HOMERIBBON_H
 
-#include <QWidget>
+#include "ribbonwidget.h"
 
 namespace Ui {
 class RibbonHome;
 }
 
-class RibbonHome : public QWidget
+class RibbonHome : public RibbonWidget
 {
     Q_OBJECT
     

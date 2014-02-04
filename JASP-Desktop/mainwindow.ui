@@ -114,39 +114,9 @@ QTabBar::tab:first:selected {
 	border-bottom: 1.2px solid #C4C4C3;
 }</string>
           </property>
-          <widget class="QWidget" name="ribbonPageHome">
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <property name="leftMargin">
-             <number>3</number>
-            </property>
-            <property name="topMargin">
-             <number>3</number>
-            </property>
-            <property name="rightMargin">
-             <number>3</number>
-            </property>
-            <property name="bottomMargin">
-             <number>3</number>
-            </property>
-            <item>
-             <widget class="RibbonHome" name="homeRibbon" native="true"/>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>353</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </widget>
+          <widget class="RibbonHome" name="ribbonHome"/>
           <widget class="RibbonAnalysis" name="ribbonAnalysis"/>
+          <widget class="RibbonSEM" name="ribbonSEM"/>
          </widget>
         </item>
         <item>
@@ -269,7 +239,7 @@ QTabBar::tab:first:selected {
                      <x>0</x>
                      <y>0</y>
                      <width>800</width>
-                     <height>562</height>
+                     <height>572</height>
                     </rect>
                    </property>
                    <layout class="QGridLayout" name="optionsContentAreaLayout">
@@ -372,7 +342,7 @@ QTabBar::tab:first:selected {
   <customwidget>
    <class>RibbonHome</class>
    <extends>QWidget</extends>
-   <header>ribbonhome.h</header>
+   <header>ribbons/ribbonhome.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -383,11 +353,17 @@ QTabBar::tab:first:selected {
   <customwidget>
    <class>RibbonAnalysis</class>
    <extends>QWidget</extends>
-   <header>ribbonanalysis.h</header>
+   <header>ribbons/ribbonanalysis.h</header>
    <container>1</container>
    <slots>
     <signal>itemSelected(QString)</signal>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>RibbonSEM</class>
+   <extends>QWidget</extends>
+   <header>ribbons/ribbonsem.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -1,7 +1,7 @@
 
 init <- function(name, options.as.json.string) {
 
-	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE)
+	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE)
 	analysis <- eval(parse(text=name))
 	results <- analysis(dataset=NULL, options=options, perform="init")
 	RJSONIO::toJSON(results)
@@ -9,7 +9,7 @@ init <- function(name, options.as.json.string) {
 
 run <- function(name, options.as.json.string) {
 
-	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE)
+	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE)
 	analysis <- eval(parse(text=name))
 	results <- analysis(dataset=NULL, options=options, perform="run", callback=callback)
 	RJSONIO::toJSON(results)

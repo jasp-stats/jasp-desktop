@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>98</width>
-    <height>72</height>
+    <width>216</width>
+    <height>75</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,15 +24,8 @@
     <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
-   <item row="0" column="1">
-    <widget class="Line" name="line_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QWidget" name="widget_4" native="true">
      <layout class="QGridLayout" name="gridLayout_4">
@@ -102,7 +95,7 @@ background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgb
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="resources/icons.qrc">
+            <iconset resource="../resources/icons.qrc">
              <normaloff>:/icons/edit-paste.png</normaloff>:/icons/edit-paste.png</iconset>
            </property>
            <property name="iconSize">
@@ -173,10 +166,30 @@ background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgb
      </layout>
     </widget>
    </item>
+   <item row="0" column="2">
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
   </layout>
  </widget>
  <resources>
-  <include location="resources/icons.qrc"/>
+  <include location="../resources/icons.qrc"/>
  </resources>
  <connections/>
  <slots>

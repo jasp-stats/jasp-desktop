@@ -16,6 +16,8 @@
 #include "analyses/correlationpartial.h"
 #include "analyses/crosstabs.h"
 
+#include "analyses/semsimple.h"
+
 #include "analysispart.h"
 
 Analysis *AnalysisLoader::load(int id, string analysisName)
@@ -51,6 +53,8 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		return new CorrelationPartial(id);
 	else if (analysisName == "Crosstabs")
 		return new Crosstabs(id);
+	else if (analysisName == "SEMSimple")
+		return new SEMSimple(id);
 	else
 	{
 		std::cout << "AnalysisLoader::laod(); Analysis not found: " << analysisName << "\n";

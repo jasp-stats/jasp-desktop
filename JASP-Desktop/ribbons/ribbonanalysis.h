@@ -1,26 +1,19 @@
 #ifndef RIBBONANALYSIS_H
 #define RIBBONANALYSIS_H
 
-#include <QWidget>
+#include "ribbonwidget.h"
 
 namespace Ui {
 class RibbonAnalysis;
 }
 
-class RibbonAnalysis : public QWidget
+class RibbonAnalysis : public RibbonWidget
 {
 	Q_OBJECT
 	
 public:
 	explicit RibbonAnalysis(QWidget *parent = 0);
 	~RibbonAnalysis();
-
-signals:
-	void itemSelected(QString itemName);
-	
-private slots:
-	void itemSelected();
-	void menuItemSelected();
 
 private:
 	Ui::RibbonAnalysis *ui;
