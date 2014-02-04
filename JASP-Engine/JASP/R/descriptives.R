@@ -138,21 +138,21 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			field.results[["Valid"]] = length(na.omitted)
 			field.results[["Missing"]] = rows - length(na.omitted)
 
-			if (central.tendency["mean"]) {
+			if (central.tendency[["mean"]]) {
 				if (class(na.omitted) != "factor") {
 					field.results[["Mean"]] <- .clean(mean(na.omitted))
 				} else {
 					field.results[["Mean"]] <- ""
 				}
 			}
-			if (central.tendency["median"]) {
+			if (central.tendency[["median"]]) {
 				if (class(na.omitted) != "factor") {
 					field.results[["Median"]] <- .clean(median(na.omitted))
 				} else {
 					field.results[["Median"]] <- ""
 				}
 			}
-			if (central.tendency["mode"]) {
+			if (central.tendency[["mode"]]) {
 		
 				if (class(na.omitted) != "factor") {
 			
@@ -177,56 +177,56 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 			
 			}
-			if (central.tendency["sum"]) {
+			if (central.tendency[["sum"]]) {
 				if (class(na.omitted) != "factor") {
 					field.results[["Sum"]] <- .clean(sum(na.omitted))
 				} else {
 					field.results[["Sum"]] <- ""
 				}
 			}
-			if (dispersion["maximum"]) {
+			if (dispersion[["maximum"]]) {
 				if (class(na.omitted) != "factor") {
 					field.results[["Maximum"]] <- .clean(max(na.omitted))
 				} else {
 					field.results[["Maximum"]] <- ""
 				}
 			}
-			if (dispersion["minimum"]) {
+			if (dispersion[["minimum"]]) {
 				if (class(na.omitted) != "factor") {
 					field.results[["Minimum"]] <- .clean(min(na.omitted))
 				} else {
 					field.results[["Minimum"]] <- ""
 				}
 			}
-			if (dispersion["range"]) {
+			if (dispersion[["range"]]) {
 				if (class(na.omitted) != "factor") {
 					field.results[["Range"]] <- .clean(range(na.omitted)[2]-range(na.omitted)[1])
 				} else {
 					field.results[["Range"]] <- ""
 				}
 			}
-			if (dispersion["standardDeviation"]) {
+			if (dispersion[["standardDeviation"]]) {
 				if (class(na.omitted) != "factor"){
 					field.results[["Std. Deviation"]] <- .clean(sd(na.omitted))
 				} else {
 					field.results[["Std. Deviation"]] <- ""
 				}
 			}
-			if (dispersion["standardErrorMean"]) {
+			if (dispersion[["standardErrorMean"]]) {
 				if (class(na.omitted) != "factor") {
 					field.results[["Std. Error of Mean"]] <- .clean(sd(na.omitted)/sqrt(length(na.omitted)))
 				} else {
 					field.results[["Std. Error of Mean"]] <- ""
 				}
 			}
-			if (dispersion["variance"]) {
+			if (dispersion[["variance"]]) {
 				if (class(na.omitted) != "factor") {
 					field.results[["Variance"]] <- .clean(var(na.omitted))
 				} else {
 					field.results[["Variance"]] <- ""
 				}
 			}
-			if (distribution["kurtosis"]) {
+			if (distribution[["kurtosis"]]) {
 				if (class(na.omitted) != "factor") {
 					field.results[["Kurtosis"]] <- .clean(kurtosis(na.omitted))
 					field.results[["Std. Error of Kurtosis"]] <- .clean(SEK(na.omitted))
@@ -235,7 +235,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					field.results[["Std. Error of Kurtosis"]] <- ""
 				}
 			}
-			if (distribution["skewness"]) {
+			if (distribution[["skewness"]]) {
 				if (class(na.omitted) != "factor") {
 					field.results[["Skewness"]] <- .clean(skewness(na.omitted))
 					field.results[["Std. Error of Skewness"]] <- .clean(SES(na.omitted))
