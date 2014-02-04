@@ -29,6 +29,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	menu = new QMenu(this);
 	menu->addAction(QString("Correlation"), this, SLOT(itemSelected()))->setObjectName("Correlation");
+	menu->addAction(QString("Partial Correlation"), this, SLOT(itemSelected()))->setObjectName("CorrelationPartial");
 	menu->addAction(QString("Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinear");
 
 	ui->classicalRegressionButton->setMenu(menu);

@@ -87,7 +87,8 @@ SOURCES += main.cpp\
     analysisforms/anovarepeatedmeasuresform.cpp \
     analysisforms/crosstabsform.cpp \
     widgets/tablemodelvariableslevels.cpp \
-    utils.cpp
+    utils.cpp \
+    analysisforms/correlationpartialform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -152,7 +153,8 @@ HEADERS  += \
     analysisforms/anovarepeatedmeasuresform.h \
     utils.h \
     analysisforms/crosstabsform.h \
-    widgets/tablemodelvariableslevels.h
+    widgets/tablemodelvariableslevels.h \
+    analysisforms/correlationpartialform.h
 
 FORMS    += \
     backstageform.ui \
@@ -177,7 +179,8 @@ FORMS    += \
     widgets/boundassignwidget.ui \
     analysisforms/subforms/posthoctestssub.ui \
     analysisforms/anovarepeatedmeasuresform.ui \
-    analysisforms/crosstabsform.ui
+    analysisforms/crosstabsform.ui \
+    analysisforms/correlationpartialform.ui
 
 
 RESOURCES += \

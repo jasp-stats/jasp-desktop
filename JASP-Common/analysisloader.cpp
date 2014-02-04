@@ -13,6 +13,7 @@
 #include "analyses/ancovamultivariate.h"
 #include "analyses/regressionlinear.h"
 #include "analyses/correlation.h"
+#include "analyses/correlationpartial.h"
 #include "analyses/crosstabs.h"
 
 #include "analysispart.h"
@@ -46,6 +47,8 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		return new RegressionLinear(id);
 	else if (analysisName == "Correlation")
 		return new Correlation(id);
+	else if (analysisName == "CorrelationPartial")
+		return new CorrelationPartial(id);
 	else if (analysisName == "Crosstabs")
 		return new Crosstabs(id);
 	else
