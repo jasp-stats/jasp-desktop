@@ -56,12 +56,20 @@ void Analysis::run()
 string Analysis::js()
 {
 	return "{"
-			"    depends : [ 'tables' ],"
-			"    render  : function(element, results)"
-			"    {"
-			"        element.tables( { tables : _.toArray(results) } )"
-			"    }"
-			"}";
+			"    depends : [ 'tables' ],\n"
+			"    render  : function(element, results)\n"
+			"    {\n"
+			"        var tables = [ ]\n"
+			"        _.each(results, function(result) {\n"
+			"            if (_.isArray(result))\n"
+			"                _.each(result, function(table) {\n"
+			"                    tables.push(table) })\n"
+			"            else\n"
+			"                tables.push(result)\n"
+			"        })\n"
+			"        element.tables( { tables : tables } )\n"
+			"    }\n"
+			"}\n";
 }
 
 void Analysis::setResults(Json::Value results)
