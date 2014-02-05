@@ -330,9 +330,11 @@ void MainWindow::analysisRemoved()
 void MainWindow::pushToClipboardHandler(QString data)
 {
 	QString toClipboard;
-	toClipboard += "<html>\n"
+	toClipboard += "<!DOCTYPE HTML>\n"
+			"<html>\n"
 			"	<head>\n"
 			"		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
+			"		<title>JASP</title>"
 			"	</head>\n"
 			"	<body>\n";
 	toClipboard += data;

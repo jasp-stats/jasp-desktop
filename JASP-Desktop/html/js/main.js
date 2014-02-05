@@ -162,20 +162,27 @@ var stringify = function(element, tabs) {
 	else
 		text = tabs + '<' + tag + ' ' + attrs + '>'
 	
-	var children = $el.children()
+	var contents = $el.contents()
 
-	if (children.length > 0) {
-	
-		text += "\n"
+	if (contents.length > 0) {
 		
-		for (var i = 0; i < children.length; i++)
-			text += stringify(children[i], tabs + "\t")
-			
+		for (var i = 0; i < contents.length; i++) {
+			var node = contents[i]
+			if (node.nodeType === 3) {
+				var value = $(node).text()
+				if (value)
+					text += "\n" + tabs + value + "\n"
+			}
+			else {
+				text += "\n" + stringify(contents[i], tabs + "\t")
+			}
+		}
+		
 		text += tabs + '</' + tag + '>\n'
 	}
 	else {
 	
-		text += " " + $el.html() + ' </' + tag + '>\n'
+		text += '</' + tag + '>\n'	
 	}
 	
 	return text
