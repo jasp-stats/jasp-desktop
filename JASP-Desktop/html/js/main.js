@@ -1,4 +1,6 @@
 
+"use strict"
+
 $(document).ready(function() {
 
     var analyses = []
@@ -119,3 +121,70 @@ $(document).ready(function() {
     $("body").click(window.unselectByClickingBody)
 
 })
+
+var stringify = function(element, tabs) {
+
+	tabs = tabs || ""
+
+	var text = ""
+	var $el = $(element)
+	
+	var tag = $el.prop("tagName").toLowerCase()
+	
+	var attrs = ""
+	var style = ""
+	
+	var css = $el.css( [ "border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align" ] )
+
+	if (tag === "td" || tag === "th") {
+	
+		if (css["border-top-width"])
+			style += "border-width : " + css["border-top-width"] + " " + css["border-right-width"] + " " + css["border-bottom-width"] + " " + css["border-left-width"] + "; "
+		if (css["border-color"])
+			style += "border-color : " + css["border-color"] + "; "
+		if (css["border-style"])
+			style += "border-style : " + css["border-style"] + "; "
+		if (css['text-align'])
+			style += "text-align : " + css['text-align'] + "; "
+		if (css['padding'])
+			style += "padding : " + css['padding'] + "; "
+		if ($el.prop("rowspan") && $el.prop("rowspan") != 1)
+			attrs += 'rowspan="' + $el.prop("rowspan") + '" '
+		if ($el.prop("colspan") && $el.prop("colspan") != 1)
+			attrs += 'colspan="' + $el.prop("colspan") + '" '
+	}
+
+	if (tag === "table" && css['border-collapse'])
+		style += "border-collapse : " + css['border-collapse'] + "; "
+	
+	if (style)
+		text = tabs + '<' + tag + ' style="' + style + '" ' + attrs + '>'
+	else
+		text = tabs + '<' + tag + ' ' + attrs + '>'
+	
+	var children = $el.children()
+
+	if (children.length > 0) {
+	
+		text += "\n"
+		
+		for (var i = 0; i < children.length; i++)
+			text += stringify(children[i], tabs + "\t")
+			
+		text += tabs + '</' + tag + '>\n'
+	}
+	else {
+	
+		text += " " + $el.html() + ' </' + tag + '>\n'
+	}
+	
+	return text
+}
+
+var pushToClipboard = function(element) {
+
+	var $el = $(element)
+	
+	jasp.pushToClipboard(stringify($el, "\t\t"))
+
+}

@@ -59,11 +59,13 @@ private:
 signals:
 	void analysisSelected(int id);
 	void analysisUnselected();
+	void pushToClipboard(QString data);
 
 private slots:
 
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
+	void pushToClipboardHandler(QString data);
 
     void tabChanged(int index);
 	void dataSetSelected(const QString &filename);

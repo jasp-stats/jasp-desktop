@@ -39,5 +39,7 @@
         <file>css/theme-jasp.css</file>
         <file>js/displaydefs.js</file>
         <file>js/tables.js</file>
+        <file>css/images/loading.gif</file>
+        <file>css/images/copy.png</file>
     </qresource>
 </RCC>

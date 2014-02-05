@@ -296,4 +296,6 @@ OTHER_FILES += \
     resources/icons/variable-scale-trans.png \
     resources/icons/variable-nominal-trans.png \
     resources/icons/variable-ordinal-trans.png \
-    resources/icons/analysis-ttest.png
+    resources/icons/analysis-ttest.png \
+    html/css/images/loading.gif \
+    html/css/images/copy.png

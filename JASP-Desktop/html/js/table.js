@@ -217,8 +217,26 @@ $.widget("jasp.table", {
 		}
 
         html += '</table>'
+        
+        html += '<div class="toolbar" style="position: absolute ; left:-100px ; top:-100px ;"><div class="copy"></div><div class="loading"></div></div>'
 
 		this.element.html(html)
+		
+		var $table = this.element.children("table")
+		var $toolbar = this.element.children("div.toolbar")
+		var $copy = $toolbar.find("div.copy")
+		
+		$copy.click(function() {
+			pushToClipboard($table)
+		})
+		
+		setTimeout(function() {
+		
+			var left = $table.offset().left + $table.width() - $toolbar.width()
+			var top  = $table.offset().top
+
+			$toolbar.offset( { top : top, left : left } )
+		}, 0)
 		
 	},
 	_destroy: function () {

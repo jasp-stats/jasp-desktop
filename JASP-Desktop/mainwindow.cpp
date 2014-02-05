@@ -25,6 +25,7 @@
 #include <QWebFrame>
 #include <QFile>
 #include <QToolTip>
+#include <QClipboard>
 
 #include <QStringBuilder>
 
@@ -102,6 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
+	connect(this, SIGNAL(pushToClipboard(QString)), this, SLOT(pushToClipboardHandler(QString)));
 
 	_buttonPanel = new QWidget(this);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
@@ -323,4 +325,25 @@ void MainWindow::analysisRemoved()
 	ui->stackedLHS->setCurrentWidget(ui->pageData);
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
 	_buttonPanel->hide();
+}
+
+void MainWindow::pushToClipboardHandler(QString data)
+{
+	QString toClipboard;
+	toClipboard += "<html>\n"
+			"	<head>\n"
+			"		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
+			"	</head>\n"
+			"	<body>\n";
+	toClipboard += data;
+	toClipboard += "	</body>\n"
+			"</html>";
+
+	QMimeData *mimeData = new QMimeData();
+	mimeData->setData("text/html", toClipboard.toUtf8());
+
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->setMimeData(mimeData, QClipboard::Clipboard);
+
+	//qDebug() << clipboard->mimeData(QClipboard::Clipboard)->data("text/html");
 }

@@ -44,7 +44,7 @@ thead tr:first-child th {
 	padding: 6px 10px ;
 	font-style: bold ;
 	text-align: left ;
-	padding-left: 0;
+	padding-left: 0 ;
 }
 
 thead th {
@@ -135,6 +135,31 @@ svg > text
 	background-color: white ;
 }
 
+div.toolbar
+{
+	padding-right : 4px ;
+	padding-top   : 4px ;
+}
+
+div.copy
+{
+	width: 16px ;
+	height: 16px ;
+	background : url(images/copy.png) no-repeat;
+	background-size : 100% ;
+	cursor : pointer ;
+	display: inline-block ;
+}
+
+div.loading
+{
+	width: 16px ;
+	height: 16px ;
+	/* background : url(images/loading.gif) no-repeat; */
+	background-size : 100% ;
+	display: inline-block ;
+	margin-left : 6px ;
+}
 
 /*div > svg
 {
