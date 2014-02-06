@@ -165,7 +165,7 @@ QTabBar::tab:first:selected {
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="pageOptions">
+              <widget class="QWidget" name="pageOptionsWeb">
                <layout class="QGridLayout" name="gridLayout_2">
                 <property name="leftMargin">
                  <number>0</number>
@@ -214,7 +214,7 @@ QTabBar::tab:first:selected {
                 </item>
                </layout>
               </widget>
-              <widget class="QWidget" name="pageOptions2">
+              <widget class="QWidget" name="pageOptions">
                <layout class="QGridLayout" name="gridLayout_7">
                 <property name="leftMargin">
                  <number>0</number>

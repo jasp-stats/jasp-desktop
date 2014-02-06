@@ -105,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
 	connect(this, SIGNAL(pushToClipboard(QString)), this, SLOT(pushToClipboardHandler(QString)));
 
-	_buttonPanel = new QWidget(this);
+	_buttonPanel = new QWidget(ui->pageOptions);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
 	_buttonPanelLayout->setSpacing(6);
 	_buttonPanelLayout->setContentsMargins(0, 12, 24, 0);
@@ -222,7 +222,7 @@ void MainWindow::showForm(Analysis *analysis)
 
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);
-		ui->stackedLHS->setCurrentWidget(ui->pageOptions2);
+		ui->stackedLHS->setCurrentWidget(ui->pageOptions);
 
 		_buttonPanel->raise();
 		_buttonPanel->show();
@@ -307,9 +307,7 @@ void MainWindow::repositionButtonPanel()
 	int overallWidth = ui->splitter->sizes().at(0);
 	int panelWidth = _buttonPanel->width();
 
-	QPoint pos = ui->splitter->mapTo(this, QPoint());
-
-	_buttonPanel->move(overallWidth - panelWidth, pos.y());
+	_buttonPanel->move(overallWidth - panelWidth, 0);
 	_buttonPanel->raise();
 }
 
