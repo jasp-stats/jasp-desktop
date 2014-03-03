@@ -20,8 +20,12 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 	for (pair in options$pairs)
 	{
-		pair[pair == ""] <- "..."	
-		cases[[length(cases)+1]] <- paste(pair[1], "-", pair[2])
+		if (pair[[1]] == "")
+			pair[[1]] <- "..."
+		if (pair[[2]] == "")
+			pair[[2]] <- "..."
+			
+		cases[[length(cases)+1]] <- paste(pair[[1]], "-", pair[[2]])
 	}
 
 	ttest[["cases"]] <- cases
@@ -54,8 +58,8 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		{
 			result <- try (silent = TRUE, expr = {
 				
-				c1 <- dataset[[pair[1]]]
-				c2 <- dataset[[pair[2]]]
+				c1 <- dataset[[ pair[[1]] ]]
+				c2 <- dataset[[ pair[[2]] ]]
 				
 				ci <- options$confidenceIntervalInterval
 				
@@ -127,10 +131,14 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 			
 		for (pair in options$pairs)
 		{
-			pair[pair == ""] <- "..."
+			if (pair[[1]] == "")
+				pair[[1]] <- "..."
+			if (pair[[2]] == "")
+				pair[[2]] <- "..."
+
 			for(i in 1:2){
-				if(is.na(match(pair[i],cases))){
-					cases[[length(cases)+1]] <- pair[i]
+				if(is.na(match(pair[[i]],cases))){
+					cases[[length(cases)+1]] <- pair[[i]]
 				}			
 			}
 		}
@@ -156,9 +164,9 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				for (i in 1:2){
 					result <- try (silent = TRUE, expr = {
 						
-						n <- .clean(as.numeric(length(dataset[[pair[i]]])))
-						m <- .clean(as.numeric(mean(dataset[[pair[i]]], na.rm = TRUE)))
-						std <- .clean(as.numeric(sd(dataset[[pair[i]]], na.rm = TRUE)))
+						n <- .clean(as.numeric(length(dataset[[ pair[[i]] ]])))
+						m <- .clean(as.numeric(mean(dataset[[ pair[[i]] ]], na.rm = TRUE)))
+						std <- .clean(as.numeric(sd(dataset[[ pair[[i]] ]], na.rm = TRUE)))
 						if(is.numeric(std)){
 							se <- .clean(as.numeric(std/sqrt(n)))}
 						else
@@ -171,9 +179,9 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 						result <- list(N="", mean="", sd="", SE="")
 					}
 					
-					if(is.na(match(pair[i],variables))){
+					if(is.na(match(pair[[i]],variables))){
 						descriptives.results[[length(descriptives.results)+1]] <- result
-						variables <- c(variables,pair[i])
+						variables <- c(variables,pair[[i]])
 					}				
 				}
 			}
