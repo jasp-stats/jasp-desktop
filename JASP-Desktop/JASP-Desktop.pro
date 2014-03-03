@@ -92,8 +92,7 @@ SOURCES += main.cpp\
     ribbons/ribbonanalysis.cpp \
     ribbons/ribbonhome.cpp \
     analysisforms/semsimpleform.cpp \
-    widgets/boundtextedit.cpp \
-    maintabbar.cpp
+	widgets/boundtextedit.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -163,8 +162,7 @@ HEADERS  += \
     ribbons/ribbonanalysis.h \
     ribbons/ribbonhome.h \
     analysisforms/semsimpleform.h \
-    widgets/boundtextedit.h \
-    maintabbar.h
+	widgets/boundtextedit.h
 
 FORMS    += \
     backstageform.ui \
