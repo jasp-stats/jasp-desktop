@@ -2,7 +2,8 @@ $.widget("jasp.frequencies", {
 
     options: {
         stats : null,
-        tables : null
+        tables : null,
+        status : "waiting"
     },
     _create: function () {
     
@@ -39,7 +40,8 @@ $.widget("jasp.frequencies", {
 				cases : this.options.stats.cases,
                 schema : this.options.stats.schema,
                 data : this.options.stats.data,
-                footnotes: this.options.stats.footnotes
+                footnotes: this.options.stats.footnotes,
+                status : this.options.status
             })
 				
 			this.statistics.show()
@@ -67,6 +69,9 @@ $.widget("jasp.frequencies", {
                     }
                     tableData["formats"] = formats
                 }
+                
+                if ( ! tableData.status)
+                	tableData.status = this.options.status
 
 				var table = $('<div class="jasp-frequencies-tables-table"></div>')
 

@@ -7,7 +7,8 @@ $.widget("jasp.table", {
 		cases: [ ],
         data: null,
         casesAcrossColumns : false,
-        formats : null
+        formats : null,
+        status : "waiting"
 	},
 	_create: function () {
 		this.element.addClass("jasp-table")
@@ -69,7 +70,7 @@ $.widget("jasp.table", {
         
 				html += '<thead>'
 					html += '<tr>'
-                        html += '<th colspan="' + (1 + this.options.schema.fields.length) + '">' + this.options.title + '</th>'
+                        html += '<th colspan="' + (1 + this.options.schema.fields.length) + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
 					html += '</tr>'
 
             if (this.options.subtitle) {
@@ -118,6 +119,11 @@ $.widget("jasp.table", {
                         html += '<td>' + value + '</td>'
                     }, this)
 				}
+				else {
+                    _.each(this.options.schema.fields, function(field) {
+                    	html += '<td>.</td>'
+                    }, this)				
+				}
 					
 					html += '</tr>'
             }
@@ -144,7 +150,7 @@ $.widget("jasp.table", {
         {
 				html += '<thead>'
 					html += '<tr>'
-                        html += '<th colspan="' + (1 + this.options.cases.length) + '">' + this.options.title + '</th>'
+                        html += '<th colspan="' + (1 + this.options.cases.length) + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
 					html += '</tr>'
 					
 			if (this.options.subtitle) {
@@ -217,26 +223,27 @@ $.widget("jasp.table", {
 		}
 
         html += '</table>'
-        
-        html += '<div class="toolbar" style="position: absolute ; left:-100px ; top:-100px ;"><div class="copy"></div><div class="loading"></div></div>'
 
 		this.element.html(html)
 		
 		var $table = this.element.children("table")
-		var $toolbar = this.element.children("div.toolbar")
+		var $toolbar = this.element.find("div.toolbar")
 		var $copy = $toolbar.find("div.copy")
+		var $status = $toolbar.find("div.status")
 		
-		$copy.click(function() {
-			pushToClipboard($table)
+		$table.mouseenter(function(event){
+			$copy.css("visibility", "visible")
+		})
+		$table.mouseleave(function(event) {
+			$copy.css("visibility", "hidden")
 		})
 		
-		setTimeout(function() {
+		$copy.click(function(event) {
+			pushToClipboard($table)
+			event.preventDefault()
+		})
 		
-			var left = $table.offset().left + $table.width() - $toolbar.width()
-			var top  = $table.offset().top
-
-			$toolbar.offset( { top : top, left : left } )
-		}, 0)
+		$status.addClass(this.options.status)
 		
 	},
 	_destroy: function () {

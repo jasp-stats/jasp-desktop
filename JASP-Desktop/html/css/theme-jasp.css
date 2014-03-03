@@ -137,8 +137,8 @@ svg > text
 
 div.toolbar
 {
-	padding-right : 4px ;
-	padding-top   : 4px ;
+	padding-left : 1em ;
+	float : right ;
 }
 
 div.copy
@@ -151,14 +151,23 @@ div.copy
 	display: inline-block ;
 }
 
-div.loading
+div.status
 {
 	width: 16px ;
 	height: 16px ;
-	/* background : url(images/loading.gif) no-repeat; */
 	background-size : 100% ;
 	display: inline-block ;
 	margin-left : 6px ;
+}
+
+div.status.running
+{
+	background : url(images/running.gif) no-repeat ;
+}
+
+div.status.waiting
+{
+	background : url(images/waiting.gif) no-repeat ;
 }
 
 /*div > svg

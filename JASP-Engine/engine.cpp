@@ -162,7 +162,26 @@ void Engine::send(Analysis *analysis)
 	results["id"] = analysis->id();
 	results["name"] = analysis->name();
 	results["results"] = analysis->results();
-	results["complete"] = analysis->status() == Analysis::Complete;
+
+	string status;
+
+	switch (analysis->status())
+	{
+	case Analysis::Inited:
+		status = "inited";
+		break;
+	case Analysis::Running:
+		status = "running";
+		break;
+	case Analysis::Complete:
+		status = "complete";
+		break;
+	default:
+		status = "error";
+		break;
+	}
+
+	results["status"] = status;
 
 	string message = results.toStyledString();
 

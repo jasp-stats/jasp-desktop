@@ -69,6 +69,6 @@ string Descriptives::js()
 {
 	return "{"
 			"    depends : ['frequencies'], "
-			"    render : function(element, results) { element.frequencies( results ) } "
+			"    render : function(element, results, status) { element.frequencies( { stats : results.stats, tables : results.tables, status : status } ) } "
 			"}";
 }

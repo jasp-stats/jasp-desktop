@@ -29,16 +29,8 @@ Options *TTestPairedSamples::createDefaultOptions()
 	options->add("descriptives", new OptionBoolean());
 	options->add("effectSize", new OptionBoolean());
 
-	vector<string> missingValues;
-	missingValues.push_back("excludeAnalysisByAnalysis");
-	missingValues.push_back("excludeListwise");
-
-	options->add("missingValues", new OptionList(missingValues));
-
-	vector<string> tails;
-	tails.push_back("twoTailed");
-	tails.push_back("oneTailedGreaterThan");
-	tails.push_back("oneTailedLessThan");
+	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
+	options->add("tails", new OptionList(list("twoTailed", "oneTailedGreaterThan", "oneTailedLessThan")));
 
 	return options;
 }

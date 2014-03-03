@@ -1,7 +1,8 @@
 $.widget("jasp.tables", {
 
     options: {
-        tables : [ ]
+        tables : [ ],
+        status : "waiting"
     },
     _create: function () {
 
@@ -30,8 +31,12 @@ $.widget("jasp.tables", {
         {
             for (var i = 0; i < this.options.tables.length; i++)
             {
+            	var options = this.options.tables[i]
+            	if ( ! options["status"])
+            		options["status"] = this.options.status
+            
                 var table = $('<div class="jasp-tables-table"></div>')
-                table.table(this.options.tables[i])
+                table.table(options)
                 this.tables.append(table)
             }
 

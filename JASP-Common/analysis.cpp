@@ -57,7 +57,7 @@ string Analysis::js()
 {
 	return "{"
 			"    depends : [ 'tables' ],\n"
-			"    render  : function(element, results)\n"
+			"    render  : function(element, results, status)\n"
 			"    {\n"
 			"        var tables = [ ]\n"
 			"        _.each(results, function(result) {\n"
@@ -67,7 +67,7 @@ string Analysis::js()
 			"            else\n"
 			"                tables.push(result)\n"
 			"        })\n"
-			"        element.tables( { tables : tables } )\n"
+			"        element.tables( { tables : tables, status : status } )\n"
 			"    }\n"
 			"}\n";
 }
@@ -90,6 +90,32 @@ Json::Value Analysis::asJSON()
 	analysisAsJson["id"] = _id;
 	analysisAsJson["name"] = _name;
 	analysisAsJson["results"] = _results;
+
+	string status;
+
+	switch (_status)
+	{
+	case Analysis::Empty:
+		status = "empty";
+		break;
+	case Analysis::Inited:
+		status = "waiting";
+		break;
+	case Analysis::Running:
+		status = "running";
+		break;
+	case Analysis::Complete:
+		status = "complete";
+		break;
+	case Analysis::Aborted:
+		status = "aborted";
+		break;
+	default:
+		status = "error";
+		break;
+	}
+
+	analysisAsJson["status"] = status;
 
 	return analysisAsJson;
 }

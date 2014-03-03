@@ -50,10 +50,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->splitter->setSizes(sizes);
 
     ui->tabBar->setFocusPolicy(Qt::NoFocus);
-    ui->tabBar->addTab(QString("File"));
-	ui->tabBar->addTab(QString("Home"));
-	ui->tabBar->addTab(QString("Common"));
-	ui->tabBar->addTab(QString("SEM"));
+	ui->tabBar->addTab("File");
+	ui->tabBar->addTab("Home");
+	ui->tabBar->addTab("Common");
+	ui->tabBar->addTab("SEM");
 
 	QFile indexPageResource(QString(":/core/analyses.html"));
     indexPageResource.open(QFile::ReadOnly);
@@ -257,16 +257,23 @@ void MainWindow::tabChanged(int index)
 
 void MainWindow::dataSetSelected(const QString &filename)
 {
-	_tableModel->clearDataSet();
-
 	if (_dataSet != NULL)
 	{
-		_loader.free(_dataSet);
-		_dataSet = NULL;
+		// begin new instance
+		QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(filename));
+	}
+	else
+	{
+		/*if (_dataSet != NULL)
+		{
+			_loader.free(_dataSet);
+			_dataSet = NULL;
+		}*/
+
+		_loader.load(filename);
+		_alert->show();
 	}
 
-	_loader.load(filename);
-	_alert->show();
 	ui->tabBar->setCurrentIndex(1);
 }
 

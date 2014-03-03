@@ -79,6 +79,7 @@ $(document).ready(function() {
 
         var id = "id-" + analysis.id
         var results = analysis.results
+        var status = analysis.status
 
         var item = $("#" + id)
 
@@ -112,7 +113,7 @@ $(document).ready(function() {
 
         item = newItem
 
-        renderer.render(item, results)
+        renderer.render(item, results, status)
         
         if (selectedAnalysisId == analysis.id)
         	window.scrollIntoView(item);
@@ -129,6 +130,9 @@ var stringify = function(element, tabs) {
 	var text = ""
 	var $el = $(element)
 	
+	if ($el.hasClass("do-not-copy"))
+		return text
+
 	var tag = $el.prop("tagName").toLowerCase()
 	
 	var attrs = ""

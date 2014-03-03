@@ -67,8 +67,10 @@ EngineSync::~EngineSync()
 
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 {
+#ifndef QT_NO_DEBUG
 	std::cout << "send " << analysis->id() << " to process " << processNo << "\n";
 	std::cout.flush();
+#endif
 
 	bool init;
 
@@ -96,8 +98,10 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 
 	_channels[processNo]->send(str);
 
+#ifndef QT_NO_DEBUG
 	cout << str << "\n";
 	cout.flush();
+#endif
 
 }
 
@@ -126,21 +130,25 @@ void EngineSync::process()
 			int id = json.get("id", -1).asInt();
 			//bool init = json.get("perform", "init").asString() == "init";
 			Json::Value results = json.get("results", Json::nullValue);
-			bool complete = json.get("complete", false).asBool();
-
-			analysis->setResults(results);
+			string status = json.get("status", "error").asString();
 
 			if (analysis->status() == Analysis::Initing)
 			{
 				analysis->setStatus(Analysis::Inited);
+				analysis->setResults(results);
 				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
-			else if (complete)
+			else if (status == "complete")
 			{
 				analysis->setStatus(Analysis::Complete);
+				analysis->setResults(results);
 				_analysesInProgress[i] = NULL;
 				sendMessages();
+			}
+			else
+			{
+				analysis->setResults(results);
 			}
 		}
 
@@ -149,8 +157,10 @@ void EngineSync::process()
 
 void EngineSync::sendMessages()
 {
+#ifndef QT_NO_DEBUG
 	std::cout << "send messages\n";
 	std::cout.flush();
+#endif
 
 	for (int i = 0; i < _analysesInProgress.size(); i++)
 	{
