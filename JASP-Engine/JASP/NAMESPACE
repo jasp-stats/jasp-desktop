@@ -1,3 +1,2 @@
 exportPattern("^[[:alpha:]]+")
 import(lavaan)
-import(plyr)
