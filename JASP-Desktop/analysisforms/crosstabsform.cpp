@@ -10,7 +10,7 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 	ui->listAvailableFields->setModel(&_availableFields);
 
 	_rowsModel = new ListModelVariablesAssigned();
-	_rowsModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	_rowsModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	_rowsModel->setSource(&_availableFields);
 	ui->rows->setModel(_rowsModel);
 
