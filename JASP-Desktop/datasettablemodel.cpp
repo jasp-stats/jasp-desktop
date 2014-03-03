@@ -137,7 +137,7 @@ bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value,
 
 Qt::ItemFlags DataSetTableModel::flags(const QModelIndex &index) const
 {
-	return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
+	return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 }
 
 void DataSetTableModel::setColumnType(int columnIndex, Column::ColumnType newColumnType)
