@@ -37,9 +37,12 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 
 		shared_memory_object::remove("JASP_IPC");
 		_channels.push_back(new IPCChannel("JASP_IPC", 0));
-		//_channels.push_back(new IPCChannel("JASP_IPC", 1));
-		//_channels.push_back(new IPCChannel("JASP_IPC", 2));
-		//_channels.push_back(new IPCChannel("JASP_IPC", 3));
+
+#ifdef QT_NO_DEBUG
+		_channels.push_back(new IPCChannel("JASP_IPC", 1));
+		_channels.push_back(new IPCChannel("JASP_IPC", 2));
+		_channels.push_back(new IPCChannel("JASP_IPC", 3));
+#endif
 
     }
     catch (interprocess_exception e)
@@ -119,15 +122,17 @@ void EngineSync::process()
 
 		if (channel->receive(data))
 		{
+#ifndef QT_NO_DEBUG
 			std::cout << "message received\n";
             std::cout << data << "\n";
 			std::cout.flush();
+#endif
 
 			Json::Reader reader;
 			Json::Value json;
 			reader.parse(data, json);
 
-			int id = json.get("id", -1).asInt();
+			//int id = json.get("id", -1).asInt();
 			//bool init = json.get("perform", "init").asString() == "init";
 			Json::Value results = json.get("results", Json::nullValue);
 			string status = json.get("status", "error").asString();
@@ -192,7 +197,11 @@ void EngineSync::sendMessages()
 		}
 		else if (analysis->status() == Analysis::Inited)
 		{
-            for (int i = 0; i < _analysesInProgress.size(); i++) // don't perform 'runs' on process 0, only inits.
+#ifdef QT_NO_DEBUG
+			for (int i = 1; i < _analysesInProgress.size(); i++) // don't perform 'runs' on process 0, only inits.
+#else
+			for (int i = 0; i < _analysesInProgress.size(); i++)
+#endif
 			{
 				if (_analysesInProgress[i] == NULL)
 				{
