@@ -15,16 +15,45 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	correlations <- list()
 	
 	correlations[["title"]] <- "Correlation"
-	correlations[["cases"]] <- c("line1", "line2", "line3")
+	correlations[["cases"]] <- options$variables
 	
-	fields <- list(
-		list(id="col1", type="number", format="sf:4"),
-		list(id="col2", type="number", format="sf:4"),
-		list(id="col3", type="number", format="dp:4;p:.001"))
+	fields <- list()
+	rows <- list()
+	v.c <- length(options$variables)
+	
+	if (v.c > 0) {
+	
+		if (perform == "run") {
+		
+			reduced.dataset <- subset(dataset, select=unlist(options$variables))
+			cor.table <- cor(reduced.dataset)
+			
+		} else {
+		
+			cor.table <- matrix(data=".", nrow=v.c, ncol=v.c)
+		}
+	
+		for (i in 1:v.c)
+		{
+			variable.name <- options$variables[[i]]
+			fields[[i]] <- list(id=variable.name, type="number", format="dp:3")
+						
+			cells <- ifelse(c(rep(TRUE, v.c - i + 1), rep(FALSE, i - 1)), TRUE, FALSE)
+			row   <- as.list(cor.table[i,])
+			#row[ ! cells] <- ""
+			row[ is.na(row) ] <- "NaN"
+
+			
+			names(row) <- options$variables
+			rows[[i]] <- row
+		}
+		
+	}
 		
 	schema <- list(fields=fields)
 	
 	correlations[["schema"]] <- schema
+	correlations[["data"]] <- rows
 	
 	results[["correlations"]] <- correlations
 
