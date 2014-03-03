@@ -56,6 +56,35 @@ callback <- function(results=NULL) {
 
 }
 
+.cat <- function(object) {
+	
+	cat(RJSONIO::toJSON(object))
+}
+
+.data.frame.to.row.list <- function(df, discard.column.names=FALSE) {
+
+	if (dim(df)[1] == 0 || dim(df)[2] == 0)
+		return(list())
+		
+	column.names <- names(df)
+	rows <- list()
+
+	for (i in 1:dim(df)[1]) {
+	
+		row <- list()
+		
+		for (j in 1:length(column.names))
+			row[[j]] <- df[i,j]
+		
+		if ( ! discard.column.names)
+			names(row) <- column.names
+		
+		rows[[i]] <- row
+	}
+
+	rows
+}
+
 .clean <- function(value) {
 
 	if (is.null(value))
