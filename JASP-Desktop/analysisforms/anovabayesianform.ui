@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>696</width>
-    <height>640</height>
+    <height>670</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_6">
+  <layout class="QGridLayout" name="gridLayout_8">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -29,16 +29,6 @@
    <property name="verticalSpacing">
     <number>0</number>
    </property>
-   <item row="0" column="1">
-    <widget class="QWidget" name="widget_4" native="true">
-     <property name="minimumSize">
-      <size>
-       <width>80</width>
-       <height>0</height>
-      </size>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QWidget" name="widget_3" native="true">
      <property name="maximumSize">
@@ -319,6 +309,16 @@
      </layout>
     </widget>
    </item>
+   <item row="0" column="1">
+    <widget class="QWidget" name="widget_4" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>80</width>
+       <height>0</height>
+      </size>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="0" colspan="2">
     <widget class="QWidget" name="widget_10" native="true">
      <property name="sizePolicy">
@@ -354,6 +354,45 @@
      </layout>
     </widget>
    </item>
+   <item row="2" column="0">
+    <widget class="QWidget" name="widget_11" native="true">
+     <layout class="QGridLayout" name="gridLayout_6">
+      <item row="0" column="0">
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>Output</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="BoundCheckBox" name="outputPosterior">
+           <property name="text">
+            <string>Posterior</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="outputEffects">
+           <property name="text">
+            <string>Effects</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="BoundCheckBox" name="outputNull">
+           <property name="text">
+            <string>Null</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -382,6 +421,11 @@
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

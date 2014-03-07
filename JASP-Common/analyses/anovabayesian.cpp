@@ -27,5 +27,9 @@ Options *AnovaBayesian::createDefaultOptions()
 
 	options->add("nuisanceTerms", new OptionFields());
 
+	options->add("outputPosterior", new OptionBoolean());
+	options->add("outputEffects", new OptionBoolean());
+	options->add("outputNull", new OptionBoolean());
+
 	return options;
 }
