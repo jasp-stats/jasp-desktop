@@ -16,9 +16,6 @@ Option *OptionsRow::clone() const
 
 	BOOST_FOREACH(const string& name, this->names)
 	{
-		if (name == "variable")
-			continue;
-
 		Option *oc = get(name)->clone();
 		row->add(name, oc);
 	}
