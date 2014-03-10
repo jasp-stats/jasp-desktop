@@ -120,7 +120,7 @@ QTabBar::tab:first:selected {
           <property name="styleSheet">
            <string notr="true">#ribbon {
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgb(255, 255, 255), stop:0.5 rgb(240, 240, 240));
-	border-bottom: 1.2px solid #C4C4C4 ;
+	/*border-bottom: 1.2px solid #C4C4C4 ;*/
 }</string>
           </property>
           <widget class="RibbonAnalysis" name="ribbonAnalysis"/>
@@ -144,6 +144,12 @@ QTabBar::tab:first:selected {
            </property>
            <item row="0" column="0">
             <widget class="QSplitter" name="splitter">
+             <property name="styleSheet">
+              <string notr="true">QSplitter::handle {
+	border-left: 1px solid #929292 ;
+	border-right: 1px solid #929292 ;
+}</string>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -176,12 +182,17 @@ QTabBar::tab:first:selected {
 	padding: 0.3em ;
 	border-right: 1px solid #929292 ;
 	border-bottom: 1px solid #929292 ;
-	border-left: none;
+	border-left: none ;
 	border-top: none ;
+}
+
+QHeaderView::section::last {
+	border-right: none ;
 }
 
 QTableView {
 	selection-background-color: rgb(60, 170, 231) ;
+	border-top: 1px solid #929292 ;
 	/*selection-color: black ;*/
 }
 
@@ -191,7 +202,15 @@ QTableView::item
 	border-bottom: 1px solid #bcb3b6 ;
 	border-left: none ;
 	border-top: none ;
+}
+
+QTableView::item::last
+{
+	border-right: none ;
 }</string>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::NoFrame</enum>
                   </property>
                   <property name="showGrid">
                    <bool>false</bool>
@@ -310,8 +329,13 @@ QTableView::item
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="styleSheet">
+               <string notr="true">QWidget {
+	border-top: 1px solid #919191 ;
+}</string>
+              </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::NoFrame</enum>
               </property>
               <property name="frameShadow">
                <enum>QFrame::Raised</enum>
