@@ -85,7 +85,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QFrame" name="frame_4">
+           <widget class="QFrame" name="leftPanel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -101,22 +101,16 @@
             <property name="styleSheet">
              <string notr="true">QFrame {
 	margin: 0;
-
 	background-color: #f4f6f7;
 }
 
 QPushButton {
 	text-align: left ;
+}
+
+QWidget#leftPanel {
+	border-right: 1px solid #A3A4A5 ;
 }</string>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::Panel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <property name="lineWidth">
-             <number>1</number>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <property name="leftMargin">
@@ -146,7 +140,7 @@ QPushButton {
                 <string>Save</string>
                </property>
                <property name="icon">
-                <iconset resource="icons.qrc">
+                <iconset resource="resources/icons.qrc">
                  <normaloff>:/icons/document-save.png</normaloff>:/icons/document-save.png</iconset>
                </property>
                <property name="iconSize">
@@ -172,7 +166,7 @@ QPushButton {
                 <string>Save As</string>
                </property>
                <property name="icon">
-                <iconset resource="icons.qrc">
+                <iconset resource="resources/icons.qrc">
                  <normaloff>:/icons/document-save-as.png</normaloff>:/icons/document-save-as.png</iconset>
                </property>
                <property name="iconSize">
@@ -195,7 +189,7 @@ QPushButton {
                 <string>Open</string>
                </property>
                <property name="icon">
-                <iconset resource="icons.qrc">
+                <iconset resource="resources/icons.qrc">
                  <normaloff>:/icons/document-open.png</normaloff>:/icons/document-open.png</iconset>
                </property>
                <property name="iconSize">
@@ -218,7 +212,7 @@ QPushButton {
                 <string>Close</string>
                </property>
                <property name="icon">
-                <iconset resource="icons.qrc">
+                <iconset resource="resources/icons.qrc">
                  <normaloff>:/icons/dialog-close.png</normaloff>:/icons/dialog-close.png</iconset>
                </property>
                <property name="iconSize">
@@ -348,7 +342,7 @@ QPushButton {
                 <string>Options</string>
                </property>
                <property name="icon">
-                <iconset resource="icons.qrc">
+                <iconset resource="resources/icons.qrc">
                  <normaloff>:/icons/preferences-system-session-services.png</normaloff>:/icons/preferences-system-session-services.png</iconset>
                </property>
                <property name="iconSize">
@@ -371,7 +365,7 @@ QPushButton {
                 <string>Exit</string>
                </property>
                <property name="icon">
-                <iconset resource="icons.qrc">
+                <iconset resource="resources/icons.qrc">
                  <normaloff>:/icons/application-exit.png</normaloff>:/icons/application-exit.png</iconset>
                </property>
                <property name="iconSize">
@@ -796,7 +790,7 @@ QPushButton {
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>83</width>
+                       <width>98</width>
                        <height>48</height>
                       </rect>
                      </property>
@@ -870,7 +864,7 @@ QPushButton {
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="icons.qrc"/>
+  <include location="resources/icons.qrc"/>
  </resources>
  <connections>
   <connection>
