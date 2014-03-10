@@ -51,7 +51,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
-	ui->tabBar->addTab("Home");
 	ui->tabBar->addTab("Common");
 	ui->tabBar->addTab("SEM");
 
@@ -66,7 +65,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->webViewOptions->setHtml(indexPage, QUrl("qrc:/core/"));
 
-	ui->ribbonHome->setEnabled(false);
 	ui->ribbonAnalysis->setEnabled(false);
 	ui->ribbonSEM->setEnabled(false);
 
@@ -283,7 +281,6 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 
 	_tableModel->setDataSet(dataSet);
 
-	ui->ribbonHome->setEnabled(true);
 	ui->ribbonAnalysis->setEnabled(true);
 	ui->ribbonSEM->setEnabled(true);
 

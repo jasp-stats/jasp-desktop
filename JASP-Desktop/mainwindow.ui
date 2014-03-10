@@ -340,12 +340,6 @@ QTabBar::tab:first:selected {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>RibbonHome</class>
-   <extends>QWidget</extends>
-   <header>ribbons/ribbonhome.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>MainTableView</class>
    <extends>QTableView</extends>
    <header>maintableview.h</header>
