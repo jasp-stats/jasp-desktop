@@ -5,8 +5,6 @@
 #include "widgets/listmodelvariablesassigned.h"
 #include "widgets/listmodelanovamodelnuisancefactors.h"
 
-#include "ui_posthoctestssub.h"
-
 AnovaForm::AnovaForm(QWidget *parent) :
 	AnalysisForm("AnovaForm", parent),
 	ui(new Ui::AnovaForm)
@@ -46,9 +44,7 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
 	_anovaModel = new ListModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
-	ui->modelTerms->hide();
 
-	ui->sumOfSquaresContainer->hide();
 	ui->sumOfSquares->addItem("Type I");
 	ui->sumOfSquares->addItem("Type II");
 	ui->sumOfSquares->addItem("Type III");
@@ -59,20 +55,13 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
 	termsChanged();
 
-	//ui->marginalMeansContainer->hide();
-
 	_contrastsModel = new TableModelVariablesOptions();
     ui->contrasts->setModel(_contrastsModel);
 
-    //ui->posthocSelection->hide();
-    //ui->varAssumed->hide();
-    //ui->varnotAssumed->hide();
-
-    ui->containerEMM->hide();
-    ui->containerDisplay->hide();
-    ui->containerSig->hide();
-
-    ui->containerFactors->hide();
+	ui->containerModel->hide();
+	ui->containerFactors->hide();
+	ui->containerOptions->hide();
+	ui->containerPostHocTests->hide();
 
     ui->ciAdjustment->addItem("LSD (none)");
     ui->ciAdjustment->addItem("Bonferroni");
@@ -97,7 +86,7 @@ void AnovaForm::factorsChanged()
 	_anovaModel->setVariables(factorsAvailable);
 	_contrastsModel->setVariables(factorsAvailable);
 
-    ui->postHocTestsSub->ui->postHocTests->setVariables(factorsAvailable);
+	ui->postHocTests->setVariables(factorsAvailable);
 }
 
 void AnovaForm::dependentChanged()

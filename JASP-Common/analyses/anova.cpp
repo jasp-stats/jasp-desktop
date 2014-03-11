@@ -30,47 +30,30 @@ Options *Anova::createDefaultOptions()
 
 	options->add("modelTerms", new OptionFields());
 
-	vector<string> sumOfSquares;
-	sumOfSquares.push_back("type1");
-	sumOfSquares.push_back("type2");
-	sumOfSquares.push_back("type3");
+	options->add("sumOfSquares", new OptionList(list("type1", "type2", "type3"), "type3"));
 
-	options->add("sumOfSquares", new OptionList(sumOfSquares, "type3"));
 
 	Options *contrastsTemplate = new Options();
 	contrastsTemplate->add("variable", new OptionField());
 
-	vector<string> contrastTypes;
-	contrastTypes.push_back("none");
-	contrastTypes.push_back("deviation");
-	contrastTypes.push_back("simple");
-	contrastTypes.push_back("difference");
-	contrastTypes.push_back("helmert");
-	contrastTypes.push_back("repeated");
-	contrastTypes.push_back("polynomial");
+	contrastsTemplate->add("contrast", new OptionList(list(
+		"none",
+		"deviation",
+		"simple",
+		"difference",
+		"helmert",
+		"repeated",
+		"polynomial")));
 
-	vector<string> refCategories;
-	refCategories.push_back("first");
-	refCategories.push_back("last");
+	contrastsTemplate->add("reference", new OptionList(list("first", "last")));
 
-	contrastsTemplate->add("contrast", new OptionList(contrastTypes));
-	contrastsTemplate->add("reference", new OptionList(refCategories));
 
 	options->add("contrasts", new OptionsTable(contrastsTemplate));
 	options->add("postHocTests", new OptionFields());
     options->add("marginalMeans", new OptionFields());
 
-    vector<string> ciAdjustment;
-    ciAdjustment.push_back("LSD (none)");
-    ciAdjustment.push_back("Bonferroni");
-
-    options->add("ciAdjustment", new OptionList(ciAdjustment, "LSD (none)"));
-
-    vector<string> controlCategory;
-    controlCategory.push_back("Last");
-    controlCategory.push_back("First");
-
-    options->add("controlCategory", new OptionList(controlCategory, "Last"));
+	options->add("ciAdjustment", new OptionList(list("LSD (none)", "Bonferroni")));
+	options->add("controlCategory", new OptionList(list("first", "last"), "Last"));
 	
 	return options;
 }
