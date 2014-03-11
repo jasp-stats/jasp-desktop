@@ -159,8 +159,10 @@ void TableModelVariablesOptions::setVariables(const QList<ColumnInfo> &variables
 	int i = 0;
 	while (i < _boundTo->size())
 	{
-		OptionField *option = dynamic_cast<OptionField *>(_boundTo->at(i));
-		string existingName = option->value()[0];
+		Options *row = _boundTo->at(i);
+		OptionField *variable = dynamic_cast<OptionField *>(row->get(0));
+
+		string existingName = variable->value()[0];
 
 		vector<string>::iterator itr = find(variableNames.begin(), variableNames.end(), existingName);
 
@@ -176,19 +178,20 @@ void TableModelVariablesOptions::setVariables(const QList<ColumnInfo> &variables
 
 		if (_boundTo->contains(variableName))
 		{
-			OptionField *option = dynamic_cast<OptionField *>(_boundTo->at(i));
-			string name = option->value()[0];
+			Options *row = _boundTo->at(i);
+			OptionField *variable = dynamic_cast<OptionField *>(row->get(0));
+			string name = variable->value()[0];
 
 			if (name == variableName)
 				continue;
 
-			Options *row = _boundTo->remove(variableName);
+			row = _boundTo->remove(variableName);
 			_boundTo->insert(i, row);
 		}
 		else
 		{
 			Options *row = dynamic_cast<Options *>(_boundTo->rowTemplate()->clone());
-			OptionField *variable = dynamic_cast<OptionField *>(row->get("variable"));
+			OptionField *variable = dynamic_cast<OptionField *>(row->get(0));
 			variable->setValue(variableName);
 			_boundTo->insert(i, row);
 		}
