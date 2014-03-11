@@ -2,6 +2,8 @@
 
 #include "boost/foreach.hpp"
 
+#include "optionfield.h"
+
 using namespace Json;
 using namespace std;
 

@@ -61,7 +61,6 @@ SOURCES += \
     ipcchannel.cpp \
     options/options.cpp \
     options/option.cpp \
-    options/optionsrow.cpp \
     options/optionstable.cpp \
     analyses/crosstabs.cpp \
     analyses/correlationpartial.cpp \
@@ -116,7 +115,6 @@ HEADERS +=\
     ipcchannel.h \
     options/options.h \
     options/option.h \
-    options/optionsrow.h \
     options/optionstable.h \
     analyses/crosstabs.h \
     analyses/correlationpartial.h \

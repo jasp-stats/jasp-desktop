@@ -4,6 +4,7 @@
 
 #include "options/optionstring.h"
 #include "options/optionlist.h"
+#include "options/optionfields.h"
 #include "column.h"
 
 

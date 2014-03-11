@@ -7,6 +7,7 @@
 #include "options/optionnumber.h"
 #include "options/optioninteger.h"
 #include "options/optionlist.h"
+#include "options/optionfields.h"
 
 Crosstabs::Crosstabs(int id)
 	: Analysis(id, "Crosstabs")

@@ -8,8 +8,6 @@
 #include "option.h"
 #include "options.h"
 
-#include "optionsrow.h"
-
 class OptionsTable : public Option
 {
 public:
