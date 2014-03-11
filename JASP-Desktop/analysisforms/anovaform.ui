@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>696</width>
-    <height>640</height>
+    <height>1585</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_6">
+  <layout class="QGridLayout" name="gridLayout_12">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -26,19 +26,6 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="verticalSpacing">
-    <number>0</number>
-   </property>
-   <item row="0" column="1">
-    <widget class="QWidget" name="widget_4" native="true">
-     <property name="minimumSize">
-      <size>
-       <width>80</width>
-       <height>0</height>
-      </size>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QWidget" name="widget_3" native="true">
      <property name="maximumSize">
@@ -388,6 +375,266 @@
      </layout>
     </widget>
    </item>
+   <item row="0" column="1">
+    <widget class="QWidget" name="widget_4" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>80</width>
+       <height>0</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QWidget" name="widget_13" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>1</number>
+      </property>
+      <item>
+       <widget class="ExpanderButton" name="expanderPosthoc">
+        <property name="text">
+         <string>Post Hoc Tests</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="PostHocTestsSub" name="postHocTestsSub" native="true">
+        <layout class="QGridLayout" name="gridLayout_9"/>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <widget class="QWidget" name="options" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>1</number>
+      </property>
+      <item>
+       <widget class="ExpanderButton" name="expanderOptions">
+        <property name="text">
+         <string>Options</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="BoundAssignWidget" name="marginalMeans" native="true"/>
+      </item>
+      <item>
+       <widget class="QWidget" name="containerEMM" native="true">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0" rowspan="2">
+          <spacer name="verticalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>33</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="checkBox_22">
+           <property name="text">
+            <string>Compare main effects</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Confidence interval adjustment:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="BoundComboBox" name="ciAdjustment"/>
+         </item>
+        </layout>
+        <zorder>verticalSpacer_6</zorder>
+        <zorder>checkBox_22</zorder>
+        <zorder>label_14</zorder>
+        <zorder>ciAdjustment</zorder>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="containerDisplay" native="true">
+        <layout class="QGridLayout" name="gridLayout_10">
+         <item row="4" column="1">
+          <widget class="QCheckBox" name="checkBox_27">
+           <property name="text">
+            <string>Lack of fit</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QCheckBox" name="checkBox_26">
+           <property name="text">
+            <string>Residual plot</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QCheckBox" name="checkBox_28">
+           <property name="text">
+            <string>General estimable function</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="checkBox_24">
+           <property name="text">
+            <string>Spread vs. level plot</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QCheckBox" name="checkBox_21">
+           <property name="text">
+            <string>Contrast coefficient matrix</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="checkBox_16">
+           <property name="text">
+            <string>Descriptive Statistics</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QCheckBox" name="checkBox_23">
+           <property name="text">
+            <string>Homogeneity tests</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Display</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QCheckBox" name="checkBox_19">
+           <property name="text">
+            <string>Parameter estimates</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QCheckBox" name="checkBox_18">
+           <property name="text">
+            <string>Observed Power</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="checkBox_17">
+           <property name="text">
+            <string>Estimates of effect size</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="containerSig" native="true">
+        <layout class="QGridLayout" name="gridLayout_11">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Significance Level:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="lineEdit">
+           <property name="text">
+            <string>.05</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QWidget" name="widget_14" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>1</number>
+      </property>
+      <item>
+       <widget class="ExpanderButton" name="expanderContrasts">
+        <property name="text">
+         <string>Contrasts</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="containerFactors" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>Factors:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="BoundTableView" name="contrasts"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="1" column="0" colspan="2">
     <widget class="QWidget" name="widget_10" native="true">
      <property name="sizePolicy">
@@ -396,8 +643,21 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="1" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="bottomMargin">
+       <number>1</number>
+      </property>
+      <item>
+       <widget class="ExpanderButton" name="expanderModel">
+        <property name="text">
+         <string>Model</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="AnovaModelWidget" name="modelTerms" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -413,14 +673,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderModel">
-        <property name="text">
-         <string>Model</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
+      <item>
        <widget class="QWidget" name="sumOfSquaresContainer" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="leftMargin">
@@ -459,6 +712,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>BoundAssignWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/boundassignwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
    <header>widgets/assignbutton.h</header>
@@ -488,6 +747,17 @@
    <class>BoundComboBox</class>
    <extends>QComboBox</extends>
    <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundTableView</class>
+   <extends>QTableView</extends>
+   <header>widgets/boundtableview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PostHocTestsSub</class>
+   <extends>QWidget</extends>
+   <header>analysisforms/subforms/posthoctestssub.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
