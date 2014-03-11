@@ -57,9 +57,21 @@ Options *Anova::createDefaultOptions()
 	contrastsTemplate->add("reference", new OptionList(refCategories));
 
 	options->add("contrasts", new OptionsTable(contrastsTemplate));
-
 	options->add("postHocTests", new OptionFields());
+    options->add("marginalMeans", new OptionFields());
 
+    vector<string> ciAdjustment;
+    ciAdjustment.push_back("LSD (none)");
+    ciAdjustment.push_back("Bonferroni");
+
+    options->add("ciAdjustment", new OptionList(ciAdjustment, "LSD (none)"));
+
+    vector<string> controlCategory;
+    controlCategory.push_back("Last");
+    controlCategory.push_back("First");
+
+    options->add("controlCategory", new OptionList(controlCategory, "Last"));
+	
 	return options;
 }
 

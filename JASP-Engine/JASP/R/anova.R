@@ -43,6 +43,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 				if ( ! is.null(options$wlsWeights))
 					WLS <- dataset[[options$wlsWeights]]
 				
+				options(contrasts = c("contr.sum","contr.poly"))
 				model <- aov(model.formula, dataset, weights=WLS)
 				
 				if (options$sumOfSquares == "type1") {
@@ -55,7 +56,6 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 
 				} else if (options$sumOfSquares == "type3") {
 				
-					options(contrasts = c("contr.sum","contr.poly"))
 					result <- car::Anova(model, type=3)
 					
 				}
@@ -92,6 +92,129 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 		
 		results[["anova"]] <- an0va
 
+	}
+	
+	if (length(options$fixedFactors) > 0) {
+		
+		contrasts <- list()
+		
+		for(var in 1:length(options$fixedFactors)){
+			
+			contrast.name <- options$contrasts[[var]][["contrast"]]
+			reference <- options$contrasts[[var]][["reference"]]
+			variable <- options$contrasts[[var]][["variable"]]
+			
+			contrast <- list()
+			
+			if(contrast.name != "none" & length(unique(dataset[[variable]])) > 1){
+					
+				contrast[["title"]] <- paste(variable, contrast.name, "contrast", sep=" ")
+				  
+				levels <- sort(unique(dataset[[variable]]),decreasing=reference!="last")
+				n.levels <- length(levels)
+        
+				cases <- list()
+				  
+				if(contrast.name=="simple"){
+				  
+				  c<-contr.treatment(levels)
+				  my.coding<-matrix(rep(1/n.levels, prod(dim(c))), ncol=n.levels-1)
+				  contr<-c-my.coding
+          
+				  for(i in 1:(n.levels-1)){
+				    cases[[i]] <- paste(levels[i+1]," - ",paste(levels[-(i+1)],collapse=", "),sep="")
+				  }
+				  
+				} else if(contrast.name=="deviation"){
+				  
+				  contr = contr.sum(levels)
+          
+				  for(i in 1:(n.levels-1)){
+				    cases[[i]] <- paste(levels[i]," - ",levels[n.levels],sep="")
+				  }
+				  
+				} else if(contrast.name=="polynomial"){
+				  
+				  contr = contr.poly(levels)
+				  
+				} else if(contrast.name=="helmert"){
+				  
+				  contr = matrix(0,nrow = n.levels, ncol = n.levels-1)
+				  for(i in 1:(n.levels-1)){
+				    k <- 1/(n.levels-(i-1))
+				    contr[i:n.levels,i] <- c(k*(n.levels-i),rep(-k,n.levels-i))
+				  }
+          
+				  for(i in 1:(n.levels-1)){
+				    cases[[i]] <- paste(levels[i]," - ",paste(levels[-(1:i)],collapse=", "),sep="")
+				  }
+				  
+				} else if(contrast.name=="repeated"){
+				  
+				  contr = matrix(0,nrow = n.levels, ncol = n.levels-1)
+				  for(i in 1:n.levels-1){
+				    contr[c(i,i+1),i]<- c(-1,1)  
+				  }
+          
+				  for(i in 1:(n.levels-1)){
+				    cases[[i]] <- paste(levels[i]," - ",levels[i+1],sep="")
+				  }
+
+				  
+				} else if(contrast.name=="difference"){
+				  
+				  rotate <- function(x) t(apply(x, 2, rev))
+				  contr = matrix(0,nrow = n.levels, ncol = n.levels-1)
+				  for(i in 1:(n.levels-1)){
+				    k <- 1/(n.levels-(i-1))
+				    contr[i:n.levels,i] <- c(k*(n.levels-i),rep(-k,n.levels-i))
+				  }
+				  contr <- rotate(rotate(contr))
+          
+				  for(i in 1:(n.levels-1)){
+				    cases[[i]] <- paste(levels[i+1]," - ",paste(levels[1:i],collapse=", "),sep="")
+				  }
+				  
+				}
+        
+				contrast[["cases"]] <- cases
+					
+				fields <- list(
+					list(id="estimate", type="number", format="sf:4"),
+					list(id="t", type="number", format="sf:4"),
+					list(id="p", type="number", format="dp:4;p:.001"))
+
+				contrast[["schema"]] <- list(fields=fields)
+	
+				fixedFactor = as.factor(dataset[[variable]])
+						
+				contrasts(fixedFactor) = contr
+				model.def <- paste(options$dependent, "~", "fixedFactor")
+				model.formula <- as.formula(model.def)
+				result <- summary(lm(model.formula, dataset))
+				
+				contrast.results <- list()
+				
+				for (i in 1:(length(unique(dataset[[variable]]))-1)) {
+					
+					est <- result$coefficients[i+1,"Estimate"]	
+					t <- result$coefficients[i+1,"t value"]	
+					p <- if (is.na(result$coefficients[i+1,"Pr(>|t|)"])) {""} else { result$coefficients[i+1,"Pr(>|t|)"] }
+						
+					r <- list("estimate"=est, "t"=t, "p"=p)
+						
+					contrast.results[[length(contrast.results)+1]] <- r
+				}
+				
+				
+				contrast[["data"]] <- contrast.results
+			}
+			
+			contrasts[[var]] <- contrast
+			
+		}
+		
+		results[["contrasts"]] <- contrasts
 	}
 		
 	results
