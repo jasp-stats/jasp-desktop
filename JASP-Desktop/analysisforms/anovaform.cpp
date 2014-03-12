@@ -45,10 +45,6 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	_anovaModel = new ListModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
 
-	ui->sumOfSquares->addItem("Type I");
-	ui->sumOfSquares->addItem("Type II");
-	ui->sumOfSquares->addItem("Type III");
-
 	_contrastsModel = new TableModelVariablesOptions(this);
 
 	connect(_anovaModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
@@ -62,12 +58,6 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->containerFactors->hide();
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
-
-    ui->ciAdjustment->addItem("LSD (none)");
-    ui->ciAdjustment->addItem("Bonferroni");
-
-    //ui->controlCategory->addItem("Last");
-    //ui->controlCategory->addItem("First");
 
 }
 
@@ -86,7 +76,7 @@ void AnovaForm::factorsChanged()
 	_anovaModel->setVariables(factorsAvailable);
 	_contrastsModel->setVariables(factorsAvailable);
 
-	ui->postHocTests->setVariables(factorsAvailable);
+	ui->postHocTests_variables->setVariables(factorsAvailable);
 }
 
 void AnovaForm::dependentChanged()
@@ -102,5 +92,5 @@ void AnovaForm::termsChanged()
 {
 	QList<ColumnInfo> terms = _anovaModel->terms();
 	terms.prepend(ColumnInfo("~OVERALL", 0));
-    ui->marginalMeans->setVariables(terms);
+	ui->marginalMeans_terms->setVariables(terms);
 }
