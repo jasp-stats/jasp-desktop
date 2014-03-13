@@ -55,11 +55,6 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 			}
 			
 			cases <- .data.frame.to.row.list(cases, discard.column.names=TRUE)
-			
-			#cases.descriptor <- list("case)
-
-			#cases.descriptor$
-			#cases.descriptor$cases <- cases
 
 			table <- list()
 			
@@ -85,6 +80,9 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 
 	
+	} else {
+	
+		crosstabs[[1]] <- list(title = "Crosstabs", cases = list(), schema = list(fields=list()))
 	}
 
 	results[["crosstabs"]] <- crosstabs
