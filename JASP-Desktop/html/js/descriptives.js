@@ -1,4 +1,4 @@
-$.widget("jasp.frequencies", {
+$.widget("jasp.descriptives", {
 
     options: {
         stats : null,
@@ -7,11 +7,11 @@ $.widget("jasp.frequencies", {
     },
     _create: function () {
     
-        this.element.addClass("jasp-frequencies")
+        this.element.addClass("jasp-descriptives")
 
-        this.statistics = $('<div class="jasp-frequencies-statistics"></div>')
-        this.tables     = $('<div class="jasp-frequencies-tables"></div>')
-        this.bargraphs  = $('<div class="jasp-frequencies-bargraphs"></div>')
+        this.statistics = $('<div class="jasp-descriptives-statistics"></div>')
+        this.tables     = $('<div class="jasp-descriptives-tables"></div>')
+        this.bargraphs  = $('<div class="jasp-descriptives-bargraphs"></div>')
         
         this.element.append(this.statistics)
         this.element.append(this.tables)
@@ -32,7 +32,7 @@ $.widget("jasp.frequencies", {
     },
     refresh: function () {
     
-        if (this.options.stats && $.isArray(this.options.stats.cases) && this.options.stats.cases.length > 0) {
+        if (this.options.stats && $.isArray(this.options.stats.cases)) {
 
             this.statistics.table({
                 title : this.options.stats.title,
@@ -73,7 +73,7 @@ $.widget("jasp.frequencies", {
                 if ( ! tableData.status)
                 	tableData.status = this.options.status
 
-				var table = $('<div class="jasp-frequencies-tables-table"></div>')
+				var table = $('<div class="jasp-descriptives-tables-table"></div>')
 
 				table.table(tableData)
 				
@@ -94,7 +94,7 @@ $.widget("jasp.frequencies", {
             for (var i = 0; i < this.options.plots.length; i++) {
 
                 var barGraphData = this.options.plots[i]
-                var graph = $('<div class="jasp-frequencies-bargraphs-bargraph"></div>')
+                var graph = $('<div class="jasp-descriptives-bargraphs-bargraph"></div>')
 
                 graph.bargraph(barGraphData)
 
@@ -110,6 +110,6 @@ $.widget("jasp.frequencies", {
 
     },
     _destroy: function () {
-        this.element.removeClass("jasp-frequencies").text("")
+        this.element.removeClass("jasp-descriptives").text("")
     }
 })

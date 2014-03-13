@@ -231,7 +231,6 @@ OTHER_FILES += \
     html/js/jquery.svg.pack.js \
     html/js/table.js \
     html/js/bargraph.js \
-    html/js/frequencies.js \
     html/js/d3.v2.js \
     html/js/nv.d3.js \
     html/js/nv.d3.min.js \
@@ -327,4 +326,5 @@ OTHER_FILES += \
     resources/icons/analysis-bayesian-crosstabs.svg \
     resources/icons/analysis-classical-crosstabs.svg \
     resources/icons/analysis-bayesian-regression.svg \
-    resources/icons/toolbutton-menu-indicator.svg
+    resources/icons/toolbutton-menu-indicator.svg \
+    html/js/descriptives.js

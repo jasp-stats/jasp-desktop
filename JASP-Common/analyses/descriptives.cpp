@@ -68,7 +68,7 @@ Options *Descriptives::createDefaultOptions()
 string Descriptives::js()
 {
 	return "{"
-			"    depends : ['frequencies'], "
-			"    render : function(element, results, status) { element.frequencies( { stats : results.stats, tables : results.tables, status : status } ) } "
+			"    depends : ['descriptives'], "
+			"    render : function(element, results, status) { element.descriptives( { stats : results.stats, tables : results.tables, status : status } ) } "
 			"}";
 }

@@ -23,24 +23,20 @@
         <file>js/jquery-1.9.1.js</file>
         <file>js/jquery-ui-1.10.1.custom.js</file>
         <file>js/jquery-ui-1.10.1.custom.min.js</file>
-        <file>analyses.html</file>
-        <file>css/analyses.css</file>
-        <file>js/analyses.js</file>
         <file>js/jquery.svg.js</file>
         <file>js/jquery.svggraph.js</file>
         <file>js/jquery.svg.pack.js</file>
         <file>js/table.js</file>
         <file>js/bargraph.js</file>
-        <file>js/frequencies.js</file>
         <file>js/nv.d3.min.js</file>
         <file>js/nv.d3.js</file>
         <file>js/d3.v2.js</file>
         <file>css/theme-spss.css</file>
         <file>css/theme-jasp.css</file>
-        <file>js/displaydefs.js</file>
         <file>js/tables.js</file>
         <file>css/images/copy.png</file>
         <file>css/images/running.gif</file>
         <file>css/images/waiting.gif</file>
+        <file>js/descriptives.js</file>
     </qresource>
 </RCC>
