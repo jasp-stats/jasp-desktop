@@ -54,6 +54,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->tabBar->addTab("Common");
 	ui->tabBar->addTab("SEM");
 
+#ifdef __WIN32__
+    QFont font = ui->tabBar->font();
+    font.setPointSize(10);
+    ui->tabBar->setFont(font);
+#endif
+
 	QFile indexPageResource(QString(":/core/analyses.html"));
     indexPageResource.open(QFile::ReadOnly);
     QString indexPage(indexPageResource.readAll());

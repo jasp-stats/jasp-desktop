@@ -43,7 +43,7 @@ QTabBar {
 QTabBar::tab {
 	border-top-left-radius: 0 ;
 	border-top-right-radius: 0 ;
-	min-width: 6ex;
+	min-width: 36px ;
 	padding: 4px 16px;
 	margin: 4px 1.5px 0 1.5px;
 	/*font-family: Helvetica, sans-serif ;*/
@@ -298,7 +298,7 @@ QTableView::item::last
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>83</width>
+                     <width>81</width>
                      <height>28</height>
                     </rect>
                    </property>
