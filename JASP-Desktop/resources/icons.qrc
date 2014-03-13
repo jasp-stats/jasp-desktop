@@ -46,16 +46,6 @@
         <file>icons/variable-scale-trans.png</file>
         <file>icons/variable-ordinal-trans.png</file>
         <file>icons/variable-nominal-trans.png</file>
-        <file>icons/analysis-ttest.png</file>
-        <file>icons/analysis-bayesian-crosstabs.png</file>
-        <file>icons/analysis-bayesian-regression.png</file>
-        <file>icons/analysis-bayesian-anova.png</file>
-        <file>icons/analysis-bayesian-ttest.png</file>
-        <file>icons/analysis-classical-anova.png</file>
-        <file>icons/analysis-classical-crosstabs.png</file>
-        <file>icons/analysis-classical-regression.png</file>
-        <file>icons/analysis-classical-ttest.png</file>
-        <file>icons/analysis-descriptives.png</file>
         <file>icons/analysis-descriptives.svg</file>
         <file>icons/variable-scale.svg</file>
         <file>icons/variable-ordinal.svg</file>
