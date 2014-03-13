@@ -126,7 +126,7 @@ QWidget#leftPanel {
               <number>12</number>
              </property>
              <item>
-              <widget class="RibbonButton" name="pushButton_5">
+              <widget class="StealthButton" name="pushButton_5">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -152,7 +152,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="RibbonButton" name="pushButton_6">
+              <widget class="StealthButton" name="pushButton_6">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -178,7 +178,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="RibbonButton" name="buttonOpen">
+              <widget class="StealthButton" name="buttonOpen">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -201,7 +201,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="RibbonButton" name="pushButton_8">
+              <widget class="StealthButton" name="pushButton_8">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -224,7 +224,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="RibbonButton" name="pushButton_9">
+              <widget class="StealthButton" name="pushButton_9">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -250,7 +250,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="RibbonButton" name="pushButton_10">
+              <widget class="StealthButton" name="pushButton_10">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -276,7 +276,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="RibbonButton" name="pushButton_11">
+              <widget class="StealthButton" name="pushButton_11">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -302,7 +302,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="RibbonButton" name="pushButton_12">
+              <widget class="StealthButton" name="pushButton_12">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -328,7 +328,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="RibbonButton" name="pushButton_13">
+              <widget class="StealthButton" name="pushButton_13">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -354,7 +354,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="RibbonButton" name="buttonExit">
+              <widget class="StealthButton" name="buttonExit">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -790,7 +790,7 @@ QWidget#leftPanel {
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>98</width>
+                       <width>83</width>
                        <height>48</height>
                       </rect>
                      </property>
@@ -858,32 +858,15 @@ QWidget#leftPanel {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>RibbonButton</class>
+   <class>StealthButton</class>
    <extends>QPushButton</extends>
-   <header>widgets/ribbonbutton.h</header>
+   <header>widgets/stealthbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources>
   <include location="resources/icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>buttonOpen</sender>
-   <signal>clicked()</signal>
-   <receiver>BackStageForm</receiver>
-   <slot>fileItemSelected()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>74</x>
-     <y>84</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>347</x>
-     <y>267</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>fileItemSelected()</slot>
  </slots>

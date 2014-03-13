@@ -6,16 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1356</width>
+    <width>840</width>
     <height>86</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_3">
+  <layout class="QGridLayout" name="gridLayout_7">
    <property name="leftMargin">
-    <number>0</number>
+    <number>12</number>
    </property>
    <property name="topMargin">
     <number>0</number>
@@ -24,44 +24,51 @@
     <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>3</number>
+    <number>0</number>
    </property>
+   <property name="horizontalSpacing">
+    <number>0</number>
+   </property>
+   <item row="0" column="2">
+    <widget class="QWidget" name="widget_4" native="true">
+     <layout class="QGridLayout" name="gridLayout_8">
+      <item row="0" column="0">
+       <widget class="Line" name="line">
+        <property name="styleSheet">
+         <string notr="true">QWidget {	color : #929292 ; }</string>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
+     <layout class="QGridLayout" name="gridLayout">
       <property name="leftMargin">
-       <number>6</number>
+       <number>0</number>
       </property>
       <property name="topMargin">
        <number>6</number>
       </property>
       <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Descriptives</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>3</number>
+      </property>
+      <item row="1" column="0">
        <widget class="QWidget" name="widget_9" native="true">
-        <layout class="QGridLayout" name="gridLayout_5">
+        <layout class="QGridLayout" name="gridLayout_4">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -74,93 +81,73 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <property name="spacing">
-          <number>3</number>
-         </property>
-         <item row="0" column="0">
+         <item row="1" column="0">
           <widget class="RibbonButton" name="Descriptives">
+           <property name="minimumSize">
+            <size>
+             <width>76</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
             <string>Descriptives</string>
            </property>
            <property name="icon">
             <iconset resource="../resources/icons.qrc">
-             <normaloff>:/icons/edit-delete-shred.png</normaloff>:/icons/edit-delete-shred.png</iconset>
+             <normaloff>:/icons/analysis-descriptives.svg</normaloff>:/icons/analysis-descriptives.svg</iconset>
            </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QWidget" name="widget_10" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>1</verstretch>
-            </sizepolicy>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
            </property>
           </widget>
          </item>
         </layout>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QWidget" name="widget_20" native="true">
-     <layout class="QGridLayout" name="gridLayout_10">
-      <property name="leftMargin">
-       <number>1</number>
-      </property>
-      <property name="topMargin">
-       <number>12</number>
-      </property>
-      <property name="rightMargin">
-       <number>1</number>
-      </property>
-      <property name="bottomMargin">
-       <number>12</number>
-      </property>
       <item row="0" column="0">
-       <widget class="Line" name="line_7">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
+       <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="0" column="2">
+   <item row="0" column="3">
     <widget class="QWidget" name="widget_2" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <property name="spacing">
-       <number>0</number>
-      </property>
+     <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
-       <number>6</number>
+       <number>0</number>
       </property>
       <property name="topMargin">
        <number>6</number>
       </property>
       <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item>
-       <widget class="QLabel" name="label_5">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>20</height>
-         </size>
-        </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>3</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -174,9 +161,9 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QWidget" name="widget_4" native="true">
-        <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0">
+       <widget class="QWidget" name="widget_10" native="true">
+        <layout class="QGridLayout" name="gridLayout_3">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -189,44 +176,119 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <property name="spacing">
-          <number>3</number>
+         <property name="horizontalSpacing">
+          <number>5</number>
          </property>
-         <item row="2" column="0">
-          <widget class="QWidget" name="widget_5" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>1</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="0">
           <widget class="RibbonButton" name="classicalTTestButton">
+           <property name="minimumSize">
+            <size>
+             <width>76</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
             <string>T-Tests</string>
            </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/analysis-classical-ttest.svg</normaloff>:/icons/analysis-classical-ttest.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="popupMode">
+            <enum>QToolButton::InstantPopup</enum>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
+           </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="0" column="1">
           <widget class="RibbonButton" name="classicalAnovaButton">
+           <property name="minimumSize">
+            <size>
+             <width>76</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
             <string>ANOVA</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/analysis-classical-anova.svg</normaloff>:/icons/analysis-classical-anova.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="popupMode">
+            <enum>QToolButton::InstantPopup</enum>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
            </property>
           </widget>
          </item>
          <item row="0" column="2">
           <widget class="RibbonButton" name="classicalRegressionButton">
+           <property name="minimumSize">
+            <size>
+             <width>76</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
             <string>Regression</string>
            </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/analysis-classical-regression.svg</normaloff>:/icons/analysis-classical-regression.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="popupMode">
+            <enum>QToolButton::InstantPopup</enum>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
+           </property>
           </widget>
          </item>
-         <item row="1" column="2">
+         <item row="0" column="3">
           <widget class="RibbonButton" name="Crosstabs">
+           <property name="minimumSize">
+            <size>
+             <width>76</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
             <string>Crosstabs</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/analysis-classical-crosstabs.svg</normaloff>:/icons/analysis-classical-crosstabs.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
            </property>
           </widget>
          </item>
@@ -236,78 +298,160 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="3">
-    <widget class="QWidget" name="widget_19" native="true">
-     <layout class="QGridLayout" name="gridLayout_9">
-      <property name="leftMargin">
-       <number>1</number>
-      </property>
-      <property name="topMargin">
-       <number>12</number>
-      </property>
-      <property name="rightMargin">
-       <number>1</number>
-      </property>
-      <property name="bottomMargin">
-       <number>12</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="Line" name="line_6">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="4">
+   <item row="0" column="5">
     <widget class="QWidget" name="widget_3" native="true">
-     <layout class="QGridLayout" name="gridLayout_2">
+     <layout class="QGridLayout" name="gridLayout_5">
       <property name="leftMargin">
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>0</number>
+       <number>6</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>6</number>
       </property>
       <property name="verticalSpacing">
-       <number>0</number>
+       <number>3</number>
       </property>
-      <item row="3" column="1">
-       <widget class="QLabel" name="label_4">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>T-Tests</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
+      <item row="1" column="0">
+       <widget class="QWidget" name="widget_11" native="true">
+        <layout class="QGridLayout" name="gridLayout_6">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="horizontalSpacing">
+          <number>5</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="RibbonButton" name="bayesianTTestButton">
+           <property name="minimumSize">
+            <size>
+             <width>76</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>T-Tests</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/analysis-bayesian-ttest.svg</normaloff>:/icons/analysis-bayesian-ttest.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="popupMode">
+            <enum>QToolButton::InstantPopup</enum>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="RibbonButton" name="bayesianAnovaButton">
+           <property name="minimumSize">
+            <size>
+             <width>76</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>ANOVA</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/analysis-bayesian-anova.svg</normaloff>:/icons/analysis-bayesian-anova.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="popupMode">
+            <enum>QToolButton::InstantPopup</enum>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="RibbonButton" name="bayesianCrosstabsButton">
+           <property name="minimumSize">
+            <size>
+             <width>76</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Crosstabs</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/analysis-bayesian-crosstabs.svg</normaloff>:/icons/analysis-bayesian-crosstabs.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="RibbonButton" name="bayesianRegressionButton">
+           <property name="minimumSize">
+            <size>
+             <width>76</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Regression</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../resources/icons.qrc">
+             <normaloff>:/icons/analysis-bayesian-regression.svg</normaloff>:/icons/analysis-bayesian-regression.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>37</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="popupMode">
+            <enum>QToolButton::InstantPopup</enum>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
-      <item row="0" column="1" colspan="3">
-       <widget class="QLabel" name="label_6">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>16</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>20</height>
-         </size>
-        </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -321,175 +465,59 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QPushButton" name="bayesianAnovaButton">
-        <property name="minimumSize">
+      <item row="0" column="1" rowspan="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>0</width>
-          <height>32</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="styleSheet">
-         <string notr="true">QWidget {
-	font-size: 11px;
-	text-decoration: none;
-	font-family: &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, sans-serif;
-	font-weight:normal;
-	color: #000;
-	border: none;
-
-	margin: 0 4px ;
-	padding: 4px 0 ;
-}
-
-QPushButton::menu-indicator {
-	image: none ;
-}
-
-
-QWidget::hover {
-	border-radius: 4px;
-	border:1px solid #9a9a9a;
-
-	/*background-color: qlineargradient(spread:reflect, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.5 rgba(245, 245, 245, 255), stop:0.527094 rgba(243, 243, 243, 255), stop:1 rgba(255, 255, 255, 255))*/
-}
-
-QWidget::pressed {
-	/*background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(211, 247, 253, 255), stop:0.339901 rgba(135, 197, 251, 255), stop:0.605911 rgba(161, 209, 249, 255), stop:1 rgba(212, 233, 252, 255));*/
-
-background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.389163 rgba(213, 213, 213, 255), stop:0.610837 rgba(213, 213, 213, 255), stop:1 rgba(255, 255, 255, 255))
-}</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../resources/icons.qrc">
-          <normaloff>:/icons/tools-wizard.png</normaloff>:/icons/tools-wizard.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>48</width>
-          <height>32</height>
-         </size>
-        </property>
-       </widget>
+       </spacer>
       </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="label_7">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QWidget" name="widget_5" native="true">
+     <property name="styleSheet">
+      <string notr="true">QWidget {	color : #929292 ; }</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_9">
+      <item row="0" column="0">
+       <widget class="Line" name="line_2">
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
         </property>
-        <property name="text">
-         <string>ANOVA</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="bayesianTTestButton">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QWidget {
-	font-size: 11px;
-	text-decoration: none;
-	font-family: &quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, sans-serif;
-	font-weight:normal;
-	color: #000;
-	border: none;
-
-	margin: 0 4px ;
-	padding: 4px 0 ;
-}
-
-QPushButton::menu-indicator {
-	image: none ;
-}
-
-
-QWidget::hover {
-	border-radius: 4px;
-	border:1px solid #9a9a9a;
-
-	/*background-color: qlineargradient(spread:reflect, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.5 rgba(245, 245, 245, 255), stop:0.527094 rgba(243, 243, 243, 255), stop:1 rgba(255, 255, 255, 255))*/
-}
-
-QWidget::pressed {
-	/*background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(211, 247, 253, 255), stop:0.339901 rgba(135, 197, 251, 255), stop:0.605911 rgba(161, 209, 249, 255), stop:1 rgba(212, 233, 252, 255));*/
-
-background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(235, 235, 235, 255), stop:0.389163 rgba(213, 213, 213, 255), stop:0.610837 rgba(213, 213, 213, 255), stop:1 rgba(255, 255, 255, 255))
-}</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../resources/icons.qrc">
-          <normaloff>:/icons/tools-wizard.png</normaloff>:/icons/tools-wizard.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>48</width>
-          <height>32</height>
-         </size>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="0" column="5">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>1066</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
   </layout>
-  <zorder>widget_2</zorder>
   <zorder>widget</zorder>
-  <zorder>widget_20</zorder>
-  <zorder>horizontalSpacer</zorder>
-  <zorder>widget_19</zorder>
+  <zorder>widget_2</zorder>
   <zorder>widget_3</zorder>
+  <zorder>widget_4</zorder>
+  <zorder>widget_5</zorder>
  </widget>
  <customwidgets>
   <customwidget>
    <class>RibbonButton</class>
-   <extends>QPushButton</extends>
+   <extends>QToolButton</extends>
    <header>widgets/ribbonbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources>
   <include location="../resources/icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>Descriptives</sender>
-   <signal>clicked()</signal>
-   <receiver>RibbonAnalysis</receiver>
-   <slot>itemSelected()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>75</x>
-     <y>33</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>677</x>
-     <y>39</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>itemSelected()</slot>
   <slot>menuItemSelected()</slot>

@@ -10,9 +10,9 @@ MainTableHorizontalHeader::MainTableHorizontalHeader(QWidget *parent) :
 	_menu = new QMenu(this);
 	_columnSelected = 0;
 
-	_nominalIcon = QIcon(":/icons/variable-nominal.png");
-	_ordinalIcon = QIcon(":/icons/variable-ordinal.png");
-	_scaleIcon = QIcon(":/icons/variable-scale.png");
+	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
+	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
+	_scaleIcon = QIcon(":/icons/variable-scale.svg");
 
 	_convertToScale = _menu->addAction(_scaleIcon, "", this, SLOT(scaleSelected()));
 	_convertToOrdinal = _menu->addAction(_ordinalIcon, "", this, SLOT(ordinalSelected()));

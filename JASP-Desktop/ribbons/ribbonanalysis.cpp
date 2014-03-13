@@ -10,6 +10,8 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	connect(ui->Descriptives, SIGNAL(clicked()), this, SLOT(itemSelected()));
+
 	QMenu *menu = new QMenu(this);
 
 	menu->addAction(QString("Independent Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestIndependentSamples");
@@ -45,6 +47,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
 
 	ui->bayesianAnovaButton->setMenu(menu);
+
 }
 
 RibbonAnalysis::~RibbonAnalysis()

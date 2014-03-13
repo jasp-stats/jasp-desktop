@@ -11,9 +11,9 @@ ListModelVariables::ListModelVariables(QObject *parent) :
 {
 	_variableTypesAllowed = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
 
-	_nominalIcon = QIcon(":/icons/variable-nominal.png");
-	_ordinalIcon = QIcon(":/icons/variable-ordinal.png");
-	_scaleIcon = QIcon(":/icons/variable-scale.png");
+	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
+	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
+	_scaleIcon = QIcon(":/icons/variable-scale.svg");
 
 	_dropActions = Qt::MoveAction;
 	_dragActions = Qt::MoveAction;

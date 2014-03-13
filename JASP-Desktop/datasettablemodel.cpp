@@ -13,9 +13,9 @@ DataSetTableModel::DataSetTableModel(QObject *parent) :
 {
 	_dataSet = NULL;
 
-	_nominalIcon = QIcon(":/icons/variable-nominal.png");
-	_ordinalIcon = QIcon(":/icons/variable-ordinal.png");
-	_scaleIcon = QIcon(":/icons/variable-scale.png");
+	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
+	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
+	_scaleIcon = QIcon(":/icons/variable-scale.svg");
 }
 
 void DataSetTableModel::setDataSet(DataSet* dataSet)

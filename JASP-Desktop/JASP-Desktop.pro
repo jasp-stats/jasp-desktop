@@ -92,7 +92,8 @@ SOURCES += main.cpp\
     ribbons/ribbonanalysis.cpp \
     ribbons/ribbonhome.cpp \
     analysisforms/semsimpleform.cpp \
-	widgets/boundtextedit.cpp
+	widgets/boundtextedit.cpp \
+    widgets/stealthbutton.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -162,7 +163,8 @@ HEADERS  += \
     ribbons/ribbonanalysis.h \
     ribbons/ribbonhome.h \
     analysisforms/semsimpleform.h \
-	widgets/boundtextedit.h
+	widgets/boundtextedit.h \
+    widgets/stealthbutton.h
 
 FORMS    += \
     backstageform.ui \
@@ -299,4 +301,30 @@ OTHER_FILES += \
     resources/icons/analysis-ttest.png \
     html/css/images/copy.png \
     html/css/images/running.gif \
-    html/css/images/waiting.gif
+    html/css/images/waiting.gif \
+    resources/icons/toolbutton-descriptives.png \
+    resources/icons/analysis-bayesian-crosstabs.png \
+    resources/icons/analysis-bayesian-regression.png \
+    resources/icons/analysis-bayesian-anova.png \
+    resources/icons/analysis-bayesian-ttest.png \
+    resources/icons/analysis-classical-anova.png \
+    resources/icons/analysis-classical-crosstabs.png \
+    resources/icons/analysis-classical-regression.png \
+    resources/icons/analysis-classical-ttest.png \
+    resources/icons/analysis-descriptives.png \
+    resources/icons/analysis-background-mouseover.png \
+    resources/icons/analysis-background-clicked.png \
+    resources/icons/analysis-descriptives.svg \
+    resources/icons/toolbutton-menu-indicator.svg \
+    resources/icons/variable-scale.svg \
+    resources/icons/variable-ordinal.svg \
+    resources/icons/variable-nominal.svg \
+    resources/icons/analysis-classical-regression.svg \
+    resources/icons/analysis-classical-anova.svg \
+    resources/icons/analysis-classical-ttest.svg \
+    resources/icons/analysis-bayesian-ttest.svg \
+    resources/icons/analysis-bayesian-anova.svg \
+    resources/icons/analysis-bayesian-crosstabs.svg \
+    resources/icons/analysis-classical-crosstabs.svg \
+    resources/icons/analysis-bayesian-regression.svg \
+    resources/icons/toolbutton-menu-indicator.svg

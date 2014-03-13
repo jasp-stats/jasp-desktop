@@ -287,6 +287,9 @@ QTableView::item::last
                 </property>
                 <item row="0" column="0">
                  <widget class="QScrollArea" name="scrollArea">
+                  <property name="verticalScrollBarPolicy">
+                   <enum>Qt::ScrollBarAlwaysOn</enum>
+                  </property>
                   <property name="widgetResizable">
                    <bool>true</bool>
                   </property>
@@ -295,8 +298,8 @@ QTableView::item::last
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>800</width>
-                     <height>572</height>
+                     <width>83</width>
+                     <height>28</height>
                     </rect>
                    </property>
                    <layout class="QGridLayout" name="optionsContentAreaLayout">

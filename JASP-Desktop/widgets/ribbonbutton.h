@@ -1,27 +1,34 @@
-#ifndef JTOOLBUTTONLEFTALIGNED_H
-#define JTOOLBUTTONLEFTALIGNED_H
+#ifndef RIBBONBUTTON_H
+#define RIBBONBUTTON_H
 
-#include <QPushButton>
+#include <QToolButton>
 #include <QString>
+#include <QMouseEvent>
 
 #include "common.h"
 
-class RibbonButton : public QPushButton
+class RibbonButton : public QToolButton
 {
     Q_OBJECT
 public:
 	explicit RibbonButton(QWidget *parent = 0);
 
-signals:
-    
 public slots:
+	void notifyMouseOut();
+	void notifyMouseOver();
 
 protected:
-    virtual void paintEvent(QPaintEvent *event) OVERRIDE;
+	virtual void enterEvent(QEvent *event) OVERRIDE;
+	virtual void mousePressEvent(QMouseEvent *event) OVERRIDE;
 
 private:
-    bool _firstPaint;
-    
+
+	bool _mouseOver;
+
+	QString _mouseOutSS;
+	QString _mouseOverSS;
+
+	bool _connectedToMenu;
 };
 
-#endif // JTOOLBUTTONLEFTALIGNED_H
+#endif // RIBBONBUTTON_H

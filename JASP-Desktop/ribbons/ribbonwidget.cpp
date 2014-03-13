@@ -1,6 +1,8 @@
 #include "ribbonwidget.h"
 
-#include <QPushButton>
+#include <QDebug>
+#include <QMenu>
+#include "widgets/ribbonbutton.h"
 
 RibbonWidget::RibbonWidget(QWidget *parent) :
 	QWidget(parent)
@@ -15,10 +17,12 @@ void RibbonWidget::itemSelected()
 	emit itemSelected(name);
 }
 
-void RibbonWidget::menuItemSelected()
+void RibbonWidget::menuHiding()
 {
-	QPushButton *source = dynamic_cast<QPushButton*>(this->sender());
-	if (source != NULL)
-		source->showMenu();
+	QMenu *menu = qobject_cast<QMenu *>(this->sender());
+	RibbonButton *button = qobject_cast<RibbonButton *>(menu->parent());
+
+	qDebug() << button;
 }
+
 

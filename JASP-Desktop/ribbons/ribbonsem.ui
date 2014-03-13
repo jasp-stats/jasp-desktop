@@ -14,9 +14,6 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
    <property name="topMargin">
     <number>0</number>
    </property>
@@ -63,21 +60,6 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLabel" name="label">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>SEM</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QWidget" name="widget_9" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
          <property name="leftMargin">
@@ -102,17 +84,19 @@
            </property>
            <property name="icon">
             <iconset resource="../resources/icons.qrc">
-             <normaloff>:/icons/edit-delete-shred.png</normaloff>:/icons/edit-delete-shred.png</iconset>
+             <normaloff>:/icons/applications-system.png</normaloff>:/icons/applications-system.png</iconset>
            </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QWidget" name="widget_10" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>1</verstretch>
-            </sizepolicy>
+           <property name="iconSize">
+            <size>
+             <width>48</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="popupMode">
+            <enum>QToolButton::InstantPopup</enum>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextUnderIcon</enum>
            </property>
           </widget>
          </item>
@@ -165,7 +149,7 @@
  <customwidgets>
   <customwidget>
    <class>RibbonButton</class>
-   <extends>QPushButton</extends>
+   <extends>QToolButton</extends>
    <header>widgets/ribbonbutton.h</header>
   </customwidget>
  </customwidgets>

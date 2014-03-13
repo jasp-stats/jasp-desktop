@@ -10,9 +10,9 @@ AvailableFields::AvailableFields(QObject *parent)
 {
 	_shouldFilter = false;
 
-	_nominalIcon = QIcon(":/icons/variable-nominal.png");
-	_ordinalIcon = QIcon(":/icons/variable-ordinal.png");
-	_scaleIcon = QIcon(":/icons/variable-scale.png");
+	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
+	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
+	_scaleIcon = QIcon(":/icons/variable-scale.svg");
 }
 
 void AvailableFields::setDataSet(DataSet *dataSet)

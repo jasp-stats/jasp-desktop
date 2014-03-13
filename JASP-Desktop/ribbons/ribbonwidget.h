@@ -2,6 +2,7 @@
 #define RIBBONWIDGET_H
 
 #include <QWidget>
+#include "widgets/ribbonbutton.h"
 
 class RibbonWidget : public QWidget
 {
@@ -14,7 +15,7 @@ signals:
 
 protected slots:
 	void itemSelected();
-	void menuItemSelected();
+	void menuHiding();
 
 };
 
