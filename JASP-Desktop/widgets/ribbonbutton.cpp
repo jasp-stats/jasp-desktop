@@ -18,6 +18,7 @@ RibbonButton::RibbonButton(QWidget *parent) :
 	_mouseOutSS = "QToolButton {"
 			"	border: 1px solid transparent ;"
 			"	border-radius: 5px ;"
+			"	padding-top: 4px ;"
 			"}"
 			"QToolButton[popupMode='2'] {"
 			"	padding-right: 4px ;"
