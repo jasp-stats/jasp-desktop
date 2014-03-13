@@ -14,14 +14,6 @@ class RibbonHome : public RibbonWidget
 public:
 	explicit RibbonHome(QWidget *parent = 0);
 	~RibbonHome();
-
-signals:
-    void itemSelected(QString item);
-
-private slots:
-    void frequenciesItemSelected();
-    void descriptivesItemSelected();
-	void anovaItemSelected();
     
 private:
 	Ui::RibbonHome *ui;

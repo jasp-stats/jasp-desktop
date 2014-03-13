@@ -15,17 +15,3 @@ RibbonHome::~RibbonHome()
     delete ui;
 }
 
-void RibbonHome::frequenciesItemSelected()
-{
-    emit itemSelected(QString("base/frequencies"));
-}
-
-void RibbonHome::descriptivesItemSelected()
-{
-	emit itemSelected(QString("base/descriptives"));
-}
-
-void RibbonHome::anovaItemSelected()
-{
-	emit itemSelected(QString("anova"));
-}
