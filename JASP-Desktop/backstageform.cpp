@@ -18,6 +18,8 @@ BackStageForm::BackStageForm(QWidget *parent) :
     ui(new Ui::BackStageForm)
 {
     ui->setupUi(this);
+
+	connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(fileItemSelected()));
 }
 
 BackStageForm::~BackStageForm()
