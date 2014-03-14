@@ -6,6 +6,10 @@ SEMSimpleForm::SEMSimpleForm(QWidget *parent) :
 	ui(new Ui::SEMSimpleForm)
 {
 	ui->setupUi(this);
+
+	ui->containerStatistics->hide();
+	ui->containerOptions->hide();
+	ui->containerAdvanced->hide();
 }
 
 SEMSimpleForm::~SEMSimpleForm()
