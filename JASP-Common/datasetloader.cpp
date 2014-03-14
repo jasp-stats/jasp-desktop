@@ -1,14 +1,13 @@
+
 #include "datasetloader.h"
-
-#include "dataset.h"
-#include "csvparser.h"
-
-#include <QDebug>
 
 #include <boost/foreach.hpp>
 
 #include "boost/lexical_cast.hpp"
 #include "sys/stat.h"
+
+#include "dataset.h"
+#include "csv.h"
 
 using boost::lexical_cast;
 using namespace boost::interprocess;
@@ -23,60 +22,28 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 	struct stat fileInfo;
 	stat(locator.c_str(), &fileInfo);
 
-	int fileSize = fileInfo.st_size;
+	CSV csv(locator);
+	csv.open();
 
-	ifstream is;
-	is.open(locator.c_str(), ios::in);
-
-	CSVParser parser;
 	vector<string> columns = vector<string>();
 	vector<vector<string> > cells = vector<vector<string> >();
 
-	parser.readNextRow(is);
-
-	/*int bufferSize = 2048;
-	char buffer[bufferSize];
-
-	int count = is.readsome(buffer, bufferSize);
-
-	if (count < 3 || (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF))
-	{
-		// UTF8
-	}
-	else if (buffer[0] == 0xFF && buffer[1] == 0xFE)
-	{
-		// UTF16LE
-	}
-	else if (buffer[0] == 0xFE && buffer[1] == 0xFF)
-	{
-		// UTF16BE
-	}
-	else if (buffer[0] == 0xFF && buffer[1] == 0xFE && buffer[2] == 0 && buffer[3] == 0)
-	{
-		// UTF32LE
-	}
-	else if (buffer[0] == 0 && buffer[1] == 0 && buffer[2] == 0xFE && buffer[3] == 0xFF)
-	{
-		// UTF32BE
-	}*/
-
+	csv.readLine(columns);
 
 	unsigned long long progress;
 	unsigned long long lastProgress = -1;
 
-	int columnCount = parser.size();
+	int columnCount = columns.size();
 
-    for (int i = 0; i < columnCount; i++)
-    {
-		columns.push_back(parser[i]);
+	for (int i = 0; i < columnCount; i++)  // columns
 		cells.push_back(vector<string>());
-    }
 
-	parser.readNextRow(is);
+	vector<string> line;
+	bool success = csv.readLine(line);
 
-    while (parser.size() > 0)
+	while (success)
     {
-		progress = 50 * is.tellg() / fileSize;
+		progress = 50 * csv.pos() / csv.size();
 		if (progress != lastProgress)
 		{
 			this->progress("Loading Data Set", progress);
@@ -84,12 +51,13 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 		}
 
         int i = 0;
-        for (; i < parser.size() && i < columnCount; i++)
-			cells[i].push_back(parser[i]);
+		for (; i < line.size() && i < columnCount; i++)
+			cells[i].push_back(line[i]);
         for (; i < columnCount; i++)
 			cells[i].push_back(string());
 
-		parser.readNextRow(is);
+		line.clear();
+		success = csv.readLine(line);
     }	
 
 	if (SharedMemory::isCreatedRW() == false)
@@ -98,8 +66,6 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 	managed_shared_memory* mem = SharedMemory::get();
 
 	DataSet *dataSet = mem->construct<DataSet>(boost::interprocess::unique_instance)();
-
-	bool success;
 
 	do
 	{
@@ -114,15 +80,15 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
-			cout << "growing shared memory\n";
-			cout.flush();
+			//cout << "growing shared memory\n";
+			//cout.flush();
 
 			try {
 
-				cout << mem->get_size() << "\n";
+				//cout << mem->get_size() << "\n";
 				mem = SharedMemory::grow(mem->get_size());
-				cout << mem->get_size() << "\n";
-				cout.flush();
+				//cout << mem->get_size() << "\n";
+				//cout.flush();
 
 				dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
 
@@ -133,8 +99,8 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 				cout.flush();
 			}
 
-			cout << "memory grown\n";
-			cout.flush();
+			//cout << "memory grown\n";
+			//cout.flush();
 
 			success = false;
 		}
@@ -151,8 +117,8 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 	}
 	while ( ! success);
 
-	cout << "success!\n";
-	cout.flush();
+	//cout << "success!\n";
+	//cout.flush();
 
 	int colNo = 0;
 	BOOST_FOREACH(Column &column, dataSet->columns())

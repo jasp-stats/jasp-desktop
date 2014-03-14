@@ -21,7 +21,6 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 SOURCES += \
     datasetloader.cpp \
     dataset.cpp \
-    csvparser.cpp \
     analysisloader.cpp \
     analysis.cpp \
     columns.cpp \
@@ -64,12 +63,12 @@ SOURCES += \
     options/optionstable.cpp \
     analyses/crosstabs.cpp \
     analyses/correlationpartial.cpp \
-    analyses/semsimple.cpp
+    analyses/semsimple.cpp \
+    csv.cpp
 
 HEADERS +=\
     datasetloader.h \
     dataset.h \
-    csvparser.h \
     analysisloader.h \
     analysis.h \
     columns.h \
@@ -118,7 +117,8 @@ HEADERS +=\
     options/optionstable.h \
     analyses/crosstabs.h \
     analyses/correlationpartial.h \
-    analyses/semsimple.h
+    analyses/semsimple.h \
+    csv.h
 
 unix:!symbian {
     maemo5 {

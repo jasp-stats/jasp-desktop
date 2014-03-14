@@ -301,8 +301,8 @@ void Column::append(int rows)
 
 void Column::setRowCount(int rowCount)
 {
-	std::cout << "setting row count, old " << _rowCount << " new " << rowCount << "\n";
-	std::cout.flush();
+	//std::cout << "setting row count, old " << _rowCount << " new " << rowCount << "\n";
+	//std::cout.flush();
 
 	if (rowCount == this->rowCount())
 		return;
