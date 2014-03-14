@@ -43,9 +43,6 @@
         <file>icons/bookcase.png</file>
         <file>icons/accessories-text-editor.png</file>
         <file>icons/accessories-calculator.png</file>
-        <file>icons/variable-scale-trans.png</file>
-        <file>icons/variable-ordinal-trans.png</file>
-        <file>icons/variable-nominal-trans.png</file>
         <file>icons/analysis-descriptives.svg</file>
         <file>icons/variable-scale.svg</file>
         <file>icons/variable-ordinal.svg</file>
@@ -59,5 +56,8 @@
         <file>icons/analysis-classical-crosstabs.svg</file>
         <file>icons/analysis-bayesian-regression.svg</file>
         <file>icons/toolbutton-menu-indicator.svg</file>
+        <file>icons/variable-scale-inactive.svg</file>
+        <file>icons/variable-ordinal-inactive.svg</file>
+        <file>icons/variable-nominal-inactive.svg</file>
     </qresource>
 </RCC>

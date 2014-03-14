@@ -294,9 +294,6 @@ OTHER_FILES += \
     resources/icons/variable-nominal.png \
     resources/icons/variable-ordinal.png \
     resources/icons/variable-scale.png \
-    resources/icons/variable-scale-trans.png \
-    resources/icons/variable-nominal-trans.png \
-    resources/icons/variable-ordinal-trans.png \
     resources/icons/analysis-ttest.png \
     html/css/images/copy.png \
     html/css/images/running.gif \
@@ -327,4 +324,7 @@ OTHER_FILES += \
     resources/icons/analysis-classical-crosstabs.svg \
     resources/icons/analysis-bayesian-regression.svg \
     resources/icons/toolbutton-menu-indicator.svg \
-    html/js/descriptives.js
+    html/js/descriptives.js \
+    resources/icons/variable-scale-inactive.svg \
+    resources/icons/variable-ordinal-inactive.svg \
+    resources/icons/variable-nominal-inactive.svg
