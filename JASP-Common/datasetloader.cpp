@@ -136,7 +136,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 
 		BOOST_FOREACH(string &value, columnRows)
 		{
-			if (value != "NaN" && value != "nan" && value != "")
+			if (value != "NaN" && value != "nan" && value != "" && value != " ")
 			{
 				try
 				{
@@ -169,16 +169,24 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 
 		BOOST_FOREACH(string &value, columnRows)
 		{
-			try
+			if (value != "" && value != " ")
 			{
-				*doubleInputItr = lexical_cast<double>(value);
-				doubleInputItr++;
+				try
+				{
+					*doubleInputItr = lexical_cast<double>(value);
+				}
+				catch (...)
+				{
+					success = false;
+					break;
+				}
 			}
-			catch (...)
+			else
 			{
-				success = false;
-				break;
+				*doubleInputItr = NAN;
 			}
+
+			doubleInputItr++;
 		}
 
 		if (success)
