@@ -240,9 +240,24 @@ string Column::operator [](int index)
 {
 	if (_dataType == Column::DataTypeDouble)
 	{
-		stringstream s;
-		s << AsDoubles[index];
-		return s.str();
+		double v = AsDoubles[index];
+
+		if (v > DBL_MAX)
+		{
+			char inf[] = { 0xE2, 0x88, 0x9E, 0 };
+			return string(inf);
+		}
+		else if (v < DBL_MIN)
+		{
+			char ninf[] = { 0x2D, 0xE2, 0x88, 0x9E, 0 };
+			return string(ninf);
+		}
+		else
+		{
+			stringstream s;
+			s << v;
+			return s.str();
+		}
 	}
 	else
 	{
