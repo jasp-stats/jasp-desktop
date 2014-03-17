@@ -244,12 +244,12 @@ string Column::operator [](int index)
 
 		if (v > DBL_MAX)
 		{
-			char inf[] = { 0xE2, 0x88, 0x9E, 0 };
+            char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
 			return string(inf);
 		}
 		else if (v < DBL_MIN)
 		{
-			char ninf[] = { 0x2D, 0xE2, 0x88, 0x9E, 0 };
+            char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
 			return string(ninf);
 		}
 		else
