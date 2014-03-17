@@ -247,7 +247,7 @@ string Column::operator [](int index)
             char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
 			return string(inf);
 		}
-		else if (v < DBL_MIN)
+		else if (v < -DBL_MAX)
 		{
             char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
 			return string(ninf);
