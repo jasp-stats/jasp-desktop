@@ -23,21 +23,21 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 
 	if (isSlave)
 	{
-		mutexInName << "sm";
-		mutexOutName << "mm";
-		dataInName << "sd";
-		dataOutName << "md";
-		semaphoreInName << "JASP-" << name << "-ss";
-		semaphoreOutName << "JASP-" << name << "-ms";
+		mutexInName  << name << "-sm";
+		mutexOutName << name << "-mm";
+		dataInName   << name << "-sd";
+		dataOutName  << name << "-md";
+		semaphoreInName  << name << "-ss";
+		semaphoreOutName << name << "-ms";
 	}
 	else
 	{
-		mutexInName << "mm";
-		mutexOutName << "sm";
-		dataInName << "md";
-		dataOutName << "sd";
-		semaphoreInName << "JASP-" << name << "-ms";
-		semaphoreOutName << "JASP-" << name << "-ss";
+		mutexInName  << name << "-mm";
+		mutexOutName << name << "-sm";
+		dataInName   << name << "-md";
+		dataOutName  << name << "-sd";
+		semaphoreInName  << name << "-ms";
+		semaphoreOutName << name << "-ss";
 	}
 
 	mutexInName << channelNumber;

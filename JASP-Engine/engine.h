@@ -1,13 +1,12 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include <map>
-
-#include "../JASP-Common/analyses.h"
-#include "../JASP-Common/lib_json/json.h"
-
 #include "rcppbridge.h"
+
+#include "../JASP-Common/lib_json/json.h"
+#include "../JASP-Common/analysis.h"
 #include "../JASP-Common/ipcchannel.h"
+#include "../JASP-Common/process.h"
 
 class Engine
 {
@@ -17,7 +16,6 @@ public:
 public:
 
 	void run();
-    void setParentPID(unsigned long pid);
 	void setSlaveNo(int no);
 	
 private:
@@ -25,8 +23,6 @@ private:
 	void receiveMessages(int timeout = 0);
 	void runAnalysis();
 	void analysisResultsChanged(Analysis *analysis);
-
-	bool shouldISuicide();
 
 	Analysis *_currentAnalysis;
 	Analysis *_nextAnalysis;
@@ -41,12 +37,7 @@ private:
 
 	RcppBridge _R;
 
-	unsigned long _parentPID;
 	int _slaveNo;
-
-#ifdef __WIN32__
-    void* _parentHandle;
-#endif
 
 };
 

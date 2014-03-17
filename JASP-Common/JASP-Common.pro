@@ -64,7 +64,8 @@ SOURCES += \
     analyses/crosstabs.cpp \
     analyses/correlationpartial.cpp \
     analyses/semsimple.cpp \
-    csv.cpp
+    csv.cpp \
+    process.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -118,7 +119,8 @@ HEADERS +=\
     analyses/crosstabs.h \
     analyses/correlationpartial.h \
     analyses/semsimple.h \
-    csv.h
+    csv.h \
+    process.h
 
 unix:!symbian {
     maemo5 {

@@ -46,6 +46,8 @@ private:
 	void sendMessages();
 	void startSlaveProcess(int no);
 
+	std::string _memoryName;
+
 private slots:
 
 	void process();

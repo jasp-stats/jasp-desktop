@@ -14,14 +14,5 @@ int main(int argc, char *argv[])
 		e->setSlaveNo(slaveNo);
 	}
 
-#ifdef __WIN32__
-	if (argc > 2)
-    {
-        unsigned long parentId = 0;
-		parentId = strtoul(argv[2], NULL, 10);
-        e->setParentPID(parentId);
-    }
-#endif
-
     e->run();
 }

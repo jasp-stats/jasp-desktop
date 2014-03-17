@@ -60,10 +60,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 		success = csv.readLine(line);
     }	
 
-	if (SharedMemory::isCreatedRW() == false)
-		SharedMemory::createRW();
-
-	managed_shared_memory* mem = SharedMemory::get();
+	managed_shared_memory* mem = SharedMemory::get(true);
 
 	DataSet *dataSet = mem->construct<DataSet>(boost::interprocess::unique_instance)();
 

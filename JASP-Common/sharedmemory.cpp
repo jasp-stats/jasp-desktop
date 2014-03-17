@@ -1,42 +1,44 @@
+
 #include "sharedmemory.h"
 
-SharedMemory::SharedMemory()
-{
-}
+#include "process.h"
 
-bool SharedMemory::isCreatedRW()
-{
-	return _isCreated;
-}
+#include <sstream>
 
 boost::interprocess::managed_shared_memory *SharedMemory::_memory;
-
-bool SharedMemory::_isCreated = false;
-
-boost::interprocess::managed_shared_memory *SharedMemory::createRW()
-{
-	//if (_memory != NULL)
-	//	qDebug() << "SharedMemory::create(), memory already created.";
-
-	boost::interprocess::shared_memory_object::remove("bruce");
-	_memory = new boost::interprocess::managed_shared_memory(boost::interprocess::create_only, "bruce", 6553600);
-	_isCreated = true;
-
-	return _memory;
-}
+std::string SharedMemory::_memoryName;
 
 boost::interprocess::managed_shared_memory *SharedMemory::grow(int amount)
-{
-	boost::interprocess::managed_shared_memory::grow("bruce", amount);
-	_memory = new boost::interprocess::managed_shared_memory(boost::interprocess::open_only, "bruce");
+{	
+	boost::interprocess::managed_shared_memory::grow(_memoryName.c_str(), amount);
+	_memory = new boost::interprocess::managed_shared_memory(boost::interprocess::open_only, _memoryName.c_str());
 
 	return _memory;
 }
 
-boost::interprocess::managed_shared_memory *SharedMemory::get()
+boost::interprocess::managed_shared_memory *SharedMemory::get(bool master)
 {
 	if (_memory == NULL)
-		_memory = new boost::interprocess::managed_shared_memory(boost::interprocess::open_read_only, "bruce");
+	{
+		std::stringstream ss;
+		ss << "JASP-DATA-";
+
+		if (master)
+		{   
+			ss << Process::currentPID();
+			_memoryName = ss.str();
+            boost::interprocess::shared_memory_object::remove(_memoryName.c_str());
+            _memory = new boost::interprocess::managed_shared_memory(boost::interprocess::create_only, _memoryName.c_str(), 6553600);
+		}
+		else
+		{
+			ss << Process::parentPID();
+			_memoryName = ss.str();
+			_memory = new boost::interprocess::managed_shared_memory(boost::interprocess::open_read_only, _memoryName.c_str());
+		}
+
+
+	}
 
 	return _memory;
 }

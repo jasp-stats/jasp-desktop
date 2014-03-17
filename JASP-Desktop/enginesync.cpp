@@ -8,15 +8,11 @@
 
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
-
-#ifdef __WIN32__
-#include <windows.h>
-#include <winbase.h>
-#endif
-
 #include <boost/foreach.hpp>
 
 #include "lib_json/json.h"
+
+#include "process.h"
 
 using namespace boost::interprocess;
 using namespace std;
@@ -35,13 +31,19 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 
     try {
 
-		shared_memory_object::remove("JASP_IPC");
-		_channels.push_back(new IPCChannel("JASP_IPC", 0));
+		unsigned long pid = Process::currentPID();
+
+		stringstream ss;
+		ss << "JASP-IPC-" << pid;
+
+		_memoryName = ss.str();
+
+		_channels.push_back(new IPCChannel(_memoryName, 0));
 
 #ifdef QT_NO_DEBUG
-		_channels.push_back(new IPCChannel("JASP_IPC", 1));
-		_channels.push_back(new IPCChannel("JASP_IPC", 2));
-		_channels.push_back(new IPCChannel("JASP_IPC", 3));
+		_channels.push_back(new IPCChannel(_memoryName, 1));
+		_channels.push_back(new IPCChannel(_memoryName, 2));
+		_channels.push_back(new IPCChannel(_memoryName, 3));
 #endif
 
     }
@@ -66,11 +68,13 @@ EngineSync::~EngineSync()
 		_slaveProcesses[i]->terminate();
 		_slaveProcesses[i]->kill();
 	}
+
+	shared_memory_object::remove(_memoryName.c_str());
 }
 
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 {
-#ifndef QT_NO_DEBUG
+#ifdef QT_DEBUG
 	std::cout << "send " << analysis->id() << " to process " << processNo << "\n";
 	std::cout.flush();
 #endif
@@ -122,7 +126,7 @@ void EngineSync::process()
 
 		if (channel->receive(data))
 		{
-#ifndef QT_NO_DEBUG
+#ifdef QT_DEBUG
 			std::cout << "message received\n";
             std::cout << data << "\n";
 			std::cout.flush();
@@ -162,7 +166,7 @@ void EngineSync::process()
 
 void EngineSync::sendMessages()
 {
-#ifndef QT_NO_DEBUG
+#ifdef QT_DEBUG
 	std::cout << "send messages\n";
 	std::cout.flush();
 #endif
@@ -197,7 +201,7 @@ void EngineSync::sendMessages()
 		}
 		else if (analysis->status() == Analysis::Inited)
 		{
-#ifdef QT_NO_DEBUG
+#ifndef QT_DEBUG
 			for (int i = 1; i < _analysesInProgress.size(); i++) // don't perform 'runs' on process 0, only inits.
 #else
 			for (int i = 0; i < _analysesInProgress.size(); i++)
@@ -226,7 +230,7 @@ void EngineSync::startSlaveProcess(int no)
 #ifdef __WIN32__
     env.insert("PATH", programDir.absoluteFilePath("R-3.0.0\\library\\RInside\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\library\\Rcpp\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\bin\\i386"));
 
-    DWORD processId = GetCurrentProcessId();
+    unsigned long processId = Process::currentPID();
     args << QString::number(processId);
 #elif __APPLE__
     env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib"));

@@ -6,15 +6,15 @@
 class SharedMemory
 {
 public:
-	SharedMemory();
 
-	static bool isCreatedRW();
-	static boost::interprocess::managed_shared_memory *createRW();
-	static boost::interprocess::managed_shared_memory *get();
+	static boost::interprocess::managed_shared_memory *get(bool master = false);
 	static boost::interprocess::managed_shared_memory *grow(int amount);
+
 private:
+
+	static std::string _memoryName;
 	static boost::interprocess::managed_shared_memory *_memory;
-	static bool _isCreated;
+
 };
 
 #endif // SHAREDMEMORY_H

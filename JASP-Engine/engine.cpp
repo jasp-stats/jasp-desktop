@@ -6,6 +6,7 @@
 #include "../JASP-Common/lib_json/json.h"
 #include "../JASP-Common/rinterface.h"
 #include "../JASP-Common/analysisloader.h"
+#include "../JASP-Common/process.h"
 
 #include <sstream>
 
@@ -13,9 +14,6 @@
 
 #undef Realloc
 #undef Free
-
-#include <windows.h>
-#include <winbase.h>
 
 #endif
 
@@ -28,7 +26,6 @@ Engine::Engine()
 {
 	_dataSet = NULL;
 	_channel = NULL;
-    _parentPID = 0;
 	_slaveNo = 0;
 	_currentAnalysis = NULL;
 	_nextAnalysis = NULL;
@@ -71,27 +68,26 @@ void Engine::analysisResultsChanged(Analysis *analysis)
 
 void Engine::run()
 {
-#ifdef __WIN32__
-	if (_parentPID != 0)
-        _parentHandle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, _parentPID);
-#endif
+	stringstream ss;
+	ss << "JASP-IPC-" << Process::parentPID();
+	string memoryName = ss.str();
 
-	_channel = new IPCChannel("JASP_IPC", _slaveNo, true);
+	std::cout << "slave \"" << memoryName << "\"\n";
+	std::cout.flush();
+
+	_channel = new IPCChannel(memoryName, _slaveNo, true);
 
 	do
 	{
 		receiveMessages(20);
-		if (shouldISuicide())
+		if ( ! Process::isParentRunning())
 			break;
 		runAnalysis();
 
 	}
     while(1);
-}
 
-void Engine::setParentPID(unsigned long pid)
-{
-	_parentPID = pid;
+	shared_memory_object::remove(memoryName.c_str());
 }
 
 void Engine::setSlaveNo(int no)
@@ -191,27 +187,3 @@ void Engine::send(Analysis *analysis)
 	_channel->send(message);
 }
 
-bool Engine::shouldISuicide()  // check if parent is dead
-{
-#ifdef __WIN32__
-
-    if (_parentHandle != NULL)
-	{
-		BOOL success;
-		DWORD exitCode;
-
-        success = GetExitCodeProcess(_parentHandle, &exitCode);
-
-		if (success && exitCode != STILL_ACTIVE)
-			return true;
-	}
-
-#else
-
-	if (getppid() == 1)
-		return true;
-
-#endif
-
-	return false;
-}
