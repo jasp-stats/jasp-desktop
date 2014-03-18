@@ -72,6 +72,8 @@ protected:
 			std::string nine  = "",
 			std::string ten   = "");
 
+	virtual std::string order() { return ""; }
+
 private:
 	int _id;
 	std::string _name;
