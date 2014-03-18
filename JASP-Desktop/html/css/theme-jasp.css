@@ -32,12 +32,7 @@ td, th {
 }
 
 td {
-
 	text-align: right ;
-
-	/*border-left: 1px solid black ;
-	border-right: 1px solid black ;*/
-
 }
 
 thead tr:first-child th {
@@ -62,53 +57,31 @@ tbody td {
 	border-top : none;
 }
 
-/*thead tr:last-child th,
-tbody td
-{
-	border-left : 1px solid black ;
-	border-right : 1px solid black ;
-}*/
-
 thead tr:last-child th:nth-child(1n + 2)
 {
-	border-top: thin solid black ;
+	border-top: thin solid ;
 }
 
 thead tr:nth-child(2) th
 {
-	border-top: thin solid black ;
+	border-top: thin solid ;
 }
 
 thead tr:last-child th
 {
-	border-bottom: thin solid black ;
+	border-bottom: thin solid ;
 }
 
 tbody tr:last-child th,
 tbody tr:last-child td
 {
-	border-bottom: 2px solid black ;
+	border-bottom: 2px solid ;
 }
 
 tfoot td
 {
 	text-align: left;
 }
-
-/*thead tr:nth-child(1n + 2) th:first-child,
-tbody tr th:first-of-type,
-tbody tr td:first-of-type
-{
-	border-left: 2px solid black ;
-}*/
-
-/*thead tr:nth-child(1n + 2) th:last-child,
-thead tr:nth-child(1n + 2) th:first-child,
-tbody tr th:last-of-type,
-tbody tr td:last-child
-{
-	border-right: 2px solid black ;
-}*/
 
 .chart > g > rect { fill: #C9C682 }
 
@@ -170,13 +143,13 @@ div.status.waiting
 	background : url(images/waiting.gif) no-repeat ;
 }
 
-/*div > svg
-{
-	height: 450px ;
-}*/
+.error-state {
+	color: silver ;
+}
 
-
-/*.jasp-frequencies-tables-table thead tr:first-child th:before
+div.error-message-box
 {
-	content: "Frequencies of ";
-}*/
+	padding: 1em ;
+	border-radius: .4em ;
+}
+

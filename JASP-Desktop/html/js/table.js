@@ -64,7 +64,14 @@ $.widget("jasp.table", {
 		
 		var html = ''
 
-        html += '<table>'
+		if (this.options.error) {
+		
+        	html += '<table class="error-state">'
+		}
+		else {
+		
+        	html += '<table>'
+        }
 		
         if ( ! this.options.casesAcrossColumns) {
         
@@ -223,6 +230,13 @@ $.widget("jasp.table", {
 		}
 
         html += '</table>'
+        
+        if (this.options.error && this.options.error.errorMessage) {
+        
+        	html += '<div style="position: absolute ; left: -1000 ; top: -1000 ;" class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'
+        	html += this.options.error.errorMessage
+        	html += '</div>'
+        }
 
 		this.element.html(html)
 		
@@ -244,6 +258,21 @@ $.widget("jasp.table", {
 		})
 		
 		$status.addClass(this.options.status)
+		
+		if (this.options.error && this.options.error.errorMessage) {
+			
+			var $error = this.element.children("div.error-message-box")
+
+			setTimeout(function() {
+			
+				var tablePos = $table.offset()
+				var left = tablePos.left + ($table.width()  - $error.width()) / 2
+				var top  = tablePos.top  + ($table.height() - $error.height()) / 2
+				
+				$error.offset({ top : top, left : left })
+			
+			}, 0)
+		}
 		
 	},
 	_destroy: function () {
