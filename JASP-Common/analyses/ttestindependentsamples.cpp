@@ -53,3 +53,8 @@ Options *TTestIndependentSamples::createDefaultOptions()
 
 	return options;
 }
+
+string TTestIndependentSamples::order()
+{
+	return "ttest,descriptives,inequalityOfVariances";
+}

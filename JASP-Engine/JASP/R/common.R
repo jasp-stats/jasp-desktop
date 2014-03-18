@@ -85,6 +85,16 @@ callback <- function(results=NULL) {
 	rows
 }
 
+.indices <- function(v) {
+
+	indices <- c()
+
+	if (length(v) > 0)
+		indices <- 1:length(v)
+	
+	indices
+}
+
 .clean <- function(value) {
 
 	if (is.null(value))
