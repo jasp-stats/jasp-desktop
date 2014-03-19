@@ -69,6 +69,6 @@ string Descriptives::js()
 {
 	return "{"
 			"    depends : ['descriptives'], "
-			"    render : function(element, results, status) { element.descriptives( { stats : results.stats, tables : results.tables, status : status } ) } "
+			"    render : function(element, results, status) { element.descriptives( { stats : results.stats, tables : results.tables, plots : results.plots, status : status } ) } "
 			"}";
 }
