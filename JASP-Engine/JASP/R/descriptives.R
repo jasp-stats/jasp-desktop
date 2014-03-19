@@ -72,50 +72,51 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	fields <- list()
 
-	fields[[length(fields) + 1]] <- list(id="Valid", type="integer")
-	fields[[length(fields) + 1]] <- list(id="Missing", type="integer")
+	fields[[length(fields) + 1]] <- list(name="Variable", type="string")
+	fields[[length(fields) + 1]] <- list(name="Valid", type="integer")
+	fields[[length(fields) + 1]] <- list(name="Missing", type="integer")
 
 	if (central.tendency[["mean"]])
-		fields[[length(fields) + 1]] <- list(id="Mean", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Mean", type="number", format="sf:4")
 	if (dispersion[["standardErrorMean"]])
-		fields[[length(fields) + 1]] <- list(id="Std. Error of Mean", type="text")	
+		fields[[length(fields) + 1]] <- list(name="Std. Error of Mean", type="text")	
 	if (central.tendency[["median"]])
-		fields[[length(fields) + 1]] <- list(id="Median", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Median", type="number", format="sf:4")
 	if (central.tendency[["mode"]])
-		fields[[length(fields) + 1]] <- list(id="Mode", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Mode", type="number", format="sf:4")
 	if (dispersion[["standardDeviation"]])
-		fields[[length(fields) + 1]] <- list(id="Std. Deviation", type="text")
+		fields[[length(fields) + 1]] <- list(name="Std. Deviation", type="text")
 	if (dispersion[["variance"]])
-		fields[[length(fields) + 1]] <- list(id="Variance", type="text")
+		fields[[length(fields) + 1]] <- list(name="Variance", type="text")
 	if (distribution[["skewness"]]) {
-		fields[[length(fields) + 1]] <- list(id="Skewness", type="text")  
-		fields[[length(fields) + 1]] <- list(id="Std. Error of Skewness", type="text") 
+		fields[[length(fields) + 1]] <- list(name="Skewness", type="text")  
+		fields[[length(fields) + 1]] <- list(name="Std. Error of Skewness", type="text") 
 	}
 	if (distribution[["kurtosis"]]) {
-		fields[[length(fields) + 1]] <- list(id="Kurtosis", type="text")  
-		fields[[length(fields) + 1]] <- list(id="Std. Error of Kurtosis", type="text")
+		fields[[length(fields) + 1]] <- list(name="Kurtosis", type="text")  
+		fields[[length(fields) + 1]] <- list(name="Std. Error of Kurtosis", type="text")
 	}
 	if (dispersion[["range"]])
-		fields[[length(fields) + 1]] <- list(id="Range", type="text")
+		fields[[length(fields) + 1]] <- list(name="Range", type="text")
 	if (dispersion[["minimum"]])
-		fields[[length(fields) + 1]] <- list(id="Minimum", type="text")
+		fields[[length(fields) + 1]] <- list(name="Minimum", type="text")
 	if (dispersion[["maximum"]])
-		fields[[length(fields) + 1]] <- list(id="Maximum", type="text")
+		fields[[length(fields) + 1]] <- list(name="Maximum", type="text")
 	if (central.tendency[["sum"]])
-		fields[[length(fields) + 1]] <- list(id="Sum", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Sum", type="number", format="sf:4")
 	
 	if (percentileValues[["quartiles"]]) {
-		fields[[length(fields) + 1]] <- list(id="25th percentile", type="text")  
-		fields[[length(fields) + 1]] <- list(id="50th percentile", type="text") 
-		fields[[length(fields) + 1]] <- list(id="75th percentile", type="text")
+		fields[[length(fields) + 1]] <- list(name="25th percentile", type="text")  
+		fields[[length(fields) + 1]] <- list(name="50th percentile", type="text") 
+		fields[[length(fields) + 1]] <- list(name="75th percentile", type="text")
 	} 
 	if (percentileValues[["equalGroups"]]) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
 		for (i in seq(equalGroupsNo - 1))
-			fields[[length(fields) + 1]] <- list(id=paste(100 * i / equalGroupsNo, "th percentile", sep=""), type="text") 
+			fields[[length(fields) + 1]] <- list(name=paste(100 * i / equalGroupsNo, "th percentile", sep=""), type="text") 
 	} 
 	if (percentileValues[["percentiles"]]) { 
 		for (i in percentilesPercentiles) 
-			fields[[length(fields) + 1]] <- list(id=paste(i, "th percentile", sep=""), type="text") 
+			fields[[length(fields) + 1]] <- list(name=paste(i, "th percentile", sep=""), type="text") 
 	} 
   
 	stats.results[["title"]] <- "Descriptive Statistics"
@@ -124,12 +125,23 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	footnotes <- list()
 
+	if (perform == "init") {
+	
+		stats.values <- list()
+
+		for (variable in variables)
+			stats.values[[length(stats.values)+1]] <- list(Variable=variable)
+		
+		stats.results[["data"]] <- stats.values
+
+	}
 	if (perform == "run") {
+	
 		stats.values <- list()
 
 		for (field in variables) {
 
-			field.results <- list()
+			field.results <- list(Variable=field)
 			column <- dataset[[field]]
 
 			rows <- nrow(dataset)
@@ -296,10 +308,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			frequency.table <- list()
 		
 			fields <- list(
-							list(id="Frequency", type="integer"),
-							list(id="Percent", type="number", format="dp:1"),
-							list(id="Valid Percent", type="number", format="dp:1"),
-							list(id="Cumulative Percent", type="number", format="dp:1"))
+							list(name="Level", type="string", title=""),
+							list(name="Frequency", type="integer"),
+							list(name="Percent", type="number", format="dp:1"),
+							list(name="Valid Percent", type="number", format="dp:1"),
+							list(name="Cumulative Percent", type="number", format="dp:1"))
 
 			frequency.table[["title"]] <- paste("Frequencies for", variable)
 			frequency.table[["schema"]] <- list(fields=fields)
@@ -324,6 +337,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				t <- table(column)
 				total <- sum(t)
 
+				ns <- list()
 				freqs <- list()
 				percent <- list()
 				validPercent <- list()
@@ -332,6 +346,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				cumFreq <- 0
 
 				for (n in names(t)) {
+
+					ns[[length(ns)+1]] <- n
 					freq <- as.vector(t[n])
 					cumFreq <- cumFreq + freq
 	
@@ -341,6 +357,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					cumPercent[[length(cumPercent)+1]] <- cumFreq / total * 100
 				}
 
+				ns[[length(ns)+1]] <- "Total"
 				freqs[[length(freqs)+1]] <- total
 				percent[[length(percent)+1]] <- 100
 				validPercent[[length(validPercent)+1]] <- 100
@@ -349,22 +366,22 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				data <- list()
 
 				for (i in seq(freqs))
-					data[[length(data)+1]] <- list("Frequency"=freqs[[i]], "Percent"=percent[[i]], "Valid Percent"=validPercent[[i]], "Cumulative Percent"=cumPercent[[i]])
+					data[[length(data)+1]] <- list(Level=ns[[i]], "Frequency"=freqs[[i]], "Percent"=percent[[i]], "Valid Percent"=validPercent[[i]], "Cumulative Percent"=cumPercent[[i]])
 
 				frequency.table[["data"]] <- data
 
 			} else {
+			
+				data <- list()
 		
 				if (class(column) == "factor") {
 			
-					frequency.table[["cases"]] <- levels(dataset[[variable]])
-				
-				} else {
-			
-					frequency.table[["cases"]] <- list()
+					for (level in levels(dataset[[variable]]))
+						data[[length(data)+1]] <- list(level=level)
 				
 				}
 				
+				frequency.table[["data"]] <- data
 			}
 		
 			frequency.tables[[length(frequency.tables)+1]] <- frequency.table

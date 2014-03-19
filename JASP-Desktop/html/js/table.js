@@ -74,84 +74,74 @@ $.widget("jasp.table", {
         }
 		
         if ( ! this.options.casesAcrossColumns) {
-        
-			var dataColumnCount = this.options.schema.fields.length
-			var headerColumnCount
-			
-			if (this.options.cases && this.options.cases.length > 0 && _.isArray(this.options.cases[0]))
-				headerColumnCount = this.options.cases[0].length
-			else
-				headerColumnCount = 1
-				
-			var totalColumnCount = headerColumnCount + dataColumnCount
-			
 
 				html += '<thead>'
 					html += '<tr>'
-                        html += '<th colspan="' + totalColumnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
+                        html += '<th colspan="' + this.options.schema.fields.length + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
 					html += '</tr>'
 
             if (this.options.subtitle) {
                     html += '<tr>'
-                        html += '<th colspan="' + headerColumnCount + '"></th><th colspan="' + dataColumnCount + '">' + this.options.subtitle + '</th>'
+                        html += '<th colspan="' + this.options.schema.fields.length + '"></th>'
                     html += '</tr>'
             }
 
 					html += '<tr>'
-                        html += '<th colspan="' + headerColumnCount + '"></th>'
 					
-            for (var i = 0; i < this.options.schema.fields.length; i++)
-                        html += '<th>' + this.options.schema.fields[i].id + '</th>'
+            for (var i = 0; i < this.options.schema.fields.length; i++) {
+
+				var field = this.options.schema.fields[i]
+            	if (_.has(field, "title"))
+                        html += '<th>' + field.title + '</th>'
+                else if (_.has(field, "name"))
+                		html += '<th>' + field.name + '</th>'
+            	else
+                        html += '<th>' + field.id + '</th>'
+            }
 					
 					html += '</tr>'
 				html += '</thead>'
 				html += '<tbody>'
+				
+			if (this.options.data != null) {
 			
-            for (var i = 0; i < this.options.cases.length; i++) {
+				for (var rowNo = 0; rowNo < this.options.data.length; rowNo++) {
 
-                var caze = this.options.cases[i];
-
-                html += '<tr>'
-                
-                if ( ! _.isArray(caze))
-                	caze = [ caze ]
-                	
-				for (var j = 0; j < caze.length; j++) {
-                
-					if (i == 0 || caze[j] != this.options.cases[i - 1][j])
-						html += '<th>' + caze[j] + '</th>'
-					else
-						html += '<th></th>'
-                }
-
+					html += '<tr>'
 		
-				if (this.options.data != null && i < this.options.data.length) {
-                    _.each(this.options.schema.fields, function(field) {
+					_.each(this.options.schema.fields, function(field) {
 
-                        var value = this.options.data[i][field.id]
-                        if (field.format)
-                            value = this._format(value, field.format)
-                        if (this.options.data[i]["~footnotes"] && this.options.data[i]["~footnotes"][field.id]) {
-                            var footnotes = this.options.data[i]["~footnotes"][field.id]
-                            var sup = "<sup>" + String.fromCharCode(97 + footnotes[0]);
-                            for (var j = 1; j < footnotes.length; j++)
-                                sup += "," + String.fromCharCode(97 + footnotes[i]);
-                            sup += "</sup>"
+						var value = this.options.data[rowNo][field.id]
+						if (_.isUndefined(value))
+							value = this.options.data[rowNo][field.name]
+						
+						if (field.combine && rowNo > 0 && value === this.options.data[rowNo-1][field.name])
+							value = ""
+						else if (_.isUndefined(value))
+							value = "."
+						else if (field.format)
+							value = this._format(value, field.format)
+							
+						if (this.options.data[rowNo]["~footnotes"] && this.options.data[rowNo]["~footnotes"][field.name]) {
+							var footnotes = this.options.data[rowNo]["~footnotes"][field.name]
+							var sup = "<sup>" + String.fromCharCode(97 + footnotes[0]);
+							for (var j = 1; j < footnotes.length; j++)
+								sup += "," + String.fromCharCode(97 + footnotes[rowNo]);
+							sup += "</sup>"
 
-                            value = "" + value + sup
-                        }
+							value = "" + value + sup
+						}
 
-                        html += '<td>' + value + '</td>'
-                    }, this)
-				}
-				else {
-                    _.each(this.options.schema.fields, function(field) {
-                    	html += '<td>.</td>'
-                    }, this)				
-				}
+						html += '<td>' + value + '</td>'
+						
+					}, this)
 					
 					html += '</tr>'
-            }
+				}
+			
+			}
+			
+            
 		
 				html += '</tbody>'
 				
@@ -173,46 +163,57 @@ $.widget("jasp.table", {
         }
         else
         {
+
+			var fields = this.options.schema.fields
+
 				html += '<thead>'
 					html += '<tr>'
-                        html += '<th colspan="' + (1 + this.options.cases.length) + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
+                        html += '<th colspan="' + fields.length + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
 					html += '</tr>'
 					
 			if (this.options.subtitle) {
                     html += '<tr>'
-                        html += '<th></th><th colspan="' + (this.options.cases.length) + '">' + this.options.subtitle + '</th>'
+                        html += '<th colspan="' + fields.length + '">' + this.options.subtitle + '</th>'
                     html += '</tr>'
             }
 					
 					html += '<tr>'
                         html += '<th></th>'
 					
-            _.each(this.options.cases, function(caze){
-                        html += '<th>' + caze + '</th>'
+			var firstCol = fields[0].name
+
+            _.each(this.options.data, function(row) {
+            
+                        html += '<th>' + row[firstCol] + '</th>'
+                        
             }, this)
 					
 					html += '</tr>'
 				html += '</thead>'
 				html += '<tbody>'
 			
-            _.each(this.options.schema.fields, function(field) {
-					html += '<tr>'
-                    html += '<th>' + field.id + '</th>'
+			for (var colNo = 1; colNo < fields.length; colNo++) {
+			
+				var field = fields[colNo]
 
-                //var format;
-                //if (this.options.formats)
-                //    format = this.options.formats[varNo]
+					html += '<tr>'
+                    html += '<th>' + field.name + '</th>'
 		
                 if (this.options.data != null) {
-                    for (var i = 0; i < this.options.cases.length; i++) {
+                
+                    for (var i = 0; i < this.options.data.length; i++) {
+                    
                         var entry = this.options.data[i]
-                        var value = entry[field.id]
+                        var value = entry[field.name]
 
-                        if (field.format)
-                            value = this._format(value, field.format)
+						if (_.isUndefined(value))
+							value = "."
+						else if (field.format)
+							value = this._format(value, field.format)
 
-                        if (this.options.data[i]["~footnotes"] && this.options.data[i]["~footnotes"][field.id]) {
-                            var footnotes = this.options.data[i]["~footnotes"][field.id]
+                        if (this.options.data[i]["~footnotes"] && this.options.data[i]["~footnotes"][field.name]) {
+                        
+                            var footnotes = this.options.data[i]["~footnotes"][field.name]
 
                             var sup = "<sup>" + String.fromCharCode(97 + footnotes[0]);
                             for (var j = 1; j < footnotes.length; j++)
@@ -227,6 +228,11 @@ $.widget("jasp.table", {
 				}
 					
 					html += '</tr>'
+	
+			}
+
+            _.each(this.options.schema.fields, function(field) {
+
             }, this)
 		
 				html += '</tbody>'

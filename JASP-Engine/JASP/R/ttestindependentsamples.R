@@ -38,24 +38,24 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	descriptives <- list()
 
 	descriptives[["title"]] <- "Group Statistics"
-
-	cases <- list()
-	
-	for (i in .indices(options$variables)) {
-		cases[[length(cases) + 1]] <- options$variables[[i]]
-		cases[[length(cases) + 1]] <- options$variables[[i]]
-	}
-
-	descriptives[["cases"]] <- cases
 	
 	fields <- list(
-		list(id="groups", type="text"),
-		list(id="N", type="number", format="sf:4"),
-		list(id="Mean", type="number", format="sf:4"),
-		list(id="Std. Deviation", type="number", format="dp:4;p:.001"),
-		list(id="Std. Error Mean", type="number", format="sf:4"))
+		list(name="Variable", title="", type="text", combine=TRUE),
+		list(name="groups", type="text"),
+		list(name="N", type="number", format="sf:4"),
+		list(name="Mean", type="number", format="sf:4"),
+		list(name="Std. Deviation", type="number", format="dp:4;p:.001"),
+		list(name="Std. Error Mean", type="number", format="sf:4"))
 
 	descriptives[["schema"]] <- list(fields=fields)
+	
+	data <- list()
+	
+	for (variable in options[["variables"]]) {
+	
+		data[[length(data)+1]] <- list(Variable=variable)
+		data[[length(data)+1]] <- list(Variable=variable)
+	}
 	
 	if (perform == "run" && options$groupingVariable != "") {
 	
@@ -66,9 +66,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			descriptives[["error"]] <- list(errorType="badData")
 			
 		} else {
-			
-			descriptives.results <- list()
 		
+			rowNo <- 1
 			groupingVar <- dataset[[ options$groupingVariable ]]
 		
 			for (variable in options[["variables"]]) {
@@ -87,21 +86,23 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						stdDeviation <- .clean(sd(groupDataOm))
 						stdErrorMean <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
 					
-						result <- list(groups=level, N=n, Mean=mean, "Std. Deviation"=stdDeviation,
-										"Std. Error Mean"=stdErrorMean)						
+						result <- list(Variable=variable, groups=level, N=n, Mean=mean, "Std. Deviation"=stdDeviation,
+							"Std. Error Mean"=stdErrorMean)						
+							
 					} else {
 				
 						n <- .clean(length(groupDataOm))
-						result <- list(groups="", N=n, Mean="", "Std. Deviation"="", "Std. Error Mean"="")
+						result <- list(Variable=variable, groups="", N=n, Mean="", "Std. Deviation"="", "Std. Error Mean"="")
 					}
 				
-					descriptives.results[[length(descriptives.results) + 1]] <- result
+					data[[rowNo]] <- result
+					rowNo <- rowNo + 1
 				}
 			}
-		
-			descriptives[["data"]] <- descriptives.results
 		}
 	}
+	
+	descriptives[["data"]] <- data
 
 	descriptives
 }
@@ -113,40 +114,40 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	ttest[["title"]] <- "Independent Samples T-Test"
 
 	fields <- list(
-		list(id="Variance Assumption", type="text"),
-		list(id="t", type="number", format="sf:4"),
-		list(id="df", type="number", format="sf:4"),
-		list(id="p", type="number", format="dp:4;p:.001"))
+		list(name="Variable", title="", type="text", combine=TRUE),
+		list(name="Variance Assumption", type="text"),
+		list(name="t", type="number", format="sf:4"),
+		list(name="df", type="number", format="sf:4"),
+		list(name="p", type="number", format="dp:4;p:.001"))
 
 	if (options$meanDifference) {
 	
-		fields[[length(fields) + 1]] <- list(id="Mean Difference", type="number", format="sf:4")
-		fields[[length(fields) + 1]] <- list(id="Std. Error Difference", type="number", format="sf:4")	
+		fields[[length(fields) + 1]] <- list(name="Mean Difference", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Std. Error Difference", type="number", format="sf:4")	
 	}
 	if (options$confidenceInterval) {
 	
-		fields[[length(fields) + 1]] <- list(id="Lower CI", type="number", format="sf:4")
-		fields[[length(fields) + 1]] <- list(id="Upper CI", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4")
 		
 		# Footnote informing what confidence interval is printed 
-		CINote <- paste("The Confidence Interval is ",options$confidenceIntervalInterval*100,"%",sep="") 
-		footnotes[[length(footnotes) +1]] <- CINote
+		#CINote <- paste("The Confidence Interval is ",options$confidenceIntervalInterval*100,"%",sep="") 
+		#footnotes[[length(footnotes) +1]] <- CINote
 	}
 		
 	ttest[["schema"]] <- list(fields=fields)
 	
-	if (options$equalityOfVariances == "both") {
+	ttest.results <- list()
 	
-		ttest[["cases"]] <- rep(options$variables, each=2)
-		
-	} else {
+	for (variable in options[["variables"]]) {
 	
-		ttest[["cases"]] <- options$variables
+		if (options$equalityOfVariances == "assumeEqual" || options$equalityOfVariances == "both")
+			ttest.results[[length(ttest.results)+1]] <- list(Variable=variable, "Variance Assumption"="assumed equal")
+		if (options$equalityOfVariances == "assumeUnequal" || options$equalityOfVariances == "both")
+			ttest.results[[length(ttest.results)+1]] <- list(Variable=variable, "Variance Assumption"="no assumption")
 	}
 	
-	ready <- length(options$variables) != 0 && options$groupingVariable != ""
-	
-	if (perform == "run" && ready) {
+	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 
 		levels <- unique(dataset[[options$groupingVariable]])
 		
@@ -155,49 +156,45 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
 			
 		} else {
-
-			ttest.results <- list()
-		
-			footnotes <- list()
 		
 			if (options$tails == "oneTailedGreaterThan") {
 		
 				testType <- "greater"
-				hypothesisNote <- "Alternative hypothesis: true difference in means is greater than 0"
-				footnotes[[length(footnotes) +1]] <- hypothesisNote
+				#hypothesisNote <- "Alternative hypothesis: true difference in means is greater than 0"
+				#footnotes[[length(footnotes) +1]] <- hypothesisNote
 			
 			} else if (options$tails == "oneTailedLessThan") {
 		
 				testType <- "less"
-				hypothesisNote <- "Alternative hypothesis: true difference in means is less than 0"
-				footnotes[[length(footnotes) +1]] <- hypothesisNote
+				#hypothesisNote <- "Alternative hypothesis: true difference in means is less than 0"
+				#footnotes[[length(footnotes) +1]] <- hypothesisNote
 			
 			} else {
 		
 				testType <- "two.sided"
-				hypothesisNote <- "Alternative hypothesis: true difference in means is not equal to 0"
-				footnotes[[length(footnotes) +1]] <- hypothesisNote
+				#hypothesisNote <- "Alternative hypothesis: true difference in means is not equal to 0"
+				#footnotes[[length(footnotes) +1]] <- hypothesisNote
 			}
 		
 			if (options$equalityOfVariances == "assumeEqual") {
 		
 				assume <- c(TRUE)
-				assumption=c("equal", NA)
+				assumption=c("assumed equal", NA)
 			
 			} else if (options$equalityOfVariances == "assumeUnequal") {
 		
 				assume <- c(FALSE)
-				assumption=c("unequal", NA)
+				assumption=c("no assumption", NA)
 			
 			} else {  # assuming both
 		
 				assume <- c(TRUE, FALSE)
-				assumption=c("equal", "unequal")
+				assumption=c("assumed equal", "no assumption")
 			}
 		
 			groupingVar <- dataset[[options$groupingVariable]]
-		
 			footnotes <- list()
+			rowNo <- 1
 		
 			for (variable in options[["variables"]]) {
 
@@ -250,30 +247,33 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 					
 						if (variance.assumption.violated) {
 					
-							list("Variance Assumption" = assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
+							list(Variable=variable, "Variance Assumption"=assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
 								 "Lower CI"=ciLow, "Upper CI"=ciUp, "Std. Error Difference"=sed, "~footnotes"=list("Variance Assumption"=list(0)))
 							 
 						} else {
 					
-							list("Variance Assumption" = assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
+							list(Variable=variable, "Variance Assumption" = assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
 								 "Lower CI"=ciLow, "Upper CI"=ciUp, "Std. Error Difference"=sed)					
 						}
 					})
 
 					if (class(result) == "try-error") {
 				
-						result <- list("Variance Assumption" = "", t="", df="", p="", "Mean Difference"="",
-									   "Lower CI"="", "Upper CI"="", "Std. Error Difference"="")
+						result <- list(Variable=variable, "Variance Assumption"=assumption[i], t="", df="", p="", "Mean Difference"="",
+								"Lower CI"="", "Upper CI"="", "Std. Error Difference"="")
 					}
 				
-					ttest.results[[length(ttest.results)+1]] <- result
+					ttest.results[[rowNo]] <- result
+					rowNo <- rowNo + 1
 				}
 			}
 		
-			ttest[["data"]] <- ttest.results
 			ttest[["footnotes"]] <- footnotes
 		}
+		
 	}
+	
+	ttest[["data"]] <- ttest.results
 	
 	ttest
 
@@ -287,14 +287,19 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	levenes <- list()
 
 	levenes[["title"]] <- "Test of Inequality of Variances (Levene's)"
-	levenes[["cases"]] <- options$variables
 	
 	fields <- list(
-		list(id="F", type="number", format="sf:4"),
-		list(id="df", type="number", format="sf:4"),
-		list(id="p", type="number", format="dp:4;p:.001"))
+		list(name="Variable", title="", type="text"),
+		list(name="F", type="number", format="sf:4"),
+		list(name="df", type="number", format="sf:4"),
+		list(name="p", type="number", format="dp:4;p:.001"))
 
 	levenes[["schema"]] <- list(fields=fields)
+	
+	data <- list()
+	
+	for (variable in options[["variables"]])
+		data[[length(data)+1]] <- list(Variable=variable)
 	
 	if (perform == "run" && options$groupingVariable != "") {
 	
@@ -305,9 +310,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			levenes[["error"]] <- list(errorType="badData")
 			
 		} else {
-
-			data <- list()
 	
+			rowNo <- 1
+
 			for (variable in options[["variables"]]) {
 		
 				result <- try (silent=TRUE, expr= {
@@ -318,21 +323,20 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 					df <- .clean(as.numeric(levene[1,2]))
 					p  <- .clean(as.numeric(levene[1,3]))
 		
-					list(F=F, df=df, p=p)
+					list(Variable=variable, F=F, df=df, p=p)
 				})
 
-				if (class(result) == "try-error") {
+				if (class(result) == "try-error")
+					result <- list(Variable=variable, F="", df="", p="")
 	
-					result <- list(F="", df="", p="")
-				}
-	
-				data[[length(data)+1]] <- result
+				data[[rowNo]] <- result
+				rowNo <- rowNo + 1
 			}
-			
-			levenes[["data"]] <- data
 		}
 	
 	}
+	
+	levenes[["data"]] <- data
 
 	levenes
 }
