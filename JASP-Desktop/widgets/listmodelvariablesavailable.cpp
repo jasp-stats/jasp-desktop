@@ -118,7 +118,8 @@ void ListModelVariablesAvailable::notifyAlreadyAssigned(const QList<ColumnInfo> 
 	foreach (const ColumnInfo &toRemove, variables)
 	{
 		int index = _variables.indexOf(toRemove);
-		removeRow(index);
+		if (index != -1)
+			removeRow(index);
 	}
 }
 
