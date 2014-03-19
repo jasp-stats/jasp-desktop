@@ -61,7 +61,7 @@ callback <- function(results=NULL) {
 	cat(RJSONIO::toJSON(object))
 }
 
-.data.frame.to.row.list <- function(df, discard.column.names=FALSE) {
+.dataFrameToRowList <- function(df, discard.column.names=FALSE) {
 
 	if (dim(df)[1] == 0 || dim(df)[2] == 0)
 		return(list())

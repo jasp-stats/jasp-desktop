@@ -14,7 +14,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 	crosstabs <- list()
 
-	if (length(options$rows) > 0 && length(options$columns) > 0)
+	if (length(options$rows) > 0 && length(options$columns) > 0 && perform == "run")
 	{
 		rows <- as.vector(options$rows, "character")
 		columns <- as.vector(options$columns, "character")
@@ -29,7 +29,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 			names(analyses)[dim(analyses)[2]] <- layer$name
 		}
 		
-		analyses <- .data.frame.to.row.list(analyses)
+		analyses <- .dataFrameToRowList(analyses)
 
 		for (analysis in analyses)
 		{
@@ -49,12 +49,12 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 					if (is.null(lvls))
 						lvls <- levels(factor(dataset[[ var.name ]]))
 					
-					cases <- cbind(cases, rep(lvls, each=dim(cases)[1]), stringsAsFactors=FALSE)
-					names(cases)[dim(cases)[j - 1]] <- var.name
+					cases <- cbind(rep(lvls, each=dim(cases)[1]), cases, stringsAsFactors=FALSE)
+					names(cases)[dim(cases)[1]] <- var.name
 				}
 			}
 			
-			cases <- .data.frame.to.row.list(cases, discard.column.names=TRUE)
+			cases <- .dataFrameToRowList(cases, discard.column.names=TRUE)
 
 			table <- list()
 			
