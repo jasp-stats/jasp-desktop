@@ -75,19 +75,30 @@ $.widget("jasp.table", {
 		
         if ( ! this.options.casesAcrossColumns) {
         
+			var dataColumnCount = this.options.schema.fields.length
+			var headerColumnCount
+			
+			if (this.options.cases && this.options.cases.length > 0 && _.isArray(this.options.cases[0]))
+				headerColumnCount = this.options.cases[0].length
+			else
+				headerColumnCount = 1
+				
+			var totalColumnCount = headerColumnCount + dataColumnCount
+			
+
 				html += '<thead>'
 					html += '<tr>'
-                        html += '<th colspan="' + (1 + this.options.schema.fields.length) + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
+                        html += '<th colspan="' + totalColumnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
 					html += '</tr>'
 
             if (this.options.subtitle) {
                     html += '<tr>'
-                        html += '<th></th><th colspan="' + this.options.schema.fields.length + '">' + this.options.subtitle + '</th>'
+                        html += '<th colspan="' + headerColumnCount + '"></th><th colspan="' + dataColumnCount + '">' + this.options.subtitle + '</th>'
                     html += '</tr>'
             }
 
 					html += '<tr>'
-                        html += '<th></th>'
+                        html += '<th colspan="' + headerColumnCount + '"></th>'
 					
             for (var i = 0; i < this.options.schema.fields.length; i++)
                         html += '<th>' + this.options.schema.fields[i].id + '</th>'
@@ -102,10 +113,17 @@ $.widget("jasp.table", {
 
                 html += '<tr>'
                 
-                if (i == 0 || caze != this.options.cases[i - 1])
-                    html += '<th>' + caze + '</th>'
-                else
-                	html += '<th></th>'
+                if ( ! _.isArray(caze))
+                	caze = [ caze ]
+                	
+				for (var j = 0; j < caze.length; j++) {
+                
+					if (i == 0 || caze[j] != this.options.cases[i - 1][j])
+						html += '<th>' + caze[j] + '</th>'
+					else
+						html += '<th></th>'
+                }
+
 		
 				if (this.options.data != null && i < this.options.data.length) {
                     _.each(this.options.schema.fields, function(field) {
