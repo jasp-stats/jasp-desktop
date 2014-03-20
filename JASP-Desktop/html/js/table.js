@@ -88,15 +88,39 @@ $.widget("jasp.table", {
 
 					html += '<tr>'
 					
+			var rowsInEachColumn = { }
+			var maxRows = 1
+			var columnCount = 0
+					
             for (var i = 0; i < this.options.schema.fields.length; i++) {
 
 				var field = this.options.schema.fields[i]
-            	if (_.has(field, "title"))
-                        html += '<th>' + field.title + '</th>'
-                else if (_.has(field, "name"))
-                		html += '<th>' + field.name + '</th>'
-            	else
-                        html += '<th>' + field.id + '</th>'
+
+				var columnName = field.name
+				var bPos = columnName.indexOf("[")
+				if (bPos != -1)
+					columnName = columnName.substring(0, bPos);
+
+				if (_.has(rowsInEachColumn, columnName)) {
+				
+					rowsInEachColumn[columnName]++
+					
+					if (rowsInEachColumn[columnName] > maxRows)
+						maxRows = rowsInEachColumn[columnName]
+				}
+				else {
+				
+					rowsInEachColumn[columnName] = 1
+					columnCount++
+				
+					if (_.has(field, "title"))
+							html += '<th>' + field.title + '</th>'
+					else if (_.has(field, "name"))
+							html += '<th>' + field.name + '</th>'
+					else
+							html += '<th>' + field.id + '</th>'
+						
+                }
             }
 					
 					html += '</tr>'
@@ -107,13 +131,27 @@ $.widget("jasp.table", {
 			
 				for (var rowNo = 0; rowNo < this.options.data.length; rowNo++) {
 
-					html += '<tr>'
+					if (maxRows > 1)
+						html += '<tr class="main-row">'
+					else
+						html += '<tr>'
+					
+					var currentSubRow = 0
+					var rowsInEachColumnInserted = { }
 		
 					_.each(this.options.schema.fields, function(field) {
 
 						var value = this.options.data[rowNo][field.id]
 						if (_.isUndefined(value))
 							value = this.options.data[rowNo][field.name]
+							
+						var columnName = field.name
+						var bPos = columnName.indexOf("[")
+						if (bPos != -1)
+							columnName = columnName.substring(0, bPos);
+							
+						var rowSpan = maxRows / rowsInEachColumn[columnName]
+
 						
 						if (field.combine && rowNo > 0 && value === this.options.data[rowNo-1][field.name])
 							value = ""
@@ -122,17 +160,43 @@ $.widget("jasp.table", {
 						else if (field.format)
 							value = this._format(value, field.format)
 							
-						if (this.options.data[rowNo]["~footnotes"] && this.options.data[rowNo]["~footnotes"][field.name]) {
-							var footnotes = this.options.data[rowNo]["~footnotes"][field.name]
-							var sup = "<sup>" + String.fromCharCode(97 + footnotes[0]);
+						if (this.options.data[rowNo][".footnotes"] && this.options.data[rowNo][".footnotes"][field.name]) {
+
+							var footnotes = this.options.data[rowNo][".footnotes"][field.name]
+
+							var footnotify = function(footnote) {
+								if (_.isNumber(footnote))
+									return String.fromCharCode(97 + footnote)
+								else
+									return footnote
+							}
+
+							var sup = "<sup>" + footnotify(footnotes[0]);
 							for (var j = 1; j < footnotes.length; j++)
-								sup += "," + String.fromCharCode(97 + footnotes[rowNo]);
+								sup += "," + footnotify(footnotes[rowNo]);
 							sup += "</sup>"
 
 							value = "" + value + sup
 						}
 
-						html += '<td>' + value + '</td>'
+						var subRowNo
+						
+						if ( ! _.has(rowsInEachColumnInserted, columnName))
+							rowsInEachColumnInserted[columnName] = 0
+						
+						subRowNo = rowsInEachColumnInserted[columnName]
+						
+						if (subRowNo != currentSubRow) {
+							html += '</tr><tr>'
+							currentSubRow++
+						}
+
+						rowsInEachColumnInserted[columnName] += rowSpan
+						
+						var format = (field.type == "string") ? "text" : ""
+
+						html += '<td rowspan="' + rowSpan + '" class="' + format + '">' + value + '</td>'
+
 						
 					}, this)
 					
@@ -141,7 +205,7 @@ $.widget("jasp.table", {
 			
 			}
 			
-            
+	            html += '<tr><td colspan="' + columnCount + '"></td></tr>'
 		
 				html += '</tbody>'
 				
@@ -151,9 +215,22 @@ $.widget("jasp.table", {
 
 				for (var i = 0; i < this.options.footnotes.length; i++) {
 
-					html += '<tr><td colspan="' + (1 + this.options.schema.fields.length) + '">'
-					html += '<sup>' + String.fromCharCode(97 + i) + '</sup>'
-					html += this.options.footnotes[i]
+					html += '<tr><td colspan="' + this.options.schema.fields.length + '">'
+					
+					var footnote = this.options.footnotes[i]
+					
+					if (_.isString(footnote)) {
+
+						html += '<sup>' + String.fromCharCode(97 + i) + '</sup>'
+						html += footnote
+					}
+					
+					if (_.has(footnote, "symbol")) {
+					
+						html += '<sup>' + footnote.symbol + '</sup>'
+						html += footnote.text
+					}
+					
 					html += '</td></tr>'
 				}
 
@@ -234,6 +311,8 @@ $.widget("jasp.table", {
             _.each(this.options.schema.fields, function(field) {
 
             }, this)
+            
+            	html += '<tr><td colspan="' + this.options.schema.fields.length + '"></td></tr>'
 		
 				html += '</tbody>'
 				

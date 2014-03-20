@@ -95,6 +95,16 @@ callback <- function(results=NULL) {
 	indices
 }
 
+.seqx <- function(from, to) {
+
+	if (from > to)
+		seq <- c()
+	else
+		seq <- from:to
+		
+	seq
+}
+
 .clean <- function(value) {
 
 	if (is.null(value))

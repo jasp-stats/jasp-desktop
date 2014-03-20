@@ -21,6 +21,7 @@ Options *Correlation::createDefaultOptions()
 
 	options->add("tails", new OptionList(list("twoTailed", "oneTailed")));
 
+	options->add("reportSignificance", new OptionBoolean());
 	options->add("flagSignificant", new OptionBoolean());
 
 	options->add("meansAndStdDev", new OptionBoolean());

@@ -33,6 +33,7 @@ td, th {
 
 td {
 	text-align: right ;
+	vertical-align: top ;
 }
 
 thead tr:first-child th {
@@ -73,13 +74,22 @@ thead tr:last-child th
 }
 
 tbody tr:last-child th,
-tbody tr:last-child td
-{
+tbody tr:last-child td {
+
 	border-bottom: 2px solid ;
 }
 
-tfoot td
-{
+tbody tr.main-row td {
+
+	border-top: 1px solid ;
+}
+
+td.text {
+	text-align: left ;
+}
+
+tfoot td {
+
 	text-align: left;
 }
 
