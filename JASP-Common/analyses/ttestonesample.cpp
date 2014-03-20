@@ -41,3 +41,8 @@ Options *TTestOneSample::createDefaultOptions()
 
 	return options;
 }
+
+string TTestOneSample::order()
+{
+	return "ttest,descriptives";
+}
