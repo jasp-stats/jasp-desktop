@@ -16,20 +16,6 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 	ttest[["title"]] <- "Paired Samples T-Test"
 
-	cases <- list()
-
-	for (pair in options$pairs)
-	{
-		if (pair[[1]] == "")
-			pair[[1]] <- "..."
-		if (pair[[2]] == "")
-			pair[[2]] <- "..."
-			
-		cases[[length(cases)+1]] <- paste(pair[[1]], "-", pair[[2]])
-	}
-
-	ttest[["cases"]] <- cases
-
 	fields <- list(
 		list(name=".variable1", type="string", title=""),
 		list(name=".separator", type="string", title=""),
@@ -66,37 +52,47 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				
 				ci <- options$confidenceIntervalInterval
 				
-				if(options$tails=="twoTailed"){
-					tail <- "two.sided"}
-				if(options$tails=="oneTailedGreaterThan"){
-					tail <- "greater"}
-				if(options$tails=="oneTailedLessThan"){
-					tail <- "less"}
+				if (options$tails == "twoTailed")
+					tail <- "two.sided"
+				if (options$tails == "oneTailedGreaterThan")
+					tail <- "greater"
+				if (options$tails == "oneTailedLessThan")
+					tail <- "less"
 		
 				r <- t.test(c1, c2, paired = TRUE, conf.level = ci, alternative = tail)
-				r2 <- t.test(c1, c2, paired = TRUE, conf.level = ci, alternative = "two.sided")
 				
-				t <- .clean(as.numeric(r$statistic))
+				t  <- .clean(as.numeric(r$statistic))
 				df <- as.numeric(r$parameter)
-				p <- as.numeric(r$p.value)
-				m <- as.numeric(r$estimate)
+				p  <- as.numeric(r$p.value)
+				m  <- as.numeric(r$estimate)
 				es <- .clean((mean(c1)-mean(c2))/(sqrt((sd(c1)^2+sd(c2)^2)/2)))
-				ci.l <- as.numeric(r2$conf.int[1])
-				ci.u <- as.numeric(r2$conf.int[2])
+				
+				ci.l <- as.numeric(r$conf.int[1])
+				ci.u <- as.numeric(r$conf.int[2])
+				
+				if (options$tails == "oneTailedGreaterThan")
+					ci.u = .clean(Inf)
+				if (options$tails == "oneTailedLessThan")
+					ci.l = .clean(-Inf)
 				
 				r <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], t=t, df=df, p=p)
-				if(options$meanDifference){
+				
+				if (options$meanDifference) {
+				
 					r[["mean difference"]] <- m
 				}
 				
-				if(options$effectSize){
+				if (options$effectSize) {
+				
 					r[["Cohen's d"]] <- es
 				}
 				
-				if(options$confidenceInterval){
+				if(options$confidenceInterval) {
+				
 					r[["lower"]] <- ci.l
 					r[["upper"]] <- ci.u
 				}
+				
 				r
 			})
 			
@@ -124,31 +120,14 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 	}
 
-	if(options$descriptives){
+	if (options$descriptives) {
 	
 		descriptives <- list()
 
 		descriptives[["title"]] <- "Descriptives"
 
-		cases <- list()
-			
-		for (pair in options$pairs)
-		{
-			if (pair[[1]] == "")
-				pair[[1]] <- "..."
-			if (pair[[2]] == "")
-				pair[[2]] <- "..."
-
-			for(i in 1:2){
-				if(is.na(match(pair[[i]],cases))){
-					cases[[length(cases)+1]] <- pair[[i]]
-				}			
-			}
-		}
-
-		descriptives[["cases"]] <- cases
-
 		fields <- list(
+			list(name=".variable", type="string", title=""),
 			list(name="N", type="number", format="sf:4"),
 			list(name="mean", type="number", format="sf:4"),
 			list(name="sd", type="number", format="dp:4;p:.001"),
@@ -156,15 +135,16 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 		descriptives[["schema"]] <- list(fields=fields)
 
-		if (perform == "run")
-		{
+		if (perform == "run") {
+		
 			descriptives.results <- list()
 			
 			variables <- NULL
 			
-			for (pair in options$pairs)
-			{	
-				for (i in 1:2){
+			for (pair in options$pairs) {	
+
+				for (i in 1:2) {
+
 					result <- try (silent = TRUE, expr = {
 						
 						n <- .clean(as.numeric(length(dataset[[ pair[[i]] ]])))
@@ -175,11 +155,12 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 						else
 							se <- "NaN"
 										
-						list(N=n, mean=m, sd=std, SE=se)
+						list(.variable=pair[[i]], N=n, mean=m, sd=std, SE=se)
 					})
 					
-					if (class(result) == "try-error"){
-						result <- list(N="", mean="", sd="", SE="")
+					if (class(result) == "try-error") {
+					
+						result <- list(.variable=pair[[i]], N="", mean="", sd="", SE="")
 					}
 					
 					if(is.na(match(pair[[i]],variables))){
