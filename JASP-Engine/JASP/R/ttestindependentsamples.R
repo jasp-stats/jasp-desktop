@@ -40,8 +40,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	descriptives[["title"]] <- "Group Statistics"
 	
 	fields <- list(
-		list(name="Variable", title="", type="text", combine=TRUE),
-		list(name="groups", type="text"),
+		list(name="Variable", title="", type="string", combine=TRUE),
+		list(name="groups", type="string"),
 		list(name="N", type="number", format="sf:4"),
 		list(name="Mean", type="number", format="sf:4"),
 		list(name="Std. Deviation", type="number", format="dp:4;p:.001"),
@@ -114,8 +114,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	ttest[["title"]] <- "Independent Samples T-Test"
 
 	fields <- list(
-		list(name="Variable", title="", type="text", combine=TRUE),
-		list(name="Variance Assumption", type="text"),
+		list(name="Variable", title="", type="string", combine=TRUE),
+		list(name="Variance Assumption", type="string"),
 		list(name="t", type="number", format="sf:4"),
 		list(name="df", type="number", format="sf:4"),
 		list(name="p", type="number", format="dp:4;p:.001"))
@@ -289,7 +289,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	levenes[["title"]] <- "Test of Inequality of Variances (Levene's)"
 	
 	fields <- list(
-		list(name="Variable", title="", type="text"),
+		list(name="Variable", title="", type="string"),
 		list(name="F", type="number", format="sf:4"),
 		list(name="df", type="number", format="sf:4"),
 		list(name="p", type="number", format="dp:4;p:.001"))
