@@ -31,21 +31,24 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	ttest[["cases"]] <- cases
 
 	fields <- list(
-		list(id="t", type="number", format="sf:4"),
-		list(id="df", type="number", format="sf:4"),
-		list(id="p", type="number", format="dp:4;p:.001"))
+		list(name=".variable1", type="string", title=""),
+		list(name=".separator", type="string", title=""),
+		list(name=".variable2", type="string", title=""),
+		list(name="t", type="number", format="sf:4"),
+		list(name="df", type="number", format="sf:4"),
+		list(name="p", type="number", format="dp:4;p:.001"))
 
 	if(options$meanDifference){
-		fields[[length(fields)+1]] <- list(id="mean difference", type="number", format="sf:4")
+		fields[[length(fields)+1]] <- list(name="mean difference", type="number", format="sf:4")
 	}
 	
 	if(options$effectSize){
-		fields[[length(fields)+1]] <- list(id="Cohen's d", type="number", format="sf:4")
+		fields[[length(fields)+1]] <- list(name="Cohen's d", type="number", format="sf:4")
 	}
 	
 	if(options$confidenceInterval){
-		fields[[length(fields)+1]] <- list(id="lower", type="number", format="sf:4")
-		fields[[length(fields)+1]] <- list(id="upper", type="number", format="sf:4")
+		fields[[length(fields)+1]] <- list(name="lower", type="number", format="sf:4")
+		fields[[length(fields)+1]] <- list(name="upper", type="number", format="sf:4")
 	}
 
 	ttest[["schema"]] <- list(fields=fields)
@@ -81,7 +84,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				ci.l <- as.numeric(r2$conf.int[1])
 				ci.u <- as.numeric(r2$conf.int[2])
 				
-				r <- list(t=t, df=df, p=p)
+				r <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], t=t, df=df, p=p)
 				if(options$meanDifference){
 					r[["mean difference"]] <- m
 				}
@@ -98,7 +101,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 			})
 			
 			if (class(result) == "try-error"){
-				result <- list(t="", df="", p="")
+				result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], t="", df="", p="")
 				
 				if(options$meanDifference){
 					result[["mean difference"]] <- ""
@@ -146,10 +149,10 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		descriptives[["cases"]] <- cases
 
 		fields <- list(
-			list(id="N", type="number", format="sf:4"),
-			list(id="mean", type="number", format="sf:4"),
-			list(id="sd", type="number", format="dp:4;p:.001"),
-			list(id="SE", type="number", format="dp:4;p:.001"))
+			list(name="N", type="number", format="sf:4"),
+			list(name="mean", type="number", format="sf:4"),
+			list(name="sd", type="number", format="dp:4;p:.001"),
+			list(name="SE", type="number", format="dp:4;p:.001"))
 
 		descriptives[["schema"]] <- list(fields=fields)
 

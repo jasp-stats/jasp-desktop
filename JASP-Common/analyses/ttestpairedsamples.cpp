@@ -34,3 +34,8 @@ Options *TTestPairedSamples::createDefaultOptions()
 
 	return options;
 }
+
+string TTestPairedSamples::order()
+{
+	return "ttest,descriptives";
+}

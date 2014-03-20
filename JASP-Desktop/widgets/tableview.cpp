@@ -19,8 +19,6 @@ TableView::TableView(QWidget *parent) :
 
 	connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(doubleClickedHandler(QModelIndex)));
 
-	setShowGrid(false);
-
 	horizontalHeader()->hide();
 	verticalHeader()->hide();
 	verticalHeader()->setDefaultSectionSize(verticalHeader()->fontMetrics().height() + 2);
