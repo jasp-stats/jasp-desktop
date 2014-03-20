@@ -130,9 +130,6 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4")
 		
-		# Footnote informing what confidence interval is printed 
-		#CINote <- paste("The Confidence Interval is ",options$confidenceIntervalInterval*100,"%",sep="") 
-		#footnotes[[length(footnotes) +1]] <- CINote
 	}
 		
 	ttest[["schema"]] <- list(fields=fields)
@@ -160,20 +157,14 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			if (options$tails == "oneTailedGreaterThan") {
 		
 				testType <- "greater"
-				#hypothesisNote <- "Alternative hypothesis: true difference in means is greater than 0"
-				#footnotes[[length(footnotes) +1]] <- hypothesisNote
 			
 			} else if (options$tails == "oneTailedLessThan") {
 		
 				testType <- "less"
-				#hypothesisNote <- "Alternative hypothesis: true difference in means is less than 0"
-				#footnotes[[length(footnotes) +1]] <- hypothesisNote
 			
 			} else {
 		
 				testType <- "two.sided"
-				#hypothesisNote <- "Alternative hypothesis: true difference in means is not equal to 0"
-				#footnotes[[length(footnotes) +1]] <- hypothesisNote
 			}
 		
 			if (options$equalityOfVariances == "assumeEqual") {
@@ -248,7 +239,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						if (variance.assumption.violated) {
 					
 							list(Variable=variable, "Variance Assumption"=assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
-								 "Lower CI"=ciLow, "Upper CI"=ciUp, "Std. Error Difference"=sed, "~footnotes"=list("Variance Assumption"=list(0)))
+								 "Lower CI"=ciLow, "Upper CI"=ciUp, "Std. Error Difference"=sed, ".footnotes"=list("Variance Assumption"=list(0)))
 							 
 						} else {
 					
