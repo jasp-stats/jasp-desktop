@@ -329,6 +329,14 @@ bool CSV::readLine(vector<string> &items)
 		i++;
 	}
 
+	for (int i = 0; i < items.size(); i++)
+	{
+		string item = items.at(i);
+		if (item.size() > 2 && item[0] == '"' && item[item.size()-1] == '"')
+			item = item.substr(1, item.size()-2);
+		items[i] = item;
+	}
+
 	return true;
 }
 
