@@ -72,9 +72,6 @@ void Engine::run()
 	ss << "JASP-IPC-" << Process::parentPID();
 	string memoryName = ss.str();
 
-	std::cout << "slave \"" << memoryName << "\"\n";
-	std::cout.flush();
-
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
 
 	do
