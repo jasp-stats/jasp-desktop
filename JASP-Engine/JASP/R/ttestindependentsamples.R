@@ -37,12 +37,12 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 	descriptives <- list()
 
-	descriptives[["title"]] <- "Group Statistics"
+	descriptives[["title"]] <- "Group Descriptives"
 	
 	fields <- list(
 		list(name="Variable", title="", type="string", combine=TRUE),
 		list(name="groups", type="string"),
-		list(name="N", type="number", format="sf:4"),
+		list(name="N", type="number"),
 		list(name="Mean", type="number", format="sf:4"),
 		list(name="Std. Deviation", type="number", format="dp:4;p:.001"),
 		list(name="Std. Error Mean", type="number", format="sf:4"))
@@ -114,17 +114,23 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	ttest[["title"]] <- "Independent Samples T-Test"
 
 	fields <- list(
-		list(name="Variable", title="", type="string", combine=TRUE),
-		list(name="Variance Assumption", type="string"),
-		list(name="t", type="number", format="sf:4"),
-		list(name="df", type="number", format="sf:4"),
-		list(name="p", type="number", format="dp:4;p:.001"))
+		list(name=".variable", title="", type="string", combine=TRUE))
+	
+	if (options$equalityOfVariances == "reportBoth")	{
+	
+		fields[[length(fields)+1]] <- list(name="Variances", type="string")
+	}
+	
+	fields[[length(fields)+1]] <- list(name="t", type="number", format="sf:4")
+	fields[[length(fields)+1]] <- list(name="df", type="number", format="sf:4")
+	fields[[length(fields)+1]] <- list(name="p", type="number", format="dp:4;p:.001")
 
 	if (options$meanDifference) {
 	
 		fields[[length(fields) + 1]] <- list(name="Mean Difference", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="Std. Error Difference", type="number", format="sf:4")	
 	}
+	
 	if (options$confidenceInterval) {
 	
 		fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4")
@@ -136,13 +142,22 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	ttest.results <- list()
 	
-	for (variable in options[["variables"]]) {
+	if (options$equalityOfVariances == "reportBoth") {
+
+		for (variable in options[["variables"]]) {
+
+			ttest.results[[length(ttest.results)+1]] <- list(.variable=variable, "Variances"="assumed equal")
+			ttest.results[[length(ttest.results)+1]] <- list(.variable=variable, "Variances"="no assumption")
+		}
+		
+	} else {
 	
-		if (options$equalityOfVariances == "assumeEqual" || options$equalityOfVariances == "both")
-			ttest.results[[length(ttest.results)+1]] <- list(Variable=variable, "Variance Assumption"="assumed equal")
-		if (options$equalityOfVariances == "assumeUnequal" || options$equalityOfVariances == "both")
-			ttest.results[[length(ttest.results)+1]] <- list(Variable=variable, "Variance Assumption"="no assumption")
+		for (variable in options[["variables"]]) {
+
+			ttest.results[[length(ttest.results)+1]] <- list(.variable=variable)
+		}
 	}
+
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 
@@ -153,6 +168,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
 			
 		} else {
+		
+			variance.assumption.violated <- FALSE
 		
 			if (options$tails == "oneTailedGreaterThan") {
 		
@@ -172,7 +189,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 				assume <- c(TRUE)
 				assumption=c("assumed equal", NA)
 			
-			} else if (options$equalityOfVariances == "assumeUnequal") {
+			} else if (options$equalityOfVariances == "noAssumption") {
 		
 				assume <- c(FALSE)
 				assumption=c("no assumption", NA)
@@ -184,8 +201,15 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			}
 		
 			groupingVar <- dataset[[options$groupingVariable]]
-			footnotes <- list()
 			rowNo <- 1
+			
+			violation.footnote.index <- 0
+			
+			if (options$tails != "twoTailed")
+				violation.footnote.index <- violation.footnote.index + 1
+			
+			if (options$equalityOfVariances != "reportBoth")
+				violation.footnote.index <- violation.footnote.index + 1
 		
 			for (variable in options[["variables"]]) {
 
@@ -199,19 +223,17 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 						r <- t.test(variableData ~ groupingVar, alternative=testType,
 									var.equal=assume.equal, conf.level=options$confidenceIntervalInterval)
-								
-						variance.assumption.violated <- FALSE
+
+						variance.assumption.violated.now <- FALSE
 
 						if (assume.equal) {
 					
 							levene <- car::leveneTest(variableData, groupingVar, "mean")
-							
-							print(levene)
 				
 							if (levene[1,3] < .05) {
 						
 								variance.assumption.violated <- TRUE
-								footnotes <- list("Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption")
+								variance.assumption.violated.now <- TRUE
 							}
 						}
 									
@@ -229,28 +251,28 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						
 						} else if (testType == "less") {
 					
-							sed <- "???"# .clean((ciUp - m) / (qt(options$confidenceIntervalInterval,r$parameter)))
+							sed <- ""# .clean((ciUp - m) / (qt(options$confidenceIntervalInterval,r$parameter)))
 						
 						} else {
 					
-							sed <- "???"# .clean((m - ciLow) / (qt(options$confidenceIntervalInterval,r$parameter)))
+							sed <- ""# .clean((m - ciLow) / (qt(options$confidenceIntervalInterval,r$parameter)))
 						}
 					
-						if (variance.assumption.violated) {
+						if (variance.assumption.violated.now && assume.equal) {
 					
-							list(Variable=variable, "Variance Assumption"=assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
-								 "Lower CI"=ciLow, "Upper CI"=ciUp, "Std. Error Difference"=sed, ".footnotes"=list("Variance Assumption"=list(0)))
+							list(.variable=variable, "Variances"=assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
+								 "Lower CI"=ciLow, "Upper CI"=ciUp, "Std. Error Difference"=sed, ".footnotes"=list("p"=list(violation.footnote.index)))
 							 
 						} else {
 					
-							list(Variable=variable, "Variance Assumption" = assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
+							list(.variable=variable, "Variances" = assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
 								 "Lower CI"=ciLow, "Upper CI"=ciUp, "Std. Error Difference"=sed)					
 						}
 					})
 
 					if (class(result) == "try-error") {
 				
-						result <- list(Variable=variable, "Variance Assumption"=assumption[i], t="", df="", p="", "Mean Difference"="",
+						result <- list(.variable=variable, "Variances"=assumption[i], t="", df="", p="", "Mean Difference"="",
 								"Lower CI"="", "Upper CI"="", "Std. Error Difference"="")
 					}
 				
@@ -258,6 +280,22 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 					rowNo <- rowNo + 1
 				}
 			}
+			
+			footnotes <- list()
+			
+			if (options$equalityOfVariances == "assumeEqual")
+				footnotes[[length(footnotes)+1]] <- "All tests, variances of groups assumed equal"
+			if (options$equalityOfVariances == "noAssumption")
+				footnotes[[length(footnotes)+1]] <- "All tests, variances of groups not assumed equal"
+				
+			if (options$tails == "oneTailedGreaterThan")
+				footnotes[[length(footnotes)+1]] <- "All tests, one tailed (group 1 greater than group 2)"
+			if (options$tails == "oneTailedLessThan")
+				footnotes[[length(footnotes)+1]] <- "All tests, one tailed (group 1 less than group 2)"
+				
+			if (variance.assumption.violated)
+				footnotes[[length(footnotes)+1]] <- "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"
+
 		
 			ttest[["footnotes"]] <- footnotes
 		}

@@ -198,6 +198,73 @@
    <item row="1" column="0">
     <widget class="QWidget" name="widget_3" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0" colspan="2">
+       <widget class="QGroupBox" name="groupBox_8">
+        <property name="title">
+         <string>Equality of Variances</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>6</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="BoundGroupBox" name="equalityOfVariances" native="true">
+           <layout class="QGridLayout" name="gridLayout_5">
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="reportBoth">
+              <property name="text">
+               <string>Report both</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="noAssumption">
+              <property name="text">
+               <string>No assumption</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="assumeEqual">
+              <property name="text">
+               <string>Assume equal</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QWidget" name="widget_5" native="true"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="testUnequalVariances">
+           <property name="text">
+            <string>Test inequality of variances</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item row="0" column="2">
        <widget class="QGroupBox" name="groupBox_7">
         <property name="title">
@@ -217,7 +284,7 @@
          <item row="1" column="0" colspan="3">
           <widget class="BoundCheckBox" name="confidenceInterval">
            <property name="text">
-            <string>Confidence Interval</string>
+            <string>Confidence interval</string>
            </property>
           </widget>
          </item>
@@ -264,15 +331,15 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="0" colspan="2">
-       <widget class="QGroupBox" name="groupBox_8">
+      <item row="1" column="0">
+       <widget class="QGroupBox" name="groupBox_9">
         <property name="title">
-         <string>Equality of variances</string>
+         <string>Missing values</string>
         </property>
         <property name="flat">
          <bool>true</bool>
         </property>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QGridLayout" name="gridLayout_4">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -286,8 +353,58 @@
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <widget class="BoundGroupBox" name="equalityOfVariances" native="true">
-           <layout class="QGridLayout" name="gridLayout_5">
+          <widget class="BoundGroupBox" name="missingValues" native="true">
+           <layout class="QGridLayout" name="gridLayout_6">
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="excludeAnalysisByAnalysis">
+              <property name="text">
+               <string>Exclude cases analysis by analysis</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="excludeListwise">
+              <property name="text">
+               <string>Exclude cases listwise</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QGroupBox" name="groupBox_10">
+        <property name="title">
+         <string>Tails</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>3</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="BoundGroupBox" name="tails" native="true">
+           <layout class="QGridLayout" name="gridLayout_9">
             <property name="topMargin">
              <number>0</number>
             </property>
@@ -295,37 +412,27 @@
              <number>0</number>
             </property>
             <item row="2" column="0">
-             <widget class="QRadioButton" name="both">
+             <widget class="QRadioButton" name="oneTailedLessThan">
               <property name="text">
-               <string>Report both</string>
+               <string>One-tailed group two greater</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QRadioButton" name="assumeUnequal">
+             <widget class="QRadioButton" name="oneTailedGreaterThan">
               <property name="text">
-               <string>Assume unequal</string>
+               <string>One-tailed group one greater</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QRadioButton" name="assumeEqual">
+             <widget class="QRadioButton" name="twoTailed">
               <property name="text">
-               <string>Assume equal</string>
+               <string>Two-tailed</string>
               </property>
              </widget>
             </item>
            </layout>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QWidget" name="widget_5" native="true"/>
-         </item>
-         <item row="1" column="0">
-          <widget class="BoundCheckBox" name="testUnequalVariances">
-           <property name="text">
-            <string>Test Inequality of variances</string>
-           </property>
           </widget>
          </item>
         </layout>
@@ -347,122 +454,10 @@
      </property>
     </spacer>
    </item>
-   <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBox_9">
-     <property name="title">
-      <string>Missing values</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>3</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="BoundGroupBox" name="missingValues" native="true">
-        <layout class="QGridLayout" name="gridLayout_6">
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QRadioButton" name="excludeAnalysisByAnalysis">
-           <property name="text">
-            <string>Exclude cases analysis by analysis</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="excludeListwise">
-           <property name="text">
-            <string>Exclude cases listwise</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QGroupBox" name="groupBox_10">
-     <property name="title">
-      <string>Tails</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_7">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>3</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="BoundGroupBox" name="tails" native="true">
-        <layout class="QGridLayout" name="gridLayout_9">
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="2" column="0">
-          <widget class="QRadioButton" name="oneTailedLessThan">
-           <property name="text">
-            <string>One-tailed &lt; Test value</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="oneTailedGreaterThan">
-           <property name="text">
-            <string>One-tailed &gt; Test value</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QRadioButton" name="twoTailed">
-           <property name="text">
-            <string>Two-tailed</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QWidget" name="widget_8" native="true"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
   </layout>
   <zorder>widget</zorder>
   <zorder>horizontalSpacer</zorder>
   <zorder>widget_3</zorder>
-  <zorder>groupBox_9</zorder>
-  <zorder>groupBox_10</zorder>
  </widget>
  <customwidgets>
   <customwidget>
