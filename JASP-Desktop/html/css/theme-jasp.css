@@ -138,6 +138,13 @@ div.copy
 	background-size : 100% ;
 	cursor : pointer ;
 	display: inline-block ;
+	
+	border: 1px solid transparent ;
+}
+
+div.copy:active {
+
+	border: 1px solid silver ;
 }
 
 div.status
