@@ -96,7 +96,7 @@ $(document).ready(function() {
 
 		var item = $("#" + id)
 
-		var newItem = $('<div id="' + id + '" class="jasp-analysis"></div>')
+		var newItem = $('<div id="' + id + '" class="jasp-analysis"><div class="jasp-analysis-inner"></div></div>')
 		newItem.click(selectedHandler)
 		
 		if (analysis.id == selectedAnalysisId)
@@ -125,8 +125,9 @@ $(document).ready(function() {
 		}
 
 		item = newItem
+		var inner = item.children(".jasp-analysis-inner")
 
-		renderer.render(item, results, status)
+		renderer.render(inner, results, status)
 		
 		if (selectedAnalysisId == analysis.id)
 			window.scrollIntoView(item);

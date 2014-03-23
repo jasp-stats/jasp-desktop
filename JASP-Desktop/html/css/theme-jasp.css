@@ -102,18 +102,19 @@ svg > text
 	font-size: 120% ;
 }
 
-.jasp-analysis
-{
+.jasp-analysis-inner {
+
 	margin: .7em ;
 	padding: 1em ;
+	display: inline-block ;
 }
 
-.jasp-analysis.unselected
+.jasp-analysis.unselected .jasp-analysis-inner
 {
 	background-color: #E8E8E8 ;
 }
 
-.jasp-analysis.selected
+.jasp-analysis.selected .jasp-analysis-inner
 {
 	background-color: white ;
 }
