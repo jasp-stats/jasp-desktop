@@ -1,4 +1,6 @@
-kurtosis <- function(x) {
+
+.descriptivesKurtosis <- function(x) {
+
 	# Kurtosis function as in SPSS: 
 	# http://www.ats.ucla.edu/stat/mult_pkg/faq/general/kurtosis.htm
 	# http://en.wikipedia.org/wiki/Kurtosis#Estimators_of_population_kurtosis
@@ -12,8 +14,10 @@ kurtosis <- function(x) {
 	c <- (-3 * (n - 1)^2) / ((n - 2) * (n - 3))
 	kurtosis <- a * b + c
 	return(kurtosis)
-}	
-skewness <- function(x) {
+}
+
+.descriptivesSkewness <- function(x) {
+
 	# Skewness function as in SPSS (for samlpes spaces): 
 	# http://suite101.com/article/skew-and-how-skewness-is-calculated-in-statistical-software-a231005
 	
@@ -24,31 +28,38 @@ skewness <- function(x) {
 	a <- n / ((n - 1) * (n - 2))
 	skewness <- sum(z^3) * a
 	return(skewness)
-} 
-SES <- function(x) {
+}
+
+.descriptivesSES <- function(x) {
+
 	# Standard Error of Skewness
 	# Formula found http://web.ipac.caltech.edu/staff/fmasci/home/statistics_refs/SkewStatSignif.pdf
 	
 	n <- length(x)
 	SES <- sqrt((6 * n * (n - 1) / ((n - 2) * (n + 1) * (n + 3))))
 	return(SES)
-} 
-SEK <- function(x) {
+}
+
+.descriptivesSEK <- function(x) {
+
 	# Standard Error of Kurtosis
 	# Formula found http://web.ipac.caltech.edu/staff/fmasci/home/statistics_refs/SkewStatSignif.pdf
 	
 	n <- length(x)
-	SEK <- 2 * SES(x) * sqrt((n^2 - 1) / ((n - 3) * (n + 5)))
+	SEK <- 2 * .descriptivesSES(x) * sqrt((n^2 - 1) / ((n - 3) * (n + 5)))
 	return(SEK)
 } 
 
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
-	if (is.null(dataset))
-	{
+	if (is.null(dataset)) {
+	
 		if (perform == "run") {
+		
 			dataset <- read.dataset.to.end()
+			
 		} else {
+		
 			dataset <- read.dataset.header()
 		}
 	}
@@ -88,14 +99,19 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		fields[[length(fields) + 1]] <- list(name="Std. Deviation", type="text")
 	if (dispersion[["variance"]])
 		fields[[length(fields) + 1]] <- list(name="Variance", type="text")
+		
 	if (distribution[["skewness"]]) {
+	
 		fields[[length(fields) + 1]] <- list(name="Skewness", type="text")  
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Skewness", type="text") 
 	}
+	
 	if (distribution[["kurtosis"]]) {
+	
 		fields[[length(fields) + 1]] <- list(name="Kurtosis", type="text")  
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Kurtosis", type="text")
 	}
+	
 	if (dispersion[["range"]])
 		fields[[length(fields) + 1]] <- list(name="Range", type="text")
 	if (dispersion[["minimum"]])
@@ -106,15 +122,20 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		fields[[length(fields) + 1]] <- list(name="Sum", type="number", format="sf:4")
 	
 	if (percentileValues[["quartiles"]]) {
+	
 		fields[[length(fields) + 1]] <- list(name="25th percentile", type="text")  
 		fields[[length(fields) + 1]] <- list(name="50th percentile", type="text") 
 		fields[[length(fields) + 1]] <- list(name="75th percentile", type="text")
-	} 
+	}
+	
 	if (percentileValues[["equalGroups"]]) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
+	
 		for (i in seq(equalGroupsNo - 1))
 			fields[[length(fields) + 1]] <- list(name=paste(100 * i / equalGroupsNo, "th percentile", sep=""), type="text") 
-	} 
+	}
+	
 	if (percentileValues[["percentiles"]]) { 
+	
 		for (i in percentilesPercentiles) 
 			fields[[length(fields) + 1]] <- list(name=paste(i, "th percentile", sep=""), type="text") 
 	} 
@@ -134,36 +155,45 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		stats.results[["data"]] <- stats.values
 
-	}
-	if (perform == "run") {
+	} else if (perform == "run") {
 	
 		stats.values <- list()
 
-		for (field in variables) {
+		for (variable in variables) {
 
-			field.results <- list(Variable=field)
-			column <- dataset[[field]]
+			variable.results <- list(Variable=variable)
+			column <- dataset[[variable]]
 
 			rows <- nrow(dataset)
 			na.omitted = na.omit(column)
 
-			field.results[["Valid"]] = length(na.omitted)
-			field.results[["Missing"]] = rows - length(na.omitted)
+			variable.results[["Valid"]] = length(na.omitted)
+			variable.results[["Missing"]] = rows - length(na.omitted)
 
 			if (central.tendency[["mean"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["Mean"]] <- .clean(mean(na.omitted))
+				
+					variable.results[["Mean"]] <- .clean(mean(na.omitted))
+					
 				} else {
-					field.results[["Mean"]] <- ""
+				
+					variable.results[["Mean"]] <- ""
 				}
 			}
+			
 			if (central.tendency[["median"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["Median"]] <- .clean(median(na.omitted))
+				
+					variable.results[["Median"]] <- .clean(median(na.omitted))
+					
 				} else {
-					field.results[["Median"]] <- ""
+				
+					variable.results[["Median"]] <- ""
 				}
 			}
+			
 			if (central.tendency[["mode"]]) {
 		
 				if (class(na.omitted) != "factor") {
@@ -177,115 +207,176 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 							footnotes[[length(footnotes)+1]] <- warning
 						index <- which.max(footnotes == warning) - 1
 					
-						field.results[["~footnotes"]] <- list(Mode=list(index));
+						variable.results[[".footnotes"]] <- list(Mode=list(index));
 					}
 			
-					field.results[["Mode"]] <- .clean(mode[1])
+					variable.results[["Mode"]] <- .clean(mode[1])
 				
 				} else {
 			
-					field.results[["Mode"]] <- ""
+					variable.results[["Mode"]] <- ""
 				}
 			
 			
 			}
+			
 			if (central.tendency[["sum"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["Sum"]] <- .clean(sum(na.omitted))
+				
+					variable.results[["Sum"]] <- .clean(sum(na.omitted))
+					
 				} else {
-					field.results[["Sum"]] <- ""
+				
+					variable.results[["Sum"]] <- ""
 				}
 			}
+			
 			if (dispersion[["maximum"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["Maximum"]] <- .clean(max(na.omitted))
+				
+					variable.results[["Maximum"]] <- .clean(max(na.omitted))
+					
 				} else {
-					field.results[["Maximum"]] <- ""
+				
+					variable.results[["Maximum"]] <- ""
 				}
 			}
+			
 			if (dispersion[["minimum"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["Minimum"]] <- .clean(min(na.omitted))
+				
+					variable.results[["Minimum"]] <- .clean(min(na.omitted))
+					
 				} else {
-					field.results[["Minimum"]] <- ""
+				
+					variable.results[["Minimum"]] <- ""
 				}
 			}
+			
 			if (dispersion[["range"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["Range"]] <- .clean(range(na.omitted)[2]-range(na.omitted)[1])
+				
+					variable.results[["Range"]] <- .clean(range(na.omitted)[2]-range(na.omitted)[1])
+					
 				} else {
-					field.results[["Range"]] <- ""
+				
+					variable.results[["Range"]] <- ""
 				}
 			}
+			
 			if (dispersion[["standardDeviation"]]) {
+			
 				if (class(na.omitted) != "factor"){
-					field.results[["Std. Deviation"]] <- .clean(sd(na.omitted))
+				
+					variable.results[["Std. Deviation"]] <- .clean(sd(na.omitted))
+					
 				} else {
-					field.results[["Std. Deviation"]] <- ""
+				
+					variable.results[["Std. Deviation"]] <- ""
 				}
 			}
+			
 			if (dispersion[["standardErrorMean"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["Std. Error of Mean"]] <- .clean(sd(na.omitted)/sqrt(length(na.omitted)))
+				
+					variable.results[["Std. Error of Mean"]] <- .clean(sd(na.omitted)/sqrt(length(na.omitted)))
+					
 				} else {
-					field.results[["Std. Error of Mean"]] <- ""
+				
+					variable.results[["Std. Error of Mean"]] <- ""
 				}
 			}
+			
 			if (dispersion[["variance"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["Variance"]] <- .clean(var(na.omitted))
+				
+					variable.results[["Variance"]] <- .clean(var(na.omitted))
+					
 				} else {
-					field.results[["Variance"]] <- ""
+				
+					variable.results[["Variance"]] <- ""
 				}
 			}
+			
 			if (distribution[["kurtosis"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["Kurtosis"]] <- .clean(kurtosis(na.omitted))
-					field.results[["Std. Error of Kurtosis"]] <- .clean(SEK(na.omitted))
+				
+					variable.results[["Kurtosis"]] <- .clean(.descriptivesKurtosis(na.omitted))
+					variable.results[["Std. Error of Kurtosis"]] <- .clean(.descriptivesSEK(na.omitted))
+					
 				} else {
-					field.results[["Kurtosis"]] <- ""
-					field.results[["Std. Error of Kurtosis"]] <- ""
+				
+					variable.results[["Kurtosis"]] <- ""
+					variable.results[["Std. Error of Kurtosis"]] <- ""
 				}
 			}
+			
 			if (distribution[["skewness"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["Skewness"]] <- .clean(skewness(na.omitted))
-					field.results[["Std. Error of Skewness"]] <- .clean(SES(na.omitted))
+				
+					variable.results[["Skewness"]] <- .clean(.descriptivesSkewness(na.omitted))
+					variable.results[["Std. Error of Skewness"]] <- .clean(.descriptivesSES(na.omitted))
+					
 				} else {
-					field.results[["Skewness"]] <- ""
-					field.results[["Std. Error of Skewness"]] <- ""
+				
+					variable.results[["Skewness"]] <- ""
+					variable.results[["Std. Error of Skewness"]] <- ""
 				}
 			}
-			if (percentileValues[["quartiles"]]) { 
+			
+			if (percentileValues[["quartiles"]]) {
+			
 				if (class(na.omitted) != "factor") {
-					field.results[["25th percentile"]] <- .clean(quantile(na.omitted, c(.25), type=6, names=F))
-					field.results[["50th percentile"]] <- .clean(quantile(na.omitted, c(.5), type=6, names=F))
-					field.results[["75th percentile"]] <- .clean(quantile(na.omitted, c(.75), type=6, names=F))
+				
+					variable.results[["25th percentile"]] <- .clean(quantile(na.omitted, c(.25), type=6, names=F))
+					variable.results[["50th percentile"]] <- .clean(quantile(na.omitted, c(.5), type=6, names=F))
+					variable.results[["75th percentile"]] <- .clean(quantile(na.omitted, c(.75), type=6, names=F))
+					
 				} else {
-					field.results[["25th percentile"]] <- ""
-					field.results[["50th percentile"]] <- ""
-					field.results[["75th percentile"]] <- ""
+				
+					variable.results[["25th percentile"]] <- ""
+					variable.results[["50th percentile"]] <- ""
+					variable.results[["75th percentile"]] <- ""
 				}
-			}	
-			if (percentileValues[["equalGroups"]]) {  
+			}
+			
+			if (percentileValues[["equalGroups"]]) {
+			
 				if (class(na.omitted) != "factor") {
+				
 					for (i in seq(equalGroupsNo - 1))
-						field.results[[paste(100 * i / equalGroupsNo, "th percentile", sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
+						variable.results[[paste(100 * i / equalGroupsNo, "th percentile", sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
+						
 				} else {
+				
 					for (i in seq(equalGroupsNo - 1))
-						field.results[[paste(100 * i / equalGroupsNo, "th percentile", sep="")]] <- ""
+						variable.results[[paste(100 * i / equalGroupsNo, "th percentile", sep="")]] <- ""
+						
 				}
-			}	
-			if (percentileValues[["percentiles"]]) {  
+			}
+				
+			if (percentileValues[["percentiles"]]) {
+			
 				if (class(na.omitted) != "factor") {
+				
 					for (i in percentilesPercentiles)
-						field.results[[paste(i,"th percentile", sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
+						variable.results[[paste(i,"th percentile", sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
+						
 				} else {
+				
 					for (i in 1:(equalGroupsNo - 1))
-						field.results[[paste(i,"th percentile", sep="")]] <- ""
+						variable.results[[paste(i,"th percentile", sep="")]] <- ""
 				}
-			}	
-			stats.values[[length(stats.values) + 1]] <- field.results
+			}
+			stats.values[[length(stats.values) + 1]] <- variable.results
 		}
 	
 		stats.results[["data"]] <- stats.values
@@ -297,7 +388,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	#### FREQUENCIES TABLES
 
 	if (options$main$displayFrequencyTables) {
+	
 		frequency.tables <- list()
+		
 		for (variable in variables) {
 	
 			column <- dataset[[variable]]
@@ -318,8 +411,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			frequency.table[["schema"]] <- list(fields=fields)
 
 			if (class(column) == "factor"){
+			
 				frequency.table[["cases"]] <- levels(dataset[[variable]])
+				
 			} else {
+			
 				frequency.table[["cases"]] <- list()
 			}
 		
@@ -328,10 +424,14 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				lvls <- c()
 
 				if (class(column) == "factor") {
+				
 					lvls <- levels(dataset[[variable]])
+					
 				} else if (class(column) == "integer") {
+				
 					lvls <- sort(unique(dataset[[variable]]))
 				}
+				
 				frequency.table[["cases"]] <- c(lvls, "Total")
 
 				t <- table(column)
@@ -406,8 +506,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			frequency.plot[["title"]] <- paste("Frequencies for", variable)
 
 			if (class(column) == "factor") {
+			
 				frequency.plot[["cases"]] <- as.character(levels(column))
+				
 			} else if (class(column) == "integer") {
+			
 				frequency.plot[["cases"]] <- as.character(sort(unique(column)))
 			}
 
@@ -424,6 +527,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				cumFreq <- 0
 
 				for (n in names(t)) {
+				
 					freq <- as.vector(t[n])
 					cumFreq <- cumFreq + freq
 	

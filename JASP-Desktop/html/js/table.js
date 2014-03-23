@@ -4,8 +4,7 @@ $.widget("jasp.table", {
 		title: "",
         subtitle: null,
 		variables: [ ],
-		cases: [ ],
-        data: null,
+        data: [ ],
         casesAcrossColumns : false,
         formats : null,
         status : "waiting"
@@ -242,45 +241,51 @@ $.widget("jasp.table", {
         {
 
 			var fields = this.options.schema.fields
+			var data = this.options.data
+
+			var columnCount = data.length + 1
 
 				html += '<thead>'
 					html += '<tr>'
-                        html += '<th colspan="' + fields.length + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
+					
+                        html += '<th colspan="' + columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
 					html += '</tr>'
 					
 			if (this.options.subtitle) {
                     html += '<tr>'
-                        html += '<th colspan="' + fields.length + '">' + this.options.subtitle + '</th>'
+                        html += '<th colspan="' + columnCount + '">' + this.options.subtitle + '</th>'
                     html += '</tr>'
             }
 					
 					html += '<tr>'
-                        html += '<th></th>'
+					html += '<th></th>'
 					
+
 			var firstCol = fields[0].name
 
-            _.each(this.options.data, function(row) {
-            
-                        html += '<th>' + row[firstCol] + '</th>'
-                        
-            }, this)
+			_.each(data, function(col) {
+		
+						html += '<th>' + col[firstCol] + '</th>'
+					
+			}, this)
+			
 					
 					html += '</tr>'
 				html += '</thead>'
 				html += '<tbody>'
 			
-			for (var colNo = 1; colNo < fields.length; colNo++) {
+			for (var rowNo = 1; rowNo < fields.length; rowNo++) {
 			
-				var field = fields[colNo]
+				var field = fields[rowNo]
 
 					html += '<tr>'
                     html += '<th>' + field.name + '</th>'
 		
                 if (this.options.data != null) {
                 
-                    for (var i = 0; i < this.options.data.length; i++) {
+                    for (var colNo = 0; colNo < data.length; colNo++) {
                     
-                        var entry = this.options.data[i]
+                        var entry = this.options.data[colNo]
                         var value = entry[field.name]
 
 						if (_.isUndefined(value))
@@ -288,9 +293,9 @@ $.widget("jasp.table", {
 						else if (field.format)
 							value = this._format(value, field.format)
 
-                        if (this.options.data[i]["~footnotes"] && this.options.data[i]["~footnotes"][field.name]) {
+                        if (this.options.data[colNo][".footnotes"] && this.options.data[colNo][".footnotes"][field.name]) {
                         
-                            var footnotes = this.options.data[i]["~footnotes"][field.name]
+                            var footnotes = this.options.data[colNo][".footnotes"][field.name]
 
                             var sup = "<sup>" + String.fromCharCode(97 + footnotes[0]);
                             for (var j = 1; j < footnotes.length; j++)
@@ -307,12 +312,8 @@ $.widget("jasp.table", {
 					html += '</tr>'
 	
 			}
-
-            _.each(this.options.schema.fields, function(field) {
-
-            }, this)
             
-            	html += '<tr><td colspan="' + this.options.schema.fields.length + '"></td></tr>'
+            	html += '<tr><td colspan="' + columnCount + '"></td></tr>'
 		
 				html += '</tbody>'
 				
@@ -322,7 +323,7 @@ $.widget("jasp.table", {
 
 				for (var i = 0; i < this.options.footnotes.length; i++) {
 
-					html += '<tr><td colspan="' + (1 + this.options.cases.length) + '">'
+					html += '<tr><td colspan="' + columnCount + '">'
 					html += '<sup>' + String.fromCharCode(97 + i) + '</sup>'
 					html += this.options.footnotes[i]
 					html += '</td></tr>'
