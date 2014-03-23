@@ -3,123 +3,136 @@
 
 $(document).ready(function() {
 
-    var analyses = []
+	var analyses = []
 	var selectedAnalysisId = -1;
-    var selectedAnalysis = null
+	var selectedAnalysis = null
 
-    window.select = function(id) {
+	window.select = function(id) {
 
-        if (selectedAnalysis != null)
-            $(selectedAnalysis).removeClass("selected")
+		if (selectedAnalysis != null)
+			$(selectedAnalysis).removeClass("selected")
 
-        var analysis = $('#id-' + id)
-        selectedAnalysisId = id
+		var analysis = $('#id-' + id)
+		selectedAnalysisId = id
 
-        if (analysis.length === 0)
-            return
+		if (analysis.length === 0)
+			return
 
-        selectedAnalysis = analysis[0]
+		selectedAnalysis = analysis[0]
 
-        analysis.addClass("selected").removeClass("unselected")
-        $("body").addClass("selected")
-    }
-    
-    window.scrollIntoView = function(item) {
-    
-        var itemTop = item.offset().top
-        var itemBottom = itemTop + item.height() + parseInt(item.css('marginBottom')) + parseInt(item.css('marginTop'))
-        var windowTop = document.body.scrollTop
-        var windowBottom = windowTop + window.innerHeight
+		analysis.addClass("selected").removeClass("unselected")
+		$("body").addClass("selected")
+	}
+	
+	window.scrollIntoView = function(item) {
+	
+		var itemTop = item.offset().top
+		var itemBottom = itemTop + item.height() + parseInt(item.css('marginBottom')) + parseInt(item.css('marginTop'))
+		var windowTop = document.body.scrollTop
+		var windowBottom = windowTop + window.innerHeight
 
-        //console.log(itemTop, itemBottom, windowTop, windowBottom)
+		//console.log(itemTop, itemBottom, windowTop, windowBottom)
 
-        if (itemTop < windowTop && itemBottom < windowBottom)
-            $("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
-        else if (itemBottom > windowBottom && item.height() < window.innerHeight)
-            $("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing'});
-    
-    }
+		if (itemTop < windowTop && itemBottom < windowBottom)
+			$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
+		else if (itemBottom > windowBottom && item.height() < window.innerHeight)
+			$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing'});
+	
+	}
 
-    window.unselect = function() {
+	window.unselect = function() {
 
-        $(analyses).removeClass("unselected")
-        $(selectedAnalysis).removeClass("selected")
-        $("body").removeClass("selected")
+		$(analyses).removeClass("unselected")
+		$(selectedAnalysis).removeClass("selected")
+		$("body").removeClass("selected")
 
 		selectedAnalysisId = -1
-        selectedAnalysis = null
-    }
+		selectedAnalysis = null
+	}
 
-    window.remove = function(id) {
+	window.remove = function(id) {
 
-        window.unselect()
+		window.unselect()
 
-        var analysis = $('#id-' + id)
-        analysis.remove()
-    }
+		var analysis = $('#id-' + id)
+		analysis.remove()
+	}
 
-    window.unselectByClickingBody = function()
-    {
-        window.unselect()
-        jasp.analysisUnselected()
-    }
+	window.unselectByClickingBody = function(event) {
 
-    var selectedHandler = function(event) {
+		if ($(event.target).is(".jasp-analysis *") == false) {
+	
+			window.unselect()
+			jasp.analysisUnselected()
+		}
+	}
 
-        var id = $(event.currentTarget).attr("id")
-        var idAsInt = parseInt(id.substring(3))
+	var selectedHandler = function(event) {
 
-        window.select(idAsInt)
-        jasp.analysisSelected(idAsInt)
+		if ($(event.target).is(".toolbar") || $(event.target).is(".toolbar > *"))
+			return
 
-        event.stopPropagation()
-    }
+		var id = $(event.currentTarget).attr("id")
+		var idAsInt = parseInt(id.substring(3))
+		
+		if (selectedAnalysisId == idAsInt) {
+		
+			window.unselect()
+			jasp.analysisUnselected()
+		}
+		else {
 
-    window.analysisChanged = function(renderer, analysis) {
+			window.select(idAsInt)
+			jasp.analysisSelected(idAsInt)
+		}
 
-        var id = "id-" + analysis.id
-        var results = analysis.results
-        var status = analysis.status
+	}
 
-        var item = $("#" + id)
+	window.analysisChanged = function(renderer, analysis) {
 
-        var newItem = $('<div id="' + id + '" class="jasp-analysis"></div>')
-        newItem.click(selectedHandler)
-        
-        if (analysis.id == selectedAnalysisId)
-        {
-        	if (selectedAnalysis != null)
-        		$(selectedAnalysis).removeClass("selected")
+		var id = "id-" + analysis.id
+		var results = analysis.results
+		var status = analysis.status
 
-        	$(analyses).addClass("unselected")
-        	$("body").addClass("selected")
+		var item = $("#" + id)
 
-        	selectedAnalysis = newItem[0]
-        	$(selectedAnalysis).addClass("selected")
-        }
-        
-        analyses.push(newItem[0])
+		var newItem = $('<div id="' + id + '" class="jasp-analysis"></div>')
+		newItem.click(selectedHandler)
+		
+		if (analysis.id == selectedAnalysisId)
+		{
+			if (selectedAnalysis != null)
+				$(selectedAnalysis).removeClass("selected")
 
-        if (item.length !== 0)
-        {
-            analyses.filter(function(a) { return a !== item[0] })
-            item.replaceWith(newItem);
-        }
-        else
-        {
-            var spacer = $("#spacer")
-            spacer.before(newItem)
-        }
+			$(analyses).addClass("unselected")
+			$("body").addClass("selected")
 
-        item = newItem
+			selectedAnalysis = newItem[0]
+			$(selectedAnalysis).addClass("selected")
+		}
+		
+		analyses.push(newItem[0])
 
-        renderer.render(item, results, status)
-        
-        if (selectedAnalysisId == analysis.id)
-        	window.scrollIntoView(item);
-    }
+		if (item.length !== 0)
+		{
+			analyses.filter(function(a) { return a !== item[0] })
+			item.replaceWith(newItem);
+		}
+		else
+		{
+			var spacer = $("#spacer")
+			spacer.before(newItem)
+		}
 
-    $("body").click(window.unselectByClickingBody)
+		item = newItem
+
+		renderer.render(item, results, status)
+		
+		if (selectedAnalysisId == analysis.id)
+			window.scrollIntoView(item);
+	}
+
+	$("body").click(window.unselectByClickingBody)
 
 })
 
