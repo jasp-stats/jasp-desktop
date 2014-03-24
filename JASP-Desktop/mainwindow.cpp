@@ -180,7 +180,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new TTestBayesianIndependentSamplesForm(contentArea);
 	else if (name == "TTestBayesianPairedSamples")
 		form = new TTestBayesianPairedSamplesForm(contentArea);
-	else if (name == "TTestOneSample")
+	else if (name == "TTestIndependentSamples")
 		form = new TTestIndependentSamplesForm(contentArea);
 	else if (name == "TTestPairedSamples")
 		form = new TTestPairedSamplesForm(contentArea);
