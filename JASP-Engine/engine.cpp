@@ -48,14 +48,15 @@ void Engine::runAnalysis()
 		}
 	}
 
-	while (_currentAnalysis->status() == Analysis::Empty)
-		_currentAnalysis->init();
+	while (_currentAnalysis->status() == Analysis::Empty || _currentAnalysis->status() == Analysis::Running)
+	{
+		while (_currentAnalysis->status() == Analysis::Empty)
+			_currentAnalysis->init();
 
-	while (_currentAnalysis->status() == Analysis::Running)
-		_currentAnalysis->run();
+		while (_currentAnalysis->status() == Analysis::Running)
+			_currentAnalysis->run();
+	}
 
-	while (_currentAnalysis->status() == Analysis::Empty)
-		_currentAnalysis->init();
 }
 
 void Engine::analysisResultsChanged(Analysis *analysis)
@@ -112,12 +113,16 @@ void Engine::receiveMessages(int timeout)
 			_currentAnalysis->options()->set(jsonOptions);
 			if (run)
 				_currentAnalysis->setStatus(Analysis::Running);
+			else
+				_currentAnalysis->setStatus(Analysis::Empty);
 		}
 		else if (_nextAnalysis != NULL && _nextAnalysis->id() == id)
 		{
 			_nextAnalysis->options()->set(jsonOptions);
 			if (run)
 				_nextAnalysis->setStatus(Analysis::Running);
+			else
+				_nextAnalysis->setStatus(Analysis::Empty);
 		}
 		else
 		{

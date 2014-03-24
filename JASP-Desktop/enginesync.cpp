@@ -148,16 +148,23 @@ void EngineSync::process()
 				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
-			else if (status == "complete")
+			else if (analysis->status() == Analysis::Running)
 			{
-				analysis->setStatus(Analysis::Complete);
-				analysis->setResults(results);
-				_analysesInProgress[i] = NULL;
-				sendMessages();
+				if (status == "complete")
+				{
+					analysis->setStatus(Analysis::Complete);
+					analysis->setResults(results);
+					_analysesInProgress[i] = NULL;
+					sendMessages();
+				}
+				else
+				{
+					analysis->setResults(results);
+				}
 			}
 			else
 			{
-				analysis->setResults(results);
+				sendMessages();
 			}
 		}
 
