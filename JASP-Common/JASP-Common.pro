@@ -65,7 +65,9 @@ SOURCES += \
     analyses/correlationpartial.cpp \
     analyses/semsimple.cpp \
     csv.cpp \
-    process.cpp
+    process.cpp \
+    analyses/ttestbayesianindependentsamples.cpp \
+    analyses/ttestbayesianpairedsamples.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -120,7 +122,9 @@ HEADERS +=\
     analyses/correlationpartial.h \
     analyses/semsimple.h \
     csv.h \
-    process.h
+    process.h \
+    analyses/ttestbayesianindependentsamples.h \
+    analyses/ttestbayesianpairedsamples.h
 
 unix:!symbian {
     maemo5 {

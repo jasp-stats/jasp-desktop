@@ -39,6 +39,8 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	connect(ui->Crosstabs, SIGNAL(clicked()), this, SLOT(itemSelected()));
 
 	menu = new QMenu(this);
+	menu->addAction(QString("Bayesian Independent Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianIndependentSamples");
+	menu->addAction(QString("Bayesian Paired Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianPairedSamples");
 	menu->addAction(QString("Bayesian One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianOneSample");
 
 	ui->bayesianTTestButton->setMenu(menu);

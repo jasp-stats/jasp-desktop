@@ -3,17 +3,21 @@
 
 #include "analysisforms/descriptivesform.h"
 
+#include "analysisforms/ttestbayesianindependentsamplesform.h"
+#include "analysisforms/ttestbayesianpairedsamplesform.h"
 #include "analysisforms/ttestbayesianonesampleform.h"
-#include "analysisforms/ttestpairedsamplesform.h"
 #include "analysisforms/ttestindependentsamplesform.h"
+#include "analysisforms/ttestpairedsamplesform.h"
 #include "analysisforms/ttestonesampleform.h"
 
-#include "analysisforms/anovabayesianform.h"
+
 #include "analysisforms/anovaonewayform.h"
 #include "analysisforms/anovaform.h"
-#include "analysisforms/anovamultivariateform.h"
 #include "analysisforms/ancovaform.h"
+#include "analysisforms/anovamultivariateform.h"
 #include "analysisforms/ancovamultivariateform.h"
+#include "analysisforms/anovabayesianform.h"
+
 #include "analysisforms/regressionlinearform.h"
 #include "analysisforms/correlationform.h"
 #include "analysisforms/correlationpartialform.h"
@@ -172,7 +176,11 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new DescriptivesForm(contentArea);
 	else if (name == "TTestBayesianOneSample")
 		form = new TTestBayesianOneSampleForm(contentArea);
-	else if (name == "TTestIndependentSamples")
+	else if (name == "TTestBayesianIndependentSamples")
+		form = new TTestBayesianIndependentSamplesForm(contentArea);
+	else if (name == "TTestBayesianPairedSamples")
+		form = new TTestBayesianPairedSamplesForm(contentArea);
+	else if (name == "TTestOneSample")
 		form = new TTestIndependentSamplesForm(contentArea);
 	else if (name == "TTestPairedSamples")
 		form = new TTestPairedSamplesForm(contentArea);

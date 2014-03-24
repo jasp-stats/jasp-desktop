@@ -93,7 +93,9 @@ SOURCES += main.cpp\
     ribbons/ribbonhome.cpp \
     analysisforms/semsimpleform.cpp \
 	widgets/boundtextedit.cpp \
-    widgets/stealthbutton.cpp
+    widgets/stealthbutton.cpp \
+    analysisforms/ttestbayesianindependentsamplesform.cpp \
+    analysisforms/ttestbayesianpairedsamplesform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -164,7 +166,9 @@ HEADERS  += \
     ribbons/ribbonhome.h \
     analysisforms/semsimpleform.h \
 	widgets/boundtextedit.h \
-    widgets/stealthbutton.h
+    widgets/stealthbutton.h \
+    analysisforms/ttestbayesianindependentsamplesform.h \
+    analysisforms/ttestbayesianpairedsamplesform.h
 
 FORMS    += \
     backstageform.ui \
@@ -192,7 +196,9 @@ FORMS    += \
     ribbons/ribbonhome.ui \
     ribbons/ribbonsem.ui \
     ribbons/ribbonanalysis.ui \
-    analysisforms/semsimpleform.ui
+    analysisforms/semsimpleform.ui \
+    analysisforms/ttestbayesianindependentsamplesform.ui \
+    analysisforms/ttestbayesianpairedsamplesform.ui
 
 
 RESOURCES += \

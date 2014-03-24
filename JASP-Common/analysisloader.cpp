@@ -4,6 +4,8 @@
 #include "analyses/ttestonesample.h"
 #include "analyses/ttestindependentsamples.h"
 #include "analyses/ttestbayesianonesample.h"
+#include "analyses/ttestbayesianpairedsamples.h"
+#include "analyses/ttestbayesianindependentsamples.h"
 #include "analyses/ttestpairedsamples.h"
 #include "analyses/anovaoneway.h"
 #include "analyses/anovamultivariate.h"
@@ -33,6 +35,10 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		return new TTestPairedSamples(id);
 	else if (analysisName == "TTestBayesianOneSample")
 		return new TTestBayesianOneSample(id);
+	else if (analysisName == "TTestBayesianPairedSamples")
+		return new TTestBayesianPairedSamples(id);
+	else if (analysisName == "TTestBayesianIndependentSamples")
+		return new TTestBayesianIndependentSamples(id);
 	else if (analysisName == "AnovaOneWay")
 		return new AnovaOneWay(id);
 	else if (analysisName == "AnovaMultivariate")
