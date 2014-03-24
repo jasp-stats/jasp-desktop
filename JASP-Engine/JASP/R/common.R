@@ -3,16 +3,42 @@ init <- function(name, options.as.json.string) {
 
 	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE)
 	analysis <- eval(parse(text=name))
-	results <- analysis(dataset=NULL, options=options, perform="init")
-	RJSONIO::toJSON(results)
+	
+	results <- try (silent = TRUE, expr = {
+	
+		analysis(dataset=NULL, options=options, perform="init")
+	})
+	
+	if (class(results) == "try-error") {
+	
+		"{ \"error\" : 	1, \"errorMessage\" : \"This analysis terminated unexpectedly. Please contact its author.\" }"
+	
+	} else {
+	
+		RJSONIO::toJSON(results)	
+	}
+
 }
 
 run <- function(name, options.as.json.string) {
 
 	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE)
 	analysis <- eval(parse(text=name))
-	results <- analysis(dataset=NULL, options=options, perform="run", callback=callback)
-	RJSONIO::toJSON(results)
+	
+	results <- try (silent = TRUE, expr = {
+	
+		analysis(dataset=NULL, options=options, perform="run", callback=callback)
+	})
+	
+	if (class(results) == "try-error") {
+	
+		"{ \"error\" : 	1, \"errorMessage\" : \"This analysis terminated unexpectedly. Please contact its author.\" }"
+	
+	} else {
+	
+		RJSONIO::toJSON(results)	
+	}
+
 }
 
 read.dataset.to.end <- function(exclude.na.listwise=NULL, ...) {	

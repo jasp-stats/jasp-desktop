@@ -127,7 +127,10 @@ $(document).ready(function() {
 		item = newItem
 		var inner = item.children(".jasp-analysis-inner")
 
-		renderer.render(inner, results, status)
+        if (results.error)
+            inner.append('<div class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + results.errorMessage + '</div>')
+        else
+            renderer.render(inner, results, status)
 		
 		if (selectedAnalysisId == analysis.id)
 			window.scrollIntoView(item);
