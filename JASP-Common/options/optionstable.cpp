@@ -81,6 +81,8 @@ Options *OptionsTable::remove(int index)
 
 	_rows.erase(itr);
 
+	rowChanged();
+
 	return *itr;
 }
 
@@ -98,6 +100,7 @@ Options *OptionsTable::remove(string name)
 		{
 			_rows.erase(itr);
 			return *itr;
+			rowChanged();
 		}
 
 		itr++;
