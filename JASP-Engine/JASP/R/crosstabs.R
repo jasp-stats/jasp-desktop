@@ -14,7 +14,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 	crosstabs <- list()
 
-	if (length(options$rows) > 0 && length(options$columns) > 0 && perform == "run")
+	if (length(options$rows) > 0 && length(options$columns) > 0)
 	{
 		rows <- as.vector(options$rows, "character")
 		columns <- as.vector(options$columns, "character")
@@ -33,11 +33,26 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 
 		for (analysis in analyses)
 		{
-			lvls <- levels(dataset[[ analysis$.rows ]])
-			if (is.null(lvls))
-				lvls <- levels(factor(dataset[[ analysis$.rows ]]))
+			a.factor.contains.no.levels <- FALSE
+		
+			lvls <- c()
+			if (is.factor( dataset[[ analysis$.rows ]] )) {
+			
+				lvls <- levels(dataset[[ analysis$.rows ]])
 				
-			cases <- data.frame(".rows"=lvls, stringsAsFactors=FALSE)
+			} else if (perform == "run") {
+			
+				lvls <- unique(dataset[[ analysis$.rows ]])
+			}
+			
+			if (length(lvls) == 0) {
+			
+				lvls = c(".")
+				a.factor.contains.no.levels <- TRUE
+			}
+				
+			cases <- data.frame(lvls, stringsAsFactors=FALSE)
+			names(cases) <- analysis$.rows
 			
 			if (length(analysis) > 2)
 			{
@@ -45,35 +60,94 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 				{
 					var.name <- analysis[[j]]
 				
-					lvls <- levels(dataset[[ var.name ]])
-					if (is.null(lvls))
-						lvls <- levels(factor(dataset[[ var.name ]]))
+					lvls <- c()
+					if (is.factor(dataset[[ var.name ]])) {
+					
+						lvls <- levels(dataset[[ var.name ]])
+					}
+					else if (perform == "run") {
+					
+						lvls <- unique(dataset[[ var.name]] )
+					}
+					
+					if (length(lvls) == 0) {
+					
+						lvls = c(".")
+						a.factor.contains.no.levels <- TRUE
+					}
 					
 					cases <- cbind(rep(lvls, each=dim(cases)[1]), cases, stringsAsFactors=FALSE)
-					names(cases)[dim(cases)[1]] <- var.name
+					names(cases)[1] <- var.name
 				}
 			}
 			
-			cases <- .dataFrameToRowList(cases, discard.column.names=TRUE)
+			cases <- .dataFrameToRowList(cases)
 
 			table <- list()
 			
 			table[["title"]] <- "Crosstabs"
-
-			table[["cases"]] <- cases
 	
-			fields <- list(
-				list(id=analysis$.rows))
+			fields <- list()
 			
-			if (length(analysis) > 2)
-			{
-				for (j in 3:length(analysis))
-					fields[[length(fields)+1]] <- list(id=analysis[[j]])
+			if (length(analysis) > 2) {
+			
+				for (j in length(analysis):3)
+					fields[[length(fields)+1]] <- list(name=analysis[[j]], type="string", combine=TRUE)
 			}
+						
+			fields[[length(fields)+1]] <- list(name=analysis$.rows, type="string")
+			
+			lvls <- c()
+			if (is.factor(dataset[[ analysis$.columns ]] )) {
+
+				lvls <- levels(dataset[[ analysis$.columns ]])
+
+			} else if (perform == "run") {
+			
+				lvls <- unique(dataset[[ analysis$.columns ]])
+			}
+			
+			if (length(lvls) == 0) {
+			
+				lvls <- c(".")
+				a.factor.contains.no.levels <- TRUE
+			}
+			
+			for (column.name in lvls) {
+
+				private.name <- paste(".", column.name, sep="")
+				fields[[length(fields)+1]] <- list(name=private.name, title=column.name, type="number")
+			}
+			
+			if (perform == "run" && a.factor.contains.no.levels == FALSE) {
+
+				for (i in .indices(cases)) {
+				
+					caze <- cases[[i]]
+					
+					ss.filter.string <- paste("as.character(", names(caze), ")==\"", caze, "\"", sep="", collapse="&")
+					ss.expression <- parse(text=ss.filter.string)
+					
+					ss <- subset(dataset, select=analysis$.columns, subset=eval(ss.expression))
+					
+					t <- base::table(ss)
+
+					for (n in names(t)) {
+					
+						private.name <- paste(".", n, sep="")
+						caze[[private.name]] <- unname(t[n])
+					}
+
+					cases[[i]] <- caze
+				}
+			
+			}
+			
 		
 			schema <- list(fields=fields)
 	
-			table[["schema"]] <- schema			
+			table[["schema"]] <- schema
+			table[["data"]] <- cases		
 			
 			crosstabs[[length(crosstabs)+1]] <- table				
 		}
