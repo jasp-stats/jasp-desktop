@@ -7,6 +7,8 @@ $(document).ready(function() {
 	var selectedAnalysisId = -1;
 	var selectedAnalysis = null
 
+    var $intro = $("#intro")
+
 	window.select = function(id) {
 
 		if (selectedAnalysis != null)
@@ -90,7 +92,9 @@ $(document).ready(function() {
 
 	window.analysisChanged = function(renderer, analysis) {
 
-		var id = "id-" + analysis.id
+        $intro.hide()
+
+        var id = "id-" + analysis.id
 		var results = analysis.results
 		var status = analysis.status
 

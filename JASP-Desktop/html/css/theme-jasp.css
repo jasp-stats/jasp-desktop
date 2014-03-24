@@ -16,7 +16,7 @@ body.selected {
 
 h1 {
 	font-size: 150% ;
-	margin: .5em ;
+	margin: .5em inherit ;
 }
 
 table {
@@ -176,3 +176,13 @@ div.error-message-box
 	border-radius: .4em ;
 }
 
+#intro {
+
+	padding: 1em 2em ;
+	margin: 50px auto ;
+	width: 300px ;
+	border: 3px dashed #3CAAE7 ;
+	border-radius: 10px ;
+	color: #3CAAE7 ;
+
+}
