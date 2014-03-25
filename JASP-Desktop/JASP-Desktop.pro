@@ -22,6 +22,9 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
 
+unix:ICON = icon.icns
+windows:RC_FILE = icon.rc
+
 windows:LIBS += -lole32 -loleaut32
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
@@ -206,6 +209,9 @@ RESOURCES += \
     resources/icons.qrc \
     resources/resources.qrc \
     resources/win/stylesheets.qrc
+
+unix:OTHER_FILES += icon.icns
+windows:OTHER_FILES += icon.rc
 
 OTHER_FILES += \
     html/index.html \
