@@ -36,7 +36,9 @@ void TableModelVariablesAssigned::bindTo(Option *option)
 	vector<pair<string, string> > assigned = _boundTo->value();
 	const QList<ColumnInfo> &allVariables = _source->allVariables();
 
-	beginInsertRows(QModelIndex(), 0, assigned.size());
+	beginResetModel();
+
+	_values.clear();
 
 	pair<string, string> p;
 
@@ -76,7 +78,7 @@ void TableModelVariablesAssigned::bindTo(Option *option)
 		_values.append(newPair);
 	}
 
-	endInsertRows();
+	endResetModel();
 }
 
 void TableModelVariablesAssigned::setSource(ListModelVariablesAvailable *source)
