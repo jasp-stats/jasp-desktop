@@ -487,6 +487,19 @@
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
+            <item row="7" column="0">
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item row="1" column="2" rowspan="7">
              <widget class="QWidget" name="widget_17" native="true">
               <layout class="QGridLayout" name="gridLayout_16">
@@ -672,6 +685,14 @@
                </item>
                <item row="3" column="0">
                 <widget class="BoundCheckBox" name="postHocTests_dunnett">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <strikeout>true</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Dunnett</string>
                  </property>
@@ -679,6 +700,14 @@
                </item>
                <item row="1" column="0">
                 <widget class="BoundCheckBox" name="postHocTests_wallerDuncan">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <strikeout>true</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Waller-Duncan</string>
                  </property>
@@ -687,8 +716,19 @@
               </layout>
              </widget>
             </item>
+            <item row="0" column="0">
+             <widget class="QWidget" name="widget_18" native="true"/>
+            </item>
             <item row="1" column="1">
              <widget class="BoundCheckBox" name="postHocTests_SNK">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
               <property name="text">
                <string>SNK</string>
               </property>
@@ -696,50 +736,58 @@
             </item>
             <item row="6" column="1">
              <widget class="BoundCheckBox" name="postHocTests_gabriel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
               <property name="text">
                <string>Gabriel</string>
               </property>
              </widget>
             </item>
-            <item row="7" column="0">
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
             <item row="5" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_REGWF">
+             <widget class="BoundCheckBox" name="postHocTests_benjamini">
               <property name="text">
-               <string>REGWF</string>
+               <string>Benjamini</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QWidget" name="widget_18" native="true"/>
-            </item>
             <item row="4" column="1">
              <widget class="BoundCheckBox" name="postHocTests_duncan">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
               <property name="text">
                <string>Duncan</string>
               </property>
              </widget>
             </item>
             <item row="6" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_REGWQ">
+             <widget class="BoundCheckBox" name="postHocTests_FDR">
               <property name="text">
-               <string>REGWQ</string>
+               <string>FDR</string>
               </property>
              </widget>
             </item>
             <item row="5" column="1">
              <widget class="BoundCheckBox" name="postHocTests_hochbergGT2">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
               <property name="text">
                <string>Hochberg's GT2</string>
               </property>
@@ -753,37 +801,53 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_LSD">
+             <widget class="BoundCheckBox" name="postHocTests_holm">
               <property name="text">
-               <string>LSD</string>
+               <string>Holm</string>
               </property>
              </widget>
             </item>
             <item row="2" column="1">
              <widget class="BoundCheckBox" name="postHocTests_tukey">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
               <property name="text">
                <string>Tukey</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_sidak">
+             <widget class="BoundCheckBox" name="postHocTests_hochberg">
               <property name="text">
-               <string>Sidak</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_scheffe">
-              <property name="text">
-               <string>Scheffe</string>
+               <string>Hochberg</string>
               </property>
              </widget>
             </item>
             <item row="3" column="1">
              <widget class="BoundCheckBox" name="postHocTests_tukeyB">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
               <property name="text">
                <string>Tukey's B</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="postHocTests_hommel">
+              <property name="text">
+               <string>Hommel</string>
               </property>
              </widget>
             </item>
@@ -807,6 +871,14 @@
             </property>
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="postHocTests_tamhaneT2">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
               <property name="text">
                <string>Tamhane's T2</string>
               </property>
@@ -814,6 +886,14 @@
             </item>
             <item row="0" column="1">
              <widget class="BoundCheckBox" name="postHocTests_dunnettT3">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
               <property name="text">
                <string>Dunnett's T3</string>
               </property>
@@ -821,6 +901,14 @@
             </item>
             <item row="0" column="3">
              <widget class="BoundCheckBox" name="postHocTests_dunnettC">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
               <property name="text">
                <string>Dunnett's C</string>
               </property>
@@ -828,6 +916,14 @@
             </item>
             <item row="0" column="2">
              <widget class="BoundCheckBox" name="postHocTests_gamesHowell">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
               <property name="text">
                <string>Games-Howell</string>
               </property>

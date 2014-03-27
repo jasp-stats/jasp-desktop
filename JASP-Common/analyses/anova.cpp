@@ -59,18 +59,19 @@ Options *Anova::createDefaultOptions()
 	// post hoc tests
 
 	options->add("postHocTests/variables", new OptionFields());
-	options->add("postHocTests/LSD", new OptionBoolean());
 	options->add("postHocTests/bonferroni", new OptionBoolean());
-	options->add("postHocTests/sidak", new OptionBoolean());
-	options->add("postHocTests/scheffe", new OptionBoolean());
-	options->add("postHocTests/REGWF", new OptionBoolean());
-	options->add("postHocTests/REGWQ", new OptionBoolean());
-	options->add("postHocTests/SNK", new OptionBoolean());
+    options->add("postHocTests/holm", new OptionBoolean());
+    options->add("postHocTests/FDR", new OptionBoolean());
+    options->add("postHocTests/hochberg", new OptionBoolean());
+    options->add("postHocTests/hommel", new OptionBoolean());
+    options->add("postHocTests/benjamini", new OptionBoolean());
+    //options->add("postHocTests/REGWQ", new OptionBoolean());
+    //options->add("postHocTests/SNK", new OptionBoolean());
 	options->add("postHocTests/tukey", new OptionBoolean());
-	options->add("postHocTests/tukeyB", new OptionBoolean());
-	options->add("postHocTests/duncan", new OptionBoolean());
-	options->add("postHocTests/hochbergGT2", new OptionBoolean());
-	options->add("postHocTests/gabriel", new OptionBoolean());
+    //options->add("postHocTests/tukeyB", new OptionBoolean());
+    //options->add("postHocTests/duncan", new OptionBoolean());
+    //options->add("postHocTests/hochbergGT2", new OptionBoolean());
+    //options->add("postHocTests/gabriel", new OptionBoolean());
 
 	options->add("postHocTests/wallerDuncan", new OptionBoolean());
 	options->add("postHocTests/wallerDuncanRatio", new OptionInteger(100));
