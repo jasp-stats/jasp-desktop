@@ -1,144 +1,301 @@
+# Function to create covariance matrix:
+.covTable <- function(fit,title = "Covariance matrix", include = c("observed","fitted","residual"))
+{
+	observedCov <- inspect(fit, "sampstat")$cov
+	fittedCov <- fitted(fit)$cov
+	residualCov <- observedCov - fittedCov
+	
+	varNames <- colnames(observedCov)
+	
+	covList <- list(
+		observed = observedCov,
+		fitted = fittedCov,
+		residual = residualCov)
+	
+	corList <- list(
+		observed = cov2cor(observedCov),
+		fitted = cov2cor(fittedCov),
+		residual = cov2cor(observedCov) - cov2cor(fittedCov))
+	
+	n <- ncol(covList[[1]])
+	
+	
+	matList <- mapply(cov = covList, cor = corList, type = names(covList), FUN=function(cov,cor, type){
+		cov[upper.tri(cov,diag=FALSE)] <- cor[upper.tri(cor,diag=FALSE)] 
+		cbind(..sortingDummy = seq_len(NROW(cov)), ..varName = rownames(cov), ..type = type, as.data.frame(cov),stringsAsFactors = FALSE)
+	}, SIMPLIFY = FALSE)
+	
+	matDF <- do.call(rbind, matList)
+	matDF <- matDF[matDF$..type %in% include,]
+	matDF$..type <- as.character(	matDF$..type)
+	matDF <- matDF[order(matDF$..sortingDummy),]
+	matDF <- matDF[,-1]
+	
+	# Empty object:
+	covariances <- list()
+	
+	# Fill:
+	covariances[["title"]] <- title
+ # covariances[["cases"]] <- matDF$..varName
+	covariances[["cases"]] <- rep("",length(matDF$..varName))
+	
+	fields <- list(list(name = "Variable", type="text"),list(name = "Type", type="text"))
+	
+	# Enter fields:
+	for (i in 1:n)
+	{
+		fields[[i+2]] <- list(name = varNames[i], type="number", format="dp:3")
+	}
+	
+	# Enter rows:
+	rows <- list()
+	
+	for (i in seq_len(NROW(matDF)))
+	{
+		variable.name <- varNames[i]
+		row <- matDF[i,,drop=FALSE]
+	names(row)[1:2] <- c("Variable", "Type")
+		rows[[i]] <- as.list(row)
+	}
 
+	schema <- list(fields=fields)
+	
+	covariances[["schema"]] <- schema
+	covariances[["data"]] <- rows	
+	return(covariances)
+}
+
+
+### SEM Function:
 SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-  
-  if (is.null(dataset))
-  {
-    if (perform == "run") {
-      dataset <- read.dataset.to.end()
-    } else {
-      dataset <- read.dataset.header()
-    }
-  }
-  
-  
-  ### RUN SEM ###
-  sem_results <- try(lavaan:::sem(options$model, data = dataset))
-  if (!is(sem_results,"try-error"))
-  {
-    # Fit Measures:
-    sem_fitm <- lavaan:::fitMeasures(sem_results)  
-    
-    # Parameter Estimates:
-    sem_parest <- lavaan:::parameterEstimates(sem_results)
-    
-    # ANOVA:
-    sem_anova <- lavaan:::anova(sem_results)
-    
-    # Modification indices:
-    sem_modind <- lavaan:::modificationIndices(sem_results)
-    
-  } else {  
-    sem_fitm <- NULL
-    sem_parest <- NULL
-    sem_anova <- NULL
-    sem_modind <- NULL
-  }
-  
-  ### ANOVA ###
-  an0va <- list()
-  an0va[["title"]] <- "Chi Square Test Statistic (unscaled)"
-  an0va[["cases"]] <- c("Saturated", "Model")
-  an0va[["schema"]] <- list(
-    fields = list(
-      list(id="DF", type="number", format="dp:0"),
-      list(id="AIC", type="number", format="dp:1"),
-      list(id="BIC", type="number", format="dp:1"),
-      list(id="Chisq", type="number", format="dp:3"),
-      list(id="Chisq diff", type="number", format="dp:3"),
-      list(id="Pr(>Chisq)", type="number", format="dp:3;p:0.001")
-    )
-  )
-  an0va[["data"]] <- list()
-  if (!is.null(sem_anova))
-  {
-    for (i in seq_len(NROW(sem_anova)))
-    {
-      an0va[["data"]][[i]] <- as.list(sem_anova[i,])
-      an0va[["data"]][[i]][is.na(an0va[["data"]][[i]])] <- '.'
-    }
-  }
-  
+	
+	if (is.null(dataset)) {
+		if (perform == "run") {
+			dataset <- read.dataset.to.end()
+		} else {
+			dataset <- read.dataset.header()
+		}
+	}
+	
+	errorMessage <- ""
+	### RUN SEM ###
+	if (perform == "run") {
+		semResults <- try(lavaan:::lavaan(
+			model = options$model, 
+			data = dataset, 
+			auto.delta = options$addScalingParameters, 
+			auto.th = options$addThresholds,
+			orthogonal = options$assumeFactorsUncorrelated,
+			auto.cov.y = options$correlateDependentVariables,
+			auto.cov.lv.x = options$correlateExogenousLatents,
+			mimic = ifelse(options$emulation=="none","lavaan",options$emulation),
+			se = options$errorCalculation,
+			bootstrap = options$errorCalculationBootstrapSamples,
+			estimator = ifelse(options$estimator == "automatic", "default", options$estimator),
+			std.lv = options$factorStandardisation == "residualVariance",
+			auto.fix.first = options$factorStandardisation == "factorLoadings",
+			fixed.x = options$fixExogenousCovariates,
+			int.lv.free = !options$fixLatentInterceptsToZero,
+			int.ov.free = !options$fixManifestInterceptsToZero,
+			meanstructure = options$includeMeanStructure,
+			auto.fix.single = options$omitResidualSingleIndicator,
+			auto.var = options$residualVariances
+	#		group = options$groupingVariable
+			))
 
-  ### PARAMETER ESTIMATES ####
-  par_estimates <- list()
-  par_estimates[["title"]] <- "Parameter Estimates"
-  if (NROW(sem_parest) == 0)
-  {
-    par_estimates[["cases"]] <- NULL
-  } else par_estimates[["cases"]] <- seq_len(NROW(sem_parest))
-  par_estimates[["schema"]] <- list(
-    fields = list(
-      list(id="lhs", type="character"),
-      list(id="op", type="character"),
-      list(id="rhs", type="character"),
-      list(id="label", type="character"),
-      list(id="est", type="number", format = "dp:3"),
-      list(id="se", type="number", format = "dp:3"),
-      list(id="z", type="number", format = "dp:3"),
-      list(id="pvalue", type="number", format = "dp:3;p:.001"),
-      list(id="ci.lower", type="number", format = "dp:3"),
-      list(id="ci.upper", type="number", format = "dp:3")
-    )
-  )
-  
-  par_estimates[["data"]] <- list()
-  if (!is.null(sem_parest))
-  {
-    for (i in seq_len(NROW(sem_parest)))
-    {
-      par_estimates[["data"]][[i]] <- as.list(sem_parest[i,])
-      par_estimates[["data"]][[i]][is.na(par_estimates[["data"]][[i]])] <- '.'
-    }
-  }
-  
-  ### MODIFICATION INDICES ###
-  ### PARAMETER ESTIMATES ####
-  mod_indices <- list()
-  mod_indices[["title"]] <- "Modification Indices"
-  if (NROW(sem_modind) == 0)
-  {
-    mod_indices[["cases"]] <- NULL
-  } else mod_indices[["cases"]] <- seq_len(NROW(sem_modind))
-  
-  mod_indices[["schema"]] <- list(
-    fields = list(
-      list(id="lhs", type="character"),
-      list(id="op", type="character"),
-      list(id="rhs", type="character"),
-      list(id="mi", type="number", format = "dp:3"),
-      list(id="epc", type="number", format = "dp:3"),
-      list(id="sepc.lv", type="number", format = "dp:3"),
-      list(id="sepc.all", type="number", format = "dp:3"),
-      list(id="sepc.nox", type="number", format = "dp:3")
-    )
-  )
-  
-  mod_indices[["data"]] <- list()
-  if (!is.null(sem_modind))
-  {
-    for (i in seq_len(NROW(sem_modind)))
-    {
-      mod_indices[["data"]][[i]] <- as.list(sem_modind[i,])
-      mod_indices[["data"]][[i]][is.na(mod_indices[["data"]][[i]])] <- '.'
-    }
-  }
-  
-  ## FIT MEASURES ###
-  fit_measures <- list()
-  fit_measures[["title"]] <- "Fit Measures"
-  fit_measures[["cases"]] <- names(sem_fitm)
-  fit_measures[["schema"]] <- list(fields = list(
-    list(id="Measure", type="number", format="dp:3")))
-  fit_measures[["data"]] <- lapply(as.list(unname(sem_fitm)) , function(x) {names(x) <- "Measure";x})
-  
-  
-  ### RETURN ###
-  results <- list()
-  results[["an0va"]] <- an0va
-  results[["par_estimates"]] <- par_estimates
-  results[["fit_measures"]] <- fit_measures
-  results[["mod_indices"]] <- mod_indices
-  
-  results
+		# Check if worked:
+		if (is(semResults,"try-error"))	{
+			errorMessage <- as.character(semResults)
+			# Better Error messages:
+			if (errorMessage == "Error in start.idx[i]:end.idx[i] : NA/NaN argument\n") {
+				errorMessage <- "Model misspecified"
+			}
+			semResults <- NULL
+		}
+	} else {
+		semResults <- NULL
+	}
+
+	### Output object:
+	results <- list()
+
+	### ANOVA table ###
+	an0va <- list()
+	an0va[["title"]] <- "Chi Square Test Statistic (unscaled)"
+	an0va[["cases"]] <- c("Saturated", "Model")
+	an0va[["schema"]] <- list(
+		fields = list(
+			list(name="DF", type="number", format="dp:0"),
+			list(name="AIC", type="number", format="dp:1"),
+			list(name="BIC", type="number", format="dp:1"),
+			list(name="Chisq", type="number", format="dp:3"),
+			list(name="Chisq diff", type="number", format="dp:3"),
+			list(name="Pr(>Chisq)", type="number", format="dp:3;p:0.001")
+		)
+	)
+	an0va[["data"]] <- list()
+	if (!is.null(semResults))
+	{
+		sem_anova <- lavaan:::anova(semResults)
+		for (i in seq_len(NROW(sem_anova)))
+		{
+			an0va[["data"]][[i]] <- as.list(sem_anova[i,])
+			an0va[["data"]][[i]][is.na(an0va[["data"]][[i]])] <- '.'
+			names(an0va[["data"]][[i]]) <- gsub("Df","DF",	names(an0va[["data"]][[i]]))
+		}
+	}
+	if (errorMessage!="" & perform == "run" & options$model != "") an0va[['error']] <- list(errorType="badData", errorMessage=errorMessage)
+	results[['fit']] <- an0va
+
+
+	### PARAMETER ESTIMATES ####
+	parEstimates <- list()
+	parEstimates[["title"]] <- "Parameter Estimates"
+	parEstimates[["schema"]] <- list(
+		fields = list(
+			list(name="lhs", type="character"),
+			list(name="op", type="character"),
+			list(name="rhs", type="character"),
+			list(name="label", type="character"),
+			list(name="est", type="number", format = "dp:3"),
+			list(name="se", type="number", format = "dp:3"),
+			list(name="z", type="number", format = "dp:3"),
+			list(name="pvalue", type="number", format = "dp:3;p:.001"),
+			list(name="ci.lower", type="number", format = "dp:3"),
+			list(name="ci.upper", type="number", format = "dp:3"),
+			list(name="std.lv", type="number", format = "dp:3"),
+			list(name="std.all", type="number", format = "dp:3"),
+			list(name="std.nox", type="number", format = "dp:3")
+		))
+	parEstimates[["data"]] <- list()
+	if (errorMessage!="" & perform == "run" & options$model != "") parEstimates[['error']] <- list(errorType="badData")
+	
+	if (!is.null(semResults)) {
+		sem_parest <- lavaan:::parameterEstimates(semResults, standardized = TRUE)
+		parEstimates[["cases"]] <- rep("",NROW(sem_parest))
+		for (i in seq_len(NROW(sem_parest)))
+		{
+			parEstimates[["data"]][[i]] <- as.list(sem_parest[i,])
+			parEstimates[["data"]][[i]][is.na(parEstimates[["data"]][[i]])] <- '.'
+		}
+	} else {
+		parEstimates[["cases"]] <- NULL
+	}
+	results[["parameterEstimates"]] <- parEstimates
+
+
+	### MODIFICATION INDICES ###
+## SORT THEM
+	if (options$output$modificationIndices) {
+
+		modIndices <- list()
+		modIndices[["title"]] <- "Modification Indices"
+		
+		modIndices[["schema"]] <- list(
+			fields = list(
+				list(name="lhs", type="character"),
+				list(name="op", type="character"),
+				list(name="rhs", type="character"),
+				list(name="mi", type="number", format = "dp:3"),
+				list(name="epc", type="number", format = "dp:3"),
+				list(name="sepc.lv", type="number", format = "dp:3"),
+				list(name="sepc.all", type="number", format = "dp:3"),
+				list(name="sepc.nox", type="number", format = "dp:3")
+			)
+		)
+	
+		modIndices[["data"]] <- list()
+		if (!is.null(semResults))
+		{
+			# Extract modidffication indices:
+			sem_modind <- lavaan:::modificationIndices(semResults)
+			### Remove NA:
+			sem_modind <- sem_modind[!is.na(sem_modind$mi),,drop=FALSE]
+
+			## Sort:
+			sem_modind <- sem_modind[order(sem_modind$mi,decreasing = TRUE),,drop=FALSE]
+
+			### Remove low indices:
+			if (options$output$modificationIndicesHideLowIndices)
+			{
+				sem_modind <- sem_modind[sem_modind$mi > options$output$modificationIndicesHideLowIndicesThreshold,,  drop = FALSE]
+			}
+
+			modIndices[["cases"]] <- rep("",nrow(sem_modind))
+			for (i in seq_len(nrow(sem_modind)))
+			{
+				modIndices[["data"]][[i]] <- as.list(sem_modind[i,])
+				modIndices[["data"]][[i]][is.na(modIndices[["data"]][[i]])] <- '.'
+			}
+		} else {
+			modIndices[["cases"]] <- NULL
+		}
+	if (errorMessage!="" & perform == "run" & options$model != "") modIndices[['error']] <- list(errorType="badData")
+		results[["modificationIndices"]] <- modIndices
+	}
+
+
+	## FIT MEASURES ###
+	if (options$output$additionalFitMeasures){
+		fitMeasures <- list()
+		fitMeasures[["title"]] <- "Fit Measures"
+		fitMeasures[["schema"]] <- list(fields = list(
+			list(name="Measure", type="number", format="dp:3")))
+
+
+		fitMeasures[["cases"]] <- c("fmin", "chisq", "df", "pvalue", "baseline.chisq", "baseline.df", 
+						"baseline.pvalue", "cfi", "tli", "nnfi", "rfi", "nfi", "pnfi", 
+						"ifi", "rni", "logl", "unrestricted.logl", "npar", "aic", "bic", 
+						"ntotal", "bic2", "rmsea", "rmsea.ci.lower", "rmsea.ci.upper", 
+						"rmsea.pvalue", "rmr", "rmr_nomean", "srmr", "srmr_nomean", "cn_05", 
+						"cn_01", "gfi", "agfi", "pgfi", "mfi", "ecvi")
+
+		if (!is.null(semResults))
+		{
+			sem_fitm <- lavaan:::fitMeasures(semResults)
+			fitMeasures[["data"]] <- lapply(as.list(unname(sem_fitm)) , function(x) {names(x) <- "Measure";x})
+		}
+		if (errorMessage!="" & perform == "run" & options$model != "") fitMeasures[['error']] <- list(errorType="badData")
+		results[["fitMeasures"]] <- fitMeasures
+	}
+
+   ### Mardia coefficient
+	if (options$output$mardiasCoefficients){
+		mardiasCoefficient <- list()
+		mardiasCoefficient[["title"]] <- "Mardia's coefficients"
+		mardiasCoefficient[["schema"]] <- list(fields = list(
+			list(name="Type", title = "", type="string"),
+			list(name="Coefficient", type="number", format="dp:3"),
+			list(name="z", type="number", format="dp:3"),
+			list(name="Chisq", type="number", format="dp:3"),
+			list(name="DF", type="number", format="dp:0"),
+			list(name="p-value", type="number", format="dp:3;p:0.001")
+))
+
+
+		if (!is.null(semResults))
+		{
+			varNames <- lavaanNames(semResults, type = "ov")
+
+			mardiaSkew <- unname(semTools:::mardiaSkew(dataset[,varNames]))
+			mardiaKurtosis <- unname(semTools:::mardiaKurtosis(dataset[,varNames]))
+			mardiasCoefficient[["data"]] <- list(
+			list(Type = "Skewness", Coefficient = mardiaSkew[1], z = ".", Chisq = mardiaSkew[2], DF = mardiaSkew[3], "p-value" = mardiaSkew[4]),
+			list(Type = "Kurtosis", Coefficient = mardiaKurtosis[1], z = mardiaKurtosis[2], Chisq = ".", DF = ".", "p-value" = mardiaKurtosis[3]))
+		}
+		if (errorMessage!="" & perform == "run" & options$model != "") mardiasCoefficient[['error']] <- list(errorType="badData")
+		results[["mardiasCoefficient"]] <- mardiasCoefficient
+	}
+
+	### Covariance table:
+	# Only if observed, fitted or residual 
+	if( options$output$observedCovarianceCorrelations | options$output$fittedCovarianceCorrelations | options$output$residualCovarianceCorrelations) {
+		if (!is.null(semResults))
+		{
+			results[["covcor"]] <- .covTable(semResults, "Covariances (lower triangle) / correlations (upper triangle)", include = c("observed","fitted","residual")[ c(options$output$observedCovarianceCorrelations , options$output$fittedCovarianceCorrelations ,options$output$residualCovarianceCorrelations) ] )
+		}
+	}
+	
+	return(results)
 }
 

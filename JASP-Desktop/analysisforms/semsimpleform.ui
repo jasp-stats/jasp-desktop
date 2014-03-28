@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>641</width>
-    <height>1069</height>
+    <height>1151</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -154,7 +154,7 @@
             <item row="4" column="0">
              <widget class="QGroupBox" name="groupBox_6">
               <property name="title">
-               <string>Factor Standardisation</string>
+               <string>Factor Scaling</string>
               </property>
               <property name="flat">
                <bool>true</bool>
@@ -167,17 +167,17 @@
                 <widget class="BoundComboBox" name="factorStandardisation">
                  <item>
                   <property name="text">
-                   <string>None</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
                    <string>Residual Variance</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
                    <string>Factor Loadings</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>None</string>
                   </property>
                  </item>
                 </widget>
@@ -252,45 +252,52 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
-               <item row="3" column="0">
-                <widget class="QRadioButton" name="radioButton_7">
-                 <property name="text">
-                  <string>ULS</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QRadioButton" name="radioButton_6">
-                 <property name="text">
-                  <string>WLS</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="radioButton_5">
-                 <property name="text">
-                  <string>GLS</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QRadioButton" name="radioButton_8">
-                 <property name="text">
-                  <string>DWLS</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="0">
-                <widget class="QRadioButton" name="radioButton_4">
+                <widget class="QRadioButton" name="automatic">
                  <property name="text">
-                  <string>ML</string>
+                  <string>Auto</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
                  </property>
                 </widget>
                </item>
+               <item row="4" column="0">
+                <widget class="QRadioButton" name="ULS">
+                 <property name="text">
+                  <string>ULS</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QRadioButton" name="WLS">
+                 <property name="text">
+                  <string>WLS</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="GLS">
+                 <property name="text">
+                  <string>GLS</string>
+                 </property>
+                </widget>
+               </item>
                <item row="5" column="0">
+                <widget class="QRadioButton" name="DWLS">
+                 <property name="text">
+                  <string>DWLS</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="ML">
+                 <property name="text">
+                  <string>ML</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -436,7 +443,7 @@
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="QRadioButton" name="radioButton_9">
+                <widget class="QRadioButton" name="none">
                  <property name="text">
                   <string>None</string>
                  </property>
@@ -446,14 +453,14 @@
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QRadioButton" name="radioButton_11">
+                <widget class="QRadioButton" name="EQS">
                  <property name="text">
                   <string>EQS</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QRadioButton" name="radioButton_10">
+                <widget class="QRadioButton" name="Mplus">
                  <property name="text">
                   <string>Mplus</string>
                  </property>
@@ -508,35 +515,28 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="output_marthesCoefficient">
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="output_fittedCovarianceCorrelations">
               <property name="text">
-               <string>Marthes coefficient</string>
+               <string>Fitted covariances / correlations</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="output_observedCovarianceMatrix">
+             <widget class="BoundCheckBox" name="output_observedCovarianceCorrelations">
               <property name="text">
-               <string>Observed covariance matrix</string>
+               <string>Observed covariances / correlations</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="output_impliedCovarianceMatrix">
+            <item row="6" column="0">
+             <widget class="BoundCheckBox" name="output_modificationIndices">
               <property name="text">
-               <string>Implied covariance matrix</string>
+               <string>Modification indices</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="output_additionalFitMeasures">
-              <property name="text">
-               <string>Additional fit measures</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
+            <item row="8" column="0">
              <widget class="QWidget" name="widget_6" native="true">
               <layout class="QGridLayout" name="gridLayout_6">
                <property name="leftMargin">
@@ -630,10 +630,24 @@
               </layout>
              </widget>
             </item>
-            <item row="4" column="0">
-             <widget class="BoundCheckBox" name="output_modificationIndices">
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="output_additionalFitMeasures">
               <property name="text">
-               <string>Modification indices</string>
+               <string>Additional fit measures</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="output_residualCovarianceCorrelations">
+              <property name="text">
+               <string>Residual covariances / correlations</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="BoundCheckBox" name="output_mardiasCoefficients">
+              <property name="text">
+               <string>Mardia's coefficients</string>
               </property>
              </widget>
             </item>
