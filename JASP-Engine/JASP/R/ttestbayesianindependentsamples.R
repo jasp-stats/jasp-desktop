@@ -69,10 +69,25 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				result <- try (silent=FALSE, expr= {
 
 					f <- as.formula(paste(variable, "~", options$groupingVariable))
-					r <- BayesFactor::ttestBF(data=dataset, formula=f)
+					
+					if (options$tails == "oneTailedGreaterThan") {
+					
+						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=1, nullInterval=c(-Inf, 0))
+						bf <- bf[1]
+					
+					} else if (options$tails == "oneTailedLessThan") {
+	
+						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=1, nullInterval=c(0, Inf))
+						bf <- bf[1]
+					
+					} else {
+					
+						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=1)
+					
+					}
 				
-					BF <- .clean(exp(as.numeric(r@bayesFactor$bf)))
-					error <- .clean(as.numeric(r@bayesFactor$error))
+					BF <- .clean(exp(as.numeric(bf@bayesFactor$bf)))
+					error <- .clean(as.numeric(bf@bayesFactor$error))
 				
 					list(.variable=variable, BF=BF, error=error)					
 				})
