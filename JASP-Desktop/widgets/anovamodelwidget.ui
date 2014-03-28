@@ -239,6 +239,9 @@
            <property name="selectionMode">
             <enum>QAbstractItemView::ExtendedSelection</enum>
            </property>
+           <property name="showGrid">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
         </layout>
