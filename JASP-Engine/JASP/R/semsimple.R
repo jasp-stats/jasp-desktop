@@ -37,9 +37,9 @@
 	# Fill:
 	covariances[["title"]] <- title
  # covariances[["cases"]] <- matDF$..varName
-	covariances[["cases"]] <- rep("",length(matDF$..varName))
+#	covariances[["cases"]] <- rep("",length(matDF$..varName))
 	
-	fields <- list(list(name = "Variable", type="text"),list(name = "Type", type="text"))
+	fields <- list(list(name = "Variable", title = "", type="text"),list(name = "Type", title = "", type="text"))
 	
 	# Enter fields:
 	for (i in 1:n)
@@ -122,9 +122,10 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 	### ANOVA table ###
 	an0va <- list()
 	an0va[["title"]] <- "Chi Square Test Statistic (unscaled)"
-	an0va[["cases"]] <- c("Saturated", "Model")
+	# an0va[["cases"]] <- c("Saturated", "Model")
 	an0va[["schema"]] <- list(
 		fields = list(
+			list(name="Model", title = "", type="string"),
 			list(name="DF", type="number", format="dp:0"),
 			list(name="AIC", type="number", format="dp:1"),
 			list(name="BIC", type="number", format="dp:1"),
@@ -139,7 +140,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 		sem_anova <- lavaan:::anova(semResults)
 		for (i in seq_len(NROW(sem_anova)))
 		{
-			an0va[["data"]][[i]] <- as.list(sem_anova[i,])
+			an0va[["data"]][[i]] <- c(Model = rownames(sem_anova)[i],as.list(sem_anova[i,]))
 			an0va[["data"]][[i]][is.na(an0va[["data"]][[i]])] <- '.'
 			names(an0va[["data"]][[i]]) <- gsub("Df","DF",	names(an0va[["data"]][[i]]))
 		}
@@ -172,7 +173,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 	if (!is.null(semResults)) {
 		sem_parest <- lavaan:::parameterEstimates(semResults, standardized = TRUE)
-		parEstimates[["cases"]] <- rep("",NROW(sem_parest))
+		# parEstimates[["cases"]] <- rep("",NROW(sem_parest))
 		for (i in seq_len(NROW(sem_parest)))
 		{
 			parEstimates[["data"]][[i]] <- as.list(sem_parest[i,])
@@ -240,10 +241,11 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 		fitMeasures <- list()
 		fitMeasures[["title"]] <- "Fit Measures"
 		fitMeasures[["schema"]] <- list(fields = list(
+			list(name="Type", title = "", type="string"),
 			list(name="Measure", type="number", format="dp:3")))
 
 
-		fitMeasures[["cases"]] <- c("fmin", "chisq", "df", "pvalue", "baseline.chisq", "baseline.df", 
+		cases <- c("fmin", "chisq", "df", "pvalue", "baseline.chisq", "baseline.df", 
 						"baseline.pvalue", "cfi", "tli", "nnfi", "rfi", "nfi", "pnfi", 
 						"ifi", "rni", "logl", "unrestricted.logl", "npar", "aic", "bic", 
 						"ntotal", "bic2", "rmsea", "rmsea.ci.lower", "rmsea.ci.upper", 
@@ -252,8 +254,18 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 
 		if (!is.null(semResults))
 		{
-			sem_fitm <- lavaan:::fitMeasures(semResults)
-			fitMeasures[["data"]] <- lapply(as.list(unname(sem_fitm)) , function(x) {names(x) <- "Measure";x})
+			sem_fitm <- unlist(lavaan:::fitMeasures(semResults))
+			#data <- lapply(as.list(unname(sem_fitm)) , function(x) {names(x) <- "Measure";x})
+		} #else data <- list()
+
+		for (i in seq_along(cases))
+		{
+			entry <- list(Type = cases[i], Measure = ".")
+			if (!is.null(semResults))
+			{
+				entry$Measure <- sem_fitm[[i]]
+			}
+			fitMeasures[["data"]][[i]] <- entry
 		}
 		if (errorMessage!="" & perform == "run" & options$model != "") fitMeasures[['error']] <- list(errorType="badData")
 		results[["fitMeasures"]] <- fitMeasures
