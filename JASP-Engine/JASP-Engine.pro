@@ -34,8 +34,8 @@ INCLUDEPATH += \
 
 unix:LIBS += \
 	-L$$R_HOME/library/RInside/lib -lRInside \
-	-L$$R_HOME/lib -lR
-#-L$$R_HOME/library/Rcpp/lib -lRcpp \
+        -L$$R_HOME/lib -lR \
+        -L$$R_HOME/library/Rcpp/lib -lRcpp \
 
 win32:LIBS += \
 	-L$$R_HOME/library/RInside/lib/i386 -lRInside \

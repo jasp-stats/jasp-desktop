@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#include <stdint.h>
+
 class CSV
 {
 public:
