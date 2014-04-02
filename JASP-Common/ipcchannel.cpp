@@ -66,6 +66,25 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 			; // do nothing
 
 	}
+#elif defined __WIN32__
+
+	wstring inName = s2ws(semaphoreInName.str());
+	wstring outName = s2ws(semaphoreOutName.str());
+
+	LPCWSTR inLPCWSTR = inName.c_str();
+	LPCWSTR outLPCWSTR = outName.c_str();
+
+	if (isSlave == false)
+	{
+		_semaphoreIn = CreateSemaphore(NULL, 0, 1, inLPCWSTR);
+		_semaphoreOut = CreateSemaphore(NULL, 0, 1, outLPCWSTR);
+	}
+	else
+	{
+		_semaphoreIn = OpenSemaphore(SYNCHRONIZE, false, inLPCWSTR);
+		_semaphoreOut = OpenSemaphore(SYNCHRONIZE | SEMAPHORE_MODIFY_STATE, false, outLPCWSTR);
+	}
+
 #else
 
     if (_isSlave == false)
@@ -93,6 +112,8 @@ void IPCChannel::send(string &data)
 
 #ifdef __APPLE__
 	sem_post(_semaphoreOut);
+#elif defined __WIN32__
+	ReleaseSemaphore(_semaphoreOut, 1, NULL);
 #else
     _semaphoreOut->post();
 #endif
@@ -134,6 +155,10 @@ bool IPCChannel::tryWait(int timeout)
 		messageWaiting = sem_trywait(_semaphoreIn) == 0;
 	}
 
+#elif defined __WIN32__
+
+	messageWaiting = (WaitForSingleObject(_semaphoreIn, timeout) == WAIT_OBJECT_0);
+
 #else
 
 	if (timeout > 0)
@@ -153,3 +178,16 @@ bool IPCChannel::tryWait(int timeout)
 
 }
 
+#ifdef __WIN32__
+wstring IPCChannel::s2ws(const string &s)
+{
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
+}
+#endif

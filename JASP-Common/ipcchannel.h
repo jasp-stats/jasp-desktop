@@ -1,8 +1,19 @@
 #ifndef IPCCHANNEL_H
 #define IPCCHANNEL_H
 
+/* for reasons unclear to me, the boost semaphores use 100% CPU on OS X
+ * and sometimes under windows too. hence, there are platform specific
+ * implementations below */
+
 #ifdef __APPLE__
 #include <semaphore.h>
+#elif defined __WIN32__
+
+#undef Realloc
+#undef Free
+
+#include <windows.h>
+
 #else
 #include <boost/interprocess/sync/named_semaphore.hpp>
 #endif
@@ -43,6 +54,12 @@ private:
 #ifdef __APPLE__
 	sem_t* _semaphoreOut;
 	sem_t* _semaphoreIn;
+#elif defined __WIN32__
+    HANDLE _semaphoreOut;
+    HANDLE _semaphoreIn;
+
+    static std::wstring s2ws(const std::string& s);
+
 #else
 	boost::interprocess::named_semaphore* _semaphoreOut;
 	boost::interprocess::named_semaphore* _semaphoreIn;

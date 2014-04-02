@@ -77,7 +77,7 @@ void Engine::run()
 
 	do
 	{
-		receiveMessages(20);
+        receiveMessages(100);
 		if ( ! Process::isParentRunning())
 			break;
 		runAnalysis();
