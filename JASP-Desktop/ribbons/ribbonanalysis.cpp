@@ -50,6 +50,10 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	ui->bayesianAnovaButton->setMenu(menu);
 
+	ui->bayesianCrosstabsButton->hide();
+	ui->bayesianRegressionButton->hide();
+
+
 }
 
 RibbonAnalysis::~RibbonAnalysis()
