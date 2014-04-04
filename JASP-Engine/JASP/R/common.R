@@ -41,7 +41,7 @@ run <- function(name, options.as.json.string) {
 
 }
 
-read.dataset.to.end <- function(exclude.na.listwise=NULL, ...) {	
+read.dataset.to.end <- function(read.as.factors=c(), exclude.na.listwise=NULL, ...) {	
 
 	dataset <- .read.dataset.native()
 	
@@ -60,6 +60,12 @@ read.dataset.to.end <- function(exclude.na.listwise=NULL, ...) {
 		rows.to.keep <- rows.to.keep[ ! rows.to.keep %in% rows.to.exclude]
 		
 		dataset <- dataset[rows.to.keep,]
+	}
+	
+	for (variable in read.as.factors) {
+
+		if (is.factor( dataset[[variable]] ))
+			dataset[[variable]] <- as.factor(dataset[[variable]])
 	}
 	
 	dataset
