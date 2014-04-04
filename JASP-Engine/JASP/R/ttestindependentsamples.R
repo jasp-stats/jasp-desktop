@@ -173,11 +173,11 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 			if (options$tails == "oneTailedGreaterThan") {
 		
-				testType <- "greater"
+				testType <- "less"
 			
 			} else if (options$tails == "oneTailedLessThan") {
 		
-				testType <- "less"
+				testType <- "greater"
 			
 			} else {
 		
