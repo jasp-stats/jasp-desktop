@@ -3,11 +3,13 @@
 
 #include <boost/foreach.hpp>
 #include <sstream>
+#include <string>
 
 #include <boost/lexical_cast.hpp>
 #include <cmath>
 
 using namespace boost::interprocess;
+using namespace boost;
 using namespace std;
 
 Column::Column() :
@@ -87,7 +89,30 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 
 	if ((newColumnType & _columnTypesAllowed) != 0)
 	{
-		if (_columnType != Column::ColumnTypeScale && newColumnType == Column::ColumnTypeScale)
+		if (_columnType == ColumnTypeOrdinal && newColumnType == ColumnTypeNominal)
+		{
+			Ints::iterator ints = this->AsInts.begin();
+			Ints::iterator end = this->AsInts.end();
+
+			map<int, string> labels;
+
+			for (; ints != end; ints++)
+			{
+				int value = *ints;
+
+				if (labels.find(value) == labels.end())
+				{
+					stringstream ss;
+					ss << value;
+					labels[value] = ss.str();
+				}
+			}
+
+			setLabels(labels);
+
+			_columnType = newColumnType;
+		}
+		else if (_columnType == Column::ColumnTypeOrdinal && newColumnType == Column::ColumnTypeScale)
 		{
 			Ints::iterator ints = this->AsInts.begin();
 			Ints::iterator end = this->AsInts.end();
@@ -97,7 +122,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			{
 				int value = *ints;
 				if (value == INT_MIN)
-					*doubles = std::numeric_limits<double>::quiet_NaN();
+					*doubles = NAN;
 				else
 					*doubles = (double)*ints;
 			}
@@ -105,7 +130,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			_dataType = Column::DataTypeDouble;
 			_columnType = newColumnType;
 		}
-		else if (_columnType == Column::ColumnTypeScale && newColumnType != Column::ColumnTypeScale)
+		else if (_columnType == Column::ColumnTypeScale && newColumnType == Column::ColumnTypeOrdinal)
 		{
 			Ints::iterator ints = this->AsInts.begin();
 			Ints::iterator end = this->AsInts.end();
@@ -123,8 +148,67 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			_dataType = Column::DataTypeInt;
 			_columnType = newColumnType;
 		}
-		else
+		else if (_columnType == Column::ColumnTypeScale && newColumnType == Column::ColumnTypeNominal)
 		{
+			changeColumnType(Column::ColumnTypeOrdinal);
+			changeColumnType(Column::ColumnTypeNominal);
+		}
+		else if (_columnType == ColumnTypeNominal && newColumnType == ColumnTypeOrdinal)
+		{
+			Ints::iterator ints = this->AsInts.begin();
+			Ints::iterator end = this->AsInts.end();
+
+			for (; ints != end; ints++)
+			{
+				int value = *ints;
+				string display = displayFromValue(value);
+				int newValue;
+
+				try
+				{
+					newValue = lexical_cast<int>(display);
+				}
+				catch (...)
+				{
+					newValue = INT_MIN;
+				}
+
+				*ints = newValue;
+			}
+
+			SharedMemory::get()->destroy_ptr(_labels.get());
+			_labels = NULL;
+
+			_columnType = newColumnType;
+		}
+		else if (_columnType == ColumnTypeNominal && newColumnType == ColumnTypeScale)
+		{
+			Ints::iterator ints = this->AsInts.begin();
+			Ints::iterator end = this->AsInts.end();
+			Doubles::iterator doubles = this->AsDoubles.begin();
+
+			for (; ints != end; ints++, doubles++)
+			{
+				int value = *ints;
+				string display = displayFromValue(value);
+				double newValue;
+
+				try
+				{
+					newValue = lexical_cast<double>(display);
+				}
+				catch (...)
+				{
+					newValue = NAN;
+				}
+
+				*doubles = newValue;
+			}
+
+			SharedMemory::get()->destroy_ptr(_labels.get());
+			_labels = NULL;
+
+			_dataType = Column::DataTypeDouble;
 			_columnType = newColumnType;
 		}
 	}
@@ -146,14 +230,14 @@ bool Column::hasLabels()
 
 std::string Column::displayFromValue(int value)
 {
+	if (value == INT_MIN)
+		return ".";
+
 	if (hasLabels())
 	{
 		String s = _labels->at(value);
 		return string(s.begin(), s.end());
 	}
-
-	if (value == INT_MIN)
-		return "";
 
 	stringstream s;
 	s << value;
@@ -251,6 +335,10 @@ string Column::operator [](int index)
 		{
             char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
 			return string(ninf);
+		}
+		else if (isnan(v))
+		{
+			return ".";
 		}
 		else
 		{

@@ -190,7 +190,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 		{
 			column._dataType = Column::DataTypeDouble;
 			column._columnType = Column::ColumnTypeScale;
-			column._columnTypesAllowed = Column::ColumnTypeScale;
+			column._columnTypesAllowed = (Column::ColumnType)(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 			continue;
 		}
 
@@ -198,6 +198,15 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 		sort(inColumn.begin(), inColumn.end());
 		vector<string> cases;
 		unique_copy(inColumn.begin(), inColumn.end(), back_inserter(cases));
+
+		for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
+		{
+			if (*itr == "") // remove empty string
+			{
+				cases.erase(itr);
+				break;
+			}
+		}
 
 		std::map<int, string> casesMap;
 		int i = 0;
@@ -215,13 +224,17 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 
 		BOOST_FOREACH (string &value, columnRows)
 		{
-			*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
+			if (value == "")
+				*intInputItr = INT_MIN;
+			else
+				*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
+
 			intInputItr++;
 		}
 
 		column._dataType = Column::DataTypeInt;
 		column._columnType = Column::ColumnTypeNominal;
-		column._columnTypesAllowed = Column::ColumnTypeNominal;
+		column._columnTypesAllowed = (Column::ColumnType)(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	}
 
 	return dataSet;
