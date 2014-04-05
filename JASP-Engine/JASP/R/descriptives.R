@@ -76,6 +76,16 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	run <- perform == "run"
 
 	results <- list()
+	
+	#### META
+	
+	meta <- list()
+	
+	meta[[1]] <- list(name="stats", type="table")
+	meta[[2]] <- list(name="tables", type="table")
+	meta[[3]] <- list(name="plots", type="image")
+	
+	results[[".meta"]] <- meta
 
 	#### STATS TABLE
 
@@ -142,7 +152,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
   
 	stats.results[["title"]] <- "Descriptive Statistics"
 	stats.results[["schema"]] <- list(fields=fields)
-	stats.results[["cases"]] <- as.list(variables)
+	stats.results[["casesAcrossColumns"]] <- TRUE
 
 	footnotes <- list()
 
@@ -409,15 +419,6 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 			frequency.table[["title"]] <- paste("Frequencies for", variable)
 			frequency.table[["schema"]] <- list(fields=fields)
-
-			if (class(column) == "factor"){
-			
-				frequency.table[["cases"]] <- levels(dataset[[variable]])
-				
-			} else {
-			
-				frequency.table[["cases"]] <- list()
-			}
 		
 			if (perform == "run") {
 		
@@ -431,8 +432,6 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				
 					lvls <- sort(unique(dataset[[variable]]))
 				}
-				
-				frequency.table[["cases"]] <- c(lvls, "Total")
 
 				t <- table(column)
 				total <- sum(t)
@@ -491,7 +490,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	#### FREQUENCY PLOTS
 
-	if (options$charts$chartType != "noCharts") {
+	if (perform=="run" && options$charts$chartType != "noCharts") {
 
 		frequency.plots <- list()
 
@@ -499,52 +498,32 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 			column <- dataset[[variable]]
 
-			if (class(column) == "numeric")
+			if (class(column) == "numeric" || is.factor(column))
 				next
-		
-			frequency.plot <- list()
-			frequency.plot[["title"]] <- paste("Frequencies for", variable)
-
-			if (class(column) == "factor") {
-			
-				frequency.plot[["cases"]] <- as.character(levels(column))
 				
-			} else if (class(column) == "integer") {
+			if (callback(results) != 0)
+				return()
 			
-				frequency.plot[["cases"]] <- as.character(sort(unique(column)))
-			}
-
-			if (perform == "run") {
-
-				t <- table(column)
-				total <- sum(t)
-
-				freqs <- list()
-				percent <- list()
-				validPercent <- list()
-				cumPercent <- list()
-
-				cumFreq <- 0
-
-				for (n in names(t)) {
-				
-					freq <- as.vector(t[n])
-					cumFreq <- cumFreq + freq
-	
-					freqs[[length(freqs) + 1]] <- freq
-					percent[[length(percent) + 1]] <- freq / total * 100
-					validPercent[[length(validPercent) + 1]] <- freq / total * 100
-					cumPercent[[length(cumPercent)+1]] <- cumFreq / total * 100
-				}
+			image <- .beginSaveImage(480, 320)
 			
-				frequency.plot[["data"]] <- freqs
+			par(lwd=2)
+			hist(column, main=paste("Frequencies for", variable), xlab=variable, col=rainbow(10))
 			
-			}
-		
-			frequency.plots[[length(frequency.plots)+1]] <- frequency.plot
+			content <- .endSaveImage(image)
+			
+			plot <- list()
+			
+			plot[["title"]] <- variable
+			plot[["data"]]  <- content
+			plot[["width"]]  <- 480
+			plot[["height"]] <- 320
+			
+			frequency.plots[[length(frequency.plots)+1]] <- plot
+
+			results[["plots"]] <- frequency.plots
+			
 		}
 	
-		results[["plots"]] <- frequency.plots
 	}
 
 	results

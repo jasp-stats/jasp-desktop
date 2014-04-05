@@ -89,6 +89,23 @@ $(document).ready(function() {
 		}
 
 	}
+		
+	var render = function(element, result, status, metaEntry) {
+
+		if ( ! _.isArray(result))
+			result = [ result ]
+			
+		_.each(result, function(item) {
+		
+			if ( ! _.has(item, "status"))
+				item.status = status
+
+			$('<div></div>')
+				.appendTo(element)
+				[metaEntry.type](item)
+		})
+
+	}
 
 	window.analysisChanged = function(renderer, analysis) {
 
@@ -131,10 +148,31 @@ $(document).ready(function() {
 		item = newItem
 		var inner = item.children(".jasp-analysis-inner")
 
-        if (results.error)
+        if (results.error) {
+        
             inner.append('<div class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + results.errorMessage + '</div>')
-        else
-            renderer.render(inner, results, status)
+        }
+        else {
+        
+			var meta = results[".meta"]
+
+        	if (results[".meta"]) {
+        	
+        		for (var i = 0; i < meta.length; i++) {
+
+					var metaEntry = meta[i]
+        			if (_.has(results, metaEntry.name))
+        				render(inner, results[metaEntry.name], status, metaEntry)
+        				
+        		}
+        		
+        	}
+        	else {
+        	
+            	renderer.render(inner, results, status)
+        	}
+            
+        }
 		
 		if (selectedAnalysisId == analysis.id)
 			window.scrollIntoView(item);

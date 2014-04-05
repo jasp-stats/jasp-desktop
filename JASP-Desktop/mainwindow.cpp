@@ -66,14 +66,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QFile indexPageResource(QString(":/core/analyses.html"));
     indexPageResource.open(QFile::ReadOnly);
-    QString indexPage(indexPageResource.readAll());
+	QByteArray indexPage = indexPageResource.readAll();
 
 #ifndef QT_NO_DEBUG
     ui->webViewOptions->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     ui->webViewOptions->page()->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
 #endif
 
-	ui->webViewOptions->setHtml(indexPage, QUrl("qrc:/core/"));
+	ui->webViewOptions->setContent(indexPage, "application/xhtml+xml", QUrl("qrc:/core/"));
 
 	ui->ribbonAnalysis->setEnabled(false);
 	ui->ribbonSEM->setEnabled(false);

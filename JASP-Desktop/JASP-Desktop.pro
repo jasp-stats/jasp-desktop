@@ -234,18 +234,10 @@ OTHER_FILES += \
     html/js/jquery-1.9.1.js \
     html/js/jquery-ui-1.10.1.custom.js \
     html/js/jquery-ui-1.10.1.custom.min.js \
-    html/js/jquery.websocket-0.0.1.js \
     html/js/main.js \
     html/js/underscore-min.js \
     html/js/underscore.js \
-    html/js/jquery.svg.js \
-    html/js/jquery.svggraph.js \
-    html/js/jquery.svg.pack.js \
     html/js/table.js \
-    html/js/bargraph.js \
-    html/js/d3.v2.js \
-    html/js/nv.d3.js \
-    html/js/nv.d3.min.js \
     html/js/tables.js \
     resources/expanded.png \
     resources/expander-arrow-down-disabled.png \
@@ -336,7 +328,10 @@ OTHER_FILES += \
     resources/icons/analysis-classical-crosstabs.svg \
     resources/icons/analysis-bayesian-regression.svg \
     resources/icons/toolbutton-menu-indicator.svg \
-    html/js/descriptives.js \
+	html/js/image.js \
+	html/js/descriptives.js \
     resources/icons/variable-scale-inactive.svg \
     resources/icons/variable-ordinal-inactive.svg \
-    resources/icons/variable-nominal-inactive.svg
+    resources/icons/variable-nominal-inactive.svg \
+	html/css/images/logo.svg
+

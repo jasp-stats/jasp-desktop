@@ -38,5 +38,6 @@
         <file>css/images/running.gif</file>
         <file>css/images/waiting.gif</file>
         <file>js/descriptives.js</file>
+        <file>js/image.js</file>
     </qresource>
 </RCC>

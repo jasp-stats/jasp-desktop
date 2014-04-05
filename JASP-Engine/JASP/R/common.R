@@ -32,6 +32,8 @@ run <- function(name, options.as.json.string) {
 	
 	if (class(results) == "try-error") {
 	
+		print(results)
+	
 		"{ \"error\" : 	1, \"errorMessage\" : \"This analysis terminated unexpectedly. Please contact its author.\" }"
 	
 	} else {
@@ -135,6 +137,31 @@ callback <- function(results=NULL) {
 		seq <- from:to
 		
 	seq
+}
+
+.beginSaveImage <- function(width=320, height=320) {
+		
+	file <- paste(tempfile(), "png", sep=".")
+			
+	grDevices::png(filename=file, width=2 * width, height=2 * height, pointsize=24, bg="transparent")
+	
+	list(format="png", encoding="dataURI;base64", file=file)
+}
+
+.endSaveImage <- function(image.descriptor) {
+
+	grDevices::dev.off()
+	
+	file <- tempfile()
+	
+	base64::encode(image.descriptor$file, file, linesize=1024*1024*1024)
+	
+	content <- paste("data:image/png;base64,", base::readChar(file, 1024*1024*1024), sep="")
+	
+	base::file.remove(image.descriptor$file)
+	base::file.remove(file)
+
+	content
 }
 
 .clean <- function(value) {
