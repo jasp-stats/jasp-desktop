@@ -1,4 +1,4 @@
-$.widget("jasp.tables", {
+$.widget("jasp.images", {
 
     options: {
         items : [ ],
@@ -6,9 +6,9 @@ $.widget("jasp.tables", {
     },
     _create: function () {
 
-        this.element.addClass("jasp-tables")
+        this.element.addClass("jasp-images")
 
-        this.tables = $(this.element)
+        this.images = $(this.element)
 
         this.refresh()
     },
@@ -19,19 +19,31 @@ $.widget("jasp.tables", {
     },
     refresh: function () {
 
-        this.tables.empty()
+        this.images.empty()
 
         if (this.options.items && $.isArray(this.options.items) && this.options.items.length > 0)
         {
+			this.allImages = [ ]
+
             for (var i = 0; i < this.options.items.length; i++)
             {
             	var options = this.options.items[i]
             	if ( ! options["status"])
             		options["status"] = this.options.status
             
-                var table = $('<div class="jasp-tables-table"></div>')
-                table.table(options)
-                this.tables.append(table)
+                var image = $('<div class="jasp-images-image"></div>')
+                image.image(options)
+                this.images.append(image)
+                
+                var self = this
+                
+                image.bind("resize", function(event, ui) {
+                
+					$(self.element.children())
+						.css("width", ui.size.width)
+						.css("height", ui.size.height)
+                
+                } )
             }
 
         }
@@ -41,6 +53,6 @@ $.widget("jasp.tables", {
 
     },
     _destroy: function () {
-        this.element.removeClass("jasp-tables").text("")
+        this.element.removeClass("jasp-images").text("")
     }
 })

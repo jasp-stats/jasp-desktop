@@ -76,7 +76,7 @@ string Analysis::js()
 			"                    tables.push(result)\n"
 			"            })\n"
 			"        }\n"
-			"        element.tables( { tables : tables, status : status } )\n"
+			"        element.tables( { items : tables, status : status } )\n"
 			"    }\n"
 			"}\n";
 }

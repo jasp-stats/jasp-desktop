@@ -82,8 +82,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	meta <- list()
 	
 	meta[[1]] <- list(name="stats", type="table")
-	meta[[2]] <- list(name="tables", type="table")
-	meta[[3]] <- list(name="plots", type="image")
+	meta[[2]] <- list(name="tables", type="tables")
+	meta[[3]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
 
@@ -490,38 +490,66 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	#### FREQUENCY PLOTS
 
-	if (perform=="run" && options$charts$chartType != "noCharts") {
-
+	if (options$charts$chartType != "noCharts") {
+	
 		frequency.plots <- list()
+		
+		i <- 1
 
 		for (variable in variables) {
-	
+
 			column <- dataset[[variable]]
 
 			if (class(column) == "numeric" || is.factor(column))
 				next
 				
-			if (callback(results) != 0)
-				return()
-			
-			image <- .beginSaveImage(480, 320)
-			
-			par(lwd=2)
-			hist(column, main=paste("Frequencies for", variable), xlab=variable, col=rainbow(10))
-			
-			content <- .endSaveImage(image)
-			
 			plot <- list()
-			
+		
 			plot[["title"]] <- variable
-			plot[["data"]]  <- content
-			plot[["width"]]  <- 480
-			plot[["height"]] <- 320
-			
-			frequency.plots[[length(frequency.plots)+1]] <- plot
+			plot[["width"]]  <- options$charts$chartWidth
+			plot[["height"]] <- options$charts$chartHeight
+		
+			frequency.plots[[i]] <- plot
+			i <- i + 1	
+		}
+		
+		results[["plots"]] <- frequency.plots
 
-			results[["plots"]] <- frequency.plots
+		if (perform=="run") {
 			
+			i <- 1
+
+			for (variable in variables) {
+	
+				column <- dataset[[variable]]
+
+				if (class(column) == "numeric" || is.factor(column))
+					next
+				
+				if (callback(results) != 0)
+					return()
+			
+				image <- .beginSaveImage(options$charts$chartWidt, options$charts$chartHeight)
+			
+				par(lwd=2)
+				hist(column, main=paste("Frequencies for", variable), xlab=variable, col=rainbow(10))
+			
+				content <- .endSaveImage(image)
+			
+				plot <- list()
+			
+				plot[["title"]] <- variable
+				plot[["data"]]  <- content
+				plot[["width"]]  <- options$charts$chartWidth
+				plot[["height"]] <- options$charts$chartHeight
+			
+				frequency.plots[[i]] <- plot
+				i <- i + 1
+
+				results[["plots"]] <- frequency.plots
+			
+			}
+		
 		}
 	
 	}

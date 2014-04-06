@@ -48,27 +48,11 @@ Options *Descriptives::createDefaultOptions()
 	options->add("statistics/distribution/skewness", new OptionBoolean());
 	options->add("statistics/distribution/kurtosis", new OptionBoolean());
 
-	vector<string> chartType;
-	chartType.push_back("noCharts");
-	chartType.push_back("barCharts");
-	chartType.push_back("barCharts");
-	chartType.push_back("barCharts");
-
-	vector<string> chartValues;
-	chartValues.push_back("frequencies");
-	chartValues.push_back("percentages");
-
-	options->add("charts/chartType", new OptionList(chartType));
+	options->add("charts/chartType", new OptionList(list("noCharts", "barCharts", "barCharts", "barCharts")));
 	options->add("charts/showNormalCurve", new OptionBoolean());
-	options->add("charts/chartValues", new OptionList(chartValues));
+	options->add("charts/chartValues", new OptionList(list("frequencies", "percentages")));
+	options->add("charts/chartWidth", new OptionInteger(480));
+	options->add("charts/chartHeight", new OptionInteger(320));
 
 	return options;
-}
-
-string Descriptives::js()
-{
-	return "{"
-			"    depends : ['descriptives'], "
-			"    render : function(element, results, status) { element.descriptives( { stats : results.stats, tables : results.tables, plots : results.plots, status : status } ) } "
-			"}";
 }

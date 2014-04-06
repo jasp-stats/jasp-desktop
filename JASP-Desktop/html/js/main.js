@@ -91,20 +91,23 @@ $(document).ready(function() {
 	}
 		
 	var render = function(element, result, status, metaEntry) {
-
-		if ( ! _.isArray(result))
-			result = [ result ]
-			
-		_.each(result, function(item) {
 		
-			if ( ! _.has(item, "status"))
-				item.status = status
+		if (_.isArray(result)) {
+		
+			$('<div></div>')
+				.appendTo(element)
+				[metaEntry.type]({ items : result, status : status })
+		
+		}
+		else {
+
+			if ( ! _.has(result, "status"))
+				result.status = status
 
 			$('<div></div>')
 				.appendTo(element)
-				[metaEntry.type](item)
-		})
-
+				[metaEntry.type](result)
+		}
 	}
 
 	window.analysisChanged = function(renderer, analysis) {

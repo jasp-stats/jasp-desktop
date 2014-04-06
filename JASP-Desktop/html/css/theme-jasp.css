@@ -111,6 +111,26 @@ svg > text
 	float: left ;
 }
 
+.jasp-image {
+
+	border: 2px solid transparent ;
+	border-radius : 2px ;
+	padding: 0px ;
+}
+
+.jasp-image-resizer {
+	background-color : #BFD9F7 ;
+	border: 1px solid #7C95CB ;
+	border-radius : 3px ;
+	margin: 0px ;
+}
+
+.jasp-image-resizable {
+
+	border: 2px solid #BFD9F7 ;
+	border-radius : 2px ;
+}
+
 .jasp-analysis-inner {
 
 	margin: .7em ;
