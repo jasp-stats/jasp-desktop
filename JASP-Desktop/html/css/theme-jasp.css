@@ -107,6 +107,10 @@ svg > text
 	font-size: 120% ;
 }
 
+.jasp-image {
+	float: left ;
+}
+
 .jasp-analysis-inner {
 
 	margin: .7em ;
