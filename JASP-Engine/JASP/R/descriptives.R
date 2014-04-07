@@ -506,8 +506,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			plot <- list()
 		
 			plot[["title"]] <- variable
-			plot[["width"]]  <- options$charts$chartWidth
-			plot[["height"]] <- options$charts$chartHeight
+			plot[["width"]]  <- options$chartWidth
+			plot[["height"]] <- options$chartHeight
+			plot[["itemOptions"]] <- list(width="chartWidth", height="chartHeight")
 		
 			frequency.plots[[i]] <- plot
 			i <- i + 1	
@@ -529,19 +530,16 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				if (callback(results) != 0)
 					return()
 			
-				image <- .beginSaveImage(options$charts$chartWidt, options$charts$chartHeight)
+				image <- .beginSaveImage(options$chartWidth, options$chartHeight)
 			
 				par(lwd=2)
 				hist(column, main=paste("Frequencies for", variable), xlab=variable, col=rainbow(10))
 			
 				content <- .endSaveImage(image)
 			
-				plot <- list()
+				plot <- frequency.plots[[i]]
 			
-				plot[["title"]] <- variable
 				plot[["data"]]  <- content
-				plot[["width"]]  <- options$charts$chartWidth
-				plot[["height"]] <- options$charts$chartHeight
 			
 				frequency.plots[[i]] <- plot
 				i <- i + 1

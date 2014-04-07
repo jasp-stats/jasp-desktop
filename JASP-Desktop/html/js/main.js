@@ -89,25 +89,11 @@ $(document).ready(function() {
 		}
 
 	}
-		
-	var render = function(element, result, status, metaEntry) {
-		
-		if (_.isArray(result)) {
-		
-			$('<div></div>')
-				.appendTo(element)
-				[metaEntry.type]({ items : result, status : status })
-		
-		}
-		else {
-
-			if ( ! _.has(result, "status"))
-				result.status = status
-
-			$('<div></div>')
-				.appendTo(element)
-				[metaEntry.type](result)
-		}
+	
+	var analysisChangedDownstreamHandler = function(event, data) {
+	
+		jasp.analysisChangedDownstream(data.id, JSON.stringify(data.options))
+	
 	}
 
 	window.analysisChanged = function(renderer, analysis) {
@@ -120,7 +106,7 @@ $(document).ready(function() {
 
 		var item = $("#" + id)
 
-		var newItem = $('<div id="' + id + '" class="jasp-analysis"><div class="jasp-analysis-inner"></div></div>')
+		var newItem = $('<div id="' + id + '" class="jasp-analysis"></div>')
 		newItem.click(selectedHandler)
 		
 		if (analysis.id == selectedAnalysisId)
@@ -149,33 +135,9 @@ $(document).ready(function() {
 		}
 
 		item = newItem
-		var inner = item.children(".jasp-analysis-inner")
-
-        if (results.error) {
-        
-            inner.append('<div class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + results.errorMessage + '</div>')
-        }
-        else {
-        
-			var meta = results[".meta"]
-
-        	if (results[".meta"]) {
-        	
-        		for (var i = 0; i < meta.length; i++) {
-
-					var metaEntry = meta[i]
-        			if (_.has(results, metaEntry.name))
-        				render(inner, results[metaEntry.name], status, metaEntry)
-        				
-        		}
-        		
-        	}
-        	else {
-        	
-            	renderer.render(inner, results, status)
-        	}
-            
-        }
+		
+		item.analysis( { id : analysis.id, results : results, renderer : renderer.render, status : status } )
+		item.bind("analysisoptionschanged", analysisChangedDownstreamHandler)
 		
 		if (selectedAnalysisId == analysis.id)
 			window.scrollIntoView(item);

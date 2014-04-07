@@ -334,5 +334,6 @@ OTHER_FILES += \
     resources/icons/variable-ordinal-inactive.svg \
     resources/icons/variable-nominal-inactive.svg \
 	html/css/images/logo.svg \
-    html/js/images.js
+	html/js/images.js \
+	html/js/analysis.js
 

@@ -41,5 +41,6 @@
         <file>css/images/logo.svg</file>
         <file>js/image.js</file>
         <file>js/images.js</file>
+        <file>js/analysis.js</file>
     </qresource>
 </RCC>

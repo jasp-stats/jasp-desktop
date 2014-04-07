@@ -6,7 +6,9 @@ $.widget("jasp.image", {
 		height: 320,
         data: null,
         status : "waiting",
-        resize : [ ]
+        resize : [ ],
+        itemOptions : { },
+        itemoptionschanged : [ ]
 	},
 	_create: function () {
 		this.element.addClass("jasp-image")
@@ -16,6 +18,30 @@ $.widget("jasp.image", {
 
 		this._super(options)		
 		this.refresh()
+	},
+	_startResize : function(event, ui) {
+	
+		this.element.addClass("jasp-image-resizable")
+	},
+	_resize : function(event, ui) {
+	
+		this._trigger("resize", event, ui)
+	},
+	_stopResize : function(event, ui) {
+
+		this.element.removeClass("jasp-image-resizable")
+
+		var itemOptions = this.options.itemOptions
+
+		var options = { }
+		
+		if (_.has(itemOptions, "width"))
+			options[itemOptions.width] = ui.size.width
+		if (_.has(itemOptions, "height"))
+			options[itemOptions.height] = ui.size.height
+			
+		this._trigger("itemoptionschanged", null, options)
+		
 	},
 	refresh: function () {
 		
@@ -40,9 +66,11 @@ $.widget("jasp.image", {
 		var self = this
 
 		this.element.resizable( {
-			start  : function() { self.element.addClass("jasp-image-resizable") },
-			stop   : function() { self.element.removeClass("jasp-image-resizable") },
-			resize : function(event, ui) { self._trigger("resize", event, ui) }
+			minWidth : 160,
+			minHeight: 160,
+			start  : function(event, ui) { self._startResize(event, ui) },
+			stop   : function(event, ui) { self._stopResize(event, ui) },
+			resize : function(event, ui) { self._resize(event, ui) }
 		} )
 		
 	},

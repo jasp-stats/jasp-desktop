@@ -49,8 +49,9 @@ void Options::set(Json::Value &json)
 	BOOST_FOREACH(OptionNamed item, _options)
 	{
 		string name = item.first;
-		Json::Value value = extractValue(name, json);
-		item.second->set(value);
+		Json::Value value;
+		if (extractValue(name, json, value))
+			item.second->set(value);
 	}
 
 	optionsChanged();
@@ -73,7 +74,7 @@ void Options::insertValue(string &name, Json::Value &value, Json::Value &root)
 	}
 }
 
-Json::Value Options::extractValue(string &name, Json::Value &root)
+bool Options::extractValue(string &name, Json::Value &root, Json::Value &value)
 {
 	size_t endPos;
 
@@ -82,11 +83,16 @@ Json::Value Options::extractValue(string &name, Json::Value &root)
 		string groupName = name.substr(0, endPos);
 		string itemName = name.substr(endPos + 1);
 
-		return extractValue(itemName, root[groupName]);
+		return extractValue(itemName, root[groupName], value);
+	}
+	else if (root.isMember(name))
+	{
+		value = root[name];
+		return true;
 	}
 	else
 	{
-		return root[name];
+		return false;
 	}
 }
 

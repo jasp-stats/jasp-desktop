@@ -2,6 +2,7 @@ $.widget("jasp.images", {
 
     options: {
         items : [ ],
+        itemoptionschanged : [ ],
         status : "waiting"
     },
     _create: function () {
@@ -23,8 +24,6 @@ $.widget("jasp.images", {
 
         if (this.options.items && $.isArray(this.options.items) && this.options.items.length > 0)
         {
-			this.allImages = [ ]
-
             for (var i = 0; i < this.options.items.length; i++)
             {
             	var options = this.options.items[i]
@@ -36,14 +35,21 @@ $.widget("jasp.images", {
                 this.images.append(image)
                 
                 var self = this
+                var allImages = this.element.children()
                 
-                image.bind("resize", function(event, ui) {
+				image.bind("imageresize", function(event, ui) {
                 
-					$(self.element.children())
+					$(allImages)
 						.css("width", ui.size.width)
 						.css("height", ui.size.height)
+				
+				})
                 
-                } )
+				image.bind("imageitemoptionschanged", function(event, data) {
+                
+					self._trigger("itemoptionschanged", null, data)
+				})
+				
             }
 
         }

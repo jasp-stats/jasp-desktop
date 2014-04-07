@@ -59,6 +59,7 @@ private:
 signals:
 	void analysisSelected(int id);
 	void analysisUnselected();
+	void analysisChangedDownstream(int id, QString options);
 	void pushToClipboard(QString data);
 
 private slots:
@@ -66,6 +67,7 @@ private slots:
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
 	void pushToClipboardHandler(QString data);
+	void analysisChangedDownstreamHandler(int id, QString options);
 
     void tabChanged(int index);
 	void dataSetSelected(const QString &filename);

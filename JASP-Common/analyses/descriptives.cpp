@@ -51,8 +51,8 @@ Options *Descriptives::createDefaultOptions()
 	options->add("charts/chartType", new OptionList(list("noCharts", "barCharts", "barCharts", "barCharts")));
 	options->add("charts/showNormalCurve", new OptionBoolean());
 	options->add("charts/chartValues", new OptionList(list("frequencies", "percentages")));
-	options->add("charts/chartWidth", new OptionInteger(480));
-	options->add("charts/chartHeight", new OptionInteger(320));
+	options->add("chartWidth", new OptionInteger(480));
+	options->add("chartHeight", new OptionInteger(320));
 
 	return options;
 }

@@ -112,6 +112,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
 	connect(this, SIGNAL(pushToClipboard(QString)), this, SLOT(pushToClipboardHandler(QString)));
+	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
 
 	_buttonPanel = new QWidget(ui->pageOptions);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
@@ -364,4 +365,22 @@ void MainWindow::pushToClipboardHandler(QString data)
 	clipboard->setMimeData(mimeData, QClipboard::Clipboard);
 
 	//qDebug() << clipboard->mimeData(QClipboard::Clipboard)->data("text/html");
+}
+
+void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
+{
+	Analysis *analysis = _analyses->get(id);
+	if (analysis == NULL)
+		return;
+
+	string utf8 = fq(options);
+
+	Json::Value root;
+
+	Json::Reader parser;
+	parser.parse(utf8, root);
+
+	analysis->options()->set(root);
+
+
 }
