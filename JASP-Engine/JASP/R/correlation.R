@@ -118,7 +118,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				
 						if (options$tails == "twoTailed") {
 
-							result   <- cor.test(dataset[[variable.name]], dataset[[variable.2.name]], method=test, alternative="two.sided")
+							result   <- cor.test(dataset[[ .v(variable.name) ]], dataset[[ .v(variable.2.name) ]], method=test, alternative="two.sided")
 							estimate <- as.numeric(result$estimate)
 
 							p.value  <- as.numeric(result$p.value)
@@ -126,8 +126,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						}
 						else {
 						
-							result1 <- cor.test(dataset[[variable.name]], dataset[[variable.2.name]], method=test, alternative="less")
-							result2 <- cor.test(dataset[[variable.name]], dataset[[variable.2.name]], method=test, alternative="greater")
+							result1 <- cor.test(dataset[[ .v(variable.name) ]], dataset[[ .v(variable.2.name) ]], method=test, alternative="less")
+							result2 <- cor.test(dataset[[ .v(variable.name) ]], dataset[[ .v(variable.2.name) ]], method=test, alternative="greater")
 							estimate <- as.numeric(result1$estimate)
 
 							p.value  <- min(as.numeric(result1$p.value), as.numeric(result2$p.value))

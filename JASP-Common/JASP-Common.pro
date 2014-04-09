@@ -67,7 +67,10 @@ SOURCES += \
     csv.cpp \
     process.cpp \
     analyses/ttestbayesianindependentsamples.cpp \
-    analyses/ttestbayesianpairedsamples.cpp
+    analyses/ttestbayesianpairedsamples.cpp \
+    base64.cpp \
+    base64/cdecode.cpp \
+    base64/cencode.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -124,7 +127,10 @@ HEADERS +=\
     csv.h \
     process.h \
     analyses/ttestbayesianindependentsamples.h \
-    analyses/ttestbayesianpairedsamples.h
+    analyses/ttestbayesianpairedsamples.h \
+    base64/cencode.h \
+    base64/cdecode.h \
+    base64.h
 
 unix:!symbian {
     maemo5 {

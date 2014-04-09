@@ -52,7 +52,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 
-		levels <- unique(dataset[[options$groupingVariable]])
+		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
 		
 		if (length(levels) != 2) {
 		
@@ -64,11 +64,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 			for (variable in options[["variables"]]) {
 
-				variableData <- dataset[[variable]]
+				variableData <- dataset[[ .v(variable) ]]
 				
 				result <- try (silent=FALSE, expr= {
 
-					f <- as.formula(paste(variable, "~", options$groupingVariable))
+					f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
 					
 					if (options$tails == "oneTailedGreaterThan") {
 					

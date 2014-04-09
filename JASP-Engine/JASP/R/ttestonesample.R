@@ -58,7 +58,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 					testType <- "two.sided"
 				}
 			
-				r <- t.test(dataset[[variable]], alternative=testType, mu=options$testValue,
+				r <- t.test(dataset[[ .v(variable) ]], alternative=testType, mu=options$testValue,
 							conf.level=options$confidenceIntervalInterval)
 			
 				t  <- as.numeric(r$statistic)
@@ -108,7 +108,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			
 			if (perform == "run") {
 
-				data = dataset[[variable]]
+				data = dataset[[ .v(variable) ]]
 
 				if (class(data) != "factor") {
 

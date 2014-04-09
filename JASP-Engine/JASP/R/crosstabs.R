@@ -36,13 +36,13 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 			a.factor.contains.no.levels <- FALSE
 		
 			lvls <- c()
-			if (is.factor( dataset[[ analysis$.rows ]] )) {
+			if (is.factor( dataset[[ .v(analysis$.rows) ]] )) {
 			
-				lvls <- levels(dataset[[ analysis$.rows ]])
+				lvls <- levels(dataset[[ .v(analysis$.rows) ]])
 				
 			} else if (perform == "run") {
 			
-				lvls <- unique(dataset[[ analysis$.rows ]])
+				lvls <- unique(dataset[[ .v(analysis$.rows) ]])
 			}
 			
 			if (length(lvls) == 0) {
@@ -61,13 +61,13 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 					var.name <- analysis[[j]]
 				
 					lvls <- c()
-					if (is.factor(dataset[[ var.name ]])) {
+					if (is.factor(dataset[[ .v(var.name) ]])) {
 					
-						lvls <- levels(dataset[[ var.name ]])
+						lvls <- levels(dataset[[ .v(var.name) ]])
 					}
 					else if (perform == "run") {
 					
-						lvls <- unique(dataset[[ var.name]] )
+						lvls <- unique(dataset[[ .v(var.name) ]] )
 					}
 					
 					if (length(lvls) == 0) {
@@ -98,13 +98,13 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 			fields[[length(fields)+1]] <- list(name=analysis$.rows, type="string")
 			
 			lvls <- c()
-			if (is.factor(dataset[[ analysis$.columns ]] )) {
+			if (is.factor(dataset[[ .v(analysis$.columns) ]] )) {
 
-				lvls <- levels(dataset[[ analysis$.columns ]])
+				lvls <- levels(dataset[[ .v(analysis$.columns) ]])
 
 			} else if (perform == "run") {
 			
-				lvls <- unique(dataset[[ analysis$.columns ]])
+				lvls <- unique(dataset[[ .v(analysis$.columns) ]])
 			}
 			
 			if (length(lvls) == 0) {
@@ -125,10 +125,11 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 				
 					caze <- cases[[i]]
 					
-					ss.filter.string <- paste("as.character(", names(caze), ")==\"", caze, "\"", sep="", collapse="&")
+					ss.filter.string <- paste("as.character(", .v(names(caze)), ")==\"", caze, "\"", sep="", collapse="&")
+					print(ss.filter.string)
 					ss.expression <- parse(text=ss.filter.string)
 					
-					ss <- subset(dataset, select=analysis$.columns, subset=eval(ss.expression))
+					ss <- subset(dataset, select=.v(analysis$.columns), subset=eval(ss.expression))
 					
 					t <- base::table(ss)
 

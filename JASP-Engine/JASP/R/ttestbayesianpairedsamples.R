@@ -42,8 +42,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 				result <- try (silent = TRUE, expr = {
 			
-					c1 <- dataset[[ pair[[1]] ]]
-					c2 <- dataset[[ pair[[2]] ]]
+					c1 <- dataset[[ .v(pair[[1]]) ]]
+					c2 <- dataset[[ .v(pair[[2]]) ]]
 	
 					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE)
 			
@@ -99,9 +99,9 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 					result <- try (silent = TRUE, expr = {
 						
-						n <- .clean(as.numeric(length(dataset[[ pair[[i]] ]])))
-						m <- .clean(as.numeric(mean(dataset[[ pair[[i]] ]], na.rm = TRUE)))
-						std <- .clean(as.numeric(sd(dataset[[ pair[[i]] ]], na.rm = TRUE)))
+						n <- .clean(as.numeric(length(dataset[[ .v(pair[[i]]) ]])))
+						m <- .clean(as.numeric(mean(dataset[[ .v(pair[[i]]) ]], na.rm = TRUE)))
+						std <- .clean(as.numeric(sd(dataset[[ .v(pair[[i]]) ]], na.rm = TRUE)))
 						if(is.numeric(std)){
 							se <- .clean(as.numeric(std/sqrt(n)))}
 						else

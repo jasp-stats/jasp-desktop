@@ -78,6 +78,16 @@ read.dataset.header <- function() {
 	.read.dataset.header.native()
 }
 
+.v <- function(variable.names) {
+
+	vs <- c()
+
+	for (v in variable.names)
+		vs[length(vs)+1] <- paste(".", .toBase64(v), sep="")
+
+	vs
+}
+
 callback <- function(results=NULL) {
 
 	if (is.null(results)) {
@@ -183,3 +193,4 @@ callback <- function(results=NULL) {
 
 	NULL
 }
+

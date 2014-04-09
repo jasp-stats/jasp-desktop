@@ -59,7 +59,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	if (perform == "run" && options$groupingVariable != "") {
 	
-		levels <- unique(dataset[[options$groupingVariable]])
+		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
 		
 		if (length(levels) != 2) {
 		
@@ -68,13 +68,13 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		} else {
 		
 			rowNo <- 1
-			groupingVar <- dataset[[ options$groupingVariable ]]
+			groupingVar <- dataset[[ .v(options$groupingVariable) ]]
 		
 			for (variable in options[["variables"]]) {
 		
 				for (level in levels) {
 			
-					variableData <- dataset[[variable]]
+					variableData <- dataset[[ .v(variable) ]]
 				
 					groupData <- variableData[groupingVar == level]
 					groupDataOm <- na.omit(groupData)
@@ -161,7 +161,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 
-		levels <- unique(dataset[[options$groupingVariable]])
+		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
 		
 		if (length(levels) != 2) {
 		
@@ -200,7 +200,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 				assumption=c("assumed equal", "no assumption")
 			}
 		
-			groupingVar <- dataset[[options$groupingVariable]]
+			groupingVar <- dataset[[ .v(options$groupingVariable) ]]
 			rowNo <- 1
 			
 			violation.footnote.index <- 0
@@ -213,7 +213,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 			for (variable in options[["variables"]]) {
 
-				variableData <- dataset[[variable]]
+				variableData <- dataset[[ .v(variable) ]]
 			
 				for (i in .indices(assume)) {
 				
@@ -332,7 +332,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	if (perform == "run" && options$groupingVariable != "") {
 	
-		levels <- unique(dataset[[options$groupingVariable]])
+		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
 		
 		if (length(levels) != 2) {
 		
@@ -346,7 +346,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 				result <- try (silent=TRUE, expr= {
 
-					levene <- car::leveneTest(dataset[[variable]], dataset[[options$groupingVariable]], "mean")
+					levene <- car::leveneTest(dataset[[ .v(variable) ]], dataset[[ .v(options$groupingVariable) ]], "mean")
 		
 					F  <- .clean(as.numeric(levene[1,1]))
 					df <- .clean(as.numeric(levene[1,2]))

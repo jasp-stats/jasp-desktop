@@ -172,7 +172,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		for (variable in variables) {
 
 			variable.results <- list(Variable=variable)
-			column <- dataset[[variable]]
+			column <- dataset[[ .v(variable) ]]
 
 			rows <- nrow(dataset)
 			na.omitted = na.omit(column)
@@ -403,7 +403,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		for (variable in variables) {
 	
-			column <- dataset[[variable]]
+			column <- dataset[[ .v(variable) ]]
 		
 			if (class(column) == "numeric")
 				next		
@@ -426,11 +426,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 				if (class(column) == "factor") {
 				
-					lvls <- levels(dataset[[variable]])
+					lvls <- levels(dataset[[ .v(variable) ]])
 					
 				} else if (class(column) == "integer") {
 				
-					lvls <- sort(unique(dataset[[variable]]))
+					lvls <- sort(unique(dataset[[ .v(variable) ]]))
 				}
 
 				t <- table(column)
@@ -475,7 +475,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 				if (class(column) == "factor") {
 			
-					for (level in levels(dataset[[variable]]))
+					for (level in levels(dataset[[ .v(variable) ]]))
 						data[[length(data)+1]] <- list(level=level)
 				
 				}
@@ -498,7 +498,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 		for (variable in variables) {
 
-			column <- dataset[[variable]]
+			column <- dataset[[ .v(variable) ]]
 
 			if (class(column) == "numeric" || is.factor(column))
 				next
@@ -511,7 +511,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			plot[["itemOptions"]] <- list(width="chartWidth", height="chartHeight")
 		
 			frequency.plots[[i]] <- plot
-			i <- i + 1	
+			i <- i + 1
 		}
 		
 		results[["plots"]] <- frequency.plots
@@ -522,7 +522,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 			for (variable in variables) {
 	
-				column <- dataset[[variable]]
+				column <- dataset[[ .v(variable) ]]
 
 				if (class(column) == "numeric" || is.factor(column))
 					next

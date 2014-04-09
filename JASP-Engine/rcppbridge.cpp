@@ -1,6 +1,7 @@
 #include "rcppbridge.h"
 
 #include <boost/foreach.hpp>
+#include "../JASP-Common/base64.h"
 
 using namespace std;
 
@@ -72,7 +73,11 @@ Rcpp::DataFrame RcppBridge::readDataSet()
 
 	BOOST_FOREACH(Column &column, _dataSet->columns())
 	{
-		columnNames.push_back(column.name());
+		string columnName = column.name();
+		string dot = ".";
+
+		string base64 = Base64::encode(dot, columnName);
+		columnNames.push_back(base64);
 
 		if (column.dataType() == Column::DataTypeInt)
 		{
@@ -139,7 +144,11 @@ Rcpp::DataFrame RcppBridge::readDataSetHeader()
 
 	BOOST_FOREACH(Column &column, _dataSet->columns())
 	{
-		columnNames.push_back(column.name());
+		string columnName = column.name();
+		string dot = ".";
+
+		string base64 = Base64::encode(dot, columnName);
+		columnNames.push_back(base64);
 
 		if (column.dataType() == Column::DataTypeInt)
 		{
