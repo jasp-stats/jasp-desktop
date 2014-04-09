@@ -55,7 +55,7 @@ $.widget("jasp.analysis", {
 
         if (this.options.results.error) {
         
-            $innerElement.append('<div class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + results.errorMessage + '</div>')
+            $innerElement.append('<div class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + this.options.results.errorMessage + '</div>')
             
         }
 		else if (this.options.results[".meta"]) {
