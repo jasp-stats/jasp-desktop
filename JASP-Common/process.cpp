@@ -10,7 +10,6 @@
 
 unsigned long Process::currentPID()
 {
-	return 0;  // these return 0's should be removed for release
 
 #ifdef __WIN32__
 	return GetCurrentProcessId();
@@ -21,7 +20,6 @@ unsigned long Process::currentPID()
 
 unsigned long Process::parentPID()
 {
-	return 0;  // these return 0's should be removed for release
 
 #ifdef __WIN32__
 
@@ -55,8 +53,6 @@ unsigned long Process::parentPID()
 bool Process::isParentRunning()
 {
 #ifdef __WIN32__
-
-	return true;  // these returns should be removed for release
 
     static unsigned long _parentPID = parentPID();
 	static void* _parentHandle = NULL;
