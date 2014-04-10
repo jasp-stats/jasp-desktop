@@ -21,18 +21,18 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	ui->classicalTTestButton->setMenu(menu);
 
 	menu = new QMenu(this);
-	menu->addAction(QString("One Way ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaOneWay");
+	//menu->addAction(QString("One Way ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaOneWay");
 	menu->addAction(QString("ANOVA"), this, SLOT(itemSelected()))->setObjectName("Anova");
-	menu->addAction(QString("ANCOVA"), this, SLOT(itemSelected()))->setObjectName("Ancova");
-	menu->addAction(QString("MAN(C)OVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");
+	//menu->addAction(QString("ANCOVA"), this, SLOT(itemSelected()))->setObjectName("Ancova");
+	//menu->addAction(QString("MAN(C)OVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");
 	//menu->addAction(QString("MANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");
 
 	ui->classicalAnovaButton->setMenu(menu);
 
 	menu = new QMenu(this);
 	menu->addAction(QString("Correlation"), this, SLOT(itemSelected()))->setObjectName("Correlation");
-	menu->addAction(QString("Partial Correlation"), this, SLOT(itemSelected()))->setObjectName("CorrelationPartial");
-	menu->addAction(QString("Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinear");
+	//menu->addAction(QString("Partial Correlation"), this, SLOT(itemSelected()))->setObjectName("CorrelationPartial");
+	//menu->addAction(QString("Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinear");
 
 	ui->classicalRegressionButton->setMenu(menu);
 
@@ -49,6 +49,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
 
 	ui->bayesianAnovaButton->setMenu(menu);
+	ui->bayesianAnovaButton->hide();
 
 	ui->bayesianCrosstabsButton->hide();
 	ui->bayesianRegressionButton->hide();

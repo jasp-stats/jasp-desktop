@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
 	ui->tabBar->addTab("Common");
-	ui->tabBar->addTab("SEM");
+	//ui->tabBar->addTab("SEM");
 
 #ifdef __WIN32__
     QFont font = ui->tabBar->font();
