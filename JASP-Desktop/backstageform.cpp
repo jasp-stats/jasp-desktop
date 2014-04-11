@@ -29,10 +29,19 @@ BackStageForm::~BackStageForm()
 
 void BackStageForm::fileItemSelected()
 {
-	QString filename = QFileDialog::getOpenFileName(this, tr("Open CSV File"), QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first(), tr("CSV Files (*.csv)"));
+	_settings.sync();
+	QString path = _settings.value("openPath", QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first()).toString();
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open CSV File"), path, tr("CSV Files (*.csv)"));
 
 	if ( ! filename.isNull())
+	{
+		QFileInfo f(filename);
+		path = f.absolutePath();
+		_settings.setValue("openPath", path);
+		_settings.sync();
+
 		emit dataSetSelected(filename);
+	}
 }
 
 

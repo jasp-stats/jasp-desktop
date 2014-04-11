@@ -2,6 +2,7 @@
 #define BACKSTAGEFORM_H
 
 #include <QWidget>
+#include <QSettings>
 
 #include "asyncloader.h"
 #include "dataset.h"
@@ -23,6 +24,7 @@ signals:
     
 private:
     Ui::BackStageForm *ui;
+	QSettings _settings;
 
 private slots:
     void fileItemSelected();
