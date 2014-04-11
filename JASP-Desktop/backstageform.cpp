@@ -21,11 +21,19 @@ BackStageForm::BackStageForm(QWidget *parent) :
 
 	connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(fileItemSelected()));
 	connect(ui->buttonExit, SIGNAL(clicked()), this, SLOT(exitItemSelected()));
+	connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(closeItemSelected()));
+
+	setFileLoaded(false);
 }
 
 BackStageForm::~BackStageForm()
 {
-    delete ui;
+	delete ui;
+}
+
+void BackStageForm::setFileLoaded(bool loaded)
+{
+	ui->buttonClose->setEnabled(loaded);
 }
 
 void BackStageForm::fileItemSelected()
@@ -48,6 +56,11 @@ void BackStageForm::fileItemSelected()
 void BackStageForm::exitItemSelected()
 {
 	QApplication::exit();
+}
+
+void BackStageForm::closeItemSelected()
+{
+	emit closeDataSetSelected();
 }
 
 

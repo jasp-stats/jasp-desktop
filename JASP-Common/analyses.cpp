@@ -36,6 +36,16 @@ Analysis *Analyses::create(string name, int id)
 	return analysis;
 }
 
+void Analyses::clear()
+{
+	for (Analyses::iterator itr = this->begin(); itr != this->end(); itr++)
+	{
+		Analysis *analysis = *itr;
+		if (analysis->status() != Analysis::Complete)
+			analysis->setStatus(Analysis::Aborted);
+	}
+}
+
 Analysis *Analyses::get(int id)
 {
 	if (id < _analyses.size())
@@ -43,28 +53,6 @@ Analysis *Analyses::get(int id)
 	else
 		return NULL;
 }
-
-/*Analysis *Analyses::next()
-{
-	static int j = 0;
-
-	Analysis *next = NULL;
-
-	for (ById::iterator itr = _analyses.begin(); itr != _analyses.end(); itr++)
-	{
-		Analysis *analysis = itr->second;
-
-		if (analysis->isCompleted() == false && analysis->isInitialised() == false)
-			return analysis;
-
-		if (next == NULL && analysis->isCompleted() == false)
-			next = analysis;
-	}
-
-	return next;
-}*/
-
-
 
 std::vector<Analysis*>::iterator Analyses::begin()
 {

@@ -71,6 +71,7 @@ private slots:
 
     void tabChanged(int index);
 	void dataSetSelected(const QString &filename);
+	void dataSetCloseRequested();
 	void dataSetLoaded(DataSet *dataSet);
 	void itemSelected(const QString item);
 
@@ -81,6 +82,7 @@ private slots:
 	void analysisOKed();
 	void analysisRemoved();
 
+	void updateMenuEnabledDisabledStatus();
 };
 
 #endif // MAINWIDGET_H

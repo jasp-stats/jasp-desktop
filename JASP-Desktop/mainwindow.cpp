@@ -90,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
+	connect(ui->backStage, SIGNAL(closeDataSetSelected()), this, SLOT(dataSetCloseRequested()));
 
 	_alert = new ProgressWidget(ui->tableView);
 	_alert->setAutoFillBackground(true);
@@ -284,14 +285,24 @@ void MainWindow::dataSetSelected(const QString &filename)
 	ui->tabBar->setCurrentIndex(1);
 }
 
+void MainWindow::dataSetCloseRequested()
+{
+	_tableModel->clearDataSet();
+	_loader.free(_dataSet);
+	_dataSet = NULL;
+	updateMenuEnabledDisabledStatus();
+	ui->backStage->setFileLoaded(false);
+	ui->webViewResults->reload();
+	_inited = false;
+}
+
 void MainWindow::dataSetLoaded(DataSet *dataSet)
 {
 	_dataSet = dataSet;
-
 	_tableModel->setDataSet(dataSet);
-
-	ui->ribbonAnalysis->setEnabled(true);
-	ui->ribbonSEM->setEnabled(true);
+	updateMenuEnabledDisabledStatus();
+	ui->backStage->setFileLoaded(true);
+	_analyses->clear();
 
 	_alert->hide();
 
@@ -301,6 +312,14 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 		_inited = true;
 	}
 
+}
+
+void MainWindow::updateMenuEnabledDisabledStatus()
+{
+	bool enable = _dataSet != NULL;
+
+	ui->ribbonAnalysis->setEnabled(enable);
+	ui->ribbonSEM->setEnabled(enable);
 }
 
 void MainWindow::itemSelected(const QString item)
