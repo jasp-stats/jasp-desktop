@@ -28,9 +28,9 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 	ui->buttonAssignColumns->setSourceAndTarget(ui->listAvailableFields, ui->columns);
 	ui->buttonAssignLayers->setSourceAndTarget(ui->listAvailableFields, ui->layers);
 
-	ui->groupStatistics->hide();
-	ui->groupCellDisplay->hide();
-	ui->groupTableFormat->hide();
+	ui->panelStatistics->hide();
+	ui->panelCells->hide();
+	ui->panelOptions->hide();
 }
 
 CrosstabsForm::~CrosstabsForm()
