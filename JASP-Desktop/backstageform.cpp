@@ -20,6 +20,7 @@ BackStageForm::BackStageForm(QWidget *parent) :
     ui->setupUi(this);
 
 	connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(fileItemSelected()));
+	connect(ui->buttonExit, SIGNAL(clicked()), this, SLOT(exitItemSelected()));
 }
 
 BackStageForm::~BackStageForm()
@@ -42,6 +43,11 @@ void BackStageForm::fileItemSelected()
 
 		emit dataSetSelected(filename);
 	}
+}
+
+void BackStageForm::exitItemSelected()
+{
+	QApplication::exit();
 }
 
 

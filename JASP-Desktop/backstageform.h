@@ -28,6 +28,7 @@ private:
 
 private slots:
     void fileItemSelected();
+	void exitItemSelected();
 
 };
 
