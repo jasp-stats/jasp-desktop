@@ -64,25 +64,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabBar->setFont(font);
 #endif
 
-	QFile indexPageResource(QString(":/core/analyses.html"));
-    indexPageResource.open(QFile::ReadOnly);
-	QByteArray indexPage = indexPageResource.readAll();
-
-#ifndef QT_NO_DEBUG
-    ui->webViewOptions->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-    ui->webViewOptions->page()->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
-#endif
-
-	ui->webViewOptions->setContent(indexPage, "application/xhtml+xml", QUrl("qrc:/core/"));
-
 	ui->ribbonAnalysis->setEnabled(false);
 	ui->ribbonSEM->setEnabled(false);
 
+#ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
+#else
+	ui->webViewResults->setContextMenuPolicy(Qt::NoContextMenu);
+#endif
 
-	QFile a(QString(":/core/index.html"));
-	a.open(QFile::ReadOnly);
+	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
