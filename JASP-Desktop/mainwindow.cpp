@@ -48,10 +48,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    QList<int> sizes = QList<int>();
-    sizes.append(600);
-    sizes.append(1);
-    ui->splitter->setSizes(sizes);
+	QList<int> sizes = QList<int>();
+	sizes.append(1);
+	sizes.append(490);
+	ui->splitter->setSizes(sizes);
 
     ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
@@ -77,7 +77,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
-	ui->stackedLHS->setCurrentWidget(ui->pageData);
 	ui->tabBar->setCurrentIndex(1);
 
 	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
@@ -92,7 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
 
-	_alert = new ProgressWidget(ui->pageData);
+	_alert = new ProgressWidget(ui->tableView);
 	_alert->setAutoFillBackground(true);
 	_alert->resize(400, 100);
 	_alert->move(100, 80);
@@ -118,13 +117,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanelLayout->addWidget(_removeButton);
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
-	_buttonPanel->hide();
+
+	ui->pageOptions->hide();
 
 	QTimer::singleShot(0, this, SLOT(repositionButtonPanel()));
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
 	connect(_removeButton, SIGNAL(clicked()), this, SLOT(analysisRemoved()));
 
-	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(repositionButtonPanel()));
+	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
 }
 
 void MainWindow::open(QString filename)
@@ -141,6 +141,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 {
 	QMainWindow::resizeEvent(event);
 	repositionButtonPanel();
+	adjustOptionsPanelWidth();
 }
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
@@ -226,10 +227,12 @@ void MainWindow::showForm(Analysis *analysis)
 
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);
-		ui->stackedLHS->setCurrentWidget(ui->pageOptions);
+		ui->pageOptions->show();
 
 		_buttonPanel->raise();
 		_buttonPanel->show();
+
+		adjustOptionsPanelWidth();
 	}
 }
 
@@ -242,8 +245,8 @@ void MainWindow::analysisSelectedHandler(int id)
 
 void MainWindow::analysisUnselectedHandler()
 {
-	ui->stackedLHS->setCurrentWidget(ui->pageData);
-	_buttonPanel->hide();
+	ui->pageOptions->hide();
+	ui->tableView->show();
 }
 
 void MainWindow::tabChanged(int index)
@@ -312,9 +315,31 @@ void MainWindow::itemSelected(const QString item)
 	}
 }
 
-void MainWindow::repositionButtonPanel()
+void MainWindow::adjustOptionsPanelWidth()
 {
-	int overallWidth = ui->splitter->sizes().at(0);
+	if (ui->pageOptions->width() == ui->pageOptions->maximumWidth() && ui->tableView->isHidden())
+	{
+		ui->tableView->show();
+		repositionButtonPanel(ui->pageOptions->minimumWidth());
+	}
+	else if (ui->tableView->width() == ui->tableView->minimumWidth() && ui->tableView->isVisible() && ui->pageOptions->isVisible())
+	{
+		ui->tableView->hide();
+		repositionButtonPanel(ui->pageOptions->maximumWidth() - 10);
+	}
+}
+
+void MainWindow::splitterMovedHandler(int, int)
+{
+	repositionButtonPanel();
+	adjustOptionsPanelWidth();
+}
+
+void MainWindow::repositionButtonPanel(int parentWidth)
+{
+	int overallWidth = parentWidth;
+	if (parentWidth == -1)
+		overallWidth = ui->pageOptions->width();
 	int panelWidth = _buttonPanel->width();
 
 	_buttonPanel->move(overallWidth - panelWidth, 0);
@@ -323,16 +348,16 @@ void MainWindow::repositionButtonPanel()
 
 void MainWindow::analysisOKed()
 {
-	ui->stackedLHS->setCurrentWidget(ui->pageData);
+	ui->pageOptions->hide();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.unselect()");
-	_buttonPanel->hide();
+	ui->tableView->show();
 }
 
 void MainWindow::analysisRemoved()
 {
-	ui->stackedLHS->setCurrentWidget(ui->pageData);
+	ui->pageOptions->hide();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
-	_buttonPanel->hide();
+	ui->tableView->show();
 }
 
 void MainWindow::pushToClipboardHandler(QString data)

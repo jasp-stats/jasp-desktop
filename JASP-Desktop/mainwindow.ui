@@ -146,7 +146,6 @@ QTabBar::tab:first:selected {
             <widget class="QSplitter" name="splitter">
              <property name="styleSheet">
               <string notr="true">QSplitter::handle {
-	border-left: 1px solid #929292 ;
 	border-right: 1px solid #929292 ;
 }</string>
              </property>
@@ -156,28 +155,53 @@ QTabBar::tab:first:selected {
              <property name="handleWidth">
               <number>16</number>
              </property>
-             <widget class="QStackedWidget" name="stackedLHS">
-              <property name="currentIndex">
-               <number>0</number>
+             <property name="childrenCollapsible">
+              <bool>false</bool>
+             </property>
+             <widget class="QWidget" name="panelLHS" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <widget class="QWidget" name="pageData">
-               <layout class="QGridLayout" name="gridLayout_4">
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item row="0" column="0">
-                 <widget class="MainTableView" name="tableView">
-                  <property name="styleSheet">
-                   <string notr="true">QTableCornerButton::section, QHeaderView::section {
+              <property name="styleSheet">
+               <string notr="true">QWidget#panelLHS {
+	border-top: 1px solid #929292 ;
+}</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_5">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="horizontalSpacing">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="MainTableView" name="tableView">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>1</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QTableCornerButton::section, QHeaderView::section {
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 rgb(240, 240, 240), stop:0.701 rgb(227, 225, 226));
 	padding: 0.3em ;
 	border-right: 1px solid #929292 ;
@@ -193,6 +217,7 @@ QHeaderView::section::last {
 QTableView {
 	selection-background-color: rgb(60, 170, 231) ;
 	border-top: 1px solid #929292 ;
+	border-right: 1px solid #929292 ;
 	/*selection-color: black ;*/
 }
 
@@ -208,127 +233,109 @@ QTableView::item::last
 {
 	border-right: none ;
 }</string>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::NoFrame</enum>
+                 </property>
+                 <property name="showGrid">
+                  <bool>false</bool>
+                 </property>
+                 <property name="cornerButtonEnabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QWidget" name="pageOptions" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>590</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>670</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_4">
+                  <property name="leftMargin">
+                   <number>0</number>
                   </property>
-                  <property name="frameShape">
-                   <enum>QFrame::NoFrame</enum>
+                  <property name="topMargin">
+                   <number>0</number>
                   </property>
-                  <property name="showGrid">
-                   <bool>false</bool>
+                  <property name="rightMargin">
+                   <number>0</number>
                   </property>
-                  <property name="cornerButtonEnabled">
-                   <bool>false</bool>
+                  <property name="bottomMargin">
+                   <number>0</number>
                   </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="pageOptionsWeb">
-               <layout class="QGridLayout" name="gridLayout_2">
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item row="0" column="0">
-                 <widget class="QFrame" name="frame">
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_5">
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
-                   <item row="0" column="0">
-                    <widget class="QWebView" name="webViewOptions">
-                     <property name="url">
-                      <url>
-                       <string>about:blank</string>
-                      </url>
+                  <item row="0" column="0">
+                   <widget class="QScrollArea" name="scrollArea">
+                    <property name="styleSheet">
+                     <string notr="true">QWidget#scrollArea {
+	border-top: 1px solid #929292 ;
+	border-right: 1px solid #929292 ;
+}</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::NoFrame</enum>
+                    </property>
+                    <property name="verticalScrollBarPolicy">
+                     <enum>Qt::ScrollBarAlwaysOn</enum>
+                    </property>
+                    <property name="horizontalScrollBarPolicy">
+                     <enum>Qt::ScrollBarAlwaysOff</enum>
+                    </property>
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="optionsContentArea">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>573</width>
+                       <height>572</height>
+                      </rect>
                      </property>
+                     <layout class="QGridLayout" name="optionsContentAreaLayout">
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <item row="0" column="0" rowspan="2" colspan="2">
+                       <widget class="QWidget" name="widget" native="true"/>
+                      </item>
+                     </layout>
                     </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="pageOptions">
-               <layout class="QGridLayout" name="gridLayout_7">
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item row="0" column="0">
-                 <widget class="QScrollArea" name="scrollArea">
-                  <property name="verticalScrollBarPolicy">
-                   <enum>Qt::ScrollBarAlwaysOn</enum>
-                  </property>
-                  <property name="widgetResizable">
-                   <bool>true</bool>
-                  </property>
-                  <widget class="QWidget" name="optionsContentArea">
-                   <property name="geometry">
-                    <rect>
-                     <x>0</x>
-                     <y>0</y>
-                     <width>83</width>
-                     <height>28</height>
-                    </rect>
-                   </property>
-                   <layout class="QGridLayout" name="optionsContentAreaLayout">
-                    <property name="leftMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <item row="0" column="0">
-                     <widget class="QWidget" name="widget" native="true"/>
-                    </item>
-                   </layout>
-                  </widget>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
              </widget>
              <widget class="QFrame" name="frame_2">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>1</horstretch>
+                <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
@@ -359,13 +366,17 @@ QTableView::item::last
                <item row="0" column="0">
                 <widget class="QWebView" name="webViewResults">
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(250, 250, 250);</string>
+                  <string notr="true">QWidget {
+	background-color: rgb(250, 250, 250);
+}</string>
                  </property>
                  <property name="url">
                   <url>
                    <string>about:blank</string>
                   </url>
                  </property>
+                 <zorder>widget_2</zorder>
+                 <zorder>widget_2</zorder>
                 </widget>
                </item>
               </layout>

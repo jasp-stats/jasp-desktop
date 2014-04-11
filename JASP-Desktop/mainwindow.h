@@ -74,7 +74,9 @@ private slots:
 	void dataSetLoaded(DataSet *dataSet);
 	void itemSelected(const QString item);
 
-	void repositionButtonPanel();
+	void adjustOptionsPanelWidth();
+	void splitterMovedHandler(int, int);
+	void repositionButtonPanel(int parentWidth = -1);
 
 	void analysisOKed();
 	void analysisRemoved();
