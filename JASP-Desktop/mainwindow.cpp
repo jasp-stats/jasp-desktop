@@ -48,9 +48,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
+	ui->pageOptions->hide();
+
 	QList<int> sizes = QList<int>();
-	sizes.append(1);
-	sizes.append(490);
+	sizes.append(590);
 	ui->splitter->setSizes(sizes);
 
     ui->tabBar->setFocusPolicy(Qt::NoFocus);
@@ -118,8 +119,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanelLayout->addWidget(_removeButton);
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
-
-	ui->pageOptions->hide();
 
 	QTimer::singleShot(0, this, SLOT(repositionButtonPanel()));
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
@@ -329,13 +328,17 @@ void MainWindow::itemSelected(const QString item)
 	if (_currentAnalysis != NULL)
 	{
 		showForm(_currentAnalysis);
-		repositionButtonPanel();
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
 	}
 }
 
 void MainWindow::adjustOptionsPanelWidth()
 {
+	int splitterPos = ui->splitter->sizes()[0];
+
+	if (splitterPos < ui->pageOptions->minimumWidth())
+		splitterPos = ui->pageOptions->minimumWidth();
+
 	if (ui->pageOptions->width() == ui->pageOptions->maximumWidth() && ui->tableView->isHidden())
 	{
 		ui->tableView->show();
@@ -344,8 +347,17 @@ void MainWindow::adjustOptionsPanelWidth()
 	else if (ui->tableView->width() == ui->tableView->minimumWidth() && ui->tableView->isVisible() && ui->pageOptions->isVisible())
 	{
 		ui->tableView->hide();
-		repositionButtonPanel(ui->pageOptions->maximumWidth() - 10);
+		repositionButtonPanel(splitterPos);
 	}
+	else if (splitterPos > ui->pageOptions->maximumWidth())
+	{
+		repositionButtonPanel(ui->pageOptions->minimumWidth());
+	}
+	else
+	{
+		repositionButtonPanel();
+	}
+
 }
 
 void MainWindow::splitterMovedHandler(int, int)

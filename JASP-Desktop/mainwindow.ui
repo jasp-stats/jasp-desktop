@@ -160,8 +160,8 @@ QTabBar::tab:first:selected {
              </property>
              <widget class="QWidget" name="panelLHS" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>1</horstretch>
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
@@ -247,12 +247,6 @@ QTableView::item::last
                </item>
                <item row="0" column="1">
                 <widget class="QWidget" name="pageOptions" native="true">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>590</width>
@@ -303,7 +297,7 @@ QTableView::item::last
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>573</width>
+                       <width>572</width>
                        <height>572</height>
                       </rect>
                      </property>
@@ -332,12 +326,18 @@ QTableView::item::last
                </item>
               </layout>
              </widget>
-             <widget class="QFrame" name="frame_2">
+             <widget class="QFrame" name="panelRHS">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>0</horstretch>
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>1</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>200</width>
+                <height>0</height>
+               </size>
               </property>
               <property name="styleSheet">
                <string notr="true">QWidget {
@@ -375,8 +375,6 @@ QTableView::item::last
                    <string>about:blank</string>
                   </url>
                  </property>
-                 <zorder>widget_2</zorder>
-                 <zorder>widget_2</zorder>
                 </widget>
                </item>
               </layout>
