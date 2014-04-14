@@ -187,14 +187,14 @@
           <widget class="BoundGroupBox" name="tails" native="true">
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="0" column="0">
-             <widget class="QRadioButton" name="twoTailed">
+             <widget class="QRadioButton" name="_1twoTailed">
               <property name="text">
                <string>Two-tailed</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QRadioButton" name="oneTailed">
+             <widget class="QRadioButton" name="_2oneTailed">
               <property name="text">
                <string>One-tailed</string>
               </property>
@@ -361,14 +361,14 @@
              <number>6</number>
             </property>
             <item row="0" column="0">
-             <widget class="QRadioButton" name="excludePairwise">
+             <widget class="QRadioButton" name="_1excludePairwise">
               <property name="text">
                <string>Exclude cases pairwise</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QRadioButton" name="excludeListwise">
+             <widget class="QRadioButton" name="_2excludeListwise">
               <property name="text">
                <string>Exclude cases listwise</string>
               </property>

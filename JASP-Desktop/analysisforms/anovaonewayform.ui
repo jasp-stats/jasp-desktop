@@ -295,21 +295,21 @@
              <number>0</number>
             </property>
             <item row="2" column="0">
-             <widget class="QRadioButton" name="both">
+             <widget class="QRadioButton" name="_3both">
               <property name="text">
                <string>Report both</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QRadioButton" name="assumeUnequal">
+             <widget class="QRadioButton" name="_2assumeUnequal">
               <property name="text">
                <string>Assume unequal</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QRadioButton" name="assumeEqual">
+             <widget class="QRadioButton" name="_1assumeEqual">
               <property name="text">
                <string>Assume equal</string>
               </property>
@@ -378,14 +378,14 @@
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <widget class="QRadioButton" name="excludeAnalysisByAnalysis">
+          <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
            <property name="text">
             <string>Exclude cases analysis by analysis</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QRadioButton" name="excludeListwise">
+          <widget class="QRadioButton" name="_2excludeListwise">
            <property name="text">
             <string>Exclude cases listwise</string>
            </property>
@@ -428,21 +428,21 @@
           <number>0</number>
          </property>
          <item row="2" column="0">
-          <widget class="QRadioButton" name="oneTailedLessThan">
+          <widget class="QRadioButton" name="_3oneTailedLessThan">
            <property name="text">
             <string>One-tailed &lt; Test value</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QRadioButton" name="oneTailedGreaterThan">
+          <widget class="QRadioButton" name="_2oneTailedGreaterThan">
            <property name="text">
             <string>One-tailed &gt; Test value</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QRadioButton" name="twoTailed">
+          <widget class="QRadioButton" name="_1twoTailed">
            <property name="text">
             <string>Two-tailed</string>
            </property>

@@ -98,7 +98,8 @@ SOURCES += main.cpp\
 	widgets/boundtextedit.cpp \
     widgets/stealthbutton.cpp \
     analysisforms/ttestbayesianindependentsamplesform.cpp \
-    analysisforms/ttestbayesianpairedsamplesform.cpp
+    analysisforms/ttestbayesianpairedsamplesform.cpp \
+    widgets/itemmodelselectitem.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -171,7 +172,8 @@ HEADERS  += \
 	widgets/boundtextedit.h \
     widgets/stealthbutton.h \
     analysisforms/ttestbayesianindependentsamplesform.h \
-    analysisforms/ttestbayesianpairedsamplesform.h
+    analysisforms/ttestbayesianpairedsamplesform.h \
+    widgets/itemmodelselectitem.h
 
 FORMS    += \
     backstageform.ui \

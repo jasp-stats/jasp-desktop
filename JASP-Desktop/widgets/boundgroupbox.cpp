@@ -3,22 +3,25 @@
 #include <QTimer>
 #include <QRadioButton>
 #include <QDebug>
+#include <QLayout>
+
+#include <QtAlgorithms>
 
 #include <boost/foreach.hpp>
 
 BoundGroupBox::BoundGroupBox(QWidget *parent) :
-	QWidget(parent)
-{
-	_option = NULL;
+	QGroupBox(parent)
+{	
 	_timer = new QTimer(this);
 	_buttonGroup = new QButtonGroup(this);
+	setFlat(true);
 
 	connect(_buttonGroup, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(itemSelected(QAbstractButton*)));
 }
 
 void BoundGroupBox::bindTo(Option *option)
 {
-	_option = dynamic_cast<OptionList *>(option);
+	_model.bindTo(option);
 }
 
 void BoundGroupBox::childEvent(QChildEvent *child)
@@ -27,30 +30,45 @@ void BoundGroupBox::childEvent(QChildEvent *child)
 		_timer->singleShot(0, this, SLOT(updateGroup()));
 }
 
+bool compareNames(QObject *left, QObject *right)
+{
+	return left->objectName().compare(right->objectName()) < 0;
+}
+
 void BoundGroupBox::updateGroup()
 {
 	BOOST_FOREACH(QAbstractButton *button, _buttonGroup->buttons())
 		_buttonGroup->removeButton(button);
 
-	BOOST_FOREACH(QObject *child, this->children())
+	QList<QRadioButton *> buttons;
+
+	foreach (QObject *child, this->children())
 	{
 		QRadioButton *radio = qobject_cast<QRadioButton *>(child);
 		if (radio != NULL)
-		{
-			_buttonGroup->addButton(radio);
-			if (_option != NULL && QString(_option->value().c_str()) == radio->objectName())
-				radio->setChecked(true);
-		}
+			buttons.append(radio);
+	}
+
+	qDebug() << buttons << "\n";
+
+	qSort(buttons.begin(), buttons.end(), compareNames);
+
+	qDebug() << buttons << "\n";
+
+	int index = 0;
+	int selectedIndex = _model.valueIndex();
+
+	foreach (QRadioButton *button, buttons)
+	{
+		if (index == selectedIndex)
+			button->setChecked(true);
+		_buttonGroup->addButton(button, index);
+		index++;
 	}
 }
 
 void BoundGroupBox::itemSelected(QAbstractButton *button)
 {
-	QString name = button->objectName();
-	QByteArray buffer = name.toUtf8();
-	std::string value(buffer.constData(), buffer.length());
-
-	if (_option != NULL)
-		_option->setValue(value);
+	_model.setValueByIndex(_buttonGroup->checkedId());
 }
 

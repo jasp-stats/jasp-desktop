@@ -377,7 +377,7 @@
                 <number>0</number>
                </property>
                <item>
-                <widget class="QRadioButton" name="noCharts">
+                <widget class="QRadioButton" name="_1noCharts">
                  <property name="text">
                   <string>None</string>
                  </property>
@@ -387,21 +387,21 @@
                 </widget>
                </item>
                <item>
-                <widget class="QRadioButton" name="barCharts">
+                <widget class="QRadioButton" name="_2barCharts">
                  <property name="text">
                   <string>Bar Charts</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QRadioButton" name="pieCharts">
+                <widget class="QRadioButton" name="_3pieCharts">
                  <property name="text">
                   <string>Pie Charts</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QRadioButton" name="histograms">
+                <widget class="QRadioButton" name="_4histograms">
                  <property name="text">
                   <string>Histograms</string>
                  </property>
@@ -426,7 +426,7 @@
              <widget class="BoundGroupBox" name="charts_chartValues" native="true">
               <layout class="QGridLayout" name="gridLayout_9">
                <item row="0" column="0">
-                <widget class="QRadioButton" name="frequencies">
+                <widget class="QRadioButton" name="_1frequencies">
                  <property name="text">
                   <string>Frequencies</string>
                  </property>
@@ -436,7 +436,7 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QRadioButton" name="percentages">
+                <widget class="QRadioButton" name="_2percentages">
                  <property name="text">
                   <string>Percentages</string>
                  </property>
@@ -535,7 +535,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_14">
             <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButton_7">
+             <widget class="QRadioButton" name="_1ascendingValues">
               <property name="text">
                <string>Ascending values</string>
               </property>
@@ -545,21 +545,21 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QRadioButton" name="radioButton_8">
+             <widget class="QRadioButton" name="_2descendingValues">
               <property name="text">
                <string>Descending values</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QRadioButton" name="radioButton_9">
+             <widget class="QRadioButton" name="_3ascendingCounts">
               <property name="text">
                <string>Ascending counts</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QRadioButton" name="radioButton_10">
+             <widget class="QRadioButton" name="_4descendingCounts">
               <property name="text">
                <string>Descending counts</string>
               </property>
@@ -597,7 +597,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_12">
             <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButton_11">
+             <widget class="QRadioButton" name="_1compareVariables">
               <property name="text">
                <string>Compare variables</string>
               </property>
@@ -607,7 +607,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QRadioButton" name="radioButton_12">
+             <widget class="QRadioButton" name="_2organiseOutputByVariables">
               <property name="text">
                <string>Organise output by variables</string>
               </property>
@@ -785,21 +785,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
    <header>widgets/assignbutton.h</header>
@@ -808,6 +793,16 @@
    <class>AvailableFieldsListView</class>
    <extends>QListView</extends>
    <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>
@@ -819,6 +814,11 @@
    <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -54,14 +54,14 @@
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <widget class="QRadioButton" name="excludeAnalysisByAnalysis">
+          <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
            <property name="text">
             <string>Exclude cases analysis by analysis</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QRadioButton" name="excludeListwise">
+          <widget class="QRadioButton" name="_2excludeListwise">
            <property name="text">
             <string>Exclude cases listwise</string>
            </property>
@@ -242,11 +242,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
    <header>widgets/assignbutton.h</header>
@@ -255,6 +250,11 @@
    <class>AvailableFieldsListView</class>
    <extends>QListView</extends>
    <header>widgets/availablefieldslistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
