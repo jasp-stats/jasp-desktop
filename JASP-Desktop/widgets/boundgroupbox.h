@@ -32,9 +32,7 @@ signals:
 	
 private slots:
 	void updateGroup();
-	void itemSelected(QAbstractButton *button);
-
-
+	void itemSelected(QAbstractButton *);
 	
 };
 

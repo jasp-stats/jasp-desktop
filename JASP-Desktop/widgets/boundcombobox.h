@@ -4,6 +4,7 @@
 #include <QComboBox>
 #include "bound.h"
 #include "options/optionlist.h"
+#include "itemmodelselectitem.h"
 
 class BoundComboBox : public QComboBox, public Bound
 {
@@ -11,13 +12,16 @@ class BoundComboBox : public QComboBox, public Bound
 public:
 	explicit BoundComboBox(QWidget *parent = 0);
 
-	void bindTo(Option *option) OVERRIDE;
+	virtual void bindTo(Option *option) OVERRIDE;
+	void setModel(QAbstractItemModel *newModel);
 
 private slots:
 	void changeHandler(int index);
+	void updateSelection();
 
 private:
-	OptionList *_boundTo;
+	BoundModel *_model;
+	ItemModelSelectItem _defaultModel;
 
 };
 

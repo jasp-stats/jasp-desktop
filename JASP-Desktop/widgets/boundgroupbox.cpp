@@ -49,14 +49,10 @@ void BoundGroupBox::updateGroup()
 			buttons.append(radio);
 	}
 
-	qDebug() << buttons << "\n";
-
 	qSort(buttons.begin(), buttons.end(), compareNames);
 
-	qDebug() << buttons << "\n";
-
 	int index = 0;
-	int selectedIndex = _model.valueIndex();
+	int selectedIndex = _model.selectedIndex();
 
 	foreach (QRadioButton *button, buttons)
 	{
@@ -67,8 +63,8 @@ void BoundGroupBox::updateGroup()
 	}
 }
 
-void BoundGroupBox::itemSelected(QAbstractButton *button)
+void BoundGroupBox::itemSelected(QAbstractButton *)
 {
-	_model.setValueByIndex(_buttonGroup->checkedId());
+	_model.setSelected(_buttonGroup->checkedId());
 }
 

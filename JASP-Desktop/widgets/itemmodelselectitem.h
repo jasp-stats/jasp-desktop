@@ -1,29 +1,30 @@
 #ifndef ITEMMODELSELECTITEM_H
 #define ITEMMODELSELECTITEM_H
 
-#include <QAbstractListModel>
+#include <QStandardItemModel>
 
 #include "boundmodel.h"
 #include "common.h"
 #include "options/optionlist.h"
 
-class ItemModelSelectItem : public QAbstractListModel, public BoundModel
+class ItemModelSelectItem : public QStandardItemModel, public BoundModel
 {
 public:
 	ItemModelSelectItem();
 
 	virtual void bindTo(Option *option) OVERRIDE;
-	virtual int rowCount(const QModelIndex &parent) const OVERRIDE;
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+	QVariant data(const QModelIndex &index, int role) const OVERRIDE;
+	virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
+	virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
 
-	void setValueByIndex(int index);
-	int valueIndex() const;
+	int selectedIndex();
+	void setSelected(int index);
 
-	void setValue(QString value);
-	QString value() const;
 
 private:
+	int _selectedIndex;
 	OptionList *_boundTo;
+
 };
 
 #endif // ITEMMODELSELECTITEM_H
