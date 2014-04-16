@@ -328,7 +328,7 @@ QTableView::item::last
       <property name="styleSheet">
        <string notr="true">QWidget#background {
 	border-bottom: 1px solid #919191;
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 #FOFOFO, stop:0.701 #E3E1E2);
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 #F0F0F0, stop:0.701 #E3E1E2);
 }
 
 QPushButton {
