@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
 
+	_optionsForm = NULL;
+
     ui->setupUi(this);
 
 	ui->pageOptions->hide();
@@ -57,7 +59,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
 	ui->tabBar->addTab("Common");
-	ui->tabBar->addTab("SEM");
+	ui->tabBar->addLastTab("Options");
+	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
 #ifdef __WIN32__
     QFont font = ui->tabBar->font();
@@ -125,6 +128,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_removeButton, SIGNAL(clicked()), this, SLOT(analysisRemoved()));
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
+
+	updateUIFromOptions();
 }
 
 void MainWindow::open(QString filename)
@@ -255,6 +260,17 @@ void MainWindow::tabChanged(int index)
 	{
 		ui->topLevelWidgets->setCurrentIndex(0);
 	}
+	else if (index == ui->tabBar->count() - 1)
+	{
+		if (_optionsForm == NULL)
+		{
+			_optionsForm = new OptionsForm(this);
+			ui->topLevelWidgets->addWidget(_optionsForm);
+			connect(_optionsForm, SIGNAL(optionsChanged()), this, SLOT(updateUIFromOptions()));
+		}
+
+		ui->topLevelWidgets->setCurrentWidget(_optionsForm);
+	}
 	else
 	{
 		ui->topLevelWidgets->setCurrentIndex(1);
@@ -319,6 +335,22 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 
 	ui->ribbonAnalysis->setEnabled(enable);
 	ui->ribbonSEM->setEnabled(enable);
+}
+
+void MainWindow::updateUIFromOptions()
+{
+	QSettings settings;
+	QVariant sem = settings.value("plugins/sem", false);
+	if (sem.canConvert(QVariant::Bool) && sem.toBool())
+	{
+		ui->tabBar->addTab("SEM");
+	}
+	else
+	{
+		if (ui->tabBar->count() >= 4)
+			ui->tabBar->removeTab(2);
+	}
+
 }
 
 void MainWindow::itemSelected(const QString item)

@@ -11,6 +11,7 @@
 
 #include "analysisforms/analysisform.h"
 #include "asyncloader.h"
+#include "optionsform.h"
 
 namespace Ui {
 class MainWindow;
@@ -54,6 +55,8 @@ private:
 	QPushButton *_okButton;
 	QPushButton *_removeButton;
 
+	OptionsForm *_optionsForm;
+
 	std::map<std::string, AnalysisForm *> _analysisForms;
 
 signals:
@@ -83,6 +86,7 @@ private slots:
 	void analysisRemoved();
 
 	void updateMenuEnabledDisabledStatus();
+	void updateUIFromOptions();
 };
 
 #endif // MAINWIDGET_H

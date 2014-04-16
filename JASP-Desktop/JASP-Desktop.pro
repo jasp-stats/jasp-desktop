@@ -100,7 +100,9 @@ SOURCES += main.cpp\
     analysisforms/ttestbayesianindependentsamplesform.cpp \
     analysisforms/ttestbayesianpairedsamplesform.cpp \
     widgets/itemmodelselectitem.cpp \
-    widgets/itemmodelselectvariable.cpp
+    widgets/itemmodelselectvariable.cpp \
+    widgets/tabbar.cpp \
+    optionsform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -175,7 +177,9 @@ HEADERS  += \
     analysisforms/ttestbayesianindependentsamplesform.h \
     analysisforms/ttestbayesianpairedsamplesform.h \
     widgets/itemmodelselectitem.h \
-    widgets/itemmodelselectvariable.h
+    widgets/itemmodelselectvariable.h \
+    widgets/tabbar.h \
+    optionsform.h
 
 FORMS    += \
     backstageform.ui \
@@ -205,7 +209,8 @@ FORMS    += \
     ribbons/ribbonanalysis.ui \
     analysisforms/semsimpleform.ui \
     analysisforms/ttestbayesianindependentsamplesform.ui \
-    analysisforms/ttestbayesianpairedsamplesform.ui
+    analysisforms/ttestbayesianpairedsamplesform.ui \
+    optionsform.ui
 
 
 RESOURCES += \

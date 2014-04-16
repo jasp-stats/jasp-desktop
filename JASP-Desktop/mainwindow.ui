@@ -30,71 +30,6 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <item row="0" column="0">
-     <widget class="QTabBar" name="tabBar" native="true">
-      <property name="styleSheet">
-       <string notr="true">
-QTabBar {
-	border-bottom: 1.2px solid #919191;
-	/*background-color: #E8E8E8 ;*/
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 rgb(240, 240, 240), stop:0.701 rgb(227, 225, 226));
-}
-
-QTabBar::tab {
-	border-top-left-radius: 0 ;
-	border-top-right-radius: 0 ;
-	min-width: 36px ;
-	padding: 4px 16px;
-	margin: 4px 1.5px 0 1.5px;
-	/*font-family: Helvetica, sans-serif ;*/
-
-}
-
-QTabBar::tab:selected {
-	border: 1.2px solid #919191;
-	border-bottom: 1.2px solid white;
-	background-color: white ;
-}
-
-QTabBar::tab:first {
-	margin-left: 5px ;
-	color: white;
-	/*background-color: #2561b7;*/
-	/*border: 1.2px solid #1e47a0;*/
-	/*background: qradialgradient(cx: 0.5, cy: 2, radius: 2, fx: 0.5, fy: 1,
-																	stop: 0 #619ed7, stop: 0.4 #2561b7
-																	stop: 0.6 #2561b7, stop: 1.0 #619ed7);*/
-	border-top: 1.2px solid rgb(52, 159, 227) ;
-	border-bottom: 1.2px solid #919191;
-	border-left: none ;
-	border-right: none ;
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 rgb(60, 170, 231), stop:0.701 rgb(52, 159, 227));
-}
-
-QTabBar::tab:first:selected {
-	/*border-bottom: 1.2px solid #619ed7;*/
-	border-left: 1.2px solid #6B767E;
-	border-top: 1.2px solid #6B767E;
-	border-right: 1.2px solid #3B363E;
-	border-bottom: 1.2px solid rgb(60, 170, 231);
-	/*border: 1.2px solid #1e47a0;*/
-	background-color: rgb(60, 170, 231);
-}
-</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QWidget" name="spacer" native="true">
-      <property name="styleSheet">
-       <string notr="true">QWidget {
-	/*border-bottom: 1.2px solid #C4C4C3;*/
-	border-bottom: 1.2px solid #919191;
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 rgb(240, 240, 240), stop:0.701 rgb(227, 225, 226));
-}</string>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="0" colspan="2">
      <widget class="QStackedWidget" name="topLevelWidgets">
       <widget class="BackStageForm" name="backStage"/>
@@ -297,8 +232,8 @@ QTableView::item::last
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>572</width>
-                       <height>572</height>
+                       <width>589</width>
+                       <height>16</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="optionsContentAreaLayout">
@@ -388,6 +323,61 @@ QTableView::item::last
       </widget>
      </widget>
     </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="TabBar" name="tabBar" native="true">
+      <property name="styleSheet">
+       <string notr="true">QWidget#background {
+	border-bottom: 1px solid #919191;
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 #FOFOFO, stop:0.701 #E3E1E2);
+}
+
+QPushButton {
+	border-top: 1px solid transparent;
+	border-left: 1px solid transparent;
+	border-bottom: 1px solid #919191 ;
+	border-right: 1px solid transparent;
+
+	border-top-left-radius: 0 ;
+	border-top-right-radius: 0 ;
+	min-width: 36px ;
+	padding: 4px 16px;
+	margin: 4px 1px 0 1px;
+}
+
+QPushButton:checked {
+	border-top: 1px solid #919191;
+	border-left: 1px solid #919191;
+	border-bottom: 1px solid white ;
+	border-right: 1px solid #919191;
+	background-color: white ;
+}
+
+QPushButton#last {
+	margin-right: 5px ;
+}
+
+QPushButton#first {
+	margin-left: 5px ;
+	color: white;
+	border-top: 1px solid #349FE3 ;
+	border-bottom: 1px solid #919191;
+	border-left: none ;
+	border-right: none ;
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 #3CAAE7, stop:0.701 #349FE3);
+}
+
+QPushButton#first:checked {
+	border-top: 1px solid #6B767E;
+	border-right: 1px solid #3B363E;
+	border-bottom: 1px solid #3CAAE7;
+	border-left: 1px solid #6B767E;
+	background-color: #3CAAE7;
+}
+
+</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
  </widget>
@@ -397,15 +387,6 @@ QTableView::item::last
    <extends>QWidget</extends>
    <header>QtWebKitWidgets/QWebView</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QTabBar</class>
-   <extends>QWidget</extends>
-   <header location="global">qtabbar.h</header>
-   <container>1</container>
-   <slots>
-    <signal>currentChanged(int)</signal>
-   </slots>
   </customwidget>
   <customwidget>
    <class>BackStageForm</class>
@@ -433,26 +414,15 @@ QTableView::item::last
    <header>ribbons/ribbonsem.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>TabBar</class>
+   <extends>QWidget</extends>
+   <header>widgets/tabbar.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>tabBar</sender>
-   <signal>currentChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>tabChanged(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>4</x>
-     <y>7</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>tabChanged(int)</slot>
   <slot>dataSetLoaded(DataSet*)</slot>
