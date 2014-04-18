@@ -34,6 +34,8 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 		columnDescs.append(QPair<QString, int>(asQS, columnType));
 	}
 
+	_availableFields.setVariables(columnDescs);
+
 	_options = options;
 
 	BOOST_FOREACH(const string &name, options->names)
@@ -53,6 +55,6 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 			qDebug() << "child not found : " << qsName << " in AnalysisForm::setOptions()";
 	}
 
-	_availableFields.setVariables(columnDescs);
+
 }
 
