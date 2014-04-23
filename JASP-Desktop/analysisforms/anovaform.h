@@ -30,6 +30,7 @@ private:
 	ListModelVariablesAssigned *_dependentListModel;
 	ListModelVariablesAssigned *_fixedFactorsListModel;
 	ListModelVariablesAssigned *_randomFactorsListModel;
+	ListModelVariablesAssigned *_repeatedMeasuresListModel;
 	ListModelVariablesAssigned *_wlsWeightsListModel;
 
 	ListModelAnovaModel *_anovaModel;

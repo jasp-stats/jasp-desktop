@@ -28,6 +28,11 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	_randomFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->randomFactors->setModel(_randomFactorsListModel);
 
+	_repeatedMeasuresListModel = new ListModelVariablesAssigned(this);
+	_repeatedMeasuresListModel->setSource(&_availableFields);
+	_repeatedMeasuresListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	ui->repeatedMeasures->setModel(_repeatedMeasuresListModel);
+
 	_wlsWeightsListModel = new ListModelVariablesAssigned(this);
 	_wlsWeightsListModel->setSource(&_availableFields);
 	_wlsWeightsListModel->setVariableTypesAllowed(Column::ColumnTypeScale);
@@ -37,10 +42,12 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->fixedFactors);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->randomFactors);
 	ui->buttonAssignWLSWeights->setSourceAndTarget(ui->listAvailableFields, ui->wlsWeights);
+	ui->buttonAssignRepeated->setSourceAndTarget(ui->listAvailableFields, ui->repeatedMeasures);
 
 	connect(_dependentListModel, SIGNAL(assignmentsChanged()), this, SLOT(dependentChanged()));
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_repeatedMeasuresListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
 	_anovaModel = new ListModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
@@ -72,6 +79,7 @@ void AnovaForm::factorsChanged()
 
 	factorsAvailable.append(_fixedFactorsListModel->assigned());
 	factorsAvailable.append(_randomFactorsListModel->assigned());
+	factorsAvailable.append(_repeatedMeasuresListModel->assigned());
 
 	_anovaModel->setVariables(factorsAvailable);
 	_contrastsModel->setVariables(factorsAvailable);
