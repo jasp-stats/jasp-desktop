@@ -37,7 +37,7 @@ $.widget("jasp.table", {
             {
                 var p = f.substring(2)
                 if (value < p)
-                    return "< " + p
+                    return "<&nbsp" + p
             }
         }
 
