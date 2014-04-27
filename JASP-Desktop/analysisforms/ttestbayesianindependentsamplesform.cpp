@@ -14,12 +14,12 @@ TTestBayesianIndependentSamplesForm::TTestBayesianIndependentSamplesForm(QWidget
 
 	ListModelVariablesAssigned *variablesModel = new ListModelVariablesAssigned(this);
 	variablesModel->setSource(&_availableFields);
-	variablesModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	variablesModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
 	ListModelVariablesAssigned *groupingVariableModel = new ListModelVariablesAssigned(this);
-	groupingVariableModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	groupingVariableModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	groupingVariableModel->setSource(&_availableFields);
 	ui->groupingVariable->setModel(groupingVariableModel);
 	ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields);

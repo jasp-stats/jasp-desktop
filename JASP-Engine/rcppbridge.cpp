@@ -2,6 +2,7 @@
 
 #include <boost/foreach.hpp>
 #include "../JASP-Common/base64.h"
+#include <iomanip>
 
 using namespace std;
 
@@ -64,58 +65,144 @@ Json::Value RcppBridge::run(const string &name, const Json::Value &options, boos
 	return json;
 }
 
-Rcpp::DataFrame RcppBridge::readDataSet()
+Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::ColumnType> &columns)
 {
-	Rcpp::List list(_dataSet->columnCount());
+	Rcpp::List list(columns.size());
 	Rcpp::CharacterVector columnNames;
 
 	int colNo = 0;
 
-	BOOST_FOREACH(Column &column, _dataSet->columns())
+	typedef pair<const string, Column::ColumnType> ColumnInfo;
+
+	BOOST_FOREACH(const ColumnInfo &columnInfo, columns)
 	{
-		string columnName = column.name();
+		(void)columns;
 		string dot = ".";
+
+		string columnName = columnInfo.first;
 
 		string base64 = Base64::encode(dot, columnName);
 		columnNames.push_back(base64);
 
-		if (column.dataType() == Column::DataTypeInt)
+		Column *column = _dataSet->columns().get(columnName);
+		Column::ColumnType columnType = column->columnType();
+
+		Column::ColumnType requestedType = columnInfo.second;
+		if (requestedType == Column::ColumnTypeUnknown)
+			requestedType = columnType;
+
+		int rowCount = column->rowCount();
+		int rowNo = 0;
+
+		if (requestedType == Column::ColumnTypeScale)
 		{
-			Rcpp::IntegerVector v(column.rowCount());
-
-			if (column.hasLabels())
+			if (columnType == Column::ColumnTypeScale)
 			{
-				int r = 0;
-				BOOST_FOREACH(int value, column.AsInts)
-					v[r++] = value + 1;
+				Rcpp::NumericVector v(rowCount);
 
-				Rcpp::CharacterVector labels;
-				typedef pair<int, string> pair;
+				BOOST_FOREACH(double value, column->AsDoubles)
+				{
+					(void)column;
+					v[rowNo++] = value;
+				}
 
-				BOOST_FOREACH(pair label, column.labels())
-					labels.push_back(label.second);
+				list[colNo++] = v;
+			}
+			else if (columnType == Column::ColumnTypeOrdinal || columnType == Column::ColumnTypeNominal)
+			{
+				Rcpp::IntegerVector v(rowCount);
 
-				v.attr("levels") = labels;
-				v.attr("class") = "factor";
+				BOOST_FOREACH(int value, column->AsInts)
+				{
+					(void)column;
+					v[rowNo++] = column->actualFromRaw(value);
+				}
+
+				list[colNo++] = v;
+			}
+			else // columnType == Column::ColumnTypeNominalText
+			{
+				Rcpp::IntegerVector v(rowCount);
+
+				BOOST_FOREACH(int value, column->AsInts)
+				{
+					(void)column;
+					v[rowNo++] = column->actualFromRaw(value);
+				}
+
+				makeFactor(v, column->labels());
+
+				list[colNo++] = v;
+			}
+		}
+		else // if (requestedType != Column::ColumnTypeScale)
+		{
+			bool ordinal = (requestedType == Column::ColumnTypeOrdinal);
+
+			Rcpp::IntegerVector v(rowCount);
+
+			if (column->hasLabels())
+			{
+				BOOST_FOREACH(int value, column->AsInts)
+				{
+					(void)column;
+					v[rowNo++] = value + 1;
+				}
+
+				makeFactor(v, column->labels(), ordinal);
+			}
+			else if (column->hasNumericLabels())
+			{
+				BOOST_FOREACH(int value, column->AsInts)
+				{
+					(void)column;
+					v[rowNo++] = value + 1;
+				}
+
+				makeFactor(v, column->numericLabels(), ordinal);
 			}
 			else
 			{
-				int r = 0;
-				BOOST_FOREACH(int value, column.AsInts)
-					v[r++] = value;
-			}
+				// scale to nominal or ordinal (doesn't really make sense, but we have to do something)
 
-			list[colNo++] = v;
-		}
-		else
-		{
-			Rcpp::NumericVector v(column.rowCount());
+				set<int> uniqueValues;
 
-			int r = 0;
-			BOOST_FOREACH(double value, column.AsDoubles)
-			{
-				(void)column;
-				v[r++] = value;
+				BOOST_FOREACH(double value, column->AsDoubles)
+				{
+					(void)column;
+					int intValue = (int)(value * 1000);
+					uniqueValues.insert(intValue);
+				}
+
+				int index = 0;
+				map<int, int> valueToIndex;
+				map<int, string> labels;
+
+				BOOST_FOREACH(int value, uniqueValues)
+				{
+					(void)uniqueValues;
+					valueToIndex[value] = index;
+
+					stringstream ss;
+					ss << ((double)value / 1000);
+					labels[index] = ss.str();
+
+					index++;
+				}
+
+				BOOST_FOREACH(double value, column->AsDoubles)
+				{
+					(void)column;
+
+					if (isnan(value))
+						v[rowNo++] = INT_MIN;
+					else
+					{
+						v[rowNo++] = valueToIndex[(int)(value * 1000)] + 1;
+					}
+				}
+
+				makeFactor(v, labels, ordinal);
 			}
 
 			list[colNo++] = v;
@@ -126,51 +213,72 @@ Rcpp::DataFrame RcppBridge::readDataSet()
 
 	Rcpp::DataFrame dataFrame = Rcpp::DataFrame(list);
 
-	/*if (Rf_isNull(excludeNAsListwise))
-	{
-		wholeDataFrame = dataFrame;
-		wholeDataFrameLoaded = true;
-	}*/
-
 	return dataFrame;
 }
 
-Rcpp::DataFrame RcppBridge::readDataSetHeader()
+Rcpp::DataFrame RcppBridge::readDataSetHeader(const std::map<string, Column::ColumnType> &columns)
 {
-	Rcpp::List list(_dataSet->columnCount());
+	Rcpp::List list(columns.size());
 	Rcpp::CharacterVector columnNames;
 
 	int colNo = 0;
 
-	BOOST_FOREACH(Column &column, _dataSet->columns())
+	typedef pair<const string, Column::ColumnType> ColumnInfo;
+
+	BOOST_FOREACH(const ColumnInfo &columnInfo, columns)
 	{
-		string columnName = column.name();
+		(void)columns;
 		string dot = ".";
+
+		string columnName = columnInfo.first;
 
 		string base64 = Base64::encode(dot, columnName);
 		columnNames.push_back(base64);
 
-		if (column.dataType() == Column::DataTypeInt)
+		Column *column = _dataSet->columns().get(columnName);
+		Column::ColumnType columnType = column->columnType();
+
+		Column::ColumnType requestedType = columnInfo.second;
+		if (requestedType == Column::ColumnTypeUnknown)
+			requestedType = columnType;
+
+		if (requestedType == Column::ColumnTypeScale)
 		{
-			Rcpp::IntegerVector v(0);
-
-			if (column.hasLabels())
+			if (columnType == Column::ColumnTypeScale)
 			{
-				Rcpp::CharacterVector labels;
-				typedef pair<int, string> pair;
-
-				BOOST_FOREACH(pair label, column.labels())
-					labels.push_back(label.second);
-
-				v.attr("levels") = labels;
-				v.attr("class") = "factor";
+				list[colNo++] = Rcpp::NumericVector(0);
 			}
-
-			list[colNo++] = v;
+			else if (columnType == Column::ColumnTypeOrdinal || columnType == Column::ColumnTypeNominal)
+			{
+				list[colNo++] = Rcpp::IntegerVector(0);
+			}
+			else
+			{
+				Rcpp::IntegerVector v(0);
+				makeFactor(v, column->labels());
+				list[colNo++] = v;
+			}
 		}
 		else
 		{
-			Rcpp::NumericVector v(0);
+			bool ordinal = (requestedType == Column::ColumnTypeOrdinal);
+
+			Rcpp::IntegerVector v(0);
+
+			if (column->hasLabels())
+			{
+				makeFactor(v, column->labels(), ordinal);
+			}
+			else if (column->hasNumericLabels())
+			{
+				makeFactor(v, column->numericLabels(), ordinal);
+			}
+			else
+			{
+				std::map<int, string> levels;
+				makeFactor(v, levels, ordinal);
+			}
+
 			list[colNo++] = v;
 		}
 	}
@@ -181,6 +289,50 @@ Rcpp::DataFrame RcppBridge::readDataSetHeader()
 
 	return dataFrame;
 }
+
+void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const map<int, string> &levels, bool ordinal)
+{
+	Rcpp::CharacterVector labels;
+	typedef pair<int, string> pair;
+
+	BOOST_FOREACH(pair label, levels)
+	{
+		std::cout << "label assigned " << label.second << "\n";
+		labels.push_back(label.second);
+	}
+
+	v.attr("levels") = labels;
+
+	vector<string> cla55;
+
+	if (ordinal)
+		cla55.push_back("ordered");
+
+	cla55.push_back("factor");
+
+	v.attr("class") = cla55;
+}
+
+void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const map<int, int> &levels, bool ordinal)
+{
+	Rcpp::NumericVector labels;
+	typedef pair<int, int> pair;
+
+	BOOST_FOREACH(pair label, levels)
+		labels.push_back(label.second);
+
+	v.attr("levels") = labels;
+
+	vector<string> cla55;
+
+	if (ordinal)
+		cla55.push_back("ordered");
+
+	cla55.push_back("factor");
+
+	v.attr("class") = cla55;
+}
+
 
 int RcppBridge::callback(SEXP results)
 {
@@ -193,14 +345,58 @@ int RcppBridge::callback(SEXP results)
 	return _callback(json);
 }
 
-Rcpp::DataFrame RcppBridge::readDataSetStatic()
-{
-	return _staticRef->readDataSet();
+Rcpp::DataFrame RcppBridge::readDataSetStatic(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
+{	
+	map<string, Column::ColumnType> columnsRequested = marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns);
+	return _staticRef->readDataSet(columnsRequested);
 }
 
-Rcpp::DataFrame RcppBridge::readDataSetHeaderStatic()
+Rcpp::DataFrame RcppBridge::readDataSetHeaderStatic(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
 {
-	return _staticRef->readDataSetHeader();
+	map<string, Column::ColumnType> columnsRequested = marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns);
+	return _staticRef->readDataSetHeader(columnsRequested);
+}
+
+std::map<string, Column::ColumnType> RcppBridge::marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
+{
+	map<string, Column::ColumnType> columnsRequested;
+
+	if (Rf_isLogical(allColumns) && Rcpp::as<bool>(allColumns))
+	{
+		(void)_staticRef;
+		BOOST_FOREACH(const Column &column, _staticRef->_dataSet->columns())
+			columnsRequested[column.name()] = Column::ColumnTypeUnknown;
+	}
+
+	if (Rf_isString(columns))
+	{
+		vector<string> temp = Rcpp::as<vector<string> >(columns);
+		for (int i = 0; i < temp.size(); i++)
+			columnsRequested[temp.at(i)] = Column::ColumnTypeUnknown;
+	}
+
+	if (Rf_isString(columnsAsNumeric))
+	{
+		vector<string> temp = Rcpp::as<vector<string> >(columnsAsNumeric);
+		for (int i = 0; i < temp.size(); i++)
+			columnsRequested[temp.at(i)] = Column::ColumnTypeScale;
+	}
+
+	if (Rf_isString(columnsAsOrdinal))
+	{
+		vector<string> temp = Rcpp::as<vector<string> >(columnsAsOrdinal);
+		for (int i = 0; i < temp.size(); i++)
+			columnsRequested[temp.at(i)] = Column::ColumnTypeOrdinal;
+	}
+
+	if (Rf_isString(columnsAsNominal))
+	{
+		vector<string> temp = Rcpp::as<vector<string> >(columnsAsNominal);
+		for (int i = 0; i < temp.size(); i++)
+			columnsRequested[temp.at(i)] = Column::ColumnTypeNominal;
+	}
+
+	return columnsRequested;
 }
 
 SEXP RcppBridge::callbackStatic(SEXP results)

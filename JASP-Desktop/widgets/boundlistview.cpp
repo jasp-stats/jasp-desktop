@@ -45,7 +45,7 @@ void BoundListView::setModel(QAbstractItemModel *model)
 
 	if (_variablesListModel != NULL)
 	{
-		if (_variablesListModel->variableTypesAllowed() & Column::ColumnTypeNominal)
+		if (_variablesListModel->variableTypesSuggested() & Column::ColumnTypeNominal)
 		{
 			QLabel *label = new QLabel(_variableTypeKey);
 			QIcon icon(":/icons/variable-nominal-inactive.svg");
@@ -54,7 +54,7 @@ void BoundListView::setModel(QAbstractItemModel *model)
 			_variableTypeKey->layout()->addWidget(label);
 		}
 
-		if (_variablesListModel->variableTypesAllowed() & Column::ColumnTypeOrdinal)
+		if (_variablesListModel->variableTypesSuggested() & Column::ColumnTypeOrdinal)
 		{
 			QLabel *label = new QLabel(_variableTypeKey);
 			QIcon icon(":/icons/variable-ordinal-inactive.svg");
@@ -63,7 +63,7 @@ void BoundListView::setModel(QAbstractItemModel *model)
 			_variableTypeKey->layout()->addWidget(label);
 		}
 
-		if (_variablesListModel->variableTypesAllowed() & Column::ColumnTypeScale)
+		if (_variablesListModel->variableTypesSuggested() & Column::ColumnTypeScale)
 		{
 			QLabel *label = new QLabel(_variableTypeKey);
 			QIcon icon(":/icons/variable-scale-inactive.svg");

@@ -65,23 +65,165 @@
 	return(covariances)
 }
 
+.is.raw.letter <- function(ch) {
+
+	(ch >= 0x61 && ch <= 0x7A) || (ch >= 0x41 && ch <= 0x5A)
+}
+
+.is.alpha.numeric <- function(ch) {
+
+	(ch >= 0x61 && ch <= 0x7A) || (ch >= 0x41 && ch <= 0x5A) || (ch >= 0x30 && ch <= 0x39)
+}
+
+.extractVariables <- function(model) {
+
+	reserved.words <- c("c", "start", "equal", "NA")
+	
+	bytes <- c(charToRaw(model), 0)
+	
+	variables <- c()
+	
+	none <- 0
+	in.double.quote <- 1
+	in.single.quote <- 2
+	in.unquoted <- 3
+	in.comment <- 4
+	
+	parse.state <- none
+	token.start <- 1
+	
+	sq <- charToRaw("'")
+	dq <- charToRaw('"')
+	hash <- charToRaw('#')
+	nl <- charToRaw('\n')
+
+	i <- 1
+ 	while (i <= length(bytes)) {
+	
+		ch <- bytes[i]
+
+		if (parse.state == none) {
+
+			if (.is.raw.letter(ch))
+			{
+				token.start <- i
+				parse.state <- in.unquoted
+				
+			} else if (ch == sq) {
+			
+				token.start <- i
+				parse.state <- in.single.quote
+				
+			} else if (ch == dq) {
+			
+				token.start <- i
+				parse.state <- in.double.quote
+			
+			} else if (ch == hash) {
+			
+				parse.state <- in.comment
+			}
+		
+		} else if (parse.state == in.single.quote) {
+		
+			if (ch == sq) {
+			
+				variable <- substr(model, token.start, i)
+				variables <- c(variables, variable)
+				parse.state <- none
+			}
+		
+		} else if (parse.state == in.double.quote) {
+		
+			if (ch == dq) {
+			
+				variable <- substr(model, token.start, i)
+				variables <- c(variables, variable)
+				parse.state <- none
+			}
+		
+		} else if (parse.state == in.unquoted) {
+		
+			if (.is.alpha.numeric(ch) == FALSE) {
+			
+				variable <- substr(model, token.start, i - 1)
+				variables <- c(variables, variable)
+				parse.state <- none
+				i <- i - 1
+			}
+			
+		} else if (parse.state == in.comment) {
+		
+			if (ch == nl)
+				parse.state <- none
+		
+		}
+	
+		i <- i + 1
+	}
+	
+	variables <- unique(variables)
+	variables <- variables[ ! (variables %in% reserved.words)]
+	
+	if (length(variables) > 0) {
+	
+		for (i in 1:length(variables))
+		{
+			variable <- variables[i]
+			if ((regexpr("'.*'", variable) == 1) || (regexpr("\".*\"", variable) == 1))
+				variable <- substr(variable, 2, nchar(variable) - 1)
+			variables[i] <- variable
+		}
+	
+	}
+	
+	variables <- variables[ ! (variables %in% reserved.words)]
+	
+	variables
+}
+
+.translateModel <- function(model, variables) {
+
+	if (length(variables) == 0)
+		return(model)
+
+	variables <- variables[order(nchar(variables), decreasing=TRUE)]
+	with.s.quotes <- paste("'", variables, "'", sep="")
+	with.d.quotes <- paste('"', variables, '"', sep="")
+	
+	new.names <- .v(variables)
+	
+	for (i in 1:length(variables))
+		model <- gsub(with.d.quotes[i], new.names[i], model)
+	for (i in 1:length(variables))
+		model <- gsub(with.s.quotes[i], new.names[i], model)
+	for (i in 1:length(variables))
+		model <- gsub(variables[i], new.names[i], model)
+		
+	model
+}
 
 ### SEM Function:
 SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-	
+
+	variables <- .extractVariables(options$model)
+	model <- .translateModel(options$model, variables)
+
 	if (is.null(dataset)) {
+	
 		if (perform == "run") {
-			dataset <- read.dataset.to.end()
+			dataset <- read.dataset.to.end(all.columns=TRUE)
 		} else {
-			dataset <- read.dataset.header()
+			dataset <- read.dataset.header(all.columns=TRUE)
 		}
 	}
+	
 	
 	errorMessage <- ""
 	### RUN SEM ###
 	if (perform == "run") {
 		semResults <- try(lavaan:::lavaan(
-			model = options$model, 
+			model = model, 
 			data = dataset, 
 			auto.delta = options$addScalingParameters, 
 			auto.th = options$addThresholds,
@@ -176,8 +318,11 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 		# parEstimates[["cases"]] <- rep("",NROW(sem_parest))
 		for (i in seq_len(NROW(sem_parest)))
 		{
-			parEstimates[["data"]][[i]] <- as.list(sem_parest[i,])
-			parEstimates[["data"]][[i]][is.na(parEstimates[["data"]][[i]])] <- '.'
+			estimates <- sem_parest[i,]
+			estimates["lhs"] <- .unv(estimates["lhs"])
+			estimates["rhs"] <- .unv(estimates["rhs"])
+			estimates[is.na(estimates)] <- '.'
+			parEstimates[["data"]][[i]] <- as.list(estimates)
 		}
 	} else {
 		parEstimates[["cases"]] <- NULL

@@ -1,13 +1,14 @@
 #ifndef BOUNDTEXTEDIT_H
 #define BOUNDTEXTEDIT_H
 
-#include <QPlainTextEdit>
+#include <QTextEdit>
+#include <QLabel>
 
 #include "bound.h"
 #include "common.h"
-#include "options/optionstring.h"
+#include "textmodellavaan.h"
 
-class BoundTextEdit : public QPlainTextEdit, public Bound
+class BoundTextEdit : public QTextEdit, public Bound
 {
 	Q_OBJECT
 public:
@@ -19,11 +20,25 @@ signals:
 
 public slots:
 
+private slots:
+	void cursorPositionChangedHandler();
+	void errorStateChangedHandler();
+	void contentsChangedHandler();
+
 protected:
 	void keyPressEvent(QKeyEvent *event) OVERRIDE;
+	void resizeEvent(QResizeEvent *e) OVERRIDE;
+	void paintEvent(QPaintEvent *event) OVERRIDE;
 
 private:
-	OptionString *_boundTo;
+
+	QString _errorStylesheet;
+	QString _okStylesheet;
+	QString _okMessage;
+
+	bool _applied;
+	QLabel *_status;
+	TextModelLavaan *_model;
 
 };
 

@@ -14,12 +14,14 @@ TTestIndependentSamplesForm::TTestIndependentSamplesForm(QWidget *parent) :
 
 	ListModelVariablesAssigned *variablesModel = new ListModelVariablesAssigned(this);
 	variablesModel->setSource(&_availableFields);
-	variablesModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	variablesModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	variablesModel->setIsNominalTextAllowed(false);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
 	ListModelVariablesAssigned *groupingVariableModel = new ListModelVariablesAssigned(this);
-	groupingVariableModel->setVariableTypesAllowed(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	groupingVariableModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	groupingVariableModel->setIsNominalTextAllowed(true);
 	groupingVariableModel->setSource(&_availableFields);
 	ui->groupingVariable->setModel(groupingVariableModel);
 	ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields);

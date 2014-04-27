@@ -114,8 +114,6 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 	}
 	while ( ! success);
 
-	//cout << "success!\n";
-	//cout.flush();
 
 	int colNo = 0;
 	BOOST_FOREACH(Column &column, dataSet->columns())
@@ -128,8 +126,11 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 
 		colNo++;
 
-		Column::Ints::iterator intInputItr = column.AsInts.begin();
+		// try to make the column nominal
+
 		bool success = true;
+		set<int> uniqueValues;
+		Column::Ints::iterator intInputItr = column.AsInts.begin();
 
 		BOOST_FOREACH(string &value, columnRows)
 		{
@@ -137,10 +138,14 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 			{
 				try
 				{
-					*intInputItr = lexical_cast<int>(value);
+					int v = lexical_cast<int>(value);
+					uniqueValues.insert(v);
+					*intInputItr = v;
 				}
 				catch (...)
 				{
+					// column can't be made nominal numeric
+
 					success = false;
 					break;
 				}
@@ -153,13 +158,35 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 			intInputItr++;
 		}
 
-		if (success)
+		if (success && uniqueValues.size() <= 24)
 		{
-			column._dataType = Column::DataTypeInt;
-			column._columnType = Column::ColumnTypeOrdinal;
-			column._columnTypesAllowed = (Column::ColumnType)(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+			map<int, int> rawToActual;
+			map<int, int> actualToRaw;
+
+			int index = 0;
+			BOOST_FOREACH(int value, uniqueValues)
+			{
+				(void)uniqueValues;
+				rawToActual[index] = value;
+				actualToRaw[value] = index;
+				index++;
+			}
+
+			Column::Ints::iterator intInputItr = column.AsInts.begin();
+			for (; intInputItr != column.AsInts.end(); intInputItr++)
+			{
+				int actual = *intInputItr;
+				if (actual != INT_MIN)
+					*intInputItr = actualToRaw.at(actual);
+			}
+
+			column._columnType = Column::ColumnTypeNominal;
+			column.setLabels(rawToActual);
+
 			continue;
 		}
+
+		// try to make the column scale
 
 		Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
 		success = true;
@@ -174,6 +201,8 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 				}
 				catch (...)
 				{
+					// column can't be made scale
+
 					success = false;
 					break;
 				}
@@ -188,16 +217,17 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 
 		if (success)
 		{
-			column._dataType = Column::DataTypeDouble;
 			column._columnType = Column::ColumnTypeScale;
-			column._columnTypesAllowed = (Column::ColumnType)(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 			continue;
 		}
+
+		// if it can't be made nominal numeric or scale, try and make it nominal-text
 
 		vector<string> inColumn = columnRows;
 		sort(inColumn.begin(), inColumn.end());
 		vector<string> cases;
 		unique_copy(inColumn.begin(), inColumn.end(), back_inserter(cases));
+		sort(cases.begin(), cases.end());
 
 		for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
 		{
@@ -232,9 +262,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 			intInputItr++;
 		}
 
-		column._dataType = Column::DataTypeInt;
-		column._columnType = Column::ColumnTypeNominal;
-		column._columnTypesAllowed = (Column::ColumnType)(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+		column._columnType = Column::ColumnTypeNominalText;
 	}
 
 	return dataSet;

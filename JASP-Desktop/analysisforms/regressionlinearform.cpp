@@ -11,7 +11,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 
 	_dependentModel = new ListModelVariablesAssigned();
 	_dependentModel->setSource(&_availableFields);
-	_dependentModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_dependentModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->dependent->setModel(_dependentModel);
 
 	_blocksModel = new TableModelVariablesLevels();
@@ -21,7 +21,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 
 	_wlsWeightsModel = new ListModelVariablesAssigned();
 	_wlsWeightsModel->setSource(&_availableFields);
-	_wlsWeightsModel->setVariableTypesAllowed(Column::ColumnTypeScale);
+	_wlsWeightsModel->setVariableTypesSuggested(Column::ColumnTypeScale);
 	ui->wlsWeights->setModel(_wlsWeightsModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);

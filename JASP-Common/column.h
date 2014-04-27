@@ -35,6 +35,10 @@ class Column
 	typedef boost::interprocess::allocator<LabelEntry, boost::interprocess::managed_shared_memory::segment_manager> LabelEntryAllocator;
 	typedef boost::container::map<int, String, std::less<int>, LabelEntryAllocator> Labels;
 
+	typedef boost::container::map<int, int>::value_type NumericEntry;
+	typedef boost::interprocess::allocator<NumericEntry, boost::interprocess::managed_shared_memory::segment_manager> NumericEntryAllocator;
+	typedef boost::container::map<int, int, std::less<int>, NumericEntryAllocator> NumericLabels;
+
 public:
 
 	typedef struct IntsStruct
@@ -113,7 +117,7 @@ public:
 
 	Column();
 
-	std::string name();
+	std::string name() const;
 	void setName(std::string name);
 
 	void setValue(int rowIndex, int value);
@@ -127,31 +131,30 @@ public:
 	Doubles AsDoubles;
 	Ints AsInts;
 
-	enum DataType { DataTypeInt = 1, DataTypeDouble = 2 };
-	DataType dataType() const;
-
-	enum ColumnType { None = 0, ColumnTypeNominal = 1, ColumnTypeOrdinal = 2, ColumnTypeScale = 4 };
+	enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
 	ColumnType columnType() const;
 
-	ColumnType columnTypesAllowed() const;
 	void changeColumnType(ColumnType newColumnType);
 
 	int rowCount() const;
 
-	bool hasLabels();
+	bool hasLabels() const;
 	std::map<int, std::string> labels() const;
 	void setLabels(std::map<int, std::string> labels);
+	std::string stringFromRaw(int value) const;
 
-	std::string displayFromValue(int value);
+	bool hasNumericLabels() const;
+	void setLabels(std::map<int, int> labels);
+	std::map<int, int> numericLabels() const;
+	int actualFromRaw(int value) const;
 
 private:
 
 	String _name;
 	boost::interprocess::offset_ptr<Labels> _labels;
-	DataType _dataType;
+	boost::interprocess::offset_ptr<NumericLabels> _numericLabels;
 	int _rowCount;
 	ColumnType _columnType;
-	ColumnType _columnTypesAllowed;
 
 	BlockMap _blocks;
 
@@ -162,13 +165,6 @@ private:
 
 namespace boost
 {
-	// specialize range_mutable_iterator and range_const_iterator in namespace boost
-	/*template<>
-	struct range_mutable_iterator< Column::AsInt >
-	{
-		typedef Column::AsInt::iterator type;
-	};*/
-
 	template <>
 	struct range_const_iterator< Column::Ints >
 	{
@@ -180,12 +176,6 @@ namespace boost
 	{
 		typedef Column::Doubles::iterator type;
 	};
-
-	/*template <>
-	struct range_const_iterator< Column::Labels >
-	{
-		typedef Column::Labels::iterator type;
-	};*/
 }
 
 

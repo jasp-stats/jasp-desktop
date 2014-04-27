@@ -23,13 +23,17 @@ private:
 	DataSet *_dataSet;
 
 	static RcppBridge* _staticRef;
-	static Rcpp::DataFrame readDataSetStatic();
-	static Rcpp::DataFrame readDataSetHeaderStatic();
+	static Rcpp::DataFrame readDataSetStatic(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
+	static Rcpp::DataFrame readDataSetHeaderStatic(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
+	static std::map<std::string, Column::ColumnType> marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 	static SEXP callbackStatic(SEXP results);
 
 	int callback(SEXP results);
-	Rcpp::DataFrame readDataSet();
-	Rcpp::DataFrame readDataSetHeader();
+	Rcpp::DataFrame readDataSet(const std::map<std::string, Column::ColumnType> &columns);
+	Rcpp::DataFrame readDataSetHeader(const std::map<std::string, Column::ColumnType> &columns);
+
+	static void makeFactor(Rcpp::IntegerVector &vector, const std::map<int, std::string> &levels, bool ordinal = false);
+	static void makeFactor(Rcpp::IntegerVector &vector, const std::map<int, int> &levels, bool ordinal = false);
 
 	boost::function<int (Json::Value)> _callback;
 };

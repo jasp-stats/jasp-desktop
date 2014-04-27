@@ -54,8 +54,6 @@
 	
 	cases <- .dataFrameToRowList(cases)
 
-
-
 	tables <- list()
 
 	table <- list()
@@ -97,10 +95,10 @@
 	if (perform == "run" && a.factor.contains.no.levels == FALSE) {
 
 		for (i in .indices(cases)) {
-		
+
 			caze <- cases[[i]]
 			
-			ss.filter.string <- paste("as.character(", .v(names(caze)), ")==\"", caze, "\"", sep="", collapse="&")
+			ss.filter.string <- paste(.v(names(caze)), "==\"", caze, "\"", sep="", collapse="&")
 			ss.expression <- parse(text=ss.filter.string)
 			
 			ss <- subset(dataset, select=.v(analysis$columns), subset=eval(ss.expression))
@@ -130,12 +128,19 @@
 
 Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
+	layer.variables <- c()
+
+	for (layer in options$layers)
+		layer.variables <- c(layer.variables, unlist(layer$variables))
+
+	all.variables = c(unlist(options$rows), unlist(options$columns), layer.variables)
+
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- read.dataset.to.end()
+			dataset <- read.dataset.to.end(columns.as.factor=all.variables)
 		} else {
-			dataset <- read.dataset.header()
+			dataset <- read.dataset.header(columns.as.factor=all.variables)
 		}
 	}
 

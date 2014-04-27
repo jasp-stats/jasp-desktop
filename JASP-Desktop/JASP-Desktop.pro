@@ -102,7 +102,9 @@ SOURCES += main.cpp\
     widgets/itemmodelselectitem.cpp \
     widgets/itemmodelselectvariable.cpp \
     widgets/tabbar.cpp \
-    optionsform.cpp
+    optionsform.cpp \
+    widgets/tablemodelcontrasts.cpp \
+    widgets/textmodellavaan.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -179,7 +181,9 @@ HEADERS  += \
     widgets/itemmodelselectitem.h \
     widgets/itemmodelselectvariable.h \
     widgets/tabbar.h \
-    optionsform.h
+    optionsform.h \
+    widgets/tablemodelcontrasts.h \
+    widgets/textmodellavaan.h
 
 FORMS    += \
     backstageform.ui \
@@ -344,5 +348,6 @@ OTHER_FILES += \
     resources/icons/variable-nominal-inactive.svg \
 	html/css/images/logo.svg \
 	html/js/images.js \
-	html/js/analysis.js
+	html/js/analysis.js \
+    resources/icons/variable-nominal-text.svg
 

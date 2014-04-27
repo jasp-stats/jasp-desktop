@@ -35,6 +35,7 @@ private:
 	ListModelVariablesAvailable *_source;
 	OptionField *_boundTo;
 
+	QIcon _nominalTextIcon;
 	QIcon _nominalIcon;
 	QIcon _ordinalIcon;
 	QIcon _scaleIcon;

@@ -10,6 +10,7 @@ AvailableFields::AvailableFields(QObject *parent)
 {
 	_shouldFilter = false;
 
+	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
@@ -94,6 +95,8 @@ QVariant AvailableFields::data(const QModelIndex &index, int role) const
 
 		switch (column->columnType())
 		{
+		case Column::ColumnTypeNominalText:
+			return QVariant(_nominalTextIcon);
 		case Column::ColumnTypeNominal:
 			return QVariant(_nominalIcon);
 		case Column::ColumnTypeOrdinal:

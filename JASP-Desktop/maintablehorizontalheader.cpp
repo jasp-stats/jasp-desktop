@@ -10,6 +10,7 @@ MainTableHorizontalHeader::MainTableHorizontalHeader(QWidget *parent) :
 	_menu = new QMenu(this);
 	_columnSelected = 0;
 
+	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
@@ -32,12 +33,6 @@ void MainTableHorizontalHeader::mousePressEvent(QMouseEvent *event)
 	if (x >= 4 && x <= 24)
 	{
 		_columnSelected = index;
-
-		int columnTypesAllowed = model()->headerData(index, Qt::Horizontal, Qt::UserRole).toInt();
-
-		_convertToNominal->setEnabled(columnTypesAllowed & Column::ColumnTypeNominal);
-		_convertToOrdinal->setEnabled(columnTypesAllowed & Column::ColumnTypeOrdinal);
-		_convertToScale->setEnabled(columnTypesAllowed & Column::ColumnTypeScale);
 
 		QPoint menuPos = this->mapToGlobal(QPoint(itemPos, this->height()));
 

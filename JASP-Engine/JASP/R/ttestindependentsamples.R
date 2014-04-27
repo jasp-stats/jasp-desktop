@@ -1,23 +1,29 @@
 
 TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
+	dependents <- unlist(options$variables)
+	
+	grouping   <- options$groupingVariable
+	if (grouping == "")
+		grouping <- NULL
+
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
 		
 			if (options$missingValues == "excludeListwise") {
 		
-				dataset <- read.dataset.to.end(exclude.na.listwise = options$variables)
+				dataset <- read.dataset.to.end(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=dependents)
 			
 			} else {
 		
-				dataset <- read.dataset.to.end()
+				dataset <- read.dataset.to.end(columns.as.numeric=dependents, columns.as.factor=grouping)
 			}
 		
 
 		} else {
 		
-			dataset <- read.dataset.header()
+			dataset <- read.dataset.header(columns.as.numeric=dependents, columns.as.factor=grouping)
 		}
 	}
 
@@ -217,7 +223,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			
 				for (i in .indices(assume)) {
 				
-					result <- try (silent=TRUE, expr= {
+					result <- try (silent=FALSE, expr= {
 					
 						assume.equal = assume[i]
 
@@ -229,8 +235,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						if (assume.equal) {
 					
 							levene <- car::leveneTest(variableData, groupingVar, "mean")
-				
-							if (levene[1,3] < .05) {
+							
+							if ( ! is.na(levene[1,3]) && levene[1,3] < .05) {
 						
 								variance.assumption.violated <- TRUE
 								variance.assumption.violated.now <- TRUE

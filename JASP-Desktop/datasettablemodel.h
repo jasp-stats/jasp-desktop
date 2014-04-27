@@ -35,6 +35,7 @@ signals:
 private:
 	DataSet *_dataSet;
 
+	QIcon _nominalTextIcon;
 	QIcon _nominalIcon;
 	QIcon _ordinalIcon;
 	QIcon _scaleIcon;

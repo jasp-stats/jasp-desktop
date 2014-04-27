@@ -13,6 +13,7 @@ DataSetTableModel::DataSetTableModel(QObject *parent) :
 {
 	_dataSet = NULL;
 
+	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
@@ -85,6 +86,8 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 
 		switch (column.columnType())
 		{
+		case Column::ColumnTypeNominalText:
+			return QVariant(_nominalTextIcon);
 		case Column::ColumnTypeNominal:
 			return QVariant(_nominalIcon);
 		case Column::ColumnTypeOrdinal:
@@ -103,17 +106,13 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	{
 		return QVariant(Qt::AlignCenter);
 	}
-	else if (role == Qt::UserRole)
-	{
-		return QVariant(_dataSet->columns()[section].columnTypesAllowed());
-	}
 
 	return QVariant();
 }
 
 bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-	if (_dataSet == NULL)
+	/*if (_dataSet == NULL)
 		return false;
 
 	bool ok;
@@ -128,7 +127,7 @@ bool DataSetTableModel::setData(const QModelIndex &index, const QVariant &value,
 			emit badDataEntered(index);
 
 		return ok;
-	}
+	}*/
 
 	//_dataSet->columns()[index.column()].setValue(index.row(), v);
 

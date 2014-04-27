@@ -10,18 +10,18 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	ui->listAvailableFields->setModel(&_availableFields);
 
 	_dependentListModel = new ListModelVariablesAssigned(this);
-	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
 	_dependentListModel->setSource(&_availableFields);
 	ui->dependent->setModel(_dependentListModel);
 
 	_fixedFactorsListModel = new ListModelVariablesAssigned(this);
 	_fixedFactorsListModel->setSource(&_availableFields);
-	_fixedFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->fixedFactors->setModel(_fixedFactorsListModel);
 
 	_randomFactorsListModel = new ListModelVariablesAssigned(this);
 	_randomFactorsListModel->setSource(&_availableFields);
-	_randomFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_randomFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->randomFactors->setModel(_randomFactorsListModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);

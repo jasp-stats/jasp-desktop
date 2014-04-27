@@ -16,7 +16,7 @@ void ListModelVariablesAvailable::setVariables(const QList<ColumnInfo> &variable
 {	
 	beginResetModel();
 
-	if (variableTypesAllowed() == (Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeScale))
+	if (variableTypesSuggested() == (Column::ColumnTypeOrdinal | Column::ColumnTypeNominal | Column::ColumnTypeScale))
 	{
 		_variables = variables;
 		_allVariables = variables;

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-string Base64::encode(string &prefix, string &in)
+string Base64::encode(const string &prefix, const string &in)
 {
 	base64_encodestate state;
 	base64_init_encodestate(&state);

@@ -9,8 +9,10 @@
 ListModelVariables::ListModelVariables(QObject *parent) :
 	TableModel(parent)
 {
-	_variableTypesAllowed = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
+	_variableTypesSuggested = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
+	_nominalTextAllowed = true;
 
+	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
@@ -23,14 +25,24 @@ ListModelVariables::ListModelVariables(QObject *parent) :
 	_mimeType = "application/vnd.list.variable";
 }
 
-void ListModelVariables::setVariableTypesAllowed(int variableTypesAllowed)
+void ListModelVariables::setVariableTypesSuggested(int variableTypesSuggested)
 {
-	_variableTypesAllowed = variableTypesAllowed;
+	_variableTypesSuggested = variableTypesSuggested;
 }
 
-int ListModelVariables::variableTypesAllowed()
+int ListModelVariables::variableTypesSuggested()
 {
-	return _variableTypesAllowed;
+	return _variableTypesSuggested;
+}
+
+void ListModelVariables::setIsNominalTextAllowed(bool allowed)
+{
+	_nominalTextAllowed = allowed;
+}
+
+bool ListModelVariables::isNominalTextAllowed()
+{
+	return _nominalTextAllowed;
 }
 
 int ListModelVariables::rowCount(const QModelIndex &) const
@@ -55,6 +67,8 @@ QVariant ListModelVariables::data(const QModelIndex &index, int role) const
 	{
 		switch (_variables.at(row).second)
 		{
+		case Column::ColumnTypeNominalText:
+			return QVariant(_nominalTextIcon);
 		case Column::ColumnTypeNominal:
 			return QVariant(_nominalIcon);
 		case Column::ColumnTypeOrdinal:
@@ -275,7 +289,7 @@ void ListModelVariables::setMimeType(const QString &mimeType)
 
 bool ListModelVariables::isForbidden(int variableType) const
 {
-	return variableType & ~_variableTypesAllowed;
+	return _nominalTextAllowed == false && (variableType == Column::ColumnTypeNominalText);
 }
 
 bool ListModelVariables::isDroppingToSelf(const QMimeData *mimeData) const

@@ -1,23 +1,29 @@
 
 TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
+	dependents <- unlist(options$variables)
+	
+	grouping   <- options$groupingVariable
+	if (grouping == "")
+		grouping <- NULL
+
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
 		
 			if (options$missingValues == "excludeListwise") {
 		
-				dataset <- read.dataset.to.end(exclude.na.listwise = options$variables)
+				dataset <- read.dataset.to.end(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=dependents)
 			
 			} else {
 		
-				dataset <- read.dataset.to.end()
+				dataset <- read.dataset.to.end(columns.as.numeric=dependents, columns.as.factor=grouping)
 			}
 		
 
 		} else {
 		
-			dataset <- read.dataset.header()
+			dataset <- read.dataset.header(columns.as.numeric=dependents, columns.as.factor=grouping)
 		}
 	}
 

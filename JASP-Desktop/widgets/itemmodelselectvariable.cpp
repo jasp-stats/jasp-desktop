@@ -12,6 +12,7 @@ ItemModelSelectVariable::ItemModelSelectVariable(QObject *parent) :
 	_boundTo = NULL;
 	_selectedIndex = 0;
 
+	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
@@ -48,6 +49,8 @@ QVariant ItemModelSelectVariable::data(const QModelIndex &index, int role) const
 
 		switch (_source->allVariables().at(index.row() - 1).second)
 		{
+		case Column::ColumnTypeNominalText:
+			return QVariant(_nominalTextIcon);
 		case Column::ColumnTypeNominal:
 			return QVariant(_nominalIcon);
 		case Column::ColumnTypeOrdinal:
