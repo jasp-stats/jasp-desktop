@@ -342,7 +342,6 @@ OTHER_FILES += \
     resources/icons/analysis-bayesian-regression.svg \
     resources/icons/toolbutton-menu-indicator.svg \
 	html/js/image.js \
-	html/js/descriptives.js \
     resources/icons/variable-scale-inactive.svg \
     resources/icons/variable-ordinal-inactive.svg \
     resources/icons/variable-nominal-inactive.svg \
