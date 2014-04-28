@@ -103,7 +103,6 @@ SOURCES += main.cpp\
     widgets/itemmodelselectvariable.cpp \
     widgets/tabbar.cpp \
     optionsform.cpp \
-    widgets/tablemodelcontrasts.cpp \
     widgets/textmodellavaan.cpp
 
 HEADERS  += \
@@ -182,7 +181,6 @@ HEADERS  += \
     widgets/itemmodelselectvariable.h \
     widgets/tabbar.h \
     optionsform.h \
-    widgets/tablemodelcontrasts.h \
     widgets/textmodellavaan.h
 
 FORMS    += \
