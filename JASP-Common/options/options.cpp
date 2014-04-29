@@ -27,7 +27,7 @@ void Options::add(string name, Option *option)
 
 void Options::optionsChanged(Option *option)
 {
-	changed(option);
+	notifyChanged();
 }
 
 Json::Value Options::asJSON() const

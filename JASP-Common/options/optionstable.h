@@ -22,6 +22,7 @@ public:
 	size_t size();
 
 	void insert(int index, Options *row);
+	void append(Options *row);
 	Options *remove(int index);
 	Options *remove(std::string name);
 	bool contains(std::string name);

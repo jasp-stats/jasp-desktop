@@ -40,8 +40,3 @@ Option *OptionFields::clone() const
 	c->setValue(value());
 	return c;
 }
-
-void OptionFields::setRestrictions(int restrictions)
-{
-}
-

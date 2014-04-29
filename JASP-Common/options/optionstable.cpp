@@ -31,9 +31,11 @@ void OptionsTable::set(Json::Value &value)
 
 	for (int i = 0; i < value.size(); i++)
 	{
-		Options *item = static_cast<Options *>(_template->clone());
-		item->set(value[i]);
-		_rows.push_back(item);
+		Options *row = static_cast<Options *>(_template->clone());
+		row->set(value[i]);
+		_rows.push_back(row);
+
+		row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
 	}
 }
 
@@ -70,6 +72,15 @@ void OptionsTable::insert(int index, Options *row)
 	_rows.insert(itr, row);
 
 	row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
+	rowChanged();
+}
+
+void OptionsTable::append(Options *row)
+{
+	_rows.push_back(row);
+
+	row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
+	rowChanged();
 }
 
 Options *OptionsTable::remove(int index)
@@ -99,8 +110,8 @@ Options *OptionsTable::remove(string name)
 		if (variable == name)
 		{
 			_rows.erase(itr);
-			return *itr;
 			rowChanged();
+			return *itr;
 		}
 
 		itr++;
@@ -125,5 +136,5 @@ bool OptionsTable::contains(string name)
 
 void OptionsTable::rowChanged()
 {
-	changed(this);
+	notifyChanged();
 }

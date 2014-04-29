@@ -14,12 +14,22 @@ class Option
 {
 public:
 	Option();
+	virtual ~Option();
 
 	virtual Json::Value asJSON() const = 0;
 	virtual void set(Json::Value& value) = 0;
 	virtual Option *clone() const = 0;
 
 	boost::signals2::signal<void (Option *)> changed;
+
+	void blockSignals(bool block);
+
+protected:
+	void notifyChanged();
+
+private:
+	int _signalsBlocked;
+	bool _shouldSignalOnceUnblocked;
 
 };
 

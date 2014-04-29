@@ -4,6 +4,8 @@
 #include <QMimeData>
 #include <QDebug>
 
+#include "utils.h"
+
 using namespace std;
 
 ListModelAnovaModel::ListModelAnovaModel(QObject *parent)
@@ -143,7 +145,7 @@ void ListModelAnovaModel::setCustomModelMode(bool on)
 
 void ListModelAnovaModel::bindTo(Option *option)
 {
-	_boundTo = dynamic_cast<OptionFields *>(option);
+	_boundTo = dynamic_cast<OptionsTable *>(option);
 
 	beginResetModel();
 	_variables.clear();
@@ -391,8 +393,8 @@ QList<QList<ColumnInfo> > ListModelAnovaModel::generateCrossCombinations(const Q
 
 	for (int r = 1; r <= variables.size(); r++)
 	{
-		std::vector<bool> v(variables.size());
-		std::fill(v.begin() + r, v.end(), true);
+		vector<bool> v(variables.size());
+		fill(v.begin() + r, v.end(), true);
 
 		do {
 
@@ -461,16 +463,50 @@ void ListModelAnovaModel::assignToOption()
 	if (_boundTo == NULL)
 		return;
 
-	vector<string> values;
+	QList<QList<ColumnInfo> > terms;
+	if (_customModel)
+		terms = _terms;
+	else
+		terms = generateCrossCombinations(_variables.toVector());
 
-	foreach (ColumnInfo term, terms())
+	int index = 0;
+
+	_boundTo->blockSignals(true);
+
+	foreach (QList<ColumnInfo> term, terms)
 	{
-		QString modelTerm = term.first;
-		QByteArray utf8 = modelTerm.toUtf8();
-		string modelTermAsString(utf8.constData(), utf8.length());
-		values.push_back(modelTermAsString);
+		vector<string> components;
+
+		foreach (const ColumnInfo &component, term)
+		{
+			components.push_back(fq(component.first));
+		}
+
+		if (index < _boundTo->size())
+		{
+			Options *row = _boundTo->at(index);
+			Option *option = row->get("components");
+			OptionFields *componentsOption = static_cast<OptionFields *>(option);
+			componentsOption->setValue(components);
+		}
+		else
+		{
+			Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
+			Option *option = row->get("components");
+			OptionFields *componentsOption = static_cast<OptionFields *>(option);
+			componentsOption->setValue(components);
+			_boundTo->append(row);
+		}
+
+		index++;
 	}
 
-	_boundTo->setValue(values);
+	while (index < _boundTo->size())
+	{
+		Option *row = _boundTo->remove(_boundTo->size() - 1);
+		delete row;
+	}
+
+	_boundTo->blockSignals(false);
 
 }

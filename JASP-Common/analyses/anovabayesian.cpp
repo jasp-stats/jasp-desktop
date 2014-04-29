@@ -9,6 +9,7 @@
 #include "options/optionlist.h"
 #include "options/optionnumber.h"
 #include "options/optionfield.h"
+#include "options/optionstable.h"
 
 AnovaBayesian::AnovaBayesian(int id)
 	: Analysis(id, "AnovaBayesian")
@@ -23,7 +24,10 @@ Options *AnovaBayesian::createDefaultOptions()
 	options->add("fixedFactors", new OptionFields());
 	options->add("randomFactors", new OptionFields());
 
-	options->add("modelTerms", new OptionFields());
+	Options *termsTemplate = new Options();
+	termsTemplate->add("components", new OptionFields());
+
+	options->add("modelTerms", new OptionsTable(termsTemplate));
 
 	options->add("nuisanceTerms", new OptionFields());
 

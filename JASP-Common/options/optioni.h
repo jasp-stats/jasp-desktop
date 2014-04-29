@@ -27,7 +27,7 @@ public:
 
 		_value = value;
 
-		changed(this);
+		notifyChanged();
 	}
 
 protected:

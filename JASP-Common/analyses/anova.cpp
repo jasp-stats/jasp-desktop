@@ -33,7 +33,10 @@ Options *Anova::createDefaultOptions()
 
 	// model
 
-	options->add("modelTerms", new OptionFields());
+	Options *termsTemplate = new Options();
+	termsTemplate->add("components", new OptionFields());
+
+	options->add("modelTerms", new OptionsTable(termsTemplate));
 	options->add("sumOfSquares", new OptionList(list("type1", "type2", "type3"), "type3"));
 
 

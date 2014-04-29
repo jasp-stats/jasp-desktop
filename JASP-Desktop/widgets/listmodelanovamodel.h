@@ -6,6 +6,7 @@
 #include "listmodelvariablesavailable.h"
 #include "enhanceddroptarget.h"
 #include "options/optionfields.h"
+#include "options/optionstable.h"
 
 #include "tablemodel.h"
 
@@ -58,7 +59,7 @@ protected:
 	static QList<QList<ColumnInfo> > generateWayCombinations(const QVector<ColumnInfo> &variables, int ways);
 	static QString itemsToString(QList<ColumnInfo> items);
 
-	OptionFields *_boundTo;
+	OptionsTable *_boundTo;
 
 	bool _customModel;
 
