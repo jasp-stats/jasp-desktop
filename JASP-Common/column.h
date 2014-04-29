@@ -1,18 +1,15 @@
 #ifndef COLUMN_H
 #define COLUMN_H
 
-#include <string>
-#include <map>
-
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range.hpp>
 
-#include <boost/interprocess/segment_manager.hpp>
 #include <boost/container/map.hpp>
 #include <boost/container/string.hpp>
+#include <boost/container/vector.hpp>
 
-#include "sharedmemory.h"
 #include "datablock.h"
+#include "labels.h"
 
 class Column
 {
@@ -30,14 +27,6 @@ class Column
 	typedef boost::interprocess::allocator<char, boost::interprocess::managed_shared_memory::segment_manager> CharAllocator;
 	typedef boost::container::basic_string<char, std::char_traits<char>, CharAllocator> String;
 	typedef boost::interprocess::allocator<String, boost::interprocess::managed_shared_memory::segment_manager> StringAllocator;
-
-	typedef boost::container::map<int, String, StringAllocator>::value_type LabelEntry;
-	typedef boost::interprocess::allocator<LabelEntry, boost::interprocess::managed_shared_memory::segment_manager> LabelEntryAllocator;
-	typedef boost::container::map<int, String, std::less<int>, LabelEntryAllocator> Labels;
-
-	typedef boost::container::map<int, int>::value_type NumericEntry;
-	typedef boost::interprocess::allocator<NumericEntry, boost::interprocess::managed_shared_memory::segment_manager> NumericEntryAllocator;
-	typedef boost::container::map<int, int, std::less<int>, NumericEntryAllocator> NumericLabels;
 
 public:
 
@@ -89,7 +78,6 @@ public:
 
 		public:
 
-			//iterator(BlockMap *blocks);
 			explicit iterator(BlockMap::iterator blockItr, int currentPos);
 
 		private:
@@ -115,7 +103,7 @@ public:
 
 	} Doubles;
 
-	Column();
+	Column(boost::interprocess::managed_shared_memory *mem);
 
 	std::string name() const;
 	void setName(std::string name);
@@ -138,28 +126,25 @@ public:
 
 	int rowCount() const;
 
-	bool hasLabels() const;
-	std::map<int, std::string> labels() const;
-	void setLabels(std::map<int, std::string> labels);
-	std::string stringFromRaw(int value) const;
-
-	bool hasNumericLabels() const;
-	void setLabels(std::map<int, int> labels);
-	std::map<int, int> numericLabels() const;
+	Labels& labels();
 	int actualFromRaw(int value) const;
+
+	Column &operator=(const Column &columns);
 
 private:
 
+	boost::interprocess::managed_shared_memory *_mem;
+
 	String _name;
-	boost::interprocess::offset_ptr<Labels> _labels;
-	boost::interprocess::offset_ptr<NumericLabels> _numericLabels;
-	int _rowCount;
 	ColumnType _columnType;
+	int _rowCount;
 
 	BlockMap _blocks;
+	Labels _labels;
 
 	void setRowCount(int rowCount);
 	void insert(int rowCount, int index);
+	std::string stringFromRaw(int value) const;
 
 };
 

@@ -70,7 +70,9 @@ SOURCES += \
     analyses/ttestbayesianpairedsamples.cpp \
     base64.cpp \
     base64/cdecode.cpp \
-    base64/cencode.cpp
+    base64/cencode.cpp \
+    label.cpp \
+    labels.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -130,7 +132,9 @@ HEADERS +=\
     analyses/ttestbayesianpairedsamples.h \
     base64/cencode.h \
     base64/cdecode.h \
-    base64.h
+    base64.h \
+    label.h \
+    labels.h
 
 unix:!symbian {
     maemo5 {

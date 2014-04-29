@@ -32,8 +32,8 @@ private:
 	Rcpp::DataFrame readDataSet(const std::map<std::string, Column::ColumnType> &columns);
 	Rcpp::DataFrame readDataSetHeader(const std::map<std::string, Column::ColumnType> &columns);
 
-	static void makeFactor(Rcpp::IntegerVector &vector, const std::map<int, std::string> &levels, bool ordinal = false);
-	static void makeFactor(Rcpp::IntegerVector &vector, const std::map<int, int> &levels, bool ordinal = false);
+	static void makeFactor(Rcpp::IntegerVector &v, const std::vector<std::string> &levels, bool ordinal = false);
+	static void makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordinal = false);
 
 	boost::function<int (Json::Value)> _callback;
 };

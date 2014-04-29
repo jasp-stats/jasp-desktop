@@ -12,118 +12,46 @@ using namespace boost::interprocess;
 using namespace boost;
 using namespace std;
 
-Column::Column() :
-	_name(SharedMemory::get()->get_segment_manager()),
-	_blocks(std::less<ull>(), SharedMemory::get()->get_segment_manager())
+Column::Column(managed_shared_memory *mem) :
+	_name(mem->get_segment_manager()),
+	_blocks(std::less<ull>(), mem->get_segment_manager()),
+	_labels(mem)
 {
-	_labels = NULL;
+	_mem = mem;
 	_rowCount = 0;
 	_columnType = Column::ColumnTypeNominal;
 
 	ull firstId = DataBlock::capacity();
-	DataBlock *firstBlock = SharedMemory::get()->construct<DataBlock>(anonymous_instance)();
+	DataBlock *firstBlock = _mem->construct<DataBlock>(anonymous_instance)();
 
 	_blocks.insert(BlockEntry(firstId, firstBlock));
 }
 
-std::map<int, std::string> Column::labels() const
+Labels &Column::labels()
 {
-	typedef std::pair<const int, std::string> label;
-
-	std::map<int, std::string> ls;
-
-	Labels *source = _labels.get();
-
-	if (source != NULL)
-	{
-		BOOST_FOREACH(LabelEntry &entry, *source)
-		{
-			std::string value(entry.second.begin(), entry.second.end());
-			ls.insert(label(entry.first, value));
-		}
-	}
-
-	return ls;
-}
-
-void Column::setLabels(std::map<int, std::string> labels)
-{
-	managed_shared_memory *mem = SharedMemory::get();
-
-	if (_labels == NULL)
-		_labels = mem->construct<Labels>(anonymous_instance)(std::less<int>(), mem->get_segment_manager());
-	else
-		_labels->clear();
-
-	typedef std::pair<const int, std::string> label;
-
-	BOOST_FOREACH(label &p, labels)
-	{
-		int rawValue = p.first;
-		String displayValue(p.second.begin(), p.second.end(), mem->get_segment_manager());
-		_labels->insert(LabelEntry(rawValue, displayValue));
-	}
-
-	if (_numericLabels != NULL)
-	{
-		mem->destroy_ptr(_numericLabels.get());
-		_numericLabels = NULL;
-	}
-}
-
-bool Column::hasNumericLabels() const
-{
-	return _numericLabels.get() != NULL;
-}
-
-void Column::setLabels(std::map<int, int> labels)
-{
-	managed_shared_memory *mem = SharedMemory::get();
-
-	if (_numericLabels == NULL)
-		_numericLabels = mem->construct<NumericLabels>(anonymous_instance)(std::less<int>(), mem->get_segment_manager());
-	else
-		_numericLabels->clear();
-
-	typedef std::pair<const int, int> label;
-
-	BOOST_FOREACH(label &p, labels)
-	{
-		int rawValue = p.first;
-		int actualValue = p.second;
-		_numericLabels->insert(NumericEntry(rawValue, actualValue));
-	}
-
-	if (_labels != NULL)
-	{
-		mem->destroy_ptr(_labels.get());
-		_labels = NULL;
-	}
-}
-
-std::map<int, int> Column::numericLabels() const
-{
-	typedef std::pair<const int, int> label;
-
-	std::map<int, int> ls;
-
-	NumericLabels *source = _numericLabels.get();
-
-	if (source != NULL)
-	{
-		BOOST_FOREACH(NumericEntry &entry, *source)
-			ls.insert(label(entry.first, entry.second));
-	}
-
-	return ls;
+	return _labels;
 }
 
 int Column::actualFromRaw(int raw) const
 {
-	if (raw != INT_MIN && hasNumericLabels())
-		return _numericLabels->at(raw);
+	if (raw != INT_MIN && _labels.size() > 0)
+		return _labels.at(raw).value();
 	else
 		return raw;
+}
+
+Column &Column::operator=(const Column &column)
+{
+	if (&column != this)
+	{
+		this->_name = column._name;
+		this->_rowCount = column._rowCount;
+		this->_columnType = column._columnType;
+		this->_blocks = column._blocks;
+		this->_labels = column._labels;
+	}
+
+	return *this;
 }
 
 Column::ColumnType Column::columnType() const
@@ -144,22 +72,19 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 		}
 		else if (_columnType == ColumnTypeNominalText)
 		{
-			map<int, string> labels = this->labels();
+			Labels& labels = this->labels();
+			labels.clear();
+
 			map<int, int> oldIndexToNewIndex;
-			map<int, int> numericLabels;
 
-			typedef pair<const int, string> label;
-
-			int index = 0;
-
-			BOOST_FOREACH (label l, labels)
+			for (int i = 0; i < labels.size(); i++)
 			{
 				try
 				{
-					int value = lexical_cast<int>(l.second);
-					numericLabels[index] = value;
-					oldIndexToNewIndex[l.first] = index;
-					index++;
+					std::string text = labels.at(i).text();
+					int value = lexical_cast<int>(text);
+					int raw = labels.add(value);
+					oldIndexToNewIndex[i] = raw;
 				}
 				catch (...)
 				{
@@ -178,8 +103,6 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 
 			}
 
-			setLabels(numericLabels);
-
 			_columnType = newColumnType;
 		}
 		else if (_columnType == ColumnTypeScale)
@@ -194,19 +117,15 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 					uniqueValues.insert(v);
 			}
 
-			map<int, int> labels;
+			Labels& labels = this->labels();
 			map<int, int> valueToIndex;
 
-			int index = 0;
 			set<int>::iterator itr = uniqueValues.begin();
 			for (; itr != uniqueValues.end(); itr++)
 			{
 				int v = *itr;
-
-				labels[index] = v;
-				valueToIndex[v] = index;
-
-				index++;
+				int raw = labels.add(v);
+				valueToIndex[v] = raw;
 			}
 
 			Ints::iterator ints = this->AsInts.begin();
@@ -227,8 +146,6 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 					*ints = index;
 				}
 			}
-
-			setLabels(labels);
 
 			_columnType = newColumnType;
 		}
@@ -258,9 +175,6 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 
 				*doubles = newValue;
 			}
-
-			SharedMemory::get()->destroy_ptr(_numericLabels.get());
-			_numericLabels = NULL;
 
 			_columnType = newColumnType;
 		}
@@ -293,31 +207,18 @@ int Column::rowCount() const
 	return _rowCount;
 }
 
-bool Column::hasLabels() const
-{
-	return _labels.get() != NULL;
-}
-
 string Column::stringFromRaw(int value) const
 {
 	if (value == INT_MIN)
 		return ".";
 
-	if (hasLabels())
-	{
-		String s = _labels->at(value);
-		return string(s.begin(), s.end());
-	}
+	if (_labels.size() > 0)
+		return _labels.at(value).text();
 
-	if (hasNumericLabels())
-	{
-		value = _numericLabels->at(value);
-	}
+	stringstream ss;
+	ss << value;
 
-	stringstream s;
-	s << value;
-
-	return s.str();
+	return ss.str();
 }
 
 string Column::name() const
@@ -327,7 +228,7 @@ string Column::name() const
 
 void Column::setName(string name)
 {
-	_name = String(name.begin(), name.end(), SharedMemory::get()->get_segment_manager());
+	_name = String(name.begin(), name.end(), _mem->get_segment_manager());
 }
 
 void Column::setValue(int rowIndex, string value)
@@ -456,7 +357,7 @@ void Column::append(int rows)
 	{
 		try {
 
-		DataBlock *newBlock = SharedMemory::get()->construct<DataBlock>(anonymous_instance)();
+		DataBlock *newBlock = _mem->construct<DataBlock>(anonymous_instance)();
 
 		int toInsert = std::min(rowsLeft, DataBlock::capacity());
 		newBlock->insert(0, toInsert);
@@ -497,7 +398,7 @@ void Column::setRowCount(int rowCount)
 	{
 		BlockEntry &entry = *itr;
 		DataBlock *block = entry.second.get();
-		SharedMemory::get()->destroy_ptr<DataBlock>(block);
+		_mem->destroy_ptr<DataBlock>(block);
 		entry.second = NULL;
 	}
 

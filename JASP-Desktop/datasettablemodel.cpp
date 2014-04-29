@@ -6,6 +6,8 @@
 #include <QSize>
 #include <QDebug>
 
+#include "utils.h"
+
 using namespace std;
 
 DataSetTableModel::DataSetTableModel(QObject *parent) :
@@ -56,8 +58,8 @@ QVariant DataSetTableModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
 	{
-		string value = _dataSet->columns()[index.column()][index.row()];
-		return QVariant(QString::fromUtf8(value.c_str(), value.length()));
+		QString value = tq(_dataSet->column(index.column())[index.row()]);
+		return QVariant(value);
 	}
 
     return QVariant();
@@ -72,8 +74,8 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	{
 		if (orientation == Qt::Horizontal)
 		{
-			string value = _dataSet->columns()[section].name();
-			return QVariant(QString::fromUtf8(value.c_str(), value.length()) + QString("        "));
+			QString value = tq(_dataSet->column(section).name()) + QString("        ");
+			return QVariant(value);
 		}
 		else
 		{
@@ -82,7 +84,7 @@ QVariant DataSetTableModel::headerData ( int section, Qt::Orientation orientatio
 	}
 	else if (role == Qt::DecorationRole && orientation == Qt::Horizontal)
 	{
-		Column &column = _dataSet->columns()[section];
+		Column &column = _dataSet->column(section);
 
 		switch (column.columnType())
 		{
@@ -144,7 +146,7 @@ void DataSetTableModel::setColumnType(int columnIndex, Column::ColumnType newCol
 	if (_dataSet == NULL)
 		return;
 
-	_dataSet->columns()[columnIndex].changeColumnType(newColumnType);
+	_dataSet->column(columnIndex).changeColumnType(newColumnType);
 
 	emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex);
 }

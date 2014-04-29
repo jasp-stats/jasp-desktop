@@ -84,14 +84,14 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 		string base64 = Base64::encode(dot, columnName);
 		columnNames.push_back(base64);
 
-		Column *column = _dataSet->columns().get(columnName);
-		Column::ColumnType columnType = column->columnType();
+		Column &column = _dataSet->columns().get(columnName);
+		Column::ColumnType columnType = column.columnType();
 
 		Column::ColumnType requestedType = columnInfo.second;
 		if (requestedType == Column::ColumnTypeUnknown)
 			requestedType = columnType;
 
-		int rowCount = column->rowCount();
+		int rowCount = column.rowCount();
 		int rowNo = 0;
 
 		if (requestedType == Column::ColumnTypeScale)
@@ -100,7 +100,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 			{
 				Rcpp::NumericVector v(rowCount);
 
-				BOOST_FOREACH(double value, column->AsDoubles)
+				BOOST_FOREACH(double value, column.AsDoubles)
 				{
 					(void)column;
 					v[rowNo++] = value;
@@ -112,10 +112,10 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 			{
 				Rcpp::IntegerVector v(rowCount);
 
-				BOOST_FOREACH(int value, column->AsInts)
+				BOOST_FOREACH(int value, column.AsInts)
 				{
 					(void)column;
-					v[rowNo++] = column->actualFromRaw(value);
+					v[rowNo++] = column.actualFromRaw(value);
 				}
 
 				list[colNo++] = v;
@@ -124,13 +124,13 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 			{
 				Rcpp::IntegerVector v(rowCount);
 
-				BOOST_FOREACH(int value, column->AsInts)
+				BOOST_FOREACH(int value, column.AsInts)
 				{
 					(void)column;
-					v[rowNo++] = column->actualFromRaw(value);
+					v[rowNo++] = column.actualFromRaw(value);
 				}
 
-				makeFactor(v, column->labels());
+				makeFactor(v, column.labels());
 
 				list[colNo++] = v;
 			}
@@ -141,25 +141,15 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 
 			Rcpp::IntegerVector v(rowCount);
 
-			if (column->hasLabels())
+			if (columnType != Column::ColumnTypeScale)
 			{
-				BOOST_FOREACH(int value, column->AsInts)
+				BOOST_FOREACH(int value, column.AsInts)
 				{
 					(void)column;
 					v[rowNo++] = value + 1;
 				}
 
-				makeFactor(v, column->labels(), ordinal);
-			}
-			else if (column->hasNumericLabels())
-			{
-				BOOST_FOREACH(int value, column->AsInts)
-				{
-					(void)column;
-					v[rowNo++] = value + 1;
-				}
-
-				makeFactor(v, column->numericLabels(), ordinal);
+				makeFactor(v, column.labels(), ordinal);
 			}
 			else
 			{
@@ -167,7 +157,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 
 				set<int> uniqueValues;
 
-				BOOST_FOREACH(double value, column->AsDoubles)
+				BOOST_FOREACH(double value, column.AsDoubles)
 				{
 					(void)column;
 					int intValue = (int)(value * 1000);
@@ -176,7 +166,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 
 				int index = 0;
 				map<int, int> valueToIndex;
-				map<int, string> labels;
+				vector<string> labels;
 
 				BOOST_FOREACH(int value, uniqueValues)
 				{
@@ -185,12 +175,12 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 
 					stringstream ss;
 					ss << ((double)value / 1000);
-					labels[index] = ss.str();
+					labels.push_back(ss.str());
 
 					index++;
 				}
 
-				BOOST_FOREACH(double value, column->AsDoubles)
+				BOOST_FOREACH(double value, column.AsDoubles)
 				{
 					(void)column;
 
@@ -235,8 +225,8 @@ Rcpp::DataFrame RcppBridge::readDataSetHeader(const std::map<string, Column::Col
 		string base64 = Base64::encode(dot, columnName);
 		columnNames.push_back(base64);
 
-		Column *column = _dataSet->columns().get(columnName);
-		Column::ColumnType columnType = column->columnType();
+		Column &column = _dataSet->columns().get(columnName);
+		Column::ColumnType columnType = column.columnType();
 
 		Column::ColumnType requestedType = columnInfo.second;
 		if (requestedType == Column::ColumnTypeUnknown)
@@ -255,7 +245,7 @@ Rcpp::DataFrame RcppBridge::readDataSetHeader(const std::map<string, Column::Col
 			else
 			{
 				Rcpp::IntegerVector v(0);
-				makeFactor(v, column->labels());
+				makeFactor(v, column.labels());
 				list[colNo++] = v;
 			}
 		}
@@ -264,20 +254,7 @@ Rcpp::DataFrame RcppBridge::readDataSetHeader(const std::map<string, Column::Col
 			bool ordinal = (requestedType == Column::ColumnTypeOrdinal);
 
 			Rcpp::IntegerVector v(0);
-
-			if (column->hasLabels())
-			{
-				makeFactor(v, column->labels(), ordinal);
-			}
-			else if (column->hasNumericLabels())
-			{
-				makeFactor(v, column->numericLabels(), ordinal);
-			}
-			else
-			{
-				std::map<int, string> levels;
-				makeFactor(v, levels, ordinal);
-			}
+			makeFactor(v, column.labels(), ordinal);
 
 			list[colNo++] = v;
 		}
@@ -290,44 +267,30 @@ Rcpp::DataFrame RcppBridge::readDataSetHeader(const std::map<string, Column::Col
 	return dataFrame;
 }
 
-void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const map<int, string> &levels, bool ordinal)
+void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordinal)
 {
 	Rcpp::CharacterVector labels;
-	typedef pair<int, string> pair;
 
-	BOOST_FOREACH(pair label, levels)
-	{
-		std::cout << "label assigned " << label.second << "\n";
-		labels.push_back(label.second);
-	}
+	for (int i = 0; i < levels.size(); i++)
+		labels.push_back(levels.at(i).text());
 
 	v.attr("levels") = labels;
 
 	vector<string> cla55;
-
 	if (ordinal)
 		cla55.push_back("ordered");
-
 	cla55.push_back("factor");
 
 	v.attr("class") = cla55;
 }
 
-void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const map<int, int> &levels, bool ordinal)
+void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &levels, bool ordinal)
 {
-	Rcpp::NumericVector labels;
-	typedef pair<int, int> pair;
-
-	BOOST_FOREACH(pair label, levels)
-		labels.push_back(label.second);
-
-	v.attr("levels") = labels;
+	v.attr("levels") = levels;
 
 	vector<string> cla55;
-
 	if (ordinal)
 		cla55.push_back("ordered");
-
 	cla55.push_back("factor");
 
 	v.attr("class") = cla55;

@@ -2,10 +2,10 @@
 #include "datasetloader.h"
 
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
+#include <sys/stat.h>
 
-#include "boost/lexical_cast.hpp"
-#include "sys/stat.h"
-
+#include "sharedmemory.h"
 #include "dataset.h"
 #include "csv.h"
 
@@ -62,7 +62,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 
 	managed_shared_memory* mem = SharedMemory::get(true);
 
-	DataSet *dataSet = mem->construct<DataSet>(boost::interprocess::unique_instance)();
+	DataSet *dataSet = mem->construct<DataSet>(boost::interprocess::unique_instance)(mem);
 
 	do
 	{
@@ -131,6 +131,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 		bool success = true;
 		set<int> uniqueValues;
 		Column::Ints::iterator intInputItr = column.AsInts.begin();
+		Labels &labels = column.labels();
 
 		BOOST_FOREACH(string &value, columnRows)
 		{
@@ -160,15 +161,15 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 
 		if (success && uniqueValues.size() <= 24)
 		{
-			map<int, int> rawToActual;
+			labels.clear();
 			map<int, int> actualToRaw;
 
 			int index = 0;
 			BOOST_FOREACH(int value, uniqueValues)
 			{
 				(void)uniqueValues;
-				rawToActual[index] = value;
-				actualToRaw[value] = index;
+				int raw = labels.add(value);
+				actualToRaw[value] = raw;
 				index++;
 			}
 
@@ -181,7 +182,6 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 			}
 
 			column._columnType = Column::ColumnTypeNominal;
-			column.setLabels(rawToActual);
 
 			continue;
 		}
@@ -238,17 +238,10 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 			}
 		}
 
-		std::map<int, string> casesMap;
-		int i = 0;
+		labels.clear();
 
 		BOOST_FOREACH (string &value, cases)
-		{
-			pair<int, string> p(i, value);
-			casesMap.insert(p);
-			i++;
-		}
-
-		column.setLabels(casesMap);
+			labels.add(value);
 
 		intInputItr = column.AsInts.begin();
 
