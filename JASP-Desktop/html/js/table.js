@@ -13,12 +13,6 @@ $.widget("jasp.table", {
 		this.element.addClass("jasp-table")
 		this.refresh()
 	},
-	/*_setOption: function (key, value) {
-		if (key === "value") {
-			value = this._constrain(value)
-		}
-		this._super(key, value)
-	},*/
 	_setOptions: function (options) {
 		this._super(options)
 		
@@ -140,9 +134,7 @@ $.widget("jasp.table", {
 		
 					_.each(this.options.schema.fields, function(field) {
 
-						var value = this.options.data[rowNo][field.id]
-						if (_.isUndefined(value))
-							value = this.options.data[rowNo][field.name]
+						var value = this.options.data[rowNo][field.name]
 							
 						var columnName = field.name
 						var bPos = columnName.indexOf("[")
@@ -277,9 +269,12 @@ $.widget("jasp.table", {
 			for (var rowNo = 1; rowNo < fields.length; rowNo++) {
 			
 				var field = fields[rowNo]
+				var title = field.title
+				if ( ! title)
+					title = field.name
 
 					html += '<tr>'
-                    html += '<th>' + field.name + '</th>'
+                    html += '<th>' + title + '</th>'
 		
                 if (this.options.data != null) {
                 
