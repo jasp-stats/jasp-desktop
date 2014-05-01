@@ -23,10 +23,12 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	
 	.meta <- list(
 	list(name="anova", type="table"),
+	list(name="levene", type="table"),
 	list(name="contrasts", type="tables"),
-	list(name="posthoc", type="tables")
+	list(name="posthoc", type="tables"),
+	list(name="descriptives", type="table")
 	)
-	
+		
 	results[[".meta"]] <- .meta
 	
     #######################################
@@ -137,7 +139,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
     
     anova[["schema"]] <- list(fields=fields)
     
-    if (length(options$modelTerms) > 0) {
+    if (length(options$modelTerms) > 0 & length(options$dependent) > 0) {
         
         terms <- options$modelTerms
         fixedFactors <- options$fixedFactors
@@ -266,7 +268,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
                         
                         contrast <- list()
                         
-                        contrast[["title"]] <- paste(variable[var], contrast.name[var],"Contrast", sep=" ")
+                        contrast[["title"]] <- paste("Contrast", contrast.name[var], variable[var], sep=" ")
                         
                         cases <- .setContrast(variable[var], contrast.name[var], reference[var], case=TRUE)
                         
@@ -327,7 +329,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
                 
                 if (length(unique(dataset[[ .v(postHoc.var[var]) ]])) > 1) {
                     
-                    posthoc[["title"]] <- paste(postHoc.var[var], "Post-Hoc Comparisons", sep=" ")
+                    posthoc[["title"]] <- paste("Post-Hoc Comparisons", postHoc.var[var], sep=" ")
                     
                     fields <- list(
                         list(name="(I) response", type="text"),
@@ -452,28 +454,117 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
     ###          DESCRIPTIVES           ###
     #######################################
     
-    if (perform == "run" & options$misc[["descriptives"]]==TRUE) {
+    if (perform == "run" & options$misc[["descriptives"]] & length(options$fixedFactors) > 0 & length(options$dependent) > 0) {
         
-        # descriptives <- list()
+        descriptives <- list()
         
-        # descriptives[["title"]] <- "Descriptives"
+        descriptives[["title"]] <- "Descriptives"
         
-        # fields <- list()
+        fields <- list()
         
-        # for(i in options$fixedFactors) {
-            # fields[[length(fields)+1]] <-  list(name=i, type="text")
-        # }
+        for(i in options$fixedFactors) {
+            fields[[length(fields)+1]] <-  list(name=i, type="text")
+        }
         
-        # fields[[length(fields)+1]] <- list(name="Mean", type="number", format="dp:3")
-        # fields[[length(fields)+1]] <- list(name="SD", type="number", format="dp:3")
-        # fields[[length(fields)+1]] <- list(name="N", type="number", format="dp:0")
+        fields[[length(fields)+1]] <- list(name="Mean", type="number", format="dp:3")
+        fields[[length(fields)+1]] <- list(name="SD", type="number", format="dp:3")
+        fields[[length(fields)+1]] <- list(name="N", type="number", format="dp:0")
         
-        # descriptives[["schema"]] <- list(fields=fields)
+        descriptives[["schema"]] <- list(fields=fields)
         
+        fixedFactors <- unlist(options$fixedFactors)
         
+        data <- list()
+        levels <- list()
         
+        for(i in 1:length(fixedFactors)) {
+            data[[i]] <- factor(dataset[[ .v(fixedFactors[i]) ]])
+            levels[[i]] <- levels(data[[i]])
+        }
+        
+        cases <- expand.grid(levels)  
+        descr <- by(dataset[[ .v(options$dependent) ]], data, pastecs::stat.desc)
+        
+		N <- NULL
+		mean <- NULL
+		sd <- NULL
+        
+        for(i in 1:nrow(cases)) {
+            if(is.null(descr[i][[1]])) {
+                N <- c(N, 0)
+                mean <- c(mean, NA)
+                sd <- c(sd,NA)
+            } else {
+                N <- c(N, descr[i][[1]][["nbr.val"]])
+                mean <- c(mean, descr[i][[1]][["mean"]])
+                sd <- c(sd,descr[i][[1]][["std.dev"]])
+            }
+        }      
+        
+        descr <- cbind(cases,N,mean,sd)
+		descr <- descr[do.call("order",descr[.indices(fixedFactors)]),]
+        
+        descriptives.result <- list()
+        
+        for(i in 1:length(descr[,1])) {
+            r <- list()
+			
+            for(j in 1:length(fixedFactors)) {
+                if(i == 1) {
+					r[[fixedFactors[j]]] <- descr[i,j]
+				} else if (descr[i,j]!=descr[i-1,j]) {
+					r[[fixedFactors[j]]] <- descr[i,j]
+				} else 
+					r[[fixedFactors[j]]] <- ""
+            }  
+			
+            r[["Mean"]] <- descr[i,"mean"]
+            r[["SD"]] <- descr[i,"sd"]
+            r[["N"]] <- descr[i,"N"]
+                
+            descriptives.result[[length(descriptives.result) +1 ]] <- r
+        }
+        
+        descriptives[["data"]] <- descriptives.result      
+        
+        results[["descriptives"]] <- descriptives      
     }
     
+	#######################################
+    ###          LEVENE'S TEST          ###
+    #######################################
+	
+    # if (perform == "run" & options$misc[["homogeneityTests"]] & length(options$fixedFactors) > 0 & length(options$dependent) > 0) {
+		
+		# levene <- list()
+        
+        # levene[["title"]] <- "Levene's Test for Homogeneity of Variance"
+        
+        # fields <- list(
+			# list(name="Levene's Statistic", type="text"),
+			# list(name="df1", type="number", format="dp:0"),
+			# list(name="df2", type="number", format="dp:0"),
+			# list(name="p", type="number", format="dp:3;p:.001"))
+
+        # levene[["schema"]] <- list(fields=fields)
+		
+		# fixedFactors <- unlist(options$fixedFactors)
+		# fixedFactors.base64 <- NULL
+		
+		# for(i in .indices(fixedFactors)) {
+			# fixedFactors.base64[i] <- .v(fixedFactors)
+		# }
+		
+		# data.levene <- dataset[,fixedFactors.base64]
+		# interactions <- do.call("interaction",data.levene)
+		
+		# r <- car::leveneTest(dataset[[ .v(options$dependent) ]], interactions, center=median)
+		
+		# levene[["data"]] <- list(list("Levene's Statistic"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3]))
+		
+		# results[["levene"]] <- levene
+	# }	
+	
     results[["anova"]] <- anova
     
 	print(results)
