@@ -15,7 +15,7 @@ TextModelLavaan::TextModelLavaan(QObject *parent)
 	this->setDocumentMargin(12);
 
 	connect(this, SIGNAL(contentsChanged()), this, SLOT(contentChangedHandler()));
-	connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(checkEverything()));
+	//connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(checkEverything()));
 	connect(this, SIGNAL(contentsChange(int,int,int)), this, SLOT(contentChange(int,int,int)));
 }
 
@@ -538,11 +538,8 @@ void TextModelLavaan::cursorPositionChangedHandler(QTextCursor cursor)
 
 	if (currentBlock != _currentBlock)
 	{
-		checkEverything();
+		//checkEverything();
 		_currentBlock = currentBlock;
-
-		std::cout << "pos changed " << _currentBlock << "\n";
-		std::cout.flush();
 
 		if (_changed)
 		{
@@ -555,7 +552,7 @@ void TextModelLavaan::cursorPositionChangedHandler(QTextCursor cursor)
 
 void TextModelLavaan::apply()
 {
-	checkEverything();
+	//checkEverything();
 	if (_boundTo != NULL && inError() == false)
 		_boundTo->setValue(fq(this->toPlainText()));
 }
