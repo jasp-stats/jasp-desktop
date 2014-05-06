@@ -29,11 +29,9 @@ Options *AnovaBayesian::createDefaultOptions()
 
 	options->add("modelTerms", new OptionsTable(termsTemplate));
 
-	options->add("nuisanceTerms", new OptionFields());
-
-	options->add("outputPosterior", new OptionBoolean());
 	options->add("outputEffects", new OptionBoolean());
-	options->add("outputNull", new OptionBoolean());
+	options->add("posteriorEstimates", new OptionBoolean());
+	options->add("posteriorDistributions", new OptionBoolean());
 
 	return options;
 }

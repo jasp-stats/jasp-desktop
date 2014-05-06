@@ -4,7 +4,7 @@
 #include "analysisform.h"
 
 #include "widgets/listmodelvariablesassigned.h"
-#include "widgets/listmodelanovamodelnuisancefactors.h"
+#include "widgets/listmodelanovamodel.h"
 
 namespace Ui {
 class AnovaBayesianForm;
@@ -18,7 +18,7 @@ public:
 	explicit AnovaBayesianForm(QWidget *parent = 0);
 	~AnovaBayesianForm();
 
-	virtual void set(Options *options, DataSet *dataSet) OVERRIDE;
+	//virtual void set(Options *options, DataSet *dataSet) OVERRIDE;
 
 private slots:
 	void factorsChanged();
@@ -32,7 +32,7 @@ private:
 	ListModelVariablesAssigned *_randomFactorsListModel;
 	ListModelVariablesAssigned *_wlsWeightsListModel;
 
-	ListModelAnovaModelNuisanceFactors *_anovaModel;
+	ListModelAnovaModel *_anovaModel;
 
 	ListModelVariablesAvailable *_factorsAvailableListModel;
 };

@@ -32,7 +32,7 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
-	_anovaModel = new ListModelAnovaModelNuisanceFactors(this);
+	_anovaModel = new ListModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
 	ui->modelTerms->hide();
 }
@@ -42,14 +42,14 @@ AnovaBayesianForm::~AnovaBayesianForm()
 	delete ui;
 }
 
-void AnovaBayesianForm::set(Options *options, DataSet *dataSet)
+/*void AnovaBayesianForm::set(Options *options, DataSet *dataSet)
 {
 	OptionFields *nuisanceOption = dynamic_cast<OptionFields *>(options->get("nuisanceTerms"));
 
 	_anovaModel->setNuisanceTermsOption(nuisanceOption);
 
 	AnalysisForm::set(options, dataSet);
-}
+}*/
 
 void AnovaBayesianForm::factorsChanged()
 {
