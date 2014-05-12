@@ -18,7 +18,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	results <- list()
 	
 	#######################################
-	###				 META				###
+	###              META               ###
 	#######################################
 
 	.meta <- list(
@@ -32,7 +32,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	results[[".meta"]] <- .meta
 
 	#######################################
-	###		   CONTRAST FUNCTION		###
+	###        CONTRAST FUNCTION        ###
 	#######################################
 	
 	.setContrast <- function (var,con,ref,case=FALSE) {
@@ -122,7 +122,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	}
 	
 	#######################################
-	###				 ANOVA				###
+	###              ANOVA              ###
 	#######################################
 	
 	anova <- list()
@@ -289,7 +289,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 		
 		
 		#######################################
-		###			   CONTRASTS			###
+		###            CONTRASTS            ###
 		#######################################
 		
 		if (!all(contrast.name == "none")){
@@ -349,7 +349,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	}
 	
 	#######################################
-	###			 POST-HOC TESTS			###
+	###         POST-HOC TESTS          ###
 	#######################################
 	
 	if (perform == "run")
@@ -489,7 +489,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	}
 	
 	#######################################
-	###			  DESCRIPTIVES			###
+	###          DESCRIPTIVES           ###
 	#######################################
 	
 	if (perform == "run" & options$misc[["descriptives"]] & length(options$fixedFactors) > 0 & length(options$dependent) > 0) {
@@ -569,7 +569,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	}
 	
 	#######################################
-	###			 LEVENE'S TEST			###
+	###          LEVENE'S TEST          ###
 	#######################################
 	
 	if (perform == "run" & options$misc[["homogeneityTests"]] & length(options$fixedFactors) > 0 & length(options$dependent) > 0) {
