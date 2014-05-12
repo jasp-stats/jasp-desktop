@@ -8,7 +8,7 @@
 class Base64
 {
 public:
-	static std::string encode(std::string &prefix, std::string &in);
+	static std::string encode(const std::string &prefix, const std::string &in);
 
 };
 

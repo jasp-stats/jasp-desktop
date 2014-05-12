@@ -55,5 +55,5 @@ Options *SEMSimple::createDefaultOptions()
 
 std::string SEMSimple::order()
 {
-    return "fit,parameterEstimates,fitMeasures,covcor,modificationIndices,mardiasCoefficient";
+    return "fit,parameterEstimates,fitMeasures_modelTest,fitMeasures_vsBaseline,fitMeasures_likelihoodInfo,fitMeasures_RMSEA,fitMeasures_RMR,fitMeasures_Other,covcor,modificationIndices,mardiasCoefficient";
 }

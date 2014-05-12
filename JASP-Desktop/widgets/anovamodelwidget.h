@@ -57,7 +57,7 @@ private:
 
 	Ui::AnovaModelWidget *ui;
 
-	OptionFields *_boundTo;
+	OptionsTable *_boundTo;
 
 	ListModelVariablesAvailable *_listModelVariablesAvailable;
 	ListModelAnovaModel *_listModelAnovaModel;

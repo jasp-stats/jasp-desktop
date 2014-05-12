@@ -78,7 +78,7 @@ private:
 	int _id;
 	std::string _name;
 
-	void optionsChangedHandler();
+	void optionsChangedHandler(Option *option);
 
 };
 

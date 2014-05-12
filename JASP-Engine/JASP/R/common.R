@@ -11,6 +11,8 @@ init <- function(name, options.as.json.string) {
 	
 	if (class(results) == "try-error") {
 	
+		print(results)
+	
 		"{ \"error\" : 	1, \"errorMessage\" : \"This analysis terminated unexpectedly. Please contact its author.\" }"
 	
 	} else {
@@ -43,9 +45,12 @@ run <- function(name, options.as.json.string) {
 
 }
 
-read.dataset.to.end <- function(read.as.factors=c(), exclude.na.listwise=NULL, ...) {	
+read.dataset.to.end <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {	
 
-	dataset <- .read.dataset.native()
+	if (is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor) && all.columns == FALSE)
+		return (data.frame())
+
+	dataset <- .read.dataset.native(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
 	
 	if ( ! is.null(exclude.na.listwise))
 	{
@@ -64,18 +69,17 @@ read.dataset.to.end <- function(read.as.factors=c(), exclude.na.listwise=NULL, .
 		dataset <- dataset[rows.to.keep,]
 	}
 	
-	for (variable in read.as.factors) {
-
-		if (is.factor( dataset[[variable]] ))
-			dataset[[variable]] <- as.factor(dataset[[variable]])
-	}
-	
 	dataset
 }
 
-read.dataset.header <- function() {
+read.dataset.header <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, ...) {
 
-	.read.dataset.header.native()
+	if (is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor) && all.columns == FALSE)
+		return (data.frame())
+
+	dataset <- .read.dataset.header.native(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
+	
+	dataset
 }
 
 .v <- function(variable.names) {
@@ -85,6 +89,16 @@ read.dataset.header <- function() {
 	for (v in variable.names)
 		vs[length(vs)+1] <- paste(".", .toBase64(v), sep="")
 
+	vs
+}
+
+.unv <- function(variable.names) {
+
+	vs <- c()
+	
+	for (v in variable.names)
+		vs[length(vs)+1] <- .fromBase64(substr(v, 2, nchar(v)))
+	
 	vs
 }
 

@@ -1,18 +1,15 @@
 #ifndef COLUMN_H
 #define COLUMN_H
 
-#include <string>
-#include <map>
-
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range.hpp>
 
-#include <boost/interprocess/segment_manager.hpp>
 #include <boost/container/map.hpp>
 #include <boost/container/string.hpp>
+#include <boost/container/vector.hpp>
 
-#include "sharedmemory.h"
 #include "datablock.h"
+#include "labels.h"
 
 class Column
 {
@@ -30,10 +27,6 @@ class Column
 	typedef boost::interprocess::allocator<char, boost::interprocess::managed_shared_memory::segment_manager> CharAllocator;
 	typedef boost::container::basic_string<char, std::char_traits<char>, CharAllocator> String;
 	typedef boost::interprocess::allocator<String, boost::interprocess::managed_shared_memory::segment_manager> StringAllocator;
-
-	typedef boost::container::map<int, String, StringAllocator>::value_type LabelEntry;
-	typedef boost::interprocess::allocator<LabelEntry, boost::interprocess::managed_shared_memory::segment_manager> LabelEntryAllocator;
-	typedef boost::container::map<int, String, std::less<int>, LabelEntryAllocator> Labels;
 
 public:
 
@@ -85,7 +78,6 @@ public:
 
 		public:
 
-			//iterator(BlockMap *blocks);
 			explicit iterator(BlockMap::iterator blockItr, int currentPos);
 
 		private:
@@ -111,9 +103,9 @@ public:
 
 	} Doubles;
 
-	Column();
+	Column(boost::interprocess::managed_shared_memory *mem);
 
-	std::string name();
+	std::string name() const;
 	void setName(std::string name);
 
 	void setValue(int rowIndex, int value);
@@ -127,48 +119,37 @@ public:
 	Doubles AsDoubles;
 	Ints AsInts;
 
-	enum DataType { DataTypeInt = 1, DataTypeDouble = 2 };
-	DataType dataType() const;
-
-	enum ColumnType { None = 0, ColumnTypeNominal = 1, ColumnTypeOrdinal = 2, ColumnTypeScale = 4 };
+	enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
 	ColumnType columnType() const;
 
-	ColumnType columnTypesAllowed() const;
 	void changeColumnType(ColumnType newColumnType);
 
 	int rowCount() const;
 
-	bool hasLabels();
-	std::map<int, std::string> labels() const;
-	void setLabels(std::map<int, std::string> labels);
+	Labels& labels();
+	int actualFromRaw(int value) const;
 
-	std::string displayFromValue(int value);
+	Column &operator=(const Column &columns);
 
 private:
 
+	boost::interprocess::managed_shared_memory *_mem;
+
 	String _name;
-	boost::interprocess::offset_ptr<Labels> _labels;
-	DataType _dataType;
-	int _rowCount;
 	ColumnType _columnType;
-	ColumnType _columnTypesAllowed;
+	int _rowCount;
 
 	BlockMap _blocks;
+	Labels _labels;
 
 	void setRowCount(int rowCount);
 	void insert(int rowCount, int index);
+	std::string stringFromRaw(int value) const;
 
 };
 
 namespace boost
 {
-	// specialize range_mutable_iterator and range_const_iterator in namespace boost
-	/*template<>
-	struct range_mutable_iterator< Column::AsInt >
-	{
-		typedef Column::AsInt::iterator type;
-	};*/
-
 	template <>
 	struct range_const_iterator< Column::Ints >
 	{
@@ -180,12 +161,6 @@ namespace boost
 	{
 		typedef Column::Doubles::iterator type;
 	};
-
-	/*template <>
-	struct range_const_iterator< Column::Labels >
-	{
-		typedef Column::Labels::iterator type;
-	};*/
 }
 
 

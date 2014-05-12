@@ -452,10 +452,6 @@
              </widget>
             </item>
            </layout>
-           <zorder>label</zorder>
-           <zorder>label</zorder>
-           <zorder>regressionCoefficients_confidenceIntervalsInterval</zorder>
-           <zorder>label_2</zorder>
           </widget>
          </item>
          <item row="3" column="0" colspan="3">
@@ -556,7 +552,7 @@
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="QRadioButton" name="outliersOutside">
+             <widget class="QRadioButton" name="_1outliersOutside">
               <property name="text">
                <string>Outliers outside</string>
               </property>
@@ -580,7 +576,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QRadioButton" name="allCases">
+             <widget class="QRadioButton" name="_2allCases">
               <property name="text">
                <string>All cases</string>
               </property>
@@ -773,14 +769,14 @@
              </widget>
             </item>
             <item row="2" column="0" colspan="2">
-             <widget class="QRadioButton" name="useFValue">
+             <widget class="QRadioButton" name="_2useFValue">
               <property name="text">
                <string>Use F value</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0" colspan="2">
-             <widget class="QRadioButton" name="usePValue">
+             <widget class="QRadioButton" name="_1usePValue">
               <property name="text">
                <string>Use p value</string>
               </property>
@@ -846,21 +842,21 @@
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="QRadioButton" name="excludeCasesListwise">
+             <widget class="QRadioButton" name="_1excludeCasesListwise">
               <property name="text">
                <string>Exclude cases listwise</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QRadioButton" name="excludeCasesPairwise">
+             <widget class="QRadioButton" name="_2excludeCasesPairwise">
               <property name="text">
                <string>Exclude cases pairwise</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QRadioButton" name="replaceWithMean">
+             <widget class="QRadioButton" name="_3replaceWithMean">
               <property name="text">
                <string>Replace with mean</string>
               </property>
@@ -909,15 +905,15 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundGroupBox</class>
    <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -987,7 +983,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>usePValue</sender>
+   <sender>_1usePValue</sender>
    <signal>toggled(bool)</signal>
    <receiver>panelPValue</receiver>
    <slot>setEnabled(bool)</slot>
@@ -1003,7 +999,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>useFValue</sender>
+   <sender>_2useFValue</sender>
    <signal>toggled(bool)</signal>
    <receiver>panelFValue</receiver>
    <slot>setEnabled(bool)</slot>

@@ -31,6 +31,7 @@ private:
 
 	QMenu *_menu;
 
+	QIcon _nominalTextIcon;
 	QIcon _nominalIcon;
 	QIcon _ordinalIcon;
 	QIcon _scaleIcon;

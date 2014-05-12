@@ -10,13 +10,13 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 	ui->listAvailableFields->setModel(&_availableFields);
 
 	_rowsModel = new ListModelVariablesAssigned();
-	_rowsModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_rowsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	_rowsModel->setSource(&_availableFields);
 	ui->rows->setModel(_rowsModel);
 
 	_columnsModel = new ListModelVariablesAssigned();
 	_columnsModel->setSource(&_availableFields);
-	_columnsModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_columnsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->columns->setModel(_columnsModel);
 
 	_layersModel = new TableModelVariablesLevels();
@@ -28,9 +28,9 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 	ui->buttonAssignColumns->setSourceAndTarget(ui->listAvailableFields, ui->columns);
 	ui->buttonAssignLayers->setSourceAndTarget(ui->listAvailableFields, ui->layers);
 
-	ui->groupStatistics->hide();
-	ui->groupCellDisplay->hide();
-	ui->groupTableFormat->hide();
+	ui->panelStatistics->hide();
+	ui->panelCells->hide();
+	ui->panelOptions->hide();
 }
 
 CrosstabsForm::~CrosstabsForm()

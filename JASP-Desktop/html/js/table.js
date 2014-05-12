@@ -13,12 +13,6 @@ $.widget("jasp.table", {
 		this.element.addClass("jasp-table")
 		this.refresh()
 	},
-	/*_setOption: function (key, value) {
-		if (key === "value") {
-			value = this._constrain(value)
-		}
-		this._super(key, value)
-	},*/
 	_setOptions: function (options) {
 		this._super(options)
 		
@@ -37,7 +31,7 @@ $.widget("jasp.table", {
             {
                 var p = f.substring(2)
                 if (value < p)
-                    return "< " + p
+                    return "<&nbsp" + p
             }
         }
 
@@ -53,7 +47,11 @@ $.widget("jasp.table", {
             if (f.indexOf("sf:") != -1) {
 
                 var sf = f.substring(3)
-                return value.toPrecision(sf)
+                var cutoff = Math.pow(10, sf)
+                if (value < cutoff)
+	                return value.toPrecision(sf)
+	            else
+					return parseInt(value)
             }
         }
 
@@ -140,9 +138,7 @@ $.widget("jasp.table", {
 		
 					_.each(this.options.schema.fields, function(field) {
 
-						var value = this.options.data[rowNo][field.id]
-						if (_.isUndefined(value))
-							value = this.options.data[rowNo][field.name]
+						var value = this.options.data[rowNo][field.name]
 							
 						var columnName = field.name
 						var bPos = columnName.indexOf("[")
@@ -277,9 +273,12 @@ $.widget("jasp.table", {
 			for (var rowNo = 1; rowNo < fields.length; rowNo++) {
 			
 				var field = fields[rowNo]
+				var title = field.title
+				if ( ! title)
+					title = field.name
 
 					html += '<tr>'
-                    html += '<th>' + field.name + '</th>'
+                    html += '<th>' + title + '</th>'
 		
                 if (this.options.data != null) {
                 

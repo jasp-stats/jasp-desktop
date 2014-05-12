@@ -99,10 +99,10 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
             <item row="0" column="0">
-             <widget class="BoundComboBox" name="groupingVariableWHATNEEDSFIXING">
+             <widget class="BoundComboBox" name="groupingVariable">
               <property name="minimumSize">
                <size>
-                <width>200</width>
+                <width>190</width>
                 <height>0</height>
                </size>
               </property>

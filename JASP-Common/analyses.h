@@ -20,6 +20,7 @@ public:
 	Analysis *create(std::string name);
 	Analysis *create(std::string name, int id);
 	Analysis *get(int id);
+	void clear();
 
 	boost::signals2::signal<void (Analysis *)> analysisInitialised;
 	boost::signals2::signal<void (Analysis *)> analysisOptionsChanged;

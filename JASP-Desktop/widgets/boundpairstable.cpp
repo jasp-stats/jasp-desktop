@@ -87,7 +87,7 @@ void BoundPairsTable::setupKey()
 
 	if (_tableModel != NULL)
 	{
-		if (_tableModel->variableTypesAllowed() & Column::ColumnTypeNominal)
+		if (_tableModel->variableTypesSuggested() & Column::ColumnTypeNominal)
 		{
 			QLabel *label = new QLabel(_variableTypeKey);
 			QIcon icon(":/icons/variable-nominal-inactive.svg");
@@ -96,7 +96,7 @@ void BoundPairsTable::setupKey()
 			_variableTypeKey->layout()->addWidget(label);
 		}
 
-		if (_tableModel->variableTypesAllowed() & Column::ColumnTypeOrdinal)
+		if (_tableModel->variableTypesSuggested() & Column::ColumnTypeOrdinal)
 		{
 			QLabel *label = new QLabel(_variableTypeKey);
 			QIcon icon(":/icons/variable-ordinal-inactive.svg");
@@ -105,7 +105,7 @@ void BoundPairsTable::setupKey()
 			_variableTypeKey->layout()->addWidget(label);
 		}
 
-		if (_tableModel->variableTypesAllowed() & Column::ColumnTypeScale)
+		if (_tableModel->variableTypesSuggested() & Column::ColumnTypeScale)
 		{
 			QLabel *label = new QLabel(_variableTypeKey);
 			QIcon icon(":/icons/variable-scale-inactive.svg");

@@ -98,7 +98,12 @@ SOURCES += main.cpp\
 	widgets/boundtextedit.cpp \
     widgets/stealthbutton.cpp \
     analysisforms/ttestbayesianindependentsamplesform.cpp \
-    analysisforms/ttestbayesianpairedsamplesform.cpp
+    analysisforms/ttestbayesianpairedsamplesform.cpp \
+    widgets/itemmodelselectitem.cpp \
+    widgets/itemmodelselectvariable.cpp \
+    widgets/tabbar.cpp \
+    optionsform.cpp \
+    widgets/textmodellavaan.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -171,7 +176,12 @@ HEADERS  += \
 	widgets/boundtextedit.h \
     widgets/stealthbutton.h \
     analysisforms/ttestbayesianindependentsamplesform.h \
-    analysisforms/ttestbayesianpairedsamplesform.h
+    analysisforms/ttestbayesianpairedsamplesform.h \
+    widgets/itemmodelselectitem.h \
+    widgets/itemmodelselectvariable.h \
+    widgets/tabbar.h \
+    optionsform.h \
+    widgets/textmodellavaan.h
 
 FORMS    += \
     backstageform.ui \
@@ -201,7 +211,8 @@ FORMS    += \
     ribbons/ribbonanalysis.ui \
     analysisforms/semsimpleform.ui \
     analysisforms/ttestbayesianindependentsamplesform.ui \
-    analysisforms/ttestbayesianpairedsamplesform.ui
+    analysisforms/ttestbayesianpairedsamplesform.ui \
+    optionsform.ui
 
 
 RESOURCES += \
@@ -329,11 +340,11 @@ OTHER_FILES += \
     resources/icons/analysis-bayesian-regression.svg \
     resources/icons/toolbutton-menu-indicator.svg \
 	html/js/image.js \
-	html/js/descriptives.js \
     resources/icons/variable-scale-inactive.svg \
     resources/icons/variable-ordinal-inactive.svg \
     resources/icons/variable-nominal-inactive.svg \
 	html/css/images/logo.svg \
 	html/js/images.js \
-	html/js/analysis.js
+	html/js/analysis.js \
+    resources/icons/variable-nominal-text.svg
 

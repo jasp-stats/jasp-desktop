@@ -52,19 +52,20 @@
 
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
+	variables <- unlist(options$main$fields)
+
 	if (is.null(dataset)) {
 	
 		if (perform == "run") {
 		
-			dataset <- read.dataset.to.end()
+			dataset <- read.dataset.to.end(columns.as.numeric=variables)
 			
 		} else {
 		
-			dataset <- read.dataset.header()
+			dataset <- read.dataset.header(columns.as.numeric=variables)
 		}
 	}
 
-	variables <- options$main$fields
 	stats.options <- options[["statistics"]]
 	central.tendency <- stats.options[["centralTendency"]]
 	dispersion <- stats.options[["dispersion"]]

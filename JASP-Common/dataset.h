@@ -7,13 +7,15 @@ class DataSet
 {
 public:
 
-	DataSet();
+	DataSet(boost::interprocess::managed_shared_memory *mem);
 	~DataSet();
 
 	int rowCount();
 	int columnCount();
 
 	Columns &columns();
+	Column& column(int index);
+	Column &column(std::string name);
 
 	void setRowCount(int rowCount);
 	void setColumnCount(int columnCount);

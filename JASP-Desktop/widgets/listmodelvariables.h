@@ -25,8 +25,11 @@ class ListModelVariables : public TableModel
 public:
 	explicit ListModelVariables(QObject *parent = 0);
 	
-	void setVariableTypesAllowed(int variableTypesAllowed);
-	int variableTypesAllowed();
+	void setVariableTypesSuggested(int variableTypesSuggested);
+	int variableTypesSuggested();
+
+	void setIsNominalTextAllowed(bool allowed);
+	bool isNominalTextAllowed();
 
     virtual int rowCount(const QModelIndex &) const OVERRIDE;
 	virtual int columnCount(const QModelIndex &parent) const OVERRIDE;
@@ -65,9 +68,12 @@ private:
 	Qt::DropActions _dropActions;
 	Qt::DropActions _dragActions;
 
-	int _variableTypesAllowed;
+	int _variableTypesSuggested;
+
+	bool _nominalTextAllowed;
 	QMimeData *_mimeData;
 
+	QIcon _nominalTextIcon;
 	QIcon _nominalIcon;
 	QIcon _ordinalIcon;
 	QIcon _scaleIcon;

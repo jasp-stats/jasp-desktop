@@ -15,8 +15,6 @@ public:
 	virtual void set(Json::Value& value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
 
-	void setRestrictions(int restrictions);
-
 };
 
 #endif // OPTIONFIELDS_H

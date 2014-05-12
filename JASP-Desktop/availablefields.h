@@ -38,6 +38,7 @@ private:
 	std::vector<std::string> _filter;
 	bool _shouldFilter;
 
+	QIcon _nominalTextIcon;
 	QIcon _nominalIcon;
 	QIcon _ordinalIcon;
 	QIcon _scaleIcon;

@@ -154,13 +154,13 @@ Options *Analysis::options()
 	if (_options == NULL)
 	{
 		_options = createDefaultOptions();
-		_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this));
+		_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 	}
 
 	return _options;
 }
 
-void Analysis::optionsChangedHandler()
+void Analysis::optionsChangedHandler(Option *option)
 {
 	_status = Empty;
 	optionsChanged(this);

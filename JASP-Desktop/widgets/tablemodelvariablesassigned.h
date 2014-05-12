@@ -17,8 +17,11 @@ class TableModelVariablesAssigned : public TableModel, public BoundModel
 public:
 	explicit TableModelVariablesAssigned(QObject *parent = 0);
 	
-	void setVariableTypesAllowed(int variableTypesAllowed);
-	int variableTypesAllowed();
+	void setIsNominalTextAllowed(bool allowed);
+	bool nominalTextAllowed();
+
+	void setVariableTypesSuggested(int variableTypesSuggested);
+	int variableTypesSuggested();
 
 	void bindTo(Option *option) OVERRIDE;
 	int rowCount(const QModelIndex &parent) const OVERRIDE;
@@ -44,7 +47,8 @@ protected:
 	void assignToOption();
 
 private:
-	int _variableTypesAllowed;
+	bool _nominalTextAllowed;
+	int _variableTypesSuggested;
 
 	ListModelVariablesAvailable *_source;
 

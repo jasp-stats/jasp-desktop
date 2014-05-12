@@ -7,6 +7,7 @@
 #include "../JASP-Common/rinterface.h"
 #include "../JASP-Common/analysisloader.h"
 #include "../JASP-Common/process.h"
+#include "../JASP-Common/sharedmemory.h"
 
 #include <sstream>
 

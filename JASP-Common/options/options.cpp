@@ -22,12 +22,12 @@ Options::~Options()
 void Options::add(string name, Option *option)
 {
 	_options.push_back(OptionNamed(name, option));
-	option->changed.connect(boost::bind(&Options::optionsChanged, this));
+	option->changed.connect(boost::bind(&Options::optionsChanged, this, _1));
 }
 
-void Options::optionsChanged()
+void Options::optionsChanged(Option *option)
 {
-	changed(this);
+	notifyChanged();
 }
 
 Json::Value Options::asJSON() const
@@ -54,7 +54,7 @@ void Options::set(Json::Value &json)
 			item.second->set(value);
 	}
 
-	optionsChanged();
+	optionsChanged(this);
 }
 
 void Options::insertValue(string &name, Json::Value &value, Json::Value &root)

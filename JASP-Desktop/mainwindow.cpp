@@ -46,17 +46,21 @@ MainWindow::MainWindow(QWidget *parent) :
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
 
+	_optionsForm = NULL;
+
     ui->setupUi(this);
 
-    QList<int> sizes = QList<int>();
-    sizes.append(600);
-    sizes.append(1);
-    ui->splitter->setSizes(sizes);
+	ui->pageOptions->hide();
+
+	QList<int> sizes = QList<int>();
+	sizes.append(590);
+	ui->splitter->setSizes(sizes);
 
     ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
 	ui->tabBar->addTab("Common");
-	//ui->tabBar->addTab("SEM");
+	ui->tabBar->addLastTab("Options");
+	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 
 #ifdef __WIN32__
     QFont font = ui->tabBar->font();
@@ -64,29 +68,19 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabBar->setFont(font);
 #endif
 
-	QFile indexPageResource(QString(":/core/analyses.html"));
-    indexPageResource.open(QFile::ReadOnly);
-	QByteArray indexPage = indexPageResource.readAll();
-
-#ifndef QT_NO_DEBUG
-    ui->webViewOptions->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-    ui->webViewOptions->page()->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
-#endif
-
-	ui->webViewOptions->setContent(indexPage, "application/xhtml+xml", QUrl("qrc:/core/"));
-
 	ui->ribbonAnalysis->setEnabled(false);
 	ui->ribbonSEM->setEnabled(false);
 
+#ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
+#else
+	ui->webViewResults->setContextMenuPolicy(Qt::NoContextMenu);
+#endif
 
-	QFile a(QString(":/core/index.html"));
-	a.open(QFile::ReadOnly);
+	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
-	ui->stackedLHS->setCurrentWidget(ui->pageData);
 	ui->tabBar->setCurrentIndex(1);
 
 	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
@@ -100,8 +94,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
+	connect(ui->backStage, SIGNAL(closeDataSetSelected()), this, SLOT(dataSetCloseRequested()));
 
-	_alert = new ProgressWidget(ui->pageData);
+	_alert = new ProgressWidget(ui->tableView);
 	_alert->setAutoFillBackground(true);
 	_alert->resize(400, 100);
 	_alert->move(100, 80);
@@ -127,13 +122,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanelLayout->addWidget(_removeButton);
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
-	_buttonPanel->hide();
 
 	QTimer::singleShot(0, this, SLOT(repositionButtonPanel()));
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
 	connect(_removeButton, SIGNAL(clicked()), this, SLOT(analysisRemoved()));
 
-	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(repositionButtonPanel()));
+	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
+
+	updateUIFromOptions();
 }
 
 void MainWindow::open(QString filename)
@@ -150,6 +146,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 {
 	QMainWindow::resizeEvent(event);
 	repositionButtonPanel();
+	adjustOptionsPanelWidth();
 }
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
@@ -235,10 +232,12 @@ void MainWindow::showForm(Analysis *analysis)
 
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);
-		ui->stackedLHS->setCurrentWidget(ui->pageOptions);
+		ui->pageOptions->show();
 
 		_buttonPanel->raise();
 		_buttonPanel->show();
+
+		adjustOptionsPanelWidth();
 	}
 }
 
@@ -251,8 +250,8 @@ void MainWindow::analysisSelectedHandler(int id)
 
 void MainWindow::analysisUnselectedHandler()
 {
-	ui->stackedLHS->setCurrentWidget(ui->pageData);
-	_buttonPanel->hide();
+	ui->pageOptions->hide();
+	ui->tableView->show();
 }
 
 void MainWindow::tabChanged(int index)
@@ -260,6 +259,17 @@ void MainWindow::tabChanged(int index)
 	if (index == 0)
 	{
 		ui->topLevelWidgets->setCurrentIndex(0);
+	}
+	else if (index == ui->tabBar->count() - 1)
+	{
+		if (_optionsForm == NULL)
+		{
+			_optionsForm = new OptionsForm(this);
+			ui->topLevelWidgets->addWidget(_optionsForm);
+			connect(_optionsForm, SIGNAL(optionsChanged()), this, SLOT(updateUIFromOptions()));
+		}
+
+		ui->topLevelWidgets->setCurrentWidget(_optionsForm);
 	}
 	else
 	{
@@ -290,14 +300,24 @@ void MainWindow::dataSetSelected(const QString &filename)
 	ui->tabBar->setCurrentIndex(1);
 }
 
+void MainWindow::dataSetCloseRequested()
+{
+	_tableModel->clearDataSet();
+	_loader.free(_dataSet);
+	_dataSet = NULL;
+	updateMenuEnabledDisabledStatus();
+	ui->backStage->setFileLoaded(false);
+	ui->webViewResults->reload();
+	_inited = false;
+}
+
 void MainWindow::dataSetLoaded(DataSet *dataSet)
 {
 	_dataSet = dataSet;
-
 	_tableModel->setDataSet(dataSet);
-
-	ui->ribbonAnalysis->setEnabled(true);
-	ui->ribbonSEM->setEnabled(true);
+	updateMenuEnabledDisabledStatus();
+	ui->backStage->setFileLoaded(true);
+	_analyses->clear();
 
 	_alert->hide();
 
@@ -309,6 +329,30 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 
 }
 
+void MainWindow::updateMenuEnabledDisabledStatus()
+{
+	bool enable = _dataSet != NULL;
+
+	ui->ribbonAnalysis->setEnabled(enable);
+	ui->ribbonSEM->setEnabled(enable);
+}
+
+void MainWindow::updateUIFromOptions()
+{
+	QSettings settings;
+	QVariant sem = settings.value("plugins/sem", false);
+	if (sem.canConvert(QVariant::Bool) && sem.toBool())
+	{
+		ui->tabBar->addTab("SEM");
+	}
+	else
+	{
+		if (ui->tabBar->count() >= 4)
+			ui->tabBar->removeTab(2);
+	}
+
+}
+
 void MainWindow::itemSelected(const QString item)
 {
 	string name = item.toStdString();
@@ -316,14 +360,49 @@ void MainWindow::itemSelected(const QString item)
 	if (_currentAnalysis != NULL)
 	{
 		showForm(_currentAnalysis);
-		repositionButtonPanel();
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
 	}
 }
 
-void MainWindow::repositionButtonPanel()
+void MainWindow::adjustOptionsPanelWidth()
 {
-	int overallWidth = ui->splitter->sizes().at(0);
+	int splitterPos = ui->splitter->sizes()[0];
+
+	if (splitterPos < ui->pageOptions->minimumWidth())
+		splitterPos = ui->pageOptions->minimumWidth();
+
+	if (ui->pageOptions->width() == ui->pageOptions->maximumWidth() && ui->tableView->isHidden())
+	{
+		ui->tableView->show();
+		repositionButtonPanel(ui->pageOptions->minimumWidth());
+	}
+	else if (ui->tableView->width() == ui->tableView->minimumWidth() && ui->tableView->isVisible() && ui->pageOptions->isVisible())
+	{
+		ui->tableView->hide();
+		repositionButtonPanel(splitterPos);
+	}
+	else if (splitterPos > ui->pageOptions->maximumWidth())
+	{
+		repositionButtonPanel(ui->pageOptions->minimumWidth());
+	}
+	else
+	{
+		repositionButtonPanel();
+	}
+
+}
+
+void MainWindow::splitterMovedHandler(int, int)
+{
+	repositionButtonPanel();
+	adjustOptionsPanelWidth();
+}
+
+void MainWindow::repositionButtonPanel(int parentWidth)
+{
+	int overallWidth = parentWidth;
+	if (parentWidth == -1)
+		overallWidth = ui->pageOptions->width();
 	int panelWidth = _buttonPanel->width();
 
 	_buttonPanel->move(overallWidth - panelWidth, 0);
@@ -332,16 +411,16 @@ void MainWindow::repositionButtonPanel()
 
 void MainWindow::analysisOKed()
 {
-	ui->stackedLHS->setCurrentWidget(ui->pageData);
+	ui->pageOptions->hide();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.unselect()");
-	_buttonPanel->hide();
+	ui->tableView->show();
 }
 
 void MainWindow::analysisRemoved()
 {
-	ui->stackedLHS->setCurrentWidget(ui->pageData);
+	ui->pageOptions->hide();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
-	_buttonPanel->hide();
+	ui->tableView->show();
 }
 
 void MainWindow::pushToClipboardHandler(QString data)

@@ -1,12 +1,15 @@
 
 TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
+	all.variables <- unique(unlist(options$pairs))
+	all.variables <- all.variables[all.variables != ""]
+
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- read.dataset.to.end()
+			dataset <- read.dataset.to.end(columns.as.numeric=all.variables)
 		} else {
-			dataset <- read.dataset.header()
+			dataset <- read.dataset.header(columns.as.numeric=all.variables)
 		}
 	}
 

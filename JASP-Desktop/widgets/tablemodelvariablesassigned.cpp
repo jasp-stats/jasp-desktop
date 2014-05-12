@@ -14,7 +14,18 @@ TableModelVariablesAssigned::TableModelVariablesAssigned(QObject *parent)
 	_boundTo = NULL;
 	_source = NULL;
 
-	_variableTypesAllowed = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
+	_nominalTextAllowed = true;
+	_variableTypesSuggested = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
+}
+
+void TableModelVariablesAssigned::setIsNominalTextAllowed(bool allowed)
+{
+	_nominalTextAllowed = allowed;
+}
+
+bool TableModelVariablesAssigned::nominalTextAllowed()
+{
+	return _nominalTextAllowed;
 }
 
 void TableModelVariablesAssigned::bindTo(Option *option)
@@ -249,7 +260,7 @@ bool TableModelVariablesAssigned::canDropMimeData(const QMimeData *data, Qt::Dro
 
 bool TableModelVariablesAssigned::isForbidden(int variableType) const
 {
-	return variableType & ~_variableTypesAllowed;
+	return _nominalTextAllowed == false && variableType == Column::ColumnTypeNominalText;
 }
 
 bool TableModelVariablesAssigned::insertRows(int row, int count, const QModelIndex &parent)
@@ -296,14 +307,14 @@ void TableModelVariablesAssigned::assignToOption()
 		_boundTo->setValue(asVector(_values));
 }
 
-void TableModelVariablesAssigned::setVariableTypesAllowed(int variableTypesAllowed)
+void TableModelVariablesAssigned::setVariableTypesSuggested(int variableTypesSuggested)
 {
-	_variableTypesAllowed = variableTypesAllowed;
+	_variableTypesSuggested = variableTypesSuggested;
 }
 
-int TableModelVariablesAssigned::variableTypesAllowed()
+int TableModelVariablesAssigned::variableTypesSuggested()
 {
-	return _variableTypesAllowed;
+	return _variableTypesSuggested;
 }
 
 vector<pair<string, string> > TableModelVariablesAssigned::asVector(QList<VarPair> values)

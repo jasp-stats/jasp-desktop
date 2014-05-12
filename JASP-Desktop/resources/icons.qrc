@@ -59,5 +59,6 @@
         <file>icons/variable-scale-inactive.svg</file>
         <file>icons/variable-ordinal-inactive.svg</file>
         <file>icons/variable-nominal-inactive.svg</file>
+        <file>icons/variable-nominal-text.svg</file>
     </qresource>
 </RCC>

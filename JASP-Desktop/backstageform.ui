@@ -201,7 +201,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="StealthButton" name="pushButton_8">
+              <widget class="StealthButton" name="buttonClose">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -224,7 +224,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="StealthButton" name="pushButton_9">
+              <widget class="StealthButton" name="buttonInfo">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -250,7 +250,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="StealthButton" name="pushButton_10">
+              <widget class="StealthButton" name="buttonRecent">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -276,7 +276,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="StealthButton" name="pushButton_11">
+              <widget class="StealthButton" name="buttonPrint">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -302,7 +302,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="StealthButton" name="pushButton_12">
+              <widget class="StealthButton" name="buttonHelp">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -328,7 +328,7 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
-              <widget class="StealthButton" name="pushButton_13">
+              <widget class="StealthButton" name="buttonOptions">
                <property name="enabled">
                 <bool>false</bool>
                </property>

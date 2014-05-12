@@ -54,5 +54,7 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 		else
 			qDebug() << "child not found : " << qsName << " in AnalysisForm::setOptions()";
 	}
+
+
 }
 

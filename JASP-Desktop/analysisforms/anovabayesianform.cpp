@@ -10,18 +10,18 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	ui->listAvailableFields->setModel(&_availableFields);
 
 	_dependentListModel = new ListModelVariablesAssigned(this);
-	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
 	_dependentListModel->setSource(&_availableFields);
 	ui->dependent->setModel(_dependentListModel);
 
 	_fixedFactorsListModel = new ListModelVariablesAssigned(this);
 	_fixedFactorsListModel->setSource(&_availableFields);
-	_fixedFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->fixedFactors->setModel(_fixedFactorsListModel);
 
 	_randomFactorsListModel = new ListModelVariablesAssigned(this);
 	_randomFactorsListModel->setSource(&_availableFields);
-	_randomFactorsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_randomFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->randomFactors->setModel(_randomFactorsListModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
@@ -32,7 +32,7 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
-	_anovaModel = new ListModelAnovaModelNuisanceFactors(this);
+	_anovaModel = new ListModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
 	ui->modelTerms->hide();
 }
@@ -42,14 +42,14 @@ AnovaBayesianForm::~AnovaBayesianForm()
 	delete ui;
 }
 
-void AnovaBayesianForm::set(Options *options, DataSet *dataSet)
+/*void AnovaBayesianForm::set(Options *options, DataSet *dataSet)
 {
 	OptionFields *nuisanceOption = dynamic_cast<OptionFields *>(options->get("nuisanceTerms"));
 
 	_anovaModel->setNuisanceTermsOption(nuisanceOption);
 
 	AnalysisForm::set(options, dataSet);
-}
+}*/
 
 void AnovaBayesianForm::factorsChanged()
 {

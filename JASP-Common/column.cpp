@@ -12,64 +12,46 @@ using namespace boost::interprocess;
 using namespace boost;
 using namespace std;
 
-Column::Column() :
-	_name(SharedMemory::get()->get_segment_manager()),
-	_blocks(std::less<ull>(), SharedMemory::get()->get_segment_manager())
+Column::Column(managed_shared_memory *mem) :
+	_name(mem->get_segment_manager()),
+	_blocks(std::less<ull>(), mem->get_segment_manager()),
+	_labels(mem)
 {
-	_labels = NULL;
-	_dataType = Column::DataTypeInt;
+	_mem = mem;
 	_rowCount = 0;
 	_columnType = Column::ColumnTypeNominal;
-	_columnTypesAllowed = Column::ColumnTypeNominal;
 
 	ull firstId = DataBlock::capacity();
-	DataBlock *firstBlock = SharedMemory::get()->construct<DataBlock>(anonymous_instance)();
+	DataBlock *firstBlock = _mem->construct<DataBlock>(anonymous_instance)();
 
 	_blocks.insert(BlockEntry(firstId, firstBlock));
 }
 
-std::map<int, std::string> Column::labels() const
+Labels &Column::labels()
 {
-	typedef std::pair<const int, std::string> label;
-
-	std::map<int, std::string> ls;
-
-	Labels *source = _labels.get();
-
-	if (source != NULL)
-	{
-		BOOST_FOREACH(LabelEntry &entry, *source)
-		{
-			std::string value(entry.second.begin(), entry.second.end());
-			ls.insert(label(entry.first, value));
-		}
-	}
-
-	return ls;
+	return _labels;
 }
 
-void Column::setLabels(std::map<int, std::string> labels)
+int Column::actualFromRaw(int raw) const
 {
-	managed_shared_memory *mem = SharedMemory::get();
-
-	if (_labels == NULL)
-		_labels = mem->construct<Labels>(anonymous_instance)(std::less<int>(), mem->get_segment_manager());
+	if (raw != INT_MIN && _labels.size() > 0)
+		return _labels.at(raw).value();
 	else
-		_labels->clear();
-
-	typedef std::pair<const int, std::string> label;
-
-	BOOST_FOREACH(label &p, labels)
-	{
-		int rawValue = p.first;
-		String displayValue(p.second.begin(), p.second.end(), mem->get_segment_manager());
-		_labels->insert(LabelEntry(rawValue, displayValue));
-	}
+		return raw;
 }
 
-Column::DataType Column::dataType() const
+Column &Column::operator=(const Column &column)
 {
-	return _dataType;
+	if (&column != this)
+	{
+		this->_name = column._name;
+		this->_rowCount = column._rowCount;
+		this->_columnType = column._columnType;
+		this->_blocks = column._blocks;
+		this->_labels = column._labels;
+	}
+
+	return *this;
 }
 
 Column::ColumnType Column::columnType() const
@@ -77,111 +59,100 @@ Column::ColumnType Column::columnType() const
 	return _columnType;
 }
 
-Column::ColumnType Column::columnTypesAllowed() const
-{
-	return _columnTypesAllowed;
-}
-
 void Column::changeColumnType(Column::ColumnType newColumnType)
 {
 	if (newColumnType == _columnType)
 		return;
 
-	if ((newColumnType & _columnTypesAllowed) != 0)
+	if (newColumnType == ColumnTypeOrdinal || newColumnType == ColumnTypeNominal)
 	{
-		if (_columnType == ColumnTypeOrdinal && newColumnType == ColumnTypeNominal)
+		if (_columnType == ColumnTypeNominal || _columnType == ColumnTypeOrdinal)
 		{
-			Ints::iterator ints = this->AsInts.begin();
-			Ints::iterator end = this->AsInts.end();
+			_columnType = newColumnType;
+		}
+		else if (_columnType == ColumnTypeNominalText)
+		{
+			Labels& labels = this->labels();
+			labels.clear();
 
-			map<int, string> labels;
+			map<int, int> oldIndexToNewIndex;
 
-			for (; ints != end; ints++)
+			for (int i = 0; i < labels.size(); i++)
 			{
-				int value = *ints;
-
-				if (labels.find(value) == labels.end())
+				try
 				{
-					stringstream ss;
-					ss << value;
-					labels[value] = ss.str();
+					std::string text = labels.at(i).text();
+					int value = lexical_cast<int>(text);
+					int raw = labels.add(value);
+					oldIndexToNewIndex[i] = raw;
+				}
+				catch (...)
+				{
 				}
 			}
 
-			setLabels(labels);
-
-			_columnType = newColumnType;
-		}
-		else if (_columnType == Column::ColumnTypeOrdinal && newColumnType == Column::ColumnTypeScale)
-		{
-			Ints::iterator ints = this->AsInts.begin();
-			Ints::iterator end = this->AsInts.end();
-			Doubles::iterator doubles = this->AsDoubles.begin();
-
-			for (; ints != end; ints++, doubles++)
+			Ints::iterator intIterator = AsInts.begin();
+			for (; intIterator != AsInts.end(); intIterator++)
 			{
-				int value = *ints;
-				if (value == INT_MIN)
-					*doubles = NAN;
+				int value = *intIterator;
+				map<int, int>::iterator itr = oldIndexToNewIndex.find(value);
+				if (itr != oldIndexToNewIndex.end())
+					*intIterator = itr->second;
 				else
-					*doubles = (double)*ints;
+					*intIterator = INT_MIN;
+
 			}
 
-			_dataType = Column::DataTypeDouble;
 			_columnType = newColumnType;
 		}
-		else if (_columnType == Column::ColumnTypeScale && newColumnType == Column::ColumnTypeOrdinal)
+		else if (_columnType == ColumnTypeScale)
 		{
+			std::set<int> uniqueValues;
+
+			Doubles::iterator doubles = this->AsDoubles.begin();
+			for (; doubles != this->AsDoubles.end(); doubles++)
+			{
+				int v = (int)*doubles;
+				if ( ! isnan(v))
+					uniqueValues.insert(v);
+			}
+
+			Labels& labels = this->labels();
+			map<int, int> valueToIndex;
+
+			set<int>::iterator itr = uniqueValues.begin();
+			for (; itr != uniqueValues.end(); itr++)
+			{
+				int v = *itr;
+				int raw = labels.add(v);
+				valueToIndex[v] = raw;
+			}
+
 			Ints::iterator ints = this->AsInts.begin();
 			Ints::iterator end = this->AsInts.end();
-			Doubles::iterator doubles = this->AsDoubles.begin();
+			doubles = this->AsDoubles.begin();
 
 			for (; ints != end; ints++, doubles++)
 			{
 				double value = *doubles;
 				if (isnan(value))
+				{
 					*ints = INT_MIN;
+				}
 				else
-					*ints = (int)*doubles;
-			}
-
-			_dataType = Column::DataTypeInt;
-			_columnType = newColumnType;
-		}
-		else if (_columnType == Column::ColumnTypeScale && newColumnType == Column::ColumnTypeNominal)
-		{
-			changeColumnType(Column::ColumnTypeOrdinal);
-			changeColumnType(Column::ColumnTypeNominal);
-		}
-		else if (_columnType == ColumnTypeNominal && newColumnType == ColumnTypeOrdinal)
-		{
-			Ints::iterator ints = this->AsInts.begin();
-			Ints::iterator end = this->AsInts.end();
-
-			for (; ints != end; ints++)
-			{
-				int value = *ints;
-				string display = displayFromValue(value);
-				int newValue;
-
-				try
 				{
-					newValue = lexical_cast<int>(display);
+					int v = (int)*doubles;
+					int index = valueToIndex[v];
+					*ints = index;
 				}
-				catch (...)
-				{
-					newValue = INT_MIN;
-				}
-
-				*ints = newValue;
 			}
-
-			SharedMemory::get()->destroy_ptr(_labels.get());
-			_labels = NULL;
 
 			_columnType = newColumnType;
 		}
-		else if (_columnType == ColumnTypeNominal && newColumnType == ColumnTypeScale)
+	}
+	else if (newColumnType == Column::ColumnTypeScale)
+	{
+		if (_columnType == Column::ColumnTypeNominal || _columnType == ColumnTypeOrdinal)
 		{
 			Ints::iterator ints = this->AsInts.begin();
 			Ints::iterator end = this->AsInts.end();
@@ -190,7 +161,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			for (; ints != end; ints++, doubles++)
 			{
 				int value = *ints;
-				string display = displayFromValue(value);
+				string display = stringFromRaw(value);
 				double newValue;
 
 				try
@@ -205,17 +176,30 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 				*doubles = newValue;
 			}
 
-			SharedMemory::get()->destroy_ptr(_labels.get());
-			_labels = NULL;
+			_columnType = newColumnType;
+		}
+		else if (_columnType == ColumnTypeNominalText)
+		{
+			Ints::iterator ints = AsInts.begin();
+			Ints::iterator end = AsInts.end();
+			Doubles::iterator doubles = AsDoubles.begin();
 
-			_dataType = Column::DataTypeDouble;
+			for (; ints != end; ints++, doubles++)
+			{
+				try
+				{
+					*doubles = lexical_cast<int>(this->stringFromRaw(*ints));
+				}
+				catch (...)
+				{
+					*doubles = NAN;
+				}
+			}
+
 			_columnType = newColumnType;
 		}
 	}
-	else
-	{
-		//qDebug() << "Column::changeColumnType(); column type not allowed";
-	}
+
 }
 
 int Column::rowCount() const
@@ -223,41 +207,33 @@ int Column::rowCount() const
 	return _rowCount;
 }
 
-bool Column::hasLabels()
-{
-	return _labels.get() != NULL;
-}
-
-std::string Column::displayFromValue(int value)
+string Column::stringFromRaw(int value) const
 {
 	if (value == INT_MIN)
 		return ".";
 
-	if (hasLabels())
-	{
-		String s = _labels->at(value);
-		return string(s.begin(), s.end());
-	}
+	if (_labels.size() > 0)
+		return _labels.at(value).text();
 
-	stringstream s;
-	s << value;
+	stringstream ss;
+	ss << value;
 
-	return s.str();
+	return ss.str();
 }
 
-string Column::name()
+string Column::name() const
 {
 	return std::string(_name.begin(), _name.end());
 }
 
 void Column::setName(string name)
 {
-	_name = String(name.begin(), name.end(), SharedMemory::get()->get_segment_manager());
+	_name = String(name.begin(), name.end(), _mem->get_segment_manager());
 }
 
 void Column::setValue(int rowIndex, string value)
 {
-	if (_dataType == Column::DataTypeDouble)
+	/*if (_dataType == Column::DataTypeDouble)
 	{
 		try
 		{
@@ -283,7 +259,7 @@ void Column::setValue(int rowIndex, string value)
                 //qDebug() << "could not assign: " << value.c_str();
 			}
 		}
-	}
+	}*/
 }
 
 void Column::setValue(int rowIndex, int value)
@@ -322,7 +298,7 @@ void Column::setValue(int rowIndex, double value)
 
 string Column::operator [](int index)
 {
-	if (_dataType == Column::DataTypeDouble)
+	if (_columnType == Column::ColumnTypeScale)
 	{
 		double v = AsDoubles[index];
 
@@ -350,7 +326,7 @@ string Column::operator [](int index)
 	else
 	{
 		int value = AsInts[index];
-		return displayFromValue(value);
+		return stringFromRaw(value);
 	}
 }
 
@@ -381,7 +357,7 @@ void Column::append(int rows)
 	{
 		try {
 
-		DataBlock *newBlock = SharedMemory::get()->construct<DataBlock>(anonymous_instance)();
+		DataBlock *newBlock = _mem->construct<DataBlock>(anonymous_instance)();
 
 		int toInsert = std::min(rowsLeft, DataBlock::capacity());
 		newBlock->insert(0, toInsert);
@@ -422,7 +398,7 @@ void Column::setRowCount(int rowCount)
 	{
 		BlockEntry &entry = *itr;
 		DataBlock *block = entry.second.get();
-		SharedMemory::get()->destroy_ptr<DataBlock>(block);
+		_mem->destroy_ptr<DataBlock>(block);
 		entry.second = NULL;
 	}
 

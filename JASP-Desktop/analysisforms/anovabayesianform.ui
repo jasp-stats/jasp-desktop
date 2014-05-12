@@ -39,7 +39,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_7">
       <property name="bottomMargin">
-       <number>3</number>
+       <number>12</number>
       </property>
       <property name="verticalSpacing">
        <number>0</number>
@@ -319,44 +319,59 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
-    <widget class="QWidget" name="widget_10" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderModel">
-        <property name="text">
-         <string>Model</string>
-        </property>
-       </widget>
-      </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QWidget" name="widget_11" native="true">
+     <layout class="QGridLayout" name="gridLayout_6">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>0</number>
+      </property>
       <item row="1" column="0">
-       <widget class="AnovaModelWidget" name="modelTerms" native="true">
+       <widget class="QWidget" name="widget_10" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>200</height>
-         </size>
-        </property>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="ExpanderButton" name="expanderModel">
+           <property name="text">
+            <string>Model</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="AnovaModelWidget" name="modelTerms" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>200</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QWidget" name="widget_11" native="true">
-     <layout class="QGridLayout" name="gridLayout_6">
       <item row="0" column="0">
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
@@ -366,14 +381,14 @@
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
-          <widget class="BoundCheckBox" name="outputPosterior">
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="posteriorEstimates">
            <property name="text">
-            <string>Posterior</string>
+            <string>Posterior estimates</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="0" column="0">
           <widget class="BoundCheckBox" name="outputEffects">
            <property name="text">
             <string>Effects</string>
@@ -381,9 +396,9 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="BoundCheckBox" name="outputNull">
+          <widget class="BoundCheckBox" name="posteriorDistributions">
            <property name="text">
-            <string>Null</string>
+            <string>Posterior distributions</string>
            </property>
           </widget>
          </item>

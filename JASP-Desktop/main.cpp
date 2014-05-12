@@ -8,7 +8,9 @@
 
 int main(int argc, char *argv[])
 {
-	//Q_INIT_RESOURCE(html);
+	QCoreApplication::setOrganizationName("JASP");
+	QCoreApplication::setOrganizationDomain("jasp-stats.org");
+	QCoreApplication::setApplicationName("JASP");
 
     QApplication a(argc, argv);
 	MainWindow w;

@@ -5,16 +5,20 @@
 #include <QWidget>
 #include <QTimer>
 #include <QButtonGroup>
+#include <QRadioButton>
+#include <QGroupBox>
 
 #include "bound.h"
-#include "options/optionlist.h"
+#include "itemmodelselectitem.h"
 
-class BoundGroupBox : public QWidget, public Bound
+class BoundGroupBox : public QGroupBox, public Bound
 {
 	Q_OBJECT
 public:
 	explicit BoundGroupBox(QWidget *parent = 0);
+
 	void bindTo(Option *option) OVERRIDE;
+
 
 protected:
 	void childEvent(QChildEvent *child) OVERRIDE;
@@ -22,15 +26,13 @@ protected:
 private:
 	QButtonGroup *_buttonGroup;
 	QTimer *_timer;
-	OptionList *_option;
+	ItemModelSelectItem _model;
 
 signals:
 	
 private slots:
 	void updateGroup();
-	void itemSelected(QAbstractButton *button);
-
-
+	void itemSelected(QAbstractButton *);
 	
 };
 

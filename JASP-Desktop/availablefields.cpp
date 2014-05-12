@@ -1,7 +1,8 @@
 #include "availablefields.h"
 
-#include "boost/foreach.hpp"
-#include "boost/bind.hpp"
+#include <boost/foreach.hpp>
+#include <boost/bind.hpp>
+#include "utils.h"
 
 using namespace std;
 
@@ -10,6 +11,7 @@ AvailableFields::AvailableFields(QObject *parent)
 {
 	_shouldFilter = false;
 
+	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
@@ -87,13 +89,13 @@ QVariant AvailableFields::data(const QModelIndex &index, int role) const
 	}
 	else if (role == Qt::DecorationRole)
 	{
-		QString variable = _availableFields.at(row);
-		QByteArray utf8 = variable.toUtf8();
-		string n(utf8.constData(), utf8.length());
-		Column *column = _dataSet->columns().get(n);
+		string variable = fq(_availableFields.at(row));
+		Column &column = _dataSet->columns().get(variable);
 
-		switch (column->columnType())
+		switch (column.columnType())
 		{
+		case Column::ColumnTypeNominalText:
+			return QVariant(_nominalTextIcon);
 		case Column::ColumnTypeNominal:
 			return QVariant(_nominalIcon);
 		case Column::ColumnTypeOrdinal:

@@ -110,6 +110,7 @@ private:
 	ListModelVariablesAvailable *_source;
 	void readFromOption();
 
+	QIcon _nominalTextIcon;
 	QIcon _nominalIcon;
 	QIcon _ordinalIcon;
 	QIcon _scaleIcon;

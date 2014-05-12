@@ -82,10 +82,6 @@
            <property name="text">
             <string>Simple SEM</string>
            </property>
-           <property name="icon">
-            <iconset resource="../resources/icons.qrc">
-             <normaloff>:/icons/applications-system.png</normaloff>:/icons/applications-system.png</iconset>
-           </property>
            <property name="iconSize">
             <size>
              <width>48</width>
@@ -123,6 +119,12 @@
       </property>
       <item row="0" column="0">
        <widget class="Line" name="line_7">
+        <property name="styleSheet">
+         <string notr="true">QWidget {	color : #929292 ; }</string>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
@@ -153,9 +155,7 @@
    <header>widgets/ribbonbutton.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../resources/icons.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>SEMSimple</sender>
