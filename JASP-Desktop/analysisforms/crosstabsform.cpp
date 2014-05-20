@@ -7,20 +7,20 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->listAvailableFields->setModel(&_availableFields);
+	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
-	_rowsModel = new ListModelVariablesAssigned();
+	_rowsModel = new TableModelVariablesAssigned();
 	_rowsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	_rowsModel->setSource(&_availableFields);
+	_rowsModel->setSource(&_availableVariablesModel);
 	ui->rows->setModel(_rowsModel);
 
-	_columnsModel = new ListModelVariablesAssigned();
-	_columnsModel->setSource(&_availableFields);
+	_columnsModel = new TableModelVariablesAssigned();
+	_columnsModel->setSource(&_availableVariablesModel);
 	_columnsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->columns->setModel(_columnsModel);
 
 	_layersModel = new TableModelVariablesLevels();
-	_layersModel->setSource(&_availableFields);
+	_layersModel->setSource(&_availableVariablesModel);
 	//_layersModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->layers->setModel(_layersModel);
 

@@ -32,7 +32,7 @@ void AvailableFields::filter(std::vector<string> show)
 	updateAvailableFields();
 }
 
-void AvailableFields::provideFor(OptionFields *option)
+void AvailableFields::provideFor(OptionVariables *option)
 {
 	_provideFor.push_back(option);
 	option->changed.connect(boost::bind(&AvailableFields::updateAvailableFields, this));
@@ -64,9 +64,9 @@ void AvailableFields::updateAvailableFields()
 		}
 	}
 
-	BOOST_FOREACH(OptionFields *option, _provideFor)
+	BOOST_FOREACH(OptionVariables *option, _provideFor)
 	{
-		BOOST_FOREACH(string assigned, option->value())
+		BOOST_FOREACH(string assigned, option->variables())
 		{
 			QString value = QString::fromUtf8(assigned.c_str(), assigned.length());
 			availableFields.removeOne(value);

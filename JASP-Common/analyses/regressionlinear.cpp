@@ -1,7 +1,8 @@
 
 #include "regressionlinear.h"
 
-#include "options/optionfield.h"
+#include "options/optionvariables.h"
+#include "options/optionvariable.h"
 #include "options/optionstring.h"
 #include "options/optionlist.h"
 #include "options/optionstable.h"
@@ -18,16 +19,16 @@ Options *RegressionLinear::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add("dependent", new OptionField());
+	options->add("dependent", new OptionVariable());
 
 	Options *layerOptionsTemplate = new Options();
 	layerOptionsTemplate->add("name", new OptionString("Block %1"));
-	layerOptionsTemplate->add("variables", new OptionFields());
+	layerOptionsTemplate->add("variables", new OptionVariables());
 	layerOptionsTemplate->add("method", new OptionList(list("Enter", "Stepwise", "Remove", "Backward", "Forward")));
 
 	options->add("blocks", new OptionsTable(layerOptionsTemplate));
 
-	options->add("wlsWeights", new OptionFields());
+	options->add("wlsWeights", new OptionVariables());
 
 
 	options->add("regressionCoefficients/estimates", new OptionBoolean());

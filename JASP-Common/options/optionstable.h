@@ -8,7 +8,7 @@
 #include "option.h"
 #include "options.h"
 
-class OptionsTable : public Option
+class OptionsTable : public OptionI<std::vector<Options*> >
 {
 public:
 	OptionsTable(Options *rowTemplate);
@@ -16,21 +16,15 @@ public:
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(Json::Value &value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
+	virtual void setValue(std::vector<Options *> value) OVERRIDE;
 
-	Options *rowTemplate();
-	Options *at(int index);
-	size_t size();
-
-	void insert(int index, Options *row);
-	void append(Options *row);
-	Options *remove(int index);
-	Options *remove(std::string name);
-	bool contains(std::string name);
+	Options *rowTemplate() const;
+	/*Options *at(int index) const;
+	size_t size() const;*/
 
 private:
 	Options *_template;
-	std::vector<Options *> _rows;
-	void rowChanged();
+	//void rowChanged();
 };
 
 #endif // OPTIONSTABLE_H

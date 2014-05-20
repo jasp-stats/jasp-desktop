@@ -4,11 +4,8 @@
 
 #include "options/optionstring.h"
 #include "options/optionlist.h"
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 #include "column.h"
-
-
-typedef QPair<QString, int> ColumnInfo;
 
 using namespace std;
 
@@ -34,39 +31,36 @@ void TableModelVariablesLevels::bindTo(Option *option)
 
 	_boundTo = dynamic_cast<OptionsTable *>(option);
 
-	readFromOption();
+	refresh();
 }
 
 void TableModelVariablesLevels::mimeDataMoved(const QModelIndexList &indexes)
 {
 	bool levelRemoved = false;
 
-	for (int i = _boundTo->size() - 1; i >= 0; i--)
+	Terms toRemove;
+
+	foreach (const QModelIndex &index, indexes)
+		toRemove.add(_rows.at(index.row()).title());
+
+	for (int i = _levels.size() - 1; i >= 0; i--)
 	{
-		Options *levelOptions = _boundTo->at(i);
-		OptionFields *variablesOption = dynamic_cast<OptionFields *>(levelOptions->get("variables"));
-		vector<string> variables = variablesOption->value();
-		bool changed = false;
+		Options *levelOptions = _levels.at(i);
+		OptionVariables *variablesOption = dynamic_cast<OptionVariables *>(levelOptions->get("variables"));
+		Terms variables = variablesOption->variables();
 
-		foreach (const QModelIndex &index, indexes)
+		variables.remove(toRemove);
+
+		if (variables.size() == 0)
 		{
-			string value = fq(_rows.at(index.row()).name());
-			if (remove(variables, value))
-				changed = true;
+			Options *options = _levels.at(i);
+			_levels.erase(find(_levels.begin(), _levels.end(), options));
+			delete options;
+			levelRemoved = true;
 		}
-
-		if (changed)
+		else
 		{
-			if (variables.size() == 0)
-			{
-				Options *options = _boundTo->remove(i);
-				delete options;
-				levelRemoved = true;
-			}
-			else
-			{
-				variablesOption->setValue(variables);
-			}
+			variablesOption->setValue(variables.asVector());
 		}
 	}
 
@@ -75,19 +69,23 @@ void TableModelVariablesLevels::mimeDataMoved(const QModelIndexList &indexes)
 		OptionString *nameOption = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
 		QString nameTemplate = tq(nameOption->value());
 
-		for (int i = 0; i < _boundTo->size(); i++)
+		for (uint i = 0; i < _levels.size(); i++)
 		{
-			nameOption = static_cast<OptionString *>(_boundTo->at(i)->get("name"));
+			nameOption = static_cast<OptionString *>(_levels.at(i)->get("name"));
 			nameOption->setValue(fq(nameTemplate.arg(i + 1)));
 		}
 	}
 
-	readFromOption();
+	_boundTo->setValue(_levels);
+
+	refresh();
 
 }
 
 int TableModelVariablesLevels::rowCount(const QModelIndex &parent) const
 {
+	Q_UNUSED(parent);
+
 	if (_boundTo == NULL)
 		return 0;
 
@@ -96,6 +94,8 @@ int TableModelVariablesLevels::rowCount(const QModelIndex &parent) const
 
 int TableModelVariablesLevels::columnCount(const QModelIndex &parent) const
 {
+	Q_UNUSED(parent);
+
 	if (_boundTo == NULL)
 		return 0;
 
@@ -109,42 +109,39 @@ QVariant TableModelVariablesLevels::data(const QModelIndex &index, int role) con
 
 	Row row = _rows.at(index.row());
 
-	if (role == Qt::DisplayRole || role == Qt::EditRole)
+	if (role == Qt::DisplayRole)
 	{
+		if (role != Qt::DisplayRole && role != Qt::EditRole)
+			return QVariant();
+
 		if ( ! row.isOption())
-			return row.name();
-
-		OptionList *list = row.option();
-		string selected = list->value();
-		QString qsSelected = QString::fromUtf8(selected.c_str(), selected.length());
-
-		if (role == Qt::DisplayRole)
-			return qsSelected;
-
-		vector<string> items = list->options();
-		QStringList qsItems;
-
-		for (int i = 0; i < items.size(); i++)
 		{
-			string item = items.at(i);
-			QString qs = QString::fromUtf8(item.c_str(), item.size());
-			qsItems.append(qs);
+			return row.title();
 		}
+		else
+		{
+			OptionList *list = row.option();
+			QString selected = tq(list->value());
 
-		QVariant qvSelected = QVariant(qsSelected);
-		QVariant qvItems = QVariant(qsItems);
+			if (role == Qt::DisplayRole)
+				return selected;
 
-		QList<QVariant> qvValue;
-		qvValue.append(qvSelected);
-		qvValue.append(qvItems);
+			QStringList items = tql(list->options());
 
-		return qvValue;
+			QList<QVariant> value;
+			value.append(selected);
+			value.append(items);
+
+			return value;
+		}
 	}
 	else if (role == Qt::DecorationRole)
 	{
-		if (row.isLevel() == false)
+		if (row.isHeading() == false && row.isOption() == false)
 		{
-			switch (row.variable().second)
+			int variableType = requestInfo(row.title(), VariableInfo::VariableType).toInt();
+
+			switch (variableType)
 			{
 			case Column::ColumnTypeNominalText:
 				return QVariant(_nominalTextIcon);
@@ -166,14 +163,14 @@ QVariant TableModelVariablesLevels::data(const QModelIndex &index, int role) con
 	}
 	else if (role == Qt::TextAlignmentRole)
 	{
-		if (row.isLevel())
+		if (row.isHeading())
 			return Qt::AlignCenter;
-		if (row.isOption())
+		else if (row.isOption())
 			return Qt::AlignTop;
 	}
 	else if (role == Qt::SizeHintRole)
 	{
-		if (row.isLevel() || row.isOption())
+		if (row.isHeading())
 			return QSize(-1, 24);
 	}
 
@@ -192,15 +189,15 @@ Qt::ItemFlags TableModelVariablesLevels::flags(const QModelIndex &index) const
 	{
 		Row row = _rows.at(index.row());
 		if (row.isOption())
-			flags |= Qt::ItemIsEditable;
-		else if (row.isVariable())
+			flags |= Qt::ItemIsSelectable | Qt::ItemIsEditable;
+		else if (row.isHeading() == false)
 			flags |= Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
 	}
 
 	return flags;
 }
 
-bool TableModelVariablesLevels::setData(const QModelIndex &index, const QVariant &value, int role)
+/*bool TableModelVariablesLevels::setData(const QModelIndex &index, const QVariant &value, int role)
 {
 	if (_boundTo == NULL)
 		return false;
@@ -215,7 +212,7 @@ bool TableModelVariablesLevels::setData(const QModelIndex &index, const QVariant
 	emit dataChanged(index, index);
 
 	return true;
-}
+}*/
 
 Qt::DropActions TableModelVariablesLevels::supportedDropActions() const
 {
@@ -246,7 +243,7 @@ QMimeData *TableModelVariablesLevels::mimeData(const QModelIndexList &indexes) c
 	for (int i = 0; i < indexes.length(); i++)
 	{
 		Row row = _rows.at(indexes.at(i).row());
-		dataStream << row.variable();
+		dataStream << row.title();
 	}
 
 	mimeData->setData("application/vnd.list.variable", encodedData);
@@ -265,13 +262,11 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 	if (mimeTypes().contains("application/vnd.list.variable"))
 	{
 		QByteArray encodedData = data->data("application/vnd.list.variable");
-		QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
-		int count;
+		Terms variables;
+		variables.set(encodedData);
 
-		stream >> count;
-
-		if (count == 0)
+		if (variables.size() == 0)
 			return false;
 
 		if (parent.isValid() == false)
@@ -285,7 +280,7 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 			int positionInLevel = 0;
 			for (int i = 1; i < row; i++)
 			{
-				if (_rows[i].isLevel())
+				if (_rows[i].isHeading())
 				{
 					level++;
 					positionInLevel = 0;
@@ -296,39 +291,39 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 				}
 			}
 
-			if (level == _boundTo->size())
+			if (level == _levels.size())
 			{
 				Options *options = dynamic_cast<Options*>(_boundTo->rowTemplate()->clone());
 				OptionString *nameOption = dynamic_cast<OptionString *>(options->get("name"));
 				string levelName = fq(tq(nameOption->value()).arg(level + 1));
 				nameOption->setValue(levelName);
-				_boundTo->insert(level, options);
+				_levels.push_back(options);
 			}
 
-			Options *levelOption = _boundTo->at(level);
-			OptionFields *variablesOption = dynamic_cast<OptionFields*>(levelOption->get("variables"));
-			vector<string> variables = variablesOption->value();
+			Options *levelOption = _levels.at(level);
+			OptionVariables *variablesOption = dynamic_cast<OptionVariables*>(levelOption->get("variables"));
+			vector<string> currentVariables = variablesOption->variables();
 
-			vector<string>::iterator insertionPoint = variables.begin();
+			vector<string>::iterator insertionPoint = currentVariables.begin();
 			for (int i = 0; i < positionInLevel; i++)
 				insertionPoint++;
-			variables.insert(insertionPoint, count, "");
 
-			for (int i = 0; i < count && !stream.atEnd(); i++)
+			foreach (const Term &variable, variables)
 			{
-				ColumnInfo item;
-				stream >> item;
-
-				variables[positionInLevel + i] = fq(item.first);
+				currentVariables.insert(insertionPoint, variable.asString());
+				insertionPoint++;
 			}
 
-			variablesOption->setValue(variables);
+			variablesOption->setValue(currentVariables);
 
-			readFromOption();
+			_boundTo->setValue(_levels);
 
+			refresh();
+
+			return true;
 		}
 
-		return true;
+
 	}
 
 	return false;
@@ -355,46 +350,45 @@ bool TableModelVariablesLevels::canDropMimeData(const QMimeData *data, Qt::DropA
 	return false;
 }
 
-void TableModelVariablesLevels::setSource(ListModelVariablesAvailable *source)
+void TableModelVariablesLevels::setSource(TableModelVariablesAvailable *source)
 {
 	_source = source;
+	setInfoProvider(source);
 }
 
-void TableModelVariablesLevels::readFromOption()
+void TableModelVariablesLevels::refresh()
 {
-	beginResetModel();
-
 	_rows.clear();
 
-	if (_boundTo != NULL)
+	if (_boundTo == NULL)
+		return;
+
+	beginResetModel();
+
+	uint i;
+
+	for (i = 0; i < _levels.size(); i++)
 	{
-		int i;
+		Options *level = _levels.at(i);
+		OptionVariables *variablesOption = dynamic_cast<OptionVariables *>(level->get("variables"));
+		OptionString *nameOption = dynamic_cast<OptionString *>(level->get("name"));
+		vector<string> variables = variablesOption->variables();
 
-		for (i = 0; i < _boundTo->size(); i++)
+		_rows.append(Row(tq(nameOption->value()), true));
+
+		for (uint j = 2; j < level->size(); j++)
 		{
-			Options *level = _boundTo->at(i);
-			OptionFields *variablesOption = dynamic_cast<OptionFields *>(level->get("variables"));
-			OptionString *nameOption = dynamic_cast<OptionString *>(level->get("name"));
-			vector<string> variables = variablesOption->value();
-
-			_rows.append(Row(tq(nameOption->value())));
-
-			for (int j = 2; j < level->size(); j++)
-			{
-				OptionList *list = dynamic_cast<OptionList *>(level->get(j));
-				_rows.append(Row(list));
-			}
-
-			QList<ColumnInfo> vars = _source->retrieveInfo(variables);
-
-			foreach (const ColumnInfo &variable, vars)
-				_rows.append(Row(variable));
+			OptionList *list = dynamic_cast<OptionList *>(level->get(j));
+			_rows.append(Row(list));
 		}
 
-		OptionString *nameTemplate = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
-		QString name = tq(nameTemplate->value()).arg(i + 1);
-		_rows.append(Row(name));
+		foreach (const string &variable, variables)
+			_rows.append(Row(tq(variable)));
 	}
+
+	OptionString *nameTemplate = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
+	QString name = tq(nameTemplate->value()).arg(i + 1);
+	_rows.append(Row(name, true));
 
 	endResetModel();
 }

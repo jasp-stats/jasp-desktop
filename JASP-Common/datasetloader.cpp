@@ -77,28 +77,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
-			//cout << "growing shared memory\n";
-			//cout.flush();
-
-			try {
-
-				//cout << mem->get_size() << "\n";
-				mem = SharedMemory::grow(mem->get_size());
-				//cout << mem->get_size() << "\n";
-				//cout.flush();
-
-				dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
-
-			}
-			catch (exception &e)
-			{
-				cout << e.what();
-				cout.flush();
-			}
-
-			//cout << "memory grown\n";
-			//cout.flush();
-
+			growMemory(dataSet, mem);
 			success = false;
 		}
 		catch (exception e)
@@ -115,147 +94,37 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 	while ( ! success);
 
 
-	int colNo = 0;
-	BOOST_FOREACH(Column &column, dataSet->columns())
+	for (int colNo = 0; colNo < dataSet->columnCount(); colNo++)
 	{
-		this->progress("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
-
-		column.setName(columns.at(colNo));
-
-		vector<string> &columnRows = cells.at(colNo);
-
-		colNo++;
-
-		// try to make the column nominal
-
 		bool success = true;
-		set<int> uniqueValues;
-		Column::Ints::iterator intInputItr = column.AsInts.begin();
-		Labels &labels = column.labels();
 
-		BOOST_FOREACH(string &value, columnRows)
-		{
-			if (value != "NaN" && value != "nan" && value != "" && value != " ")
-			{
-				try
-				{
-					int v = lexical_cast<int>(value);
-					uniqueValues.insert(v);
-					*intInputItr = v;
-				}
-				catch (...)
-				{
-					// column can't be made nominal numeric
+		do {
 
-					success = false;
-					break;
-				}
+			try {
+
+				this->progress("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
+
+				Column &column = dataSet->column(colNo);
+				initColumn(column, columns.at(colNo), cells.at(colNo));
+
 			}
-			else
+			catch (boost::interprocess::bad_alloc &e)
 			{
-				*intInputItr = INT_MIN;
+				growMemory(dataSet, mem);
+				success = false;
 			}
-
-			intInputItr++;
-		}
-
-		if (success && uniqueValues.size() <= 24)
-		{
-			labels.clear();
-			map<int, int> actualToRaw;
-
-			int index = 0;
-			BOOST_FOREACH(int value, uniqueValues)
+			catch (exception e)
 			{
-				(void)uniqueValues;
-				int raw = labels.add(value);
-				actualToRaw[value] = raw;
-				index++;
+				cout << "n " << e.what();
+				cout.flush();
+			}
+			catch (...)
+			{
+				cout << "something else\n ";
+				cout.flush();
 			}
 
-			Column::Ints::iterator intInputItr = column.AsInts.begin();
-			for (; intInputItr != column.AsInts.end(); intInputItr++)
-			{
-				int actual = *intInputItr;
-				if (actual != INT_MIN)
-					*intInputItr = actualToRaw.at(actual);
-			}
-
-			column._columnType = Column::ColumnTypeNominal;
-
-			continue;
-		}
-
-		// try to make the column scale
-
-		Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
-		success = true;
-
-		BOOST_FOREACH(string &value, columnRows)
-		{
-			if (value != "" && value != " ")
-			{
-				try
-				{
-					*doubleInputItr = lexical_cast<double>(value);
-				}
-				catch (...)
-				{
-					// column can't be made scale
-
-					success = false;
-					break;
-				}
-			}
-			else
-			{
-				*doubleInputItr = NAN;
-			}
-
-			doubleInputItr++;
-		}
-
-		if (success)
-		{
-			column._columnType = Column::ColumnTypeScale;
-			continue;
-		}
-
-		// if it can't be made nominal numeric or scale, try and make it nominal-text
-
-		vector<string> inColumn = columnRows;
-		sort(inColumn.begin(), inColumn.end());
-		vector<string> cases;
-		unique_copy(inColumn.begin(), inColumn.end(), back_inserter(cases));
-		sort(cases.begin(), cases.end());
-
-		for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
-		{
-			if (*itr == "") // remove empty string
-			{
-				cases.erase(itr);
-				break;
-			}
-		}
-
-		labels.clear();
-
-		BOOST_FOREACH (string &value, cases)
-			labels.add(value);
-
-		intInputItr = column.AsInts.begin();
-
-		BOOST_FOREACH (string &value, columnRows)
-		{
-			if (value == "")
-				*intInputItr = INT_MIN;
-			else
-				*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
-
-			intInputItr++;
-		}
-
-		column._columnType = Column::ColumnTypeNominalText;
+		} while (success == false);
 	}
 
 	return dataSet;
@@ -264,4 +133,165 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 void DataSetLoader::freeDataSet(DataSet *dataSet)
 {
 	SharedMemory::get()->destroy_ptr(dataSet);
+}
+
+void DataSetLoader::initColumn(Column &column, const string &name, const vector<string> &cells)
+{
+	column.setName(name);
+
+	// try to make the column nominal
+
+	bool success = true;
+	set<int> uniqueValues;
+	Column::Ints::iterator intInputItr = column.AsInts.begin();
+	Labels &labels = column.labels();
+	labels.clear();
+
+	BOOST_FOREACH(const string &value, cells)
+	{
+		if (value != "NaN" && value != "nan" && value != "" && value != " ")
+		{
+			try
+			{
+				int v = lexical_cast<int>(value);
+				uniqueValues.insert(v);
+				*intInputItr = v;
+			}
+			catch (...)
+			{
+				// column can't be made nominal numeric
+
+				success = false;
+				break;
+			}
+		}
+		else
+		{
+			*intInputItr = INT_MIN;
+		}
+
+		intInputItr++;
+	}
+
+	if (success && uniqueValues.size() <= 24)
+	{
+		labels.clear();
+		map<int, int> actualToRaw;
+
+		int index = 0;
+		BOOST_FOREACH(int value, uniqueValues)
+		{
+			(void)uniqueValues;
+			int raw = labels.add(value);
+			actualToRaw[value] = raw;
+			index++;
+		}
+
+		Column::Ints::iterator intInputItr = column.AsInts.begin();
+		for (; intInputItr != column.AsInts.end(); intInputItr++)
+		{
+			int actual = *intInputItr;
+			if (actual != INT_MIN)
+				*intInputItr = actualToRaw.at(actual);
+		}
+
+		column._columnType = Column::ColumnTypeNominal;
+
+		return;
+	}
+
+	// try to make the column scale
+
+	Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
+	success = true;
+
+	BOOST_FOREACH(const string &value, cells)
+	{
+		if (value != "" && value != " ")
+		{
+			try
+			{
+				*doubleInputItr = lexical_cast<double>(value);
+			}
+			catch (...)
+			{
+				// column can't be made scale
+
+				success = false;
+				break;
+			}
+		}
+		else
+		{
+			*doubleInputItr = NAN;
+		}
+
+		doubleInputItr++;
+	}
+
+	if (success)
+	{
+		column._columnType = Column::ColumnTypeScale;
+		return;
+	}
+
+	// if it can't be made nominal numeric or scale, make it nominal-text
+
+	vector<string> sorted = cells;
+	sort(sorted.begin(), sorted.end());
+	vector<string> cases;
+	unique_copy(sorted.begin(), sorted.end(), back_inserter(cases));
+	sort(cases.begin(), cases.end());
+
+	for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
+	{
+		if (*itr == "") // remove empty string
+		{
+			cases.erase(itr);
+			break;
+		}
+	}
+
+	labels.clear();
+
+	BOOST_FOREACH (string &value, cases)
+			labels.add(value);
+
+	intInputItr = column.AsInts.begin();
+
+	BOOST_FOREACH (const string &value, cells)
+	{
+		if (value == "")
+			*intInputItr = INT_MIN;
+		else
+			*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
+
+		intInputItr++;
+	}
+
+	column._columnType = Column::ColumnTypeNominalText;
+}
+
+void DataSetLoader::growMemory(DataSet *&dataSet, managed_shared_memory *&mem)
+{
+	cout << "growing shared memory\n";
+	cout.flush();
+
+	try {
+
+		//cout << mem->get_size() << "\n";
+		mem = SharedMemory::grow(mem->get_size());
+		//cout << mem->get_size() << "\n";
+		//cout.flush();
+
+		dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
+	}
+	catch (exception &e)
+	{
+		cout << e.what();
+		cout.flush();
+	}
+
+	cout << "memory grown\n";
+	cout.flush();
 }

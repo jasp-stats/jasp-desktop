@@ -8,16 +8,18 @@
 
 #include "dataset.h"
 #include "options/options.h"
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 
 #include "availablefields.h"
 #include "widgets/availablefieldslistview.h"
 #include "widgets/assignbutton.h"
 #include "widgets/boundlistview.h"
 
-#include "widgets/listmodelvariablesavailable.h"
+#include "widgets/tablemodelvariablesavailable.h"
 
-class AnalysisForm : public QWidget
+#include "variableinfo.h"
+
+class AnalysisForm : public QWidget, protected VariableInfoProvider
 {
 	Q_OBJECT
 
@@ -27,12 +29,14 @@ public:
 
 protected:
 
+	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;
+
 	DataSet *_dataSet;
 	Options *_options;
 
-	ListModelVariablesAvailable _availableFields;
+	TableModelVariablesAvailable _availableVariablesModel;
 
-	OptionFields *_mainFields;
+	OptionVariables *_mainVariables;
 	
 	
 };

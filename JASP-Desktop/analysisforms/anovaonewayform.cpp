@@ -9,18 +9,18 @@ AnovaOneWayForm::AnovaOneWayForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->listAvailableFields->setModel(&_availableFields);
+	ui->listAvailableFields->setModel(&_availableVariablesModel);
 	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
-	ListModelVariablesAssigned *variablesModel = new ListModelVariablesAssigned(this);
-	variablesModel->setSource(&_availableFields);
+	TableModelVariablesAssigned *variablesModel = new TableModelVariablesAssigned(this);
+	variablesModel->setSource(&_availableVariablesModel);
 	variablesModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
-	ListModelVariablesAssigned *groupingVariableModel = new ListModelVariablesAssigned(this);
+	TableModelVariablesAssigned *groupingVariableModel = new TableModelVariablesAssigned(this);
 	groupingVariableModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
-	groupingVariableModel->setSource(&_availableFields);
+	groupingVariableModel->setSource(&_availableVariablesModel);
 	ui->groupingVariable->setModel(groupingVariableModel);
 	ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields);
 

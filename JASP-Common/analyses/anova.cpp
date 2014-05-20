@@ -2,8 +2,8 @@
 
 #include "options/options.h"
 #include "options/option.h"
-#include "options/optionfield.h"
-#include "options/optionfields.h"
+#include "options/optionvariable.h"
+#include "options/optionvariables.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
@@ -25,16 +25,16 @@ Options *Anova::createDefaultOptions()
 
 	// main
 
-	options->add("dependent", new OptionField());
-	options->add("fixedFactors", new OptionFields());
-	options->add("randomFactors", new OptionFields());
-	options->add("wlsWeights", new OptionField());
+	options->add("dependent", new OptionVariable());
+	options->add("fixedFactors", new OptionVariables());
+	options->add("randomFactors", new OptionVariables());
+	options->add("wlsWeights", new OptionVariable());
 
 
 	// model
 
 	Options *termsTemplate = new Options();
-	termsTemplate->add("components", new OptionFields());
+	termsTemplate->add("components", new OptionVariables());
 
 	options->add("modelTerms", new OptionsTable(termsTemplate));
 	options->add("sumOfSquares", new OptionList(list("type1", "type2", "type3"), "type3"));
@@ -43,7 +43,7 @@ Options *Anova::createDefaultOptions()
 	// contrasts
 
 	Options *contrastsTemplate = new Options();
-	contrastsTemplate->add("variable", new OptionField());
+	contrastsTemplate->add("variable", new OptionVariable());
 
 	contrastsTemplate->add("contrast", new OptionList(list(
 		"none",
@@ -54,14 +54,12 @@ Options *Anova::createDefaultOptions()
 		"repeated",
 		"polynomial")));
 
-	contrastsTemplate->add("reference", new OptionList(list("first", "last")));
-
 	options->add("contrasts", new OptionsTable(contrastsTemplate));
 
 
 	// post hoc tests
 
-	options->add("postHocTests/variables", new OptionFields());
+	options->add("postHocTests/variables", new OptionVariables());
 	options->add("postHocTests/bonferroni", new OptionBoolean());
     options->add("postHocTests/holm", new OptionBoolean());
     options->add("postHocTests/FDR", new OptionBoolean());
@@ -91,7 +89,7 @@ Options *Anova::createDefaultOptions()
 
 	// options
 
-	options->add("marginalMeans/terms", new OptionFields());
+	options->add("marginalMeans/terms", new OptionVariables());
 	options->add("marginalMeans/compareMainEffects", new OptionBoolean());
 	options->add("marginalMeans/ciAdjustment", new OptionList(list("LSD", "bonferroni")));
 

@@ -1,6 +1,6 @@
 #include "correlation.h"
 
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 #include "options/optionboolean.h"
 #include "options/optionlist.h"
 
@@ -13,7 +13,7 @@ Options *Correlation::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add("variables", new OptionFields());
+	options->add("variables", new OptionVariables());
 
 	options->add("pearson", new OptionBoolean(true));
 	options->add("kendallsTauB", new OptionBoolean());

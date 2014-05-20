@@ -7,20 +7,20 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->listAvailableFields->setModel(&this->_availableFields);
+	ui->listAvailableFields->setModel(&this->_availableVariablesModel);
 
-	_dependentModel = new ListModelVariablesAssigned();
-	_dependentModel->setSource(&_availableFields);
+	_dependentModel = new TableModelVariablesAssigned();
+	_dependentModel->setSource(&_availableVariablesModel);
 	_dependentModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->dependent->setModel(_dependentModel);
 
 	_blocksModel = new TableModelVariablesLevels();
-	_blocksModel->setSource(&_availableFields);
+	_blocksModel->setSource(&_availableVariablesModel);
 	//_layersModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->blocks->setModel(_blocksModel);
 
-	_wlsWeightsModel = new ListModelVariablesAssigned();
-	_wlsWeightsModel->setSource(&_availableFields);
+	_wlsWeightsModel = new TableModelVariablesAssigned();
+	_wlsWeightsModel->setSource(&_availableVariablesModel);
 	_wlsWeightsModel->setVariableTypesSuggested(Column::ColumnTypeScale);
 	ui->wlsWeights->setModel(_wlsWeightsModel);
 

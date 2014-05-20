@@ -2,6 +2,7 @@
 #define OPTIONI_H
 
 #include "option.h"
+#include "common.h"
 
 #include <QDebug>
 

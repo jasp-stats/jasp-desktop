@@ -1,64 +1,46 @@
 #ifndef TABLEMODELVARIABLESASSIGNED_H
 #define TABLEMODELVARIABLESASSIGNED_H
 
-#include <QAbstractListModel>
+#include "tablemodelvariables.h"
 
-#include "options/optionfieldpairs.h"
-#include "listmodelvariables.h"
-#include "tablemodel.h"
-#include "droptarget.h"
-#include "listmodelvariablesavailable.h"
+#include "tablemodelvariablesavailable.h"
+#include "options/optionvariables.h"
 
-typedef QList<ColumnInfo> VarPair;
+#include "column.h"
 
-class TableModelVariablesAssigned : public TableModel, public BoundModel
+class TableModelVariablesAssigned : public TableModelVariables, public BoundModel
 {
 	Q_OBJECT
 public:
 	explicit TableModelVariablesAssigned(QObject *parent = 0);
-	
-	void setIsNominalTextAllowed(bool allowed);
-	bool nominalTextAllowed();
 
-	void setVariableTypesSuggested(int variableTypesSuggested);
-	int variableTypesSuggested();
+	virtual void bindTo(Option *option) OVERRIDE;
+	void setSource(TableModelVariablesAvailable *source);
 
-	void bindTo(Option *option) OVERRIDE;
-	int rowCount(const QModelIndex &parent) const OVERRIDE;
-	int columnCount(const QModelIndex &parent) const OVERRIDE;
-	QVariant data(const QModelIndex &index, int role) const OVERRIDE;
-	Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
-
-	virtual Qt::DropActions supportedDropActions() const OVERRIDE;
-	virtual Qt::DropActions supportedDragActions() const OVERRIDE;
-	virtual QStringList mimeTypes() const OVERRIDE;
-	virtual QMimeData *mimeData(const QModelIndexList &indexes) const OVERRIDE;
-	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) OVERRIDE;
 	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
+	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) OVERRIDE;
+	virtual void mimeDataMoved(const QModelIndexList &indices) OVERRIDE;
 
-	bool isForbidden(int variableType) const;
+	bool setSorted(bool sorted);
+	const Terms &assigned() const;
 
-	virtual bool insertRows(int row, int count, const QModelIndex &parent) OVERRIDE;
+signals:
+	void assignmentsChanged();
 
-	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
-
-	void setSource(ListModelVariablesAvailable *source);
-protected:
-	void assignToOption();
+private slots:
+	void sourceVariablesChanged();
+	void sendBack();
 
 private:
-	bool _nominalTextAllowed;
-	int _variableTypesSuggested;
+	void assign(const Terms &variables);
+	void unassign(const Terms &variables);
+	void setAssigned(const Terms &variables);
 
-	ListModelVariablesAvailable *_source;
+	OptionVariables *_boundTo;
+	TableModelVariablesAvailable *_source;
+	bool _sorted;
 
-	OptionFieldPairs *_boundTo;
-	QList<VarPair> _values;
-
-	void pairsChanged();
-
-	static std::vector<std::pair<std::string, std::string> > asVector(QList<VarPair> values);
-	
+	Terms _toSendBack;
 };
 
 #endif // TABLEMODELVARIABLESASSIGNED_H

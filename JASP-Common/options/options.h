@@ -28,7 +28,7 @@ public:
 
 	virtual Option* clone() const OVERRIDE;
 
-	size_t size();
+	size_t size() const;
 
 	class Names
 	{

@@ -9,20 +9,20 @@ TTestIndependentSamplesForm::TTestIndependentSamplesForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->listAvailableFields->setModel(&_availableFields);
+	ui->listAvailableFields->setModel(&_availableVariablesModel);
 	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
-	ListModelVariablesAssigned *variablesModel = new ListModelVariablesAssigned(this);
-	variablesModel->setSource(&_availableFields);
+	TableModelVariablesAssigned *variablesModel = new TableModelVariablesAssigned(this);
+	variablesModel->setSource(&_availableVariablesModel);
 	variablesModel->setVariableTypesSuggested(Column::ColumnTypeScale);
 	variablesModel->setIsNominalTextAllowed(false);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
-	ListModelVariablesAssigned *groupingVariableModel = new ListModelVariablesAssigned(this);
+	TableModelVariablesAssigned *groupingVariableModel = new TableModelVariablesAssigned(this);
 	groupingVariableModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	groupingVariableModel->setIsNominalTextAllowed(true);
-	groupingVariableModel->setSource(&_availableFields);
+	groupingVariableModel->setSource(&_availableVariablesModel);
 	ui->groupingVariable->setModel(groupingVariableModel);
 	ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields);
 

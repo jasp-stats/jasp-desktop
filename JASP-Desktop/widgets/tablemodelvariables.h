@@ -1,5 +1,5 @@
-#ifndef LISTMODELVARIABLES_H
-#define LISTMODELVARIABLES_H
+#ifndef TABLEMODELVARIABLES_H
+#define TABLEMODELVARIABLES_H
 
 #include <QAbstractListModel>
 
@@ -14,16 +14,16 @@
 #include <QIcon>
 #include <QAbstractItemView>
 
+#include "terms.h"
 #include "tablemodel.h"
 #include "common.h"
+#include "variableinfo.h"
 
-typedef QPair<QString, int> ColumnInfo;
-
-class ListModelVariables : public TableModel
+class TableModelVariables : public TableModel, public VariableInfoConsumer
 {
 	Q_OBJECT
 public:
-	explicit ListModelVariables(QObject *parent = 0);
+	explicit TableModelVariables(QObject *parent = 0);
 	
 	void setVariableTypesSuggested(int variableTypesSuggested);
 	int variableTypesSuggested();
@@ -52,11 +52,14 @@ public:
 	void setMimeType(const QString &mimeType);
 
 	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
+
 protected:
 
-	QList<ColumnInfo> _variables;
+	Terms _variables;
 
-	bool isForbidden(int variableType) const;
+	bool isForbidden(const Term &term) const;
+	bool isSuggested(const Term &term) const;
+
 	bool isDroppingToSelf(const QMimeData *mimeData) const;
 
 	QString _mimeType;
@@ -80,4 +83,4 @@ private:
 	
 };
 
-#endif // LISTMODELVARIABLES_H
+#endif // TABLEMODELVARIABLES_H

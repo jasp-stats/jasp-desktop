@@ -9,7 +9,7 @@
 #include <string>
 
 #include "dataset.h"
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 
 class AvailableFields : public QAbstractListModel
 {
@@ -19,7 +19,7 @@ public:
 	void setDataSet(DataSet *dataSet);
 	void filter(std::vector<std::string> show);
 
-	void provideFor(OptionFields *option);
+	void provideFor(OptionVariables *option);
 	QStringList getFields(QModelIndexList indices);
 
 	boost::signals2::signal<void ()> availableFieldsChanged();
@@ -31,7 +31,7 @@ public:
 
 private:
 	DataSet *_dataSet;
-	std::vector<OptionFields *> _provideFor;
+	std::vector<OptionVariables *> _provideFor;
 	void updateAvailableFields();
 	QStringList _availableFields;
 

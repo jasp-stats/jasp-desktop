@@ -3,8 +3,8 @@
 
 #include "analysisform.h"
 
-#include "widgets/listmodelvariablesassigned.h"
-#include "widgets/listmodelanovamodel.h"
+#include "widgets/tablemodelvariablesassigned.h"
+#include "widgets/tablemodelanovamodel.h"
 
 namespace Ui {
 class AnovaMultivariateForm;
@@ -25,13 +25,13 @@ private slots:
 private:
 	Ui::AnovaMultivariateForm *ui;
 
-	ListModelVariablesAssigned *_dependentListModel;
-	ListModelVariablesAssigned *_fixedFactorsListModel;
-	ListModelVariablesAssigned *_wlsWeightsListModel;
+	TableModelVariablesAssigned *_dependentListModel;
+	TableModelVariablesAssigned *_fixedFactorsListModel;
+	TableModelVariablesAssigned *_wlsWeightsListModel;
 
-	ListModelAnovaModel *_anovaModel;
+	TableModelAnovaModel *_anovaModel;
 
-	ListModelVariablesAvailable *_factorsAvailableListModel;
+	TableModelVariablesAvailable *_factorsAvailableListModel;
 
 };
 

@@ -133,7 +133,7 @@ Option *Options::clone() const
 	return c;
 }
 
-size_t Options::size()
+size_t Options::size() const
 {
 	return _options.size();
 }

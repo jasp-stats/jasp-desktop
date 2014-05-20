@@ -2,8 +2,8 @@
 #include "ui_anovamultivariateform.h"
 
 #include "column.h"
-#include "widgets/listmodelvariablesassigned.h"
-#include "widgets/listmodelanovamodelnuisancefactors.h"
+#include "widgets/tablemodelvariablesassigned.h"
+#include "widgets/tablemodelanovamodelnuisancefactors.h"
 
 AnovaMultivariateForm::AnovaMultivariateForm(QWidget *parent) :
 	AnalysisForm("AnovaMultivariateForm", parent),
@@ -11,22 +11,22 @@ AnovaMultivariateForm::AnovaMultivariateForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->listAvailableFields->setModel(&_availableFields);
+	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
-	_dependentListModel = new ListModelVariablesAssigned(this);
+	_dependentListModel = new TableModelVariablesAssigned(this);
 	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
-	_dependentListModel->setSource(&_availableFields);
+	_dependentListModel->setSource(&_availableVariablesModel);
 	ui->dependents->setModel(_dependentListModel);
 
-	_fixedFactorsListModel = new ListModelVariablesAssigned(this);
-	_fixedFactorsListModel->setSource(&_availableFields);
+	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
+	_fixedFactorsListModel->setSource(&_availableVariablesModel);
 	_fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->fixedFactors->setModel(_fixedFactorsListModel);
 
-	_wlsWeightsListModel = new ListModelVariablesAssigned(this);
-	_wlsWeightsListModel->setSource(&_availableFields);
+	_wlsWeightsListModel = new TableModelVariablesAssigned(this);
+	_wlsWeightsListModel->setSource(&_availableVariablesModel);
 	_wlsWeightsListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_wlsWeightsListModel->setSource(&_availableFields);
+	_wlsWeightsListModel->setSource(&_availableVariablesModel);
 	ui->wlsWeights->setModel(_wlsWeightsListModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependents);
@@ -36,8 +36,8 @@ AnovaMultivariateForm::AnovaMultivariateForm(QWidget *parent) :
 	connect(_dependentListModel, SIGNAL(assignmentsChanged()), this, SLOT(dependentChanged()));
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
-	_anovaModel = new ListModelAnovaModel(this);
-	ui->model->setModel(_anovaModel);
+	_anovaModel = new TableModelAnovaModel(this);
+	//ui->model->setModel(_anovaModel);
 	ui->model->hide();
 }
 
@@ -53,9 +53,9 @@ void AnovaMultivariateForm::factorsChanged()
 
 void AnovaMultivariateForm::dependentChanged()
 {
-	const QList<ColumnInfo> &assigned = _dependentListModel->assigned();
+	/*const QList<ColumnInfo> &assigned = _dependentListModel->assigned();
 	if (assigned.length() == 0)
 		_anovaModel->setDependent(ColumnInfo("", 0));
 	else
-		_anovaModel->setDependent(assigned.last());
+		_anovaModel->setDependent(assigned.last());*/
 }
