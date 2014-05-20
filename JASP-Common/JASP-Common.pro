@@ -36,8 +36,6 @@ SOURCES += \
 	datablock.cpp \
     sharedmemory.cpp \
     options/optionboolean.cpp \
-    options/optionfield.cpp \
-    options/optionfields.cpp \
     options/optionintegerarray.cpp \
     options/optioninteger.cpp \
     options/optionlist.cpp \
@@ -51,7 +49,6 @@ SOURCES += \
     analyses/ttestpairedsamples.cpp \
     analyses/anovabayesian.cpp \
     analyses/ttestbayesianonesample.cpp \
-    options/optionfieldpairs.cpp \
     options/optionstring.cpp \
     analyses/ancova.cpp \
     analyses/ancovamultivariate.cpp \
@@ -72,7 +69,12 @@ SOURCES += \
     base64/cdecode.cpp \
     base64/cencode.cpp \
     label.cpp \
-    labels.cpp
+    labels.cpp \
+    options/optionvariable.cpp \
+    options/optionterms.cpp \
+    options/optionvariablesgroups.cpp \
+    options/optionterm.cpp \
+    options/optionvariables.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -95,8 +97,6 @@ HEADERS +=\
     datablock.h \
     sharedmemory.h \
     options/optionboolean.h \
-    options/optionfield.h \
-    options/optionfields.h \
     options/optioni.h \
     options/optionintegerarray.h \
     options/optioninteger.h \
@@ -112,7 +112,6 @@ HEADERS +=\
     analyses/ttestpairedsamples.h \
     analyses/anovabayesian.h \
     analyses/ttestbayesianonesample.h \
-    options/optionfieldpairs.h \
     common.h \
     options/optionstring.h \
     analyses/ancova.h \
@@ -134,7 +133,12 @@ HEADERS +=\
     base64/cdecode.h \
     base64.h \
     label.h \
-    labels.h
+    labels.h \
+    options/optionvariables.h \
+    options/optionvariable.h \
+    options/optionterms.h \
+    options/optionvariablesgroups.h \
+    options/optionterm.h
 
 unix:!symbian {
     maemo5 {

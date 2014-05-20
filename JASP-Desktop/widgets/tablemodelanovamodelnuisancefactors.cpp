@@ -1,31 +1,31 @@
-#include "listmodelanovamodelnuisancefactors.h"
+#include "tablemodelanovamodelnuisancefactors.h"
 
 using namespace std;
 
-ListModelAnovaModelNuisanceFactors::ListModelAnovaModelNuisanceFactors(QObject *parent)
-	: ListModelAnovaModel(parent)
+TableModelAnovaModelNuisanceFactors::TableModelAnovaModelNuisanceFactors(QObject *parent)
+	: TableModelAnovaModel(parent)
 {
 	_nuisanceOption = NULL;
 }
 
-int ListModelAnovaModelNuisanceFactors::columnCount(const QModelIndex &parent) const
+int TableModelAnovaModelNuisanceFactors::columnCount(const QModelIndex &parent) const
 {
 	return 2;
 }
 
-Qt::ItemFlags ListModelAnovaModelNuisanceFactors::flags(const QModelIndex &index) const
+Qt::ItemFlags TableModelAnovaModelNuisanceFactors::flags(const QModelIndex &index) const
 {
 	if (index.isValid() && index.column() == 1)
 		return Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable;
 	else
-		return ListModelAnovaModel::flags(index);
+		return TableModelAnovaModel::flags(index);
 }
 
-QVariant ListModelAnovaModelNuisanceFactors::data(const QModelIndex &index, int role) const
+QVariant TableModelAnovaModelNuisanceFactors::data(const QModelIndex &index, int role) const
 {
 	if (index.column() == 0)
 	{
-		return ListModelAnovaModel::data(index, role);
+		return TableModelAnovaModel::data(index, role);
 	}
 	else
 	{
@@ -40,7 +40,7 @@ QVariant ListModelAnovaModelNuisanceFactors::data(const QModelIndex &index, int 
 	}
 }
 
-QVariant ListModelAnovaModelNuisanceFactors::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant TableModelAnovaModelNuisanceFactors::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
 	{
@@ -53,9 +53,9 @@ QVariant ListModelAnovaModelNuisanceFactors::headerData(int section, Qt::Orienta
 	return QVariant();
 }
 
-void ListModelAnovaModelNuisanceFactors::assignToNuisanceOption()
+void TableModelAnovaModelNuisanceFactors::assignToNuisanceOption()
 {
-	if (_nuisanceOption != NULL)
+	/*if (_nuisanceOption != NULL)
 	{
 		vector<string> values;
 
@@ -77,17 +77,17 @@ void ListModelAnovaModelNuisanceFactors::assignToNuisanceOption()
 		}
 
 		_nuisanceOption->setValue(values);
-	}
+	}*/
 }
 
-void ListModelAnovaModelNuisanceFactors::setNuisanceTermsOption(OptionFields *nuisanceOption)
+void TableModelAnovaModelNuisanceFactors::setNuisanceTermsOption(OptionVariables *nuisanceOption)
 {
 	_nuisanceOption = nuisanceOption;
 }
 
-void ListModelAnovaModelNuisanceFactors::mimeDataMoved(const QModelIndexList &indexes)
+void TableModelAnovaModelNuisanceFactors::mimeDataMoved(const QModelIndexList &indexes)
 {
-	beginResetModel();
+	/*beginResetModel();
 
 	QModelIndexList sorted = indexes;
 
@@ -108,12 +108,12 @@ void ListModelAnovaModelNuisanceFactors::mimeDataMoved(const QModelIndexList &in
 
 	endResetModel();
 
-	assignToOption();
+	assignToOption();*/
 }
 
-bool ListModelAnovaModelNuisanceFactors::insertRows(int row, int count, const QModelIndex &parent)
+bool TableModelAnovaModelNuisanceFactors::insertRows(int row, int count, const QModelIndex &parent)
 {
-	beginInsertRows(parent, row, row + count - 1);
+	/*beginInsertRows(parent, row, row + count - 1);
 
 	for (int i = 0; i < count; i++)
 		_terms.insert(row, QList<ColumnInfo>());
@@ -121,30 +121,29 @@ bool ListModelAnovaModelNuisanceFactors::insertRows(int row, int count, const QM
 	for (int i = 0; i < count; i++)
 		_nuisance.insert(row, false);
 
-	endInsertRows();
+	endInsertRows();*/
 
 	return true;
 }
 
-bool ListModelAnovaModelNuisanceFactors::removeRows(int row, int count, const QModelIndex &parent)
+bool TableModelAnovaModelNuisanceFactors::removeRows(int row, int count, const QModelIndex &parent)
 {
 	beginRemoveRows(parent, row, row + count - 1);
 
 	for (int i = 0; i < count; i++)
 		_nuisance.removeAt(row);
 
-	for (int i = 0; i < count; i++)
-		_terms.removeAt(row);
+	//for (int i = 0; i < count; i++)
+	//	_terms.removeAt(row);
 
 	endRemoveRows();
 
-	assignToOption();
 	assignToNuisanceOption();
 
 	return true;
 }
 
-bool ListModelAnovaModelNuisanceFactors::setData(const QModelIndex &index, const QVariant &value, int role)
+bool TableModelAnovaModelNuisanceFactors::setData(const QModelIndex &index, const QVariant &value, int role)
 {
 	if (role == Qt::CheckStateRole && index.column() == 1)
 	{
@@ -160,5 +159,5 @@ bool ListModelAnovaModelNuisanceFactors::setData(const QModelIndex &index, const
 		return true;
 	}
 
-	return ListModelAnovaModel::setData(index, value, role);
+	return TableModelAnovaModel::setData(index, value, role);
 }

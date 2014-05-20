@@ -2,8 +2,8 @@
 #include "ui_ancovaform.h"
 
 #include "column.h"
-#include "widgets/listmodelvariablesassigned.h"
-#include "widgets/listmodelanovamodelnuisancefactors.h"
+#include "widgets/tablemodelvariablesassigned.h"
+#include "widgets/tablemodelanovamodelnuisancefactors.h"
 
 AncovaForm::AncovaForm(QWidget *parent) :
 	AnalysisForm("AncovaForm", parent),
@@ -11,32 +11,32 @@ AncovaForm::AncovaForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->listAvailableFields->setModel(&_availableFields);
+	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
-	_dependentListModel = new ListModelVariablesAssigned(this);
+	_dependentListModel = new TableModelVariablesAssigned(this);
 	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
-	_dependentListModel->setSource(&_availableFields);
+	_dependentListModel->setSource(&_availableVariablesModel);
 	ui->dependent->setModel(_dependentListModel);
 
-	_fixedFactorsListModel = new ListModelVariablesAssigned(this);
-	_fixedFactorsListModel->setSource(&_availableFields);
+	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
+	_fixedFactorsListModel->setSource(&_availableVariablesModel);
 	_fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->fixedFactors->setModel(_fixedFactorsListModel);
 
-	_randomFactorsListModel = new ListModelVariablesAssigned(this);
-	_randomFactorsListModel->setSource(&_availableFields);
+	_randomFactorsListModel = new TableModelVariablesAssigned(this);
+	_randomFactorsListModel->setSource(&_availableVariablesModel);
 	_randomFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->randomFactors->setModel(_randomFactorsListModel);
 
-	_covariatesListModel = new ListModelVariablesAssigned(this);
-	_covariatesListModel->setSource(&_availableFields);
+	_covariatesListModel = new TableModelVariablesAssigned(this);
+	_covariatesListModel->setSource(&_availableVariablesModel);
 	_covariatesListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
 	ui->covariates->setModel(_covariatesListModel);
 
-	_wlsWeightsListModel = new ListModelVariablesAssigned(this);
-	_wlsWeightsListModel->setSource(&_availableFields);
+	_wlsWeightsListModel = new TableModelVariablesAssigned(this);
+	_wlsWeightsListModel->setSource(&_availableVariablesModel);
 	_wlsWeightsListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_wlsWeightsListModel->setSource(&_availableFields);
+	_wlsWeightsListModel->setSource(&_availableVariablesModel);
 	ui->wlsWeights->setModel(_wlsWeightsListModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
@@ -50,8 +50,8 @@ AncovaForm::AncovaForm(QWidget *parent) :
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
-	_anovaModel = new ListModelAnovaModel(this);
-	ui->model->setModel(_anovaModel);
+	_anovaModel = new TableModelAnovaModel(this);
+	//ui->model->setModel(_anovaModel);
 	ui->model->hide();
 }
 
@@ -62,20 +62,20 @@ AncovaForm::~AncovaForm()
 
 void AncovaForm::factorsChanged()
 {
-	QList<ColumnInfo> factorsAvailable;
+	Terms factorsAvailable;
 
-	factorsAvailable.append(_fixedFactorsListModel->assigned());
-	factorsAvailable.append(_randomFactorsListModel->assigned());
-	factorsAvailable.append(_covariatesListModel->assigned());
+	factorsAvailable.add(_fixedFactorsListModel->assigned());
+	factorsAvailable.add(_randomFactorsListModel->assigned());
+	factorsAvailable.add(_covariatesListModel->assigned());
 
 	_anovaModel->setVariables(factorsAvailable);
 }
 
 void AncovaForm::dependentChanged()
 {
-	const QList<ColumnInfo> &assigned = _dependentListModel->assigned();
+	/*const QList<ColumnInfo> &assigned = _dependentListModel->assigned();
 	if (assigned.length() == 0)
 		_anovaModel->setDependent(ColumnInfo("", 0));
 	else
-		_anovaModel->setDependent(assigned.last());
+		_anovaModel->setDependent(assigned.last());*/
 }

@@ -5,8 +5,7 @@
 
 #include "boundmodel.h"
 #include "options/optionstable.h"
-
-typedef QPair<QString, int> ColumnInfo;
+#include "terms.h"
 
 class TableModelVariablesOptions : public QAbstractTableModel, public BoundModel
 {
@@ -23,12 +22,14 @@ public:
 	Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const OVERRIDE;
 
-	void setVariables(const QList<ColumnInfo> &variables);
+	void setVariables(const Terms &variables);
+	const Terms& variables() const;
 
 private:
-	OptionsTable *_boundTo;
 
-	static std::vector<std::string> getVariableNames(const QList<ColumnInfo> &variables);
+	Terms _variables;
+	std::vector<Options*> _rows;
+	OptionsTable *_boundTo;
 
 };
 

@@ -23,7 +23,7 @@ int ItemModelSelectVariable::rowCount(const QModelIndex &parent) const
 	if (_source == NULL)
 		return 1;
 
-	return _source->allVariables().length() + 1;
+	return _source->allVariables().size() + 1;
 }
 
 QVariant ItemModelSelectVariable::data(const QModelIndex &index, int role) const
@@ -36,7 +36,7 @@ QVariant ItemModelSelectVariable::data(const QModelIndex &index, int role) const
 		if (index.row() == 0)
 			return "[ None ]";
 		else
-			return _source->allVariables().at(index.row() - 1).first;
+			return _source->allVariables().at(index.row() - 1).asQString();
 	}
 	else if (role == Qt::CheckStateRole)
 	{
@@ -47,7 +47,10 @@ QVariant ItemModelSelectVariable::data(const QModelIndex &index, int role) const
 		if (index.row() == 0)
 			return QVariant();
 
-		switch (_source->allVariables().at(index.row() - 1).second)
+		const Term &variable = _source->allVariables().at(index.row() - 1);
+		int variableType = _source->requestInfo(variable, VariableInfo::VariableType).toInt();
+
+		switch (variableType)
 		{
 		case Column::ColumnTypeNominalText:
 			return QVariant(_nominalTextIcon);
@@ -87,7 +90,7 @@ bool ItemModelSelectVariable::setData(const QModelIndex &index, const QVariant &
 			if (_selectedIndex == 0)
 				_boundTo->setValue("");
 			else
-				_boundTo->setValue(fq(_source->allVariables().at(_selectedIndex - 1).first));
+				_boundTo->setValue(_source->allVariables().at(_selectedIndex - 1).asString());
 		}
 
 		return true;
@@ -102,13 +105,13 @@ void ItemModelSelectVariable::bindTo(Option *option)
 {
 	beginResetModel();
 
-	_boundTo = dynamic_cast<OptionField *>(option);
+	_boundTo = dynamic_cast<OptionVariable *>(option);
 	updateSelected();
 
 	endResetModel();
 }
 
-void ItemModelSelectVariable::setSource(ListModelVariablesAvailable *source)
+void ItemModelSelectVariable::setSource(TableModelVariablesAvailable *source)
 {
 	beginResetModel();
 	_source = source;

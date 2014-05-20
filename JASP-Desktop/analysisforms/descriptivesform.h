@@ -3,12 +3,7 @@
 
 #include <QWidget>
 
-#include "dataset.h"
-#include "options/options.h"
-#include "options/optionfields.h"
-
 #include "analysisform.h"
-#include "availablefields.h"
 
 using namespace std;
 

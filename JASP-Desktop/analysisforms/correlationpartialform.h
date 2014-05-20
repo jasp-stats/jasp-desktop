@@ -19,8 +19,8 @@ public:
 private:
 	Ui::CorrelationPartialForm *ui;
 
-	ListModelVariablesAssigned *_modelVariables;
-	ListModelVariablesAssigned *_modelControllingFor;
+	TableModelVariablesAssigned *_modelVariables;
+	TableModelVariablesAssigned *_modelControllingFor;
 };
 
 #endif // CORRELATIONPARTIALFORM_H

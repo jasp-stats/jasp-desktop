@@ -2,7 +2,7 @@
 #define REGRESSIONLINEARFORM_H
 
 #include "analysisform.h"
-#include "widgets/listmodelvariablesassigned.h"
+#include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelvariableslevels.h"
 
 namespace Ui {
@@ -20,9 +20,9 @@ public:
 private:
 	Ui::RegressionLinearForm *ui;
 
-	ListModelVariablesAssigned *_dependentModel;
+	TableModelVariablesAssigned *_dependentModel;
 	TableModelVariablesLevels  *_blocksModel;
-	ListModelVariablesAssigned *_wlsWeightsModel;
+	TableModelVariablesAssigned *_wlsWeightsModel;
 };
 
 #endif // REGRESSIONLINEARFORM_H

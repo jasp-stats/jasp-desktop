@@ -4,8 +4,9 @@
 #include <QAbstractListModel>
 #include "boundmodel.h"
 #include "common.h"
-#include "options/optionfield.h"
-#include "widgets/listmodelvariablesavailable.h"
+#include "options/optionvariable.h"
+#include "widgets/tablemodelvariablesavailable.h"
+#include "variableinfo.h"
 
 typedef QPair<QString, int> ColumnInfo;
 
@@ -22,7 +23,7 @@ public:
 
 	void bindTo(Option* option) OVERRIDE;
 
-	void setSource(ListModelVariablesAvailable *source);
+	void setSource(TableModelVariablesAvailable *source);
 
 private slots:
 	void variablesChangedHandler();
@@ -32,8 +33,8 @@ private:
 	void updateSelected();
 
 	int _selectedIndex;
-	ListModelVariablesAvailable *_source;
-	OptionField *_boundTo;
+	TableModelVariablesAvailable *_source;
+	OptionVariable *_boundTo;
 
 	QIcon _nominalTextIcon;
 	QIcon _nominalIcon;

@@ -6,11 +6,11 @@
 
 #include "bound.h"
 
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 #include "availablefields.h"
 
-#include "listmodelvariablesavailable.h"
-#include "listmodelanovamodel.h"
+#include "tablemodelvariablesavailable.h"
+#include "tablemodelanovamodel.h"
 
 namespace Ui {
 class AnovaModelWidget;
@@ -25,10 +25,7 @@ public:
 	~AnovaModelWidget();
 
 	virtual void bindTo(Option *option) OVERRIDE;
-
-	virtual void setModel(ListModelAnovaModel *model);
-
-	void setDependent(const QString dependent);
+	virtual void setModel(TableModelAnovaModel *model);
 	
 private slots:
 
@@ -59,8 +56,8 @@ private:
 
 	OptionsTable *_boundTo;
 
-	ListModelVariablesAvailable *_listModelVariablesAvailable;
-	ListModelAnovaModel *_listModelAnovaModel;
+	TableModelVariablesAvailable *_tableModelVariablesAvailable;
+	TableModelAnovaModel *_tableModelAnovaModel;
 
 };
 

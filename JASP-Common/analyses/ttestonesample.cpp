@@ -2,7 +2,7 @@
 
 #include "options/options.h"
 #include "options/option.h"
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
@@ -20,7 +20,7 @@ Options *TTestOneSample::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add("variables", new OptionFields());
+	options->add("variables", new OptionVariables());
 	options->add("testValue", new OptionNumber(0));
 
 	vector<string> tails;

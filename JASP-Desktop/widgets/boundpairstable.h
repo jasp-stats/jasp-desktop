@@ -5,7 +5,7 @@
 #include "bound.h"
 #include "availablefieldslistview.h"
 #include "assignbutton.h"
-#include "tablemodelvariablesassigned.h"
+#include "tablemodelpairsassigned.h"
 #include "tableview.h"
 
 class BoundPairsTable : public TableView, public Bound
@@ -28,7 +28,7 @@ protected:
 
 private:
 
-	TableModelVariablesAssigned *_tableModel;
+	TableModelPairsAssigned *_tableModel;
 	QWidget *_variableTypeKey;
 
 };

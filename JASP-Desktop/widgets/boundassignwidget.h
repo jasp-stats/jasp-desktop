@@ -5,9 +5,9 @@
 
 #include "bound.h"
 #include "common.h"
-#include "options/optionfields.h"
-#include "widgets/listmodelvariablesavailable.h"
-#include "widgets/listmodelvariablesassigned.h"
+#include "options/optionterms.h"
+#include "widgets/tablemodelvariablesavailable.h"
+#include "widgets/tablemodelvariablesassigned.h"
 
 #include <QAbstractItemModel>
 
@@ -25,12 +25,12 @@ public:
 
 	virtual void bindTo(Option *option) OVERRIDE;
 
-	void setVariables(const QList<ColumnInfo> &variables);
+	void setVariables(const Terms &variables);
 private:
 	Ui::BoundAssignWidget *ui;
 
-	ListModelVariablesAvailable *_availableModel;
-	ListModelVariablesAssigned *_assignedModel;
+	TableModelVariablesAvailable *_availableModel;
+	TableModelVariablesAssigned *_assignedModel;
 };
 
 #endif // BOUNDASSIGNWIDGET_H

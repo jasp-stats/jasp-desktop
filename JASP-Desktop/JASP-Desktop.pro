@@ -53,19 +53,12 @@ SOURCES += main.cpp\
     widgets/boundgroupbox.cpp \
 	widgets/progresswidget.cpp \
 	widgets/anovamodelwidget.cpp \
-	widgets/listmodelvariablesavailable.cpp \
-	widgets/listmodelvariables.cpp \
-	widgets/listmodelvariablesassigned.cpp \
 	widgets/listview.cpp \
-	widgets/tablemodelvariablesassigned.cpp \
 	widgets/draganddrop.cpp \
-	widgets/listmodelanovamodel.cpp \
 	widgets/assignbuttonmenu.cpp \
 	widgets/tableview.cpp \
 	widgets/boundpairstable.cpp \
-	widgets/listmodelanovamodelnuisancefactors.cpp \
 	widgets/boundcombobox.cpp \
-	widgets/tablemodelvariablesoptions.cpp \
 	widgets/boundtableview.cpp \
 	widgets/tableviewmenueditor.cpp \
 	widgets/tableviewmenueditordelegate.cpp \
@@ -87,7 +80,6 @@ SOURCES += main.cpp\
     analysisforms/subforms/posthoctestssub.cpp \
     analysisforms/anovarepeatedmeasuresform.cpp \
     analysisforms/crosstabsform.cpp \
-    widgets/tablemodelvariableslevels.cpp \
     utils.cpp \
     analysisforms/correlationpartialform.cpp \
     ribbons/ribbonwidget.cpp \
@@ -103,7 +95,17 @@ SOURCES += main.cpp\
     widgets/itemmodelselectvariable.cpp \
     widgets/tabbar.cpp \
     optionsform.cpp \
-    widgets/textmodellavaan.cpp
+    widgets/textmodellavaan.cpp \
+    terms.cpp \
+    term.cpp \
+    widgets/tablemodelanovamodelnuisancefactors.cpp \
+    widgets/tablemodelpairsassigned.cpp \
+    widgets/tablemodelvariables.cpp \
+    widgets/tablemodelvariablesassigned.cpp \
+    widgets/tablemodelvariablesavailable.cpp \
+    widgets/tablemodelvariableslevels.cpp \
+    widgets/tablemodelvariablesoptions.cpp \
+    widgets/tablemodelanovamodel.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -131,19 +133,13 @@ HEADERS  += \
     widgets/anovamodelwidget.h \
     bound.h \
     widgets/boundmodel.h \
-    widgets/listmodelvariablesavailable.h \
-    widgets/listmodelvariables.h \
-    widgets/listmodelvariablesassigned.h \
     widgets/listview.h \
-    widgets/tablemodelvariablesassigned.h \
     widgets/draganddrop.h \
-    widgets/listmodelanovamodel.h \
     widgets/assignbuttonmenu.h \
     widgets/enhanceddroptarget.h \
     widgets/tableview.h \
     maintableview.h \
     widgets/droptarget.h \
-    widgets/listmodelanovamodelnuisancefactors.h \
     widgets/tablemodel.h \
     analysisforms/ancovaform.h \
     analysisforms/anovaform.h \
@@ -157,7 +153,6 @@ HEADERS  += \
     mainwindow.h \
     analysisforms/correlationform.h \
     widgets/boundcombobox.h \
-    widgets/tablemodelvariablesoptions.h \
     widgets/boundtableview.h \
     widgets/tableviewmenueditor.h \
     widgets/tableviewmenueditordelegate.h \
@@ -166,7 +161,6 @@ HEADERS  += \
     analysisforms/anovarepeatedmeasuresform.h \
     utils.h \
     analysisforms/crosstabsform.h \
-    widgets/tablemodelvariableslevels.h \
     analysisforms/correlationpartialform.h \
     ribbons/ribbonwidget.h \
     ribbons/ribbonsem.h \
@@ -181,7 +175,18 @@ HEADERS  += \
     widgets/itemmodelselectvariable.h \
     widgets/tabbar.h \
     optionsform.h \
-    widgets/textmodellavaan.h
+    widgets/textmodellavaan.h \
+    term.h \
+    terms.h \
+    variableinfo.h \
+    widgets/tablemodelanovamodelnuisancefactors.h \
+    widgets/tablemodelpairsassigned.h \
+    widgets/tablemodelvariables.h \
+    widgets/tablemodelvariablesassigned.h \
+    widgets/tablemodelvariablesavailable.h \
+    widgets/tablemodelvariableslevels.h \
+    widgets/tablemodelvariablesoptions.h \
+    widgets/tablemodelanovamodel.h
 
 FORMS    += \
     backstageform.ui \

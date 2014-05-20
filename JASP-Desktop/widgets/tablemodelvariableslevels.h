@@ -6,15 +6,17 @@
 #include "common.h"
 #include "boundmodel.h"
 #include "droptarget.h"
+
+#include "tablemodelvariablesavailable.h"
+#include "variableinfo.h"
+
 #include "options/optionstable.h"
-#include "listmodelvariablesavailable.h"
 #include "options/optionstring.h"
 #include "options/optionlist.h"
-#include "tablemodel.h"
 
  #include "utils.h"
 
-class TableModelVariablesLevels : public TableModel, public BoundModel, public DropTarget
+class TableModelVariablesLevels : public TableModel, public BoundModel, public DropTarget, public VariableInfoConsumer
 {
 	Q_OBJECT
 public:
@@ -27,7 +29,7 @@ public:
 	virtual int columnCount(const QModelIndex &parent) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
-	virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
+	//virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
 
 	virtual Qt::DropActions supportedDropActions() const OVERRIDE;
 	virtual Qt::DropActions supportedDragActions() const OVERRIDE;
@@ -36,61 +38,31 @@ public:
 	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) OVERRIDE;
 	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
 
-	void setSource(ListModelVariablesAvailable *source);
+	void setSource(TableModelVariablesAvailable *source);
 
 private:
 
 	class Row
 	{
 	public:
-		Row(QString level)
+		Row(QString title, bool isLevelHeading = false)
 		{
-			_level = level;
-			_isLevel = true;
+			_title = title;
+			_isHeading = isLevelHeading;
 			_option = NULL;
-		}
-
-		Row(ColumnInfo variable)
-		{
-			_variable = variable;
-			_isLevel = false;
-			_option = NULL;
+			_isOption = false;
 		}
 
 		Row(OptionList *option)
 		{
-			_isLevel = false;
 			_option = option;
+			_isOption = true;
+			_isHeading = false;
 		}
 
-		ColumnInfo variable() const
+		QString title() const
 		{
-			return _variable;
-		}
-
-		QString name() const
-		{
-			if (_option != NULL)
-				return tq(_option->value());
-			else if (_isLevel)
-				return _level;
-			else
-				return _variable.first;
-		}
-
-		bool isLevel() const
-		{
-			return _isLevel;
-		}
-
-		bool isOption() const
-		{
-			return _option != NULL;
-		}
-
-		bool isVariable()
-		{
-			return _option == NULL && _isLevel == false;
+			return _title;
 		}
 
 		OptionList *option() const
@@ -98,17 +70,30 @@ private:
 			return _option;
 		}
 
+		bool isHeading() const
+		{
+			return _isHeading;
+		}
+
+		bool isOption() const
+		{
+			return _isOption;
+		}
+
 	private:
-		bool _isLevel;
-		QString _level;
-		ColumnInfo _variable;
+		QString _title;
 		OptionList *_option;
+		bool _isHeading;
+		bool _isOption;
 	};
 
+	std::vector<Options *> _levels;
+
 	OptionsTable *_boundTo;
+
 	QList<Row> _rows;
-	ListModelVariablesAvailable *_source;
-	void readFromOption();
+	TableModelVariablesAvailable *_source;
+	void refresh();
 
 	QIcon _nominalTextIcon;
 	QIcon _nominalIcon;

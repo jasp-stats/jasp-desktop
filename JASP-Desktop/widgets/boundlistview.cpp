@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-#include "options/optionfield.h"
+#include "options/optionvariables.h"
 
 #include "widgets/boundmodel.h"
 #include "tableviewmenueditordelegate.h"
@@ -41,7 +41,7 @@ BoundListView::BoundListView(QWidget *parent)
 
 void BoundListView::setModel(QAbstractItemModel *model)
 {
-	_variablesListModel = qobject_cast<ListModelVariablesAssigned *>(model);
+	_variablesListModel = qobject_cast<TableModelVariablesAssigned *>(model);
 
 	if (_variablesListModel != NULL)
 	{

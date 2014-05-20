@@ -17,7 +17,7 @@ QString tq(const std::string &from)
 	return QString::fromUtf8(from.c_str(), from.length());
 }
 
-QStringList tql(const std::vector<std::string> &from)
+QStringList tql(const std::vector<string> &from)
 {
 	(void)from;
 
@@ -32,21 +32,3 @@ QStringList tql(const std::vector<std::string> &from)
 	return result;
 }
 
-
-bool remove(vector<string> &array, string &value)
-{
-	vector<string>::iterator itr = array.begin();
-
-	while (itr != array.end())
-	{
-		if (*itr == value)
-		{
-			array.erase(itr);
-			return true;
-		}
-
-		itr++;
-	}
-
-	return false;
-}

@@ -1,7 +1,7 @@
 
 #include "correlationpartial.h"
 
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 #include "options/optionboolean.h"
 #include "options/optionlist.h"
 
@@ -14,8 +14,8 @@ Options *CorrelationPartial::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add("variables", new OptionFields());
-	options->add("controllingFor", new OptionFields());
+	options->add("variables", new OptionVariables());
+	options->add("controllingFor", new OptionVariables());
 
 	options->add("tails", new OptionList(list("twoTailed", "oneTailed")));
 

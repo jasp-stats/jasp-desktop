@@ -11,11 +11,11 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->listAvailableFields->setModel(&_availableFields);
+	ui->listAvailableFields->setModel(&_availableVariablesModel);
 	ui->listAvailableFields->setDoubleClickTarget(ui->main_fields);
 
-	ListModelVariablesAssigned *model = new ListModelVariablesAssigned(this);
-	model->setSource(&_availableFields);
+	TableModelVariablesAssigned *model = new TableModelVariablesAssigned(this);
+	model->setSource(&_availableVariablesModel);
 
 	ui->main_fields->setModel(model);
 	ui->main_fields->setDoubleClickTarget(ui->listAvailableFields);

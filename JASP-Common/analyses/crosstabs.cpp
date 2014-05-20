@@ -7,7 +7,7 @@
 #include "options/optionnumber.h"
 #include "options/optioninteger.h"
 #include "options/optionlist.h"
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 
 Crosstabs::Crosstabs(int id)
 	: Analysis(id, "Crosstabs")
@@ -18,12 +18,12 @@ Options *Crosstabs::createDefaultOptions()
 {
 	Options *options = new Options();
 
-	options->add("rows", new OptionFields());
-	options->add("columns", new OptionFields());
+	options->add("rows", new OptionVariables());
+	options->add("columns", new OptionVariables());
 
 	Options *layerOptionsTemplate = new Options();
 	layerOptionsTemplate->add("name", new OptionString("Layer %1"));
-	layerOptionsTemplate->add("variables", new OptionFields());
+	layerOptionsTemplate->add("variables", new OptionVariables());
 
 	options->add("layers", new OptionsTable(layerOptionsTemplate));
 
