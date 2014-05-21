@@ -7,7 +7,6 @@
 
 #include "optionvariables.h"
 #include "common.h"
-#include "term.h"
 
 class OptionVariable : public OptionVariables
 {
