@@ -26,6 +26,13 @@ Options *AnovaOneWay::createDefaultOptions()
 	options->add("variables", new OptionVariables());
 	options->add("groupingVariable", new OptionVariable());
 
+	options->add("postHocTestsFDR", new OptionBoolean());
+	options->add("postHocTestsBenjamini", new OptionBoolean());
+	options->add("postHocTestsBonferroni", new OptionBoolean());
+	options->add("postHocTestsHochberg", new OptionBoolean());
+	options->add("postHocTestsHolm", new OptionBoolean());
+	options->add("postHocTestsHommel", new OptionBoolean());
+
 	options->add("equalityOfVariances", new OptionList(list("assumeEqual", "assumeUnequal", "both")));
 
 	options->add("testUnequalVariances", new OptionBoolean());

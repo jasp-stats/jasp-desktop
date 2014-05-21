@@ -7,7 +7,7 @@
 class VariableInfo
 {
 public:
-	enum InfoType { VariableType };
+	enum InfoType { VariableType, Labels };
 };
 
 class VariableInfoProvider

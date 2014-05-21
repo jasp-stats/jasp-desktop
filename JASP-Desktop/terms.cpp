@@ -14,6 +14,12 @@ Terms::Terms(const QList<QList<QString> > &terms, Terms *parent)
 	set(terms);
 }
 
+Terms::Terms(const QList<QString> &terms, Terms *parent)
+{
+	_parent = parent;
+	set(terms);
+}
+
 Terms::Terms(const std::vector<std::vector<string> > &terms, Terms *parent)
 {
 	_parent = parent;
@@ -82,6 +88,14 @@ void Terms::set(const QList<QList<QString> > &terms)
 	_terms.clear();
 
 	BOOST_FOREACH(const QList<QString> &term, terms)
+		add(Term(term));
+}
+
+void Terms::set(const QList<QString> &terms)
+{
+	_terms.clear();
+
+	BOOST_FOREACH(const QString &term, terms)
 		add(Term(term));
 }
 

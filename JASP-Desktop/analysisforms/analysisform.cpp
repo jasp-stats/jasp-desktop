@@ -9,6 +9,7 @@
 #include <QResizeEvent>
 #include "widgets/boundlistview.h"
 #include "widgets/boundpairstable.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -57,8 +58,21 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
 {
 	if (info == VariableInfo::VariableType)
+	{
 		return _dataSet->column(term.asString()).columnType();
+	}
+	else if (info == VariableInfo::Labels)
+	{
+		QStringList values;
+		Labels &labels = _dataSet->column(term.asString()).labels();
+		for (uint i = 0; i < labels.size(); i++)
+			values.append(tq(labels.at(i).text()));
+
+		return values;
+	}
 	else
+	{
 		return QVariant();
+	}
 }
 

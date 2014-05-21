@@ -9,12 +9,14 @@ class Terms
 {
 public:
 	Terms(const QList<QList<QString> > &terms, Terms *parent = NULL);
+	Terms(const QList<QString> &terms, Terms *parent = NULL);
 	Terms(const std::vector<std::vector<std::string> > &terms, Terms *parent = NULL);
 	Terms(const std::vector<std::string> &terms, Terms *parent = NULL);
 	Terms(const QList<Term> &terms, Terms *parent = NULL);
 	Terms(Terms *parent = NULL);
 
 	void set(const QList<QList<QString> > &terms);
+	void set(const QList<QString> &terms);
 	void set(const std::vector<Term> &terms);
 	void set(const std::vector<std::string> &terms);
 	void set(const std::vector<std::vector<std::string> > &terms);

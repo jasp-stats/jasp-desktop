@@ -105,7 +105,8 @@ SOURCES += main.cpp\
     widgets/tablemodelvariablesavailable.cpp \
     widgets/tablemodelvariableslevels.cpp \
     widgets/tablemodelvariablesoptions.cpp \
-    widgets/tablemodelanovamodel.cpp
+    widgets/tablemodelanovamodel.cpp \
+    widgets/tablemodelcontrasts.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -186,7 +187,8 @@ HEADERS  += \
     widgets/tablemodelvariablesavailable.h \
     widgets/tablemodelvariableslevels.h \
     widgets/tablemodelvariablesoptions.h \
-    widgets/tablemodelanovamodel.h
+    widgets/tablemodelanovamodel.h \
+    widgets/tablemodelcontrasts.h
 
 FORMS    += \
     backstageform.ui \
