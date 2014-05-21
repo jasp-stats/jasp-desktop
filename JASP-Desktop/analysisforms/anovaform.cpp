@@ -15,8 +15,8 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
 	_dependentListModel = new TableModelVariablesAssigned(this);
 	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	_dependentListModel->setSource(&_availableVariablesModel);
-	_dependentListModel->setIsNominalTextAllowed(false);
 	ui->dependent->setModel(_dependentListModel);
 
 	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
@@ -37,7 +37,7 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	_wlsWeightsListModel = new TableModelVariablesAssigned(this);
 	_wlsWeightsListModel->setSource(&_availableVariablesModel);
 	_wlsWeightsListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_wlsWeightsListModel->setIsNominalTextAllowed(false);
+	_wlsWeightsListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->wlsWeights->setModel(_wlsWeightsListModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);

@@ -14,11 +14,13 @@ AnovaOneWayForm::AnovaOneWayForm(QWidget *parent) :
 
 	TableModelVariablesAssigned *variablesModel = new TableModelVariablesAssigned(this);
 	variablesModel->setSource(&_availableVariablesModel);
-	variablesModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	variablesModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	variablesModel->setVariableTypesSuggested(Column::ColumnTypeScale);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
 	TableModelVariablesAssigned *groupingVariableModel = new TableModelVariablesAssigned(this);
+	groupingVariableModel->setVariableTypesAllowed(Column::ColumnTypeNominalText | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	groupingVariableModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	groupingVariableModel->setSource(&_availableVariablesModel);
 	ui->groupingVariable->setModel(groupingVariableModel);

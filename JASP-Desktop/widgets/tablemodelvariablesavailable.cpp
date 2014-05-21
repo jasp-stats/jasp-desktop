@@ -22,7 +22,7 @@ void TableModelVariablesAvailable::setVariables(const Terms &variables)
 
 	foreach (const Term &term, variables)
 	{
-		if (isForbidden(term))
+		if ( ! isAllowed(term))
 			forbidden.add(term);
 		else if (isSuggested(term))
 			suggested.add(term);
@@ -30,7 +30,7 @@ void TableModelVariablesAvailable::setVariables(const Terms &variables)
 			allowed.add(term);
 	}
 
-	Terms ordered; // present them in a sensible order
+	Terms ordered; // present them in a nice order
 
 	ordered.add(suggested);
 	ordered.add(allowed);

@@ -26,10 +26,10 @@ public:
 	explicit TableModelVariables(QObject *parent = 0);
 	
 	void setVariableTypesSuggested(int variableTypesSuggested);
-	int variableTypesSuggested();
+	int variableTypesSuggested() const;
 
-	void setIsNominalTextAllowed(bool allowed);
-	bool isNominalTextAllowed();
+	void setVariableTypesAllowed(int variableTypesAllowed);
+	int variableTypesAllowed() const;
 
     virtual int rowCount(const QModelIndex &) const OVERRIDE;
 	virtual int columnCount(const QModelIndex &parent) const OVERRIDE;
@@ -57,7 +57,7 @@ protected:
 
 	Terms _variables;
 
-	bool isForbidden(const Term &term) const;
+	bool isAllowed(const Term &term) const;
 	bool isSuggested(const Term &term) const;
 
 	bool isDroppingToSelf(const QMimeData *mimeData) const;
@@ -72,8 +72,8 @@ private:
 	Qt::DropActions _dragActions;
 
 	int _variableTypesSuggested;
+	int _variableTypesAllowed;
 
-	bool _nominalTextAllowed;
 	QMimeData *_mimeData;
 
 	QIcon _nominalTextIcon;

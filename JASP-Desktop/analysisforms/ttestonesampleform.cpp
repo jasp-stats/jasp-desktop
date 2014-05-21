@@ -11,13 +11,13 @@ TTestOneSampleForm::TTestOneSampleForm(QWidget *parent) :
 	ui->setupUi(this);
 
 	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale);
-	_availableVariablesModel.setIsNominalTextAllowed(false);
+	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
 	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
 	TableModelVariablesAssigned *variablesModel = new TableModelVariablesAssigned(this);
 	variablesModel->setSource(&_availableVariablesModel);
-	variablesModel->setIsNominalTextAllowed(false);
+	variablesModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	variablesModel->setVariableTypesSuggested(Column::ColumnTypeScale);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);

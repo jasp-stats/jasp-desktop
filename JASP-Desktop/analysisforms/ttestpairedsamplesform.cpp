@@ -12,7 +12,7 @@ TTestPairedSamplesForm::TTestPairedSamplesForm(QWidget *parent) :
 	_availableVariablesModel.setSupportedDropActions(Qt::MoveAction);
 	_availableVariablesModel.setSupportedDragActions(Qt::CopyAction);
 	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale);
-	_availableVariablesModel.setIsNominalTextAllowed(false);
+	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->availableFields->setModel(&_availableVariablesModel);
 	ui->availableFields->setDefaultDropAction(Qt::MoveAction);
 	ui->availableFields->setDoubleClickTarget(ui->pairs);

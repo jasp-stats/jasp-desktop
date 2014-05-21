@@ -10,7 +10,7 @@ TableModelVariables::TableModelVariables(QObject *parent) :
 	TableModel(parent)
 {
 	_variableTypesSuggested = 0;
-	_nominalTextAllowed = true;
+	_variableTypesAllowed = 0xff;
 
 	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
@@ -30,19 +30,19 @@ void TableModelVariables::setVariableTypesSuggested(int variableTypesSuggested)
 	_variableTypesSuggested = variableTypesSuggested;
 }
 
-int TableModelVariables::variableTypesSuggested()
+int TableModelVariables::variableTypesSuggested() const
 {
 	return _variableTypesSuggested;
 }
 
-void TableModelVariables::setIsNominalTextAllowed(bool allowed)
+void TableModelVariables::setVariableTypesAllowed(int variableTypesAllowed)
 {
-	_nominalTextAllowed = allowed;
+	_variableTypesAllowed = variableTypesAllowed;
 }
 
-bool TableModelVariables::isNominalTextAllowed()
+int TableModelVariables::variableTypesAllowed() const
 {
-	return _nominalTextAllowed;
+	return _variableTypesAllowed;
 }
 
 int TableModelVariables::rowCount(const QModelIndex &) const
@@ -103,7 +103,7 @@ Qt::ItemFlags TableModelVariables::flags(const QModelIndex &index) const
 	if (index.isValid())
 	{
 		const Term &term = _variables.at(index.row());
-		if (isForbidden(term))
+		if ( ! isAllowed(term))
             return 0;
 
         return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
@@ -213,7 +213,7 @@ bool TableModelVariables::canDropMimeData(const QMimeData *data, Qt::DropAction 
 
 		foreach (const Term &variable, variables)
 		{
-			if (isForbidden(variable))
+			if ( ! isAllowed(variable))
 				return false;
 		}
 
@@ -248,12 +248,12 @@ bool TableModelVariables::isSuggested(const Term &term) const
 	return variableType & _variableTypesSuggested;
 }
 
-bool TableModelVariables::isForbidden(const Term &term) const
+bool TableModelVariables::isAllowed(const Term &term) const
 {
 	QVariant v = requestInfo(term, VariableInfo::VariableType);
 	int variableType = v.toInt();
 
-	return (_nominalTextAllowed == false) && (variableType == Column::ColumnTypeNominalText);
+	return variableType & _variableTypesAllowed;
 }
 
 bool TableModelVariables::isDroppingToSelf(const QMimeData *mimeData) const
