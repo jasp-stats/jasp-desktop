@@ -74,6 +74,6 @@ bool Process::isParentRunning()
 		return ( ! success) || exitCode == STILL_ACTIVE;
 	}
 #else
-	return getppid() != -1;
+	return getppid() != 1;
 #endif
 }
