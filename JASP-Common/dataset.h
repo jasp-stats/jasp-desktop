@@ -20,6 +20,8 @@ public:
 	void setRowCount(int rowCount);
 	void setColumnCount(int columnCount);
 
+	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
+
 private:
 
 	Columns _columns;

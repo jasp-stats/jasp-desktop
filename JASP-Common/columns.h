@@ -33,6 +33,8 @@ public:
 
 private:
 
+	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
+
 	boost::interprocess::managed_shared_memory *_mem;
 
 	void setRowCount(int rowCount);

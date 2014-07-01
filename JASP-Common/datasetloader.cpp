@@ -285,6 +285,7 @@ void DataSetLoader::growMemory(DataSet *&dataSet, managed_shared_memory *&mem)
 		//cout.flush();
 
 		dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
+		dataSet->setSharedMemory(mem);
 	}
 	catch (exception &e)
 	{
