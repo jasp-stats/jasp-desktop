@@ -17,7 +17,7 @@ init <- function(name, options.as.json.string) {
 	
 	} else {
 	
-		RJSONIO::toJSON(results)	
+		RJSONIO::toJSON(results, digits=12)
 	}
 
 }
@@ -40,7 +40,7 @@ run <- function(name, options.as.json.string) {
 	
 	} else {
 	
-		RJSONIO::toJSON(results)	
+		RJSONIO::toJSON(results, digits=12)
 	}
 
 }
