@@ -35,7 +35,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	###        CONTRAST FUNCTION        ###
 	#######################################
 	
-	.setContrast <- function (var,con,ref,case=FALSE) {
+	.setContrast <- function (var,con,case=FALSE) {
 		levels <- levels(dataset[[ .v(var) ]])
 		n.levels <- length(levels)
 		
@@ -47,30 +47,24 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 			
 		} else if (con == "deviation") {
 			
-			if(ref=="first") {
-				contr = matrix(0,nrow = n.levels, ncol = n.levels - 1)
-				for(i in 1:n.levels-1){
-					contr[c(1,i+1),i]<- c(-1,1)  
-				}
+			contr = matrix(0,nrow = n.levels, ncol = n.levels - 1)
+			for(i in 1:n.levels-1){
+				contr[c(1,i+1),i]<- c(-1,1)  
 			}
-			if(ref=="last") contr = contr.sum(levels)
 
 			for(i in 1:(n.levels - 1)) {
-				if(ref=="first") cases[[i]] <- paste(levels[i + 1]," - ",paste(levels,collapse=", "),sep="")
-				if(ref=="last") cases[[i]] <- paste(levels[i]," - ",paste(levels,collapse=", "),sep="")
+				cases[[i]] <- paste(levels[i + 1]," - ",paste(levels,collapse=", "),sep="")
 			}
 			
 		} else if (con == "simple") {
 			
-			if(ref=="first") c <- contr.treatment(levels)
-			if(ref=="last") c <- contr.treatment(levels,base=n.levels)
+			c <- contr.treatment(levels)
 
 			my.coding <- matrix(rep(1 / n.levels, prod(dim(c))), ncol=n.levels - 1)
 			contr <- (c-my.coding)*n.levels
 		   
 			for(i in 1:(n.levels - 1)) {
-				if(ref=="first") cases[[i]] <- paste(levels[i+1]," - ",levels[1],sep="")
-				if(ref=="last") cases[[i]] <- paste(levels[i]," - ",levels[n.levels],sep="")
+				cases[[i]] <- paste(levels[i+1]," - ",levels[1],sep="")
 			}
 					   
 		} else if (con == "helmert") {
@@ -151,7 +145,6 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 		model <- NULL
 		
 		contrast.name <- NULL
-		reference <- NULL
 		variable <- NULL
 		
 		dependent.base64 <- .v(options$dependent)
@@ -182,11 +175,10 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 				for (i in .indices(fixedFactors)) {
 					
 					contrast.name[i] <- options$contrasts[[i]][["contrast"]]
-					reference[i] <- options$contrasts[[i]][["reference"]]
 					variable[i] <- options$contrasts[[i]][["variable"]]
 					
 					if(length(unique(dataset[[ .v(fixedFactors[i]) ]])) > 1) {
-						contr <- .setContrast(variable[i], contrast.name[i], reference[i])
+						contr <- .setContrast(variable[i], contrast.name[i])
 						dimnames(contr)<-NULL
 						contrasts(dataset[[ .v(variable[i]) ]]) = contr
 					}
@@ -308,7 +300,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 						
 						contrast[["title"]] <- paste("Contrast", contrast.name[var], variable[var], sep=" ")
 						
-						cases <- .setContrast(variable[var], contrast.name[var], reference[var], case=TRUE)
+						cases <- .setContrast(variable[var], contrast.name[var], case=TRUE)
 						
 						fields <- list(
 							list(name="Comparison", type="text"),
