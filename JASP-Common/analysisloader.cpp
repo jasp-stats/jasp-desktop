@@ -10,6 +10,7 @@
 #include "analyses/anovaoneway.h"
 #include "analyses/anovamultivariate.h"
 #include "analyses/anova.h"
+#include "analyses/anovarepeatedmeasures.h"
 #include "analyses/ancova.h"
 #include "analyses/anovabayesian.h"
 #include "analyses/ancovamultivariate.h"
@@ -47,6 +48,8 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		return new AncovaMultivariate(id);
 	else if (analysisName == "Anova")
 		return new Anova(id);
+	else if (analysisName == "AnovaRepeatedMeasures")
+		return new AnovaRepeatedMeasures(id);
 	else if (analysisName == "Ancova")
 		return new Ancova(id);
 	else if (analysisName == "AnovaBayesian")

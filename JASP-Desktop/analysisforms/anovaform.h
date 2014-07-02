@@ -29,7 +29,6 @@ private:
 	TableModelVariablesAssigned *_dependentListModel;
 	TableModelVariablesAssigned *_fixedFactorsListModel;
 	TableModelVariablesAssigned *_randomFactorsListModel;
-	TableModelVariablesAssigned *_repeatedMeasuresListModel;
 	TableModelVariablesAssigned *_wlsWeightsListModel;
 
 	TableModelAnovaModel *_anovaModel;

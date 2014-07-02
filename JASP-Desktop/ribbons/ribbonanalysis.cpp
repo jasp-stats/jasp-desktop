@@ -23,6 +23,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu = new QMenu(this);
 	menu->addAction(QString("One Way ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaOneWay");
 	menu->addAction(QString("ANOVA"), this, SLOT(itemSelected()))->setObjectName("Anova");
+	menu->addAction(QString("Repeated Measures ANOVA [Long Form]"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasures");
 	menu->addAction(QString("ANCOVA"), this, SLOT(itemSelected()))->setObjectName("Ancova");
 	menu->addAction(QString("MAN(C)OVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");
 	//menu->addAction(QString("MANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");

@@ -74,7 +74,8 @@ SOURCES += \
     options/optionterms.cpp \
     options/optionvariablesgroups.cpp \
     options/optionterm.cpp \
-    options/optionvariables.cpp
+    options/optionvariables.cpp \
+    analyses/anovarepeatedmeasures.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -138,7 +139,8 @@ HEADERS +=\
     options/optionvariable.h \
     options/optionterms.h \
     options/optionvariablesgroups.h \
-    options/optionterm.h
+    options/optionterm.h \
+    analyses/anovarepeatedmeasures.h
 
 unix:!symbian {
     maemo5 {
