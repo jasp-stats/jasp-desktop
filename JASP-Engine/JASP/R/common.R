@@ -45,12 +45,12 @@ run <- function(name, options.as.json.string) {
 
 }
 
-read.dataset.to.end <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {	
+.readDataSetToEnd <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {	
 
 	if (is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor) && all.columns == FALSE)
 		return (data.frame())
 
-	dataset <- .read.dataset.native(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
+	dataset <- .readDatasetToEndNative(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
 	
 	if ( ! is.null(exclude.na.listwise))
 	{
@@ -72,12 +72,12 @@ read.dataset.to.end <- function(columns=c(), columns.as.numeric=c(), columns.as.
 	dataset
 }
 
-read.dataset.header <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, ...) {
+.readDataSetHeader <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, ...) {
 
 	if (is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor) && all.columns == FALSE)
 		return (data.frame())
 
-	dataset <- .read.dataset.header.native(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
+	dataset <- .readDataSetHeaderNative(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
 	
 	dataset
 }
@@ -110,7 +110,7 @@ callback <- function(results=NULL) {
 		json.string <- RJSONIO::toJSON(results)
 	}
 	
-	.callback.native(json.string);
+	.callbackNative(json.string);
 
 }
 

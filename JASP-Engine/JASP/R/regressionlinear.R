@@ -4,9 +4,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- read.dataset.to.end()
+			dataset <- .readDataSetToEnd()
 		} else {
-			dataset <- read.dataset.header()
+			dataset <- .readDataSetHeader()
 		}
 	}
 

@@ -9,9 +9,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	if (is.null(dataset)) {
 		
 		if (perform == "run") {
-			dataset <- read.dataset.to.end(	columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
+			dataset <- .readDataSetToEnd(	columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
 		} else {
-			dataset <- read.dataset.header( columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
+			dataset <- .readDataSetHeader( columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
 		}
 	}
 	

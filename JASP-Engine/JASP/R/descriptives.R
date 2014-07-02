@@ -58,11 +58,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 		if (perform == "run") {
 		
-			dataset <- read.dataset.to.end(columns.as.numeric=variables)
+			dataset <- .readDataSetToEnd(columns.as.numeric=variables)
 			
 		} else {
 		
-			dataset <- read.dataset.header(columns.as.numeric=variables)
+			dataset <- .readDataSetHeader(columns.as.numeric=variables)
 		}
 	}
 

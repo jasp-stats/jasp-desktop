@@ -212,9 +212,9 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 	if (is.null(dataset)) {
 	
 		if (perform == "run") {
-			dataset <- read.dataset.to.end(all.columns=TRUE)
+			dataset <- .readDataSetToEnd(all.columns=TRUE)
 		} else {
-			dataset <- read.dataset.header(all.columns=TRUE)
+			dataset <- .readDataSetHeader(all.columns=TRUE)
 		}
 	}
 	

@@ -13,17 +13,17 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 			if (options$missingValues == "excludeListwise") {
 		
-				dataset <- read.dataset.to.end(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=dependents)
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=dependents)
 			
 			} else {
 		
-				dataset <- read.dataset.to.end(columns.as.numeric=dependents, columns.as.factor=grouping)
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping)
 			}
 		
 
 		} else {
 		
-			dataset <- read.dataset.header(columns.as.numeric=dependents, columns.as.factor=grouping)
+			dataset <- .readDataSetHeader(columns.as.numeric=dependents, columns.as.factor=grouping)
 		}
 	}
 

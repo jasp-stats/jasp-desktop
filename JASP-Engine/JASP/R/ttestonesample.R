@@ -6,9 +6,9 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- read.dataset.to.end(columns.as.numeric=all.variables)
+			dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
 		} else {
-			dataset <- read.dataset.header(columns.as.numeric=all.variables)
+			dataset <- .readDataSetHeader(columns.as.numeric=all.variables)
 		}
 	}
 
