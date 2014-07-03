@@ -165,11 +165,11 @@ callback <- function(results=NULL) {
 
 .beginSaveImage <- function(width=320, height=320) {
 		
-	file <- paste(tempfile(), "png", sep=".")
+	file <- tempfile()
 			
-	grDevices::png(filename=file, width=2 * width, height=2 * height, pointsize=24, bg="transparent")
+	grDevices::svg(filename=file, width=width/72, height=height/72, bg="transparent")
 	
-	list(format="png", encoding="dataURI;base64", file=file)
+	list(format="svg", encoding="dataURI;base64", file=file)
 }
 
 .endSaveImage <- function(image.descriptor) {
@@ -180,7 +180,7 @@ callback <- function(results=NULL) {
 	
 	base64::encode(image.descriptor$file, file, linesize=1024*1024*1024)
 	
-	content <- paste("data:image/png;base64,", base::readChar(file, 1024*1024*1024), sep="")
+	content <- paste("data:image/svg+xml;base64,", base::readChar(file, 1024*1024*1024), sep="")
 	
 	base::file.remove(image.descriptor$file)
 	base::file.remove(file)
