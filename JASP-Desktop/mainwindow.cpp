@@ -31,6 +31,7 @@
 #include <QFile>
 #include <QToolTip>
 #include <QClipboard>
+#include <QWebElement>
 
 #include <QStringBuilder>
 
@@ -96,6 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
 	connect(ui->backStage, SIGNAL(closeDataSetSelected()), this, SLOT(dataSetCloseRequested()));
+	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
 
 	_alert = new ProgressWidget(ui->tableView);
 	_alert->setAutoFillBackground(true);
@@ -365,6 +367,31 @@ void MainWindow::itemSelected(const QString item)
 		showForm(_currentAnalysis);
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
 	}
+}
+
+void MainWindow::exportSelected(const QString &filename)
+{
+	QWebElement element = ui->webViewResults->page()->mainFrame()->documentElement().clone();
+
+	QWebElementCollection nodes = element.findAll("html > head > script, html > head > link, #spacer, #intro, #templates");
+	foreach (QWebElement node, nodes)
+		node.removeFromDocument();
+
+	QWebElement head = element.findFirst("html > head");
+
+	QFile ss(":/core/css/theme-jasp.css");
+	ss.open(QIODevice::ReadOnly);
+	QByteArray bytes = ss.readAll();
+	QString css = QString::fromUtf8(bytes);
+
+	head.setInnerXml(QString("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><title>JASP Results</title><style type=\"text/css\">") + css + QString("</style>"));
+
+	QFile file(filename);
+	file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+	QTextStream stream(&file);
+	stream << element.toOuterXml();
+	stream.flush();
+	file.close();
 }
 
 void MainWindow::adjustOptionsPanelWidth()
