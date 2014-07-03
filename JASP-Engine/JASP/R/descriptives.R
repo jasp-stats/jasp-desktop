@@ -509,7 +509,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			plot[["title"]] <- variable
 			plot[["width"]]  <- options$chartWidth
 			plot[["height"]] <- options$chartHeight
-			plot[["itemOptions"]] <- list(width="chartWidth", height="chartHeight")
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
 		
 			frequency.plots[[i]] <- plot
 			i <- i + 1
