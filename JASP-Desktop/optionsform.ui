@@ -46,7 +46,7 @@
          <item row="0" column="0">
           <widget class="QGroupBox" name="groupBox">
            <property name="title">
-            <string>Additional Modules</string>
+            <string>Additional Toolboxes</string>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -58,7 +58,7 @@
             <item row="0" column="0">
              <widget class="QCheckBox" name="plugins_sem">
               <property name="text">
-               <string>SEM Module</string>
+               <string>SEM Toolbox</string>
               </property>
              </widget>
             </item>
