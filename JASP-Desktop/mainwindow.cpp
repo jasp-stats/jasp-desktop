@@ -373,9 +373,18 @@ void MainWindow::exportSelected(const QString &filename)
 {
 	QWebElement element = ui->webViewResults->page()->mainFrame()->documentElement().clone();
 
-	QWebElementCollection nodes = element.findAll("html > head > script, html > head > link, #spacer, #intro, #templates");
+	QWebElementCollection nodes;
+
+	nodes = element.findAll("html > head > script, html > head > link, #spacer, #intro, #templates");
 	foreach (QWebElement node, nodes)
 		node.removeFromDocument();
+
+	nodes = element.findAll(".selected, .unselected");
+	foreach (QWebElement node, nodes)
+	{
+		node.removeClass("selected");
+		node.removeClass("unselected");
+	}
 
 	QWebElement head = element.findFirst("html > head");
 
@@ -392,6 +401,8 @@ void MainWindow::exportSelected(const QString &filename)
 	stream << element.toOuterXml();
 	stream.flush();
 	file.close();
+
+	ui->tabBar->setCurrentIndex(1);
 }
 
 void MainWindow::adjustOptionsPanelWidth()
