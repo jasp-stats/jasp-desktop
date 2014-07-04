@@ -4,6 +4,7 @@
 #include <string>
 #include <QMimeData>
 #include <QTimer>
+#include <QDebug>
 
 #include "options/optionvariables.h"
 

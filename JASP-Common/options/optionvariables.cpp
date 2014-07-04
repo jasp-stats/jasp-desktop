@@ -2,6 +2,7 @@
 #include "optionvariables.h"
 
 #include <boost/foreach.hpp>
+#include "common.h"
 
 using namespace std;
 

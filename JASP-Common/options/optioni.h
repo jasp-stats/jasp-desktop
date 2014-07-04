@@ -4,8 +4,6 @@
 #include "option.h"
 #include "common.h"
 
-#include <QDebug>
-
 template <class T>
 class OptionI : public Option
 {

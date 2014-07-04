@@ -7,4 +7,6 @@
 #define OVERRIDE override
 #endif
 
+typedef unsigned int uint;
+
 #endif // COMMON_H
