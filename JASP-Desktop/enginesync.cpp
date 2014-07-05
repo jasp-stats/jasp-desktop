@@ -25,11 +25,26 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
 	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
 
+}
+
+EngineSync::~EngineSync()
+{
+	for (int i = 0; i < _slaveProcesses.size(); i++)
+	{
+		_slaveProcesses[i]->terminate();
+		_slaveProcesses[i]->kill();
+	}
+
+	shared_memory_object::remove(_memoryName.c_str());
+}
+
+void EngineSync::start()
+{
 	_timer = new QTimer(this);
 	connect(_timer, SIGNAL(timeout()), this, SLOT(process()));
 	_timer->start(50);
 
-    try {
+	try {
 
 		unsigned long pid = Process::currentPID();
 
@@ -46,30 +61,18 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 		_channels.push_back(new IPCChannel(_memoryName, 3));
 #endif
 
-    }
-    catch (interprocess_exception e)
-    {
-        qDebug() << "interprocess exception! " << e.what() << "\n";
-        throw e;
-    }
+	}
+	catch (interprocess_exception e)
+	{
+		qDebug() << "interprocess exception! " << e.what() << "\n";
+		throw e;
+	}
 
 	for (int i = 0; i < _channels.size(); i++)
 	{
 		_analysesInProgress.push_back(NULL);
 		startSlaveProcess(i);
 	}
-
-}
-
-EngineSync::~EngineSync()
-{
-	for (int i = 0; i < _slaveProcesses.size(); i++)
-	{
-		_slaveProcesses[i]->terminate();
-		_slaveProcesses[i]->kill();
-	}
-
-	shared_memory_object::remove(_memoryName.c_str());
 }
 
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
@@ -281,6 +284,8 @@ void EngineSync::subProcessStarted()
 
 void EngineSync::subProcessError(QProcess::ProcessError error)
 {
+	emit engineTerminated();
+
 	qDebug() << "subprocess error" << error;
 }
 

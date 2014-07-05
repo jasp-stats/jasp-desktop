@@ -32,6 +32,7 @@
 #include <QToolTip>
 #include <QClipboard>
 #include <QWebElement>
+#include <QMessageBox>
 
 #include <QStringBuilder>
 
@@ -90,6 +91,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, this);
+	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(engineCrashed()));
+	_engineSync->start();
 
 	_analyses->analysisResultsChanged.connect(boost::bind(&MainWindow::analysisResultsChangedHandler, this, _1));
 
@@ -356,6 +359,19 @@ void MainWindow::updateUIFromOptions()
 			ui->tabBar->removeTab(2);
 	}
 
+}
+
+void MainWindow::engineCrashed()
+{
+	static bool exiting = false;
+
+	if (exiting == false)
+	{
+		exiting = true;
+
+		QMessageBox::warning(this, "Error", "The JASP Statistics Engine has terminated unexpectedly.\n\nThis sometimes happens under older versions of Operating Systems that have not yet been tested.\n\nThe JASP team is actively working on this, and if you could report your experiences that would be appreciated.\n\nJASP cannot continue and will now close.");
+		QApplication::exit(1);
+	}
 }
 
 void MainWindow::itemSelected(const QString item)

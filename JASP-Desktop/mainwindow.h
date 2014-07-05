@@ -88,6 +88,8 @@ private slots:
 
 	void updateMenuEnabledDisabledStatus();
 	void updateUIFromOptions();
+
+	void engineCrashed();
 };
 
 #endif // MAINWIDGET_H
