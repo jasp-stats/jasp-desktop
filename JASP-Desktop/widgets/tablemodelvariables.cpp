@@ -253,7 +253,7 @@ bool TableModelVariables::isAllowed(const Term &term) const
 	QVariant v = requestInfo(term, VariableInfo::VariableType);
 	int variableType = v.toInt();
 
-	return variableType & _variableTypesAllowed;
+	return variableType == 0 || variableType & _variableTypesAllowed;
 }
 
 bool TableModelVariables::isDroppingToSelf(const QMimeData *mimeData) const
