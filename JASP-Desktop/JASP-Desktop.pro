@@ -77,7 +77,6 @@ SOURCES += main.cpp\
 	analysisforms/regressionlinearform.cpp \
 	analysisforms/correlationform.cpp \
     widgets/boundassignwidget.cpp \
-    analysisforms/subforms/posthoctestssub.cpp \
     analysisforms/anovarepeatedmeasuresform.cpp \
     analysisforms/crosstabsform.cpp \
     utils.cpp \
@@ -158,7 +157,6 @@ HEADERS  += \
     widgets/tableviewmenueditor.h \
     widgets/tableviewmenueditordelegate.h \
     widgets/boundassignwidget.h \
-    analysisforms/subforms/posthoctestssub.h \
     analysisforms/anovarepeatedmeasuresform.h \
     utils.h \
     analysisforms/crosstabsform.h \
@@ -209,7 +207,6 @@ FORMS    += \
     mainwindow.ui \
     analysisforms/correlationform.ui \
     widgets/boundassignwidget.ui \
-    analysisforms/subforms/posthoctestssub.ui \
     analysisforms/anovarepeatedmeasuresform.ui \
     analysisforms/crosstabsform.ui \
     analysisforms/correlationpartialform.ui \
