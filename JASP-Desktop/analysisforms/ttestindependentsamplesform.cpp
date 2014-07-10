@@ -21,7 +21,6 @@ TTestIndependentSamplesForm::TTestIndependentSamplesForm(QWidget *parent) :
 
 	TableModelVariablesAssigned *groupingVariableModel = new TableModelVariablesAssigned(this);
 	groupingVariableModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
-	groupingVariableModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	groupingVariableModel->setSource(&_availableVariablesModel);
 	ui->groupingVariable->setModel(groupingVariableModel);
 	ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields);
