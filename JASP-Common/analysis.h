@@ -20,6 +20,7 @@ class Analysis
 
 public:
 	Analysis(int id, std::string name);
+	virtual ~Analysis();
 
 	Options *options();
 

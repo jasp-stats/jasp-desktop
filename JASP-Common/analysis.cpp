@@ -28,6 +28,10 @@ Analysis::Analysis(int id, string name)
 	_options = NULL;
 }
 
+Analysis::~Analysis()
+{
+}
+
 void Analysis::init()
 {
 	_status = Initing;
