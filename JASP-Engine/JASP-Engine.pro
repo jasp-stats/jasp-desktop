@@ -20,7 +20,11 @@ LIBS += -L.. -lJASP-Common
 unix:INCLUDEPATH += /opt/local/include
 windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
 
-R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.0/Resources
+macx {
+	R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.0/Resources
+} else {
+	R_HOME = $$OUT_PWD/../R-3.0.0
+}
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
