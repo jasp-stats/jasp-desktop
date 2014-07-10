@@ -53,12 +53,12 @@ AnovaBayesianForm::~AnovaBayesianForm()
 
 void AnovaBayesianForm::factorsChanged()
 {
-	/*QList<ColumnInfo> factorsAvailable;
+	Terms factorsAvailable;
 
-	factorsAvailable.append(_fixedFactorsListModel->assigned());
-	factorsAvailable.append(_randomFactorsListModel->assigned());
+	factorsAvailable.add(_fixedFactorsListModel->assigned());
+	factorsAvailable.add(_randomFactorsListModel->assigned());
 
-	_anovaModel->setVariables(factorsAvailable);*/
+	_anovaModel->setVariables(factorsAvailable);
 }
 
 void AnovaBayesianForm::dependentChanged()
