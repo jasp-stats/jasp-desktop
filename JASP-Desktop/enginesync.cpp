@@ -243,12 +243,12 @@ void EngineSync::startSlaveProcess(int no)
     unsigned long processId = Process::currentPID();
     args << QString::number(processId);
 #elif __APPLE__
-    env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib"));
+	env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("../Frameworks/R.framework/Libraries"));
 #else
     env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib") + ";" + programDir.absoluteFilePath("R-3.0.0/library/RInside/lib") + ";" + programDir.absoluteFilePath("R-3.0.0/library/Rcpp/lib"));
 #endif
 
-	env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));
+	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Resources"));
 
 	QProcess *slave = new QProcess(this);
 	slave->setProcessEnvironment(env);
