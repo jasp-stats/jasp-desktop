@@ -9,7 +9,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	if (is.null(dataset)) {
 		
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(	columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
+			dataset <- .readDataSetToEnd( columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
 		} else {
 			dataset <- .readDataSetHeader( columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
 		}
@@ -108,7 +108,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 			}	
 		} 
 		
-		if (case==FALSE & con!="none")
+		if (case==FALSE && con!="none")
 			return(contr)
 		if (case==TRUE)
 			return(cases) 
@@ -138,8 +138,8 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	
 	anova[["schema"]] <- list(fields=fields)
 	
-	if (length(options$modelTerms) > 0 & length(options$dependent) > 0) {
-		
+	if (length(options$modelTerms) > 0 && options$dependent != "") {
+
 		terms <- options$modelTerms
 		fixedFactors <- options$fixedFactors
 		model <- NULL
@@ -288,29 +288,29 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 			
 			contrasts <- list()
 			
-			if (perform == "run") {	
+			result.contrast <- summary.lm(model)[["coefficients"]]
+			con <- 1
+			for(var in .indices(fixedFactors)) {
 				
-				result.contrast <- summary.lm(model)[["coefficients"]]
-				con <- 1
-				for(var in .indices(fixedFactors)) {
+				if (contrast.name[var] != "none" && length(unique(dataset[[ .v(variable[var]) ]])) > 1) {
 					
-					if (contrast.name[var] != "none" & length(unique(dataset[[ .v(variable[var]) ]])) > 1) {
-						
-						contrast <- list()
-						
-						contrast[["title"]] <- paste("Contrast", contrast.name[var], variable[var], sep=" ")
-						
-						cases <- .setContrast(variable[var], contrast.name[var], case=TRUE)
-						
-						fields <- list(
-							list(name="Comparison", type="text"),
-							list(name="Estimate", type="number", format="dp:3"),
-							list(name="Std. Error", type="number", format="dp:3"),
-							list(name="t", type="number", format="dp:3"),
-							list(name="p", type="number", format="dp:3;p:.001"))
-						
-						contrast[["schema"]] <- list(fields=fields)
-						
+					contrast <- list()
+					
+					contrast[["title"]] <- paste("Contrast", contrast.name[var], variable[var], sep=" ")
+					
+					cases <- .setContrast(variable[var], contrast.name[var], case=TRUE)
+					
+					fields <- list(
+						list(name="Comparison", type="text"),
+						list(name="Estimate", type="number", format="dp:3"),
+						list(name="Std. Error", type="number", format="dp:3"),
+						list(name="t", type="number", format="dp:3"),
+						list(name="p", type="number", format="dp:3;p:.001"))
+					
+					contrast[["schema"]] <- list(fields=fields)
+					
+					if (perform == "run") {
+					
 						contrast.results <- list()
 						
 						for (i in 1:(length(levels(dataset[[ .v(variable[var]) ]])) - 1)) {
@@ -325,20 +325,34 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 							r <- list("Comparison"=cases[[i]], "Estimate"=est, "Std. Error"=SE, "t"=t, "p"=p)
 							
 							contrast.results[[length(contrast.results) + 1]] <- r
-						}
+						} 
 						
 						contrast[["data"]] <- contrast.results  
 						
-						contrasts[[con]] <- contrast	
+					} else {
 						
-						con <- con + 1						
-					}			 
+						contrast.results <- list()
+						
+						for (i in 1:(length(levels(dataset[[ .v(variable[var]) ]])) - 1)) {
+						
+							r <- list("Comparison"=cases[[i]], "Estimate"=".", "Std. Error"=".", "t"=".", "p"=".")
+							contrast.results[[length(contrast.results) + 1]] <- r
+						}
+						
+						contrast[["data"]] <- contrast.results  
+					}
+					
+					contrasts[[con]] <- contrast
+					
+					con <- con + 1
 				}
 			}
-			
+
 			results[["contrasts"]] <- contrasts   
 		}
 	}
+	
+	results[["anova"]] <- anova
 	
 	#######################################
 	###         POST-HOC TESTS          ###
@@ -414,7 +428,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 								
 								r <- t.test(data.split[[i]],data.split[[j]])
 								
-								if (j == 1 | (i == 1 & j == 2))
+								if (j == 1 | (i == 1 && j == 2))
 									var1 <- names(data.split)[i]
 								else
 									var1 <- "" 
@@ -441,7 +455,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 						for (i in 1:count) {
 							
 							if (options$postHocTests[["holm"]]) {
-								p.holm <- p.adjust(p, method="holm")[i]						
+								p.holm <- p.adjust(p, method="holm")[i]
 								posthoc[["data"]][[i]][["p holm"]] <- p.holm
 							}
 							
@@ -484,7 +498,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	###          DESCRIPTIVES           ###
 	#######################################
 	
-	if (perform == "run" & options$misc[["descriptives"]] & length(options$fixedFactors) > 0 & length(options$dependent) > 0) {
+	if (perform == "run" && options$misc[["descriptives"]] && length(options$fixedFactors) > 0 && length(options$dependent) > 0) {
 		
 		descriptives <- list()
 		
@@ -564,7 +578,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	###          LEVENE'S TEST          ###
 	#######################################
 	
-	if (perform == "run" & options$misc[["homogeneityTests"]] & length(options$fixedFactors) > 0 & length(options$dependent) > 0) {
+	if (options$misc[["homogeneityTests"]] && length(options$fixedFactors) > 0 && length(options$dependent) > 0) {
 		
 		levene <- list()
 		
@@ -578,19 +592,25 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 
 		levene[["schema"]] <- list(fields=fields)
 		
-		interaction <- paste(.v(options$fixedFactors), collapse=":", sep="")
-		levene.def <- paste(.v(options$dependent), "~", interaction)
-		levene.formula <- as.formula(levene.def)
+		if (perform == "run") {
 
-		r <- car::leveneTest(levene.formula, dataset, center = "mean")
+			interaction <- paste(.v(options$fixedFactors), collapse=":", sep="")
+			levene.def <- paste(.v(options$dependent), "~", interaction)
+			levene.formula <- as.formula(levene.def)
 
-		levene[["data"]] <- list(list("F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3]))
+			r <- car::leveneTest(levene.formula, dataset, center = "mean")
 
+			levene[["data"]] <- list(list("F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3]))
+		
+		} else {
+		
+			levene[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"="."))
+		
+		}
+		
 		results[["levene"]] <- levene
 	}
-
-	results[["anova"]] <- anova
 	
-	print(results)
+	#print(results)
 	results
 }
