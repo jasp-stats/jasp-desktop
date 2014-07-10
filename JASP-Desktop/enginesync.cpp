@@ -21,6 +21,7 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	: QObject(parent)
 {
 	_analyses = analyses;
+	_engineStarted = false;
 
 	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
 	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
@@ -40,6 +41,11 @@ EngineSync::~EngineSync()
 
 void EngineSync::start()
 {
+	if (_engineStarted)
+		return;
+
+	_engineStarted = true;
+
 	_timer = new QTimer(this);
 	connect(_timer, SIGNAL(timeout()), this, SLOT(process()));
 	_timer->start(50);
@@ -68,11 +74,16 @@ void EngineSync::start()
 		throw e;
 	}
 
-	for (int i = 0; i < _channels.size(); i++)
+	for (uint i = 0; i < _channels.size(); i++)
 	{
 		_analysesInProgress.push_back(NULL);
 		startSlaveProcess(i);
 	}
+}
+
+bool EngineSync::engineStarted()
+{
+	return _engineStarted;
 }
 
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)

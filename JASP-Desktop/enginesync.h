@@ -28,6 +28,8 @@ public:
 
 	void start();
 
+	bool engineStarted();
+
 signals:
 
 	void updateReceived(QString data);
@@ -36,6 +38,7 @@ signals:
 private:
 
 	Analyses *_analyses;
+	bool _engineStarted;
 
 	std::vector<QProcess *> _slaveProcesses;
 	std::vector<IPCChannel *> _channels;

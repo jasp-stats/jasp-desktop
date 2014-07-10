@@ -92,7 +92,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, this);
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(engineCrashed()));
-	_engineSync->start();
 
 	_analyses->analysisResultsChanged.connect(boost::bind(&MainWindow::analysisResultsChangedHandler, this, _1));
 
@@ -334,6 +333,9 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 		ui->webViewResults->page()->mainFrame()->addToJavaScriptWindowObject("jasp", this);
 		_inited = true;
 	}
+
+	if (_engineSync->engineStarted() == false)
+		_engineSync->start();
 
 }
 
