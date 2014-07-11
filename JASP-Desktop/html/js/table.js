@@ -47,11 +47,7 @@ $.widget("jasp.table", {
             if (f.indexOf("sf:") != -1) {
 
                 var sf = f.substring(3)
-                var cutoff = Math.pow(10, sf)
-                if (value < cutoff)
-	                return value.toPrecision(sf)
-	            else
-					return parseInt(value)
+                return value.toPrecision(sf)
             }
         }
 
