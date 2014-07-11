@@ -102,6 +102,72 @@ run <- function(name, options.as.json.string) {
 	vs
 }
 
+.vf <- function(formula) {
+  
+  in.pieces <- .decompose(formula)
+  ved <- .jrapply(in.pieces, .v)
+  .compose(ved)
+}
+
+.unvf <- function(formula) {
+  
+  in.pieces <- .decompose(formula)
+  unved <- .jrapply(in.pieces, .unv)
+  .compose(unved)
+}
+
+.decompose <- function(formulas) {
+  
+  lapply(as.list(formulas), function(formula) {
+  
+    sides <- strsplit(formula, "~", fixed=TRUE)[[1]]
+    
+    lapply(sides, function(formula) {
+    
+      terms <- strsplit(formula, "+", fixed=TRUE)
+      
+      lapply(terms, function(term) {
+        components <- strsplit(term, ":")
+        components <- sapply(components, stringr::str_trim, simplify=FALSE)
+      })[[1]]
+      
+    })
+  })
+}
+
+.compose <- function(formulas) {
+  
+  sapply(formulas, function(formula) {
+    
+    formula <- sapply(formula, function(side) {
+      
+      side <- sapply(side, function(term) {
+        paste(term, collapse=":")
+      })
+      
+      paste(side, collapse=" + ")
+    })
+    
+    paste(formula, collapse=" ~ ")    
+  })
+}
+
+
+.jrapply <- function(X, FUN) {
+	
+	if (is.list(X) && length(X) > 0) {
+		
+		for (i in 1:length(X)) {
+			X[[i]] <- .jrapply(X[[i]], FUN)
+		}
+	}
+	else {
+		X <- FUN(X)
+	}
+	
+	X
+}
+
 callback <- function(results=NULL) {
 
 	if (is.null(results)) {
