@@ -198,7 +198,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 					
 				} else if (options$sumOfSquares == "type3") {
 					
-					result <- car::Anova(model, type=3)
+					result <- car::Anova(model, type=3, singular.ok=TRUE)
 					SSt <- sum(result[-1,"Sum Sq"])
 					
 				}
