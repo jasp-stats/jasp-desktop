@@ -7,4 +7,6 @@ JASP aims to be a complete statistical package for both Bayesian and Frequentist
 Development
 -----------
 
-The JASP style guide for R code is [here](Docs/style-guide.md)
+[The JASP Guide for Implementing Analyses in R](Docs/r-analyses-guide.md)
+[The JASP R style guide](Docs/r-style-guide.md)
+

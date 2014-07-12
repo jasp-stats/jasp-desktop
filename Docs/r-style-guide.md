@@ -1,6 +1,6 @@
 
-JASP code conventions for R
-===========================
+JASP R Style-guide
+==================
 
 Good Practice
 -------------
