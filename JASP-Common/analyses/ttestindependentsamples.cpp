@@ -13,11 +13,11 @@
 using namespace std;
 
 TTestIndependentSamples::TTestIndependentSamples(int id)
-	: Analysis(id, "TTestIndependentSamples")
+	: Analysis(id, "TTestIndependentSamples", createOptions())
 {
 }
 
-Options *TTestIndependentSamples::createDefaultOptions()
+Options *TTestIndependentSamples::createOptions() const
 {
 	Options *options = new Options();
 
@@ -39,7 +39,3 @@ Options *TTestIndependentSamples::createDefaultOptions()
 	return options;
 }
 
-string TTestIndependentSamples::order()
-{
-	return "ttest,inequalityOfVariances,descriptives";
-}

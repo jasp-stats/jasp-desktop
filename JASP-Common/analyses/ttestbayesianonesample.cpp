@@ -13,11 +13,11 @@
 using namespace std;
 
 TTestBayesianOneSample::TTestBayesianOneSample(int id)
-	: Analysis(id, "TTestBayesianOneSample")
+	: Analysis(id, "TTestBayesianOneSample", createOptions())
 {
 }
 
-Options *TTestBayesianOneSample::createDefaultOptions()
+Options *TTestBayesianOneSample::createOptions() const
 {
 	Options *options = new Options();
 

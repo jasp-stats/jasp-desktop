@@ -9,7 +9,7 @@ public:
 	AnovaRepeatedMeasures(int id);
 
 protected:
-	virtual Options* createDefaultOptions() OVERRIDE;
+	Options* createOptions() const;
 };
 
 #endif // ANOVAREPEATEDMEASURES_H

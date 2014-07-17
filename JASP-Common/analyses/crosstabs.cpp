@@ -10,11 +10,11 @@
 #include "options/optionvariables.h"
 
 Crosstabs::Crosstabs(int id)
-	: Analysis(id, "Crosstabs")
+	: Analysis(id, "Crosstabs", createOptions())
 {
 }
 
-Options *Crosstabs::createDefaultOptions()
+Options *Crosstabs::createOptions() const
 {
 	Options *options = new Options();
 

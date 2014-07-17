@@ -14,11 +14,11 @@
 using namespace std;
 
 TTestPairedSamples::TTestPairedSamples(int id)
-	: Analysis(id, "TTestPairedSamples")
+	: Analysis(id, "TTestPairedSamples", createOptions())
 {
 }
 
-Options *TTestPairedSamples::createDefaultOptions()
+Options *TTestPairedSamples::createOptions() const
 {
 	Options *options = new Options();
 
@@ -34,9 +34,4 @@ Options *TTestPairedSamples::createDefaultOptions()
 	options->add("tails", new OptionList(list("twoTailed", "oneTailedGreaterThan", "oneTailedLessThan")));
 
 	return options;
-}
-
-string TTestPairedSamples::order()
-{
-	return "ttest,descriptives";
 }

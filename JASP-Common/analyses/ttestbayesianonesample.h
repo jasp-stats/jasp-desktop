@@ -8,7 +8,7 @@ class TTestBayesianOneSample : public Analysis
 public:
 	TTestBayesianOneSample(int id);
 protected:
-	virtual Options *createDefaultOptions() OVERRIDE;
+	Options *createOptions() const;
 };
 
 #endif // TTESTBAYESIANONESAMPLE_H

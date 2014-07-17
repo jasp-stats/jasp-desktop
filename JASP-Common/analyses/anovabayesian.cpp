@@ -12,11 +12,11 @@
 #include "options/optionstable.h"
 
 AnovaBayesian::AnovaBayesian(int id)
-	: Analysis(id, "AnovaBayesian")
+	: Analysis(id, "AnovaBayesian", createOptions())
 {
 }
 
-Options *AnovaBayesian::createDefaultOptions()
+Options *AnovaBayesian::createOptions() const
 {
 	Options *options = new Options();
 

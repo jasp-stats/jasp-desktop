@@ -13,11 +13,11 @@
 using namespace std;
 
 TTestBayesianPairedSamples::TTestBayesianPairedSamples(int id)
-	: Analysis(id, "TTestBayesianPairedSamples")
+	: Analysis(id, "TTestBayesianPairedSamples", createOptions())
 {
 }
 
-Options *TTestBayesianPairedSamples::createDefaultOptions()
+Options *TTestBayesianPairedSamples::createOptions() const
 {
 	Options *options = new Options();
 
@@ -30,7 +30,3 @@ Options *TTestBayesianPairedSamples::createDefaultOptions()
 	return options;
 }
 
-string TTestBayesianPairedSamples::order()
-{
-	return "ttest,descriptives";
-}

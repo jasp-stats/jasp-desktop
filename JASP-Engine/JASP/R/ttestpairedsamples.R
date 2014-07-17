@@ -14,6 +14,16 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	}
 
 	results <- list()
+	
+	
+	meta <- list()
+	
+	meta[[1]] <- list(name="ttest", type="table")
+	meta[[2]] <- list(name="descriptives", type="table")
+	
+	results[[".meta"]] <- meta
+	
+	
 
 	ttest <- list()
 

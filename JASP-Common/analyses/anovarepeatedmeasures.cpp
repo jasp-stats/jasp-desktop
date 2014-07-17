@@ -16,11 +16,11 @@
 using namespace std;
 
 AnovaRepeatedMeasures::AnovaRepeatedMeasures(int id)
-	: Analysis(id, "AnovaRepeatedMeasures")
+	: Analysis(id, "AnovaRepeatedMeasures", createOptions())
 {
 }
 
-Options *AnovaRepeatedMeasures::createDefaultOptions()
+Options *AnovaRepeatedMeasures::createOptions() const
 {
 	Options *options = new Options();
 

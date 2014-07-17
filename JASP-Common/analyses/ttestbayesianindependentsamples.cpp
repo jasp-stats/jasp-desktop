@@ -13,11 +13,11 @@
 using namespace std;
 
 TTestBayesianIndependentSamples::TTestBayesianIndependentSamples(int id)
-	: Analysis(id, "TTestBayesianIndependentSamples")
+	: Analysis(id, "TTestBayesianIndependentSamples", createOptions())
 {
 }
 
-Options *TTestBayesianIndependentSamples::createDefaultOptions()
+Options *TTestBayesianIndependentSamples::createOptions() const
 {
 	Options *options = new Options();
 
@@ -32,7 +32,3 @@ Options *TTestBayesianIndependentSamples::createDefaultOptions()
 	return options;
 }
 
-string TTestBayesianIndependentSamples::order()
-{
-	return "ttest,descriptives";
-}

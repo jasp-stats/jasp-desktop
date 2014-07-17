@@ -3,7 +3,6 @@ $.widget("jasp.analysis", {
 	options: {
 		id : -1,
 		results : { },
-		renderer : function() {},
         status : "waiting",
         optionschanged : [ ]
 	},
@@ -69,10 +68,6 @@ $.widget("jasp.analysis", {
 					this._render($innerElement, results[meta[i].name], this.options.status, meta[i])
 			}
 			
-		}
-		else {
-		
-			this.options.renderer($innerElement, this.options.results, this.options.status)
 		}
 
 		this.element.append($innerElement)

@@ -96,7 +96,7 @@ $(document).ready(function() {
 	
 	}
 
-	window.analysisChanged = function(renderer, analysis) {
+	window.analysisChanged = function(analysis) {
 
         $intro.hide()
 
@@ -136,7 +136,7 @@ $(document).ready(function() {
 
 		item = newItem
 		
-		item.analysis( { id : analysis.id, results : results, renderer : renderer.render, status : status } )
+		item.analysis( { id : analysis.id, results : results, status : status } )
 		item.bind("analysisoptionschanged", analysisChangedDownstreamHandler)
 		
 		if (selectedAnalysisId == analysis.id)

@@ -19,10 +19,10 @@ class Analysis
 {
 
 public:
-	Analysis(int id, std::string name);
+	Analysis(int id, std::string name, Options *options);
 	virtual ~Analysis();
 
-	Options *options();
+	Options *options() const;
 
 	boost::signals2::signal<void (Analysis *source)> optionsChanged;
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
@@ -31,12 +31,11 @@ public:
 	Json::Value results();
 	Json::Value asJSON();
 
-	std::string name();
-	int id();
+	const std::string &name() const;
+	int id() const;
 
 	virtual void init();
 	virtual void run();
-	virtual std::string js();
 
 	void setRInterface(RInterface *r);
 	void setDataSet(DataSet *dataSet);
@@ -50,8 +49,6 @@ public:
 protected:
 
 	Status _status;
-
-	virtual Options *createDefaultOptions() = 0;
 
 	Options* _options;
 	DataSet *_dataSet;
@@ -72,8 +69,6 @@ protected:
 			std::string eight = "",
 			std::string nine  = "",
 			std::string ten   = "");
-
-	virtual std::string order() { return ""; }
 
 private:
 	int _id;

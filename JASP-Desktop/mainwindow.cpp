@@ -157,9 +157,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
 	string results = analysis->asJSON().toStyledString();
-	string render = analysis->js();
 
-	QString eval = tq("window.analysisChanged(" + render + ", " + results + ")");
+	QString eval = tq("window.analysisChanged(" + results + ")");
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
 }

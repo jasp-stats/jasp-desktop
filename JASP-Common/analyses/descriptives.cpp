@@ -13,11 +13,11 @@
 using namespace std;
 
 Descriptives::Descriptives(int id)
-	: Analysis(id, "Descriptives")
+	: Analysis(id, "Descriptives", createOptions())
 {
 }
 
-Options *Descriptives::createDefaultOptions()
+Options *Descriptives::createOptions() const
 {
 	Options *options = new Options();
 

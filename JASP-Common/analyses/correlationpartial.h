@@ -9,7 +9,7 @@ public:
 	CorrelationPartial(int id);
 
 protected:
-	virtual Options* createDefaultOptions() OVERRIDE;
+	Options* createOptions() const;
 };
 
 #endif // CORRELATIONPARTIAL_H

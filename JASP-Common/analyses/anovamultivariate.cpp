@@ -12,11 +12,11 @@
 #include "options/optionstring.h"
 
 AnovaMultivariate::AnovaMultivariate(int id)
-	: Analysis(id, "AnovaMultivariate")
+	: Analysis(id, "AnovaMultivariate", createOptions())
 {
 }
 
-Options *AnovaMultivariate::createDefaultOptions()
+Options *AnovaMultivariate::createOptions() const
 {
 	Options *options = new Options();
 

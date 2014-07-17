@@ -28,6 +28,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	}
 
 	results <- list()
+	
+	
+	meta <- list()
+	
+	meta[[1]] <- list(name="ttest", type="table")
+	meta[[2]] <- list(name="descriptives", type="table")
+	
+	results[[".meta"]] <- meta
+	
+	
 
 	results[["ttest"]] <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)

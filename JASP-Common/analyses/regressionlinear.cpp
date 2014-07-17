@@ -11,11 +11,11 @@
 #include "options/optioninteger.h"
 
 RegressionLinear::RegressionLinear(int id)
-	: Analysis(id, "RegressionLinear")
+	: Analysis(id, "RegressionLinear", createOptions())
 {
 }
 
-Options *RegressionLinear::createDefaultOptions()
+Options *RegressionLinear::createOptions() const
 {
 	Options *options = new Options();
 

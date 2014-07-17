@@ -28,6 +28,19 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	}
 
 	results <- list()
+	
+
+	#### META
+	
+	meta <- list()
+	
+	meta[[1]] <- list(name="ttest", type="table")
+	meta[[2]] <- list(name="inequalityOfVariances", type="table")
+	meta[[3]] <- list(name="descriptives", type="table")
+	
+	results[[".meta"]] <- meta
+	
+	
 
 	results[["ttest"]] <- .ttestIndependentSamplesTTest(dataset, options, perform)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)

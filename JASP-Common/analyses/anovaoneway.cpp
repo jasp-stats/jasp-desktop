@@ -15,11 +15,11 @@
 using namespace std;
 
 AnovaOneWay::AnovaOneWay(int id)
-	: Analysis(id, "AnovaOneWay")
+	: Analysis(id, "AnovaOneWay", createOptions())
 {
 }
 
-Options *AnovaOneWay::createDefaultOptions()
+Options *AnovaOneWay::createOptions() const
 {
 	Options *options = new Options();
 

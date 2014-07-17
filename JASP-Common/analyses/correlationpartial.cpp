@@ -6,11 +6,11 @@
 #include "options/optionlist.h"
 
 CorrelationPartial::CorrelationPartial(int id)
-	: Analysis(id, "CorrelationPartial")
+	: Analysis(id, "CorrelationPartial", createOptions())
 {
 }
 
-Options *CorrelationPartial::createDefaultOptions()
+Options *CorrelationPartial::createOptions() const
 {
 	Options *options = new Options();
 

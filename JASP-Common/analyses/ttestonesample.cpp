@@ -12,11 +12,11 @@
 using namespace std;
 
 TTestOneSample::TTestOneSample(int id)
-	: Analysis(id, "TTestOneSample")
+	: Analysis(id, "TTestOneSample", createOptions())
 {
 }
 
-Options *TTestOneSample::createDefaultOptions()
+Options *TTestOneSample::createOptions() const
 {
 	Options *options = new Options();
 
@@ -40,9 +40,4 @@ Options *TTestOneSample::createDefaultOptions()
 	options->add("missingValues", new OptionList(missingValues));
 
 	return options;
-}
-
-string TTestOneSample::order()
-{
-	return "ttest,descriptives";
 }

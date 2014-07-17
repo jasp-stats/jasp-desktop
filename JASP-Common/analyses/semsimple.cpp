@@ -9,11 +9,11 @@
 #include "options/optionvariable.h"
 
 SEMSimple::SEMSimple(int id)
-	: Analysis(id, "SEMSimple")
+	: Analysis(id, "SEMSimple", createOptions())
 {
 }
 
-Options *SEMSimple::createDefaultOptions()
+Options *SEMSimple::createOptions() const
 {
 	Options *options = new Options();
 
@@ -53,7 +53,3 @@ Options *SEMSimple::createDefaultOptions()
     return options;
 }
 
-std::string SEMSimple::order()
-{
-    return "fit,parameterEstimates,fitMeasures_modelTest,fitMeasures_vsBaseline,fitMeasures_likelihoodInfo,fitMeasures_RMSEA,fitMeasures_RMR,fitMeasures_Other,covcor,modificationIndices,mardiasCoefficient";
-}

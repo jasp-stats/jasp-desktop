@@ -5,11 +5,11 @@
 #include "options/optionlist.h"
 
 Correlation::Correlation(int id)
-	: Analysis(id, "Correlation")
+	: Analysis(id, "Correlation", createOptions())
 {
 }
 
-Options *Correlation::createDefaultOptions()
+Options *Correlation::createOptions() const
 {
 	Options *options = new Options();
 

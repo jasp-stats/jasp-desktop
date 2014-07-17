@@ -12,11 +12,11 @@
 #include "options/optionstring.h"
 
 AncovaMultivariate::AncovaMultivariate(int id)
-	: Analysis(id, "AncovaMultivariate")
+	: Analysis(id, "AncovaMultivariate", createOptions())
 {
 }
 
-Options *AncovaMultivariate::createDefaultOptions()
+Options *AncovaMultivariate::createOptions() const
 {
 	Options *options = new Options();
 

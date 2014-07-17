@@ -9,7 +9,7 @@ public:
 	RegressionLinear(int id);
 
 protected:
-	virtual Options *createDefaultOptions() OVERRIDE;
+	Options *createOptions() const;
 };
 
 #endif // REGRESSIONLINEAR_H
