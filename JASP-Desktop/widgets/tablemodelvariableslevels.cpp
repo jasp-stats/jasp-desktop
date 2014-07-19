@@ -109,11 +109,8 @@ QVariant TableModelVariablesLevels::data(const QModelIndex &index, int role) con
 
 	Row row = _rows.at(index.row());
 
-	if (role == Qt::DisplayRole)
+	if (role == Qt::DisplayRole || role == Qt::EditRole)
 	{
-		if (role != Qt::DisplayRole && role != Qt::EditRole)
-			return QVariant();
-
 		if ( ! row.isOption())
 		{
 			return row.title();
@@ -189,7 +186,7 @@ Qt::ItemFlags TableModelVariablesLevels::flags(const QModelIndex &index) const
 	{
 		Row row = _rows.at(index.row());
 		if (row.isOption())
-			flags |= Qt::ItemIsSelectable | Qt::ItemIsEditable;
+			flags |= Qt::ItemIsEditable;
 		else if (row.isHeading() == false)
 			flags |= Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
 	}
@@ -197,7 +194,7 @@ Qt::ItemFlags TableModelVariablesLevels::flags(const QModelIndex &index) const
 	return flags;
 }
 
-/*bool TableModelVariablesLevels::setData(const QModelIndex &index, const QVariant &value, int role)
+bool TableModelVariablesLevels::setData(const QModelIndex &index, const QVariant &value, int role)
 {
 	if (_boundTo == NULL)
 		return false;
@@ -212,7 +209,7 @@ Qt::ItemFlags TableModelVariablesLevels::flags(const QModelIndex &index) const
 	emit dataChanged(index, index);
 
 	return true;
-}*/
+}
 
 Qt::DropActions TableModelVariablesLevels::supportedDropActions() const
 {

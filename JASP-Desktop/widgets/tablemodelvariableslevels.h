@@ -29,7 +29,7 @@ public:
 	virtual int columnCount(const QModelIndex &parent) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
-	//virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
+	virtual bool setData(const QModelIndex &index, const QVariant &value, int role) OVERRIDE;
 
 	virtual Qt::DropActions supportedDropActions() const OVERRIDE;
 	virtual Qt::DropActions supportedDragActions() const OVERRIDE;
