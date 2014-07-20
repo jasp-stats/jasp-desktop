@@ -15,10 +15,6 @@ void Labels::clear()
 
 int Labels::add(int display)
 {
-	if (_labels.size() > 0 && _haveIntegerValues == false)
-		throw exception();
-
-	_haveIntegerValues = true;
 	int pos = _labels.size();
 	_labels.push_back(Label(_mem, display));
 
@@ -27,12 +23,8 @@ int Labels::add(int display)
 
 int Labels::add(std::string &display)
 {
-	if (_labels.size() > 0 && _haveIntegerValues)
-		throw exception();
-
-	_haveIntegerValues = false;
 	int pos = _labels.size();
-	_labels.push_back(Label(_mem, display));
+	_labels.push_back(Label(_mem, display, _labels.size()));
 
 	return pos;
 }
@@ -47,18 +39,12 @@ size_t Labels::size() const
 	return _labels.size();
 }
 
-bool Labels::haveIntegerValues() const
-{
-	return _haveIntegerValues;
-}
-
 Labels &Labels::operator=(const Labels &labels)
 {
 	if (&labels != this)
 	{
 		this->_mem = labels._mem;
 		this->_labels = labels._labels;
-		this->_haveIntegerValues = labels._haveIntegerValues;
 	}
 
 	return *this;

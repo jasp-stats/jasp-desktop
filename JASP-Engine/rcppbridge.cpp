@@ -127,7 +127,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 				BOOST_FOREACH(int value, column.AsInts)
 				{
 					(void)column;
-					v[rowNo++] = column.actualFromRaw(value);
+					v[rowNo++] = value + 1;
 				}
 
 				makeFactor(v, column.labels());
