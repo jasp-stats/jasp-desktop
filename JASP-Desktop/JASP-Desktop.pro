@@ -228,8 +228,7 @@ RESOURCES += \
 	html/html.qrc \
     resources/icons.qrc \
     resources/resources.qrc \
-    resources/win/stylesheets.qrc \
-    analysisforms/analysisforms.qrc
+	resources/win/stylesheets.qrc
 
 unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
