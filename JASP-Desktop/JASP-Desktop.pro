@@ -105,7 +105,9 @@ SOURCES += main.cpp\
     widgets/tablemodelvariableslevels.cpp \
     widgets/tablemodelvariablesoptions.cpp \
     widgets/tablemodelanovamodel.cpp \
-    widgets/tablemodelcontrasts.cpp
+    widgets/tablemodelcontrasts.cpp \
+	analysisforms/anovarepeatedmeasuresshortform.cpp \
+	widgets/tablemodelanovadesign.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -186,7 +188,9 @@ HEADERS  += \
     widgets/tablemodelvariableslevels.h \
     widgets/tablemodelvariablesoptions.h \
     widgets/tablemodelanovamodel.h \
-    widgets/tablemodelcontrasts.h
+    widgets/tablemodelcontrasts.h \
+	analysisforms/anovarepeatedmeasuresshortform.h \
+	widgets/tablemodelanovadesign.h
 
 FORMS    += \
     backstageform.ui \
@@ -216,14 +220,16 @@ FORMS    += \
     analysisforms/semsimpleform.ui \
     analysisforms/ttestbayesianindependentsamplesform.ui \
     analysisforms/ttestbayesianpairedsamplesform.ui \
-    optionsform.ui
+    optionsform.ui \
+    analysisforms/anovarepeatedmeasuresshortform.ui
 
 
 RESOURCES += \
 	html/html.qrc \
     resources/icons.qrc \
     resources/resources.qrc \
-    resources/win/stylesheets.qrc
+    resources/win/stylesheets.qrc \
+    analysisforms/analysisforms.qrc
 
 unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
@@ -350,5 +356,6 @@ OTHER_FILES += \
 	html/css/images/logo.svg \
 	html/js/images.js \
 	html/js/analysis.js \
-    resources/icons/variable-nominal-text.svg
+    resources/icons/variable-nominal-text.svg \
+    analysisforms/AnovaRepeatedMeasuresShortForm.qml
 

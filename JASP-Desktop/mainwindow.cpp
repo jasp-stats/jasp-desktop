@@ -14,6 +14,7 @@
 #include "analysisforms/anovaonewayform.h"
 #include "analysisforms/anovaform.h"
 #include "analysisforms/anovarepeatedmeasuresform.h"
+#include "analysisforms/anovarepeatedmeasuresshortform.h"
 #include "analysisforms/ancovaform.h"
 #include "analysisforms/anovamultivariateform.h"
 #include "analysisforms/ancovamultivariateform.h"
@@ -196,6 +197,8 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new AnovaForm(contentArea);
 	else if (name == "AnovaRepeatedMeasures")
 		form = new AnovaRepeatedMeasuresForm(contentArea);
+	else if (name == "AnovaRepeatedMeasuresShort")
+		form = new AnovaRepeatedMeasuresShortForm(contentArea);
 	else if (name == "Ancova")
 		form = new AncovaForm(contentArea);
 	else if (name == "AnovaMultivariate")
