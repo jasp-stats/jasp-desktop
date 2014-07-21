@@ -250,16 +250,19 @@ void EngineSync::startSlaveProcess(int no)
 
 #ifdef __WIN32__
     env.insert("PATH", programDir.absoluteFilePath("R-3.0.0\\library\\RInside\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\library\\Rcpp\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\bin\\i386"));
+	env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));
 
     unsigned long processId = Process::currentPID();
     args << QString::number(processId);
+
 #elif __APPLE__
 	env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("../Frameworks/R.framework/Libraries"));
+	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Resources"));
 #else
     env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib") + ";" + programDir.absoluteFilePath("R-3.0.0/library/RInside/lib") + ";" + programDir.absoluteFilePath("R-3.0.0/library/Rcpp/lib"));
+	env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));
 #endif
 
-	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Resources"));
 
 	QProcess *slave = new QProcess(this);
 	slave->setProcessEnvironment(env);
