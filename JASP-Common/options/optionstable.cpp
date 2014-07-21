@@ -2,7 +2,7 @@
 
 #include "boost/foreach.hpp"
 
-#include "optionfield.h"
+#include "optionvariable.h"
 
 using namespace Json;
 using namespace std;
@@ -17,7 +17,7 @@ Json::Value OptionsTable::asJSON() const
 	Value v = arrayValue;
 	int i = 0;
 
-	BOOST_FOREACH(Options *item, _rows)
+	BOOST_FOREACH(Options *item, _value)
 		v[i++] = item->asJSON();
 
 	return v;
@@ -25,17 +25,17 @@ Json::Value OptionsTable::asJSON() const
 
 void OptionsTable::set(Json::Value &value)
 {
-	BOOST_FOREACH(Options *row, _rows)
+	BOOST_FOREACH(Options *row, _value)
 		delete row;
-	_rows.clear();
+	_value.clear();
 
-	for (int i = 0; i < value.size(); i++)
+	for (uint i = 0; i < value.size(); i++)
 	{
 		Options *row = static_cast<Options *>(_template->clone());
 		row->set(value[i]);
-		_rows.push_back(row);
+		_value.push_back(row);
 
-		row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
+		//row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
 	}
 }
 
@@ -47,94 +47,28 @@ Option *OptionsTable::clone() const
 	return NULL;
 }
 
-Options *OptionsTable::rowTemplate()
+void OptionsTable::setValue(vector<Options *> value)
+{
+	_value = value;
+	notifyChanged();
+}
+
+Options *OptionsTable::rowTemplate() const
 {
 	return _template;
 }
 
-Options *OptionsTable::at(int index)
+/*Options *OptionsTable::at(int index) const
 {
-	return _rows.at(index);
+	return _value.at(index);
 }
 
-size_t OptionsTable::size()
+size_t OptionsTable::size() const
 {
-	return _rows.size();
-}
-
-void OptionsTable::insert(int index, Options *row)
-{
-	std::vector<Options *>::iterator itr = _rows.begin();
-
-	for (int i = 0; i < index; i++)
-		itr++;
-
-	_rows.insert(itr, row);
-
-	row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
-	rowChanged();
-}
-
-void OptionsTable::append(Options *row)
-{
-	_rows.push_back(row);
-
-	row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
-	rowChanged();
-}
-
-Options *OptionsTable::remove(int index)
-{
-	std::vector<Options *>::iterator itr = _rows.begin();
-
-	for (int i = 0; i < index; i++)
-		itr++;
-
-	_rows.erase(itr);
-
-	rowChanged();
-
-	return *itr;
-}
-
-Options *OptionsTable::remove(string name)
-{
-	std::vector<Options *>::iterator itr = _rows.begin();
-
-	while (itr != _rows.end())
-	{
-		Options *row = *itr;
-		OptionField *option = static_cast<OptionField *>(row->get(0));
-		string variable = option->value()[0];
-
-		if (variable == name)
-		{
-			_rows.erase(itr);
-			rowChanged();
-			return *itr;
-		}
-
-		itr++;
-	}
-
-	return NULL;
-}
-
-bool OptionsTable::contains(string name)
-{
-	BOOST_FOREACH(Options *row, _rows)
-	{
-		OptionField *option = static_cast<OptionField *>(row->get(0));
-		string variable = option->value()[0];
-
-		if (variable == name)
-			return true;
-	}
-
-	return false;
+	return _value.size();
 }
 
 void OptionsTable::rowChanged()
 {
 	notifyChanged();
-}
+}*/

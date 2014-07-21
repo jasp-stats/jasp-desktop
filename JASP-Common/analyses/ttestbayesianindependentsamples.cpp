@@ -2,8 +2,8 @@
 
 #include "options/options.h"
 #include "options/option.h"
-#include "options/optionfield.h"
-#include "options/optionfields.h"
+#include "options/optionvariable.h"
+#include "options/optionvariables.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
@@ -13,26 +13,22 @@
 using namespace std;
 
 TTestBayesianIndependentSamples::TTestBayesianIndependentSamples(int id)
-	: Analysis(id, "TTestBayesianIndependentSamples")
+	: Analysis(id, "TTestBayesianIndependentSamples", createOptions())
 {
 }
 
-Options *TTestBayesianIndependentSamples::createDefaultOptions()
+Options *TTestBayesianIndependentSamples::createOptions() const
 {
 	Options *options = new Options();
 
-	options->add("variables", new OptionFields());
-	options->add("groupingVariable", new OptionField());
+	options->add("variables", new OptionVariables());
+	options->add("groupingVariable", new OptionVariable());
 
 	options->add("descriptives", new OptionBoolean());
 
-	options->add("tails", new OptionList(list("twoTailed", "oneailedGreaterThan", "oneTailedLessThan")));
+	options->add("tails", new OptionList(list("twoTailed", "oneTailedGreaterThan", "oneTailedLessThan")));
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
 
 	return options;
 }
 
-string TTestBayesianIndependentSamples::order()
-{
-	return "ttest,descriptives";
-}

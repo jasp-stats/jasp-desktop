@@ -26,13 +26,19 @@ public:
 	EngineSync(Analyses *analyses, QObject *parent);
 	~EngineSync();
 
+	void start();
+
+	bool engineStarted();
+
 signals:
 
 	void updateReceived(QString data);
+	void engineTerminated();
 
 private:
 
 	Analyses *_analyses;
+	bool _engineStarted;
 
 	std::vector<QProcess *> _slaveProcesses;
 	std::vector<IPCChannel *> _channels;

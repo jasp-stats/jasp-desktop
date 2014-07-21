@@ -13,21 +13,34 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 			if (options$missingValues == "excludeListwise") {
 		
-				dataset <- read.dataset.to.end(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=dependents)
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=dependents)
 			
 			} else {
 		
-				dataset <- read.dataset.to.end(columns.as.numeric=dependents, columns.as.factor=grouping)
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping)
 			}
 		
 
 		} else {
 		
-			dataset <- read.dataset.header(columns.as.numeric=dependents, columns.as.factor=grouping)
+			dataset <- .readDataSetHeader(columns.as.numeric=dependents, columns.as.factor=grouping)
 		}
 	}
 
 	results <- list()
+	
+
+	#### META
+	
+	meta <- list()
+	
+	meta[[1]] <- list(name="ttest", type="table")
+	meta[[2]] <- list(name="inequalityOfVariances", type="table")
+	meta[[3]] <- list(name="descriptives", type="table")
+	
+	results[[".meta"]] <- meta
+	
+	
 
 	results[["ttest"]] <- .ttestIndependentSamplesTTest(dataset, options, perform)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
@@ -49,9 +62,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		list(name="Variable", title="", type="string", combine=TRUE),
 		list(name="groups", type="string"),
 		list(name="N", type="number"),
-		list(name="Mean", type="number", format="sf:4"),
-		list(name="Std. Deviation", type="number", format="dp:4;p:.001"),
-		list(name="Std. Error Mean", type="number", format="sf:4"))
+		list(name="Mean", type="number", format="sf:6"),
+		list(name="Std. Deviation", type="number", format="sf:6;p:.001"),
+		list(name="Std. Error Mean", type="number", format="sf:6"))
 
 	descriptives[["schema"]] <- list(fields=fields)
 	

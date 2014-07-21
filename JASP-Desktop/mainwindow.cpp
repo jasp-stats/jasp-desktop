@@ -13,6 +13,8 @@
 
 #include "analysisforms/anovaonewayform.h"
 #include "analysisforms/anovaform.h"
+#include "analysisforms/anovarepeatedmeasuresform.h"
+#include "analysisforms/anovarepeatedmeasuresshortform.h"
 #include "analysisforms/ancovaform.h"
 #include "analysisforms/anovamultivariateform.h"
 #include "analysisforms/ancovamultivariateform.h"
@@ -30,6 +32,8 @@
 #include <QFile>
 #include <QToolTip>
 #include <QClipboard>
+#include <QWebElement>
+#include <QMessageBox>
 
 #include <QStringBuilder>
 
@@ -88,6 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, this);
+	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(engineCrashed()));
 
 	_analyses->analysisResultsChanged.connect(boost::bind(&MainWindow::analysisResultsChangedHandler, this, _1));
 
@@ -95,6 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
 	connect(ui->backStage, SIGNAL(closeDataSetSelected()), this, SLOT(dataSetCloseRequested()));
+	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
 
 	_alert = new ProgressWidget(ui->tableView);
 	_alert->setAutoFillBackground(true);
@@ -152,9 +158,8 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
 	string results = analysis->asJSON().toStyledString();
-	string render = analysis->js();
 
-	QString eval = tq("window.analysisChanged(" + render + ", " + results + ")");
+	QString eval = tq("window.analysisChanged(" + results + ")");
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
 }
@@ -190,6 +195,10 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new AnovaOneWayForm(contentArea);
 	else if (name == "Anova")
 		form = new AnovaForm(contentArea);
+	else if (name == "AnovaRepeatedMeasures")
+		form = new AnovaRepeatedMeasuresForm(contentArea);
+	else if (name == "AnovaRepeatedMeasuresShort")
+		form = new AnovaRepeatedMeasuresShortForm(contentArea);
 	else if (name == "Ancova")
 		form = new AncovaForm(contentArea);
 	else if (name == "AnovaMultivariate")
@@ -327,6 +336,9 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 		_inited = true;
 	}
 
+	if (_engineSync->engineStarted() == false)
+		_engineSync->start();
+
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
@@ -353,6 +365,19 @@ void MainWindow::updateUIFromOptions()
 
 }
 
+void MainWindow::engineCrashed()
+{
+	static bool exiting = false;
+
+	if (exiting == false)
+	{
+		exiting = true;
+
+		QMessageBox::warning(this, "Error", "The JASP Statistics Engine has terminated unexpectedly.\n\nThis sometimes happens under older versions of Operating Systems that have not yet been tested.\n\nThe JASP team is actively working on this, and if you could report your experiences that would be appreciated.\n\nJASP cannot continue and will now close.");
+		QApplication::exit(1);
+	}
+}
+
 void MainWindow::itemSelected(const QString item)
 {
 	string name = item.toStdString();
@@ -362,6 +387,42 @@ void MainWindow::itemSelected(const QString item)
 		showForm(_currentAnalysis);
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
 	}
+}
+
+void MainWindow::exportSelected(const QString &filename)
+{
+	QWebElement element = ui->webViewResults->page()->mainFrame()->documentElement().clone();
+
+	QWebElementCollection nodes;
+
+	nodes = element.findAll("html > head > script, html > head > link, #spacer, #intro, #templates");
+	foreach (QWebElement node, nodes)
+		node.removeFromDocument();
+
+	nodes = element.findAll(".selected, .unselected");
+	foreach (QWebElement node, nodes)
+	{
+		node.removeClass("selected");
+		node.removeClass("unselected");
+	}
+
+	QWebElement head = element.findFirst("html > head");
+
+	QFile ss(":/core/css/theme-jasp.css");
+	ss.open(QIODevice::ReadOnly);
+	QByteArray bytes = ss.readAll();
+	QString css = QString::fromUtf8(bytes);
+
+	head.setInnerXml(QString("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><title>JASP Results</title><style type=\"text/css\">") + css + QString("</style>"));
+
+	QFile file(filename);
+	file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+	QTextStream stream(&file);
+	stream << element.toOuterXml();
+	stream.flush();
+	file.close();
+
+	ui->tabBar->setCurrentIndex(1);
 }
 
 void MainWindow::adjustOptionsPanelWidth()

@@ -1,19 +1,19 @@
 #include "correlation.h"
 
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 #include "options/optionboolean.h"
 #include "options/optionlist.h"
 
 Correlation::Correlation(int id)
-	: Analysis(id, "Correlation")
+	: Analysis(id, "Correlation", createOptions())
 {
 }
 
-Options *Correlation::createDefaultOptions()
+Options *Correlation::createOptions() const
 {
 	Options *options = new Options();
 
-	options->add("variables", new OptionFields());
+	options->add("variables", new OptionVariables());
 
 	options->add("pearson", new OptionBoolean(true));
 	options->add("kendallsTauB", new OptionBoolean());

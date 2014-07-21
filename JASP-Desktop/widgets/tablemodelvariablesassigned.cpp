@@ -1,336 +1,204 @@
-
 #include "tablemodelvariablesassigned.h"
-#include "column.h"
 
+#include <vector>
+#include <string>
 #include <QMimeData>
 #include <QTimer>
 #include <QDebug>
 
+#include "options/optionvariables.h"
+
 using namespace std;
 
 TableModelVariablesAssigned::TableModelVariablesAssigned(QObject *parent)
-	: TableModel(parent)
+	: TableModelVariables(parent)
 {
 	_boundTo = NULL;
 	_source = NULL;
-
-	_nominalTextAllowed = true;
-	_variableTypesSuggested = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
-}
-
-void TableModelVariablesAssigned::setIsNominalTextAllowed(bool allowed)
-{
-	_nominalTextAllowed = allowed;
-}
-
-bool TableModelVariablesAssigned::nominalTextAllowed()
-{
-	return _nominalTextAllowed;
+	_sorted = false;
 }
 
 void TableModelVariablesAssigned::bindTo(Option *option)
 {
-	_boundTo = dynamic_cast<OptionFieldPairs *>(option);
+	_boundTo = dynamic_cast<OptionVariables *>(option);
 
-	if (_boundTo == NULL)
+	if (_boundTo != NULL)
 	{
-		qDebug() << "TableModelVariablesAssigned::bindTo(); Could not bind to option";
-		return;
-	}
-
-	if (_source == NULL)
-	{
-		qDebug() << "TableModelVariablesAssigned::bindTo(); source not set";
-		return;
-	}
-
-	vector<pair<string, string> > assigned = _boundTo->value();
-	const QList<ColumnInfo> &allVariables = _source->allVariables();
-
-	beginResetModel();
-
-	_values.clear();
-
-	pair<string, string> p;
-
-	foreach (p, assigned)
-	{
-		ColumnInfo info1;
-		ColumnInfo info2;
-
-		string first = p.first;
-		string second = p.second;
-
-		QString firstQ = QString::fromUtf8(first.c_str(), first.size());
-		QString secondQ = QString::fromUtf8(second.c_str(), second.size());
-
-		foreach (const ColumnInfo &info, allVariables)
+		if (_source != NULL)
 		{
-			if (info.first == firstQ)
-			{
-				info1.first = info.first;
-				info1.second = info.second;
-			}
+			const vector<string> assigned = _boundTo->variables();
 
-			if (info.first == secondQ)
-			{
-				info2.first = info.first;
-				info2.second = info.second;
-			}
+			beginResetModel();
+			_variables.set(assigned);
+			endResetModel();
 
-			if (info1.first != "" && info2.first != "")
-				break;
+			_source->notifyAlreadyAssigned(_variables);
 		}
-
-		VarPair newPair;
-		newPair.append(info1);
-		newPair.append(info2);
-
-		_values.append(newPair);
+		else
+		{
+			qDebug() << "TableModelVariablesAssigned::bindTo(); source not set";
+		}
 	}
-
-	endResetModel();
+	else
+	{
+		qDebug() << "TableModelVariablesAssigned::bindTo(); option not of type OptionVariables*";
+	}
 }
 
-void TableModelVariablesAssigned::setSource(ListModelVariablesAvailable *source)
+void TableModelVariablesAssigned::setSource(TableModelVariablesAvailable *source)
 {
 	_source = source;
+	setInfoProvider(source);
+
+	if (_sorted)
+		_variables.setSortParent(_source->allVariables());
+
+	connect(source, SIGNAL(variablesChanged()), this, SLOT(sourceVariablesChanged()));
 }
 
-int TableModelVariablesAssigned::rowCount(const QModelIndex &parent) const
+bool TableModelVariablesAssigned::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
 {
-	return _values.length();
-}
+	if (_boundTo == NULL)
+		return false;
 
-int TableModelVariablesAssigned::columnCount(const QModelIndex &parent) const
-{
-	return 2;
-}
+	if ( ! TableModelVariables::canDropMimeData(data, action, row, column, parent))
+		return false;
 
-QVariant TableModelVariablesAssigned::data(const QModelIndex &index, int role) const
-{
-	if ( ! index.isValid())
-		return QVariant();
+	if (_boundTo->onlyOneTerm())
+	{
+		QByteArray encodedData = data->data(_mimeType);
 
-	if (role == Qt::DisplayRole)
-		return QVariant(_values.at(index.row()).at(index.column()).first);
+		Terms variables;
+		variables.set(encodedData);
 
-	return QVariant();
-}
+		if (variables.size() != 1)
+			return false;
+	}
 
-Qt::ItemFlags TableModelVariablesAssigned::flags(const QModelIndex &index) const
-{	
-	if (index.isValid())
-		return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
-	else
-		return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;
-}
-
-Qt::DropActions TableModelVariablesAssigned::supportedDropActions() const
-{
-	return Qt::CopyAction;
-}
-
-Qt::DropActions TableModelVariablesAssigned::supportedDragActions() const
-{
-	return Qt::MoveAction;
-}
-
-QStringList TableModelVariablesAssigned::mimeTypes() const
-{
-	QStringList types;
-
-	types << "application/vnd.list.variable";
-
-	return types;
-}
-
-QMimeData *TableModelVariablesAssigned::mimeData(const QModelIndexList &indexes) const
-{
-	QMimeData *mimeData = new QMimeData();
-	QByteArray encodedData;
-
-	QDataStream dataStream(&encodedData, QIODevice::WriteOnly);
-
-	dataStream << 0;
-
-	mimeData->setData("application/vnd.list.variable", encodedData);
-
-	return mimeData;
+	return true;
 }
 
 bool TableModelVariablesAssigned::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
+	if (_boundTo == NULL)
+		return false;
+
 	if (action == Qt::IgnoreAction)
 		return true;
 
 	if ( ! canDropMimeData(data, action, row, column, parent))
 		return false;
 
-	if (mimeTypes().contains("application/vnd.list.variable"))
-	{
-		QByteArray encodedData = data->data("application/vnd.list.variable");
-		QDataStream stream(&encodedData, QIODevice::ReadOnly);
+	if (action != Qt::MoveAction && action != Qt::CopyAction)
+		return false;
 
-		int count;
+	QByteArray encodedData = data->data(_mimeType);
 
-		stream >> count;
-
-		if (count == 0)
-			return false;
-
-		ColumnInfo item1;
-		stream >> item1;
-
-		if (parent.isValid()) // drop into cell
-		{
-			_values[parent.row()][parent.column()] = item1;
-			emit dataChanged(parent, parent);
-		}
-		else if (row == -1 && (!_values.isEmpty()) && _values.last().last().first == "")
-		{
-			int row = _values.length() - 1;
-			int column = _values.at(row).length() - 1;
-
-			_values.last().last() = item1;
-
-			emit dataChanged(index(row, column), index(row, column));
-		}
-		else
-		{
-			int beginRow;
-
-			if (row != -1)
-				beginRow = row;
-			else
-				beginRow = rowCount(QModelIndex());
-
-			beginInsertRows(QModelIndex(), beginRow, beginRow);
-
-			if (count == 1)
-			{
-				QList<ColumnInfo> newRow;
-				newRow.append(item1);
-				newRow.append(ColumnInfo("", 0));
-
-				_values.insert(beginRow, newRow);
-			}
-			else
-			{
-				ColumnInfo item2;
-				stream >> item2;
-
-				QList<ColumnInfo> newRow;
-				newRow.append(item1);
-				newRow.append(item2);
-
-				_values.insert(beginRow, newRow);
-			}
-
-			endInsertRows();
-		}
-
-		assignToOption();
-
-		return true;
-	}
-
-	return false;
-}
-
-bool TableModelVariablesAssigned::canDropMimeData(const QMimeData *data, Qt::DropAction, int row, int column, const QModelIndex &parent) const
-{
-	if (mimeTypes().contains("application/vnd.list.variable"))
-	{
-		QByteArray encodedData = data->data("application/vnd.list.variable");
-		QDataStream stream(&encodedData, QIODevice::ReadOnly);
-
-		if (stream.atEnd()) // is empty
-			return false;
-
-		int count;
-
-		stream >> count;
-
-		return count != 0;
-	}
-
-	return false;
-}
-
-bool TableModelVariablesAssigned::isForbidden(int variableType) const
-{
-	return _nominalTextAllowed == false && variableType == Column::ColumnTypeNominalText;
-}
-
-bool TableModelVariablesAssigned::insertRows(int row, int count, const QModelIndex &parent)
-{
-	beginInsertRows(parent, row, row + count - 1);
-	for (int i = 0; i < count; i++)
-	{
-		QList<ColumnInfo> newRow;
-		newRow.append(ColumnInfo());
-		newRow.append(ColumnInfo());
-		_values.insert(row, newRow);
-	}
-	endInsertRows();
+	Terms variables;
+	variables.set(encodedData);
+	assign(variables);
 
 	return true;
 }
 
-void TableModelVariablesAssigned::mimeDataMoved(const QModelIndexList &indexes)
+void TableModelVariablesAssigned::mimeDataMoved(const QModelIndexList &indices)
 {
-	beginResetModel();
+	Terms variablesToRemove;
 
-	QModelIndexList sorted = indexes;
+	foreach (const QModelIndex &index, indices)
+		variablesToRemove.add(_variables.at(index.row()));
 
-	int lastRowDeleted = -1;
+	unassign(variablesToRemove);
+}
 
-	qSort(sorted.begin(), sorted.end(), qGreater<QModelIndex>());
+bool TableModelVariablesAssigned::setSorted(bool sorted)
+{
+	_sorted = sorted;
 
-	foreach (const QModelIndex &index, sorted)
+	if (sorted && _source != NULL)
+		_variables.setSortParent(_source->allVariables());
+}
+
+const Terms &TableModelVariablesAssigned::assigned() const
+{
+	return _variables;
+}
+
+void TableModelVariablesAssigned::sourceVariablesChanged()
+{
+	const Terms &variables = _source->allVariables();
+	Terms variablesToKeep;
+	bool variableRemoved = false;
+
+	variablesToKeep.set(_variables);
+	variableRemoved = variablesToKeep.discardWhatDoesntContainTheseComponents(variables);
+
+	if (variableRemoved)
+		setAssigned(variablesToKeep);
+}
+
+void TableModelVariablesAssigned::assign(const Terms &variables)
+{
+	if (_boundTo == NULL)
+		return;
+
+	Terms v;
+
+	if (_boundTo->onlyOneTerm())
 	{
-		int row = index.row();
-		if (row != lastRowDeleted)
-			_values.removeAt(row);
-		lastRowDeleted = row;
+		if (variables.size() > 0)
+			v.add(variables.at(0));
+
+		if (_variables.size() > 0)
+		{
+			_toSendBack.set(_variables);
+			_variables.clear();
+			QTimer::singleShot(0, this, SLOT(sendBack()));
+		}
+	}
+	else
+	{
+		v.set(_variables);
+		v.add(variables);
 	}
 
+	setAssigned(v);
+}
+
+void TableModelVariablesAssigned::unassign(const Terms &variables)
+{
+	Terms variablesToKeep;
+	variablesToKeep.set(_variables);
+	variablesToKeep.remove(variables);
+	setAssigned(variablesToKeep);
+}
+
+void TableModelVariablesAssigned::setAssigned(const Terms &variables)
+{
+	if (_source == NULL)
+	{
+		qDebug() << "TableModelVariablesAssigned::setAssigned() : Source not set!";
+		return;
+	}
+
+	if (_boundTo == NULL)
+	{
+		qDebug() << "TableModelVariablesAssigned::setAssigned() : Not bound!";
+		return;
+	}
+
+	beginResetModel();
+	_variables.set(variables);
 	endResetModel();
 
-	assignToOption();
-}
+	emit assignmentsChanged();
 
-void TableModelVariablesAssigned::assignToOption()
-{
 	if (_boundTo != NULL)
-		_boundTo->setValue(asVector(_values));
+		_boundTo->setValue(_variables.asVector());
 }
 
-void TableModelVariablesAssigned::setVariableTypesSuggested(int variableTypesSuggested)
+void TableModelVariablesAssigned::sendBack()
 {
-	_variableTypesSuggested = variableTypesSuggested;
+	_source->sendBack(_toSendBack);
+	_toSendBack.clear();
 }
-
-int TableModelVariablesAssigned::variableTypesSuggested()
-{
-	return _variableTypesSuggested;
-}
-
-vector<pair<string, string> > TableModelVariablesAssigned::asVector(QList<VarPair> values)
-{
-	vector<pair<string, string> > vec;
-
-	foreach (VarPair p, values)
-	{
-		QByteArray a1 = p.at(0).first.toUtf8();
-		QByteArray a2 = p.at(1).first.toUtf8();
-		string s1(a1.constData(), a1.length());
-		string s2(a2.constData(), a2.length());
-
-		vec.push_back(pair<string, string>(s1, s2));
-	}
-
-	return vec;
-}
-

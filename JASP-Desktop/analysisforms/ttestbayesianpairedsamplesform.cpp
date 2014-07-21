@@ -9,15 +9,15 @@ TTestBayesianPairedSamplesForm::TTestBayesianPairedSamplesForm(QWidget *parent) 
 {
 	ui->setupUi(this);
 
-	_availableFields.setSupportedDropActions(Qt::MoveAction);
-	_availableFields.setSupportedDragActions(Qt::CopyAction);
-	_availableFields.setVariableTypesSuggested(Column::ColumnTypeScale);
-	ui->availableFields->setModel(&_availableFields);
+	_availableVariablesModel.setSupportedDropActions(Qt::MoveAction);
+	_availableVariablesModel.setSupportedDragActions(Qt::CopyAction);
+	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale);
+	ui->availableFields->setModel(&_availableVariablesModel);
 	ui->availableFields->setDefaultDropAction(Qt::MoveAction);
 	ui->availableFields->setDoubleClickTarget(ui->pairs);
 
-	TableModelVariablesAssigned *model = new TableModelVariablesAssigned(this);
-	model->setSource(&_availableFields);
+	TableModelPairsAssigned *model = new TableModelPairsAssigned(this);
+	model->setSource(&_availableVariablesModel);
 	model->setVariableTypesSuggested(Column::ColumnTypeScale);
 	ui->pairs->setModel(model);
 

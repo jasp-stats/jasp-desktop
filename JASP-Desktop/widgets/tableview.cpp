@@ -82,7 +82,7 @@ void TableView::mousePressEvent(QMouseEvent *event)
 
 void TableView::resizeEvent(QResizeEvent *event)
 {
-	int columnCount = model()->columnCount();
+	/*int columnCount = model()->columnCount();
 	int width = event->size().width();
 
 	if (columnCount == 1)
@@ -93,7 +93,7 @@ void TableView::resizeEvent(QResizeEvent *event)
 	{
 		setColumnWidth(0, width - 50);
 		setColumnWidth(1, 50);
-	}
+	}*/
 
 	QTableView::resizeEvent(event);
 }

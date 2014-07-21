@@ -7,15 +7,15 @@ CorrelationPartialForm::CorrelationPartialForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->listAvailableFields->setModel(&_availableFields);
+	ui->listAvailableFields->setModel(&_availableVariablesModel);
 	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
-	_modelVariables = new ListModelVariablesAssigned();
-	_modelVariables->setSource(&_availableFields);
+	_modelVariables = new TableModelVariablesAssigned();
+	_modelVariables->setSource(&_availableVariablesModel);
 	ui->variables->setModel(_modelVariables);
 
-	_modelControllingFor = new ListModelVariablesAssigned();
-	_modelControllingFor->setSource(&_availableFields);
+	_modelControllingFor = new TableModelVariablesAssigned();
+	_modelControllingFor->setSource(&_availableVariablesModel);
 	ui->controllingFor->setModel(_modelControllingFor);
 
 	ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);

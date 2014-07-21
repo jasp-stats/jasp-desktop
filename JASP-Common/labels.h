@@ -20,14 +20,11 @@ public:
 	const Label &at(int raw) const;
 	size_t size() const;
 
-	bool haveIntegerValues() const;
-
 	Labels& operator=(const Labels& labels);
 
 private:
 	boost::interprocess::managed_shared_memory *_mem;
 	LabelVector _labels;
-	bool _haveIntegerValues;
 };
 
 #endif // LABELS_H

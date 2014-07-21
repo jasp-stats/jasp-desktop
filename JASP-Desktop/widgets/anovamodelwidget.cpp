@@ -16,18 +16,21 @@ AnovaModelWidget::AnovaModelWidget(QWidget *parent) :
 	ui->setupUi(this);
 
 	_boundTo = NULL;
-	_listModelAnovaModel = NULL;
+	_tableModelAnovaModel = NULL;
 
 	connect(ui->custom, SIGNAL(toggled(bool)), this, SLOT(setCustomModelMode(bool)));
 	setCustomModelMode(false);
 
-	_listModelVariablesAvailable = new ListModelVariablesAvailable(this);
-	_listModelVariablesAvailable->setSupportedDragActions(Qt::CopyAction);
-	_listModelVariablesAvailable->setSupportedDropActions(Qt::MoveAction);
-	_listModelVariablesAvailable->setMimeType("application/vnd.list.term");
-	ui->listFactorsAvailable->setModel(_listModelVariablesAvailable);
-
+	_tableModelVariablesAvailable = new TableModelVariablesAvailable(this);
+	_tableModelVariablesAvailable->setSupportedDragActions(Qt::CopyAction);
+	_tableModelVariablesAvailable->setSupportedDropActions(Qt::MoveAction);
+	_tableModelVariablesAvailable->setMimeType("application/vnd.list.term");
+	ui->listFactorsAvailable->setModel(_tableModelVariablesAvailable);
+	ui->listFactorsAvailable->setDoubleClickTarget(ui->listModelTerms);
 	ui->listFactorsAvailable->selectionUpdated.connect(boost::bind(&AnovaModelWidget::sourceSelectionChanged, this));
+
+	ui->listModelTerms->setDoubleClickTarget(ui->listFactorsAvailable);
+	ui->listModelTerms->horizontalHeader()->setStretchLastSection(true);
 
 	ui->buttonAssignCross->setSourceAndTarget(ui->listFactorsAvailable, ui->listModelTerms);
 	ui->buttonAssignMenu->setSourceAndTarget(ui->listFactorsAvailable, ui->listModelTerms);
@@ -68,18 +71,18 @@ void AnovaModelWidget::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable *>(option);
 
-	if (_listModelAnovaModel != NULL && _boundTo != NULL)
-		_listModelAnovaModel->bindTo(_boundTo);
+	if (_tableModelAnovaModel != NULL && _boundTo != NULL)
+		_tableModelAnovaModel->bindTo(_boundTo);
 }
 
-void AnovaModelWidget::setModel(ListModelAnovaModel *model)
+void AnovaModelWidget::setModel(TableModelAnovaModel *model)
 {
-	_listModelAnovaModel = model;
+	_tableModelAnovaModel = model;
 
 	if (_boundTo != NULL)
-		_listModelAnovaModel->bindTo(_boundTo);
+		_tableModelAnovaModel->bindTo(_boundTo);
 
-	_listModelAnovaModel->setCustomModelMode(_customModel);
+	_tableModelAnovaModel->setCustomModelMode(_customModel);
 
 	ui->listModelTerms->setModel(model);
 
@@ -88,21 +91,21 @@ void AnovaModelWidget::setModel(ListModelAnovaModel *model)
 	ui->columnLabel1->setText(model->headerData(1, Qt::Horizontal, Qt::DisplayRole).toString());
 
 	variablesAvailableChanged();
-	connect(_listModelAnovaModel, SIGNAL(variablesAvailableChanged()), this, SLOT(variablesAvailableChanged()));
+	connect(_tableModelAnovaModel, SIGNAL(variablesAvailableChanged()), this, SLOT(variablesAvailableChanged()));
 }
 
 void AnovaModelWidget::setCustomModelMode(bool customModel)
 {
 	_customModel = customModel;
-	if (_listModelAnovaModel != NULL)
-		_listModelAnovaModel->setCustomModelMode(customModel);
+	if (_tableModelAnovaModel != NULL)
+		_tableModelAnovaModel->setCustomModelMode(customModel);
 	ui->modelBuilder->setEnabled(customModel);
 }
 
 void AnovaModelWidget::variablesAvailableChanged()
 {
-	const QList<ColumnInfo> &variables = _listModelAnovaModel->variables();
-	_listModelVariablesAvailable->setVariables(variables);
+	const Terms &variables = _tableModelAnovaModel->variables();
+	_tableModelVariablesAvailable->setVariables(variables);
 }
 
 void AnovaModelWidget::sourceSelectionChanged()
@@ -119,30 +122,30 @@ void AnovaModelWidget::sourceSelectionChanged()
 
 void AnovaModelWidget::assignInteraction()
 {
-	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::Interaction);
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, TableModelAnovaModel::Interaction);
 }
 
 void AnovaModelWidget::assignMainEffects()
 {
-	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::MainEffects);
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, TableModelAnovaModel::MainEffects);
 }
 
 void AnovaModelWidget::assign2ways()
 {
-	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::All2Way);
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, TableModelAnovaModel::All2Way);
 }
 
 void AnovaModelWidget::assign3ways()
 {
-	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::All3Way);
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, TableModelAnovaModel::All3Way);
 }
 
 void AnovaModelWidget::assign4ways()
 {
-	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::All4Way);
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, TableModelAnovaModel::All4Way);
 }
 
 void AnovaModelWidget::assign5ways()
 {
-	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, ListModelAnovaModel::All5Way);
+	DragAndDrop::perform(ui->listFactorsAvailable, ui->listModelTerms, TableModelAnovaModel::All5Way);
 }

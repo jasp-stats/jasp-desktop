@@ -20,7 +20,11 @@ LIBS += -L.. -lJASP-Common
 unix:INCLUDEPATH += /opt/local/include
 windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
 
-R_HOME = $$OUT_PWD/../R-3.0.0
+macx {
+	R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.0/Resources
+} else {
+	R_HOME = $$OUT_PWD/../R-3.0.0
+}
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
@@ -34,8 +38,8 @@ INCLUDEPATH += \
 
 unix:LIBS += \
 	-L$$R_HOME/library/RInside/lib -lRInside \
-        -L$$R_HOME/lib -lR \
-        -L$$R_HOME/library/Rcpp/lib -lRcpp \
+	-L$$R_HOME/lib -lR \
+	-L$$R_HOME/library/Rcpp/lib -lRcpp
 
 win32:LIBS += \
 	-L$$R_HOME/library/RInside/lib/i386 -lRInside \
@@ -45,7 +49,7 @@ win32:LIBS += \
 win32:LIBS += -lole32 -loleaut32
 
 
-RPackage.commands = $$R_HOME/bin/R CMD INSTALL $$PWD/JASP
+RPackage.commands = $$R_HOME/bin/R CMD INSTALL --library=$$R_HOME/library $$PWD/JASP
 QMAKE_EXTRA_TARGETS += RPackage
 PRE_TARGETDEPS += RPackage
 

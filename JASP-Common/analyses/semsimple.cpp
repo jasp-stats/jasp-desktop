@@ -6,14 +6,14 @@
 #include "options/optionboolean.h"
 #include "options/optionlist.h"
 #include "options/optioninteger.h"
-#include "options/optionfield.h"
+#include "options/optionvariable.h"
 
 SEMSimple::SEMSimple(int id)
-	: Analysis(id, "SEMSimple")
+	: Analysis(id, "SEMSimple", createOptions())
 {
 }
 
-Options *SEMSimple::createDefaultOptions()
+Options *SEMSimple::createOptions() const
 {
 	Options *options = new Options();
 
@@ -31,7 +31,7 @@ Options *SEMSimple::createDefaultOptions()
 	options->add("output/modificationIndicesHideLowIndices", new OptionBoolean());
 	options->add("output/modificationIndicesHideLowIndicesThreshold", new OptionInteger(10));
 
-	options->add("groupingVariable", new OptionField());
+	options->add("groupingVariable", new OptionVariable());
     options->add("estimator", new OptionList(list("automatic", "ML", "GLS", "WLS", "ULS", "DWLS")));
 
 	options->add("includeMeanStructure", new OptionBoolean());
@@ -53,7 +53,3 @@ Options *SEMSimple::createDefaultOptions()
     return options;
 }
 
-std::string SEMSimple::order()
-{
-    return "fit,parameterEstimates,fitMeasures_modelTest,fitMeasures_vsBaseline,fitMeasures_likelihoodInfo,fitMeasures_RMSEA,fitMeasures_RMR,fitMeasures_Other,covcor,modificationIndices,mardiasCoefficient";
-}

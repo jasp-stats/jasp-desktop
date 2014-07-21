@@ -21,15 +21,36 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	: QObject(parent)
 {
 	_analyses = analyses;
+	_engineStarted = false;
 
 	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
 	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
+
+}
+
+EngineSync::~EngineSync()
+{
+	for (int i = 0; i < _slaveProcesses.size(); i++)
+	{
+		_slaveProcesses[i]->terminate();
+		_slaveProcesses[i]->kill();
+	}
+
+	shared_memory_object::remove(_memoryName.c_str());
+}
+
+void EngineSync::start()
+{
+	if (_engineStarted)
+		return;
+
+	_engineStarted = true;
 
 	_timer = new QTimer(this);
 	connect(_timer, SIGNAL(timeout()), this, SLOT(process()));
 	_timer->start(50);
 
-    try {
+	try {
 
 		unsigned long pid = Process::currentPID();
 
@@ -46,30 +67,23 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 		_channels.push_back(new IPCChannel(_memoryName, 3));
 #endif
 
-    }
-    catch (interprocess_exception e)
-    {
-        qDebug() << "interprocess exception! " << e.what() << "\n";
-        throw e;
-    }
+	}
+	catch (interprocess_exception e)
+	{
+		qDebug() << "interprocess exception! " << e.what() << "\n";
+		throw e;
+	}
 
-	for (int i = 0; i < _channels.size(); i++)
+	for (uint i = 0; i < _channels.size(); i++)
 	{
 		_analysesInProgress.push_back(NULL);
 		startSlaveProcess(i);
 	}
-
 }
 
-EngineSync::~EngineSync()
+bool EngineSync::engineStarted()
 {
-	for (int i = 0; i < _slaveProcesses.size(); i++)
-	{
-		_slaveProcesses[i]->terminate();
-		_slaveProcesses[i]->kill();
-	}
-
-	shared_memory_object::remove(_memoryName.c_str());
+	return _engineStarted;
 }
 
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
@@ -240,12 +254,12 @@ void EngineSync::startSlaveProcess(int no)
     unsigned long processId = Process::currentPID();
     args << QString::number(processId);
 #elif __APPLE__
-    env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib"));
+	env.insert("DYLD_LIBRARY_PATH", programDir.absoluteFilePath("../Frameworks/R.framework/Libraries"));
 #else
     env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib") + ";" + programDir.absoluteFilePath("R-3.0.0/library/RInside/lib") + ";" + programDir.absoluteFilePath("R-3.0.0/library/Rcpp/lib"));
 #endif
 
-	env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));
+	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Resources"));
 
 	QProcess *slave = new QProcess(this);
 	slave->setProcessEnvironment(env);
@@ -281,6 +295,8 @@ void EngineSync::subProcessStarted()
 
 void EngineSync::subProcessError(QProcess::ProcessError error)
 {
+	emit engineTerminated();
+
 	qDebug() << "subprocess error" << error;
 }
 

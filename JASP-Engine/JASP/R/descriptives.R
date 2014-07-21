@@ -58,11 +58,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 		if (perform == "run") {
 		
-			dataset <- read.dataset.to.end(columns.as.numeric=variables)
+			dataset <- .readDataSetToEnd(columns.as.numeric=variables)
 			
 		} else {
 		
-			dataset <- read.dataset.header(columns.as.numeric=variables)
+			dataset <- .readDataSetHeader(columns.as.numeric=variables)
 		}
 	}
 
@@ -99,44 +99,44 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	fields[[length(fields) + 1]] <- list(name="Missing", type="integer")
 
 	if (central.tendency[["mean"]])
-		fields[[length(fields) + 1]] <- list(name="Mean", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Mean", type="number", format="sf:6")
 	if (dispersion[["standardErrorMean"]])
-		fields[[length(fields) + 1]] <- list(name="Std. Error of Mean", type="text")	
+		fields[[length(fields) + 1]] <- list(name="Std. Error of Mean", type="number", format="sf:6")	
 	if (central.tendency[["median"]])
-		fields[[length(fields) + 1]] <- list(name="Median", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Median", type="number", format="sf:6")
 	if (central.tendency[["mode"]])
-		fields[[length(fields) + 1]] <- list(name="Mode", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Mode", type="number", format="sf:6")
 	if (dispersion[["standardDeviation"]])
-		fields[[length(fields) + 1]] <- list(name="Std. Deviation", type="text")
+		fields[[length(fields) + 1]] <- list(name="Std. Deviation", type="number", format="sf:6")
 	if (dispersion[["variance"]])
-		fields[[length(fields) + 1]] <- list(name="Variance", type="text")
+		fields[[length(fields) + 1]] <- list(name="Variance", type="number", format="sf:6")
 		
 	if (distribution[["skewness"]]) {
 	
-		fields[[length(fields) + 1]] <- list(name="Skewness", type="text")  
-		fields[[length(fields) + 1]] <- list(name="Std. Error of Skewness", type="text") 
+		fields[[length(fields) + 1]] <- list(name="Skewness", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Std. Error of Skewness", type="number", format="sf:6") 
 	}
 	
 	if (distribution[["kurtosis"]]) {
 	
-		fields[[length(fields) + 1]] <- list(name="Kurtosis", type="text")  
-		fields[[length(fields) + 1]] <- list(name="Std. Error of Kurtosis", type="text")
+		fields[[length(fields) + 1]] <- list(name="Kurtosis", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Std. Error of Kurtosis", type="text", format="sf:6")
 	}
 	
 	if (dispersion[["range"]])
-		fields[[length(fields) + 1]] <- list(name="Range", type="text")
+		fields[[length(fields) + 1]] <- list(name="Range", type="number", format="sf:6")
 	if (dispersion[["minimum"]])
-		fields[[length(fields) + 1]] <- list(name="Minimum", type="text")
+		fields[[length(fields) + 1]] <- list(name="Minimum", type="number", format="sf:6")
 	if (dispersion[["maximum"]])
-		fields[[length(fields) + 1]] <- list(name="Maximum", type="text")
+		fields[[length(fields) + 1]] <- list(name="Maximum", type="number", format="sf:6")
 	if (central.tendency[["sum"]])
-		fields[[length(fields) + 1]] <- list(name="Sum", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Sum", type="number", format="sf:6")
 	
 	if (percentileValues[["quartiles"]]) {
 	
-		fields[[length(fields) + 1]] <- list(name="25th percentile", type="text")  
-		fields[[length(fields) + 1]] <- list(name="50th percentile", type="text") 
-		fields[[length(fields) + 1]] <- list(name="75th percentile", type="text")
+		fields[[length(fields) + 1]] <- list(name="25th percentile", type="number", format="sf:6")  
+		fields[[length(fields) + 1]] <- list(name="50th percentile", type="number", format="sf:6") 
+		fields[[length(fields) + 1]] <- list(name="75th percentile", type="number", format="sf:6")
 	}
 	
 	if (percentileValues[["equalGroups"]]) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
@@ -449,6 +449,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 					ns[[length(ns)+1]] <- n
 					freq <- as.vector(t[n])
+					
 					cumFreq <- cumFreq + freq
 	
 					freqs[[length(freqs) + 1]] <- freq
@@ -509,7 +510,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			plot[["title"]] <- variable
 			plot[["width"]]  <- options$chartWidth
 			plot[["height"]] <- options$chartHeight
-			plot[["itemOptions"]] <- list(width="chartWidth", height="chartHeight")
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
 		
 			frequency.plots[[i]] <- plot
 			i <- i + 1

@@ -45,7 +45,7 @@ $.widget("jasp.images", {
 				
 				})
                 
-				image.bind("imageitemoptionschanged", function(event, data) {
+				image.bind("imagecustomchanged", function(event, data) {
                 
 					self._trigger("itemoptionschanged", null, data)
 				})

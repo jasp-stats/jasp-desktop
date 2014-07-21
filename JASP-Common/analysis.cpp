@@ -15,17 +15,23 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string name)
+Analysis::Analysis(int id, string name, Options *options)
 {
 	_id = id;
 	_name = name;
+	_options = options;
+
+	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
 
 	_dataSet = NULL;
 	_r = NULL;
+}
 
-	_options = NULL;
+Analysis::~Analysis()
+{
+	delete _options;
 }
 
 void Analysis::init()
@@ -51,34 +57,6 @@ void Analysis::run()
 		_status = Complete;
 		resultsChanged(this);
 	}
-}
-
-string Analysis::js()
-{
-	return "{"
-			"    depends : [ 'tables' ],\n"
-			"    render  : function(element, results, status)\n"
-			"    {\n"
-			"        var tables = [ ]\n"
-			"        var tableNames = \"" + this->order() + "\".split(',')\n"
-			"        if (tableNames[0] !== \"\") {\n"
-			"            _.each(tableNames, function(tableName) {\n"
-			"                if (_.has(results, tableName))\n"
-			"                    tables.push(results[tableName])\n"
-			"            })\n"
-			"        }\n"
-			"        else {\n"
-			"            _.each(results, function(result) {\n"
-			"                if (_.isArray(result))\n"
-			"                    _.each(result, function(table) {\n"
-			"                        tables.push(table) })\n"
-			"                else\n"
-			"                    tables.push(result)\n"
-			"            })\n"
-			"        }\n"
-			"        element.tables( { items : tables, status : status } )\n"
-			"    }\n"
-			"}\n";
 }
 
 void Analysis::setResults(Json::Value results)
@@ -139,24 +117,18 @@ void Analysis::setStatus(Analysis::Status status)
 	_status = status;
 }
 
-string Analysis::name()
+const string &Analysis::name() const
 {
 	return _name;
 }
 
-int Analysis::id()
+int Analysis::id() const
 {
 	return _id;
 }
 
-Options *Analysis::options()
+Options *Analysis::options() const
 {
-	if (_options == NULL)
-	{
-		_options = createDefaultOptions();
-		_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
-	}
-
 	return _options;
 }
 

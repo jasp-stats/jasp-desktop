@@ -20,8 +20,8 @@ public:
 private:
 	Ui::CrosstabsForm *ui;
 
-	ListModelVariablesAssigned *_rowsModel;
-	ListModelVariablesAssigned *_columnsModel;
+	TableModelVariablesAssigned *_rowsModel;
+	TableModelVariablesAssigned *_columnsModel;
 	TableModelVariablesLevels *_layersModel;
 };
 

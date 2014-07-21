@@ -7,15 +7,17 @@ BoundAssignWidget::BoundAssignWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	_availableModel = new ListModelVariablesAvailable(this);
-	_assignedModel = new ListModelVariablesAssigned(this);
+	_availableModel = new TableModelVariablesAvailable(this);
+	_assignedModel = new TableModelVariablesAssigned(this);
 
 	_assignedModel->setSource(_availableModel);
+	_assignedModel->setSorted(true);
 
 	ui->availableVariables->setModel(_availableModel);
 	ui->availableVariables->setDoubleClickTarget(ui->assignedVariables);
 
 	ui->assignedVariables->setModel(_assignedModel);
+	ui->assignedVariables->setDoubleClickTarget(ui->availableVariables);
 
 	ui->assignButton->setSourceAndTarget(ui->availableVariables, ui->assignedVariables);
 }
@@ -30,7 +32,7 @@ void BoundAssignWidget::bindTo(Option *option)
 	ui->assignedVariables->bindTo(option);
 }
 
-void BoundAssignWidget::setVariables(const QList<ColumnInfo> &variables)
+void BoundAssignWidget::setVariables(const Terms &variables)
 {
 	_availableModel->setVariables(variables);
 	_availableModel->notifyAlreadyAssigned(_assignedModel->assigned());

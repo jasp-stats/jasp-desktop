@@ -138,9 +138,9 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- read.dataset.to.end(columns.as.factor=all.variables)
+			dataset <- .readDataSetToEnd(columns.as.factor=all.variables)
 		} else {
-			dataset <- read.dataset.header(columns.as.factor=all.variables)
+			dataset <- .readDataSetHeader(columns.as.factor=all.variables)
 		}
 	}
 

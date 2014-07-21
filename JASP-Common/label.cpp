@@ -3,15 +3,15 @@
 
 using boost::interprocess::managed_shared_memory;
 
-Label::Label(managed_shared_memory *mem, std::string value)
-	: _stringValue(value.begin(), value.end(), mem->get_segment_manager())
+Label::Label(managed_shared_memory *mem, const std::string &label, int value)
+	: _stringValue(label.begin(), label.end(), mem->get_segment_manager())
 {
 	_mem = mem;
-	_hasIntValue = false;
-	_intValue = INT_MIN;
+	_hasIntValue = true;
+	_intValue = value;
 }
 
-Label::Label(boost::interprocess::managed_shared_memory *mem, int value)
+Label::Label(managed_shared_memory *mem, int value)
 	: _stringValue(mem->get_segment_manager())
 {
 	_mem = mem;

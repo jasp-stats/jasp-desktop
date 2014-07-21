@@ -13,9 +13,9 @@ RcppBridge::RcppBridge()
 {
 	_staticRef = this;
 
-	_rInside[".read.dataset.native"] = Rcpp::InternalFunction(&RcppBridge::readDataSetStatic);
-	_rInside[".read.dataset.header.native"] = Rcpp::InternalFunction(&RcppBridge::readDataSetHeaderStatic);
-	_rInside[".callback.native"] = Rcpp::InternalFunction(&RcppBridge::callbackStatic);
+	_rInside[".readDatasetToEndNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetStatic);
+	_rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetHeaderStatic);
+	_rInside[".callbackNative"] = Rcpp::InternalFunction(&RcppBridge::callbackStatic);
 
 	_rInside["jasp.analyses"] = Rcpp::List();
 	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"RJSONIO\"))");
@@ -127,7 +127,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 				BOOST_FOREACH(int value, column.AsInts)
 				{
 					(void)column;
-					v[rowNo++] = column.actualFromRaw(value);
+					v[rowNo++] = value + 1;
 				}
 
 				makeFactor(v, column.labels());

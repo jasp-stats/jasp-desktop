@@ -2,7 +2,7 @@
 
 #include "options/options.h"
 #include "options/option.h"
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
@@ -12,15 +12,15 @@
 using namespace std;
 
 TTestOneSample::TTestOneSample(int id)
-	: Analysis(id, "TTestOneSample")
+	: Analysis(id, "TTestOneSample", createOptions())
 {
 }
 
-Options *TTestOneSample::createDefaultOptions()
+Options *TTestOneSample::createOptions() const
 {
 	Options *options = new Options();
 
-	options->add("variables", new OptionFields());
+	options->add("variables", new OptionVariables());
 	options->add("testValue", new OptionNumber(0));
 
 	vector<string> tails;
@@ -40,9 +40,4 @@ Options *TTestOneSample::createDefaultOptions()
 	options->add("missingValues", new OptionList(missingValues));
 
 	return options;
-}
-
-string TTestOneSample::order()
-{
-	return "ttest,descriptives";
 }

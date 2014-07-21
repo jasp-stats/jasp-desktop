@@ -3,8 +3,8 @@
 
 #include <QPushButton>
 
-#include "listmodelvariablesavailable.h"
-#include "listmodelvariablesassigned.h"
+#include "tablemodelvariablesavailable.h"
+#include "tablemodelvariablesassigned.h"
 #include "listview.h"
 #include "boundpairstable.h"
 

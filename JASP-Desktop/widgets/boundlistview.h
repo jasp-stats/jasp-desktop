@@ -7,11 +7,11 @@
 #include <QListView>
 #include <QIcon>
 
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 
 #include "availablefieldslistview.h"
 #include "dataset.h"
-#include "listmodelvariablesassigned.h"
+#include "tablemodelvariablesassigned.h"
 #include "listview.h"
 
 class BoundListView : public ListView, public Bound
@@ -32,7 +32,7 @@ protected:
 	virtual void resizeEvent(QResizeEvent *e) OVERRIDE;
 	virtual void moveEvent(QMoveEvent *e) OVERRIDE;
 
-	ListModelVariablesAssigned *_variablesListModel;
+	TableModelVariablesAssigned *_variablesListModel;
 
 private:
 

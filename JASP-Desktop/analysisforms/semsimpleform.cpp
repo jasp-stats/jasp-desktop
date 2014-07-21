@@ -10,7 +10,7 @@ SEMSimpleForm::SEMSimpleForm(QWidget *parent) :
 	ui->setupUi(this);
 
 	ItemModelSelectVariable *model = new ItemModelSelectVariable(this);
-	model->setSource(&_availableFields);
+	model->setSource(&_availableVariablesModel);
 
 	ui->groupingVariable->setModel(model);
 

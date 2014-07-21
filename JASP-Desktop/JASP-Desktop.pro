@@ -53,19 +53,12 @@ SOURCES += main.cpp\
     widgets/boundgroupbox.cpp \
 	widgets/progresswidget.cpp \
 	widgets/anovamodelwidget.cpp \
-	widgets/listmodelvariablesavailable.cpp \
-	widgets/listmodelvariables.cpp \
-	widgets/listmodelvariablesassigned.cpp \
 	widgets/listview.cpp \
-	widgets/tablemodelvariablesassigned.cpp \
 	widgets/draganddrop.cpp \
-	widgets/listmodelanovamodel.cpp \
 	widgets/assignbuttonmenu.cpp \
 	widgets/tableview.cpp \
 	widgets/boundpairstable.cpp \
-	widgets/listmodelanovamodelnuisancefactors.cpp \
 	widgets/boundcombobox.cpp \
-	widgets/tablemodelvariablesoptions.cpp \
 	widgets/boundtableview.cpp \
 	widgets/tableviewmenueditor.cpp \
 	widgets/tableviewmenueditordelegate.cpp \
@@ -84,10 +77,8 @@ SOURCES += main.cpp\
 	analysisforms/regressionlinearform.cpp \
 	analysisforms/correlationform.cpp \
     widgets/boundassignwidget.cpp \
-    analysisforms/subforms/posthoctestssub.cpp \
     analysisforms/anovarepeatedmeasuresform.cpp \
     analysisforms/crosstabsform.cpp \
-    widgets/tablemodelvariableslevels.cpp \
     utils.cpp \
     analysisforms/correlationpartialform.cpp \
     ribbons/ribbonwidget.cpp \
@@ -103,7 +94,20 @@ SOURCES += main.cpp\
     widgets/itemmodelselectvariable.cpp \
     widgets/tabbar.cpp \
     optionsform.cpp \
-    widgets/textmodellavaan.cpp
+    widgets/textmodellavaan.cpp \
+    terms.cpp \
+    term.cpp \
+    widgets/tablemodelanovamodelnuisancefactors.cpp \
+    widgets/tablemodelpairsassigned.cpp \
+    widgets/tablemodelvariables.cpp \
+    widgets/tablemodelvariablesassigned.cpp \
+    widgets/tablemodelvariablesavailable.cpp \
+    widgets/tablemodelvariableslevels.cpp \
+    widgets/tablemodelvariablesoptions.cpp \
+    widgets/tablemodelanovamodel.cpp \
+    widgets/tablemodelcontrasts.cpp \
+	analysisforms/anovarepeatedmeasuresshortform.cpp \
+	widgets/tablemodelanovadesign.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -131,19 +135,13 @@ HEADERS  += \
     widgets/anovamodelwidget.h \
     bound.h \
     widgets/boundmodel.h \
-    widgets/listmodelvariablesavailable.h \
-    widgets/listmodelvariables.h \
-    widgets/listmodelvariablesassigned.h \
     widgets/listview.h \
-    widgets/tablemodelvariablesassigned.h \
     widgets/draganddrop.h \
-    widgets/listmodelanovamodel.h \
     widgets/assignbuttonmenu.h \
     widgets/enhanceddroptarget.h \
     widgets/tableview.h \
     maintableview.h \
     widgets/droptarget.h \
-    widgets/listmodelanovamodelnuisancefactors.h \
     widgets/tablemodel.h \
     analysisforms/ancovaform.h \
     analysisforms/anovaform.h \
@@ -157,16 +155,13 @@ HEADERS  += \
     mainwindow.h \
     analysisforms/correlationform.h \
     widgets/boundcombobox.h \
-    widgets/tablemodelvariablesoptions.h \
     widgets/boundtableview.h \
     widgets/tableviewmenueditor.h \
     widgets/tableviewmenueditordelegate.h \
     widgets/boundassignwidget.h \
-    analysisforms/subforms/posthoctestssub.h \
     analysisforms/anovarepeatedmeasuresform.h \
     utils.h \
     analysisforms/crosstabsform.h \
-    widgets/tablemodelvariableslevels.h \
     analysisforms/correlationpartialform.h \
     ribbons/ribbonwidget.h \
     ribbons/ribbonsem.h \
@@ -181,7 +176,21 @@ HEADERS  += \
     widgets/itemmodelselectvariable.h \
     widgets/tabbar.h \
     optionsform.h \
-    widgets/textmodellavaan.h
+    widgets/textmodellavaan.h \
+    term.h \
+    terms.h \
+    variableinfo.h \
+    widgets/tablemodelanovamodelnuisancefactors.h \
+    widgets/tablemodelpairsassigned.h \
+    widgets/tablemodelvariables.h \
+    widgets/tablemodelvariablesassigned.h \
+    widgets/tablemodelvariablesavailable.h \
+    widgets/tablemodelvariableslevels.h \
+    widgets/tablemodelvariablesoptions.h \
+    widgets/tablemodelanovamodel.h \
+    widgets/tablemodelcontrasts.h \
+	analysisforms/anovarepeatedmeasuresshortform.h \
+	widgets/tablemodelanovadesign.h
 
 FORMS    += \
     backstageform.ui \
@@ -202,7 +211,6 @@ FORMS    += \
     mainwindow.ui \
     analysisforms/correlationform.ui \
     widgets/boundassignwidget.ui \
-    analysisforms/subforms/posthoctestssub.ui \
     analysisforms/anovarepeatedmeasuresform.ui \
     analysisforms/crosstabsform.ui \
     analysisforms/correlationpartialform.ui \
@@ -212,14 +220,15 @@ FORMS    += \
     analysisforms/semsimpleform.ui \
     analysisforms/ttestbayesianindependentsamplesform.ui \
     analysisforms/ttestbayesianpairedsamplesform.ui \
-    optionsform.ui
+    optionsform.ui \
+    analysisforms/anovarepeatedmeasuresshortform.ui
 
 
 RESOURCES += \
 	html/html.qrc \
     resources/icons.qrc \
     resources/resources.qrc \
-    resources/win/stylesheets.qrc
+	resources/win/stylesheets.qrc
 
 unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
@@ -346,5 +355,6 @@ OTHER_FILES += \
 	html/css/images/logo.svg \
 	html/js/images.js \
 	html/js/analysis.js \
-    resources/icons/variable-nominal-text.svg
+    resources/icons/variable-nominal-text.svg \
+    analysisforms/AnovaRepeatedMeasuresShortForm.qml
 

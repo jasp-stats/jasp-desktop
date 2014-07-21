@@ -212,9 +212,9 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 	if (is.null(dataset)) {
 	
 		if (perform == "run") {
-			dataset <- read.dataset.to.end(all.columns=TRUE)
+			dataset <- .readDataSetToEnd(all.columns=TRUE)
 		} else {
-			dataset <- read.dataset.header(all.columns=TRUE)
+			dataset <- .readDataSetHeader(all.columns=TRUE)
 		}
 	}
 	
@@ -302,6 +302,25 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 
 	### Output object:
 	results <- list()
+	
+
+
+	meta <- list()
+	
+	meta[[1]]  <- list(name="fit", type="table")
+	meta[[2]]  <- list(name="parameterEstimates", type="table")
+	meta[[3]]  <- list(name="fitMeasures_modelTest", type="table")
+	meta[[4]]  <- list(name="fitMeasures_vsBaseline", type="table")
+	meta[[5]]  <- list(name="fitMeasures_likelihoodInfo", type="table")
+	meta[[6]]  <- list(name="fitMeasures_RMSEA", type="table")
+	meta[[7]]  <- list(name="fitMeasures_RMR", type="table")
+	meta[[8]]  <- list(name="fitMeasures_Other", type="table")
+	meta[[9]]  <- list(name="covcor", type="table")
+	meta[[10]] <- list(name="modificationIndices", type="table")
+	meta[[11]] <- list(name="mardiasCoefficient", type="table")
+	
+	results[[".meta"]] <- meta
+	
 
 	### ANOVA table ###
 	an0va <- list()

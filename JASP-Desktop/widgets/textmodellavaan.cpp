@@ -3,6 +3,7 @@
 
 #include <QTextBlock>
 #include <QRegExp>
+#include <QDebug>
 
 #include "utils.h"
 

@@ -9,8 +9,7 @@ public:
 	SEMSimple(int id);
 
 protected:
-	virtual Options *createDefaultOptions() OVERRIDE;
-    virtual std::string order() OVERRIDE;
+	Options *createOptions() const;
 
 };
 

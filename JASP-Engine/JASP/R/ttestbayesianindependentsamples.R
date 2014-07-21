@@ -13,21 +13,31 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 			if (options$missingValues == "excludeListwise") {
 		
-				dataset <- read.dataset.to.end(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=dependents)
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=dependents)
 			
 			} else {
 		
-				dataset <- read.dataset.to.end(columns.as.numeric=dependents, columns.as.factor=grouping)
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping)
 			}
 		
 
 		} else {
 		
-			dataset <- read.dataset.header(columns.as.numeric=dependents, columns.as.factor=grouping)
+			dataset <- .readDataSetHeader(columns.as.numeric=dependents, columns.as.factor=grouping)
 		}
 	}
 
 	results <- list()
+	
+	
+	meta <- list()
+	
+	meta[[1]] <- list(name="ttest", type="table")
+	meta[[2]] <- list(name="descriptives", type="table")
+	
+	results[[".meta"]] <- meta
+	
+	
 
 	results[["ttest"]] <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)

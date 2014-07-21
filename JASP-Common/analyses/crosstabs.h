@@ -10,7 +10,7 @@ public:
 	Crosstabs(int id);
 
 protected:
-	Options *createDefaultOptions() OVERRIDE;
+	Options *createOptions() const;
 
 };
 

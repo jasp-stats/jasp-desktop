@@ -3,8 +3,8 @@
 
 #include "analysisform.h"
 
-#include "widgets/listmodelvariablesassigned.h"
-#include "widgets/listmodelanovamodel.h"
+#include "widgets/tablemodelvariablesassigned.h"
+#include "widgets/tablemodelanovamodel.h"
 #include "widgets/tablemodelvariablesoptions.h"
 
 namespace Ui {
@@ -21,22 +21,20 @@ public:
 	
 private slots:
 	void factorsChanged();
-	void dependentChanged();
 	void termsChanged();
 
 private:
 	Ui::AnovaForm *ui;
 
-	ListModelVariablesAssigned *_dependentListModel;
-	ListModelVariablesAssigned *_fixedFactorsListModel;
-	ListModelVariablesAssigned *_randomFactorsListModel;
-	ListModelVariablesAssigned *_repeatedMeasuresListModel;
-	ListModelVariablesAssigned *_wlsWeightsListModel;
+	TableModelVariablesAssigned *_dependentListModel;
+	TableModelVariablesAssigned *_fixedFactorsListModel;
+	TableModelVariablesAssigned *_randomFactorsListModel;
+	TableModelVariablesAssigned *_wlsWeightsListModel;
 
-	ListModelAnovaModel *_anovaModel;
+	TableModelAnovaModel *_anovaModel;
+
 	TableModelVariablesOptions *_contrastsModel;
-
-	ListModelVariablesAvailable *_factorsAvailableListModel;
+	TableModelVariablesAvailable *_factorsAvailableListModel;
 
 };
 

@@ -4,7 +4,7 @@
 
 #include "options/options.h"
 #include "options/option.h"
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
@@ -13,15 +13,15 @@
 using namespace std;
 
 Descriptives::Descriptives(int id)
-	: Analysis(id, "Descriptives")
+	: Analysis(id, "Descriptives", createOptions())
 {
 }
 
-Options *Descriptives::createDefaultOptions()
+Options *Descriptives::createOptions() const
 {
 	Options *options = new Options();
 
-	options->add("main/fields", new OptionFields());
+	options->add("main/fields", new OptionVariables());
 	options->add("main/displayFrequencyTables", new OptionBoolean());
 
 	options->add("statistics/percentileValues/quartiles", new OptionBoolean());

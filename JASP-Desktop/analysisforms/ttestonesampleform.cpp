@@ -2,7 +2,7 @@
 #include "ui_ttestonesampleform.h"
 
 #include "analysisform.h"
-#include "widgets/listmodelvariablesassigned.h"
+#include "widgets/tablemodelvariablesassigned.h"
 
 TTestOneSampleForm::TTestOneSampleForm(QWidget *parent) :
 	AnalysisForm("TTestOneSampleForm", parent),
@@ -10,13 +10,14 @@ TTestOneSampleForm::TTestOneSampleForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	_availableFields.setIsNominalTextAllowed(false);
-	ui->listAvailableFields->setModel(&_availableFields);
+	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale);
+	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	ui->listAvailableFields->setModel(&_availableVariablesModel);
 	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
-	ListModelVariablesAssigned *variablesModel = new ListModelVariablesAssigned(this);
-	variablesModel->setSource(&_availableFields);
-	variablesModel->setIsNominalTextAllowed(false);
+	TableModelVariablesAssigned *variablesModel = new TableModelVariablesAssigned(this);
+	variablesModel->setSource(&_availableVariablesModel);
+	variablesModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	variablesModel->setVariableTypesSuggested(Column::ColumnTypeScale);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);

@@ -2,8 +2,7 @@
 #define OPTIONI_H
 
 #include "option.h"
-
-#include <QDebug>
+#include "common.h"
 
 template <class T>
 class OptionI : public Option

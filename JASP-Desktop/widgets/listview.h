@@ -5,7 +5,7 @@
 #include <QAbstractItemView>
 
 #include "droptarget.h"
-#include "listmodelvariables.h"
+#include "tablemodelvariables.h"
 
 class ListView : public QListView, public DropTarget
 {

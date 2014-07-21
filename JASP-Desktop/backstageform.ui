@@ -126,54 +126,16 @@ QWidget#leftPanel {
               <number>12</number>
              </property>
              <item>
-              <widget class="StealthButton" name="pushButton_5">
+              <widget class="StealthButton" name="buttonNew">
                <property name="enabled">
                 <bool>false</bool>
                </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
                <property name="text">
-                <string>Save</string>
+                <string>New</string>
                </property>
                <property name="icon">
                 <iconset resource="resources/icons.qrc">
-                 <normaloff>:/icons/document-save.png</normaloff>:/icons/document-save.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>16</width>
-                 <height>16</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="StealthButton" name="pushButton_6">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Save As</string>
-               </property>
-               <property name="icon">
-                <iconset resource="resources/icons.qrc">
-                 <normaloff>:/icons/document-save-as.png</normaloff>:/icons/document-save-as.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>16</width>
-                 <height>16</height>
-                </size>
+                 <normaloff>:/icons/document-new.png</normaloff>:/icons/document-new.png</iconset>
                </property>
               </widget>
              </item>
@@ -201,7 +163,88 @@ QWidget#leftPanel {
               </widget>
              </item>
              <item>
+              <widget class="StealthButton" name="buttonSave">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Save</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resources/icons.qrc">
+                 <normaloff>:/icons/document-save.png</normaloff>:/icons/document-save.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>16</width>
+                 <height>16</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="StealthButton" name="buttonSaveAs">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Save As</string>
+               </property>
+               <property name="icon">
+                <iconset resource="resources/icons.qrc">
+                 <normaloff>:/icons/document-save-as.png</normaloff>:/icons/document-save-as.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>16</width>
+                 <height>16</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="StealthButton" name="buttonExport">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Export</string>
+               </property>
+               <property name="icon">
+                <iconset theme="help-about">
+                 <normaloff>../../JASP/qtui</normaloff>../../JASP/qtui</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="StealthButton" name="buttonClose">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -214,159 +257,6 @@ QWidget#leftPanel {
                <property name="icon">
                 <iconset resource="resources/icons.qrc">
                  <normaloff>:/icons/dialog-close.png</normaloff>:/icons/dialog-close.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>16</width>
-                 <height>16</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="StealthButton" name="buttonInfo">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Info</string>
-               </property>
-               <property name="icon">
-                <iconset theme="help-about">
-                 <normaloff>../../JASP/qtui</normaloff>../../JASP/qtui</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="StealthButton" name="buttonRecent">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Recent</string>
-               </property>
-               <property name="icon">
-                <iconset theme="help-about">
-                 <normaloff>../../JASP/qtui</normaloff>../../JASP/qtui</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="StealthButton" name="buttonPrint">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Print</string>
-               </property>
-               <property name="icon">
-                <iconset theme="help-about">
-                 <normaloff>../../JASP/qtui</normaloff>../../JASP/qtui</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="StealthButton" name="buttonHelp">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Help</string>
-               </property>
-               <property name="icon">
-                <iconset theme="help-about">
-                 <normaloff>../../JASP/qtui</normaloff>../../JASP/qtui</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="StealthButton" name="buttonOptions">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Options</string>
-               </property>
-               <property name="icon">
-                <iconset resource="resources/icons.qrc">
-                 <normaloff>:/icons/preferences-system-session-services.png</normaloff>:/icons/preferences-system-session-services.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>16</width>
-                 <height>16</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="StealthButton" name="buttonExit">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Exit</string>
-               </property>
-               <property name="icon">
-                <iconset resource="resources/icons.qrc">
-                 <normaloff>:/icons/application-exit.png</normaloff>:/icons/application-exit.png</iconset>
                </property>
                <property name="iconSize">
                 <size>

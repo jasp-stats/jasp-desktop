@@ -9,32 +9,29 @@
 #include <QResizeEvent>
 #include "widgets/boundlistview.h"
 #include "widgets/boundpairstable.h"
+#include "utils.h"
 
 using namespace std;
 
 AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 	QWidget(parent),
-	_availableFields(parent)
+	_availableVariablesModel(parent)
 {
 	setObjectName(name);
-	_mainFields = NULL;
+	_mainVariables = NULL;
 }
 
 void AnalysisForm::set(Options *options, DataSet *dataSet)
 {
 	_dataSet = dataSet;
 
-	QList<QPair<QString, int> > columnDescs;
+	vector<string> columnNames;
 
 	BOOST_FOREACH(Column &column, dataSet->columns())
-	{
-		string name = column.name();
-		QString asQS = QString::fromUtf8(name.c_str(), name.length());
-		int columnType = column.columnType();
-		columnDescs.append(QPair<QString, int>(asQS, columnType));
-	}
+		columnNames.push_back(column.name());
 
-	_availableFields.setVariables(columnDescs);
+	_availableVariablesModel.setInfoProvider(this);
+	_availableVariablesModel.setVariables(columnNames);
 
 	_options = options;
 
@@ -56,5 +53,26 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 	}
 
 
+}
+
+QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
+{
+	if (info == VariableInfo::VariableType)
+	{
+		return _dataSet->column(term.asString()).columnType();
+	}
+	else if (info == VariableInfo::Labels)
+	{
+		QStringList values;
+		Labels &labels = _dataSet->column(term.asString()).labels();
+		for (uint i = 0; i < labels.size(); i++)
+			values.append(tq(labels.at(i).text()));
+
+		return values;
+	}
+	else
+	{
+		return QVariant();
+	}
 }
 

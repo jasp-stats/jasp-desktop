@@ -16,7 +16,7 @@ BoundPairsTable::BoundPairsTable(QWidget *parent) :
 {
 	_variableTypeKey = NULL;
 
-	setModel(new TableModelVariablesAssigned(this));
+	setModel(new TableModelPairsAssigned(this));
 	setSelectionMode(QAbstractItemView::ContiguousSelection);
 
 	this->setDragEnabled(true);
@@ -48,7 +48,7 @@ void BoundPairsTable::notifyDragWasDropped()
 
 void BoundPairsTable::setModel(QAbstractItemModel *model)
 {
-	_tableModel = qobject_cast<TableModelVariablesAssigned *>(model);
+	_tableModel = qobject_cast<TableModelPairsAssigned *>(model);
 
 	setupKey();
 

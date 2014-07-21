@@ -3,7 +3,7 @@
 
 #include "options/options.h"
 #include "options/option.h"
-#include "options/optionfields.h"
+#include "options/optionvariables.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
@@ -13,15 +13,15 @@
 using namespace std;
 
 TTestBayesianOneSample::TTestBayesianOneSample(int id)
-	: Analysis(id, "TTestBayesianOneSample")
+	: Analysis(id, "TTestBayesianOneSample", createOptions())
 {
 }
 
-Options *TTestBayesianOneSample::createDefaultOptions()
+Options *TTestBayesianOneSample::createOptions() const
 {
 	Options *options = new Options();
 
-	options->add("variables", new OptionFields());
+	options->add("variables", new OptionVariables());
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
 
 	return options;

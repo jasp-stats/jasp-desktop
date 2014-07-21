@@ -1,13 +1,13 @@
-#ifndef LISTMODELANOVAMODELNUISANCEFACTORS_H
-#define LISTMODELANOVAMODELNUISANCEFACTORS_H
+#ifndef TABLEMODELANOVAMODELNUISANCEFACTORS_H
+#define TABLEMODELANOVAMODELNUISANCEFACTORS_H
 
-#include "listmodelanovamodel.h"
-#include "options/optionfields.h"
+#include "tablemodelanovamodel.h"
+#include "options/optionvariables.h"
 
-class ListModelAnovaModelNuisanceFactors : public ListModelAnovaModel
+class TableModelAnovaModelNuisanceFactors : public TableModelAnovaModel
 {
 public:
-	ListModelAnovaModelNuisanceFactors(QObject *parent = 0);
+	TableModelAnovaModelNuisanceFactors(QObject *parent = 0);
 
 	virtual int columnCount(const QModelIndex &parent) const OVERRIDE;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
@@ -18,13 +18,13 @@ public:
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const OVERRIDE;
 
 	void assignToNuisanceOption();
-	void setNuisanceTermsOption(OptionFields *nuisanceOption);
+	void setNuisanceTermsOption(OptionVariables *nuisanceOption);
 
 	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
 
 protected:
 	QList<bool> _nuisance;
-	OptionFields *_nuisanceOption;
+	OptionVariables *_nuisanceOption;
 };
 
-#endif // LISTMODELANOVAMODELNUISANCEFACTORS_H
+#endif // TABLEMODELANOVAMODELNUISANCEFACTORS_H

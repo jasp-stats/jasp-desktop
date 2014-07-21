@@ -4,13 +4,21 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- read.dataset.to.end(columns.as.numeric=options$variables)
+			dataset <- .readDataSetToEnd(columns.as.numeric=options$variables)
 		} else {
-			dataset <- read.dataset.header(columns.as.numeric=options$variables)
+			dataset <- .readDataSetHeader(columns.as.numeric=options$variables)
 		}
 	}
 
 	results <- list()
+	
+	
+	meta <- list(
+		list(name="correlations", type="table"))
+	
+	results[[".meta"]] <- meta
+	
+	
 	
 	correlations <- list()
 

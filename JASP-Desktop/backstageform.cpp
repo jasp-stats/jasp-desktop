@@ -1,15 +1,8 @@
 #include "backstageform.h"
 #include "ui_backstageform.h"
 
-#include <iostream>
-#include <fstream>
 #include <QFileDialog>
 #include <QStandardPaths>
-
-#include <QDebug>
-
-#include "../JASP-Common/datasetloader.h"
-#include "asyncloader.h"
 
 using namespace std;
 
@@ -20,8 +13,8 @@ BackStageForm::BackStageForm(QWidget *parent) :
     ui->setupUi(this);
 
 	connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(fileItemSelected()));
-	connect(ui->buttonExit, SIGNAL(clicked()), this, SLOT(exitItemSelected()));
 	connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(closeItemSelected()));
+	connect(ui->buttonExport, SIGNAL(clicked()), this, SLOT(exportItemSelected()));
 
 	setFileLoaded(false);
 }
@@ -34,6 +27,7 @@ BackStageForm::~BackStageForm()
 void BackStageForm::setFileLoaded(bool loaded)
 {
 	ui->buttonClose->setEnabled(loaded);
+	ui->buttonExport->setEnabled(loaded);
 }
 
 void BackStageForm::fileItemSelected()
@@ -53,14 +47,26 @@ void BackStageForm::fileItemSelected()
 	}
 }
 
-void BackStageForm::exitItemSelected()
-{
-	QApplication::exit();
-}
-
 void BackStageForm::closeItemSelected()
 {
 	emit closeDataSetSelected();
+}
+
+void BackStageForm::exportItemSelected()
+{
+	_settings.sync();
+	QString path = _settings.value("openPath", QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first()).toString() + QDir::separator() + "Results.html";
+	QString filename = QFileDialog::getSaveFileName(this, tr("Export as HTML"), path, tr("HTML Files (*.html)"));
+
+	if ( ! filename.isNull())
+	{
+		QFileInfo f(filename);
+		path = f.absolutePath();
+		_settings.setValue("openPath", path);
+		_settings.sync();
+
+		emit exportSelected(filename);
+	}
 }
 
 

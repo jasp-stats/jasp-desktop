@@ -7,14 +7,14 @@ CorrelationForm::CorrelationForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	_availableFields.setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
-	_availableFields.setIsNominalTextAllowed(false);
-	ui->availableVariables->setModel(&_availableFields);
+	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	ui->availableVariables->setModel(&_availableVariablesModel);
 	ui->availableVariables->setDoubleClickTarget(ui->variables);
 
-	_modelVariables = new ListModelVariablesAssigned();
-	_modelVariables->setSource(&_availableFields);
-	_modelVariables->setIsNominalTextAllowed(false);
+	_modelVariables = new TableModelVariablesAssigned();
+	_modelVariables->setSource(&_availableVariablesModel);
+	_modelVariables->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	_modelVariables->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
 	ui->variables->setModel(_modelVariables);
 

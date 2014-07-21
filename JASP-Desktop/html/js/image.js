@@ -7,8 +7,8 @@ $.widget("jasp.image", {
         data: null,
         status : "waiting",
         resize : [ ],
-        itemOptions : { },
-        itemoptionschanged : [ ]
+        custom : { },
+        customchanged : [ ]
 	},
 	_create: function () {
 		this.element.addClass("jasp-image")
@@ -31,16 +31,16 @@ $.widget("jasp.image", {
 
 		this.element.removeClass("jasp-image-resizable")
 
-		var itemOptions = this.options.itemOptions
+		var custom = this.options.custom
 
 		var options = { }
 		
-		if (_.has(itemOptions, "width"))
-			options[itemOptions.width] = ui.size.width
-		if (_.has(itemOptions, "height"))
-			options[itemOptions.height] = ui.size.height
+		if (_.has(custom, "width"))
+			options[custom.width] = ui.size.width
+		if (_.has(custom, "height"))
+			options[custom.height] = ui.size.height
 			
-		this._trigger("itemoptionschanged", null, options)
+		this._trigger("customchanged", null, options)
 		
 	},
 	refresh: function () {

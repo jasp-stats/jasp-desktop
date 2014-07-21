@@ -17,7 +17,7 @@ init <- function(name, options.as.json.string) {
 	
 	} else {
 	
-		RJSONIO::toJSON(results)	
+		RJSONIO::toJSON(results, digits=12)
 	}
 
 }
@@ -40,17 +40,17 @@ run <- function(name, options.as.json.string) {
 	
 	} else {
 	
-		RJSONIO::toJSON(results)	
+		RJSONIO::toJSON(results, digits=12)
 	}
 
 }
 
-read.dataset.to.end <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {	
+.readDataSetToEnd <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {	
 
 	if (is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor) && all.columns == FALSE)
 		return (data.frame())
 
-	dataset <- .read.dataset.native(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
+	dataset <- .readDatasetToEndNative(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
 	
 	if ( ! is.null(exclude.na.listwise))
 	{
@@ -72,12 +72,12 @@ read.dataset.to.end <- function(columns=c(), columns.as.numeric=c(), columns.as.
 	dataset
 }
 
-read.dataset.header <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, ...) {
+.readDataSetHeader <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, ...) {
 
 	if (is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor) && all.columns == FALSE)
 		return (data.frame())
 
-	dataset <- .read.dataset.header.native(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
+	dataset <- .readDataSetHeaderNative(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
 	
 	dataset
 }
@@ -102,6 +102,72 @@ read.dataset.header <- function(columns=c(), columns.as.numeric=c(), columns.as.
 	vs
 }
 
+.vf <- function(formula) {
+  
+  in.pieces <- .decompose(formula)
+  ved <- .jrapply(in.pieces, .v)
+  .compose(ved)
+}
+
+.unvf <- function(formula) {
+  
+  in.pieces <- .decompose(formula)
+  unved <- .jrapply(in.pieces, .unv)
+  .compose(unved)
+}
+
+.decompose <- function(formulas) {
+  
+  lapply(as.list(formulas), function(formula) {
+  
+    sides <- strsplit(formula, "~", fixed=TRUE)[[1]]
+    
+    lapply(sides, function(formula) {
+    
+      terms <- strsplit(formula, "+", fixed=TRUE)
+      
+      lapply(terms, function(term) {
+        components <- strsplit(term, ":")
+        components <- sapply(components, stringr::str_trim, simplify=FALSE)
+      })[[1]]
+      
+    })
+  })
+}
+
+.compose <- function(formulas) {
+  
+  sapply(formulas, function(formula) {
+    
+    formula <- sapply(formula, function(side) {
+      
+      side <- sapply(side, function(term) {
+        paste(term, collapse=":")
+      })
+      
+      paste(side, collapse=" + ")
+    })
+    
+    paste(formula, collapse=" ~ ")    
+  })
+}
+
+
+.jrapply <- function(X, FUN) {
+	
+	if (is.list(X) && length(X) > 0) {
+		
+		for (i in 1:length(X)) {
+			X[[i]] <- .jrapply(X[[i]], FUN)
+		}
+	}
+	else {
+		X <- FUN(X)
+	}
+	
+	X
+}
+
 callback <- function(results=NULL) {
 
 	if (is.null(results)) {
@@ -110,7 +176,7 @@ callback <- function(results=NULL) {
 		json.string <- RJSONIO::toJSON(results)
 	}
 	
-	.callback.native(json.string);
+	.callbackNative(json.string);
 
 }
 
@@ -164,23 +230,25 @@ callback <- function(results=NULL) {
 }
 
 .beginSaveImage <- function(width=320, height=320) {
-		
-	file <- paste(tempfile(), "png", sep=".")
+
+	file <- tempfile(fileext=".svg")
 			
-	grDevices::png(filename=file, width=2 * width, height=2 * height, pointsize=24, bg="transparent")
+	grDevices::svg(filename=file, width=width/72, height=height/72, bg="transparent")
 	
-	list(format="png", encoding="dataURI;base64", file=file)
+	list(format="svg", encoding="dataURI;base64", file=file)
 }
 
 .endSaveImage <- function(image.descriptor) {
 
 	grDevices::dev.off()
 	
-	file <- tempfile()
+	file <- tempfile(fileext=".base64")
 	
 	base64::encode(image.descriptor$file, file, linesize=1024*1024*1024)
 	
-	content <- paste("data:image/png;base64,", base::readChar(file, 1024*1024*1024), sep="")
+	file.size <- base::file.info(file)$size
+	
+	content <- paste("data:image/svg+xml;base64,", base::readChar(file, file.size), sep="")
 	
 	base::file.remove(image.descriptor$file)
 	base::file.remove(file)

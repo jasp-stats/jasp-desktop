@@ -3,6 +3,8 @@
 #include <QPaintEvent>
 #include <QPainter>
 
+#include <iostream>
+
 TableViewMenuEditor::TableViewMenuEditor(QWidget *parent) :
 	QWidget(parent)
 {
@@ -28,7 +30,8 @@ void TableViewMenuEditor::setMenuContent(QStringList menuItems, QString selected
 	}
 
 	_menu->setActiveAction(active);
-	connect(_menu, SIGNAL(triggered(QAction*)), this, SLOT(itemSelected(QAction*)));
+	connect(_menu, SIGNAL(aboutToHide()), this, SLOT(aboutToHide()));
+
 }
 
 void TableViewMenuEditor::showEvent(QShowEvent *)
@@ -53,8 +56,11 @@ void TableViewMenuEditor::paintEvent(QPaintEvent *event)
 	painter.fillPath(path, black);
 }
 
-void TableViewMenuEditor::itemSelected(QAction *action)
+void TableViewMenuEditor::aboutToHide()
 {
-	_selected = action->text();
+	QAction *action = _menu->activeAction();
+	if (action != NULL)
+		_selected = action->text();
+
 	emit editingFinished();
 }

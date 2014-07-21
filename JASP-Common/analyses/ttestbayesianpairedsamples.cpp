@@ -2,26 +2,26 @@
 
 #include "options/options.h"
 #include "options/option.h"
-#include "options/optionfields.h"
+#include "options/optionterms.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
 #include "options/optionlist.h"
 #include "options/optionnumber.h"
-#include "options/optionfieldpairs.h"
+#include "options/optionvariablesgroups.h"
 
 using namespace std;
 
 TTestBayesianPairedSamples::TTestBayesianPairedSamples(int id)
-	: Analysis(id, "TTestBayesianPairedSamples")
+	: Analysis(id, "TTestBayesianPairedSamples", createOptions())
 {
 }
 
-Options *TTestBayesianPairedSamples::createDefaultOptions()
+Options *TTestBayesianPairedSamples::createOptions() const
 {
 	Options *options = new Options();
 
-	options->add("pairs", new OptionFieldPairs());
+	options->add("pairs", new OptionVariablesGroups());
 
 	options->add("descriptives", new OptionBoolean());
 
@@ -30,7 +30,3 @@ Options *TTestBayesianPairedSamples::createDefaultOptions()
 	return options;
 }
 
-string TTestBayesianPairedSamples::order()
-{
-	return "ttest,descriptives";
-}

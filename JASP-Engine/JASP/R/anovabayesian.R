@@ -4,9 +4,9 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- read.dataset.to.end()
+			dataset <- .readDataSetToEnd()
 		} else {
-			dataset <- read.dataset.header()
+			dataset <- .readDataSetHeader()
 		}
 	}
 

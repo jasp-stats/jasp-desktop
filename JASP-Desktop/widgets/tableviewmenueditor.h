@@ -23,7 +23,7 @@ protected:
 	virtual void paintEvent(QPaintEvent *event) OVERRIDE;
 
 private slots:
-	void itemSelected(QAction *action);
+	void aboutToHide();
 
 private:
 

@@ -14,7 +14,7 @@ typedef boost::interprocess::allocator<String, boost::interprocess::managed_shar
 class Label
 {
 public:
-	Label(boost::interprocess::managed_shared_memory *mem, std::string value);
+	Label(boost::interprocess::managed_shared_memory *mem, const std::string &label, int value);
 	Label(boost::interprocess::managed_shared_memory *mem, int value);
 
 	std::string text() const;

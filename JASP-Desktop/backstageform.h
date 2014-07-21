@@ -4,9 +4,6 @@
 #include <QWidget>
 #include <QSettings>
 
-#include "asyncloader.h"
-#include "dataset.h"
-
 namespace Ui {
 class BackStageForm;
 }
@@ -25,6 +22,7 @@ public slots:
 signals:
 	void dataSetSelected(QString filename);
 	void closeDataSetSelected();
+	void exportSelected(QString filename);
     
 private:
     Ui::BackStageForm *ui;
@@ -32,8 +30,8 @@ private:
 
 private slots:
     void fileItemSelected();
-	void exitItemSelected();
 	void closeItemSelected();
+	void exportItemSelected();
 
 };
 

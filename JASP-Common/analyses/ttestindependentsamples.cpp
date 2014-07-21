@@ -2,8 +2,8 @@
 
 #include "options/options.h"
 #include "options/option.h"
-#include "options/optionfield.h"
-#include "options/optionfields.h"
+#include "options/optionvariable.h"
+#include "options/optionvariables.h"
 #include "options/optionboolean.h"
 #include "options/optioninteger.h"
 #include "options/optionintegerarray.h"
@@ -13,16 +13,16 @@
 using namespace std;
 
 TTestIndependentSamples::TTestIndependentSamples(int id)
-	: Analysis(id, "TTestIndependentSamples")
+	: Analysis(id, "TTestIndependentSamples", createOptions())
 {
 }
 
-Options *TTestIndependentSamples::createDefaultOptions()
+Options *TTestIndependentSamples::createOptions() const
 {
 	Options *options = new Options();
 
-	options->add("variables", new OptionFields());
-	options->add("groupingVariable", new OptionField());
+	options->add("variables", new OptionVariables());
+	options->add("groupingVariable", new OptionVariable());
 
 	options->add("equalityOfVariances", new OptionList(list("assumeEqual", "noAssumption", "reportBoth")));
 
@@ -39,7 +39,3 @@ Options *TTestIndependentSamples::createDefaultOptions()
 	return options;
 }
 
-string TTestIndependentSamples::order()
-{
-	return "ttest,inequalityOfVariances,descriptives";
-}
