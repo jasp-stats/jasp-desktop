@@ -12,6 +12,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 	results <- list()
 	
+	
+	meta <- list(
+		list(name="correlations", type="table"))
+	
+	results[[".meta"]] <- meta
+	
+	
+	
 	correlations <- list()
 
 	tests <- c()
