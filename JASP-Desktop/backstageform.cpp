@@ -4,6 +4,16 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+
+#include <QTimer>
+
+#include <QDebug>
+
+#include "appdirs.h"
+
 using namespace std;
 
 BackStageForm::BackStageForm(QWidget *parent) :
@@ -16,12 +26,27 @@ BackStageForm::BackStageForm(QWidget *parent) :
 	connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(closeItemSelected()));
 	connect(ui->buttonExport, SIGNAL(clicked()), this, SLOT(exportItemSelected()));
 
+	connect(ui->recentDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelectedHandler(QString)));
+	connect(ui->exampleDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelectedHandler(QString)));
+
 	setFileLoaded(false);
+
+	QTimer::singleShot(200, this, SLOT(loadExamples())); // delay loading for quick start up
+
+	this->installEventFilter(this);
 }
 
 BackStageForm::~BackStageForm()
 {
 	delete ui;
+}
+
+bool BackStageForm::eventFilter(QObject *object, QEvent *event)
+{
+	if (event->type() == QEvent::Show || event->type() == QEvent::WindowActivate)
+		loadRecents();
+
+	return QWidget::eventFilter(object, event);
 }
 
 void BackStageForm::setFileLoaded(bool loaded)
@@ -36,11 +61,22 @@ void BackStageForm::fileItemSelected()
 	QString path = _settings.value("openPath", QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first()).toString();
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open CSV File"), path, tr("CSV Files (*.csv)"));
 
-	if ( ! filename.isNull())
+	if ( ! filename.isNull() && QFile::exists(filename))
 	{
 		QFileInfo f(filename);
 		path = f.absolutePath();
 		_settings.setValue("openPath", path);
+
+		loadRecents();
+		_recents.removeAll(filename);
+
+		_recents.prepend(filename);
+		while (_recents.size() > _maxRecents)
+			_recents.removeLast();
+		_settings.setValue("recentItems", _recents);
+
+		ui->recentDataSets->setDataSets(_recents);
+
 		_settings.sync();
 
 		emit dataSetSelected(filename);
@@ -67,6 +103,76 @@ void BackStageForm::exportItemSelected()
 
 		emit exportSelected(filename);
 	}
+}
+
+void BackStageForm::dataSetSelectedHandler(const QString &path)
+{
+	emit dataSetSelected(path);
+}
+
+void BackStageForm::loadRecents()
+{
+	_settings.sync();
+
+	QVariant v = _settings.value("recentItems");
+	if (v.type() != QVariant::StringList)
+	{
+		qDebug() << "BackStageForm::loadRecents();  setting 'recentItems' is not a QStringList";
+		return;
+	}
+
+	QStringList recents = v.toStringList();
+
+	while (_recents.size() > 5)
+		_recents.removeFirst();
+
+	if (recents != _recents)
+	{
+		_recents = recents;
+		ui->recentDataSets->setDataSets(_recents);
+	}
+}
+
+void BackStageForm::loadExamples()
+{
+	QFile index(AppDirs::examples() + QDir::separator() + "index.json");
+
+	if ( ! index.exists())
+	{
+		qDebug() << "BackStageForm::loadExamples();  index not found\n";
+		return;
+	}
+
+	index.open(QFile::ReadOnly);
+	if ( ! index.isOpen())
+	{
+		qDebug() << "BackStageForm::loadExamples();  index could not be opened\n";
+		return;
+	}
+
+	QByteArray bytes = index.readAll();
+	QJsonParseError error;
+
+	QJsonDocument doc = QJsonDocument::fromJson(bytes, &error);
+
+	if (error.error != QJsonParseError::NoError)
+	{
+		qDebug() << "BackStageForm::loadExamples();  JSON parse error : " << error.errorString() << "\n";
+		return;
+	}
+
+	QJsonArray examples = doc.array();
+
+	for (int i = examples.size() - 1; i >= 0; i--)
+	{
+		QJsonObject example = examples.at(i).toObject();
+		QString path = AppDirs::examples() + QDir::separator() + example["path"].toString();
+		QString name = example["name"].toString();
+		QString description = example["description"].toString();
+
+		ui->exampleDataSets->addDataSetOption(path, name, description);
+	}
+
 }
 
 
