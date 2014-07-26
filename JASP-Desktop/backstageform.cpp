@@ -74,7 +74,7 @@ void BackStageForm::fileItemSelected()
 		path = f.absolutePath();
 		_settings.setValue("openPath", path);
 
-		addToRecentList(path);
+		addToRecentList(filename);
 
 		emit dataSetSelected(filename);
 	}
