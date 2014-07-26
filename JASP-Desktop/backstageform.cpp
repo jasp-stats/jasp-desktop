@@ -26,8 +26,8 @@ BackStageForm::BackStageForm(QWidget *parent) :
 	connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(closeItemSelected()));
 	connect(ui->buttonExport, SIGNAL(clicked()), this, SLOT(exportItemSelected()));
 
-	connect(ui->recentDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelectedHandler(QString)));
-	connect(ui->exampleDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelectedHandler(QString)));
+	connect(ui->recentDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(recentSelectedHandler(QString)));
+	connect(ui->exampleDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(exampleSelectedHandler(QString)));
 
 	setFileLoaded(false);
 
@@ -74,17 +74,7 @@ void BackStageForm::fileItemSelected()
 		path = f.absolutePath();
 		_settings.setValue("openPath", path);
 
-		loadRecents();
-		_recents.removeAll(filename);
-
-		_recents.prepend(filename);
-		while (_recents.size() > _maxRecents)
-			_recents.removeLast();
-		_settings.setValue("recentItems", _recents);
-
-		ui->recentDataSets->setDataSets(_recents);
-
-		_settings.sync();
+		addToRecentList(path);
 
 		emit dataSetSelected(filename);
 	}
@@ -112,8 +102,14 @@ void BackStageForm::exportItemSelected()
 	}
 }
 
-void BackStageForm::dataSetSelectedHandler(const QString &path)
+void BackStageForm::exampleSelectedHandler(QString path)
 {
+	emit dataSetSelected(path);
+}
+
+void BackStageForm::recentSelectedHandler(QString path)
+{
+	addToRecentList(path);
 	emit dataSetSelected(path);
 }
 
@@ -180,6 +176,21 @@ void BackStageForm::loadExamples()
 		ui->exampleDataSets->addDataSetOption(path, name, description);
 	}
 
+}
+
+void BackStageForm::addToRecentList(QString path)
+{
+	loadRecents();
+	_recents.removeAll(path);
+
+	_recents.prepend(path);
+	while (_recents.size() > _maxRecents)
+		_recents.removeLast();
+	_settings.setValue("recentItems", _recents);
+
+	ui->recentDataSets->setDataSets(_recents);
+
+	_settings.sync();
 }
 
 

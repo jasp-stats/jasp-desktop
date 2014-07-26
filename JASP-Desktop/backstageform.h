@@ -39,10 +39,13 @@ private slots:
     void fileItemSelected();
 	void closeItemSelected();
 	void exportItemSelected();
-	void dataSetSelectedHandler(const QString &path);
+	void exampleSelectedHandler(QString path);
+	void recentSelectedHandler(QString path);
 
 	void loadRecents();
 	void loadExamples();
+
+	void addToRecentList(QString path);
 
 };
 
