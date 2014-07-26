@@ -107,7 +107,10 @@ SOURCES += main.cpp\
     widgets/tablemodelanovamodel.cpp \
     widgets/tablemodelcontrasts.cpp \
 	analysisforms/anovarepeatedmeasuresshortform.cpp \
-	widgets/tablemodelanovadesign.cpp
+	widgets/tablemodelanovadesign.cpp \
+    widgets/datasetsselectwidget.cpp \
+    widgets/datasetselectwidget.cpp \
+    appdirs.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -190,7 +193,10 @@ HEADERS  += \
     widgets/tablemodelanovamodel.h \
     widgets/tablemodelcontrasts.h \
 	analysisforms/anovarepeatedmeasuresshortform.h \
-	widgets/tablemodelanovadesign.h
+	widgets/tablemodelanovadesign.h \
+    widgets/datasetsselectwidget.h \
+    widgets/datasetselectwidget.h \
+    appdirs.h
 
 FORMS    += \
     backstageform.ui \
@@ -221,7 +227,8 @@ FORMS    += \
     analysisforms/ttestbayesianindependentsamplesform.ui \
     analysisforms/ttestbayesianpairedsamplesform.ui \
     optionsform.ui \
-    analysisforms/anovarepeatedmeasuresshortform.ui
+    analysisforms/anovarepeatedmeasuresshortform.ui \
+    widgets/datasetselectwidget.ui
 
 
 RESOURCES += \
