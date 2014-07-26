@@ -34,6 +34,13 @@ BackStageForm::BackStageForm(QWidget *parent) :
 	QTimer::singleShot(200, this, SLOT(loadExamples())); // delay loading for quick start up
 
 	this->installEventFilter(this);
+
+#ifdef __WIN32__
+	QFont f = ui->recentDataSetsHeading->font();
+	QFont nf(f.family(), 11, f.weight(), f.italic());
+	ui->recentDataSetsHeading->setFont(nf);
+	ui->exampleDataSetsHeading->setFont(nf);
+#endif
 }
 
 BackStageForm::~BackStageForm()
