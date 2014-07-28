@@ -204,7 +204,9 @@ div.error-message-box
 
 	padding: 1em 2em ;
 	margin: 50px auto ;
-	width: 300px ;
+	min-width: 300px ;
+	max-width: 500px ;
+	width: 50% ;
 	border: 3px dashed #3CAAE7 ;
 	border-radius: 10px ;
 	color: #3CAAE7 ;
