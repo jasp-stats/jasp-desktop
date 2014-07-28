@@ -328,6 +328,8 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 	ui->backStage->setFileLoaded(true);
 	_analyses->clear();
 
+	ui->tableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+
 	_alert->hide();
 
 	if (_inited == false)
