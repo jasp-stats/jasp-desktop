@@ -2,12 +2,12 @@ $.widget("jasp.table", {
 
 	options: {
 		title: "",
-        subtitle: null,
+		subtitle: null,
 		variables: [ ],
-        data: [ ],
-        casesAcrossColumns : false,
-        formats : null,
-        status : "waiting"
+		data: [ ],
+		casesAcrossColumns : false,
+		formats : null,
+		status : "waiting"
 	},
 	_create: function () {
 		this.element.addClass("jasp-table")
@@ -18,324 +18,345 @@ $.widget("jasp.table", {
 		
 		this.refresh()
 	},
-    _format : function(value, format) {
+	_fsd : function(value) { // first significant digit position
+	
+		if (value > 0)
+			return Math.floor(Math.log(+value) / Math.log(10)) + 1
+		else if (value < 0)
+			return Math.floor(Math.log(-value) / Math.log(10)) + 1
+		else
+			return 1
+	
+	},
+	_swapRowsAndColumns : function(columnHeaders, columns) {
+	
+		var newRowCount = columns.length - 1
+		var newColumnCount = columns[0].length + 1
 
-        if (isNaN(parseFloat(value)))
-            return value;
+		var newColumnHeaders = columns[0]
+		var newColumns = Array(newColumnCount)
 
-        var formats = format.split(";");
-
-        for (var i = 0; i < formats.length; i++) {
-            var f = formats[i]
-            if (f.indexOf("p:") != -1)
-            {
-                var p = f.substring(2)
-                if (value < p)
-                    return "<&nbsp" + p
-            }
-        }
-
-        for (var i = 0; i < formats.length; i++) {
-
-            var f = formats[i]
-
-            if (f.indexOf("dp:") != -1) {
-
-                var dp = f.substring(3)
-                return value.toFixed(dp)
-            }
-            if (f.indexOf("sf:") != -1) {
-
-                var sf = f.substring(3)
-                return value.toPrecision(sf)
-            }
-        }
-
-        return value
-    },
-	refresh: function () {
+		var cornerCell = columnHeaders.shift()
+		newColumnHeaders.unshift(cornerCell)
+		newColumns[0] = columnHeaders
 		
-		var html = ''
-
-		if (this.options.error) {
+		for (var colNo = 1; colNo < newColumnCount; colNo++) {
 		
-        	html += '<table class="error-state">'
+			newColumns[colNo] = Array(newRowCount)
+		
+			for (var rowNo = 0; rowNo < newRowCount; rowNo++) {
+			
+				newColumns[colNo][rowNo] = columns[rowNo+1][colNo-1]
+			}
+		
 		}
-		else {
 		
-        	html += '<table>'
-        }
+		return { columnHeaders : newColumnHeaders, columns : newColumns, rowCount : newRowCount, columnCount : newColumnCount }
+	
+	},
+	_formatColumn : function(column, type, format) {
+
+		var columnCells = Array(column.length)
+
+		if (type == "string" || typeof format == "undefined") {
 		
-        if ( ! this.options.casesAcrossColumns) {
+			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
-				html += '<thead>'
-					html += '<tr>'
-                        html += '<th colspan="' + this.options.schema.fields.length + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
-					html += '</tr>'
-
-            if (this.options.subtitle) {
-                    html += '<tr>'
-                        html += '<th colspan="' + this.options.schema.fields.length + '"></th>'
-                    html += '</tr>'
-            }
-
-					html += '<tr>'
-					
-			var rowsInEachColumn = { }
-			var maxRows = 1
-			var columnCount = 0
-					
-            for (var i = 0; i < this.options.schema.fields.length; i++) {
-
-				var field = this.options.schema.fields[i]
-
-				var columnName = field.name
-				var bPos = columnName.indexOf("[")
-				if (bPos != -1)
-					columnName = columnName.substring(0, bPos);
-
-				if (_.has(rowsInEachColumn, columnName)) {
+				var clazz = (type == "string") ? "text" : "number"
 				
-					rowsInEachColumn[columnName]++
+				var cell = column[rowNo]
+				if (typeof cell == "undefined")
+					cell = "."
 					
-					if (rowsInEachColumn[columnName] > maxRows)
-						maxRows = rowsInEachColumn[columnName]
+				columnCells[rowNo] = { content : cell, "class" : clazz }
+			}
+			
+			return columnCells
+		}
+
+		var formats = format.split(";");
+		var p = NaN
+		var dp = NaN
+		var sf = NaN
+
+		for (var i = 0; i < formats.length; i++) {
+		
+			var f = formats[i]
+			
+			if (f.indexOf("p:") != -1)
+			{
+				p = f.substring(2)
+			}
+			if (f.indexOf("dp:") != -1) {
+
+				dp = f.substring(3)
+			}
+			if (f.indexOf("sf:") != -1) {
+
+				sf = f.substring(3)
+			}
+		}
+		
+		if (isFinite(sf)) {
+
+			var lowerLim = -5
+			var upperLim =  5
+			var scientific = false
+			var minLsd = Infinity	// right most position of the least significant digit
+			
+			for (var rowNo = 0; rowNo < column.length; rowNo++) {
+
+				var cell = column[rowNo]
+				
+				if (isNaN(parseFloat(cell)))  // isn't a number
+					continue
+
+				var fsd = this._fsd(cell)  // position of first significant digit
+				var lsd = fsd - sf
+				
+				if (fsd > upperLim || lsd < lowerLim) {
+				
+					scientific = true
+					break
+				}
+				else if (lsd < minLsd) {
+				
+					minLsd = lsd
+				}
+			}
+		
+			for (var rowNo = 0; rowNo < column.length; rowNo++) {
+
+				var cell = column[rowNo]
+				
+				if (typeof cell == "undefined") {
+				
+					columnCells[rowNo] = { content : ".", "class" : "missing" }
+				}
+				else if (isNaN(parseFloat(cell))) {  // isn't a number
+					
+					columnCells[rowNo] = { content : cell, "class" : "text" }
+
+				}
+				else if (cell < p) {
+					
+					columnCells[rowNo] = { content : "<&nbsp" + p, "class" : "p-value" }
+
+				}
+				else if (scientific === false) {
+				
+					var fsd = this._fsd(cell)  // position of first significant digit
+					var lsd = fsd - sf
+					
+					var paddingNeeded = Math.max(lsd - minLsd, 0)
+					var padding = ""
+					
+					if (paddingNeeded)
+						padding = '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
+					
+					columnCells[rowNo] = { content : cell.toPrecision(sf) + padding, "class" : "number" }
 				}
 				else {
 				
-					rowsInEachColumn[columnName] = 1
-					columnCount++
-				
-					if (_.has(field, "title"))
-							html += '<th>' + field.title + '</th>'
-					else if (_.has(field, "name"))
-							html += '<th>' + field.name + '</th>'
-					else
-							html += '<th>' + field.id + '</th>'
-						
-                }
-            }
-					
-					html += '</tr>'
-				html += '</thead>'
-				html += '<tbody>'
-				
-			if (this.options.data != null) {
-			
-				for (var rowNo = 0; rowNo < this.options.data.length; rowNo++) {
-
-					if (maxRows > 1)
-						html += '<tr class="main-row">'
-					else
-						html += '<tr>'
-					
-					var currentSubRow = 0
-					var rowsInEachColumnInserted = { }
-		
-					_.each(this.options.schema.fields, function(field) {
-
-						var value = this.options.data[rowNo][field.name]
-							
-						var columnName = field.name
-						var bPos = columnName.indexOf("[")
-						if (bPos != -1)
-							columnName = columnName.substring(0, bPos);
-							
-						var rowSpan = maxRows / rowsInEachColumn[columnName]
-
-						
-						if (field.combine && rowNo > 0 && value === this.options.data[rowNo-1][field.name])
-							value = ""
-						else if (_.isUndefined(value))
-							value = "."
-						else if (field.format)
-							value = this._format(value, field.format)
-							
-						if (this.options.data[rowNo][".footnotes"] && this.options.data[rowNo][".footnotes"][field.name]) {
-
-							var footnotes = this.options.data[rowNo][".footnotes"][field.name]
-
-							var footnotify = function(footnote) {
-								if (_.isNumber(footnote))
-									return String.fromCharCode(97 + footnote)
-								else
-									return footnote
-							}
-
-							var sup = "<sup>" + footnotify(footnotes[0]);
-							for (var j = 1; j < footnotes.length; j++)
-								sup += "," + footnotify(footnotes[rowNo]);
-							sup += "</sup>"
-
-							value = "" + value + sup
-						}
-
-						var subRowNo
-						
-						if ( ! _.has(rowsInEachColumnInserted, columnName))
-							rowsInEachColumnInserted[columnName] = 0
-						
-						subRowNo = rowsInEachColumnInserted[columnName]
-						
-						if (subRowNo != currentSubRow) {
-							html += '</tr><tr>'
-							currentSubRow++
-						}
-
-						rowsInEachColumnInserted[columnName] += rowSpan
-						
-						var format = (field.type == "string") ? "text" : ""
-
-						html += '<td rowspan="' + rowSpan + '" class="' + format + '">' + value + '</td>'
-
-						
-					}, this)
-					
-					html += '</tr>'
+					columnCells[rowNo] = { content : cell.toExponential(sf-1), "class" : "number" }
 				}
-			
-			}
-			
-	            html += '<tr><td colspan="' + columnCount + '"></td></tr>'
-		
-				html += '</tbody>'
-				
-			if (this.options.footnotes) {
-
-				html += '<tfoot>'
-
-				for (var i = 0; i < this.options.footnotes.length; i++) {
-
-					html += '<tr><td colspan="' + this.options.schema.fields.length + '">'
-					
-					var footnote = this.options.footnotes[i]
-					
-					if (_.isString(footnote)) {
-
-						html += '<sup>' + String.fromCharCode(97 + i) + '</sup>'
-						html += footnote
-					}
-					
-					if (_.has(footnote, "symbol")) {
-					
-						html += '<sup>' + footnote.symbol + '</sup>'
-						html += footnote.text
-					}
-					
-					html += '</td></tr>'
-				}
-
-				html += '</tfoot>'
-			}
-				
-        }
-        else
-        {
-
-			var fields = this.options.schema.fields
-			var data = this.options.data
-
-			var columnCount = data.length + 1
-
-				html += '<thead>'
-					html += '<tr>'
-					
-                        html += '<th colspan="' + columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div>' + '</th>'
-					html += '</tr>'
-					
-			if (this.options.subtitle) {
-                    html += '<tr>'
-                        html += '<th colspan="' + columnCount + '">' + this.options.subtitle + '</th>'
-                    html += '</tr>'
-            }
-					
-					html += '<tr>'
-					html += '<th></th>'
-					
-
-			var firstCol = fields[0].name
-
-			_.each(data, function(col) {
-		
-						html += '<th>' + col[firstCol] + '</th>'
-					
-			}, this)
-			
-					
-					html += '</tr>'
-				html += '</thead>'
-				html += '<tbody>'
-			
-			for (var rowNo = 1; rowNo < fields.length; rowNo++) {
-			
-				var field = fields[rowNo]
-				var title = field.title
-				if ( ! title)
-					title = field.name
-
-					html += '<tr>'
-                    html += '<th>' + title + '</th>'
-		
-                if (this.options.data != null) {
-                
-                    for (var colNo = 0; colNo < data.length; colNo++) {
-                    
-                        var entry = this.options.data[colNo]
-                        var value = entry[field.name]
-
-						if (_.isUndefined(value))
-							value = "."
-						else if (field.format)
-							value = this._format(value, field.format)
-
-                        if (this.options.data[colNo][".footnotes"] && this.options.data[colNo][".footnotes"][field.name]) {
-                        
-                            var footnotes = this.options.data[colNo][".footnotes"][field.name]
-
-                            var sup = "<sup>" + String.fromCharCode(97 + footnotes[0]);
-                            for (var j = 1; j < footnotes.length; j++)
-                                sup += "," + String.fromCharCode(97 + footnotes[i]);
-                            sup += "</sup>"
-
-                            value = "" + value + sup
-                        }
-
-						html += '<td>' + value + '</td>'
-                    }
-				}
-					
-					html += '</tr>'
-	
-			}
-            
-            	html += '<tr><td colspan="' + columnCount + '"></td></tr>'
-		
-				html += '</tbody>'
-				
-			if (this.options.footnotes) {
-
-				html += '<tfoot>'
-
-				for (var i = 0; i < this.options.footnotes.length; i++) {
-
-					html += '<tr><td colspan="' + columnCount + '">'
-					html += '<sup>' + String.fromCharCode(97 + i) + '</sup>'
-					html += this.options.footnotes[i]
-					html += '</td></tr>'
-				}
-
-				html += '</tfoot>'
 			}
 		}
+		else if (isFinite(dp)) {
+		
+			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
-        html += '</table>'
-        
-        if (this.options.error && this.options.error.errorMessage) {
-        
-        	html += '<div style="position: absolute ; left: -1000 ; top: -1000 ;" class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>'
-        	html += this.options.error.errorMessage
-        	html += '</div>'
-        }
+				var cell = column[rowNo]
+				
+				if (typeof cell == "undefined") {
+				
+					columnCells[rowNo] = { content : ".", "class" : "missing" }
+				}
+				else if (isNaN(parseFloat(cell))) {  // isn't a number
+					
+					columnCells[rowNo] = { content : cell, "class" : "text" }
+				}
+				else if (cell < p) {
+					
+					columnCells[rowNo] = { content : "<&nbsp" + p, "class" : "p-value" }
+				}
+				else {
+				
+					columnCells[rowNo] = { content : cell.toFixed(dp), "class" : "number" }
+				}
+			}
+		}
+		else {
+		
+			for (var rowNo = 0; rowNo < column.length; rowNo++) {
+			
+				var cell = column[rowNo]
+				if (typeof cell == "undefined")
+					cell = "."
+					
+				columnCells[rowNo] = { content : cell }
+			}
+		}
+		
+		return columnCells
+	
+	},
+	refresh: function () {
+
+		var columnDefs = this.options.schema.fields
+		var columnCount = columnDefs.length
+		
+		var rowData = this.options.data
+		var rowCount = rowData ? rowData.length : 0
+
+		var columnHeaders = Array(columnCount)
+		var columns = Array(columnCount)
+		
+
+		for (var colNo = 0; colNo < columnCount; colNo++) {
+		
+			// populate column headers
+				
+			var columnDef = columnDefs[colNo]	
+			var title = (typeof columnDef.title != "undefined") ? columnDef.title : columnDef.name
+			
+			columnHeaders[colNo] = { content : title, header : true }
+			
+			
+			// populate cells column-wise
+			
+			var column = Array(rowCount)
+			
+			for (var rowNo = 0; rowNo < rowCount; rowNo++) {
+			
+				column[rowNo] = rowData[rowNo][columnDef.name]
+			}
+			
+			columns[colNo] = column
+		}
+
+		var cells = Array(columnCount)
+		
+		for (var colNo = 0; colNo < columnCount; colNo++) {
+		
+			var column = columns[colNo]
+			var type   = columnDefs[colNo].type
+			var format = columnDefs[colNo].format
+			
+			cells[colNo] = this._formatColumn(column, type, format)
+		}
+		
+		if (this.options.casesAcrossColumns) {
+		
+			var swapped = this._swapRowsAndColumns(columnHeaders, cells)
+			cells = swapped.columns
+			columnHeaders = swapped.columnHeaders;
+			rowCount = swapped.rowCount
+			columnCount = swapped.columnCount
+		}
+		
+		var chunks = [ ]		
+
+		if (this.options.error) {
+		
+			chunks.push('<table class="error-state">')
+		}
+		else {
+		
+			chunks.push('<table>')
+		}
+		
+	
+
+			chunks.push('<thead>')
+				chunks.push('<tr>')
+					chunks.push('<th colspan="' + columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div></th>')
+				chunks.push('</tr>')
+
+		if (this.options.subtitle) {
+				chunks.push('<tr>')
+					chunks.push('<th colspan="' + columnCount + '"></th>')
+				chunks.push('</tr>')
+		}
+
+				chunks.push('<tr>')
+
+				
+		for (var colNo = 0; colNo < columnCount; colNo++) {
+
+			var cell = columnHeaders[colNo]
+			chunks.push('<th>' + cell.content + '</th>')
+
+		}
+				
+				chunks.push('</tr>')
+			chunks.push('</thead>')
+			chunks.push('<tbody>')
+		
+		for (var rowNo = 0; rowNo < rowCount; rowNo++) {
+			
+			chunks.push('<tr>')
+
+			for (var colNo = 0; colNo < columnCount; colNo++) {
+			
+				var cell = cells[colNo][rowNo]
+				
+				var cellHtml = ''
+				
+				cellHtml += (cell.header  ? '<th' : '<td')
+				cellHtml += (cell.class   ? ' class="' + cell.class + '"' : '')
+				cellHtml += '>'
+				cellHtml += (cell.content ? cell.content : '')
+				cellHtml += (cell.header  ? '</th>' : '</td>')
+				
+				chunks.push(cellHtml)
+			}
+
+			chunks.push('</tr>')
+		}
+		
+			chunks.push('<tr><td colspan="' + columnCount + '"></td></tr>')
+	
+			chunks.push('</tbody>')
+			
+		if (this.options.footnotes) {
+
+			chunks.push('<tfoot>')
+
+			for (var i = 0; i < this.options.footnotes.length; i++) {
+
+				chunks.push('<tr><td colspan="' + this.options.schema.fields.length + '">')
+				
+				var footnote = this.options.footnotes[i]
+				
+				if (_.isString(footnote)) {
+
+					chunks.push('<sup>' + String.fromCharCode(97 + i) + '</sup>')
+					chunks.push(footnote)
+				}
+				
+				if (_.has(footnote, "symbol")) {
+				
+					chunks.push('<sup>' + footnote.symbol + '</sup>')
+					chunks.push(footnote.text)
+				}
+				
+				chunks.push('</td></tr>')
+			}
+
+			chunks.push('</tfoot>')
+		}
+
+		chunks.push('</table>')
+		
+		if (this.options.error && this.options.error.errorMessage) {
+		
+			chunks.push('<div style="position: absolute ; left: -1000 ; top: -1000 ;" class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>')
+			chunks.push(this.options.error.errorMessage)
+			chunks.push('</div>')
+		}
+		
+		var html = chunks.join("")
 
 		this.element.html(html)
 		
