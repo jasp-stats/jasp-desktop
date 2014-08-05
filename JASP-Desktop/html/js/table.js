@@ -126,7 +126,7 @@ $.widget("jasp.table", {
 				var lsd   = fsd - sf
 				var fsdoe = this._fsdoe(cell)
 				
-				if (fsd > upperLim || lsd < lowerLim) {
+				if (fsd >= upperLim || lsd <= lowerLim) {
 				
 					scientific = true
 					break
