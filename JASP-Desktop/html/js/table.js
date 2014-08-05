@@ -28,6 +28,16 @@ $.widget("jasp.table", {
 			return 1
 	
 	},
+	_fsdoe : function(value) { // first significant digit position in the exponent in scientific notation
+	
+		if (value == 0)
+			return 1
+
+		var exponent = Math.floor(Math.log(Math.abs(value)) / Math.log(10))
+
+		return this._fsd(exponent)
+	
+	},
 	_swapRowsAndColumns : function(columnHeaders, columns) {
 	
 		var newRowCount = columns.length - 1
@@ -54,7 +64,7 @@ $.widget("jasp.table", {
 		return { columnHeaders : newColumnHeaders, columns : newColumns, rowCount : newRowCount, columnCount : newColumnCount }
 	
 	},
-	_formatColumn : function(column, type, format) {
+	_formatColumn : function(column, type, format, alignNumbers) {
 
 		var columnCells = Array(column.length)
 
@@ -102,7 +112,8 @@ $.widget("jasp.table", {
 			var lowerLim = -5
 			var upperLim =  5
 			var scientific = false
-			var minLsd = Infinity	// right most position of the least significant digit
+			var minLSD = Infinity	// right most position of the least significant digit
+			var maxFSDOE = -Infinity  // left most position of the least significant digit of the exponent in scientific notation
 			
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
@@ -111,18 +122,22 @@ $.widget("jasp.table", {
 				if (isNaN(parseFloat(cell)))  // isn't a number
 					continue
 
-				var fsd = this._fsd(cell)  // position of first significant digit
-				var lsd = fsd - sf
+				var fsd   = this._fsd(cell)  // position of first significant digit
+				var lsd   = fsd - sf
+				var fsdoe = this._fsdoe(cell)
 				
 				if (fsd > upperLim || lsd < lowerLim) {
 				
 					scientific = true
 					break
 				}
-				else if (lsd < minLsd) {
+				else if (lsd < minLSD) {
 				
-					minLsd = lsd
+					minLSD = lsd
 				}
+				
+				if (fsdoe > maxFSDOE)
+					maxFSDOE = fsdoe
 			}
 		
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
@@ -148,17 +163,38 @@ $.widget("jasp.table", {
 					var fsd = this._fsd(cell)  // position of first significant digit
 					var lsd = fsd - sf
 					
-					var paddingNeeded = Math.max(lsd - minLsd, 0)
+					var paddingNeeded = Math.max(lsd - minLSD, 0)
 					var padding = ""
 					
-					if (paddingNeeded)
-						padding = '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
+					if (paddingNeeded && alignNumbers) {
+						
+						var dot = lsd == 0 ? "." : ""
+						padding = '<span class="do-not-copy" style="visibility: hidden;">' + dot + Array(paddingNeeded + 1).join("0") + '</span>'
+					}
 					
 					columnCells[rowNo] = { content : cell.toPrecision(sf) + padding, "class" : "number" }
 				}
 				else {
 				
-					columnCells[rowNo] = { content : cell.toExponential(sf-1), "class" : "number" }
+					var exponentiated = cell.toExponential(sf-1)
+					var paddingNeeded = maxFSDOE - this._fsdoe(cell)
+					
+					var split = exponentiated.split("e")
+					var mantissa = split[0]
+					var exponent = split[1]
+					var exponentSign = exponent.substr(0, 1)
+					var exponentNum  = exponent.substr(1)
+
+					var padding
+					
+					if (paddingNeeded)
+						padding = '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
+					else
+						padding = ''
+					
+					var reassembled = mantissa + "e " + exponentSign + padding + exponentNum
+				
+					columnCells[rowNo] = { content : reassembled, "class" : "number" }
 				}
 			}
 		}
@@ -242,8 +278,9 @@ $.widget("jasp.table", {
 			var column = columns[colNo]
 			var type   = columnDefs[colNo].type
 			var format = columnDefs[colNo].format
+			var alignNumbers = ! this.options.casesAcrossColumns  // numbers can't be aligned across rows
 			
-			cells[colNo] = this._formatColumn(column, type, format)
+			cells[colNo] = this._formatColumn(column, type, format, alignNumbers)
 		}
 		
 		if (this.options.casesAcrossColumns) {
