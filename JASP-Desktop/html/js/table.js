@@ -129,7 +129,6 @@ $.widget("jasp.table", {
 				if (fsd >= upperLim || lsd <= lowerLim) {
 				
 					scientific = true
-					break
 				}
 				else if (lsd < minLSD) {
 				
@@ -172,12 +171,12 @@ $.widget("jasp.table", {
 						padding = '<span class="do-not-copy" style="visibility: hidden;">' + dot + Array(paddingNeeded + 1).join("0") + '</span>'
 					}
 					
-					columnCells[rowNo] = { content : cell.toPrecision(sf) + padding, "class" : "number" }
+					columnCells[rowNo] = { content : cell.toPrecision(sf).replace(/-/g, "&minus;") + padding, "class" : "number" }
 				}
 				else {
 				
-					var exponentiated = cell.toExponential(sf-1)
-					var paddingNeeded = maxFSDOE - this._fsdoe(cell)
+					var exponentiated = cell.toExponential(sf-1).replace(/-/g, "&minus;")
+					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(cell), 0)
 					
 					var split = exponentiated.split("e")
 					var mantissa = split[0]
@@ -192,7 +191,7 @@ $.widget("jasp.table", {
 					else
 						padding = ''
 					
-					var reassembled = mantissa + "e " + exponentSign + padding + exponentNum
+					var reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum
 				
 					columnCells[rowNo] = { content : reassembled, "class" : "number" }
 				}
@@ -218,7 +217,7 @@ $.widget("jasp.table", {
 				}
 				else {
 				
-					columnCells[rowNo] = { content : cell.toFixed(dp), "class" : "number" }
+					columnCells[rowNo] = { content : cell.toFixed(dp).replace(/-/g, "&minus;"), "class" : "number" }
 				}
 			}
 		}
@@ -307,12 +306,12 @@ $.widget("jasp.table", {
 
 			chunks.push('<thead>')
 				chunks.push('<tr>')
-					chunks.push('<th colspan="' + columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div></th>')
+					chunks.push('<th nowrap colspan="' + columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div></th>')
 				chunks.push('</tr>')
 
 		if (this.options.subtitle) {
 				chunks.push('<tr>')
-					chunks.push('<th colspan="' + columnCount + '"></th>')
+					chunks.push('<th nowrap colspan="' + columnCount + '"></th>')
 				chunks.push('</tr>')
 		}
 
@@ -322,7 +321,7 @@ $.widget("jasp.table", {
 		for (var colNo = 0; colNo < columnCount; colNo++) {
 
 			var cell = columnHeaders[colNo]
-			chunks.push('<th>' + cell.content + '</th>')
+			chunks.push('<th nowrap>' + cell.content + '</th>')
 
 		}
 				
@@ -340,7 +339,7 @@ $.widget("jasp.table", {
 				
 				var cellHtml = ''
 				
-				cellHtml += (cell.header  ? '<th' : '<td')
+				cellHtml += (cell.header  ? '<th nowrap' : '<td nowrap')
 				cellHtml += (cell.class   ? ' class="' + cell.class + '"' : '')
 				cellHtml += '>'
 				cellHtml += (cell.content ? cell.content : '')
