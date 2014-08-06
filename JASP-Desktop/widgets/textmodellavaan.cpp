@@ -156,7 +156,7 @@ QList<Token> TextModelLavaan::tokenise(QTextBlock &block)
 			{
 				token.text = text.at(i);
 				token.pos = i;
-				token.type = Unknown;
+				token.type = UnknownToken;
 
 				tokens.append(token);
 

@@ -4,6 +4,13 @@
 #include <RInside.h>
 #include <Rcpp.h>
 
+#ifdef __WIN32__
+
+#undef Realloc
+#undef Free
+
+#endif
+
 #include "../JASP-Common/common.h"
 #include "../JASP-Common/rinterface.h"
 

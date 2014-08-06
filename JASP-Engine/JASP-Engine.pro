@@ -17,19 +17,46 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
 
-unix:INCLUDEPATH += /opt/local/include
-windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
-
 macx {
+
+	INCLUDEPATH += ../../boost_1_54_0
+
 	R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.0/Resources
-} else {
+	R_EXE  = $$R_HOME/bin/R
+}
+
+linux {
+
+	INCLUDEPATH += /opt/local/include
+
 	R_HOME = $$OUT_PWD/../R-3.0.0
+	R_EXE  = $$R_HOME/bin/R
+}
+
+windows {
+
+	COMPILER_DUMP = $$system(g++ -dumpmachine)
+	contains(COMPILER_DUMP, x86_64-w64-mingw32) {
+
+		ARCH = x64
+		INCLUDEPATH += ../../boost_1_54_0
+
+	} else {
+
+		ARCH = i386
+		INCLUDEPATH += ../../boost_1_53_0
+	}
+
+	R_HOME = $$OUT_PWD/../R
+	R_EXE  = $$R_HOME/bin/$$ARCH/R
 }
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-c++11-long-long
 QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+
+QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 INCLUDEPATH += \
 	$$R_HOME/include \
@@ -42,14 +69,13 @@ unix:LIBS += \
 	-L$$R_HOME/library/Rcpp/lib -lRcpp
 
 win32:LIBS += \
-	-L$$R_HOME/library/RInside/lib/i386 -lRInside \
-	-L$$R_HOME/library/Rcpp/lib/i386 -lRcpp \
-	-L$$R_HOME/bin/i386 -lR
+	-L$$R_HOME/library/RInside/lib/$$ARCH -lRInside \
+	-L$$R_HOME/library/Rcpp/lib/$$ARCH -lRcpp \
+	-L$$R_HOME/bin/$$ARCH -lR
 
 win32:LIBS += -lole32 -loleaut32
 
-
-RPackage.commands = $$R_HOME/bin/R CMD INSTALL --library=$$R_HOME/library $$PWD/JASP
+RPackage.commands = $$R_EXE CMD INSTALL --library=$$R_HOME/library $$PWD/JASP
 QMAKE_EXTRA_TARGETS += RPackage
 PRE_TARGETDEPS += RPackage
 

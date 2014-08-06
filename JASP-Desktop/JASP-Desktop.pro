@@ -15,8 +15,20 @@ CONFIG -= app_bundle
 
 INCLUDEPATH += ../JASP-Common/
 
-   unix:INCLUDEPATH += /opt/local/include
-windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
+unix:INCLUDEPATH += ../../boost_1_54_0
+
+windows {
+
+	COMPILER_DUMP = $$system(g++ -dumpmachine)
+	contains(COMPILER_DUMP, x86_64-w64-mingw32) {
+
+		INCLUDEPATH += ../../boost_1_54_0
+	}
+	else {
+
+		INCLUDEPATH += ../../boost_1_53_0
+	}
+}
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
@@ -31,6 +43,8 @@ QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-c++11-long-long
 QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+
+QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 SOURCES += main.cpp\
 	mainwindow.cpp \
