@@ -342,7 +342,7 @@ $.widget("jasp.table", {
 				cellHtml += (cell.header  ? '<th nowrap' : '<td nowrap')
 				cellHtml += (cell.class   ? ' class="' + cell.class + '"' : '')
 				cellHtml += '>'
-				cellHtml += (cell.content ? cell.content : '')
+				cellHtml += (typeof cell.content != "undefined" ? cell.content : '')
 				cellHtml += (cell.header  ? '</th>' : '</td>')
 				
 				chunks.push(cellHtml)
