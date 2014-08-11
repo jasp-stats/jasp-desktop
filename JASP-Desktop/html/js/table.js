@@ -149,7 +149,7 @@ $.widget("jasp.table", {
 				}
 				else if (isNaN(parseFloat(cell))) {  // isn't a number
 					
-					columnCells[rowNo] = { content : cell, "class" : "text" }
+					columnCells[rowNo] = { content : cell, "class" : "number" }
 
 				}
 				else if (cell < p) {
@@ -209,7 +209,7 @@ $.widget("jasp.table", {
 				}
 				else if (isNaN(parseFloat(cell))) {  // isn't a number
 					
-					columnCells[rowNo] = { content : cell, "class" : "text" }
+					columnCells[rowNo] = { content : cell, "class" : "number" }
 				}
 				else if (cell < p) {
 					
@@ -282,6 +282,88 @@ $.widget("jasp.table", {
 			cells[colNo] = this._formatColumn(column, type, format, alignNumbers)
 		}
 		
+		var foldedRows = false
+		var columnsInColumn = { }  // dictionary of counts
+		var columnsInsertedInColumn = { }
+		var maxColumnsInColumn = 0
+		var columnNames = [ ]
+		
+		for (var colNo = 0; colNo < columnCount; colNo++) {
+		
+			var columnName = this.options.schema.fields[colNo].name
+			var subRowPos = columnName.indexOf("[")
+			
+			if (subRowPos != -1) {
+			
+				foldedRows = true
+				columnName = columnName.substr(0, subRowPos)
+			}
+			
+			columnNames[colNo] = columnName
+			
+			var cic = columnsInColumn[columnName]
+			
+			if (typeof cic == "undefined")
+				cic = 1
+			else
+				cic++
+				
+			if (maxColumnsInColumn < cic)
+				maxColumnsInColumn = cic
+			
+			columnsInColumn[columnName] = cic
+		}
+		
+		if (foldedRows) {
+		
+			var foldedColumnNames = _.uniq(columnNames)
+			var foldedCells = Array(foldedColumnNames.length)
+			var foldedColumnHeaders = Array(foldedColumnNames.length)
+			
+			// fold the headers
+
+			for (var colNo = 0; colNo < foldedColumnNames.length; colNo++) {
+			
+				var headerIndex = columnNames.indexOf(foldedColumnNames[colNo])
+				foldedColumnHeaders[colNo] = columnHeaders[headerIndex]
+			}
+			
+			
+			// fold the columns
+			
+			for (var colNo = 0; colNo < columnNames.length; colNo++) {
+			
+				var columnCells = cells[colNo]
+				var columnName  = columnNames[colNo]
+				var targetIndex = foldedColumnNames.indexOf(columnName)
+				var column = foldedCells[targetIndex]
+				var cic = columnsInColumn[columnName]
+				
+				if (typeof column == "undefined")
+					column = Array(columnCells.length * cic)
+					
+				var offset = columnsInsertedInColumn[columnName]
+				if (typeof offset == "undefined")
+					offset = 0
+
+				for (var rowNo = 0; rowNo < columnCells.length; rowNo++) {
+				
+					var cell = columnCells[rowNo]
+					cell.span = maxColumnsInColumn / cic
+					column[rowNo * cic + offset] = cell
+				
+				}
+				
+				columnsInsertedInColumn[columnName] = offset + 1
+				foldedCells[targetIndex] = column
+			}
+			
+			cells = foldedCells
+			columnHeaders = foldedColumnHeaders
+			columnCount = foldedColumnHeaders.length
+			rowCount *= maxColumnsInColumn
+		}
+		
 		if (this.options.casesAcrossColumns) {
 		
 			var swapped = this._swapRowsAndColumns(columnHeaders, cells)
@@ -318,7 +400,7 @@ $.widget("jasp.table", {
 				chunks.push('<tr>')
 
 				
-		for (var colNo = 0; colNo < columnCount; colNo++) {
+		for (var colNo = 0; colNo < columnHeaders.length; colNo++) {
 
 			var cell = columnHeaders[colNo]
 			chunks.push('<th nowrap>' + cell.content + '</th>')
@@ -328,24 +410,54 @@ $.widget("jasp.table", {
 				chunks.push('</tr>')
 			chunks.push('</thead>')
 			chunks.push('<tbody>')
+			
+		var tableProgress = Array(columnCount)
+		for (var i = 0; i < columnCount; i++) {
+		
+			tableProgress[i] = { from : 0, to : 0 }
+		}
 		
 		for (var rowNo = 0; rowNo < rowCount; rowNo++) {
 			
 			chunks.push('<tr>')
 
+			var isMainRow = false
+
 			for (var colNo = 0; colNo < columnCount; colNo++) {
 			
-				var cell = cells[colNo][rowNo]
+				if (tableProgress[colNo].to == rowNo) {
+
+					var fromIndex = tableProgress[colNo].from
+					var cell = cells[colNo][fromIndex]
+					var cellHtml = ''
+
+					var cellClass = (cell.class ? cell.class + " " : "")
+					cellClass += (isMainRow ? "main-row" : "")
 				
-				var cellHtml = ''
+					cellHtml += (cell.header ? '<th nowrap' : '<td nowrap')
+					cellHtml += (cellClass   ? ' class="'   + cellClass + '"' : '')
+					cellHtml += (cell.span   ? ' rowspan="' + cell.span + '"' : '')
+					cellHtml += '>'
+					cellHtml += (typeof cell.content != "undefined" ? cell.content : '')
+					cellHtml += (cell.header  ? '</th>' : '</td>')
+					
+					tableProgress[colNo].from += 1
+					
+					if (cell.span) {
+					
+						tableProgress[colNo].to += cell.span
+						
+						if (cell.span > 1)
+							isMainRow = true
+					}
+					else {
+					
+						tableProgress[colNo].to += 1
+					}
 				
-				cellHtml += (cell.header  ? '<th nowrap' : '<td nowrap')
-				cellHtml += (cell.class   ? ' class="' + cell.class + '"' : '')
-				cellHtml += '>'
-				cellHtml += (typeof cell.content != "undefined" ? cell.content : '')
-				cellHtml += (cell.header  ? '</th>' : '</td>')
+					chunks.push(cellHtml)
+				}
 				
-				chunks.push(cellHtml)
 			}
 
 			chunks.push('</tr>')
