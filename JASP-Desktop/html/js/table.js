@@ -75,10 +75,18 @@ $.widget("jasp.table", {
 				var clazz = (type == "string") ? "text" : "number"
 				
 				var cell = column[rowNo]
-				if (typeof cell == "undefined")
-					cell = "."
+				var content = cell.content
+				var formatted
+				
+				if (typeof content == "undefined")
+					formatted = { content : "." }
+				else
+					formatted = { content : content }
 					
-				columnCells[rowNo] = { content : cell, "class" : clazz }
+				if (typeof cell.footnotes != "undefined")
+					formatted.footnotes = this._getFootnotes(cell.footnotes)
+					
+				columnCells[rowNo] = { content : content, "class" : clazz }
 			}
 			
 			return columnCells
@@ -118,13 +126,14 @@ $.widget("jasp.table", {
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
 				var cell = column[rowNo]
+				var content = cell.content
 				
-				if (isNaN(parseFloat(cell)))  // isn't a number
+				if (isNaN(parseFloat(content)))  // isn't a number
 					continue
 
-				var fsd   = this._fsd(cell)  // position of first significant digit
+				var fsd   = this._fsd(content)  // position of first significant digit
 				var lsd   = fsd - sf
-				var fsdoe = this._fsdoe(cell)
+				var fsdoe = this._fsdoe(content)
 				
 				if (fsd >= upperLim || lsd <= lowerLim) {
 				
@@ -142,24 +151,26 @@ $.widget("jasp.table", {
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
 				var cell = column[rowNo]
+				var content = cell.content
+				var formatted
 				
-				if (typeof cell == "undefined") {
+				if (typeof content == "undefined") {
 				
-					columnCells[rowNo] = { content : ".", "class" : "missing" }
+					formatted = { content : "." }
 				}
-				else if (isNaN(parseFloat(cell))) {  // isn't a number
+				else if (isNaN(parseFloat(content))) {  // isn't a number
 					
-					columnCells[rowNo] = { content : cell, "class" : "number" }
+					formatted = { content : content, "class" : "number" }
 
 				}
-				else if (cell < p) {
+				else if (content < p) {
 					
-					columnCells[rowNo] = { content : "<&nbsp" + p, "class" : "p-value" }
+					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
 
 				}
 				else if (scientific === false) {
 				
-					var fsd = this._fsd(cell)  // position of first significant digit
+					var fsd = this._fsd(content)  // position of first significant digit
 					var lsd = fsd - sf
 					
 					var paddingNeeded = Math.max(lsd - minLSD, 0)
@@ -171,11 +182,11 @@ $.widget("jasp.table", {
 						padding = '<span class="do-not-copy" style="visibility: hidden;">' + dot + Array(paddingNeeded + 1).join("0") + '</span>'
 					}
 					
-					columnCells[rowNo] = { content : cell.toPrecision(sf).replace(/-/g, "&minus;") + padding, "class" : "number" }
+					formatted = { content : content.toPrecision(sf).replace(/-/g, "&minus;") + padding, "class" : "number" }
 				}
 				else {
 				
-					var exponentiated = cell.toExponential(sf-1).replace(/-/g, "&minus;")
+					var exponentiated = content.toExponential(sf-1).replace(/-/g, "&minus;")
 					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(cell), 0)
 					
 					var split = exponentiated.split("e")
@@ -193,8 +204,13 @@ $.widget("jasp.table", {
 					
 					var reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum
 				
-					columnCells[rowNo] = { content : reassembled, "class" : "number" }
+					formatted = { content : reassembled, "class" : "number" }
 				}
+				
+				if (typeof cell.footnotes != "undefined")
+					formatted.footnotes = this._getFootnotes(cell.footnotes)
+				
+				columnCells[rowNo] = formatted
 			}
 		}
 		else if (isFinite(dp)) {
@@ -202,23 +218,30 @@ $.widget("jasp.table", {
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
 				var cell = column[rowNo]
+				var content = cell.content
+				var formatted
 				
-				if (typeof cell == "undefined") {
+				if (typeof content == "undefined") {
 				
-					columnCells[rowNo] = { content : ".", "class" : "missing" }
+					formatted = { content : "." }
 				}
-				else if (isNaN(parseFloat(cell))) {  // isn't a number
+				else if (isNaN(parseFloat(content))) {  // isn't a number
 					
-					columnCells[rowNo] = { content : cell, "class" : "number" }
+					formatted = { content : content, "class" : "number" }
 				}
 				else if (cell < p) {
 					
-					columnCells[rowNo] = { content : "<&nbsp" + p, "class" : "p-value" }
+					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
 				}
 				else {
 				
-					columnCells[rowNo] = { content : cell.toFixed(dp).replace(/-/g, "&minus;"), "class" : "number" }
+					formatted = { content : content.toFixed(dp).replace(/-/g, "&minus;"), "class" : "number" }
 				}
+				
+				if (typeof cell.footnotes != "undefined")
+					formatted.footnotes = this._getFootnotes(cell.footnotes)
+				
+				columnCells[rowNo] = formatted
 			}
 		}
 		else {
@@ -226,15 +249,39 @@ $.widget("jasp.table", {
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 			
 				var cell = column[rowNo]
-				if (typeof cell == "undefined")
-					cell = "."
+				var content = cell.content
+				
+				if (typeof content == "undefined")
+					content = "."
 					
-				columnCells[rowNo] = { content : cell }
+				var formatted = { content : content }
+				
+				if (typeof cell.footnotes != "undefined")
+					formatted.footnotes = this._getFootnotes(cell.footnotes)
+					
+				columnCells[rowNo] = formatted
 			}
 		}
 		
 		return columnCells
 	
+	},
+	_getFootnotes : function(indices) {
+	
+		var footnotes = Array(indices.length)
+
+		for (var i = 0; i < indices.length; i++) {
+		
+			var footnote = this.options.footnotes[i]
+			if (typeof footnote.symbol != "undefined")
+				footnotes[i] = footnote.symbol
+			else
+				footnotes[i] = String.fromCharCode(97 + indices[i])
+			
+		}
+			
+		return footnotes
+		
 	},
 	refresh: function () {
 
@@ -252,8 +299,9 @@ $.widget("jasp.table", {
 		
 			// populate column headers
 				
-			var columnDef = columnDefs[colNo]	
-			var title = (typeof columnDef.title != "undefined") ? columnDef.title : columnDef.name
+			var columnDef = columnDefs[colNo]
+			var columnName = columnDef.name
+			var title = (typeof columnDef.title != "undefined") ? columnDef.title : columnName
 			
 			columnHeaders[colNo] = { content : title, header : true }
 			
@@ -264,7 +312,14 @@ $.widget("jasp.table", {
 			
 			for (var rowNo = 0; rowNo < rowCount; rowNo++) {
 			
-				column[rowNo] = rowData[rowNo][columnDef.name]
+				var row = rowData[rowNo]
+				var content = row[columnName]
+				var cell = { content : content }
+				
+				if (row['.footnotes'] && row['.footnotes'][columnName])
+					cell.footnotes = row['.footnotes'][columnName]
+				
+				column[rowNo] = cell
 			}
 			
 			columns[colNo] = column
@@ -275,6 +330,7 @@ $.widget("jasp.table", {
 		for (var colNo = 0; colNo < columnCount; colNo++) {
 		
 			var column = columns[colNo]
+			var name   = columnDefs[colNo].name
 			var type   = columnDefs[colNo].type
 			var format = columnDefs[colNo].format
 			var alignNumbers = ! this.options.casesAcrossColumns  // numbers can't be aligned across rows
@@ -438,7 +494,8 @@ $.widget("jasp.table", {
 					cellHtml += (cellClass   ? ' class="'   + cellClass + '"' : '')
 					cellHtml += (cell.span   ? ' rowspan="' + cell.span + '"' : '')
 					cellHtml += '>'
-					cellHtml += (typeof cell.content != "undefined" ? cell.content : '')
+					cellHtml += (typeof cell.content   != "undefined" ? cell.content : '')
+					cellHtml += (typeof cell.footnotes != "undefined" ? '<sup>' + cell.footnotes.join(',') + '</sup>' : '')
 					cellHtml += (cell.header  ? '</th>' : '</td>')
 					
 					tableProgress[colNo].from += 1
