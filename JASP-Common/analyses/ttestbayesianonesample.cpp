@@ -24,5 +24,7 @@ Options *TTestBayesianOneSample::createOptions() const
 	options->add("variables", new OptionVariables());
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
 
+	options->add("rSize", new OptionNumber(1));
+
 	return options;
 }

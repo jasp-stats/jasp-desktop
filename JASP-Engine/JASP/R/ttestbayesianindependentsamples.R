@@ -54,7 +54,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	fields <- list(
 		list(name=".variable", title="", type="string", combine=TRUE))
 	
-	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4", title="BF<sub>10</sub>")
+	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4", title="BF\u2081\u2080")
 	fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4")
 		
 	ttest[["schema"]] <- list(fields=fields)
@@ -88,17 +88,17 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					if (options$tails == "oneTailedGreaterThan") {
 					
-						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=1, nullInterval=c(-Inf, 0))
+						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=options$rSize, nullInterval=c(-Inf, 0))
 						bf <- bf[1]
 					
 					} else if (options$tails == "oneTailedLessThan") {
 	
-						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=1, nullInterval=c(0, Inf))
+						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=options$rSize, nullInterval=c(0, Inf))
 						bf <- bf[1]
 					
 					} else {
 					
-						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=1)
+						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=options$rSize)
 					
 					}
 				

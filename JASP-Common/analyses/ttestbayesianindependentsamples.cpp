@@ -29,6 +29,8 @@ Options *TTestBayesianIndependentSamples::createOptions() const
 	options->add("tails", new OptionList(list("twoTailed", "oneTailedGreaterThan", "oneTailedLessThan")));
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
 
+	options->add("rSize", new OptionNumber(1));
+
 	return options;
 }
 
