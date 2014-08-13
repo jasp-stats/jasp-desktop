@@ -20,6 +20,7 @@ RcppBridge::RcppBridge()
 	_rInside["jasp.analyses"] = Rcpp::List();
 	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"RJSONIO\"))");
 	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
+	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 }
 
 void RcppBridge::setDataSet(DataSet* dataSet)
