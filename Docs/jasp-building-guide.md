@@ -22,6 +22,8 @@ The directory structure should be as follows:
 [-] build-JASP- ... < build directory, created by QtCreator >
    [+] R
 </pre>
+
+You should also copy the three files libgcc_s_seh-1.dll, libstdc++-6.dll and libwinpthread-1.dll from QtSDK-x86_64/bin into the build directory as well.
  
 Mac OS X
 --------
