@@ -117,9 +117,7 @@ $.widget("jasp.table", {
 		
 		if (isFinite(sf)) {
 
-			var lowerLim = -5
-			var upperLim =  5
-			var scientific = false
+			var upperLimit = 1e6
 			var minLSD = Infinity	// right most position of the least significant digit
 			var maxFSDOE = -Infinity  // left most position of the least significant digit of the exponent in scientific notation
 			
@@ -133,20 +131,21 @@ $.widget("jasp.table", {
 
 				var fsd   = this._fsd(content)  // position of first significant digit
 				var lsd   = fsd - sf
-				var fsdoe = this._fsdoe(content)
 				
-				if (fsd >= upperLim || lsd <= lowerLim) {
+				if (content >= upperLimit || fsd <= -dp) {
 				
-					scientific = true
+					var fsdoe = this._fsdoe(content)
+					if (fsdoe > maxFSDOE)
+						maxFSDOE = fsdoe
 				}
 				else if (lsd < minLSD) {
 				
 					minLSD = lsd
 				}
-				
-				if (fsdoe > maxFSDOE)
-					maxFSDOE = fsdoe
 			}
+			
+			if (minLSD < -dp)
+				minLSD = -dp
 		
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
@@ -168,23 +167,7 @@ $.widget("jasp.table", {
 					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
 
 				}
-				else if (scientific === false) {
-				
-					var fsd = this._fsd(content)  // position of first significant digit
-					var lsd = fsd - sf
-					
-					var paddingNeeded = Math.max(lsd - minLSD, 0)
-					var padding = ""
-					
-					if (paddingNeeded && alignNumbers) {
-						
-						var dot = lsd == 0 ? "." : ""
-						padding = '<span class="do-not-copy" style="visibility: hidden;">' + dot + Array(paddingNeeded + 1).join("0") + '</span>'
-					}
-					
-					formatted = { content : content.toPrecision(sf).replace(/-/g, "&minus;") + padding, "class" : "number" }
-				}
-				else {
+				else if (content >= upperLimit || content <= Math.pow(10, -dp)) {
 				
 					var exponentiated = content.toExponential(sf-1).replace(/-/g, "&minus;")
 					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(content), 0)
@@ -205,6 +188,10 @@ $.widget("jasp.table", {
 					var reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum
 				
 					formatted = { content : reassembled, "class" : "number" }
+				}
+				else {
+					
+					formatted = { content : content.toFixed(-minLSD).replace(/-/g, "&minus;"), "class" : "number" }
 				}
 				
 				if (typeof cell.footnotes != "undefined")
@@ -232,6 +219,10 @@ $.widget("jasp.table", {
 				else if (cell < p) {
 					
 					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
+				}
+				else if (cell < Math.pow(10, -dp) || cell >= 1e6) {
+				
+					formatted = { content : content.toPrecision(4).replace(/-/g, "&minus;"), "class" : "number" }
 				}
 				else {
 				
