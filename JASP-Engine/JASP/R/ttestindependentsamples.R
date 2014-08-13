@@ -142,7 +142,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	fields[[length(fields)+1]] <- list(name="t", type="number", format="sf:4")
 	fields[[length(fields)+1]] <- list(name="df", type="number", format="sf:4")
-	fields[[length(fields)+1]] <- list(name="p", type="number", format="dp:4;p:.001")
+	fields[[length(fields)+1]] <- list(name="p", type="number", format="dp:3;p:.001")
 
 	if (options$meanDifference) {
 	
