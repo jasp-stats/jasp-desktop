@@ -94,49 +94,49 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	fields <- list()
 
-	fields[[length(fields) + 1]] <- list(name="Variable", type="string")
+	fields[[length(fields) + 1]] <- list(name="Variable", title="", type="string")
 	fields[[length(fields) + 1]] <- list(name="Valid", type="integer")
 	fields[[length(fields) + 1]] <- list(name="Missing", type="integer")
 
 	if (central.tendency[["mean"]])
-		fields[[length(fields) + 1]] <- list(name="Mean", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Mean", type="number", format="sf:4")
 	if (dispersion[["standardErrorMean"]])
-		fields[[length(fields) + 1]] <- list(name="Std. Error of Mean", type="number", format="sf:6")	
+		fields[[length(fields) + 1]] <- list(name="Std. Error of Mean", type="number", format="sf:4")
 	if (central.tendency[["median"]])
-		fields[[length(fields) + 1]] <- list(name="Median", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Median", type="number", format="sf:4")
 	if (central.tendency[["mode"]])
-		fields[[length(fields) + 1]] <- list(name="Mode", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Mode", type="number", format="sf:4")
 	if (dispersion[["standardDeviation"]])
-		fields[[length(fields) + 1]] <- list(name="Std. Deviation", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Std. Deviation", type="number", format="sf:4")
 	if (dispersion[["variance"]])
-		fields[[length(fields) + 1]] <- list(name="Variance", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Variance", type="number", format="sf:4")
 		
 	if (distribution[["skewness"]]) {
 	
-		fields[[length(fields) + 1]] <- list(name="Skewness", type="number", format="sf:6")
-		fields[[length(fields) + 1]] <- list(name="Std. Error of Skewness", type="number", format="sf:6") 
+		fields[[length(fields) + 1]] <- list(name="Skewness", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Std. Error of Skewness", type="number", format="sf:4")
 	}
 	
 	if (distribution[["kurtosis"]]) {
 	
-		fields[[length(fields) + 1]] <- list(name="Kurtosis", type="number", format="sf:6")
-		fields[[length(fields) + 1]] <- list(name="Std. Error of Kurtosis", type="text", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Kurtosis", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Std. Error of Kurtosis", type="text", format="sf:4")
 	}
 	
 	if (dispersion[["range"]])
-		fields[[length(fields) + 1]] <- list(name="Range", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Range", type="number", format="sf:4")
 	if (dispersion[["minimum"]])
-		fields[[length(fields) + 1]] <- list(name="Minimum", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Minimum", type="number", format="sf:4")
 	if (dispersion[["maximum"]])
-		fields[[length(fields) + 1]] <- list(name="Maximum", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Maximum", type="number", format="sf:4")
 	if (central.tendency[["sum"]])
-		fields[[length(fields) + 1]] <- list(name="Sum", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="Sum", type="number", format="sf:4")
 	
 	if (percentileValues[["quartiles"]]) {
 	
-		fields[[length(fields) + 1]] <- list(name="25th percentile", type="number", format="sf:6")  
-		fields[[length(fields) + 1]] <- list(name="50th percentile", type="number", format="sf:6") 
-		fields[[length(fields) + 1]] <- list(name="75th percentile", type="number", format="sf:6")
+		fields[[length(fields) + 1]] <- list(name="25th percentile", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="50th percentile", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="75th percentile", type="number", format="sf:4")
 	}
 	
 	if (percentileValues[["equalGroups"]]) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
