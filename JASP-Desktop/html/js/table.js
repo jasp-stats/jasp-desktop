@@ -187,7 +187,7 @@ $.widget("jasp.table", {
 				else {
 				
 					var exponentiated = content.toExponential(sf-1).replace(/-/g, "&minus;")
-					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(cell), 0)
+					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(content), 0)
 					
 					var split = exponentiated.split("e")
 					var mantissa = split[0]
