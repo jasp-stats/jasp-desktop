@@ -444,12 +444,12 @@ $.widget("jasp.table", {
 
 			chunks.push('<thead>')
 				chunks.push('<tr>')
-					chunks.push('<th nowrap colspan="' + columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div></th>')
+					chunks.push('<th nowrap colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div></th>')
 				chunks.push('</tr>')
 
 		if (this.options.subtitle) {
 				chunks.push('<tr>')
-					chunks.push('<th nowrap colspan="' + columnCount + '"></th>')
+					chunks.push('<th nowrap colspan="' + 2 * columnCount + '"></th>')
 				chunks.push('</tr>')
 		}
 
@@ -459,7 +459,7 @@ $.widget("jasp.table", {
 		for (var colNo = 0; colNo < columnHeaders.length; colNo++) {
 
 			var cell = columnHeaders[colNo]
-			chunks.push('<th nowrap>' + cell.content + '</th>')
+			chunks.push('<th colspan="2" nowrap>' + cell.content + '</th>')
 
 		}
 				
@@ -489,14 +489,21 @@ $.widget("jasp.table", {
 
 					var cellClass = (cell.class ? cell.class + " " : "")
 					cellClass += (isMainRow ? "main-row" : "")
-				
-					cellHtml += (cell.header ? '<th nowrap' : '<td nowrap')
-					cellHtml += (cellClass   ? ' class="'   + cellClass + '"' : '')
+
+					cellHtml += (cell.header ? '<th' : '<td')
+					cellHtml += ' class="value ' + cellClass + '"'
 					cellHtml += (cell.span   ? ' rowspan="' + cell.span + '"' : '')
-					cellHtml += '>'
+					cellHtml += ' nowrap>'
 					cellHtml += (typeof cell.content   != "undefined" ? cell.content : '')
-					cellHtml += (typeof cell.footnotes != "undefined" ? '<sup>' + cell.footnotes.join(',') + '</sup>' : '')
-					cellHtml += (cell.header  ? '</th>' : '</td>')
+					cellHtml += (cell.header ? '</th>' : '</td>')
+					
+					cellHtml += (cell.header ? '<th' : '<td')
+					cellHtml += ' class="symbol ' + cellClass + '"'
+					cellHtml += (cell.span   ? ' rowspan="' + cell.span + '"' : '')
+					cellHtml += ' nowrap>'
+					if (typeof cell.footnotes != "undefined")
+						cellHtml += '&nbsp<sup>' + cell.footnotes.join(',') + '</sup>'
+					cellHtml += (cell.header ? '</th>' : '</td>')
 					
 					tableProgress[colNo].from += 1
 					
@@ -520,7 +527,7 @@ $.widget("jasp.table", {
 			chunks.push('</tr>')
 		}
 		
-			chunks.push('<tr><td colspan="' + columnCount + '"></td></tr>')
+			chunks.push('<tr><td colspan="' + 2 * columnCount + '"></td></tr>')
 	
 			chunks.push('</tbody>')
 			
@@ -530,19 +537,19 @@ $.widget("jasp.table", {
 
 			for (var i = 0; i < this.options.footnotes.length; i++) {
 
-				chunks.push('<tr><td colspan="' + this.options.schema.fields.length + '">')
+				chunks.push('<tr><td colspan="' + 2 * columnCount + '">')
 				
 				var footnote = this.options.footnotes[i]
 				
 				if (_.isString(footnote)) {
 
-					chunks.push('<sup>' + String.fromCharCode(97 + i) + '</sup>')
+					chunks.push('<sup>' + String.fromCharCode(97 + i) + '</sup>&nbsp;')
 					chunks.push(footnote)
 				}
 				
 				if (_.has(footnote, "symbol")) {
 				
-					chunks.push('<sup>' + footnote.symbol + '</sup>')
+					chunks.push('<sup>' + footnote.symbol + '</sup>&nbsp;')
 					chunks.push(footnote.text)
 				}
 				
