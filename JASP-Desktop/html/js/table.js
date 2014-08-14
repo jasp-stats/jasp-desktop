@@ -132,7 +132,7 @@ $.widget("jasp.table", {
 				var fsd   = this._fsd(content)  // position of first significant digit
 				var lsd   = fsd - sf
 				
-				if (content >= upperLimit || fsd <= -dp) {
+				if (content >= upperLimit || content <= Math.pow(10, -dp)) {
 				
 					var fsdoe = this._fsdoe(content)
 					if (fsdoe > maxFSDOE)
@@ -216,7 +216,7 @@ $.widget("jasp.table", {
 					
 					formatted = { content : content, "class" : "number" }
 				}
-				else if (cell < p) {
+				else if (content < p) {
 					
 					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
 				}
