@@ -1,33 +1,494 @@
 
 AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+  
+	 
+	if(is.null(base::options()$BFMaxModels)) base::options(BFMaxModels = 50000)
+	if(is.null(base::options()$BFpretestIterations)) base::options(BFpretestIterations = 100)
+	if(is.null(base::options()$BFapproxOptimizer)) base::options(BFapproxOptimizer = "optim")
+	if(is.null(base::options()$BFapproxLimits)) base::options(BFapproxLimits = c(-15,15))
+	if(is.null(base::options()$BFprogress)) base::options(BFprogress = interactive())
+	
+	numeric.variables <- c(unlist(options$dependent),unlist(options$wlsWeight))
+	numeric.variables <- numeric.variables[numeric.variables != ""]
+	
+	factor.variables <- c(unlist(options$fixedFactors),unlist(options$randomFactors))
+	factor.variables <- factor.variables[factor.variables != ""]
 
-	if (is.null(dataset))
-	{
+	if (is.null(dataset)) {
+
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd()
+
+			dataset <-	.readDataSetToEnd(	columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
+		
 		} else {
-			dataset <- .readDataSetHeader()
+	
+			dataset <- .readDataSetHeader( columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
+		}
+	}
+	
+	
+	results <- list()
+	
+	#### META
+	# Currently only effect works, needs posterior estimates and plots of posterior distributions 
+	
+	meta <- list()
+	
+	meta[[1]] <- list(name="posterior", type="table")
+	meta[[2]] <- list(name="effect", type="table")
+	meta[[3]] <- list(name="picture", type="image")
+	results[[".meta"]] <- meta
+	
+	##############
+	### DEFAULT###
+	##############
+	## This table will have a number of rows equal to the number of MODELS, not 
+	## the number of effects. Output shows prior model probability, posterior 
+	## model probability, Bayes factor showing change from prior to posterior 
+	## model probability, Bayes factor for model versus intercept only model and 
+	## percentage of error for model vs intercepr Bayes factor 
+	
+	# Set up table as a list
+	
+	posterior <- list()
+	posterior[["title"]] <- "Bayesian Anova Model Comparison"
+		
+	fields <- list(
+		list(name="Models", type="string"),
+		list(name="P(M)", type="number", format="sf:4;dp:3"),
+		list(name="P(M|Y)", type="number", format="sf:4;dp:3"),
+		list(name="BF<sub>M</sub>", type="number", format="sf:4;dp:3"),
+		list(name="BF<sub>10</sub>", type="number", format="sf:4;dp:3"),
+		list(name="% error", type="number", format="sf:4;dp:3")
+		)
+	
+	schema <- list(fields=fields)
+	posterior[["schema"]] <- schema	
+
+	# set up variable names and formula
+	
+	if (length(options$modelTerms) > 0) {
+		terms <- options$modelTerms
+
+		if (perform == "run"){	
+			posterior.results <- try (silent = FALSE, expr = {
+
+				terms.as.strings <- c()
+	
+					for (term in options$modelTerms) {
+						term.as.string <- paste(.v(term$components), collapse=":")
+						# .v changes from interface to dataframe
+						terms.as.strings <- c(terms.as.strings, term.as.string)
+					}
+						 
+					rhs <- paste(terms.as.strings, collapse="+")
+					model.def <- paste(.v(options$dependent), "~", rhs)
+					model.formula <- as.formula(model.def)
+	
+					ind.random <- length(options$randomFactors)
+												 
+					##ANALYSIS##
+				
+					if( ind.random > 0) {
+						random <- .v(options$randomFactors)
+						withmain <- BayesFactor::anovaBF(model.formula, dataset, whichModels = "withmain", whichRandom = random,progress=FALSE )
+						} else {
+						withmain <- BayesFactor::anovaBF(model.formula, dataset, whichModels = "withmain",progress=FALSE )
+					}
+	
+					BFmain <- as.numeric(exp(withmain@bayesFactor$bf))
+					errormain <- as.numeric(withmain@bayesFactor$error)
+ 
+					##PREPARE VECTORS##
+					# - modelnames for table
+					# - prepare for component matching to allow customizing
+
+					if( ind.random > 0) {
+						random.plus	<-	 paste(.unv(random), collapse=" + ") 
+						models <-	 as.character(paste("Null model (incl.",	random.plus, ")", sep = "" ) )
+						} else {
+						models <-	 as.character(c("Null model"))
+					}	
+																										
+					n.mod.con <- length(names(withmain)$numerator)
+					nst2 <- rep(0,n.mod.con)
+				
+					complist <-	vector("list",n.mod.con)
+						for (i in 1:n.mod.con) { 
+							complist[[i]] <- .decompose(names(withmain)$numerator[i])[[1]][[1]]
+							nst2[i] <- length(complist[[i]])
+						}	
+				
+				 for (i in 1:n.mod.con) { 
+						models <-	 c(models,as.character(.unvf(names(withmain)$numerator[i]))) 
+					}
+				
+					# In case of customized model specification: 
+					nocomp <- length(terms.as.strings)
+					custommtch <- matrix(0,nocomp,n.mod.con)
+ 
+					for (n1 in 1:nocomp) {
+						for(n2 in 1:n.mod.con){
+							abs <- 0
+							for ( j in 1:nst2[n2]) {
+								if ( length(complist[[n2]][[j]]) == length(.v(options$modelTerms[[n1]]$component)) ) {
+									A <- paste(sort(complist[[n2]][[j]]), sep="", collapse="")
+									B <- paste(sort(.v(options$modelTerms[[n1]]$component)), sep="", collapse="")	
+									abs	<- abs + (A==B)
+								}
+							}
+							if (abs > 0) {custommtch[n1,n2] <- 1} 
+						}
+					}
+ 
+					# Which (custom) models are under evaluation:
+					custom1 <-	 which( (colSums(custommtch) >0)	&	((nst2 - colSums(custommtch)) == 0))
+					# Including the null model 
+					custom0 <- c(0,custom1) + 1
+ 
+ 
+					##PROCESS RESULTS 
+					BFmain.c	<- c(1,BFmain[custom1])
+				
+					n.models.c <- length(models[custom0])
+					# prior probability: 1/ number of models
+					pprior <- .clean(1/n.models.c)	
+					# posterior probability: computed from Bayes factors (only with equal prior probability) 
+					posterior.probability <- c(BFmain.c)/sum(BFmain.c)
+				
+					#proppost <-	c(1,BFmain[custom1])/sum(c(BFmain[custom1],1) )
+					BFmodels <-	(posterior.probability/(1-posterior.probability))/(pprior/(1-pprior))
+					BFnull		<- as.numeric(1/1)
+	
+					errormain <- c(NA,errormain[custom1])
+					modelscustom <-	 models[custom0]
+ 
+					#TABLE#
+					posterior.table <- list()
+		
+					for (n in 1:n.models.c) {
+						ppost <- .clean(posterior.probability[n])
+						BF		<- .clean(BFmain.c[n] )
+						error <- .clean(errormain[n]*100)
+						if (n==1) {
+							error <- " "
+						}
+						model.name <-	modelscustom[n]
+						BFM <- .clean(BFmodels[n])
+			
+						r <- list("Models"= model.name,"P(M)" = pprior, "P(M|Y)"=ppost,
+							"BF<sub>M</sub>" = BFM,"BF<sub>10</sub>"=BF, "% error"=error)
+		
+						posterior.table[[length(posterior.table)+1]] <- r
+					}
+
+				posterior.table
+			})
+
+			if (class(posterior.results) == "try-error") {
+				posterior.results <- list()
+				r <- list("Models"= "","P(M)" = "", "P(M|Y)"="","BF<sub>M</sub>" = "","BF<sub>10</sub>"="", "% error"="")
+				posterior.results[[length(posterior.results)+1]] <- r
+			}
+	
+			posterior[["data"]] <- posterior.results
+		}
+	
+	}
+	
+	########################
+	####FUTURE TABLE ####
+	########################
+
+	if (FALSE) {	
+		###	for the second table 
+		null <- list()
+		null[["title"]] <- options$model
+		null[["cases"]] <- options$modelTerms
+	
+		fields <- list(
+			list(name="Models", type="string"),
+			list(name="BF<sub>10</sub>", type="number", format="sf:4;dp:3"),
+			list(name="% error", type="number", format="sf:4;dp:3") 
+		)
+	
+		schema <- list(fields=fields)
+		null[["schema"]] <- schema
+	
+		if (length(options$modelTerms) > 0) {
+			terms <- options$modelTerms
+			null.results <- list()
+			null.results <- for(i in 1:(n.models.c-1)) {
+			r <- list("Models"="","BF<sub>10</sub>"="", "% error"="")
+			null.results[[length(null.results)+1]] <- r
+		}
+			
+		if (class(null.results) == "try-error") {
+			null.results <- list()
+				null.results <- for(i in 1:(n.models.c-1)) {
+				r <- list("Models"="","BF<sub>10</sub>"="", "% error"="")
+				null.results[[length(null.results)+1]] <- r
+			}
+		}
+	#		null[["cases"]] <- names(models)
+			null[["data"]] <- null.results
 		}
 	}
 
-	results <- list()
-	
-	an0va <- list()
-	
-	an0va[["title"]] <- options$model
-	an0va[["cases"]] <- c("line1", "line2", "line3")
-	
-	fields <- list(
-		list(id="col1", type="number", format="sf:4"),
-		list(id="col2", type="number", format="sf:4"),
-		list(id="col3", type="number", format="dp:4;p:.001"))
+	###################
+	###EFFECTS TABLE###
+	##################
+	# Now we compute the results for the inclusion/removal of every term in the model
+	## this table will have a number of rows equal to the number of effects
+	## this table will have columns corresponding to the prior and posterior inclusion
+	## probability for the effect, the Bayes factor for inclusion,
+	## a "backward Bayes factor" comparing the fullest model with the effect with 
+	## the model when the effect would be removed, and 
+	## a "forward bayes factor" compring a model with only the indicated effect 
+	## with a null model 
 		
-	schema <- list(fields=fields)
-	
-	an0va[["schema"]] <- schema
-	
-	results[["anova"]] <- an0va
+	if (options$outputEffects== TRUE){
 
-	results
+	# set up table as a list	 
+	effect <- list()
+	effect[["title"]] <- "Bayesian Anova:Analysis of Effects"
+	
+		fields <- list(
+			list(name="Effects", type="string"),
+			list(name="P(incl)", type="number", format="sf:4;dp:3"),
+			list(name="P(incl|Y)", type="number", format="sf:4;dp:3"),
+			list(name="BF<sub>Inclusion</sub>", type="number", format="sf:4;dp:3"),
+			list(name="BF<sub>Backward</sub>", type="number", format="sf:4;dp:3"),
+			list(name="% errorB", type="number", format="sf:4;dp:3"),
+			list(name="BF<sub>Forward</sub>", type="number", format="sf:4;dp:3"),
+			list(name="% errorF", type="number", format="sf:4;dp:3")
+		)
+	
+	schema <- list(fields=fields)
+	effect[["schema"]] <- schema
+		
+	if (length(options$modelTerms) > 0) {
+		if (perform == "run"){	
+		effect.results <- try (silent = FALSE, expr = {	
+			
+			if (length(models) > 2) {
+				
+				###ANALYSIS###
+				# 1. Bottom up effects	(Forward analysis)
+			
+				if(ind.random > 0) {
+					random <- .v(options$randomFactors) 
+					bottom <- BayesFactor::anovaBF(model.formula, dataset, whichModels = "bottom",whichRandom = random,progress=FALSE )
+				} else {
+					bottom <- BayesFactor::anovaBF(model.formula, dataset, whichModels = "bottom",progress=FALSE )
+				}			
+
+				vBFbot <- as.numeric(exp(bottom@bayesFactor$bf))
+				verrorbot <- as.numeric(bottom@bayesFactor$error)
+			
+				effect.names <- as.character(names(bottom)$numerator)
+				neff <- length(effect.names)
+		
+				if (ind.random > 0) {
+					randomv.plus	<-	 paste(c("",random), collapse=" + ") 
+					effect.names.r <-effect.names
+					effect.names	<- gsub(randomv.plus,"",effect.names.r, fixed = TRUE)
+				}
+		
+				neff.c <- length(terms.as.strings)
+		
+				custeff <- matrix(0,neff.c,neff)
+				for (n1 in 1:neff.c){
+					for(n2 in 1:neff){
+						B <- paste(sort(.v(options$modelTerms[[n1]]$component)), sep="", collapse="")	
+						A <- paste(sort(unlist((strsplit(effect.names[n2], "[:]")) ) ), sep="", collapse="")
+						custeff[n1,n2] <- (A == B)
+						
+					}
+				}
+		
+				customeff <- which(colSums(custeff) == 1) 
+				effect.names.c <- effect.names[customeff]
+				BFbot <- vBFbot[customeff]
+				errorbot <- verrorbot[customeff]
+				
+				for (i in 1:neff.c){
+						BFbot[i] <- vBFbot[which(custeff[i,]==1)]
+						errorbot[i] <- verrorbot[which(custeff[i,]==1)]
+					}
+				
+				# 2. Inclusion probabilities and Bayes factors 
+				
+				# Extract names of models from BF output 
+				model.names.c		 <-		as.character(c("Null",names(withmain)$numerator[custom1]))
+				 
+				#Match models and effects
+				# which effects are in which models 
+				match <- cbind(rep(0,neff.c),custommtch[,custom1])
+				
+				inclusion.probabilities <- rowSums(match * matrix(rep(posterior.probability[], each = neff.c) ,neff.c,n.models.c))
+				prior.probabilities <- rowSums(match)/n.models.c
+				Bayesfactor.inclusion <-	(inclusion.probabilities/(1-inclusion.probabilities))/(prior.probabilities/(1- prior.probabilities))
+								
+				#3. Backward probabilities (use this for more elaborate model)
+						 
+				complist[[n.mod.con+1]] <-	"NULL"
+				complist.c <- complist[c(n.mod.con+1,custom1)]				
+				model.length <- sapply(complist.c, length)
+				
+				# Which interactions models have interactions including the effect
+				# and are therefore forbidden to be in the full model
+				effect.length <- sapply(strsplit(terms.as.strings, ":"), length)
+				effect.components <- sapply(strsplit(terms.as.strings, ":"), as.character) 
+			
+				match2 <- matrix(0,neff.c,n.models.c)
+				#match 2 gives for every effect the models which include an interaction in which the effect is included (lower order)
+				for(n1 in 1:neff.c){
+					for(n2 in 1:n.models.c){
+						# length of each model component 
+						comp.length <- sapply(complist.c[[n2]], length) 
+						# which model components are longer than the effect - higher order interactions
+						adm <- which(comp.length>effect.length[n1])
+						if (length(adm) > 0) {
+							TT <-	matrix(0,effect.length[n1],length(adm)) 
+							for ( ii in 1:effect.length[n1]){
+								for (jj in 1:length(adm)){
+									#check whether each effect component is one of the components of the higher order interaction(s)
+									TT[ii,] <-	length(grep(effect.components[[n1]][ii],complist.c[[n2]][[adm[jj]]]))
+								}	
+							}
+							# for each higher order interaction check whether the number of matching components corresponds to the effect length
+							# because if only one of the effect compnents is in the higher order model component thwe 
+							# do not want it to give a signal 
+							if (sum(colSums(TT) == effect.length[n1]) > 0 ) {
+								match2[n1,n2] <- 1
+							}
+						}
+					}
+				}
+				 
+			 # Combine match and forbidden to select the Full and Reduced model to compare
+			 complexity.models <- colSums(match) # complexity (no. terms) of each model
+			 ninlude <- rowSums(match)
+			 Full <- rep(0, neff.c)
+			 Red <-	rep(0, neff.c)
+			 BF.Backward <-	rep(0, neff.c)
+			 error.Backward <-	rep(0, neff.c)
+			 for ( e in 1: neff.c) {
+				 if(ninlude[e] ==1) {
+					 Full[e] <-	which(match[e,]==1)
+					 Red[e] <-	which(complexity.models ==	max(complexity.models[-Full[e]]))	
+				 } else {
+					 # the model has to meet the condition that the effect is included but the model doesnt include a
+					 # higher order interaction with the model 
+					 mno1 <- which(match2[e,] ==0)
+					 mno2 <- which(match[e,]	>0)
+					 selection <- intersect(mno1,mno2)
+					 
+					 Full[e] <- selection[which(complexity.models[selection]==max(complexity.models[selection]))]
+					 mno3 <- which(match[e,] == 0)
+					 Red[e] <- mno3[which(complexity.models[mno3]==max(complexity.models[mno3]))]
+				 }
+				 out <- withmain[custom0[Full[e]]-1]/withmain[custom0[Red[e]]-1]
+				 BF.Backward[e] <- as.numeric(exp(out@bayesFactor$bf))
+				 error.Backward[e] <- as.numeric(exp(out@bayesFactor$error))
+			 }
+				
+			 Fnames <- model.names.c[Full]
+			 Rnames <- model.names.c[Red]
+			 
+			 
+			 
+			 
+				################################
+				# For Table
+				###################################
+				# put effect names back to original
+		
+			 n.eff.con <- length(terms.as.strings)
+			 effect.names.tab <- rep(0,n.eff.con)
+			 for (i in 1:n.eff.con) { 
+				 sep.1 <- unlist(strsplit(terms.as.strings[i], "[:]"))
+				 effect.names.tab[i] <- paste(.unv(sep.1), collapse=":")
+			 }
+		}	 
+				
+				#TABLE#
+		
+		effect.table <- list()
+									
+		if(length(models) > 2) {
+			
+			for (e in 1:neff.c) {
+				BFtops		<- .clean(BF.Backward[e])
+				errortops <- .clean(error.Backward[e])
+				BFbottom		<- .clean(BFbot[e])
+				errorbottom <- .clean(errorbot[e]*100)
+					
+				effname		 <-		as.character(effect.names.tab[e])
+				 
+				ipb <- .clean(inclusion.probabilities[e])
+				ppb <- .clean(prior.probabilities[e])
+				bfi <- .clean(Bayesfactor.inclusion[e])
+					
+				r <- list("Effects"=effname,"P(incl)"= ppb, "P(incl|Y)"= ipb,"BF<sub>Inclusion</sub>" = bfi,
+				"BF<sub>Backward</sub>"=BFtops, "% errorB"=errortops,"BF<sub>Forward</sub>"=BFbottom, "% errorF"=errorbottom)
+					
+				effect.table[[length(effect.table)+1]] <- r
+			}
+		}
+		
+		if(length(models) == 2) {
+			
+			BFtops		<- ""
+			errortops <- ""
+			BFbottom		<- .clean(BFmain[2])
+			errorbottom <- .clean(errormain[2]*100)
+			effname		 <-	as.character(models[2])
+			
+			ipb <- .clean(posterior.probability[2])
+			ppb <- .clean(pprior)
+			bfi <- .clean(BFmodels[2])
+			
+			r <- list("Effects"=effname,"P(incl)"= ppb, "P(incl|Y)"= ipb,"BF<sub>Inclusion</sub>" = bfi,
+								"BF<sub>Backward</sub>"=BFtops, "% errorB"=errortops,"BF<sub>Forward</sub>"=BFbottom, "% errorF"=errorbottom)
+			
+			effect.table[[length(effect.table)+1]] <- r
+		}
+		
+		effect.table
+				
+	 })
+			
+		if (class(effect.results) == "try-error") {
+			effect.results <- list()
+			r <- list("Effects"= "","P(incl)"= "", "P(incl|Y)"= "","BF<sub>Inclusion</sub>" = "",
+										"BF<sub>Backward</sub>"="", "% errorB"="","BF<sub>Forward</sub>"="", "% errorF"="")
+			effect.results[[length(effect.results)+1]] <- r
+				
+		}
+			
+	#	print("effect.results")
+	#	print(effect.results)
+	#	print("effect.results end")
+		
+		effect[["data"]] <- effect.results
+	}
+		
+ }}
+
+ if (TRUE)
+	 results[["posterior"]] <- posterior
+ if (FALSE)	
+	 results[["null"]] <- null
+ if (options$outputEffects)
+	 results[["effect"]] <- effect
+
+results
 }
+
+
+
+
+
 
