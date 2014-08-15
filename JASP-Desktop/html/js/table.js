@@ -237,10 +237,6 @@ $.widget("jasp.table", {
 					
 					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
 				}
-				else if (cell < Math.pow(10, -dp) || cell >= 1e6) {
-				
-					formatted = { content : content.toPrecision(4).replace(/-/g, "&minus;"), "class" : "number" }
-				}
 				else {
 				
 					formatted = { content : content.toFixed(dp).replace(/-/g, "&minus;"), "class" : "number" }
