@@ -38,6 +38,11 @@ $.widget("jasp.table", {
 		return this._fsd(exponent)
 	
 	},
+	_symbol : function(index) {
+	
+		return "\u1D43\u1D47\u1D9C\u1D48\u1D49\u1DA0\u1D4D\u02B0\u2071\u02B2\u1D4F\u02E1\u1D50\u207F\u1D52\u1D56\u02B3\u02E2\u1D57\u1D58\u1D5B\u02B7\u02E3\u02B8\u1DBB".charAt(index)
+	
+	},
 	_swapRowsAndColumns : function(columnHeaders, columns) {
 	
 		var newRowCount = columns.length - 1
@@ -288,7 +293,7 @@ $.widget("jasp.table", {
 			if (typeof footnote.symbol != "undefined")
 				footnotes[i] = footnote.symbol
 			else
-				footnotes[i] = String.fromCharCode(97 + indices[i])
+				footnotes[i] = this._symbol(indices[i])
 			
 		}
 			
@@ -515,7 +520,7 @@ $.widget("jasp.table", {
 					cellHtml += (cell.span   ? ' rowspan="' + cell.span + '"' : '')
 					cellHtml += ' nowrap>'
 					if (typeof cell.footnotes != "undefined")
-						cellHtml += '&nbsp<sup>' + cell.footnotes.join(',') + '</sup>'
+						cellHtml += cell.footnotes.join(' ')
 					cellHtml += (cell.header ? '</th>' : '</td>')
 					
 					tableProgress[colNo].from += 1
@@ -556,13 +561,13 @@ $.widget("jasp.table", {
 				
 				if (_.isString(footnote)) {
 
-					chunks.push('<sup>' + String.fromCharCode(97 + i) + '</sup>&nbsp;')
+					chunks.push(this._symbol(i) + '&nbsp;')
 					chunks.push(footnote)
 				}
 				
 				if (_.has(footnote, "symbol")) {
 				
-					chunks.push('<sup>' + footnote.symbol + '</sup>&nbsp;')
+					chunks.push(footnote.symbol + '&nbsp;')
 					chunks.push(footnote.text)
 				}
 				
