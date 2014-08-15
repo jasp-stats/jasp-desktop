@@ -148,6 +148,8 @@ $.widget("jasp.table", {
 			
 			if (minLSD < -dp)
 				minLSD = -dp
+			if (minLSD > 0)
+				minLSD = 0
 		
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
