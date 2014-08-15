@@ -64,7 +64,7 @@ $.widget("jasp.table", {
 		return { columnHeaders : newColumnHeaders, columns : newColumns, rowCount : newRowCount, columnCount : newColumnCount }
 	
 	},
-	_formatColumn : function(column, type, format, alignNumbers) {
+	_formatColumn : function(column, type, format, alignNumbers, combine) {
 
 		var columnCells = Array(column.length)
 
@@ -80,13 +80,15 @@ $.widget("jasp.table", {
 				
 				if (typeof content == "undefined")
 					formatted = { content : "." }
+				else if (combine && rowNo > 0 && column[rowNo-1].content == content)
+					formatted = { content : "", class : clazz }
 				else
-					formatted = { content : content }
+					formatted = { content : content, "class" : clazz }
 					
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
 					
-				columnCells[rowNo] = { content : content, "class" : clazz }
+				columnCells[rowNo] = formatted
 			}
 			
 			return columnCells
@@ -157,6 +159,10 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
+				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
+				
+					formatted = { content : "", "class" : "number" }
+				}
 				else if (isNaN(parseFloat(content))) {  // isn't a number
 					
 					formatted = { content : content, "class" : "number" }
@@ -212,6 +218,10 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
+				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
+				
+					formatted = { content : "", "class" : "number" }
+				}
 				else if (isNaN(parseFloat(content))) {  // isn't a number
 					
 					formatted = { content : content, "class" : "number" }
@@ -241,11 +251,20 @@ $.widget("jasp.table", {
 			
 				var cell = column[rowNo]
 				var content = cell.content
+				var formatted
 				
-				if (typeof content == "undefined")
-					content = "."
-					
-				var formatted = { content : content }
+				if (typeof content == "undefined") {
+				
+					formatted = { content : "." }
+				}
+				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
+				
+					formatted = { content : "" }
+				}
+				else {
+				
+					formatted = { content : content }
+				}
 				
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
@@ -325,8 +344,9 @@ $.widget("jasp.table", {
 			var type   = columnDefs[colNo].type
 			var format = columnDefs[colNo].format
 			var alignNumbers = ! this.options.casesAcrossColumns  // numbers can't be aligned across rows
+			var combine = columnDefs[colNo].combine
 			
-			cells[colNo] = this._formatColumn(column, type, format, alignNumbers)
+			cells[colNo] = this._formatColumn(column, type, format, alignNumbers, combine)
 		}
 		
 		var foldedRows = false
