@@ -222,8 +222,17 @@ var stringify = function(element, tabs) {
 			var node = contents[i]
 			if (node.nodeType === 3) {
 				var value = $(node).text()
-				if (value)
+				if (value) {
+				
+					value = value
+						.replace(/&/g, '&amp;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#39;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+				
 					text += "\n" + tabs + value + "\n"
+				}
 			}
 			else {
 				text += "\n" + stringify(contents[i], tabs + "\t")
