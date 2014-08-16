@@ -69,14 +69,15 @@ private slots:
 
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
-	void pushToClipboardHandler(QString data);
+	void pushToClipboardHandler(const QString &data);
 	void analysisChangedDownstreamHandler(int id, QString options);
 
     void tabChanged(int index);
 	void dataSetSelected(const QString &filename);
 	void dataSetCloseRequested();
 	void dataSetLoaded(DataSet *dataSet);
-	void itemSelected(const QString item);
+	void dataSetLoadFailed(const QString &message);
+	void itemSelected(const QString &item);
 	void exportSelected(const QString &filename);
 
 	void adjustOptionsPanelWidth();

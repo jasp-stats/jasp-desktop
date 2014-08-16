@@ -18,7 +18,7 @@ AsyncLoader::AsyncLoader(QObject *parent) :
 	_thread.start();
 }
 
-void AsyncLoader::load(QString filename)
+void AsyncLoader::load(const QString &filename)
 {
 	emit progress("Loading Data Set", 0);
 	emit loads(filename);
@@ -29,11 +29,20 @@ void AsyncLoader::free(DataSet *dataSet)
 	_loader.freeDataSet(dataSet);
 }
 
-void AsyncLoader::loadTask(QString filename)
+void AsyncLoader::loadTask(const QString &filename)
 {
-	DataSet *dataSet = _loader.loadDataSet(filename.toStdString());
-
-	emit complete(dataSet);
+	try {
+		DataSet *dataSet = _loader.loadDataSet(filename.toStdString());
+		emit complete(dataSet);
+	}
+	catch (runtime_error e)
+	{
+		emit fail(e.what());
+	}
+	catch (exception e)
+	{
+		emit fail(e.what());
+	}
 }
 
 void AsyncLoader::progressHandler(string status, int progress)

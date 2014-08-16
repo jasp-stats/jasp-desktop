@@ -16,16 +16,17 @@ class AsyncLoader : public QObject
 public:
 	explicit AsyncLoader(QObject *parent = 0);
 
-	void load(QString filename);
-
+	void load(const QString &filename);
 	void free(DataSet *dataSet);
+
 signals:
-	void loads(QString filename);
-	void progress(QString status, int progress);
+	void loads(const QString &filename);
+	void progress(const QString &status, int progress);
 	void complete(DataSet *dataSet);
+	void fail(const QString &reason);
 
 private slots:
-	void loadTask(QString filename);
+	void loadTask(const QString &filename);
 
 private:
 

@@ -110,6 +110,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(&_loader, SIGNAL(complete(DataSet*)), this, SLOT(dataSetLoaded(DataSet*)));
 	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
+	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(dataSetLoadFailed(QString)));
+
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
 	connect(this, SIGNAL(pushToClipboard(QString)), this, SLOT(pushToClipboardHandler(QString)));
@@ -343,6 +345,12 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 
 }
 
+void MainWindow::dataSetLoadFailed(const QString &message)
+{
+	_alert->hide();
+	QMessageBox::warning(this, "", "The Data set could not be loaded\n\n" + message);
+}
+
 void MainWindow::updateMenuEnabledDisabledStatus()
 {
 	bool enable = _dataSet != NULL;
@@ -380,7 +388,7 @@ void MainWindow::engineCrashed()
 	}
 }
 
-void MainWindow::itemSelected(const QString item)
+void MainWindow::itemSelected(const QString &item)
 {
 	string name = item.toStdString();
 	_currentAnalysis = _analyses->create(name);
@@ -486,7 +494,7 @@ void MainWindow::analysisRemoved()
 	ui->tableView->show();
 }
 
-void MainWindow::pushToClipboardHandler(QString data)
+void MainWindow::pushToClipboardHandler(const QString &data)
 {
 	QString toClipboard;
 	toClipboard += "<!DOCTYPE HTML>\n"
