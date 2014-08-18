@@ -34,15 +34,81 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	meta[[1]] <- list(name="ttest", type="table")
 	meta[[2]] <- list(name="descriptives", type="table")
+	meta[[3]] <- list(name="posteriorPlots", type="images")
 	
 	results[[".meta"]] <- meta
 	
-	
-
 	results[["ttest"]] <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
+	results[["posteriorPlots"]] <- .ttestBayesianIndependentSamplesTTestPosteriorPlots(dataset, options, perform)
 
 	results
+}
+
+.ttestBayesianIndependentSamplesTTestPosteriorPlots <- function(dataset, options, perform) {
+	
+	if (options$posteriorPlots == FALSE)
+		return(NULL)
+
+	posterior.plots <- list()
+	
+	for (variable in options[["variables"]])
+		posterior.plots[[length(posterior.plots)+1]] <- list(title=variable, width=options$plotWidth, height=options$plotHeight, custom=list(width="plotWidth", height="plotHeight"))
+	
+	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
+		
+		rowNo <- 1
+	
+		for (variable in options[["variables"]]) {
+
+			variableData <- dataset[[ .v(variable) ]]
+			
+			f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
+			r.size <- options$rSize
+			
+			if (options$tails == "oneTailedGreaterThan") {
+			
+				null.interval <- c(-Inf, 0)
+			
+			} else if (options$tails == "oneTailedLessThan") {
+
+				null.interval <- c(0, Inf)
+			
+			} else {
+			
+				null.interval <- c(-Inf, Inf)
+			}
+			
+			result <- try (silent=FALSE, expr= {
+			
+				bf    <- BayesFactor::ttestBF(data=dataset, formula=f, r=r.size, nullInterval=null.interval)[1]
+				BF    <- .clean(exp(as.numeric(bf@bayesFactor$bf)))
+				error <- .clean(as.numeric(bf@bayesFactor$error))
+				
+				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+
+				posterior.samples <- BayesFactor::ttestBF(data=dataset, formula=f, r=r.size, nullInterval=null.interval, posterior=TRUE, iterations=10000, progress=FALSE)
+
+				hist(posterior.samples, main=variable, xlab="", ylab="Frequency", col=rainbow(20))
+				
+				data <- .endSaveImage(image)
+				
+				data
+			})
+
+			if (class(result) == "try-error") {
+		
+				result <- NULL
+			}
+
+			posterior.plots[[rowNo]][["data"]] <- result
+		
+			rowNo <- rowNo + 1
+		}
+	}
+	
+	posterior.plots
+
 }
 
 .ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform) {
@@ -66,6 +132,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		ttest.results[[length(ttest.results)+1]] <- list(.variable=variable)
 	}
 	
+	if (options$posteriorPlots)
+	{
+		posterior.plots <- list()
+		
+		for (variable in options[["variables"]])
+			posterior.plots <- c(posterior.plots, list(title=variable, width=640, height=480))
+	}
+	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 
 		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
@@ -82,27 +156,26 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 				variableData <- dataset[[ .v(variable) ]]
 				
-				result <- try (silent=FALSE, expr= {
-
-					f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
-					
-					if (options$tails == "oneTailedGreaterThan") {
-					
-						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=options$rSize, nullInterval=c(-Inf, 0))
-						bf <- bf[1]
-					
-					} else if (options$tails == "oneTailedLessThan") {
-	
-						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=options$rSize, nullInterval=c(0, Inf))
-						bf <- bf[1]
-					
-					} else {
-					
-						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=options$rSize)
-					
-					}
+				f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
+				r.size <- options$rSize
 				
-					BF <- .clean(exp(as.numeric(bf@bayesFactor$bf)))
+				if (options$tails == "oneTailedGreaterThan") {
+				
+					null.interval <- c(-Inf, 0)
+				
+				} else if (options$tails == "oneTailedLessThan") {
+
+					null.interval <- c(0, Inf)
+				
+				} else {
+				
+					null.interval <- c(-Inf, Inf)
+				}
+				
+				result <- try (silent=FALSE, expr= {
+				
+					bf    <- BayesFactor::ttestBF(data=dataset, formula=f, r=r.size, nullInterval=null.interval)[1]
+					BF    <- .clean(exp(as.numeric(bf@bayesFactor$bf)))
 					error <- .clean(as.numeric(bf@bayesFactor$error))
 				
 					list(.variable=variable, BF=BF, error=error)					
@@ -112,8 +185,27 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			
 					result <- list(.variable=variable, BF="", error="")
 				}
-			
+				
 				ttest.results[[rowNo]] <- result
+				
+				
+				# plots
+				
+				if (options$posteriorPlots)
+				{
+					i <- 1
+					
+					image <- .beginSaveImage(640, 480)
+
+					hist(1:10, main=variable)
+					
+					data <- .endSaveImage(image)
+
+					posterior.plots[[i]][["data"]] <- data
+		
+					i <- i + 1
+				}
+			
 				rowNo <- rowNo + 1
 			}
 		}

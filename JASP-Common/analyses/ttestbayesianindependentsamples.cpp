@@ -31,6 +31,11 @@ Options *TTestBayesianIndependentSamples::createOptions() const
 
 	options->add("rSize", new OptionNumber(1));
 
+	options->add("posteriorPlots", new OptionBoolean());
+
+	options->add("plotWidth", new OptionInteger(320));
+	options->add("plotHeight", new OptionInteger(240));
+
 	return options;
 }
 
