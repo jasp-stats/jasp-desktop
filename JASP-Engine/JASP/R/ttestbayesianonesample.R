@@ -30,8 +30,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
 	fields <- list(
 		list(name="Variable", type="string", title=""),
-		list(name="BF10", type="number", format="sf:4", title="BF\u2081\u2080"),
-		list(name="error", type="number", format="sf:4"))
+		list(name="BF10", type="number", format="sf:4;dp:3", title="BF\u2081\u2080"),
+		list(name="error", type="number", format="sf:4;dp:3", title="error %"))
 
 	ttest[["schema"]] <- list(fields=fields)
 
@@ -52,7 +52,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			{
 				result <- try (silent = TRUE, expr = {
 
-					r <- BayesFactor::ttestBF(dataset[[ .v(variable) ]], r=options$rSize)
+					r <- BayesFactor::ttestBF(dataset[[ .v(variable) ]], r=options$priorWidth)
 		
 					BF <- .clean(exp(as.numeric(r@bayesFactor$bf)))
 					error <- .clean(as.numeric(r@bayesFactor$error))

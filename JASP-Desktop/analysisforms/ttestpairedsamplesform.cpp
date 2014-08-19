@@ -20,7 +20,7 @@ TTestPairedSamplesForm::TTestPairedSamplesForm(QWidget *parent) :
 	TableModelPairsAssigned *model = new TableModelPairsAssigned(this);
 	model->setSource(&_availableVariablesModel);
 	model->setVariableTypesSuggested(Column::ColumnTypeScale);
-	model->setIsNominalTextAllowed(false);
+	model->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->pairs->setModel(model);
 
 	ui->assignButton->setSourceAndTarget(ui->availableFields, ui->pairs);

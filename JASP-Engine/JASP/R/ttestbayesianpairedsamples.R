@@ -34,8 +34,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		list(name=".variable1", type="string", title=""),
 		list(name=".separator", type="string", title=""),
 		list(name=".variable2", type="string", title=""),
-		list(name="BF", type="number", format="sf:4", title="BF\u2081\u2080"),
-		list(name="error", type="number", format="sf:4"))
+		list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080"),
+		list(name="error", type="number", format="sf:4;dp:3", title="error %"))
 
 	ttest[["schema"]] <- list(fields=fields)
 
@@ -59,7 +59,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					c1 <- dataset[[ .v(pair[[1]]) ]]
 					c2 <- dataset[[ .v(pair[[2]]) ]]
 	
-					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE, r=options$rSize)
+					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE, r=options$priorWidth)
 			
 					BF <- .clean(exp(as.numeric(r@bayesFactor$bf)))
 					error <- .clean(as.numeric(r@bayesFactor$error))

@@ -26,15 +26,16 @@ Options *TTestBayesianIndependentSamples::createOptions() const
 
 	options->add("descriptives", new OptionBoolean());
 
-	options->add("tails", new OptionList(list("twoTailed", "oneTailedGreaterThan", "oneTailedLessThan")));
+	options->add("tails", new OptionList(list("twoTailed", "oneTailedGroupOneGreater", "oneTailedGroupTwoGreater")));
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
 
-	options->add("rSize", new OptionNumber(1));
+	options->add("priorWidth", new OptionNumber(1));
 
-	options->add("posteriorPlots", new OptionBoolean());
-
+	options->add("plots", new OptionBoolean());
 	options->add("plotWidth", new OptionInteger(320));
 	options->add("plotHeight", new OptionInteger(240));
+
+	options->add("bayesFactorType", new OptionList(list("BF10", "BF01")));
 
 	return options;
 }

@@ -14,18 +14,8 @@ TableModelPairsAssigned::TableModelPairsAssigned(QObject *parent)
 	_boundTo = NULL;
 	_source = NULL;
 
-	_nominalTextAllowed = true;
+	_variableTypesAllowed = 0;
 	_variableTypesSuggested = Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale;
-}
-
-void TableModelPairsAssigned::setIsNominalTextAllowed(bool allowed)
-{
-	_nominalTextAllowed = allowed;
-}
-
-bool TableModelPairsAssigned::nominalTextAllowed()
-{
-	return _nominalTextAllowed;
 }
 
 void TableModelPairsAssigned::bindTo(Option *option)
@@ -34,13 +24,13 @@ void TableModelPairsAssigned::bindTo(Option *option)
 
 	if (_boundTo == NULL)
 	{
-		qDebug() << "TableModelVariablesAssigned::bindTo(); Could not bind to option";
+		qDebug() << "TableModelPairsAssigned::bindTo(); Could not bind to option";
 		return;
 	}
 
 	if (_source == NULL)
 	{
-		qDebug() << "TableModelVariablesAssigned::bindTo(); source not set";
+		qDebug() << "TableModelPairsAssigned::bindTo(); source not set";
 		return;
 	}
 
@@ -55,6 +45,7 @@ void TableModelPairsAssigned::bindTo(Option *option)
 void TableModelPairsAssigned::setSource(TableModelVariablesAvailable *source)
 {
 	_source = source;
+	this->setInfoProvider(source);
 }
 
 int TableModelPairsAssigned::rowCount(const QModelIndex &parent) const
@@ -218,24 +209,30 @@ bool TableModelPairsAssigned::canDropMimeData(const QMimeData *data, Qt::DropAct
 	if (mimeTypes().contains("application/vnd.list.variable"))
 	{
 		QByteArray encodedData = data->data("application/vnd.list.variable");
-		QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
-		if (stream.atEnd()) // is empty
-			return false;
+		Terms variables;
+		variables.set(encodedData);
 
-		int count;
+		foreach (const Term &variable, variables)
+		{
+			if ( ! isAllowed(variable))
+				return false;
+		}
 
-		stream >> count;
-
-		return count != 0;
+		return true;
 	}
-
-	return false;
+	else
+	{
+		return false;
+	}
 }
 
-bool TableModelPairsAssigned::isForbidden(int variableType) const
+bool TableModelPairsAssigned::isAllowed(const Term &term) const
 {
-	return _nominalTextAllowed == false && variableType == Column::ColumnTypeNominalText;
+	QVariant v = requestInfo(term, VariableInfo::VariableType);
+	int variableType = v.toInt();
+
+	return variableType == 0 || variableType & _variableTypesAllowed;
 }
 
 bool TableModelPairsAssigned::insertRows(int row, int count, const QModelIndex &parent)
@@ -287,9 +284,17 @@ void TableModelPairsAssigned::setVariableTypesSuggested(int variableTypesSuggest
 	_variableTypesSuggested = variableTypesSuggested;
 }
 
-int TableModelPairsAssigned::variableTypesSuggested()
+int TableModelPairsAssigned::variableTypesSuggested() const
 {
 	return _variableTypesSuggested;
 }
 
+void TableModelPairsAssigned::setVariableTypesAllowed(int variableTypesAllowed)
+{
+	_variableTypesAllowed = variableTypesAllowed;
+}
 
+int TableModelPairsAssigned::variableTypesAllowed() const
+{
+	return _variableTypesAllowed;
+}
