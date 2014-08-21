@@ -206,6 +206,8 @@ bool TableModelVariablesLevels::setData(const QModelIndex &index, const QVariant
 
 	list->setValue(string(bytes.constData(), bytes.length()));
 
+	_boundTo->setValue(_levels);
+
 	emit dataChanged(index, index);
 
 	return true;
