@@ -56,7 +56,7 @@ run <- function(name, options.as.json.string) {
 	{
 		rows.to.exclude <- c()
 		
-		for (col in exclude.na.listwise) {
+		for (col in .v(exclude.na.listwise)) {
 			
 			rows.to.exclude <- c(rows.to.exclude, which(is.na(dataset[[col]])))
 		}
