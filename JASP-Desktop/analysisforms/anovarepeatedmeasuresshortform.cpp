@@ -15,22 +15,22 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
 	_designTableModel = new TableModelAnovaDesign(this);
-	ui->design->setModel(_designTableModel);
+	ui->repeatedMeasuresFactors->setModel(_designTableModel);
 
-	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
-	_fixedFactorsListModel->setSource(&_availableVariablesModel);
-	_fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->fixedFactors->setModel(_fixedFactorsListModel);
+	_withinSubjectCellsListModel = new TableModelAnovaWithinSubjectCells(this);
+	_withinSubjectCellsListModel->setSource(&_availableVariablesModel);
+	_withinSubjectCellsListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_withinSubjectCellsListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	ui->repeatedMeasuresCells->setModel(_withinSubjectCellsListModel);
 
 	_randomFactorsListModel = new TableModelVariablesAssigned(this);
 	_randomFactorsListModel->setSource(&_availableVariablesModel);
 	_randomFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->randomFactors->setModel(_randomFactorsListModel);
 
-	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->fixedFactors);
+	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->repeatedMeasuresCells);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->randomFactors);
 
-	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
 	_anovaModel = new TableModelAnovaModel(this);
@@ -47,6 +47,7 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
 
+	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
 }
 
 AnovaRepeatedMeasuresShortForm::~AnovaRepeatedMeasuresShortForm()
@@ -58,7 +59,7 @@ void AnovaRepeatedMeasuresShortForm::factorsChanged()
 {
 	Terms factorsAvailable;
 
-	factorsAvailable.add(_fixedFactorsListModel->assigned());
+	//factorsAvailable.add(_fixedFactorsListModel->assigned());
 	factorsAvailable.add(_randomFactorsListModel->assigned());
 
 	_anovaModel->setVariables(factorsAvailable);
@@ -72,4 +73,9 @@ void AnovaRepeatedMeasuresShortForm::termsChanged()
 	Terms terms = _anovaModel->terms();
 	terms.insert(0, string("~OVERALL"));
 	ui->marginalMeans_terms->setVariables(terms);
+}
+
+void AnovaRepeatedMeasuresShortForm::withinSubjectsDesignChanged()
+{
+	_withinSubjectCellsListModel->setDesign(_designTableModel->design());
 }

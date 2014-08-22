@@ -1,102 +1,255 @@
 
 #include "tablemodelanovadesign.h"
 
-#include <QBrush>
+#include <QSize>
 #include <QDebug>
+#include <QIcon>
+#include <QBrush>
 
-TableModelAnovaDesign::TableModelAnovaDesign(QObject *parent) :
-	QAbstractTableModel(parent)
+#include "utils.h"
+#include "variableinfo.h"
+#include "column.h"
+
+using namespace std;
+
+TableModelAnovaDesign::TableModelAnovaDesign(QObject *parent)
+	: TableModel(parent)
 {
-	_design.append(24);
-	_design.append(3);
+	_boundTo = NULL;
 }
 
-const QList<int> &TableModelAnovaDesign::design() const
+void TableModelAnovaDesign::bindTo(Option *option)
 {
-	return _design;
+	_boundTo = dynamic_cast<OptionsTable *>(option);
+
+	if (_boundTo != NULL)
+	{
+		_groups = _boundTo->value();
+		refresh();
+		emit designChanged();
+	}
 }
 
-int TableModelAnovaDesign::rowCount(const QModelIndex &) const
+int TableModelAnovaDesign::rowCount(const QModelIndex &parent) const
 {
+	Q_UNUSED(parent);
+
+	if (_boundTo == NULL)
+		return 0;
+
+	return _rows.length();
+}
+
+int TableModelAnovaDesign::columnCount(const QModelIndex &parent) const
+{
+	Q_UNUSED(parent);
+
+	if (_boundTo == NULL)
+		return 0;
+
 	return 1;
-}
-
-int TableModelAnovaDesign::columnCount(const QModelIndex &) const
-{
-	return 2 * _design.size() + 1;
 }
 
 QVariant TableModelAnovaDesign::data(const QModelIndex &index, int role) const
 {
+	if (_boundTo == NULL)
+		return QVariant();
+
+	Row row = _rows.at(index.row());
+
 	if (role == Qt::DisplayRole)
 	{
-		if (index.column() / 2 == _design.size())
-			return "";
-		else if ((index.column() % 2) == 0)
-			return _design.at(index.column() / 2);
-		else
-			return "x";
+		return row.text();
+	}
+	else if (role == Qt::EditRole)
+	{
+		return row.text();
 	}
 	else if (role == Qt::ForegroundRole)
 	{
-		if (index.column() == 2 * _design.size() - 1)
-			return QBrush(Qt::lightGray);
+		if (row.isHypothetical())
+			return QBrush(QColor(0xCC, 0xCC, 0xCC));
 		else
 			return QVariant();
 	}
 	else if (role == Qt::TextAlignmentRole)
 	{
-		return Qt::AlignCenter;
+		if (row.isHeading())
+			return Qt::AlignCenter;
+		else
+			return QVariant();
 	}
-	else
+	else if (role == Qt::SizeHintRole)
 	{
-		return QVariant();
+		if (row.isHeading())
+			return QSize(-1, 24);
 	}
+
+	return QVariant();
 }
 
-Qt::ItemFlags TableModelAnovaDesign::flags(const QModelIndex &index) const
+void TableModelAnovaDesign::refresh()
 {
-	if ((index.column() % 2) == 0)
-		return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
-	else
-		return Qt::ItemIsEnabled;
+	_rows.clear();
 
-	return 0;
+	if (_boundTo == NULL)
+		return;
+
+	beginResetModel();
+
+	int i;
+
+	for (i = 0; i < _groups.size(); i++)
+	{
+		Options *group = _groups.at(i);
+		OptionString *nameOption = static_cast<OptionString *>(group->get("name"));
+		OptionVariables *variablesOption = static_cast<OptionVariables *>(group->get("levels"));
+
+		_rows.append(Row(tq(nameOption->value()), false, i));
+
+		vector<string> variables = variablesOption->variables();
+
+		int j;
+		for (j = 0; j < variables.size(); j++)
+			_rows.append(Row(tq(variables.at(j)), false, i, j));
+
+		_rows.append(Row(QString("Level %1").arg(j + 1), true, i, j));
+	}
+
+	OptionString *nameTemplate = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
+	QString name = tq(nameTemplate->value()).arg(i + 1);
+	_rows.append(Row(name, true, i));
+
+	endResetModel();
 }
 
-bool TableModelAnovaDesign::setData(const QModelIndex &index, const QVariant &value, int role)
+Qt::ItemFlags TableModelAnovaDesign::flags(const QModelIndex &) const
 {
-	if (role != Qt::EditRole)
-		return false;
+	return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
+}
 
-	qDebug() << value.toString();
+bool TableModelAnovaDesign::setData(const QModelIndex &index, const QVariant &value, int)
+{
+	string v = fq(value.toString());
 
-	bool success;
-	int v = value.toInt(&success);
+	if (v == "")
+		deleteRow(index.row());
+	else
+		changeRow(index.row(), v);
 
-	if ( ! success)
-		return false;
+	return false;
+}
 
-	int i = index.column() / 2;
-	if (i < _design.size())
+QList<Factor> TableModelAnovaDesign::design()
+{
+	QList<Factor> factors;
+
+	for (uint i = 0; i < _groups.size(); i++)
 	{
-		_design[i] = v;
+		Options *factorOptions = _groups.at(i);
+		OptionString *factorNameOption = static_cast<OptionString *>(factorOptions->get("name"));
+		OptionVariables *factorLevelsOption = static_cast<OptionVariables *>(factorOptions->get("levels"));
 
-		QVector<int> roles;
-		roles.append(Qt::DisplayRole);
+		Factor factor;
 
-		emit dataChanged(index, index, roles);
+		factor.first = tq(factorNameOption->value());
+		factor.second = tql(factorLevelsOption->variables());
+
+		factors.append(factor);
+	}
+
+	return factors;
+}
+
+void TableModelAnovaDesign::changeRow(int rowNo, string value)
+{
+	const Row &row = _rows.at(rowNo);
+
+	if (row.isHeading())
+	{
+		if (row.isHypothetical())
+		{
+			Options *newRow = static_cast<Options *>(_boundTo->rowTemplate()->clone());
+			OptionString *factorName = static_cast<OptionString *>(newRow->get("name"));
+			factorName->setValue(value);
+			_groups.push_back(newRow);
+		}
+		else
+		{
+			OptionString *option = static_cast<OptionString *>(_groups.at(row.index())->get("name"));
+			option->setValue(value);
+		}
 	}
 	else
 	{
-		beginInsertColumns(QModelIndex(), index.column(), index.column() + 1);
+		OptionVariables *option = static_cast<OptionVariables *>(_groups.at(row.index())->get("levels"));
+		vector<string> levels = option->variables();
 
-		_design.append(v);
+		if (row.isHypothetical())
+			levels.push_back(value);
+		else
+			levels[row.subIndex()] = value;
 
-		endInsertColumns();
+		option->setValue(levels);
 	}
 
+	refresh();
+	_boundTo->setValue(_groups);
+	emit designChanged();
+}
 
-	return true;
+void TableModelAnovaDesign::deleteRow(int rowNo)
+{
+	const Row &row = _rows.at(rowNo);
+
+	if (row.isHypothetical())
+	{
+		return;
+	}
+	else if (row.isHeading())
+	{
+		if (_groups.size() > 1)
+		{
+			std::vector<Options *>::iterator itr = _groups.begin();
+
+			for (int i = 0; i < row.index(); i++)
+				itr++;
+
+			_groups.erase(itr);
+		}
+		else
+		{
+			OptionString *factorNameTemplate = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
+			string defaultName = fq(tq(factorNameTemplate->value()).arg(rowNo + 1));
+			OptionString *factorNameOption = static_cast<OptionString *>(_groups.at(0)->get("name"));
+			factorNameOption->setValue(defaultName);
+		}
+	}
+	else
+	{
+		OptionVariables *option = static_cast<OptionVariables *>(_groups.at(row.index())->get("levels"));
+		vector<string> levels = option->variables();
+
+		if (levels.size() > 2)
+		{
+			vector<string>::iterator itr = levels.begin();
+
+			for (int i = 0; i < row.subIndex(); i++)
+				itr++;
+
+			levels.erase(itr);
+		}
+		else
+		{
+			string defaultName = fq(QString("Level %1").arg(row.subIndex() + 1));
+			levels[row.subIndex()] = defaultName;
+		}
+
+		option->setValue(levels);
+	}
+
+	refresh();
+	_boundTo->setValue(_groups);
+	emit designChanged();
 }
 

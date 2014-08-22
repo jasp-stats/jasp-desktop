@@ -7,6 +7,7 @@
 #include "widgets/tablemodelanovamodel.h"
 #include "widgets/tablemodelvariablesoptions.h"
 #include "widgets/tablemodelanovadesign.h"
+#include "widgets/tablemodelanovawithinsubjectcells.h"
 
 namespace Ui {
 class AnovaRepeatedMeasuresShortForm;
@@ -23,12 +24,13 @@ public:
 private slots:
 	void factorsChanged();
 	void termsChanged();
+	void withinSubjectsDesignChanged();
 
 private:
 	Ui::AnovaRepeatedMeasuresShortForm *ui;
 
 	TableModelAnovaDesign *_designTableModel;
-	TableModelVariablesAssigned *_fixedFactorsListModel;
+	TableModelAnovaWithinSubjectCells *_withinSubjectCellsListModel;
 	TableModelVariablesAssigned *_randomFactorsListModel;
 	TableModelVariablesAssigned *_wlsWeightsListModel;
 

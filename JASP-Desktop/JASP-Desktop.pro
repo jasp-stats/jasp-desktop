@@ -124,7 +124,8 @@ SOURCES += main.cpp\
 	widgets/tablemodelanovadesign.cpp \
     widgets/datasetsselectwidget.cpp \
     widgets/datasetselectwidget.cpp \
-    appdirs.cpp
+    appdirs.cpp \
+    widgets/tablemodelanovawithinsubjectcells.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -210,7 +211,8 @@ HEADERS  += \
 	widgets/tablemodelanovadesign.h \
     widgets/datasetsselectwidget.h \
     widgets/datasetselectwidget.h \
-    appdirs.h
+    appdirs.h \
+    widgets/tablemodelanovawithinsubjectcells.h
 
 FORMS    += \
     backstageform.ui \

@@ -29,10 +29,10 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 	anova <- list()
 	
-	anova[["title"]] <- "ANOVA"
+	anova[["title"]] <- "Repeated Measures ANOVA"
 	
 	fields <- list(
-		list(name="Cases", type="text"),
+		list(name="case", type="text", title=""),
 		list(name="Sum of Squares", type="number", format="dp:3"),
 		list(name="df", type="number", format="dp:0"),
 		list(name="Mean Square", type="number", format="dp:3"),
@@ -45,6 +45,17 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		}
 	
 	anova[["schema"]] <- list(fields=fields)
+	
+	data <- list()
+	
+	for (factor in options$repeatedMeasuresFactors) {
+	
+		data[[length(data)+1]] <- list("case"=factor$name)
+	}
+	
+	data[[length(data)+1]] <- list("case"="Residual")
+	
+	anova[["data"]] <- data
 	
 	results[["anova"]] <- anova
 	
