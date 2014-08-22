@@ -34,7 +34,7 @@ Options *TTestIndependentSamples::createOptions() const
 	options->add("descriptives", new OptionBoolean());
 
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
-	options->add("tails", new OptionList(list("twoTailed", "oneailedGreaterThan", "oneTailedLessThan")));
+	options->add("tails", new OptionList(list("twoTailed", "oneTailedGreaterThan", "oneTailedLessThan")));
 
 	return options;
 }
