@@ -1,14 +1,15 @@
 
 AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-  
+	
 	 
 	if(is.null(base::options()$BFMaxModels)) base::options(BFMaxModels = 50000)
 	if(is.null(base::options()$BFpretestIterations)) base::options(BFpretestIterations = 100)
 	if(is.null(base::options()$BFapproxOptimizer)) base::options(BFapproxOptimizer = "optim")
 	if(is.null(base::options()$BFapproxLimits)) base::options(BFapproxLimits = c(-15,15))
 	if(is.null(base::options()$BFprogress)) base::options(BFprogress = interactive())
+	if(is.null(base::options()$BFfactorsMax)) base::options(BFfactorsMax = 5) 
 	
-	numeric.variables <- c(unlist(options$dependent),unlist(options$wlsWeight))
+		numeric.variables <- c(unlist(options$dependent),unlist(options$wlsWeight))
 	numeric.variables <- numeric.variables[numeric.variables != ""]
 	
 	factor.variables <- c(unlist(options$fixedFactors),unlist(options$randomFactors))
@@ -51,7 +52,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	# Set up table as a list
 	
 	posterior <- list()
-	posterior[["title"]] <- "Bayesian Anova Model Comparison"
+	posterior[["title"]] <- "Bayesian ANOVA: Model Comparison"
 		
 	fields <- list(
 		list(name="Models", type="string"),
@@ -69,36 +70,51 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	
 	if (length(options$modelTerms) > 0) {
 		terms <- options$modelTerms
-
+		
 		if (perform == "run"){	
 			posterior.results <- try (silent = FALSE, expr = {
-
+				
 				terms.as.strings <- c()
-	
-					for (term in options$modelTerms) {
-						term.as.string <- paste(.v(term$components), collapse=":")
-						# .v changes from interface to dataframe
-						terms.as.strings <- c(terms.as.strings, term.as.string)
+				
+				for (term in options$modelTerms) {
+					term.as.string <- paste(.v(term$components), collapse=":")
+					# .v changes from interface to dataframe
+					terms.as.strings <- c(terms.as.strings, term.as.string)
+				}
+				
+				
+				ind.random <- length(options$randomFactors)
+				
+				if (ind.random > 0) { 
+					for (rand in options$randomFactors) {
+						term.as.string <- paste(.v(rand))
+						terms.w.rand <- c(terms.as.strings, term.as.string)
 					}
-						 
-					rhs <- paste(terms.as.strings, collapse="+")
+				} else {	
+					terms.w.rand <- terms.as.strings
+				}
+				
+ 					rhs <- paste(terms.w.rand, collapse="+")
 					model.def <- paste(.v(options$dependent), "~", rhs)
 					model.formula <- as.formula(model.def)
 	
 					ind.random <- length(options$randomFactors)
-												 
+				
 					##ANALYSIS##
 				
 					if( ind.random > 0) {
 						random <- .v(options$randomFactors)
-						withmain <- BayesFactor::anovaBF(model.formula, dataset, whichModels = "withmain", whichRandom = random,progress=FALSE )
+						withmain <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = "withmain", neverExclude = random, whichRandom = random,progress=FALSE )
+						indr <- which(names(withmain)$numerator == paste(random, collapse=" + ")) 
+						withmain <- withmain[-indr]/withmain[indr]
 						} else {
-						withmain <- BayesFactor::anovaBF(model.formula, dataset, whichModels = "withmain",progress=FALSE )
+						withmain <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = "withmain",progress=FALSE )
 					}
 	
 					BFmain <- as.numeric(exp(withmain@bayesFactor$bf))
 					errormain <- as.numeric(withmain@bayesFactor$error)
  
+						
 					##PREPARE VECTORS##
 					# - modelnames for table
 					# - prepare for component matching to allow customizing
@@ -110,27 +126,42 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 						models <-	 as.character(c("Null model"))
 					}	
 																										
-					n.mod.con <- length(names(withmain)$numerator)
-					nst2 <- rep(0,n.mod.con)
-				
-					complist <-	vector("list",n.mod.con)
-						for (i in 1:n.mod.con) { 
+					# all possible models and their components 
+					n.mod.all <- length(names(withmain)$numerator)	
+					n.comp.mod <- rep(0,n.mod.all)
+								
+				 complist <-	vector("list",n.mod.all)
+				 for (i in 1:n.mod.all) { 
 							complist[[i]] <- .decompose(names(withmain)$numerator[i])[[1]][[1]]
-							nst2[i] <- length(complist[[i]])
-						}	
+					 		n.comp.mod[i] <- length(complist[[i]])
+							if( ind.random > 0) {
+								a <- .decompose(names(withmain)$numerator[i])[[1]][[1]]	 
+								complist[[i]] <-	 a[which(a != random)]
+								n.comp.mod[i] <- length(complist[[i]])
+							}
+					}	
 				
-				 for (i in 1:n.mod.con) { 
+				 for (i in 1:n.mod.all) { 
+					 if (ind.random == 0) {
 						models <-	 c(models,as.character(.unvf(names(withmain)$numerator[i]))) 
-					}
+					 } else{ 
+							random.plus	<-	 paste(c("",options$randomFactors), collapse=" + ") 
+							mi <-	as.character(.unvf(names(withmain)$numerator[i]))
+							mi2	<- gsub(random.plus,"",mi, fixed = TRUE)
+							models <-	 c(models,mi2) 
+					 }
+				 }
 				
 					# In case of customized model specification: 
 					nocomp <- length(terms.as.strings)
-					custommtch <- matrix(0,nocomp,n.mod.con)
+					seq.eff <- seq(1:length(terms.as.strings))
+				
+					custommtch <- matrix(0,nocomp,n.mod.all)
  
 					for (n1 in 1:nocomp) {
-						for(n2 in 1:n.mod.con){
+						for(n2 in 1:n.mod.all){
 							abs <- 0
-							for ( j in 1:nst2[n2]) {
+							for ( j in 1:n.comp.mod[n2]) {
 								if ( length(complist[[n2]][[j]]) == length(.v(options$modelTerms[[n1]]$component)) ) {
 									A <- paste(sort(complist[[n2]][[j]]), sep="", collapse="")
 									B <- paste(sort(.v(options$modelTerms[[n1]]$component)), sep="", collapse="")	
@@ -140,29 +171,22 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 							if (abs > 0) {custommtch[n1,n2] <- 1} 
 						}
 					}
- 
-					# Which (custom) models are under evaluation:
-					custom1 <-	 which( (colSums(custommtch) >0)	&	((nst2 - colSums(custommtch)) == 0))
-					# Including the null model 
-					custom0 <- c(0,custom1) + 1
- 
- 
+	
 					##PROCESS RESULTS 
-					BFmain.c	<- c(1,BFmain[custom1])
-				
-					n.models.c <- length(models[custom0])
+					BFmain.c	<- c(1,BFmain)		
+					n.models.c <- length(models)
+	 	
 					# prior probability: 1/ number of models
 					pprior <- .clean(1/n.models.c)	
 					# posterior probability: computed from Bayes factors (only with equal prior probability) 
 					posterior.probability <- c(BFmain.c)/sum(BFmain.c)
 				
-					#proppost <-	c(1,BFmain[custom1])/sum(c(BFmain[custom1],1) )
 					BFmodels <-	(posterior.probability/(1-posterior.probability))/(pprior/(1-pprior))
 					BFnull		<- as.numeric(1/1)
 	
-					errormain <- c(NA,errormain[custom1])
-					modelscustom <-	 models[custom0]
- 
+					errormain <- c(NA,errormain)
+					modelscustom <-	 models
+		 
 					#TABLE#
 					posterior.table <- list()
 		
@@ -176,8 +200,13 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 						model.name <-	modelscustom[n]
 						BFM <- .clean(BFmodels[n])
 			
+						if (ind.random == 0) {
 						r <- list("Models"= model.name,"P(M)" = pprior, "P(M|Y)"=ppost,
 							"BF<sub>M</sub>" = BFM,"BF<sub>10</sub>"=BF, "% error"=error)
+						} else {
+						r <- list("Models"= model.name,"P(M)" = pprior, "P(M|Y)"=ppost,
+											"BF<sub>M</sub>" = BFM,"BF<sub>10</sub>"=BF, "% error"=error, ".footnotes"=list("p"=list(1)))
+						}
 		
 						posterior.table[[length(posterior.table)+1]] <- r
 					}
@@ -246,12 +275,12 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	## the model when the effect would be removed, and 
 	## a "forward bayes factor" compring a model with only the indicated effect 
 	## with a null model 
-		
+	
 	if (options$outputEffects== TRUE){
 
 	# set up table as a list	 
 	effect <- list()
-	effect[["title"]] <- "Bayesian Anova:Analysis of Effects"
+	effect[["title"]] <- "Bayesian ANOVA: Analysis of Effects"
 	
 		fields <- list(
 			list(name="Effects", type="string"),
@@ -271,60 +300,41 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		if (perform == "run"){	
 		effect.results <- try (silent = FALSE, expr = {	
 			
-			if (length(models) > 2) {
+			if (length(modelscustom) > 2) {
 				
 				###ANALYSIS###
 				# 1. Bottom up effects	(Forward analysis)
-			
-				if(ind.random > 0) {
-					random <- .v(options$randomFactors) 
-					bottom <- BayesFactor::anovaBF(model.formula, dataset, whichModels = "bottom",whichRandom = random,progress=FALSE )
+							
+				if( ind.random > 0) {
+					random <- .v(options$randomFactors)
+					bottom <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = "bottom", neverExclude = random, whichRandom = random,progress=FALSE )
+					indr <- which(names(bottom)$numerator == paste(random, collapse=" + ")) 
+					bottom <- bottom[-indr]/bottom[indr]
 				} else {
-					bottom <- BayesFactor::anovaBF(model.formula, dataset, whichModels = "bottom",progress=FALSE )
-				}			
-
-				vBFbot <- as.numeric(exp(bottom@bayesFactor$bf))
-				verrorbot <- as.numeric(bottom@bayesFactor$error)
+					bottom <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = "bottom",progress=FALSE )
+				}
+				
+				BFbot <- as.numeric(exp(bottom@bayesFactor$bf))
+				errorbot <- as.numeric(bottom@bayesFactor$error)
 			
 				effect.names <- as.character(names(bottom)$numerator)
-				neff <- length(effect.names)
-		
+				neff.c <- length(effect.names)
+					
+				# the random effects are in the model names as well 
 				if (ind.random > 0) {
 					randomv.plus	<-	 paste(c("",random), collapse=" + ") 
 					effect.names.r <-effect.names
 					effect.names	<- gsub(randomv.plus,"",effect.names.r, fixed = TRUE)
 				}
 		
-				neff.c <- length(terms.as.strings)
-		
-				custeff <- matrix(0,neff.c,neff)
-				for (n1 in 1:neff.c){
-					for(n2 in 1:neff){
-						B <- paste(sort(.v(options$modelTerms[[n1]]$component)), sep="", collapse="")	
-						A <- paste(sort(unlist((strsplit(effect.names[n2], "[:]")) ) ), sep="", collapse="")
-						custeff[n1,n2] <- (A == B)
-						
-					}
-				}
-		
-				customeff <- which(colSums(custeff) == 1) 
-				effect.names.c <- effect.names[customeff]
-				BFbot <- vBFbot[customeff]
-				errorbot <- verrorbot[customeff]
-				
-				for (i in 1:neff.c){
-						BFbot[i] <- vBFbot[which(custeff[i,]==1)]
-						errorbot[i] <- verrorbot[which(custeff[i,]==1)]
-					}
-				
 				# 2. Inclusion probabilities and Bayes factors 
 				
 				# Extract names of models from BF output 
-				model.names.c		 <-		as.character(c("Null",names(withmain)$numerator[custom1]))
-				 
+				model.names.c		 <-						models 
+				
 				#Match models and effects
 				# which effects are in which models 
-				match <- cbind(rep(0,neff.c),custommtch[,custom1])
+				match <- cbind(rep(0,neff.c),custommtch)
 				
 				inclusion.probabilities <- rowSums(match * matrix(rep(posterior.probability[], each = neff.c) ,neff.c,n.models.c))
 				prior.probabilities <- rowSums(match)/n.models.c
@@ -332,14 +342,16 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 								
 				#3. Backward probabilities (use this for more elaborate model)
 						 
-				complist[[n.mod.con+1]] <-	"NULL"
-				complist.c <- complist[c(n.mod.con+1,custom1)]				
+				complist[[n.mod.all+1]] <-	"NULL"
+				complist.c <- complist[c(n.mod.all+1,1:n.mod.all)]				
 				model.length <- sapply(complist.c, length)
+				
 				
 				# Which interactions models have interactions including the effect
 				# and are therefore forbidden to be in the full model
-				effect.length <- sapply(strsplit(terms.as.strings, ":"), length)
-				effect.components <- sapply(strsplit(terms.as.strings, ":"), as.character) 
+					
+				effect.length <- sapply(strsplit(effect.names, ":"), length)
+				effect.components <- sapply(strsplit(effect.names, ":"), as.character) 
 			
 				match2 <- matrix(0,neff.c,n.models.c)
 				#match 2 gives for every effect the models which include an interaction in which the effect is included (lower order)
@@ -389,7 +401,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 					 mno3 <- which(match[e,] == 0)
 					 Red[e] <- mno3[which(complexity.models[mno3]==max(complexity.models[mno3]))]
 				 }
-				 out <- withmain[custom0[Full[e]]-1]/withmain[custom0[Red[e]]-1]
+				 out <- withmain[Full[e]-1]/withmain[Red[e]-1]
 				 BF.Backward[e] <- as.numeric(exp(out@bayesFactor$bf))
 				 error.Backward[e] <- as.numeric(exp(out@bayesFactor$error))
 			 }
@@ -405,19 +417,18 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 				###################################
 				# put effect names back to original
 		
-			 n.eff.con <- length(terms.as.strings)
-			 effect.names.tab <- rep(0,n.eff.con)
-			 for (i in 1:n.eff.con) { 
-				 sep.1 <- unlist(strsplit(terms.as.strings[i], "[:]"))
-				 effect.names.tab[i] <- paste(.unv(sep.1), collapse=":")
+			
+			 effect.names.tab <- rep(0,neff.c)
+			 for (i in 1:neff.c) { 
+				 effect.names.tab[i] <- .unvf(effect.names[i])
 			 }
-		}	 
-				
+		}
+		
 				#TABLE#
 		
 		effect.table <- list()
 									
-		if(length(models) > 2) {
+		if(length(modelscustom) > 2) {
 			
 			for (e in 1:neff.c) {
 				BFtops		<- .clean(BF.Backward[e])
@@ -438,13 +449,13 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 			}
 		}
 		
-		if(length(models) == 2) {
+		if(length(modelscustom) == 2) {
 			
 			BFtops		<- ""
 			errortops <- ""
 			BFbottom		<- .clean(BFmain[2])
 			errorbottom <- .clean(errormain[2]*100)
-			effname		 <-	as.character(models[2])
+			effname		 <-	as.character(modelscustom[2])
 			
 			ipb <- .clean(posterior.probability[2])
 			ppb <- .clean(pprior)
@@ -489,6 +500,6 @@ results
 
 
 
-
+		
 
 
