@@ -9,17 +9,19 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	if(is.null(base::options()$BFprogress)) base::options(BFprogress = interactive())
 	if(is.null(base::options()$BFfactorsMax)) base::options(BFfactorsMax = 5) 
 	
-		numeric.variables <- c(unlist(options$dependent),unlist(options$wlsWeight))
+	numeric.variables <- c(unlist(options$dependent),unlist(options$wlsWeight))
 	numeric.variables <- numeric.variables[numeric.variables != ""]
 	
 	factor.variables <- c(unlist(options$fixedFactors),unlist(options$randomFactors))
 	factor.variables <- factor.variables[factor.variables != ""]
+	
+	all.variables <- c(numeric.variables, factor.variables)
 
 	if (is.null(dataset)) {
 
 		if (perform == "run") {
 
-			dataset <-	.readDataSetToEnd(	columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
+			dataset <-	.readDataSetToEnd(columns.as.numeric = numeric.variables, columns.as.factor = factor.variables, exclude.na.listwise = all.variables)
 		
 		} else {
 	
