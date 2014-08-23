@@ -7,8 +7,18 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
+		
+			if (options$missingValues == "excludeListwise") {
+			
+				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
+			}
+			else {
+			
+				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
+			}
+			
 		} else {
+		
 			dataset <- .readDataSetHeader(columns.as.numeric=all.variables)
 		}
 	}
@@ -26,28 +36,35 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	
 
 	ttest <- list()
-
-	ttest[["title"]] <- "Paired Samples T-Test"
+	
+	if (options$hypothesis == "groupsNotEqual") {
+	
+		ttest[["title"]] <- "Paired Samples T-Test"
+	}
+	else {
+	
+		ttest[["title"]] <- "One Tailed Paired Samples T-Test"
+	}
 
 	fields <- list(
 		list(name=".variable1", type="string", title=""),
 		list(name=".separator", type="string", title=""),
 		list(name=".variable2", type="string", title=""),
-		list(name="t", type="number", format="sf:4"),
-		list(name="df", type="number", format="sf:4"),
-		list(name="p", type="number", format="dp:4;p:.001"))
+		list(name="t", type="number", format="sf:4;dp:3"),
+		list(name="df", type="number", format="sf:4;dp:3"),
+		list(name="p", type="number", format="dp:3;p:.001"))
 
 	if(options$meanDifference){
-		fields[[length(fields)+1]] <- list(name="mean difference", type="number", format="sf:4")
+		fields[[length(fields)+1]] <- list(name="mean difference", type="number", format="sf:4;dp:3")
 	}
 	
 	if(options$effectSize){
-		fields[[length(fields)+1]] <- list(name="Cohen's d", type="number", format="sf:4")
+		fields[[length(fields)+1]] <- list(name="Cohen's d", type="number", format="sf:4;dp:3")
 	}
 	
 	if(options$confidenceInterval){
-		fields[[length(fields)+1]] <- list(name="lower", type="number", format="sf:4")
-		fields[[length(fields)+1]] <- list(name="upper", type="number", format="sf:4")
+		fields[[length(fields)+1]] <- list(name="lower", type="number", format="sf:4;dp:3")
+		fields[[length(fields)+1]] <- list(name="upper", type="number", format="sf:4;dp:3")
 	}
 
 	ttest[["schema"]] <- list(fields=fields)
@@ -65,11 +82,11 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				
 				ci <- options$confidenceIntervalInterval
 				
-				if (options$tails == "twoTailed")
+				if (options$hypothesis == "groupsNotEqual")
 					tail <- "two.sided"
-				if (options$tails == "oneTailedGreaterThan")
+				if (options$hypothesis == "groupOneGreater")
 					tail <- "greater"
-				if (options$tails == "oneTailedLessThan")
+				if (options$hypothesis == "groupTwoGreater")
 					tail <- "less"
 		
 				r <- t.test(c1, c2, paired = TRUE, conf.level = ci, alternative = tail)
@@ -83,9 +100,9 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				ci.l <- as.numeric(r$conf.int[1])
 				ci.u <- as.numeric(r$conf.int[2])
 				
-				if (options$tails == "oneTailedGreaterThan")
+				if (options$hypothesis == "groupOneGreater")
 					ci.u = .clean(Inf)
-				if (options$tails == "oneTailedLessThan")
+				if (options$hypothesis == "groupTwoGreater")
 					ci.l = .clean(-Inf)
 				
 				r <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], t=t, df=df, p=p)
@@ -141,10 +158,10 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 		fields <- list(
 			list(name=".variable", type="string", title=""),
-			list(name="N", type="number", format="sf:4"),
-			list(name="mean", type="number", format="sf:4"),
-			list(name="sd", type="number", format="dp:4;p:.001"),
-			list(name="SE", type="number", format="dp:4;p:.001"))
+			list(name="N", type="number", format="sf:4;dp:3"),
+			list(name="mean", type="number", format="sf:4;dp:3"),
+			list(name="sd", type="number", format="dp:3;p:.001"),
+			list(name="SE", type="number", format="dp:3;p:.001"))
 
 		descriptives[["schema"]] <- list(fields=fields)
 

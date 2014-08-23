@@ -62,9 +62,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		list(name="Variable", title="", type="string", combine=TRUE),
 		list(name="groups", type="string"),
 		list(name="N", type="number"),
-		list(name="Mean", type="number", format="sf:6"),
-		list(name="Std. Deviation", type="number", format="sf:6;p:.001"),
-		list(name="Std. Error Mean", type="number", format="sf:6"))
+		list(name="Mean", type="number", format="sf:4;dp:3"),
+		list(name="Std. Deviation", type="number", format="sf:4;dp:3"),
+		list(name="Std. Error Mean", type="number", format="sf:4;dp:3"))
 
 	descriptives[["schema"]] <- list(fields=fields)
 	
@@ -130,7 +130,15 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 	ttest <- list()
 
-	ttest[["title"]] <- "Independent Samples T-Test"
+	
+	if (options$hypothesis == "groupsNotEqual") {
+
+		ttest[["title"]] <- "Independent Samples T-Test"
+		
+	} else {
+
+		ttest[["title"]] <- "One Tailed Independent Samples T-Test"
+	}
 
 	fields <- list(
 		list(name=".variable", title="", type="string", combine=TRUE))
@@ -140,20 +148,20 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		fields[[length(fields)+1]] <- list(name="Variances", type="string")
 	}
 	
-	fields[[length(fields)+1]] <- list(name="t", type="number", format="sf:4", combine=TRUE)
-	fields[[length(fields)+1]] <- list(name="df", type="number", format="sf:4")
+	fields[[length(fields)+1]] <- list(name="t", type="number", format="sf:4;dp:3", combine=TRUE)
+	fields[[length(fields)+1]] <- list(name="df", type="number", format="sf:4;dp:3")
 	fields[[length(fields)+1]] <- list(name="p", type="number", format="dp:3;p:.001")
 
 	if (options$meanDifference) {
 	
-		fields[[length(fields) + 1]] <- list(name="Mean Difference", type="number", format="sf:4")
-		fields[[length(fields) + 1]] <- list(name="Std. Error Difference", type="number", format="sf:4")	
+		fields[[length(fields) + 1]] <- list(name="Mean Difference", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="Std. Error Difference", type="number", format="sf:4;dp:3")	
 	}
 	
 	if (options$confidenceInterval) {
 	
-		fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4")
-		fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4;dp:3")
 		
 	}
 		
@@ -190,11 +198,11 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 			variance.assumption.violated <- FALSE
 		
-			if (options$tails == "oneTailedGreaterThan") {
+			if (options$hypothesis == "groupOneGreater") {
 		
 				testType <- "less"
 			
-			} else if (options$tails == "oneTailedLessThan") {
+			} else if (options$hypothesis == "groupTwoGreater") {
 		
 				testType <- "greater"
 			
@@ -224,7 +232,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			
 			violation.footnote.index <- 0
 			
-			if (options$tails != "twoTailed")
+			if (options$hypothesis != "groupsNotEqual")
 				violation.footnote.index <- violation.footnote.index + 1
 			
 			if (options$equalityOfVariances != "reportBoth")
@@ -307,9 +315,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			if (options$equalityOfVariances == "noAssumption")
 				footnotes[[length(footnotes)+1]] <- "All tests, variances of groups not assumed equal"
 				
-			if (options$tails == "oneTailedGreaterThan")
+			if (options$hypothesis == "groupOneGreater")
 				footnotes[[length(footnotes)+1]] <- "All tests, one tailed (group 1 greater than group 2)"
-			if (options$tails == "oneTailedLessThan")
+			if (options$hypothesis == "groupTwoGreater")
 				footnotes[[length(footnotes)+1]] <- "All tests, one tailed (group 1 less than group 2)"
 				
 			if (variance.assumption.violated)
@@ -338,9 +346,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	fields <- list(
 		list(name="Variable", title="", type="string"),
-		list(name="F", type="number", format="sf:4"),
-		list(name="df", type="number", format="sf:4"),
-		list(name="p", type="number", format="dp:4;p:.001"))
+		list(name="F", type="number", format="sf:4;dp:3"),
+		list(name="df", type="number", format="sf:4;dp:3"),
+		list(name="p", type="number", format="dp:3;p:.001"))
 
 	levenes[["schema"]] <- list(fields=fields)
 	

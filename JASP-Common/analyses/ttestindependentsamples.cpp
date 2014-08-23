@@ -34,7 +34,7 @@ Options *TTestIndependentSamples::createOptions() const
 	options->add("descriptives", new OptionBoolean());
 
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
-	options->add("tails", new OptionList(list("twoTailed", "oneTailedGreaterThan", "oneTailedLessThan")));
+	options->add("hypothesis", new OptionList(list("groupsNotEqual", "groupOneGreater", "groupTwoGreater")));
 
 	return options;
 }

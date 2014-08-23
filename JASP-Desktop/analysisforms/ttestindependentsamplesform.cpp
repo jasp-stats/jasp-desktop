@@ -9,8 +9,6 @@ TTestIndependentSamplesForm::TTestIndependentSamplesForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale);
-	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
 	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 

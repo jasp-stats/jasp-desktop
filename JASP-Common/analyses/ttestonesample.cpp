@@ -23,10 +23,7 @@ Options *TTestOneSample::createOptions() const
 	options->add("variables", new OptionVariables());
 	options->add("testValue", new OptionNumber(0));
 
-	vector<string> tails;
-	tails.push_back("twoTailed");
-
-	options->add("tails", new OptionList(tails));
+	options->add("hypothesis", new OptionList(list("notTestValue", "greaterThanTestValue", "lessThanTestValue")));
 
 	options->add("meanDifference", new OptionBoolean());
 	options->add("confidenceInterval", new OptionBoolean());
