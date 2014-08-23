@@ -141,7 +141,7 @@ $.widget("jasp.table", {
 				var fsd   = this._fsd(content)  // position of first significant digit
 				var lsd   = fsd - sf
 				
-				if (content >= upperLimit || content <= Math.pow(10, -dp)) {
+				if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
 				
 					var fsdoe = this._fsdoe(content)
 					if (fsdoe > maxFSDOE)
@@ -182,7 +182,17 @@ $.widget("jasp.table", {
 					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
 
 				}
-				else if (content >= upperLimit || content <= Math.pow(10, -dp)) {
+				else if (content == 0) {
+
+					var zero = 0
+
+					if (isFinite(dp))
+						formatted = { content : zero.toFixed(dp), "class" : "number" }
+					else
+						formatted = { content : zero.toPrecision(sf), "class" : "number" }
+					
+				}
+				else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
 				
 					var exponentiated = content.toExponential(sf-1).replace(/-/g, "&minus;")
 					var paddingNeeded = Math.max(maxFSDOE - this._fsdoe(content), 0)
