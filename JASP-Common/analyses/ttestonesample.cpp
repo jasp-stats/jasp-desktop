@@ -23,7 +23,7 @@ Options *TTestOneSample::createOptions() const
 	options->add("variables", new OptionVariables());
 	options->add("testValue", new OptionNumber(0));
 
-	options->add("hypothesis", new OptionList(list("notTestValue", "greaterThanTestValue", "lessThanTestValue")));
+	options->add("hypothesis", new OptionList(list("notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue")));
 
 	options->add("meanDifference", new OptionBoolean());
 	options->add("confidenceInterval", new OptionBoolean());

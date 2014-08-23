@@ -38,7 +38,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	descriptives <- list()
 	
 
-	if (options$hypothesis == "notTestValue") {
+	if (options$hypothesis == "notEqualToTestValue") {
 
 		ttest[["title"]] <- "One Sample T-Test"
 	
