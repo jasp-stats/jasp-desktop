@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>618</width>
+    <width>584</width>
     <height>506</height>
    </rect>
   </property>
@@ -90,50 +90,13 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
+      <property name="horizontalSpacing">
+       <number>0</number>
+      </property>
       <item row="0" column="0">
        <widget class="QWidget" name="widget_2" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="2" column="0">
-          <widget class="QGroupBox" name="groupBox_2">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="title">
-            <string>Plots</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_12">
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="plots">
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Prior and posterior plots</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="1" column="0">
           <widget class="QGroupBox" name="groupBox">
            <property name="title">
             <string>Prior</string>
@@ -185,10 +148,56 @@
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="BoundGroupBox" name="bayesFactorType">
-           <property name="enabled">
-            <bool>false</bool>
+          <widget class="BoundGroupBox" name="hypothesis">
+           <property name="title">
+            <string>Hypothesis</string>
            </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_9">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="_3oneTailedLessThan">
+              <property name="text">
+               <string>Group one &lt; Group two</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2oneTailedGreaterThan">
+              <property name="text">
+               <string>Group one &gt; Group two</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1twoTailed">
+              <property name="text">
+               <string>Group one ≠ Group two</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="0">
+          <widget class="BoundGroupBox" name="bayesFactorType">
            <property name="title">
             <string>Bayes Factor</string>
            </property>
@@ -198,11 +207,6 @@
            <layout class="QGridLayout" name="gridLayout_13">
             <item row="1" column="0">
              <widget class="QRadioButton" name="_2">
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
               <property name="text">
                <string>BF₀₁</string>
               </property>
@@ -210,11 +214,6 @@
             </item>
             <item row="0" column="0">
              <widget class="QRadioButton" name="_1">
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
               <property name="text">
                <string>BF₁₀</string>
               </property>
@@ -229,8 +228,37 @@
       <item row="0" column="1">
        <widget class="QWidget" name="widget_3" native="true">
         <layout class="QGridLayout" name="gridLayout_2">
+         <item row="2" column="0">
+          <widget class="BoundGroupBox" name="missingValues">
+           <property name="title">
+            <string>Missing Values</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_6">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
+              <property name="text">
+               <string>Exclude cases analysis by analysis</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2excludeListwise">
+              <property name="text">
+               <string>Exclude cases listwise</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
          <item row="0" column="0" colspan="2">
-          <widget class="QGroupBox" name="groupBox_7">
+          <widget class="QGroupBox" name="additionalStatisticsGroup">
            <property name="title">
             <string>Additional Statistics</string>
            </property>
@@ -248,109 +276,7 @@
            </layout>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QGroupBox" name="tails">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="title">
-            <string>Tails</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_9">
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item row="2" column="0">
-             <widget class="QRadioButton" name="_3oneTailedLessThan">
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>One-tailed group two greater</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="_2oneTailedGreaterThan">
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>One-tailed group one greater</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="_1twoTailed">
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Two-tailed</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QGroupBox" name="missingValues">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="title">
-            <string>Missing Values</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_6">
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Exclude cases analysis by analysis</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="_2excludeListwise">
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Exclude cases listwise</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="3" column="0">
+         <item row="4" column="0">
           <spacer name="verticalSpacer_2">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -362,6 +288,25 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="1" column="0">
+          <widget class="QGroupBox" name="plotsGroup">
+           <property name="title">
+            <string>Plots</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_12">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="plots">
+              <property name="text">
+               <string>Prior and posterior plots</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </widget>

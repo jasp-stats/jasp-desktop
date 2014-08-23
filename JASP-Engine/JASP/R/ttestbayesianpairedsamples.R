@@ -7,8 +7,18 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
+		
+			if (options$missingValues == "excludeListwise") {
+		
+				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
+			
+			} else {
+		
+				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
+			}
+			
 		} else {
+		
 			dataset <- .readDataSetHeader(columns.as.numeric=all.variables)
 		}
 	}

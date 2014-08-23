@@ -25,7 +25,7 @@ Options *TTestBayesianPairedSamples::createOptions() const
 
 	options->add("descriptives", new OptionBoolean());
 
-	options->add("tails", new OptionList(list("twoTailed", "oneTailedGroupOneGreater", "oneTailedGroupTwoGreater")));
+	options->add("hypothesis", new OptionList(list("groupsNotEqual", "groupOneGreater", "groupTwoGreater")));
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
 
 	options->add("priorWidth", new OptionNumber(1));

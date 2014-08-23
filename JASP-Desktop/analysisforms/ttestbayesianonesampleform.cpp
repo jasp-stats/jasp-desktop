@@ -21,6 +21,18 @@ TTestBayesianOneSampleForm::TTestBayesianOneSampleForm(QWidget *parent) :
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
+
+#ifdef QT_NO_DEBUG
+	ui->additionalStatisticsGroup->hide();
+	ui->bayesFactorType->hide();
+	ui->plotsGroup->hide();
+	ui->hypothesis->hide();
+#else
+	ui->additionalStatisticsGroup->setStyleSheet("background-color: pink;");
+	ui->bayesFactorType->setStyleSheet("background-color: pink;");
+	ui->plotsGroup->setStyleSheet("background-color: pink;");
+	ui->hypothesis->setStyleSheet("background-color: pink;");
+#endif
 }
 
 TTestBayesianOneSampleForm::~TTestBayesianOneSampleForm()

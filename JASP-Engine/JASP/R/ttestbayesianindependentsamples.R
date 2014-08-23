@@ -13,11 +13,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 			if (options$missingValues == "excludeListwise") {
 		
-				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=dependents)
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=c(dependents, grouping))
 			
 			} else {
 		
-				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping)
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=grouping)
 			}
 		
 
@@ -66,11 +66,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
 			r.size <- options$priorWidth
 			
-			if (options$tails == "oneTailedGroupOneGreater") {
+			if (options$hypothesis == "groupOneGreater") {
 			
 				null.interval <- c(-Inf, 0)
 			
-			} else if (options$tails == "oneTailedGroupTwoGreater") {
+			} else if (options$hypothesis == "groupTwoGreater") {
 
 				null.interval <- c(0, Inf)
 			
@@ -160,16 +160,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
 				r.size <- options$priorWidth
 				
-				if (options$tails == "oneTailedGroupOneGreater") {
-				
+				if (options$hypothesis == "groupOneGreater") {
+			
 					null.interval <- c(-Inf, 0)
-				
-				} else if (options$tails == "oneTailedGroupTwoGreater") {
+			
+				} else if (options$hypothesis == "groupTwoGreater") {
 
 					null.interval <- c(0, Inf)
-				
+			
 				} else {
-				
+			
 					null.interval <- c(-Inf, Inf)
 				}
 				

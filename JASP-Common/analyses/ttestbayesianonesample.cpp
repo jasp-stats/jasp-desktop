@@ -23,7 +23,7 @@ Options *TTestBayesianOneSample::createOptions() const
 
 	options->add("variables", new OptionVariables());
 
-	options->add("tails", new OptionList(list("twoTailed", "oneTailedGreaterThanZero", "oneTailedLessThanZero")));
+	options->add("hypothesis", new OptionList(list("notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue")));
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
 
 	options->add("priorWidth", new OptionNumber(1));
