@@ -383,7 +383,7 @@ void MainWindow::engineCrashed()
 	{
 		exiting = true;
 
-		QMessageBox::warning(this, "Error", "The JASP Statistics Engine has terminated unexpectedly.\n\nThis sometimes happens under older versions of Operating Systems that have not yet been tested.\n\nThe JASP team is actively working on this, and if you could report your experiences that would be appreciated.\n\nJASP cannot continue and will now close.");
+		QMessageBox::warning(this, "Error", "The JASP Statistics Engine has terminated unexpectedly.\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.");
 		QApplication::exit(1);
 	}
 }
