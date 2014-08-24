@@ -566,7 +566,7 @@
     </widget>
    </item>
    <item row="4" column="0" colspan="2">
-    <widget class="QWidget" name="groupTableFormat" native="true">
+    <widget class="QWidget" name="groupOptions" native="true">
      <layout class="QGridLayout" name="gridLayout_18">
       <property name="topMargin">
        <number>3</number>
@@ -574,67 +574,49 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
-      <item row="1" column="0">
-       <widget class="QWidget" name="panelOptions" native="true">
-        <layout class="QGridLayout" name="gridLayout_22">
-         <item row="0" column="0">
-          <widget class="QGroupBox" name="fred">
-           <property name="title">
-            <string>Row Order</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_20">
-            <property name="topMargin">
-             <number>6</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="BoundGroupBox" name="rowOrder" native="true">
-              <layout class="QGridLayout" name="gridLayout_21">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="ascending">
-                 <property name="text">
-                  <string>Ascending</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="descending">
-                 <property name="text">
-                  <string>Descending</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="0" column="0" colspan="2">
        <widget class="ExpanderButton" name="pushButton_3">
         <property name="text">
          <string>Options</string>
         </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="BoundGroupBox" name="rowOrder">
+        <property name="title">
+         <string>Row Order</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_21">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="ascending">
+           <property name="text">
+            <string>Ascending</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="descending">
+           <property name="text">
+            <string>Descending</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -878,25 +860,25 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>ExpanderButton</class>

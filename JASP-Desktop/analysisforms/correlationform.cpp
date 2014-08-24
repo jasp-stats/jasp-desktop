@@ -21,6 +21,14 @@ CorrelationForm::CorrelationForm(QWidget *parent) :
 	ui->assignButton->setSourceAndTarget(ui->availableVariables, ui->variables);
 
 	ui->panelOptions->hide();
+
+#ifdef QT_NO_DEBUG
+	ui->optionsWidget->hide();
+#else
+	ui->optionsWidget->setStyleSheet("background-color: pink ;");
+#endif
+
+
 }
 
 CorrelationForm::~CorrelationForm()
