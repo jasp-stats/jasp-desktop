@@ -25,6 +25,8 @@ public:
     virtual Json::Value init(const std::string &name, const Json::Value &options) OVERRIDE;
     virtual Json::Value run(const std::string &name, const Json::Value &options, boost::function<int (Json::Value)> callback) OVERRIDE;
 
+	boost::signals2::signal<void ()> yield;
+
 private:
 	RInside _rInside;
 	DataSet *_dataSet;

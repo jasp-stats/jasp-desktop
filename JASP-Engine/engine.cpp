@@ -30,6 +30,8 @@ Engine::Engine()
 	_slaveNo = 0;
 	_currentAnalysis = NULL;
 	_nextAnalysis = NULL;
+
+	_R.yield.connect(boost::bind(&Engine::analysisYield, this));
 }
 
 void Engine::runAnalysis()
@@ -66,6 +68,11 @@ void Engine::analysisResultsChanged(Analysis *analysis)
 
 	if (analysis->status() != Analysis::Empty) // i.e. didn't become uninitialised by the messages received
 		send(analysis);
+}
+
+void Engine::analysisYield()
+{
+	receiveMessages();
 }
 
 void Engine::run()
