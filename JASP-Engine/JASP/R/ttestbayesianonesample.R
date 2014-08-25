@@ -79,9 +79,13 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				ttest[["data"]] <- ttest.results
 	
 				results[["ttest"]] <- ttest
+				
+				if (callback(results) != 0)
+					return(NULL)
 			}
 		}
 		
+		ttest[["data"]] <- ttest.results
 	}
 
 	results[["ttest"]] <- ttest
