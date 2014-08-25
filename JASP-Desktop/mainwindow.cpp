@@ -18,7 +18,10 @@
 #include "analysisforms/ancovaform.h"
 #include "analysisforms/anovamultivariateform.h"
 #include "analysisforms/ancovamultivariateform.h"
+
 #include "analysisforms/anovabayesianform.h"
+#include "analysisforms/ancovabayesianform.h"
+#include "analysisforms/anovarepeatedmeasuresbayesianform.h"
 
 #include "analysisforms/regressionlinearform.h"
 #include "analysisforms/correlationform.h"
@@ -217,6 +220,10 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new CrosstabsForm(contentArea);
 	else if (name == "SEMSimple")
 		form = new SEMSimpleForm(contentArea);
+	else if (name == "AncovaBayesian")
+		form = new AncovaBayesianForm(contentArea);
+	else if (name == "AnovaRepeatedMeasuresBayesian")
+		form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
 	else
 		qDebug() << "MainWidget::loadForm(); form not found : " << name.c_str();
 

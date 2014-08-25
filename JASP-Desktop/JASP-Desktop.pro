@@ -125,7 +125,9 @@ SOURCES += main.cpp\
     widgets/datasetsselectwidget.cpp \
     widgets/datasetselectwidget.cpp \
     appdirs.cpp \
-    widgets/tablemodelanovawithinsubjectcells.cpp
+    widgets/tablemodelanovawithinsubjectcells.cpp \
+    analysisforms/ancovabayesianform.cpp \
+    analysisforms/anovarepeatedmeasuresbayesianform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -212,7 +214,9 @@ HEADERS  += \
     widgets/datasetsselectwidget.h \
     widgets/datasetselectwidget.h \
     appdirs.h \
-    widgets/tablemodelanovawithinsubjectcells.h
+    widgets/tablemodelanovawithinsubjectcells.h \
+    analysisforms/ancovabayesianform.h \
+    analysisforms/anovarepeatedmeasuresbayesianform.h
 
 FORMS    += \
     backstageform.ui \
@@ -244,7 +248,9 @@ FORMS    += \
     analysisforms/ttestbayesianpairedsamplesform.ui \
     optionsform.ui \
     analysisforms/anovarepeatedmeasuresshortform.ui \
-    widgets/datasetselectwidget.ui
+    widgets/datasetselectwidget.ui \
+    analysisforms/ancovabayesianform.ui \
+    analysisforms/anovarepeatedmeasuresbayesianform.ui
 
 
 RESOURCES += \

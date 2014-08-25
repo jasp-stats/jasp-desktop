@@ -49,6 +49,8 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	menu = new QMenu(this);
 	menu->addAction(QString("Bayesian ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
+	menu->addAction(QString("Bayesian Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasuresBayesian");
+	menu->addAction(QString("Bayesian ANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaBayesian");
 
 	ui->bayesianAnovaButton->setMenu(menu);
 

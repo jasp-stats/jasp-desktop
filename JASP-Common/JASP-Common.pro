@@ -90,7 +90,9 @@ SOURCES += \
     options/optionterm.cpp \
     options/optionvariables.cpp \
     analyses/anovarepeatedmeasures.cpp \
-	analyses/anovarepeatedmeasuresshort.cpp
+	analyses/anovarepeatedmeasuresshort.cpp \
+    analyses/ancovabayesian.cpp \
+    analyses/anovarepeatedmeasuresbayesian.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -156,7 +158,9 @@ HEADERS +=\
     options/optionvariablesgroups.h \
     options/optionterm.h \
     analyses/anovarepeatedmeasures.h \
-	analyses/anovarepeatedmeasuresshort.h
+	analyses/anovarepeatedmeasuresshort.h \
+    analyses/ancovabayesian.h \
+    analyses/anovarepeatedmeasuresbayesian.h
 
 unix:!symbian {
     maemo5 {
