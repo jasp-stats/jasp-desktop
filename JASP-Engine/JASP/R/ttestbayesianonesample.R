@@ -61,8 +61,11 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			for (variable in options[["variables"]])
 			{
 				result <- try (silent = TRUE, expr = {
+				
+					variableData <- dataset[[ .v(variable) ]]
+					variableData <- variableData[ ! is.na(variableData) ]
 
-					r <- BayesFactor::ttestBF(dataset[[ .v(variable) ]], r=options$priorWidth)
+					r <- BayesFactor::ttestBF(variableData, r=options$priorWidth)
 		
 					BF <- .clean(exp(as.numeric(r@bayesFactor$bf)))
 					error <- .clean(as.numeric(r@bayesFactor$error))

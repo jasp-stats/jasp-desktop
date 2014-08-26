@@ -61,7 +61,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 		for (variable in options[["variables"]]) {
 
-			variableData <- dataset[[ .v(variable) ]]
+			subDataSet <- subset(dataset,    subset=( ! is.na( dataset[[ .v(variable) ]] )), select=c(.v(variable), .v(options$groupingVariable)))
+			subDataSet <- subset(subDataSet, subset=( ! is.na( dataset[[ .v(options$groupingVariable) ]] )))
 			
 			f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
 			r.size <- options$priorWidth
@@ -81,7 +82,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			
 			result <- try (silent=FALSE, expr= {
 			
-				bf    <- BayesFactor::ttestBF(data=dataset, formula=f, r=r.size, nullInterval=null.interval)[1]
+				bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, nullInterval=null.interval)[1]
 				BF    <- .clean(exp(as.numeric(bf@bayesFactor$bf)))
 				error <- .clean(as.numeric(bf@bayesFactor$error))
 				
@@ -155,8 +156,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 			for (variable in options[["variables"]]) {
 
-				variableData <- dataset[[ .v(variable) ]]
+				# BayesFactor package doesn't handle NAs, so it is necessary to exclude them
 				
+				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
+				subDataSet <- na.omit(subDataSet)
+
 				f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
 				r.size <- options$priorWidth
 				
@@ -175,7 +179,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 				result <- try (silent=FALSE, expr= {
 				
-					bf    <- BayesFactor::ttestBF(data=dataset, formula=f, r=r.size, nullInterval=null.interval)[1]
+					bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, nullInterval=null.interval)[1]
 					
 					if (options$bayesFactorType == "BF01")
 						bf <- 1 / bf

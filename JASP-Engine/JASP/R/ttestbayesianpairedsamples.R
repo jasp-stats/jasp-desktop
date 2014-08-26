@@ -64,10 +64,13 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 			if (perform == "run") {
 
-				result <- try (silent = TRUE, expr = {
+				result <- try (silent = FALSE, expr = {
+
+					subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
+					subDataSet <- na.omit(subDataSet)
 			
-					c1 <- dataset[[ .v(pair[[1]]) ]]
-					c2 <- dataset[[ .v(pair[[2]]) ]]
+					c1 <- subDataSet[[ .v(pair[[1]]) ]]
+					c2 <- subDataSet[[ .v(pair[[2]]) ]]
 	
 					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE, r=options$priorWidth)
 			
