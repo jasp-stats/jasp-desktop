@@ -207,6 +207,7 @@ div.status.waiting
 
 div.error-message-box
 {
+	z-index: 100 ;
 	padding: 1em ;
 	border-radius: .4em ;
 }

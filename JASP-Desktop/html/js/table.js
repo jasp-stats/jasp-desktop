@@ -459,6 +459,15 @@ $.widget("jasp.table", {
 
 		if (this.options.error) {
 		
+			if (this.options.error.errorMessage) {
+		
+				chunks.push('<div style="height: 0px ; overflow: visible ; position: relative; top: 20px ;">')
+				chunks.push('<div style="" class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>')
+				chunks.push(this.options.error.errorMessage)
+				chunks.push('</div>')
+				chunks.push('</div>')
+			}
+		
 			chunks.push('<table class="error-state">')
 		}
 		else {
@@ -587,13 +596,7 @@ $.widget("jasp.table", {
 
 		chunks.push('</table>')
 		
-		if (this.options.error && this.options.error.errorMessage) {
-		
-			chunks.push('<div style="position: absolute ; left: -1000 ; top: -1000 ;" class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>')
-			chunks.push(this.options.error.errorMessage)
-			chunks.push('</div>')
-		}
-		
+	
 		var html = chunks.join("")
 
 		this.element.html(html)
@@ -616,21 +619,6 @@ $.widget("jasp.table", {
 		})
 		
 		$status.addClass(this.options.status)
-		
-		if (this.options.error && this.options.error.errorMessage) {
-			
-			var $error = this.element.children("div.error-message-box")
-
-			setTimeout(function() {
-			
-				var tablePos = $table.offset()
-				var left = tablePos.left + ($table.width()  - $error.width()) / 2
-				var top  = tablePos.top  + ($table.height() - $error.height()) / 2
-				
-				$error.offset({ top : top, left : left })
-			
-			}, 0)
-		}
 		
 	},
 	_destroy: function () {
