@@ -7,7 +7,8 @@ $.widget("jasp.table", {
 		data: [ ],
 		casesAcrossColumns : false,
 		formats : null,
-		status : "waiting"
+		status : "waiting",
+		footnotes : [ ]
 	},
 	_create: function () {
 		this.element.addClass("jasp-table")
@@ -297,11 +298,18 @@ $.widget("jasp.table", {
 
 		for (var i = 0; i < indices.length; i++) {
 		
-			var footnote = this.options.footnotes[i]
-			if (typeof footnote.symbol != "undefined")
-				footnotes[i] = footnote.symbol
-			else
-				footnotes[i] = this._symbol(indices[i])
+			if (i < this.options.footnotes.length) {
+		
+				var footnote = this.options.footnotes[i]
+				if (typeof footnote.symbol != "undefined")
+					footnotes[i] = footnote.symbol
+				else
+					footnotes[i] = this._symbol(indices[i])
+			}
+			else {
+			
+				footnotes[i] = this._symbol(indices[i])			
+			}
 			
 		}
 			
@@ -329,6 +337,9 @@ $.widget("jasp.table", {
 			var title = (typeof columnDef.title != "undefined") ? columnDef.title : columnName
 			
 			columnHeaders[colNo] = { content : title, header : true }
+			
+			if (typeof columnDef[".footnotes"] != "undefined")
+				columnHeaders[colNo].footnotes = this._getFootnotes(columnDef[".footnotes"])
 			
 			
 			// populate cells column-wise
@@ -494,7 +505,10 @@ $.widget("jasp.table", {
 		for (var colNo = 0; colNo < columnHeaders.length; colNo++) {
 
 			var cell = columnHeaders[colNo]
-			chunks.push('<th colspan="2" nowrap>' + cell.content + '</th>')
+			chunks.push('<th colspan="2" nowrap>' + cell.content)
+			if (cell.footnotes)
+				chunks.push(cell.footnotes.join(' '))
+			chunks.push('</th>')
 
 		}
 				
