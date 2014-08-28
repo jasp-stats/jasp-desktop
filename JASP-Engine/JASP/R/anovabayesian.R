@@ -381,7 +381,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		
 		if (length(options$modelTerms) > 0) {
 	
-			if (perform == "run" & ferror == 0) {
+			if (perform == "run" && ferror == 0) {
 		
 				effect.results <- try (silent = FALSE, expr = {	
 			
@@ -555,7 +555,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 			
 						BFtops <- ""
 						errortops <- ""
-						BFbottom <- .clean(BFmain[2])
+						BFbottom <- .clean(BFmain[1])
 						errorbottom <- .clean(errormain[2]*100)
 						effname <- as.character(modelscustom[2])
 			
