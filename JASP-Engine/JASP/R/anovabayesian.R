@@ -59,13 +59,15 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	posterior <- list()
 	posterior[["title"]] <- "Bayesian ANOVA: Model Comparison"
 		
+	
 	fields <- list(
-		list(name="Models", type="string"),
+		list(name="Models", type="string", .footnotes = list(0)),
 		list(name="P(M)", type="number", format="sf:4;dp:3"),
 		list(name="P(M|Y)", type="number", format="sf:4;dp:3"),
 		list(name="BF<sub>M</sub>", type="number", format="sf:4;dp:3"),
 		list(name="BF<sub>10</sub>", type="number", format="sf:4;dp:3"),
 		list(name="% error", type="number", format="sf:4;dp:3")
+		
 		)
 	
 	schema <- list(fields=fields)
@@ -79,9 +81,31 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		
 		if (perform == "run"){	
 		
+			# error message if a factor has only one level 
+			ferror <- 0
+			for (fact in options$fixedFactor) {
+				levels <- unique(dataset[[.v(fact)]])
+				if (length(levels) < 2) {
+					ferror <- ferror + 1
+				} 
+			}		 
+			 
+			if (ferror > 0) {
+				
+				posterior[["error"]] <- list(errorType="badData", errorMessage="Factors must have 2 or more levels")
+				
+				posterior.results <- list()
+				r <- list("Models"= "","P(M)" = "", "P(M|Y)"="","BF<sub>M</sub>" = "","BF<sub>10</sub>"="", "% error"="")
+				posterior.results[[length(posterior.results)+1]] <- r
+				
+				ind.random <- length(options$randomFactors)
+				
+				
+			} else {
+			
 			posterior.results <- try (silent = FALSE, expr = {
 				
-				terms.as.strings <- c()
+					terms.as.strings <- c()
 				
 				for (term in options$modelTerms) {
 					term.as.string <- paste(.v(term$components), collapse=":")
@@ -188,7 +212,6 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 						for (j in 1:n.comp.mod[n2]) {
 						
 							if (length(complist[[n2]][[j]]) == length(.v(options$modelTerms[[n1]]$component)) ) {
-							
 								A <- paste(sort(complist[[n2]][[j]]), sep="", collapse="")
 								B <- paste(sort(.v(options$modelTerms[[n1]]$component)), sep="", collapse="")	
 								abs	<- abs + (A==B)
@@ -246,6 +269,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 				posterior.table
 			})
 
+	}
 			if (class(posterior.results) == "try-error") {
 				posterior.results <- list()
 				r <- list("Models"= "","P(M)" = "", "P(M|Y)"="","BF<sub>M</sub>" = "","BF<sub>10</sub>"="", "% error"="")
@@ -253,6 +277,17 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 			}
 	
 			posterior[["data"]] <- posterior.results
+
+
+		 		footnotes <- list()
+ 				if (ind.random > 0){
+ 					footrand <- paste(options$randomFactors, collapse=" and ")
+ 					footnotes <- list(paste("All models include", footrand))
+ 				} 				
+				posterior[["footnotes"]] <- footnotes
+		
+		
+		
 		}
 	
 	}
@@ -330,7 +365,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		
 		if (length(options$modelTerms) > 0) {
 	
-			if (perform == "run") {
+			if (perform == "run" & ferror == 0) {
 		
 				effect.results <- try (silent = FALSE, expr = {	
 			
@@ -522,7 +557,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 				
 				})
 			
-				if (class(effect.results) == "try-error") {
+				if (class(effect.results) == "try-error" | ferror > 0) {
 					effect.results <- list()
 					r <- list("Effects"= "","P(incl)"= "", "P(incl|Y)"= "","BF<sub>Inclusion</sub>" = "",
 												"BF<sub>Backward</sub>"="", "% errorB"="","BF<sub>Forward</sub>"="", "% errorF"="")
