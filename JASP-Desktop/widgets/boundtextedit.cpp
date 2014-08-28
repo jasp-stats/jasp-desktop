@@ -138,3 +138,11 @@ void BoundTextEdit::paintEvent(QPaintEvent *event)
 
 	}
 }
+
+void BoundTextEdit::insertFromMimeData(const QMimeData *source)
+{
+	QTextEdit::insertFromMimeData(source);
+
+	if (_model != NULL)
+		_model->checkEverything();
+}

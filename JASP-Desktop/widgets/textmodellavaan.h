@@ -37,13 +37,13 @@ public:
 public slots:
 	void cursorPositionChangedHandler(QTextCursor cursor);
 	void apply();
+	void checkEverything();
 
 signals:
 	void errorStateChanged();
 
 private slots:
 	void contentChangedHandler();
-	void checkEverything();
 
 private:
 

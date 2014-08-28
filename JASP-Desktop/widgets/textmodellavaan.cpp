@@ -16,8 +16,7 @@ TextModelLavaan::TextModelLavaan(QObject *parent)
 	this->setDocumentMargin(12);
 
 	connect(this, SIGNAL(contentsChanged()), this, SLOT(contentChangedHandler()));
-	//connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(checkEverything()));
-	connect(this, SIGNAL(contentsChange(int,int,int)), this, SLOT(contentChange(int,int,int)));
+
 }
 
 void TextModelLavaan::bindTo(Option *option)
