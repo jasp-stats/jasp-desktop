@@ -59,7 +59,17 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	posterior <- list()
 	posterior[["title"]] <- "Bayesian ANOVA: Model Comparison"
 		
+	ferror <- 0
+	for (fact in options$fixedFactor) {
+	  levels <- unique(dataset[[.v(fact)]])
+	  if (length(levels) < 2) {
+	    ferror <- ferror + 1
+	  } 
+	}		 
+  
+	ind.random <- length(options$randomFactors)
 	
+  if (ind.random > 0) { 
 	fields <- list(
 		list(name="Models", type="string", .footnotes = list(0)),
 		list(name="P(M)", type="number", format="sf:4;dp:3"),
@@ -69,7 +79,19 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		list(name="% error", type="number", format="sf:4;dp:3")
 		
 		)
-	
+  } else { 
+    fields <- list(
+      list(name="Models", type="string"),
+      list(name="P(M)", type="number", format="sf:4;dp:3"),
+      list(name="P(M|Y)", type="number", format="sf:4;dp:3"),
+      list(name="BF<sub>M</sub>", type="number", format="sf:4;dp:3"),
+      list(name="BF<sub>10</sub>", type="number", format="sf:4;dp:3"),
+      list(name="% error", type="number", format="sf:4;dp:3")
+      
+    )
+  }
+  
+  
 	schema <- list(fields=fields)
 	posterior[["schema"]] <- schema	
 
@@ -82,13 +104,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		if (perform == "run"){	
 		
 			# error message if a factor has only one level 
-			ferror <- 0
-			for (fact in options$fixedFactor) {
-				levels <- unique(dataset[[.v(fact)]])
-				if (length(levels) < 2) {
-					ferror <- ferror + 1
-				} 
-			}		 
+		
 			 
 			if (ferror > 0) {
 				
@@ -98,7 +114,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 				r <- list("Models"= "","P(M)" = "", "P(M|Y)"="","BF<sub>M</sub>" = "","BF<sub>10</sub>"="", "% error"="")
 				posterior.results[[length(posterior.results)+1]] <- r
 				
-				ind.random <- length(options$randomFactors)
+		
 				
 				
 			} else {
@@ -160,7 +176,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 				if (ind.random > 0) {
 				
 					random.plus	<- paste(.unv(random), collapse=" + ") 
-					models <- as.character(paste("Null model (incl.",	random.plus, ")", sep = "" ) )
+					models <- as.character(paste("Null model (incl. ",	random.plus, ")", sep = "" ) )
 					
 				} else {
 				
