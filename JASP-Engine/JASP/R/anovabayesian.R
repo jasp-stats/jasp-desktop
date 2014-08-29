@@ -60,38 +60,36 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	posterior[["title"]] <- "Bayesian ANOVA: Model Comparison"
 		
 	ferror <- 0
-	for (fact in options$fixedFactor) {
-	  levels <- unique(dataset[[.v(fact)]])
-	  if (length(levels) < 2) {
-	    ferror <- ferror + 1
-	  } 
+	for (fact in options$fixedFactors) {
+		levels <- unique(dataset[[.v(fact)]])
+		if (length(levels) < 2) {
+			ferror <- ferror + 1
+		} 
 	}		 
-  
+	
 	ind.random <- length(options$randomFactors)
 	
-  if (ind.random > 0) { 
-	fields <- list(
-		list(name="Models", type="string", .footnotes = list(0)),
-		list(name="P(M)", type="number", format="sf:4;dp:3"),
-		list(name="P(M|Y)", type="number", format="sf:4;dp:3"),
-		list(name="BF<sub>M</sub>", type="number", format="sf:4;dp:3"),
-		list(name="BF<sub>10</sub>", type="number", format="sf:4;dp:3"),
-		list(name="% error", type="number", format="sf:4;dp:3")
-		
+	if (ind.random > 0) { 
+		 fields <- list(
+					list(name="Models", type="string", .footnotes = list(0)),
+			list(name="P(M)", type="number", format="sf:4;dp:3"),
+			list(name="P(M|Y)", type="number", format="sf:4;dp:3"),
+			list(name="BF<sub>M</sub>", type="number", format="sf:4;dp:3"),
+			list(name="BF<sub>10</sub>", type="number", format="sf:4;dp:3"),
+			list(name="% error", type="number", format="sf:4;dp:3")
 		)
-  } else { 
-    fields <- list(
-      list(name="Models", type="string"),
-      list(name="P(M)", type="number", format="sf:4;dp:3"),
-      list(name="P(M|Y)", type="number", format="sf:4;dp:3"),
-      list(name="BF<sub>M</sub>", type="number", format="sf:4;dp:3"),
-      list(name="BF<sub>10</sub>", type="number", format="sf:4;dp:3"),
-      list(name="% error", type="number", format="sf:4;dp:3")
-      
-    )
-  }
-  
-  
+	} else { 
+		fields <- list(
+			list(name="Models", type="string"),
+			list(name="P(M)", type="number", format="sf:4;dp:3"),
+			list(name="P(M|Y)", type="number", format="sf:4;dp:3"),
+			list(name="BF<sub>M</sub>", type="number", format="sf:4;dp:3"),
+			list(name="BF<sub>10</sub>", type="number", format="sf:4;dp:3"),
+			list(name="% error", type="number", format="sf:4;dp:3")
+		)
+	}
+	
+	
 	schema <- list(fields=fields)
 	posterior[["schema"]] <- schema	
 
@@ -105,7 +103,6 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		
 			# error message if a factor has only one level 
 		
-			 
 			if (ferror > 0) {
 				
 				posterior[["error"]] <- list(errorType="badData", errorMessage="Factors must have 2 or more levels")
@@ -114,14 +111,11 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 				r <- list("Models"= "","P(M)" = "", "P(M|Y)"="","BF<sub>M</sub>" = "","BF<sub>10</sub>"="", "% error"="")
 				posterior.results[[length(posterior.results)+1]] <- r
 				
-		
-				
-				
 			} else {
 			
 			posterior.results <- try (silent = FALSE, expr = {
 				
-					terms.as.strings <- c()
+				terms.as.strings <- c()
 				
 				for (term in options$modelTerms) {
 					term.as.string <- paste(.v(term$components), collapse=":")
@@ -196,7 +190,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 					if (ind.random > 0) {
 					
 						a <- .decompose(names(withmain)$numerator[i])[[1]][[1]]	 
-						complist[[i]] <-	 a[which(a != random)]
+						complist[[i]] <-	 a[-which(is.element(a, nuisance))]
 						n.comp.mod[i] <- length(complist[[i]])
 					}
 				}
@@ -537,6 +531,12 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 							errortops <- .clean(error.Backward[e])
 							BFbottom <- .clean(BFbot[e])
 							errorbottom <- .clean(errorbot[e]*100)
+					
+							if(effect.length[e] ==1) {
+								ind.model.e <- which(modelscustom== effect.names.tab[e])
+								BFbottom <- .clean(BFmain.c[ind.model.e])
+								errorbottom <- .clean(errorbot[ind.model.e]*100)
+							}
 					
 							effname <- as.character(effect.names.tab[e])
 				 
