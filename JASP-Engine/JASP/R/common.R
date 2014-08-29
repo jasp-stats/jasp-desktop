@@ -82,6 +82,57 @@ run <- function(name, options.as.json.string) {
 	dataset
 }
 
+.shortToLong <- function(dataset, rm.factors, rm.vars, bt.vars) {
+
+	f  <- rm.factors[[length(rm.factors)]]
+	df <- data.frame(as.factor(unlist(f$levels)))
+	names(df) <- paste("F", .v(f$name), sep="")
+
+	i <- length(rm.factors) - 1
+	while (i > 0) {
+	
+		f <- rm.factors[[i]]
+	
+		new.df <- df
+
+		j <- 2
+		while (j <= length(f$levels)) {
+		
+			new.df <- rbind(new.df, df)
+			j <- j + 1
+		}
+		
+		df <- new.df
+		
+		row.count <- dim(df)[1]
+
+		cells <- rep(unlist(f$levels), each=row.count / length(f$levels))
+		cells <- as.factor(cells)
+		
+		
+		df <- cbind(cells, df)
+		names(df)[[i]] <- paste("F", .v(f$name), sep="")
+		
+		i <- i - 1
+	}
+	
+	ds <- subset(dataset, select=.v(rm.vars))
+	ds <- t(as.matrix(ds))
+	
+	df <- cbind(df, dependent=as.numeric(c(ds)))
+	
+	for (bt.var in bt.vars) {
+
+		cells <- rep(dataset[[.v(bt.var)]], each=row.count)
+		new.col <- list()
+		new.col[[.v(bt.var)]] <- cells
+		
+		df <- cbind(df, new.col)
+	}
+
+	df
+}
+
 .v <- function(variable.names) {
 
 	vs <- c()

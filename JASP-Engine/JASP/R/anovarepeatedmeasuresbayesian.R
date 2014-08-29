@@ -1,17 +1,30 @@
 
 AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
-	numeric.variables <- c(unlist(options$dependent),unlist(options$wlsWeight))
-	numeric.variables <- numeric.variables[numeric.variables != ""]
-	factor.variables <- c(unlist(options$fixedFactors),unlist(options$randomFactors),unlist(options$repeatedMeasures))
-	factor.variables <- factor.variables[factor.variables != ""]
+	ready <- "" %in% options$repeatedMeasuresCells == FALSE
+	
+	if (ready) {
+	
+		rm.vars <- options$repeatedMeasuresCells
+		
+	} else {
+	
+		rm.vars <- c()
+	
+	}
+	
+	bt.vars <- options$betweenSubjectFactors
+	
 
 	if (is.null(dataset)) {
 		
-		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables))
+		if (perform == "run" && ready) {
+		
+			dataset <- .readDataSetToEnd(columns.as.numeric = rm.vars, columns.as.factor = bt.vars)
+			
 		} else {
-			dataset <- .readDataSetHeader(columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables))
+		
+			dataset <- .readDataSetHeader(columns.as.numeric = rm.vars, columns.as.factor = bt.vars)
 		}
 	}
 	
@@ -26,8 +39,6 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 	)
 
 	results[[".meta"]] <- .meta
-	
-	
 	
 	
 	anova <- list()
@@ -52,6 +63,18 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 	}
 	
 	data[[length(data)+1]] <- list("case"="Residual")
+	
+	
+	if (perform == "run" && ready == TRUE) {
+
+		rm.factors <- options$repeatedMeasuresFactors
+
+		dataset <- .shortToLong(dataset, rm.factors, rm.vars, bt.vars)
+		
+		print(dataset)
+	
+	}
+	
 	
 	anova[["data"]] <- data
 	

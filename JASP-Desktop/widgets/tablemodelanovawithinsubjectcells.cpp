@@ -135,13 +135,15 @@ bool TableModelAnovaWithinSubjectCells::canDropMimeData(const QMimeData *data, Q
 		return false;
 
 	QByteArray encodedData = data->data("application/vnd.list.variable");
-	QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
-	if (stream.atEnd())
-		return false;
+	Terms dropped;
+	dropped.set(encodedData);
 
-	int count;
-	stream >> count;
+	foreach (const Term &term, dropped)
+	{
+		if ( ! isAllowed(term))
+			return false;
+	}
 
 	if (rowNo == -1)
 	{
@@ -153,11 +155,11 @@ bool TableModelAnovaWithinSubjectCells::canDropMimeData(const QMimeData *data, Q
 				available++;
 		}
 
-		return count <= available;
+		return dropped.size() <= available;
 	}
 	else
 	{
-		return count <= _variables.size() - rowNo;
+		return dropped.size() <= _variables.size() - rowNo;
 	}
 
 	return true;

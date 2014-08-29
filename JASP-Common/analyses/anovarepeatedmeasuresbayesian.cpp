@@ -26,11 +26,7 @@ Options *AnovaRepeatedMeasuresBayesian::createOptions() const
 
 	// main
 
-	options->add("dependent", new OptionVariable());
-	options->add("fixedFactors", new OptionVariables());
-	options->add("randomFactors", new OptionVariables());
-	options->add("subjectIDs", new OptionVariables());
-	options->add("wlsWeights", new OptionVariable());
+	options->add("betweenSubjectFactors", new OptionVariables());
 
 
 	// design

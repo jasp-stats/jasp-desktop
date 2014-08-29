@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>544</width>
+    <width>562</width>
     <height>2358</height>
    </rect>
   </property>
@@ -82,7 +82,7 @@
           </widget>
          </item>
          <item row="1" column="1" rowspan="2">
-          <widget class="BoundListView" name="randomFactors">
+          <widget class="BoundListView" name="betweenSubjectFactors">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -215,7 +215,7 @@
             <enum>QAbstractItemView::ScrollPerPixel</enum>
            </property>
            <attribute name="horizontalHeaderVisible">
-            <bool>true</bool>
+            <bool>false</bool>
            </attribute>
            <attribute name="horizontalHeaderDefaultSectionSize">
             <number>130</number>
@@ -1408,9 +1408,25 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AnovaModelWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/anovamodelwidget.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>
@@ -1424,25 +1440,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundAssignWidget</class>
    <extends>QWidget</extends>
    <header>widgets/boundassignwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>AnovaModelWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
