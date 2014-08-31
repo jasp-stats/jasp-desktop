@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>544</width>
+    <width>563</width>
     <height>2358</height>
    </rect>
   </property>
@@ -82,7 +82,7 @@
           </widget>
          </item>
          <item row="1" column="1" rowspan="2">
-          <widget class="BoundListView" name="randomFactors">
+          <widget class="BoundListView" name="betweenSubjectFactors">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
              <horstretch>0</horstretch>

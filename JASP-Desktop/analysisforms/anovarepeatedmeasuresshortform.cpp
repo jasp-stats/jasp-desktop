@@ -26,10 +26,10 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	_randomFactorsListModel = new TableModelVariablesAssigned(this);
 	_randomFactorsListModel->setSource(&_availableVariablesModel);
 	_randomFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->randomFactors->setModel(_randomFactorsListModel);
+	ui->betweenSubjectFactors->setModel(_randomFactorsListModel);
 
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->repeatedMeasuresCells);
-	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->randomFactors);
+	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->betweenSubjectFactors);
 
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 

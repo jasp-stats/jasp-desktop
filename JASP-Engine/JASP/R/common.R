@@ -87,6 +87,9 @@ run <- function(name, options.as.json.string) {
 	f  <- rm.factors[[length(rm.factors)]]
 	df <- data.frame(as.factor(unlist(f$levels)))
 	names(df) <- paste("F", .v(f$name), sep="")
+	
+	row.count <- dim(df)[1]
+	
 
 	i <- length(rm.factors) - 1
 	while (i > 0) {
@@ -129,6 +132,11 @@ run <- function(name, options.as.json.string) {
 		
 		df <- cbind(df, new.col)
 	}
+	
+	subjects <- 1:(dim(dataset)[1])
+	subjects <- as.factor(rep(subjects, each=row.count))
+	
+	df <- cbind(df, subject=subjects)
 
 	df
 }
@@ -147,8 +155,24 @@ run <- function(name, options.as.json.string) {
 
 	vs <- c()
 	
-	for (v in variable.names)
-		vs[length(vs)+1] <- .fromBase64(substr(v, 2, nchar(v)))
+	for (v in variable.names) {
+	
+		firstChar <- charToRaw(substr(v, 1, 1))
+	
+		if (firstChar >= 0x41 && firstChar <= 0x5A) {  # A to Z
+		
+			vs[length(vs)+1] <- .fromBase64(substr(v, 3, nchar(v)))
+			
+		} else if (firstChar == 0x2E) {  # a dot
+		
+			vs[length(vs)+1] <- .fromBase64(substr(v, 2, nchar(v)))
+			
+		} else {
+		
+			stop(paste("bad call to .unv() : ", v))
+		
+		}
+	}
 	
 	vs
 }
