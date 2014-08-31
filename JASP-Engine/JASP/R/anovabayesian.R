@@ -73,7 +73,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		list(name="P(M)", type="number", format="sf:4;dp:3"),
 		list(name="P(M|Y)", type="number", format="sf:4;dp:3"),
 		list(name="BFM", type="number", format="sf:4;dp:3", title="BF<sub>M</sub>"),
-		list(name="BF10", type="number", format="sf:4;dp:3", title="BF\u2081\u2080"),
+		list(name="BF10", type="number", format="sf:4;dp:3", title="BF<sub>10</sub>"),
 		list(name="% error", type="number", format="sf:4;dp:3")
 	)
 	
