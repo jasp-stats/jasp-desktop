@@ -48,6 +48,18 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	ui->containerPostHocTests->hide();
 
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
+
+#ifdef QT_NO_DEBUG
+	ui->groupModel->hide();
+	ui->groupContrasts->hide();
+	ui->groupOptions->hide();
+	ui->groupPostHoc->hide();
+#else
+	ui->groupModel->setStyleSheet("background-color: pink ;");
+	ui->groupContrasts->setStyleSheet("background-color: pink ;");
+	ui->groupOptions->setStyleSheet("background-color: pink ;");
+	ui->groupPostHoc->setStyleSheet("background-color: pink ;");
+#endif
 }
 
 AnovaRepeatedMeasuresShortForm::~AnovaRepeatedMeasuresShortForm()
