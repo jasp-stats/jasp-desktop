@@ -105,9 +105,6 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		
 		f <- paste("dependent", rhs, sep="~")
 		
-		print(f)
-		print(dataset)
-		
 		r <- stats::aov(as.formula(f), data=dataset)
 		
 		data <- list()
@@ -142,14 +139,12 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 				}
 			}
 		}
-		
-		
-
-		
 	}
 	
 	
 	anova[["data"]] <- data
+	
+	anova[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text="Type I Sum of Squares"))
 	
 	results[["anova"]] <- anova
 	
