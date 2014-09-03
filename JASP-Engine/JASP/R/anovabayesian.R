@@ -78,7 +78,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	)
 	
 	if (ind.random > 0)
-		fields[["Models"]][[".footnotes"]] <- list(0)
+		fields[[1]][[".footnotes"]] <- list(0)
 			
 	
 	schema <- list(fields=fields)
@@ -187,7 +187,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 				if (ind.random > 0) {
 		
 					a <- .decompose(names(withmain)$numerator[i])[[1]][[1]]	 
-					complist[[i]] <-	 a[-which(is.element(a, nuisance))]
+					complist[[i]] <-	 a[-which(is.element(a, random))]
 					n.comp.mod[i] <- length(complist[[i]])
 				}
 			}
