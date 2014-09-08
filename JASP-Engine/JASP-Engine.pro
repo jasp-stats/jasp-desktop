@@ -21,7 +21,7 @@ macx {
 
 	INCLUDEPATH += ../../boost_1_54_0
 
-	R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.0/Resources
+	R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.1/Resources
 	R_EXE  = $$R_HOME/bin/R
 }
 
@@ -65,12 +65,10 @@ INCLUDEPATH += \
 
 unix:LIBS += \
 	-L$$R_HOME/library/RInside/lib -lRInside \
-	-L$$R_HOME/lib -lR \
-	-L$$R_HOME/library/Rcpp/lib -lRcpp
+	-L$$R_HOME/lib -lR
 
 win32:LIBS += \
 	-L$$R_HOME/library/RInside/lib/$$ARCH -lRInside \
-	-L$$R_HOME/library/Rcpp/lib/$$ARCH -lRcpp \
 	-L$$R_HOME/bin/$$ARCH -lR
 
 win32:LIBS += -lole32 -loleaut32
