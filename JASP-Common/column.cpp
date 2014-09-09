@@ -54,6 +54,12 @@ Column &Column::operator=(const Column &column)
 	return *this;
 }
 
+void Column::setSharedMemory(managed_shared_memory *mem)
+{
+	_mem = mem;
+	_labels.setSharedMemory(mem);
+}
+
 Column::ColumnType Column::columnType() const
 {
 	return _columnType;

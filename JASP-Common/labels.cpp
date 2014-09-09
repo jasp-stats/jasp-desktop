@@ -49,3 +49,8 @@ Labels &Labels::operator=(const Labels &labels)
 
 	return *this;
 }
+
+void Labels::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
+{
+	_mem = mem;
+}

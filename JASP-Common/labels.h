@@ -22,6 +22,8 @@ public:
 
 	Labels& operator=(const Labels& labels);
 
+	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
+
 private:
 	boost::interprocess::managed_shared_memory *_mem;
 	LabelVector _labels;

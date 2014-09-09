@@ -56,8 +56,6 @@ void Columns::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 	_mem = mem;
 
 	BOOST_FOREACH(Column &column, *this)
-	{
-		column._mem = mem;
-	}
+		column.setSharedMemory(mem);
 }
 
