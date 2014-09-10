@@ -6,23 +6,42 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
+		
+			if (options$missingValues == "excludeListwise") {
+		
+				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
+			
+			} else {
+		
+				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
+			}
+			
 		} else {
+		
 			dataset <- .readDataSetHeader(columns.as.numeric=all.variables)
 		}
 	}
 
 	results <- list()
-
+	
+	
+	
+	meta <- list()
+	
+	meta[[1]] <- list(name="ttest", type="table")
+	
+	results[[".meta"]] <- meta
+	
+	
+	
 	ttest <- list()
 
 	ttest[["title"]] <- "Bayesian One Sample T-Test"
-	ttest[["cases"]] <- I(options$variables)
 
 	fields <- list(
 		list(name="Variable", type="string", title=""),
-		list(name="BF<sub>10</sub>", type="number", format="sf:4"),
-		list(name="error", type="number", format="sf:4"))
+		list(name="BF10", type="number", format="sf:4;dp:3", title="BF\u2081\u2080"),
+		list(name="error", type="number", format="sf:4;dp:3", title="error %"))
 
 	ttest[["schema"]] <- list(fields=fields)
 
@@ -32,7 +51,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
 		for (variable in options[["variables"]])
 		{
-			ttest.results[[length(ttest.results)+1]] <- list(Variable=variable, "BF<sub>10</sub>"=".", error=".")	
+			ttest.results[[length(ttest.results)+1]] <- list(Variable=variable, "BF10"=".", error=".")	
 		}
 		
 		if (perform == "run") {
@@ -42,17 +61,20 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			for (variable in options[["variables"]])
 			{
 				result <- try (silent = TRUE, expr = {
+				
+					variableData <- dataset[[ .v(variable) ]]
+					variableData <- variableData[ ! is.na(variableData) ]
 
-					r <- BayesFactor::ttestBF(dataset[[ .v(variable) ]])
+					r <- BayesFactor::ttestBF(variableData, r=options$priorWidth)
 		
 					BF <- .clean(exp(as.numeric(r@bayesFactor$bf)))
 					error <- .clean(as.numeric(r@bayesFactor$error))
 
-					list(Variable=variable, "BF<sub>10</sub>"=BF, error=error)
+					list(Variable=variable, "BF10"=BF, error=error)
 				})
 
 				if (class(result) == "try-error")
-					result <- list(Variable=variable, "BF<sub>10</sub>"="", error="")
+					result <- list(Variable=variable, "BF10"="", error="")
 		
 				ttest.results[[c]] <- result
 				c <- c + 1
@@ -60,17 +82,13 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				ttest[["data"]] <- ttest.results
 	
 				results[["ttest"]] <- ttest
-
-				#for (junk in 1:20) {
-				#	Sys.sleep(.1)
-				#	if (callback() != 0)
-				#		return(results)
-				#}
-			
-				#callback(results)
+				
+				if (callback(results) != 0)
+					return(NULL)
 			}
 		}
 		
+		ttest[["data"]] <- ttest.results
 	}
 
 	results[["ttest"]] <- ttest

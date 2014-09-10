@@ -125,10 +125,10 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	
 	fields <- list(
 		list(name="Cases", type="text"),
-		list(name="Sum of Squares", type="number", format="dp:3"),
+		list(name="Sum of Squares", type="number", format="sf:4;dp:3"),
 		list(name="df", type="number", format="dp:0"),
-		list(name="Mean Square", type="number", format="dp:3"),
-		list(name="F", type="number", format="dp:3"),
+		list(name="Mean Square", type="number", format="sf:4;dp:3"),
+		list(name="F", type="number", format="sf:4;dp:3"),
 		list(name="p", type="number", format="dp:3;p:.001"))
 		
 		if (options$misc[["effectSizeEstimates"]]) {
@@ -302,9 +302,9 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 					
 					fields <- list(
 						list(name="Comparison", type="text"),
-						list(name="Estimate", type="number", format="dp:3"),
-						list(name="Std. Error", type="number", format="dp:3"),
-						list(name="t", type="number", format="dp:3"),
+						list(name="Estimate", type="number", format="sf:4;dp:3"),
+						list(name="Std. Error", type="number", format="sf:4;dp:3"),
+						list(name="t", type="number", format="sf:4;dp:3"),
 						list(name="p", type="number", format="dp:3;p:.001"))
 					
 					contrast[["schema"]] <- list(fields=fields)
@@ -378,8 +378,8 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 					fields <- list(
 						list(name="(I) response", type="text"),
 						list(name="(J) response", type="text"),
-						list(name="Mean Difference", type="number", format="dp:3"),
-						list(name="t", type="number", format="dp:3"),
+						list(name="Mean Difference", type="number", format="sf:4;dp:3"),
+						list(name="t", type="number", format="sf:4;dp:3"),
 						list(name="df", type="number", format="dp:0"),
 						list(name="p", type="number", format="dp:3;p:.001"))
 					
@@ -510,8 +510,8 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 			fields[[length(fields)+1]] <-  list(name=i, type="text")
 		}
 		
-		fields[[length(fields)+1]] <- list(name="Mean", type="number", format="dp:3")
-		fields[[length(fields)+1]] <- list(name="SD", type="number", format="dp:3")
+		fields[[length(fields)+1]] <- list(name="Mean", type="number", format="sf:4;dp:3")
+		fields[[length(fields)+1]] <- list(name="SD", type="number", format="sf:4;dp:3")
 		fields[[length(fields)+1]] <- list(name="N", type="number", format="dp:0")
 		
 		descriptives[["schema"]] <- list(fields=fields)

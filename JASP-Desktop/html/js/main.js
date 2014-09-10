@@ -8,6 +8,9 @@ $(document).ready(function() {
 	var selectedAnalysis = null
 
     var $intro = $("#intro")
+    var introVisible = true
+    var introHiding  = false
+    var introHidingResultsWaiting = [ ]
 
 	window.select = function(id) {
 
@@ -98,7 +101,28 @@ $(document).ready(function() {
 
 	window.analysisChanged = function(analysis) {
 
-        $intro.hide()
+		if (introVisible) {
+			
+			introHidingResultsWaiting.push(analysis)
+			
+			if (introHiding == false) {
+			
+				introHiding = true
+			
+				$intro.hide("slide", { direction : "up", easing : "easeOutCubic" }, function() {
+				
+					introHiding = false
+					introVisible = false
+					
+					introHidingResultsWaiting.reverse()
+
+					while (introHidingResultsWaiting.length > 0)
+						window.analysisChanged(introHidingResultsWaiting.pop())
+				})
+			}
+			
+			return
+		}
 
         var id = "id-" + analysis.id
 		var results = analysis.results
@@ -198,8 +222,17 @@ var stringify = function(element, tabs) {
 			var node = contents[i]
 			if (node.nodeType === 3) {
 				var value = $(node).text()
-				if (value)
+				if (value) {
+				
+					value = value
+						.replace(/&/g, '&amp;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#39;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+				
 					text += "\n" + tabs + value + "\n"
+				}
 			}
 			else {
 				text += "\n" + stringify(contents[i], tabs + "\t")

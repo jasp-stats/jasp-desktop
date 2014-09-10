@@ -20,6 +20,7 @@ RcppBridge::RcppBridge()
 	_rInside["jasp.analyses"] = Rcpp::List();
 	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"RJSONIO\"))");
 	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
+	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 }
 
 void RcppBridge::setDataSet(DataSet* dataSet)
@@ -301,14 +302,23 @@ void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &l
 
 
 int RcppBridge::callback(SEXP results)
-{
-	string jsonString = Rcpp::as<string>(results);
+{	
+	yield();
 
-	Json::Reader r;
-	Json::Value json;
-	r.parse(jsonString, json);
+	if (Rf_isNull(results))
+	{
+		return _callback(Json::nullValue);
+	}
+	else
+	{
+		string jsonString = Rcpp::as<string>(results);
 
-	return _callback(json);
+		Json::Reader r;
+		Json::Value json;
+		r.parse(jsonString, json);
+
+		return _callback(json);
+	}
 }
 
 Rcpp::DataFrame RcppBridge::readDataSetStatic(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)

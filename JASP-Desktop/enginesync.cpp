@@ -13,6 +13,7 @@
 #include "lib_json/json.h"
 
 #include "process.h"
+#include "common.h"
 
 using namespace boost::interprocess;
 using namespace std;
@@ -249,14 +250,23 @@ void EngineSync::startSlaveProcess(int no)
 	args << QString::number(no);
 
 #ifdef __WIN32__
-    env.insert("PATH", programDir.absoluteFilePath("R-3.0.0\\library\\RInside\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\library\\Rcpp\\libs\\i386") + ";" + programDir.absoluteFilePath("R-3.0.0\\bin\\i386"));
-	env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));
+
+#if defined(ARCH_32)
+#define ARCH_SUBPATH "i386"
+#else
+#define ARCH_SUBPATH "x64"
+#endif
+
+	env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
+	env.insert("R_HOME", programDir.absoluteFilePath("R"));
 
     unsigned long processId = Process::currentPID();
     args << QString::number(processId);
 
+#undef ARCH_SUBPATH
+
 #elif __APPLE__
-	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.0/Resources"));
+	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources"));
 #else
     env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R-3.0.0/lib") + ";" + programDir.absoluteFilePath("R-3.0.0/library/RInside/lib") + ";" + programDir.absoluteFilePath("R-3.0.0/library/Rcpp/lib"));
 	env.insert("R_HOME", programDir.absoluteFilePath("R-3.0.0"));

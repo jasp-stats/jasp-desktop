@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QSettings>
 
+#include "common.h"
+
 namespace Ui {
 class BackStageForm;
 }
@@ -16,6 +18,8 @@ public:
     explicit BackStageForm(QWidget *parent = 0);
     ~BackStageForm();
 
+	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
+
 public slots:
 	void setFileLoaded(bool loaded);
 
@@ -27,11 +31,21 @@ signals:
 private:
     Ui::BackStageForm *ui;
 	QSettings _settings;
+	QStringList _recents;
+
+	const int _maxRecents = 5;
 
 private slots:
     void fileItemSelected();
 	void closeItemSelected();
 	void exportItemSelected();
+	void exampleSelectedHandler(QString path);
+	void recentSelectedHandler(QString path);
+
+	void loadRecents();
+	void loadExamples();
+
+	void addToRecentList(QString path);
 
 };
 

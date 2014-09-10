@@ -131,6 +131,8 @@ public:
 
 	Column &operator=(const Column &columns);
 
+	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
+
 private:
 
 	boost::interprocess::managed_shared_memory *_mem;

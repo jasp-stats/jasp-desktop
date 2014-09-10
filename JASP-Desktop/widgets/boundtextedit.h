@@ -29,6 +29,7 @@ protected:
 	void keyPressEvent(QKeyEvent *event) OVERRIDE;
 	void resizeEvent(QResizeEvent *e) OVERRIDE;
 	void paintEvent(QPaintEvent *event) OVERRIDE;
+	void insertFromMimeData(const QMimeData *source) OVERRIDE;
 
 private:
 

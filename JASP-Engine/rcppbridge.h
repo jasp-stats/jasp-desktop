@@ -4,6 +4,13 @@
 #include <RInside.h>
 #include <Rcpp.h>
 
+#ifdef __WIN32__
+
+#undef Realloc
+#undef Free
+
+#endif
+
 #include "../JASP-Common/common.h"
 #include "../JASP-Common/rinterface.h"
 
@@ -17,6 +24,8 @@ public:
     virtual void setDataSet(DataSet *dataSet) OVERRIDE;
     virtual Json::Value init(const std::string &name, const Json::Value &options) OVERRIDE;
     virtual Json::Value run(const std::string &name, const Json::Value &options, boost::function<int (Json::Value)> callback) OVERRIDE;
+
+	boost::signals2::signal<void ()> yield;
 
 private:
 	RInside _rInside;

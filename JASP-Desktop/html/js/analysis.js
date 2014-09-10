@@ -44,6 +44,13 @@ $.widget("jasp.analysis", {
 			self._trigger("optionschanged", null, data)
 		
 		})
+		
+		item.bind("imageitemoptionschanged", function(event, data) {
+
+			data = { id : self.options.id, options : data }
+			self._trigger("optionschanged", null, data)
+		
+		})
 	
 	},
 	refresh: function () {

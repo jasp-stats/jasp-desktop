@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>562</width>
-    <height>750</height>
+    <height>764</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -113,6 +113,45 @@
       <property name="verticalSpacing">
        <number>0</number>
       </property>
+      <item row="1" column="0">
+       <widget class="BoundGroupBox" name="tails">
+        <property name="title">
+         <string>Test of Significance</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="1">
+          <widget class="QRadioButton" name="_2oneTailed">
+           <property name="text">
+            <string>One-tailed</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="_1twoTailed">
+           <property name="text">
+            <string>Two-tailed</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
@@ -162,63 +201,6 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QGroupBox" name="groupBox_2">
-        <property name="title">
-         <string>Test of Significance</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="BoundGroupBox" name="tails" native="true">
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="_1twoTailed">
-              <property name="text">
-               <string>Two-tailed</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QRadioButton" name="_2oneTailed">
-              <property name="text">
-               <string>One-tailed</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="2" column="0">
        <widget class="QWidget" name="widget_7" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
@@ -245,11 +227,11 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QWidget" name="widget_3" native="true">
+   <item row="2" column="0" colspan="2">
+    <widget class="QWidget" name="optionsWidget" native="true">
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QPushButton" name="buttonOptions">
+       <widget class="ExpanderButton" name="buttonOptions">
         <property name="text">
          <string>Options</string>
         </property>
@@ -258,101 +240,17 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QWidget" name="panelOptions" native="true">
-     <layout class="QGridLayout" name="gridLayout_10">
-      <item row="0" column="0" colspan="2">
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Options&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QGroupBox" name="groupBox_3">
-        <property name="title">
-         <string>Statistics</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="0" column="0">
-          <widget class="BoundCheckBox" name="meansAndStdDev">
-           <property name="text">
-            <string>Means and standard deviations</string>
-           </property>
-          </widget>
-         </item>
+      <item row="1" column="0">
+       <widget class="QWidget" name="panelOptions" native="true">
+        <layout class="QGridLayout" name="gridLayout_10">
          <item row="1" column="0">
-          <widget class="BoundCheckBox" name="crossProducts">
-           <property name="text">
-            <string>Cross-product deviations and covariances</string>
+          <widget class="BoundGroupBox" name="missingValues">
+           <property name="title">
+            <string>Missing values</string>
            </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="2" column="1" rowspan="2">
-       <widget class="QWidget" name="widget_6" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QGroupBox" name="groupBox_4">
-        <property name="title">
-         <string>Missing Values</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_8">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="BoundGroupBox" name="missingValues" native="true">
+           <property name="flat">
+            <bool>true</bool>
+           </property>
            <layout class="QGridLayout" name="gridLayout_9">
             <property name="topMargin">
              <number>6</number>
@@ -371,6 +269,42 @@
              <widget class="QRadioButton" name="_2excludeListwise">
               <property name="text">
                <string>Exclude cases listwise</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="1" rowspan="3">
+          <widget class="QWidget" name="widget_6" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>1</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QGroupBox" name="groupBox_3">
+           <property name="title">
+            <string>Statistics</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="meansAndStdDev">
+              <property name="text">
+               <string>Means and standard deviations</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="crossProducts">
+              <property name="text">
+               <string>Cross-product deviations and covariances</string>
               </property>
              </widget>
             </item>
@@ -397,39 +331,27 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonOptions</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>panelOptions</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>63</x>
-     <y>394</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>278</x>
-     <y>428</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

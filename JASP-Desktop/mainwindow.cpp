@@ -18,7 +18,10 @@
 #include "analysisforms/ancovaform.h"
 #include "analysisforms/anovamultivariateform.h"
 #include "analysisforms/ancovamultivariateform.h"
+
 #include "analysisforms/anovabayesianform.h"
+#include "analysisforms/ancovabayesianform.h"
+#include "analysisforms/anovarepeatedmeasuresbayesianform.h"
 
 #include "analysisforms/regressionlinearform.h"
 #include "analysisforms/correlationform.h"
@@ -110,6 +113,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(&_loader, SIGNAL(complete(DataSet*)), this, SLOT(dataSetLoaded(DataSet*)));
 	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
+	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(dataSetLoadFailed(QString)));
+
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
 	connect(this, SIGNAL(pushToClipboard(QString)), this, SLOT(pushToClipboardHandler(QString)));
@@ -215,6 +220,10 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new CrosstabsForm(contentArea);
 	else if (name == "SEMSimple")
 		form = new SEMSimpleForm(contentArea);
+	else if (name == "AncovaBayesian")
+		form = new AncovaBayesianForm(contentArea);
+	else if (name == "AnovaRepeatedMeasuresBayesian")
+		form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
 	else
 		qDebug() << "MainWidget::loadForm(); form not found : " << name.c_str();
 
@@ -328,6 +337,8 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 	ui->backStage->setFileLoaded(true);
 	_analyses->clear();
 
+	ui->tableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+
 	_alert->hide();
 
 	if (_inited == false)
@@ -339,6 +350,12 @@ void MainWindow::dataSetLoaded(DataSet *dataSet)
 	if (_engineSync->engineStarted() == false)
 		_engineSync->start();
 
+}
+
+void MainWindow::dataSetLoadFailed(const QString &message)
+{
+	_alert->hide();
+	QMessageBox::warning(this, "", "The Data set could not be loaded\n\n" + message);
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
@@ -373,12 +390,12 @@ void MainWindow::engineCrashed()
 	{
 		exiting = true;
 
-		QMessageBox::warning(this, "Error", "The JASP Statistics Engine has terminated unexpectedly.\n\nThis sometimes happens under older versions of Operating Systems that have not yet been tested.\n\nThe JASP team is actively working on this, and if you could report your experiences that would be appreciated.\n\nJASP cannot continue and will now close.");
+		QMessageBox::warning(this, "Error", "The JASP Statistics Engine has terminated unexpectedly.\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.");
 		QApplication::exit(1);
 	}
 }
 
-void MainWindow::itemSelected(const QString item)
+void MainWindow::itemSelected(const QString &item)
 {
 	string name = item.toStdString();
 	_currentAnalysis = _analyses->create(name);
@@ -484,7 +501,7 @@ void MainWindow::analysisRemoved()
 	ui->tableView->show();
 }
 
-void MainWindow::pushToClipboardHandler(QString data)
+void MainWindow::pushToClipboardHandler(const QString &data)
 {
 	QString toClipboard;
 	toClipboard += "<!DOCTYPE HTML>\n"

@@ -56,7 +56,7 @@ run <- function(name, options.as.json.string) {
 	{
 		rows.to.exclude <- c()
 		
-		for (col in exclude.na.listwise) {
+		for (col in .v(exclude.na.listwise)) {
 			
 			rows.to.exclude <- c(rows.to.exclude, which(is.na(dataset[[col]])))
 		}
@@ -82,6 +82,65 @@ run <- function(name, options.as.json.string) {
 	dataset
 }
 
+.shortToLong <- function(dataset, rm.factors, rm.vars, bt.vars) {
+
+	f  <- rm.factors[[length(rm.factors)]]
+	df <- data.frame(as.factor(unlist(f$levels)))
+	names(df) <- paste("F", .v(f$name), sep="")
+	
+	row.count <- dim(df)[1]
+	
+
+	i <- length(rm.factors) - 1
+	while (i > 0) {
+	
+		f <- rm.factors[[i]]
+	
+		new.df <- df
+
+		j <- 2
+		while (j <= length(f$levels)) {
+		
+			new.df <- rbind(new.df, df)
+			j <- j + 1
+		}
+		
+		df <- new.df
+		
+		row.count <- dim(df)[1]
+
+		cells <- rep(unlist(f$levels), each=row.count / length(f$levels))
+		cells <- as.factor(cells)
+		
+		
+		df <- cbind(cells, df)
+		names(df)[[i]] <- paste("F", .v(f$name), sep="")
+		
+		i <- i - 1
+	}
+	
+	ds <- subset(dataset, select=.v(rm.vars))
+	ds <- t(as.matrix(ds))
+	
+	df <- cbind(df, dependent=as.numeric(c(ds)))
+	
+	for (bt.var in bt.vars) {
+
+		cells <- rep(dataset[[.v(bt.var)]], each=row.count)
+		new.col <- list()
+		new.col[[.v(bt.var)]] <- cells
+		
+		df <- cbind(df, new.col)
+	}
+	
+	subjects <- 1:(dim(dataset)[1])
+	subjects <- as.factor(rep(subjects, each=row.count))
+	
+	df <- cbind(df, subject=subjects)
+
+	df
+}
+
 .v <- function(variable.names) {
 
 	vs <- c()
@@ -96,8 +155,24 @@ run <- function(name, options.as.json.string) {
 
 	vs <- c()
 	
-	for (v in variable.names)
-		vs[length(vs)+1] <- .fromBase64(substr(v, 2, nchar(v)))
+	for (v in variable.names) {
+	
+		firstChar <- charToRaw(substr(v, 1, 1))
+	
+		if (firstChar >= 0x41 && firstChar <= 0x5A) {  # A to Z
+		
+			vs[length(vs)+1] <- .fromBase64(substr(v, 3, nchar(v)))
+			
+		} else if (firstChar == 0x2E) {  # a dot
+		
+			vs[length(vs)+1] <- .fromBase64(substr(v, 2, nchar(v)))
+			
+		} else {
+		
+			stop(paste("bad call to .unv() : ", v))
+		
+		}
+	}
 	
 	vs
 }

@@ -9,17 +9,17 @@
 #include "droptarget.h"
 #include "tablemodelvariablesavailable.h"
 
-class TableModelPairsAssigned : public TableModel, public BoundModel
+class TableModelPairsAssigned : public TableModel, public BoundModel, public VariableInfoConsumer
 {
 	Q_OBJECT
 public:
 	explicit TableModelPairsAssigned(QObject *parent = 0);
-	
-	void setIsNominalTextAllowed(bool allowed);
-	bool nominalTextAllowed();
 
 	void setVariableTypesSuggested(int variableTypesSuggested);
-	int variableTypesSuggested();
+	int variableTypesSuggested() const;
+
+	void setVariableTypesAllowed(int variableTypesAllowed);
+	int variableTypesAllowed() const;
 
 	void bindTo(Option *option) OVERRIDE;
 	int rowCount(const QModelIndex &parent) const OVERRIDE;
@@ -36,15 +36,15 @@ public:
 	virtual bool insertRows(int row, int count, const QModelIndex &parent) OVERRIDE;
 	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
 
-	bool isForbidden(int variableType) const;
-
 	void setSource(TableModelVariablesAvailable *source);
 
 protected:
+
+	bool isAllowed(const Term &term) const;
 	void assignToOption();
 
 private:
-	bool _nominalTextAllowed;
+	int _variableTypesAllowed;
 	int _variableTypesSuggested;
 
 	TableModelVariablesAvailable *_source;

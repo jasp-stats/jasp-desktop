@@ -23,6 +23,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu = new QMenu(this);
 	//menu->addAction(QString("One Way ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaOneWay");
 	menu->addAction(QString("ANOVA"), this, SLOT(itemSelected()))->setObjectName("Anova");
+	menu->addAction(QString("Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasuresShort");
 	//menu->addAction(QString("ANCOVA"), this, SLOT(itemSelected()))->setObjectName("Ancova");
 	//menu->addAction(QString("MAN(C)OVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");
 	//menu->addAction(QString("MANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaMultivariate");
@@ -47,9 +48,10 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	menu = new QMenu(this);
 	menu->addAction(QString("Bayesian ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
+	//menu->addAction(QString("Bayesian Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasuresBayesian");
+	//menu->addAction(QString("Bayesian ANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaBayesian");
 
 	ui->bayesianAnovaButton->setMenu(menu);
-	ui->bayesianAnovaButton->hide();
 
 	ui->bayesianCrosstabsButton->hide();
 	ui->bayesianRegressionButton->hide();

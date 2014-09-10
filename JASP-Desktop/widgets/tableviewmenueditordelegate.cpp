@@ -28,15 +28,20 @@ QWidget *TableViewMenuEditorDelegate::createEditor(QWidget *parent, const QStyle
 	{
 		return QStyledItemDelegate::createEditor(parent, option, index);
 	}
-
-
 }
 
 void TableViewMenuEditorDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
 	TableViewMenuEditor *menuEditor = qobject_cast<TableViewMenuEditor *>(editor);
-	if (menuEditor != NULL && menuEditor->selected() != "")
-		model->setData(index, menuEditor->selected(), Qt::DisplayRole);
+	if (menuEditor != NULL)
+	{
+		if (menuEditor->selected() != "")
+			model->setData(index, menuEditor->selected(), Qt::DisplayRole);
+	}
+	else
+	{
+		QStyledItemDelegate::setModelData(editor, model, index);
+	}
 }
 
 void TableViewMenuEditorDelegate::editingFinished()

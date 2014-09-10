@@ -19,6 +19,8 @@
 #include "analyses/correlationpartial.h"
 #include "analyses/crosstabs.h"
 #include "analyses/anovarepeatedmeasuresshort.h"
+#include "analyses/anovarepeatedmeasuresbayesian.h"
+#include "analyses/ancovabayesian.h"
 
 #include "analyses/semsimple.h"
 
@@ -67,6 +69,10 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		return new Crosstabs(id);
 	else if (analysisName == "SEMSimple")
 		return new SEMSimple(id);
+	else if (analysisName == "AncovaBayesian")
+		return new AncovaBayesian(id);
+	else if (analysisName == "AnovaRepeatedMeasuresBayesian")
+		return new AnovaRepeatedMeasuresBayesian(id);
 	else
 	{
 		std::cout << "AnalysisLoader::load(); Analysis not found: " << analysisName << "\n";

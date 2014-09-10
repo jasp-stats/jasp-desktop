@@ -8,8 +8,20 @@ CONFIG += staticlib
 
 windows:CONFIG += c++11
 
-unix:INCLUDEPATH += /opt/local/include
-windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
+unix:INCLUDEPATH += ../../boost_1_54_0
+
+windows {
+
+	COMPILER_DUMP = $$system(g++ -dumpmachine)
+	contains(COMPILER_DUMP, x86_64-w64-mingw32) {
+
+		INCLUDEPATH += ../../boost_1_54_0
+	}
+	else {
+
+		INCLUDEPATH += ../../boost_1_53_0
+	}
+}
 
 windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
 
@@ -17,6 +29,8 @@ QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-c++11-long-long
 QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+
+QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 SOURCES += \
     datasetloader.cpp \
@@ -76,7 +90,9 @@ SOURCES += \
     options/optionterm.cpp \
     options/optionvariables.cpp \
     analyses/anovarepeatedmeasures.cpp \
-	analyses/anovarepeatedmeasuresshort.cpp
+	analyses/anovarepeatedmeasuresshort.cpp \
+    analyses/ancovabayesian.cpp \
+    analyses/anovarepeatedmeasuresbayesian.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -142,7 +158,9 @@ HEADERS +=\
     options/optionvariablesgroups.h \
     options/optionterm.h \
     analyses/anovarepeatedmeasures.h \
-	analyses/anovarepeatedmeasuresshort.h
+	analyses/anovarepeatedmeasuresshort.h \
+    analyses/ancovabayesian.h \
+    analyses/anovarepeatedmeasuresbayesian.h
 
 unix:!symbian {
     maemo5 {

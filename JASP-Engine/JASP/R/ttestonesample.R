@@ -6,7 +6,16 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
+		
+			if (options$missingValues == "excludeListwise") {
+			
+				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
+			}
+			else {
+			
+				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
+			}
+		
 		} else {
 			dataset <- .readDataSetHeader(columns.as.numeric=all.variables)
 		}
@@ -28,24 +37,33 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	ttest <- list()
 	descriptives <- list()
 	
-	ttest[["title"]] <- "One Sample T-Test"
-	ttest[["cases"]] <- I(options$variables)
+
+	if (options$hypothesis == "notEqualToTestValue") {
+
+		ttest[["title"]] <- "One Sample T-Test"
+	
+	} else {
+	
+		ttest[["title"]] <- "One Tailed One Sample T-Test"	
+	}
+	
+
 
 	fields <- list(
 		list(name=".variable", type="string", title=""),
-		list(name="t", type="number", format="sf:4"),
-		list(name="df", type="number", format="sf:4"),
-		list(name="p", type="number", format="dp:4;p:.001"))
+		list(name="t", type="number", format="sf:4;dp:3"),
+		list(name="df", type="number", format="sf:4;dp:3"),
+		list(name="p", type="number", format="dp:3;p:.001"))
 		
 	if (options$meanDifference) {
 	
-		fields[[length(fields) + 1]] <- list(name="Mean Difference", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Mean Difference", type="number", format="sf:4;dp:3")
 	}
 	
 	if (options$confidenceInterval) {
 	
-		fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4")
-		fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4;dp:3")
 	}
 	
 	ttest[["schema"]] <- list(fields=fields)
@@ -58,11 +76,11 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 
 			result <- try (silent = TRUE, expr = {
 		
-				if (options$tails == "oneTailedGreaterThan") {
+				if (options$hypothesis == "greaterThanTestValue") {
 
 					testType <- "greater"
 
-				} else if (options$tails == "oneTailedLessThan") {
+				} else if (options$hypothesis == "lessThanTestValue") {
 
 					testType <- "less"
 
@@ -109,10 +127,10 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 
 		fields <- list(
 			list(name=".variable", type="string", title=""),
-			list(name="N", type="number", format="sf:4"),
-			list(name="Mean", type="number", format="sf:4"),
-			list(name="Std. Deviation", type="number", format="dp:4;p:.001"),
-			list(name="Std. Error Mean", type="number", format="sf:4"))
+			list(name="N", type="number", format="sf:4;dp:3"),
+			list(name="Mean", type="number", format="sf:4;dp:3"),
+			list(name="Std. Deviation", type="number", format="dp:3;p:.001"),
+			list(name="Std. Error Mean", type="number", format="sf:4;dp:3"))
 
 		descriptives[["schema"]] <- list(fields=fields)
 		descriptives.results <- list()
@@ -121,7 +139,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			
 			if (perform == "run") {
 
-				data = dataset[[ .v(variable) ]]
+				data <- na.omit(dataset[[ .v(variable) ]])
 
 				if (class(data) != "factor") {
 

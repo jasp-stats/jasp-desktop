@@ -23,6 +23,7 @@ private:
 	void receiveMessages(int timeout = 0);
 	void runAnalysis();
 	void analysisResultsChanged(Analysis *analysis);
+	void analysisYield();
 
 	Analysis *_currentAnalysis;
 	Analysis *_nextAnalysis;

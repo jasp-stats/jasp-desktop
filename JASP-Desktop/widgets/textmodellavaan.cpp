@@ -16,8 +16,7 @@ TextModelLavaan::TextModelLavaan(QObject *parent)
 	this->setDocumentMargin(12);
 
 	connect(this, SIGNAL(contentsChanged()), this, SLOT(contentChangedHandler()));
-	//connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(checkEverything()));
-	connect(this, SIGNAL(contentsChange(int,int,int)), this, SLOT(contentChange(int,int,int)));
+
 }
 
 void TextModelLavaan::bindTo(Option *option)
@@ -156,7 +155,7 @@ QList<Token> TextModelLavaan::tokenise(QTextBlock &block)
 			{
 				token.text = text.at(i);
 				token.pos = i;
-				token.type = Unknown;
+				token.type = UnknownToken;
 
 				tokens.append(token);
 

@@ -25,6 +25,17 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 	ui->pageStatistics->hide();
 	ui->pageCharts->hide();
 	ui->pageFormat->hide();
+
+#ifdef QT_NO_DEBUG
+	// temporary hides until the appropriate R code is implemented
+
+	ui->widgetCharts->hide();
+	ui->widgetFormat->hide();
+#else
+	ui->widgetCharts->setStyleSheet("background-color: pink;");
+	ui->widgetFormat->setStyleSheet("background-color: pink;");
+#endif
+
 }
 
 DescriptivesForm::~DescriptivesForm()

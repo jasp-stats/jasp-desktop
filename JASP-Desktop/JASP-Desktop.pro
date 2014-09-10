@@ -15,8 +15,20 @@ CONFIG -= app_bundle
 
 INCLUDEPATH += ../JASP-Common/
 
-   unix:INCLUDEPATH += /opt/local/include
-windows:INCLUDEPATH += C:/progra~1/boost/boost_1_53_0
+unix:INCLUDEPATH += ../../boost_1_54_0
+
+windows {
+
+	COMPILER_DUMP = $$system(g++ -dumpmachine)
+	contains(COMPILER_DUMP, x86_64-w64-mingw32) {
+
+		INCLUDEPATH += ../../boost_1_54_0
+	}
+	else {
+
+		INCLUDEPATH += ../../boost_1_53_0
+	}
+}
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
@@ -31,6 +43,8 @@ QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-c++11-long-long
 QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+
+QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 SOURCES += main.cpp\
 	mainwindow.cpp \
@@ -107,7 +121,13 @@ SOURCES += main.cpp\
     widgets/tablemodelanovamodel.cpp \
     widgets/tablemodelcontrasts.cpp \
 	analysisforms/anovarepeatedmeasuresshortform.cpp \
-	widgets/tablemodelanovadesign.cpp
+	widgets/tablemodelanovadesign.cpp \
+    widgets/datasetsselectwidget.cpp \
+    widgets/datasetselectwidget.cpp \
+    appdirs.cpp \
+    widgets/tablemodelanovawithinsubjectcells.cpp \
+    analysisforms/ancovabayesianform.cpp \
+    analysisforms/anovarepeatedmeasuresbayesianform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -190,7 +210,13 @@ HEADERS  += \
     widgets/tablemodelanovamodel.h \
     widgets/tablemodelcontrasts.h \
 	analysisforms/anovarepeatedmeasuresshortform.h \
-	widgets/tablemodelanovadesign.h
+	widgets/tablemodelanovadesign.h \
+    widgets/datasetsselectwidget.h \
+    widgets/datasetselectwidget.h \
+    appdirs.h \
+    widgets/tablemodelanovawithinsubjectcells.h \
+    analysisforms/ancovabayesianform.h \
+    analysisforms/anovarepeatedmeasuresbayesianform.h
 
 FORMS    += \
     backstageform.ui \
@@ -221,7 +247,10 @@ FORMS    += \
     analysisforms/ttestbayesianindependentsamplesform.ui \
     analysisforms/ttestbayesianpairedsamplesform.ui \
     optionsform.ui \
-    analysisforms/anovarepeatedmeasuresshortform.ui
+    analysisforms/anovarepeatedmeasuresshortform.ui \
+    widgets/datasetselectwidget.ui \
+    analysisforms/ancovabayesianform.ui \
+    analysisforms/anovarepeatedmeasuresbayesianform.ui
 
 
 RESOURCES += \

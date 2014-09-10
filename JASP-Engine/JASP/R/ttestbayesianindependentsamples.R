@@ -13,11 +13,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 			if (options$missingValues == "excludeListwise") {
 		
-				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=dependents)
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=c(dependents, grouping))
 			
 			} else {
 		
-				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping)
+				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=grouping)
 			}
 		
 
@@ -34,15 +34,82 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	meta[[1]] <- list(name="ttest", type="table")
 	meta[[2]] <- list(name="descriptives", type="table")
+	meta[[3]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
 	
-	
-
 	results[["ttest"]] <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
+	results[["plots"]] <- .ttestBayesianIndependentSamplesTTestPlots(dataset, options, perform)
 
 	results
+}
+
+.ttestBayesianIndependentSamplesTTestPlots <- function(dataset, options, perform) {
+	
+	if (options$plots == FALSE)
+		return(NULL)
+
+	plots <- list()
+	
+	for (variable in options[["variables"]])
+		plots[[length(plots)+1]] <- list(title=variable, width=options$plotWidth, height=options$plotHeight, custom=list(width="plotWidth", height="plotHeight"))
+	
+	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
+		
+		rowNo <- 1
+	
+		for (variable in options[["variables"]]) {
+
+			subDataSet <- subset(dataset,    subset=( ! is.na( dataset[[ .v(variable) ]] )), select=c(.v(variable), .v(options$groupingVariable)))
+			subDataSet <- subset(subDataSet, subset=( ! is.na( dataset[[ .v(options$groupingVariable) ]] )))
+			
+			f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
+			r.size <- options$priorWidth
+			
+			if (options$hypothesis == "groupOneGreater") {
+			
+				null.interval <- c(-Inf, 0)
+			
+			} else if (options$hypothesis == "groupTwoGreater") {
+
+				null.interval <- c(0, Inf)
+			
+			} else {
+			
+				null.interval <- c(-Inf, Inf)
+			}
+			
+			result <- try (silent=FALSE, expr= {
+			
+				bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, nullInterval=null.interval)[1]
+				BF    <- .clean(exp(as.numeric(bf@bayesFactor$bf)))
+				error <- .clean(as.numeric(bf@bayesFactor$error))
+				
+				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+
+				posterior.samples <- BayesFactor::ttestBF(data=dataset, formula=f, r=r.size, nullInterval=null.interval, posterior=TRUE, iterations=10000, progress=FALSE)
+
+				hist(posterior.samples, main=variable, xlab="", ylab="Frequency", col=rainbow(20))
+				
+				data <- .endSaveImage(image)
+				
+				data
+			})
+
+			if (class(result) == "try-error") {
+		
+				result <- NULL
+			}
+
+			plots[[rowNo]][["data"]] <- result
+		
+			rowNo <- rowNo + 1
+		}
+	}
+	
+	plots
+
 }
 
 .ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform) {
@@ -54,8 +121,17 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	fields <- list(
 		list(name=".variable", title="", type="string", combine=TRUE))
 	
-	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4", title="BF<sub>10</sub>")
-	fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4")
+	if (options$bayesFactorType == "BF01") {
+	
+		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
+	}
+	else {
+
+		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080")	
+	}
+	
+	
+	fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3", title="error %")
 		
 	ttest[["schema"]] <- list(fields=fields)
 	
@@ -80,29 +156,35 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 			for (variable in options[["variables"]]) {
 
-				variableData <- dataset[[ .v(variable) ]]
+				# BayesFactor package doesn't handle NAs, so it is necessary to exclude them
+				
+				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
+				subDataSet <- na.omit(subDataSet)
+
+				f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
+				r.size <- options$priorWidth
+				
+				if (options$hypothesis == "groupOneGreater") {
+			
+					null.interval <- c(-Inf, 0)
+			
+				} else if (options$hypothesis == "groupTwoGreater") {
+
+					null.interval <- c(0, Inf)
+			
+				} else {
+			
+					null.interval <- c(-Inf, Inf)
+				}
 				
 				result <- try (silent=FALSE, expr= {
-
-					f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
-					
-					if (options$tails == "oneTailedGreaterThan") {
-					
-						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=1, nullInterval=c(-Inf, 0))
-						bf <- bf[1]
-					
-					} else if (options$tails == "oneTailedLessThan") {
-	
-						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=1, nullInterval=c(0, Inf))
-						bf <- bf[1]
-					
-					} else {
-					
-						bf <- BayesFactor::ttestBF(data=dataset, formula=f, r=1)
-					
-					}
 				
-					BF <- .clean(exp(as.numeric(bf@bayesFactor$bf)))
+					bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, nullInterval=null.interval)[1]
+					
+					if (options$bayesFactorType == "BF01")
+						bf <- 1 / bf
+					
+					BF    <- .clean(exp(as.numeric(bf@bayesFactor$bf)))
 					error <- .clean(as.numeric(bf@bayesFactor$error))
 				
 					list(.variable=variable, BF=BF, error=error)					
@@ -112,8 +194,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			
 					result <- list(.variable=variable, BF="", error="")
 				}
-			
+				
 				ttest.results[[rowNo]] <- result
+			
 				rowNo <- rowNo + 1
 			}
 		}

@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <iostream>
 #include <cstring>
+#include <stdexcept>
 
 using namespace std;
 
@@ -22,14 +23,17 @@ CSV::CSV(string path)
 void CSV::open()
 {
 	struct stat fileInfo;
-	stat(_path.c_str(), &fileInfo);
+	int error = stat(_path.c_str(), &fileInfo);
+
+	if (error != 0)
+		throw runtime_error("Could not stat file");
 
 	_fileSize = fileInfo.st_size;
 
 	if (_fileSize == 0)
 	{
 		_status = Empty;
-		return;
+		throw runtime_error("File is empty");
 	}
 
 	_rawBufferStartPos = 0;
@@ -38,6 +42,11 @@ void CSV::open()
 	_utf8BufferEndPos = 0;
 
 	_stream.open(_path.c_str(), ios::in);
+	if ( ! _stream.is_open())
+	{
+		_status = Empty;
+		throw runtime_error("Could not open file");
+	}
 
 	if (readRaw())
 	{
@@ -46,10 +55,12 @@ void CSV::open()
 		determineDelimiters();
 	}
 	else
+	{
 		_status = Empty;
+	}
 
-	std::cout << "encoding : " << _encoding << " delimeters : " << _delim << "\n";
-	std::cout.flush();
+	//std::cout << "encoding : " << _encoding << " delimeters : " << _delim << "\n";
+	//std::cout.flush();
 }
 
 bool CSV::readRaw()

@@ -24,7 +24,6 @@ table {
 	font-style: normal ;
 	border-collapse: collapse ;
 	margin-bottom: 2em ;
-	/*margin: 2em 2em 4em;*/
 }
 
 th {
@@ -32,8 +31,20 @@ th {
 	font-weight: normal ;
 }
 
-td, th {
-	padding: 2px 1em ;
+th[colspan="2"] {
+	padding-left : 1em ;
+	padding-right: 1em ;
+}
+
+td.value {
+	padding-left : 1em ;
+	padding-right: 0 ;
+}
+
+td.symbol {
+	text-align: left ;
+	padding-right: 1em ;
+	padding-left: 0 ;
 }
 
 td {
@@ -84,9 +95,9 @@ tbody tr:last-child td {
 	border-bottom: 2px solid ;
 }
 
-tbody tr.main-row td {
+tbody tr td.main-row {
 
-	border-top: 1px solid ;
+	border-top: 1px solid lightgrey ;
 }
 
 td.text {
@@ -196,6 +207,7 @@ div.status.waiting
 
 div.error-message-box
 {
+	z-index: 100 ;
 	padding: 1em ;
 	border-radius: .4em ;
 }
@@ -204,7 +216,9 @@ div.error-message-box
 
 	padding: 1em 2em ;
 	margin: 50px auto ;
-	width: 300px ;
+	min-width: 300px ;
+	max-width: 500px ;
+	width: 50% ;
 	border: 3px dashed #3CAAE7 ;
 	border-radius: 10px ;
 	color: #3CAAE7 ;

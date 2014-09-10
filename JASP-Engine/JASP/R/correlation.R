@@ -115,7 +115,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					p.values[[length(p.values)+1]] <- ""
 				}
 
-				row[[length(row)+1]] <- "-"
+				row[[length(row)+1]] <- "\u2014" # em-dash
 				p.values[[length(p.values)+1]] <- ""
 
 				for (j in .seqx(i+1, v.c)) {

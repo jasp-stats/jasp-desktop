@@ -27,10 +27,38 @@ Options *AnovaRepeatedMeasuresShort::createOptions() const
 	// main
 
 	options->add("dependent", new OptionVariable());
-	options->add("fixedFactors", new OptionVariables());
-	options->add("randomFactors", new OptionVariables());
-	options->add("subjectIDs", new OptionVariables());
-	options->add("wlsWeights", new OptionVariable());
+	options->add("betweenSubjectFactors", new OptionVariables());
+
+
+	// design
+
+	vector<string> l12;
+	l12.push_back("Level 1");
+	l12.push_back("Level 2");
+
+	OptionVariables *factorLevels = new OptionVariables();
+	factorLevels->setValue(l12);
+
+	Options *factorOptionsTemplate = new Options();
+	factorOptionsTemplate->add("name", new OptionString("RM Factor %1"));
+	factorOptionsTemplate->add("levels", factorLevels);
+
+	OptionsTable *t = new OptionsTable(factorOptionsTemplate);
+
+	vector<Options *> defaultValue;
+	Options *defaultFirstFactor = static_cast<Options *>(factorOptionsTemplate->clone());
+	OptionString *defaultFirstFactorName = static_cast<OptionString*>(defaultFirstFactor->get("name"));
+	defaultFirstFactorName->setValue("RM Factor 1");
+	defaultValue.push_back(defaultFirstFactor);
+
+	t->setValue(defaultValue);
+
+	options->add("repeatedMeasuresFactors", t);
+
+
+	// rm subject cells
+
+	options->add("repeatedMeasuresCells", new OptionVariables());
 
 
 	// model

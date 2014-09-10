@@ -14,7 +14,7 @@ TTestBayesianIndependentSamplesForm::TTestBayesianIndependentSamplesForm(QWidget
 
 	TableModelVariablesAssigned *variablesModel = new TableModelVariablesAssigned(this);
 	variablesModel->setSource(&_availableVariablesModel);
-	variablesModel->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	variablesModel->setVariableTypesSuggested(Column::ColumnTypeScale);
 	ui->variables->setModel(variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
@@ -26,6 +26,12 @@ TTestBayesianIndependentSamplesForm::TTestBayesianIndependentSamplesForm(QWidget
 
 	ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 	ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
+
+#ifdef QT_NO_DEBUG
+	ui->plotsGroup->hide();
+#else
+	ui->plotsGroup->setStyleSheet("background-color: pink;");
+#endif
 }
 
 TTestBayesianIndependentSamplesForm::~TTestBayesianIndependentSamplesForm()

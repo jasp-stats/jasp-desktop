@@ -10,7 +10,7 @@
 #include <QSyntaxHighlighter>
 #include <QTextCursor>
 
-enum TokenType { Unknown, Variable, Comment, Operator, Plus, Times, Number, FunctionOpen, FunctionClose, Comma };
+enum TokenType { UnknownToken, Variable, Comment, Operator, Plus, Times, Number, FunctionOpen, FunctionClose, Comma };
 
 typedef struct TokenStruct
 {
@@ -37,13 +37,13 @@ public:
 public slots:
 	void cursorPositionChangedHandler(QTextCursor cursor);
 	void apply();
+	void checkEverything();
 
 signals:
 	void errorStateChanged();
 
 private slots:
 	void contentChangedHandler();
-	void checkEverything();
 
 private:
 
