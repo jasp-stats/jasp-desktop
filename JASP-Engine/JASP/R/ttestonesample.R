@@ -139,7 +139,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			
 			if (perform == "run") {
 
-				data = dataset[[ .v(variable) ]]
+				data <- na.omit(dataset[[ .v(variable) ]])
 
 				if (class(data) != "factor") {
 

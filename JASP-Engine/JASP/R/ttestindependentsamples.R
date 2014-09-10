@@ -78,7 +78,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	if (perform == "run" && options$groupingVariable != "") {
 	
-		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
+		levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
 		
 		if (length(levels) != 2) {
 		
@@ -188,8 +188,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 
-		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
-		
+		levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
+				
 		if (length(levels) != 2) {
 		
 			ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
@@ -359,7 +359,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	if (perform == "run" && options$groupingVariable != "") {
 	
-		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
+		levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
 		
 		if (length(levels) != 2) {
 		
