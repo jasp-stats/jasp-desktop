@@ -137,6 +137,8 @@ void DataSetLoader::freeDataSet(DataSet *dataSet)
 
 void DataSetLoader::initColumn(Column &column, const string &name, const vector<string> &cells)
 {
+	// we treat single spaces as missing values, because SPSS saves missing values as a single space in CSV files
+
 	column.setName(name);
 
 	// try to make the column nominal
@@ -252,16 +254,25 @@ void DataSetLoader::initColumn(Column &column, const string &name, const vector<
 		}
 	}
 
+	for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
+	{
+		if (*itr == " ") // remove empty string
+		{
+			cases.erase(itr);
+			break;
+		}
+	}
+
 	labels.clear();
 
 	BOOST_FOREACH (string &value, cases)
-			labels.add(value);
+		labels.add(value);
 
 	intInputItr = column.AsInts.begin();
 
 	BOOST_FOREACH (const string &value, cells)
 	{
-		if (value == "")
+		if (value == "" || value == " ")
 			*intInputItr = INT_MIN;
 		else
 			*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
