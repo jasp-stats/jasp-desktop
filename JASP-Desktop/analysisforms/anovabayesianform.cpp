@@ -41,9 +41,12 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 
 	ui->posteriorDistributions->hide();
 	ui->posteriorEstimates->hide();
+	ui->widgetModel->hide();
+
 #else
 	ui->posteriorDistributions->setStyleSheet("background-color: pink;");
 	ui->posteriorEstimates->setStyleSheet("background-color: pink;");
+	ui->widgetModel->setStyleSheet("background-color: pink;");
 #endif
 }
 

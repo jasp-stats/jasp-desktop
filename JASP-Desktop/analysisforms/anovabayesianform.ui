@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>696</width>
-    <height>670</height>
+    <height>679</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -338,7 +338,7 @@
        <number>0</number>
       </property>
       <item row="0" column="0">
-       <widget class="QWidget" name="widget_10" native="true">
+       <widget class="QWidget" name="widgetModel" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
