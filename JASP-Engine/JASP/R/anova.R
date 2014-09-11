@@ -124,7 +124,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	anova[["title"]] <- "ANOVA"
 	
 	fields <- list(
-		list(name="Cases", type="text"),
+		list(name="Cases", type="string"),
 		list(name="Sum of Squares", type="number", format="sf:4;dp:3"),
 		list(name="df", type="number", format="dp:0"),
 		list(name="Mean Square", type="number", format="sf:4;dp:3"),
@@ -301,7 +301,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 					cases <- .setContrast(variable[var], contrast.name[var], case=TRUE)
 					
 					fields <- list(
-						list(name="Comparison", type="text"),
+						list(name="Comparison", type="string"),
 						list(name="Estimate", type="number", format="sf:4;dp:3"),
 						list(name="Std. Error", type="number", format="sf:4;dp:3"),
 						list(name="t", type="number", format="sf:4;dp:3"),
@@ -376,8 +376,8 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 					posthoc[["title"]] <- paste("Post-Hoc Comparisons", postHoc.var[var], sep=" ")
 					
 					fields <- list(
-						list(name="(I) response", type="text"),
-						list(name="(J) response", type="text"),
+						list(name="(I) response", type="string"),
+						list(name="(J) response", type="string"),
 						list(name="Mean Difference", type="number", format="sf:4;dp:3"),
 						list(name="t", type="number", format="sf:4;dp:3"),
 						list(name="df", type="number", format="dp:0"),
@@ -507,7 +507,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 		fields <- list()
 		
 		for(i in options$fixedFactors) {
-			fields[[length(fields)+1]] <-  list(name=i, type="text")
+			fields[[length(fields)+1]] <-  list(name=i, type="string")
 		}
 		
 		fields[[length(fields)+1]] <- list(name="Mean", type="number", format="sf:4;dp:3")
@@ -585,7 +585,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 		levene[["title"]] <- "Levene's Test for Homogeneity of Variance"
 		
 		fields <- list(
-			list(name="F", type="text"),
+			list(name="F", type="number", format="sf:4;dp:3"),
 			list(name="df1", type="number", format="dp:0"),
 			list(name="df2", type="number", format="dp:0"),
 			list(name="p", type="number", format="dp:3;p:.001"))
