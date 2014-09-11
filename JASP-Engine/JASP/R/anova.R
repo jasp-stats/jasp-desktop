@@ -22,11 +22,11 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	#######################################
 
 	.meta <- list(
-	list(name="anova", type="table"),
-	list(name="levene", type="table"),
-	list(name="contrasts", type="tables"),
-	list(name="posthoc", type="tables"),
-	list(name="descriptives", type="table")
+		list(name="anova", type="table"),
+		list(name="levene", type="table"),
+		list(name="contrasts", type="tables"),
+		list(name="posthoc", type="tables"),
+		list(name="descriptives", type="table")
 	)
 
 	results[[".meta"]] <- .meta
@@ -275,6 +275,9 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 				r <- list("Cases"=terms.normal[i], "Sum of Squares"=".", "df"=".", "Mean Square"=".", "F"=".", "p"=".")
 				anova.results[[length(anova.results) + 1]] <- r
 			}
+
+			r <- list("Cases"="Residual", "Sum of Squares"=".", "df"=".", "Mean Square"=".", "F"=".", "p"=".")
+			anova.results[[length(anova.results) + 1]] <- r
 
 			anova[["data"]] <- anova.results		
 		}
