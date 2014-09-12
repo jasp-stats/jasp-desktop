@@ -96,6 +96,9 @@ $.widget("jasp.table", {
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
 					
+				if (cell.isNewGroup)
+					formatted["class"] += " new-group-row"
+					
 				columnCells[rowNo] = formatted
 			}
 			
@@ -222,6 +225,9 @@ $.widget("jasp.table", {
 				
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
+					
+				if (cell.isNewGroup)
+					formatted["class"] += " new-group-row"
 				
 				columnCells[rowNo] = formatted
 			}
@@ -257,6 +263,9 @@ $.widget("jasp.table", {
 				
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
+					
+				if (cell.isNewGroup)
+					formatted["class"] += " new-group-row"
 				
 				columnCells[rowNo] = formatted
 			}
@@ -284,6 +293,9 @@ $.widget("jasp.table", {
 				
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
+					
+				if (cell.isNewGroup)
+					formatted["class"] += " new-group-row"
 					
 				columnCells[rowNo] = formatted
 			}
@@ -354,6 +366,12 @@ $.widget("jasp.table", {
 				
 				if (row['.footnotes'] && row['.footnotes'][columnName])
 					cell.footnotes = row['.footnotes'][columnName]
+					
+				if (colNo == 0 && columnDef.type == "string" && row[".rowLevel"])
+					cell.content = Array(row[".rowLevel"]+1).join("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") + cell.content
+					
+				if (row['.isNewGroup'])
+					cell.isNewGroup = true
 				
 				column[rowNo] = cell
 			}
@@ -526,7 +544,7 @@ $.widget("jasp.table", {
 			
 			chunks.push('<tr>')
 
-			var isMainRow = false
+			var isNewGroup = false
 
 			for (var colNo = 0; colNo < columnCount; colNo++) {
 			
@@ -537,7 +555,7 @@ $.widget("jasp.table", {
 					var cellHtml = ''
 
 					var cellClass = (cell.class ? cell.class + " " : "")
-					cellClass += (isMainRow ? "main-row" : "")
+					cellClass += (cell.isNewGroup || isNewGroup ? "new-group-row" : "")
 
 					cellHtml += (cell.header ? '<th' : '<td')
 					cellHtml += ' class="value ' + cellClass + '"'
@@ -561,7 +579,7 @@ $.widget("jasp.table", {
 						tableProgress[colNo].to += cell.span
 						
 						if (cell.span > 1)
-							isMainRow = true
+							isNewGroup = true
 					}
 					else {
 					

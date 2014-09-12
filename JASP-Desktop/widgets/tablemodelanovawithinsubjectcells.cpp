@@ -289,6 +289,7 @@ void TableModelAnovaWithinSubjectCells::bindTo(Option *option)
 	{
 		_variables = _boundTo->variables();
 		setDesign(_design);
+		_source->notifyAlreadyAssigned(_variables);
 	}
 }
 
