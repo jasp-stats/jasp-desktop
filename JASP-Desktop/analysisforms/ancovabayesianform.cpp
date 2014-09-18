@@ -33,7 +33,7 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->fixedFactors);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->randomFactors);
-	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
+	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
 	connect(_dependentListModel, SIGNAL(assignmentsChanged()), this, SLOT(dependentChanged()));
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
