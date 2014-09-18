@@ -29,7 +29,6 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		}
 	}
 	
-	
 	results <- list()
 	
 	#### META
@@ -41,7 +40,6 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	meta[[2]] <- list(name="effect", type="table")
 
 	results[[".meta"]] <- meta
-	
 	
 	jasp.callback <- function(...) as.integer(callback())
 	
@@ -70,7 +68,8 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		list(name="% error", type="number", format="sf:4;dp:3")
 	)
 	
-	if (ind.random > 0){
+	#Footnote: if random effects specified  included in the null model
+  if (ind.random > 0){
 		fields[[1]][[".footnotes"]] <- list(0)
 	}		
 	
@@ -87,8 +86,8 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	  } 
 	}
 	
-	if (length(options$modelTerms) > 0) {
-	
+	if (options$dependent != "" && length(options$modelTerms) > 0) {
+	      
 		posterior.results <- list()
 
 		# set up formula for BayesFactor :
@@ -112,13 +111,12 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		}
     
 		rhs <- paste(terms.w.rand, collapse="+")
-		model.def <- paste(.v(options$dependent), "~", rhs)
-		model.formula <- as.formula(model.def)
+    model.def <- paste(.v(options$dependent), "~", rhs)
+    model.formula <- as.formula(model.def)
 		
     random <- .v(options$randomFactors)
 	
-    
-		# error message when interaction specified without main effect TO BE CONTINUED 
+    # error message when interaction specified without main effect
 		
 		for (term in options$modelTerms) {
 		  lmtc <- length(term$components)
@@ -145,8 +143,9 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		}
     
     #Extract all possible modelnames  
-    
+   
     all.models <- BayesFactor::enumerateGeneralModels(model.formula, whichModels="withmain", neverExclude=random)
+	
     
     if (ind.random > 0) {
 			random.plus	<- paste(.unv(random), collapse=" + ")
@@ -157,7 +156,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 
   	
 		if (perform == "init" || ferror > 0) {
-		
+		  # BUILD EMPTY TABLE
 			posterior.results[[1]] <- list("Models"=null.name)
 		
 			for (model in all.models) {
@@ -168,16 +167,19 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 			}
 			
 			if (perform == "run" && ferror > 0){
-			  if (sperror == "interaction"){ 
+		    # IF ERROR: ERROR MESSAGE	
+        if (sperror == "interaction"){ 
           posterior[["error"]] <- list(errorType="badData", errorMessage="Interactions are only allowed when the corresponding main effects are specified")
 			  }
 			  if (sperror == "levels"){
           posterior[["error"]] <- list(errorType="badData", errorMessage="Factors must have 2 or more levels")
-			   }
+			  }
 		  }
-      
 		} 
-		if (perform == "run" && ferror == 0) {
+		
+    
+    
+    if (perform == "run" && ferror == 0) {
     
 			##ANALYSIS##
 
@@ -253,10 +255,11 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 						}
 					}
 			
-					if (abs > 0)
+					if (abs > 0){
 						custommtch[n1,n2] <- 1
+					}  
 				}
-			}
+			 }
 
 			##PROCESS RESULTS 
 			BFmain.c	<- c(1,BFmain)		
@@ -281,9 +284,10 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 				BF <- .clean(BFmain.c[n] )
 				error <- .clean(errormain[n]*100)
 		
-				if (n==1)
+				if (n==1){
 					error <- " "
-		
+				}
+        
 				model.name <-	modelscustom[n]
 				BFM <- .clean(BFmodels[n])
 
@@ -384,7 +388,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		schema <- list(fields=fields)
 		effect[["schema"]] <- schema
 		
-		if (length(options$modelTerms) > 0) {
+		if (options$dependent != "" && length(options$modelTerms) > 0) {
 		
 			effect.results <- list()
 
