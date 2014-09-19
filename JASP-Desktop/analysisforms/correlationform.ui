@@ -114,25 +114,25 @@
        <number>0</number>
       </property>
       <item row="1" column="0">
-       <widget class="BoundGroupBox" name="tails">
+       <widget class="BoundGroupBox" name="hypothesis">
         <property name="title">
-         <string>Test of Significance</string>
+         <string>Hypothesis</string>
         </property>
         <property name="flat">
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="1">
-          <widget class="QRadioButton" name="_2oneTailed">
+          <widget class="QRadioButton" name="_2correlatedInDirection">
            <property name="text">
-            <string>One-tailed</string>
+            <string>Correlated in direction (one-tailed)</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QRadioButton" name="_1twoTailed">
+          <widget class="QRadioButton" name="_1correlated">
            <property name="text">
-            <string>Two-tailed</string>
+            <string>Correlated</string>
            </property>
           </widget>
          </item>
