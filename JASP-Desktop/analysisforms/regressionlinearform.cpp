@@ -30,6 +30,20 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 
 	ui->panelStatistics->hide();
 	ui->panelOptions->hide();
+
+#ifdef QT_NO_DEBUG
+	ui->groupBoxResiduals->hide();
+	ui->groupBoxSteppingMethodCriteria->hide();
+	ui->partAndPartialCorrelations->hide();
+	ui->collinearityDiagnostics->hide();
+	ui->includeConstant->hide();
+#else
+	ui->groupBoxResiduals->setStyleSheet("background-color: pink ;");
+	ui->groupBoxSteppingMethodCriteria->setStyleSheet("background-color: pink ;");
+	ui->partAndPartialCorrelations->setStyleSheet("background-color: pink ;");
+	ui->collinearityDiagnostics->setStyleSheet("background-color: pink ;");
+	ui->includeConstant->setStyleSheet("background-color: pink ;");
+#endif
 }
 
 RegressionLinearForm::~RegressionLinearForm()

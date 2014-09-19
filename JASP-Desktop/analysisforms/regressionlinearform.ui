@@ -350,7 +350,7 @@
           <number>3</number>
          </property>
          <item row="1" column="0" colspan="2">
-          <widget class="QGroupBox" name="groupBox_3">
+          <widget class="QGroupBox" name="groupBoxResiduals">
            <property name="title">
             <string>Residuals</string>
            </property>
@@ -607,7 +607,7 @@
           <number>3</number>
          </property>
          <item row="0" column="0">
-          <widget class="QGroupBox" name="groupBox_4">
+          <widget class="QGroupBox" name="groupBoxSteppingMethodCriteria">
            <property name="title">
             <string>Stepping Method Criteria</string>
            </property>
