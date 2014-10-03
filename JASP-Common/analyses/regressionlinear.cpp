@@ -28,15 +28,15 @@ Options *RegressionLinear::createOptions() const
 
 	options->add("blocks", new OptionsTable(layerOptionsTemplate));
 
-	options->add("wlsWeights", new OptionVariables());
+    options->add("wlsWeights", new OptionVariable());
 
 
-	options->add("regressionCoefficients/estimates", new OptionBoolean());
+    options->add("regressionCoefficients/estimates", new OptionBoolean(true));
 	options->add("regressionCoefficients/confidenceIntervals", new OptionBoolean());
 	options->add("regressionCoefficients/confidenceIntervalsInterval", new OptionInteger(95));
 	options->add("regressionCoefficients/covarianceMatrix", new OptionBoolean());
 
-	options->add("modelFit", new OptionBoolean());
+	options->add("modelFit", new OptionBoolean(true));
 	options->add("rSquaredChange", new OptionBoolean());
 	options->add("descriptives", new OptionBoolean());
 	options->add("partAndPartialCorrelations", new OptionBoolean());
@@ -53,7 +53,7 @@ Options *RegressionLinear::createOptions() const
 	options->add("steppingMethodCriteria/fEntry", new OptionNumber(3.84));
 	options->add("steppingMethodCriteria/fRemoval", new OptionNumber(2.71));
 
-	options->add("includeConstant", new OptionBoolean());
+	options->add("includeConstant", new OptionBoolean(true));
 
 	options->add("missingValues", new OptionList(list("excludeCasesListwise", "excludeCasesPairwise", "replaceWithMeans")));
 
