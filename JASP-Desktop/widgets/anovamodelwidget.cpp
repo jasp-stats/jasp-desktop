@@ -60,6 +60,9 @@ AnovaModelWidget::AnovaModelWidget(QWidget *parent) :
 	QMenu *menu = new QMenu(ui->buttonAssignMenu);
 	menu->addActions(actions);
 	ui->buttonAssignMenu->setMenu(menu);
+
+	ui->listModelTerms->horizontalHeader()->setDefaultSectionSize(230);
+	ui->listModelTerms->horizontalHeader()->setStretchLastSection(true);
 }
 
 AnovaModelWidget::~AnovaModelWidget()

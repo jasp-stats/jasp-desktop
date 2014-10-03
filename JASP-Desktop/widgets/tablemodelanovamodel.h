@@ -25,6 +25,7 @@ public:
 	virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
 	virtual int rowCount(const QModelIndex &) const OVERRIDE;
 	virtual int columnCount(const QModelIndex &) const OVERRIDE;
+	virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) OVERRIDE;
 
 	virtual QStringList mimeTypes() const OVERRIDE;
 	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;

@@ -18,11 +18,8 @@ public:
 	explicit AncovaBayesianForm(QWidget *parent = 0);
 	~AncovaBayesianForm();
 
-	//virtual void set(Options *options, DataSet *dataSet) OVERRIDE;
-
 private slots:
 	void factorsChanged();
-	void dependentChanged();
 	
 private:
 	Ui::AncovaBayesianForm *ui;

@@ -40,6 +40,18 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 
 	results[[".meta"]] <- .meta
 	
+  
+  #######################################
+	###			   ANALYSIS			  ###
+	#######################################
+  
+	rm.factor.names <- c()
+	
+	for (factor in options$repeatedMeasuresFactors) {
+	  
+	  rm.factor.names <- c(rm.factor.names, factor$name)
+	}
+	
 	
 	anova <- list()
 	
