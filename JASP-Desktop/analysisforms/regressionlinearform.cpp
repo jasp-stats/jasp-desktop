@@ -40,6 +40,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->descriptives->hide();
 	ui->regressionCoefficients_covarianceMatrix->hide();
 	ui->widgetOptions->hide();
+	ui->widget_5->hide(); // wls weights
 #else
 	ui->groupBoxResiduals->setStyleSheet("background-color: pink ;");
 	ui->groupBoxSteppingMethodCriteria->setStyleSheet("background-color: pink ;");
@@ -49,6 +50,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->descriptives->setStyleSheet("background-color: pink ;");
 	ui->regressionCoefficients_covarianceMatrix->setStyleSheet("background-color: pink ;");
 	ui->widgetOptions->setStyleSheet("background-color: pink ;");
+	ui->widget_5->setStyleSheet("background-color: pink ;");
 #endif
 }
 
