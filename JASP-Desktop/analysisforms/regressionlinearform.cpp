@@ -37,12 +37,18 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->partAndPartialCorrelations->hide();
 	ui->collinearityDiagnostics->hide();
 	ui->includeConstant->hide();
+	ui->descriptives->hide();
+	ui->regressionCoefficients_covarianceMatrix->hide();
+	ui->widgetOptions->hide();
 #else
 	ui->groupBoxResiduals->setStyleSheet("background-color: pink ;");
 	ui->groupBoxSteppingMethodCriteria->setStyleSheet("background-color: pink ;");
 	ui->partAndPartialCorrelations->setStyleSheet("background-color: pink ;");
 	ui->collinearityDiagnostics->setStyleSheet("background-color: pink ;");
 	ui->includeConstant->setStyleSheet("background-color: pink ;");
+	ui->descriptives->setStyleSheet("background-color: pink ;");
+	ui->regressionCoefficients_covarianceMatrix->setStyleSheet("background-color: pink ;");
+	ui->widgetOptions->setStyleSheet("background-color: pink ;");
 #endif
 }
 
