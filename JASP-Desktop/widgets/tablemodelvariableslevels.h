@@ -40,6 +40,16 @@ public:
 
 	void setSource(TableModelVariablesAvailable *source);
 
+	void setVariableTypesSuggested(int variableTypesSuggested);
+	int variableTypesSuggested() const;
+	void setVariableTypesAllowed(int variableTypesAllowed);
+	int variableTypesAllowed() const;
+
+protected:
+
+	bool isSuggested(const Term &term) const;
+	bool isAllowed(const Term &term) const;
+
 private:
 
 	class Row
@@ -94,6 +104,9 @@ private:
 	QList<Row> _rows;
 	TableModelVariablesAvailable *_source;
 	void refresh();
+
+	int _variableTypesSuggested;
+	int _variableTypesAllowed;
 
 	QIcon _nominalTextIcon;
 	QIcon _nominalIcon;
