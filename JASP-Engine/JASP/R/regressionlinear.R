@@ -1,4 +1,3 @@
-
 RegressionLinear <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 	#######################################
 	###	   VARIABLE DECLARATION	   ##
@@ -22,7 +21,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 	if (is.null(dataset)) {
 		if (perform == "run") {
-			# casewise removal is the dafault in lm( ). MM
+			# casewise removal is the default in lm( ). MM
 			# if( options$missingValues == "excludeCasesListwise"){
 			#	dataset <- .readDataSetToEnd(columns.as.numeric = to.be.read.variables, exclude.na.listwise=to.be.read.variables)
 			#} else {
@@ -30,6 +29,79 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			#}
 		} else {
 			dataset <- .readDataSetHeader(columns.as.numeric = to.be.read.variables)
+		}
+	}
+
+	#######################################
+	###		    DATA QUALITY CHECK  	 ##
+	#######################################
+	ERROR <- list(number.of.errors = 0, error.messages = list())
+
+	if (perform == "run" && dependent.variable != ""){
+		#check weights
+		if ( options$wlsWeight != "") {
+			weight.base64 <- .v(wls.weight)
+			min.weight <- min(dataset[[ weight.base64 ]] )
+			if( is.finite(min.weight)) {
+				if (min.weight <= 0) {
+					ERROR$number.of.errors <- ERROR$number.of.errors + 1
+					ERROR$error.messages[[ ERROR$number.of.errors ]] <- paste("Nonpositive weights encountered in ", wls.weight,".",sep="")
+				}
+			} else {
+				ERROR$number.of.errors <- ERROR$number.of.errors + 1
+				ERROR$error.messages[[ ERROR$number.of.errors ]] <- paste("Infinities encountered in ", wls.weight,".",sep="")
+			}
+		}
+		
+		#check for data
+		number.of.rows <- length( dataset[[ .v(dependent.variable) ]])
+		number.of.columns <- 1 + length(independent.variables)
+		x <- matrix(0, number.of.rows, number.of.columns)
+		x[,1] <- as.numeric( dataset[[ .v(dependent.variable) ]])
+		if( number.of.columns > 1){
+			for (i in 1:(number.of.columns - 1)) {
+				x[,i+1] <- as.numeric( dataset[[ .v(independent.variables[ i ]) ]])
+			}
+		}
+
+		#remove NA's
+		x <- na.omit(x)
+
+		#check on number of valid observations.
+		n.valid.cases <- nrow(x)
+		if (n.valid.cases == 0) {
+			ERROR$number.of.errors <- ERROR$number.of.errors + 1
+			ERROR$error.messages[[ ERROR$number.of.errors ]] <- "No valid cases observed after listwise deletion of missing values."
+		}
+
+		#check for variance in variables.
+		number.of.values.vars <- sapply(1:ncol(x),function(i){length(unique(x[,i]))})
+		indicator <- which(number.of.values.vars <= 1)
+		if ( length(indicator) != 0 ){
+			ERROR$number.of.errors <- ERROR$number.of.errors + 1
+			if( number.of.values.vars[1] <= 1){
+				ERROR$error.messages[[ ERROR$number.of.errors ]] <- "No variance in dependent variable."
+			} else {
+				if(length(indicator) == 1){
+					ERROR$error.messages[[ ERROR$number.of.errors ]] <- paste("No variance in independent variable: ", independent.variables[indicator-1],".",sep="")
+				} else {
+					var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
+					ERROR$error.messages[[ ERROR$number.of.errors ]] <- paste("No variance in independent variable(s): ", var.names, ".", sep="")
+				}
+			}
+		}
+		
+		#check for Inf's in dataset.
+		column.sums <- colSums(x,na.rm=TRUE)
+		indicator <- which(is.infinite(column.sums))
+		if( length(indicator) > 0 ){
+			ERROR$number.of.errors <- ERROR$number.of.errors + 1
+			if( 1%in%indicator){
+				ERROR$error.messages[[ ERROR$number.of.errors ]] <- "Infinities encountered in dependent variable."
+			} else {
+				var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
+				ERROR$error.messages[[ ERROR$number.of.errors ]] <- paste("Infinities encountered in ", var.names,".",sep="")
+			}
 		}
 	}
 
@@ -50,30 +122,21 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	results[[".meta"]] <- .meta
 
 	#######################################
-	###		LINEAR REGRESSION		###
+	###	 	   LINEAR REGRESSION		###
 	#######################################
 
 	# Fit Linear Model
 	lm.model <- list()
 	empty.model <- list(lm.fit = NULL, variables = NULL)
-	weights.error <- FALSE
 
 	if (dependent.variable != "") {
 		dependent.base64 <- .v(dependent.variable)
 
-# Check if weights are all positive.
-# If not, an error should be placed somewhere. TODO(MM)
-# In case of error, unweighted estimation is used.
-		weights.error <- FALSE
-		weights. <- rep(1,length(dataset[[ dependent.base64 ]] ))
-		if (length(wls.weight) == 1 ) {
+		if (wls.weight != "" ) {
 			weight.base64 <- .v(wls.weight)
-			min.weight <- min(dataset[[ weight.base64 ]] )
-			if (min.weight > 0) {
-				weights. <- dataset[[ weight.base64 ]]
-			} else {
-				weights.error <- TRUE
-			}
+			weights. <- dataset[[ weight.base64 ]]
+		} else {
+			weights. <- rep(1,length(dataset[[ dependent.base64 ]] ))
 		}
 		
 		if (number.of.blocks > 0)
@@ -103,8 +166,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					
 					if (length(variables.in.model) > 0 ) {
 						independent.base64 <- .v(variables.in.model)
-						if (options$includeConstant == TRUE)
-						{
+						if (options$includeConstant == TRUE) {
 							model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"))
 						} else {
 							model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"), "-1")
@@ -118,17 +180,19 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						} else {
 							model.definition <- NULL #this model has no parameters
 						}
-						
 					}
 					
-					if (perform == "run" && !is.null(model.definition)) {
-						model.formula <- as.formula(model.definition)
-						lm.fit <- try(lm(model.formula, data = dataset, weights = weights.), silent = TRUE)
-						if ( class(lm.fit) == "lm") {
-							lm.model[[ b ]] <- list(lm.fit = lm.fit, variables = variables.in.model)
-						} else {
-							lm.model[[ b ]] <- list(lm.fit = NULL, variables = variables.in.model)
-						}
+					if (perform == "run" && !is.null(model.definition) && ERROR$number.of.errors == 0) {
+							model.formula <- as.formula(model.definition)
+							lm.fit <- try( stats::lm( model.formula, data = dataset, weights = weights. ), silent = TRUE)
+							if ( class(lm.fit) == "lm") {
+								lm.model[[ b ]] <- list(lm.fit = lm.fit, variables = variables.in.model)
+							} else {
+								ERROR$number.of.errors <- ERROR$number.of.errors + 1
+								ERROR$error.messages[[ERROR$number.of.errors]] <- "An unknown error occurred, please contact the author."
+								lm.model[[ b ]] <- list(lm.fit = NULL, variables = variables.in.model)
+							}
+						
 					} else {
 						lm.model[[ b ]] <- list(lm.fit = NULL, variables = variables.in.model)
 					}
@@ -201,9 +265,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 
 	}
-	
-# Model' variable descriptives
-# TODO(MM / JL)
 
 
 ################################################################################
@@ -233,7 +294,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	model.table[["schema"]] <- list(fields = fields)
 	table.rows <- list()
 	
-	if (perform == "run" && length(lm.model) > 0 ) {		
+	if (perform == "run" && length(lm.model) > 0 && ERROR$number.of.errors == 0 ) {
 		
 			for (m in 1:length(lm.model)) {
 				
@@ -282,12 +343,21 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				}
 			}
 	} else {
-		#To ensure that there is at least one empty model shown in the anova table if perform == init
-		number.of.init.models <- max(1, length(lm.model))
-
-		for (m in 1:number.of.init.models) {
-			table.rows[[ m ]] <- empty.line
-			table.rows[[ m ]]$"Model" <- as.integer(m)
+		if( ERROR$number.of.errors > 0){
+			if(ERROR$number.of.errors == 1){
+				model.table[["error"]] <- list(errorType="badData", errorMessage=ERROR$error.messages[[1]])
+			} else {
+				model.table[["error"]] <- list(errorType="badData", errorMessage= paste("The following errors were encountered: <br> <br>",
+																	paste(unlist(ERROR$error.messages),collapse="<br>"), sep=""))
+			}
+		} else {
+			#To ensure that there is at least one empty model shown in the anova table if perform == init
+			number.of.init.models <- max(1, length(lm.model))
+			
+			for (m in 1:number.of.init.models) {
+				table.rows[[ m ]] <- empty.line
+				table.rows[[ m ]]$"Model" <- as.integer(m)
+			}
 		}
 	}
 	model.table[["data"]] <- table.rows
@@ -297,7 +367,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 ################################################################################
 #							  MODEL ANOVA TABLE							   #
 ################################################################################
-	if (options$modelFit == TRUE) {
+	if (options$modelFit == TRUE & ERROR$number.of.errors == 0) {
 		anova <- list()
 		anova[["title"]] <- "ANOVA"
 		
@@ -419,7 +489,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 ################################################################################
 
 
-	if (options$regressionCoefficients[["estimates"]] == TRUE) {
+	if (options$regressionCoefficients[["estimates"]] == TRUE && ERROR$number.of.errors == 0) {
 		regression <- list()
 		regression[["title"]] <- "Coefficients"
 		
@@ -511,13 +581,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						}
 						len.reg <- len.reg + 1
 					}
-					sd.dep <- sd( dataset[[ dependent.base64 ]] )
+					sd.dep <- sd( dataset[[ dependent.base64 ]] ,na.rm = TRUE)
+print(sd.dep)
 					if (length(lm.model[[ m ]]$variables) > 0) {
 						variables.in.model <- lm.model[[ m ]]$variables
 
 						for (var in 1:length(variables.in.model)) {
-							sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]] )
-							
+							sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]] ,na.rm = TRUE)
+print(sd.ind)
 							regression.result[[ len.reg ]] <- empty.line
 							regression.result[[ len.reg ]]$"Model" <- ""
 							if (var == 1 && options$includeConstant == FALSE) {
