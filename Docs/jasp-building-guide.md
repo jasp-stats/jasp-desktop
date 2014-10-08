@@ -27,11 +27,11 @@ You should also copy the three files libgcc_s_seh-1.dll, libstdc++-6.dll and lib
  
 Mac OS X
 --------
-Qt: JASP build on OS X is pretty robust, and most versions works. We currently use 5.3.1, but newer versions will probably work too. You can download it from [here](https://qt-project.org/downloads).
+Qt: building JASP on OS X is pretty robust, and most versions work. We currently use 5.3.1, but newer versions will probably work too. You can download it from [here](https://qt-project.org/downloads).
 
 R: We provide a specially crafted R.framework [here](http://jasp-stats.org/development/R%20OSX%20for%20JASP%20%282014-09-09%29.zip)
 
-boost: 1.54.0 works, get it from [here](http://www.boost.org/users/history/version_1_54_0.html)
+boost: 1.54.0 works, get it from [here](http://www.boost.org/users/history/version_1_54_0.html) (though we do use boost 1.53.0 for 32-bit JASP)
 
 The directory structure should be as follows:
 

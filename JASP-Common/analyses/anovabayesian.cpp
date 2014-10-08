@@ -26,6 +26,7 @@ Options *AnovaBayesian::createOptions() const
 
 	Options *termsTemplate = new Options();
 	termsTemplate->add("components", new OptionVariables());
+	termsTemplate->add("isNuisance", new OptionBoolean());
 
 	options->add("modelTerms", new OptionsTable(termsTemplate));
 

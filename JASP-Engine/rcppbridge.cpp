@@ -278,8 +278,15 @@ void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool o
 {
 	Rcpp::CharacterVector labels;
 
-	for (int i = 0; i < levels.size(); i++)
-		labels.push_back(levels.at(i).text());
+	if (levels.size() == 0)
+	{
+		labels.push_back(".");
+	}
+	else
+	{
+		for (int i = 0; i < levels.size(); i++)
+			labels.push_back(levels.at(i).text());
+	}
 
 	v.attr("levels") = labels;
 

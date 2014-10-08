@@ -38,22 +38,46 @@ void Analysis::init()
 {
 	_status = Initing;
 
-	_results = _r->init(_name, options()->asJSON());
+	Json::Value returned = _r->init(_name, options()->asJSON());
 
-	_status = Inited;
+	string status = returned.get("status", "").asString();
+
+	if (status != "")
+	{
+		if (status == "complete")
+			_status = Complete;
+		else
+			_status = Inited;
+
+		_results = returned.get("results", Json::nullValue);
+	}
+	else
+	{
+		_results = returned;
+		_status = Inited;
+	}
+
 	resultsChanged(this);
 }
 
 void Analysis::run()
 {
 	_status = Running;
-	_results = _r->run(_name, options()->asJSON(), boost::bind(&Analysis::callback, this, _1));
+
+	Json::Value returned = _r->run(_name, options()->asJSON(), boost::bind(&Analysis::callback, this, _1));
 
 	// status can be changed by subsequent messages, so we have to see if the analysis has
 	// changed. if it has, then we shouldn't bother sending the results
 
 	if (_status == Running)
 	{
+		Json::Value status = returned.get("status", Json::nullValue);
+
+		if (status != Json::nullValue)
+			_results = returned.get("results", Json::nullValue);
+		else
+			_results = returned;
+
 		_status = Complete;
 		resultsChanged(this);
 	}

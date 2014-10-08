@@ -60,16 +60,10 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->groupComareMainEffects->hide();
-	ui->groupOptions->hide();
-	ui->groupComareMainEffects->hide();
-	ui->groupPostHocOptions->hide();
-	ui->groupEqualVariances->hide();
+	ui->marginalMeansContainer->hide();
 #else
 	ui->groupComareMainEffects->setStyleSheet("background-color: pink ;");
-	ui->groupOptions->setStyleSheet("background-color: pink ;");
-	ui->groupComareMainEffects->setStyleSheet("background-color: pink ;");
-	ui->groupPostHocOptions->setStyleSheet("background-color: pink ;");
-	ui->groupEqualVariances->setStyleSheet("background-color: pink ;");
+	ui->marginalMeansContainer->setStyleSheet("background-color: pink ;");
 #endif
 
 }

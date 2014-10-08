@@ -22,6 +22,7 @@ public:
 	BoundListView(QWidget *parent = 0);
 
 	virtual void bindTo(Option *option) OVERRIDE;
+	virtual void unbind() OVERRIDE;
 
 	void setAssignButton(AssignButton *button);
 	void setAvailableFieldsListView(AvailableFieldsListView *listView);

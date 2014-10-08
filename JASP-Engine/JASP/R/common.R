@@ -56,17 +56,24 @@ run <- function(name, options.as.json.string) {
 	{
 		rows.to.exclude <- c()
 		
-		for (col in .v(exclude.na.listwise)) {
-			
+		for (col in .v(exclude.na.listwise))
 			rows.to.exclude <- c(rows.to.exclude, which(is.na(dataset[[col]])))
-		}
 		
 		rows.to.exclude <- unique(rows.to.exclude)
 
 		rows.to.keep <- 1:dim(dataset)[1]
 		rows.to.keep <- rows.to.keep[ ! rows.to.keep %in% rows.to.exclude]
 		
-		dataset <- dataset[rows.to.keep,]
+		new.dataset <- dataset[rows.to.keep,]
+		
+		if (class(new.dataset) != "data.frame") {   # HACK! if only one column, R turns it into a factor (because it's stupid)
+		
+			dataset <- na.omit(dataset)
+			
+		} else {
+		
+			dataset <- new.dataset
+		}
 	}
 	
 	dataset

@@ -238,6 +238,7 @@ void MainWindow::showForm(Analysis *analysis)
 	if (_currentOptionsWidget != NULL)
 	{
 		_currentOptionsWidget->hide();
+		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
 	}
 
@@ -246,7 +247,7 @@ void MainWindow::showForm(Analysis *analysis)
 	if (_currentOptionsWidget != NULL)
 	{
 		Options *options = analysis->options();
-		_currentOptionsWidget->set(options, _dataSet);
+		_currentOptionsWidget->bindTo(options, _dataSet);
 
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);
@@ -489,6 +490,13 @@ void MainWindow::repositionButtonPanel(int parentWidth)
 
 void MainWindow::analysisOKed()
 {
+	if (_currentOptionsWidget != NULL)
+	{
+		_currentOptionsWidget->hide();
+		_currentOptionsWidget->unbind();
+		_currentOptionsWidget = NULL;
+	}
+
 	ui->pageOptions->hide();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.unselect()");
 	ui->tableView->show();
@@ -496,6 +504,13 @@ void MainWindow::analysisOKed()
 
 void MainWindow::analysisRemoved()
 {
+	if (_currentOptionsWidget != NULL)
+	{
+		_currentOptionsWidget->hide();
+		_currentOptionsWidget->unbind();
+		_currentOptionsWidget = NULL;
+	}
+
 	ui->pageOptions->hide();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
 	ui->tableView->show();

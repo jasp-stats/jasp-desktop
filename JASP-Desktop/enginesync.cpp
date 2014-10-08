@@ -156,26 +156,23 @@ void EngineSync::process()
 			Json::Value results = json.get("results", Json::nullValue);
 			string status = json.get("status", "error").asString();
 
-			if (analysis->status() == Analysis::Initing)
+			if (status == "complete")
 			{
-				analysis->setStatus(Analysis::Inited);
+				analysis->setStatus(Analysis::Complete);
 				analysis->setResults(results);
 				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
 			else if (analysis->status() == Analysis::Running)
 			{
-				if (status == "complete")
-				{
-					analysis->setStatus(Analysis::Complete);
-					analysis->setResults(results);
-					_analysesInProgress[i] = NULL;
-					sendMessages();
-				}
-				else
-				{
-					analysis->setResults(results);
-				}
+				analysis->setResults(results);
+			}
+			else if (analysis->status() == Analysis::Initing)
+			{
+				analysis->setStatus(Analysis::Inited);
+				analysis->setResults(results);
+				_analysesInProgress[i] = NULL;
+				sendMessages();
 			}
 			else
 			{

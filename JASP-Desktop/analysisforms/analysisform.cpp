@@ -21,7 +21,7 @@ AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 	_mainVariables = NULL;
 }
 
-void AnalysisForm::set(Options *options, DataSet *dataSet)
+void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 {
 	_dataSet = dataSet;
 
@@ -53,6 +53,24 @@ void AnalysisForm::set(Options *options, DataSet *dataSet)
 	}
 
 
+}
+
+void AnalysisForm::unbind()
+{
+	BOOST_FOREACH(const string &name, _options->names)
+	{
+		Option *option = _options->get(name);
+
+		QString qsName = QString::fromUtf8(name.c_str(), name.length());
+		qsName.replace('/', '_');
+
+		QWidget *child = this->findChild<QWidget*>(qsName);
+
+		Bound *boundChild = dynamic_cast<Bound*>(child);
+
+		if (boundChild != NULL)
+			boundChild->unbind();
+	}
 }
 
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const

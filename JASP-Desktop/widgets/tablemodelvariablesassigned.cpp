@@ -45,6 +45,11 @@ void TableModelVariablesAssigned::bindTo(Option *option)
 	}
 }
 
+void TableModelVariablesAssigned::unbind()
+{
+	_boundTo = NULL;
+}
+
 void TableModelVariablesAssigned::setSource(TableModelVariablesAvailable *source)
 {
 	_source = source;
