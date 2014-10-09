@@ -341,21 +341,29 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 				_levels.push_back(options);
 			}
 
-			Options *levelOption = _levels.at(level);
-			OptionVariables *variablesOption = dynamic_cast<OptionVariables*>(levelOption->get("variables"));
-			vector<string> currentVariables = variablesOption->variables();
+			Options *levelDroppedOn = _levels.at(level);
+			OptionVariables *variablesOption = dynamic_cast<OptionVariables*>(levelDroppedOn->get("variables"));
+			Terms currentVariables = variablesOption->variables();
 
 			foreach (const Term &variable, variables)
 			{
-				vector<string>::iterator insertionPoint = currentVariables.begin();
-				for (int i = 0; i < positionInLevel; i++)
-					insertionPoint++;
-
-				currentVariables.insert(insertionPoint, variable.asString());
+				currentVariables.insert(positionInLevel, variable);
 				positionInLevel++;
 			}
 
-			variablesOption->setValue(currentVariables);
+			variablesOption->setValue(currentVariables.asVector());
+
+			foreach (Options *level, _levels)
+			{
+				if (level == levelDroppedOn)
+					continue;
+
+				OptionVariables *variablesOption = dynamic_cast<OptionVariables*>(level->get("variables"));
+				Terms currentVariables = variablesOption->variables();
+
+				currentVariables.remove(variables);
+				variablesOption->setValue(currentVariables.asVector());
+			}
 
 			_boundTo->setValue(_levels);
 
