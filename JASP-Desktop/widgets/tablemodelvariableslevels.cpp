@@ -345,14 +345,14 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 			OptionVariables *variablesOption = dynamic_cast<OptionVariables*>(levelOption->get("variables"));
 			vector<string> currentVariables = variablesOption->variables();
 
-			vector<string>::iterator insertionPoint = currentVariables.begin();
-			for (int i = 0; i < positionInLevel; i++)
-				insertionPoint++;
-
 			foreach (const Term &variable, variables)
 			{
+				vector<string>::iterator insertionPoint = currentVariables.begin();
+				for (int i = 0; i < positionInLevel; i++)
+					insertionPoint++;
+
 				currentVariables.insert(insertionPoint, variable.asString());
-				insertionPoint++;
+				positionInLevel++;
 			}
 
 			variablesOption->setValue(currentVariables);
