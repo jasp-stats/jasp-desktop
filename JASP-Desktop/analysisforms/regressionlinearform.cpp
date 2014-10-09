@@ -7,6 +7,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->listAvailableFields->setModel(&this->_availableVariablesModel);
 
 	_dependentModel = new TableModelVariablesAssigned();
