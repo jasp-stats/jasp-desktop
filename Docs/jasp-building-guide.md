@@ -27,6 +27,8 @@ You should also copy the three files libgcc_s_seh-1.dll, libstdc++-6.dll and lib
  
 Mac OS X
 --------
+XCode: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
+
 Qt: building JASP on OS X is pretty robust, and most versions work. We currently use 5.3.1, but newer versions will probably work too. You can download it from [here](https://qt-project.org/downloads).
 
 R: We provide a specially crafted R.framework [here](http://jasp-stats.org/development/R%20OSX%20for%20JASP%20%282014-09-09%29.zip)
