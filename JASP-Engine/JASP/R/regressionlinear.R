@@ -21,11 +21,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	if (is.null(dataset)) {
 		if (perform == "run") {
-			# if ( options$missingValues == "excludeCasesListwise"){
-			#	dataset <- .readDataSetToEnd(columns.as.numeric = to.be.read.variables, exclude.na.listwise=to.be.read.variables)
-			#} else {
-			dataset <- .readDataSetToEnd(columns.as.numeric = to.be.read.variables)
-			#}
+				dataset <- .readDataSetToEnd(columns.as.numeric = to.be.read.variables, exclude.na.listwise=to.be.read.variables)
 		} else {
 			dataset <- .readDataSetHeader(columns.as.numeric = to.be.read.variables)
 		}
@@ -61,9 +57,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				x[,i+1] <- as.numeric( dataset[[ .v(independent.variables[ i ]) ]])
 			}
 		}
-		
-		#remove NA's
-		x <- na.omit(x)
 		
 		#check on number of valid observations.
 		n.valid.cases <- nrow(x)
@@ -423,7 +416,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				if ( class(lm.model[[ m ]]$lm.fit) == "lm" && length( lm.model[[m]]$variables) > 0) {
 					
 					lm.summary <- summary(lm.model[[ m ]]$lm.fit)
-# Should we round to ensure that ss.model + ss.residual = ss.total?
 					
 					F			   <- lm.summary$fstatistic[1]
 					mss.residual	<- (lm.summary$sigma) ^2
@@ -561,12 +553,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						}
 						len.reg <- len.reg + 1
 					}
-					sd.dep <- sd( dataset[[ dependent.base64 ]] ,na.rm = TRUE)
+					sd.dep <- sd( dataset[[ dependent.base64 ]])
 					if (length(lm.model[[ m ]]$variables) > 0) {
 						variables.in.model <- lm.model[[ m ]]$variables
 						
 						for (var in 1:length(variables.in.model)) {
-							sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]] ,na.rm = TRUE)
+							sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]])
 							
 							regression.result[[ len.reg ]] <- empty.line
 							regression.result[[ len.reg ]]$"Model" <- ""
