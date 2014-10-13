@@ -164,7 +164,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
 	string results = analysis->asJSON().toStyledString();
 
-	QString eval = tq("window.analysisChanged(" + results + ")");
+    QString eval = tq("window.analysisChanged(JSON.parse('" + results + "'));").replace("\n", "");
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
 }
