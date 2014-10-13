@@ -38,6 +38,7 @@ unix:ICON = icon.icns
 windows:RC_FILE = icon.rc
 
 windows:LIBS += -lole32 -loleaut32
+  linux:LIBS += -lrt
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
