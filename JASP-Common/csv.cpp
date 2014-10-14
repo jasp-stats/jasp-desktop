@@ -213,9 +213,9 @@ void CSV::determineDelimiters()
 {
 	bool inQuote = false;
 
-	enum { COMMA = 0, SEMICOLON = 1, SPACE = 2 };
+	enum { COMMA = 0, SEMICOLON = 1, SPACE = 2, TAB = 3 };
 
-	int counts[] = { 0, 0, 0 };
+	int counts[] = { 0, 0, 0, 0 };
 
 	for (int i = 0; i < _utf8BufferEndPos; i++)
 	{
@@ -238,11 +238,14 @@ void CSV::determineDelimiters()
 		case ' ':
 			counts[SPACE]++;
 			break;
+		case '\t':
+			counts[TAB]++;
+			break;
 		}
 	}
 
 	int maxi = 0;
-	for (int i = 1; i < 3; i++)
+	for (int i = 1; i < 4; i++)
 	{
 		if (counts[maxi] < counts[i])
 			maxi = i;
@@ -255,6 +258,9 @@ void CSV::determineDelimiters()
 		break;
 	case SPACE:
 		_delim = ' ';
+		break;
+	case TAB:
+		_delim = '\t';
 		break;
 	default:
 		_delim = ',';
