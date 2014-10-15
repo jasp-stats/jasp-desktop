@@ -48,7 +48,7 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
             
             ####ERRORS#####################
             
-            errorcheck <-    .checkerrors(options, dataset)
+            errorcheck <-    .checkerrors(options, dataset, perform)
             specific.error <- errorcheck$specific.error
             error.present <- errorcheck$error.present
             
@@ -179,6 +179,19 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
             if (specific.error == "levels"){
                 posterior[["error"]] <- list(errorType="badData", errorMessage="Factors must have 2 or more levels")
             }
+            if (specific.error == "observed levels"){
+            	observed.levels <- vector(length = length(options$fixedFactors))
+            	counter <- 0
+            	for (fact in options$fixedFactors) {
+            		counter <- counter + 1
+            		observed.levels[counter] <- length(unique(dataset[[.v(fact)]]))
+            	}
+            	factor.names <- unlist(options$fixedFactors[which(observed.levels < 2)])
+            	if(length(fact) > 1){
+            		factor.names <- paste(factor.names,collapse=", ")
+            	} 	
+            	posterior[["error"]] <- list(errorType="badData", errorMessage=paste("After removing cases with missing values, less than 2 levels were observed for: ", factor.names,".",sep=""))								
+            }            
             if (specific.error =="all nuisance"){
                 posterior[["error"]] <- list(errorType="badData", errorMessage="All modelterms are specified as nuisance")
             }
@@ -481,7 +494,7 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
 #########################################################
 ##########SUPPORTING FUNCTIONS###########################
 #########################################################
-.checkerrors <- function(options, dataset)    { 
+.checkerrors <- function(options, dataset,perform)    { 
     
     # Error messages 
     specific.error <- "none"
@@ -495,7 +508,15 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
             specific.error <- "levels"
         } 
     }
-    
+    # error message when less than two levels are observed for a factor
+    if(perform == "run"){
+    	for (fact in options$fixedFactors) {
+    		if (length(unique(dataset[[.v(fact)]])) < 2){
+    			error.present <- 1
+    			specific.error <- "observed levels"
+    		} 
+    	}
+    }    
     # error message when interaction specified without main effect
     
     for (term in options$modelTerms) {
