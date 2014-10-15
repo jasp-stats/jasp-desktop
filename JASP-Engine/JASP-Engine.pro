@@ -68,7 +68,6 @@ unix:LIBS += \
 	-L$$R_HOME/lib -lR
 
 linux:LIBS += \
-	-L$$R_HOME/library/Rcpp/lib -lRcpp \
 	-lrt
 
 win32:LIBS += \
