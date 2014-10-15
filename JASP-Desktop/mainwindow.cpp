@@ -162,11 +162,13 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
-	string results = analysis->asJSON().toStyledString();
+	QString results = tq(analysis->asJSON().toStyledString());
 
-    QString eval = tq("window.analysisChanged(JSON.parse('" + results + "'));").replace("\n", "");
+	results = results.replace("'", "\\'");
+	results = results.replace("\n", "");
+	results = "window.analysisChanged(JSON.parse('" + results + "'));";
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
 }
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
