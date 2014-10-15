@@ -149,8 +149,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							variables.in.model <- variables.in.model[ variables.in.model != ""]
 						}
 					}
-					# This is a bug, and should be fixed in GUI. TODO(JL)
-					variables.in.model <- unique(variables.in.model)
 					
 					if (length(variables.in.model) > 0 ) {
 						independent.base64 <- .v(variables.in.model)
