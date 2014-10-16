@@ -310,17 +310,21 @@ $.widget("jasp.table", {
 
 		for (var i = 0; i < indices.length; i++) {
 		
-			if (i < this.options.footnotes.length) {
+			var index = indices[i]
 		
-				var footnote = this.options.footnotes[i]
-				if (typeof footnote.symbol != "undefined")
-					footnotes[i] = footnote.symbol
+			if (index < this.options.footnotes.length) {
+		
+				var footnote = this.options.footnotes[index]
+				if (typeof footnote.symbol == "undefined")
+					footnotes[i] = this._symbol(index)
+				else if (_.isNumber(footnote.symbol))
+					footnotes[i] = this._symbol(footnote.symbol)
 				else
-					footnotes[i] = this._symbol(indices[i])
+					footnotes[i] = footnote.symbol
 			}
 			else {
 			
-				footnotes[i] = this._symbol(indices[i])			
+				footnotes[i] = this._symbol(index)			
 			}
 			
 		}
@@ -348,11 +352,23 @@ $.widget("jasp.table", {
 			var columnName = columnDef.name
 			var title = (typeof columnDef.title != "undefined") ? columnDef.title : columnName
 			
-			columnHeaders[colNo] = { content : title, header : true }
+			var columnHeader = { content : title, header : true }
+
+			// At the moment this only supports combining two column headers
+			// Support for multiple can be added when necessary
+
+			if (columnDef.combineHeaders) {
+			
+				if (colNo + 1 < columnCount && columnDefs[colNo + 1].combineHeaders && columnDef.title == columnDefs[colNo + 1].title)
+					columnHeader.span = 2
+				else if (colNo - 1 >= 0 && columnDefs[colNo - 1].combineHeaders && columnDef.title == columnDefs[colNo - 1].title)
+					columnHeader.span = 0
+			}
 			
 			if (typeof columnDef[".footnotes"] != "undefined")
-				columnHeaders[colNo].footnotes = this._getFootnotes(columnDef[".footnotes"])
-			
+				columnHeader.footnotes = this._getFootnotes(columnDef[".footnotes"])
+
+			columnHeaders[colNo] = columnHeader			
 			
 			// populate cells column-wise
 			
@@ -523,10 +539,20 @@ $.widget("jasp.table", {
 		for (var colNo = 0; colNo < columnHeaders.length; colNo++) {
 
 			var cell = columnHeaders[colNo]
-			chunks.push('<th colspan="2" nowrap>' + cell.content)
-			if (cell.footnotes)
-				chunks.push(cell.footnotes.join(' '))
-			chunks.push('</th>')
+			
+			var span = cell.span
+			if (typeof span == "undefined")
+				span = 1
+				
+			if (span) {
+
+				span *= 2  // times 2, because of footnote markers
+			
+				chunks.push('<th colspan="' + span + '" nowrap>' + cell.content)
+				if (cell.footnotes)
+					chunks.push(cell.footnotes.join(' '))
+				chunks.push('</th>')
+			}
 
 		}
 				
@@ -616,7 +642,11 @@ $.widget("jasp.table", {
 				
 				if (_.has(footnote, "symbol")) {
 				
-					chunks.push(footnote.symbol + '&nbsp;')
+					if (_.isNumber(footnote.symbol))
+						chunks.push(this._symbol(footnote.symbol) + '&nbsp;')
+					else
+						chunks.push(footnote.symbol + '&nbsp;')
+						
 					chunks.push(footnote.text)
 				}
 				

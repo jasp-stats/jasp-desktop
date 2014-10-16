@@ -554,5 +554,19 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	}
 
-	results
+	if (perform == "init") {
+	
+		if (length(variables) == 0) {
+		
+			return(list(results=results, status="complete"))
+			
+		} else {
+		
+			return(list(results=results, status="inited"))
+		}
+		
+	} else {
+	
+		return(list(results=results, status="complete"))
+	}
 }

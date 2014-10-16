@@ -37,17 +37,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	ttest <- list()
 	descriptives <- list()
 	
-
-	if (options$hypothesis == "notEqualToTestValue") {
-
-		ttest[["title"]] <- "One Sample T-Test"
-	
-	} else {
-	
-		ttest[["title"]] <- "One Tailed One Sample T-Test"	
-	}
-	
-
+	ttest[["title"]] <- "One Sample T-Test"
 
 	fields <- list(
 		list(name=".variable", type="string", title=""),
@@ -62,32 +52,49 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	
 	if (options$confidenceInterval) {
 	
-		fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4;dp:3")
-		fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4;dp:3")
+		interval <- 100 * options$confidenceIntervalInterval
+		title    <- paste(interval, "% Confidence Interval", sep="")
+
+		fields[[length(fields) + 1]] <- list(name="lowerCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
+		fields[[length(fields) + 1]] <- list(name="upperCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
 	}
 	
 	ttest[["schema"]] <- list(fields=fields)
 	
-	ttest.results <- list()
+	footnotes <- .newFootnotes()
+	
+	if (options$hypothesis == "greaterThanTestValue") {
+
+		message <- paste("All tests, hypothesis is sample mean is greater than ", options$testValue, sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		
+		testType <- "greater"
+
+	} else if (options$hypothesis == "lessThanTestValue") {
+
+		message <- paste("All tests, hypothesis is sample mean is less than ", options$testValue, sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		
+		testType <- "less"
+		
+	} else {
+
+		if (options$testValue != 0) {
+		
+			message <- paste("All tests, hypothesis is sample mean is different to ", options$testValue, sep="")
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		}
+	
+		testType <- "two.sided"	
+	}
+	
+	ttest.rows <- list()
 	
 	for (variable in options[["variables"]]) {
 
 		if (perform == "run") {
 
 			result <- try (silent = TRUE, expr = {
-		
-				if (options$hypothesis == "greaterThanTestValue") {
-
-					testType <- "greater"
-
-				} else if (options$hypothesis == "lessThanTestValue") {
-
-					testType <- "less"
-
-				} else {
-			
-					testType <- "two.sided"
-				}
 			
 				r <- t.test(dataset[[ .v(variable) ]], alternative=testType, mu=options$testValue,
 							conf.level=options$confidenceIntervalInterval)
@@ -99,24 +106,43 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 				ciLow <- .clean(as.numeric(r$conf.int[1]) - as.numeric(r$null.value)) 
 				ciUp  <- .clean(as.numeric(r$conf.int[2]) - as.numeric(r$null.value)) 
 			
-				list(.variable=variable, t=t, df=df, p=p, "Mean Difference"=m, "Lower CI"=ciLow, "Upper CI"=ciUp)
+				list(.variable=variable, t=t, df=df, p=p, "Mean Difference"=m, "lowerCI"=ciLow, "upperCI"=ciUp)
 			})
 				
 			if (class(result) == "try-error") {
+			
+				errorMessage <- .extractErrorMessage(result)
+						
+				if (errorMessage == "missing value where TRUE/FALSE needed") {
+				
+					errorMessage <- paste("t-statistic is undefined - the sample contains infinity")
+					
+				} else if (errorMessage == "data are essentially constant") {
+				
+					errorMessage <- paste("t-statistic is undefined - the sample contains all the same value (the variance is zero)")
+				
+				} else if (errorMessage == "not enough 'x' observations") {
+					
+					errorMessage <- "t-statistic is undefined - sample contains only one value"
+						
+				}
+				
+				index <- .addFootnote(footnotes, errorMessage)
 		
-				result <- list(.variable=variable, t="", df="", p="", "Mean Difference"="", "Lower CI"="", "Upper CI"="")
+				result <- list(.variable=variable, t=.clean(NaN), df="", p="", "Mean Difference"="", "lowerCI"="", "upperCI"="", .footnotes=list(t=list(index)))
 			}
 			
 		} else {
 
-			result <- list(.variable=variable, t=".", df=".", p=".", "Mean Difference"=".", "Lower CI"=".", "Upper CI"=".")
+			result <- list(.variable=variable, t=".", df=".", p=".", "Mean Difference"=".", "lowerCI"=".", "upperCI"=".")
 		
 		}
 		
-		ttest.results[[length(ttest.results)+1]] <- result
+		ttest.rows[[length(ttest.rows)+1]] <- result
 	}
 	
-	ttest[["data"]] <- ttest.results
+	ttest[["data"]] <- ttest.rows
+	ttest[["footnotes"]] <- as.list(footnotes)
 	
 	
 

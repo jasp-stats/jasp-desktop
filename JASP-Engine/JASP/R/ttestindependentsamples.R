@@ -87,7 +87,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		} else {
 		
 			rowNo <- 1
-			groupingVar <- dataset[[ .v(options$groupingVariable) ]]
+			groupingData <- dataset[[ .v(options$groupingVariable) ]]
 		
 			for (variable in options[["variables"]]) {
 		
@@ -95,7 +95,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			
 					variableData <- dataset[[ .v(variable) ]]
 				
-					groupData <- variableData[groupingVar == level]
+					groupData <- variableData[groupingData == level]
 					groupDataOm <- na.omit(groupData)
 
 					if (class(groupDataOm) != "factor") {
@@ -130,15 +130,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 	ttest <- list()
 
-	
-	if (options$hypothesis == "groupsNotEqual") {
-
-		ttest[["title"]] <- "Independent Samples T-Test"
-		
-	} else {
-
-		ttest[["title"]] <- "One Tailed Independent Samples T-Test"
-	}
+	ttest[["title"]] <- "Independent Samples T-Test"
 
 	fields <- list(
 		list(name=".variable", title="", type="string", combine=TRUE))
@@ -148,7 +140,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		fields[[length(fields)+1]] <- list(name="Variances", type="string")
 	}
 	
-	fields[[length(fields)+1]] <- list(name="t", type="number", format="sf:4;dp:3", combine=TRUE)
+	fields[[length(fields)+1]] <- list(name="t", type="number", format="sf:4;dp:3")
 	fields[[length(fields)+1]] <- list(name="df", type="number", format="sf:4;dp:3")
 	fields[[length(fields)+1]] <- list(name="p", type="number", format="dp:3;p:.001")
 
@@ -159,53 +151,67 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	}
 	
 	if (options$confidenceInterval) {
+
+		interval <- 100 * options$confidenceIntervalInterval
+		title    <- paste(interval, "% Confidence Interval", sep="")
 	
-		fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4;dp:3")
-		fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="lowerCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
+		fields[[length(fields) + 1]] <- list(name="upperCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
 		
 	}
 		
 	ttest[["schema"]] <- list(fields=fields)
 	
-	ttest.results <- list()
+	ttest.rows <- list()
 	
 	if (options$equalityOfVariances == "reportBoth") {
 
 		for (variable in options[["variables"]]) {
 
-			ttest.results[[length(ttest.results)+1]] <- list(.variable=variable, "Variances"="assumed equal")
-			ttest.results[[length(ttest.results)+1]] <- list(.variable=variable, "Variances"="no assumption")
+			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, "Variances"="assumed equal")
+			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, "Variances"="no assumption")
 		}
 		
 	} else {
 	
 		for (variable in options[["variables"]]) {
 
-			ttest.results[[length(ttest.results)+1]] <- list(.variable=variable)
+			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable)
 		}
 	}
+	
+	
+	footnotes <- .newFootnotes()
 
+	if (options$equalityOfVariances == "assumeEqual")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text="All tests, variances of groups assumed equal")
+	if (options$equalityOfVariances == "noAssumption")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text="All tests, variances of groups not assumed equal")
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 
 		levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
-				
+		
 		if (length(levels) != 2) {
 		
 			ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
 			
 		} else {
 		
-			variance.assumption.violated <- FALSE
-		
 			if (options$hypothesis == "groupOneGreater") {
-		
-				testType <- "less"
-			
-			} else if (options$hypothesis == "groupTwoGreater") {
-		
+
+				message <- paste("All tests, hypothesis is group <em>", levels[1], "</em> greater than group <em>", levels[2], "</em>", sep="")
+				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+				
 				testType <- "greater"
-			
+		
+			} else if (options$hypothesis == "groupTwoGreater") {
+	
+				message <- paste("All tests, hypothesis is group <em>", levels[1], "</em> less than group <em>", levels[2], "</em>", sep="")
+				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+
+				testType <- "less"
+				
 			} else {
 		
 				testType <- "two.sided"
@@ -227,17 +233,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 				assumption=c("assumed equal", "no assumption")
 			}
 		
-			groupingVar <- dataset[[ .v(options$groupingVariable) ]]
+			groupingData <- dataset[[ .v(options$groupingVariable) ]]
 			rowNo <- 1
 			
-			violation.footnote.index <- 0
-			
-			if (options$hypothesis != "groupsNotEqual")
-				violation.footnote.index <- violation.footnote.index + 1
-			
-			if (options$equalityOfVariances != "reportBoth")
-				violation.footnote.index <- violation.footnote.index + 1
-		
 			for (variable in options[["variables"]]) {
 
 				variableData <- dataset[[ .v(variable) ]]
@@ -246,24 +244,24 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 				
 					result <- try (silent=FALSE, expr= {
 					
+						row.footnotes <- NULL
+
 						assume.equal = assume[i]
+						
+						f <- as.formula(paste(.v(variable), "~", .v(options$groupingVariable)))
 
-						r <- t.test(variableData ~ groupingVar, alternative=testType,
-									var.equal=assume.equal, conf.level=options$confidenceIntervalInterval)
-
-						variance.assumption.violated.now <- FALSE
+						r <- t.test(f, data=dataset, alternative=testType, var.equal=assume.equal, conf.level=options$confidenceIntervalInterval)
 
 						if (assume.equal) {
 					
-							levene <- car::leveneTest(variableData, groupingVar, "mean")
+							levene <- car::leveneTest(variableData, groupingData, "mean")
 							
 							if ( ! is.na(levene[1,3]) && levene[1,3] < .05) {
 						
-								variance.assumption.violated <- TRUE
-								variance.assumption.violated.now <- TRUE
+								foot.index <- .addFootnote(footnotes, "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption")
+								row.footnotes <- list(p=list(foot.index))
 							}
 						}
-									
 					
 						t <- as.numeric(r$statistic)
 						df <- as.numeric(r$parameter)
@@ -285,51 +283,52 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 							sed <- ""# .clean((m - ciLow) / (qt(options$confidenceIntervalInterval,r$parameter)))
 						}
 					
-						if (variance.assumption.violated.now && assume.equal) {
-					
-							list(.variable=variable, "Variances"=assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
-								 "Lower CI"=ciLow, "Upper CI"=ciUp, "Std. Error Difference"=sed, ".footnotes"=list("p"=list(violation.footnote.index)))
-							 
-						} else {
-					
-							list(.variable=variable, "Variances" = assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
-								 "Lower CI"=ciLow, "Upper CI"=ciUp, "Std. Error Difference"=sed)					
-						}
+						list(.variable=variable, "Variances"=assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
+							 "lowerCI"=ciLow, "upperCI"=ciUp, "Std. Error Difference"=sed, ".footnotes"=row.footnotes)
+						
 					})
 
 					if (class(result) == "try-error") {
+					
+						errorMessage <- .extractErrorMessage(result)
+						
+						if (errorMessage == "missing value where TRUE/FALSE needed" && any(is.finite(variableData) == FALSE)) {
+						
+							errorMessage <- "t-statistic is undefined - the dependent variable contains infinity"
+							
+						} else if (errorMessage == "grouping factor must have exactly 2 levels") {
+						
+							# We know that the grouping factor *does* have two levels, because we've checked this earlier on
+							# This error means that all of one factor has been excluded because of missing values in the dependent
+							
+							errorMessage <- "t-statistic is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
+							
+						} else if (errorMessage == "data are essentially constant") {
+						
+							errorMessage <- "t-statistic is undefined - one or both levels of the dependent contains all the same value (the variance is zero)"
+							
+						} else if (errorMessage == "not enough observations") {
+					
+							errorMessage <- "t-statistic is undefined - one or both levels of the dependent contain too few observations"
+						}
+						
+						index <- .addFootnote(footnotes, errorMessage)
 				
-						result <- list(.variable=variable, "Variances"=assumption[i], t="", df="", p="", "Mean Difference"="",
-								"Lower CI"="", "Upper CI"="", "Std. Error Difference"="")
+						result <- list(.variable=variable, "Variances"=assumption[i], t="NaN", df="", p="", "Mean Difference"="",
+								"lowerCI"="", "upperCI"="", "Std. Error Difference"="", .footnotes=list(t=list(index)))
 					}
 				
-					ttest.results[[rowNo]] <- result
+					ttest.rows[[rowNo]] <- result
 					rowNo <- rowNo + 1
 				}
 			}
-			
-			footnotes <- list()
-			
-			if (options$equalityOfVariances == "assumeEqual")
-				footnotes[[length(footnotes)+1]] <- "All tests, variances of groups assumed equal"
-			if (options$equalityOfVariances == "noAssumption")
-				footnotes[[length(footnotes)+1]] <- "All tests, variances of groups not assumed equal"
-				
-			if (options$hypothesis == "groupOneGreater")
-				footnotes[[length(footnotes)+1]] <- "All tests, one tailed (group 1 greater than group 2)"
-			if (options$hypothesis == "groupTwoGreater")
-				footnotes[[length(footnotes)+1]] <- "All tests, one tailed (group 1 less than group 2)"
-				
-			if (variance.assumption.violated)
-				footnotes[[length(footnotes)+1]] <- "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"
-
 		
-			ttest[["footnotes"]] <- footnotes
+			ttest[["footnotes"]] <- as.list(footnotes)
 		}
 		
 	}
 	
-	ttest[["data"]] <- ttest.results
+	ttest[["data"]] <- ttest.rows
 	
 	ttest
 
