@@ -17,3 +17,4 @@ Development
 
 [The JASP R style guide](Docs/r-style-guide.md)
 
+[Guide to Rebasing Your Repo](Docs/git-guide.md)
