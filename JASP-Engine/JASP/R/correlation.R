@@ -168,7 +168,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						if (flagSignificant && is.na(p.value) == FALSE && p.value < .05) {
 						
 							column.name <- paste(variable.2.name, "[", test, "]", sep="")
-							row.footnotes[[column.name]] <- list("*")
+							row.footnotes[[column.name]] <- list(0)
 						}
 						
 						if (reportSignificance)

@@ -28,7 +28,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run", callback=f
 	
 	results[[".meta"]] <- meta
 	
-	results[["correlations"]] <- .correlationTable(dataset, perform,
+	results[["correlations"]] <- .correlationTableBayesian(dataset, perform,
 		variables=options$variables, pearson=options$pearson,
 		kendallsTauB=options$kendallsTauB, spearman=options$spearman,
 		hypothesis=options$hypothesis, reportSignificance=options$reportSignificance,
@@ -38,7 +38,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run", callback=f
 	results
 }
 
-.correlationTable <- function(dataset, perform, variables=c(), pearson=TRUE, kendallsTauB=FALSE,
+.correlationTableBayesian <- function(dataset, perform, variables=c(), pearson=TRUE, kendallsTauB=FALSE,
 	spearman=FALSE, hypothesis="correlated", reportSignificance=FALSE,
 	flagSignificant=FALSE, meansAndStdDev=FALSE, crossProducts=FALSE) {
 	
@@ -168,7 +168,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run", callback=f
 						if (flagSignificant && is.na(p.value) == FALSE && p.value < .05) {
 						
 							column.name <- paste(variable.2.name, "[", test, "]", sep="")
-							row.footnotes[[column.name]] <- list("*")
+							row.footnotes[[column.name]] <- list(0)
 						}
 						
 						if (reportSignificance)
