@@ -1,6 +1,5 @@
 
 AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-    
     if(is.null(base::options()$BFMaxModels)) base::options(BFMaxModels = 50000)
     if(is.null(base::options()$BFpretestIterations)) base::options(BFpretestIterations = 100)
     if(is.null(base::options()$BFapproxOptimizer)) base::options(BFapproxOptimizer = "optim")
@@ -27,8 +26,8 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
             dataset <- .readDataSetHeader( columns.as.numeric = c(numeric.variables), columns.as.factor = c(factor.variables) )
         }
     }
-    
-    results <- list()
+
+	results <- list()
     
     #### META
 
@@ -52,8 +51,7 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
             specific.error <- errorcheck$specific.error
             error.present <- errorcheck$error.present
             
-            
-            if ( error.present == 0){    
+            if ( error.present == 0){
     
                 terms <- options$modelTerms
                 terms.as.strings <- c()
@@ -112,7 +110,6 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
     
     
     ##########BUILD DEFAULT TABLE##########
-    
     if (options$dependent != "" && length(options$modelTerms) > 0) {
         posterior.results <- list()
  
@@ -331,11 +328,25 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
                     if (specific.error == "levels"){
                         effect[["error"]] <- list(errorType="badData", errorMessage="Factors must have 2 or more levels")
                     }
-                    if (specific.error == "interaction nuisance"){ 
+					if (specific.error == "observed levels"){
+						observed.levels <- vector(length = length(options$fixedFactors))
+						counter <- 0
+						for (fact in options$fixedFactors) {
+							counter <- counter + 1
+							observed.levels[counter] <- length(unique(dataset[[.v(fact)]]))
+						}
+						factor.names <- unlist(options$fixedFactors[which(observed.levels < 2)])
+						if(length(fact) > 1){
+							factor.names <- paste(factor.names,collapse=", ")
+						}
+						effect[["error"]] <- list(errorType="badData", errorMessage=paste("After removing cases with missing values, less than 2 levels were observed for: ", factor.names,".",sep=""))
+					}
+					
+                    if (specific.error == "interaction nuisance"){
                         effect[["error"]] <- list(errorType="badData", errorMessage="Interactions as nuisance are only allowed when the corresponding main effects are specified as nuisance")
                     }
                     if (specific.error =="all nuisance"){
-                    effect[["error"]] <- list(errorType="badData", errorMessage="All modelterms are specified as nuisance")
+						effect[["error"]] <- list(errorType="badData", errorMessage="All modelterms are specified as nuisance")
                     }
                 }
             } else {    # if the requirements are met to run the model 
