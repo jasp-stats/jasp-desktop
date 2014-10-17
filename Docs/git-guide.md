@@ -9,7 +9,16 @@ Once you have done a commit, you should **not** do additional rebases until your
 
 To do a rebase, you need to bring up a terminal at the location of the project. Under OS X, this is most easily done with the Github client, by selecting `Open in Terminal` from the `Repository` menu. Under Windows, this is most easily done with the Github client, by selecting `Open in Git Shell` from the gear menu at the top right.
 
-Once you have a terminal, you can rebase your repo with the following commands:
+Under OS X, **only** the first time your do a rebase, you will need to issue the following commands:
+
+    git remote add upstream https://github.com/jasp-stats/jasp-desktop.git
+    git checkout development
+    
+Under windows, **only** the first time you do a rebase, it is necessary to issue:
+
+    git checkout development
+
+Subsequently on all platforms you can rebase your repo with the following commands:
 
     git stash
     git fetch upstream
