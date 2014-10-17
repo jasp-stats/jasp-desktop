@@ -128,7 +128,8 @@ SOURCES += main.cpp\
     appdirs.cpp \
     widgets/tablemodelanovawithinsubjectcells.cpp \
     analysisforms/ancovabayesianform.cpp \
-    analysisforms/anovarepeatedmeasuresbayesianform.cpp
+    analysisforms/anovarepeatedmeasuresbayesianform.cpp \
+    analysisforms/correlationbayesianform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -217,7 +218,8 @@ HEADERS  += \
     appdirs.h \
     widgets/tablemodelanovawithinsubjectcells.h \
     analysisforms/ancovabayesianform.h \
-    analysisforms/anovarepeatedmeasuresbayesianform.h
+	analysisforms/anovarepeatedmeasuresbayesianform.h \
+    analysisforms/correlationbayesianform.h
 
 FORMS    += \
     backstageform.ui \
@@ -251,7 +253,8 @@ FORMS    += \
     analysisforms/anovarepeatedmeasuresshortform.ui \
     widgets/datasetselectwidget.ui \
     analysisforms/ancovabayesianform.ui \
-    analysisforms/anovarepeatedmeasuresbayesianform.ui
+    analysisforms/anovarepeatedmeasuresbayesianform.ui \
+    analysisforms/correlationbayesianform.ui
 
 
 RESOURCES += \
@@ -386,5 +389,6 @@ OTHER_FILES += \
 	html/js/images.js \
 	html/js/analysis.js \
     resources/icons/variable-nominal-text.svg \
-    analysisforms/AnovaRepeatedMeasuresShortForm.qml
+    analysisforms/AnovaRepeatedMeasuresShortForm.qml \
+    html/css/images/waiting.svg
 

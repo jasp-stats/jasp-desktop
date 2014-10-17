@@ -21,6 +21,7 @@
 #include "analyses/anovarepeatedmeasuresshort.h"
 #include "analyses/anovarepeatedmeasuresbayesian.h"
 #include "analyses/ancovabayesian.h"
+#include "analyses/correlationbayesian.h"
 
 #include "analyses/semsimple.h"
 
@@ -63,6 +64,8 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		return new RegressionLinear(id);
 	else if (analysisName == "Correlation")
 		return new Correlation(id);
+	else if (analysisName == "CorrelationBayesian")
+		return new CorrelationBayesian(id);
 	else if (analysisName == "CorrelationPartial")
 		return new CorrelationPartial(id);
 	else if (analysisName == "Crosstabs")

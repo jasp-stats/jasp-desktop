@@ -54,9 +54,13 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	ui->bayesianAnovaButton->setMenu(menu);
 
-	ui->bayesianCrosstabsButton->hide();
-	ui->bayesianRegressionButton->hide();
+	menu = new QMenu(this);
+	menu->addAction(QString("Bayesian Correlation"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesian");
 
+	ui->bayesianRegressionButton->setMenu(menu);
+
+
+	ui->bayesianCrosstabsButton->hide();
 
 }
 
