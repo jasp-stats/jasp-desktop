@@ -26,7 +26,7 @@ void CSV::open()
 	int error = stat(_path.c_str(), &fileInfo);
 
 	if (error != 0)
-		throw runtime_error("Could not stat file");
+		throw runtime_error("Could not access file");
 
 	_fileSize = fileInfo.st_size;
 

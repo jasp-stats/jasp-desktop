@@ -74,10 +74,13 @@ void XTAsyncLoader::free(DataSet *dataSet)
 
 void XTAsyncLoader::loadTask(const QString &filename)
 {
-	try {
-		_mutex->lock();
-		DataSet *dataSet = _loader.loadDataSet(filename.toStdString());
-		_mutex->unlock();
+	try
+	{
+		DataSet *dataSet = NULL;
+		{
+			QMutexLocker locker(_mutex);
+			dataSet = _loader.loadDataSet(filename.toStdString());
+		}
 		emit complete(dataSet);
 	}
 	catch (runtime_error e)
