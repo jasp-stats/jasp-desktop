@@ -118,8 +118,11 @@ void BackStageForm::loadRecents()
 	_settings.sync();
 
 	QVariant v = _settings.value("recentItems");
-	if (v.type() != QVariant::StringList)
+    if (v.type() != QVariant::StringList && v.type() != QVariant::String)
 	{
+        // oddly, under linux, loading a setting value of type StringList which has
+        // only a single string in it, gives you just a string. we QVariant::String is acceptable too
+
 		qDebug() << "BackStageForm::loadRecents();  setting 'recentItems' is not a QStringList";
 		return;
 	}
