@@ -194,8 +194,9 @@ std::vector<string> Analysis::list(string one, string two, string three, string 
 	vector<string> result;
 
 	result.push_back(one);
-	result.push_back(two);
 
+	if (two != "")
+		result.push_back(two);
 	if (three != "")
 		result.push_back(three);
 	if (four != "")

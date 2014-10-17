@@ -24,7 +24,7 @@ Options *RegressionLinear::createOptions() const
 	Options *layerOptionsTemplate = new Options();
 	layerOptionsTemplate->add("name", new OptionString("Block %1"));
 	layerOptionsTemplate->add("variables", new OptionVariables());
-	layerOptionsTemplate->add("method", new OptionList(list("Enter", "Stepwise", "Remove", "Backward", "Forward")));
+	layerOptionsTemplate->add("method", new OptionList(list("Enter")));//, "Stepwise", "Remove", "Backward", "Forward")));
 
 	options->add("blocks", new OptionsTable(layerOptionsTemplate));
 
