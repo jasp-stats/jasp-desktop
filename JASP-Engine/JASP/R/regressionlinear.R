@@ -21,7 +21,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	if (is.null(dataset)) {
 		if (perform == "run") {
-				dataset <- .readDataSetToEnd(columns.as.numeric = to.be.read.variables, exclude.na.listwise=to.be.read.variables)
+			dataset <- .readDataSetToEnd(columns.as.numeric = to.be.read.variables, exclude.na.listwise=to.be.read.variables)
 		} else {
 			dataset <- .readDataSetHeader(columns.as.numeric = to.be.read.variables)
 		}
@@ -332,19 +332,19 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			}
 		}
 	} else {
-		if (length(list.of.errors)  > 0){
-			if (length(list.of.errors) == 1){
-				model.table[["error"]] <- list(errorType = "badData", errorMessage = list.of.errors[[ 1 ]])
-			} else {
+		number.of.init.models <- max(1, length(lm.model))
+		
+		for (m in 1:number.of.init.models) {
+			table.rows[[ m ]] <- empty.line
+			table.rows[[ m ]]$"Model" <- as.integer(m)
+		}
+		
+		if (length(list.of.errors) == 1){
+			model.table[["error"]] <- list(errorType = "badData", errorMessage = list.of.errors[[ 1 ]])
+		}
+		
+		if (length(list.of.errors) > 1){
 				model.table[["error"]] <- list(errorType = "badData", errorMessage = paste("The following errors were encountered: <br> <br>", paste(unlist(list.of.errors),collapse="<br>"), sep=""))
-			}
-		} else {
-			number.of.init.models <- max(1, length(lm.model))
-			
-			for (m in 1:number.of.init.models) {
-				table.rows[[ m ]] <- empty.line
-				table.rows[[ m ]]$"Model" <- as.integer(m)
-			}
 		}
 	}
 	model.table[["data"]] <- table.rows
@@ -354,7 +354,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	################################################################################
 	#							  MODEL ANOVA TABLE							   #
 	################################################################################
-	if (options$modelFit == TRUE && length(list.of.errors) == 0) {
+	if (options$modelFit == TRUE) {
 		
 		anova <- list()
 		anova[["title"]] <- "ANOVA"
@@ -407,7 +407,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 		
 		
-		if (perform == "run" ) {
+		if (perform == "run" && length(list.of.errors) == 0) {
 			
 			for (m in 1:length(lm.model)) {
 				
@@ -463,6 +463,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			for (m in 1:number.of.init.models) {
 				anova.result <- .addEmptyModel(anova.result,m)
 			}
+			
+			if (length(list.of.errors) > 0){
+				anova[["error"]] <- list(errorType = "badData")
+			}
 		}
 		anova[["data"]] <- anova.result
 		
@@ -475,7 +479,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	################################################################################
 	
 	
-	if (options$regressionCoefficients[["estimates"]] == TRUE && length(list.of.errors) == 0) {
+	if (options$regressionCoefficients[["estimates"]] == TRUE) {
 		
 		regression <- list()
 		regression[["title"]] <- "Coefficients"
@@ -521,7 +525,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 		regression.result <- list()
 		
-		if (perform == "run") {
+		if (perform == "run" && length(list.of.errors) == 0) {
 			
 			for (m in 1:length(lm.model)) {
 				
@@ -622,6 +626,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				if (options$includeConstant == TRUE) {
 					regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
 				}
+			}
+			if(length(list.of.errors) > 0){
+				regression[["error"]] <- list(errorType="badData")
 			}
 		}
 		
