@@ -28,6 +28,7 @@
 #include "analysisforms/correlationbayesianform.h"
 #include "analysisforms/correlationpartialform.h"
 #include "analysisforms/crosstabsform.h"
+#include "analysisforms/crosstabsbayesianform.h"
 
 #include "analysisforms/semsimpleform.h"
 
@@ -223,6 +224,8 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new CorrelationPartialForm(contentArea);
 	else if (name == "Crosstabs")
 		form = new CrosstabsForm(contentArea);
+	else if (name == "CrosstabsBayesian")
+		form = new CrosstabsBayesianForm(contentArea);
 	else if (name == "SEMSimple")
 		form = new SEMSimpleForm(contentArea);
 	else if (name == "AncovaBayesian")

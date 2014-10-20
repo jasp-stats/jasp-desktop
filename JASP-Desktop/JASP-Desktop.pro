@@ -129,7 +129,8 @@ SOURCES += main.cpp\
     widgets/tablemodelanovawithinsubjectcells.cpp \
     analysisforms/ancovabayesianform.cpp \
     analysisforms/anovarepeatedmeasuresbayesianform.cpp \
-    analysisforms/correlationbayesianform.cpp
+    analysisforms/correlationbayesianform.cpp \
+    analysisforms/crosstabsbayesianform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -219,7 +220,8 @@ HEADERS  += \
     widgets/tablemodelanovawithinsubjectcells.h \
     analysisforms/ancovabayesianform.h \
 	analysisforms/anovarepeatedmeasuresbayesianform.h \
-    analysisforms/correlationbayesianform.h
+    analysisforms/correlationbayesianform.h \
+    analysisforms/crosstabsbayesianform.h
 
 FORMS    += \
     backstageform.ui \
@@ -254,7 +256,8 @@ FORMS    += \
     widgets/datasetselectwidget.ui \
     analysisforms/ancovabayesianform.ui \
     analysisforms/anovarepeatedmeasuresbayesianform.ui \
-    analysisforms/correlationbayesianform.ui
+    analysisforms/correlationbayesianform.ui \
+    analysisforms/crosstabsbayesianform.ui
 
 
 RESOURCES += \

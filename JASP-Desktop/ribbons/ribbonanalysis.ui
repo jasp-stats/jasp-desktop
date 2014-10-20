@@ -393,7 +393,7 @@
           </widget>
          </item>
          <item row="0" column="3">
-          <widget class="RibbonButton" name="bayesianCrosstabsButton">
+          <widget class="RibbonButton" name="CrosstabsBayesian">
            <property name="minimumSize">
             <size>
              <width>76</width>

@@ -59,8 +59,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	ui->bayesianRegressionButton->setMenu(menu);
 
-
-	ui->bayesianCrosstabsButton->hide();
+	connect(ui->CrosstabsBayesian, SIGNAL(clicked()), this, SLOT(itemSelected()));
 
 }
 
