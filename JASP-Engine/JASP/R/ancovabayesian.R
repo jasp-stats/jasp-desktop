@@ -1,4 +1,3 @@
-
 AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
     if(is.null(base::options()$BFMaxModels)) base::options(BFMaxModels = 50000)
     if(is.null(base::options()$BFpretestIterations)) base::options(BFpretestIterations = 100)
@@ -39,63 +38,89 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
     results[[".meta"]] <- meta
      
     jasp.callback <- function(...) as.integer(callback())
-    
-     ####GENERAL SET UP FOR MODELS#####
-    
-        if (options$dependent != "" && length(options$modelTerms) > 0) {
+	
+	#### Check for errors
+	error.present <- 0
+	if (options$dependent != "" && length(options$modelTerms) > 0) {
+		errorcheck <- .checkerrors(options, dataset, perform)
+		
+		error.present <- errorcheck$error.present
+		
+		specific.error <- errorcheck$specific.error
+	}
 
-            
-            ####ERRORS#####################
-            
-            errorcheck <-    .checkerrors(options, dataset, perform)
-            specific.error <- errorcheck$specific.error
-            error.present <- errorcheck$error.present
-            
-            if ( error.present == 0){
+	####GENERAL SET UP FOR MODELS#####
+	
+	null.name <- as.character(c("Null model"))
+
+	if (options$dependent != "" && length(options$modelTerms) > 0) {
+		
+		terms <- options$modelTerms
+		terms.as.strings <- c()
+		
+		
+		if ( error.present == 0){
+	
+			for (term in options$modelTerms) {
+				term.as.string <- paste(.v(term$components), collapse=":")
+				terms.as.strings <- c(terms.as.strings, term.as.string)
+			}
     
-                terms <- options$modelTerms
-                terms.as.strings <- c()
+			terms.nuisance <- c()
+			for (term in options$modelTerms) {
+				if(term$isNuisance == TRUE) {
+					term.nuisance <- paste(.v(term$components), collapse=":")
+					terms.nuisance <- c(terms.nuisance, term.nuisance)
+				}
+			}
     
-                for (term in options$modelTerms) {
-                    term.as.string <- paste(.v(term$components), collapse=":")
-                    terms.as.strings <- c(terms.as.strings, term.as.string)
-                }
-    
-                terms.nuisance <- c()
-                for (term in options$modelTerms) {
-                    if(term$isNuisance == TRUE) { 
-                        term.nuisance <- paste(.v(term$components), collapse=":")
-                        terms.nuisance <- c(terms.nuisance, term.nuisance)
-                    }
-                }
-    
-                rhs <- paste(terms.as.strings, collapse="+")
-                model.def <- paste(.v(options$dependent), "~", rhs)
-                model.formula <- as.formula(model.def)
-    
-                ind.random <- length(options$randomFactors)
-                ind.cov <- length(options$covariates) 
-                random <- .v(options$randomFactors)
-                covariate <- .v(options$covariates)
+			ind.random <- length(options$randomFactors)
+			ind.cov <- length(options$covariates)
+			random <- .v(options$randomFactors)
+			covariate <- .v(options$covariates)
  
-                all.models <- BayesFactor::enumerateGeneralModels(model.formula, whichModels="withmain", neverExclude=paste("^",terms.nuisance,"$", sep = "")) 
-    
-                if (length(terms.nuisance)> 0) {
+ 			if (length(terms.nuisance)> 0) {
                     nuisance.plus	<- paste(.unvf(terms.nuisance), collapse=" + ") #
                     null.name <- as.character(paste("Null model (incl. ",	nuisance.plus, ")", sep = "" ) )#		
-                } else {#
-                    null.name <- as.character(c("Null model"))#
-                }	
-    
-            }
-        }    # if (options$dependent != "" && length(options$modelTerms) > 0)
-    
-    
-    #####BUILD INITIAL TABLE##########
-    
+			}
+		} else {
+			# If interactions are specified without corresponding main effects
+			# all.models is not running: table should be made alternatively
+			for (term in options$modelTerms) {
+				if (length(term$components) == 1){
+					term.as.string <- paste(.v(term$components), collapse=":")
+					terms.as.strings <- c(terms.as.strings, term.as.string)
+				}
+			}
+	
+			terms.nuisance <- c()
+			for (term in options$modelTerms) {
+				if(term$isNuisance == TRUE) {
+					if (length(term$components) ==1){
+						term.nuisance <- paste(.v(term$components), collapse=":")
+						terms.nuisance <- c(terms.nuisance, term.nuisance)
+					}
+				}
+			}
+			
+			if (length(terms.nuisance)> 0) {
+				nuisance.plus	<- paste(.unvf(terms.nuisance), collapse=" + ") #
+				null.name <- as.character(paste("Null model (incl. ",	nuisance.plus, ")", sep = "" ) )#
+			}
+		}
+		rhs <- paste(terms.as.strings, collapse="+")
+		model.def <- paste(.v(options$dependent), "~", rhs)
+		model.formula <- as.formula(model.def)
+		
+		all.models <- BayesFactor::enumerateGeneralModels(model.formula, whichModels="withmain", neverExclude=paste("^",terms.nuisance,"$", sep = ""))
+	}
+		
+		
+    #####BUILD Bayesian ANOVA table ##########
+	
     posterior <- list()
     posterior[["title"]] <- "Bayesian ANOVA: Model Comparison"
-    
+	
     fields <- list(
         list(name="Models", type="string"),
         list(name="P(M)", type="number", format="sf:4;dp:3"),
@@ -104,186 +129,137 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
         list(name="BF10", type="number", format="sf:4;dp:3", title="BF<sub>10</sub>"),
         list(name="% error", type="number", format="sf:4;dp:3")
     )
-    
+	
     schema <- list(fields=fields)
-    posterior[["schema"]] <- schema	
-    
-    
-    ##########BUILD DEFAULT TABLE##########
-    if (options$dependent != "" && length(options$modelTerms) > 0) {
-        posterior.results <- list()
- 
-        #### GENERATE EMPTY TABLE IF NO RESULTS 
-    
-        if (perform == "init") {
-            # BUILD EMPTY TABLE
-            posterior.results[[1]] <- list("Models"=null.name)
-            
-            for (model in all.models) {
-                nuisance.plus    <- paste(c("", terms.nuisance), collapse=" + ") 
-                nuisance.alone    <- paste(c(terms.nuisance), collapse=" + ")
-                model.name <- as.character(model)[[3]]
-                if (length(terms.nuisance) > 0) {
-                    model.name    <- gsub(nuisance.plus, "", model.name, fixed = TRUE)
-                    model.name    <- gsub(nuisance.alone, "", model.name, fixed = TRUE)
-                }
-                model.name <- .unvf(model.name)
-                posterior.results[[length(posterior.results)+1]] <- list("Models"=model.name)
-            }
-        }    #if (perform == "init")
-        
-        if (error.present > 0){
-            # If interactions are specified without corresponding main effects
-            # all.models is not running: table should be made alternatively
-            terms <- options$modelTerms
-            terms.as.strings <- c()
-            for (term in options$modelTerms) {
-                if (length(term$components) ==1){
-                    term.as.string <- paste(.v(term$components), collapse=":")
-                    terms.as.strings <- c(terms.as.strings, term.as.string)
-                }
-            }
-            
-            terms.nuisance <- c()
-            for (term in options$modelTerms) {
-                if(term$isNuisance == TRUE) { 
-                    if (length(term$components) ==1){
-                    term.nuisance <- paste(.v(term$components), collapse=":")
-                    terms.nuisance <- c(terms.nuisance, term.nuisance)
-                    }
-                }
-            }
-            
-            rhs <- paste(terms.as.strings, collapse="+")
-            model.def <- paste(.v(options$dependent), "~", rhs)
-            model.formula <- as.formula(model.def)
-        
-            all.models <- BayesFactor::enumerateGeneralModels(model.formula, whichModels="withmain", neverExclude=paste("^",terms.nuisance,"$", sep = "")) #
-            
-            for (model in all.models) {
-                model.name <- as.character(model)[[3]]
-                model.name <- .unvf(model.name)
-                posterior.results[[length(posterior.results)+1]] <- list("Models"=model.name)
-            }    
-    
-            # IF ERROR: ERROR MESSAGE	
-            if (specific.error == "interaction nuisance"){ 
-                posterior[["error"]] <- list(errorType="badData", errorMessage="Interactions as nuisance are only allowed when the corresponding main effects are specified as nuisance")
-            }
-            if (specific.error == "interaction"){ 
-                posterior[["error"]] <- list(errorType="badData", errorMessage="Interactions are only allowed when the corresponding main effects are specified")
-            }
-            if (specific.error == "levels"){
-                posterior[["error"]] <- list(errorType="badData", errorMessage="Factors must have 2 or more levels")
-            }
-            if (specific.error == "observed levels"){
-            	observed.levels <- vector(length = length(options$fixedFactors))
-            	counter <- 0
-            	for (fact in options$fixedFactors) {
-            		counter <- counter + 1
-            		observed.levels[counter] <- length(unique(dataset[[.v(fact)]]))
-            	}
-            	factor.names <- unlist(options$fixedFactors[which(observed.levels < 2)])
-            	if(length(fact) > 1){
-            		factor.names <- paste(factor.names,collapse=", ")
-            	} 	
-            	posterior[["error"]] <- list(errorType="badData", errorMessage=paste("After removing cases with missing values, less than 2 levels were observed for: ", factor.names,".",sep=""))								
-            }            
-            if (specific.error =="all nuisance"){
-                posterior[["error"]] <- list(errorType="badData", errorMessage="All modelterms are specified as nuisance")
-            }
-        
-    }
-     
-    #######RUN ANALYSIS IF CONDITIONS ARE MET############# 
-    
-    if (perform == "run" && error.present == 0) {		 
-        
-            if (length(terms.nuisance)> 0) { 
-                fields[[1]][[".footnotes"]] <- list(0)    
-            }
-        
-            #######ANALYSIS#######
-            
-            withmain <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = "withmain", 
-                                                                                         neverExclude =    paste("^",terms.nuisance,"$", sep = ""), 
-                                                                                         whichRandom = random,    progress=FALSE, callback=jasp.callback)
-            
-            # something is broken in callback with random effects included: needs to be repaired
-            
-            #withmain <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = "withmain", 
-            #                                                                             neverExclude =    paste("^",terms.nuisance,"$", sep = ""), 
-            #                                                                             whichRandom = random,    progress=FALSE)
-            
-            if (length(terms.nuisance) > 0) {
-                indw.nui <- which(names(withmain)$numerator == paste(terms.nuisance, collapse=" + "))
-                withmain <- withmain[-indw.nui]/withmain[indw.nui]	
-            } 
-            
-            BFmain <- as.numeric(exp(withmain@bayesFactor$bf))
-            errormain <- as.numeric(withmain@bayesFactor$error)
-            
-            #####PREPARE VECTORS/MATRICES WITHOUT NUISANCE######
-            # Prepare for model selection: lists of components of effects and models
-            # Modelnames and effect names for table
-            # Matrix of effects (of interest -without nuisance) vs models 
-            
-            # Make a list of all models and their components, without nuisance terms, for later use 
-                    
-            modelsmain <- names(withmain)$numerator
-            
-            a <- .modelnames(modelsmain,null.name,terms.nuisance)
-            for (n in 1: length(a)){
-                assign(names(a)[n], a[[n]])
-            }
-            
-            ##PROCESS RESULTS 
-            BFmain.0	<- c(1,BFmain)		
-            # prior probability: 1/ number of models
-            pprior <- .clean(1/n.mod.0)	
-            # posterior probability: computed from Bayes factors (only with equal prior probability) 
-            posterior.probability <- c(BFmain.0)/sum(BFmain.0)
-            
-            BFmodels <-	(posterior.probability/(1-posterior.probability))/(pprior/(1-pprior))
-            errormain.0 <- c(NA,errormain)
-            
-            #####TABLE####
-            
-            for (n in 1:n.mod.0) {
-                ppost <- .clean(posterior.probability[n])
-                BF <- .clean(BFmain.0[n] )
-                error <- .clean(errormain.0[n]*100)
-                if (n==1){
-                    error <- " "
-                }
-                model.name <-	models.tab[n]
-                BFM <- .clean(BFmodels[n])
-                if (ind.random == 0 && ind.cov == 0) {
-                    r <- list("Models"= model.name,"P(M)" = pprior, "P(M|Y)"=ppost,
-                                        "BFM" = BFM,"BF10"=BF, "% error"=error)
-                } else {
-                    r <- list("Models"= model.name,"P(M)" = pprior, "P(M|Y)"=ppost,
-                                        "BFM" = BFM,"BF10"=BF, "% error"=error, ".footnotes"=list("p"=list(1)))
-                }
-                posterior.results[[length(posterior.results)+1]] <- r
-            }
-            
-        
-        } # END POSTERIOR TABLE if (perform == "run" && error.present == 0) { - otherwise wait until someone specifies something
-    
-        posterior[["data"]] <- posterior.results
-    
-        footnotes <- list()
-        if (length(terms.nuisance) > 0){
-            footrand <- paste(.unvf(terms.nuisance), collapse=" and ")
-            footnotes <- list(paste("All models include", footrand))
-        } 				
-        posterior[["footnotes"]] <- footnotes    
-    
-    } # END POSTERIOR TABLE     if (options$dependent != "" && length(options$modelTerms) > 0) {
+    posterior[["schema"]] <- schema
+	
+	posterior.results <- list()
+	
+	if (options$dependent != "" && length(options$modelTerms) > 0 ){
+		if ( perform == "run" && error.present == 0){
+			#build run table
+		
+			if (length(terms.nuisance)> 0) {
+				fields[[1]][[".footnotes"]] <- list(0)
+			}
+			
+			#######ANALYSIS#######
+			withmain <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = "withmain", neverExclude =    paste("^",terms.nuisance,"$", sep = ""), whichRandom = random,    progress=FALSE, callback=jasp.callback)
+		
+#something is broken in callback with random effects included: needs to be repaired
 
-    
-    
+			if (length(terms.nuisance) > 0) {
+				indw.nui <- which(names(withmain)$numerator == paste(terms.nuisance, collapse=" + "))
+				withmain <- withmain[-indw.nui]/withmain[indw.nui]
+			}
+			
+			BFmain <- as.numeric(exp(withmain@bayesFactor$bf))
+			errormain <- as.numeric(withmain@bayesFactor$error)
+			
+			#####PREPARE VECTORS/MATRICES WITHOUT NUISANCE######
+			# Prepare for model selection: lists of components of effects and models
+			# Modelnames and effect names for table
+			# Matrix of effects (of interest -without nuisance) vs models
+			
+			# Make a list of all models and their components, without nuisance terms, for later use
+			
+			modelsmain <- names(withmain)$numerator
+			
+			a <- .modelnames(modelsmain,null.name,terms.nuisance)
+			for (n in 1: length(a)){
+				assign(names(a)[n], a[[n]])
+			}
+			
+			##PROCESS RESULTS
+			BFmain.0	<- c(1,BFmain)
+			# prior probability: 1/ number of models
+			pprior <- .clean(1/n.mod.0)			#n.mod.0 comes from .modelnames()
+			# posterior probability: computed from Bayes factors (only with equal prior probability)
+			posterior.probability <- c(BFmain.0)/sum(BFmain.0)
+			
+			BFmodels <-	(posterior.probability/(1-posterior.probability))/(pprior/(1-pprior))
+			errormain.0 <- c(NA,errormain)
+			
+			#####TABLE####
+			
+			for (n in 1:n.mod.0) {
+				ppost <- .clean(posterior.probability[n])
+				BF <- .clean(BFmain.0[n] )
+				error <- .clean(errormain.0[n]*100)
+				if (n==1){
+					error <- " "
+				}
+				model.name <-	models.tab[n]
+				BFM <- .clean(BFmodels[n])
+				if (ind.random == 0 && ind.cov == 0) {
+					r <- list("Models"= model.name,"P(M)" = pprior, "P(M|Y)"=ppost,
+					"BFM" = BFM,"BF10"=BF, "% error"=error)
+				} else {
+					r <- list("Models"= model.name,"P(M)" = pprior, "P(M|Y)"=ppost,
+					"BFM" = BFM,"BF10"=BF, "% error"=error, ".footnotes"=list("p"=list(1)))
+				}
+				posterior.results[[length(posterior.results)+1]] <- r
+			}
+		
+			footnotes <- list()
+			if (length(terms.nuisance) > 0){
+				footrand <- paste(.unvf(terms.nuisance), collapse=" and ")
+				footnotes <- list(paste("All models include", footrand))
+			}
+			posterior[["footnotes"]] <- footnotes
+	
+		} else {
+			#build init table
+			posterior.results[[1]] <- list("Models"=null.name)
+			
+			for (model in all.models) {
+				nuisance.plus    <- paste(c("", terms.nuisance), collapse=" + ")
+				nuisance.alone    <- paste(c(terms.nuisance), collapse=" + ")
+				model.name <- as.character(model)[[3]]
+				if (length(terms.nuisance) > 0) {
+					model.name    <- gsub(nuisance.plus, "", model.name, fixed = TRUE)
+					model.name    <- gsub(nuisance.alone, "", model.name, fixed = TRUE)
+				}
+				model.name <- .unvf(model.name)
+				posterior.results[[length(posterior.results)+1]] <- list("Models" = model.name)
+			}
+
+			if (error.present > 0){
+				#provide errors
+				if (specific.error == "interaction nuisance"){
+					posterior[["error"]] <- list(errorType="badData", errorMessage="Interactions as nuisance are only allowed when the corresponding main effects are specified as nuisance")
+				}
+				if (specific.error == "interaction"){
+					posterior[["error"]] <- list(errorType="badData", errorMessage="Interactions are only allowed when the corresponding main effects are specified")
+				}
+				if (specific.error == "levels"){
+					posterior[["error"]] <- list(errorType="badData", errorMessage="Factors must have 2 or more levels")
+				}
+				if (specific.error == "observed levels"){
+					observed.levels <- vector(length = length(options$fixedFactors))
+					counter <- 0
+					for (fact in options$fixedFactors) {
+						counter <- counter + 1
+						observed.levels[counter] <- length(unique(dataset[[.v(fact)]]))
+					}
+					factor.names <- unlist(options$fixedFactors[which(observed.levels < 2)])
+					if(length(fact) > 1){
+						factor.names <- paste(factor.names,collapse=", ")
+					}
+					posterior[["error"]] <- list(errorType="badData", errorMessage=paste("After removing cases with missing values, less than 2 levels were observed for: ", factor.names,".",sep=""))
+				}
+				if (specific.error =="all nuisance"){
+					posterior[["error"]] <- list(errorType="badData", errorMessage="All modelterms are specified as nuisance")
+				}
+			}
+		}
+		
+	} else {
+		posterior.results[[1]] <- list("Models" = null.name)
+	}
+	posterior[["data"]] <- posterior.results
+
+
     ###################
     ###EFFECTS TABLE###
     ##################
@@ -322,32 +298,7 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
                     }                
                 }
                 if (perform == "run" && error.present > 0) {
-                    if (specific.error == "interaction"){ 
-                        effect[["error"]] <- list(errorType="badData", errorMessage="Interactions are only allowed when the corresponding main effects are specified")
-                    }
-                    if (specific.error == "levels"){
-                        effect[["error"]] <- list(errorType="badData", errorMessage="Factors must have 2 or more levels")
-                    }
-					if (specific.error == "observed levels"){
-						observed.levels <- vector(length = length(options$fixedFactors))
-						counter <- 0
-						for (fact in options$fixedFactors) {
-							counter <- counter + 1
-							observed.levels[counter] <- length(unique(dataset[[.v(fact)]]))
-						}
-						factor.names <- unlist(options$fixedFactors[which(observed.levels < 2)])
-						if(length(fact) > 1){
-							factor.names <- paste(factor.names,collapse=", ")
-						}
-						effect[["error"]] <- list(errorType="badData", errorMessage=paste("After removing cases with missing values, less than 2 levels were observed for: ", factor.names,".",sep=""))
-					}
-					
-                    if (specific.error == "interaction nuisance"){
-                        effect[["error"]] <- list(errorType="badData", errorMessage="Interactions as nuisance are only allowed when the corresponding main effects are specified as nuisance")
-                    }
-                    if (specific.error =="all nuisance"){
-						effect[["error"]] <- list(errorType="badData", errorMessage="All modelterms are specified as nuisance")
-                    }
+                    effect[["error"]] <- list(errorType="badData")
                 }
             } else {    # if the requirements are met to run the model 
                 
@@ -510,16 +461,19 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
     # Error messages 
     specific.error <- "none"
     error.present <- 0
-    
-    # error message when factor has less than two levels
-    
-    for (fact in options$fixedFactors) {
-        if (length(levels(dataset[[.v(fact)]])) < 2){
-            error.present <- 1
-            specific.error <- "levels"
-        } 
-    }
-    # error message when less than two levels are observed for a factor
+	
+	# error message when less than two levels are observed for a factor
+	if(perform == "run"){
+		for (fact in options$fixedFactors) {
+			if (length(levels(dataset[[.v(fact)]])) < 2){
+				error.present <- 1
+				specific.error <- "levels"
+			}
+		}
+	}
+	
+	
+    # error message when less than two levels are observed for a factor after deleting NA's
     if(perform == "run"){
     	for (fact in options$fixedFactors) {
     		if (length(unique(dataset[[.v(fact)]])) < 2){
@@ -527,7 +481,8 @@ AncovaBayesian     <- function(dataset=NULL, options, perform="run", callback=fu
     			specific.error <- "observed levels"
     		} 
     	}
-    }    
+    }
+	
     # error message when interaction specified without main effect
     
     for (term in options$modelTerms) {
