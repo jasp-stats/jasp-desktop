@@ -312,8 +312,12 @@ $.widget("jasp.table", {
 		for (var i = 0; i < indices.length; i++) {
 		
 			var index = indices[i]
+			
+			if (_.isString(index)) {
+			
+				footnotes[i] = index
 		
-			if (index < this.options.footnotes.length) {
+			} else if (index < this.options.footnotes.length) {
 		
 				var footnote = this.options.footnotes[index]
 				if (typeof footnote.symbol == "undefined")

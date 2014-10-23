@@ -165,10 +165,22 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						
 						row[[length(row)+1]] <- .clean(estimate)
 						
-						if (flagSignificant && is.na(p.value) == FALSE && p.value < .05) {
+						if (flagSignificant && is.na(p.value) == FALSE) {
 						
 							column.name <- paste(variable.2.name, "[", test, "]", sep="")
-							row.footnotes[[column.name]] <- list(0)
+
+							if (p.value < .001) {
+							
+								row.footnotes[[column.name]] <- list("***")
+							
+							} else if (p.value < .01) {
+							
+								row.footnotes[[column.name]] <- list("**")
+							
+							} else if (p.value < .05) {
+							
+								row.footnotes[[column.name]] <- list("*")
+							}
 						}
 						
 						if (reportSignificance)
@@ -209,11 +221,11 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 		if (hypothesis == "correlated") {
 		
-			correlation.table[["footnotes"]] <- list(list(symbol="*", text="p < .05"))
+			correlation.table[["footnotes"]] <- list(list(symbol="*", text="p < .05, ** p < .01, *** p < .001"))
 			
 		} else {
 		
-			correlation.table[["footnotes"]] <- list(list(symbol="*", text="p < .05, one tailed"))
+			correlation.table[["footnotes"]] <- list(list(symbol="*", text="p < .05, ** p < .01, *** p < .001, all one-tailed"))
 		}
 	}
 	
