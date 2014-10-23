@@ -33,8 +33,14 @@
 
 	} else if (contrast.type == "polynomial") {
 		
-		for (i in 1:(n.levels - 1))
-			cases[[i]] <- ""
+		poly.names <- c("linear", "quadratic", "cubic", "quartic", "quintic", "sextic", "septic", "octic")
+		for (i in 1:(n.levels - 1)) {
+			if (i <= 8) {
+				cases[[i]] <- poly.names[i]
+			} else {
+				cases[[i]] <- paste("degree", i, "polynomial", sep=" ")
+			}
+		}
 	} 
 		
 	cases
@@ -168,9 +174,11 @@
 	WLS <- NULL
 	if ( ! is.null(options$wlsWeights))
 		WLS <- dataset[[ .v(options$wlsWeights) ]]
-	
+		
 	model <- aov(model.formula, dataset, weights=WLS)
 	
+	print(summary.aov(model))
+		
 	model
 }
 
@@ -239,7 +247,7 @@
 		anova.rows <- try (silent = FALSE, expr = {
 			
 			rows <- list()
-		
+					
 			if (options$sumOfSquares == "type1") {
 			
 				result <- stats::anova(model)
@@ -382,14 +390,11 @@
 					contrast.rows[[length(contrast.rows)+1]] <- list(Comparison=case)			
 			
 			} else {
-				
-				print(contrast.summary)
-				print(v)
-				
+								
 				for (i in .indices(cases)) {
 				
 					case <- cases[[i]]
-					
+										
 					nam <- paste(v, i, sep="")
 					
 					est <- contrast.summary[nam,"Estimate"]
