@@ -50,37 +50,8 @@
       <property name="verticalSpacing">
        <number>0</number>
       </property>
-      <item row="0" column="0">
-       <widget class="QWidget" name="widget_2" native="true">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>20</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" rowspan="3">
-       <widget class="AvailableFieldsListView" name="listAvailableFields">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>210</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::ExtendedSelection</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QWidget" name="widget" native="true">
+      <item row="0" column="1" rowspan="3">
+       <widget class="QWidget" name="widget_5" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -93,7 +64,7 @@
           <height>100</height>
          </size>
         </property>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QGridLayout" name="gridLayout_2">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -106,11 +77,8 @@
          <property name="verticalSpacing">
           <number>3</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QWidget" name="widget_9" native="true"/>
-         </item>
          <item row="1" column="0">
-          <widget class="AssignButton" name="buttonAssignColumns">
+          <widget class="AssignButton" name="buttonAssignRows">
            <property name="maximumSize">
             <size>
              <width>50</width>
@@ -123,7 +91,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <spacer name="verticalSpacer">
+          <spacer name="verticalSpacer_2">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -136,7 +104,7 @@
           </spacer>
          </item>
          <item row="1" column="1" rowspan="2">
-          <widget class="BoundListView" name="columns">
+          <widget class="BoundListView" name="rows">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -154,17 +122,20 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="0">
+          <widget class="QWidget" name="widget_8" native="true"/>
+         </item>
          <item row="0" column="1">
-          <widget class="QLabel" name="label_3">
+          <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Columns</string>
+            <string>Rows</string>
            </property>
           </widget>
          </item>
         </layout>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="5" column="1">
        <widget class="QWidget" name="widget_6" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -252,8 +223,8 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="1" rowspan="2">
-       <widget class="QWidget" name="widget_5" native="true">
+      <item row="3" column="1">
+       <widget class="QWidget" name="widget" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -266,7 +237,7 @@
           <height>100</height>
          </size>
         </property>
-        <layout class="QGridLayout" name="gridLayout_2">
+        <layout class="QGridLayout" name="gridLayout">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -279,8 +250,11 @@
          <property name="verticalSpacing">
           <number>3</number>
          </property>
+         <item row="0" column="0">
+          <widget class="QWidget" name="widget_9" native="true"/>
+         </item>
          <item row="1" column="0">
-          <widget class="AssignButton" name="buttonAssignRows">
+          <widget class="AssignButton" name="buttonAssignColumns">
            <property name="maximumSize">
             <size>
              <width>50</width>
@@ -293,7 +267,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <spacer name="verticalSpacer_2">
+          <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -306,7 +280,7 @@
           </spacer>
          </item>
          <item row="1" column="1" rowspan="2">
-          <widget class="BoundListView" name="rows">
+          <widget class="BoundListView" name="columns">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -324,17 +298,103 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QWidget" name="widget_8" native="true"/>
-         </item>
          <item row="0" column="1">
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Rows</string>
+            <string>Columns</string>
            </property>
           </widget>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QWidget" name="widget_2" native="true">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>20</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QWidget" name="widget_7" native="true">
+        <layout class="QGridLayout" name="gridLayout_20">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>3</number>
+         </property>
+         <item row="1" column="0" rowspan="2" colspan="2">
+          <widget class="AssignButton" name="buttonAssignCounts">
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2" colspan="2">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Counts</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QWidget" name="widget_11" native="true"/>
+         </item>
+         <item row="1" column="2" rowspan="2" colspan="2">
+          <widget class="BoundListView" name="counts">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>210</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::ExtendedSelection</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="0" rowspan="5">
+       <widget class="AvailableFieldsListView" name="listAvailableFields">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>210</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
        </widget>
       </item>
      </layout>
@@ -448,21 +508,21 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="counts_observed">
+             <widget class="BoundCheckBox" name="countsObserved">
               <property name="text">
                <string>Observed</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="counts_expected">
+             <widget class="BoundCheckBox" name="countsExpected">
               <property name="text">
                <string>Expected</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="counts_hideSmallCounts">
+             <widget class="BoundCheckBox" name="hideSmallCounts">
               <property name="text">
                <string>Hide small counts</string>
               </property>
@@ -489,7 +549,7 @@
              </widget>
             </item>
             <item row="3" column="2">
-             <widget class="BoundTextBox" name="counts_hideSmallCountsLessThan">
+             <widget class="BoundTextBox" name="hideSmallCountsLessThan">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -921,7 +981,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>counts_hideSmallCounts</sender>
+   <sender>hideSmallCounts</sender>
    <signal>toggled(bool)</signal>
    <receiver>counts_hideSmallCountsLessThanLabel</receiver>
    <slot>setEnabled(bool)</slot>
@@ -937,9 +997,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>counts_hideSmallCounts</sender>
+   <sender>hideSmallCounts</sender>
    <signal>toggled(bool)</signal>
-   <receiver>counts_hideSmallCountsLessThan</receiver>
+   <receiver>hideSmallCountsLessThan</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

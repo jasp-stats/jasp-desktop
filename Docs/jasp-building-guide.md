@@ -10,39 +10,53 @@ Building JASP under windows is the most temperamental, and the versions listed h
 
 Qt: JASP for windows is built as 64-bit and is built with Mingw-W64. The Qt project does not ship a 64-bit version of Qt based on Mingw-W64, and so we rely on a version from [here](http://sourceforge.net/projects/mingwbuilds/files/external-binary-packages/Qt-Builds/). The x64 Qt 5.2.1 version is known to work and is recommended. It also includes Mingw-64. Once downloaded and unzipped to the desired location, it is necessary to run the `QtSDK-x86_64/qtbinpatcher.exe`, so it knows about it's current location.
 
-R: We provide an R build which is known to work [here](http://jasp-stats.org/development/R%20Win64%20for%20JASP%20%282014-09-09%29.zip)
+R: We provide an R build which is known to work [here](http://jasp-stats.org/development/R%20Win64%20for%20JASP%20%282014-10-02%29.zip)
 
-boost: 1.54.0 works, get it from [here](http://www.boost.org/users/history/version_1_54_0.html)
+boost: 1.54.0 works, get it from [here](http://www.boost.org/users/history/version_1_54_0.html) (though we do use boost 1.53.0 for 32-bit JASP on windows)
+
+dlls: You should also copy the four files libgcc_s_seh-1.dll, libstdc++-6.dll, libwinpthread-1.dll and libgomp-1.dll from QtSDK-x86_64/bin into the build directory as well.
 
 The directory structure should be as follows:
 
-<pre>
-[+] jasp-desktop  &lt; from github &gt;
-[+] boost_1_54_0
-[-] build-JASP- ... &lt; build directory, created by QtCreator &gt;
-   [+] R
-</pre>
+    [+] jasp-desktop  &lt; from github &gt;
+    [+] boost_1_54_0
+    [-] build-JASP- ... < build directory, created by QtCreator >
+       [+] R
+        - libgcc_s_seh-1.dll
+        - libstdc++-6.dll
+        - libwinpthread-1.dll
+        - libgomp-1.dll
 
-You should also copy the three files libgcc_s_seh-1.dll, libstdc++-6.dll and libwinpthread-1.dll from QtSDK-x86_64/bin into the build directory as well.
  
 Mac OS X
 --------
-Qt: JASP build on OS X is pretty robust, and most versions works. We currently use 5.3.1, but newer versions will probably work too. You can download it from [here](https://qt-project.org/downloads).
+XCode: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
 
-R: We provide a specially crafted R.framework [here](http://jasp-stats.org/development/R%20OSX%20for%20JASP%20%282014-09-09%29.zip)
+Qt: building JASP on OS X is pretty robust, and most versions work. We currently use 5.3.1, but newer versions will probably work too. You can download it from [here](https://qt-project.org/downloads).
+
+R: We provide a specially crafted R.framework [here](http://jasp-stats.org/development/R%20OSX%20for%20JASP%20%282014-10-14%29.zip)
 
 boost: 1.54.0 works, get it from [here](http://www.boost.org/users/history/version_1_54_0.html)
 
 The directory structure should be as follows:
 
-<pre>
- [+] jasp-desktop  &lt; from github &gt;
- [+] boost_1_54_0
- [-] Frameworks
-    [+] R.framework
- [+] build-JASP- ... &lt; build directory, created by QtCreator &gt;
-</pre>
+    [+] jasp-desktop  < from github >
+    [+] boost_1_54_0
+    [-] Frameworks
+       [+] R.framework
+    [+] build-JASP- ... < build directory, created by QtCreator >
 
 Linux
 -----
-This is pretty straight forward
+
+Qt: Whatever comes with your distro.
+
+R: We provide a specially crafted R.framework for Ubuntu 14.04 [here](http://jasp-stats.org/development/R%20U1404%20for%20JASP%20%282014-10-14%29.zip)
+
+boost: Whatever comes with your distro.
+
+The directory structure should be as follows:
+
+    [+] jasp-desktop  < from github >
+    [+] R
+    [+] build-JASP- ... < build directory, created by QtCreator >

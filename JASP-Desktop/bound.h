@@ -7,6 +7,7 @@ class Bound
 {
 public:
 	virtual void bindTo(Option *option) = 0;
+	virtual void unbind() { }
 
 };
 

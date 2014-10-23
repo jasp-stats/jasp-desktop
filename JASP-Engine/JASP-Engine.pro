@@ -29,7 +29,7 @@ linux {
 
 	INCLUDEPATH += /opt/local/include
 
-	R_HOME = $$OUT_PWD/../R-3.0.0
+	R_HOME = $$OUT_PWD/../R
 	R_EXE  = $$R_HOME/bin/R
 }
 
@@ -67,6 +67,9 @@ unix:LIBS += \
 	-L$$R_HOME/library/RInside/lib -lRInside \
 	-L$$R_HOME/lib -lR
 
+linux:LIBS += \
+	-lrt
+
 win32:LIBS += \
 	-L$$R_HOME/library/RInside/lib/$$ARCH -lRInside \
 	-L$$R_HOME/bin/$$ARCH -lR
@@ -78,11 +81,11 @@ QMAKE_EXTRA_TARGETS += RPackage
 PRE_TARGETDEPS += RPackage
 
 SOURCES += main.cpp \
-    engine.cpp \
-    rcppbridge.cpp
+	engine.cpp \
+	rcppbridge.cpp
 
 HEADERS += \
-    engine.h \
+	engine.h \
 	analysistask.h \
 	rcppbridge.h
 

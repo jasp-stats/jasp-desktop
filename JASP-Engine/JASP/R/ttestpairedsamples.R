@@ -37,21 +37,14 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 	ttest <- list()
 	
-	if (options$hypothesis == "groupsNotEqual") {
-	
-		ttest[["title"]] <- "Paired Samples T-Test"
-	}
-	else {
-	
-		ttest[["title"]] <- "One Tailed Paired Samples T-Test"
-	}
+	ttest[["title"]] <- "Paired Samples T-Test"
 
 	fields <- list(
 		list(name=".variable1", type="string", title=""),
 		list(name=".separator", type="string", title=""),
 		list(name=".variable2", type="string", title=""),
 		list(name="t", type="number", format="sf:4;dp:3"),
-		list(name="df", type="number", format="sf:4;dp:3"),
+		list(name="df", type="integer"),
 		list(name="p", type="number", format="dp:3;p:.001"))
 
 	if(options$meanDifference){
@@ -62,20 +55,39 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		fields[[length(fields)+1]] <- list(name="Cohen's d", type="number", format="sf:4;dp:3")
 	}
 	
-	if(options$confidenceInterval){
-		fields[[length(fields)+1]] <- list(name="lower", type="number", format="sf:4;dp:3")
-		fields[[length(fields)+1]] <- list(name="upper", type="number", format="sf:4;dp:3")
+	if (options$confidenceInterval) {
+	
+		interval <- 100 * options$confidenceIntervalInterval
+		title    <- paste(interval, "% Confidence Interval", sep="")
+	
+		fields[[length(fields)+1]] <- list(name="lowerCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
+		fields[[length(fields)+1]] <- list(name="upperCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
 	}
 
 	ttest[["schema"]] <- list(fields=fields)
 
 	ttest.results <- list()
 	
+	footnotes <- .newFootnotes()
+	
+	if (options$hypothesis == "groupOneGreater") {
+
+		message <- paste("All tests, hypothesis is group one greater than group two", sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+
+	} else if (options$hypothesis == "groupTwoGreater") {
+
+		message <- paste("All tests, hypothesis is group one less than group two", sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	}
+
 	for (pair in options$pairs)
 	{
 		row <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]])
 		
 		if (perform == "run") {
+		
+			row.footnotes <- NULL
 		
 			if (pair[[1]] != "" && pair[[2]] != "") {
 
@@ -91,21 +103,59 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				if (options$hypothesis == "groupTwoGreater")
 					tail <- "less"
 	
-				r <- t.test(c1, c2, paired = TRUE, conf.level = ci, alternative = tail)
+				r <- try( { t.test(c1, c2, paired = TRUE, conf.level = ci, alternative = tail) } )
+				
+				if (class(r) != "try-error") {
 			
-				t  <- .clean(as.numeric(r$statistic))
-				df <- as.numeric(r$parameter)
-				p  <- as.numeric(r$p.value)
-				m  <- as.numeric(r$estimate)
-				es <- .clean((mean(c1)-mean(c2))/(sqrt((sd(c1)^2+sd(c2)^2)/2)))
+					t  <- .clean(as.numeric(r$statistic))
+					df <- as.numeric(r$parameter)
+					p  <- as.numeric(r$p.value)
+					m  <- as.numeric(r$estimate)
+					es <- .clean((mean(c1)-mean(c2))/(sqrt((sd(c1)^2+sd(c2)^2)/2)))
 			
-				ci.l <- as.numeric(r$conf.int[1])
-				ci.u <- as.numeric(r$conf.int[2])
+					ci.l <- as.numeric(r$conf.int[1])
+					ci.u <- as.numeric(r$conf.int[2])
 			
-				if (options$hypothesis == "groupOneGreater")
-					ci.u = .clean(Inf)
-				if (options$hypothesis == "groupTwoGreater")
-					ci.l = .clean(-Inf)				
+					if (options$hypothesis == "groupOneGreater")
+						ci.u <- .clean(Inf)
+					if (options$hypothesis == "groupTwoGreater")
+						ci.l <- .clean(-Inf)
+						
+				} else {
+				
+					errorMessage <- .extractErrorMessage(r)
+					
+					if (errorMessage == "missing value where TRUE/FALSE needed") {
+					
+						errorMessage <- "t-statistic is undefined - one or both of the variables contain infinity"
+						
+					} else if (errorMessage == "data are essentially constant") {
+					
+						errorMessage <- "t-statistic is undefined - one or both of the variables contain all the same value (the variance is zero)"
+						
+					} else if (errorMessage == "not enough 'x' observations") {
+					
+						errorMessage <- "t-statistic is undefined - one or both of the variables contain only one value"
+						
+					} else {
+					
+						errorMessage <- paste("t statistic is undefined - ", errorMessage)
+					}
+					
+					index <- .addFootnote(footnotes, errorMessage)
+				
+					t  <- .clean(NaN)
+					df <- ""
+					p  <- ""
+					m  <- ""
+					es <- ""
+			
+					ci.l <- ""
+					ci.u <- ""
+					
+					row.footnotes <- list(t=list(index))
+				}
+				
 			}
 			else {
 			
@@ -135,16 +185,19 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 			
 			if(options$confidenceInterval) {
 			
-				row[["lower"]] <- ci.l
-				row[["upper"]] <- ci.u
+				row[["lowerCI"]] <- ci.l
+				row[["upperCI"]] <- ci.u
 			}
+			
+			row[[".footnotes"]] <- row.footnotes
 		}
 		
 		ttest.results[[length(ttest.results)+1]] <- row
 	}
 	
 	ttest[["data"]] <- ttest.results
-
+	
+	ttest[["footnotes"]] <- as.list(footnotes)
 
 	if (options$descriptives) {
 	
@@ -154,10 +207,10 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 		fields <- list(
 			list(name=".variable", type="string", title=""),
-			list(name="N", type="number", format="sf:4;dp:3"),
+			list(name="N",    type="integer"),
 			list(name="mean", type="number", format="sf:4;dp:3"),
-			list(name="sd", type="number", format="dp:3;p:.001"),
-			list(name="SE", type="number", format="dp:3;p:.001"))
+			list(name="sd",   type="number", format="sf:4;dp:3"),
+			list(name="SE",   type="number", format="sf:4;dp:3"))
 
 		descriptives[["schema"]] <- list(fields=fields)
 		

@@ -16,6 +16,7 @@ RcppBridge::RcppBridge()
 	_rInside[".readDatasetToEndNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetStatic);
 	_rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetHeaderStatic);
 	_rInside[".callbackNative"] = Rcpp::InternalFunction(&RcppBridge::callbackStatic);
+	_rInside[".baseCitation"] = "Love, J., Selker, R., Verhagen, J., Smira, M., Wild, A., Marsman, M., Gronau, Q., Morey, R., Rouder, J. & Wagenmakers, E. J. (2014). JASP (Version 0.5)[Computer software].";
 
 	_rInside["jasp.analyses"] = Rcpp::List();
 	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"RJSONIO\"))");
@@ -278,8 +279,15 @@ void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool o
 {
 	Rcpp::CharacterVector labels;
 
-	for (int i = 0; i < levels.size(); i++)
-		labels.push_back(levels.at(i).text());
+	if (levels.size() == 0)
+	{
+		labels.push_back(".");
+	}
+	else
+	{
+		for (int i = 0; i < levels.size(); i++)
+			labels.push_back(levels.at(i).text());
+	}
 
 	v.attr("levels") = labels;
 

@@ -60,7 +60,7 @@ protected:
 
 	static std::vector<std::string> list(
 			std::string one,
-			std::string two,
+			std::string two   = "",
 			std::string three = "",
 			std::string four  = "",
 			std::string five  = "",

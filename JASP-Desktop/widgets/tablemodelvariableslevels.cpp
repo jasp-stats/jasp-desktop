@@ -15,6 +15,9 @@ TableModelVariablesLevels::TableModelVariablesLevels(QWidget *parent) :
 	_boundTo = NULL;
 	_source = NULL;
 
+	_variableTypesSuggested = 0;
+	_variableTypesAllowed = 0xff;
+
 	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
@@ -80,6 +83,42 @@ void TableModelVariablesLevels::mimeDataMoved(const QModelIndexList &indexes)
 
 	refresh();
 
+}
+
+void TableModelVariablesLevels::setVariableTypesSuggested(int variableTypesSuggested)
+{
+	_variableTypesSuggested = variableTypesSuggested;
+}
+
+int TableModelVariablesLevels::variableTypesSuggested() const
+{
+	return _variableTypesSuggested;
+}
+
+void TableModelVariablesLevels::setVariableTypesAllowed(int variableTypesAllowed)
+{
+	_variableTypesAllowed = variableTypesAllowed;
+}
+
+int TableModelVariablesLevels::variableTypesAllowed() const
+{
+	return _variableTypesAllowed;
+}
+
+bool TableModelVariablesLevels::isSuggested(const Term &term) const
+{
+	QVariant v = requestInfo(term, VariableInfo::VariableType);
+	int variableType = v.toInt();
+
+	return variableType & _variableTypesSuggested;
+}
+
+bool TableModelVariablesLevels::isAllowed(const Term &term) const
+{
+	QVariant v = requestInfo(term, VariableInfo::VariableType);
+	int variableType = v.toInt();
+
+	return variableType == 0 || variableType & _variableTypesAllowed;
 }
 
 int TableModelVariablesLevels::rowCount(const QModelIndex &parent) const
@@ -196,6 +235,9 @@ Qt::ItemFlags TableModelVariablesLevels::flags(const QModelIndex &index) const
 
 bool TableModelVariablesLevels::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+	if (role != Qt::DisplayRole && role != Qt::EditRole)
+		return false;
+
 	if (_boundTo == NULL)
 		return false;
 
@@ -270,9 +312,9 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 
 		if (parent.isValid() == false)
 		{
-			if (row == -1)
+			if (row == -1)  // dropped at end
 				row = _rows.length();
-			else if (row == 0)
+			else if (row == 0)  // dropped at beginning
 				row = 1;
 
 			int level = 0;
@@ -299,21 +341,29 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 				_levels.push_back(options);
 			}
 
-			Options *levelOption = _levels.at(level);
-			OptionVariables *variablesOption = dynamic_cast<OptionVariables*>(levelOption->get("variables"));
-			vector<string> currentVariables = variablesOption->variables();
-
-			vector<string>::iterator insertionPoint = currentVariables.begin();
-			for (int i = 0; i < positionInLevel; i++)
-				insertionPoint++;
+			Options *levelDroppedOn = _levels.at(level);
+			OptionVariables *variablesOption = dynamic_cast<OptionVariables*>(levelDroppedOn->get("variables"));
+			Terms currentVariables = variablesOption->variables();
 
 			foreach (const Term &variable, variables)
 			{
-				currentVariables.insert(insertionPoint, variable.asString());
-				insertionPoint++;
+				currentVariables.insert(positionInLevel, variable);
+				positionInLevel++;
 			}
 
-			variablesOption->setValue(currentVariables);
+			variablesOption->setValue(currentVariables.asVector());
+
+			foreach (Options *level, _levels)
+			{
+				if (level == levelDroppedOn)
+					continue;
+
+				OptionVariables *variablesOption = dynamic_cast<OptionVariables*>(level->get("variables"));
+				Terms currentVariables = variablesOption->variables();
+
+				currentVariables.remove(variables);
+				variablesOption->setValue(currentVariables.asVector());
+			}
 
 			_boundTo->setValue(_levels);
 
@@ -330,20 +380,29 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 
 bool TableModelVariablesLevels::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
 {
-	if (mimeTypes().contains("application/vnd.list.variable"))
+	Q_UNUSED(action);
+	Q_UNUSED(row);
+	Q_UNUSED(column);
+	Q_UNUSED(parent);
+
+	if (data->hasFormat("application/vnd.list.variable"))
 	{
 		QByteArray encodedData = data->data("application/vnd.list.variable");
-		QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
-		if (stream.atEnd()) // is empty
-			return false;
+		Terms variables;
+		variables.set(encodedData);
 
-		int count;
+		foreach (const Term &variable, variables)
+		{
+			if ( ! isAllowed(variable))
+				return false;
+		}
 
-		stream >> count;
-
-		if (count >= 1)
-			return true;
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 
 	return false;

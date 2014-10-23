@@ -16,7 +16,8 @@ init <- function(name, options.as.json.string) {
 		"{ \"error\" : 	1, \"errorMessage\" : \"This analysis terminated unexpectedly. Please contact its author.\" }"
 	
 	} else {
-	
+
+		results <- .addCitationToResults(results)	
 		RJSONIO::toJSON(results, digits=12)
 	}
 
@@ -40,9 +41,66 @@ run <- function(name, options.as.json.string) {
 	
 	} else {
 	
+		results <- .addCitationToResults(results)
 		RJSONIO::toJSON(results, digits=12)
 	}
 
+}
+
+.addCitationToTable <- function(table) {
+
+	if ("citation" %in% names(table) ) {
+
+		table$citation <- c(.baseCitation, table$citation)
+
+	} else {
+	
+		table$citation <- list(.baseCitation)
+	}
+	
+	table
+}
+
+.addCitationToResults <- function(results) {
+
+	if ("status" %in% names(results)) {
+	
+		res <- results$results
+		
+	} else {
+	
+		res <- results
+	}
+	
+	for (m in res$.meta) {
+
+		item.name <- m$name
+		
+		if (item.name %in% names(res)) {
+	
+			if (m$type == "table") {
+	
+				res[[item.name]] <- .addCitationToTable(res[[item.name]])
+				
+			} else if (m$type == "tables") {
+
+				for (i in .indices(res[[item.name]]))
+					res[[item.name]][[i]] <- .addCitationToTable(res[[item.name]][[i]])
+			}
+		}
+	}
+	
+	
+	if ("status" %in% names(results)) {
+	
+		results$results <- res
+		
+	} else {
+	
+		results <- res
+	}
+	
+	results
 }
 
 .readDataSetToEnd <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {	
@@ -51,23 +109,7 @@ run <- function(name, options.as.json.string) {
 		return (data.frame())
 
 	dataset <- .readDatasetToEndNative(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
-	
-	if ( ! is.null(exclude.na.listwise))
-	{
-		rows.to.exclude <- c()
-		
-		for (col in .v(exclude.na.listwise)) {
-			
-			rows.to.exclude <- c(rows.to.exclude, which(is.na(dataset[[col]])))
-		}
-		
-		rows.to.exclude <- unique(rows.to.exclude)
-
-		rows.to.keep <- 1:dim(dataset)[1]
-		rows.to.keep <- rows.to.keep[ ! rows.to.keep %in% rows.to.exclude]
-		
-		dataset <- dataset[rows.to.keep,]
-	}
+	dataset <- .excludeNaListwise(dataset, exclude.na.listwise)
 	
 	dataset
 }
@@ -80,6 +122,87 @@ run <- function(name, options.as.json.string) {
 	dataset <- .readDataSetHeaderNative(unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
 	
 	dataset
+}
+
+
+.vdf <- function(df, columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {
+
+	new.df <- data.frame()
+	
+	for (column.name in columns)
+		new.df <- cbind(new.df, df[[column.name]])
+		
+	for (column.name in columns.as.ordinal)
+		new.df <- cbind(new.df, as.ordered(df[[column.name]]))
+		
+	for (column.name in columns.as.factor)
+		new.df <- cbind(new.df, as.factor(df[[column.name]]))
+		
+	for (column.name in columns.as.numeric)
+		new.df <- cbind(new.df, as.numeric(as.character(df[[column.name]])))
+
+	names(new.df) <- .v(names(new.df))
+	
+	new.df <- .excludeNaListwise(new.df, exclude.na.listwise)
+	
+	new.df
+}
+
+.excludeNaListwise <- function(dataset, exclude.na.listwise) {
+
+	if ( ! is.null(exclude.na.listwise)) {
+	
+		rows.to.exclude <- c()
+		
+		for (col in .v(exclude.na.listwise))
+			rows.to.exclude <- c(rows.to.exclude, which(is.na(dataset[[col]])))
+		
+		rows.to.exclude <- unique(rows.to.exclude)
+
+		rows.to.keep <- 1:dim(dataset)[1]
+		rows.to.keep <- rows.to.keep[ ! rows.to.keep %in% rows.to.exclude]
+		
+		new.dataset <- dataset[rows.to.keep,]
+		
+		if (class(new.dataset) != "data.frame") {   # HACK! if only one column, R turns it into a factor (because it's stupid)
+		
+			dataset <- na.omit(dataset)
+			
+		} else {
+		
+			dataset <- new.dataset
+		}
+	}
+	
+	dataset
+}
+
+.saveState <- function(state) {
+
+	con <- rawConnection(raw(), "w")
+	save("state", file=con)
+	rawContent <- rawConnectionValue(con)
+	close(con)
+	
+	.saveStateNative(rawContent)
+	
+	NULL
+}
+
+.retrieveState <- function() {
+
+	rawContent <- .retrieveStateNative()
+	
+	state <- NULL	
+
+	if (is.null(rawContent) == FALSE) {
+	
+		con <- rawConnection(rawContent, "r")	
+		load(file=con)
+		close(con)
+	}
+	
+	state
 }
 
 .shortToLong <- function(dataset, rm.factors, rm.vars, bt.vars) {
@@ -331,6 +454,57 @@ callback <- function(results=NULL) {
 	content
 }
 
+.extractErrorMessage <- function(error) {
+
+	split <- base::strsplit(as.character(error), ":")[[1]]
+	last <- split[[length(split)]]
+	stringr::str_trim(last)
+}
+
+.addFootnote <- function(footnotes, message, symbol=NULL) {
+	
+	if (length(footnotes) == 0) {
+		
+		if (is.null(symbol)) {
+			
+			footnotes <- list(message)
+			
+		} else {
+			
+			footnotes <- list(symbol=symbol, text=message)
+		}
+		
+		return(list(footnotes=footnotes, index=0))
+		
+	} else {
+		
+		for (i in 1:length(footnotes)) {
+			
+			footnote <- footnotes[[i]]
+			
+			if ("text" %in% names(footnote)) {
+				existingMessage <- footnote$text
+			} else {
+				existingMessage <- footnote
+			}
+				
+			if (existingMessage == message)
+				return(list(footnotes=footnotes, index=i-1))
+		}
+		
+		if (is.null(symbol)) {
+			new.footnote <- message
+		} else {
+			new.footnote <- list(symbol=symbol, message=message)
+		}
+	
+		index <- length(footnotes)+1
+		footnotes[[index]] <- new.footnote
+		
+		return(list(footnotes=footnotes, index=index-1))
+	}
+}
+
 .clean <- function(value) {
 
 	if (is.null(value))
@@ -351,3 +525,63 @@ callback <- function(results=NULL) {
 	NULL
 }
 
+.newFootnotes <- function() {
+	
+	footnotes <- new.env()
+	footnotes$footnotes <- list()
+	footnotes$next.symbol <- 0
+	
+	class(footnotes) <- c("footnotes", class(footnotes))
+	
+	footnotes
+}
+
+as.list.footnotes <- function(footnotes) {
+	
+	footnotes$footnotes
+}
+
+.addFootnote <- function(footnotes, text, symbol=NULL) {
+
+	if (length(footnotes$footnotes) == 0) {
+		
+		if (is.null(symbol)) {
+		
+			symbol <- footnotes$next.symbol
+			footnotes$next.symbol <- symbol + 1	
+		}
+		
+		footnotes$footnotes <- list(list(symbol=symbol, text=text))
+		
+		return(0)
+		
+	} else {
+		
+		for (i in 1:length(footnotes$footnotes)) {
+			
+			footnote <- footnotes$footnotes[[i]]
+			
+			if ("text" %in% names(footnote)) {
+				existingMessage <- footnote$text
+			} else {
+				existingMessage <- footnote
+			}
+			
+			if (existingMessage == text)
+				return(i-1)
+		}
+		
+		if (is.null(symbol)) {
+		
+			symbol <- footnotes$next.symbol
+			footnotes$next.symbol <- symbol + 1	
+		}
+
+		new.footnote <- list(symbol=symbol, text=text)
+		
+		index <- length(footnotes$footnotes)+1
+		footnotes$footnotes[[index]] <- new.footnote
+		
+		return(index-1)
+	}
+}

@@ -39,17 +39,30 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	ttest <- list()
 
 	ttest[["title"]] <- "Bayesian Paired Samples T-Test"
+	
+	ttest[["citation"]] <- list(
+		"Morey, R. D. & Rouder, J. N. (2014). BayesFactor (Version 0.99)[Computer software].",
+		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 752-760")
+	
+	bf.type <- options$bayesFactorType
+	
+	if (bf.type == "BF10") {
+		bf.title <- "BF\u2081\u2080"
+	} else {
+		bf.title <- "BF\u2080\u2081"
+	}
 
 	fields <- list(
 		list(name=".variable1", type="string", title=""),
 		list(name=".separator", type="string", title=""),
 		list(name=".variable2", type="string", title=""),
-		list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080"),
+		list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
 		list(name="error", type="number", format="sf:4;dp:3", title="error %"))
 
 	ttest[["schema"]] <- list(fields=fields)
 
-	ttest.results <- list()
+	ttest.rows <- list()
+	footnotes <- .newFootnotes()
 	
 	for (pair in options$pairs)
 	{
@@ -64,7 +77,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 			if (perform == "run") {
 
-				result <- try (silent = FALSE, expr = {
+				result <- try (silent = TRUE, expr = {
 
 					subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
 					subDataSet <- na.omit(subDataSet)
@@ -73,8 +86,12 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					c2 <- subDataSet[[ .v(pair[[2]]) ]]
 	
 					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE, r=options$priorWidth)
+					
+					bf.raw <- exp(as.numeric(r@bayesFactor$bf))
+					if (bf.type == "BF01")
+						bf.raw <- 1 / bf.raw
 			
-					BF <- .clean(exp(as.numeric(r@bayesFactor$bf)))
+					BF <- .clean(bf.raw)
 					error <- .clean(as.numeric(r@bayesFactor$error))
 			
 					list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error)
@@ -82,8 +99,25 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				})
 		
 				if (class(result) == "try-error") {
-			
-					result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF="", error="")
+				
+					errorMessage <- .extractErrorMessage(result)
+					
+					if (errorMessage == "x or y must not contain missing or infinite values.") {
+				
+						errorMessage <- paste("BayesFactor is undefined - one or both of the variables contain infinity")
+					
+					#} else if (errorMessage == "data are essentially constant") {
+					#				
+					#	errorMessage <- paste("BayesFactor is undefined - the sample contains all the same value (the variance is zero)")
+					#
+					} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
+					
+						errorMessage <- "BayesFactor is undefined - one or both of the variables has too few observations (possibly only after missing values are excluded)"	
+					}
+
+					index <- .addFootnote(footnotes, errorMessage)
+
+					result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
 				}
 			
 			} else {
@@ -93,9 +127,10 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			
 		}
 		
-		ttest.results[[length(ttest.results)+1]] <- result
+		ttest.rows[[length(ttest.rows)+1]] <- result
 		
-		ttest[["data"]] <- ttest.results
+		ttest[["data"]] <- ttest.rows
+		ttest[["footnotes"]] <- as.list(footnotes)
 
 	}
 
@@ -107,7 +142,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 		fields <- list(
 			list(name=".variable", type="string", title=""),
-			list(name="N", type="number", format="sf:4"),
+			list(name="N", type="integer"),
 			list(name="mean", type="number", format="sf:4"),
 			list(name="sd", type="number", format="dp:4;p:.001"),
 			list(name="SE", type="number", format="dp:4;p:.001"))
@@ -132,7 +167,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						if(is.numeric(std)){
 							se <- .clean(as.numeric(std/sqrt(n)))}
 						else
-							se <- "NaN"
+							se <- .clean(NaN)
 										
 						list(.variable=pair[[i]], N=n, mean=m, sd=std, SE=se)
 					})

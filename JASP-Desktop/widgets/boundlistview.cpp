@@ -87,6 +87,13 @@ void BoundListView::bindTo(Option *option)
 		model->bindTo(option);
 }
 
+void BoundListView::unbind()
+{
+	BoundModel *model = dynamic_cast<BoundModel *>(this->model());
+	if (model != NULL)
+		model->unbind();
+}
+
 void BoundListView::resizeEvent(QResizeEvent *e)
 {
 	ListView::resizeEvent(e);
