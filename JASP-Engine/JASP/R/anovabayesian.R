@@ -56,6 +56,9 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 	
 	posterior <- list()
 	posterior[["title"]] <- "Bayesian ANOVA: Model Comparison"
+	posterior[["citation"]] <- list(
+		"Morey, R. D. & Rouder, J. N. (2014). BayesFactor (Version 0.99)[Computer software].",
+		"Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology.  56.  p. 356-374.")
 	
 	ind.random <- length(options$randomFactors)
 	
@@ -373,6 +376,9 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		# set up table as a list	 
 		effect <- list()
 		effect[["title"]] <- "Bayesian ANOVA: Analysis of Effects"
+		effect[["citation"]] <- list(
+			"Morey, R. D. & Rouder, J. N. (2014). BayesFactor (Version 0.99)[Computer software].",
+			"Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology.  56.  p. 356-374.")
 	
 		fields <- list(
 			list(name="Effects", type="string"),

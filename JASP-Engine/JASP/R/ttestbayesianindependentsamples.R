@@ -117,6 +117,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	ttest <- list()
 
 	ttest[["title"]] <- "Bayesian Independent Samples T-Test"
+	
+	ttest[["citation"]] <- list(
+		"Morey, R. D. & Rouder, J. N. (2014). BayesFactor (Version 0.99)[Computer software].",
+		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 752-760")
 
 	fields <- list(
 		list(name=".variable", title="", type="string", combine=TRUE))

@@ -63,13 +63,13 @@ signals:
 	void analysisSelected(int id);
 	void analysisUnselected();
 	void analysisChangedDownstream(int id, QString options);
-	void pushToClipboard(QString data);
+	void pushToClipboard(QString mimeType, QString data);
 
 private slots:
 
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
-	void pushToClipboardHandler(const QString &data);
+	void pushToClipboardHandler(const QString &mimeType, const QString &data);
 	void analysisChangedDownstreamHandler(int id, QString options);
 
     void tabChanged(int index);

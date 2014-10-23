@@ -16,7 +16,8 @@ init <- function(name, options.as.json.string) {
 		"{ \"error\" : 	1, \"errorMessage\" : \"This analysis terminated unexpectedly. Please contact its author.\" }"
 	
 	} else {
-	
+
+		results <- .addCitationToResults(results)	
 		RJSONIO::toJSON(results, digits=12)
 	}
 
@@ -40,9 +41,66 @@ run <- function(name, options.as.json.string) {
 	
 	} else {
 	
+		results <- .addCitationToResults(results)
 		RJSONIO::toJSON(results, digits=12)
 	}
 
+}
+
+.addCitationToTable <- function(table) {
+
+	if ("citation" %in% names(table) ) {
+
+		table$citation <- c(.baseCitation, table$citation)
+
+	} else {
+	
+		table$citation <- list(.baseCitation)
+	}
+	
+	table
+}
+
+.addCitationToResults <- function(results) {
+
+	if ("status" %in% names(results)) {
+	
+		res <- results$results
+		
+	} else {
+	
+		res <- results
+	}
+	
+	for (m in res$.meta) {
+
+		item.name <- m$name
+		
+		if (item.name %in% names(res)) {
+	
+			if (m$type == "table") {
+	
+				res[[item.name]] <- .addCitationToTable(res[[item.name]])
+				
+			} else if (m$type == "tables") {
+
+				for (i in .indices(res[[item.name]]))
+					res[[item.name]][[i]] <- .addCitationToTable(res[[item.name]][[i]])
+			}
+		}
+	}
+	
+	
+	if ("status" %in% names(results)) {
+	
+		results$results <- res
+		
+	} else {
+	
+		results <- res
+	}
+	
+	results
 }
 
 .readDataSetToEnd <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {	

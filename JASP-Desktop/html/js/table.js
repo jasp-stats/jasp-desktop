@@ -8,7 +8,8 @@ $.widget("jasp.table", {
 		casesAcrossColumns : false,
 		formats : null,
 		status : "waiting",
-		footnotes : [ ]
+		footnotes : [ ],
+		citation : null
 	},
 	_create: function () {
 		this.element.addClass("jasp-table")
@@ -524,7 +525,7 @@ $.widget("jasp.table", {
 
 			chunks.push('<thead>')
 				chunks.push('<tr>')
-					chunks.push('<th nowrap colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div></th>')
+					chunks.push('<th nowrap colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="status"></div><div class="copy toolbar-button" style="visibility: hidden ;"></div><div class="cite toolbar-button" style="visibility: hidden ;"></div></div></th>')
 				chunks.push('</tr>')
 
 		if (this.options.subtitle) {
@@ -665,19 +666,47 @@ $.widget("jasp.table", {
 		
 		var $table = this.element.children("table")
 		var $toolbar = this.element.find("div.toolbar")
+		
+		var $toolbarButtons = $toolbar.find("div.toolbar-button")
 		var $copy = $toolbar.find("div.copy")
+		var $cite = $toolbar.find("div.cite")
+		
 		var $status = $toolbar.find("div.status")
 		
 		$table.mouseenter(function(event){
-			$copy.css("visibility", "visible")
+			$toolbarButtons.css("visibility", "visible")
 		})
 		$table.mouseleave(function(event) {
-			$copy.css("visibility", "hidden")
+			$toolbarButtons.css("visibility", "hidden")
 		})
+		
+		$copy.tooltip({ content: "Copied to clipboard", items: "*", disabled: true, show: { duration : 100 }, close : function() { window.setTimeout(function(){ $copy.tooltip("option", "disabled", true) }, 500) }, position: { my: "center+10 top+15", at: "center bottom", collision: "flipfit" }})
+		$cite.tooltip({ content: "Citation copied to clipboard", items: "*", disabled: true, show: { duration : 100 }, close : function() { window.setTimeout(function(){ $cite.tooltip("option", "disabled", true) }, 500) }, position: { my: "center+10 top+15", at: "center bottom", collision: "flipfit" }})
 		
 		$copy.click(function(event) {
 			pushToClipboard($table)
 			event.preventDefault()
+			$copy.tooltip("option", "disabled", false)
+			$copy.tooltip("open")
+			
+			window.setTimeout(function() {
+				$copy.tooltip("close")
+			}, 800)
+		})
+		
+		var citation = this.options.citation
+		if (citation == null)
+			$cite.hide()
+
+		$cite.click(function(event) {
+			pushTextToClipboard(citation.join("\n\n"))
+			event.preventDefault()
+			$cite.tooltip("option", "disabled", false)
+			$cite.tooltip("open")
+			
+			window.setTimeout(function() {
+				$cite.tooltip("close")
+			}, 800)
 		})
 		
 		$status.addClass(this.options.status)

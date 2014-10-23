@@ -119,7 +119,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
-	connect(this, SIGNAL(pushToClipboard(QString)), this, SLOT(pushToClipboardHandler(QString)));
+	connect(this, SIGNAL(pushToClipboard(QString, QString)), this, SLOT(pushToClipboardHandler(QString, QString)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
 
 	_buttonPanel = new QWidget(ui->pageOptions);
@@ -524,22 +524,30 @@ void MainWindow::analysisRemoved()
 	ui->tableView->show();
 }
 
-void MainWindow::pushToClipboardHandler(const QString &data)
+void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data)
 {
-	QString toClipboard;
-	toClipboard += "<!DOCTYPE HTML>\n"
-			"<html>\n"
-			"	<head>\n"
-			"		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
-			"		<title>JASP</title>"
-			"	</head>\n"
-			"	<body>\n";
-	toClipboard += data;
-	toClipboard += "	</body>\n"
-			"</html>";
-
 	QMimeData *mimeData = new QMimeData();
-	mimeData->setData("text/html", toClipboard.toUtf8());
+
+	if (mimeType == "text/html")
+	{
+		QString toClipboard;
+		toClipboard += "<!DOCTYPE HTML>\n"
+					   "<html>\n"
+					   "	<head>\n"
+					   "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
+					   "		<title>JASP</title>"
+					   "	</head>\n"
+					   "	<body>\n";
+		toClipboard += data;
+		toClipboard += "	</body>\n"
+					   "</html>";
+
+		mimeData->setData("text/html", toClipboard.toUtf8());
+	}
+	else
+	{
+		mimeData->setData(mimeType, data.toUtf8());
+	}
 
 	QClipboard *clipboard = QApplication::clipboard();
 	clipboard->setMimeData(mimeData, QClipboard::Clipboard);
