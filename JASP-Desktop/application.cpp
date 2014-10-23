@@ -1,4 +1,7 @@
+
 #include "application.h"
+
+#ifdef QT_DEBUG
 
 #include <iostream>
 
@@ -22,3 +25,5 @@ bool Application::notify(QObject *receiver, QEvent *event)
 		//return false;
 	}
 }
+
+#endif  // QT_DEBUG
