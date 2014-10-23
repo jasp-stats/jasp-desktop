@@ -32,7 +32,7 @@ windows {
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
-LIBS += -L.. -lJASP-Common
+LIBS += -L.. -lJASP-Common -lrt
 
 unix:ICON = icon.icns
 windows:RC_FILE = icon.rc
