@@ -179,27 +179,33 @@ run <- function(name, options.as.json.string) {
 
 .saveState <- function(state) {
 
-	con <- rawConnection(raw(), "w")
-	save("state", file=con)
-	rawContent <- rawConnectionValue(con)
-	close(con)
+	if (base::exists(".saveStateNative")) {
+
+		con <- rawConnection(raw(), "w")
+		save("state", file=con)
+		rawContent <- rawConnectionValue(con)
+		close(con)
 	
-	.saveStateNative(rawContent)
+		.saveStateNative(rawContent)
+	}
 	
 	NULL
 }
 
 .retrieveState <- function() {
 
-	rawContent <- .retrieveStateNative()
+	state <- NULL
 	
-	state <- NULL	
+	if (base::exists(".retrieveStateNative")) {
 
-	if (is.null(rawContent) == FALSE) {
+		rawContent <- .retrieveStateNative()
+
+		if (is.null(rawContent) == FALSE) {
 	
-		con <- rawConnection(rawContent, "r")	
-		load(file=con)
-		close(con)
+			con <- rawConnection(rawContent, "r")	
+			load(file=con)
+			close(con)
+		}	
 	}
 	
 	state
@@ -368,14 +374,20 @@ run <- function(name, options.as.json.string) {
 
 callback <- function(results=NULL) {
 
-	if (is.null(results)) {
-		json.string <- "null"
-	} else {
-		json.string <- RJSONIO::toJSON(results)
-	}
-	
-	.callbackNative(json.string);
+	ret <- 0
 
+	if (base::exists(".callbackNative")) {
+
+		if (is.null(results)) {
+			json.string <- "null"
+		} else {
+			json.string <- RJSONIO::toJSON(results)
+		}
+	
+		ret <- .callbackNative(json.string);
+	}
+
+	ret
 }
 
 .cat <- function(object) {
