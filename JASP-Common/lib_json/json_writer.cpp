@@ -72,10 +72,12 @@ std::string valueToString( double value )
    sprintf(buffer, "%#.16g", value); 
 #endif
 
+   int len = strlen(buffer);
+
    // Jonathon's Hack, on Linux, sometimes sprintf puts , instead of . for dec. place
    // this leads to bad JSON
 
-   for (int i = 0; buffer[i] != '\0'; i++)
+   for (int i = 0; i < len; i++)
    {
        if (buffer[i] == ',')
        {
@@ -86,7 +88,17 @@ std::string valueToString( double value )
 
    // end Jonathon's Hack
 
-   char* ch = buffer + strlen(buffer) - 1;
+
+   // Jonathon's next hack, sometimes sprintf puts a trailing decimal place,
+   // with no digits afterwards. this leads to bad JSON
+
+   if (buffer[len-1] == '.')
+	   buffer[len-1] = '\0';
+
+   // end Jonathon's Hack
+
+
+   char* ch = buffer + len - 1;
    if (*ch != '0') return buffer; // nothing to truncate, so save time
    while(ch > buffer && *ch == '0'){
      --ch;
