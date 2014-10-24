@@ -23,7 +23,7 @@ public:
 signals:
 	void loads(const QString &filename);
 	void progress(const QString &status, int progress);
-	void complete(DataSet *dataSet);
+	void complete(const QString &dataSetName, DataSet *dataSet);
 	void fail(const QString &reason);
 
 private slots:
@@ -50,12 +50,12 @@ public:
 
 signals:
 	void progress(const QString &status, int progress);
-	void complete(DataSet *dataSet);
+	void complete(const QString &dataSetName, DataSet *dataSet);
 	void fail(const QString &reason);
 
 private slots:
 	void progressSlot(const QString &status, int progress);
-	void completeSlot(DataSet *dataSet);
+	void completeSlot(const QString &dataSetName, DataSet *dataSet);
 	void failSlot(const QString &reason);
 
 private:

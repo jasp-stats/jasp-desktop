@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <QTimer>
+#include <QFileInfo>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ AsyncLoader::AsyncLoader(QObject *parent) :
 	// but we'll see if this works
 
 	connect(&_loader, SIGNAL(progress(QString,int)), this, SLOT(progressSlot(QString,int)));
-	connect(&_loader, SIGNAL(complete(DataSet*)), this, SLOT(completeSlot(DataSet*)));
+	connect(&_loader, SIGNAL(complete(const QString &, DataSet*)), this, SLOT(completeSlot(const QString &, DataSet*)));
 	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(failSlot(QString)));
 }
 
@@ -35,10 +36,10 @@ void AsyncLoader::progressSlot(const QString &status, int progress)
 	emit this->progress(status, progress);
 }
 
-void AsyncLoader::completeSlot(DataSet *dataSet)
+void AsyncLoader::completeSlot(const QString &dataSetName, DataSet *dataSet)
 {
 	_mutex.lock();
-	emit complete(dataSet);
+	emit complete(dataSetName, dataSet);
 	_mutex.unlock();
 }
 
@@ -81,7 +82,10 @@ void XTAsyncLoader::loadTask(const QString &filename)
 			QMutexLocker locker(_mutex);
 			dataSet = _loader.loadDataSet(filename.toStdString());
 		}
-		emit complete(dataSet);
+
+		QString name = QFileInfo(filename).baseName();
+
+		emit complete(name, dataSet);
 	}
 	catch (runtime_error e)
 	{

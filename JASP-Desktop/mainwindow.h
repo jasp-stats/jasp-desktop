@@ -75,7 +75,7 @@ private slots:
     void tabChanged(int index);
 	void dataSetSelected(const QString &filename);
 	void dataSetCloseRequested();
-	void dataSetLoaded(DataSet *dataSet);
+	void dataSetLoaded(const QString &dataSetName, DataSet *dataSet);
 	void dataSetLoadFailed(const QString &message);
 	void itemSelected(const QString &item);
 	void exportSelected(const QString &filename);

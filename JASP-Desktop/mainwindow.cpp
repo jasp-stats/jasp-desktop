@@ -113,7 +113,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_alert->move(100, 80);
 	_alert->hide();
 
-	connect(&_loader, SIGNAL(complete(DataSet*)), this, SLOT(dataSetLoaded(DataSet*)));
+	connect(&_loader, SIGNAL(complete(const QString&, DataSet*)), this, SLOT(dataSetLoaded(const QString&, DataSet*)));
 	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
 	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(dataSetLoadFailed(QString)));
 
@@ -338,8 +338,10 @@ void MainWindow::dataSetCloseRequested()
 	_inited = false;
 }
 
-void MainWindow::dataSetLoaded(DataSet *dataSet)
+void MainWindow::dataSetLoaded(const QString &dataSetName, DataSet *dataSet)
 {
+	setWindowTitle(dataSetName);
+
 	_dataSet = dataSet;
 	_tableModel->setDataSet(dataSet);
 	updateMenuEnabledDisabledStatus();
