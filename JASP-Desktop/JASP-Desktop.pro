@@ -4,6 +4,7 @@ QT       += core gui webkit webkitwidgets svg
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 windows:CONFIG += c++11
+QMAKE_CXXFLAGS += -std=c++11
 
 DESTDIR = ..
 TARGET = JASP
