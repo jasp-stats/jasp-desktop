@@ -60,16 +60,10 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->groupComareMainEffects->hide();
-	ui->groupOptions->hide();
-	ui->groupComareMainEffects->hide();
-	ui->groupPostHocOptions->hide();
-	ui->groupEqualVariances->hide();
+	ui->marginalMeansContainer->hide();
 #else
 	ui->groupComareMainEffects->setStyleSheet("background-color: pink ;");
-	ui->groupOptions->setStyleSheet("background-color: pink ;");
-	ui->groupComareMainEffects->setStyleSheet("background-color: pink ;");
-	ui->groupPostHocOptions->setStyleSheet("background-color: pink ;");
-	ui->groupEqualVariances->setStyleSheet("background-color: pink ;");
+	ui->marginalMeansContainer->setStyleSheet("background-color: pink ;");
 #endif
 
 }
@@ -94,7 +88,10 @@ void AnovaForm::factorsChanged()
 
 void AnovaForm::termsChanged()
 {
-	Terms terms = _anovaModel->terms();
-	terms.insert(0, string("~OVERALL"));
+	Terms terms;
+
+	terms.add(string("~OVERALL"));
+	terms.add(_anovaModel->terms());
+
 	ui->marginalMeans_terms->setVariables(terms);
 }

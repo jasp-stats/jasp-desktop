@@ -82,8 +82,11 @@ void AnovaRepeatedMeasuresShortForm::factorsChanged()
 
 void AnovaRepeatedMeasuresShortForm::termsChanged()
 {
-	Terms terms = _anovaModel->terms();
-	terms.insert(0, string("~OVERALL"));
+	Terms terms;
+
+	terms.add(string("~OVERALL"));
+	terms.add(_anovaModel->terms());
+
 	ui->marginalMeans_terms->setVariables(terms);
 }
 

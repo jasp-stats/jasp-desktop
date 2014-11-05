@@ -60,6 +60,9 @@ AnovaModelWidget::AnovaModelWidget(QWidget *parent) :
 	QMenu *menu = new QMenu(ui->buttonAssignMenu);
 	menu->addActions(actions);
 	ui->buttonAssignMenu->setMenu(menu);
+
+	ui->listModelTerms->horizontalHeader()->setDefaultSectionSize(230);
+	ui->listModelTerms->horizontalHeader()->setStretchLastSection(true);
 }
 
 AnovaModelWidget::~AnovaModelWidget()
@@ -72,7 +75,13 @@ void AnovaModelWidget::bindTo(Option *option)
 	_boundTo = dynamic_cast<OptionsTable *>(option);
 
 	if (_tableModelAnovaModel != NULL && _boundTo != NULL)
+	{
 		_tableModelAnovaModel->bindTo(_boundTo);
+
+		ui->columnLabel0->setText(_tableModelAnovaModel->headerData(0, Qt::Horizontal, Qt::DisplayRole).toString());
+		if (_tableModelAnovaModel->columnCount() > 1)
+			ui->columnLabel1->setText(_tableModelAnovaModel->headerData(1, Qt::Horizontal, Qt::DisplayRole).toString());
+	}
 }
 
 void AnovaModelWidget::setModel(TableModelAnovaModel *model)
@@ -85,10 +94,6 @@ void AnovaModelWidget::setModel(TableModelAnovaModel *model)
 	_tableModelAnovaModel->setCustomModelMode(_customModel);
 
 	ui->listModelTerms->setModel(model);
-
-
-	ui->columnLabel0->setText(model->headerData(0, Qt::Horizontal, Qt::DisplayRole).toString());
-	ui->columnLabel1->setText(model->headerData(1, Qt::Horizontal, Qt::DisplayRole).toString());
 
 	variablesAvailableChanged();
 	connect(_tableModelAnovaModel, SIGNAL(variablesAvailableChanged()), this, SLOT(variablesAvailableChanged()));

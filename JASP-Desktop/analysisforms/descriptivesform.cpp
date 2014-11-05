@@ -31,9 +31,11 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 
 	ui->widgetCharts->hide();
 	ui->widgetFormat->hide();
+	ui->statistics_valuesAreGroupMidpoints->hide();
 #else
 	ui->widgetCharts->setStyleSheet("background-color: pink;");
 	ui->widgetFormat->setStyleSheet("background-color: pink;");
+	ui->statistics_valuesAreGroupMidpoints->setStyleSheet("background-color: pink;");
 #endif
 
 }

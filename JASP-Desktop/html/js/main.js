@@ -253,6 +253,12 @@ var pushToClipboard = function(element) {
 
 	var $el = $(element)
 	
-	jasp.pushToClipboard(stringify($el, "\t\t"))
+	jasp.pushToClipboard("text/html", stringify($el, "\t\t"))
 
 }
+
+var pushTextToClipboard = function(str) {
+
+	jasp.pushToClipboard("text/plain", str)
+}
+

@@ -4,6 +4,7 @@ QT       += core gui webkit webkitwidgets svg
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 windows:CONFIG += c++11
+QMAKE_CXXFLAGS += -std=c++11
 
 DESTDIR = ..
 TARGET = JASP
@@ -32,12 +33,13 @@ windows {
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
-LIBS += -L.. -lJASP-Common
+LIBS += -L.. -lJASP-Common -lrt
 
 unix:ICON = icon.icns
 windows:RC_FILE = icon.rc
 
 windows:LIBS += -lole32 -loleaut32
+  linux:LIBS += -lrt
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
@@ -127,7 +129,10 @@ SOURCES += main.cpp\
     appdirs.cpp \
     widgets/tablemodelanovawithinsubjectcells.cpp \
     analysisforms/ancovabayesianform.cpp \
-    analysisforms/anovarepeatedmeasuresbayesianform.cpp
+    analysisforms/anovarepeatedmeasuresbayesianform.cpp \
+    analysisforms/correlationbayesianform.cpp \
+    analysisforms/crosstabsbayesianform.cpp \
+    application.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -216,7 +221,10 @@ HEADERS  += \
     appdirs.h \
     widgets/tablemodelanovawithinsubjectcells.h \
     analysisforms/ancovabayesianform.h \
-    analysisforms/anovarepeatedmeasuresbayesianform.h
+	analysisforms/anovarepeatedmeasuresbayesianform.h \
+    analysisforms/correlationbayesianform.h \
+    analysisforms/crosstabsbayesianform.h \
+    application.h
 
 FORMS    += \
     backstageform.ui \
@@ -250,7 +258,9 @@ FORMS    += \
     analysisforms/anovarepeatedmeasuresshortform.ui \
     widgets/datasetselectwidget.ui \
     analysisforms/ancovabayesianform.ui \
-    analysisforms/anovarepeatedmeasuresbayesianform.ui
+    analysisforms/anovarepeatedmeasuresbayesianform.ui \
+    analysisforms/correlationbayesianform.ui \
+    analysisforms/crosstabsbayesianform.ui
 
 
 RESOURCES += \
@@ -385,5 +395,6 @@ OTHER_FILES += \
 	html/js/images.js \
 	html/js/analysis.js \
     resources/icons/variable-nominal-text.svg \
-    analysisforms/AnovaRepeatedMeasuresShortForm.qml
+    analysisforms/AnovaRepeatedMeasuresShortForm.qml \
+    html/css/images/waiting.svg
 

@@ -6,13 +6,15 @@
 #include <QLayout>
 #include <QDebug>
 
+#include "application.h"
+
 int main(int argc, char *argv[])
 {
 	QCoreApplication::setOrganizationName("JASP");
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
 
-    QApplication a(argc, argv);
+	Application a(argc, argv);
 	MainWindow w;
 
     w.show();

@@ -64,7 +64,7 @@ public:
 	Terms crossCombinations() const;
 	Terms wayCombinations(int ways) const;
 
-	static QByteArray toByteArray(const Terms &terms);
+	std::string asString() const;
 
 private:
 

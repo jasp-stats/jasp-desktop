@@ -113,29 +113,32 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		
 			if (i == 2) {
 			
-				data[[length(data)+1]] <- list(case="Between Subjects", SS="", df="", MS="", F="", p="")
+				data[[length(data)+1]] <- list(case="Between Subjects", SS="", df="", MS="", F="", p="", .isNewGroup=TRUE)
 				
 			} else if (i == 3) {
 			
-				data[[length(data)+1]] <- list(case="Within Subjects", SS="", df="", MS="", F="", p="")
+				data[[length(data)+1]] <- list(case="Within Subjects", SS="", df="", MS="", F="", p="", .isNewGroup=TRUE)
 			}
 		
 			s <- summary(r[[i]])[[1]]
 
-			for (row.name in row.names(s)) {
+			r.names <- row.names(s)
+
+			for (j in .indices(r.names)) {
 		
+				row.name <- r.names[j]
 				row <- s[row.name,]
 				
 				row.name <- stringr::str_trim(row.name)
 				if (row.name == "Residuals") {
 
-					row.name <- "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Residual"
-					data[[length(data)+1]] <- list(case=row.name, SS=row[["Sum Sq"]], df=row[["Df"]], MS=row[["Mean Sq"]], F="", p="")
+					row.name <- "Residual"
+					data[[length(data)+1]] <- list(case=row.name, SS=row[["Sum Sq"]], df=row[["Df"]], MS=row[["Mean Sq"]], F="", p="", .rowLevel=1)
 					
 				} else {
 				
-					row.name <- paste("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", .unvf(row.name), sep="")
-					data[[length(data)+1]] <- list(case=row.name, SS=row[["Sum Sq"]], df=row[["Df"]], MS=row[["Mean Sq"]], F=row[["F value"]], p=row[["Pr(>F)"]])
+					row.name <- .unvf(row.name)
+					data[[length(data)+1]] <- list(case=row.name, SS=row[["Sum Sq"]], df=row[["Df"]], MS=row[["Mean Sq"]], F=row[["F value"]], p=row[["Pr(>F)"]], .rowLevel=1, .isNewGroup=(j==1))
 				}
 			}
 		}

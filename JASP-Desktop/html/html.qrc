@@ -34,5 +34,6 @@
         <file>js/image.js</file>
         <file>js/images.js</file>
         <file>js/analysis.js</file>
+        <file>css/images/cite.svg</file>
     </qresource>
 </RCC>

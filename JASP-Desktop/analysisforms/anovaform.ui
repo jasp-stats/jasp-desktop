@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>622</width>
-    <height>2084</height>
+    <width>624</width>
+    <height>1903</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -471,7 +471,7 @@
           <number>0</number>
          </property>
          <property name="bottomMargin">
-          <number>36</number>
+          <number>0</number>
          </property>
          <item row="0" column="0">
           <widget class="BoundAssignWidget" name="postHocTests_variables" native="true">
@@ -487,469 +487,53 @@
          <item row="1" column="0">
           <widget class="QGroupBox" name="groupPostHocOptions">
            <property name="title">
-            <string>Equal Variances Assumed</string>
+            <string/>
            </property>
            <property name="flat">
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
-            <item row="7" column="0">
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="2" rowspan="7">
-             <widget class="QWidget" name="widget_17" native="true">
-              <layout class="QGridLayout" name="gridLayout_16">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <property name="verticalSpacing">
-                <number>6</number>
-               </property>
-               <item row="4" column="0">
-                <widget class="QWidget" name="dunnettOptions" native="true">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_14">
-                  <property name="leftMargin">
-                   <number>24</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="verticalSpacing">
-                   <number>6</number>
-                  </property>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_7">
-                    <property name="text">
-                     <string>Control category</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
-                   <spacer name="horizontalSpacer_3">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="BoundComboBox" name="postHocTests_dunnettControl">
-                    <item>
-                     <property name="text">
-                      <string>First</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Last</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="2" column="0" colspan="3">
-                   <widget class="BoundGroupBox" name="postHocTests_dunnettSides">
-                    <property name="flat">
-                     <bool>true</bool>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_13">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="verticalSpacing">
-                      <number>6</number>
-                     </property>
-                     <item row="2" column="1">
-                      <widget class="QRadioButton" name="lessThan">
-                       <property name="text">
-                        <string>Less than control</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="3" column="1">
-                      <widget class="QRadioButton" name="greaterThan">
-                       <property name="text">
-                        <string>Greater than control</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="4">
-                      <spacer name="horizontalSpacer_7">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item row="0" column="1">
-                      <widget class="QRadioButton" name="both">
-                       <property name="text">
-                        <string>2-sided</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_8">
-                       <property name="text">
-                        <string>Test</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QWidget" name="wallerDuncanOptions" native="true">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_15">
-                  <property name="leftMargin">
-                   <number>24</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item row="0" column="1">
-                   <widget class="BoundTextBox" name="postHocTests_wallerDuncanRatio">
-                    <property name="maximumSize">
-                     <size>
-                      <width>60</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_6">
-                    <property name="text">
-                     <string>Type I/Type II Error Ratio</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
-                   <spacer name="horizontalSpacer_4">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="BoundCheckBox" name="postHocTests_dunnett">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <strikeout>true</strikeout>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Dunnett</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="BoundCheckBox" name="postHocTests_wallerDuncan">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <strikeout>true</strikeout>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Waller-Duncan</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QWidget" name="widget_18" native="true"/>
-            </item>
-            <item row="1" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_SNK">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>SNK</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_gabriel">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Gabriel</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_benjamini">
-              <property name="text">
-               <string>Benjamini</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_duncan">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Duncan</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_FDR">
-              <property name="text">
-               <string>FDR</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_hochbergGT2">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Hochberg's GT2</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_bonferroni">
-              <property name="text">
-               <string>Bonferroni</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_holm">
-              <property name="text">
-               <string>Holm</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_tukey">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Tukey</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
              <widget class="BoundCheckBox" name="postHocTests_hochberg">
               <property name="text">
                <string>Hochberg</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_tukeyB">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="postHocTests_benjamini">
               <property name="text">
-               <string>Tukey's B</string>
+               <string>Benjamini</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="postHocTests_holm">
+              <property name="text">
+               <string>Holm</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="postHocTests_bonferroni">
+              <property name="text">
+               <string>Bonferroni</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="BoundCheckBox" name="postHocTests_FDR">
+              <property name="text">
+               <string>FDR</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
              <widget class="BoundCheckBox" name="postHocTests_hommel">
               <property name="text">
                <string>Hommel</string>
               </property>
              </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QGroupBox" name="groupEqualVariances">
-           <property name="title">
-            <string>Equal Variances Not Assumed</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_18">
-            <property name="topMargin">
-             <number>18</number>
-            </property>
-            <property name="horizontalSpacing">
-             <number>24</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_tamhaneT2">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Tamhane's T2</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_dunnettT3">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Dunnett's T3</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="BoundCheckBox" name="postHocTests_dunnettC">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Dunnett's C</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="BoundCheckBox" name="postHocTests_gamesHowell">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Games-Howell</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
-             <spacer name="horizontalSpacer_8">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>
@@ -1088,46 +672,13 @@
          <property name="rightMargin">
           <number>0</number>
          </property>
-         <property name="bottomMargin">
-          <number>36</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Marginal Means</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="BoundAssignWidget" name="marginalMeans_terms" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>160</height>
-            </size>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="QWidget" name="groupComareMainEffects" native="true">
            <layout class="QGridLayout" name="gridLayout_5">
             <property name="leftMargin">
              <number>12</number>
             </property>
-            <item row="1" column="3">
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="0">
+            <item row="2" column="0">
              <widget class="QWidget" name="widget_16" native="true">
               <property name="enabled">
                <bool>false</bool>
@@ -1175,11 +726,59 @@
               </layout>
              </widget>
             </item>
-            <item row="0" column="0" colspan="2">
+            <item row="2" column="3">
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="0" colspan="2">
              <widget class="BoundCheckBox" name="marginalMeans_compareMainEffects">
               <property name="text">
                <string>Compare main effects</string>
               </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="4">
+             <widget class="QWidget" name="marginalMeansContainer" native="true">
+              <layout class="QGridLayout" name="gridLayout_13">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>Marginal Means</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="BoundAssignWidget" name="marginalMeans_terms" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>160</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
@@ -1194,37 +793,7 @@
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
-            <item row="4" column="1">
-             <widget class="BoundCheckBox" name="misc_lackOfFit">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Lack of fit</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="BoundCheckBox" name="misc_estimableFunction">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>General estimable function</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
+            <item row="1" column="1">
              <spacer name="horizontalSpacer_5">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1237,55 +806,10 @@
               </property>
              </spacer>
             </item>
-            <item row="1" column="1">
-             <widget class="BoundCheckBox" name="misc_spreadVsLevelPlot">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Spread vs. level plot</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="BoundCheckBox" name="misc_contrastCoefficients">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Contrast coefficient matrix</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="misc_descriptives">
               <property name="text">
                <string>Descriptive Statistics</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="BoundCheckBox" name="misc_parameterEstimates">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Parameter estimates</string>
               </property>
              </widget>
             </item>
@@ -1302,86 +826,6 @@
                <string>Homogeneity tests</string>
               </property>
              </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="BoundCheckBox" name="misc_observedPower">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Observed Power</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="BoundCheckBox" name="misc_residualPlot">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <strikeout>true</strikeout>
-               </font>
-              </property>
-              <property name="text">
-               <string>Residual plot</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QWidget" name="groupSignificance" native="true">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="font">
-            <font>
-             <strikeout>true</strikeout>
-            </font>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_11">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_13">
-              <property name="text">
-               <string>Significance Level:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="BoundTextBox" name="significanceLevel">
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>.05</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <spacer name="horizontalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>
@@ -1418,17 +862,6 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
@@ -1462,38 +895,5 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>postHocTests_wallerDuncan</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>wallerDuncanOptions</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>473</x>
-     <y>1214</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>470</x>
-     <y>1241</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>postHocTests_dunnett</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>dunnettOptions</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>473</x>
-     <y>1268</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>470</x>
-     <y>1337</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

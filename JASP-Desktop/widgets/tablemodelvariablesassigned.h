@@ -15,6 +15,7 @@ public:
 	explicit TableModelVariablesAssigned(QObject *parent = 0);
 
 	virtual void bindTo(Option *option) OVERRIDE;
+	virtual void unbind() OVERRIDE;
 	void setSource(TableModelVariablesAvailable *source);
 
 	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;

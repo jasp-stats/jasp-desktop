@@ -350,7 +350,7 @@
           <number>3</number>
          </property>
          <item row="1" column="0" colspan="2">
-          <widget class="QGroupBox" name="groupBox_3">
+          <widget class="QGroupBox" name="groupBoxResiduals">
            <property name="title">
             <string>Residuals</string>
            </property>
@@ -585,7 +585,7 @@
     </widget>
    </item>
    <item row="2" column="0" colspan="2">
-    <widget class="QWidget" name="widget_8" native="true">
+    <widget class="QWidget" name="widgetOptions" native="true">
      <layout class="QGridLayout" name="gridLayout_17">
       <property name="topMargin">
        <number>3</number>
@@ -607,7 +607,7 @@
           <number>3</number>
          </property>
          <item row="0" column="0">
-          <widget class="QGroupBox" name="groupBox_4">
+          <widget class="QGroupBox" name="groupBoxSteppingMethodCriteria">
            <property name="title">
             <string>Stepping Method Criteria</string>
            </property>
