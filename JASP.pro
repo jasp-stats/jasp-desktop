@@ -1,6 +1,8 @@
 
 cache()
 
+isEmpty(PREFIX) { PREFIX = /usr/local }
+
 TEMPLATE = subdirs
 
 DESTDIR = .
