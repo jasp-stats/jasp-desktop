@@ -15,6 +15,8 @@ DEPENDPATH = ..
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
+INCLUDEPATH += ..
+
 LIBS += -L.. -lJASP-Common
 
 JASP_R_LIBRARY = $$PREFIX/lib/JASP/R/library
@@ -99,7 +101,6 @@ RPackage.depends = JaspRLib
 
 RLibRelocate.files = $$JASP_R_LIB_BUILD/*
 RLibRelocate.path  = $$JASP_R_LIBRARY
-DEFINES           += JASP_R_LIBRARY=$$JASP_R_LIBRARY
 
 QMAKE_EXTRA_TARGETS += RPackage JaspRLib
 PRE_TARGETDEPS += $$RPACKAGE

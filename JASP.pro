@@ -2,6 +2,11 @@
 cache()
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
+JASP_R_LIBRARY = $$PREFIX/lib/JASP/R/library
+
+config_h.input     = config.h.in
+config_h.output    = config.h
+QMAKE_SUBSTITUTES += config_h
 
 TEMPLATE = subdirs
 

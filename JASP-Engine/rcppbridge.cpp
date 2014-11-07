@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include "rcppbridge.h"
 
 #include <boost/foreach.hpp>
@@ -6,17 +8,13 @@
 
 using namespace std;
 
-// stackoverflow's trick to turn a macro into a string literal
-#define STRINGIZE(A) _STRINGIZE(A)
-#define _STRINGIZE(A) #A
-
 RcppBridge* RcppBridge::_staticRef;
 
 RcppBridge::RcppBridge()
 {
 	_staticRef = this;
 
-	setenv("R_LIBS_USER", STRINGIZE(JASP_R_LIBRARY), 1);
+	setenv("R_LIBS_USER", JASP_R_LIBRARY, 1);
 	_rInsidePtr = new RInside();
 	RInside &_rInside = *_rInsidePtr;
 
