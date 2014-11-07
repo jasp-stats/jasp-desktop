@@ -6,7 +6,7 @@ with_dependencies {
 	ArchiveRcpp.target      = $$ARCHIVES/$$RCPP
 	ArchiveRcpp.commands    = cd $$ARCHIVES && wget $$CRAN/$$RCPP
 	Rcpp.target             = $$JASP_R_LIB_BUILD/Rcpp
-	Rcpp.commands           = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$ArchiveRcpp.target
+	Rcpp.commands           = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$ArchiveRcpp.target && touch --no-create $$JASP_R_LIB_BUILD/Rcpp
 	Rcpp.depends            = ArchiveRcpp
 	QMAKE_EXTRA_TARGETS     += Rcpp ArchiveRcpp
 	RPackage.depends        += Rcpp
@@ -18,7 +18,7 @@ with_dependencies {
 	# FIXME: this seems to put $$JASP_R_LIB_BUILD into .libPaths() when running an RInside interpreter
 	# maybe we should give up on this trick of relocating from the build dir $$JASP_R_LIB_BUILD to
 	# the library dir $$JASP_R_LIBRARY
-	RInside.commands        = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$ArchiveRInside.target
+	RInside.commands        = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$ArchiveRInside.target && touch --no-create $$JASP_R_LIB_BUILD/RInside
 	RInside.depends         = ArchiveRInside Rcpp
 	QMAKE_EXTRA_TARGETS     += RInside ArchiveRInside
 	RPackage.depends        += RInside
