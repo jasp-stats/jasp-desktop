@@ -9,6 +9,7 @@ with_dependencies {
 	Rcpp.commands           = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$ArchiveRcpp.target && touch --no-create $$JASP_R_LIB_BUILD/Rcpp
 	Rcpp.depends            = ArchiveRcpp
 	QMAKE_EXTRA_TARGETS     += Rcpp ArchiveRcpp
+	DISTFILES               += $$ArchiveRcpp.target
 	RPackage.depends        += Rcpp
 
 	RINSIDE                 = RInside_0.2.11.tar.gz
@@ -23,6 +24,7 @@ with_dependencies {
 	RInside.commands        = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$ArchiveRInside.target && touch --no-create $$JASP_R_LIB_BUILD/RInside
 	RInside.depends         = ArchiveRInside Rcpp
 	QMAKE_EXTRA_TARGETS     += RInside ArchiveRInside
+	DISTFILES               += $$ArchiveRInside.target
 	RPackage.depends        += RInside
 
 	# RInside doesn't expose its build options in a sane way,
