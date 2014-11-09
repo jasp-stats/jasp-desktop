@@ -18,6 +18,8 @@ with_dependencies {
 	# FIXME: this seems to put $$JASP_R_LIB_BUILD into .libPaths() when running an RInside interpreter
 	# maybe we should give up on this trick of relocating from the build dir $$JASP_R_LIB_BUILD to
 	# the library dir $$JASP_R_LIBRARY
+	# UPDATE: debian packaging uses the same trick (see /usr/share/R/debian/r-cran.mk) so this makes RInside
+	# unpackageable for debian. We could file a bug report with the RInside authors.
 	RInside.commands        = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$ArchiveRInside.target && touch --no-create $$JASP_R_LIB_BUILD/RInside
 	RInside.depends         = ArchiveRInside Rcpp
 	QMAKE_EXTRA_TARGETS     += RInside ArchiveRInside
