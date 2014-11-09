@@ -20,6 +20,10 @@ INCLUDEPATH += ..
 LIBS += -L.. -lJASP-Common
 
 JASP_R_LIBRARY = $$PREFIX/lib/JASP/R/library
+linux {
+	target.path = $$PREFIX/bin
+	INSTALLS += target
+}
 
 macx {
 
@@ -103,7 +107,7 @@ RLibRelocate.path  = $$JASP_R_LIBRARY
 
 QMAKE_EXTRA_TARGETS += RPackage JaspRLib
 PRE_TARGETDEPS += $$RPACKAGE
-INSTALLS += RLibRelocate JASPEngine
+INSTALLS += RLibRelocate
 
 include(Dependencies.pri)
 

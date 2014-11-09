@@ -18,6 +18,11 @@ INCLUDEPATH += ../JASP-Common/
 
 unix:INCLUDEPATH += ../../boost_1_54_0
 
+linux {
+	target.path = $$PREFIX/bin
+	INSTALLS += target
+}
+
 windows {
 
 	COMPILER_DUMP = $$system(g++ -dumpmachine)
