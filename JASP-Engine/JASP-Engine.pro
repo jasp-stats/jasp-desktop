@@ -32,7 +32,6 @@ macx {
 
 linux {
 
-	RSCRIPT = $$(RSCRIPT)
 	isEmpty(RSCRIPT) { RSCRIPT = $$system(which Rscript) }
 
 	R_HOME = $$system( $$RSCRIPT -e \'cat(R.home())\' )
