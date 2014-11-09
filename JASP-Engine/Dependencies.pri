@@ -2,30 +2,15 @@ with_dependencies {
 	CRAN = http://cran.r-project.org/src/contrib
 	ARCHIVES = $$PWD/archives
 
-	RCPP                    = Rcpp_0.11.3.tar.gz
-	ArchiveRcpp.target      = $$ARCHIVES/$$RCPP
-	ArchiveRcpp.commands    = cd $$ARCHIVES && wget $$CRAN/$$RCPP
-	Rcpp.target             = $$JASP_R_LIB_BUILD/Rcpp
-	Rcpp.commands           = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$ArchiveRcpp.target && touch --no-create $$JASP_R_LIB_BUILD/Rcpp
-	Rcpp.depends            = ArchiveRcpp
-	QMAKE_EXTRA_TARGETS     += Rcpp ArchiveRcpp
-	DISTFILES               += $$ArchiveRcpp.target
-	RPackage.depends        += Rcpp
-
-	RINSIDE                 = RInside_0.2.11.tar.gz
-	ArchiveRInside.target   = $$ARCHIVES/$$RINSIDE
-	ArchiveRInside.commands = cd $$ARCHIVES && wget $$CRAN/$$RINSIDE
-	RInside.target          = $$JASP_R_LIB_BUILD/RInside
+	INCLUDEFILE             = deps.pri
+	system ( ./cran-dependency.sh Rcpp 0.11.3 >> $$INCLUDEFILE )
 	# FIXME: this seems to put $$JASP_R_LIB_BUILD into .libPaths() when running an RInside interpreter
 	# maybe we should give up on this trick of relocating from the build dir $$JASP_R_LIB_BUILD to
 	# the library dir $$JASP_R_LIBRARY
 	# UPDATE: debian packaging uses the same trick (see /usr/share/R/debian/r-cran.mk) so this makes RInside
 	# unpackageable for debian. We could file a bug report with the RInside authors.
-	RInside.commands        = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$ArchiveRInside.target && touch --no-create $$JASP_R_LIB_BUILD/RInside
-	RInside.depends         = ArchiveRInside Rcpp
-	QMAKE_EXTRA_TARGETS     += RInside ArchiveRInside
-	DISTFILES               += $$ArchiveRInside.target
-	RPackage.depends        += RInside
+	system ( ./cran-dependency.sh RInside 0.2.11 >> $$INCLUDEFILE )
+	include( $$INCLUDEFILE )
 
 	# RInside doesn't expose its build options in a sane way,
 	# so lets add them manually
