@@ -1,0 +1,28 @@
+Source: jasp
+Section: science
+Priority: optional
+Maintainer: Timo Kluck <tkluck@infty.nl>
+Build-Depends: debhelper (>= 9), r-base-dev (>= 3.1.1-1)
+Standards-Version: 3.9.5
+Homepage: https://jasp-stats.org
+
+Package: jasp
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, jasp-cran-libs (= ${binary:Version}), r-base (>= 3.1.1-1)
+Description: JASP is a statistical package that is easy to use
+ JASP aims to be a complete statistical package for both Bayesian and
+ Frequentist statistical methods, that is easy to use and familiar to users of
+ SPSS
+
+Package: jasp-cran-libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, r-base (>= 3.1.1-1)
+Description: JASP is a statistical package that is easy to use
+ JASP aims to be a complete statistical package for both Bayesian and
+ Frequentist statistical methods, that is easy to use and familiar to users of
+ SPSS
+ This package contains jasp's dependencies from CRAN.
+
+Package: jasp-doc
+Architecture: all
+Description: documentation for jasp

@@ -1,0 +1,5 @@
+jasp (0.5) unstable; urgency=low
+
+  * Initial debian packaging.
+
+ -- Timo Kluck <tkluck@infty.nl>  Sun, 09 Nov 2014 22:20:41 +0100
