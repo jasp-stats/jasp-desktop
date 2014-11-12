@@ -7,6 +7,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 		rm.vars <- options$repeatedMeasuresCells
 		
+		
 	} else {
 	
 		rm.vars <- c()
@@ -14,6 +15,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	}
 	
 	bt.vars <- options$betweenSubjectFactors
+	print(as.character(bt.vars))
 	
 
 	if (is.null(dataset)) {
@@ -53,9 +55,14 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 		rm.factor.names <- c(rm.factor.names, factor$name)
 	}
-
-
+	
+	
 	anova <- list()
+	
+	if (length(rm.factor.names) > 2) {
+		
+			anova[["error"]] <- list(errorType="badData", errorMessage="More than two repeated measures factors is not supported in this release")
+	}
 	
 	anova[["title"]] <- "Repeated Measures ANOVA"
 	
@@ -84,7 +91,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		rm.factors <- options$repeatedMeasuresFactors
 
 		dataset <- .shortToLong(dataset, rm.factors, rm.vars, bt.vars)
-		
+				
 		options(contrasts=c("contr.sum","contr.poly"))
 		
 		df.rm.factor.names <- paste("F", .v(rm.factor.names), sep="")
@@ -104,52 +111,189 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		}
 		
 		f <- paste("dependent", rhs, sep="~")
-		
-		r <- stats::aov(as.formula(f), data=dataset)
-		
-		data <- list()
-
-		for (i in 2:length(r)) {
-		
-			if (i == 2) {
-			
-				data[[length(data)+1]] <- list(case="Between Subjects", SS="", df="", MS="", F="", p="", .isNewGroup=TRUE)
 				
-			} else if (i == 3) {
+		if (options$sumOfSquares == "type1") {
 			
-				data[[length(data)+1]] <- list(case="Within Subjects", SS="", df="", MS="", F="", p="", .isNewGroup=TRUE)
-			}
+			r <- stats::aov(as.formula(f), data=dataset)
 		
-			s <- summary(r[[i]])[[1]]
+			data <- list()
 
-			r.names <- row.names(s)
-
-			for (j in .indices(r.names)) {
+			for (i in 2:length(r)) {
 		
-				row.name <- r.names[j]
-				row <- s[row.name,]
+				if (i == 2) {
+			
+					data[[length(data)+1]] <- list(case="Between Subjects", SS="", df="", MS="", F="", p="", .isNewGroup=TRUE)
 				
-				row.name <- stringr::str_trim(row.name)
-				if (row.name == "Residuals") {
+				} else if (i == 3) {
+			
+					data[[length(data)+1]] <- list(case="Within Subjects", SS="", df="", MS="", F="", p="", .isNewGroup=TRUE)
+				}
+		
+				s <- summary(r[[i]])[[1]]
+			
+				r.names <- row.names(s)
 
-					row.name <- "Residual"
-					data[[length(data)+1]] <- list(case=row.name, SS=row[["Sum Sq"]], df=row[["Df"]], MS=row[["Mean Sq"]], F="", p="", .rowLevel=1)
+				for (j in .indices(r.names)) {
+		
+					row.name <- r.names[j]
+		
+					row <- s[row.name,]
+				
+					row.name <- stringr::str_trim(row.name)
 					
-				} else {
+					if (row.name == "Residuals") {
+
+						row.name <- "Residual"
+						data[[length(data)+1]] <- list(case=row.name, SS=row[["Sum Sq"]], df=row[["Df"]], MS=row[["Mean Sq"]], F="", p="", .rowLevel=1)
+					
+					} else {
 				
-					row.name <- .unvf(row.name)
-					data[[length(data)+1]] <- list(case=row.name, SS=row[["Sum Sq"]], df=row[["Df"]], MS=row[["Mean Sq"]], F=row[["F value"]], p=row[["Pr(>F)"]], .rowLevel=1, .isNewGroup=(j==1))
+						row.name <- .unvf(row.name) 
+						data[[length(data)+1]] <- list(case=row.name, SS=row[["Sum Sq"]], df=row[["Df"]], MS=row[["Mean Sq"]], F=row[["F value"]], p=row[["Pr(>F)"]], .rowLevel=1, .isNewGroup=(j==1))
+					}
+				}
+			}
+			
+			anova[["data"]] <- data
+	
+			anova[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text="Type I Sum of Squares"))
+		}
+		
+		
+		if (options$sumOfSquares == "type2") {			
+				
+			r <- try (silent = TRUE, expr = {afex::aov.car(as.formula(f), data=dataset,type= 2,return = "univariate")})
+			
+			if (class(r) == "try-error") {
+			
+				errorMessage <- .extractErrorMessage(r)
+			}
+		}	
+		
+		if (options$sumOfSquares == "type3") {	
+					
+			r <- try (silent = TRUE, expr = {afex::aov.car(as.formula(f), data=dataset,type= 3,return = "univariate")})
+			
+			if (class(r) == "try-error") {
+			
+			errorMessage <- .extractErrorMessage(r)
+			}
+		}	
+		
+		if(class(r) == "try-error"){
+		
+			anova[["error"]] <- list(errorType="badData", errorMessage="ANOVA could not be performed. Most likely due to too few observations for the interaction.")
+		} else {
+		
+		if (options$sumOfSquares == "type3" | options$sumOfSquares == "type2") {
+				
+			r <- as.data.frame(r$anova)
+			colnames(r) <- c("Sum Sq", "Df", "Error SS", "residualDf",   "F value", "Pr(>F)")  
+			
+			data <- list()
+
+			for (i in 2:3) {
+		
+				if (i == 2) {
+				
+					indNewGroup <- c()
+				
+		
+					data[[length(data)+1]] <- list(case="Between Subjects", SS="", df="", MS="", F="", p="", .isNewGroup=TRUE)
+			
+					if(length(bt.vars) == 0){
+						s <- r[1,]
+				
+						s[,"Mean Sq"] <- s[,1]/s[,2]
+						s[.v("Residuals"), "Sum Sq"] <- s[1,3]
+						s[.v("Residuals"), "Df"] <- s[1,4]
+						s[.v("Residuals"), "Mean Sq"] <- s[1,3]/s[1,4]
+						s <- s[2,]
+					} else {
+						s <- r[2:2^length(bt.vars),]
+										
+						s[,"Mean Sq"] <- s[,1]/s[,2]
+						s[.v("Residuals"), "Sum Sq"] <- s[1,3]
+						s[.v("Residuals"), "Df"] <- s[1,4]
+						s[.v("Residuals"), "Mean Sq"] <- s[1,3]/s[1,4]
+						}
+						
+				} else if (i == 3) {				
+		
+					data[[length(data)+1]] <- list(case="Within Subjects", SS="", df="", MS="", F="", p="", .isNewGroup=TRUE)
+
+					s <- r[-(1:(2^length(bt.vars))),]
+									
+					s[ ,"Mean Sq"] <- s[,1]/s[,2]
+					
+					inc <- 0
+					
+					if (length(df.rm.factor.names)==1) {
+						indicat <- 1
+					} else {
+						indicat <- length(df.rm.factor.names)+1
+						}
+									
+					for(z in seq_len(indicat)){
+						
+						i <- z* 2^(length(bt.vars))  + inc
+						place <- i+1
+												
+						nd <- data.frame("Sum Sq"=numeric(0), "Df"=numeric(0), "Error SS"=numeric(0), "residualDf"=numeric(0),   "F value"=numeric(0), "Pr(>F)"=numeric(0), "Mean Sq" = numeric(0))
+						colnames(nd) <- c("Sum Sq", "Df", "Error SS", "residualDf",   "F value", "Pr(>F)", "Mean Sq")
+						nd[.v("Residuals"), "Sum Sq"] <- s[i,3]
+						nd[.v("Residuals"), "Df"] <- s[i,4]
+						nd[.v("Residuals"), "Mean Sq"] <- s[i,3]/s[i,4]
+						
+						insertRow <- function(existingDF, newrow, r){
+						# function that inserts a row in a data frame at a specific position	
+						rbind(existingDF[1:(r-1),],newrow,existingDF[-(1:(r-1)),])
+						}						
+						s <- insertRow(s, nd, place)
+						inc <- inc + 1
+					}
+				}
+
+				r.names <- row.names(s)
+				resi <- .v("Residuals")
+				indNewGroup <- c(1,grep(paste("^",resi, sep = ""), r.names)+1)
+					
+				for (j in .indices(r.names)) {
+			
+					row.name <- r.names[j]
+					row <- s[row.name,]
+				
+					row.name <- stringr::str_trim(row.name)
+					
+					if (grepl(paste("^",resi, sep = ""), row.name)) {
+	
+						row.name <- "Residual"
+						data[[length(data)+1]] <- list(case=row.name, SS=row[["Sum Sq"]], df=row[["Df"]], MS=row[["Mean Sq"]], F="", p="", .rowLevel=1)
+					
+					} else {
+					
+						row.name <- .unvf(row.name)
+						
+						data[[length(data)+1]] <- list(case=row.name, SS=row[["Sum Sq"]], df=row[["Df"]], MS=row[["Mean Sq"]], F=row[["F value"]], p=row[["Pr(>F)"]], .rowLevel=1, .isNewGroup=(any(j == indNewGroup)))
+					}
 				}
 			}
 		}
+		
+			anova[["data"]] <- data
+			
+			if (options$sumOfSquares == "type2") {
+			
+				anova[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text="Type II Sum of Squares"))
+			}
+			
+			if (options$sumOfSquares == "type3") {
+			
+				anova[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text="Type III Sum of Squares"))
+			}
+		}
 	}
-	
-	
-	anova[["data"]] <- data
-	
-	anova[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text="Type I Sum of Squares"))
-	
+			
 	results[["anova"]] <- anova
-	
 	results
 }
