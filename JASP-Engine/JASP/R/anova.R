@@ -176,13 +176,12 @@
 		WLS <- dataset[[ .v(options$wlsWeights) ]]
 		
 	model <- aov(model.formula, dataset, weights=WLS)
-	
-	print(summary.aov(model))
-		
-	model
+	singular <- class(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))) == "try-error"
+					
+	list(model = model, singular = singular)
 }
 
-.anovaTable <- function(dataset, options, perform, model, status) {
+.anovaTable <- function(dataset, options, perform, model, status, singular) {
 	
 	anova <- list()
 	
@@ -251,18 +250,18 @@
 			if (options$sumOfSquares == "type1") {
 			
 				result <- stats::anova(model)
-				SSt <- sum(result[,"Sum Sq"])
+				SSt <- sum(result[,"Sum Sq"], na.rm = TRUE)
 			
 			} else if (options$sumOfSquares == "type2") {
 			
 				result <- car::Anova(model, type=2)
-				SSt <- sum(result[,"Sum Sq"])
-			
+				SSt <- sum(result[,"Sum Sq"], na.rm = TRUE)
+
 			} else if (options$sumOfSquares == "type3") {
 			
 				result <- car::Anova(model, type=3, singular.ok=TRUE)
-				SSt <- sum(result[-1,"Sum Sq"])
-			
+				SSt <- sum(result[-1,"Sum Sq"], na.rm = TRUE)
+
 			}
 
 			for (i in 1:(length(terms.base64)+1)) {
@@ -274,8 +273,15 @@
 				}
 			
 				df <- result[term,"Df"]
-				SS <- result[term,"Sum Sq"]
-				MS <- result[term,"Sum Sq"]/result[term,"Df"]
+				
+				if (df != 0) {
+					SS <- result[term,"Sum Sq"]
+					MS <- result[term,"Sum Sq"]/result[term,"Df"]
+				} else {
+					SS <- 0
+					MS <- ""
+				}	
+				
 				F <- if (is.na(result[term,"F value"])) {""} else { result[term, "F value"] }
 				p <- if (is.na(result[term,"Pr(>F)"] )) {""} else { result[term, "Pr(>F)"] }
 			
@@ -331,6 +337,9 @@
 		
 		anova[["data"]] <- anova.rows
 		
+		if (singular) 
+			anova[["footnotes"]] <- list("Warning: predictor variables are not all linearly independent (singularity)") 
+					
 	}
 	
 	list(result=anova, status=status)
@@ -381,6 +390,9 @@
 			column <- dataset[[ v ]]
 			
 			cases <- .anovaContrastCases(column, contrast.type)
+			
+			if (contrast == "polynomial" && length(cases) > 5)
+				cases <- cases[1:5]				
 			
 			contrast.rows <- list()
 			
@@ -739,14 +751,18 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	## Perform ANOVA
 
 	model <- NULL
-	if (perform == "run" && status$ready && status$error == FALSE)
-		model <- .anovaModel(dataset, options)
-
-
+	singular <- NULL
+	if (perform == "run" && status$ready && status$error == FALSE) {
+		
+		anovaModel <- .anovaModel(dataset, options)
+		model <- anovaModel$model
+		singular <- anovaModel$singular
+	
+	}
 
 	## Create ANOVA Table
 
-	result <- .anovaTable(dataset, options, perform, model, status)
+	result <- .anovaTable(dataset, options, perform, model, status, singular)
 	
 	results[["anova"]] <- result$result
 	status <- result$status
