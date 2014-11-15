@@ -19,7 +19,8 @@ INCLUDEPATH += ..
 
 LIBS += -L.. -lJASP-Common
 
-JASP_R_LIBRARY = $$PREFIX/lib/JASP/R/library
+include(../common.pri)
+
 linux {
 	target.path = $$PREFIX/bin
 	INSTALLS += target
@@ -38,15 +39,25 @@ linux {
 
 	isEmpty(RSCRIPT) { RSCRIPT = $$system(which Rscript) }
 
-	R_HOME = $$system( $$RSCRIPT -e \'cat(R.home())\' )
-	R_EXE  = $$R_HOME/bin/R
-	R_LIB  = $$system( $$RSCRIPT -e \'cat(.libPaths()[1])\' )
+	use_jasps_own_r_binary_package {
+		R_HOME = $$JASPS_OWN_R_BINARY_PACKAGE
+		R_LIB = $$R_HOME/library
+		R_EXE  = $$R_HOME/bin/R
 
-	QMAKE_CXXFLAGS += $$system( $$R_EXE CMD config --cppflags )
-	LIBS           += $$system( $$R_EXE CMD config --ldflags )
-	LIBS           += $$system( $$R_EXE CMD config BLAS_LIBS )
-	LIBS           += -Wl,-rpath,$$R_HOME/lib
+		QMAKE_CXXFLAGS += -I$$R_HOME/include
+		LIBS           += -Wl,--export-dynamic -fopenmp  -L$$R_HOME/lib -lR -lpcre -llzma -lbz2 -lz -lrt -ldl -lm
+		LIBS           += -lblas
+		LIBS           += -Wl,-rpath,$$R_HOME/lib
+	} else {
+		R_HOME = $$system( $$RSCRIPT -e \'cat(R.home())\' )
+		R_LIB  = $$system( $$RSCRIPT -e \'cat(.libPaths()[1])\' )
+		R_EXE  = $$R_HOME/bin/R
 
+		QMAKE_CXXFLAGS += $$system( $$R_EXE CMD config --cppflags )
+		LIBS           += $$system( $$R_EXE CMD config --ldflags )
+		LIBS           += $$system( $$R_EXE CMD config BLAS_LIBS )
+		LIBS           += -Wl,-rpath,$$R_HOME/lib
+        }
 }
 
 windows {
@@ -95,7 +106,7 @@ win32:LIBS += -lole32 -loleaut32
 # we want to install into a site-wide directory
 JASP_R_LIB_BUILD = $$PWD/lib
 JaspRLib.target = $$JASP_R_LIB_BUILD
-JaspRLib.commands = mkdir -p $$JASP_R_LIB_BUILD
+JaspRLib.commands = $$QMAKE_MKDIR $$JASP_R_LIB_BUILD
 
 RPACKAGE = $$PWD/lib/JASP
 RPackage.target   = $$RPACKAGE

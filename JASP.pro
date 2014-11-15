@@ -1,8 +1,6 @@
-
 cache()
 
-isEmpty(PREFIX) { PREFIX = /usr/local }
-JASP_R_LIBRARY = $$PREFIX/lib/JASP/R/library
+include(common.pri)
 
 config_h.input     = config.h.in
 config_h.output    = config.h

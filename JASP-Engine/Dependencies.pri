@@ -23,8 +23,12 @@ with_dependencies {
 	# control of this packages' compilation, we might as well add them verbatim
 	INCLUDEPATH             += $$JASP_R_LIB_BUILD/Rcpp/include
 } else {
-	QMAKE_CXXFLAGS += $$system( $$RSCRIPT -e \'cat(Rcpp:::CxxFlags())\' )
-	LDFLAGS        += $$system( $$RSCRIPT -e \'cat(Rcpp:::LdFlags())\' )
+	use_jasps_own_r_binary_package {
+		INCLUDEPATH             += $$JASP_R_LIB_BUILD/Rcpp/include
+	} else {
+		QMAKE_CXXFLAGS += $$system( $$RSCRIPT -e \'cat(Rcpp:::CxxFlags())\' )
+		LDFLAGS        += $$system( $$RSCRIPT -e \'cat(Rcpp:::LdFlags())\' )
+	}
 
 	# RInside doesn't expose its build options in a sane way,
 	# so lets add them manually
