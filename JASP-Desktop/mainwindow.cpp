@@ -25,6 +25,7 @@
 
 #include "analysisforms/regressionlinearform.h"
 #include "analysisforms/correlationform.h"
+#include "analysisforms/correlationbayesianform.h"
 #include "analysisforms/correlationpartialform.h"
 #include "analysisforms/crosstabsform.h"
 #include "analysisforms/crosstabsbayesianform.h"
@@ -217,6 +218,8 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new RegressionLinearForm(contentArea);
 	else if (name == "Correlation")
 		form = new CorrelationForm(contentArea);
+	else if (name == "CorrelationBayesian")
+		form = new CorrelationBayesianForm(contentArea);
 	else if (name == "CorrelationPartial")
 		form = new CorrelationPartialForm(contentArea);
 	else if (name == "Crosstabs")

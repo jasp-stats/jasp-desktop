@@ -93,8 +93,8 @@ SOURCES += \
 	analyses/anovarepeatedmeasuresshort.cpp \
     analyses/ancovabayesian.cpp \
     analyses/anovarepeatedmeasuresbayesian.cpp \
+    analyses/correlationbayesian.cpp \
     analyses/crosstabsbayesian.cpp
-    analyses/anovarepeatedmeasuresbayesian.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -163,8 +163,8 @@ HEADERS +=\
 	analyses/anovarepeatedmeasuresshort.h \
     analyses/ancovabayesian.h \
     analyses/anovarepeatedmeasuresbayesian.h \
+    analyses/correlationbayesian.h \
     analyses/crosstabsbayesian.h
-    analyses/anovarepeatedmeasuresbayesian.h
 
 unix:!symbian {
     maemo5 {
