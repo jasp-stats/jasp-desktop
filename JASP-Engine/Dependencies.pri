@@ -3,6 +3,7 @@ with_dependencies {
 	ARCHIVES = $$PWD/archives
 
 	INCLUDEFILE             = deps.pri
+	system ( echo > $$INCLUDEFILE )
 	system ( ./cran-dependency.sh Rcpp 0.11.3 >> $$INCLUDEFILE )
 	# FIXME: this seems to put $$JASP_R_LIB_BUILD into .libPaths() when running an RInside interpreter
 	# maybe we should give up on this trick of relocating from the build dir $$JASP_R_LIB_BUILD to
