@@ -51,6 +51,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 	rm.factor.names <- c()
 	
+	print(options$repeatedMeasuresFactors)
 	for (factor in options$repeatedMeasuresFactors) {
 	
 		rm.factor.names <- c(rm.factor.names, factor$name)
@@ -58,11 +59,6 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 	
 	anova <- list()
-	
-	if (length(rm.factor.names) > 2) {
-		
-			anova[["error"]] <- list(errorType="badData", errorMessage="More than two repeated measures factors is not supported in this release")
-	}
 	
 	anova[["title"]] <- "Repeated Measures ANOVA"
 	
@@ -89,8 +85,11 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	if (perform == "run" && ready == TRUE) {
 
 		rm.factors <- options$repeatedMeasuresFactors
+		print(rm.factors)
+		print(str(rm.factors))
 
 		dataset <- .shortToLong(dataset, rm.factors, rm.vars, bt.vars)
+		
 				
 		options(contrasts=c("contr.sum","contr.poly"))
 		
@@ -111,6 +110,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		}
 		
 		f <- paste("dependent", rhs, sep="~")
+		print(f)
 				
 		if (options$sumOfSquares == "type1") {
 			
@@ -162,7 +162,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		
 		if (options$sumOfSquares == "type2") {			
 				
-			r <- try (silent = TRUE, expr = {afex::aov.car(as.formula(f), data=dataset,type= 2,return = "univariate")})
+			r <- try (silent = FALSE, expr = {afex::aov.car(as.formula(f), data=dataset,type= 2,return = "univariate")})
 			
 			if (class(r) == "try-error") {
 			
@@ -172,7 +172,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		
 		if (options$sumOfSquares == "type3") {	
 					
-			r <- try (silent = TRUE, expr = {afex::aov.car(as.formula(f), data=dataset,type= 3,return = "univariate")})
+			r <- try (silent = FALSE, expr = {afex::aov.car(as.formula(f), data=dataset,type= 3,return = "univariate")})
 			
 			if (class(r) == "try-error") {
 			
