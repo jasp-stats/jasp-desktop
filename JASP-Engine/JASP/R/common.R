@@ -215,6 +215,7 @@ run <- function(name, options.as.json.string) {
 
 	f  <- rm.factors[[length(rm.factors)]]
 	df <- data.frame(as.factor(unlist(f$levels)))
+	
 	names(df) <- paste("F", .v(f$name), sep="")
 	
 	row.count <- dim(df)[1]
@@ -243,7 +244,7 @@ run <- function(name, options.as.json.string) {
 		
 		
 		df <- cbind(cells, df)
-		names(df)[[i]] <- paste("F", .v(f$name), sep="")
+		names(df)[[1]] <- paste("F", .v(f$name), sep="")
 		
 		i <- i - 1
 	}
