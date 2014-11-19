@@ -327,7 +327,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QGroupBox" name="groupBox_5">
+          <widget class="BoundGroupBox" name="chartType">
            <property name="title">
             <string>Chart Type</string>
            </property>
@@ -359,7 +359,7 @@
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="BoundCheckBox" name="charts_showNormalCurve">
+             <widget class="BoundCheckBox" name="chartShowNormalCurve">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -396,7 +396,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="chartValuesGroup">
+          <widget class="BoundGroupBox" name="chartValues">
            <property name="title">
             <string>Chart Values</string>
            </property>
@@ -473,7 +473,7 @@
           </widget>
          </item>
          <item row="1" column="1" colspan="3">
-          <widget class="QCheckBox" name="checkBox_19">
+          <widget class="QCheckBox" name="suppressTablesWithManyCategories">
            <property name="text">
             <string>Suppress tables with many categories</string>
            </property>
@@ -502,7 +502,7 @@
           </widget>
          </item>
          <item row="0" column="0" rowspan="3">
-          <widget class="QGroupBox" name="groupBox_7">
+          <widget class="QGroupBox" name="formatOrderBy">
            <property name="title">
             <string>Order by</string>
            </property>
@@ -564,7 +564,7 @@
           </widget>
          </item>
          <item row="0" column="1" colspan="3">
-          <widget class="QGroupBox" name="groupBox_8">
+          <widget class="QGroupBox" name="formatMultipleVariables">
            <property name="title">
             <string>Multiple Variables</string>
            </property>
@@ -789,6 +789,12 @@
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

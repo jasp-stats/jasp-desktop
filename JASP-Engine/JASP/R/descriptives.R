@@ -492,7 +492,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	#### FREQUENCY PLOTS
 
-	if (options$charts$chartType != "noCharts") {
+	if (options$chartType != "noCharts") {
 	
 		frequency.plots <- list()
 		
