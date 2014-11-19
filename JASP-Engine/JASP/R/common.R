@@ -457,7 +457,7 @@ callback <- function(results=NULL) {
 	
 	base64::encode(image.descriptor$file, file, linesize=1024*1024*1024)
 	
-	file.size <- base::file.info(file)$size
+	file.size <- base::file.info(file)$size - 2   # strip \r\n from end
 	
 	content <- paste("data:image/svg+xml;base64,", base::readChar(file, file.size), sep="")
 	
