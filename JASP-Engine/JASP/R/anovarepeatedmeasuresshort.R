@@ -15,7 +15,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	}
 	
 	bt.vars <- options$betweenSubjectFactors
-	print(as.character(bt.vars))
+	
 	
 
 	if (is.null(dataset)) {
@@ -51,7 +51,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 	rm.factor.names <- c()
 	
-	print(options$repeatedMeasuresFactors)
+	
 	for (factor in options$repeatedMeasuresFactors) {
 	
 		rm.factor.names <- c(rm.factor.names, factor$name)
@@ -85,8 +85,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	if (perform == "run" && ready == TRUE) {
 
 		rm.factors <- options$repeatedMeasuresFactors
-		print(rm.factors)
-		print(str(rm.factors))
+		
 
 		dataset <- .shortToLong(dataset, rm.factors, rm.vars, bt.vars)
 		
@@ -110,7 +109,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		}
 		
 		f <- paste("dependent", rhs, sep="~")
-		print(f)
+		
 				
 		if (options$sumOfSquares == "type1") {
 			
@@ -190,6 +189,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 			r <- as.data.frame(r$anova)
 			colnames(r) <- c("Sum Sq", "Df", "Error SS", "residualDf",   "F value", "Pr(>F)")  
 			
+			
 			data <- list()
 
 			for (i in 2:3) {
@@ -227,12 +227,9 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 					s[ ,"Mean Sq"] <- s[,1]/s[,2]
 					
 					inc <- 0
-					
-					if (length(df.rm.factor.names)==1) {
-						indicat <- 1
-					} else {
-						indicat <- length(df.rm.factor.names)+1
-						}
+										
+					indicat <- 2^(length(df.rm.factor.names))-1#length(df.rm.factor.names)+1
+						
 									
 					for(z in seq_len(indicat)){
 						
