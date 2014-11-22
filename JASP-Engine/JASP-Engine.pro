@@ -110,7 +110,7 @@ JaspRLib.commands = $$QMAKE_MKDIR $$JASP_R_LIB_BUILD
 
 RPACKAGE = $$PWD/lib/JASP
 RPackage.target   = $$RPACKAGE
-RPackage.commands = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$PWD/JASP && touch --no-create $$RPACKAGE
+RPackage.commands = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$PWD/JASP && touch -c $$RPACKAGE
 RPackage.depends = JaspRLib
 
 RLibRelocate.files = $$JASP_R_LIB_BUILD/*
