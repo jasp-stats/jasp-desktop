@@ -199,7 +199,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 				{
 					(void)column;
 
-					if (isnan(value))
+					if (std::isnan(value))
 						v[rowNo++] = INT_MIN;
 					else
 					{
