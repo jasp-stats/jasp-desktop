@@ -26,29 +26,27 @@ linux {
 	INSTALLS += target
 }
 
-macx {
-
-	INCLUDEPATH += ../../boost_1_54_0
-
-	R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.1/Resources
-	R_EXE  = $$R_HOME/bin/R
-	R_LIB  = $$R_HOME/library
-}
-
-linux {
-
-	isEmpty(RSCRIPT) { RSCRIPT = $$system(which Rscript) }
-
+unix {
 	use_jasps_own_r_binary_package {
-		R_HOME = $$JASPS_OWN_R_BINARY_PACKAGE
+		linux { R_HOME = $$JASPS_OWN_R_BINARY_PACKAGE }
+		macx  {
+			R_FRAMEWORK = $$JASPS_OWN_R_BINARY_PACKAGE
+			R_HOME = $$R_FRAMEWORK/Versions/3.1/Resources
+		}
 		R_LIB = $$R_HOME/library
 		R_EXE  = $$R_HOME/bin/R
 
-		QMAKE_CXXFLAGS += -I$$R_HOME/include
-		LIBS           += -Wl,--export-dynamic -fopenmp  -L$$R_HOME/lib -lR -lpcre -llzma -lbz2 -lz -lrt -ldl -lm
-		LIBS           += -lblas
+		linux {
+			LIBS           += -Wl,--export-dynamic -fopenmp  -L$$R_HOME/lib -lR -lpcre -llzma -lbz2 -lz -lrt -ldl -lm
+			LIBS           += -lblas
+		}
+		macx {
+			LIBS += -F$$R_FRAMEWORK/.. -framework R -llzma -licucore -lm -liconv
+			LIBS += -L$$R_HOME/lib -lRblas
+		}
 		LIBS           += -Wl,-rpath,$$R_HOME/lib
 	} else {
+		isEmpty(RSCRIPT) { RSCRIPT = $$system(which Rscript) }
 		R_HOME = $$system( $$RSCRIPT -e \'cat(R.home())\' )
 		R_LIB  = $$system( $$RSCRIPT -e \'cat(.libPaths()[1])\' )
 		R_EXE  = $$R_HOME/bin/R
@@ -86,7 +84,7 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
-win32,macx:INCLUDEPATH += \
+win32INCLUDEPATH += \
 	$$R_HOME/include \
 	$$R_LIB/RInside/include \
 	$$R_LIB/Rcpp/include

@@ -1,4 +1,4 @@
-
+include( ../common.pri )
 QT       -= gui
 
 DESTDIR = ..
@@ -7,8 +7,6 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 windows:CONFIG += c++11
-
-unix:INCLUDEPATH += ../../boost_1_54_0
 
 windows {
 

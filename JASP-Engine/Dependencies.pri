@@ -10,7 +10,7 @@ with_dependencies {
 	# the library dir $$JASP_R_LIBRARY
 	# UPDATE: debian packaging uses the same trick (see /usr/share/R/debian/r-cran.mk) so this makes RInside
 	# unpackageable for debian. We could file a bug report with the RInside authors.
-	system ( ./cran-dependency.sh RInside 0.2.11 >> $$INCLUDEFILE )
+	system ( ./cran-dependency.sh RInside 0.2.11 --configure-args="CFLAGS=--std=c++11" >> $$INCLUDEFILE )
 	include( $$INCLUDEFILE )
 
 	# RInside doesn't expose its build options in a sane way,
@@ -24,7 +24,10 @@ with_dependencies {
 	INCLUDEPATH             += $$JASP_R_LIB_BUILD/Rcpp/include
 } else {
 	use_jasps_own_r_binary_package {
-		INCLUDEPATH             += $$JASP_R_LIB_BUILD/Rcpp/include
+		INCLUDEPATH             +=      \
+			$$R_HOME/include        \
+			$$R_LIB/Rcpp/include    \
+			$$R_LIB/Rinside/include
 	} else {
 		QMAKE_CXXFLAGS += $$system( $$RSCRIPT -e \'cat(Rcpp:::CxxFlags())\' )
 		LDFLAGS        += $$system( $$RSCRIPT -e \'cat(Rcpp:::LdFlags())\' )
