@@ -10,7 +10,7 @@ macx: isEmpty(BOOST) {
 
 #CONFIG += use_jasps_own_r_binary_package
 
-isEmpty(JASPS_OWN_R_BINARY_PACKAGE) {
+use_jasps_own_r_binary_package:isEmpty(JASPS_OWN_R_BINARY_PACKAGE) {
     JASPS_OWN_R_BINARY_PACKAGE = $$system(cd ../R && pwd)
 }
 
