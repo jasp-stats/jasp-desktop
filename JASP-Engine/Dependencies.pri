@@ -4,7 +4,7 @@ with_dependencies {
 
 	INCLUDEFILE             = deps.pri
 	system ( echo > $$INCLUDEFILE )
-	system ( ./cran-dependency.sh Rcpp 0.11.3 >> $$INCLUDEFILE )
+	system ( ./cran-dependency.sh Rcpp 0.11.3 --configure-args="CFLAGS=--std=c++11" >> $$INCLUDEFILE )
 	# FIXME: this seems to put $$JASP_R_LIB_BUILD into .libPaths() when running an RInside interpreter
 	# maybe we should give up on this trick of relocating from the build dir $$JASP_R_LIB_BUILD to
 	# the library dir $$JASP_R_LIBRARY
