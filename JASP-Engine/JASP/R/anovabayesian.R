@@ -1,7 +1,14 @@
 
 AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 	
-	 
+
+    options$covariates <- NULL
+
+    results <- AncovaBayesian(dataset, options, perform, callback)
+    
+    return(results)
+
+if(FALSE){	 
 	if(is.null(base::options()$BFMaxModels)) base::options(BFMaxModels = 50000)
 	if(is.null(base::options()$BFpretestIterations)) base::options(BFpretestIterations = 100)
 	if(is.null(base::options()$BFapproxOptimizer)) base::options(BFapproxOptimizer = "optim")
@@ -623,6 +630,7 @@ AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=functio
 		results[["effect"]] <- effect
 
 	results
+    }
 }
 
 
