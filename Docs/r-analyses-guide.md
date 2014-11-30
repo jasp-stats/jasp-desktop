@@ -29,12 +29,13 @@ An assortment of useful functions are available to JASP R analyses. These are de
 
 In order for the analysis to read the data from JASP, one of two functions must be called:
 
-`.readDataSetHeader(columns.as.numeric, columns.as.ordered, columns.as.factor)`  
-`.readDataSetToEnd(columns.as.numeric, columns.as.ordered, columns.as.factor)`
+`.readDataSetHeader(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`  
+`.readDataSetToEnd(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
 
-- `columns.as.numeric` : a vector of column names to be read as numeric
-- `columns.as.ordered` : a vector of column names to be read as ordered factors
-- `columns.as.nominal` : a vector of column names to be read as unordered factors
+- `columns` : a vector of column names to be read
+- `columns.as.numeric` : a vector of column names to be read as numeric (marshalled as necessary)
+- `columns.as.ordered` : a vector of column names to be read as ordered factors (marshalled as necessary)
+- `columns.as.nominal` : a vector of column names to be read as unordered factors (marshalled as necessary)
 
 These functions return a data.frame containing the columns requested marshalled (if necessary) to the type requested.
 
