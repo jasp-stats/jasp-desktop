@@ -21,7 +21,7 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
 	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
 	_fixedFactorsListModel->setSource(&_availableVariablesModel);
-	_fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    _fixedFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->fixedFactors->setModel(_fixedFactorsListModel);
 
 	_randomFactorsListModel = new TableModelVariablesAssigned(this);
@@ -52,18 +52,29 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	_contrastsModel = new TableModelVariablesOptions();
     ui->contrasts->setModel(_contrastsModel);
 
+    ui->plot_variables->setModel(&_availableVariablesModel);
+
+    /*
+    _horizontalAxis = new TableModelVariablesAssigned(this);
+    _horizontalAxis->setSource(&_availableVariablesModel);
+    _horizontalAxis->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+    ui->horizontalAxis->setModel(_horizontalAxis);
+    */
+
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
-
+    ui->containerProfilePlot->hide();
 
 #ifdef QT_NO_DEBUG
 	ui->groupComareMainEffects->hide();
 	ui->marginalMeansContainer->hide();
+    ui->profilePlot->hide();
 #else
 	ui->groupComareMainEffects->setStyleSheet("background-color: pink ;");
 	ui->marginalMeansContainer->setStyleSheet("background-color: pink ;");
+    ui->profilePlot->setStyleSheet("background-color: pink ;");
 #endif
 
 }
