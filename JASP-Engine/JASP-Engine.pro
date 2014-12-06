@@ -15,22 +15,47 @@ DEPENDPATH = ..
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
+INCLUDEPATH += ..
+
 LIBS += -L.. -lJASP-Common
 
-macx {
-
-	INCLUDEPATH += ../../boost_1_54_0
-
-	R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.1/Resources
-	R_EXE  = $$R_HOME/bin/R
-}
+include(../common.pri)
 
 linux {
+	target.path = $$PREFIX/bin
+	INSTALLS += target
+}
 
-	INCLUDEPATH += /opt/local/include
+unix {
+	use_jasps_own_r_binary_package {
+		linux { R_HOME = $$JASPS_OWN_R_BINARY_PACKAGE }
+		macx  {
+			R_FRAMEWORK = $$JASPS_OWN_R_BINARY_PACKAGE
+			R_HOME = $$R_FRAMEWORK/Versions/3.1/Resources
+		}
+		R_LIB = $$R_HOME/library
+		R_EXE  = $$R_HOME/bin/R
 
-	R_HOME = $$OUT_PWD/../R
-	R_EXE  = $$R_HOME/bin/R
+		linux {
+			LIBS           += -Wl,--export-dynamic -fopenmp  -L$$R_HOME/lib -lR -lpcre -llzma -lbz2 -lz -lrt -ldl -lm
+			LIBS           += -lblas
+		}
+		macx {
+			LIBS += -F$$R_FRAMEWORK/.. -framework R -llzma -licucore -lm -liconv
+			LIBS += -L$$R_HOME/lib -lRblas
+		}
+		LIBS           += -Wl,-rpath,$$R_HOME/lib
+	} else {
+		isEmpty(RSCRIPT) { RSCRIPT = $$system(which Rscript) }
+		R_HOME = $$system( $$RSCRIPT -e \'cat(R.home())\' )
+		R_LIB  = $$system( $$RSCRIPT -e \'cat(.libPaths()[1])\' )
+		R_EXE  = $$R_HOME/bin/R
+
+		QMAKE_CXXFLAGS += $$system( $$R_EXE CMD config --cppflags )
+		LIBS           += $$system( $$R_EXE CMD config --ldflags )
+		LIBS           += $$system( $$R_EXE CMD config BLAS_LIBS )
+		LIBS           += -Wl,-rpath,$$R_HOME/lib
+        }
 }
 
 windows {
@@ -49,6 +74,7 @@ windows {
 
 	R_HOME = $$OUT_PWD/../R
 	R_EXE  = $$R_HOME/bin/$$ARCH/R
+	R_LIB  = $$R_HOME/library
 }
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
@@ -58,17 +84,14 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
-INCLUDEPATH += \
+win32INCLUDEPATH += \
 	$$R_HOME/include \
-	$$R_HOME/library/RInside/include \
-	$$R_HOME/library/Rcpp/include
+	$$R_LIB/RInside/include \
+	$$R_LIB/Rcpp/include
 
-unix:LIBS += \
+macx:LIBS += \
 	-L$$R_HOME/library/RInside/lib -lRInside \
 	-L$$R_HOME/lib -lR
-
-linux:LIBS += \
-	-lrt
 
 win32:LIBS += \
 	-L$$R_HOME/library/RInside/lib/$$ARCH -lRInside \
@@ -76,9 +99,26 @@ win32:LIBS += \
 
 win32:LIBS += -lole32 -loleaut32
 
-RPackage.commands = $$R_EXE CMD INSTALL --library=$$R_HOME/library $$PWD/JASP
-QMAKE_EXTRA_TARGETS += RPackage
-PRE_TARGETDEPS += RPackage
+# We build the JASP package in a phony directory, then copy it at install time
+# to $$JASP_R_LIBRARY. This way, we can call `make` without super-user privileges even if
+# we want to install into a site-wide directory
+JASP_R_LIB_BUILD = $$PWD/lib
+JaspRLib.target = $$JASP_R_LIB_BUILD
+JaspRLib.commands = $$QMAKE_MKDIR $$JASP_R_LIB_BUILD
+
+RPACKAGE = $$PWD/lib/JASP
+RPackage.target   = $$RPACKAGE
+RPackage.commands = $$R_EXE CMD INSTALL --library=$$JASP_R_LIB_BUILD $$PWD/JASP && touch -c $$RPACKAGE
+RPackage.depends = JaspRLib
+
+RLibRelocate.files = $$JASP_R_LIB_BUILD/*
+RLibRelocate.path  = $$JASP_R_LIBRARY
+
+QMAKE_EXTRA_TARGETS += RPackage JaspRLib
+PRE_TARGETDEPS += $$RPACKAGE
+INSTALLS += RLibRelocate
+
+include(Dependencies.pri)
 
 SOURCES += main.cpp \
 	engine.cpp \

@@ -1,5 +1,10 @@
-
 cache()
+
+include(common.pri)
+
+config_h.input     = config.h.in
+config_h.output    = config.h
+QMAKE_SUBSTITUTES += config_h
 
 TEMPLATE = subdirs
 

@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include "rcppbridge.h"
 
 #include <boost/foreach.hpp>
@@ -6,12 +8,15 @@
 
 using namespace std;
 
-
 RcppBridge* RcppBridge::_staticRef;
 
 RcppBridge::RcppBridge()
 {
 	_staticRef = this;
+
+	setenv("R_LIBS_USER", JASP_R_LIBRARY, 1);
+	_rInsidePtr = new RInside();
+	RInside &_rInside = *_rInsidePtr;
 
 	_rInside[".readDatasetToEndNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetStatic);
 	_rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetHeaderStatic);
@@ -32,6 +37,7 @@ void RcppBridge::setDataSet(DataSet* dataSet)
 Json::Value RcppBridge::init(const string &name, const Json::Value &options)
 {
 	SEXP results;
+	RInside &_rInside = *_rInsidePtr;
 
 	_rInside["name"] = name;
 	_rInside["options.as.json.string"] = options.toStyledString();
@@ -51,6 +57,7 @@ Json::Value RcppBridge::run(const string &name, const Json::Value &options, boos
 	SEXP results;
 
 	_callback = callback;
+	RInside &_rInside = *_rInsidePtr;
 
 	_rInside["name"] = name;
 	_rInside["options.as.json.string"] = options.toStyledString();
@@ -192,7 +199,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 				{
 					(void)column;
 
-					if (isnan(value))
+					if (std::isnan(value))
 						v[rowNo++] = INT_MIN;
 					else
 					{

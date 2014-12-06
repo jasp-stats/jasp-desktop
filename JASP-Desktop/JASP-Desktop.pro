@@ -1,9 +1,8 @@
+include(../common.pri)
 
 QT       += core gui webkit webkitwidgets svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-windows:CONFIG += c++11
 
 DESTDIR = ..
 TARGET = JASP
@@ -15,7 +14,11 @@ CONFIG -= app_bundle
 
 INCLUDEPATH += ../JASP-Common/
 
-unix:INCLUDEPATH += ../../boost_1_54_0
+
+linux {
+	target.path = $$PREFIX/bin
+	INSTALLS += target
+}
 
 windows {
 

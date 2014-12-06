@@ -1,4 +1,4 @@
-
+include( ../common.pri )
 QT       -= gui
 
 DESTDIR = ..
@@ -7,8 +7,6 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 windows:CONFIG += c++11
-
-unix:INCLUDEPATH += ../../boost_1_54_0
 
 windows {
 
@@ -170,7 +168,7 @@ unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
     } else {
-        target.path = /usr/lib
+        target.path = $$PREFIX/lib
     }
     INSTALLS += target
 }
