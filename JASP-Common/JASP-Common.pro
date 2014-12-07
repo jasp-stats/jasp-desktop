@@ -1,4 +1,4 @@
-
+include( ../common.pri )
 QT       -= gui
 
 DESTDIR = ..

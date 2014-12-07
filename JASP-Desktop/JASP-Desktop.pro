@@ -1,3 +1,4 @@
+include(../common.pri)
 
 QT       += core gui webkit webkitwidgets svg
 

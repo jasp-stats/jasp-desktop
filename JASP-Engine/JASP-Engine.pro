@@ -15,6 +15,8 @@ DEPENDPATH = ..
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
+include(../common.pri)
+
 LIBS += -L.. -lJASP-Common
 
 macx {

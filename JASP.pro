@@ -1,5 +1,6 @@
-
 cache()
+
+include(common.pri)
 
 TEMPLATE = subdirs
 
