@@ -86,8 +86,9 @@ win32:LIBS += \
 win32:LIBS += -lole32 -loleaut32
 
 RPackage.commands = $$R_EXE CMD INSTALL --library=$$R_HOME/library $$PWD/JASP
+RPackage.path = $$R_HOME/library
 QMAKE_EXTRA_TARGETS += RPackage
-PRE_TARGETDEPS += RPackage
+INSTALLS += RPackage
 
 SOURCES += main.cpp \
 	engine.cpp \
