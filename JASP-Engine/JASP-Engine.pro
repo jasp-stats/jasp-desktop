@@ -27,10 +27,20 @@ macx {
 
 linux {
 
-	INCLUDEPATH += /opt/local/include
-
-	R_HOME = $$OUT_PWD/../R
+	isEmpty(RSCRIPT) {
+		RSCRIPT = $$PWD/Rscript-wrapper
+		system( perl -pe\'s/^R_HOME_DIR=.*\$/R_HOME_DIR=\"\\\$(dirname \"\\\$(dirname \"\\\$(readlink -f \"\\\$0\")\" )\" )\"/\' -i ../R/bin/R )
+		system( perl -pe\'s+^R_INCLUDE_DIR=.*\$+R_INCLUDE_DIR=\"\\\${R_HOME_DIR}/include\"+\' -i ../R/bin/R )
+	}
+	R_HOME = $$system( $$RSCRIPT -e \'cat(R.home())\' )
+	R_LIB  = $$system( $$RSCRIPT -e \'cat(.libPaths()[1])\' )
 	R_EXE  = $$R_HOME/bin/R
+
+	QMAKE_CXXFLAGS += $$system( $$R_EXE CMD config --cppflags )
+	LIBS           += $$system( $$R_EXE CMD config --ldflags )
+	LIBS           += $$system( $$R_EXE CMD config BLAS_LIBS )
+	LIBS           += -Wl,-rpath,$$R_HOME/lib
+	LIBS           += -Wl,-rpath,$$R_HOME/library/RInside/lib
 }
 
 windows {
@@ -64,11 +74,10 @@ INCLUDEPATH += \
 	$$R_HOME/library/Rcpp/include
 
 unix:LIBS += \
-	-L$$R_HOME/library/RInside/lib -lRInside \
-	-L$$R_HOME/lib -lR
+	-L$$R_HOME/library/RInside/lib -lRInside
 
-linux:LIBS += \
-	-lrt
+macx:LIBS += \
+	-L$$R_HOME/lib -lR
 
 win32:LIBS += \
 	-L$$R_HOME/library/RInside/lib/$$ARCH -lRInside \

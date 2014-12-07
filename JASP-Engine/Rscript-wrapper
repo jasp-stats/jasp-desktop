@@ -1,0 +1,3 @@
+#!/bin/bash
+export RHOME=$(cd ../R && pwd)
+../R/bin/Rscript "$@"
