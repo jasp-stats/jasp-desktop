@@ -86,19 +86,29 @@ $.widget("jasp.table", {
 				var cell = column[rowNo]
 				var content = cell.content
 				var formatted
+				var combined = false
 				
-				if (typeof content == "undefined")
+				if (typeof content == "undefined") {
+				
 					formatted = { content : "." }
-				else if (combine && rowNo > 0 && column[rowNo-1].content == content)
+				}
+				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
+				
 					formatted = { content : "", class : clazz }
-				else
+					combined = true
+				}
+				else {
+				
 					formatted = { content : content, "class" : clazz }
+				}
+				
+				if (combined == false && cell.isNewGroup)
+					formatted["class"] += " new-group-row"
 					
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
 					
-				if (cell.isNewGroup)
-					formatted["class"] += " new-group-row"
+
 					
 				columnCells[rowNo] = formatted
 			}
