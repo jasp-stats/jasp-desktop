@@ -31,6 +31,10 @@ windows {
 	}
 }
 
+linux:with_system_r {
+    DEFINES += DONT_ADD_ENVIRONMENT_VARIABLES_FOR_R_PACKAGE
+}
+
 PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common

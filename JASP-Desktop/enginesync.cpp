@@ -254,6 +254,8 @@ void EngineSync::startSlaveProcess(int no)
 #define ARCH_SUBPATH "x64"
 #endif
 
+#if !defined(DONT_ADD_ENVIRONMENT_VARIABLES_FOR_R_PACKAGE)
+
 	env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
 	env.insert("R_HOME", programDir.absoluteFilePath("R"));
 
@@ -267,6 +269,8 @@ void EngineSync::startSlaveProcess(int no)
 #else
     env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R/lib") + ";" + programDir.absoluteFilePath("R/library/RInside/lib") + ";" + programDir.absoluteFilePath("R/library/Rcpp/lib"));
     env.insert("R_HOME", programDir.absoluteFilePath("R"));
+#endif
+
 #endif
 
 
