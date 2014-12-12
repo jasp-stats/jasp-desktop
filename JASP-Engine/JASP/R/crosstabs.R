@@ -112,10 +112,10 @@
 	tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
 	tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value", type="integer")
 
-	if (options$chiSquare) {
+	if (options$chiSquared) {
 	
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[chiSquare]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[chiSquare]", title="Value", type="number", format="sf:4;dp:3")
+		tests.fields[[length(tests.fields)+1]] <- list(name="type[chiSquared]", title="", type="string")
+		tests.fields[[length(tests.fields)+1]] <- list(name="value[chiSquared]", title="Value", type="number", format="sf:4;dp:3")
 	}
 	
 	schema <- list(fields=tests.fields)
@@ -197,9 +197,9 @@
 	}
 	
 	
-	if (options$chiSquare) {
+	if (options$chiSquared) {
 	
-		row[["type[chiSquare]"]] <- "\u03A7\u00B2"
+		row[["type[chiSquared]"]] <- "\u03A7\u00B2"
 
 		if (perform == "run") {
 		
@@ -210,7 +210,7 @@
 			
 			if (class(chi.result) == "try-error") {
 
-				row[["value[chiSquare]"]] <- .clean(NaN)
+				row[["value[chiSquared]"]] <- .clean(NaN)
 				
 				error <- .extractErrorMessage(chi.result)
 				
@@ -218,23 +218,23 @@
 					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 				
 				sup   <- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[chiSquare]"=list(sup))
+				row[[".footnotes"]] <- list("value[chiSquared]"=list(sup))
 			
 			} else if (is.na(chi.result$statistic)) {
 			
-				row[["value[chiSquare]"]] <- .clean(NaN)
+				row[["value[chiSquared]"]] <- .clean(NaN)
 			
 				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-				row[[".footnotes"]] <- list("value[chiSquare]"=list(sup))
+				row[[".footnotes"]] <- list("value[chiSquared]"=list(sup))
 			
 			} else {
 			
-				row[["value[chiSquare]"]] <- unname(chi.result$statistic)
+				row[["value[chiSquared]"]] <- unname(chi.result$statistic)
 			}
 			
 		} else {
 		
-			row[["value[chiSquare]"]] <- "."
+			row[["value[chiSquared]"]] <- "."
 		}
 		
 	}

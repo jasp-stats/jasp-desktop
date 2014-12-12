@@ -711,7 +711,7 @@
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="chiSquare">
+             <widget class="BoundCheckBox" name="chiSquared">
               <property name="text">
                <string>Chi-square</string>
               </property>

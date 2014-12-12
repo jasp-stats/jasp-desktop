@@ -29,7 +29,7 @@ Options *Crosstabs::createOptions() const
 
 	options->add("layers", new OptionsTable(layerOptionsTemplate));
 
-	options->add("chiSquare", new OptionBoolean(true));
+	options->add("chiSquared", new OptionBoolean(true));
 	options->add("correlations", new OptionBoolean(false));
 
 	options->add("nominal/contingencyCoefficient", new OptionBoolean());
