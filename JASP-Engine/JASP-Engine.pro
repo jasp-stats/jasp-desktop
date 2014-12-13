@@ -43,6 +43,9 @@ linux {
 	LIBS           += $$system( $$R_EXE CMD config BLAS_LIBS )
 	LIBS           += -Wl,-rpath,$$R_HOME/lib
 	LIBS           += -Wl,-rpath,$$R_HOME/library/RInside/lib
+	# workaround for https://github.com/RcppCore/Rcpp/issues/178 in case
+	# R compiles with --export-dynamic
+        LIBS           += -Wl,--no-export-dynamic
 }
 
 windows {
