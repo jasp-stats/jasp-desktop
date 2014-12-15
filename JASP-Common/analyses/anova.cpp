@@ -68,23 +68,23 @@ Options *Anova::createOptions() const
     options->add("postHocTests/benjamini", new OptionBoolean());
     //options->add("postHocTests/REGWQ", new OptionBoolean());
     //options->add("postHocTests/SNK", new OptionBoolean());
-	options->add("postHocTests/tukey", new OptionBoolean());
+    //options->add("postHocTests/tukey", new OptionBoolean());
     //options->add("postHocTests/tukeyB", new OptionBoolean());
     //options->add("postHocTests/duncan", new OptionBoolean());
     //options->add("postHocTests/hochbergGT2", new OptionBoolean());
     //options->add("postHocTests/gabriel", new OptionBoolean());
 
-	options->add("postHocTests/wallerDuncan", new OptionBoolean());
-	options->add("postHocTests/wallerDuncanRatio", new OptionInteger(100));
+    //options->add("postHocTests/wallerDuncan", new OptionBoolean());
+    //options->add("postHocTests/wallerDuncanRatio", new OptionInteger(100));
 
-	options->add("postHocTests/dunnett", new OptionBoolean());
-	options->add("postHocTests/dunnettControl", new OptionList(list("first", "last"), "last"));
-	options->add("postHocTests/dunnettSides", new OptionList(list("both", "lessThan", "greaterThan")));
+    //options->add("postHocTests/dunnett", new OptionBoolean());
+    //options->add("postHocTests/dunnettControl", new OptionList(list("first", "last"), "last"));
+    //options->add("postHocTests/dunnettSides", new OptionList(list("both", "lessThan", "greaterThan")));
 
-	options->add("postHocTests/tamhaneT2", new OptionBoolean());
-	options->add("postHocTests/dunnettT3", new OptionBoolean());
-	options->add("postHocTests/gamesHowell", new OptionBoolean());
-	options->add("postHocTests/dunnettC", new OptionBoolean());
+    //options->add("postHocTests/tamhaneT2", new OptionBoolean());
+    //options->add("postHocTests/dunnettT3", new OptionBoolean());
+    //options->add("postHocTests/gamesHowell", new OptionBoolean());
+    //options->add("postHocTests/dunnettC", new OptionBoolean());
 
 
 	// options
@@ -95,16 +95,23 @@ Options *Anova::createOptions() const
 
 	options->add("misc/descriptives", new OptionBoolean());
 	options->add("misc/effectSizeEstimates", new OptionBoolean());
-	options->add("misc/observedPower", new OptionBoolean());
-	options->add("misc/parameterEstimates", new OptionBoolean());
-	options->add("misc/contrastCoefficients", new OptionBoolean());
+    //options->add("misc/observedPower", new OptionBoolean());
+    //options->add("misc/parameterEstimates", new OptionBoolean());
+    //options->add("misc/contrastCoefficients", new OptionBoolean());
 	options->add("misc/homogeneityTests", new OptionBoolean());
 	//options->add("misc/spreadVsLevelPlot", new OptionBoolean());
 	//options->add("misc/residualPlot", new OptionBoolean());
 	//options->add("misc/lackOfFit", new OptionBoolean());
 	//options->add("misc/estimableFunction", new OptionBoolean());
 
-	options->add("significanceLevel", new OptionNumber(.05, .0001, .5));
+    //options->add("significanceLevel", new OptionNumber(.05, .0001, .5));
+
+    // plots
+
+    options->add("horizontalAxis", new OptionVariable());
+    options->add("seperateLines", new OptionVariable());
+    options->add("seperatePlots", new OptionVariable());
+    options->add("errorBars", new OptionBoolean());
 
 	return options;
 }

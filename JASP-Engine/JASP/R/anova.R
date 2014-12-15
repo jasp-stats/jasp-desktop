@@ -222,6 +222,23 @@
 		terms.normal <- c(terms.normal, term.normal)
 	}
 	
+	footnotes <- .newFootnotes()
+    
+    if (options$sumOfSquares == "type1") {
+    
+        .addFootnote(footnotes, text = "Type I Sum of Squares", symbol = "<em>Note.</em>")
+						
+	} else if (options$sumOfSquares == "type2") {
+			
+        .addFootnote(footnotes, text = "Type II Sum of Squares", symbol = "<em>Note.</em>")
+
+	} else if (options$sumOfSquares == "type3") {
+			
+        .addFootnote(footnotes, text = "Type III Sum of Squares", symbol = "<em>Note.</em>")
+
+	}	
+	
+	
 	if (perform == "init" || status$ready == FALSE || status$error) {
 	
 		anova.rows <- list()
@@ -273,14 +290,16 @@
 				}
 			
 				df <- result[term,"Df"]
+				print(is.na(df))
 				
-				if (df != 0) {
+				if (is.na(df) || df == 0) {
+				    SS <- 0
+				    df <- 0
+					MS <- ""
+				} else {
 					SS <- result[term,"Sum Sq"]
 					MS <- result[term,"Sum Sq"]/result[term,"Df"]
-				} else {
-					SS <- 0
-					MS <- ""
-				}	
+				}
 				
 				F <- if (is.na(result[term,"F value"])) {""} else { result[term, "F value"] }
 				p <- if (is.na(result[term,"Pr(>F)"] )) {""} else { result[term, "Pr(>F)"] }
@@ -336,11 +355,13 @@
 		}
 		
 		anova[["data"]] <- anova.rows
-		
-		if (singular) 
-			anova[["footnotes"]] <- list(list(symbol = "<em>Note.</em>", text="Warning: predictor variables are not all linearly independent (singularity)"))
-					
+        			
+		if (singular)
+		    .addFootnote(footnotes, text = "Predictor variables are not all linearly independent (singularity)", symbol = "<em>Warning.</em>")
+							
 	}
+	
+	anova[["footnotes"]] <- as.list(footnotes)
 	
 	list(result=anova, status=status)
 }
