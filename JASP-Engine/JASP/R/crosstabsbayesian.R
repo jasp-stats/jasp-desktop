@@ -118,6 +118,37 @@
 		tests.fields[[length(tests.fields)+1]] <- list(name="value[oddsRatio]", title="Value", type="number", format="sf:4;dp:3")
 	}
 	
+	if (options$samplingModel=="poisson") {
+	
+		tests.fields[[length(tests.fields)+1]] <- list(name="type[Poisson]", title="", type="string")
+		tests.fields[[length(tests.fields)+1]] <- list(name="value[Poisson]", title="Value", type="number", format="sf:4;dp:3")
+	}
+	
+	if (options$samplingModel=="jointMultinomial") {
+	
+		tests.fields[[length(tests.fields)+1]] <- list(name="type[jointMulti]", title="", type="string")
+		tests.fields[[length(tests.fields)+1]] <- list(name="value[jointMulti]", title="Value", type="number", format="sf:4;dp:3")
+	}
+	
+	if (options$samplingModel=="independentMultinomialRowsFixed") {
+	
+		tests.fields[[length(tests.fields)+1]] <- list(name="type[indMultiR]", title="", type="string")
+		tests.fields[[length(tests.fields)+1]] <- list(name="value[indMultiR]", title="Value", type="number", format="sf:4;dp:3")
+	}
+	
+	if (options$samplingModel=="independentMultinomialColumnsFixed") {
+	
+		tests.fields[[length(tests.fields)+1]] <- list(name="type[indMultiC]", title="", type="string")
+		tests.fields[[length(tests.fields)+1]] <- list(name="value[indMultiC]", title="Value", type="number", format="sf:4;dp:3")
+	}
+
+	if (options$samplingModel=="hypergeometric") {
+	
+		tests.fields[[length(tests.fields)+1]] <- list(name="type[Hypergeometric]", title="", type="string")
+		tests.fields[[length(tests.fields)+1]] <- list(name="value[Hypergeometric]", title="Value", type="number", format="sf:4;dp:3")
+	}
+
+
 	schema <- list(fields=tests.fields)
 	
 	tests.table[["schema"]] <- schema
@@ -238,6 +269,188 @@
 		}
 		
 	}
+#######################################	
+	if (options$samplingModel=="poisson") {
+	
+		row[["type[Poisson]"]] <- "BF Poisson"
+
+		if (perform == "run") {
+		
+			BF <- try({
+
+				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType = "poisson")
+				
+			})
+			
+			if (class(BF) == "try-error") {
+
+				row[["value[Poisson]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(BF)
+				
+				if (error == "at least one entry of 'x' must be positive")
+					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
+				
+				sup   <- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[Poisson]"=list(sup))
+			
+			} else {
+			
+				row[["value[Poisson]"]] <- unname(BF@bayesFactor$bf)
+			}
+			
+		} else {
+		
+			row[["value[Poisson]"]] <- "."
+		}
+		
+	}
+	
+################################
+if (options$samplingModel=="jointMultinomial") {
+	
+		row[["type[jointMulti]"]] <- "BF joint Multinomial"
+
+		if (perform == "run") {
+		
+			BF <- try({
+
+				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType = "jointMulti")
+				
+			})
+			
+			if (class(BF) == "try-error") {
+
+				row[["value[jointMulti]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(BF)
+				
+				if (error == "at least one entry of 'x' must be positive")
+					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
+				
+				sup   <- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[JointMulti]"=list(sup))
+			
+			} else {
+			
+				row[["value[jointMulti]"]] <- unname(BF@bayesFactor$bf)
+			}
+			
+		} else {
+		
+			row[["value[jointMulti]"]] <- "."
+		}
+		
+	}
+###############################
+if (options$samplingModel=="independentMultinomialRowsFixed") {
+	
+		row[["type[indMultiR]"]] <- "BF independent Multinomial (Rows)"
+
+		if (perform == "run") {
+		
+			BF <- try({
+
+				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType = "indepMulti", fixedMargin ="rows")
+				
+			})
+			
+			if (class(BF) == "try-error") {
+
+				row[["value[indMultiR]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(BF)
+				
+				if (error == "at least one entry of 'x' must be positive")
+					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
+				
+				sup   <- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[indMultiR]"=list(sup))
+			
+			} else {
+			
+				row[["value[indMultiR]"]] <- unname(BF@bayesFactor$bf)
+			}
+			
+		} else {
+		
+			row[["value[indMultiR]"]] <- "."
+		}
+		
+	}
+###############################	
+	if (options$samplingModel=="independentMultinomialColumnsFixed") {
+	
+		row[["type[indMultiC]"]] <- "BF independent Multinomial (Cols)"
+
+		if (perform == "run") {
+		
+			BF <- try({
+
+				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType = "indepMulti", fixedMargin ="cols")
+				
+			})
+			
+			if (class(BF) == "try-error") {
+
+				row[["value[indMultiC]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(BF)
+				
+				if (error == "at least one entry of 'x' must be positive")
+					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
+				
+				sup   <- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[indMultiC]"=list(sup))
+			
+			} else {
+			
+				row[["value[indMultiC]"]] <- unname(BF@bayesFactor$bf)
+			}
+			
+		} else {
+		
+			row[["value[indMultiC]"]] <- "."
+		}
+		
+	}
+###############################
+if (options$samplingModel=="hypergeometric") {
+	
+		row[["type[Hypergeometric]"]] <- "BF Hypergeometric"
+
+		if (perform == "run") {
+		
+			BF <- try({
+
+				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType = "hypergeom")
+				
+			})
+			
+			if (class(BF) == "try-error") {
+
+				row[["value[hypergeometric]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(BF)
+				
+				if (error == "at least one entry of 'x' must be positive")
+					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
+				
+				sup   <- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[hypergeometric]"=list(sup))
+			
+			} else {
+			
+				row[["value[hypergeometric]"]] <- unname(BF@bayesFactor$bf)
+			}
+			
+		} else {
+		
+			row[["value[hypergeometric]"]] <- "."
+		}
+		
+	}
+###############################	
 
 	list(row)
 }
