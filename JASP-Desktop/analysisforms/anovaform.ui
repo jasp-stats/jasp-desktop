@@ -220,7 +220,7 @@
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QListView" name="horizontalAxis">
+                <widget class="BoundListView" name="horizontalAxis">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -280,7 +280,7 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QListView" name="seperateLines">
+                <widget class="BoundListView" name="seperateLines">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -320,7 +320,7 @@
                 <number>0</number>
                </property>
                <item row="1" column="1">
-                <widget class="QListView" name="seperatePlots">
+                <widget class="BoundListView" name="seperatePlots">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
                    <horstretch>0</horstretch>

@@ -52,14 +52,25 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	_contrastsModel = new TableModelVariablesOptions();
     ui->contrasts->setModel(_contrastsModel);
 
-    ui->plot_variables->setModel(&_availableVariablesModel);
+    _plotFactorsAvailableTableModel = new TableModelVariablesAvailable();
+    _plotFactorsAvailableTableModel->setInfoProvider(this);
+    ui->plot_variables->setModel(_plotFactorsAvailableTableModel);
 
-    /*
-    _horizontalAxis = new TableModelVariablesAssigned(this);
-    _horizontalAxis->setSource(&_availableVariablesModel);
-    _horizontalAxis->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-    ui->horizontalAxis->setModel(_horizontalAxis);
-    */
+    _horizontalAxisTableModel = new TableModelVariablesAssigned(this);
+    _horizontalAxisTableModel->setSource(_plotFactorsAvailableTableModel);
+    ui->horizontalAxis->setModel(_horizontalAxisTableModel);
+
+    _seperateLinesTableModel = new TableModelVariablesAssigned(this);
+    _seperateLinesTableModel->setSource(_plotFactorsAvailableTableModel);
+    ui->seperateLines->setModel(_seperateLinesTableModel);
+
+    _seperatePlotsTableModel = new TableModelVariablesAssigned(this);
+    _seperatePlotsTableModel->setSource(_plotFactorsAvailableTableModel);
+    ui->seperatePlots->setModel(_seperatePlotsTableModel);
+
+    ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plot_variables, ui->horizontalAxis);
+    ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plot_variables, ui->seperateLines);
+    ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plot_variables, ui->seperatePlots);
 
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
@@ -93,6 +104,7 @@ void AnovaForm::factorsChanged()
 
 	_anovaModel->setVariables(factorsAvailable);
 	_contrastsModel->setVariables(factorsAvailable);
+    _plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 
 	ui->postHocTests_variables->setVariables(factorsAvailable);
 }
