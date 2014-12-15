@@ -338,7 +338,7 @@
 		anova[["data"]] <- anova.rows
 		
 		if (singular) 
-			anova[["footnotes"]] <- list("Warning: predictor variables are not all linearly independent (singularity)") 
+			anova[["footnotes"]] <- list(list(symbol = "<em>Note.</em>", text="Warning: predictor variables are not all linearly independent (singularity)"))
 					
 	}
 	
@@ -743,7 +743,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 
 	## Setup Contrasts
 
-	if (status$ready && status$error == FALSE)
+	if (perform == "run" && status$ready && status$error == FALSE)
 		dataset <- .anovaSetupContrasts(dataset, options)
 	
 
