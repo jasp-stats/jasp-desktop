@@ -758,14 +758,14 @@
             <item row="2" column="0">
              <widget class="QRadioButton" name="_3IndependentRowsFixed">
               <property name="text">
-               <string>Independent, rows fixed</string>
+               <string>Independent multinomial, rows fixed</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
              <widget class="QRadioButton" name="_4IndependentColumnsFixed">
               <property name="text">
-               <string>Independent, columns fixed</string>
+               <string>Independent multinomial, columns fixed</string>
               </property>
              </widget>
             </item>
@@ -779,7 +779,7 @@
             <item row="1" column="0">
              <widget class="QRadioButton" name="_2Multinomial">
               <property name="text">
-               <string>Multi-nomial</string>
+               <string>Joint multinomial</string>
               </property>
              </widget>
             </item>
