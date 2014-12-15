@@ -109,14 +109,30 @@
 	
 	tests.fields <- fields
 	
-	tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
-	tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value", type="integer")
 
 	if (options$chiSquared) {
 	
 		tests.fields[[length(tests.fields)+1]] <- list(name="type[chiSquared]", title="", type="string")
 		tests.fields[[length(tests.fields)+1]] <- list(name="value[chiSquared]", title="Value", type="number", format="sf:4;dp:3")
+		tests.fields[[length(tests.fields)+1]] <- list(name="df[chiSquared]", title="df", type="integer")
+		tests.fields[[length(tests.fields)+1]] <- list(name="p[chiSquared]", title="p", type="number", format="dp:3;p:.001")
+		
+		tests.fields[[length(tests.fields)+1]] <- list(name="type[chiSquared-cc]", title="", type="string")
+		tests.fields[[length(tests.fields)+1]] <- list(name="value[chiSquared-cc]", title="Value", type="number", format="sf:4;dp:3")		
+		tests.fields[[length(tests.fields)+1]] <- list(name="df[chiSquared-cc]", title="df", type="integer")
+		tests.fields[[length(tests.fields)+1]] <- list(name="p[chiSquared-cc]", title="p", type="number", format="dp:3;p:.001")
+		
+		tests.fields[[length(tests.fields)+1]] <- list(name="type[likelihood]", title="", type="string")
+		tests.fields[[length(tests.fields)+1]] <- list(name="value[likelihood]", title="Value", type="number", format="sf:4;dp:3")
+		tests.fields[[length(tests.fields)+1]] <- list(name="df[likelihood]", title="df", type="integer")
+		tests.fields[[length(tests.fields)+1]] <- list(name="p[likelihood]", title="p", type="number", format="dp:3;p:.001")
+
 	}
+
+	tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
+	tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value")
+	tests.fields[[length(tests.fields)+1]] <- list(name="df[N]", title="df")
+	tests.fields[[length(tests.fields)+1]] <- list(name="p[N]", title="p")	
 	
 	schema <- list(fields=tests.fields)
 	
@@ -186,6 +202,8 @@
 	}
 	
 	row[["type[N]"]] <- "N"
+	row[["df[N]"]] <- ""
+	row[["p[N]"]] <- ""
 
 	if (perform == "run") {
 	
@@ -199,13 +217,15 @@
 	
 	if (options$chiSquared) {
 	
-		row[["type[chiSquared]"]] <- "\u03A7\u00B2"
+		#row[["type[chiSquared]"]] <- "\u03A7\u00B2"
+		row[["type[chiSquared]"]] <- "Pearson Chi-Square"
 
 		if (perform == "run") {
 		
 			chi.result <- try({
 
-				chi.result <- stats::chisq.test(counts.matrix)
+				chi.result <- stats::chisq.test(counts.matrix, correct=FALSE)
+				#row <- list(Method="Pearson's Chi-squared", X2=unname(chi$statistic), df=unname(chi$parameter), p=chi$p.value)
 			})
 			
 			if (class(chi.result) == "try-error") {
@@ -230,11 +250,91 @@
 			} else {
 			
 				row[["value[chiSquared]"]] <- unname(chi.result$statistic)
+				row[["df[chiSquared]"]] <- unname(chi.result$parameter)
+				row[["p[chiSquared]"]] <- unname(chi.result$p.value)
 			}
 			
 		} else {
 		
 			row[["value[chiSquared]"]] <- "."
+		}
+		
+###############################################		
+		
+		row[["type[chiSquared-cc]"]] <- "Continuity Correction"
+
+
+		if (perform == "run") {
+		
+			chi.result <- try({
+
+				chi.result <- stats::chisq.test(counts.matrix)
+				#row <- list(Method="Pearson's Chi-squared", X2=unname(chi$statistic), df=unname(chi$parameter), p=chi$p.value)
+			})
+			
+			if (class(chi.result) == "try-error") {
+
+				row[["value[chiSquared-cc]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(chi.result)
+				
+				if (error == "at least one entry of 'x' must be positive")
+					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
+				
+				sup   <- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[chiSquared-cc]"=list(sup))
+			
+			} else if (is.na(chi.result$statistic)) {
+			
+				row[["value[chiSquared-cc]"]] <- .clean(NaN)
+			
+				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
+				row[[".footnotes"]] <- list("value[chiSquared-cc]"=list(sup))
+			
+			} else {
+			
+				row[["value[chiSquared-cc]"]] <- unname(chi.result$statistic)
+				row[["df[chiSquared-cc]"]] <- unname(chi.result$parameter)
+				row[["p[chiSquared-cc]"]] <- unname(chi.result$p.value)
+			}
+			
+		} else {
+		
+			row[["value[chiSquared-cc]"]] <- "."
+		}
+##################################################################
+
+		
+	row[["type[likelihood]"]] <- "Likelihood Ratio"
+
+
+		if (perform == "run") {
+		
+			chi.result <- try({
+
+				chi.result <- vcd::assocstats(counts.matrix)
+				
+			})
+			
+			if (class(chi.result) == "try-error") {
+
+				row[["value[likelihood]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(chi.result)
+				
+				sup   <- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[likelihood]"=list(sup))
+			
+			} else {
+			
+				row[["value[likelihood]"]] <- chi.result$chisq_tests[1]
+				row[["df[likelihood]"]] <- chi.result$chisq_tests[3]
+				row[["p[likelihood]"]] <- chi.result$chisq_tests[5]
+			}
+			
+		} else {
+		
+			row[["value[likelihood]"]] <- "."
 		}
 		
 	}
