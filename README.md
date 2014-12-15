@@ -11,6 +11,8 @@ Development
 
 [The JASP Guide for Implementing Analyses in R](Docs/r-analyses-guide.md)
 
+[The JASP Error List](Docs/jasp-error-list.md)
+
 [The JASPPreview R package guide](Docs/jasppreview-guide.md)
 
 [The JASP Guide to Writing Analyses for Humans](Docs/jasp-human-guide.md)
