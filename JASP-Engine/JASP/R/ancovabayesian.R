@@ -28,7 +28,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 				columns.as.factor = c(factor.variables) )
 		}
 	}
-
 	
 	#### META
 	results <- list()
@@ -124,7 +123,26 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			# prior probability: 1/ number of models
 			pprior <- .clean(1/n.mod.0)			
 			# posterior probability: computed from Bayes factors (only with equal prior probability)
-			posterior.probability <- c(BFmain.0)/sum(BFmain.0)
+			
+			warning.message <- NULL
+			if( any(BFmain.0 == "NaN") || any(!is.finite(BFmain.0))){
+				if (all(is.finite(BFmain.0))){ #containing nan, but not infinity
+					tmp <- which(BFmain.0 != "NaN")
+					posterior.probability <- rep(0,length(BFmain.0))
+					posterior.probability[tmp] <- c(BFmain.0[tmp])/sum(BFmain.0[tmp])										
+				} else if(all(BFmain.0 != "NaN")){ #containing infinity, but not nan
+					tmp <- which(!is.finite(BFmain.0))
+					posterior.probability <- rep(0,length(BFmain.0))
+					posterior.probability[tmp] <- 1/length(tmp)		
+				
+				} else{ #containing both
+					tmp <- which(BFmain.0 == "Inf")
+					posterior.probability <- rep(0,length(BFmain.0))
+					posterior.probability[tmp] <- 1/length(tmp)												
+				}												
+			} else { #containing neither
+				posterior.probability <- c(BFmain.0)/sum(BFmain.0)				
+			}
 			
 			BFmodels <-	(posterior.probability/(1-posterior.probability))/(pprior/(1-pprior))
 			errormain.0 <- c(NA,errormain)
@@ -204,7 +222,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 					withmain =  withmain, effects = effects, errormain.0 = errormain.0, models.tab = models.tab, 
 					pprior = pprior, BFmodels = BFmodels, BFmain.0 = BFmain.0, model.formula = model.formula, 
 					dataset = dataset, terms.nuisance = terms.nuisance, jasp.callback = jasp.callback, 
-					n.comp.eff = n.comp.eff, models = models, effects.tab = effects.tab)
+					n.comp.eff = n.comp.eff, models = models, effects.tab = effects.tab, options = options)
 				
 			} 
 				
@@ -527,7 +545,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	
 	if (mode != "bottom" & mode != "withmain")
 		stop( 'Mode is not correctly set for generalTestBF. Should be "bottom" or "withmain".' )
-	
+
 	result <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = mode, 
 		neverExclude = paste("^",terms.nuisance,"$", sep = ""), whichRandom = .v(options$randomFactors),
 		progress=FALSE, callback=jasp.callback)
@@ -592,7 +610,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		
 	} else if (table == "null"){
 		posterior.results[[1]] <- list("Models" = null.name)	
-
 	}
 
 	return(posterior.results)
@@ -610,8 +627,8 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	#Null model and at least two more
 				
 	# 1. Bottom up effects	(Forward analysis)
-		result <- .estimateBayesFactorBayesianAnCova( mode = "bottom", model.formula, dataset, 
-			terms.nuisance, options, jasp.callback)
+
+		result <- .estimateBayesFactorBayesianAnCova( mode = "bottom", model.formula = model.formula, dataset = dataset, terms.nuisance = terms.nuisance, options = options, jasp.callback = jasp.callback)
 		bottom <- result$bf.object
 		BFbot <- result$bf
 		errorbot <- result$error					
