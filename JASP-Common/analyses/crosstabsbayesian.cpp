@@ -35,7 +35,7 @@ Options *CrosstabsBayesian::createOptions() const
 
 	options->add("bfIndependence", new OptionBoolean());
 
-	options->add("samplingModel", new OptionList(list("poisson", "jointMultinomial", "independentMultinomialRowsFixed", "independentMultinomialColumnsFixed", "hypergeometric"), "multinomial"));
+	options->add("samplingModel", new OptionList(list("poisson", "jointMultinomial", "independentMultinomialRowsFixed", "independentMultinomialColumnsFixed", "hypergeometric"), "jointMultinomial"));
 
 	options->add("plotPosteriorOddsRatio", new OptionBoolean());
 

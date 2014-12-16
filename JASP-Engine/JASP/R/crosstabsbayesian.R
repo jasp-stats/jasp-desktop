@@ -4,7 +4,13 @@
 	# analysis is a list of the form :
 	# list(columns="var.name", rows="var.name", "Layer 1"="var.name", etc...)
 	
-	dataset <- subset(dataset, select=.v(unlist(analysis)))
+	counts.var <- options$counts
+	if (counts.var == "")
+		counts.var <- NULL
+	
+	all.vars <- c(unlist(analysis), counts.var)
+
+	dataset <- subset(dataset, select=.v(all.vars))
 	
 	
 	# the following creates a 'groups' list
@@ -118,36 +124,8 @@
 		tests.fields[[length(tests.fields)+1]] <- list(name="value[oddsRatio]", title="Value", type="number", format="sf:4;dp:3")
 	}
 	
-	if (options$samplingModel=="poisson") {
-	
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[Poisson]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[Poisson]", title="Value", type="number", format="sf:4;dp:3")
-	}
-	
-	if (options$samplingModel=="jointMultinomial") {
-	
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[jointMulti]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[jointMulti]", title="Value", type="number", format="sf:4;dp:3")
-	}
-	
-	if (options$samplingModel=="independentMultinomialRowsFixed") {
-	
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[indMultiR]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[indMultiR]", title="Value", type="number", format="sf:4;dp:3")
-	}
-	
-	if (options$samplingModel=="independentMultinomialColumnsFixed") {
-	
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[indMultiC]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[indMultiC]", title="Value", type="number", format="sf:4;dp:3")
-	}
-
-	if (options$samplingModel=="hypergeometric") {
-	
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[Hypergeometric]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[Hypergeometric]", title="Value", type="number", format="sf:4;dp:3")
-	}
-
+	tests.fields[[length(tests.fields)+1]] <- list(name="type[BF]", title="", type="string")
+	tests.fields[[length(tests.fields)+1]] <- list(name="value[BF]", title="Value", type="number", format="sf:4;dp:3")
 
 	schema <- list(fields=tests.fields)
 	
@@ -160,7 +138,7 @@
 
 	# create count matrices for each group
 
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups)
+	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var))
 	
 	counts.rows <- list()
 	tests.rows <- list()
@@ -269,188 +247,72 @@
 		}
 		
 	}
-#######################################	
+	
+	
+	
 	if (options$samplingModel=="poisson") {
 	
-		row[["type[Poisson]"]] <- "BF Poisson"
-
-		if (perform == "run") {
+		bfLabel <- "BF Poisson"
+		sampleType <- "poisson"
+		fixedMargin <- NULL
 		
-			BF <- try({
+	} else if (options$samplingModel=="jointMultinomial") {
+	
+		bfLabel <- "BF Joint Multinomial"
+		sampleType <- "jointMulti"
+		fixedMargin <- NULL
+	
+	} else if (options$samplingModel=="independentMultinomialRowsFixed") {
 
-				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType = "poisson")
-				
-			})
-			
-			if (class(BF) == "try-error") {
+		bfLabel <- "BF Joint Multinomial"	
+		sampleType <- "indepMulti"
+		fixedMargin <- "rows"
+	
+	} else if (options$samplingModel=="independentMultinomialColumnsFixed") {
+	
+		bfLabel <- "BF Joint Multinomial"	
+		sampleType <- "indepMulti"
+		fixedMargin <- "cols"
+	
+	} else if (options$samplingModel=="hypergeometric") {
 
-				row[["value[Poisson]"]] <- .clean(NaN)
-				
-				error <- .extractErrorMessage(BF)
-				
-				if (error == "at least one entry of 'x' must be positive")
-					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
-				
-				sup   <- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[Poisson]"=list(sup))
-			
-			} else {
-			
-				row[["value[Poisson]"]] <- unname(BF@bayesFactor$bf)
-			}
-			
-		} else {
+		bfLabel <- "BF Hypergeometric"
+		sampleType <- "hypergeom"
+		fixedMargin <- NULL
 		
-			row[["value[Poisson]"]] <- "."
-		}
-		
+	} else {
+	
+		stop("wtf?")
 	}
 	
-################################
-if (options$samplingModel=="jointMultinomial") {
+
+	row[["type[BF]"]] <- bfLabel
+
+	if (perform == "run") {
 	
-		row[["type[jointMulti]"]] <- "BF joint Multinomial"
+		BF <- try({
 
-		if (perform == "run") {
+			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, fixedMargin=fixedMargin)
+		})
 		
-			BF <- try({
+		if (class(BF) == "try-error") {
 
-				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType = "jointMulti")
-				
-			})
+			row[["value[BF]"]] <- .clean(NaN)
 			
-			if (class(BF) == "try-error") {
-
-				row[["value[jointMulti]"]] <- .clean(NaN)
-				
-				error <- .extractErrorMessage(BF)
-				
-				if (error == "at least one entry of 'x' must be positive")
-					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
-				
-				sup   <- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[JointMulti]"=list(sup))
+			error <- .extractErrorMessage(BF)
 			
-			} else {
-			
-				row[["value[jointMulti]"]] <- unname(BF@bayesFactor$bf)
-			}
-			
+			sup   <- .addFootnote(footnotes, error)
+			row[[".footnotes"]] <- list("value[BF]"=list(sup))
+		
 		} else {
 		
-			row[["value[jointMulti]"]] <- "."
+			row[["value[BF]"]] <- unname(BF@bayesFactor$bf)
 		}
 		
-	}
-###############################
-if (options$samplingModel=="independentMultinomialRowsFixed") {
+	} else {
 	
-		row[["type[indMultiR]"]] <- "BF independent Multinomial (Rows)"
-
-		if (perform == "run") {
-		
-			BF <- try({
-
-				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType = "indepMulti", fixedMargin ="rows")
-				
-			})
-			
-			if (class(BF) == "try-error") {
-
-				row[["value[indMultiR]"]] <- .clean(NaN)
-				
-				error <- .extractErrorMessage(BF)
-				
-				if (error == "at least one entry of 'x' must be positive")
-					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
-				
-				sup   <- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[indMultiR]"=list(sup))
-			
-			} else {
-			
-				row[["value[indMultiR]"]] <- unname(BF@bayesFactor$bf)
-			}
-			
-		} else {
-		
-			row[["value[indMultiR]"]] <- "."
-		}
-		
+		row[["value[BF]"]] <- "."
 	}
-###############################	
-	if (options$samplingModel=="independentMultinomialColumnsFixed") {
-	
-		row[["type[indMultiC]"]] <- "BF independent Multinomial (Cols)"
-
-		if (perform == "run") {
-		
-			BF <- try({
-
-				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType = "indepMulti", fixedMargin ="cols")
-				
-			})
-			
-			if (class(BF) == "try-error") {
-
-				row[["value[indMultiC]"]] <- .clean(NaN)
-				
-				error <- .extractErrorMessage(BF)
-				
-				if (error == "at least one entry of 'x' must be positive")
-					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
-				
-				sup   <- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[indMultiC]"=list(sup))
-			
-			} else {
-			
-				row[["value[indMultiC]"]] <- unname(BF@bayesFactor$bf)
-			}
-			
-		} else {
-		
-			row[["value[indMultiC]"]] <- "."
-		}
-		
-	}
-###############################
-if (options$samplingModel=="hypergeometric") {
-	
-		row[["type[Hypergeometric]"]] <- "BF Hypergeometric"
-
-		if (perform == "run") {
-		
-			BF <- try({
-
-				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType = "hypergeom")
-				
-			})
-			
-			if (class(BF) == "try-error") {
-
-				row[["value[hypergeometric]"]] <- .clean(NaN)
-				
-				error <- .extractErrorMessage(BF)
-				
-				if (error == "at least one entry of 'x' must be positive")
-					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
-				
-				sup   <- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[hypergeometric]"=list(sup))
-			
-			} else {
-			
-				row[["value[hypergeometric]"]] <- unname(BF@bayesFactor$bf)
-			}
-			
-		} else {
-		
-			row[["value[hypergeometric]"]] <- "."
-		}
-		
-	}
-###############################	
 
 	list(row)
 }
@@ -462,14 +324,18 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	for (layer in options$layers)
 		layer.variables <- c(layer.variables, unlist(layer$variables))
 
-	all.variables = c(unlist(options$rows), unlist(options$columns), layer.variables)
+	counts.var <- options$counts
+	if (counts.var == "")
+		counts.var <- NULL
+
+	factors <- c(unlist(options$rows), unlist(options$columns), layer.variables)
 
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.factor=all.variables)
+			dataset <- .readDataSetToEnd(columns.as.factor=factors, columns.as.numeric=counts.var)
 		} else {
-			dataset <- .readDataSetHeader(columns.as.factor=all.variables)
+			dataset <- .readDataSetHeader(columns.as.factor=factors, columns.as.numeric=counts.var)
 		}
 	}
 

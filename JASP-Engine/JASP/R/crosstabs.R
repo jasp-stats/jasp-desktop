@@ -4,8 +4,13 @@
 	# analysis is a list of the form :
 	# list(columns="var.name", rows="var.name", "Layer 1"="var.name", etc...)
 	
-	dataset <- subset(dataset, select=.v(unlist(analysis)))
+	counts.var <- options$counts
+	if (counts.var == "")
+		counts.var <- NULL
 	
+	all.vars <- c(unlist(analysis), counts.var)
+
+	dataset <- subset(dataset, select=.v(all.vars))	
 	
 	# the following creates a 'groups' list
 	# a 'group' represents a combinations of the levels from the layers
@@ -117,10 +122,10 @@
 		tests.fields[[length(tests.fields)+1]] <- list(name="df[chiSquared]", title="df", type="integer")
 		tests.fields[[length(tests.fields)+1]] <- list(name="p[chiSquared]", title="p", type="number", format="dp:3;p:.001")
 		
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[chiSquared-cc]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[chiSquared-cc]", title="Value", type="number", format="sf:4;dp:3")		
-		tests.fields[[length(tests.fields)+1]] <- list(name="df[chiSquared-cc]", title="df", type="integer")
-		tests.fields[[length(tests.fields)+1]] <- list(name="p[chiSquared-cc]", title="p", type="number", format="dp:3;p:.001")
+		tests.fields[[length(tests.fields)+1]] <- list(name="type[chiSquaredCC]", title="", type="string")
+		tests.fields[[length(tests.fields)+1]] <- list(name="value[chiSquaredCC]", title="Value", type="number", format="sf:4;dp:3")		
+		tests.fields[[length(tests.fields)+1]] <- list(name="df[chiSquaredCC]", title="df", type="integer")
+		tests.fields[[length(tests.fields)+1]] <- list(name="p[chiSquaredCC]", title="p", type="number", format="dp:3;p:.001")
 		
 		tests.fields[[length(tests.fields)+1]] <- list(name="type[likelihood]", title="", type="string")
 		tests.fields[[length(tests.fields)+1]] <- list(name="value[likelihood]", title="Value", type="number", format="sf:4;dp:3")
@@ -145,7 +150,7 @@
 
 	# create count matrices for each group
 
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups)
+	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var))
 	
 	counts.rows <- list()
 	tests.rows <- list()
@@ -424,9 +429,17 @@
 
 	if (is.null(groups)) {
 
-		ss.dataset <- base::subset(dataset, select=c(rows, columns))	
-		ss.table <- base::table(ss.dataset)
-		ss.matrix <- base::matrix(ss.table, nrow=dim(ss.table)[1], ncol=dim(ss.table)[2], dimnames=dimnames(ss.table))
+		ss.dataset <- base::subset(dataset, select=c(rows, columns, counts))
+
+		if (is.null(counts)) {
+
+			ss.table  <- base::table(ss.dataset)
+			ss.matrix <- base::matrix(ss.table, nrow=dim(ss.table)[1], ncol=dim(ss.table)[2], dimnames=dimnames(ss.table))
+			
+		} else {
+		
+			ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
+		}
 		
 		matrices[[1]] <- ss.matrix
 	
@@ -438,17 +451,24 @@
 
 			if (length(group) == 0) {
 			
-				ss.dataset <- base::subset(dataset, select=c(rows, columns))
+				ss.dataset <- base::subset(dataset, select=c(rows, columns, counts))
 			
 			} else {
 
 				ss.filter.string <- base::paste(.v(names(group)), "==\"", group, "\"", sep="", collapse="&")
 				ss.expression    <- base::parse(text=ss.filter.string)
-				ss.dataset       <- base::subset(dataset, select=c(rows, columns), subset=eval(ss.expression))
+				ss.dataset       <- base::subset(dataset, select=c(rows, columns, counts), subset=eval(ss.expression))
 			}
 			
-			ss.table  <- base::table(ss.dataset)
-			ss.matrix <- base::matrix(ss.table, nrow=dim(ss.table)[1], ncol=dim(ss.table)[2], dimnames=dimnames(ss.table))
+			if (is.null(counts)) {
+
+				ss.table  <- base::table(ss.dataset)
+				ss.matrix <- base::matrix(ss.table, nrow=dim(ss.table)[1], ncol=dim(ss.table)[2], dimnames=dimnames(ss.table))
+			
+			} else {
+		
+				ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
+			}
 
 			matrices[[length(matrices)+1]] <- ss.matrix
 		}
@@ -463,15 +483,19 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 
 	for (layer in options$layers)
 		layer.variables <- c(layer.variables, unlist(layer$variables))
+		
+	counts.var <- options$counts
+	if (counts.var == "")
+		counts.var <- NULL
 
-	all.variables = c(unlist(options$rows), unlist(options$columns), layer.variables)
+	factors <- c(unlist(options$rows), unlist(options$columns), layer.variables)
 
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.factor=all.variables)
+			dataset <- .readDataSetToEnd(columns.as.factor=factors, columns.as.numeric=counts.var)
 		} else {
-			dataset <- .readDataSetHeader(columns.as.factor=all.variables)
+			dataset <- .readDataSetHeader(columns.as.factor=factors, columns.as.numeric=counts.var)
 		}
 	}
 
