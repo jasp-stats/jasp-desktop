@@ -139,6 +139,9 @@ QVariant TableModelVariablesOptions::headerData(int section, Qt::Orientation ori
 
 void TableModelVariablesOptions::setVariables(const Terms &variables)
 {
+	if (_variables == variables)
+		return;
+
 	_variables = variables;
 
 	if (_boundTo == NULL)

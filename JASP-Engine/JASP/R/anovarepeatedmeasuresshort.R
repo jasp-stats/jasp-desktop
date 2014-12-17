@@ -64,10 +64,10 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 	fields <- list(
 		list(name="case", type="string", title=""),
-		list(name="SS", type="number", format="dp:3", title="Sum of Squares"),
-		list(name="df", type="number", format="dp:0"),
-		list(name="MS", type="number", format="dp:3", title="Mean Square"),
-		list(name="F", type="number", format="dp:3"),
+		list(name="SS", type="number", format="sf:4;dp:3", title="Sum of Squares"),
+		list(name="df", type="integer"),
+		list(name="MS", type="number", format="sf:4;dp:3", title="Mean Square"),
+		list(name="F", type="number", format="sf:4;dp:3"),
 		list(name="p", type="number", format="dp:3;p:.001"))
 	
 	anova[["schema"]] <- list(fields=fields)

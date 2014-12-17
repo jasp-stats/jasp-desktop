@@ -25,10 +25,7 @@ Options *AnovaRepeatedMeasuresShort::createOptions() const
 	Options *options = new Options();
 
 	// main
-
-	options->add("dependent", new OptionVariable());
 	options->add("betweenSubjectFactors", new OptionVariables());
-
 
 	// design
 

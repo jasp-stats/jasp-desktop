@@ -320,6 +320,16 @@ string Terms::asString() const
 	return ss.str();
 }
 
+bool Terms::operator==(const Terms &terms) const
+{
+	return _terms == terms._terms;
+}
+
+bool Terms::operator!=(const Terms &terms) const
+{
+	return _terms != terms._terms;
+}
+
 void Terms::set(QByteArray &array)
 {
 	QDataStream stream(&array, QIODevice::ReadOnly);

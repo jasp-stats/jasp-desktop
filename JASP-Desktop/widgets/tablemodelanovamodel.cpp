@@ -108,12 +108,14 @@ void TableModelAnovaModel::setVariables(const Terms &variables)
 	{
 		Terms terms = _terms;
 		terms.discardWhatDoesntContainTheseComponents(_variables);
-		setTerms(terms);
+		if (terms.size() != _terms.size())
+			setTerms(terms);
 	}
 	else
 	{
 		Terms terms = _variables.crossCombinations();
-		setTerms(terms);
+		if (terms != _terms)
+			setTerms(terms);
 	}
 
 	emit variablesAvailableChanged();

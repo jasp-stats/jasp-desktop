@@ -66,6 +66,9 @@ public:
 
 	std::string asString() const;
 
+	bool operator==(const Terms &terms) const;
+	bool operator!=(const Terms &terms) const;
+
 private:
 
 	int rankOf(const QString &component) const;
