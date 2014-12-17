@@ -56,6 +56,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	menu = new QMenu(this);
 	menu->addAction(QString("Bayesian Correlation"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesian");
+	menu->addAction(QString("Bayesian Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinearBayesian");
 
 	ui->bayesianRegressionButton->setMenu(menu);
 

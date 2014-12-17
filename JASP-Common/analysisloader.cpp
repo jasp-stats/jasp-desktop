@@ -1,30 +1,30 @@
 #include "analysisloader.h"
 
-#include "analyses/descriptives.h"
-#include "analyses/ttestonesample.h"
-#include "analyses/ttestindependentsamples.h"
-#include "analyses/ttestbayesianonesample.h"
-#include "analyses/ttestbayesianpairedsamples.h"
-#include "analyses/ttestbayesianindependentsamples.h"
-#include "analyses/ttestpairedsamples.h"
-#include "analyses/anovaoneway.h"
-#include "analyses/anovamultivariate.h"
-#include "analyses/anova.h"
-#include "analyses/anovarepeatedmeasures.h"
 #include "analyses/ancova.h"
-#include "analyses/anovabayesian.h"
 #include "analyses/ancovamultivariate.h"
-#include "analyses/regressionlinear.h"
+#include "analyses/ancovabayesian.h"
+#include "analyses/anova.h"
+#include "analyses/anovabayesian.h"
+#include "analyses/anovamultivariate.h"
+#include "analyses/anovaoneway.h"
+#include "analyses/anovarepeatedmeasures.h"
+#include "analyses/anovarepeatedmeasuresbayesian.h"
+#include "analyses/anovarepeatedmeasuresshort.h"
 #include "analyses/correlation.h"
+#include "analyses/correlationbayesian.h"
 #include "analyses/correlationpartial.h"
 #include "analyses/crosstabs.h"
 #include "analyses/crosstabsbayesian.h"
-#include "analyses/anovarepeatedmeasuresshort.h"
-#include "analyses/anovarepeatedmeasuresbayesian.h"
-#include "analyses/ancovabayesian.h"
-#include "analyses/correlationbayesian.h"
-
+#include "analyses/descriptives.h"
+#include "analyses/regressionlinear.h"
+#include "analyses/regressionlinearbayesian.h"
 #include "analyses/semsimple.h"
+#include "analyses/ttestbayesianindependentsamples.h"
+#include "analyses/ttestbayesianonesample.h"
+#include "analyses/ttestbayesianpairedsamples.h"
+#include "analyses/ttestindependentsamples.h"
+#include "analyses/ttestonesample.h"
+#include "analyses/ttestpairedsamples.h"
 
 #include "analysispart.h"
 
@@ -63,6 +63,8 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		return new AnovaBayesian(id);
 	else if (analysisName == "RegressionLinear")
 		return new RegressionLinear(id);
+	else if (analysisName == "RegressionLinearBayesian")
+		return new RegressionLinearBayesian(id);
 	else if (analysisName == "Correlation")
 		return new Correlation(id);
 	else if (analysisName == "CorrelationBayesian")

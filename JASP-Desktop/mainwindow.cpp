@@ -24,6 +24,7 @@
 #include "analysisforms/anovarepeatedmeasuresbayesianform.h"
 
 #include "analysisforms/regressionlinearform.h"
+#include "analysisforms/regressionlinearbayesianform.h"
 #include "analysisforms/correlationform.h"
 #include "analysisforms/correlationbayesianform.h"
 #include "analysisforms/correlationpartialform.h"
@@ -216,6 +217,8 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new AncovaMultivariateForm(contentArea);
 	else if (name == "RegressionLinear")
 		form = new RegressionLinearForm(contentArea);
+	else if (name == "RegressionLinearBayesian")
+		form = new RegressionLinearBayesianForm(contentArea);
 	else if (name == "Correlation")
 		form = new CorrelationForm(contentArea);
 	else if (name == "CorrelationBayesian")
