@@ -799,7 +799,7 @@
             <item row="4" column="0">
              <widget class="QRadioButton" name="_5Hypergeometric">
               <property name="text">
-               <string>Hypergeometric</string>
+               <string>Hypergeometric (2x2 only)</string>
               </property>
              </widget>
             </item>
