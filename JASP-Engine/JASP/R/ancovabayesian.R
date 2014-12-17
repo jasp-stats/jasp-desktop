@@ -74,7 +74,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	fields <- list(
 		list(name="Models", type="string"),
 		list(name="P(M)", type="number", format="sf:4;dp:3"),
-		list(name="P(M|Y)", type="number", format="sf:4;dp:3"),
+		list(name="P(M|data)", type="number", format="sf:4;dp:3"),
 		list(name="BFM", type="number", format="sf:4;dp:3", title="BF<sub>M</sub>"),
 		list(name="BF10", type="number", format="sf:4;dp:3", title="BF<sub>10</sub>"),
 		list(name="% error", type="number", format="sf:4;dp:3")
@@ -182,7 +182,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		fields <- list(
 			list(name="Effects", type="string"),
 			list(name="P(incl)", type="number", format="sf:4;dp:3"),
-			list(name="P(incl|Y)", type="number", format="sf:4;dp:3"),
+			list(name="P(incl|data)", type="number", format="sf:4;dp:3"),
 			list(name="BF<sub>Inclusion</sub>", type="number", format="sf:4;dp:3"),
 			list(name="BF<sub>Backward</sub>", type="number", format="sf:4;dp:3"),
 			list(name="% errorB", type="number", format="sf:4;dp:3"),
