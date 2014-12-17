@@ -315,15 +315,29 @@ void TableModelAnovaWithinSubjectCells::setDesign(const QList<Factor> &design)
 			for (int i = 0; i < designCells; i++)
 				itr++;
 
-			_variables.erase(itr, _variables.end());
-		}
-		else
-		{
-			while (_variables.size() < designCells)
-				_variables.push_back("");
-		}
+			vector<string>::iterator jtr = itr;
+			for (; jtr != _variables.end(); jtr++)
+			{
+				if (*jtr != "")
+					_toSendBack.add(*jtr);
+			}
 
-		_boundTo->setValue(_variables);
+			_variables.erase(itr, _variables.end());
+
+			QTimer::singleShot(0, this, SLOT(sendBack()));
+
+			_boundTo->setValue(_variables);
+		}
+		else if (_variables.size() < designCells)
+		{
+			do
+			{
+				_variables.push_back("");	
+			}
+			while (_variables.size() < designCells);
+
+			_boundTo->setValue(_variables);
+		}
 	}
 
 	endResetModel();

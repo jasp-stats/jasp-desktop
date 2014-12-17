@@ -99,13 +99,22 @@ void TableModelAnovaDesign::refresh()
 
 	int i;
 
+	OptionString *nameTemplateOption = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
+	QString nameTemplate = tq(nameTemplateOption->value());
+
 	for (i = 0; i < _groups.size(); i++)
 	{
 		Options *group = _groups.at(i);
 		OptionString *nameOption = static_cast<OptionString *>(group->get("name"));
+		string oldName = nameOption->value();
+		string newName = fq(nameTemplate.arg(i + 1));
+
+		if (oldName != newName)
+			nameOption->setValue(newName);
+
 		OptionVariables *variablesOption = static_cast<OptionVariables *>(group->get("levels"));
 
-		_rows.append(Row(tq(nameOption->value()), false, i));
+		_rows.append(Row(tq(newName), false, i));
 
 		vector<string> variables = variablesOption->variables();
 
@@ -116,8 +125,7 @@ void TableModelAnovaDesign::refresh()
 		_rows.append(Row(QString("Level %1").arg(j + 1), true, i, j));
 	}
 
-	OptionString *nameTemplate = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
-	QString name = tq(nameTemplate->value()).arg(i + 1);
+	QString name = nameTemplate.arg(i + 1);
 	_rows.append(Row(name, true, i));
 
 	endResetModel();
