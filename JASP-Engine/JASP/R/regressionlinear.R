@@ -173,7 +173,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						lm.fit <- try( stats::lm( model.formula, data = dataset, weights = weights ), silent = TRUE)
 						if ( class(lm.fit) == "lm") {
 							lm.model[[ b ]] <- list(lm.fit = lm.fit, variables = variables.in.model)
-						} else {
+						} else {							
 							list.of.errors[[ length(list.of.errors) + 1 ]]  <- "An unknown error occurred, please contact the author."
 							lm.model[[ b ]] <- list(lm.fit = NULL, variables = variables.in.model)
 						}
@@ -493,6 +493,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			list(name = "Standardized Coefficient", title = "Standardized", type = "number", format = "dp:3"),
 			list(name = "t-value", type="number", format = "dp:3"),
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
+		
 		empty.line <- list( #for empty elements in tables when given output
 			"Model" = "",
 			"Name" = "",
@@ -508,7 +509,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			"Standard Error" = ".",
 			"Standardized Coefficient" = ".",
 			"t-value" = ".",
-			"p" = ".")
+			"p" = ".")			
 		
 		if (options$regressionCoefficients[["confidenceIntervals"]] == TRUE) {
 			alpha <- options$regressionCoefficients[["confidenceIntervalsInterval"]]
@@ -530,6 +531,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			for (m in 1:length(lm.model)) {
 				
 				if ( class(lm.model[[ m ]]$lm.fit) == "lm") {
+					tmp <- 
+					na.estimate.names <- NULL
+					if(any(is.na(lm.model[[m]]$lm.fit$coefficients))){ 
+						#these estimates give back NA
+						na.estimate.names <- names(lm.model[[m]]$lm.fit$coefficients)[which(is.na(lm.model[[m]]$lm.fit$coefficients))]
+# !!!!! if(all(is.na(tmp))) 
+					}
 					lm.summary = summary(lm.model[[ m ]]$lm.fit)
 					lm.estimates <- lm.summary$coefficients
 					if (options$regressionCoefficients[["confidenceIntervals"]] == TRUE) {
@@ -540,46 +548,63 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					v <- 0
 					
 					if (options$includeConstant == TRUE) {
-						v <- v + 1
-						regression.result[[ len.reg ]] <- empty.line
-						regression.result[[ len.reg ]]$"Model" <- as.integer(m)
-						regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
-						regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v,1])
-						regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v,2])
-						regression.result[[ len.reg ]]$"t-value" <- as.numeric(lm.estimates[v,3])
-						regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v,4])
+						if(is.null(na.estimate.names) || na.estimate.names[1] != "(Intercept)"){							
+							v <- v + 1
+							regression.result[[ len.reg ]] <- empty.line
+							regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+							regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
+							regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v,1])
+							regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v,2])
+							regression.result[[ len.reg ]]$"t-value" <- as.numeric(lm.estimates[v,3])
+							regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v,4])
 						
-						if (options$regressionCoefficients[["confidenceIntervals"]] == TRUE) {
-							regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v,1] )
-							regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v,2] )
+							if (options$regressionCoefficients[["confidenceIntervals"]] == TRUE) {
+								regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v,1] )
+								regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v,2] )
+							}
+						} else {
+							regression.result[[ len.reg ]] <- empty.line
+							regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+							regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
+							regression.result[[ len.reg ]]$"Coefficient" <- "NA"
 						}
 						len.reg <- len.reg + 1
 					}
 					sd.dep <- sd( dataset[[ dependent.base64 ]])
 					if (length(lm.model[[ m ]]$variables) > 0) {
 						variables.in.model <- lm.model[[ m ]]$variables
-						
+
 						for (var in 1:length(variables.in.model)) {
-							sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]])
+							if(!is.null(na.estimate.names) && .v(variables.in.model[var])%in%na.estimate.names){
+								v <- v - 1
+								regression.result[[ len.reg ]] <- empty.line
+								if (var == 1 && options$includeConstant == FALSE) {
+									regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+								}
+								regression.result[[ len.reg ]]$"Name" <- as.character(variables.in.model[ var])
+								regression.result[[ len.reg ]]$"Coefficient" <- "NA"								
+								len.reg <- len.reg + 1																
+							} else {
+								sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]])
+		
+								regression.result[[ len.reg ]] <- empty.line
+								if (var == 1 && options$includeConstant == FALSE) {
+									regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+								}
+								regression.result[[ len.reg ]]$"Name" <- as.character(variables.in.model[ var])
+								regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v+var,1])
+								regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v+var,2])
+								regression.result[[ len.reg ]]$"Standardized Coefficient" <- as.numeric(lm.estimates[v+var,1] * sd.ind / sd.dep)
 							
-							regression.result[[ len.reg ]] <- empty.line
-							regression.result[[ len.reg ]]$"Model" <- ""
-							if (var == 1 && options$includeConstant == FALSE) {
-								regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+								regression.result[[ len.reg ]]$"t-value" <- as.numeric(lm.estimates[v+var,3])
+								regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v+var,4])
+							
+								if (options$regressionCoefficients[["confidenceIntervals"]] == TRUE) {
+									regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v+var,1] )
+									regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v+var,2] )
+								}
+								len.reg <- len.reg + 1
 							}
-							regression.result[[ len.reg ]]$"Name" <- as.character(variables.in.model[ var])
-							regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v+var,1])
-							regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v+var,2])
-							regression.result[[ len.reg ]]$"Standardized Coefficient" <- as.numeric(lm.estimates[v+var,1] * sd.ind / sd.dep)
-							
-							regression.result[[ len.reg ]]$"t-value" <- as.numeric(lm.estimates[v+var,3])
-							regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v+var,4])
-							
-							if (options$regressionCoefficients[["confidenceIntervals"]] == TRUE) {
-								regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v+var,1] )
-								regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v+var,2] )
-							}
-							len.reg <- len.reg + 1
 						}
 					}
 				} else {
