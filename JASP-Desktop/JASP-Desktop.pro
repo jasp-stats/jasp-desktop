@@ -131,7 +131,8 @@ SOURCES += main.cpp\
     analysisforms/anovarepeatedmeasuresbayesianform.cpp \
     analysisforms/correlationbayesianform.cpp \
     analysisforms/crosstabsbayesianform.cpp \
-    application.cpp
+    application.cpp \
+    analysisforms/regressionlinearbayesianform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -223,7 +224,8 @@ HEADERS  += \
 	analysisforms/anovarepeatedmeasuresbayesianform.h \
     analysisforms/correlationbayesianform.h \
     analysisforms/crosstabsbayesianform.h \
-    application.h
+    application.h \
+    analysisforms/regressionlinearbayesianform.h
 
 FORMS    += \
     backstageform.ui \
@@ -259,7 +261,8 @@ FORMS    += \
     analysisforms/ancovabayesianform.ui \
     analysisforms/anovarepeatedmeasuresbayesianform.ui \
     analysisforms/correlationbayesianform.ui \
-    analysisforms/crosstabsbayesianform.ui
+    analysisforms/crosstabsbayesianform.ui \
+    analysisforms/regressionlinearbayesianform.ui
 
 
 RESOURCES += \
