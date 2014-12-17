@@ -33,6 +33,19 @@ void TableModelVariablesLevels::bindTo(Option *option)
 	}
 
 	_boundTo = dynamic_cast<OptionsTable *>(option);
+	_levels = _boundTo->value();
+
+	Terms alreadyAssigned;
+
+	foreach (Options *level, _levels)
+	{
+		OptionVariables *levelVariablesOption = static_cast<OptionVariables*>(level->get("variables"));
+		Terms variablesInLevel = levelVariablesOption->variables();
+		alreadyAssigned.add(variablesInLevel);
+	}
+
+	if (alreadyAssigned.size() > 0)
+		_source->notifyAlreadyAssigned(alreadyAssigned);
 
 	refresh();
 }
@@ -334,6 +347,8 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 
 			if (level == _levels.size())
 			{
+				// create new level
+
 				Options *options = dynamic_cast<Options*>(_boundTo->rowTemplate()->clone());
 				OptionString *nameOption = dynamic_cast<OptionString *>(options->get("name"));
 				string levelName = fq(tq(nameOption->value()).arg(level + 1));
@@ -347,22 +362,62 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 
 			foreach (const Term &variable, variables)
 			{
+				if (currentVariables.contains(variable))  // prevent dropping to own level (because it introduces complications)
+					return false;
+
 				currentVariables.insert(positionInLevel, variable);
 				positionInLevel++;
 			}
 
 			variablesOption->setValue(currentVariables.asVector());
 
-			foreach (Options *level, _levels)
+
+			// remove the variables which were just dropped, from the other levels
+			// (to handle the case that a variable is dragged and dropped from another level)
+
+			bool levelRemoved = false;
+
+			vector<Options*>::iterator itr = _levels.begin();
+			while (itr != _levels.end())
 			{
+				Options *level = *itr;
+
 				if (level == levelDroppedOn)
+				{
+					itr++;
 					continue;
+				}
 
 				OptionVariables *variablesOption = dynamic_cast<OptionVariables*>(level->get("variables"));
 				Terms currentVariables = variablesOption->variables();
 
 				currentVariables.remove(variables);
-				variablesOption->setValue(currentVariables.asVector());
+
+				if (currentVariables.size() == 0)
+				{
+					delete variablesOption;
+					itr = _levels.erase(itr);
+					levelRemoved = true;
+				}
+				else
+				{
+					variablesOption->setValue(currentVariables.asVector());
+					itr++;
+				}
+			}
+
+			if (levelRemoved)
+			{
+				// update the level names
+
+				OptionString *nameOption = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
+				QString nameTemplate = tq(nameOption->value());
+
+				for (uint i = 0; i < _levels.size(); i++)
+				{
+					nameOption = static_cast<OptionString *>(_levels.at(i)->get("name"));
+					nameOption->setValue(fq(nameTemplate.arg(i + 1)));
+				}
 			}
 
 			_boundTo->setValue(_levels);
