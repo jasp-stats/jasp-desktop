@@ -704,24 +704,8 @@
       <item row="2" column="0" rowspan="2" colspan="3">
        <widget class="QWidget" name="panelStatistics" native="true">
         <layout class="QGridLayout" name="gridLayout_23">
-         <item row="1" column="0">
-          <widget class="QWidget" name="widget_17" native="true">
-           <layout class="QGridLayout" name="gridLayout_15">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="chiSquared">
-              <property name="text">
-               <string>Chi-square</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
          <item row="3" column="0">
-          <widget class="QGroupBox" name="groupBox_7">
+          <widget class="QGroupBox" name="groupNominalByInterval">
            <property name="title">
             <string>Nominal by Interval</string>
            </property>
@@ -742,24 +726,8 @@
            </layout>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QWidget" name="widget_19" native="true">
-           <layout class="QGridLayout" name="gridLayout_12">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="correlations">
-              <property name="text">
-               <string>Correlations</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
          <item row="2" column="1">
-          <widget class="QGroupBox" name="groupBox_6">
+          <widget class="QGroupBox" name="groupOrdinal">
            <property name="title">
             <string>Ordinal</string>
            </property>
@@ -799,7 +767,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QGroupBox" name="groupBox_5">
+          <widget class="QGroupBox" name="groupNominal">
            <property name="title">
             <string>Nominal</string>
            </property>
@@ -852,7 +820,7 @@
           </spacer>
          </item>
          <item row="4" column="0" colspan="2">
-          <widget class="QWidget" name="widget_18" native="true">
+          <widget class="QWidget" name="groupCochrans" native="true">
            <layout class="QGridLayout" name="gridLayout_14">
             <item row="1" column="0">
              <widget class="QWidget" name="widget_16" native="true">
@@ -900,6 +868,36 @@
            </layout>
           </widget>
          </item>
+         <item row="1" column="0" colspan="3">
+          <widget class="QWidget" name="widget_17" native="true">
+           <layout class="QGridLayout" name="gridLayout_15">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="chiSquared">
+              <property name="text">
+               <string>χ²</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="chiSquaredContinuityCorrection">
+              <property name="text">
+               <string>χ² Continuity correction</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="likelihoodRatio">
+              <property name="text">
+               <string>Likelihood ratio</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -920,6 +918,16 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -934,16 +942,6 @@
    <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

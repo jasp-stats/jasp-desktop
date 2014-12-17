@@ -40,11 +40,19 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 	ui->rowOrder->hide();
 
 #ifdef QT_NO_DEBUG
-	ui->groupStatistics->hide();
+	ui->groupOrdinal->hide();
+	ui->groupNominal->hide();
+	ui->groupNominalByInterval->hide();
+	ui->groupCochrans->hide();
+
 	ui->groupCellDisplay->hide();
 	ui->groupOptions->hide();
 #else
-	ui->groupStatistics->setStyleSheet("background-color: pink;");
+	ui->groupOrdinal->setStyleSheet("background-color: pink;");
+	ui->groupNominal->setStyleSheet("background-color: pink;");
+	ui->groupNominalByInterval->setStyleSheet("background-color: pink;");
+	ui->groupCochrans->setStyleSheet("background-color: pink;");
+
 	ui->groupCellDisplay->setStyleSheet("background-color: pink;");
 	ui->groupOptions->setStyleSheet("background-color: pink;");
 #endif

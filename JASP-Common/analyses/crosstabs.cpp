@@ -30,7 +30,8 @@ Options *Crosstabs::createOptions() const
 	options->add("layers", new OptionsTable(layerOptionsTemplate));
 
 	options->add("chiSquared", new OptionBoolean(true));
-	options->add("correlations", new OptionBoolean(false));
+	options->add("chiSquaredContinuityCorrection", new OptionBoolean(false));
+	options->add("likelihoodRatio", new OptionBoolean(false));
 
 	options->add("nominal/contingencyCoefficient", new OptionBoolean());
 	options->add("nominal/phiAndCramersV", new OptionBoolean());
@@ -47,7 +48,7 @@ Options *Crosstabs::createOptions() const
 	options->add("cochransAndMantel", new OptionBoolean());
 	options->add("testOddsRatioEquals", new OptionNumber(1));
 
-	options->add("countsObserved", new OptionBoolean());
+	options->add("countsObserved", new OptionBoolean(true));
 	options->add("countsExpected", new OptionBoolean());
 	options->add("hideSmallCounts", new OptionBoolean());
 	options->add("hideSmallCountsLessThan", new OptionInteger(5));
