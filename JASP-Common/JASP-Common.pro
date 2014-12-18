@@ -10,18 +10,7 @@ windows:CONFIG += c++11
 
 unix:INCLUDEPATH += ../../boost_1_54_0
 
-windows {
-
-	COMPILER_DUMP = $$system(g++ -dumpmachine)
-	contains(COMPILER_DUMP, x86_64-w64-mingw32) {
-
-		INCLUDEPATH += ../../boost_1_54_0
-	}
-	else {
-
-		INCLUDEPATH += ../../boost_1_53_0
-	}
-}
+windows:INCLUDEPATH += ../../boost_1_54_0
 
 windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
 

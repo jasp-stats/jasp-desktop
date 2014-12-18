@@ -39,14 +39,13 @@ windows {
 	contains(COMPILER_DUMP, x86_64-w64-mingw32) {
 
 		ARCH = x64
-		INCLUDEPATH += ../../boost_1_54_0
 
 	} else {
 
 		ARCH = i386
-		INCLUDEPATH += ../../boost_1_53_0
 	}
 
+	INCLUDEPATH += ../../boost_1_54_0
 	R_HOME = $$OUT_PWD/../R
 	R_EXE  = $$R_HOME/bin/$$ARCH/R
 }
