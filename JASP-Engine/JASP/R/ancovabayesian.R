@@ -39,7 +39,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	results[[".meta"]] <- meta
 	 
 	jasp.callback <- function(...) as.integer(callback())
-	
 	#### Check for errors
 	if (options$dependent != "" && length(options$modelTerms) > 0) {
 		errorcheck <- .checkErrorsBayesianAnCova(options, dataset, perform)
@@ -50,7 +49,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		specific.error <- "none"
 		errorcheck <- list(error.present = error.present, specific.error = specific.error)
 	}
-
 
 	#### Generate models
 	if (options$dependent != "" && length(options$modelTerms) > 0) {
@@ -64,7 +62,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	} else {
 		null.name <- as.character("Null model")
 	}
-		
 		
 	#####BUILD Bayesian ANOVA table ##########
 	
@@ -82,7 +79,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	
 	schema <- list(fields=fields)
 	posterior[["schema"]] <- schema
-		
 	if (options$dependent != "" && length(options$modelTerms) > 0 ){
 		if ( perform == "run" && error.present == 0){
 		
@@ -240,7 +236,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 ##########SUPPORTING FUNCTIONS###########################
 #########################################################
 .checkErrorsBayesianAnCova <- function(options, dataset,perform)	{ 
-	
+
 	# Error messages 
 	specific.error <- "none"
 	error.present <- 0
@@ -255,7 +251,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		}
 	}
 	
-	
+
 	# error message when less than two levels are observed for a factor after deleting NA's
 	if(perform == "run"){
 		for (fact in options$fixedFactors) {
@@ -266,8 +262,8 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		}
 	}
 	
-	# error message when interaction specified without main effect
-	
+
+	# error message when interaction specified without main effect	
 	for (term in options$modelTerms) {
 		lmtc <- length(term$components)
 		check <- 0
@@ -283,9 +279,9 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 		}
 	}
-	
-	# error message when interaction specified without main effect in nuisance terms 
-	
+
+
+	# error message when interaction specified without main effect in nuisance terms 	
 	for (term in options$modelTerms) {
 		if (term$isNuisance == TRUE) {
 			lmtc <- length(term$components)
@@ -304,9 +300,8 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		}
 	}
 	
-	
-	# error message when all variables are specified as nuisance 
-	
+
+	# error message when all variables are specified as nuisance 	
 	no.nuisance <- 0
 	for (term in options$modelTerms) {
 		if (term$isNuisance == TRUE) { 
@@ -317,8 +312,8 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		error.present <- 1
 		specific.error <- "all nuisance"
 	}
-	
 	list(error.present = error.present, specific.error = specific.error)
+
 }
 
 .modelnames <- function(modelsmain, null.name, terms.nuisance) {
@@ -583,10 +578,10 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			model.name <-	models.tab[n]
 			BFM <- .clean(BFmodels[n])
 			if (length(options$randomFactors) == 0 && length(options$covariates) == 0) {
-				r <- list("Models"= model.name,"P(M)" = pprior, "P(M|Y)"=ppost,
+				r <- list("Models"= model.name,"P(M)" = pprior, "P(M|data)"=ppost,
 				"BFM" = BFM,"BF10"=BF, "% error"=error)
 				} else {
-					r <- list("Models"= model.name,"P(M)" = pprior, "P(M|Y)"=ppost,
+					r <- list("Models"= model.name,"P(M)" = pprior, "P(M|data)"=ppost,
 					"BFM" = BFM,"BF10"=BF, "% error"=error, ".footnotes"=list("p"=list(1)))
 				}
 				posterior.results[[length(posterior.results)+1]] <- r
@@ -685,7 +680,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 				
 			r <- list("Effects" = as.character(effects.tab[e]),
 				"P(incl)" = .clean(prior.probabilities[e]), 
-				"P(incl|Y)" = .clean(inclusion.probabilities[e]),
+				"P(incl|data)" = .clean(inclusion.probabilities[e]),
 				"BF<sub>Inclusion</sub>" = .clean(Bayesfactor.inclusion[e]),
 				"BF<sub>Backward</sub>" = .clean(BF.Backward), 
 				"% errorB" = .clean(error.Backward),
@@ -698,7 +693,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	#Null model and one more
 		r <- list("Effects" = as.character(models.tab[2]),
 			"P(incl)" = .clean(pprior), 
-			"P(incl|Y)" = .clean(posterior.probability[2]),
+			"P(incl|data)" = .clean(posterior.probability[2]),
 			"BF<sub>Inclusion</sub>" = .clean(BFmodels[2]),
 			"BF<sub>Backward</sub>" = "",
 			"% errorB" = "",
