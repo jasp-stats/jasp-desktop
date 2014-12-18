@@ -96,7 +96,7 @@
 	
 	for (column.name in lvls) {
 
-		private.name <- base::paste(".", column.name, sep="")
+		private.name <- base::paste(column.name,"[counts]", sep="")
 		counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number")
 	}
 
@@ -113,7 +113,11 @@
 	
 	tests.table[["title"]] <- "Bayesian Crosstabs Tests"
 	
+	
 	tests.fields <- fields
+	
+	tests.fields[[length(tests.fields)+1]] <- list(name="type[BF]", title="", type="string")
+	tests.fields[[length(tests.fields)+1]] <- list(name="value[BF]", title="Value", type="number", format="sf:4;dp:3")
 	
 	tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
 	tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value", type="integer")
@@ -124,8 +128,7 @@
 		tests.fields[[length(tests.fields)+1]] <- list(name="value[oddsRatio]", title="Value", type="number", format="sf:4;dp:3")
 	}
 	
-	tests.fields[[length(tests.fields)+1]] <- list(name="type[BF]", title="", type="string")
-	tests.fields[[length(tests.fields)+1]] <- list(name="value[BF]", title="Value", type="number", format="sf:4;dp:3")
+	
 
 	schema <- list(fields=tests.fields)
 	
@@ -252,31 +255,31 @@
 	
 	if (options$samplingModel=="poisson") {
 	
-		bfLabel <- "BF Poisson"
+		bfLabel <- "BF\u2081\u2080 Poisson"
 		sampleType <- "poisson"
 		fixedMargin <- NULL
 		
 	} else if (options$samplingModel=="jointMultinomial") {
 	
-		bfLabel <- "BF Joint Multinomial"
+		bfLabel <- "BF\u2081\u2080 joint multinomial"
 		sampleType <- "jointMulti"
 		fixedMargin <- NULL
-	
+		
 	} else if (options$samplingModel=="independentMultinomialRowsFixed") {
 
-		bfLabel <- "BF Joint Multinomial"	
+		bfLabel <- "BF\u2081\u2080 independent multinomial"	
 		sampleType <- "indepMulti"
 		fixedMargin <- "rows"
-	
+		
 	} else if (options$samplingModel=="independentMultinomialColumnsFixed") {
 	
-		bfLabel <- "BF Joint Multinomial"	
+		bfLabel <- "BF\u2081\u2080 independent multinomial"	
 		sampleType <- "indepMulti"
 		fixedMargin <- "cols"
-	
+		
 	} else if (options$samplingModel=="hypergeometric") {
 
-		bfLabel <- "BF Hypergeometric"
+		bfLabel <- "BF\u2081\u2080 hypergeometric"
 		sampleType <- "hypergeom"
 		fixedMargin <- NULL
 		
@@ -292,7 +295,7 @@
 	
 		BF <- try({
 
-			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, fixedMargin=fixedMargin)
+			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
 		})
 		
 		if (class(BF) == "try-error") {
@@ -306,7 +309,7 @@
 		
 		} else {
 		
-			row[["value[BF]"]] <- unname(BF@bayesFactor$bf)
+			row[["value[BF]"]] <- exp(as.numeric(BF@bayesFactor$bf))
 		}
 		
 	} else {
