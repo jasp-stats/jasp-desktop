@@ -20,3 +20,5 @@ Development
 [The JASP R style guide](Docs/r-style-guide.md)
 
 [Guide to Rebasing Your Repo](Docs/git-guide.md)
+
+[The JASP R Package List](Docs/jasp-r-packages-list.md)
