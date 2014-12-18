@@ -61,7 +61,7 @@
 	tables <- list()
 
 
-    ### SETUP COLUMNS COMMON TO BOTH TABLES
+	### SETUP COLUMNS COMMON TO BOTH TABLES
 
 	fields <- list()
 	
@@ -95,55 +95,114 @@
 	
 	for (column.name in lvls) {
 
-		private.name <- base::paste(".", column.name, sep="")
+		private.name <- base::paste(column.name,"[counts]", sep="")
 		counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number")
+		
+		if (options$countsExpected) {
+			private.name <- base::paste(column.name,"[expected]", sep="")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number",format="sf:4;dp:3")
+		}
 	}
+	
+	counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]", title="Total", type="number")
+	
+	if (options$countsExpected)
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[expected]", title="Total", type="number",format="sf:4;dp:3")
 
 	schema <- list(fields=counts.fields)
 
 	counts.table[["schema"]] <- schema
 	
-	
-	
 
 	### SETUP TESTS TABLE SCHEMA
+	
+	if (options$chiSquared || options$chiSquaredContinuityCorrection || options$likelihoodRatio) {
 
-	tests.table <- list()
+		tests.table <- list()
 	
-	tests.table[["title"]] <- "Crosstabs Tests"
+		tests.table[["title"]] <- "Chi-Square Tests"
 	
-	tests.fields <- fields
+		tests.fields <- fields
 	
-
-	if (options$chiSquared) {
+		if (options$chiSquared){
 	
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[chiSquared]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[chiSquared]", title="Value", type="number", format="sf:4;dp:3")
-		tests.fields[[length(tests.fields)+1]] <- list(name="df[chiSquared]", title="df", type="integer")
-		tests.fields[[length(tests.fields)+1]] <- list(name="p[chiSquared]", title="p", type="number", format="dp:3;p:.001")
+			tests.fields[[length(tests.fields)+1]] <- list(name="type[chiSquared]", title="", type="string")
+			tests.fields[[length(tests.fields)+1]] <- list(name="value[chiSquared]", title="Value", type="number", format="sf:4;dp:3")
+			tests.fields[[length(tests.fields)+1]] <- list(name="df[chiSquared]", title="df", type="integer")
+			tests.fields[[length(tests.fields)+1]] <- list(name="p[chiSquared]", title="p", type="number", format="dp:3;p:.001")
+		}
 		
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[chiSquaredCC]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[chiSquaredCC]", title="Value", type="number", format="sf:4;dp:3")		
-		tests.fields[[length(tests.fields)+1]] <- list(name="df[chiSquaredCC]", title="df", type="integer")
-		tests.fields[[length(tests.fields)+1]] <- list(name="p[chiSquaredCC]", title="p", type="number", format="dp:3;p:.001")
+		if (options$chiSquaredContinuityCorrection){	
+			tests.fields[[length(tests.fields)+1]] <- list(name="type[chiSquared-cc]", title="", type="string")
+			tests.fields[[length(tests.fields)+1]] <- list(name="value[chiSquared-cc]", title="Value", type="number", format="sf:4;dp:3")
+			tests.fields[[length(tests.fields)+1]] <- list(name="df[chiSquared-cc]", title="df", type="integer")
+			tests.fields[[length(tests.fields)+1]] <- list(name="p[chiSquared-cc]", title="p", type="number", format="dp:3;p:.001")
+		}
 		
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[likelihood]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[likelihood]", title="Value", type="number", format="sf:4;dp:3")
-		tests.fields[[length(tests.fields)+1]] <- list(name="df[likelihood]", title="df", type="integer")
-		tests.fields[[length(tests.fields)+1]] <- list(name="p[likelihood]", title="p", type="number", format="dp:3;p:.001")
+		if (options$likelihoodRatio) {
+			tests.fields[[length(tests.fields)+1]] <- list(name="type[likelihood]", title="", type="string")
+			tests.fields[[length(tests.fields)+1]] <- list(name="value[likelihood]", title="Value", type="number", format="sf:4;dp:3")
+			tests.fields[[length(tests.fields)+1]] <- list(name="df[likelihood]", title="df", type="integer")
+			tests.fields[[length(tests.fields)+1]] <- list(name="p[likelihood]", title="p", type="number", format="dp:3;p:.001")
+		}
 
+		tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
+		tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value")
+		tests.fields[[length(tests.fields)+1]] <- list(name="df[N]", title="df")
+		tests.fields[[length(tests.fields)+1]] <- list(name="p[N]", title="p")	
+	
+		schema <- list(fields=tests.fields)
+	
+		tests.table[["schema"]] <- schema
+	
 	}
+	
+	##### Nominal Table (Symmetric Measures)
+	if (options$nominal$contingencyCoefficient|| options$nominal$phiAndCramersV) {
+		
+		nominal.table <- list()
 
-	tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
-	tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value")
-	tests.fields[[length(tests.fields)+1]] <- list(name="df[N]", title="df")
-	tests.fields[[length(tests.fields)+1]] <- list(name="p[N]", title="p")	
+		nominal.table[["title"]] <- "Nominal"
+
+		nominal.fields <- fields
+
+		if (options$nominal$contingencyCoefficient){
+
+			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[ContCoef]", title="", type="string")
+			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[ContCoef]", title="Value", type="number", format="sf:4;dp:3")
+		}
+
+		if (options$nominal$phiAndCramersV) {
+			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[PhiCoef]", title="", type="string")
+			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[PhiCoef]", title="Value", type="number", format="sf:4;dp:3")
+			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[CramerV]", title="", type="string")
+			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[CramerV]", title="Value", type="number", format="sf:4;dp:3")
+		}
+
+		schema <- list(fields=nominal.fields)
+
+		nominal.table[["schema"]] <- schema
+	}
 	
-	schema <- list(fields=tests.fields)
-	
-	tests.table[["schema"]] <- schema
-	
-	
+	##### Ordinal Table
+	if (options$ordinal$gamma) {
+		
+		ordinal.table <- list()
+		
+		ordinal.table[["title"]] <- "Ordinal"
+		
+		ordinal.fields <- fields
+			
+		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="type[gammaCoef]", title="", type="string")
+		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="value[gammaCoef]", title="gamma", type="number", format="sf:4;dp:3")
+		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="Sigma[gammaCoef]", title="std. error", type="number", format="dp:3")
+		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="low[gammaCoef]", title="Lower CI", type="number", format="dp:3")
+		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="up[gammaCoef]",  title="Upper CI", type="number", format="dp:3")
+		
+		schema <- list(fields=ordinal.fields)
+		
+		ordinal.table[["schema"]] <- schema
+	}
 
 
 	# POPULATE TABLES
@@ -154,8 +213,12 @@
 	
 	counts.rows <- list()
 	tests.rows <- list()
+	nominal.rows <- list()
+	ordinal.rows <- list()
 	
 	tests.footnotes <- .newFootnotes()
+	nominal.footnotes <- .newFootnotes()
+	ordinal.footnotes <- .newFootnotes()
 
 	for (i in 1:length(group.matrices)) {
 	
@@ -175,15 +238,36 @@
 		
 		next.rows <- .crosstabsCreateTestsRows(analysis$rows, group.matrix, tests.footnotes, options, perform, group)
 		tests.rows <- c(tests.rows, next.rows)
+		
+		next.rows <- .crosstabsCreateNominalRows(analysis$rows, group.matrix, nominal.footnotes, options, perform, group)
+		nominal.rows <- c(nominal.rows, next.rows)
+		
+		next.rows <- .crosstabsCreateOrdinalRows(analysis$rows, group.matrix, ordinal.footnotes, options, perform, group)
+		ordinal.rows <- c(ordinal.rows, next.rows)
+
 	}
 
 	counts.table[["data"]] <- counts.rows
-	
-	tests.table[["data"]] <- tests.rows
-	tests.table[["footnotes"]] <- as.list(tests.footnotes)
-
 	tables[[1]] <- counts.table
-	tables[[2]] <- tests.table
+	
+	if (options$chiSquared || options$chiSquaredContinuityCorrection || options$likelihoodRatio ) {
+		tests.table[["data"]] <- tests.rows
+		tests.table[["footnotes"]] <- as.list(tests.footnotes)
+		tables[[2]] <- tests.table
+	}
+	
+	if (options$nominal$contingencyCoefficient || options$nominal$phiAndCramersV) {
+		nominal.table[["data"]] <- nominal.rows
+		nominal.table[["footnotes"]] <- as.list(nominal.footnotes)
+		tables[[3]] <- nominal.table
+	}
+	
+	if (options$ordinal$gamma) {
+		ordinal.table[["data"]] <- ordinal.rows
+		ordinal.table[["footnotes"]] <- as.list(ordinal.footnotes)
+		tables[[4]] <- ordinal.table
+	}
+
 	
 	tables
 }
@@ -219,11 +303,12 @@
 		row[["value[N]"]] <- "."
 	}
 	
-	
+	 #list(name="X2", title="\u03C7\u00B2",type="number", format="sf:4"),
+
 	if (options$chiSquared) {
 	
 		#row[["type[chiSquared]"]] <- "\u03A7\u00B2"
-		row[["type[chiSquared]"]] <- "Pearson Chi-Square"
+		row[["type[chiSquared]"]] <- "\u03C7\u00B2"
 
 		if (perform == "run") {
 		
@@ -236,18 +321,22 @@
 			if (class(chi.result) == "try-error") {
 
 				row[["value[chiSquared]"]] <- .clean(NaN)
+				row[["df[chiSquared]"]]<- " "
+				row[["p[chiSquared]"]]<- " "
 				
 				error <- .extractErrorMessage(chi.result)
 				
 				if (error == "at least one entry of 'x' must be positive")
 					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 				
-				sup   <- .addFootnote(footnotes, error)
+				sup	<- .addFootnote(footnotes, error)
 				row[[".footnotes"]] <- list("value[chiSquared]"=list(sup))
 			
 			} else if (is.na(chi.result$statistic)) {
 			
 				row[["value[chiSquared]"]] <- .clean(NaN)
+				row[["df[chiSquared]"]]<- " "
+				row[["p[chiSquared]"]]<- " "
 			
 				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
 				row[[".footnotes"]] <- list("value[chiSquared]"=list(sup))
@@ -262,11 +351,12 @@
 		} else {
 		
 			row[["value[chiSquared]"]] <- "."
+			
 		}
-		
+	}	
 ###############################################		
-		
-		row[["type[chiSquared-cc]"]] <- "Continuity Correction"
+	if (options$chiSquaredContinuityCorrection){	
+		row[["type[chiSquared-cc]"]] <- "\u03C7\u00B2 continuity correction"
 
 
 		if (perform == "run") {
@@ -280,18 +370,22 @@
 			if (class(chi.result) == "try-error") {
 
 				row[["value[chiSquared-cc]"]] <- .clean(NaN)
+				row[["df[chiSquared-cc]"]]<- " "
+				row[["p[chiSquared-cc]"]]<- " "
 				
 				error <- .extractErrorMessage(chi.result)
 				
 				if (error == "at least one entry of 'x' must be positive")
 					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 				
-				sup   <- .addFootnote(footnotes, error)
+				sup	<- .addFootnote(footnotes, error)
 				row[[".footnotes"]] <- list("value[chiSquared-cc]"=list(sup))
 			
 			} else if (is.na(chi.result$statistic)) {
 			
 				row[["value[chiSquared-cc]"]] <- .clean(NaN)
+				row[["df[chiSquared-cc]"]]<- " "
+				row[["p[chiSquared-cc]"]]<- " "
 			
 				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
 				row[[".footnotes"]] <- list("value[chiSquared-cc]"=list(sup))
@@ -307,10 +401,11 @@
 		
 			row[["value[chiSquared-cc]"]] <- "."
 		}
+		}
 ##################################################################
-
+if (options$likelihoodRatio) {
 		
-	row[["type[likelihood]"]] <- "Likelihood Ratio"
+	row[["type[likelihood]"]] <- "Likelihood ratio"
 
 
 		if (perform == "run") {
@@ -324,10 +419,12 @@
 			if (class(chi.result) == "try-error") {
 
 				row[["value[likelihood]"]] <- .clean(NaN)
+				row[["df[likelihood]"]] <- ""
+				row[["p[likelihood]"]] <-""
 				
 				error <- .extractErrorMessage(chi.result)
 				
-				sup   <- .addFootnote(footnotes, error)
+				sup	<- .addFootnote(footnotes, error)
 				row[[".footnotes"]] <- list("value[likelihood]"=list(sup))
 			
 			} else {
@@ -341,22 +438,242 @@
 		
 			row[["value[likelihood]"]] <- "."
 		}
+		}
 		
-	}
+	
 
 	list(row)
 }
 
+.crosstabsCreateNominalRows <- function(var.name, counts.matrix, footnotes, options, perform, group=NULL) {
+	
+	row <- list()
+	for (layer in names(group)) {
+		
+		level <- group[[layer]]
+		
+		if (level == "") {
+			
+			row[[layer]] <- "Total"
+			
+		} else {
+			
+			row[[layer]] <- level
+		}
+	}
+
+	if (options$nominal$contingencyCoefficient) {
+		 
+		 row[["type[ContCoef]"]] <- "Contingency Coefficient"
+		 
+		 
+		if (perform == "run") {
+			 
+			 chi.result <- try({
+				 
+				 chi.result <- vcd::assocstats(counts.matrix)
+				 
+			})
+			
+			if (class(chi.result) == "try-error") {
+				
+				row[["value[ContCoef]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(chi.result)
+				
+				sup	<- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[ContCoef]"=list(sup))
+				
+			} else {
+				 
+				 row[["value[ContCoef]"]] <- chi.result$contingency
+			}
+		
+		} else {
+		
+			row[["value[ContCoef]"]] <- "."
+		}
+		
+		}
+	
+		if (options$nominal$phiAndCramersV) {
+		
+			row[["type[PhiCoef]"]] <- "Phi-Coefficient"
+			
+			
+			if (perform == "run") {
+			
+				chi.result <- try({
+				
+					chi.result <- vcd::assocstats(counts.matrix)
+				})
+			
+				if (class(chi.result) == "try-error") {
+				
+					row[["value[PhiCoef]"]] <- .clean(NaN)
+				
+					error <- .extractErrorMessage(chi.result)
+				
+					sup	<- .addFootnote(footnotes, error)
+					row[[".footnotes"]] <- list("value[PhiCoef]"=list(sup))
+				
+				} else {
+					
+					row[["value[PhiCoef]"]] <- chi.result$phi
+				}
+				
+			} else {
+				
+				row[["value[PhiCoef]"]] <- "."
+			}
+			
+		# }
+		
+		# if (options$nominal$phiAndCramersV) {
+			
+			row[["type[CramerV]"]] <- "Cramer's V "
+			
+			
+			if (perform == "run") {
+				
+				chi.result <- try({
+					
+					chi.result <- vcd::assocstats(counts.matrix)
+					
+				})
+				
+				if (class(chi.result) == "try-error") {
+					
+					row[["value[CramerV]"]] <- .clean(NaN)
+					
+					error <- .extractErrorMessage(chi.result)
+					
+					sup	<- .addFootnote(footnotes, error)
+					row[[".footnotes"]] <- list("value[CramerV]"=list(sup))
+					
+				} else {
+					
+					row[["value[CramerV]"]] <- chi.result$cramer
+				}
+				
+			} else {
+				
+				row[["value[CramerV]"]] <- "."
+			}
+			
+		}
+
+	 list(row)
+
+	 }
+	
+.crosstabsCreateOrdinalRows <- function(var.name, counts.matrix, footnotes, options, perform, group=NULL) {
+	
+	row <- list()
+	for (layer in names(group)) {
+		
+		level <- group[[layer]]
+		
+		if (level == "") {
+			
+			row[[layer]] <- "Total"
+			
+		} else {
+			
+			row[[layer]] <- level
+		}
+	}
+	
+	
+	if (options$ordinal$gamma) {
+		
+		row[["type[gammaCoef]"]] <- "Gamma Coefficient"
+		
+		
+		if (perform == "run") {
+			
+			chi.result <- try({
+				
+				chi.result <- vcdExtra::GKgamma(counts.matrix)
+				
+			})
+			
+			if (class(chi.result) == "try-error") {
+				
+				row[["value[gammaCoef]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(chi.result)
+				
+				sup	<- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[gammaCoef]"=list(sup))
+				
+			} else {
+				
+				row[["value[gammaCoef]"]] <- chi.result$gamma
+				row[["Sigma[gammaCoef]"]] <- chi.result$sigma
+				row[["low[gammaCoef]"]] <- chi.result$CI[1]
+				row[["up[gammaCoef]"]] <-  chi.result$CI[2]
+			}
+			
+		} else {
+			
+			 row[["value[gammaCoef]"]] <- "."
+			 row[["Sigma[gammaCoef]"]] <- "."
+		  	 row[["low[gammaCoef]"]] <- "."
+		  	 row[["up[gammaCoef]"]] <-  "."
+		}
+		
+	}
+	list(row)
+	
+}
+
+
+
 .crosstabsCreateCountsRows <- function(var.name, counts.matrix, options, perform, group=NULL) {
 
 	rows <- list()
+	
+	if (perform == "run") {
+	
+		expected.matrix <- try({
+
+			stats::chisq.test(counts.matrix)$expected
+		})
+
+		if (class(expected.matrix) == "try-error") {
+
+			expected.matrix <- counts.matrix
+			expected.matrix[,] <- "&nbsp;"
+		}
+		
+	} else {
+	
+		expected.matrix <- counts.matrix
+	}
 
 	for (i in 1:dim(counts.matrix)[[1]]) {
 	
 		if (perform == "run") {
 
 			row <- as.list(counts.matrix[i,])
-			names(row) <- paste(".", names(row), sep="")
+			names(row) <- base::paste(names(row),"[counts]",	sep="")
+			
+			row[["total[counts]"]] <- base::sum(counts.matrix[i,])
+			
+			if (options$countsExpected) {
+
+				expected <- as.list(expected.matrix[i,])
+				names(expected) <- paste(names(expected),"[expected]",  sep="")
+				
+				if (class(expected.matrix[1,1]) == "character") {
+					expected[["total[expected]"]] <- ""
+				} else {
+					expected[["total[expected]"]] <- base::sum(expected.matrix[i,])
+				}
+			
+				row <- c(row, expected)
+			}
 		
 		} else {
 		
@@ -387,11 +704,33 @@
 		rows[[length(rows)+1]] <- row
 	}
 	
+	
 	if (perform == "run") {
 
 		row <- apply(counts.matrix, 2, base::sum)
 		row <- as.list(row)
-		names(row) <- paste(".", names(row), sep="")
+		names(row) <- base::paste(names(row),"[counts]",	sep="")
+		row[["total[counts]"]] <- base::sum(counts.matrix)
+		
+		if (options$countsExpected) {
+		
+			if (class(expected.matrix[1,1]) == "character") {
+				expected <- expected.matrix[1,]
+			} else {
+				expected <- apply(expected.matrix, 2, base::sum)
+			}
+
+			expected <- as.list(expected)
+			names(expected) <- paste(names(expected),"[expected]", sep="")
+
+			if (class(expected.matrix[1,1]) == "character") {
+				expected[["total[expected]"]] <- ""
+			} else {
+				expected[["total[expected]"]] <- base::sum(expected.matrix)
+			}
+			
+			row <- c(row, expected)
+		}
 		
 	} else {
 	
@@ -420,6 +759,7 @@
 
 	rows
 }
+
 
 .crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, counts=NULL) {
 
@@ -456,8 +796,8 @@
 			} else {
 
 				ss.filter.string <- base::paste(.v(names(group)), "==\"", group, "\"", sep="", collapse="&")
-				ss.expression    <- base::parse(text=ss.filter.string)
-				ss.dataset       <- base::subset(dataset, select=c(rows, columns, counts), subset=eval(ss.expression))
+				ss.expression <- base::parse(text=ss.filter.string)
+				ss.dataset	  <- base::subset(dataset, select=c(rows, columns, counts), subset=eval(ss.expression))
 			}
 			
 			if (is.null(counts)) {
@@ -476,6 +816,8 @@
 	
 	matrices
 }
+
+
 
 Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
