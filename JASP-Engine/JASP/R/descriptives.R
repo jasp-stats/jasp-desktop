@@ -503,7 +503,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		ylow <- 0
 		xticks <- pretty(c(variable, jitVar), min.n= 3)
 		plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
-		h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE)
+		h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
 		ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
 		par(las=0)
 		ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.7, mgp= c(3, 0.7, 0))
