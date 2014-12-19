@@ -491,60 +491,59 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		results[["tables"]] <- frequency.tables
 	}
 
-####  PLOTS
+    ####  PLOTS
 	
-#### histogram with density estimator ####
-plotMarginal <- function(variable, cexYlab= 1.3, lwd= 2){
-par(mar= c(5, 4.5, 4, 2) + 0.1)
-density <- density(variable)
-h <- hist(variable, plot = FALSE)
-jitVar <- jitter(variable)
-yhigh <- max(max(h$density), max(density$y))
-ylow <- 0
-xticks <- pretty(c(variable, jitVar), min.n= 3)
-plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
-h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE)
-ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
-par(las=0)
-ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.7, mgp= c(3, 0.7, 0))
-rug(jitVar)
-lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
-
-}
-
+	#### histogram with density estimator ####
+	plotMarginal <- function(variable, cexYlab= 1.3, lwd= 2){
+		par(mar= c(5, 4.5, 4, 2) + 0.1)
+		density <- density(variable)
+		h <- hist(variable, plot = FALSE)
+		jitVar <- jitter(variable)
+		yhigh <- max(max(h$density), max(density$y))
+		ylow <- 0
+		xticks <- pretty(c(variable, jitVar), min.n= 3)
+		plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+		h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE)
+		ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
+		par(las=0)
+		ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.7, mgp= c(3, 0.7, 0))
+		rug(jitVar)
+		lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+	}
+	
 	if (options$chartType != "noCharts") {
-	
+		
 		frequency.plots <- list()
-		
+			
 		i <- 1
-
+	
 		for (variable in variables) {
-
+	
 			column <- dataset[[ .v(variable) ]]
-									
+										
 			plot <- list()
-		
+			
 			plot[["title"]] <- variable
 			plot[["width"]]  <- options$chartWidth
 			plot[["height"]] <- options$chartHeight
 			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-		
+			
 			frequency.plots[[i]] <- plot
 			i <- i + 1
 		}
-		
-		results[["plots"]] <- frequency.plots
-
-		if (perform=="run") {
 			
-			i <- 1
-
-			for (variable in variables) {
+		results[["plots"]] <- frequency.plots
 	
-				column <- dataset[[ .v(variable) ]]
+		if (perform=="run") {
 				
+			i <- 1
+	
+			for (variable in variables) {
+		
+				column <- dataset[[ .v(variable) ]]
+					
 				if (is.factor(column)){
-				    image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
 					yticks <- seq(0,max(summary(column)),1)
 					yticks <- pretty(yticks)
 					par(mar= c(5, 4.5, 4, 2) + 0.1)
@@ -556,28 +555,27 @@ lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density
 				
 				if (callback(results) != 0)
 					return()
-			
+				
 				image <- .beginSaveImage(options$chartWidth, options$chartHeight)
-			
+				
 				plotMarginal(column)
 				mtext(text = variable, side = 1, cex=1.9, line = 3)
 				}
-			
+				
 				content <- .endSaveImage(image)
-			
+				
 				plot <- frequency.plots[[i]]
-			
+				
 				plot[["data"]]  <- content
-			
+				
 				frequency.plots[[i]] <- plot
 				i <- i + 1
-
-				results[["plots"]] <- frequency.plots
-			
-			}
-		
-		}
 	
+				results[["plots"]] <- frequency.plots
+				
+			}
+		}
+		
 	}
 	
 	
