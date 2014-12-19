@@ -24,9 +24,244 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 	
 	meta <- list(
-		list(name="correlations", type="table"))
+		list(name="correlations", type="table"),
+		list(name="plots", type="images")
+		)
 	
 	results[[".meta"]] <- meta
+	
+	#			##########################################
+#### histogram with density estimator ####
+##########################################
+plotMarginal <- function(variable, cexYlab= 1.3, lwd= 2){
+density <- density(variable)
+h <- hist(variable, plot = FALSE)
+jitVar <- jitter(variable)
+yhigh <- max(max(h$density), max(density$y))
+ylow <- 0
+xticks <- pretty(c(variable, jitVar), min.n= 3)
+plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE)
+ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks)
+par(las=0)
+ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.08*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.7, mgp= c(3, 0.7, 0))
+rug(jitVar)
+lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+}
+
+######################
+#### scatterplots ####
+######################
+plotScatter <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2){
+
+# fit different types of regression
+fit <- vector("list", 4)
+fit[[1]] <- lm(yVar ~ poly(xVar, 1, raw= TRUE))
+fit[[2]] <- lm(yVar ~ poly(xVar, 2, raw= TRUE))
+fit[[3]] <- lm(yVar ~ poly(xVar, 3, raw= TRUE))
+fit[[4]] <- lm(yVar ~ poly(xVar, 4, raw= TRUE))
+
+# find parsimonioust, best fitting regression model
+Bic <- vector("numeric", 4)
+for(i in 1:4){
+	Bic[i] <- BIC(fit[[i]])	
+}
+bestModel <- which.min(Bic)
+
+# draw regression line
+# xx <- sort(xVar, decreasing= FALSE, index.return=TRUE)
+# lines(xx$x, as.numeric(predict(fit[[bestModel]]))[xx$ix], lwd= lwd)
+# new idea
+poly.pred <- function(fit, line=FALSE){
+	# create function formula
+	f <- vector("character", 0)
+	for(i in seq_along(coef(fit))){
+		if(i ==1){
+			temp <- paste(coef(fit)[[i]])
+			f <- paste(f, temp, sep="")
+		}
+		if(i >1){
+			temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
+		  f <- paste(f, temp, sep="+")
+		}
+	}
+	x <- seq(min(xVar), max(xVar), length.out = 100)
+	predY <- eval(parse(text=f))
+	if(line == FALSE){
+	return(predY)
+	}
+	if(line){
+	lines(x, predY, lwd=lwd)
+	}
+}
+
+
+xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
+xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(poly.pred(fit[[bestModel]], line= FALSE)))
+yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(poly.pred(fit[[bestModel]], line= FALSE)))
+xticks <- pretty(c(xlow, xhigh))
+yticks <- pretty(c(ylow, yhigh))
+plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
+poly.pred(fit[[bestModel]], line= TRUE)
+par(las=1)
+axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
+axis(2, line= 0.2, labels= yticks, at= yticks, cex.axis= cexYAxis)
+}
+
+
+##########################################
+#### display correlation value ####
+##########################################
+plotCorValue <- function(xVar, yVar, cexText= 2.5, cexCI= 1.8){
+plot(1,1, type="n", axes=FALSE, ylab="", xlab="")
+
+if(cor(xVar, yVar)>= 0 & cor(xVar, yVar) < 1){
+lab=bquote(italic(r) == .(substr(x = formatC(round(cor(xVar, yVar),2), format="f", digits= 2), start=2, stop=4)))
+text(1,1, labels= lab, cex= cexText)
+}
+if(cor(xVar, yVar)<0){
+lab=bquote(italic(r) == -.(substr(x = formatC(round(cor(xVar, yVar),2), format= "f", digits= 2), start=3, stop=5)))
+text(1,1, labels= lab, cex= cexText)
+}
+if(cor(xVar, yVar) == 1){
+	lab=bquote(italic(r) == 1)
+text(1,1, labels= lab, cex= cexText)
+}
+
+ctest <- cor.test(xVar, yVar)
+CIlow <- formatC(round(ctest$conf.int[1],2), format = "f",digits = 2)
+CIhigh <- formatC(round(ctest$conf.int[2],2), format = "f",digits = 2)
+if(CIlow < 0){
+	CIlow <- paste("-", substr(CIlow, 3, 5), sep="")
+}
+if(CIlow > 0){
+	CIlow <- substr(CIlow, 2, 4)
+}
+if(CIhigh < 0){
+	CIhigh <- paste("-", substr(CIhigh, 3, 5), sep="")
+}
+if(CIhigh > 0){
+	CIhigh <- substr(CIhigh, 2, 4)
+}
+text(1,0.8, labels= paste("95% CI: [", CIlow, ", ", CIhigh, "]", sep=""), cex= cexCI)
+}
+
+
+
+####################### end insert plotting function ##############
+if (perform == "run" & length(options$variables) > 0) {
+			
+variables <- unlist(options$variables)
+l <- length(variables)
+if(l <= 2){
+	width <- 500
+	height <- 500
+}
+if(l == 3){
+	width <- 550
+	height <- 550
+}
+if(l == 4){
+	width <- 900
+	height <- 900
+}
+if(l >= 5){
+	width <- 1100
+	height <- 1100
+}
+
+			frequency.plots <- list()
+			
+			plot <- list()
+		
+			plot[["title"]] <- variables
+			plot[["width"]]  <- width
+			plot[["height"]] <- height
+			
+		
+			frequency.plots[[1]] <- plot
+			
+
+		if (perform=="run" & length(options$variables) >0) {
+			
+			i <- 1
+												
+				# check for numeric/integer variables
+				
+				d <- vector("character", length(.v(variables)))
+				sdCheck <- vector("numeric", length(.v(variables)))
+				for(i in seq_along(.v(variables))){
+					d[i] <- class(dataset[[.v(variables)[i]]])
+					sdCheck[i] <- sd(dataset[[.v(variables)[i]]])
+				}
+				ind1 <- which(d == "numeric" | d == "integer")
+				ind2 <- which(sdCheck > 0)
+				ind <- ind1 %in% ind2
+				variables <- .v(variables)[ind]
+				
+				# image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+			
+				#par(lwd=2)
+				#hist(column, main=paste("Frequencies for", variable), xlab=variables, col=rainbow(10))
+				
+				################################### actual plotting #####################
+
+
+image <- .beginSaveImage(width, height)
+if(l == 1){
+par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))	
+}
+if(l > 1){
+par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0, 2.2, 2, 0))
+}
+for(row in seq_len(l)){
+	for(col in seq_len(l)){
+		if(row == col){
+			plotMarginal(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+		}
+		if(col > row){
+			plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+		}
+		if(col < row){
+		 if(l < 7){
+		  plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]]) # plot r= ...
+		  }
+		 if(l >= 7){
+		  plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2) 
+		  }
+		}		
+	}
+}
+
+if(l == 1){
+	mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
+}
+if(l > 1){
+textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
+for(t in seq_along(textpos)){
+	mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.9, line= -0.8)
+	mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.9, line= -0.1)
+}
+}
+#####################################end actual plotting #################
+			
+				content <- .endSaveImage(image)
+			
+				plot <- frequency.plots[[1]]
+			
+				plot[["data"]]  <- content
+			
+				frequency.plots[[1]] <- plot
+				results[["plots"]] <- frequency.plots
+			
+}			
+}	
+		
+	
+	
+	############ end plot Quentin ###
+
 	
 	results[["correlations"]] <- .correlationTable(dataset, perform,
 		variables=options$variables, pearson=options$pearson,
@@ -43,7 +278,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	flagSignificant=FALSE, meansAndStdDev=FALSE, crossProducts=FALSE) {
 	
 	correlation.table <- list()
-
+	
 	tests <- c()
 	if (pearson)
 		tests <- c(tests, "pearson")
@@ -120,6 +355,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				column.names[[length(column.names)+1]] <- column.name
 				fields[[length(fields)+1]] <- list(name=column.name, title="", type="string")
 
+				
 				for (variable.name in variables) {
 			
 					column.name <- paste(variable.name, "[", test, "-p]", sep="")
