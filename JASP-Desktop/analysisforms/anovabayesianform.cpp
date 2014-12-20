@@ -10,8 +10,9 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
 	_dependentListModel = new TableModelVariablesAssigned(this);
-	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
 	_dependentListModel->setSource(&_availableVariablesModel);
+	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->dependent->setModel(_dependentListModel);
 
 	_fixedFactorsListModel = new TableModelVariablesAssigned(this);

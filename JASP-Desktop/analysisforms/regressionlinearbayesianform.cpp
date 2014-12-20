@@ -7,10 +7,13 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	_availableVariablesModel.setVariableTypesSuggested(Column::ColumnTypeScale);
+	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
 	_dependentListModel = new TableModelVariablesAssigned(this);
-	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	_dependentListModel->setSource(&_availableVariablesModel);
 	ui->dependent->setModel(_dependentListModel);
 

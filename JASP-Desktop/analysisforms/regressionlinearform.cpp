@@ -25,6 +25,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	_wlsWeightsModel = new TableModelVariablesAssigned();
 	_wlsWeightsModel->setSource(&_availableVariablesModel);
 	_wlsWeightsModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_wlsWeightsModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->wlsWeights->setModel(_wlsWeightsModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
