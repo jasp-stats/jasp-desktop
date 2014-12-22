@@ -135,6 +135,13 @@
 			error <- TRUE
 			errorMessage <- paste("Factor(s): <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain(s) less than two levels.<br><br>(Possibly only after rows with missing values are excluded)", sep="")
 		}
+		
+		if (sum(is.infinite(dataset[[ .v(options$dependent) ]])) > 0) {
+		
+			error <- TRUE
+			errorMessage <- paste("The dependent variable: <em>", options$dependent, "</em>, contains infinite values.<br><br>(Possibly only after rows with infinite values are excluded)", sep="")
+		}
+		
 	}
 	
 	list(ready=ready, error=error, errorMessage=errorMessage)
