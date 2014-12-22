@@ -535,7 +535,7 @@ callback <- function(results=NULL) {
 	if (value == -Inf)
 		return("-\u221E")
 
-	NULL
+	stop("could not clean value")
 }
 
 .newFootnotes <- function() {
