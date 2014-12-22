@@ -6,7 +6,11 @@
 	
 	cases <- list()
 	
-	if (contrast.type == "deviation") {
+	if (n.levels == 1) {
+	
+	    cases[[1]] <- "."
+	
+	} else if (contrast.type == "deviation") {
 
 		for (i in 1:(n.levels - 1))
 			cases[[i]] <- paste(levels[i + 1], " - ", paste(levels,collapse=", "), sep="")
@@ -131,6 +135,19 @@
 			error <- TRUE
 			errorMessage <- paste("Factor(s): <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain(s) less than two levels.<br><br>(Possibly only after rows with missing values are excluded)", sep="")
 		}
+		
+		if (sum(is.infinite(dataset[[ .v(options$dependent) ]])) > 0) {
+		
+			error <- TRUE
+			errorMessage <- paste("The dependent variable: <em>", options$dependent, "</em>, contains infinite values.<br><br>(Possibly only after rows with infinite values are excluded)", sep="")
+		}
+		
+		if (sum(dataset[[ .v(options$wlsWeights) ]] <= 0) > 0) {
+		
+			error <- TRUE
+			errorMessage <- paste("The variable: <em>", options$wlsWeights, "</em>, contains negative values.<br><br>(only positive WLS weights allowed)", sep="")
+		}
+		
 	}
 	
 	list(ready=ready, error=error, errorMessage=errorMessage)
@@ -176,8 +193,17 @@
 		WLS <- dataset[[ .v(options$wlsWeights) ]]
 		
 	model <- aov(model.formula, dataset, weights=WLS)
-	singular <- class(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))) == "try-error"
-					
+	
+	modelError <- class(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))) == "try-error"
+	errorMessage <- ""
+	
+	if (modelError) 
+	    errorMessage <- .extractErrorMessage(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE)))
+	
+	singular <- FALSE
+	if (errorMessage == "singular fit encountered")
+	    singular <- TRUE
+
 	list(model = model, singular = singular)
 }
 
@@ -265,10 +291,17 @@
 			rows <- list()
 					
 			if (options$sumOfSquares == "type1") {
-			
-				result <- stats::anova(model)
+			    
+				result <- base::tryCatch(stats::anova(model),error=function(e) e, warning=function(w) w)
+				
+				print(is.null(result$message))
+				print(result$message)
+				
+				if (!is.null(result$message) && result$message == "ANOVA F-tests on an essentially perfect fit are unreliable")
+				    stop(result$message)	
+				    
 				SSt <- sum(result[,"Sum Sq"], na.rm = TRUE)
-			
+							
 			} else if (options$sumOfSquares == "type2") {
 			
 				result <- car::Anova(model, type=2)
@@ -290,7 +323,6 @@
 				}
 			
 				df <- result[term,"Df"]
-				print(is.na(df))
 				
 				if (is.na(df) || df == 0) {
 				    SS <- 0
@@ -340,11 +372,19 @@
 		
 		if (class(anova.rows) == "try-error") {
 		
-			errorMessage <- as.character(anova.rows)
+		    errorMessage <- .extractErrorMessage(anova.rows)
+						
+			if (errorMessage == "NA/NaN/Inf in foreign function call (arg 1)" || errorMessage == "undefined columns selected" ||
+			    errorMessage == "ANOVA F-tests on an essentially perfect fit are unreliable") {
+				
+				errorMessage <- "Residual sums of squares and/or residual degrees of freedom are equal to zero indicating perfect fit.<br><br>(ANOVA F-tests on an essentially perfect fit are unreliable)"
+										
+			}
+		
 			status$error <- TRUE
 			status$errorMessage <- errorMessage
 			
-			anova[["error"]] <- list(errorType="badData", errorMessage=gsub("\n", "<br>", as.character(anova.rows)))
+			anova[["error"]] <- list(errorType="badData", errorMessage = errorMessage)
 
 			anova.rows <- list()
 			
@@ -357,7 +397,7 @@
 		anova[["data"]] <- anova.rows
         			
 		if (singular)
-		    .addFootnote(footnotes, text = "Predictor variables are not all linearly independent (singularity)", symbol = "<em>Warning.</em>")
+		    .addFootnote(footnotes, text = "Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables", symbol = "<em>Warning.</em>")
 							
 	}
 	
@@ -651,7 +691,7 @@
 			for (j in 1:dim(cases)[2])
 				row[[ column.names[[j]] ]] <- as.character(cases[i, j])
 				
-			if (perform == "run" && status$ready) {
+			if (perform == "run" && status$ready && status$error == FALSE) {
 			
 				sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, "\"", sep="", collapse=" & ")))
 				
@@ -684,6 +724,9 @@
 		descriptives.table[["data"]] <- rows
 	}
 	
+	if (status$error)
+	    descriptives.table[["error"]] <- list(error="badData")
+	
 	list(result=descriptives.table, status=status)
 }
 
@@ -704,7 +747,7 @@
 
 	levenes.table[["schema"]] <- list(fields=fields)
 
-	if (perform == "run" && status$ready) {
+	if (perform == "run" && status$ready && status$error == FALSE) {
 
 		interaction <- paste(.v(options$fixedFactors), collapse=":", sep="")
 		levene.def <- paste(.v(options$dependent), "~", interaction)
@@ -719,8 +762,146 @@
 		levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"="."))
 	}
 	
+	if (status$error)
+	    levenes.table[["error"]] <- list(error="badData")
+	
 	list(result=levenes.table, status=status)
 }
+
+
+#.anovaProfilePlot <- function(dataset, options, perform, status) {
+#
+#    profilePlotList <- list()
+#            
+#    if (perform == "run" && status$ready && options$horizontalAxis != "" && options$dependent != "") {
+#        
+#        groupVars <- c(options[["horizontalAxis"]], options[["seperateLines"]], options[["seperatePlots"]])
+#        groupVars <- groupVars[groupVars != ""]
+#        
+#        summaryStat <- plyr::ddply(as.data.frame(dataset), .v(groupVars), .drop = FALSE,
+#                                   .fun = function(xx, col) {
+#                                        c(N = length(xx[[col]]), mean = mean(xx[[col]]), sd = sd(xx[[col]]))  
+#                                   }, .v(options[["dependent"]]))   
+#        
+#        summaryStat <- plyr::rename(summaryStat, c("mean" = .v(options$dependent)))
+#        
+#        summaryStat$se <- summaryStat$sd / sqrt(summaryStat$N)
+#
+#        ciMult <- qt(.95/2 + .5, summaryStat$N - 1)
+#        summaryStat$ci <- summaryStat$se * ciMult
+#        
+#        base_breaks_x <- function(x){
+#            b <- unique(as.numeric(x))
+#            d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
+#            list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 2),
+#                 ggplot2::scale_x_continuous(breaks=unique(as.numeric(x)),
+#                                   labels=levels(x), 
+#                                   limits=c(min(as.numeric(x)) - (length(levels(x)) * .1), 
+#                                         max(as.numeric(x)) + (length(levels(x)) * .1))))
+#        }
+#
+#        base_breaks_y <- function(x, errorBars){
+#            if (errorBars) {
+#                ci.pos <- c(x[,.v(options[["dependent"]])]-x[,"ci"],x[,.v(options[["dependent"]])]+x[,"ci"])
+#                b <- pretty(ci.pos)
+#                d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+#                list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 2),
+#                     ggplot2::scale_y_continuous(breaks=b))
+#            } else {
+#                b <- pretty(x[,.v(options[["dependent"]])])
+#                d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+#                list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 2),
+#                     ggplot2::scale_y_continuous(breaks=b))
+#            }
+#        }
+#        
+#        if (length(groupVars) == 3) {
+#            subsetPlots <- levels(summaryStat[,.v(options[["seperatePlots"]])])
+#		    nPlots <- length(subsetPlots)
+#	    } else {
+#		    nPlots <- 1
+#	    }
+#	    	    	    
+#	    for (i in 1:nPlots) {
+#	    
+#	        profilePlot <- list()
+#	        profilePlot[["title"]] <- ""
+#	        profilePlot[["width"]] <- 480
+#	        profilePlot[["height"]] <- 480
+##	        profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+#				
+#            if (length(groupVars) == 3) {
+#                summaryStatSubset <- subset(summaryStat,summaryStat[,.v(options[["seperatePlots"]])] == subsetPlots[i])
+#            } else {
+#                summaryStatSubset <- summaryStat
+#            }		
+#                    
+#            if(length(groupVars) == 1) {
+#            
+#                p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=.v(options[["horizontalAxis"]]), 
+#                                              y=.v(options[["dependent"]]),
+#                                              group=1))
+#            
+#            } else {
+#            
+#                p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=.v(options[["horizontalAxis"]]), 
+#                                              y=.v(options[["dependent"]]), 
+#                                              colour=.v(options[["seperateLines"]]), 
+#                                              group=.v(options[["seperateLines"]])))
+#            
+#            } 
+#        
+#            if (options[["errorBars"]]) {
+#            
+#                pd <- ggplot2::position_dodge(.15)
+#                p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=summaryStatSubset[,.v(options[["dependent"]])]-ci, 
+#                                                            ymax=summaryStatSubset[,.v(options[["dependent"]])]+ci), 
+#                                                            colour="black", width=.15, position=pd)
+#            
+#            } else {
+#            
+#                pd <- ggplot2::position_dodge(0)
+#            
+#            }
+#        
+#            p <- p + ggplot2::geom_line(position=pd, size = 1.5) + ggplot2::geom_point(position=pd, size=5, shape=21, fill="white") 
+#                ggplot2::ylab(options[["dependent"]]) +
+#                ggplot2::xlab(options[["horizontalAxis"]]) +
+#                ggplot2::labs(colour=.v(options[["seperateLines"]])) +
+#                ggplot2::theme_bw() +
+#                ggplot2::theme(legend.justification=c(1,0), legend.position=c(1,0),
+#                      panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=30),
+#                      panel.grid.major=ggplot2::element_blank(),legend.position = "none",
+#                      axis.title.x = ggplot2::element_text(size=30), axis.title.y = ggplot2::element_text(size=30),
+#                      axis.text.x = ggplot2::element_text(size=20), axis.text.y = ggplot2::element_text(size=20),
+#                      panel.background = ggplot2::element_rect(fill = 'white', colour = 'white'),
+#                      panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
+#                      legend.title = ggplot2::element_text(size=16),
+#                      legend.text = ggplot2::element_text(size = 16),
+#                      axis.ticks = ggplot2::element_line(size = 1.2),
+#                      axis.ticks.margin = grid::unit(1,"mm"),
+#                      axis.ticks.length = grid::unit(3, "mm"),
+#                      plot.margin = grid::unit(c(0,.1,0,0), "cm")) +
+#                base_breaks_y(summaryStatSubset, options[["errorBars"]]) +
+#                base_breaks_x(summaryStatSubset[,.v(options[["horizontalAxis"]])])
+#        
+#            if (length(nPlots) > 1) {
+#                p <- p + ggplot2::ggtitle(paste(options[["seperatePlots"]],"=",subsetPlots[i]))
+#            }
+#        
+#            image <- .beginSaveImage(320, 320)
+#            print(p)
+#            content <- .endSaveImage(image)
+#            
+#            profilePlot[["data"]] <- content
+#            
+#            profilePlotList[[i]] <- profilePlot
+#            
+#	    }
+#    }
+#    
+#    profilePlotList
+#}
 
 
 Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
@@ -753,6 +934,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 		list(name="contrasts", type="tables"),
 		list(name="posthoc", type="tables"),
 		list(name="descriptives", type="table")
+#		list(name="profilePlot", type="images")
 	)
 
 	results[[".meta"]] <- .meta
@@ -788,8 +970,8 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	results[["anova"]] <- result$result
 	status <- result$status
 		
-	
-
+		
+				
 	## Create Contrasts Table
 	
 	result <- .anovaContrastsTable(dataset, options, perform, model, status)
@@ -797,7 +979,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	results[["contrasts"]] <- result$result
 	status <- result$status
 	
-	
+
 	
 	## Create Post Hoc Table
 	
@@ -806,7 +988,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	results[["posthoc"]] <- result$result
 	status <- result$status
 	
-	
+
 	
 	## Create Descriptives Table
 	
@@ -824,6 +1006,11 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	results[["levene"]] <- result$result
 	status <- result$status
 	
+	
+	
+	## Create Profile Plots
+	
+#	results[["profilePlot"]] <- .anovaProfilePlot(dataset, options, perform, status)
 	
 	results
 }
