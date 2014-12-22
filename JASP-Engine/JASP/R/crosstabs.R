@@ -302,6 +302,7 @@
 .crosstabsCreateTestsRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) {
 
 	row <- list()
+	row.footnotes <- list()
 	
 	for (layer in names(group)) {
 	
@@ -330,12 +331,12 @@
 		row[["value[N]"]] <- "."
 	}
 	
-	 #list(name="X2", title="\u03C7\u00B2",type="number", format="sf:4"),
+	 #list(name="X2", title="\u03A7\u00B2",type="number", format="sf:4"),
 
 	if (options$chiSquared) {
 	
 		#row[["type[chiSquared]"]] <- "\u03A7\u00B2"
-		row[["type[chiSquared]"]] <- "\u03C7\u00B2"
+		row[["type[chiSquared]"]] <- "\u03A7\u00B2"
 
 		if (perform == "run" && status$error == FALSE) {
 		
@@ -354,10 +355,10 @@
 				error <- .extractErrorMessage(chi.result)
 				
 				if (error == "at least one entry of 'x' must be positive")
-					error <- "\u03C7\u00B2 could not be calculated, contains no observations"
+					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 				
 				sup	<- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[chiSquared]"=list(sup))
+				row.footnotes <- c(row.footnotes, list("value[chiSquared]"=list(sup)))
 			
 			} else if (is.na(chi.result$statistic)) {
 			
@@ -366,7 +367,7 @@
 				row[["p[chiSquared]"]]<- " "
 			
 				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-				row[[".footnotes"]] <- list("value[chiSquared]"=list(sup))
+				row.footnotes <- c(row.footnotes, list("value[chiSquared]"=list(sup)))
 			
 			} else {
 			
@@ -383,7 +384,7 @@
 	}	
 ###############################################		
 	if (options$chiSquaredContinuityCorrection){	
-		row[["type[chiSquared-cc]"]] <- "\u03C7\u00B2 continuity correction"
+		row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 continuity correction"
 
 
 		if (perform == "run" && status$error == FALSE) {
@@ -406,7 +407,7 @@
 					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 				
 				sup	<- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[chiSquared-cc]"=list(sup))
+				row.footnotes <- c(row.footnotes, list("value[chiSquared-cc]"=list(sup)))
 			
 			} else if (is.na(chi.result$statistic)) {
 			
@@ -415,7 +416,7 @@
 				row[["p[chiSquared-cc]"]]<- " "
 			
 				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-				row[[".footnotes"]] <- list("value[chiSquared-cc]"=list(sup))
+				row.footnotes <- c(row.footnotes, list("value[chiSquared-cc]"=list(sup)))
 			
 			} else {
 			
@@ -428,9 +429,11 @@
 		
 			row[["value[chiSquared-cc]"]] <- "."
 		}
-		}
+	}
+	
 ##################################################################
-if (options$likelihoodRatio) {
+
+	if (options$likelihoodRatio) {
 		
 	row[["type[likelihood]"]] <- "Likelihood ratio"
 
@@ -452,7 +455,7 @@ if (options$likelihoodRatio) {
 				error <- .extractErrorMessage(chi.result)
 				
 				sup	<- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[likelihood]"=list(sup))
+				row.footnotes <- c(row.footnotes, list("value[likelihood]"=list(sup)))
 			
 			} else {
 			
@@ -465,9 +468,9 @@ if (options$likelihoodRatio) {
 		
 			row[["value[likelihood]"]] <- "."
 		}
-		}
+	}
 		
-	
+	row[[".footnotes"]] <- row.footnotes
 
 	list(row)
 }
