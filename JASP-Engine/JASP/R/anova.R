@@ -148,6 +148,12 @@
 			errorMessage <- paste("The variable: <em>", options$wlsWeights, "</em>, contains negative values.<br><br>(only positive WLS weights allowed)", sep="")
 		}
 		
+		if (sum(is.infinite(dataset[[ .v(options$wlsWeights) ]])) > 0) {
+		
+			error <- TRUE
+			errorMessage <- paste("The variable: <em>", options$wlsWeights, "</em>, contains infinite values.<br><br>(Possibly only after rows with infinite values are excluded)", sep="")
+		}
+		
 	}
 	
 	list(ready=ready, error=error, errorMessage=errorMessage)
