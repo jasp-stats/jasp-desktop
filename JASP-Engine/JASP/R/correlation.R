@@ -75,6 +75,21 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 	fields <- list(list(name=".variable", title="", type="string"))
 	rows <- list()
+	
+	footnotes <- .newFootnotes()
+	
+	if (flagSignificant) {
+	
+		if (hypothesis == "correlated") {
+		
+			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001", symbol="*")
+			
+		} else {
+
+			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, all one-tailed", symbol="*")		
+		}
+	}
+	
 	v.c <- length(variables)
 	
 	if (v.c > 0) {
@@ -110,7 +125,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					column.name <- paste(variable.name, "[", test, "-p]", sep="")
 					column.names[[length(column.names)+1]] <- column.name
 					fields[[length(fields)+1]] <- list(name=column.name, title=variable.name, type="number", format="dp:3;p:.001")
-				}								
+				}
 			}
 		}
 		
@@ -143,12 +158,16 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				for (j in .seqx(i+1, v.c)) {
 
 					variable.2.name <- variables[[j]]
+					column.name <- paste(variable.2.name, "[", test, "]", sep="")
+					
+					v1 <- dataset[[ .v(variable.name) ]]
+					v2 <- dataset[[ .v(variable.2.name) ]]
 		
 					if (perform == "run") {
 				
 						if (hypothesis == "correlated") {
 
-							result   <- cor.test(dataset[[ .v(variable.name) ]], dataset[[ .v(variable.2.name) ]], method=test, alternative="two.sided")
+							result   <- cor.test(v1, v2, method=test, alternative="two.sided")
 							estimate <- as.numeric(result$estimate)
 
 							p.value  <- as.numeric(result$p.value)
@@ -156,18 +175,25 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						}
 						else {
 						
-							result1 <- cor.test(dataset[[ .v(variable.name) ]], dataset[[ .v(variable.2.name) ]], method=test, alternative="less")
-							result2 <- cor.test(dataset[[ .v(variable.name) ]], dataset[[ .v(variable.2.name) ]], method=test, alternative="greater")
+							result1 <- cor.test(v1, v2, method=test, alternative="less")
+							result2 <- cor.test(v1, v2, method=test, alternative="greater")
 							estimate <- as.numeric(result1$estimate)
 
 							p.value  <- min(as.numeric(result1$p.value), as.numeric(result2$p.value))
 						}
 						
+						if (is.na(estimate)) {
+							
+							if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
+							
+								index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - one (or more) variables contain infinity")
+								row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+							}
+						}
+						
 						row[[length(row)+1]] <- .clean(estimate)
 						
 						if (flagSignificant && is.na(p.value) == FALSE) {
-						
-							column.name <- paste(variable.2.name, "[", test, "]", sep="")
 
 							if (p.value < .001) {
 							
@@ -184,7 +210,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						}
 						
 						if (reportSignificance)
-							p.values[[length(p.values)+1]] <- p.value
+							p.values[[length(p.values)+1]] <- .clean(p.value)
 					
 					} else {
 				
@@ -195,7 +221,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				}
 				
 				if (reportSignificance) {
-				
+
 					for (p.value in p.values)
 						row[[length(row)+1]] <- p.value
 				}
@@ -216,18 +242,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 	correlation.table[["schema"]] <- schema
 	correlation.table[["data"]] <- rows
-	
-	if (flagSignificant) {
-	
-		if (hypothesis == "correlated") {
-		
-			correlation.table[["footnotes"]] <- list(list(symbol="*", text="p < .05, ** p < .01, *** p < .001"))
-			
-		} else {
-		
-			correlation.table[["footnotes"]] <- list(list(symbol="*", text="p < .05, ** p < .01, *** p < .001, all one-tailed"))
-		}
-	}
+	correlation.table[["footnotes"]] <- as.list(footnotes)
 	
 	correlation.table
 }
