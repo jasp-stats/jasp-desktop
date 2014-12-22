@@ -89,7 +89,7 @@
 
 		lvls <- base::levels(dataset[[ .v(analysis$columns) ]])
 
-	} else if (perform == "run") {
+	} else  {
 	
 		lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
 	}
@@ -97,7 +97,7 @@
 	for (column.name in lvls) {
 
 		private.name <- base::paste(column.name,"[counts]", sep="")
-		counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number")
+		counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:3")
 	}
 
 	schema <- list(fields=counts.fields)
@@ -122,11 +122,11 @@
 	tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
 	tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value", type="integer")
 
-	if (options$oddsRatio) {
+	#if (options$oddsRatio) {
 	
-		tests.fields[[length(tests.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[oddsRatio]", title="Value", type="number", format="sf:4;dp:3")
-	}
+	#	tests.fields[[length(tests.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
+	#	tests.fields[[length(tests.fields)+1]] <- list(name="value[oddsRatio]", title="Value", type="number", format="sf:4;dp:3")
+	#}
 	
 	
 
@@ -134,7 +134,36 @@
 	
 	tests.table[["schema"]] <- schema
 	
+	##### Ordinal Table
+	if (options$oddsRatio || options$oddsRatioCredibleInterval) {
+		
+		oddsratio.table <- list()
+		
+		oddsratio.table[["title"]] <- "Odds ratio"
+		
+		oddsratio.fields <- fields
+			
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="Odds ratio", type="number", format="sf:4;dp:3")
+		#oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="Sigma[oddsRatio]", title="std. error", type="number", format="dp:3")
+		if (options$oddsRatioCredibleInterval) {
+			oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
+			oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
+			}
+		
+		schema <- list(fields=oddsratio.fields)
+		
+		oddsratio.table[["schema"]] <- schema
+	}
 	
+	status <- list(error=FALSE)
+	if (is.null(counts.var) == FALSE) {
+
+		counts <- dataset[[ .v(counts.var) ]]
+		
+		if (any(counts < 0) || any(is.infinite(counts)))
+			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinite number")
+	}
 
 
 	# POPULATE TABLES
@@ -145,8 +174,10 @@
 	
 	counts.rows <- list()
 	tests.rows <- list()
+	oddsratio.rows <- list()
 	
 	tests.footnotes <- .newFootnotes()
+	oddsratio.footnotes <- .newFootnotes()
 
 	for (i in 1:length(group.matrices)) {
 	
@@ -161,25 +192,44 @@
 			group <- NULL
 		}
 	
-		next.rows <- .crosstabsCreateCountsRows(analysis$rows, group.matrix, options, perform, group)
+		next.rows <- .crosstabsCreateCountsRows(analysis$rows, group.matrix, options, perform, group, status)
 		counts.rows <- c(counts.rows, next.rows)
 		
-		next.rows <- .crosstabsBayesianCreateTestsRows(analysis$rows, group.matrix, tests.footnotes, options, perform, group)
+		next.rows <- .crosstabsBayesianCreateTestsRows(analysis$rows, group.matrix, tests.footnotes, options, perform, group, status)
 		tests.rows <- c(tests.rows, next.rows)
+		
+		next.rows <- .crosstabsBayesianCreateTestsRows(analysis$rows, group.matrix, tests.footnotes, options, perform, group, status)
+		oddsratio.rows <- c(oddsratio.rows, next.rows)
 	}
 
 	counts.table[["data"]] <- counts.rows
+	if (status$error)
+		counts.table[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
+
+	tables[[1]] <- counts.table
 	
 	tests.table[["data"]] <- tests.rows
 	tests.table[["footnotes"]] <- as.list(tests.footnotes)
-
-	tables[[1]] <- counts.table
+	if (status$error)
+		tests.table[["error"]] <- list(errorType="badData")
+		
 	tables[[2]] <- tests.table
+	
+	if (options$oddsRatio || options$oddsRatioCredibleInterval) {
+		oddsratio.table[["data"]] <- oddsratio.rows
+		
+	# oddsratio.table[["footnotes"]] <- as.list(oddsratio.footnotes)
+	
+		if (status$error)
+			oddsratio.table[["error"]] <- list(errorType="badData")
+			
+		tables[[3]] <- oddsratio.table
+	}
 	
 	tables
 }
 
-.crosstabsBayesianCreateTestsRows <- function(var.name, counts.matrix, footnotes, options, perform, group=NULL) {
+.crosstabsBayesianCreateTestsRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) {
 
 	row <- list()
 	
@@ -199,7 +249,7 @@
 	
 	row[["type[N]"]] <- "N"
 
-	if (perform == "run") {
+		if (perform == "run" && status$error == FALSE) {
 	
 		row[["value[N]"]] <- base::sum(counts.matrix)
 		
@@ -209,15 +259,15 @@
 	}
 	
 	
-	if (options$oddsRatio) {
+	if (options$oddsRatio || options$oddsRatioCredibleInterval) {
 	
 		row[["type[oddsRatio]"]] <- "Odds ratio"
 
-		if (perform == "run") {
+			if (perform == "run" && status$error == FALSE) {
 		
 			chi.result <- try({
 
-				chi.result <- stats::chisq.test(counts.matrix)
+				chi.result <- vcd::oddsratio(counts.matrix)
 			})
 			
 			if (class(chi.result) == "try-error") {
@@ -232,7 +282,7 @@
 				sup   <- .addFootnote(footnotes, error)
 				row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
 			
-			} else if (is.na(chi.result$statistic)) {
+			} else if (is.na(chi.result)) {
 			
 				row[["value[oddsRatio]"]] <- .clean(NaN)
 			
@@ -241,7 +291,11 @@
 			
 			} else {
 			
-				row[["value[oddsRatio]"]] <- unname(chi.result$statistic)
+				row[["value[oddsRatio]"]] <- exp(chi.result)
+				#row[["value[gammaCoef]"]] <- chi.result$gamma
+				#row[["Sigma[gammaCoef]"]] <- chi.result$sigma
+				row[["low[oddsRatio]"]] <- exp(confint(chi.result)[1])
+				row[["up[oddsRatio]"]] <-  exp(confint(chi.result)[2])
 			}
 			
 		} else {
@@ -291,7 +345,7 @@
 
 	row[["type[BF]"]] <- bfLabel
 
-	if (perform == "run") {
+	if (perform == "run" && status$error == FALSE) {
 	
 		BF <- try({
 
