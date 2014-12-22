@@ -217,7 +217,9 @@ void CSV::determineDelimiters()
 
 	int counts[] = { 0, 0, 0, 0 };
 
-	for (int i = 0; i < _utf8BufferEndPos; i++)
+	bool eol = false;
+
+	for (int i = 0; i < _utf8BufferEndPos && eol == false; i++)
 	{
 		char ch = _utf8Buffer[i];
 
@@ -240,6 +242,10 @@ void CSV::determineDelimiters()
 			break;
 		case '\t':
 			counts[TAB]++;
+			break;
+		case '\r':
+		case '\n':
+			eol = true;
 			break;
 		}
 	}
