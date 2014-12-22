@@ -142,13 +142,13 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	if (percentileValues[["equalGroups"]]) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
 	
 		for (i in seq(equalGroupsNo - 1))
-			fields[[length(fields) + 1]] <- list(name=paste(100 * i / equalGroupsNo, "th percentile", sep=""), type="text") 
+			fields[[length(fields) + 1]] <- list(name=paste(100 * i / equalGroupsNo, "th percentile", sep=""), type="number", format="sf:4")
 	}
 	
 	if (percentileValues[["percentiles"]]) { 
 	
 		for (i in percentilesPercentiles) 
-			fields[[length(fields) + 1]] <- list(name=paste(i, "th percentile", sep=""), type="text") 
+			fields[[length(fields) + 1]] <- list(name=paste(i, "th percentile", sep=""), type="number", format="sf:4")
 	} 
   
 	stats.results[["title"]] <- "Descriptive Statistics"
@@ -383,7 +383,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 						
 				} else {
 				
-					for (i in 1:(equalGroupsNo - 1))
+					for (i in percentilesPercentiles)
 						variable.results[[paste(i,"th percentile", sep="")]] <- ""
 				}
 			}
