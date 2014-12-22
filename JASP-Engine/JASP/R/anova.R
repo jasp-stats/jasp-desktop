@@ -6,7 +6,11 @@
 	
 	cases <- list()
 	
-	if (contrast.type == "deviation") {
+	if (n.levels == 1) {
+	
+	    cases[[1]] <- "."
+	
+	} else if (contrast.type == "deviation") {
 
 		for (i in 1:(n.levels - 1))
 			cases[[i]] <- paste(levels[i + 1], " - ", paste(levels,collapse=", "), sep="")
@@ -176,8 +180,17 @@
 		WLS <- dataset[[ .v(options$wlsWeights) ]]
 		
 	model <- aov(model.formula, dataset, weights=WLS)
-	singular <- class(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))) == "try-error"
-					
+	
+	modelError <- class(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))) == "try-error"
+	errorMessage <- ""
+	
+	if (modelError) 
+	    errorMessage <- .extractErrorMessage(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE)))
+	
+	singular <- FALSE
+	if (errorMessage == "singular fit encountered")
+	    singular <- TRUE
+
 	list(model = model, singular = singular)
 }
 
@@ -265,10 +278,17 @@
 			rows <- list()
 					
 			if (options$sumOfSquares == "type1") {
-			
-				result <- stats::anova(model)
+			    
+				result <- base::tryCatch(stats::anova(model),error=function(e) e, warning=function(w) w)
+				
+				print(is.null(result$message))
+				print(result$message)
+				
+				if (!is.null(result$message) && result$message == "ANOVA F-tests on an essentially perfect fit are unreliable")
+				    stop(result$message)	
+				    
 				SSt <- sum(result[,"Sum Sq"], na.rm = TRUE)
-			
+							
 			} else if (options$sumOfSquares == "type2") {
 			
 				result <- car::Anova(model, type=2)
@@ -290,7 +310,6 @@
 				}
 			
 				df <- result[term,"Df"]
-				print(is.na(df))
 				
 				if (is.na(df) || df == 0) {
 				    SS <- 0
@@ -340,11 +359,19 @@
 		
 		if (class(anova.rows) == "try-error") {
 		
-			errorMessage <- as.character(anova.rows)
+		    errorMessage <- .extractErrorMessage(anova.rows)
+						
+			if (errorMessage == "NA/NaN/Inf in foreign function call (arg 1)" || errorMessage == "undefined columns selected" ||
+			    errorMessage == "ANOVA F-tests on an essentially perfect fit are unreliable") {
+				
+				errorMessage <- "Residual sums of squares and/or residual degrees of freedom are equal to zero indicating perfect fit.<br><br>(ANOVA F-tests on an essentially perfect fit are unreliable)"
+										
+			}
+		
 			status$error <- TRUE
 			status$errorMessage <- errorMessage
 			
-			anova[["error"]] <- list(errorType="badData", errorMessage=gsub("\n", "<br>", as.character(anova.rows)))
+			anova[["error"]] <- list(errorType="badData", errorMessage = errorMessage)
 
 			anova.rows <- list()
 			
@@ -357,7 +384,7 @@
 		anova[["data"]] <- anova.rows
         			
 		if (singular)
-		    .addFootnote(footnotes, text = "Predictor variables are not all linearly independent (singularity)", symbol = "<em>Warning.</em>")
+		    .addFootnote(footnotes, text = "Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables", symbol = "<em>Warning.</em>")
 							
 	}
 	
@@ -651,7 +678,7 @@
 			for (j in 1:dim(cases)[2])
 				row[[ column.names[[j]] ]] <- as.character(cases[i, j])
 				
-			if (perform == "run" && status$ready) {
+			if (perform == "run" && status$ready && status$error == FALSE) {
 			
 				sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, "\"", sep="", collapse=" & ")))
 				
@@ -684,6 +711,9 @@
 		descriptives.table[["data"]] <- rows
 	}
 	
+	if (status$error)
+	    descriptives.table[["error"]] <- list(error="badData")
+	
 	list(result=descriptives.table, status=status)
 }
 
@@ -704,7 +734,7 @@
 
 	levenes.table[["schema"]] <- list(fields=fields)
 
-	if (perform == "run" && status$ready) {
+	if (perform == "run" && status$ready && status$error == FALSE) {
 
 		interaction <- paste(.v(options$fixedFactors), collapse=":", sep="")
 		levene.def <- paste(.v(options$dependent), "~", interaction)
@@ -718,6 +748,9 @@
 	
 		levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"="."))
 	}
+	
+	if (status$error)
+	    levenes.table[["error"]] <- list(error="badData")
 	
 	list(result=levenes.table, status=status)
 }
@@ -788,8 +821,8 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	results[["anova"]] <- result$result
 	status <- result$status
 		
-	
-
+		
+				
 	## Create Contrasts Table
 	
 	result <- .anovaContrastsTable(dataset, options, perform, model, status)
@@ -797,7 +830,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	results[["contrasts"]] <- result$result
 	status <- result$status
 	
-	
+
 	
 	## Create Post Hoc Table
 	
@@ -806,7 +839,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 	results[["posthoc"]] <- result$result
 	status <- result$status
 	
-	
+
 	
 	## Create Descriptives Table
 	
