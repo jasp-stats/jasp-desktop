@@ -96,7 +96,7 @@
 	for (column.name in lvls) {
 
 		private.name <- base::paste(column.name,"[counts]", sep="")
-		counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number")
+		counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:3")
 		
 		if (options$countsExpected) {
 			private.name <- base::paste(column.name,"[expected]", sep="")
@@ -203,6 +203,15 @@
 		
 		ordinal.table[["schema"]] <- schema
 	}
+	
+	status <- list(error=FALSE)
+	if (is.null(counts.var) == FALSE) {
+
+		counts <- dataset[[ .v(counts.var) ]]
+		
+		if (any(counts < 0)|| any(is.infinite(counts)))
+			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinite number")
+	}
 
 
 	# POPULATE TABLES
@@ -233,38 +242,56 @@
 			group <- NULL
 		}
 	
-		next.rows <- .crosstabsCreateCountsRows(analysis$rows, group.matrix, options, perform, group)
+		next.rows <- .crosstabsCreateCountsRows(analysis$rows, group.matrix, options, perform, group, status)
 		counts.rows <- c(counts.rows, next.rows)
 		
-		next.rows <- .crosstabsCreateTestsRows(analysis$rows, group.matrix, tests.footnotes, options, perform, group)
+		next.rows <- .crosstabsCreateTestsRows(analysis$rows, group.matrix, tests.footnotes, options, perform, group, status)
 		tests.rows <- c(tests.rows, next.rows)
 		
-		next.rows <- .crosstabsCreateNominalRows(analysis$rows, group.matrix, nominal.footnotes, options, perform, group)
+		next.rows <- .crosstabsCreateNominalRows(analysis$rows, group.matrix, nominal.footnotes, options, perform, group, status)
 		nominal.rows <- c(nominal.rows, next.rows)
 		
-		next.rows <- .crosstabsCreateOrdinalRows(analysis$rows, group.matrix, ordinal.footnotes, options, perform, group)
+		next.rows <- .crosstabsCreateOrdinalRows(analysis$rows, group.matrix, ordinal.footnotes, options, perform, group, status)
 		ordinal.rows <- c(ordinal.rows, next.rows)
 
 	}
 
 	counts.table[["data"]] <- counts.rows
+	if (status$error)
+		counts.table[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
+	
 	tables[[1]] <- counts.table
 	
 	if (options$chiSquared || options$chiSquaredContinuityCorrection || options$likelihoodRatio ) {
+
 		tests.table[["data"]] <- tests.rows
 		tests.table[["footnotes"]] <- as.list(tests.footnotes)
+
+		if (status$error)
+			tests.table[["error"]] <- list(errorType="badData")
+
 		tables[[2]] <- tests.table
 	}
 	
 	if (options$nominal$contingencyCoefficient || options$nominal$phiAndCramersV) {
+	
 		nominal.table[["data"]] <- nominal.rows
 		nominal.table[["footnotes"]] <- as.list(nominal.footnotes)
+		
+		if (status$error)
+			nominal.table[["error"]] <- list(errorType="badData")
+		
 		tables[[3]] <- nominal.table
 	}
 	
 	if (options$ordinal$gamma) {
+	
 		ordinal.table[["data"]] <- ordinal.rows
 		ordinal.table[["footnotes"]] <- as.list(ordinal.footnotes)
+		
+		if (status$error)
+			ordinal.table[["error"]] <- list(errorType="badData")
+		
 		tables[[4]] <- ordinal.table
 	}
 
@@ -272,9 +299,10 @@
 	tables
 }
 
-.crosstabsCreateTestsRows <- function(var.name, counts.matrix, footnotes, options, perform, group=NULL) {
+.crosstabsCreateTestsRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) {
 
 	row <- list()
+	row.footnotes <- list()
 	
 	for (layer in names(group)) {
 	
@@ -294,7 +322,7 @@
 	row[["df[N]"]] <- ""
 	row[["p[N]"]] <- ""
 
-	if (perform == "run") {
+	if (perform == "run" && status$error == FALSE) {
 	
 		row[["value[N]"]] <- base::sum(counts.matrix)
 		
@@ -303,14 +331,14 @@
 		row[["value[N]"]] <- "."
 	}
 	
-	 #list(name="X2", title="\u03C7\u00B2",type="number", format="sf:4"),
+	 #list(name="X2", title="\u03A7\u00B2",type="number", format="sf:4"),
 
 	if (options$chiSquared) {
 	
 		#row[["type[chiSquared]"]] <- "\u03A7\u00B2"
-		row[["type[chiSquared]"]] <- "\u03C7\u00B2"
+		row[["type[chiSquared]"]] <- "\u03A7\u00B2"
 
-		if (perform == "run") {
+		if (perform == "run" && status$error == FALSE) {
 		
 			chi.result <- try({
 
@@ -330,7 +358,7 @@
 					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 				
 				sup	<- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[chiSquared]"=list(sup))
+				row.footnotes <- c(row.footnotes, list("value[chiSquared]"=list(sup)))
 			
 			} else if (is.na(chi.result$statistic)) {
 			
@@ -339,7 +367,7 @@
 				row[["p[chiSquared]"]]<- " "
 			
 				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-				row[[".footnotes"]] <- list("value[chiSquared]"=list(sup))
+				row.footnotes <- c(row.footnotes, list("value[chiSquared]"=list(sup)))
 			
 			} else {
 			
@@ -356,10 +384,10 @@
 	}	
 ###############################################		
 	if (options$chiSquaredContinuityCorrection){	
-		row[["type[chiSquared-cc]"]] <- "\u03C7\u00B2 continuity correction"
+		row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 continuity correction"
 
 
-		if (perform == "run") {
+		if (perform == "run" && status$error == FALSE) {
 		
 			chi.result <- try({
 
@@ -379,7 +407,7 @@
 					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 				
 				sup	<- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[chiSquared-cc]"=list(sup))
+				row.footnotes <- c(row.footnotes, list("value[chiSquared-cc]"=list(sup)))
 			
 			} else if (is.na(chi.result$statistic)) {
 			
@@ -388,7 +416,7 @@
 				row[["p[chiSquared-cc]"]]<- " "
 			
 				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-				row[[".footnotes"]] <- list("value[chiSquared-cc]"=list(sup))
+				row.footnotes <- c(row.footnotes, list("value[chiSquared-cc]"=list(sup)))
 			
 			} else {
 			
@@ -401,14 +429,16 @@
 		
 			row[["value[chiSquared-cc]"]] <- "."
 		}
-		}
+	}
+	
 ##################################################################
-if (options$likelihoodRatio) {
+
+	if (options$likelihoodRatio) {
 		
 	row[["type[likelihood]"]] <- "Likelihood ratio"
 
 
-		if (perform == "run") {
+		if (perform == "run" && status$error == FALSE) {
 		
 			chi.result <- try({
 
@@ -425,7 +455,7 @@ if (options$likelihoodRatio) {
 				error <- .extractErrorMessage(chi.result)
 				
 				sup	<- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[likelihood]"=list(sup))
+				row.footnotes <- c(row.footnotes, list("value[likelihood]"=list(sup)))
 			
 			} else {
 			
@@ -438,14 +468,14 @@ if (options$likelihoodRatio) {
 		
 			row[["value[likelihood]"]] <- "."
 		}
-		}
+	}
 		
-	
+	row[[".footnotes"]] <- row.footnotes
 
 	list(row)
 }
 
-.crosstabsCreateNominalRows <- function(var.name, counts.matrix, footnotes, options, perform, group=NULL) {
+.crosstabsCreateNominalRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) {
 	
 	row <- list()
 	for (layer in names(group)) {
@@ -467,7 +497,7 @@ if (options$likelihoodRatio) {
 		 row[["type[ContCoef]"]] <- "Contingency Coefficient"
 		 
 		 
-		if (perform == "run") {
+		if (perform == "run" && status$error == FALSE) {
 			 
 			 chi.result <- try({
 				 
@@ -501,7 +531,7 @@ if (options$likelihoodRatio) {
 			row[["type[PhiCoef]"]] <- "Phi-Coefficient"
 			
 			
-			if (perform == "run") {
+			if (perform == "run" && status$error == FALSE) {
 			
 				chi.result <- try({
 				
@@ -534,7 +564,7 @@ if (options$likelihoodRatio) {
 			row[["type[CramerV]"]] <- "Cramer's V "
 			
 			
-			if (perform == "run") {
+			if (perform == "run" && status$error == FALSE) {
 				
 				chi.result <- try({
 					
@@ -567,7 +597,7 @@ if (options$likelihoodRatio) {
 
 	 }
 	
-.crosstabsCreateOrdinalRows <- function(var.name, counts.matrix, footnotes, options, perform, group=NULL) {
+.crosstabsCreateOrdinalRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) {
 	
 	row <- list()
 	for (layer in names(group)) {
@@ -590,7 +620,7 @@ if (options$likelihoodRatio) {
 		row[["type[gammaCoef]"]] <- "Gamma Coefficient"
 		
 		
-		if (perform == "run") {
+		if (perform == "run" && status$error == FALSE) {
 			
 			chi.result <- try({
 				
@@ -630,15 +660,15 @@ if (options$likelihoodRatio) {
 
 
 
-.crosstabsCreateCountsRows <- function(var.name, counts.matrix, options, perform, group=NULL) {
+.crosstabsCreateCountsRows <- function(var.name, counts.matrix, options, perform, group, status) {
 
 	rows <- list()
 	
-	if (perform == "run") {
+	if (perform == "run" && status$error == FALSE) {
 	
 		expected.matrix <- try({
 
-			stats::chisq.test(counts.matrix)$expected
+			stats::chisq.test(counts.matrix, correct=FALSE)$expected
 		})
 
 		if (class(expected.matrix) == "try-error") {
@@ -654,7 +684,7 @@ if (options$likelihoodRatio) {
 
 	for (i in 1:dim(counts.matrix)[[1]]) {
 	
-		if (perform == "run") {
+		if (perform == "run" && status$error == FALSE) {
 
 			row <- as.list(counts.matrix[i,])
 			names(row) <- base::paste(names(row),"[counts]",	sep="")
@@ -705,7 +735,7 @@ if (options$likelihoodRatio) {
 	}
 	
 	
-	if (perform == "run") {
+	if (perform == "run" && status$error == FALSE) {
 
 		row <- apply(counts.matrix, 2, base::sum)
 		row <- as.list(row)
