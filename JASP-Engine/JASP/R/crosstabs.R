@@ -93,21 +93,51 @@
 		lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
 	}
 	
+
+	counts.fp <- FALSE  # whether the counts are float point or not; changes formatting
+	
+	if (is.null(counts.var) == FALSE) {
+
+		counts <- dataset[[ .v(counts.var) ]]
+		if (identical(counts, as.integer(counts)) == FALSE)  # are the counts floating point?
+			counts.fp <- TRUE
+	}
+	
 	for (column.name in lvls) {
 
 		private.name <- base::paste(column.name,"[counts]", sep="")
-		counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:3")
+
+		if (counts.fp || options$countsExpected) {
+		
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
+		
+		} else {
+		
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="integer")
+		}
 		
 		if (options$countsExpected) {
+		
 			private.name <- base::paste(column.name,"[expected]", sep="")
-			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number",format="sf:4;dp:3")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
 		}
 	}
 	
-	counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]", title="Total", type="number")
+	# Totals columns
 	
-	if (options$countsExpected)
-		counts.fields[[length(counts.fields)+1]] <- list(name="total[expected]", title="Total", type="number",format="sf:4;dp:3")
+	if (counts.fp || options$countsExpected) {
+	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]",   title="Total", type="number", format="sf:4;dp:2")	
+		
+	} else {
+	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]", title="Total", type="integer")
+	}
+
+	if (options$countsExpected) {
+	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[expected]", title="Total", type="number", format="sf:4;dp:2")
+	}
 
 	schema <- list(fields=counts.fields)
 
@@ -120,7 +150,7 @@
 
 		tests.table <- list()
 	
-		tests.table[["title"]] <- "Chi-Square Tests"
+		tests.table[["title"]] <- "Chi-Squared Tests"
 	
 		tests.fields <- fields
 	
@@ -147,9 +177,18 @@
 		}
 
 		tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
-		tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value")
+		
+		if (counts.fp) {
+		
+			tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value", type="number", format="sf:4;dp:2")
+			
+		} else {
+		
+			tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value", type="integer")			
+		}
+		
 		tests.fields[[length(tests.fields)+1]] <- list(name="df[N]", title="df")
-		tests.fields[[length(tests.fields)+1]] <- list(name="p[N]", title="p")	
+		tests.fields[[length(tests.fields)+1]] <- list(name="p[N]", title="p")
 	
 		schema <- list(fields=tests.fields)
 	
@@ -210,7 +249,7 @@
 		counts <- dataset[[ .v(counts.var) ]]
 		
 		if (any(counts < 0)|| any(is.infinite(counts)))
-			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinite number")
+			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinities")
 	}
 
 
@@ -323,7 +362,7 @@
 	row[["p[N]"]] <- ""
 
 	if (perform == "run" && status$error == FALSE) {
-	
+
 		row[["value[N]"]] <- base::sum(counts.matrix)
 		
 	} else {
@@ -365,8 +404,14 @@
 				row[["value[chiSquared]"]] <- .clean(NaN)
 				row[["df[chiSquared]"]]<- " "
 				row[["p[chiSquared]"]]<- " "
+				
+				message <- "\u03A7\u00B2 could not be calculated"
+
+				warn <- warnings()
+				if (length(warn) > 0)
+					message <- paste(message, names(warn)[1], sep=" : ")
 			
-				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
+				sup <- .addFootnote(footnotes, message)
 				row.footnotes <- c(row.footnotes, list("value[chiSquared]"=list(sup)))
 			
 			} else {
