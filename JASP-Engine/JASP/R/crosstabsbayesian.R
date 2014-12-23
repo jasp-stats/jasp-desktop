@@ -94,17 +94,54 @@
 		lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
 	}
 	
+	counts.fp <- FALSE  # whether the counts are float point or not; changes formatting
+	
+	if (is.null(counts.var) == FALSE) {
+
+		counts <- dataset[[ .v(counts.var) ]]
+		if (identical(counts, as.integer(counts)) == FALSE)  # are the counts floating point?
+			counts.fp <- TRUE
+	}
+	
 	for (column.name in lvls) {
 
 		private.name <- base::paste(column.name,"[counts]", sep="")
-		counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:3")
+		
+		if (counts.fp || options$countsExpected) {
+		
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
+		
+		} else {
+		
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="integer")
+		}
+		
+		if (options$countsExpected) {
+		
+			private.name <- base::paste(column.name,"[expected]", sep="")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
+		}
+	}
+	
+	# Totals columns
+	
+	if (counts.fp || options$countsExpected) {
+	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]",   title="Total", type="number", format="sf:4;dp:2")	
+		
+	} else {
+	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]", title="Total", type="integer")
+	}
+
+	if (options$countsExpected) {
+	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[expected]", title="Total", type="number", format="sf:4;dp:2")
 	}
 
 	schema <- list(fields=counts.fields)
 
 	counts.table[["schema"]] <- schema
-	
-	
 	
 
 	### SETUP TESTS TABLE SCHEMA
