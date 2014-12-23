@@ -300,6 +300,9 @@ QTableView::item::last
                </property>
                <item row="0" column="0">
                 <widget class="QWebView" name="webViewResults">
+                 <property name="acceptDrops">
+                  <bool>false</bool>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QWidget {
 	background-color: rgb(250, 250, 250);
