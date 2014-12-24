@@ -286,12 +286,20 @@ Qt::ItemFlags TableModelAnovaModel::flags(const QModelIndex &index) const
 
 QVariant TableModelAnovaModel::headerData(int section, Qt::Orientation orientation, int role) const
 {	
-	if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
+	if (orientation == Qt::Horizontal)
 	{
-		if (section == 0)
-			return "Model Terms";
-		if (section == 1)
-			return "Is Nuisance";
+		if (role == Qt::DisplayRole)
+		{
+			if (section == 0)
+				return "Model Terms";
+			else if (section == 1)
+				return "Is Nuisance";
+		}
+		else
+		{
+			if (section == 1 && role == Qt::SizeHintRole)
+				return QSize(50, -1);
+		}
 	}
 
 	return QVariant();
