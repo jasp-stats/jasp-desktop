@@ -44,10 +44,7 @@ int TableModelAnovaDesign::columnCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
 
-	if (_boundTo == NULL)
-		return 0;
-
-	return 1;
+	return 2;
 }
 
 QVariant TableModelAnovaDesign::data(const QModelIndex &index, int role) const
@@ -57,32 +54,69 @@ QVariant TableModelAnovaDesign::data(const QModelIndex &index, int role) const
 
 	Row row = _rows.at(index.row());
 
-	if (role == Qt::DisplayRole)
+	if (index.column() == 0)
 	{
-		return row.text();
+		if (role == Qt::DisplayRole)
+		{
+			return row.text();
+		}
+		else if (role == Qt::EditRole)
+		{
+			if (row.isHypothetical())
+				return "";
+			else
+				return row.text();
+		}
+		else if (role == Qt::ForegroundRole)
+		{
+			if (row.isHypothetical())
+				return QBrush(QColor(0xCC, 0xCC, 0xCC));
+			else
+				return QVariant();
+		}
+		else if (role == Qt::TextAlignmentRole)
+		{
+			if (row.isHeading())
+				return Qt::AlignCenter;
+			else
+				return QVariant();
+		}
+		else if (role == Qt::SizeHintRole)
+		{
+			if (row.isHeading())
+				return QSize(-1, 24);
+		}
 	}
-	else if (role == Qt::EditRole)
+	else
 	{
-		return row.text();
+		if (role == Qt::DecorationRole)
+		{
+			if (index.row() < 3 || row.isHypothetical() || row.subIndex() == 0 || row.subIndex() == 1)
+			{
+				return QVariant();
+			}
+			else
+			{
+				static QIcon icon(":/icons/dialog-close.png");
+				return icon;
+			}
+		}
 	}
-	else if (role == Qt::ForegroundRole)
+
+	return QVariant();
+}
+
+QVariant TableModelAnovaDesign::headerData(int section, Qt::Orientation orientation, int role) const
+{
+	if (orientation == Qt::Horizontal)
 	{
-		if (row.isHypothetical())
-			return QBrush(QColor(0xCC, 0xCC, 0xCC));
-		else
-			return QVariant();
-	}
-	else if (role == Qt::TextAlignmentRole)
-	{
-		if (row.isHeading())
-			return Qt::AlignCenter;
-		else
-			return QVariant();
-	}
-	else if (role == Qt::SizeHintRole)
-	{
-		if (row.isHeading())
-			return QSize(-1, 24);
+		if (role == Qt::SizeHintRole)
+		{
+			if (section == 0)
+				return QSize(-1, 24);
+			else
+				return QSize(24, 24);
+		}
 	}
 
 	return QVariant();
@@ -107,14 +141,15 @@ void TableModelAnovaDesign::refresh()
 		Options *group = _groups.at(i);
 		OptionString *nameOption = static_cast<OptionString *>(group->get("name"));
 		string oldName = nameOption->value();
-		string newName = fq(nameTemplate.arg(i + 1));
+		//string newName = fq(nameTemplate.arg(i + 1));
 
-		if (oldName != newName)
-			nameOption->setValue(newName);
+		//if (oldName != newName)
+		//	nameOption->setValue(newName);
 
 		OptionVariables *variablesOption = static_cast<OptionVariables *>(group->get("levels"));
 
-		_rows.append(Row(tq(newName), false, i));
+		//_rows.append(Row(tq(newName), false, i));
+		_rows.append(Row(tq(oldName), false, i));
 
 		vector<string> variables = variablesOption->variables();
 
@@ -131,9 +166,29 @@ void TableModelAnovaDesign::refresh()
 	endResetModel();
 }
 
-Qt::ItemFlags TableModelAnovaDesign::flags(const QModelIndex &) const
+Qt::ItemFlags TableModelAnovaDesign::flags(const QModelIndex &index) const
 {
-	return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
+	if (index.isValid() == false)
+	{
+		return Qt::ItemIsEnabled;
+	}
+	else if (index.column() == 0)
+	{
+		return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
+	}
+	else
+	{
+		Row row = _rows.at(index.row());
+
+		if (index.row() < 3 || row.isHypothetical() || row.subIndex() == 0 || row.subIndex() == 1)
+		{
+			return Qt::ItemIsEnabled;
+		}
+		else
+		{
+			return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+		}
+	}
 }
 
 bool TableModelAnovaDesign::setData(const QModelIndex &index, const QVariant &value, int)
@@ -146,6 +201,16 @@ bool TableModelAnovaDesign::setData(const QModelIndex &index, const QVariant &va
 		changeRow(index.row(), v);
 
 	return false;
+}
+
+bool TableModelAnovaDesign::removeRows(int row, int, const QModelIndex &)
+{
+	// count is ignored, because it will never be more than 1
+
+	if (row >= 3 && _rows.at(row).isHypothetical() == false)
+		deleteRow(row);
+
+	return false; // return false, because we handle the refresh ourselves
 }
 
 QList<Factor> TableModelAnovaDesign::design()
@@ -173,19 +238,54 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 {
 	const Row &row = _rows.at(rowNo);
 
+	if (row.isHypothetical() == false && row.text() == tq(value))
+		return;
+
 	if (row.isHeading())
 	{
+		QString originalName = tq(value).trimmed();
+		QString name = originalName;
+		int n = 2;
+
+		while (true)
+		{
+			bool unique = true;
+
+			for (int i = 0; i < _rows.length(); i++)
+			{
+				if (i == rowNo)
+					continue;
+
+				Row &existing = _rows[i];
+
+				if (existing.isHeading() == false || existing.isHypothetical())
+					continue;
+
+				if (existing.text() == name)
+				{
+					unique = false;
+					break;
+				}
+			}
+
+			if (unique)
+				break;
+			else
+				name = QString("%1 (%2)").arg(originalName).arg(n++);
+		}
+
 		if (row.isHypothetical())
 		{
 			Options *newRow = static_cast<Options *>(_boundTo->rowTemplate()->clone());
 			OptionString *factorName = static_cast<OptionString *>(newRow->get("name"));
-			factorName->setValue(value);
+			factorName->setValue(fq(name));
+
 			_groups.push_back(newRow);
 		}
 		else
 		{
 			OptionString *option = static_cast<OptionString *>(_groups.at(row.index())->get("name"));
-			option->setValue(value);
+			option->setValue(fq(name));
 		}
 	}
 	else
@@ -193,10 +293,38 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 		OptionVariables *option = static_cast<OptionVariables *>(_groups.at(row.index())->get("levels"));
 		vector<string> levels = option->variables();
 
+		string originalName = fq(tq(value).trimmed());
+		string name = originalName;
+		int n = 2;
+
+		while (true)
+		{
+			bool unique = true;
+
+			for (int i = 0; i < levels.size(); i++)
+			{
+				if (i == row.subIndex())
+					continue;
+
+				string &level = levels[i];
+
+				if (level == name)
+				{
+					unique = false;
+					break;
+				}
+			}
+
+			if (unique)
+				break;
+			else
+				name = fq(QString("%1 (%2)").arg(tq(originalName)).arg(n++));
+		}
+
 		if (row.isHypothetical())
-			levels.push_back(value);
+			levels.push_back(name);
 		else
-			levels[row.subIndex()] = value;
+			levels[row.subIndex()] = name;
 
 		option->setValue(levels);
 	}

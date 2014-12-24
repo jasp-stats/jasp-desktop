@@ -82,20 +82,40 @@ void TableView::mousePressEvent(QMouseEvent *event)
 
 void TableView::resizeEvent(QResizeEvent *event)
 {
-	/*int columnCount = model()->columnCount();
-	int width = event->size().width();
-
-	if (columnCount == 1)
-	{
-		setColumnWidth(0, width);
-	}
-	else if (columnCount == 2)
-	{
-		setColumnWidth(0, width - 50);
-		setColumnWidth(1, 50);
-	}*/
-
 	QTableView::resizeEvent(event);
+
+	int columnCount = model()->columnCount();
+
+	if (columnCount > 1)
+	{
+		int overallWidth = event->size().width();
+
+		QList<int> widths;
+		int sum = 0;
+
+		for (int i = 0; i < columnCount; i++)
+		{
+			int width = 0;
+
+			QVariant v = this->model()->headerData(i, Qt::Horizontal, Qt::SizeHintRole);
+
+			if (v.canConvert(QMetaType::QSize))
+				width = v.toSize().width();
+			if (width <= 0)
+				width = this->horizontalHeader()->defaultSectionSize();
+
+			sum += width;
+			widths.append(width);
+		}
+
+		double multiplier = (double)overallWidth / sum;
+
+		for (int i = 0; i < columnCount; i++)
+		{
+			double width = widths.at(i) * multiplier;
+			setColumnWidth(i, width);
+		}
+	}
 }
 
 void TableView::doubleClickedHandler(const QModelIndex index)

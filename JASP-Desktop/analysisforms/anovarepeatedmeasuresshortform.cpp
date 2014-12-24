@@ -17,6 +17,11 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	_designTableModel = new TableModelAnovaDesign(this);
 	ui->repeatedMeasuresFactors->setModel(_designTableModel);
 
+	// this is a hack to allow deleting factors and levels :/
+	// ideally this would be handled between the TableView and the model
+	// and wouldn't require the surrounding classes' intervention like this
+	connect(ui->repeatedMeasuresFactors, SIGNAL(clicked(QModelIndex)), this, SLOT(anovaDesignTableClicked(QModelIndex)));
+
 	_withinSubjectCellsListModel = new TableModelAnovaWithinSubjectCells(this);
 	_withinSubjectCellsListModel->setSource(&_availableVariablesModel);
 	_withinSubjectCellsListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
@@ -100,4 +105,12 @@ void AnovaRepeatedMeasuresShortForm::withinSubjectsDesignChanged()
 {
 	_withinSubjectCellsListModel->setDesign(_designTableModel->design());
 	factorsChanged();
+}
+
+void AnovaRepeatedMeasuresShortForm::anovaDesignTableClicked(QModelIndex index)
+{
+	// the second column contains an X to delete the row
+
+	if (index.column() == 1)
+		_designTableModel->removeRow(index.row());
 }

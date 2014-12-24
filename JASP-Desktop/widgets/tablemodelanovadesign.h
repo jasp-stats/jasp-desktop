@@ -27,9 +27,11 @@ public:
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
 	virtual QVariant data(const QModelIndex &parent = QModelIndex(), int role = Qt::DisplayRole) const OVERRIDE;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const OVERRIDE;
 
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
 	virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) OVERRIDE;
+	virtual bool removeRows(int row, int count, const QModelIndex &parent) OVERRIDE;
 
 	QList<Factor> design();
 
