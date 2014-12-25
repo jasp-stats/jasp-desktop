@@ -287,6 +287,9 @@ run <- function(name, options.as.json.string) {
 	
 	for (v in variable.names) {
 	
+		if (nchar(v) == 0)
+			stop(paste("bad call to .unv() : v is \"\""))
+	
 		firstChar <- charToRaw(substr(v, 1, 1))
 	
 		if (firstChar >= 0x41 && firstChar <= 0x5A) {  # A to Z
@@ -299,8 +302,7 @@ run <- function(name, options.as.json.string) {
 			
 		} else {
 		
-			stop(paste("bad call to .unv() : ", v))
-		
+			stop(paste("bad call to .unv() : v is \"", v, "\"", sep=""))
 		}
 	}
 	
