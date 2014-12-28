@@ -430,7 +430,7 @@
 	
 	contrast.tables <- list()
 	
-	if (perform == "run" && status$ready && status$error == FALSE)
+	if (perform == "run" && status$ready && status$error == FALSE && options$dependent != "")
 		contrast.summary <- summary.lm(model)[["coefficients"]]
 	
 	
@@ -463,7 +463,7 @@
 			
 			contrast.rows <- list()
 			
-			if (perform == "init" || status$error) {
+			if (perform == "init" || status$error || options$dependent == "") {
 			
 				for (case in cases)
 					contrast.rows[[length(contrast.rows)+1]] <- list(Comparison=case)			
@@ -968,7 +968,7 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 
 	## Setup Contrasts
 
-	if (perform == "run" && status$ready && status$error == FALSE)
+	if (perform == "run" && status$ready && status$error == FALSE && options$dependent != "")
 		dataset <- .anovaSetupContrasts(dataset, options)
 	
 
