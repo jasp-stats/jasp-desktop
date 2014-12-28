@@ -126,14 +126,6 @@ QVariant TableModelVariablesOptions::headerData(int section, Qt::Orientation ori
 		return tq(name);
 	}
 
-	if (role == Qt::SizeHintRole && orientation == Qt::Horizontal)
-	{
-		if (section == 0)
-			return QSize(200, -1);
-		else
-			return QSize(80, -1);
-	}
-
 	return QVariant();
 }
 
