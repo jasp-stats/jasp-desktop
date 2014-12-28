@@ -6,6 +6,7 @@
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
+#include <locale>
 
 #if _MSC_VER >= 1400 // VC++ 8.0
 #pragma warning( disable : 4996 )   // disable warning about strdup being deprecated.
@@ -152,6 +153,10 @@ Reader::parse( const char *beginDoc, const char *endDoc,
                Value &root,
                bool collectComments )
 {
+    // hack to prevent it from expecting commas as decimal separators
+    setlocale(LC_NUMERIC, "C");
+    // end hack
+
    if ( !features_.allowComments_ )
    {
       collectComments = false;

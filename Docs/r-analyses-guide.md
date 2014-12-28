@@ -29,12 +29,13 @@ An assortment of useful functions are available to JASP R analyses. These are de
 
 In order for the analysis to read the data from JASP, one of two functions must be called:
 
-`.readDataSetHeader(columns.as.numeric, columns.as.ordered, columns.as.factor)`  
-`.readDataSetToEnd(columns.as.numeric, columns.as.ordered, columns.as.factor)`
+`.readDataSetHeader(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`  
+`.readDataSetToEnd(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
 
-- `columns.as.numeric` : a vector of column names to be read as numeric
-- `columns.as.ordered` : a vector of column names to be read as ordered factors
-- `columns.as.nominal` : a vector of column names to be read as unordered factors
+- `columns` : a vector of column names to be read
+- `columns.as.numeric` : a vector of column names to be read as numeric (marshalled as necessary)
+- `columns.as.ordered` : a vector of column names to be read as ordered factors (marshalled as necessary)
+- `columns.as.nominal` : a vector of column names to be read as unordered factors (marshalled as necessary)
 
 These functions return a data.frame containing the columns requested marshalled (if necessary) to the type requested.
 
@@ -91,6 +92,28 @@ JASP accepts images as SVGs encoded as base64 data URIs. The following functions
 * NaN is converted to "NaN"
 * Inf and -Inf values are converted to the appropriate unicode symbols
 * NULL values are converted to empty strings
+
+### Footnotes
+
+These functions simplify the creation of footnotes by automatically keeping track of what footnotes have already been created.
+
+`.newFootnotes()`
+`.addFootnote(footnotes, text, symbol=NULL)`
+`as.list(footnotes)`
+
+`.newFootnotes()` creates a new footnotes object
+
+`.addFootnote(footnotes, text, symbol)`
+
+* `footnotes` : a footnotes object created with `.newFootnotes()`
+* `text` : the text of the footnote
+* `symbol` : optional, the symbol to use. If omitted, a superscript letter is automatically used.
+
+Adds a new footnote to the footnote object. If a footnote with matching text already exists, a duplicate footnote is *not* created (which is what you want). This function returns the index for the created (or existing) footnote, which can be placed in the `.footnotes` object of a data row (described below).
+
+`as.list(footnotes)`
+
+Converts a footnotes object created with `.newFootnotes()` to a list conforming to the `footnotes` component of `table` described below.
 
 
 Initialization and Running
@@ -154,14 +177,16 @@ A table object itself is a named list of the form:
         "schema" : { ... },
         "data"   : [ ... ],
         "footnotes" : [ ... ],
-        "casesAcrossColumns" : false
+        "casesAcrossColumns" : false,
+        "error" : { ... }
     }
     
 - `title` : the title which appears at the top of the table
 - `schema` : specifies the columns of the table
 - `data`  : specifies the data, or rows of the table
-- `footnotes` : footnotes to appear at the bottom of the table
+- `footnotes` : optional, footnotes to appear at the bottom of the table
 - `casesAcrossColumns` : optional, defaults to false, whether the rows and columns of the table should be swapped
+- `error` : optional, specifies an error message to be displayed over the top of the table
 
 
 #### schema
@@ -194,12 +219,15 @@ Taken from here: http://dataprotocols.org/json-table-schema/
     - `p:X` - if the value is less than X, substitute `p < X` in it's place (`p:.001` is common)
     
 #### data
-`data` is of the form:
+
+`data` represents the rows in the table and is of the form:
 
     [
         {
             "column 1 name" : "row 1 column 1 value",
             "column 2 name" : 15.44444,
+            ".footnotes" : [ ... ]
+            ".isMainRow" : false
             ...
         },
         {
@@ -211,6 +239,52 @@ Taken from here: http://dataprotocols.org/json-table-schema/
     ]
     
 The column names must correspond to those specified in the schema
+
+#### .footnotes (in data)
+
+It is recommended to use the footnotes functions described above to generate the indices.
+
+`.footnotes` in row data describes the symbols (typically superscripts) which are displayed beside values
+
+    [
+        "column 1 name" : [ 0, 1 ]
+        "column 2 name" : [ 0 ]
+    ]
+
+The arrays of values are indices which refer to the footnotes object in `table` (see below). The symbols are taken from there.
+
+#### footnotes (in table)
+
+It is recommended to use the footnotes functions described above, rather than creating these objects manually. These functions make it much easier.
+
+`footnotes` is of the form:
+
+    [
+    	{
+        	"symbol" : 0,
+	        "text"   : "Footnote a text"
+    	},
+    	{
+        	"symbol" : 1,
+	        "text"   : "Footnote b text"
+    	},
+    	...
+    ]
+    
+- `symbol` : can be either an integer, or a string. Integers correspond to superscripts, 0 is <sup>a</sup>, 1 is <sup>b</sup>, 2 is <sup>d</sup>, etc. (there's no <sup>c</sup> which is peculiar). If a string is specified, it used as the symbol itself.
+- `text`   : the text of the footnote
+
+#### error
+
+`error` is of the form:
+
+    {
+        "errorType" : "badData",
+        "errorMessage" : "The error message"
+    }
+
+- `errorType` : can be whatever. In the future a set of error types will be developed.
+- `errorMessage` : optional, the message to be displayed. If an analysis produces multiple tables, it is generally best to only put the error message over the top table.
 
 
 ### image
@@ -232,3 +306,4 @@ The column names must correspond to those specified in the schema
 `data` is most easily produced with the functions:
     - `.beginImageSave()`
     - `.endImageSave()`
+

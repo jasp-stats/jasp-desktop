@@ -10,7 +10,8 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
 	_dependentListModel = new TableModelVariablesAssigned(this);
-	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	_dependentListModel->setSource(&_availableVariablesModel);
 	ui->dependent->setModel(_dependentListModel);
 
@@ -33,11 +34,11 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->fixedFactors);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->randomFactors);
-	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
+	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
-	connect(_dependentListModel, SIGNAL(assignmentsChanged()), this, SLOT(dependentChanged()));
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
@@ -59,25 +60,13 @@ AncovaBayesianForm::~AncovaBayesianForm()
 	delete ui;
 }
 
-/*void AncovaBayesianForm::set(Options *options, DataSet *dataSet)
-{
-	OptionVariables *nuisanceOption = dynamic_cast<OptionVariables *>(options->get("nuisanceTerms"));
-
-	_anovaModel->setNuisanceTermsOption(nuisanceOption);
-
-	AnalysisForm::set(options, dataSet);
-}*/
-
 void AncovaBayesianForm::factorsChanged()
 {
-	_anovaModel->setVariables(_fixedFactorsListModel->assigned());
-}
+	Terms factors;
 
-void AncovaBayesianForm::dependentChanged()
-{
-	/*const QList<ColumnInfo> &assigned = _dependentListModel->assigned();
-	if (assigned.length() == 0)
-		_anovaModel->setDependent(ColumnInfo("", 0));
-	else
-		_anovaModel->setDependent(assigned.last());*/
+	factors.add(_fixedFactorsListModel->assigned());
+	factors.add(_randomFactorsListModel->assigned());
+	factors.add(_covariatesListModel->assigned());
+
+	_anovaModel->setVariables(factors);
 }

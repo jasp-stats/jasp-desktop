@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>573</width>
-    <height>954</height>
+    <height>977</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -60,129 +60,6 @@
          <property name="bottomMargin">
           <number>3</number>
          </property>
-         <item row="3" column="1" colspan="2">
-          <widget class="QGroupBox" name="groupBox_3">
-           <property name="title">
-            <string>Distribution</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="statistics_distribution_skewness">
-              <property name="text">
-               <string>Skewness</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statistics_distribution_kurtosis">
-              <property name="text">
-               <string>Kurtosis</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QWidget" name="widget_5" native="true"/>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="0" column="1" rowspan="2" colspan="2">
-          <widget class="QGroupBox" name="statistics__central_tendency">
-           <property name="title">
-            <string>Central Tendency</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_2">
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="statistics_centralTendency_mean">
-              <property name="text">
-               <string>Mean</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statistics_centralTendency_median">
-              <property name="text">
-               <string>Median</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="statistics_centralTendency_mode">
-              <property name="text">
-               <string>Mode</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="BoundCheckBox" name="statistics_centralTendency_sum">
-              <property name="text">
-               <string>Sum</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QGroupBox" name="statisticsDispersion">
-           <property name="title">
-            <string>Dispersion</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_5">
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="statistics_dispersion_standardDeviation">
-              <property name="text">
-               <string>Std. deviation</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="BoundCheckBox" name="statistics_dispersion_minimum">
-              <property name="text">
-               <string>Minimum</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statistics_dispersion_variance">
-              <property name="text">
-               <string>Variance</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="BoundCheckBox" name="statistics_dispersion_maximum">
-              <property name="text">
-               <string>Maximum</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="statistics_dispersion_range">
-              <property name="text">
-               <string>Range</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="BoundCheckBox" name="statistics_dispersion_standardErrorMean">
-              <property name="text">
-               <string>S. E. Mean</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
          <item row="0" column="0" rowspan="2">
           <widget class="QGroupBox" name="statisticsPercentileValues">
            <property name="title">
@@ -270,7 +147,61 @@
            </layout>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="3" column="0">
+          <widget class="QGroupBox" name="statisticsDispersion">
+           <property name="title">
+            <string>Dispersion</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="statistics_dispersion_standardDeviation">
+              <property name="text">
+               <string>Std. deviation</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="BoundCheckBox" name="statistics_dispersion_minimum">
+              <property name="text">
+               <string>Minimum</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="statistics_dispersion_variance">
+              <property name="text">
+               <string>Variance</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="BoundCheckBox" name="statistics_dispersion_maximum">
+              <property name="text">
+               <string>Maximum</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="statistics_dispersion_range">
+              <property name="text">
+               <string>Range</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="BoundCheckBox" name="statistics_dispersion_standardErrorMean">
+              <property name="text">
+               <string>S. E. Mean</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
           <widget class="QWidget" name="widget_4" native="true">
            <layout class="QGridLayout" name="gridLayout_3">
             <property name="leftMargin">
@@ -291,6 +222,75 @@
                <string>Values are group midpoints</string>
               </property>
              </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="1" rowspan="2" colspan="2">
+          <widget class="QGroupBox" name="statistics__central_tendency">
+           <property name="title">
+            <string>Central Tendency</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="statistics_centralTendency_mean">
+              <property name="text">
+               <string>Mean</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="statistics_centralTendency_median">
+              <property name="text">
+               <string>Median</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="statistics_centralTendency_mode">
+              <property name="text">
+               <string>Mode</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="statistics_centralTendency_sum">
+              <property name="text">
+               <string>Sum</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="3" column="1" colspan="2">
+          <widget class="QGroupBox" name="groupBox_3">
+           <property name="title">
+            <string>Distribution</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="statistics_distribution_skewness">
+              <property name="text">
+               <string>Skewness</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="statistics_distribution_kurtosis">
+              <property name="text">
+               <string>Kurtosis</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QWidget" name="widget_5" native="true"/>
             </item>
            </layout>
           </widget>
@@ -327,7 +327,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QGroupBox" name="groupBox_5">
+          <widget class="BoundGroupBox" name="chartType">
            <property name="title">
             <string>Chart Type</string>
            </property>
@@ -359,7 +359,7 @@
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="BoundCheckBox" name="charts_showNormalCurve">
+             <widget class="BoundCheckBox" name="chartShowNormalCurve">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -396,7 +396,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="chartValuesGroup">
+          <widget class="BoundGroupBox" name="chartValues">
            <property name="title">
             <string>Chart Values</string>
            </property>
@@ -473,7 +473,7 @@
           </widget>
          </item>
          <item row="1" column="1" colspan="3">
-          <widget class="QCheckBox" name="checkBox_19">
+          <widget class="QCheckBox" name="suppressTablesWithManyCategories">
            <property name="text">
             <string>Suppress tables with many categories</string>
            </property>
@@ -502,7 +502,7 @@
           </widget>
          </item>
          <item row="0" column="0" rowspan="3">
-          <widget class="QGroupBox" name="groupBox_7">
+          <widget class="QGroupBox" name="formatOrderBy">
            <property name="title">
             <string>Order by</string>
            </property>
@@ -564,7 +564,7 @@
           </widget>
          </item>
          <item row="0" column="1" colspan="3">
-          <widget class="QGroupBox" name="groupBox_8">
+          <widget class="QGroupBox" name="formatMultipleVariables">
            <property name="title">
             <string>Multiple Variables</string>
            </property>
@@ -616,63 +616,6 @@
       </size>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
-      <item row="0" column="2">
-       <widget class="BoundListView" name="main_fields">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>200</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>210</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::ExtendedSelection</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="4">
-       <widget class="BoundCheckBox" name="main_displayFrequencyTables">
-        <property name="text">
-         <string>Display Frequency Tables</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="AvailableFieldsListView" name="listAvailableFields">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>200</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>210</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::ExtendedSelection</enum>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
        <widget class="QWidget" name="widget_2" native="true">
         <property name="sizePolicy">
@@ -754,6 +697,70 @@
         </layout>
        </widget>
       </item>
+      <item row="2" column="0" colspan="4">
+       <widget class="BoundCheckBox" name="main_displayFrequencyTables">
+        <property name="text">
+         <string>Display Frequency Tables (nominal and ordinal variables)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="BoundListView" name="main_fields">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>210</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="AvailableFieldsListView" name="listAvailableFields">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>210</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="BoundCheckBox" name="plots">
+        <property name="text">
+         <string>Display Plots</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -771,6 +778,16 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -781,14 +798,10 @@
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

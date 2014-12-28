@@ -8,6 +8,7 @@
 #include "options/optioninteger.h"
 #include "options/optionlist.h"
 #include "options/optionvariables.h"
+#include "options/optionvariable.h"
 
 Crosstabs::Crosstabs(int id)
 	: Analysis(id, "Crosstabs", createOptions())
@@ -20,6 +21,7 @@ Options *Crosstabs::createOptions() const
 
 	options->add("rows", new OptionVariables());
 	options->add("columns", new OptionVariables());
+	options->add("counts", new OptionVariable());
 
 	Options *layerOptionsTemplate = new Options();
 	layerOptionsTemplate->add("name", new OptionString("Layer %1"));
@@ -27,8 +29,9 @@ Options *Crosstabs::createOptions() const
 
 	options->add("layers", new OptionsTable(layerOptionsTemplate));
 
-	options->add("chiSquare", new OptionBoolean(true));
-	options->add("correlations", new OptionBoolean(false));
+	options->add("chiSquared", new OptionBoolean(true));
+	options->add("chiSquaredContinuityCorrection", new OptionBoolean(false));
+	options->add("likelihoodRatio", new OptionBoolean(false));
 
 	options->add("nominal/contingencyCoefficient", new OptionBoolean());
 	options->add("nominal/phiAndCramersV", new OptionBoolean());
@@ -45,10 +48,10 @@ Options *Crosstabs::createOptions() const
 	options->add("cochransAndMantel", new OptionBoolean());
 	options->add("testOddsRatioEquals", new OptionNumber(1));
 
-	options->add("counts/observed", new OptionBoolean());
-	options->add("counts/expected", new OptionBoolean());
-	options->add("counts/hideSmallCounts", new OptionBoolean());
-	options->add("counts/hideSmallCountsLessThan", new OptionInteger(5));
+	options->add("countsObserved", new OptionBoolean(true));
+	options->add("countsExpected", new OptionBoolean());
+	options->add("hideSmallCounts", new OptionBoolean());
+	options->add("hideSmallCountsLessThan", new OptionInteger(5));
 
 	options->add("zTest/compareColumns", new OptionBoolean());
 	options->add("zTest/adjustPValues", new OptionBoolean());

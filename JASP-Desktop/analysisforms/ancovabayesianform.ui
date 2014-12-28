@@ -294,7 +294,7 @@
           <widget class="QWidget" name="widget_14" native="true"/>
          </item>
          <item row="1" column="0">
-          <widget class="AssignButton" name="buttonAssignRandom_2">
+          <widget class="AssignButton" name="buttonAssignCovariates">
            <property name="maximumSize">
             <size>
              <width>50</width>
@@ -501,11 +501,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
@@ -520,6 +515,11 @@
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -1,7 +1,7 @@
 The JASP Guide to Writing Software for Humans
 =============================================
 
-Software is not just for statisticians. Humans use software too. This guide is intended highlight some of the differences between writing for statisticians (i.e. what is generally considered 'normal' or 'good enough' in R packages), and writing software for humans.
+Software is not just for statisticians. Humans use software too. This guide is intended highlight some of the differences between writing for statisticians (i.e. what is generally considered 'good enough' in R packages), and writing software for humans.
 
 These boil down to the three areas
 
@@ -11,23 +11,23 @@ These boil down to the three areas
 
 ### Good error messages
 
-In many R packages, quite cryptic error message can be thrown. For example, the *lavaan* package when provided with an empty model presents the following error message:
+In many R packages, quite cryptic error message can be thrown. For example, passing an Infinity into a t-test gives the following error message:
 
-`Error in start.idx[i]:end.idx[i] : NA/NaN argument`
+    > t.test(c(2,7,3,Inf))
+    Error in if (stderr < 10 * .Machine$double.eps * abs(mx)) stop("data are essentially constant") : 
+  missing value where TRUE/FALSE needed
 
-Of course, the user should not provide an empty model, but most people acquainted with murphy's law know that this probably still happens all the time. Good error messages prevent:
+Of course, the user should not have an infinity in their model, but most people acquainted with murphy's law know that this probably still happens all the time. Good error messages prevent:
 
  - people being confused
  - them complaining / asking on forums / emailing you
  - you having to respond to said complaint / email
 
-In summary, good error messages make JASP awesome and save you time.
+In summary, good error messages make JASP awesome and save you time in the long run.
  
-Hence, in developing an analysis, it is good to think through each and every sort of mistake the user could make, and test for each of these mistakes before running the analysis (More about this in testing below).
+Hence, in developing an analysis, it is good to think through each and every sort of mistake the user could make, and test for each of these mistakes at the start of the analysis (More about this in testing below).
 
-Should a mistake be found, the error message should use calm and neutral language, should provide a short description of the problem (this does not need to be complete, but describing it in a way that the user can type it into google can be helpful). If the problem has a simple and clear solution, it can be appropriate to incorporate this into the message as well.
-
-The sorts of errors that should be handled, can be found through thorough testing.
+Error messages can either be placed over the top of the results table, or put in the footnotes. In general, an error which makes the whole analysis meaningless, should be placed over the top of the results table. A t-test where the user has specified an independent variable with three levels would be one such example. In contrast, if the error only affects one or a handful of values in the table, then an NaN should be placed in that cell, and a footnote marker added.
 
 ### Thorough testing
 
@@ -54,3 +54,4 @@ The beauty of computers is that they never forget. People do forget to do things
 If the user does not check for an assumption, and the assumption is violated, then good practice is to add a footnote to the affected value explaining the violation. If the user explicitly checks for the violation (i.e. by selecting the "test for inhomogeneity of variances") then these footnotes need not be displayed; In both cases, assumptions are checked.
 
 Additionally, it is nice to warn users if the data they have provided are too few. For example, I think the Χ² statistic for contingency tables is suspect if a cell contains less than 5 counts.
+

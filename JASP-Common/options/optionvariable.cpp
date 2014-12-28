@@ -10,9 +10,19 @@ OptionVariable::OptionVariable()
 
 void OptionVariable::set(Json::Value &value)
 {
-	vector<string> v;
-	v.push_back(value.asString());
-	setValue(v);
+	string asString = value.asString();
+
+	if (asString == "")
+	{
+		vector<string> v;
+		setValue(v);
+	}
+	else
+	{
+		vector<string> v;
+		v.push_back(asString);
+		setValue(v);
+	}
 }
 
 Json::Value OptionVariable::asJSON() const
@@ -20,7 +30,7 @@ Json::Value OptionVariable::asJSON() const
 	if (_value.size() > 0 && _value.front().size() > 0)
 		return Json::Value(_value.front().front());
 
-	return Json::Value();
+	return Json::Value("");
 }
 
 Option *OptionVariable::clone() const

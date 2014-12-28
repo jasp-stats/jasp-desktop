@@ -14,8 +14,9 @@ AncovaMultivariateForm::AncovaMultivariateForm(QWidget *parent) :
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
 	_dependentListModel = new TableModelVariablesAssigned(this);
-	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
 	_dependentListModel->setSource(&_availableVariablesModel);
+	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->dependents->setModel(_dependentListModel);
 
 	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
@@ -26,11 +27,13 @@ AncovaMultivariateForm::AncovaMultivariateForm(QWidget *parent) :
 	_covariatesListModel = new TableModelVariablesAssigned(this);
 	_covariatesListModel->setSource(&_availableVariablesModel);
 	_covariatesListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
+	_covariatesListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->covariates->setModel(_covariatesListModel);
 
 	_wlsWeightsListModel = new TableModelVariablesAssigned(this);
 	_wlsWeightsListModel->setSource(&_availableVariablesModel);
 	_wlsWeightsListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_wlsWeightsListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	_wlsWeightsListModel->setSource(&_availableVariablesModel);
 	ui->wlsWeights->setModel(_wlsWeightsListModel);
 

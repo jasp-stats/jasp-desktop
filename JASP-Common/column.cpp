@@ -194,7 +194,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			{
 				try
 				{
-					*doubles = lexical_cast<int>(this->stringFromRaw(*ints));
+					*doubles = lexical_cast<double>(this->stringFromRaw(*ints));
 				}
 				catch (...)
 				{

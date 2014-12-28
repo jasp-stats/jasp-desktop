@@ -4,8 +4,18 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.numeric=options$variables)
+		
+			if (options$missingValues == "excludeListwise") {
+		
+				dataset <- .readDataSetToEnd(columns.as.numeric=options$variables, exclude.na.listwise=options$variables)
+				
+			} else {
+
+				dataset <- .readDataSetToEnd(columns.as.numeric=options$variables)
+			}
+			
 		} else {
+		
 			dataset <- .readDataSetHeader(columns.as.numeric=options$variables)
 		}
 	}
@@ -18,42 +28,69 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 	results[[".meta"]] <- meta
 	
+	results[["correlations"]] <- .correlationTable(dataset, perform,
+		variables=options$variables, pearson=options$pearson,
+		kendallsTauB=options$kendallsTauB, spearman=options$spearman,
+		hypothesis=options$hypothesis, reportSignificance=options$reportSignificance,
+		flagSignificant=options$flagSignificant,
+		meansAndStdDev=options$meansAndStdDev, crossProducts=options$crossProducts)
+
+	results
+}
+
+.correlationTable <- function(dataset, perform, variables=c(), pearson=TRUE, kendallsTauB=FALSE,
+	spearman=FALSE, hypothesis="correlated", reportSignificance=FALSE,
+	flagSignificant=FALSE, meansAndStdDev=FALSE, crossProducts=FALSE) {
 	
-	
-	correlations <- list()
+	correlation.table <- list()
 
 	tests <- c()
-	if (options$pearson)
+	if (pearson)
 		tests <- c(tests, "pearson")
-	if (options$spearman)
+	if (spearman)
 		tests <- c(tests, "spearman")
-	if (options$kendallsTauB)
+	if (kendallsTauB)
 		tests <- c(tests, "kendall")
 
 	if (length(tests) != 1) {
 	
-		correlations[["title"]] <- "Correlation Table"
+		correlation.table[["title"]] <- "Correlation Table"
 	}
-	else if (options$pearson) {
+	else if (pearson) {
 	
-		correlations[["title"]] <- "Pearson Correlations"
+		correlation.table[["title"]] <- "Pearson Correlations"
 	}
-	else if (options$spearman) {
+	else if (spearman) {
 	
-		correlations[["title"]] <- "Spearman Correlations"
+		correlation.table[["title"]] <- "Spearman Correlations"
 	}
-	else if (options$kendallsTauB) {
+	else if (kendallsTauB) {
 	
-		correlations[["title"]] <- "Kendall's Tau"
+		correlation.table[["title"]] <- "Kendall's Tau"
 	}
 	else {
 	
-		correlations[["title"]] <- "Correlation Table"
+		correlation.table[["title"]] <- "Correlation Table"
 	}
 	
 	fields <- list(list(name=".variable", title="", type="string"))
 	rows <- list()
-	v.c <- length(options$variables)
+	
+	footnotes <- .newFootnotes()
+	
+	if (flagSignificant) {
+	
+		if (hypothesis == "correlated") {
+		
+			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001", symbol="*")
+			
+		} else {
+
+			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, all one-tailed", symbol="*")		
+		}
+	}
+	
+	v.c <- length(variables)
 	
 	if (v.c > 0) {
 			
@@ -63,32 +100,32 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 		for (test in tests) {
 		
-			if (length(tests) > 1 || options$reportSignificance) {
+			if (length(tests) > 1 || reportSignificance) {
 			
 				column.name <- paste(".test[", test, "]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
 				fields[[length(fields)+1]] <- list(name=column.name, title="", type="string")
 			}
 				
-			for (variable.name in options$variables) {
+			for (variable.name in variables) {
 			
 				column.name <- paste(variable.name, "[", test, "]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
 				fields[[length(fields)+1]] <- list(name=column.name, title=variable.name, type="number", format="dp:3")
 			}
 			
-			if (options$reportSignificance) {
+			if (reportSignificance) {
 			
 				column.name <- paste(".test[", test, "-p]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
 				fields[[length(fields)+1]] <- list(name=column.name, title="", type="string")
 
-				for (variable.name in options$variables) {
+				for (variable.name in variables) {
 			
 					column.name <- paste(variable.name, "[", test, "-p]", sep="")
 					column.names[[length(column.names)+1]] <- column.name
 					fields[[length(fields)+1]] <- list(name=column.name, title=variable.name, type="number", format="dp:3;p:.001")
-				}								
+				}
 			}
 		}
 		
@@ -97,16 +134,16 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			row <- list()
 			row.footnotes <- list()
 			
-			variable.name <- options$variables[[i]]
+			variable.name <- variables[[i]]
 			
 			for (test in tests) {
 			
 				p.values <- list()
 
-				if (length(tests) > 1 || options$reportSignificance)
+				if (length(tests) > 1 || reportSignificance)
 					row[[length(row)+1]] <- test.names[[test]]
 					
-				if (options$reportSignificance)
+				if (reportSignificance)
 					p.values[[length(p.values)+1]] <- "p-value"
 			
 				for (j in .seqx(1, i-1)) {
@@ -120,13 +157,17 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 				for (j in .seqx(i+1, v.c)) {
 
-					variable.2.name <- options$variables[[j]]
+					variable.2.name <- variables[[j]]
+					column.name <- paste(variable.2.name, "[", test, "]", sep="")
+					
+					v1 <- dataset[[ .v(variable.name) ]]
+					v2 <- dataset[[ .v(variable.2.name) ]]
 		
 					if (perform == "run") {
 				
-						if (options$tails == "twoTailed") {
+						if (hypothesis == "correlated") {
 
-							result   <- cor.test(dataset[[ .v(variable.name) ]], dataset[[ .v(variable.2.name) ]], method=test, alternative="two.sided")
+							result   <- cor.test(v1, v2, method=test, alternative="two.sided")
 							estimate <- as.numeric(result$estimate)
 
 							p.value  <- as.numeric(result$p.value)
@@ -134,23 +175,42 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						}
 						else {
 						
-							result1 <- cor.test(dataset[[ .v(variable.name) ]], dataset[[ .v(variable.2.name) ]], method=test, alternative="less")
-							result2 <- cor.test(dataset[[ .v(variable.name) ]], dataset[[ .v(variable.2.name) ]], method=test, alternative="greater")
+							result1 <- cor.test(v1, v2, method=test, alternative="less")
+							result2 <- cor.test(v1, v2, method=test, alternative="greater")
 							estimate <- as.numeric(result1$estimate)
 
 							p.value  <- min(as.numeric(result1$p.value), as.numeric(result2$p.value))
 						}
 						
-						row[[length(row)+1]] <- .clean(estimate)
-						
-						if (options$flagSignificant && is.na(p.value) == FALSE && p.value < .05) {
-						
-							column.name <- paste(variable.2.name, "[", test, "]", sep="")
-							row.footnotes[[column.name]] <- list("*")
+						if (is.na(estimate)) {
+							
+							if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
+							
+								index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - one (or more) variables contain infinity")
+								row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+							}
 						}
 						
-						if (options$reportSignificance)
-							p.values[[length(p.values)+1]] <- p.value
+						row[[length(row)+1]] <- .clean(estimate)
+						
+						if (flagSignificant && is.na(p.value) == FALSE) {
+
+							if (p.value < .001) {
+							
+								row.footnotes[[column.name]] <- list("***")
+							
+							} else if (p.value < .01) {
+							
+								row.footnotes[[column.name]] <- list("**")
+							
+							} else if (p.value < .05) {
+							
+								row.footnotes[[column.name]] <- list("*")
+							}
+						}
+						
+						if (reportSignificance)
+							p.values[[length(p.values)+1]] <- .clean(p.value)
 					
 					} else {
 				
@@ -160,8 +220,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					}
 				}
 				
-				if (options$reportSignificance) {
-				
+				if (reportSignificance) {
+
 					for (p.value in p.values)
 						row[[length(row)+1]] <- p.value
 				}
@@ -177,27 +237,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			rows[[i]] <- row
 		}
 	}
-		
-		
+	
 	schema <- list(fields=fields)
 	
-	correlations[["schema"]] <- schema
-	correlations[["data"]] <- rows
+	correlation.table[["schema"]] <- schema
+	correlation.table[["data"]] <- rows
+	correlation.table[["footnotes"]] <- as.list(footnotes)
 	
-	if (options$flagSignificant) {
-	
-		if (options$tails == "twoTailed") {
-		
-			correlations[["footnotes"]] <- list(list(symbol="*", text="p < .05"))
-			
-		} else {
-		
-			correlations[["footnotes"]] <- list(list(symbol="*", text="p < .05, one tailed"))
-		}
-	}
-	
-	results[["correlations"]] <- correlations
-
-	results
+	correlation.table
 }
-

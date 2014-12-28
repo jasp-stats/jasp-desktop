@@ -22,6 +22,7 @@ private:
 
 	TableModelVariablesAssigned *_rowsModel;
 	TableModelVariablesAssigned *_columnsModel;
+	TableModelVariablesAssigned *_countsModel;
 	TableModelVariablesLevels *_layersModel;
 };
 

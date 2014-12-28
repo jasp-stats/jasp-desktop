@@ -207,8 +207,17 @@ void DataSetLoader::initColumn(Column &column, const string &name, const vector<
 	Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
 	success = true;
 
-	BOOST_FOREACH(const string &value, cells)
+	BOOST_FOREACH(string value, cells)
 	{
+		for (int i = 0; i < value.length(); i++)
+		{
+			if (value[i] == ',') // in case of european (,) decimal place indicator
+			{
+				value[i] = '.';
+				break;
+			}
+		}
+
 		if (value != "" && value != " ")
 		{
 			try

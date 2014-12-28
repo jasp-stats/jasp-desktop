@@ -8,7 +8,8 @@ $.widget("jasp.table", {
 		casesAcrossColumns : false,
 		formats : null,
 		status : "waiting",
-		footnotes : [ ]
+		footnotes : [ ],
+		citation : null
 	},
 	_create: function () {
 		this.element.addClass("jasp-table")
@@ -85,16 +86,29 @@ $.widget("jasp.table", {
 				var cell = column[rowNo]
 				var content = cell.content
 				var formatted
+				var combined = false
 				
-				if (typeof content == "undefined")
+				if (typeof content == "undefined") {
+				
 					formatted = { content : "." }
-				else if (combine && rowNo > 0 && column[rowNo-1].content == content)
+				}
+				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
+				
 					formatted = { content : "", class : clazz }
-				else
+					combined = true
+				}
+				else {
+				
 					formatted = { content : content, "class" : clazz }
+				}
+				
+				if (combined == false && cell.isNewGroup)
+					formatted["class"] += " new-group-row"
 					
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
+					
+
 					
 				columnCells[rowNo] = formatted
 			}
@@ -222,6 +236,9 @@ $.widget("jasp.table", {
 				
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
+					
+				if (cell.isNewGroup)
+					formatted["class"] += " new-group-row"
 				
 				columnCells[rowNo] = formatted
 			}
@@ -257,6 +274,9 @@ $.widget("jasp.table", {
 				
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
+					
+				if (cell.isNewGroup)
+					formatted["class"] += " new-group-row"
 				
 				columnCells[rowNo] = formatted
 			}
@@ -285,6 +305,9 @@ $.widget("jasp.table", {
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
 					
+				if (cell.isNewGroup)
+					formatted["class"] += " new-group-row"
+					
 				columnCells[rowNo] = formatted
 			}
 		}
@@ -298,17 +321,25 @@ $.widget("jasp.table", {
 
 		for (var i = 0; i < indices.length; i++) {
 		
-			if (i < this.options.footnotes.length) {
+			var index = indices[i]
+			
+			if (_.isString(index)) {
+			
+				footnotes[i] = index
 		
-				var footnote = this.options.footnotes[i]
-				if (typeof footnote.symbol != "undefined")
-					footnotes[i] = footnote.symbol
+			} else if (index < this.options.footnotes.length) {
+		
+				var footnote = this.options.footnotes[index]
+				if (typeof footnote.symbol == "undefined")
+					footnotes[i] = this._symbol(index)
+				else if (_.isNumber(footnote.symbol))
+					footnotes[i] = this._symbol(footnote.symbol)
 				else
-					footnotes[i] = this._symbol(indices[i])
+					footnotes[i] = footnote.symbol
 			}
 			else {
 			
-				footnotes[i] = this._symbol(indices[i])			
+				footnotes[i] = this._symbol(index)			
 			}
 			
 		}
@@ -336,11 +367,23 @@ $.widget("jasp.table", {
 			var columnName = columnDef.name
 			var title = (typeof columnDef.title != "undefined") ? columnDef.title : columnName
 			
-			columnHeaders[colNo] = { content : title, header : true }
+			var columnHeader = { content : title, header : true }
+
+			// At the moment this only supports combining two column headers
+			// Support for multiple can be added when necessary
+
+			if (columnDef.combineHeaders) {
+			
+				if (colNo + 1 < columnCount && columnDefs[colNo + 1].combineHeaders && columnDef.title == columnDefs[colNo + 1].title)
+					columnHeader.span = 2
+				else if (colNo - 1 >= 0 && columnDefs[colNo - 1].combineHeaders && columnDef.title == columnDefs[colNo - 1].title)
+					columnHeader.span = 0
+			}
 			
 			if (typeof columnDef[".footnotes"] != "undefined")
-				columnHeaders[colNo].footnotes = this._getFootnotes(columnDef[".footnotes"])
-			
+				columnHeader.footnotes = this._getFootnotes(columnDef[".footnotes"])
+
+			columnHeaders[colNo] = columnHeader			
 			
 			// populate cells column-wise
 			
@@ -354,6 +397,12 @@ $.widget("jasp.table", {
 				
 				if (row['.footnotes'] && row['.footnotes'][columnName])
 					cell.footnotes = row['.footnotes'][columnName]
+					
+				if (colNo == 0 && columnDef.type == "string" && row[".rowLevel"])
+					cell.content = Array(row[".rowLevel"]+1).join("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") + cell.content
+					
+				if (row['.isNewGroup'])
+					cell.isNewGroup = true
 				
 				column[rowNo] = cell
 			}
@@ -490,7 +539,7 @@ $.widget("jasp.table", {
 
 			chunks.push('<thead>')
 				chunks.push('<tr>')
-					chunks.push('<th nowrap colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="copy" style="visibility: hidden ;"></div><div class="status"></div></div></th>')
+					chunks.push('<th nowrap colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="status"></div><div class="copy toolbar-button" style="visibility: hidden ;"></div><div class="cite toolbar-button" style="visibility: hidden ;"></div></div></th>')
 				chunks.push('</tr>')
 
 		if (this.options.subtitle) {
@@ -505,10 +554,20 @@ $.widget("jasp.table", {
 		for (var colNo = 0; colNo < columnHeaders.length; colNo++) {
 
 			var cell = columnHeaders[colNo]
-			chunks.push('<th colspan="2" nowrap>' + cell.content)
-			if (cell.footnotes)
-				chunks.push(cell.footnotes.join(' '))
-			chunks.push('</th>')
+			
+			var span = cell.span
+			if (typeof span == "undefined")
+				span = 1
+				
+			if (span) {
+
+				span *= 2  // times 2, because of footnote markers
+			
+				chunks.push('<th colspan="' + span + '" nowrap>' + cell.content)
+				if (cell.footnotes)
+					chunks.push(cell.footnotes.join(' '))
+				chunks.push('</th>')
+			}
 
 		}
 				
@@ -526,7 +585,7 @@ $.widget("jasp.table", {
 			
 			chunks.push('<tr>')
 
-			var isMainRow = false
+			var isNewGroup = false
 
 			for (var colNo = 0; colNo < columnCount; colNo++) {
 			
@@ -537,7 +596,7 @@ $.widget("jasp.table", {
 					var cellHtml = ''
 
 					var cellClass = (cell.class ? cell.class + " " : "")
-					cellClass += (isMainRow ? "main-row" : "")
+					cellClass += (cell.isNewGroup || isNewGroup ? "new-group-row" : "")
 
 					cellHtml += (cell.header ? '<th' : '<td')
 					cellHtml += ' class="value ' + cellClass + '"'
@@ -561,7 +620,7 @@ $.widget("jasp.table", {
 						tableProgress[colNo].to += cell.span
 						
 						if (cell.span > 1)
-							isMainRow = true
+							isNewGroup = true
 					}
 					else {
 					
@@ -598,7 +657,11 @@ $.widget("jasp.table", {
 				
 				if (_.has(footnote, "symbol")) {
 				
-					chunks.push(footnote.symbol + '&nbsp;')
+					if (_.isNumber(footnote.symbol))
+						chunks.push(this._symbol(footnote.symbol) + '&nbsp;')
+					else
+						chunks.push(footnote.symbol + '&nbsp;')
+						
 					chunks.push(footnote.text)
 				}
 				
@@ -617,19 +680,47 @@ $.widget("jasp.table", {
 		
 		var $table = this.element.children("table")
 		var $toolbar = this.element.find("div.toolbar")
+		
+		var $toolbarButtons = $toolbar.find("div.toolbar-button")
 		var $copy = $toolbar.find("div.copy")
+		var $cite = $toolbar.find("div.cite")
+		
 		var $status = $toolbar.find("div.status")
 		
 		$table.mouseenter(function(event){
-			$copy.css("visibility", "visible")
+			$toolbarButtons.css("visibility", "visible")
 		})
 		$table.mouseleave(function(event) {
-			$copy.css("visibility", "hidden")
+			$toolbarButtons.css("visibility", "hidden")
 		})
+		
+		$copy.tooltip({ content: "Copied to clipboard", items: "*", disabled: true, show: { duration : 100 }, close : function() { window.setTimeout(function(){ $copy.tooltip("option", "disabled", true) }, 500) }, position: { my: "center+10 top+15", at: "center bottom", collision: "flipfit" }})
+		$cite.tooltip({ content: "Citation copied to clipboard", items: "*", disabled: true, show: { duration : 100 }, close : function() { window.setTimeout(function(){ $cite.tooltip("option", "disabled", true) }, 500) }, position: { my: "center+10 top+15", at: "center bottom", collision: "flipfit" }})
 		
 		$copy.click(function(event) {
 			pushToClipboard($table)
 			event.preventDefault()
+			$copy.tooltip("option", "disabled", false)
+			$copy.tooltip("open")
+			
+			window.setTimeout(function() {
+				$copy.tooltip("close")
+			}, 800)
+		})
+		
+		var citation = this.options.citation
+		if (citation == null)
+			$cite.hide()
+
+		$cite.click(function(event) {
+			pushTextToClipboard(citation.join("\n\n"))
+			event.preventDefault()
+			$cite.tooltip("option", "disabled", false)
+			$cite.tooltip("open")
+			
+			window.setTimeout(function() {
+				$cite.tooltip("close")
+			}, 800)
 		})
 		
 		$status.addClass(this.options.status)

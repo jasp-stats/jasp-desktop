@@ -24,9 +24,12 @@
 #include "analysisforms/anovarepeatedmeasuresbayesianform.h"
 
 #include "analysisforms/regressionlinearform.h"
+#include "analysisforms/regressionlinearbayesianform.h"
 #include "analysisforms/correlationform.h"
+#include "analysisforms/correlationbayesianform.h"
 #include "analysisforms/correlationpartialform.h"
 #include "analysisforms/crosstabsform.h"
+#include "analysisforms/crosstabsbayesianform.h"
 
 #include "analysisforms/semsimpleform.h"
 
@@ -111,13 +114,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	_alert->move(100, 80);
 	_alert->hide();
 
-	connect(&_loader, SIGNAL(complete(DataSet*)), this, SLOT(dataSetLoaded(DataSet*)));
+	connect(&_loader, SIGNAL(complete(const QString&, DataSet*)), this, SLOT(dataSetLoaded(const QString&, DataSet*)));
 	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
 	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(dataSetLoadFailed(QString)));
 
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
-	connect(this, SIGNAL(pushToClipboard(QString)), this, SLOT(pushToClipboardHandler(QString)));
+	connect(this, SIGNAL(pushToClipboard(QString, QString)), this, SLOT(pushToClipboardHandler(QString, QString)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
 
 	_buttonPanel = new QWidget(ui->pageOptions);
@@ -162,11 +165,13 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
-	string results = analysis->asJSON().toStyledString();
+	QString results = tq(analysis->asJSON().toStyledString());
 
-	QString eval = tq("window.analysisChanged(" + results + ")");
+	results = results.replace("'", "\\'");
+	results = results.replace("\n", "");
+	results = "window.analysisChanged(JSON.parse('" + results + "'));";
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
 }
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
@@ -212,12 +217,18 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new AncovaMultivariateForm(contentArea);
 	else if (name == "RegressionLinear")
 		form = new RegressionLinearForm(contentArea);
+	else if (name == "RegressionLinearBayesian")
+		form = new RegressionLinearBayesianForm(contentArea);
 	else if (name == "Correlation")
 		form = new CorrelationForm(contentArea);
+	else if (name == "CorrelationBayesian")
+		form = new CorrelationBayesianForm(contentArea);
 	else if (name == "CorrelationPartial")
 		form = new CorrelationPartialForm(contentArea);
 	else if (name == "Crosstabs")
 		form = new CrosstabsForm(contentArea);
+	else if (name == "CrosstabsBayesian")
+		form = new CrosstabsBayesianForm(contentArea);
 	else if (name == "SEMSimple")
 		form = new SEMSimpleForm(contentArea);
 	else if (name == "AncovaBayesian")
@@ -238,6 +249,7 @@ void MainWindow::showForm(Analysis *analysis)
 	if (_currentOptionsWidget != NULL)
 	{
 		_currentOptionsWidget->hide();
+		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
 	}
 
@@ -246,7 +258,7 @@ void MainWindow::showForm(Analysis *analysis)
 	if (_currentOptionsWidget != NULL)
 	{
 		Options *options = analysis->options();
-		_currentOptionsWidget->set(options, _dataSet);
+		_currentOptionsWidget->bindTo(options, _dataSet);
 
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);
@@ -329,8 +341,10 @@ void MainWindow::dataSetCloseRequested()
 	_inited = false;
 }
 
-void MainWindow::dataSetLoaded(DataSet *dataSet)
+void MainWindow::dataSetLoaded(const QString &dataSetName, DataSet *dataSet)
 {
+	setWindowTitle(dataSetName);
+
 	_dataSet = dataSet;
 	_tableModel->setDataSet(dataSet);
 	updateMenuEnabledDisabledStatus();
@@ -489,6 +503,13 @@ void MainWindow::repositionButtonPanel(int parentWidth)
 
 void MainWindow::analysisOKed()
 {
+	if (_currentOptionsWidget != NULL)
+	{
+		_currentOptionsWidget->hide();
+		_currentOptionsWidget->unbind();
+		_currentOptionsWidget = NULL;
+	}
+
 	ui->pageOptions->hide();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.unselect()");
 	ui->tableView->show();
@@ -496,27 +517,42 @@ void MainWindow::analysisOKed()
 
 void MainWindow::analysisRemoved()
 {
+	if (_currentOptionsWidget != NULL)
+	{
+		_currentOptionsWidget->hide();
+		_currentOptionsWidget->unbind();
+		_currentOptionsWidget = NULL;
+	}
+
 	ui->pageOptions->hide();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
 	ui->tableView->show();
 }
 
-void MainWindow::pushToClipboardHandler(const QString &data)
+void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data)
 {
-	QString toClipboard;
-	toClipboard += "<!DOCTYPE HTML>\n"
-			"<html>\n"
-			"	<head>\n"
-			"		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
-			"		<title>JASP</title>"
-			"	</head>\n"
-			"	<body>\n";
-	toClipboard += data;
-	toClipboard += "	</body>\n"
-			"</html>";
-
 	QMimeData *mimeData = new QMimeData();
-	mimeData->setData("text/html", toClipboard.toUtf8());
+
+	if (mimeType == "text/html")
+	{
+		QString toClipboard;
+		toClipboard += "<!DOCTYPE HTML>\n"
+					   "<html>\n"
+					   "	<head>\n"
+					   "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
+					   "		<title>JASP</title>"
+					   "	</head>\n"
+					   "	<body>\n";
+		toClipboard += data;
+		toClipboard += "	</body>\n"
+					   "</html>";
+
+		mimeData->setData("text/html", toClipboard.toUtf8());
+	}
+	else
+	{
+		mimeData->setData(mimeType, data.toUtf8());
+	}
 
 	QClipboard *clipboard = QApplication::clipboard();
 	clipboard->setMimeData(mimeData, QClipboard::Clipboard);

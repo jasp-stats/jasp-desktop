@@ -5,6 +5,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
+#include <sstream>
 
 using namespace std;
 
@@ -132,7 +133,7 @@ void Terms::add(const Term &term)
 
 void Terms::insert(int index, const Term &term)
 {
-	if (_parent != NULL)
+	if (_parent == NULL)
 	{
 		vector<Term>::iterator itr = _terms.begin();
 
@@ -149,7 +150,7 @@ void Terms::insert(int index, const Term &term)
 
 void Terms::insert(int index, const Terms &terms)
 {
-	if (_parent != NULL)
+	if (_parent == NULL)
 	{
 		vector<Term>::iterator itr = _terms.begin();
 
@@ -304,6 +305,31 @@ Terms Terms::wayCombinations(int ways) const
 	return t;
 }
 
+string Terms::asString() const
+{
+	if (_terms.size() == 0)
+		return "<0 terms>";
+
+	stringstream ss;
+
+	ss << _terms.at(0).asString();
+
+	for (int i = 1; i < _terms.size(); i++)
+		ss << ", " << _terms.at(i).asString();
+
+	return ss.str();
+}
+
+bool Terms::operator==(const Terms &terms) const
+{
+	return _terms == terms._terms;
+}
+
+bool Terms::operator!=(const Terms &terms) const
+{
+	return _terms != terms._terms;
+}
+
 void Terms::set(QByteArray &array)
 {
 	QDataStream stream(&array, QIODevice::ReadOnly);
@@ -320,11 +346,6 @@ void Terms::set(QByteArray &array)
 		stream >> variable;
 		add(variable);
 	}
-}
-
-QByteArray Terms::toByteArray(const Terms &terms)
-{
-
 }
 
 Term Terms::sortComponents(const Term &term) const

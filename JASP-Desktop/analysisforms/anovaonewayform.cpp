@@ -13,14 +13,14 @@ AnovaOneWayForm::AnovaOneWayForm(QWidget *parent) :
 	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
 	_variablesModel.setSource(&_availableVariablesModel);
-	_variablesModel.setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	_variablesModel.setVariableTypesSuggested(Column::ColumnTypeScale);
+	_variablesModel.setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->variables->setModel(&_variablesModel);
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
-	_groupingVariableModel.setVariableTypesAllowed(Column::ColumnTypeNominalText | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	_groupingVariableModel.setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	_groupingVariableModel.setSource(&_availableVariablesModel);
+	_groupingVariableModel.setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
+	_groupingVariableModel.setVariableTypesAllowed(Column::ColumnTypeNominalText | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->groupingVariable->setModel(&_groupingVariableModel);
 	ui->groupingVariable->setDoubleClickTarget(ui->listAvailableFields);
 	connect(&_groupingVariableModel, SIGNAL(assignmentsChanged()), this, SLOT(groupingVariableChanged()));

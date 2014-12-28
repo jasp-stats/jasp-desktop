@@ -10,8 +10,9 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
 	_dependentListModel = new TableModelVariablesAssigned(this);
-	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeOrdinal);
 	_dependentListModel->setSource(&_availableVariablesModel);
+	_dependentListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_dependentListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeOrdinal | Column::ColumnTypeNominal);
 	ui->dependent->setModel(_dependentListModel);
 
 	_fixedFactorsListModel = new TableModelVariablesAssigned(this);
@@ -28,7 +29,6 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->fixedFactors);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->randomFactors);
 
-	connect(_dependentListModel, SIGNAL(assignmentsChanged()), this, SLOT(dependentChanged()));
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
@@ -41,12 +41,10 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 
 	ui->posteriorDistributions->hide();
 	ui->posteriorEstimates->hide();
-	ui->widgetModel->hide();
 
 #else
 	ui->posteriorDistributions->setStyleSheet("background-color: pink;");
 	ui->posteriorEstimates->setStyleSheet("background-color: pink;");
-	ui->widgetModel->setStyleSheet("background-color: pink;");
 #endif
 }
 
@@ -55,25 +53,13 @@ AnovaBayesianForm::~AnovaBayesianForm()
 	delete ui;
 }
 
-/*void AnovaBayesianForm::set(Options *options, DataSet *dataSet)
-{
-	OptionVariables *nuisanceOption = dynamic_cast<OptionVariables *>(options->get("nuisanceTerms"));
-
-	_anovaModel->setNuisanceTermsOption(nuisanceOption);
-
-	AnalysisForm::set(options, dataSet);
-}*/
-
 void AnovaBayesianForm::factorsChanged()
 {
-	_anovaModel->setVariables(_fixedFactorsListModel->assigned());
+	Terms factors;
+
+	factors.add(_fixedFactorsListModel->assigned());
+	factors.add(_randomFactorsListModel->assigned());
+
+	_anovaModel->setVariables(factors);
 }
 
-void AnovaBayesianForm::dependentChanged()
-{
-	/*const QList<ColumnInfo> &assigned = _dependentListModel->assigned();
-	if (assigned.length() == 0)
-		_anovaModel->setDependent(ColumnInfo("", 0));
-	else
-		_anovaModel->setDependent(assigned.last());*/
-}

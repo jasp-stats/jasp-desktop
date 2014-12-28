@@ -26,12 +26,14 @@ private slots:
 	void termsChanged();
 	void withinSubjectsDesignChanged();
 
+	void anovaDesignTableClicked(QModelIndex index);
+
 private:
 	Ui::AnovaRepeatedMeasuresShortForm *ui;
 
 	TableModelAnovaDesign *_designTableModel;
 	TableModelAnovaWithinSubjectCells *_withinSubjectCellsListModel;
-	TableModelVariablesAssigned *_randomFactorsListModel;
+	TableModelVariablesAssigned *_betweenSubjectsFactorsListModel;
 	TableModelVariablesAssigned *_wlsWeightsListModel;
 
 	TableModelAnovaModel *_anovaModel;

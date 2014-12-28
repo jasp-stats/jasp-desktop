@@ -7,6 +7,8 @@
 #include "utils.h"
 #include <boost/foreach.hpp>
 
+#include "options/optionboolean.h"
+
 using namespace std;
 
 TableModelAnovaModel::TableModelAnovaModel(QObject *parent)
@@ -25,11 +27,28 @@ QVariant TableModelAnovaModel::data(const QModelIndex &index, int role) const
 
 	if (role == Qt::DisplayRole)
 	{
+		int colNo = index.column();
 		int rowNo = index.row();
 		Options *row = _rows.at(rowNo);
-		OptionTerms *termOption = static_cast<OptionTerms *>(row->get(0));
-		Term t(termOption->value().front());
-		return t.asQString();
+
+		if (colNo == 0) {
+
+			OptionTerms *termOption = static_cast<OptionTerms *>(row->get(0));
+			Term t(termOption->value().front());
+			return t.asQString();
+		}
+	}
+	else if (role == Qt::CheckStateRole)
+	{
+		int colNo = index.column();
+		int rowNo = index.row();
+		Options *row = _rows.at(rowNo);
+
+		if (colNo == 1)
+		{
+			OptionBoolean *booleanOption = static_cast<OptionBoolean *>(row->get(1));
+			return booleanOption->value() ? Qt::Checked : Qt::Unchecked;
+		}
 	}
 
 	return QVariant();
@@ -51,6 +70,25 @@ int TableModelAnovaModel::columnCount(const QModelIndex &) const
 	return _boundTo->rowTemplate()->size();
 }
 
+bool TableModelAnovaModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+	if (index.isValid() == false)
+		return false;
+
+	if (index.column() == 1 && role == Qt::CheckStateRole)
+	{
+		Options *row = _rows.at(index.row());
+		OptionBoolean *booleanOption = static_cast<OptionBoolean *>(row->get(1));
+		booleanOption->setValue(value.toInt() == Qt::Checked);
+
+		_boundTo->setValue(_rows);
+
+		return true;
+	}
+
+	return false;
+}
+
 QStringList TableModelAnovaModel::mimeTypes() const
 {
 	QStringList types;
@@ -70,12 +108,14 @@ void TableModelAnovaModel::setVariables(const Terms &variables)
 	{
 		Terms terms = _terms;
 		terms.discardWhatDoesntContainTheseComponents(_variables);
-		setTerms(terms);
+		if (terms.size() != _terms.size())
+			setTerms(terms);
 	}
 	else
 	{
 		Terms terms = _variables.crossCombinations();
-		setTerms(terms);
+		if (terms != _terms)
+			setTerms(terms);
 	}
 
 	emit variablesAvailableChanged();
@@ -232,15 +272,35 @@ QMimeData *TableModelAnovaModel::mimeData(const QModelIndexList &indexes) const
 Qt::ItemFlags TableModelAnovaModel::flags(const QModelIndex &index) const
 {
 	if (index.isValid())
-		return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
+	{
+		if (index.column() == 0)
+			return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
+		else
+			return Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
+	}
 	else
+	{
 		return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;
+	}
 }
 
 QVariant TableModelAnovaModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-	if (role == Qt::DisplayRole && orientation == Qt::Horizontal && section == 0)
-		return "Model Terms";
+{	
+	if (orientation == Qt::Horizontal)
+	{
+		if (role == Qt::DisplayRole)
+		{
+			if (section == 0)
+				return "Model Terms";
+			else if (section == 1)
+				return "Is Nuisance";
+		}
+		else
+		{
+			if (section == 1 && role == Qt::SizeHintRole)
+				return QSize(50, -1);
+		}
+	}
 
 	return QVariant();
 }
@@ -269,10 +329,14 @@ void TableModelAnovaModel::setTerms(const Terms &terms)
 
 	beginResetModel();
 
+	BOOST_FOREACH(Options *row, _rows)
+		delete row;
+
 	_rows.clear();
 
 	BOOST_FOREACH(const Term &term, _terms.terms())
 	{
+		(void)_terms;
 		Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
 		OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
 		termCell->setValue(term.scomponents());

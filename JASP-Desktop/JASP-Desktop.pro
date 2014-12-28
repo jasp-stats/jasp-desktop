@@ -17,18 +17,7 @@ INCLUDEPATH += ../JASP-Common/
 
 unix:INCLUDEPATH += ../../boost_1_54_0
 
-windows {
-
-	COMPILER_DUMP = $$system(g++ -dumpmachine)
-	contains(COMPILER_DUMP, x86_64-w64-mingw32) {
-
-		INCLUDEPATH += ../../boost_1_54_0
-	}
-	else {
-
-		INCLUDEPATH += ../../boost_1_53_0
-	}
-}
+windows:INCLUDEPATH += ../../boost_1_54_0
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
@@ -38,6 +27,7 @@ unix:ICON = icon.icns
 windows:RC_FILE = icon.rc
 
 windows:LIBS += -lole32 -loleaut32
+  linux:LIBS += -lrt
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
@@ -127,7 +117,11 @@ SOURCES += main.cpp\
     appdirs.cpp \
     widgets/tablemodelanovawithinsubjectcells.cpp \
     analysisforms/ancovabayesianform.cpp \
-    analysisforms/anovarepeatedmeasuresbayesianform.cpp
+    analysisforms/anovarepeatedmeasuresbayesianform.cpp \
+    analysisforms/correlationbayesianform.cpp \
+    analysisforms/crosstabsbayesianform.cpp \
+    application.cpp \
+    analysisforms/regressionlinearbayesianform.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -216,7 +210,11 @@ HEADERS  += \
     appdirs.h \
     widgets/tablemodelanovawithinsubjectcells.h \
     analysisforms/ancovabayesianform.h \
-    analysisforms/anovarepeatedmeasuresbayesianform.h
+	analysisforms/anovarepeatedmeasuresbayesianform.h \
+    analysisforms/correlationbayesianform.h \
+    analysisforms/crosstabsbayesianform.h \
+    application.h \
+    analysisforms/regressionlinearbayesianform.h
 
 FORMS    += \
     backstageform.ui \
@@ -250,7 +248,10 @@ FORMS    += \
     analysisforms/anovarepeatedmeasuresshortform.ui \
     widgets/datasetselectwidget.ui \
     analysisforms/ancovabayesianform.ui \
-    analysisforms/anovarepeatedmeasuresbayesianform.ui
+    analysisforms/anovarepeatedmeasuresbayesianform.ui \
+    analysisforms/correlationbayesianform.ui \
+    analysisforms/crosstabsbayesianform.ui \
+    analysisforms/regressionlinearbayesianform.ui
 
 
 RESOURCES += \
@@ -385,5 +386,6 @@ OTHER_FILES += \
 	html/js/images.js \
 	html/js/analysis.js \
     resources/icons/variable-nominal-text.svg \
-    analysisforms/AnovaRepeatedMeasuresShortForm.qml
+    analysisforms/AnovaRepeatedMeasuresShortForm.qml \
+    html/css/images/waiting.svg
 

@@ -26,6 +26,8 @@ private slots:
 	void termsChanged();
 	void withinSubjectsDesignChanged();
 
+	void anovaDesignTableClicked(QModelIndex index);
+
 private:
 	Ui::AnovaRepeatedMeasuresBayesianForm *ui;
 

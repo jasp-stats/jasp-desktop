@@ -24,6 +24,8 @@ Options *Descriptives::createOptions() const
 	options->add("main/fields", new OptionVariables());
 	options->add("main/displayFrequencyTables", new OptionBoolean());
 
+	options->add("plots", new OptionBoolean());
+
 	options->add("statistics/percentileValues/quartiles", new OptionBoolean());
 	options->add("statistics/percentileValues/equalGroups", new OptionBoolean());
 	options->add("statistics/percentileValues/percentiles", new OptionBoolean());
@@ -48,9 +50,9 @@ Options *Descriptives::createOptions() const
 	options->add("statistics/distribution/skewness", new OptionBoolean());
 	options->add("statistics/distribution/kurtosis", new OptionBoolean());
 
-	options->add("charts/chartType", new OptionList(list("noCharts", "barCharts", "barCharts", "barCharts")));
-	options->add("charts/showNormalCurve", new OptionBoolean());
-	options->add("charts/chartValues", new OptionList(list("frequencies", "percentages")));
+	options->add("chartType", new OptionList(list("noCharts", "barCharts", "barCharts", "barCharts")));
+	options->add("chartShowNormalCurve", new OptionBoolean());
+	options->add("chartValues", new OptionList(list("frequencies", "percentages")));
 	options->add("chartWidth", new OptionInteger(480));
 	options->add("chartHeight", new OptionInteger(320));
 

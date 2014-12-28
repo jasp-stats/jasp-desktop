@@ -22,17 +22,18 @@ class TableModelAnovaModel : public TableModel, public EnhancedDropTarget, publi
 public:
 	TableModelAnovaModel(QObject *parent = 0);
 
-	virtual QVariant data(const QModelIndex &index, int role) const OVERRIDE;
-	virtual int rowCount(const QModelIndex &) const OVERRIDE;
-	virtual int columnCount(const QModelIndex &) const OVERRIDE;
+	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const OVERRIDE;
+	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
+	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
+	virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) OVERRIDE;
 
 	virtual QStringList mimeTypes() const OVERRIDE;
-	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
-	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) OVERRIDE;
+	virtual bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent = QModelIndex()) const OVERRIDE;
+	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent = QModelIndex()) OVERRIDE;
 	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent, int assignType) OVERRIDE;
 	virtual QMimeData *mimeData(const QModelIndexList &indexes) const OVERRIDE;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
-	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const OVERRIDE;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const OVERRIDE;
 
 	virtual Qt::DropActions supportedDropActions() const OVERRIDE;
 	virtual Qt::DropActions supportedDragActions() const OVERRIDE;
