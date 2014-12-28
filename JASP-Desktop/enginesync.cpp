@@ -263,10 +263,10 @@ void EngineSync::startSlaveProcess(int no)
 #undef ARCH_SUBPATH
 
 #elif __APPLE__
-	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources"));
+	//env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources"));
 #else
     env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R/lib") + ";" + programDir.absoluteFilePath("R/library/RInside/lib") + ";" + programDir.absoluteFilePath("R/library/Rcpp/lib"));
-    env.insert("R_HOME", programDir.absoluteFilePath("R"));
+	env.insert("R_HOME", programDir.absoluteFilePath("R"));
 #endif
 
 

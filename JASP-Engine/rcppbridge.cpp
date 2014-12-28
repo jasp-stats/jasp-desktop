@@ -1,8 +1,10 @@
 #include "rcppbridge.h"
 
 #include <boost/foreach.hpp>
-#include "../JASP-Common/base64.h"
 #include <iomanip>
+
+#include "../JASP-Common/base64.h"
+#include "../JASP-Common/dirs.h"
 
 using namespace std;
 
@@ -13,15 +15,23 @@ RcppBridge::RcppBridge()
 {
 	_staticRef = this;
 
-	_rInside[".readDatasetToEndNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetStatic);
-	_rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetHeaderStatic);
-	_rInside[".callbackNative"] = Rcpp::InternalFunction(&RcppBridge::callbackStatic);
-	_rInside[".baseCitation"] = "Love, J., Selker, R., Verhagen, J., Smira, M., Wild, A., Marsman, M., Gronau, Q., Morey, R., Rouder, J. & Wagenmakers, E. J. (2014). JASP (Version 0.5)[Computer software].";
+#ifdef __APPLE__
+	string rHome = Dirs::rHomeDir();
+	::setenv("R_HOME", rHome.c_str(), rHome.size());
+#endif
 
-	_rInside["jasp.analyses"] = Rcpp::List();
-	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"RJSONIO\"))");
-	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
-	_rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
+	_rInside = new RInside();
+	RInside &rInside = *_rInside;
+
+	rInside[".readDatasetToEndNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetStatic);
+	rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetHeaderStatic);
+	rInside[".callbackNative"] = Rcpp::InternalFunction(&RcppBridge::callbackStatic);
+	rInside[".baseCitation"] = "Love, J., Selker, R., Verhagen, J., Smira, M., Wild, A., Marsman, M., Gronau, Q., Morey, R., Rouder, J. & Wagenmakers, E. J. (2014). JASP (Version 0.5)[Computer software].";
+
+	rInside["jasp.analyses"] = Rcpp::List();
+	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"RJSONIO\"))");
+	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
+	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 }
 
 void RcppBridge::setDataSet(DataSet* dataSet)
@@ -33,9 +43,11 @@ Json::Value RcppBridge::init(const string &name, const Json::Value &options)
 {
 	SEXP results;
 
-	_rInside["name"] = name;
-	_rInside["options.as.json.string"] = options.toStyledString();
-	_rInside.parseEval("init(name=name, options.as.json.string=options.as.json.string)", results);
+	RInside &rInside = *_rInside;
+
+	rInside["name"] = name;
+	rInside["options.as.json.string"] = options.toStyledString();
+	rInside.parseEval("init(name=name, options.as.json.string=options.as.json.string)", results);
 
 	string resultsAsString = Rcpp::as<string>(results);
 
@@ -52,9 +64,11 @@ Json::Value RcppBridge::run(const string &name, const Json::Value &options, boos
 
 	_callback = callback;
 
-	_rInside["name"] = name;
-	_rInside["options.as.json.string"] = options.toStyledString();
-	_rInside.parseEval("run(name=name, options.as.json.string=options.as.json.string)", results);
+	RInside &rInside = *_rInside;
+
+	rInside["name"] = name;
+	rInside["options.as.json.string"] = options.toStyledString();
+	rInside.parseEval("run(name=name, options.as.json.string=options.as.json.string)", results);
 
 	_callback = NULL;
 

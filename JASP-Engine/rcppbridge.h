@@ -28,7 +28,7 @@ public:
 	boost::signals2::signal<void ()> yield;
 
 private:
-	RInside _rInside;
+	RInside *_rInside;
 	DataSet *_dataSet;
 
 	static RcppBridge* _staticRef;

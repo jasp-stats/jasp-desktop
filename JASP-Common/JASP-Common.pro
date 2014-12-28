@@ -84,7 +84,8 @@ SOURCES += \
     analyses/anovarepeatedmeasuresbayesian.cpp \
     analyses/correlationbayesian.cpp \
     analyses/crosstabsbayesian.cpp \
-    analyses/regressionlinearbayesian.cpp
+    analyses/regressionlinearbayesian.cpp \
+    dirs.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -155,7 +156,8 @@ HEADERS +=\
     analyses/anovarepeatedmeasuresbayesian.h \
     analyses/correlationbayesian.h \
     analyses/crosstabsbayesian.h \
-    analyses/regressionlinearbayesian.h
+    analyses/regressionlinearbayesian.h \
+    dirs.h
 
 unix:!symbian {
     maemo5 {
