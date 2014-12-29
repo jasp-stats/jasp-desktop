@@ -34,6 +34,8 @@ string Utils::ws2s(const wstring &s)
 	return r;
 }
 
+#endif
+
 void Utils::setEnv(const string &env, const string &value)
 {
 #ifdef __WIN32__
@@ -48,4 +50,3 @@ void Utils::setEnv(const string &env, const string &value)
 #endif
 }
 
-#endif
