@@ -15,11 +15,6 @@ RcppBridge::RcppBridge()
 {
 	_staticRef = this;
 
-#ifdef __APPLE__
-	string rHome = Dirs::rHomeDir();
-	::setenv("R_HOME", rHome.c_str(), rHome.size());
-#endif
-
 	_rInside = new RInside();
 	RInside &rInside = *_rInside;
 

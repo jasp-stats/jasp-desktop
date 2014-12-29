@@ -29,7 +29,6 @@ SOURCES += \
     columns.cpp \
     column.cpp \
     analyses.cpp \
-    analysispart.cpp \
     lib_json/json_writer.cpp \
     lib_json/json_valueiterator.inl \
     lib_json/json_value.cpp \
@@ -85,7 +84,8 @@ SOURCES += \
     analyses/correlationbayesian.cpp \
     analyses/crosstabsbayesian.cpp \
     analyses/regressionlinearbayesian.cpp \
-    dirs.cpp
+    dirs.cpp \
+    utils.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -95,7 +95,6 @@ HEADERS +=\
     columns.h \
     column.h \
     analyses.h \
-    analysispart.h \
     lib_json/writer.h \
     lib_json/value.h \
     lib_json/reader.h \
@@ -157,7 +156,8 @@ HEADERS +=\
     analyses/correlationbayesian.h \
     analyses/crosstabsbayesian.h \
     analyses/regressionlinearbayesian.h \
-    dirs.h
+    dirs.h \
+    utils.h
 
 unix:!symbian {
     maemo5 {

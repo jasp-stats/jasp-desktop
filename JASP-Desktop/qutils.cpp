@@ -1,5 +1,5 @@
 
-#include "utils.h"
+#include "qutils.h"
 
 #include <QStringList>
 #include <boost/foreach.hpp>

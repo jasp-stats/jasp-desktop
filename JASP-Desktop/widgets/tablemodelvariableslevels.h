@@ -14,7 +14,7 @@
 #include "options/optionstring.h"
 #include "options/optionlist.h"
 
- #include "utils.h"
+ #include "qutils.h"
 
 class TableModelVariablesLevels : public TableModel, public BoundModel, public DropTarget, public VariableInfoConsumer
 {

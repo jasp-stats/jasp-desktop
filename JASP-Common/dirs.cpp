@@ -2,17 +2,48 @@
 #include "dirs.h"
 
 #include <iostream>
+
+#ifdef __WIN32__
+#include <windows.h>
+#else
 #include <libproc.h>
+#endif
 
 #include "process.h"
-
+#include "utils.h"
 
 using namespace std;
 
 string Dirs::exeDir()
 {
 #ifdef __WIN32__
-	return "";
+	HMODULE hModule = GetModuleHandleW(NULL);
+	WCHAR path[MAX_PATH];
+	GetModuleFileNameW(hModule, path, MAX_PATH);
+
+	wstring s(path);
+	string r = Utils::ws2s(path);
+
+	char *pathbuf = new char[MAX_PATH];
+	r.copy(pathbuf, MAX_PATH);
+
+	int last = 0;
+
+	for (int i = 0; i < r.length(); i++)
+	{
+		if (pathbuf[i] == '\\')
+		{
+			pathbuf[i] = '/';
+			last = i;
+		}
+	}
+
+	r = string(pathbuf, last);
+
+	delete[] pathbuf;
+
+	return r;
+
 #else
 
 	unsigned long pid = Process::currentPID();
@@ -49,15 +80,16 @@ string Dirs::exeDir()
 
 string Dirs::rHomeDir()
 {
-#ifdef __APPLE__
-
 	string dir = exeDir();
+
+#ifdef __WIN32__
+	dir += "/R";
+#elif __APPLE__
 	dir += "/../Frameworks/R.framework/Versions/3.1/Resources";
-
-	return dir;
-
+#else
+	dir += "/R";
 #endif
 
-	return "";
+	return dir;
 }
 

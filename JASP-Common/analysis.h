@@ -9,8 +9,6 @@
 #include "dataset.h"
 #include "options/options.h"
 
-#include "analysispart.h"
-
 #include "rinterface.h"
 
 #include "common.h"

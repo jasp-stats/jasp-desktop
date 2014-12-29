@@ -8,7 +8,7 @@
 #include "options/optionlist.h"
 #include "options/optionterms.h"
 
-#include "utils.h"
+#include "qutils.h"
 
 using namespace std;
 

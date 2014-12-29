@@ -1,6 +1,6 @@
 
 #include "term.h"
-#include "utils.h"
+#include "qutils.h"
 
 #include <sstream>
 #include <boost/foreach.hpp>

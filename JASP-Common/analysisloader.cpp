@@ -26,8 +26,6 @@
 #include "analyses/ttestonesample.h"
 #include "analyses/ttestpairedsamples.h"
 
-#include "analysispart.h"
-
 Analysis *AnalysisLoader::load(int id, string analysisName)
 {
 

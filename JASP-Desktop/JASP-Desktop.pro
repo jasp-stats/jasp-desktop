@@ -83,7 +83,6 @@ SOURCES += main.cpp\
     widgets/boundassignwidget.cpp \
     analysisforms/anovarepeatedmeasuresform.cpp \
     analysisforms/crosstabsform.cpp \
-    utils.cpp \
     analysisforms/correlationpartialform.cpp \
     ribbons/ribbonwidget.cpp \
     ribbons/ribbonsem.cpp \
@@ -121,7 +120,8 @@ SOURCES += main.cpp\
     analysisforms/correlationbayesianform.cpp \
     analysisforms/crosstabsbayesianform.cpp \
     application.cpp \
-    analysisforms/regressionlinearbayesianform.cpp
+    analysisforms/regressionlinearbayesianform.cpp \
+    qutils.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -174,7 +174,6 @@ HEADERS  += \
     widgets/tableviewmenueditordelegate.h \
     widgets/boundassignwidget.h \
     analysisforms/anovarepeatedmeasuresform.h \
-    utils.h \
     analysisforms/crosstabsform.h \
     analysisforms/correlationpartialform.h \
     ribbons/ribbonwidget.h \
@@ -214,7 +213,8 @@ HEADERS  += \
     analysisforms/correlationbayesianform.h \
     analysisforms/crosstabsbayesianform.h \
     application.h \
-    analysisforms/regressionlinearbayesianform.h
+    analysisforms/regressionlinearbayesianform.h \
+    qutils.h
 
 FORMS    += \
     backstageform.ui \

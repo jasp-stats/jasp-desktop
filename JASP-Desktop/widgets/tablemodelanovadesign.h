@@ -12,7 +12,7 @@
 #include "options/optionlist.h"
 #include "options/optionstable.h"
 
-#include "utils.h"
+#include "qutils.h"
 
 typedef QPair<QString, QStringList> Factor;
 

@@ -44,7 +44,7 @@
 #include <QStringBuilder>
 
 #include "analysisloader.h"
-#include "utils.h"
+#include "qutils.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),

@@ -9,7 +9,7 @@
 #include <QResizeEvent>
 #include "widgets/boundlistview.h"
 #include "widgets/boundpairstable.h"
-#include "utils.h"
+#include "qutils.h"
 
 using namespace std;
 

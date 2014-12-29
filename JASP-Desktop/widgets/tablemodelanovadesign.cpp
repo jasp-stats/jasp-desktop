@@ -6,7 +6,7 @@
 #include <QIcon>
 #include <QBrush>
 
-#include "utils.h"
+#include "qutils.h"
 #include "variableinfo.h"
 #include "column.h"
 
