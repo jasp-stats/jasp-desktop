@@ -1,3 +1,4 @@
+include(../common.pri)
 
 QT       += core gui webkit webkitwidgets svg
 
@@ -18,6 +19,10 @@ INCLUDEPATH += ../JASP-Common/
 unix:INCLUDEPATH += ../../boost_1_54_0
 
 windows:INCLUDEPATH += ../../boost_1_54_0
+
+linux:with_system_r {
+    DEFINES += DONT_ADD_ENVIRONMENT_VARIABLES_FOR_R_PACKAGE
+}
 
 PRE_TARGETDEPS += ../libJASP-Common.a
 
