@@ -210,13 +210,21 @@ Taken from here: http://dataprotocols.org/json-table-schema/
         ]
     }
 
-- `name` : the column name
+- `name` : the column name (note the use of [ ] in the name invokes column folding, see below)
 - `title` : optional, displayed at the top of the column; if not specified the column name is used
 - `type` : one of `"string"`, `"number"`, `"integer"`
 - `format` : format specifiers (multiple can be specified, separated with semicolons)
     - `dp:X` - format to X decimal places
     - `sf:X` - format to X significant figures
     - `p:X` - if the value is less than X, substitute `p < X` in it's place (`p:.001` is common)
+
+##### Column folding
+Column folding is where multiple columns are folded into one. This can be done for a number of reasons, but the most common is because a single column requires heterogeneous formatting. For example, the correlation table has a column which contains an r-value, a p-value directly underneath, then another r-value, etc.; these require different formatting. To achieve this, two separate columns are created for r-value and p-value, each with their own formatting, but with special names which instruct the table renderer to combine or fold these columns into one. In the case of the r-value and the p-value, the column names:
+
+- `value[pValue]`
+- `value[rValue]`
+
+might be chosen. The table renderer matches the name before the `[`, and knows to combine or fold these columns into one.
     
 #### data
 
