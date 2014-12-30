@@ -120,7 +120,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			if (reportSignificance) {
 				column.name <- paste(".test[", test, "-p]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
-				fields[[length(fields)+1]] <- list(name=column.name, title=bf.title, type="string")
+				fields[[length(fields)+1]] <- list(name=column.name, title="", type="string")
 				
 				for (variable.name in variables) {
 					column.name <- paste(variable.name, "[", test, "-p]", sep="")
@@ -143,7 +143,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				if (length(tests) > 1 || reportSignificance)
 					row[[length(row)+1]] <- test.names[[test]]
 				if (reportSignificance)
-					p.values[[length(p.values)+1]] <- bf.title
+					p.values[[length(p.values)+1]] <- "p-value"
 				for (j in .seqx(1, i-1)) {
 					row[[length(row)+1]] <- ""
 					p.values[[length(p.values)+1]] <- ""
@@ -180,31 +180,18 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						
 						if (hypothesis == "correlated") {
 							# TODO: this is a two sided BF. Fix this up for general rho0
-							# TODOTODO:
-							# Check up on NA for some.bf
 							some.bf   <- as.numeric(.bf10Exact(n=some.n, r=some.r))
 							
 							# TODO: flips BFs
 							if (bf.type == "BF01"){
 								some.bf <- 1/some.bf
 							}
-						} else if (bf.type == "BF+0"){ 
-							# TODO: add the labels "BF01" "BF10"  and "BF+0"  etc
+						} else { 
+							# TODO: for robustness, make this hypotehsis is plus or min greater or smaller whatever
 							# TODO: Still need to implement this for general rho0, rather than rho0=0
 							some.bf <- as.numeric(.bfPlus0(n=some.n, r=some.r))
-						} else if (bf.type == "BF0+") {
-							some.bf <- as.numeric(.bfPlus0(n=some.n, r=some.r))
-							some.bf <- 1/some.bf
-						} else if (bf.type == "BF-0") {
 							some.bf <- as.numeric(.bfMin0(n=some.n, r=some.r))
-						} else if (bf.type == "BF0-") {
-							some.bf <- as.numeric(.bfMin0(n=some.n, r=some.r))
-							some.bf <- 1/some.bf
-						} else {
-							# TODO: Remove this after resolving the labelling of bf.type
-							# TODOTODO: Something with erro messaging
-							#some.bf <- as.numeric(.bfPlus0(n=some.n, r=some.r))
-							some.bf <- as.numeric(.bf10Exact(n=some.n, r=some.r))
+							# TODO: flips BFs
 						}
 						
 						row[[length(row)+1]] <- .clean(some.r)
@@ -366,6 +353,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 
+0.3 <= 1
+
 # 2.2 Two-sided secondairy Bayes factor
 #  OLD
 # 
@@ -388,14 +377,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# TODO: 1. check for n=1, n=2, as r is then undefined
 	#       2. check for r=1, r=-1
 	#
-	if (is.na(r)){
-		return(NaN)
-	}
-	
-	if (n > 2 && abs(r)==1) {
-		return(Inf)
-	}
-	
 	hyperTerm <- Re(hypergeo::hypergeo((2*n-3)/4, (2*n-1)/4, (n+2)/2, r^2))
 	logTerm <- lgamma((n+1)/2)-lgamma((n+2)/2)
 	myResult <- sqrt(pi)/2*exp(logTerm)*hyperTerm
@@ -489,31 +470,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	if (alpha <= 1 && n > 2 && r==1) {
 		return(Inf)
-	} else if (alpha <= 1 && n > 2 && r==-1){
-		return(0)
 	}
-	
 	myResult <- .bf10Exact(n, r, alpha) + .mPlusMarginalB(n, r, alpha)
-	
-	if (myResult < 0){
-		# Safe guard
-		if (alpha==1){
-			bf10EJ <- .bf10JeffreysIntegrate(n, r)
-			mPlusEJ <- .mPlusMarginalBJeffreysIntegrate(n, r)
-			bfPlus0EJ <- bf10EJ+mPlusEJ
-			if (bfPlus0EJ < 0){
-				return(NaN)
-			} else {
-				return(bfPlus0EJ)
-			}
-		} else {
-			#TODO: Fix this for other alphas
-			return("Negative")
-		}		
-	} else if (myResult >= 0){
-		return(myResult)
-	}
-	return(NaN)
+	return(myResult)
 }
 
 .bfMin0 <- function(n, r, alpha=1){
@@ -531,30 +490,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(myResult)
 }
 
-.mPlusMarginalBJeffreysIntegrate <- function(n, r) {
-	# Jeffreys' test for whether a correlation is zero or not
-	# Jeffreys (1961), pp. 289-292
-	# This is the exact result, see EJ
-	##
-	# TODO: 1. check for n=1, n=2, as r is then undefined
-	#       2. check for r=1, r=-1
-	#
-	if (is.na(r)){
-		return(NaN)
-	}
-	
-	if (n > 2 && r==1) {
-		return(Inf)
-	} else if (n > 2 && r==-1){
-		return(0)
-	}
-	
-	hyperTerm <- Re(hypergeo::genhypergeo(U=c(1, (2*n-1)/4, (2*n+1)/2), 
-										  L=c(3/2, (2*n+3)/2), z=r^2))
-	myResult <- (2*n-3)/(2*n+2)*r*hyperTerm
-	return(myResult)
-}
-
 # 3.2 One-sided 2 BF
 
 # 3.3 One-sided 3 BF
@@ -568,5 +503,5 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 .posteriorRhoPlus <- function(n, r, rho, alpha=1){
-	return(1/.bfPlus0(n, r, alpha)*.myHFunction(n, r, rho)*.priorRhoPlus(rho, alpha))
+	return(1/.bfPlus0(n, r)*.myHFunction(n, r, rho)*.priorRhoPlus(rho, alpha))
 }
