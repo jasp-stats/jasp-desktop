@@ -1,15 +1,17 @@
 #include "engine.h"
 
 #include <strstream>
+#include <sstream>
 #include <cstdio>
 
 #include "../JASP-Common/lib_json/json.h"
-#include "../JASP-Common/rinterface.h"
 #include "../JASP-Common/analysisloader.h"
 #include "../JASP-Common/process.h"
-#include "../JASP-Common/sharedmemory.h"
+#include "../JASP-Common/datasetloader.h"
 
-#include <sstream>
+#include "rbridge.h"
+
+
 
 #ifdef __WIN32__
 
@@ -28,51 +30,53 @@ Engine::Engine()
 	_dataSet = NULL;
 	_channel = NULL;
 	_slaveNo = 0;
-	_currentAnalysis = NULL;
-	_nextAnalysis = NULL;
 
-	_R.yield.connect(boost::bind(&Engine::analysisYield, this));
+	_status = empty;
+
+	rbridge_init();
+
+	DataSet *dataSet = DataSetLoader::getDataSet();
+	rbridge_setDataSet(dataSet);
+}
+
+void Engine::setSlaveNo(int no)
+{
+	_slaveNo = no;
 }
 
 void Engine::runAnalysis()
 {
-	if (_currentAnalysis == NULL || _currentAnalysis->status() == Analysis::Complete || _currentAnalysis->status() == Analysis::Aborted)
+	if (_status == empty)
+		return;
+
+	string perform;
+
+	if (_status == toInit)
 	{
-		if (_nextAnalysis != NULL)
-		{
-			if (_currentAnalysis != NULL)
-				delete _currentAnalysis;
-			_currentAnalysis = _nextAnalysis;
-			_nextAnalysis = NULL;
-		}
-		else
-		{
-			return;
-		}
+		perform = "init";
+		_status = initing;
+	}
+	else
+	{
+		perform = "run";
+		_status = running;
 	}
 
-	while (_currentAnalysis->status() == Analysis::Empty || _currentAnalysis->status() == Analysis::Running)
+	RCallback callback = boost::bind(&Engine::callback, this, _1);
+	_analysisResults = rbridge_run(_analysisName, _analysisOptions, perform, callback);
+
+	if (_status == initing)
 	{
-		while (_currentAnalysis->status() == Analysis::Empty)
-			_currentAnalysis->init();
-
-		while (_currentAnalysis->status() == Analysis::Running)
-			_currentAnalysis->run();
+		_status = inited;
+		sendResults();
+		_status = empty;
 	}
-
-}
-
-void Engine::analysisResultsChanged(Analysis *analysis)
-{
-	receiveMessages();
-
-	if (analysis->status() != Analysis::Empty) // i.e. didn't become uninitialised by the messages received
-		send(analysis);
-}
-
-void Engine::analysisYield()
-{
-	receiveMessages();
+	else if (_status == running)
+	{
+		_status = complete;
+		sendResults();
+		_status = empty;
+	}
 }
 
 void Engine::run()
@@ -96,12 +100,7 @@ void Engine::run()
 	shared_memory_object::remove(memoryName.c_str());
 }
 
-void Engine::setSlaveNo(int no)
-{
-	_slaveNo = no;
-}
-
-void Engine::receiveMessages(int timeout)
+bool Engine::receiveMessages(int timeout)
 {
 	string data;
 
@@ -111,89 +110,82 @@ void Engine::receiveMessages(int timeout)
 		Reader r;
 		r.parse(data, jsonRequest, false);
 
-		string analysisName = jsonRequest.get("name", nullValue).asString();
-		int id = jsonRequest.get("id", -1).asInt();
-		bool run = jsonRequest.get("perform", "run").asString() == "run";
-		Value jsonOptions = jsonRequest.get("options", nullValue);
+		_analysisId = jsonRequest.get("id", -1).asInt();
+		_analysisName = jsonRequest.get("name", nullValue).asString();
+		_analysisOptions = jsonRequest.get("options", nullValue).toStyledString();
 
-		if (_currentAnalysis != NULL && _currentAnalysis->id() == id)
-		{
-			_currentAnalysis->options()->set(jsonOptions);
-			if (run)
-				_currentAnalysis->setStatus(Analysis::Running);
-			else
-				_currentAnalysis->setStatus(Analysis::Empty);
-		}
-		else if (_nextAnalysis != NULL && _nextAnalysis->id() == id)
-		{
-			_nextAnalysis->options()->set(jsonOptions);
-			if (run)
-				_nextAnalysis->setStatus(Analysis::Running);
-			else
-				_nextAnalysis->setStatus(Analysis::Empty);
-		}
+		string perform = jsonRequest.get("perform", "run").asString();
+
+		if (perform == "init")
+			_status = toInit;
 		else
-		{
-			Analysis *analysis = AnalysisLoader::load(id, analysisName);
-			analysis->options()->set(jsonOptions);
-			if (run)
-				analysis->setStatus(Analysis::Running);
+			_status = toRun;
 
-			if (_dataSet == NULL)
-			{
-				managed_shared_memory *mem = SharedMemory::get();
-				_dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
-				_R.setDataSet(_dataSet);
-			}
-
-			analysis->setDataSet(_dataSet);
-			analysis->setRInterface(&_R);
-			analysis->resultsChanged.connect(boost::bind(&Engine::analysisResultsChanged, this, _1));
-
-			if (_nextAnalysis != NULL)
-				delete _nextAnalysis;
-
-			_nextAnalysis = analysis;
-
-			if (_currentAnalysis != NULL)
-				_currentAnalysis->setStatus(Analysis::Aborted);
-		}
+		return true;
 	}
+
+	return false;
 }
 
-void Engine::send(Analysis *analysis)
+void Engine::sendResults()
 {
-	Value results = Value(objectValue);
+	Value response = Value(objectValue);
+	Value results;
 
-	results["id"] = analysis->id();
-	results["name"] = analysis->name();
-	results["results"] = analysis->results();
+	Json::Reader parser;
+	parser.parse(_analysisResults, results, false);
 
-	string status;
+	response["id"] = _analysisId;
+	response["name"] = _analysisName;
 
-	switch (analysis->status())
+	Json::Value resultsStatus = results.get("status", Json::nullValue);
+	if (resultsStatus != Json::nullValue)
 	{
-	case Analysis::Inited:
-		status = "inited";
-		break;
-	case Analysis::Running:
-		status = "running";
-		break;
-	case Analysis::Complete:
-		status = "complete";
-		break;
-	default:
-		status = "error";
-		break;
+		response["results"] = results.get("results", Json::nullValue);
+		response["status"]  = resultsStatus.asString();
+	}
+	else
+	{
+		string status;
+
+		switch (_status)
+		{
+		case inited:
+			status = "inited";
+			break;
+		case running:
+			status = "running";
+			break;
+		case complete:
+			status = "complete";
+			break;
+		default:
+			status = "error";
+			break;
+		}
+
+		response["results"] = results;
+		response["status"] = status;
 	}
 
-	results["status"] = status;
-
-	string message = results.toStyledString();
-
-	//cout << message;
-	//cout.flush();
+	string message = response.toStyledString();
 
 	_channel->send(message);
+}
+
+int Engine::callback(const string &results)
+{
+	if (receiveMessages())
+	{
+		return 1; // abort analysis
+	}
+
+	if (results != "null")
+	{
+		_analysisResults = results;
+		sendResults();
+	}
+
+	return 0;
 }
 

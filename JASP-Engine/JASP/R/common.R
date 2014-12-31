@@ -1,36 +1,12 @@
 
-init <- function(name, options.as.json.string) {
+run <- function(name, options.as.json.string, perform="run") {
 
 	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE)
 	analysis <- eval(parse(text=name))
 	
 	results <- try (silent = TRUE, expr = {
 	
-		analysis(dataset=NULL, options=options, perform="init")
-	})
-	
-	if (class(results) == "try-error") {
-	
-		print(results)
-	
-		"{ \"error\" : 	1, \"errorMessage\" : \"This analysis terminated unexpectedly. Please contact its author.\" }"
-	
-	} else {
-
-		results <- .addCitationToResults(results)	
-		RJSONIO::toJSON(results, digits=12)
-	}
-
-}
-
-run <- function(name, options.as.json.string) {
-
-	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE)
-	analysis <- eval(parse(text=name))
-	
-	results <- try (silent = TRUE, expr = {
-	
-		analysis(dataset=NULL, options=options, perform="run", callback=callback)
+		analysis(dataset=NULL, options=options, perform=perform, callback=callback)
 	})
 	
 	if (class(results) == "try-error") {

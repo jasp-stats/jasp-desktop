@@ -17,7 +17,7 @@ DataSetLoader::DataSetLoader()
 {
 }
 
-DataSet* DataSetLoader::loadDataSet(const string &locator)
+DataSet* DataSetLoader::loadDataSet(const string &locator) const
 {
 	struct stat fileInfo;
 	stat(locator.c_str(), &fileInfo);
@@ -130,9 +130,15 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 	return dataSet;
 }
 
-void DataSetLoader::freeDataSet(DataSet *dataSet)
+void DataSetLoader::freeDataSet(DataSet *dataSet) const
 {
 	SharedMemory::get()->destroy_ptr(dataSet);
+}
+
+DataSet *DataSetLoader::getDataSet()
+{
+	boost::interprocess::managed_shared_memory *mem = SharedMemory::get();
+	return mem->find<DataSet>(boost::interprocess::unique_instance).first;
 }
 
 void DataSetLoader::initColumn(Column &column, const string &name, const vector<string> &cells)

@@ -1,26 +1,44 @@
-#include "rcppbridge.h"
+
+#include "rbridge.h"
 
 #include <boost/foreach.hpp>
-#include <iomanip>
 
 #include "../JASP-Common/base64.h"
-#include "../JASP-Common/dirs.h"
+#include "../JASP-Common/lib_json/json.h"
+#include "../JASP-Common/sharedmemory.h"
+
+RInside *rbridge_rinside;
+DataSet *rbridge_dataSet;
 
 using namespace std;
 
+RCallback rbridge_run_callback;
 
-RcppBridge* RcppBridge::_staticRef;
+Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
+Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
+std::map<std::string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
+SEXP rbridge_callbackSEXP(SEXP results);
 
-RcppBridge::RcppBridge()
+int rbridge_callback(SEXP results);
+Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns);
+Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<std::string, Column::ColumnType> &columns);
+
+void rbridge_makeFactor(Rcpp::IntegerVector &v, const std::vector<std::string> &levels, bool ordinal = false);
+void rbridge_makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordinal = false);
+
+
+void rbridge_init()
 {
-	_staticRef = this;
+	rbridge_dataSet = NULL;
+	rbridge_run_callback = NULL;
 
-	_rInside = new RInside();
-	RInside &rInside = *_rInside;
+	rbridge_rinside = new RInside();
 
-	rInside[".readDatasetToEndNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetStatic);
-	rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&RcppBridge::readDataSetHeaderStatic);
-	rInside[".callbackNative"] = Rcpp::InternalFunction(&RcppBridge::callbackStatic);
+	RInside &rInside = rbridge_rinside->instance();
+
+	rInside[".readDatasetToEndNative"] = Rcpp::InternalFunction(&rbridge_readDataSetSEXP);
+	rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&rbridge_readDataSetHeaderSEXP);
+	rInside[".callbackNative"] = Rcpp::InternalFunction(&rbridge_callbackSEXP);
 	rInside[".baseCitation"] = "Love, J., Selker, R., Verhagen, J., Smira, M., Wild, A., Marsman, M., Gronau, Q., Morey, R., Rouder, J. & Wagenmakers, E. J. (2014). JASP (Version 0.5)[Computer software].";
 
 	rInside["jasp.analyses"] = Rcpp::List();
@@ -29,55 +47,37 @@ RcppBridge::RcppBridge()
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 }
 
-void RcppBridge::setDataSet(DataSet* dataSet)
+void rbridge_setDataSet(DataSet *dataSet)
 {
-	_dataSet = dataSet;
+	rbridge_dataSet = dataSet;
 }
 
-Json::Value RcppBridge::init(const string &name, const Json::Value &options)
+string rbridge_run(const string &name, const string &options, const string &perform, RCallback callback)
 {
 	SEXP results;
 
-	RInside &rInside = *_rInside;
+	rbridge_run_callback = callback;
+
+	RInside &rInside = rbridge_rinside->instance();
 
 	rInside["name"] = name;
-	rInside["options.as.json.string"] = options.toStyledString();
-	rInside.parseEval("init(name=name, options.as.json.string=options.as.json.string)", results);
+	rInside["options.as.json.string"] = options;
+	rInside["perform"] = perform;
+	rInside.parseEval("run(name=name, options.as.json.string=options.as.json.string, perform)", results);
 
-	string resultsAsString = Rcpp::as<string>(results);
+	rbridge_run_callback = NULL;
 
-	Json::Reader r;
-	Json::Value json;
-	r.parse(resultsAsString, json);
-
-	return json;
+	return Rcpp::as<string>(results);
 }
 
-Json::Value RcppBridge::run(const string &name, const Json::Value &options, boost::function<int (Json::Value)> callback)
+Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns)
 {
-	SEXP results;
+	if (rbridge_dataSet == NULL)
+	{
+		std::cout << "rbridge dataset not set!\n";
+		std::cout.flush();
+	}
 
-	_callback = callback;
-
-	RInside &rInside = *_rInside;
-
-	rInside["name"] = name;
-	rInside["options.as.json.string"] = options.toStyledString();
-	rInside.parseEval("run(name=name, options.as.json.string=options.as.json.string)", results);
-
-	_callback = NULL;
-
-	string resultsAsString = Rcpp::as<string>(results);
-
-	Json::Reader r;
-	Json::Value json;
-	r.parse(resultsAsString, json);
-
-	return json;
-}
-
-Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::ColumnType> &columns)
-{
 	Rcpp::List list(columns.size());
 	Rcpp::CharacterVector columnNames;
 
@@ -95,7 +95,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 		string base64 = Base64::encode(dot, columnName);
 		columnNames.push_back(base64);
 
-		Column &column = _dataSet->columns().get(columnName);
+		Column &column = rbridge_dataSet->columns().get(columnName);
 		Column::ColumnType columnType = column.columnType();
 
 		Column::ColumnType requestedType = columnInfo.second;
@@ -144,7 +144,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 						v[rowNo++] = value + 1;
 				}
 
-				makeFactor(v, column.labels());
+				rbridge_makeFactor(v, column.labels());
 
 				list[colNo++] = v;
 			}
@@ -166,7 +166,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 						v[rowNo++] = value + 1;
 				}
 
-				makeFactor(v, column.labels(), ordinal);
+				rbridge_makeFactor(v, column.labels(), ordinal);
 			}
 			else
 			{
@@ -209,7 +209,7 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 					}
 				}
 
-				makeFactor(v, labels, ordinal);
+				rbridge_makeFactor(v, labels, ordinal);
 			}
 
 			list[colNo++] = v;
@@ -223,8 +223,14 @@ Rcpp::DataFrame RcppBridge::readDataSet(const std::map<std::string, Column::Colu
 	return dataFrame;
 }
 
-Rcpp::DataFrame RcppBridge::readDataSetHeader(const std::map<string, Column::ColumnType> &columns)
+Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<string, Column::ColumnType> &columns)
 {
+	if (rbridge_dataSet == NULL)
+	{
+		std::cout << "rbridge dataset not set!\n";
+		std::cout.flush();
+	}
+
 	Rcpp::List list(columns.size());
 	Rcpp::CharacterVector columnNames;
 
@@ -242,7 +248,8 @@ Rcpp::DataFrame RcppBridge::readDataSetHeader(const std::map<string, Column::Col
 		string base64 = Base64::encode(dot, columnName);
 		columnNames.push_back(base64);
 
-		Column &column = _dataSet->columns().get(columnName);
+		Columns &columns = rbridge_dataSet->columns();
+		Column &column = columns.get(columnName);
 		Column::ColumnType columnType = column.columnType();
 
 		Column::ColumnType requestedType = columnInfo.second;
@@ -262,7 +269,7 @@ Rcpp::DataFrame RcppBridge::readDataSetHeader(const std::map<string, Column::Col
 			else
 			{
 				Rcpp::IntegerVector v(0);
-				makeFactor(v, column.labels());
+				rbridge_makeFactor(v, column.labels());
 				list[colNo++] = v;
 			}
 		}
@@ -271,7 +278,7 @@ Rcpp::DataFrame RcppBridge::readDataSetHeader(const std::map<string, Column::Col
 			bool ordinal = (requestedType == Column::ColumnTypeOrdinal);
 
 			Rcpp::IntegerVector v(0);
-			makeFactor(v, column.labels(), ordinal);
+			rbridge_makeFactor(v, column.labels(), ordinal);
 
 			list[colNo++] = v;
 		}
@@ -284,7 +291,7 @@ Rcpp::DataFrame RcppBridge::readDataSetHeader(const std::map<string, Column::Col
 	return dataFrame;
 }
 
-void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordinal)
+void rbridge_makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordinal)
 {
 	Rcpp::CharacterVector labels;
 
@@ -308,7 +315,7 @@ void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool o
 	v.attr("class") = cla55;
 }
 
-void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &levels, bool ordinal)
+void rbridge_makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &levels, bool ordinal)
 {
 	v.attr("levels") = levels;
 
@@ -321,46 +328,32 @@ void RcppBridge::makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &l
 }
 
 
-int RcppBridge::callback(SEXP results)
-{	
-	yield();
-
-	if (Rf_isNull(results))
+int rbridge_callback(SEXP results)
+{
+	if (rbridge_run_callback != NULL)
 	{
-		return _callback(Json::nullValue);
+		if (Rf_isNull(results))
+		{
+			return rbridge_run_callback("null");
+		}
+		else
+		{
+			return rbridge_run_callback(Rcpp::as<string>(results));
+		}
 	}
 	else
 	{
-		string jsonString = Rcpp::as<string>(results);
-
-		Json::Reader r;
-		Json::Value json;
-		r.parse(jsonString, json);
-
-		return _callback(json);
+		return 0;
 	}
 }
 
-Rcpp::DataFrame RcppBridge::readDataSetStatic(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
-{	
-	map<string, Column::ColumnType> columnsRequested = marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns);
-	return _staticRef->readDataSet(columnsRequested);
-}
-
-Rcpp::DataFrame RcppBridge::readDataSetHeaderStatic(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
-{
-	map<string, Column::ColumnType> columnsRequested = marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns);
-	return _staticRef->readDataSetHeader(columnsRequested);
-}
-
-std::map<string, Column::ColumnType> RcppBridge::marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
+std::map<string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
 {
 	map<string, Column::ColumnType> columnsRequested;
 
 	if (Rf_isLogical(allColumns) && Rcpp::as<bool>(allColumns))
 	{
-		(void)_staticRef;
-		BOOST_FOREACH(const Column &column, _staticRef->_dataSet->columns())
+		BOOST_FOREACH(const Column &column, rbridge_dataSet->columns())
 			columnsRequested[column.name()] = Column::ColumnTypeUnknown;
 	}
 
@@ -395,11 +388,23 @@ std::map<string, Column::ColumnType> RcppBridge::marshallSEXPs(SEXP columns, SEX
 	return columnsRequested;
 }
 
-SEXP RcppBridge::callbackStatic(SEXP results)
+SEXP rbridge_callbackSEXP(SEXP results)
 {
 	Rcpp::NumericVector control(1);
-	control[0] = _staticRef->callback(results);
+	control[0] = rbridge_callback(results);
 	return control;
+}
+
+Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
+{
+	map<string, Column::ColumnType> columnsRequested = rbridge_marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns);
+	return rbridge_readDataSet(columnsRequested);
+}
+
+Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)
+{
+	map<string, Column::ColumnType> columnsRequested = rbridge_marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns);
+	return rbridge_readDataSetHeader(columnsRequested);
 }
 
 

@@ -47,10 +47,6 @@ void EngineSync::start()
 
 	_engineStarted = true;
 
-	_timer = new QTimer(this);
-	connect(_timer, SIGNAL(timeout()), this, SLOT(process()));
-	_timer->start(50);
-
 	try {
 
 		unsigned long pid = Process::currentPID();
@@ -80,6 +76,10 @@ void EngineSync::start()
 		_analysesInProgress.push_back(NULL);
 		startSlaveProcess(i);
 	}
+
+	_timer = new QTimer(this);
+	connect(_timer, SIGNAL(timeout()), this, SLOT(process()));
+	_timer->start(50);
 }
 
 bool EngineSync::engineStarted()

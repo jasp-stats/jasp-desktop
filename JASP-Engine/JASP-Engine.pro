@@ -81,11 +81,10 @@ PRE_TARGETDEPS += RPackage
 
 SOURCES += main.cpp \
 	engine.cpp \
-	rcppbridge.cpp
+    rbridge.cpp
 
 HEADERS += \
 	engine.h \
-	analysistask.h \
-	rcppbridge.h
+    rbridge.h
 
 RESOURCES +=

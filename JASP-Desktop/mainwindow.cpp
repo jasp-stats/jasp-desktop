@@ -317,12 +317,6 @@ void MainWindow::dataSetSelected(const QString &filename)
 	}
 	else
 	{
-		/*if (_dataSet != NULL)
-		{
-			_loader.free(_dataSet);
-			_dataSet = NULL;
-		}*/
-
 		_loader.load(filename);
 		_alert->show();
 	}

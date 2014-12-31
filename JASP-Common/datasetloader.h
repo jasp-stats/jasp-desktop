@@ -8,8 +8,10 @@ class DataSetLoader
 {
 public:
     DataSetLoader();
-	DataSet *loadDataSet(const std::string &locator);
-	void freeDataSet(DataSet *dataSet);
+	DataSet *loadDataSet(const std::string &locator) const;
+	void freeDataSet(DataSet *dataSet) const;
+
+	static DataSet *getDataSet();
 
 	boost::signals2::signal<void (const std::string &stage, int progress)> progress;
 
