@@ -29,7 +29,7 @@ An assortment of useful functions are available to JASP R analyses. These are de
 
 In order for the analysis to read the data from JASP, one of two functions must be called:
 
-`.readDataSetHeader(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`  
+`.readDataSetHeader(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
 `.readDataSetToEnd(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
 
 - `columns` : a vector of column names to be read
@@ -49,16 +49,16 @@ The beginning of an analysis function will typically looks as follows:
     
         if (perform == "run") {
         
-            dataset <- .readDataSetToEnd(...)
+            dataset <- .readDataSetToEnd(columns.as.numeric=...,)
             
         } else {
         
-            dataset <- .readDataSetHeader(...)
+            dataset <- .readDataSetHeader(columns.as.numeric=...,)
         }
         
     } else {
     
-        dataset <- .vdf(dataset)
+        dataset <- .vdf(dataset, columns.as.numeric=...,)
     }
 
 ### Converting to and from *dot-prepended-base64*
@@ -70,10 +70,18 @@ Column names in data frames read from JASP are encoded in *dot-prepended-base64*
 `.vf(formulas)`  
 `.unvf(formulas)`
 
+`.vdf(dataset, columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
+
 `.v` returns a vector of column names converted to *dot-prepended-base64-encoding*
+
 `.unv` returns a vector of normal column names converted from *dot-prepended-base64-encoding*
+
 `.vf` translates formulas to *dot-prepended-base64-encoding*
+
 `.unvf` reverts formulas from *dot-prepended-base64-encoding*
+
+`.vdf` transforms the column names of a dataframe to be *dot-prepended-base64-encoding*, other arguments are the same as
+`.readDataSetToEnd()`
 
 for example:
 
