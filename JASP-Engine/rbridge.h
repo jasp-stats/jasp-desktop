@@ -4,19 +4,18 @@
 #include <RInside.h>
 #include <Rcpp.h>
 
-#include <string>
-#include <map>
-#include <boost/function.hpp>
-
-#include "../JASP-Common/dataset.h"
-
-
 #ifdef __WIN32__
 
 #undef Realloc
 #undef Free
 
 #endif
+
+#include <string>
+#include <map>
+#include <boost/function.hpp>
+
+#include "../JASP-Common/dataset.h"
 
 	//typedef int (*RCallback)(std::string value);
 	typedef boost::function<int(const std::string &)> RCallback;
