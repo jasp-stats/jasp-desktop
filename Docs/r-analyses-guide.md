@@ -12,7 +12,7 @@ Analyses in JASP, when implemented in R, should be of the following form:
 
 `AnalysisName <- function(dataset, options, perform="run", callback=function(...) 0, ...) {`
 
-* `dataset` : will always be `NULL`. `dataset` is included should you wish to make your function useable from outside of JASP. Inside JASP you should read the dataset with the included functions (details below)
+* `dataset` : will always be `NULL` in JASP. `dataset` is used when an analysis is run outside of JASP. Inside JASP you should read the dataset with the included functions (details below)
 * `options` : a list containing values corresponding to the state of each of the user interface elements in the analysis' user interface
 * `perform` : will either be equal to `"init"` or `"run"`, for initializing and running the analysis respectively
 * `callback` : a function to call periodically to notify JASP that the analysis is still running, and (not implemented yet) to provide progress updates (such as percentage complete). this function will return a non-zero value if the user has aborted the analysis, and your function should terminate in response to this.
@@ -42,6 +42,24 @@ These functions return a data.frame containing the columns requested marshalled 
 `.readDataSetHeader()` returns a data.frame with no data (zero rows), and is intended for initialization of an analysis. `.readDataSetToEnd()` returns a data.frame containing all the rows for the requested columns.
 
 The names of the columns in these data.frames are encoded with *dot-prepended-base64-encoding*. This is so that special characters can be supported. These names can be converted back and forth using the `.v` and `.unv` functions (below)
+
+The beginning of an analysis function will typically looks as follows:
+
+    if (is.null(dataset)) {
+    
+        if (perform == "run") {
+        
+            dataset <- .readDataSetToEnd(...)
+            
+        } else {
+        
+            dataset <- .readDataSetHeader(...)
+        }
+        
+    } else {
+    
+        dataset <- .vdf(dataset)
+    }
 
 ### Converting to and from *dot-prepended-base64*
 
@@ -314,4 +332,5 @@ It is recommended to use the footnotes functions described above, rather than cr
 `data` is most easily produced with the functions:
     - `.beginImageSave()`
     - `.endImageSave()`
+
 
