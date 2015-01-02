@@ -943,6 +943,10 @@ Anova <- function(dataset=NULL, options, perform="run", callback=function(...) 0
 		
 			dataset <- .readDataSetHeader(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
 		}
+		
+	} else {
+	
+		dataset <- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)	
 	}
 	
 	results <- list()

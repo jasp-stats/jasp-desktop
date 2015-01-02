@@ -103,21 +103,65 @@ run <- function(name, options.as.json.string, perform="run") {
 
 .vdf <- function(df, columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {
 
-	new.df <- data.frame()
+	new.df <- NULL
+	namez <- NULL
 	
-	for (column.name in columns)
-		new.df <- cbind(new.df, df[[column.name]])
-		
-	for (column.name in columns.as.ordinal)
-		new.df <- cbind(new.df, as.ordered(df[[column.name]]))
-		
-	for (column.name in columns.as.factor)
-		new.df <- cbind(new.df, as.factor(df[[column.name]]))
-		
-	for (column.name in columns.as.numeric)
-		new.df <- cbind(new.df, as.numeric(as.character(df[[column.name]])))
+	for (column.name in columns) {
+	
+		column <- df[[column.name]]
 
-	names(new.df) <- .v(names(new.df))
+		if (is.null(new.df)) {
+			new.df <- data.frame(column)
+		} else {
+			new.df <- data.frame(new.df, column)
+		}
+		
+		namez <- c(namez, column.name)
+	}
+		
+	for (column.name in columns.as.ordinal) {
+	
+		column <- as.ordered(df[[column.name]])
+	
+		if (is.null(new.df)) {
+			new.df <- data.frame(column)
+		} else {
+			new.df <- data.frame(new.df, column)
+		}
+
+		namez <- c(namez, column.name)
+	}
+		
+	for (column.name in columns.as.factor) {
+	
+		column <- as.factor(df[[column.name]])
+
+		if (is.null(new.df)) {
+			new.df <- data.frame(column)
+		} else {
+			new.df <- data.frame(new.df, column)
+		}
+	
+		namez <- c(namez, column.name)
+	}
+		
+	for (column.name in columns.as.numeric) {
+
+		column <- as.numeric(as.character(df[[column.name]]))
+
+		if (is.null(new.df)) {
+			new.df <- data.frame(column)
+		} else {
+			new.df <- data.frame(new.df, column)
+		}
+	
+		namez <- c(namez, column.name)
+	}
+
+	if (is.null(new.df))
+		return (data.frame())
+
+	names(new.df) <- .v(namez)
 	
 	new.df <- .excludeNaListwise(new.df, exclude.na.listwise)
 	

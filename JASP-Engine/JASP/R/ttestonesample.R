@@ -17,7 +17,19 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			}
 		
 		} else {
+		
 			dataset <- .readDataSetHeader(columns.as.numeric=all.variables)
+		}
+		
+	} else {
+	
+		if (options$missingValues == "excludeListwise") {
+		
+			dataset <- .vdf(dataset, columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
+		}
+		else {
+		
+			dataset <- .vdf(dataset, columns.as.numeric=all.variables)
 		}
 	}
 

@@ -1,6 +1,6 @@
 Guide to JASPPreview
 ==================
-The current version of JASPPreview is 0.5-1 and is available [here](https://static.jasp-stats.org/development/JASPPreview_0.5-1.tar.gz). It depends on [RJSONIO](http://cran.r-project.org/web/packages/RJSONIO/index.html), so you should install that first.
+The current version of JASPPreview is 0.5-2 and is available [here](https://static.jasp-stats.org/development/JASPPreview_0.5-2.tar.gz). It depends on [RJSONIO](http://cran.r-project.org/web/packages/RJSONIO/index.html), so you should install that first.
 
 JASPPreview allows you to run code, and see what results will look like in JASP, without having to run the code in JASP itself. This allows people to work from an interactive R session, and see their results without having to go through the whole process of rebuilding and rerunning JASP.
 
@@ -28,18 +28,18 @@ The function is then run with appropriate data, and the results object is produc
     
     JASPPreview::prepare()
     
-    data  <- read.table("~/Documents/ssgo-fred.csv", sep=",", header=TRUE)
+    data <- data.frame(rt=1:6, trialType=rep(1:2,3))
     
     options <- list(
       contrasts = list(list(contrast="deviation", variable="trialType")),
       dependent = "rt",
       fixedFactors = list("trialType"),
       modelTerms = list(
-        list(components = list("trialType"))
-        ),
+        list(components = list("trialType"))),
       sumOfSquares="type3",
-      misc=list(effectSizeEstimates=FALSE)
-    )
+      misc=list(effectSizeEstimates=FALSE, descriptives=FALSE, homogeneityTests=FALSE),
+      wlsWeights="",
+      horizontalAxis="")
     
     results <- Anova(data, options)
     
