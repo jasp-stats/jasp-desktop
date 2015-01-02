@@ -1,6 +1,6 @@
 Guide to JASPPreview
 ==================
-The current version of JASPPreview is 0.5-0 and is available [here](https://static.jasp-stats.org/development/JASPPreview_0.5-0.tar.gz). It depends on [RJSONIO](http://cran.r-project.org/web/packages/RJSONIO/index.html), so you should install that first.
+The current version of JASPPreview is 0.5-1 and is available [here](https://static.jasp-stats.org/development/JASPPreview_0.5-1.tar.gz). It depends on [RJSONIO](http://cran.r-project.org/web/packages/RJSONIO/index.html), so you should install that first.
 
 JASPPreview allows you to run code, and see what results will look like in JASP, without having to run the code in JASP itself. This allows people to work from an interactive R session, and see their results without having to go through the whole process of rebuilding and rerunning JASP.
 
