@@ -53,7 +53,7 @@ private:
 	QWidget *_buttonPanel;
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
-	QPushButton *_removeButton;
+	QPushButton *_menuButton;
 
 	OptionsForm *_optionsForm;
 

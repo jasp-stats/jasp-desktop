@@ -130,16 +130,20 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanel->setLayout(_buttonPanelLayout);
 
 	_okButton = new QPushButton(QString("OK"), _buttonPanel);
-	_removeButton = new QPushButton(QString("Remove"), _buttonPanel);
+	_menuButton = new QPushButton(QString("..."), _buttonPanel);
+
+	QMenu *menu = new QMenu(_menuButton);
+	menu->addAction("Remove Analysis", this, SLOT(analysisRemoved()));
+	_menuButton->setMenu(menu);
 
 	_buttonPanelLayout->addWidget(_okButton);
-	_buttonPanelLayout->addWidget(_removeButton);
+	_buttonPanelLayout->addWidget(_menuButton);
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
 
 	QTimer::singleShot(0, this, SLOT(repositionButtonPanel()));
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
-	connect(_removeButton, SIGNAL(clicked()), this, SLOT(analysisRemoved()));
+
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
 
