@@ -98,6 +98,9 @@ private slots:
 	void updateUIFromOptions();
 
 	void engineCrashed();
+
+	void helpFirstLoaded(bool ok);
+	void requestHelpPage(const QString &pageName);
 };
 
 #endif // MAINWIDGET_H

@@ -15,12 +15,12 @@ const QString &AppDirs::examples()
 	return dir;
 }
 
-const QString &AppDirs::userGuide()
+const QString &AppDirs::help()
 {
 #ifdef __APPLE__
-	static QString dir = QApplication::applicationDirPath() + "/../Resources/User Guide";
+	static QString dir = QApplication::applicationDirPath() + "/../Resources/Help";
 #else
-	static QString dir = QApplication::applicationDirPath() + QDir::separator() + "User Guide";
+	static QString dir = QApplication::applicationDirPath() + QDir::separator() + "Help";
 #endif
 
 	return dir;

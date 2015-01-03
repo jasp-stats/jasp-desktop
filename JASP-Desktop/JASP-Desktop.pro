@@ -15,7 +15,7 @@ CONFIG -= app_bundle
 
 INCLUDEPATH += ../JASP-Common/
 
-unix:INCLUDEPATH += ../../boost_1_54_0
+macx:INCLUDEPATH += ../../boost_1_54_0
 
 windows:INCLUDEPATH += ../../boost_1_54_0
 
@@ -23,7 +23,7 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
 
-unix:ICON = icon.icns
+macx:ICON = icon.icns
 windows:RC_FILE = icon.rc
 
 windows:LIBS += -lole32 -loleaut32
@@ -389,7 +389,7 @@ OTHER_FILES += \
     analysisforms/AnovaRepeatedMeasuresShortForm.qml \
     html/css/images/waiting.svg
 
-HELPPATH = $${PWD}/../Docs/*.*
+HELPPATH = $${PWD}/../Docs/help/*
 
 win32 {
 
@@ -398,25 +398,25 @@ win32 {
 	HELPPATH ~= s,/,\\,g
 	HELPPATHDEST ~= s,/,\\,g
 
-	copyfiles.commands += $(MKDIR) $$HELPPATHDEST &&
-	copyfiles.commands += $$quote(cmd /c xcopy /S /I $${HELPPATH} $${HELPPATHDEST})
+	copydocs.commands += $(MKDIR) $$HELPPATHDEST
+	copydocs.commands += && $$quote(cmd /c xcopy /S /I $${HELPPATH} $${HELPPATHDEST})
 }
 
 macx {
 
 	HELPPATHDEST = $${OUT_PWD}/../../Resources/Help/
 
-	copyfiles.commands += $(MKDIR) $$HELPPATHDEST ;
-	copyfiles.commands += cp $$HELPPATH $$HELPPATHDEST ;
+	copydocs.commands += $(MKDIR) $$HELPPATHDEST ;
+	copydocs.commands += cp -R $$HELPPATH $$HELPPATHDEST ;
 }
 
 linux {
 
 	HELPPATHDEST = $${OUT_PWD}/../Help/
 
-	copyfiles.commands += $(MKDIR) $$HELPPATHDEST ;
-	copyfiles.commands += cp $$HELPPATH $$HELPPATHDEST ;
+	copydocs.commands += $(MKDIR) $$HELPPATHDEST ;
+	copydocs.commands += cp -R $$HELPPATH $$HELPPATHDEST ;
 }
 
-QMAKE_EXTRA_TARGETS += copyfiles
-POST_TARGETDEPS += copyfiles
+QMAKE_EXTRA_TARGETS += copydocs
+POST_TARGETDEPS += copydocs

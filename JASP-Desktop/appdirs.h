@@ -8,7 +8,7 @@ class AppDirs
 public:
 
 	static const QString &examples();
-	static const QString &userGuide();
+	static const QString &help();
 };
 
 #endif // APPDIRS_H

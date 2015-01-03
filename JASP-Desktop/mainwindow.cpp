@@ -84,10 +84,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-	ui->webView->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+	ui->webViewHelp->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 #else
 	ui->webViewResults->setContextMenuPolicy(Qt::NoContextMenu);
-	ui->webView->setContextMenuPolicy(Qt::NoContextMenu);
+	ui->webViewHelp->setContextMenuPolicy(Qt::NoContextMenu);
 #endif
 
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
@@ -156,8 +156,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 
-	QUrl userGuide(QString("file://") + AppDirs::userGuide() + "/index.html");
-	ui->webView->setUrl(userGuide);
+	QUrl userGuide(QString("file://") + AppDirs::help() + "/index.html");
+	ui->webViewHelp->setUrl(userGuide);
+	ui->webViewHelp->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
 	ui->panelHelp->hide();
 }
 
@@ -282,6 +284,9 @@ void MainWindow::showForm(Analysis *analysis)
 
 		_buttonPanel->raise();
 		_buttonPanel->show();
+
+		QString helpPage = QString("analyses/") + tq(analysis->name()).toLower();
+		requestHelpPage(helpPage);
 	}
 }
 
@@ -440,6 +445,39 @@ void MainWindow::engineCrashed()
 		QMessageBox::warning(this, "Error", "The JASP Statistics Engine has terminated unexpectedly.\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.");
 		QApplication::exit(1);
 	}
+}
+
+void MainWindow::helpFirstLoaded(bool ok)
+{
+	if (ok)
+		requestHelpPage("index");
+}
+
+void MainWindow::requestHelpPage(const QString &pageName)
+{
+	QFile file(AppDirs::help() + "/" + pageName + ".md");
+
+	QString content;
+
+	if (file.exists())
+	{
+		file.open(QFile::ReadOnly);
+		content = QString::fromUtf8(file.readAll());
+		file.close();
+	}
+	else
+	{
+		content = "404\n===\n\n**" + pageName + "** could not be found";
+	}
+
+	content.replace("\"", "\\\"");
+	content.replace("\r\n", "\\n");
+	content.replace("\r", "\\n");
+	content.replace("\n", "\\n");
+
+	QString js = "window.render(\"" + content + "\")";
+
+	ui->webViewHelp->page()->mainFrame()->evaluateJavaScript(js);
 }
 
 void MainWindow::itemSelected(const QString &item)
