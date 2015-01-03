@@ -389,3 +389,34 @@ OTHER_FILES += \
     analysisforms/AnovaRepeatedMeasuresShortForm.qml \
     html/css/images/waiting.svg
 
+HELPPATH = $${PWD}/../Docs/*.*
+
+win32 {
+
+	HELPPATHDEST = $${OUT_PWD}/../Help/
+
+	HELPPATH ~= s,/,\\,g
+	HELPPATHDEST ~= s,/,\\,g
+
+	copyfiles.commands += $(MKDIR) $$HELPPATHDEST &&
+	copyfiles.commands += $$quote(cmd /c xcopy /S /I $${HELPPATH} $${HELPPATHDEST})
+}
+
+macx {
+
+	HELPPATHDEST = $${OUT_PWD}/../../Resources/Help/
+
+	copyfiles.commands += $(MKDIR) $$HELPPATHDEST ;
+	copyfiles.commands += cp $$HELPPATH $$HELPPATHDEST ;
+}
+
+linux {
+
+	HELPPATHDEST = $${OUT_PWD}/../Help/
+
+	copyfiles.commands += $(MKDIR) $$HELPPATHDEST ;
+	copyfiles.commands += cp $$HELPPATH $$HELPPATHDEST ;
+}
+
+QMAKE_EXTRA_TARGETS += copyfiles
+POST_TARGETDEPS += copyfiles

@@ -13,11 +13,8 @@ using boost::lexical_cast;
 using namespace boost::interprocess;
 using namespace std;
 
-DataSetLoader::DataSetLoader()
-{
-}
 
-DataSet* DataSetLoader::loadDataSet(const string &locator) const
+DataSet* DataSetLoader::loadDataSet(const string &locator, boost::function<void(const string &, int)> progressCallback)
 {
 	struct stat fileInfo;
 	stat(locator.c_str(), &fileInfo);
@@ -46,7 +43,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator) const
 		progress = 50 * csv.pos() / csv.size();
 		if (progress != lastProgress)
 		{
-			this->progress("Loading Data Set", progress);
+			progressCallback("Loading Data Set", progress);
 			lastProgress = progress;
 		}
 
@@ -102,7 +99,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator) const
 
 			try {
 
-				this->progress("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
+				progressCallback("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
 
 				Column &column = dataSet->column(colNo);
 				initColumn(column, columns.at(colNo), cells.at(colNo));
@@ -130,7 +127,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator) const
 	return dataSet;
 }
 
-void DataSetLoader::freeDataSet(DataSet *dataSet) const
+void DataSetLoader::freeDataSet(DataSet *dataSet)
 {
 	SharedMemory::get()->destroy_ptr(dataSet);
 }

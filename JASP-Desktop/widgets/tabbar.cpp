@@ -4,7 +4,8 @@
 TabBar::TabBar(QWidget *parent) :
 	QWidget(parent)
 {
-	_lastTab = NULL;
+	_optionsTab = NULL;
+	_helpTab = NULL;
 
 	_background = new QWidget(this);
 	_background->setObjectName("background");
@@ -42,20 +43,27 @@ void TabBar::removeTab(int index)
 	delete button;
 }
 
-void TabBar::addLastTab(QString tabName)
+void TabBar::addOptionsTab()
 {
-	_lastTab = new QPushButton(tabName, this);
-	_lastTab->setCheckable(true);
-	connect(_lastTab, SIGNAL(clicked()), this, SLOT(tabSelectedHandler()));
+	_optionsTab = new QPushButton("Options", this);
+	_optionsTab->setCheckable(true);
+	connect(_optionsTab, SIGNAL(clicked()), this, SLOT(tabSelectedHandler()));
 
-	_lastTab->setObjectName("last");
+	_layout->addWidget(_optionsTab);
+}
 
-	_layout->addWidget(_lastTab);
+void TabBar::addHelpTab()
+{
+	_helpTab = new QPushButton("Help", this);
+	_helpTab->setCheckable(true);
+	connect(_helpTab, SIGNAL(toggled(bool)), this, SLOT(helpToggledHandler(bool)));
+
+	_layout->addWidget(_helpTab);
 }
 
 int TabBar::count() const
 {
-	return _tabButtons.length() + (_lastTab != NULL ? 1 : 0);
+	return _tabButtons.length() + (_optionsTab != NULL ? 1 : 0);
 }
 
 void TabBar::setCurrentIndex(int index)
@@ -68,8 +76,8 @@ void TabBar::setCurrentIndex(int index)
 		i++;
 	}
 
-	if (_lastTab != NULL)
-		_lastTab->setChecked(i == index);
+	if (_optionsTab != NULL)
+		_optionsTab->setChecked(i == index);
 
 	emit currentChanged(index);
 }
@@ -89,5 +97,11 @@ void TabBar::tabSelectedHandler()
 		i++;
 	}
 
-	setCurrentIndex(i);
+	if (source == _optionsTab)
+		setCurrentIndex(i);
+}
+
+void TabBar::helpToggledHandler(bool on)
+{
+	emit helpToggled(on);
 }
