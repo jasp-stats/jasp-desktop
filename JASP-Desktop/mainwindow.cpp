@@ -133,6 +133,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanel->setLayout(_buttonPanelLayout);
 
 	_okButton = new QPushButton(QString("OK"), _buttonPanel);
+	_okButton->setDefault(true);
 	_menuButton = new QPushButton(QString("..."), _buttonPanel);
 
 	QMenu *menu = new QMenu(_menuButton);
