@@ -8,8 +8,7 @@ CONFIG += staticlib
 
 windows:CONFIG += c++11
 
-unix:INCLUDEPATH += ../../boost_1_54_0
-
+macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
 
 windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
@@ -158,15 +157,6 @@ HEADERS +=\
     analyses/regressionlinearbayesian.h \
     dirs.h \
     utils.h
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}
 
 OTHER_FILES += \
     analyses/frequencies.R \

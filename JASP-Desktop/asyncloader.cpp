@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <QFileInfo>
 
+#include <boost/bind.hpp>
+
 using namespace std;
 
 AsyncLoader::AsyncLoader(QObject *parent) :
@@ -13,8 +15,6 @@ AsyncLoader::AsyncLoader(QObject *parent) :
 	this->moveToThread(&_thread);
 
 	connect(this, SIGNAL(loads(QString)), this, SLOT(loadTask(QString)));
-
-	_loader.progress.connect(boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 	_thread.start();
 }
@@ -34,7 +34,7 @@ void AsyncLoader::loadTask(const QString &filename)
 {
 	try
 	{
-		DataSet *dataSet = _loader.loadDataSet(filename.toStdString());
+		DataSet *dataSet = _loader.loadDataSet(filename.toStdString(), boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 		QString name = QFileInfo(filename).baseName();
 

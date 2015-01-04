@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1100</width>
+    <width>1180</width>
     <height>600</height>
    </rect>
   </property>
@@ -82,6 +82,7 @@
              <property name="styleSheet">
               <string notr="true">QSplitter::handle {
 	border-right: 1px solid #929292 ;
+	border-left: 1px solid #929292 ;
 }</string>
              </property>
              <property name="orientation">
@@ -93,19 +94,88 @@
              <property name="childrenCollapsible">
               <bool>false</bool>
              </property>
-             <widget class="QWidget" name="panelLHS" native="true">
+             <widget class="MainTableView" name="tableView">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>70</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="styleSheet">
-               <string notr="true">QWidget#panelLHS {
+               <string notr="true">QTableCornerButton::section, QHeaderView::section {
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 rgb(240, 240, 240), stop:0.701 rgb(227, 225, 226));
+	padding: 0.3em ;
+	border-right: 1px solid #929292 ;
+	border-bottom: 1px solid #929292 ;
+	border-left: none ;
+	border-top: none ;
+}
+
+QHeaderView::section::last {
+	/*border-right: none ;*/
+}
+
+QTableView {
+	selection-background-color: rgb(60, 170, 231) ;
+	border-top: 1px solid #929292 ;
+	/*border-right: 1px solid #929292 ;*/
+	/*selection-color: black ;*/
+}
+
+QTableView::item
+{
+	border-right: 1px solid #bcb3b6 ;
+	border-bottom: 1px solid #bcb3b6 ;
+	border-left: none ;
+	border-top: none ;
+}
+
+QTableView::item::last
+{
+	border-right: none ;
+}</string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="showGrid">
+               <bool>false</bool>
+              </property>
+              <property name="cornerButtonEnabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+             <widget class="QWidget" name="panelMid" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>590</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>590</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QWidget#panelMid {
 	border-top: 1px solid #929292 ;
 }</string>
               </property>
-              <layout class="QGridLayout" name="gridLayout_5">
+              <layout class="QGridLayout" name="gridLayout_2">
                <property name="leftMargin">
                 <number>0</number>
                </property>
@@ -122,75 +192,13 @@
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="MainTableView" name="tableView">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>1</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>70</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QTableCornerButton::section, QHeaderView::section {
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 rgb(240, 240, 240), stop:0.701 rgb(227, 225, 226));
-	padding: 0.3em ;
-	border-right: 1px solid #929292 ;
-	border-bottom: 1px solid #929292 ;
-	border-left: none ;
-	border-top: none ;
-}
-
-QHeaderView::section::last {
-	/*border-right: none ;*/
-}
-
-QTableView {
-	selection-background-color: rgb(60, 170, 231) ;
-	border-top: 1px solid #929292 ;
-	border-right: 1px solid #929292 ;
-	/*selection-color: black ;*/
-}
-
-QTableView::item
-{
-	border-right: 1px solid #bcb3b6 ;
-	border-bottom: 1px solid #bcb3b6 ;
-	border-left: none ;
-	border-top: none ;
-}
-
-QTableView::item::last
-{
-	border-right: none ;
-}</string>
-                 </property>
-                 <property name="frameShape">
-                  <enum>QFrame::NoFrame</enum>
-                 </property>
-                 <property name="showGrid">
-                  <bool>false</bool>
-                 </property>
-                 <property name="cornerButtonEnabled">
-                  <bool>false</bool>
-                 </property>
-                </widget>
+                <widget class="QWidget" name="widget_2" native="true"/>
                </item>
                <item row="0" column="1">
                 <widget class="QWidget" name="pageOptions" native="true">
-                 <property name="minimumSize">
-                  <size>
-                   <width>590</width>
-                   <height>0</height>
-                  </size>
-                 </property>
                  <property name="maximumSize">
                   <size>
-                   <width>670</width>
+                   <width>590</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -212,7 +220,7 @@ QTableView::item::last
                     <property name="styleSheet">
                      <string notr="true">QWidget#scrollArea {
 	border-top: 1px solid #929292 ;
-	border-right: 1px solid #929292 ;
+	/*border-right: 1px solid #929292 ;*/
 }</string>
                     </property>
                     <property name="frameShape">
@@ -232,7 +240,7 @@ QTableView::item::last
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>589</width>
+                       <width>580</width>
                        <height>16</height>
                       </rect>
                      </property>
@@ -317,6 +325,34 @@ QTableView::item::last
                </item>
               </layout>
              </widget>
+             <widget class="QFrame" name="panelHelp">
+              <property name="styleSheet">
+               <string notr="true">QWidget {
+	border-top: 1px solid #919191 ;
+}</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_5">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QWebView" name="webViewHelp">
+                 <property name="acceptDrops">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
            </item>
           </layout>
@@ -355,8 +391,15 @@ QPushButton:checked {
 	background-color: white ;
 }
 
-QPushButton#last {
+QPushButton#help {
 	margin-right: 5px ;
+	height: 11px ;
+	margin-bottom: 2px ;
+	border-bottom: 1px solid transparent;
+}
+
+QPushButton#help:checked {
+	border-bottom: 1px solid #919191;
 }
 
 QPushButton#first {

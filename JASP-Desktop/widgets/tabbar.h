@@ -14,18 +14,23 @@ public:
 	explicit TabBar(QWidget *parent = 0);
 
 	void addTab(QString tabName);
-	void addLastTab(QString tabName);
 	void removeTab(int index);
+
+	void addOptionsTab();
+	void addHelpTab();
+
 	int count() const;
 
 signals:
 	void currentChanged(int index);
+	void helpToggled(bool on);
 
 public slots:
 	void setCurrentIndex(int index);
 
 private slots:
 	void tabSelectedHandler();
+	void helpToggledHandler(bool on);
 
 private:
 
@@ -34,7 +39,8 @@ private:
 	QGridLayout *_backgroundLayout;
 	QHBoxLayout *_layout;
 
-	QPushButton *_lastTab;
+	QPushButton *_optionsTab;
+	QPushButton *_helpTab;
 
 };
 

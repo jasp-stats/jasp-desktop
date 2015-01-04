@@ -27,8 +27,6 @@ macx {
 
 linux {
 
-	INCLUDEPATH += /opt/local/include
-
 	R_HOME = $$OUT_PWD/../R
 	R_EXE  = $$R_HOME/bin/R
 }
@@ -86,5 +84,3 @@ SOURCES += main.cpp \
 HEADERS += \
 	engine.h \
     rbridge.h
-
-RESOURCES +=
