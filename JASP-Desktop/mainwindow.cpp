@@ -156,9 +156,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 
-	QUrl userGuide(QString("file://") + AppDirs::help() + "/index.html");
+	QUrl userGuide = QUrl::fromLocalFile(AppDirs::help() + "/index.html");
 	ui->webViewHelp->setUrl(userGuide);
-	ui->webViewHelp->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
 	ui->panelHelp->hide();
 }

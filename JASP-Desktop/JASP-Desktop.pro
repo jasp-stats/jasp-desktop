@@ -389,7 +389,7 @@ OTHER_FILES += \
     analysisforms/AnovaRepeatedMeasuresShortForm.qml \
     html/css/images/waiting.svg
 
-HELPPATH = $${PWD}/../Docs/help/*
+HELPPATH = $${PWD}/../Docs/help
 
 win32 {
 
@@ -398,8 +398,7 @@ win32 {
 	HELPPATH ~= s,/,\\,g
 	HELPPATHDEST ~= s,/,\\,g
 
-	copydocs.commands += $(MKDIR) $$HELPPATHDEST
-	copydocs.commands += && $$quote(cmd /c xcopy /S /I $${HELPPATH} $${HELPPATHDEST})
+	copydocs.commands += $$quote(cmd /c xcopy /S /I /Y $${HELPPATH} $${HELPPATHDEST})
 }
 
 macx {
@@ -407,7 +406,7 @@ macx {
 	HELPPATHDEST = $${OUT_PWD}/../../Resources/Help/
 
 	copydocs.commands += $(MKDIR) $$HELPPATHDEST ;
-	copydocs.commands += cp -R $$HELPPATH $$HELPPATHDEST ;
+	copydocs.commands += cp -R $$HELPPATH/* $$HELPPATHDEST ;
 }
 
 linux {
@@ -415,7 +414,7 @@ linux {
 	HELPPATHDEST = $${OUT_PWD}/../Help/
 
 	copydocs.commands += $(MKDIR) $$HELPPATHDEST ;
-	copydocs.commands += cp -R $$HELPPATH $$HELPPATHDEST ;
+	copydocs.commands += cp -R $$HELPPATH/* $$HELPPATHDEST ;
 }
 
 QMAKE_EXTRA_TARGETS += copydocs
