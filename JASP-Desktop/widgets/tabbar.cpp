@@ -55,6 +55,7 @@ void TabBar::addOptionsTab()
 void TabBar::addHelpTab()
 {
 	_helpTab = new QPushButton("Help", this);
+	_helpTab->setObjectName("help");
 	_helpTab->setCheckable(true);
 	connect(_helpTab, SIGNAL(toggled(bool)), this, SLOT(helpToggledHandler(bool)));
 

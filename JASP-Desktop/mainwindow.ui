@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1100</width>
+    <width>1180</width>
     <height>600</height>
    </rect>
   </property>
@@ -240,8 +240,8 @@ QTableView::item::last
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>562</width>
-                       <height>582</height>
+                       <width>580</width>
+                       <height>16</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="optionsContentAreaLayout">
@@ -391,8 +391,15 @@ QPushButton:checked {
 	background-color: white ;
 }
 
-QPushButton#last {
+QPushButton#help {
 	margin-right: 5px ;
+	height: 12px ;
+	margin-bottom: 3px ;
+	border-bottom: 1px solid transparent;
+}
+
+QPushButton#help:checked {
+	border-bottom: 1px solid #919191;
 }
 
 QPushButton#first {
