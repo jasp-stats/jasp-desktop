@@ -82,6 +82,7 @@
 	counts.fields <- fields
 	
 	counts.fields[[length(counts.fields)+1]] <- list(name=analysis$rows, type="string", combine=TRUE)
+	
 
 	lvls <- c()
 	if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
@@ -103,21 +104,28 @@
 			counts.fp <- TRUE
 	}
 	
+	if (options$countsExpected) {
+	
+		counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
+		counts.fields[[length(counts.fields)+1]] <- list(name="type[expected]", title="", type="string")
+	}
+	
 	for (column.name in lvls) {
 
 		private.name <- base::paste(column.name,"[counts]", sep="")
 
 		if (counts.fp || options$countsExpected) {
-		
+			
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
 		
 		} else {
 		
+			#counts.fields[[length(counts.fields)+1]] <- list(name="Count ",type="string")
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="integer")
 		}
 		
 		if (options$countsExpected) {
-		
+			
 			private.name <- base::paste(column.name,"[expected]", sep="")
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
 		}
@@ -126,6 +134,7 @@
 	# Totals columns
 	
 	if (counts.fp || options$countsExpected) {
+
 	
 		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]",   title="Total", type="number", format="sf:4;dp:2")	
 		
@@ -370,11 +379,9 @@
 		row[["value[N]"]] <- "."
 	}
 	
-	 #list(name="X2", title="\u03A7\u00B2",type="number", format="sf:4"),
 
 	if (options$chiSquared) {
 	
-		#row[["type[chiSquared]"]] <- "\u03A7\u00B2"
 		row[["type[chiSquared]"]] <- "\u03A7\u00B2"
 
 		if (perform == "run" && status$error == FALSE) {
@@ -382,7 +389,6 @@
 			chi.result <- try({
 
 				chi.result <- stats::chisq.test(counts.matrix, correct=FALSE)
-				#row <- list(Method="Pearson's Chi-squared", X2=unname(chi$statistic), df=unname(chi$parameter), p=chi$p.value)
 			})
 			
 			if (class(chi.result) == "try-error") {
@@ -708,6 +714,10 @@
 .crosstabsCreateCountsRows <- function(var.name, counts.matrix, options, perform, group, status) {
 
 	rows <- list()
+	row.count<-list()
+	row.expected<-list()
+	row.count[["type[counts]"]] <- "Count"
+	
 	
 	if (perform == "run" && status$error == FALSE) {
 	
@@ -733,10 +743,12 @@
 
 			row <- as.list(counts.matrix[i,])
 			names(row) <- base::paste(names(row),"[counts]",	sep="")
-			
 			row[["total[counts]"]] <- base::sum(counts.matrix[i,])
+			row <- c(row.count, row)
 			
 			if (options$countsExpected) {
+			
+				row.expected[["type[expected]"]] <- "Expected Count"
 
 				expected <- as.list(expected.matrix[i,])
 				names(expected) <- paste(names(expected),"[expected]",  sep="")
@@ -747,6 +759,7 @@
 					expected[["total[expected]"]] <- base::sum(expected.matrix[i,])
 				}
 			
+				expected <- c(row.expected, expected)
 				row <- c(row, expected)
 			}
 		
@@ -786,6 +799,7 @@
 		row <- as.list(row)
 		names(row) <- base::paste(names(row),"[counts]",	sep="")
 		row[["total[counts]"]] <- base::sum(counts.matrix)
+		row <- c(row.count, row)
 		
 		if (options$countsExpected) {
 		
@@ -804,7 +818,9 @@
 				expected[["total[expected]"]] <- base::sum(expected.matrix)
 			}
 			
-			row <- c(row, expected)
+			expected<-c(row.expected, expected)
+			
+			row <- c(row,  expected)
 		}
 		
 	} else {
@@ -831,6 +847,7 @@
 
 	
 	rows[[length(rows)+1]] <- row
+	
 
 	rows
 }
