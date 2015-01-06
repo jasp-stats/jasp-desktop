@@ -703,70 +703,99 @@
       </item>
       <item row="2" column="0" rowspan="2" colspan="3">
        <widget class="QWidget" name="panelStatistics" native="true">
-        <layout class="QGridLayout" name="gridLayout_23">
-         <item row="3" column="0">
-          <widget class="QGroupBox" name="groupNominalByInterval">
-           <property name="title">
-            <string>Nominal by Interval</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_13">
-            <property name="bottomMargin">
+        <layout class="QGridLayout" name="gridLayout_12">
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QWidget" name="widget_17" native="true">
+           <layout class="QGridLayout" name="gridLayout_15">
+            <property name="leftMargin">
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="nominalByInterval_Eta">
+             <widget class="BoundCheckBox" name="chiSquared">
               <property name="text">
-               <string>Eta</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QGroupBox" name="groupOrdinal">
-           <property name="title">
-            <string>Ordinal</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_11">
-            <item row="3" column="0">
-             <widget class="BoundCheckBox" name="ordinal_kendallsTauC">
-              <property name="text">
-               <string>Kendall's tau-c</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="ordinal_kendallsTauB">
-              <property name="text">
-               <string>Kendall's tau-b</string>
+               <string>χ²</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="ordinal_somersD">
+             <widget class="BoundCheckBox" name="chiSquaredContinuityCorrection">
               <property name="text">
-               <string>Somers' d</string>
+               <string>χ² Continuity correction</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="ordinal_gamma">
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="likelihoodRatio">
               <property name="text">
-               <string>Gamma</string>
+               <string>Likelihood ratio</string>
               </property>
              </widget>
             </item>
            </layout>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="0" column="1" colspan="2">
+          <widget class="QWidget" name="groupOddsRatio" native="true">
+           <layout class="QGridLayout" name="gridLayout_22">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>0</number>
+            </property>
+            <item row="2" column="1">
+             <widget class="QWidget" name="widget_20" native="true">
+              <layout class="QGridLayout" name="gridLayout_23">
+               <property name="leftMargin">
+                <number>24</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Confidence Interval</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="BoundTextBox" name="oddsRatioConfidenceIntervalInterval">
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>%</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <widget class="BoundCheckBox" name="oddsRatio">
+              <property name="text">
+               <string>Odds ratio (2x2 only)</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="1" column="0" rowspan="2">
           <widget class="QGroupBox" name="groupNominal">
            <property name="title">
             <string>Nominal</string>
@@ -806,6 +835,46 @@
            </layout>
           </widget>
          </item>
+         <item row="1" column="1" rowspan="2">
+          <widget class="QGroupBox" name="groupOrdinal">
+           <property name="title">
+            <string>Ordinal</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_11">
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="ordinal_kendallsTauC">
+              <property name="text">
+               <string>Kendall's tau-c</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="ordinal_kendallsTauB">
+              <property name="text">
+               <string>Kendall's tau-b</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="ordinal_somersD">
+              <property name="text">
+               <string>Somers' d</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="ordinal_gamma">
+              <property name="text">
+               <string>Gamma</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
          <item row="2" column="2">
           <spacer name="horizontalSpacer_2">
            <property name="orientation">
@@ -818,6 +887,28 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="3" column="0">
+          <widget class="QGroupBox" name="groupNominalByInterval">
+           <property name="title">
+            <string>Nominal by Interval</string>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_13">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="nominalByInterval_Eta">
+              <property name="text">
+               <string>Eta</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item row="4" column="0" colspan="2">
           <widget class="QWidget" name="groupCochrans" native="true">
@@ -864,36 +955,6 @@
             </item>
             <item row="1" column="3">
              <widget class="QWidget" name="widget_21" native="true"/>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="3">
-          <widget class="QWidget" name="widget_17" native="true">
-           <layout class="QGridLayout" name="gridLayout_15">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="chiSquared">
-              <property name="text">
-               <string>χ²</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="chiSquaredContinuityCorrection">
-              <property name="text">
-               <string>χ² Continuity correction</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="likelihoodRatio">
-              <property name="text">
-               <string>Likelihood ratio</string>
-              </property>
-             </widget>
             </item>
            </layout>
           </widget>
