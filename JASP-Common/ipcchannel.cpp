@@ -14,7 +14,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	_channelNumber = channelNumber;
 	_isSlave = isSlave;
 
-	_memory = new managed_shared_memory(boost::interprocess::open_or_create, name.c_str(), 1024*1024);
+	_memory = new managed_shared_memory(boost::interprocess::open_or_create, name.c_str(), 16*1024*1024);
 
 	stringstream mutexInName;
 	stringstream mutexOutName;
