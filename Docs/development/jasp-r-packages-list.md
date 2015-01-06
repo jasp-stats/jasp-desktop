@@ -1,6 +1,6 @@
 
-JASP R Packages
-===============
+JASP 0.6 R Packages
+===================
 
 Dependencies (C++ API)
 ----------------------
@@ -25,6 +25,7 @@ Dependencies (C API)
 * base64 (1.1)
 * car (2.0-22)
 * qgraph (1.3)
+* hypergeo (1.2-9)
 * lavaan (0.5-17)
 * logspline (2.1.5)
 * plotrix (3.5-10)
@@ -39,11 +40,13 @@ Dependencies of dependencies (C API)
 * coda (0.16-1)
 * coin (1.0-24)
 * colorspace (1.2-4)
+* contfrac (1.1-9)
 * corpcor (1.6.7)
 * d3Network (0.5.1)
 * dichromat (2.0-0)
 * digest (0.6.6)
 * ellipse (0.3-8)
+* elliptic (1.3-5)
 * fdrtool (1.2.13)
 * Formula (1.1-2)
 * ggm (2.2)
