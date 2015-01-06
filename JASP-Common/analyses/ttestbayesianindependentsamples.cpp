@@ -31,7 +31,11 @@ Options *TTestBayesianIndependentSamples::createOptions() const
 
 	options->add("priorWidth", new OptionNumber(1));
 
-	options->add("plots", new OptionBoolean());
+	options->add("plotPriorAndPosterior", new OptionBoolean());
+	options->add("plotBayesFactorRobustness", new OptionBoolean());
+	options->add("plotSequentialAnalysis", new OptionBoolean());
+	options->add("plotSequentialAnalysisRobustness", new OptionBoolean());
+
 	options->add("plotWidth", new OptionInteger(320));
 	options->add("plotHeight", new OptionInteger(240));
 

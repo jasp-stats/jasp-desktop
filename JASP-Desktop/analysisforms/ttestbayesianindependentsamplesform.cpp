@@ -28,11 +28,6 @@ TTestBayesianIndependentSamplesForm::TTestBayesianIndependentSamplesForm(QWidget
 	ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 	ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
 
-#ifdef QT_NO_DEBUG
-	ui->plotsGroup->hide();
-#else
-	ui->plotsGroup->setStyleSheet("background-color: pink;");
-#endif
 }
 
 TTestBayesianIndependentSamplesForm::~TTestBayesianIndependentSamplesForm()
