@@ -520,6 +520,8 @@ void MainWindow::exportSelected(const QString &filename)
 	QFile file(filename);
 	file.open(QIODevice::WriteOnly | QIODevice::Truncate);
 	QTextStream stream(&file);
+	stream.setCodec("UTF-8");
+
 	stream << element.toOuterXml();
 	stream.flush();
 	file.close();
