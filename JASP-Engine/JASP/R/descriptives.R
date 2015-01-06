@@ -53,17 +53,18 @@
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
 	variables <- unlist(options$main$fields)
-
+	
 	if (is.null(dataset)) {
 	
 		if (perform == "run") {
 		
-			dataset <- .readDataSetToEnd(columns.as.numeric=variables)
+			dataset <- .readDataSetToEnd(columns=variables)
+			
 			
 		} else {
 		
-			dataset <- .readDataSetHeader(columns.as.numeric=variables)
-		}
+			dataset <- .readDataSetHeader(columns=variables)
+				}
 	}
 
 	stats.options <- options[["statistics"]]
@@ -490,70 +491,98 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		results[["tables"]] <- frequency.tables
 	}
 
-	#### FREQUENCY PLOTS
-
-	if (options$chartType != "noCharts") {
+    ####  PLOTS
 	
+	#### histogram with density estimator ####
+	plotMarginal <- function(variable, cexYlab= 1.3, lwd= 2){
+	
+		par(mar= c(5, 4.5, 4, 2) + 0.1)
+		density <- density(variable)
+		h <- hist(variable, plot = FALSE)
+		jitVar <- jitter(variable)
+		yhigh <- max(max(h$density), max(density$y))
+		ylow <- 0
+		xticks <- pretty(c(variable, jitVar), min.n= 3)
+		plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+		h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
+		ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
+		par(las=0)
+		ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.7, mgp= c(3, 0.7, 0))
+		rug(jitVar)
+		lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+	}
+	
+	if (options$chartType != "noCharts") {
+		
 		frequency.plots <- list()
-		
+			
 		i <- 1
-
+	
 		for (variable in variables) {
-
+	
 			column <- dataset[[ .v(variable) ]]
-
-			if (class(column) == "numeric" || is.factor(column))
-				next
-				
+										
 			plot <- list()
-		
+			
 			plot[["title"]] <- variable
 			plot[["width"]]  <- options$chartWidth
 			plot[["height"]] <- options$chartHeight
 			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-		
+			
 			frequency.plots[[i]] <- plot
 			i <- i + 1
 		}
-		
+			
 		results[["plots"]] <- frequency.plots
-
-		if (perform=="run") {
-			
-			i <- 1
-
-			for (variable in variables) {
 	
-				column <- dataset[[ .v(variable) ]]
-
-				if (class(column) == "numeric" || is.factor(column))
-					next
+		if (perform=="run") {
 				
-				if (callback(results) != 0)
-					return()
-			
+			i <- 1
+	
+			for (variable in variables) {
+		
+				column <- dataset[[ .v(variable) ]]
+					
+				if (is.factor(column)){
+				
+					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+					yticks <- seq(0,max(summary(column)),1)
+					yticks <- pretty(yticks)
+					par(mar= c(5, 4.5, 4, 2) + 0.1)
+					barplot(summary(column), cex.names= 1.3, axes= FALSE, ylim= range(yticks))
+					axis(2, las=1, at= yticks, labels= yticks, cex.axis= 1.4)
+					mtext(text = variable, side = 1, cex=1.9, line = 3)
+					mtext(text = "Frequency", side = 2, cex=1.9, line = 3, las=0)
+					
+				} else {
+				
+						if (callback(results) != 0)
+							return()
+				
 				image <- .beginSaveImage(options$chartWidth, options$chartHeight)
-			
-				par(lwd=2)
-				hist(column, main=paste("Frequencies for", variable), xlab=variable, col=rainbow(10))
-			
+				
+				plotMarginal(column)
+				mtext(text = variable, side = 1, cex=1.9, line = 3)
+				}
+				
 				content <- .endSaveImage(image)
-			
+				
 				plot <- frequency.plots[[i]]
-			
+				
 				plot[["data"]]  <- content
-			
+				
 				frequency.plots[[i]] <- plot
 				i <- i + 1
-
-				results[["plots"]] <- frequency.plots
-			
-			}
-		
-		}
 	
+				results[["plots"]] <- frequency.plots
+				
+			}
+		}
+		
 	}
-
+	
+	
+	
 	if (perform == "init") {
 	
 		if (length(variables) == 0) {
