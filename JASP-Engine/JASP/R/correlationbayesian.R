@@ -53,8 +53,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	correlation.table <- list()
 	
 	correlation.table[["citation"]] <- list(
-		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication.",
-		"Morey, R. D. & Rouder, J. N. (2014). BayesFactor (Version 0.99)[Computer software]."
+		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
 	)	
 	
 	if (bf.type == "BF10") {
