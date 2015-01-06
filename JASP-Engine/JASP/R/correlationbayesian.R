@@ -17,8 +17,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			dataset <- 
 				.readDataSetHeader(columns.as.numeric=options$variables)
 		}
+	} else {
+		dataset <- .vdf(dataset, columns.as.numeric=options$variables)
 	}
+	
 	results <- list()
+	print(results)
 	
 	meta <- list(
 		list(name="correlations", type="table"))
@@ -34,7 +38,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#bf.type=options$bayesFactorType)
 	return(results)
 }
-	
+
 
 
 .correlationTableBayesian <- function(dataset, perform, variables, pearson=TRUE, 
@@ -105,12 +109,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		column.names <- c()
 		
 		for (test in tests) {
+			# Creating columns
 			if (length(tests) > 1 || reportSignificance) {
 				column.name <- paste(".test[", test, "]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
 				fields[[length(fields)+1]] <- list(name=column.name, title="", type="string")
 			}
-
+			
 			for (variable.name in variables) {
 				column.name <- paste(variable.name, "[", test, "]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
@@ -125,7 +130,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				for (variable.name in variables) {
 					column.name <- paste(variable.name, "[", test, "-p]", sep="")
 					column.names[[length(column.names)+1]] <- column.name
-					fields[[length(fields)+1]] <- list(name=column.name, title=variable.name, type="number", format="dp:3;p:.001")
+					fields[[length(fields)+1]] <- list(name=column.name, title=variable.name, type="number", format="sf:4;dp:3")
 				}
 			}
 		}
@@ -138,19 +143,19 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			variable.name <- variables[[i]]
 			
 			for (test in tests) {
-				p.values <- list()
+				bayes.factors <- list()
 				
 				if (length(tests) > 1 || reportSignificance)
 					row[[length(row)+1]] <- test.names[[test]]
 				if (reportSignificance)
-					p.values[[length(p.values)+1]] <- bf.title
+					bayes.factors[[length(bayes.factors)+1]] <- bf.title
 				for (j in .seqx(1, i-1)) {
 					row[[length(row)+1]] <- ""
-					p.values[[length(p.values)+1]] <- ""
+					bayes.factors[[length(bayes.factors)+1]] <- ""
 				}
 				
 				row[[length(row)+1]] <- "\u2014" # em-dash
-				p.values[[length(p.values)+1]] <- ""
+				bayes.factors[[length(bayes.factors)+1]] <- ""
 				
 				for (j in .seqx(i+1, v.c)) {
 					# fill in blanks in table upper left-hand off diaganols 
@@ -203,8 +208,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						} else {
 							# TODO: Remove this after resolving the labelling of bf.type
 							# TODOTODO: Something with erro messaging
-							#some.bf <- as.numeric(.bfPlus0(n=some.n, r=some.r))
-							some.bf <- as.numeric(.bf10Exact(n=some.n, r=some.r))
+							some.bf <- as.numeric(.bfPlus0(n=some.n, r=some.r))
+							#some.bf <- as.numeric(.bf10Exact(n=some.n, r=some.r))
+							#some.bf <- 1
 						}
 						
 						row[[length(row)+1]] <- .clean(some.r)
@@ -220,17 +226,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						}
 						
 						if (reportSignificance)
-							p.values[[length(p.values)+1]] <- .clean(some.bf)
+							bayes.factors[[length(bayes.factors)+1]] <- .clean(some.bf)
 						
 					} else {
 						row[[length(row)+1]] <- "."
-						p.values[[length(p.values)+1]] <- "."
+						bayes.factors[[length(bayes.factors)+1]] <- "."
 					}
 				}
 				
 				if (reportSignificance) {
-					for (p.value in p.values)
-						row[[length(row)+1]] <- p.value
+					for (bf in bayes.factors)
+						row[[length(row)+1]] <- bf
 				}
 			}
 			
@@ -279,16 +285,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(myResult)
 }
 
-.myBFunction <- function(n, r, rho) {
-	hyperTerm1 <- hypergeo::hypergeo((n/2), (n/2), (1/2), (r*rho)^2)
-	hyperTerm2 <- hypergeo::hypergeo((n/2), (n/2), (-1/2), (r*rho)^2)
-	
-	myResult <- 2^(-1)*(gamma(n/2)/gamma((n+1)/2))^2*(1-rho^2)^((n-1)/2)*
-		((1-2*n*(r*rho)^2)/(r*rho)*hyperTerm1 -(1-(r*rho)^2)/(r*rho)*hyperTerm2)
-	return(Re(myResult))
-}
+# .myBFunction <- function(n, r, rho) {
+# 	hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), (1/2), (r*rho)^2))
+# 	hyperTerm2 <- Re(hypergeo::hypergeo((n/2), (n/2), (-1/2), (r*rho)^2))
+# 	
+# 	myResult <- 2^(-1)*(gamma(n/2)/gamma((n+1)/2))^2*(1-rho^2)^((n-1)/2)*
+# 		((1-2*n*(r*rho)^2)/(r*rho)*hyperTerm1 -(1-(r*rho)^2)/(r*rho)*hyperTerm2)
+# 	return(Re(myResult))
+# }
 
-.myBFunction2 <- function(n, r, rho) {
+.myBFunction <- function(n, r, rho) {
 	hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), (1/2), (r*rho)^2))
 	hyperTerm2 <- Re(hypergeo::hypergeo((n/2), (n/2), (-1/2), (r*rho)^2))
 	
@@ -338,6 +344,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 	return(realResult)
 # }
 #
+
+
 # 2.1 Two-sided main Bayes factor
 .bf10Exact <- function(n, r, alpha=1) {
 	# Ly et al 2014
@@ -347,10 +355,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# TODO: 1. check for n=1, n=2, as r is then undefined
 	#       2. check for r=1, r=-1
 	#
-	if (is.na(r)){
+	
+	
+	if (any(is.na(r))){
 		return(NaN)
 	}
 	
+	# TODO: use which
 	checkR <- abs(r) >= 1 # check whether |r| >= 1
 	
 	if (alpha <= 1 && n > 2 && checkR) {
@@ -388,10 +399,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# TODO: 1. check for n=1, n=2, as r is then undefined
 	#       2. check for r=1, r=-1
 	#
-	if (is.na(r)){
+	if ( any(is.na(r)) ){
 		return(NaN)
 	}
 	
+	# TODO: use which
 	if (n > 2 && abs(r)==1) {
 		return(Inf)
 	}
@@ -462,12 +474,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	sumTerm <- -((n*r)^2*hyperTerm1-n^2*(n+2*alpha+1)*hyperTerm2+2*n^3*r^2*
 				 	hyperTerm3+(2*n^2-2*alpha*(1-2*n)+n-1))
-	productTerm <- -(2^(1-2*alpha)*r)/((n+2*alpha-1)*(n+2*alpha+1))
-	logTerm <- -lbeta(alpha, alpha)+2*lgamma(n/2)-2*lgamma((n+1)/2)
+	productTerm <- (2^(1-2*alpha)*r)/((n+2*alpha-1)*(n+2*alpha+1))
+	logTerm <- 2*lgamma(n/2)-2*lgamma((n+1)/2)-lbeta(alpha, alpha)
 	result <- productTerm*exp(logTerm)*sumTerm
 	return(result)
 }
-
 
 # 3.1 One-sided 1 BF
 .bfPlus0 <- function(n, r, alpha=1){
@@ -483,18 +494,20 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# TODO: 1. check for n=1, n=2, as r is then undefined
 	#       2. check for r=1, r=-1
 	#
-	if (is.na(r)){
+	if ( any(is.na(r)) ){
 		return(NaN)
 	}
 	
-	if (alpha <= 1 && n > 2 && r==1) {
+	if (alpha <= 1 && n > 2 && r>=1) {
 		return(Inf)
-	} else if (alpha <= 1 && n > 2 && r==-1){
+	} else if (alpha <= 1 && n > 2 && r<=-1){
 		return(0)
 	}
 	
+	#TODO: Test for NAs
 	myResult <- .bf10Exact(n, r, alpha) + .mPlusMarginalB(n, r, alpha)
 	
+	# TODO: use which
 	if (myResult < 0){
 		# Safe guard
 		if (alpha==1){
@@ -539,10 +552,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# TODO: 1. check for n=1, n=2, as r is then undefined
 	#       2. check for r=1, r=-1
 	#
-	if (is.na(r)){
+	if ( any(is.na(r)) ){
 		return(NaN)
 	}
 	
+	# TODO: use which
 	if (n > 2 && r==1) {
 		return(Inf)
 	} else if (n > 2 && r==-1){
@@ -554,6 +568,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	myResult <- (2*n-3)/(2*n+2)*r*hyperTerm
 	return(myResult)
 }
+
+
+.bfPlus0JeffreysIntegrate <- function(n, r){
+	myResult <- .bf10JeffreysIntegrate(n, r) + .mPlusMarginalBJeffreysIntegrate(n, r)
+	return(myResult)
+}
+
+
 
 # 3.2 One-sided 2 BF
 
