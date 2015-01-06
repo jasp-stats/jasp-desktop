@@ -495,6 +495,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	#### histogram with density estimator ####
 	plotMarginal <- function(variable, cexYlab= 1.3, lwd= 2){
+	
 		par(mar= c(5, 4.5, 4, 2) + 0.1)
 		density <- density(variable)
 		h <- hist(variable, plot = FALSE)
@@ -543,6 +544,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				column <- dataset[[ .v(variable) ]]
 					
 				if (is.factor(column)){
+				
 					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
 					yticks <- seq(0,max(summary(column)),1)
 					yticks <- pretty(yticks)
@@ -551,10 +553,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					axis(2, las=1, at= yticks, labels= yticks, cex.axis= 1.4)
 					mtext(text = variable, side = 1, cex=1.9, line = 3)
 					mtext(text = "Frequency", side = 2, cex=1.9, line = 3, las=0)
-					} else {
+					
+				} else {
 				
-				if (callback(results) != 0)
-					return()
+						if (callback(results) != 0)
+							return()
 				
 				image <- .beginSaveImage(options$chartWidth, options$chartHeight)
 				
