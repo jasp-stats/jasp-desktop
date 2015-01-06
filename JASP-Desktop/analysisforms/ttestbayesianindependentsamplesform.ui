@@ -285,7 +285,7 @@
          <item row="0" column="0">
           <widget class="BoundCheckBox" name="plotPriorAndPosterior">
            <property name="text">
-            <string>Prior and posterior plots</string>
+            <string>Prior and posterior</string>
            </property>
           </widget>
          </item>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>597</width>
-    <height>500</height>
+    <height>522</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -177,9 +177,30 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_12">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="plots">
+             <widget class="BoundCheckBox" name="plotPriorAndPosterior">
               <property name="text">
-               <string>Prior and posterior plots</string>
+               <string>Prior and posterior</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="plotBayesFactorRobustness">
+              <property name="text">
+               <string>Bayes factor robustness check</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="plotSequentialAnalysis">
+              <property name="text">
+               <string>Sequential analysis</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="plotSequentialAnalysisRobustness">
+              <property name="text">
+               <string>Sequential analysis robustness check</string>
               </property>
              </widget>
             </item>
@@ -434,6 +455,11 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -448,11 +474,6 @@
    <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
