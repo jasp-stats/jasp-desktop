@@ -22,7 +22,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	}
 	
 	results <- list()
-	print(results)
 	
 	meta <- list(
 		list(name="correlations", type="table"))
