@@ -33,5 +33,9 @@ Options *Correlation::createOptions() const
 
 	options->add("missingValues", new OptionList(list("excludePairwise", "excludeListwise")));
 
+	options->add("plotCorrelationMatrix", new OptionBoolean());
+	options->add("plotDensities", new OptionBoolean());
+	options->add("plotStatistics", new OptionBoolean());
+
 	return options;
 }
