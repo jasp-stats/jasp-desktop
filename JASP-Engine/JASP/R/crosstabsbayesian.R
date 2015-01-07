@@ -380,65 +380,97 @@
 		}
 	}
 	
-	if (options$oddsRatio || options$oddsRatioCredibleInterval) {
-	
+	if (options$oddsRatio) {
+
+		
+
 		row[["type[oddsRatio]"]] <- "Odds ratio"
 
 		if (perform == "run" && status$error == FALSE) {
 		
-			if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
+			if ( options$samplingModel== "hypergeometric") {
 
 				row[["value[oddsRatio]"]] <- .clean(NaN)
 				row[["low[oddsRatio]"]] <- ""
 				row[["up[oddsRatio]"]] <-  ""
-				
-				sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
-				row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
-				
-			} else {
 			
-				chi.result <- try({
+				sup <- .addFootnote(footnotes, "Odd ratio for this model not yet implemented")
+				row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+			
+			} else {
 
-					chi.result <- vcd::oddsratio(counts.matrix)
+				OR <- try({
+	
+					if(options$samplingModel== "poisson"){
+						sampleType <- "poisson"
+						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
+						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
+						lambda<-as.data.frame(chi.result,col.names=c("lambda11","lambda21","lambda12","lambda22"))
+						odds.ratio<-(lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
+			
+					} else if (options$samplingModel== "jointMultinomial"){
+			
+						sampleType <- "jointMulti"
+						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
+						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
+						theta <- as.data.frame(chi.result,col.names=c("theta11","theta21","theta12","theta22"))
+						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+				
+					} else if (options$samplingModel== "independentMultinomialRowsFixed"){
+			
+						sampleType <- "indepMulti"
+						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
+						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
+						theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+				
+					} else if (options$samplingModel== "independentMultinomialColumnsFixed"){
+			
+						sampleType <- "indepMulti"
+						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
+						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
+						theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+				
+					} 
+			
 				})
+						
+				logOR<-log(odds.ratio)
+				z<-stats::density(logOR)
+				x.mode <- z$x[i.mode <- which.max(z$y)]
+				Sig <- options$oddsRatioCredibleIntervalInterval
+				alpha <- (1 - Sig)/2
+				x0 <- unname(stats::quantile(logOR, p = alpha))
+				x1 <- unname(stats::quantile(logOR, p = (1-alpha)))
+				
 
-				if (class(chi.result) == "try-error") {
-
+	
+				if (class(OR) == "try-error") {
+		
 					row[["value[oddsRatio]"]] <- .clean(NaN)
-
-					error <- .extractErrorMessage(chi.result)
-
-					if (error == "at least one entry of 'x' must be positive")
-						error <- "\u03A7\u00B2 could not be calculated, contains no observations"
-
+		
+					error <- .extractErrorMessage(BF)
+		
 					sup   <- .addFootnote(footnotes, error)
 					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
-
-				} else if (is.na(chi.result)) {
-
-					row[["value[oddsRatio]"]] <- .clean(NaN)
-
-					sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
-
-				} else {
-
-					row[["value[oddsRatio]"]] <- exp(chi.result)
-					#row[["value[gammaCoef]"]] <- chi.result$gamma
-					#row[["Sigma[gammaCoef]"]] <- chi.result$sigma
-					row[["low[oddsRatio]"]] <- exp(confint(chi.result)[1])
-					row[["up[oddsRatio]"]] <-  exp(confint(chi.result)[2])
+		
+				} else  {
+		
+					row[["value[oddsRatio]"]] <- exp(x.mode)
+					row[["low[oddsRatio]"]] <- exp(x0)
+					row[["up[oddsRatio]"]] <- exp(x1)
 				}
-	
 			}
 		}
-		 
-	}else {
-	
+		
+	} else {
+
 		row[["value[oddsRatio]"]] <- "."
 	}
-	
+
 	list(row)
+
 }	
 
 CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
