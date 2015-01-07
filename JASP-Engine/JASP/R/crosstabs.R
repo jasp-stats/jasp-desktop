@@ -205,6 +205,28 @@
 	
 	}
 	
+	############# Odds ratio
+	if (options$oddsRatio) {
+		
+		oddsratio.table <- list()
+		
+		oddsratio.table[["title"]] <- "Odds ratio"
+		
+		oddsratio.fields <- fields
+			
+		#oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="Odds ratio", type="number", format="sf:4;dp:3")
+		#oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="Sigma[oddsRatio]", title="std. error", type="number", format="dp:3")
+		
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
+		
+		schema <- list(fields=oddsratio.fields)
+		
+		oddsratio.table[["schema"]] <- schema
+	}
+	
+	
 	##### Nominal Table (Symmetric Measures)
 	if (options$nominal$contingencyCoefficient|| options$nominal$phiAndCramersV) {
 		
@@ -270,10 +292,12 @@
 	
 	counts.rows <- list()
 	tests.rows <- list()
+	oddsratio.rows <- list()
 	nominal.rows <- list()
 	ordinal.rows <- list()
 	
 	tests.footnotes <- .newFootnotes()
+	oddsratio.footnotes <- .newFootnotes()
 	nominal.footnotes <- .newFootnotes()
 	ordinal.footnotes <- .newFootnotes()
 
@@ -295,6 +319,9 @@
 		
 		next.rows <- .crosstabsCreateTestsRows(analysis$rows, group.matrix, tests.footnotes, options, perform, group, status)
 		tests.rows <- c(tests.rows, next.rows)
+		
+		next.rows <- .crosstabsCreateoddratioRows(analysis$rows, group.matrix, oddsratio.footnotes, options, perform, group, status)
+		oddsratio.rows <- c(oddsratio.rows, next.rows)
 		
 		next.rows <- .crosstabsCreateNominalRows(analysis$rows, group.matrix, nominal.footnotes, options, perform, group, status)
 		nominal.rows <- c(nominal.rows, next.rows)
@@ -321,6 +348,16 @@
 		tables[[2]] <- tests.table
 	}
 	
+	if (options$oddsRatio) {
+		oddsratio.table[["data"]] <- oddsratio.rows 
+		oddsratio.table[["footnotes"]] <- as.list(oddsratio.footnotes)
+	
+		if (status$error)
+			oddsratio.table[["error"]] <- list(errorType="badData")
+			
+		tables[[3]] <- oddsratio.table
+	}
+	
 	if (options$nominal$contingencyCoefficient || options$nominal$phiAndCramersV) {
 	
 		nominal.table[["data"]] <- nominal.rows
@@ -329,7 +366,7 @@
 		if (status$error)
 			nominal.table[["error"]] <- list(errorType="badData")
 		
-		tables[[3]] <- nominal.table
+		tables[[4]] <- nominal.table
 	}
 	
 	if (options$ordinal$gamma) {
@@ -340,7 +377,7 @@
 		if (status$error)
 			ordinal.table[["error"]] <- list(errorType="badData")
 		
-		tables[[4]] <- ordinal.table
+		tables[[5]] <- ordinal.table
 	}
 
 	
@@ -708,6 +745,84 @@
 	list(row)
 	
 }
+
+.crosstabsCreateoddratioRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) { 
+
+	row <- list()
+	
+	for (layer in names(group)) {
+	
+		level <- group[[layer]]
+		
+		if (level == "") {
+
+			row[[layer]] <- "Total"
+			row[[".isNewGroup"]] <- TRUE
+						
+		} else {
+		
+			row[[layer]] <- level
+		}
+	}
+	
+	if (options$oddsRatio ) {
+	
+		row[["type[oddsRatio]"]] <- "Odds ratio"
+
+		if (perform == "run" && status$error == FALSE) {
+		
+			if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
+
+				row[["value[oddsRatio]"]] <- .clean(NaN)
+				row[["low[oddsRatio]"]] <- ""
+				row[["up[oddsRatio]"]] <-  ""
+				
+				sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
+				row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+				
+			} else {
+			
+				chi.result <- try({
+
+					chi.result <- vcd::oddsratio(counts.matrix)
+				})
+
+				if (class(chi.result) == "try-error") {
+
+					row[["value[oddsRatio]"]] <- .clean(NaN)
+
+					error <- .extractErrorMessage(chi.result)
+
+					if (error == "at least one entry of 'x' must be positive")
+						error <- "\u03A7\u00B2 could not be calculated, contains no observations"
+
+					sup   <- .addFootnote(footnotes, error)
+					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+
+				} else if (is.na(chi.result)) {
+
+					row[["value[oddsRatio]"]] <- .clean(NaN)
+
+					sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
+					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+
+				} else {
+
+					row[["value[oddsRatio]"]] <- exp(chi.result)
+					row[["low[oddsRatio]"]] <- exp(confint(chi.result)[1])
+					row[["up[oddsRatio]"]] <-  exp(confint(chi.result)[2])
+				}
+	
+			}
+		}
+		 
+	}else {
+	
+		row[["value[oddsRatio]"]] <- "."
+	}
+	
+	list(row)
+}	
 
 
 
