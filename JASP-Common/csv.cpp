@@ -338,7 +338,8 @@ bool CSV::readLine(vector<string> &items)
 			bool success = readUtf8();
 			if (success)
 			{
-				i = 0;
+				i = -1;
+				inQuote = false;
 			}
 			else // eof
 			{
