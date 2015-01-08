@@ -142,9 +142,9 @@ void EngineSync::process()
 		if (channel->receive(data))
 		{
 #ifdef QT_DEBUG
-			//std::cout << "message received\n";
-			//std::cout << data << "\n";
-			//std::cout.flush();
+            //std::cout << "message received\n";
+            //std::cout << data << "\n";
+            //std::cout.flush();
 #endif
 
 			Json::Reader reader;
