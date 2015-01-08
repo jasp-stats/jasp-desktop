@@ -1,5 +1,13 @@
 
 TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+	
+	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
+	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
+	if(is.null(options()$BFapproxOptimizer)) options(BFapproxOptimizer = "optim")
+	if(is.null(options()$BFapproxLimits)) options(BFapproxLimits = c(-15,15))
+	if(is.null(options()$BFprogress)) options(BFprogress = interactive())
+	if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
+
 
 	all.variables <- unique(unlist(options$pairs))
 	all.variables <- all.variables[all.variables != ""]
@@ -31,11 +39,10 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	meta[[1]] <- list(name="ttest", type="table")
 	meta[[2]] <- list(name="inequalityOfVariances", type="table")
 	meta[[3]] <- list(name="descriptives", type="table")
+	meta[[4]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
 	
-	
-
 	ttest <- list()
 
 	ttest[["title"]] <- "Bayesian Paired Samples T-Test"
@@ -47,9 +54,38 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	bf.type <- options$bayesFactorType
 	
 	if (bf.type == "BF10") {
-		bf.title <- "BF\u2081\u2080"
+		if (options$hypothesis == "groupsNotEqual") {
+			bf.title <- "BF\u2081\u2080"
+		}
+		if (options$hypothesis == "groupOneGreater") {
+			bf.title <- "BF\u208A\u2080"
+		}
+		if (options$hypothesis == "groupTwoGreater") {
+			bf.title <- "BF\u208B\u2080"
+		}
 	} else {
-		bf.title <- "BF\u2080\u2081"
+		if (options$hypothesis == "groupsNotEqual") {
+			bf.title <- "BF\u2080\u2081"
+		}
+		if (options$hypothesis == "groupOneGreater") {
+			bf.title <- "BF\u2080\u208A"
+		}
+		if (options$hypothesis == "groupTwoGreater") {
+			bf.title <- "BF\u2080\u208B"
+		}
+	}
+	
+	if (options$hypothesis == "groupsNotEqual") {
+		nullInterval <- NULL
+		oneSided <- FALSE
+	}
+	if (options$hypothesis == "groupOneGreater") {
+		nullInterval <- c(0, Inf)
+		oneSided <- "right"
+	}
+	if (options$hypothesis == "groupTwoGreater") {
+		nullInterval <- c(-Inf, 0)
+		oneSided <- "left"
 	}
 
 	fields <- list(
@@ -62,7 +98,66 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	ttest[["schema"]] <- list(fields=fields)
 
 	ttest.rows <- list()
+	plots.ttest <- list()
+	
 	footnotes <- .newFootnotes()
+	
+	q <- 1
+		
+	for (pair in options$pairs)
+	{
+	
+		
+		if (options$plotPriorAndPosterior){
+			plot <- list()
+			
+			plot[["title"]] <- pair
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+		
+		if (options$plotSequentialAnalysis){
+			plot <- list()
+			
+			plot[["title"]] <- pair
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+		
+		if (options$plotSequentialAnalysisRobustness){
+			plot <- list()
+			
+			plot[["title"]] <- pair
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+		
+		if (options$plotBayesFactorRobustness){
+			plot <- list()
+			
+			plot[["title"]] <- pair
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+	}	
+	
+	z <- 1
 	
 	for (pair in options$pairs)
 	{
@@ -85,14 +180,14 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					c1 <- subDataSet[[ .v(pair[[1]]) ]]
 					c2 <- subDataSet[[ .v(pair[[2]]) ]]
 	
-					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE, r=options$priorWidth)
+					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE, r=options$priorWidth, nullInterval= nullInterval)
 					
-					bf.raw <- exp(as.numeric(r@bayesFactor$bf))
+					bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
 					if (bf.type == "BF01")
 						bf.raw <- 1 / bf.raw
 			
 					BF <- .clean(bf.raw)
-					error <- .clean(as.numeric(r@bayesFactor$error))
+					error <- .clean(as.numeric(r@bayesFactor$error))[1]
 			
 					list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error)
 			
@@ -118,13 +213,79 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					index <- .addFootnote(footnotes, errorMessage)
 
 					result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+				} else {
+				
+					if(BF == Inf | BF == -Inf){
+						errorMessage <- "BayesFactor is infinity - plotting not possible"
+					} else {
+										
+						if(options$plotPriorAndPosterior){
+						
+							image <- .beginSaveImage(530, 400)
+							
+							plotPosterior.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}
+						if(options$plotBayesFactorRobustness){
+						
+							image <- .beginSaveImage(530, 400)
+							
+							plotBF.robustnessCheck.ttest(x= c1, y= c2, paired= TRUE,, oneSided= oneSided, rscale = options$priorWidth)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}
+						if(options$plotSequentialAnalysis){
+						
+							image <- .beginSaveImage(530, 400)
+							
+							plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}
+						if(options$plotSequentialAnalysisRobustness){
+						
+							image <- .beginSaveImage(530, 400)
+							
+							plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}
+					}
 				}
 			
 			} else {
 			
 				result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=".", error=".")
 			}
-			
 		}
 		
 		ttest.rows[[length(ttest.rows)+1]] <- result
@@ -190,7 +351,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	}
 	
 	results[["ttest"]] <- ttest
-	
+	results[["plots"]] <- plots.ttest
 		
 	results
 }
