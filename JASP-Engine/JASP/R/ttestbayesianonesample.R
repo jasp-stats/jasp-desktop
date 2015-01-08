@@ -1,4 +1,4 @@
-plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.4, lwdAxis= 1.2){
+.plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.4, lwdAxis= 1.2){
 	
 	if(rscale == "medium"){
 		r <- sqrt(2) / 2
@@ -26,12 +26,7 @@ plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE
 	# sample from delta posterior
 	samples <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval= nullInterval, posterior = TRUE, iterations = iterations, rscale= r)
 	
-	if(!is.null(y) & paired == FALSE){
-		delta <- 2 * samples[,"group-x"] / sqrt(samples[,"sig2"])
-	} else{
-		delta <- samples[,"delta"]
-	}
-	
+	delta <- samples[,"delta"]
 	
 	# fit denisty estimator
 	fit.posterior <-  logspline::logspline(delta)
@@ -221,7 +216,7 @@ plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE
 	legend(xx, yy, legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend)
 }
 
-plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6, cexTextBF= 1.4, cexText=1.2, cexLegend= 1.4, cexEvidence= 1.6, lwdAxis= 1.2, plotDifferentPriors= FALSE){
+.plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6, cexTextBF= 1.4, cexText=1.2, cexLegend= 1.4, cexEvidence= 1.6, lwdAxis= 1.2, plotDifferentPriors= FALSE){
 	
 	#### settings ####
 	
@@ -735,7 +730,7 @@ plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NUL
 	}	
 }
 		
-plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2 , cexEvidence= 1.6){ 
+.plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2 , cexEvidence= 1.6){ 
 	
 	#### settings ####
 	if(rscale == "medium"){
@@ -1438,7 +1433,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 							image <- .beginSaveImage(530, 400)
 							
-							plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+							.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
 												
 							content <- .endSaveImage(image)
 							
@@ -1453,7 +1448,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 							image <- .beginSaveImage(530, 400)
 							
-							plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+							.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
 												
 							content <- .endSaveImage(image)
 							
@@ -1468,7 +1463,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 							image <- .beginSaveImage(530, 400)
 							
-							plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+							.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
 												
 							content <- .endSaveImage(image)
 							
@@ -1483,7 +1478,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 							image <- .beginSaveImage(530, 400)
 							
-							plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
+							.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
 												
 							content <- .endSaveImage(image)
 							
