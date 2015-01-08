@@ -171,7 +171,7 @@
 	
 	tests.table[["schema"]] <- schema
 	
-	##### Ordinal Table
+	##### Odds ratio
 	if (options$oddsRatio || options$oddsRatioCredibleInterval) {
 		
 		oddsratio.table <- list()
@@ -180,10 +180,7 @@
 		
 		oddsratio.fields <- fields
 			
-		#oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="Odds ratio", type="number", format="sf:4;dp:3")
-		#oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="Sigma[oddsRatio]", title="std. error", type="number", format="dp:3")
-		
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
 		
@@ -191,6 +188,9 @@
 		
 		oddsratio.table[["schema"]] <- schema
 	}
+	
+	##### Odds ratio Plots
+	
 	
 	status <- list(error=FALSE)
 	if (is.null(counts.var) == FALSE) {
@@ -208,6 +208,7 @@
 
 	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var))
 	
+	plots <- list()
 	counts.rows <- list()
 	tests.rows <- list()
 	oddsratio.rows <- list()
@@ -236,6 +237,9 @@
 		
 		next.rows <- .crosstabsBayesianCreateoddratioRows(analysis$rows, group.matrix, oddsratio.footnotes, options, perform, group, status)
 		oddsratio.rows <- c(oddsratio.rows, next.rows)
+		
+		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status)
+		plots <- c(plots, plot)
 	}
 
 	counts.table[["data"]] <- counts.rows
@@ -261,7 +265,7 @@
 		tables[[3]] <- oddsratio.table
 	}
 	
-	tables
+	list(tables=tables, plots=plots)
 }
 
 .crosstabsBayesianCreateTestsRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) {
@@ -388,7 +392,16 @@
 
 		if (perform == "run" && status$error == FALSE) {
 		
-			if ( options$samplingModel== "hypergeometric") {
+			if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
+
+					row[["value[oddsRatio]"]] <- .clean(NaN)
+					row[["low[oddsRatio]"]] <- ""
+					row[["up[oddsRatio]"]] <-  ""
+			
+					sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
+					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+			
+				} else if ( options$samplingModel== "hypergeometric") {
 
 				row[["value[oddsRatio]"]] <- .clean(NaN)
 				row[["low[oddsRatio]"]] <- ""
@@ -444,8 +457,6 @@
 				x0 <- unname(stats::quantile(logOR, p = alpha))
 				x1 <- unname(stats::quantile(logOR, p = (1-alpha)))
 				
-
-	
 				if (class(OR) == "try-error") {
 		
 					row[["value[oddsRatio]"]] <- .clean(NaN)
@@ -471,7 +482,119 @@
 
 	list(row)
 
-}	
+}
+
+.crosstabsBayesianPlotoddsratio <- function(var.name, counts.matrix, options, perform, group, status) { 
+
+	OddratioPlots <- list()
+	row <- list()
+	
+	for (layer in names(group)) {
+	
+		level <- group[[layer]]
+		
+		if (level == "") {
+
+			row[[layer]] <- "Total"
+			row[[".isNewGroup"]] <- TRUE
+						
+		} else {
+		
+			row[[layer]] <- level
+		}
+	}
+	
+	if (options$plotPosteriorOddsRatio ){
+	
+		oddsratio.plot <- list()
+		oddsratio.plot[["title"]] <- "Odds ratio"
+		oddsratio.plot[["width"]]  <- options$plotWidths
+		oddsratio.plot[["height"]] <- options$plotHeights
+		oddsratio.plot[["custom"]] <- list(width="plotWidths", height="plotHeights")
+
+		if (perform == "run" && status$error == FALSE) {
+		
+			if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
+			
+			} else if ( options$samplingModel== "hypergeometric") {
+			
+			} else {
+			
+				if(options$samplingModel== "poisson"){
+					sampleType <- "poisson"
+					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
+					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
+					lambda<-as.data.frame(chi.result,col.names=c("lambda11","lambda21","lambda12","lambda22"))
+					odds.ratio<-(lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
+	
+				} else if (options$samplingModel== "jointMultinomial"){
+	
+					sampleType <- "jointMulti"
+					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
+					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(chi.result,col.names=c("theta11","theta21","theta12","theta22"))
+					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+		
+				} else if (options$samplingModel== "independentMultinomialRowsFixed"){
+	
+					sampleType <- "indepMulti"
+					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
+					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+		
+				} else if (options$samplingModel== "independentMultinomialColumnsFixed"){
+	
+					sampleType <- "indepMulti"
+					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
+					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+		
+				} 
+					
+				logOR<-log(odds.ratio)
+				z<-stats::density(logOR)
+				x.mode <- z$x[i.mode <- which.max(z$y)]
+				Sig <- options$oddsRatioCredibleIntervalInterval
+				alpha <- (1 - Sig)/2
+				x0 <- unname(stats::quantile(logOR, p = alpha))
+				x1 <- unname(stats::quantile(logOR, p = (1-alpha)))
+				image <- .beginSaveImage(options$plotWidths, options$plotHeights)
+				
+				par(mar= c(5, 4.5, 4, 2) + 0.1)
+				digitsize <- 1.2
+				y.mode <- z$y[i.mode]
+				lim<-max(z$x)-min(z$x)
+				fit<-logspline::logspline(logOR)
+				ylim0 <- c(0,1.1*y.mode )
+				xticks <- pretty(logOR, min.n= 3)
+				plot(1,type="n", ylim=ylim0, xlim=range(xticks),
+					axes=F, 
+					main=" ", xlab="log(Odds ratio) ", ylab="Posterior Density")
+				plot(function(x)logspline::dlogspline(x, fit), xlim=range(xticks), lwd=2, add=TRUE)
+				axis(1, line = 0.3, at = xticks, lab=xticks, cex.axis = 1.2)
+				axis(2)
+				Sig1<-Sig*100
+				Sig1<-bquote(.(Sig1))
+				arrows(x0, 1.07*y.mode, x1, 1.07*y.mode, length = 0.05, angle = 90, code = 3, lwd=2)
+				#text(-1.5, 0.8, expression(log('BFI'[10]) == 22.60),cex=digitsize)
+				text(x.mode, y.mode+(y.mode/8.5), paste(Sig1,"%") ,cex=digitsize)
+				text(x0, 1.01*y.mode, round(x0, digits = 2) ,cex=digitsize)
+				text(x1, 1.01*y.mode, round(x1, digits = 2) ,cex=digitsize)
+				
+				content <- .endSaveImage(image) 
+				
+				oddsratio.plot[["data"]]  <- content
+
+				OddratioPlots[[length(OddratioPlots)+1]] <- oddsratio.plot
+			}
+		}
+	}
+		
+	OddratioPlots
+}
+	
 
 CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
@@ -501,6 +624,7 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 
 	meta <- list()
 	meta[[1]] <- list(name="crosstabs", type="tables")
+	meta[[2]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
 	
@@ -508,6 +632,7 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	### CROSS TABS
 	
 	crosstabs <- list()
+	plots <- list()
 
 	if (length(options$rows) > 0 && length(options$columns) > 0)
 	{
@@ -528,9 +653,11 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 
 		for (analysis in analyses)
 		{
-			tables <- .crosstabBayesian(dataset, options, perform, analysis)
-			for (table in tables)
-				crosstabs[[length(crosstabs)+1]] <- table				
+			res <- .crosstabBayesian(dataset, options, perform, analysis)
+			for (table in res$tables)
+				crosstabs[[length(crosstabs)+1]] <- table
+			for (plot in res$plots)
+				plots[[length(plots)+1]] <- plot
 		}
 	
 	} else {
@@ -539,6 +666,7 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	}
 
 	results[["crosstabs"]] <- crosstabs
+	results[["plots"]] <- plots
 
 	results
 }
