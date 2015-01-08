@@ -223,7 +223,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							plotPosterior.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
+							.plotPosterior.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
 												
 							content <- .endSaveImage(image)
 							
@@ -238,7 +238,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							plotBF.robustnessCheck.ttest(x= c1, y= c2, paired= TRUE,, oneSided= oneSided, rscale = options$priorWidth)
+							.plotBF.robustnessCheck.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
 												
 							content <- .endSaveImage(image)
 							
@@ -253,7 +253,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
+							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
 												
 							content <- .endSaveImage(image)
 							
@@ -268,7 +268,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
+							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
 												
 							content <- .endSaveImage(image)
 							
