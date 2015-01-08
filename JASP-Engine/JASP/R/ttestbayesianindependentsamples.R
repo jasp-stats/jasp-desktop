@@ -18,8 +18,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			} else {
 		
 				dataset <- .readDataSetToEnd(columns.as.numeric=dependents, columns.as.factor=grouping, exclude.na.listwise=grouping)
-			}
-		
+			}		
 
 		} else {
 		
@@ -27,8 +26,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 	}
 
-	results <- list()
-	
+	results <- list()	
 	
 	meta <- list()
 	
@@ -38,81 +36,185 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	results[[".meta"]] <- meta
 	
-	results[["ttest"]] <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
+	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
+	results[["ttest"]] <- ttest.results[[1]]
+	status <- ttest.results[[2]]
+	results[["plots"]] <- .ttestBayesianIndependentSamplesTTestPlots(dataset, options, perform, status)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
-	results[["plots"]] <- .ttestBayesianIndependentSamplesTTestPlots(dataset, options, perform)
-
+	
 	results
 }
 
-.ttestBayesianIndependentSamplesTTestPlots <- function(dataset, options, perform) {
+.ttestBayesianIndependentSamplesTTestPlots <- function(dataset, options, perform, status) {
 	
-	if (options$plots == FALSE)
+	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
+	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
+	if(is.null(options()$BFapproxOptimizer)) options(BFapproxOptimizer = "optim")
+	if(is.null(options()$BFapproxLimits)) options(BFapproxLimits = c(-15,15))
+	if(is.null(options()$BFprogress)) options(BFprogress = interactive())
+	if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
+	
+	
+	if (!options$plotPriorAndPosterior & !options$plotSequentialAnalysis & !options$plotSequentialAnalysisRobustness & !options$plotBayesFactorRobustness | status == "error"){
 		return(NULL)
-
-	plots <- list()
+	}
+	
+	plots.ttest <- list()
+	
+	q <- 1
 	
 	for (variable in options[["variables"]])
-		plots[[length(plots)+1]] <- list(title=variable, width=options$plotWidth, height=options$plotHeight, custom=list(width="plotWidth", height="plotHeight"))
+		if (options$plotPriorAndPosterior){
+			plot <- list()
+			
+			plot[["title"]] <- variable
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+		
+		if (options$plotSequentialAnalysis){
+			plot <- list()
+			
+			plot[["title"]] <- variable
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+		
+		if (options$plotSequentialAnalysisRobustness){
+			plot <- list()
+			
+			plot[["title"]] <- variable
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+		
+		if (options$plotBayesFactorRobustness){
+			plot <- list()
+			
+			plot[["title"]] <- variable
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+		
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 		
-		rowNo <- 1
+		z <- 1
 	
 		for (variable in options[["variables"]]) {
 
 			subDataSet <- subset(dataset,    subset=( ! is.na( dataset[[ .v(variable) ]] )), select=c(.v(variable), .v(options$groupingVariable)))
 			subDataSet <- subset(subDataSet, subset=( ! is.na( dataset[[ .v(options$groupingVariable) ]] )))
 			
-			f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
+			levels <- unique(dataset[[ .v(options$groupingVariable) ]])
 			r.size <- options$priorWidth
+			
+			group1 <- dataset[dataset[[.v(options$groupingVariable)]]== levels[1],.v(variable)]
+			group2 <- dataset[dataset[[.v(options$groupingVariable)]]== levels[2],.v(variable)]
 			
 			if (options$hypothesis == "groupOneGreater") {
 			
 				null.interval <- c(-Inf, 0)
+				oneSided <- "right"
 			
 			} else if (options$hypothesis == "groupTwoGreater") {
 
 				null.interval <- c(0, Inf)
+				oneSided <- "left"
 			
 			} else {
 			
 				null.interval <- c(-Inf, Inf)
+				oneSided <- FALSE
 			}
 			
-			result <- try (silent=FALSE, expr= {
 			
-				bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, nullInterval=null.interval)[1]
-				BF    <- .clean(exp(as.numeric(bf@bayesFactor$bf)))
-				error <- .clean(as.numeric(bf@bayesFactor$error))
+			if(options$plotPriorAndPosterior){
+						
+				image <- .beginSaveImage(530, 400)
 				
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-				posterior.samples <- BayesFactor::ttestBF(data=dataset, formula=f, r=r.size, nullInterval=null.interval, posterior=TRUE, iterations=10000, progress=FALSE)
-
-				hist(posterior.samples, main=variable, xlab="", ylab="Frequency", col=rainbow(20))
+				.plotPosterior.ttest(x= group1, y= group2, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
+									
+				content <- .endSaveImage(image)
 				
-				data <- .endSaveImage(image)
+				plot <- plots.ttest[[z]]
 				
-				data
-			})
-
-			if (class(result) == "try-error") {
-		
-				result <- NULL
+				plot[["data"]]  <- content
+				
+				plots.ttest[[z]] <- plot
+				z <- z + 1
 			}
-
-			plots[[rowNo]][["data"]] <- result
-		
-			rowNo <- rowNo + 1
+			if(options$plotBayesFactorRobustness){
+			
+				image <- .beginSaveImage(530, 400)
+				
+				.plotBF.robustnessCheck.ttest(x= group1, y= group2, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
+									
+				content <- .endSaveImage(image)
+				
+				plot <- plots.ttest[[z]]
+				
+				plot[["data"]]  <- content
+				
+				plots.ttest[[z]] <- plot
+				z <- z + 1
+			}
+			if(options$plotSequentialAnalysis){
+			
+				image <- .beginSaveImage(530, 400)
+				
+				.plotSequentialBF.ttest(x= group1, y= group2, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
+									
+				content <- .endSaveImage(image)
+				
+				plot <- plots.ttest[[z]]
+				
+				plot[["data"]]  <- content
+				
+				plots.ttest[[z]] <- plot
+				z <- z + 1
+			}
+			if(options$plotSequentialAnalysisRobustness){
+			
+				image <- .beginSaveImage(530, 400)
+				
+				.plotSequentialBF.ttest(x= group1, y= group2, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
+									
+				content <- .endSaveImage(image)
+				
+				plot <- plots.ttest[[z]]
+				
+				plot[["data"]]  <- content
+				
+				plots.ttest[[z]] <- plot
+				z <- z + 1
+			}
 		}
 	}
 	
-	plots
+	plots.ttest
 
 }
 
 .ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform) {
+
+	status <- "ready"
 
 	ttest <- list()
 
@@ -127,11 +229,27 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	if (options$bayesFactorType == "BF01") {
 	
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
+		if (options$hypothesis == "groupsNotEqual"){
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
+		}
+		if (options$hypothesis == "groupOneGreater"){
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u208A")
+		}
+		if (options$hypothesis == "groupTwoGreater"){
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u208B")
+		}
 		
 	} else {
-
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080")	
+	
+		if (options$hypothesis == "groupsNotEqual"){
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080")
+		}
+		if (options$hypothesis == "groupOneGreater"){
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u208A\u2080")
+		}
+		if (options$hypothesis == "groupTwoGreater"){
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u208B\u2080")
+		}	
 	}
 	
 	
@@ -162,7 +280,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			rowNo <- 1
 		
 			for (variable in options[["variables"]]) {
-
+				
+				group1 <- dataset[dataset[[.v(options$groupingVariable)]]== levels[1],.v(variable)]
+				group2 <- dataset[dataset[[.v(options$groupingVariable)]]== levels[2],.v(variable)]
+				
+				
 				# BayesFactor package doesn't handle NAs, so it is necessary to exclude them
 				
 				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
@@ -182,7 +304,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				} else {
 			
 					null.interval <- c(-Inf, Inf)
-				}
+				}				
 				
 				result <- try (silent=FALSE, expr= {
 				
@@ -220,7 +342,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 						errorMessage <- "BayesFactor is undefined - one or both levels of the dependent contain too few observations"
 					}
-					
+										
 					index <- .addFootnote(footnotes, errorMessage)
 
 					result <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
@@ -230,6 +352,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			
 				rowNo <- rowNo + 1
 			}
+			
+			if(exists("errorMessage")){
+				
+				status <- "error"
+			} 
+				
 
 			if (options$hypothesis == "groupOneGreater") {
 			
@@ -256,7 +384,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	ttest[["data"]] <- ttest.rows
 	
-	ttest
+	list(ttest, status)
 
 }
 
