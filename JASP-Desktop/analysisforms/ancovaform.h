@@ -5,6 +5,7 @@
 
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodel.h"
+#include "widgets/tablemodelvariablesoptions.h"
 
 namespace Ui {
 class AncovaForm;
@@ -20,7 +21,7 @@ public:
 	
 private slots:
 	void factorsChanged();
-	void dependentChanged();
+	void termsChanged();
 
 private:
 	Ui::AncovaForm *ui;
@@ -33,7 +34,13 @@ private:
 
 	TableModelAnovaModel *_anovaModel;
 
+	TableModelVariablesOptions *_contrastsModel;
 	TableModelVariablesAvailable *_factorsAvailableListModel;
+
+    TableModelVariablesAvailable *_plotFactorsAvailableTableModel;
+    TableModelVariablesAssigned *_horizontalAxisTableModel;
+    TableModelVariablesAssigned *_seperateLinesTableModel;
+    TableModelVariablesAssigned *_seperatePlotsTableModel;
 
 };
 
