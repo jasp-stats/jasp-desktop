@@ -48,7 +48,7 @@ public:
 	const Terms &terms() const;
 
 public slots:
-	void setVariables(const Terms &variables);
+	void setVariables(const Terms &factors, const Terms &covariates = Terms());
 
 signals:
 	void variablesAvailableChanged();
@@ -70,6 +70,8 @@ protected:
 	bool _customModel;
 
 	Terms _variables;
+	Terms _covariates;
+	Terms _factors;
 	Terms _terms;
 
 };

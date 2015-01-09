@@ -109,13 +109,8 @@ void AncovaForm::factorsChanged()
 
 	factorsAvailable.add(_fixedFactorsListModel->assigned());
 	factorsAvailable.add(_randomFactorsListModel->assigned());
-	factorsAvailable.add(_covariatesListModel->assigned());
 
-	std::cout << "moo";
-	std::cout << factorsAvailable.asString() << "\n";
-	std::cout.flush();
-
-	_anovaModel->setVariables(factorsAvailable);
+	_anovaModel->setVariables(factorsAvailable, _covariatesListModel->assigned());
 	_contrastsModel->setVariables(factorsAvailable);
     _plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 

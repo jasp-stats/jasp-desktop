@@ -98,11 +98,16 @@ QStringList TableModelAnovaModel::mimeTypes() const
 	return types;
 }
 
-void TableModelAnovaModel::setVariables(const Terms &variables)
+void TableModelAnovaModel::setVariables(const Terms &factors, const Terms &covariates)
 {
 	beginResetModel();
 
-	_variables.set(variables);
+	_covariates = covariates;
+	_factors = factors;
+
+	_variables.clear();
+	_variables.add(factors);
+	_variables.add(covariates);
 
 	if (_customModel)
 	{
@@ -113,7 +118,8 @@ void TableModelAnovaModel::setVariables(const Terms &variables)
 	}
 	else
 	{
-		Terms terms = _variables.crossCombinations();
+		Terms terms = _factors.crossCombinations();
+		terms.add(_covariates);
 		if (terms != _terms)
 			setTerms(terms);
 	}
@@ -133,9 +139,16 @@ void TableModelAnovaModel::setCustomModelMode(bool on)
 	_customModel = on;
 
 	if (_customModel)
+	{
 		clear();
+	}
 	else
-		setTerms(_variables.crossCombinations());
+	{
+		Terms terms = _factors.crossCombinations();
+		terms.add(_covariates);
+		if (terms != _terms)
+			setTerms(terms);
+	}
 }
 
 void TableModelAnovaModel::bindTo(Option *option)
