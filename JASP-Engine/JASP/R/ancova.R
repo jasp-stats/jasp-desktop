@@ -332,7 +332,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	anova <- list()
 	
-	anova[["title"]] <- "ANOVA"
+	if (is.null(options$covariates)) {
+	
+	    anova[["title"]] <- "ANOVA"
+	
+	} else {
+	    
+	    anova[["title"]] <- "ANCOVA"
+	
+	}
 	
 	fields <- list(
 		list(name="Cases", type="string"),
