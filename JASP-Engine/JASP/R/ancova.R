@@ -336,7 +336,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	    if (options$dependent != "") {
 	    
-	        anova[["title"]] <- paste("ANOVA (Dependent Variable: <em>", options$dependent, "</em>)", sep = "")
+	        anova[["title"]] <- paste("ANOVA - ", options$dependent, sep = "")
 	    
 	    } else {
 	    
@@ -348,7 +348,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	    
 	    if (options$dependent != "") {
 	    
-	        anova[["title"]] <- paste("ANCOVA (Dependent Variable: <em>", options$dependent, "</em>)", sep = "")
+	        anova[["title"]] <- paste("ANCOVA - ", options$dependent, sep = "")
 	    
 	    } else {
 	    
