@@ -334,12 +334,27 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	if (is.null(options$covariates)) {
 	
-	    anova[["title"]] <- "ANOVA"
-	
+	    if (options$dependent != "") {
+	    
+	        anova[["title"]] <- paste("ANOVA (Dependent Variable: <em>", options$dependent, "</em>)", sep = "")
+	    
+	    } else {
+	    
+	        anova[["title"]] <- "ANOVA"
+	    
+	    }
+	    
 	} else {
 	    
-	    anova[["title"]] <- "ANCOVA"
-	
+	    if (options$dependent != "") {
+	    
+	        anova[["title"]] <- paste("ANCOVA (Dependent Variable: <em>", options$dependent, "</em>)", sep = "")
+	    
+	    } else {
+	    
+	        anova[["title"]] <- "ANCOVA"
+	    
+	    }	
 	}
 	
 	fields <- list(
