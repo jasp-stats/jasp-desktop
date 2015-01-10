@@ -10,10 +10,13 @@ run <- function(name, options.as.json.string, perform="run") {
 	})
 	
 	if (class(results) == "try-error") {
+
+		error <- gsub("\n", "\\\\n", as.character(results), fixed=TRUE)
+		errorMessage <- paste("This analysis terminated unexpectedly. Please contact its author.", error, sep="\\\\n\\\\n")
 	
-		print(results)
-	
-		"{ \"error\" : 	1, \"errorMessage\" : \"This analysis terminated unexpectedly. Please contact its author.\" }"
+		errorResponse <- paste("{ \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" }", sep="")
+		
+		errorResponse
 	
 	} else {
 	

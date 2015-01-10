@@ -61,7 +61,12 @@ $.widget("jasp.analysis", {
 
         if (this.options.results.error) {
         
-            $innerElement.append('<div class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + this.options.results.errorMessage + '</div>')
+        	var error = this.options.results.errorMessage
+        	
+        	error = error.replace(/\n/g, '<br>')
+        	error = error.replace(/  /g, '&nbsp;&nbsp;')
+        
+            $innerElement.append('<div class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
             
         }
 		else if (this.options.results[".meta"]) {
