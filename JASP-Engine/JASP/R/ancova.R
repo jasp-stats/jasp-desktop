@@ -1,4 +1,119 @@
 
+Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+
+	numeric.variables <- c(unlist(options$dependent),unlist(options$covariates),unlist(options$wlsWeight))
+	numeric.variables <- numeric.variables[numeric.variables != ""]
+	factor.variables <- c(unlist(options$fixedFactors),unlist(options$randomFactors),unlist(options$repeatedMeasures))
+	factor.variables <- factor.variables[factor.variables != ""]
+
+	if (is.null(dataset)) {
+		
+		if (perform == "run") {
+		
+			dataset <- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=c(numeric.variables, factor.variables))
+			
+		} else {
+		
+			dataset <- .readDataSetHeader(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
+		}
+		
+	} else {
+	
+		dataset <- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)	
+	}
+	
+	results <- list()
+	
+	
+	# META definitions
+
+	.meta <- list(
+		list(name="anova", type="table"),
+		list(name="levene", type="table"),
+		list(name="contrasts", type="tables"),
+		list(name="posthoc", type="tables"),
+		list(name="descriptives", type="table"),
+		list(name="profilePlot", type="images")
+	)
+
+	results[[".meta"]] <- .meta
+	
+	
+	status <- .anovaCheck(dataset, options, perform)
+	
+
+
+	## Setup Contrasts
+
+	if (perform == "run" && status$ready && status$error == FALSE)
+		dataset <- .anovaSetupContrasts(dataset, options)
+	
+
+
+	## Perform ANOVA
+
+	model <- NULL
+	singular <- NULL
+	if (perform == "run" && status$ready && status$error == FALSE) {
+		
+		anovaModel <- .anovaModel(dataset, options)
+		model <- anovaModel$model
+		singular <- anovaModel$singular
+	
+	}
+
+	## Create ANOVA Table
+
+	result <- .anovaTable(dataset, options, perform, model, status, singular)
+	
+	results[["anova"]] <- result$result
+	status <- result$status
+		
+		
+				
+	## Create Contrasts Table
+	
+	result <- .anovaContrastsTable(dataset, options, perform, model, status)
+	
+	results[["contrasts"]] <- result$result
+	status <- result$status
+	
+
+	
+	## Create Post Hoc Table
+	
+	result <- .anovaPostHocTable(dataset, options, perform, status)
+	
+	results[["posthoc"]] <- result$result
+	status <- result$status
+	
+
+	
+	## Create Descriptives Table
+	
+	result <- .anovaDescriptivesTable(dataset, options, perform, status)
+	
+	results[["descriptives"]] <- result$result
+	status <- result$status
+	
+
+
+	## Create Levene's Table
+	
+	result <- .anovaLevenesTable(dataset, options, perform, status)
+	
+	results[["levene"]] <- result$result
+	status <- result$status
+	
+	
+	
+	## Create Profile Plots
+	
+	results[["profilePlot"]] <- .anovaProfilePlot(dataset, options, perform, status)
+	
+	results
+}
+
 .anovaContrastCases <- function(column, contrast.type) {
 
 	levels <- levels(column)
@@ -145,7 +260,7 @@
 		if (sum(dataset[[ .v(options$wlsWeights) ]] <= 0) > 0) {
 		
 			error <- TRUE
-			errorMessage <- paste("The variable: <em>", options$wlsWeights, "</em>, contains negative values.<br><br>(only positive WLS weights allowed)", sep="")
+			errorMessage <- paste("The variable: <em>", options$wlsWeights, "</em>, contains negative and/or zero values.<br><br>(only positive WLS weights allowed)", sep="")
 		}
 		
 		if (sum(is.infinite(dataset[[ .v(options$wlsWeights) ]])) > 0) {
@@ -923,120 +1038,4 @@
     }
     
     profilePlotList
-}
-
-
-Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-
-	numeric.variables <- c(unlist(options$dependent),unlist(options$covariates),unlist(options$wlsWeight))
-	numeric.variables <- numeric.variables[numeric.variables != ""]
-	factor.variables <- c(unlist(options$fixedFactors),unlist(options$randomFactors),unlist(options$repeatedMeasures))
-	factor.variables <- factor.variables[factor.variables != ""]
-
-	if (is.null(dataset)) {
-		
-		if (perform == "run") {
-		
-			dataset <- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=c(numeric.variables, factor.variables))
-			
-		} else {
-		
-			dataset <- .readDataSetHeader(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
-		}
-		
-	} else {
-	
-		dataset <- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)	
-	}
-	
-	results <- list()
-	
-	
-	# META definitions
-
-	.meta <- list(
-		list(name="anova", type="table"),
-		list(name="levene", type="table"),
-		list(name="contrasts", type="tables"),
-		list(name="posthoc", type="tables"),
-		list(name="descriptives", type="table"),
-		list(name="profilePlot", type="images")
-	)
-
-	results[[".meta"]] <- .meta
-	
-	
-	status <- .anovaCheck(dataset, options, perform)
-	
-
-
-	## Setup Contrasts
-
-	if (perform == "run" && status$ready && status$error == FALSE)
-		dataset <- .anovaSetupContrasts(dataset, options)
-	
-
-
-	## Perform ANOVA
-
-	model <- NULL
-	singular <- NULL
-	if (perform == "run" && status$ready && status$error == FALSE) {
-		
-		anovaModel <- .anovaModel(dataset, options)
-		model <- anovaModel$model
-		singular <- anovaModel$singular
-	
-	}
-
-	## Create ANOVA Table
-
-	result <- .anovaTable(dataset, options, perform, model, status, singular)
-	
-	results[["anova"]] <- result$result
-	status <- result$status
-		
-		
-				
-	## Create Contrasts Table
-	
-	result <- .anovaContrastsTable(dataset, options, perform, model, status)
-	
-	results[["contrasts"]] <- result$result
-	status <- result$status
-	
-
-	
-	## Create Post Hoc Table
-	
-	result <- .anovaPostHocTable(dataset, options, perform, status)
-	
-	results[["posthoc"]] <- result$result
-	status <- result$status
-	
-
-	
-	## Create Descriptives Table
-	
-	result <- .anovaDescriptivesTable(dataset, options, perform, status)
-	
-	results[["descriptives"]] <- result$result
-	status <- result$status
-	
-
-
-	## Create Levene's Table
-	
-	result <- .anovaLevenesTable(dataset, options, perform, status)
-	
-	results[["levene"]] <- result$result
-	status <- result$status
-	
-	
-	
-	## Create Profile Plots
-	
-	results[["profilePlot"]] <- .anovaProfilePlot(dataset, options, perform, status)
-	
-	results
 }
