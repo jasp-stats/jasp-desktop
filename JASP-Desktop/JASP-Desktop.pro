@@ -121,7 +121,8 @@ SOURCES += main.cpp\
     analysisforms/crosstabsbayesianform.cpp \
     application.cpp \
     analysisforms/regressionlinearbayesianform.cpp \
-    qutils.cpp
+    qutils.cpp \
+    activitylog.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -214,7 +215,8 @@ HEADERS  += \
     analysisforms/crosstabsbayesianform.h \
     application.h \
     analysisforms/regressionlinearbayesianform.h \
-    qutils.h
+    qutils.h \
+    activitylog.h
 
 FORMS    += \
     backstageform.ui \

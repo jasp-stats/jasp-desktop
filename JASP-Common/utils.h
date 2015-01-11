@@ -14,6 +14,8 @@ public:
 	static std::string ws2s(const std::wstring &s);
 #endif
 
+	static long currentMillis();
+
 };
 
 #endif // UTILS_H

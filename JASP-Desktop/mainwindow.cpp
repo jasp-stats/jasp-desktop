@@ -40,12 +40,14 @@
 #include <QClipboard>
 #include <QWebElement>
 #include <QMessageBox>
-
+#include <QTimer>
 #include <QStringBuilder>
 
 #include "analysisloader.h"
 #include "qutils.h"
 #include "appdirs.h"
+
+#include "activitylog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -161,6 +163,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->webViewHelp->setUrl(userGuide);
 	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
 	ui->panelHelp->hide();
+
+	log.log("Application Start");
+	ui->backStage->setLog(&log);
+	log.flushLogToServer();
+
+	QTimer *timer = new QTimer(this);
+	timer->setInterval(30000);
+	connect(timer, SIGNAL(timeout()), &log, SLOT(flushLogToServer()));
+	timer->start();
 }
 
 void MainWindow::open(QString filename)
@@ -261,7 +272,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 }
 
 void MainWindow::showForm(Analysis *analysis)
-{	
+{
 	if (_currentOptionsWidget != NULL)
 	{
 		_currentOptionsWidget->hide();
@@ -293,13 +304,31 @@ void MainWindow::showForm(Analysis *analysis)
 void MainWindow::analysisSelectedHandler(int id)
 {
 	_currentAnalysis = _analyses->get(id);
+
 	if (_currentAnalysis != NULL)
+	{
 		showForm(_currentAnalysis);
+
+		QMap<QString, QVariant> info;
+		info["id"] = id;
+		info["analysis"] = tq(_currentAnalysis->name());
+
+		log.log("Analysis Selected", info);
+	}
 }
 
 void MainWindow::analysisUnselectedHandler()
 {
 	hideOptionsPanel();
+
+	if (_currentAnalysis != NULL)
+	{
+		QMap<QString, QVariant> info;
+		info["id"] = _currentAnalysis->id();
+		info["analysis"] = tq(_currentAnalysis->name());
+
+		log.log("Analysis Unselected", info);
+	}
 }
 
 void MainWindow::tabChanged(int index)
@@ -328,6 +357,8 @@ void MainWindow::tabChanged(int index)
 
 void MainWindow::helpToggled(bool on)
 {
+	log.log("Help Toggled", on);
+
 	static int helpWidth = 0;
 
 	if (on)
@@ -436,6 +467,8 @@ void MainWindow::updateUIFromOptions()
 
 void MainWindow::engineCrashed()
 {
+	log.log("Engine Crashed");
+
 	static bool exiting = false;
 
 	if (exiting == false)
@@ -488,6 +521,12 @@ void MainWindow::itemSelected(const QString &item)
 	{
 		showForm(_currentAnalysis);
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
+
+		QMap<QString, QVariant> info;
+		info["id"] = _currentAnalysis->id();
+		info["analysis"] = tq(_currentAnalysis->name());
+
+		log.log("Analysis Created", info);
 	}
 }
 
@@ -654,6 +693,12 @@ void MainWindow::analysisOKed()
 {
 	if (_currentOptionsWidget != NULL)
 	{
+		QMap<QString, QVariant> info;
+		info["id"] = _currentAnalysis->id();
+		info["analysis"] = tq(_currentAnalysis->name());
+
+		log.log("Analysis OKed", info);
+
 		_currentOptionsWidget->hide();
 		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
@@ -671,6 +716,12 @@ void MainWindow::analysisRemoved()
 		_currentOptionsWidget->hide();
 		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
+
+		QMap<QString, QVariant> info;
+		info["id"] = _currentAnalysis->id();
+		info["analysis"] = tq(_currentAnalysis->name());
+
+		log.log("Analysis Removed", info);
 	}
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
@@ -680,6 +731,8 @@ void MainWindow::analysisRemoved()
 
 void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data)
 {
+	log.log("Copy");
+
 	QMimeData *mimeData = new QMimeData();
 
 	if (mimeType == "text/html")
@@ -714,6 +767,12 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	Analysis *analysis = _analyses->get(id);
 	if (analysis == NULL)
 		return;
+
+	QMap<QString, QVariant> info;
+	info["id"] = id;
+	info["analysis"] = tq(_currentAnalysis->name());
+
+	log.log("Analysis Changed Downstream", info);
 
 	string utf8 = fq(options);
 

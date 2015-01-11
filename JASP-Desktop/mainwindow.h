@@ -12,6 +12,7 @@
 #include "analysisforms/analysisform.h"
 #include "asyncloader.h"
 #include "optionsform.h"
+#include "activitylog.h"
 
 namespace Ui {
 class MainWindow;
@@ -60,6 +61,8 @@ private:
 	std::map<std::string, AnalysisForm *> _analysisForms;
 
 	int _tableViewWidthBeforeOptionsMadeVisible;
+
+	ActivityLog log;
 
 signals:
 	void analysisSelected(int id);

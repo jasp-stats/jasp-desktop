@@ -4,7 +4,10 @@
 #include "windows.h"
 #endif
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 using namespace std;
+using namespace boost::posix_time;
 
 #ifdef __WIN32__
 
@@ -48,5 +51,14 @@ void Utils::setEnv(const string &env, const string &value)
 #else
 	::setenv(env.c_str(), value.c_str(), value.size());
 #endif
+}
+
+long Utils::currentMillis()
+{
+	ptime start_of_time = from_iso_string("20150101T000000");
+	ptime t = microsec_clock::local_time();
+	time_duration elapsed = t - start_of_time;
+
+	return elapsed.total_milliseconds();
 }
 
