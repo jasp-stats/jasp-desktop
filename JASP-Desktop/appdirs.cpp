@@ -5,6 +5,14 @@
 #include <QDir>
 #include <QDebug>
 
+#ifdef __WIN32__
+#include <windows.h>
+#include "qutils.h"
+#include "utils.h"
+#endif
+
+using namespace std;
+
 const QString AppDirs::examples()
 {
 #ifdef __APPLE__
@@ -33,8 +41,23 @@ const QString AppDirs::tempDir()
 
 	if (QDir(path).exists() == false)
 	{
-		if (QDir::home().mkdir(".JASP") == false)
+		if (QDir::home().mkdir(".JASP"))
+		{
+#ifdef __WIN32__
+
+			wstring wpath = Utils::s2ws(fq(path));
+
+			DWORD attributes;
+
+			attributes = GetFileAttributes(wpath.c_str());
+			attributes |= FILE_ATTRIBUTE_HIDDEN;
+			SetFileAttributes(wpath.c_str(), attributes);
+#endif
+		}
+		else
+		{
 			qDebug() << "temp dir could not be created :" << path;
+		}
 	}
 
 	return path;
