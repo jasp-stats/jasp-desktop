@@ -50,6 +50,53 @@
 	return(SEK)
 } 
 
+.barplotJASP <- function(column, variable){
+	yticks <- seq(0,max(summary(column)),1)
+	yticks <- pretty(yticks)
+	
+	yLabs <- vector("character", length(yticks))
+	
+	for(i in seq_along(yticks)){
+		
+		if(yticks[i] < 10^6){
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+			
+		} else{
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+			
+		}		
+	}
+	
+	distLab <- max(nchar(yLabs))/1.8
+	
+	par(mar= c(5, 7.2, 4, 2) + 0.1)
+	barplot(summary(column), cex.names= 1.3, axes= FALSE, ylim= range(yticks))
+	axis(2, las=1, at= yticks, labels= yLabs, cex.axis= 1.4)
+	mtext(text = variable, side = 1, cex=1.5, line = 3)
+	mtext(text = "Frequency", side = 2, cex=1.5, line = distLab+2, las=0)
+}
+
+.plotMarginal <- function(variable, variableName, cexYlab= 1.3, lwd= 2){
+
+	par(mar= c(5, 4.5, 4, 2) + 0.1)
+	density <- density(variable)
+	h <- hist(variable, plot = FALSE)
+	jitVar <- jitter(variable)
+	yhigh <- max(max(h$density), max(density$y))
+	ylow <- 0
+	xticks <- pretty(c(variable, jitVar), min.n= 3)
+	plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+	h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
+	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
+	mtext(text = variableName, side = 1, cex=1.5, line = 3)
+	par(las=0)
+	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.5, mgp= c(3, 0.7, 0))
+	rug(jitVar)
+	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+}
+
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
 	variables <- unlist(options$main$fields)
@@ -493,26 +540,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
     ####  PLOTS
 	
-	#### histogram with density estimator ####
-	plotMarginal <- function(variable, cexYlab= 1.3, lwd= 2){
-	
-		par(mar= c(5, 4.5, 4, 2) + 0.1)
-		density <- density(variable)
-		h <- hist(variable, plot = FALSE)
-		jitVar <- jitter(variable)
-		yhigh <- max(max(h$density), max(density$y))
-		ylow <- 0
-		xticks <- pretty(c(variable, jitVar), min.n= 3)
-		plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
-		h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
-		ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
-		par(las=0)
-		ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.7, mgp= c(3, 0.7, 0))
-		rug(jitVar)
-		lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
-	}
-	
-	if (options$chartType != "noCharts") {
+	if (options$plots == TRUE) {
 		
 		frequency.plots <- list()
 			
@@ -546,14 +574,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				if (is.factor(column)){
 				
 					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
-					yticks <- seq(0,max(summary(column)),1)
-					yticks <- pretty(yticks)
-					par(mar= c(5, 4.5, 4, 2) + 0.1)
-					barplot(summary(column), cex.names= 1.3, axes= FALSE, ylim= range(yticks))
-					axis(2, las=1, at= yticks, labels= yticks, cex.axis= 1.4)
-					mtext(text = variable, side = 1, cex=1.9, line = 3)
-					mtext(text = "Frequency", side = 2, cex=1.9, line = 3, las=0)
-					
+										
+					.barplotJASP(column, variable)
+										
 				} else {
 				
 						if (callback(results) != 0)
@@ -561,8 +584,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				
 				image <- .beginSaveImage(options$chartWidth, options$chartHeight)
 				
-				plotMarginal(column)
-				mtext(text = variable, side = 1, cex=1.9, line = 3)
+				.plotMarginal(column, variableName= variable)
+				
 				}
 				
 				content <- .endSaveImage(image)
