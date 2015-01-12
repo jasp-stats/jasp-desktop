@@ -65,7 +65,11 @@ void Engine::runAnalysis()
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
 	_analysisResults = rbridge_run(_analysisName, _analysisOptions, perform, callback);
 
-	if (_status == initing)
+	if (receiveMessages())
+	{
+		// if a new message was received, the analysis was changed and we shouldn't send results
+	}
+	else if (_status == initing)
 	{
 		_status = inited;
 		sendResults();
@@ -89,13 +93,13 @@ void Engine::run()
 
 	do
 	{
-        receiveMessages(100);
+		receiveMessages(100);
 		if ( ! Process::isParentRunning())
 			break;
 		runAnalysis();
 
 	}
-    while(1);
+	while(1);
 
 	shared_memory_object::remove(memoryName.c_str());
 }
