@@ -1392,7 +1392,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				r <- BayesFactor::ttestBF(variableData, r=options$priorWidth, nullInterval = nullInterval)
 				
 				bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
-				
+								
 				if (bf.type == "BF01")
 					bf.raw <- 1 / bf.raw
 				
@@ -1423,71 +1423,81 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				index <- .addFootnote(footnotes, errorMessage)
 				
 				result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
-			} else {
-			
-				if(BF == Inf | BF == -Inf){
-					errorMessage <- "BayesFactor is infinity - plotting not possible"
+			} else {			
+						
+				if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+				
+					errorMessage <- "BayesFactor is infinity: plotting not possible"
+					.addFootnote(footnotes, errorMessage)
 				} else {
-									
-					if(options$plotPriorAndPosterior){
-					
-						image <- .beginSaveImage(530, 400)
+				
+					if(bf.raw == -Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+				
+					errorMessage <- "BayesFactor is -infinity: plotting not possible"
+					.addFootnote(footnotes, errorMessage)
+					} else {
+				
+														
+						if(options$plotPriorAndPosterior){
 						
-						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
-											
-						content <- .endSaveImage(image)
+							image <- .beginSaveImage(530, 400)
+							
+							.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}
+						if(options$plotBayesFactorRobustness){
 						
-						plot <- plots.ttest[[z]]
+							image <- .beginSaveImage(530, 400)
+							
+							.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}
+						if(options$plotSequentialAnalysis){
 						
-						plot[["data"]]  <- content
+							image <- .beginSaveImage(530, 400)
+							
+							.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}
+						if(options$plotSequentialAnalysisRobustness){
 						
-						plots.ttest[[z]] <- plot
-						z <- z + 1
-					}
-					if(options$plotBayesFactorRobustness){
-					
-						image <- .beginSaveImage(530, 400)
-						
-						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
-											
-						content <- .endSaveImage(image)
-						
-						plot <- plots.ttest[[z]]
-						
-						plot[["data"]]  <- content
-						
-						plots.ttest[[z]] <- plot
-						z <- z + 1
-					}
-					if(options$plotSequentialAnalysis){
-					
-						image <- .beginSaveImage(530, 400)
-						
-						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
-											
-						content <- .endSaveImage(image)
-						
-						plot <- plots.ttest[[z]]
-						
-						plot[["data"]]  <- content
-						
-						plots.ttest[[z]] <- plot
-						z <- z + 1
-					}
-					if(options$plotSequentialAnalysisRobustness){
-					
-						image <- .beginSaveImage(530, 400)
-						
-						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
-											
-						content <- .endSaveImage(image)
-						
-						plot <- plots.ttest[[z]]
-						
-						plot[["data"]]  <- content
-						
-						plots.ttest[[z]] <- plot
-						z <- z + 1
+							image <- .beginSaveImage(530, 400)
+							
+							.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}
 					}
 				}
 			}
@@ -1495,7 +1505,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			ttest.rows[[i]] <- result
 	
 			i <- i + 1
-		}
+			}
 	}
 			
 	ttest[["data"]] <- ttest.rows
