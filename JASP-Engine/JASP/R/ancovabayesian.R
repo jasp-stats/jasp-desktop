@@ -150,7 +150,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			posterior.results <- .posteriorResultsBayesianAnCova (table = "run", n.mod.0 = n.mod.0, 
 				posterior.probability = posterior.probability, BFmain.0 = BFmain.0, 
 				errormain.0 = errormain.0, models.tab = models.tab, BFmodels = BFmodels, 
-				options = options, pprior = pprior )
+				options = options, pprior = pprior, terms.nuisance = terms.nuisance )
 	
 		} else {
 			posterior.results <- .posteriorResultsBayesianAnCova (table = "init", null.name = null.name,
@@ -341,7 +341,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		}
 	}
 	n.mod.0 <- n.mod + 1
-	
 	list(n.mod=n.mod, n.mod.0=n.mod.0, models.tab = models.tab, models = models,models.no.null = models.no.null)
 }
 
@@ -578,34 +577,51 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 				error <- " "
 			}
 			
-			model.name <-	models.tab[n]
+			model.name <- models.tab[n]
+
+			if(n > 1 && length(terms.nuisance) > 0) {
+				model.components <- unlist(strsplit(.vf(model.name), split = "+", fixed = TRUE))
+				model.components <- sapply(model.components, stringr::str_trim, simplify=FALSE)
+				for(i in length(model.components):1){
+					if(model.components[i] %in% terms.nuisance ){
+						model.components <- model.components[-i]
+					} 
+				}
+				model.name <- .unvf(paste(model.components, collapse=" + "))
+			}
+
+			
 			BFM <- .clean(BFmodels[n])
 			if (length(options$randomFactors) == 0 && length(options$covariates) == 0) {
 				r <- list("Models"= model.name,"P(M)" = pprior, "P(M|data)"=ppost,
-				"BFM" = BFM,"BF10"=BF, "% error"=error)
-				} else {
-					r <- list("Models"= model.name,"P(M)" = pprior, "P(M|data)"=ppost,
+					"BFM" = BFM,"BF10"=BF, "% error"=error)
+			} else {
+				r <- list("Models"= model.name,"P(M)" = pprior, "P(M|data)"=ppost,
 					"BFM" = BFM,"BF10"=BF, "% error"=error, ".footnotes"=list("p"=list(1)))
-				}
-				posterior.results[[length(posterior.results)+1]] <- r
 			}
-
+			posterior.results[[length(posterior.results)+1]] <- r
+		}
 	} else if (table == "init") {
 
 		posterior.results[[1]] <- list("Models"=null.name)
 		
 		for (model in all.models) {
-			nuisance.plus	<- paste(c("", terms.nuisance), collapse=" + ")
-			nuisance.alone	<- paste(c(terms.nuisance), collapse=" + ")
 			model.name <- as.character(model)[[3]]
-			if (length(terms.nuisance) > 0) {
-				model.name	<- gsub(nuisance.plus, "", model.name, fixed = TRUE)
-				model.name	<- gsub(nuisance.alone, "", model.name, fixed = TRUE)
+			if(length(terms.nuisance) > 0) {
+				model.components <- unlist(strsplit(model.name, split = "+", fixed = TRUE))
+				model.components <- sapply(model.components, stringr::str_trim, simplify=FALSE)
+				for(i in length(model.components):1){
+					if(model.components[i] %in% terms.nuisance ){
+						model.components <- model.components[-i]
+					} 
+				}
+				model.name <- paste(model.components, collapse=" + ")
 			}
 			model.name <- .unvf(model.name)
-			posterior.results[[length(posterior.results)+1]] <- list("Models" = model.name)
+			if(length(model.name) == 1){
+				posterior.results[[length(posterior.results)+1]] <- list("Models" = model.name)
+			}
 		}
-		
 	} else if (table == "null"){
 		posterior.results[[1]] <- list("Models" = null.name)	
 	}
