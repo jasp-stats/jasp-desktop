@@ -384,7 +384,6 @@
 			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <-  sub("-", "+", x = newy)
-			#newy <- substring(newy, nchar(newy)-4, nchar(newy))
 			newy <- paste0("1/", newy)
 		}
 		
@@ -1043,7 +1042,6 @@
 			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <-  sub("-", "+", x = newy)
-			#newy <- substring(newy, nchar(newy)-4, nchar(newy))
 			newy <- paste0("1/", newy)
 		}
 		
@@ -1765,7 +1763,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					index <- .addFootnote(footnotes, errorMessage)
 					
 					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
-				} else {
+				} else if(!exists("errorMessage")){
 				
 																		
 					if(options$plotPriorAndPosterior){
