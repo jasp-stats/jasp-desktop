@@ -14,6 +14,7 @@
 
 #include "process.h"
 #include "common.h"
+#include "qutils.h"
 
 using namespace boost::interprocess;
 using namespace std;
@@ -23,6 +24,8 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 {
 	_analyses = analyses;
 	_engineStarted = false;
+
+	_log = NULL;
 
 	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
 	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
@@ -85,6 +88,11 @@ void EngineSync::start()
 bool EngineSync::engineStarted()
 {
 	return _engineStarted;
+}
+
+void EngineSync::setLog(ActivityLog *log)
+{
+	_log = log;
 }
 
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
@@ -151,12 +159,28 @@ void EngineSync::process()
 			Json::Value json;
 			reader.parse(data, json);
 
-			//int id = json.get("id", -1).asInt();
-			//bool init = json.get("perform", "init").asString() == "init";
+			int id = json.get("id", -1).asInt();
 			Json::Value results = json.get("results", Json::nullValue);
 			string status = json.get("status", "error").asString();
 
-			if (status == "complete")
+			if (status == "error")
+			{
+				analysis->setStatus(Analysis::Complete);
+				analysis->setResults(results);
+				_analysesInProgress[i] = NULL;
+				sendMessages();
+
+				if (_log != NULL)
+				{
+					QString errorMessage;
+					errorMessage = tq(results.get("errorMessage", "").asString());
+					errorMessage = errorMessage.replace("'", "\\'");
+
+					QString info = QString("%1,%2").arg(id).arg(errorMessage);
+					_log->log("Analysis Error", info);
+				}
+			}
+			else if (status == "complete")
 			{
 				analysis->setStatus(Analysis::Complete);
 				analysis->setResults(results);

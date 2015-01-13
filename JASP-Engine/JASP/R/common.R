@@ -14,7 +14,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		error <- gsub("\n", "\\\\n", as.character(results), fixed=TRUE)
 		errorMessage <- paste("This analysis terminated unexpectedly. Please contact its author.", error, sep="\\\\n\\\\n")
 	
-		errorResponse <- paste("{ \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" }", sep="")
+		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 		
 		errorResponse
 	

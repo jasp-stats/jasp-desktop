@@ -6,6 +6,7 @@
 #include <QNetworkReply>
 #include <QTimer>
 #include <QDir>
+#include <QSettings>
 
 #include "utils.h"
 #include "process.h"
@@ -20,12 +21,27 @@ ActivityLog::ActivityLog(QObject *parent)
 {
 	_reply = NULL;
 	_logFile.setFileName(tq(Dirs::tempDir()) + "/log.csv");
+
+	QSettings settings;
+	QVariant uid = settings.value("uid");
+
+	if (uid.canConvert<QString>())
+	{
+		_uid = uid.toString();
+	}
+	else
+	{
+		_uid = QString("%1").arg(Utils::currentMillis());
+		settings.setValue("uid", _uid);
+		settings.sync();
+	}
 }
 
 void ActivityLog::log(const QString &action, const QString &info)
 {
-	QString line("%1,%2,%3,%4,%5\n");
+	QString line("%1,%2,%3,%4,%5,%6\n");
 
+	line = line.arg(_uid);
 	line = line.arg(APP_VERSION);
 	line = line.arg(Process::currentPID());
 	line = line.arg(Utils::currentMillis());

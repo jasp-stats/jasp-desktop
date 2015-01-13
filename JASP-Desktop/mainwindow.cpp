@@ -165,7 +165,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->panelHelp->hide();
 
 	log.log("Application Start");
+
 	ui->backStage->setLog(&log);
+	_engineSync->setLog(&log);
+
 	log.flushLogToServer();
 
 	QTimer *timer = new QTimer(this);

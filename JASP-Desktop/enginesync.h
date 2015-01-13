@@ -17,6 +17,7 @@
 #include "analysis.h"
 #include "analyses.h"
 #include "ipcchannel.h"
+#include "activitylog.h"
 
 class EngineSync : public QObject
 {
@@ -29,6 +30,7 @@ public:
 	void start();
 
 	bool engineStarted();
+	void setLog(ActivityLog *log);
 
 signals:
 
@@ -39,6 +41,7 @@ private:
 
 	Analyses *_analyses;
 	bool _engineStarted;
+	ActivityLog *_log;
 
 	std::vector<QProcess *> _slaveProcesses;
 	std::vector<IPCChannel *> _channels;

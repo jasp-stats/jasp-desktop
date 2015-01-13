@@ -24,6 +24,8 @@ private slots:
 
 private:
 
+	QString _uid;
+
 	QFile _logFile;
 	qint64 _logFilePos;
 
