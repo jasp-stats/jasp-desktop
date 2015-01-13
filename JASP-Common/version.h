@@ -1,10 +1,10 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define APP_VERSION "JASP 0.5 Alpha"
+#define APP_VERSION "JASP 0.6 Alpha"
 #define APP_VERSION_MASSIVE  1
 #define APP_VERSION_MAJOR    0
-#define APP_VERSION_MINOR    5
+#define APP_VERSION_MINOR    6
 #define APP_VERSION_REVISION 0
 #define APP_VERSION_RELEASE_TYPE "Alpha"
 
