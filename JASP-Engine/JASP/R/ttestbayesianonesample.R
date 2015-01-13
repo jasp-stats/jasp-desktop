@@ -255,9 +255,12 @@
 	BF10 <- vector("numeric", length(x))
 	
 	for(i in seq_along(x)){
+		
 		if(i == 1){
+			
 			BF10[i] <- 1
 		} else{
+			
 			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:i], paired= paired, nullInterval= nullInterval, rscale= r)
 			BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 		}
@@ -267,9 +270,12 @@
 	BF10u <- vector("numeric", length(x))
 	
 	for(i in seq_along(x)){
+		
 		if(i == 1){
+			
 			BF10u[i] <- 1
 		} else{
+			
 			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:i], paired= paired, nullInterval= nullInterval, rscale= "ultrawide")
 			BF10u[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 		}
@@ -279,9 +285,12 @@
 	BF10m <- vector("numeric", length(x))
 	
 	for(i in seq_along(x)){
+		
 		if(i == 1){
+			
 			BF10m[i] <- 1
 		} else{
+			
 			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:i], paired= paired, nullInterval= nullInterval, rscale= "medium")
 			BF10m[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 		}
@@ -294,30 +303,44 @@
 	# y-axis labels larger than 1
 	y1h <- "1"
 	i <- 1
+	
 	while(eval(parse(text= y1h[i])) < max(BF)){
+		
 		if(grepl(pattern = "e",y1h[i])){
-			newy <- paste(substr(x = y1h[i], 1,4), as.numeric(substr(x = y1h[i], 5,5))+1, sep="")
-		} else {
+			
+			newy <- paste(strsplit(y1h[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y1h[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
+		} else{
+			
 			newy <- paste(y1h[i], "0", sep= "")
 		}
-		if(as.numeric(newy) >= 10^6){
+		
+		if(eval(parse(text=newy)) >= 10^6){
+			
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
+		
 		y1h <- c(y1h, newy)
 		i <- i + 1
 	}
 	
 	y3h <- "3"
 	i <- 1
+	
 	while(eval(parse(text= y3h[i])) < max(BF)){
+		
 		if(grepl(pattern = "e",y3h[i])){
-			newy <- paste(substr(x = y3h[i], 1,4), as.numeric(substr(x = y3h[i], 5,5))+1, sep="")
+			
+			newy <- paste(strsplit(y3h[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y3h[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
+			
 			newy <- paste(y3h[i], "0", sep= "")
 		}
+		
 		if(as.numeric(newy) >= 10^6){
+			
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
+		
 		y3h <- c(y3h, newy)
 		i <- i + 1
 	}
@@ -325,51 +348,76 @@
 	yhigh <- vector("numeric", length(y1h) + length(y3h))
 	o <- 1
 	e <- 1
+	
 	for(i in seq_along(yhigh)){
+		
 		if(i %% 2 == 1){
+			
 			yhigh[i] <- y1h[o]
 			o <- o + 1
 		}
+		
 		if(i %% 2 == 0){
+			
 			yhigh[i] <- y3h[e]
 			e <- e + 1
 		}
 	} 
+	
 	yhighLab <- as.character(yhigh)
 	
 	# y-axis labels smaller than 1
 	y1l <- "1/1"
 	i <- 1
+	
 	while(eval(parse(text= y1l[i])) > min(BF)){
+		
 		if(grepl(pattern = "e",y1l[i])){
-			newy <- paste(substr(x = y1l[i], 1,4), as.numeric(substr(x = y1h[i], 5,5))+1, sep="")
+			
+			newy <- paste(strsplit(y1l[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y1l[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
+			
 			newy <- paste(y1l[i], "0", sep= "")
 		}
+		
 		if(eval(parse(text= newy)) <= 10^(-6)){
+			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <-  sub("-", "+", x = newy)
-			newy <- substring(newy, nchar(newy)-4, nchar(newy))
+			#newy <- substring(newy, nchar(newy)-4, nchar(newy))
 			newy <- paste0("1/", newy)
 		}
+		
 		y1l <- c(y1l, newy)
 		i <- i + 1
 	}
 	
 	y3l <- "1/3"
 	i <- 1
+	
 	while(eval(parse(text= y3l[i])) > min(BF)){
+		
 		if(grepl(pattern = "e",y3l[i])){
-			newy <- paste(substr(x = y3l[i], 1,4), as.numeric(substr(x = y1h[i], 5,5))+1, sep="")
+			
+			newy <- paste(strsplit(y3l[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y3l[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
+			
 			newy <- paste(y3l[i], "0", sep= "")
 		}
-		if(eval(parse(text= newy)) <= 10^(-6)){
+		
+		if(newy == "1/3e+9"){
+			newy <- "1/3e+09"
+		}	
+		
+		if(eval(parse(text= newy)) <= 10^(-6) & eval(parse(text= newy)) > 10^(-9)){
+			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
+			newy <- paste(substring(newy, 1, nchar(newy)-1), as.numeric(substring(newy, nchar(newy), nchar(newy)))-1,sep="")
+			newy <- sub(".33", "", newy)
 			newy <-  sub("-", "+", x = newy)
-			newy <- substring(newy, nchar(newy)-4, nchar(newy))
 			newy <- paste0("1/", newy)
 		}
+		
 		y3l <- c(y3l, newy)
 		i <- i + 1
 	}
@@ -377,7 +425,9 @@
 	ylow <- vector("numeric", length(y1l) + length(y3l))
 	o <- 1
 	e <- 1
+	
 	for(i in seq_along(ylow)){
+		
 		if(i %% 2 == 1){
 			ylow[i] <- y1l[o]
 			o <- o + 1
@@ -397,43 +447,157 @@
 		
 		omit3s <- TRUE
 		
-		yLab1s <- yLab[-grep(pattern = "3", x = yLab)]
+		ind <- which(yLab == "3")
 		
-		if(max(BF) > yLab1s[length(yLab1s)]){
-			if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
-				newy <- paste(substr(x = yLab1s[length(yLab1s)], 1,4), as.numeric(substr(x = yLab1s[length(yLab1s)], 5,5))+1, sep="")
-			} else {
-				newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
+		yLabsHigh <- yLab[ind:length(yLab)]
+		
+		if(length(yLabsHigh) > 1){
+			
+			yLabsHigh <- yLabsHigh[seq(2, length(yLabsHigh),2)]
+		} else{
+			
+			yLabsHigh <- character(0)
+		}		
+		
+		yLabsLow <- yLab[1:(ind-1)]
+		yLabsLow <- yLabsLow[-grep(pattern = "/3", x = yLab)]
+		
+		yLab1s <- c(yLabsLow, yLabsHigh)
+		
+		if(max(BF) > eval(parse(text= yLab1s[length(yLab1s)]))){
+			
+			for(i in 1:2){
+				
+				if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
+					
+					newy <-  paste(strsplit(yLabs1[length(yLabs1)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLabs1[length(yLabs1)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
+				} else {
+					
+					newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
+				}
+				
+				if(eval(parse(text=newy)) >= 10^6){
+					
+					newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
+				}
+				
+				yLab1s <- c(yLab1s, newy)
 			}
-			if(as.numeric(newy) >= 10^6){
-				newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
-			}
-			yLab1s <- c(yLab1s, newy)
 		}
+		
 		if(yLab1s[1] == "1"){
+			
 			yLab1s <- c(paste0(yLab1s[1], "/", "10"), yLab1s)
 		}
-		if(min(BF) < yLab1s[1]){
+		if(yLab1s[length(yLab1s)] == "1"){
 			
-			if(grepl(pattern = "e",yLab1s[1])){
-				newy <- paste(substr(x = yLab1s[1], 1,4), as.numeric(substr(x = yLab1s[1], 5,5))+1, sep="")
-			} else {
-				newy <- paste(yLab1s[1], "0", sep= "")
+			yLab1s <- c(yLab1s, "10")
+		}
+		
+		if(min(BF) < eval(parse(text= yLab1s[1]))){
+			
+			for(i in 1:2){
+				
+				if(grepl(pattern = "e",yLab1s[1])){
+					
+					newy <- paste(strsplit(yLab1s[1], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[1],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
+				} else {
+					
+					newy <- paste(yLab1s[1], "0", sep= "")
+				}
+				
+				if(eval(parse(text= newy)) <= 10^(-6)){
+					
+					newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
+					newy <-  sub("-", "+", x = newy)
+					newy <- substring(newy, nchar(newy)-4, nchar(newy))
+					newy <- paste0("1/", newy)
+				}
 			}
-			if(eval(parse(text= newy)) <= 10^(-6)){
-				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
-				newy <-  sub("-", "+", x = newy)
-				newy <- substring(newy, nchar(newy)-4, nchar(newy))
-				newy <- paste0("1/", newy)
-			}	
 			
 			ylab1s <- c(newy, yLab1s)
-		}		
+		}
+		
 		yLab <- yLab1s
 	}
 	
+	while(length(yLab) > 9){
+		
+		ind <- which(yLab == "1")
+		
+		if(ind == 1){
+			
+			yLabLow <- character(0)
+		} else{
+			
+			yLabLow <- yLab[1:(ind-1)]
+		}
+		
+		if(ind == length(yLab)){
+			
+			yLabHigh <- character(0)
+		} else{
+			
+			yLabHigh <- yLab[(ind+1):length(yLab)]
+		}		
+		
+		if(length(yLabLow) > 1){
+			
+			yLabLow <- yLabLow[seq(length(yLabLow)-1, 1, -2)]
+		} else{
+			
+			yLabLow <- yLabLow
+		}
+		
+		
+		if(length(yLabHigh) > 1){
+			
+			yLabHigh <- yLabHigh[seq(2, length(yLabHigh), 2)]
+		} else{
+			
+			yLabHigh <- yLabHigh
+		}
+		
+		if(length(yLabLow) == 1){
+			
+			yLabLow <- paste("1/", yLabHigh[1], sep="")
+		}
+		if(length(yLabHigh) == 1){
+			
+			yLabHigh <- strsplit(x = yLabLow[1], "/", fixed=TRUE)[[1]][2]
+		}
+		
+		yLab <- c(rev(yLabLow), "1", yLabHigh)
+	}
+	
+	
+	while(eval(parse(text=yLab[1])) > min(BF)){
+		
+		for(i in 1:2){
+			
+			interval <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[2], "+", fixed= TRUE)[[1]][2])
+			pot <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) + interval
+			
+			newy <- paste(strsplit(yLab[1], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
+			yLab <- c(newy, yLab)
+		}		
+	}		
+	
+	while(eval(parse(text=yLab[length(yLab)])) < max(BF)){
+		
+		for(i in 1:2){
+			
+			interval <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[length(yLab)-1], "+", fixed= TRUE)[[1]][2])
+			pot <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) + interval
+			newy <- paste(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
+			yLab <- c( yLab, newy)
+		}
+	}		
+	
 	yAt <- vector("numeric", length(yLab))
+	
 	for(i in seq_along(yLab)){
+		
 		yAt[i] <- log(eval(parse(text= yLab[i])))
 	}	
 	
@@ -489,6 +653,7 @@
 		yAtlow <- rev(yAt[yAt <= 0])
 		
 		for(i in 1:(length(yAtlow)-1)){
+			
 			yy <- mean(c(yAtlow[i], yAtlow[i+1]))
 			
 			if(yAtlow[i] == log(1)){
@@ -510,8 +675,10 @@
 		
 		
 		axis(side=4, at= yAt,tick=TRUE,las=2, cex.axis= cexAxis, lwd= lwdAxis, labels=FALSE, line= -0.6)
+		
 		xx <- grconvertX(0.96, "ndc", "user")
 		yy <- grconvertY(0.5, "npc", "user")
+		
 		text(xx, yy, "Evidence", srt= -90, cex= cexEvidence)
 	}
 	
@@ -658,6 +825,7 @@
 	}
 	
 	if(plotDifferentPriors){
+		
 		if(length(x) <= 60){
 			points(log(BF10u), pch=21, bg= "white", cex= 0.7, lwd= 1.3) # "ultrawide" prior
 			points(log(BF10m), pch=21, bg= "black", cex= 0.7, lwd= 1.3) # "medium" prior
@@ -672,6 +840,7 @@
 	BFevidence <- BF10e
 	
 	if(evidenceText){
+		
 		if(BF10e < 1){
 			BFevidence <- 1 / BF10e
 		}		
@@ -694,6 +863,7 @@
 		yyT <- grconvertY(0.85, "ndc", "user")
 		
 		if(BF10e >= 1){
+			
 			if(oneSided == FALSE){
 				text(xxT, yyT, paste("Evidence for H1:\n", lab), cex= 1.4)
 			}
@@ -718,10 +888,12 @@
 		legend <- c("user prior", "ultrawide prior", "medium prior")
 		
 		if(length(x) <= 60){
+			
 			pt.bg <-  c("grey", "white", "black")
 			pt.cex <-  c(cexPoints, 0.7, 0.7)
 			legend(xx, yy, legend = legend[BFind], pch=rep(21,3), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,3), pt.lwd=rep(1.3,3), pt.cex= pt.cex[BFind])
 		} else{
+			
 			lty <- c(1, 1, 3)
 			lwd <- c(2.7, 1.3, 1.3)
 			col <- c("black", greycol2, greycol)
@@ -790,30 +962,44 @@
 	# y-axis labels larger than 1
 	y1h <- "1"
 	i <- 1
+	
 	while(eval(parse(text= y1h[i])) < max(BF)){
+		
 		if(grepl(pattern = "e",y1h[i])){
-			newy <- paste(substr(x = y1h[i], 1,4), as.numeric(substr(x = y1h[i], 5,5))+1, sep="")
-		} else {
+			
+			newy <- paste(strsplit(y1h[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y1h[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
+		} else{
+			
 			newy <- paste(y1h[i], "0", sep= "")
 		}
-		if(as.numeric(newy) >= 10^6){
+		
+		if(eval(parse(text=newy)) >= 10^6){
+			
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
+		
 		y1h <- c(y1h, newy)
 		i <- i + 1
 	}
 	
 	y3h <- "3"
 	i <- 1
+	
 	while(eval(parse(text= y3h[i])) < max(BF)){
+		
 		if(grepl(pattern = "e",y3h[i])){
-			newy <- paste(substr(x = y3h[i], 1,4), as.numeric(substr(x = y3h[i], 5,5))+1, sep="")
+			
+			newy <- paste(strsplit(y3h[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y3h[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
+			
 			newy <- paste(y3h[i], "0", sep= "")
 		}
+		
 		if(as.numeric(newy) >= 10^6){
+			
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
+		
 		y3h <- c(y3h, newy)
 		i <- i + 1
 	}
@@ -821,51 +1007,76 @@
 	yhigh <- vector("numeric", length(y1h) + length(y3h))
 	o <- 1
 	e <- 1
+	
 	for(i in seq_along(yhigh)){
+		
 		if(i %% 2 == 1){
+			
 			yhigh[i] <- y1h[o]
 			o <- o + 1
 		}
+		
 		if(i %% 2 == 0){
+			
 			yhigh[i] <- y3h[e]
 			e <- e + 1
 		}
 	} 
+	
 	yhighLab <- as.character(yhigh)
 	
 	# y-axis labels smaller than 1
 	y1l <- "1/1"
 	i <- 1
+	
 	while(eval(parse(text= y1l[i])) > min(BF)){
+		
 		if(grepl(pattern = "e",y1l[i])){
-			newy <- paste(substr(x = y1l[i], 1,4), as.numeric(substr(x = y1h[i], 5,5))+1, sep="")
+			
+			newy <- paste(strsplit(y1l[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y1l[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
+			
 			newy <- paste(y1l[i], "0", sep= "")
 		}
+		
 		if(eval(parse(text= newy)) <= 10^(-6)){
+			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <-  sub("-", "+", x = newy)
-			newy <- substring(newy, nchar(newy)-4, nchar(newy))
+			#newy <- substring(newy, nchar(newy)-4, nchar(newy))
 			newy <- paste0("1/", newy)
 		}
+		
 		y1l <- c(y1l, newy)
 		i <- i + 1
 	}
 	
 	y3l <- "1/3"
 	i <- 1
+	
 	while(eval(parse(text= y3l[i])) > min(BF)){
+		
 		if(grepl(pattern = "e",y3l[i])){
-			newy <- paste(substr(x = y3l[i], 1,4), as.numeric(substr(x = y1h[i], 5,5))+1, sep="")
+			
+			newy <- paste(strsplit(y3l[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y3l[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
+			
 			newy <- paste(y3l[i], "0", sep= "")
 		}
-		if(eval(parse(text= newy)) <= 10^(-6)){
+		
+		if(newy == "1/3e+9"){
+			newy <- "1/3e+09"
+		}	
+		
+		if(eval(parse(text= newy)) <= 10^(-6) & eval(parse(text= newy)) > 10^(-9)){
+			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
+			newy <- paste(substring(newy, 1, nchar(newy)-1), as.numeric(substring(newy, nchar(newy), nchar(newy)))-1,sep="")
+			newy <- sub(".33", "", newy)
 			newy <-  sub("-", "+", x = newy)
-			newy <- substring(newy, nchar(newy)-4, nchar(newy))
 			newy <- paste0("1/", newy)
 		}
+		
 		y3l <- c(y3l, newy)
 		i <- i + 1
 	}
@@ -873,7 +1084,9 @@
 	ylow <- vector("numeric", length(y1l) + length(y3l))
 	o <- 1
 	e <- 1
+	
 	for(i in seq_along(ylow)){
+		
 		if(i %% 2 == 1){
 			ylow[i] <- y1l[o]
 			o <- o + 1
@@ -893,32 +1106,67 @@
 		
 		omit3s <- TRUE
 		
-		yLab1s <- yLab[-grep(pattern = "3", x = yLab)]
+		ind <- which(yLab == "3")
 		
-		if(max(BF) > yLab1s[length(yLab1s)]){
+		yLabsHigh <- yLab[ind:length(yLab)]
+		
+		if(length(yLabsHigh) > 1){
+			
+			yLabsHigh <- yLabsHigh[seq(2, length(yLabsHigh),2)]
+		} else{
+			
+			yLabsHigh <- character(0)
+		}		
+		
+		yLabsLow <- yLab[1:(ind-1)]
+		yLabsLow <- yLabsLow[-grep(pattern = "/3", x = yLab)]
+		
+		yLab1s <- c(yLabsLow, yLabsHigh)
+		
+		if(max(BF) > eval(parse(text= yLab1s[length(yLab1s)]))){
+			
 			for(i in 1:2){
+				
 				if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
-					newy <- paste(substr(x = yLab1s[length(yLab1s)], 1,4), as.numeric(substr(x = yLab1s[length(yLab1s)], 5,5))+1, sep="")
+					
+					newy <-  paste(strsplit(yLabs1[length(yLabs1)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLabs1[length(yLabs1)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 				} else {
+					
 					newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 				}
-				if(as.numeric(newy) >= 10^6){
-					newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
+				
+				if(eval(parse(text=newy)) >= 10^6){
+					
+					newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 				}
+				
 				yLab1s <- c(yLab1s, newy)
 			}
 		}
+		
 		if(yLab1s[1] == "1"){
+			
 			yLab1s <- c(paste0(yLab1s[1], "/", "10"), yLab1s)
 		}
-		if(min(BF) < yLab1s[1]){
+		if(yLab1s[length(yLab1s)] == "1"){
+			
+			yLab1s <- c(yLab1s, "10")
+		}
+		
+		if(min(BF) < eval(parse(text= yLab1s[1]))){
+			
 			for(i in 1:2){
+				
 				if(grepl(pattern = "e",yLab1s[1])){
-					newy <- paste(substr(x = yLab1s[1], 1,4), as.numeric(substr(x = yLab1s[1], 5,5))+1, sep="")
+					
+					newy <- paste(strsplit(yLab1s[1], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[1],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 				} else {
+					
 					newy <- paste(yLab1s[1], "0", sep= "")
 				}
+				
 				if(eval(parse(text= newy)) <= 10^(-6)){
+					
 					newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 					newy <-  sub("-", "+", x = newy)
 					newy <- substring(newy, nchar(newy)-4, nchar(newy))
@@ -928,11 +1176,87 @@
 			
 			ylab1s <- c(newy, yLab1s)
 		}
+		
 		yLab <- yLab1s
 	}
 	
+	while(length(yLab) > 9){
+		
+		ind <- which(yLab == "1")
+		
+		if(ind == 1){
+			
+			yLabLow <- character(0)
+		} else{
+			
+			yLabLow <- yLab[1:(ind-1)]
+		}
+		
+		if(ind == length(yLab)){
+			
+			yLabHigh <- character(0)
+		} else{
+			
+			yLabHigh <- yLab[(ind+1):length(yLab)]
+		}		
+		
+		if(length(yLabLow) > 1){
+			
+			yLabLow <- yLabLow[seq(length(yLabLow)-1, 1, -2)]
+		} else{
+			
+			yLabLow <- yLabLow
+		}
+		
+		
+		if(length(yLabHigh) > 1){
+			
+			yLabHigh <- yLabHigh[seq(2, length(yLabHigh), 2)]
+		} else{
+			
+			yLabHigh <- yLabHigh
+		}
+		
+		if(length(yLabLow) == 1){
+			
+			yLabLow <- paste("1/", yLabHigh[1], sep="")
+		}
+		if(length(yLabHigh) == 1){
+			
+			yLabHigh <- strsplit(x = yLabLow[1], "/", fixed=TRUE)[[1]][2]
+		}
+		
+		yLab <- c(rev(yLabLow), "1", yLabHigh)
+	}
+	
+	
+	while(eval(parse(text=yLab[1])) > min(BF)){
+		
+		for(i in 1:2){
+			
+			interval <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[2], "+", fixed= TRUE)[[1]][2])
+			pot <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) + interval
+			
+			newy <- paste(strsplit(yLab[1], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
+			yLab <- c(newy, yLab)
+		}		
+	}		
+	
+	while(eval(parse(text=yLab[length(yLab)])) < max(BF)){
+		
+		for(i in 1:2){
+			
+			interval <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[length(yLab)-1], "+", fixed= TRUE)[[1]][2])
+			pot <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) + interval
+			newy <- paste(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
+			yLab <- c( yLab, newy)
+		}
+	}		
+	
 	yAt <- vector("numeric", length(yLab))
+	
 	for(i in seq_along(yLab)){
+		
 		yAt[i] <- log(eval(parse(text= yLab[i])))
 	}	
 	
@@ -1181,8 +1505,7 @@
 		} else{
 			ultraBF <- bquote(BF[0]["-"]==.(BF01ultrat))
 		}	
-	}
-	
+	}	
 	
 	xx <- grconvertX(0.2, "ndc", "user")
 	yy <- grconvertY(0.945, "ndc", "user")
@@ -1317,198 +1640,202 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		oneSided <- "left"
 	}
 	
-	if (length(options[["variables"]]) > 0)
+
+	ttest.rows <- list()
+	plots.ttest <- list()
+	
+	q <- 1
+	
+	for (variable in options[["variables"]])
 	{
-		ttest.rows <- list()
-		plots.ttest <- list()
+		ttest.rows[[length(ttest.rows)+1]] <- list(Variable=variable, "BF"=".", error=".")
 		
-		q <- 1
+					
+		if (options$plotPriorAndPosterior){
+			plot <- list()
+			
+			plot[["title"]] <- variable
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+		
+		if (options$plotSequentialAnalysis){
+			plot <- list()
+			
+			plot[["title"]] <- variable
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+		
+		if (options$plotSequentialAnalysisRobustness){
+			plot <- list()
+			
+			plot[["title"]] <- variable
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+		
+		if (options$plotBayesFactorRobustness){
+			plot <- list()
+			
+			plot[["title"]] <- variable
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			
+			plots.ttest[[q]] <- plot
+			q <- q + 1
+		}
+	}
+	
+	if (perform == "run") {
+		
+		i <- 1
+		z <- 1
 		
 		for (variable in options[["variables"]])
 		{
-			ttest.rows[[length(ttest.rows)+1]] <- list(Variable=variable, "BF"=".", error=".")
+			result <- try (silent = TRUE, expr = {
+				
+				variableData <- dataset[[ .v(variable) ]]
+				variableData <- variableData[ ! is.na(variableData) ]
+				
+				r <- BayesFactor::ttestBF(variableData, r=options$priorWidth, nullInterval = nullInterval)
+				
+				bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
+								
+				if (bf.type == "BF01")
+					bf.raw <- 1 / bf.raw
+				
+				BF <- .clean(bf.raw)
+				
+				error <- .clean(as.numeric(r@bayesFactor$error)[1])
+				
+				list(Variable=variable, BF=BF, error=error)
+			})
 			
-			if (options$plotPriorAndPosterior){
-				plot <- list()
+			if (class(result) == "try-error") {
 				
-				plot[["title"]] <- variable
-				plot[["width"]]  <- 530
-				plot[["height"]] <- 400
-				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+				errorMessage <- .extractErrorMessage(result)
 				
-				plots.ttest[[q]] <- plot
-				q <- q + 1
-			}
-			
-			if (options$plotSequentialAnalysis){
-				plot <- list()
-				
-				plot[["title"]] <- variable
-				plot[["width"]]  <- 530
-				plot[["height"]] <- 400
-				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-				
-				plots.ttest[[q]] <- plot
-				q <- q + 1
-			}
-			
-			if (options$plotSequentialAnalysisRobustness){
-				plot <- list()
-				
-				plot[["title"]] <- variable
-				plot[["width"]]  <- 530
-				plot[["height"]] <- 400
-				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-				
-				plots.ttest[[q]] <- plot
-				q <- q + 1
-			}
-			
-			if (options$plotBayesFactorRobustness){
-				plot <- list()
-				
-				plot[["title"]] <- variable
-				plot[["width"]]  <- 530
-				plot[["height"]] <- 400
-				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-				
-				plots.ttest[[q]] <- plot
-				q <- q + 1
-			}
-		}
-		
-		if (perform == "run") {
-			
-			i <- 1
-			z <- 1
-			
-			for (variable in options[["variables"]])
-			{
-				result <- try (silent = TRUE, expr = {
+				if (errorMessage == "x or y must not contain missing or infinite values.") {
 					
-					variableData <- dataset[[ .v(variable) ]]
-					variableData <- variableData[ ! is.na(variableData) ]
+					errorMessage <- paste("BayesFactor is undefined - the sample contains infinity")
 					
-					r <- BayesFactor::ttestBF(variableData, r=options$priorWidth, nullInterval = nullInterval)
+					#} else if (errorMessage == "data are essentially constant") {
+					#				
+					#	errorMessage <- paste("BayesFactor is undefined - the sample contains all the same value (the variance is zero)")
+					#
+				} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
 					
-					bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
-					
-					if (bf.type == "BF01")
-						bf.raw <- 1 / bf.raw
-					
-					BF <- .clean(bf.raw)
-					
-					error <- .clean(as.numeric(r@bayesFactor$error)[1])
-					
-					list(Variable=variable, BF=BF, error=error)
-				})
-				
-				if (class(result) == "try-error") {
-					
-					errorMessage <- .extractErrorMessage(result)
-					
-					if (errorMessage == "x or y must not contain missing or infinite values.") {
-						
-						errorMessage <- paste("BayesFactor is undefined - the sample contains infinity")
-						
-						#} else if (errorMessage == "data are essentially constant") {
-						#				
-						#	errorMessage <- paste("BayesFactor is undefined - the sample contains all the same value (the variance is zero)")
-						#
-					} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
-						
-						errorMessage <- "BayesFactor is undefined - the sample has too few observations"	
-					}
-					
-					index <- .addFootnote(footnotes, errorMessage)
-					
-					result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
-				} else {
-				
-					if(BF == Inf | BF == -Inf){
-						errorMessage <- "BayesFactor is infinity - plotting not possible"
-					} else {
-										
-						if(options$plotPriorAndPosterior){
-						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							z <- z + 1
-						}
-						if(options$plotBayesFactorRobustness){
-						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							z <- z + 1
-						}
-						if(options$plotSequentialAnalysis){
-						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							z <- z + 1
-						}
-						if(options$plotSequentialAnalysisRobustness){
-						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							z <- z + 1
-						}
-					}
+					errorMessage <- "BayesFactor is undefined - the sample has too few observations"	
 				}
 				
-				ttest.rows[[i]] <- result
-		
-				i <- i + 1
-			}
-		}
+				index <- .addFootnote(footnotes, errorMessage)
 				
-		ttest[["data"]] <- ttest.rows
-		ttest[["footnotes"]] <- as.list(footnotes)
-		
-		results[["plots"]] <- plots.ttest
-		
-		results[["ttest"]] <- ttest
-		
-		if (callback(results) != 0)
-			return(NULL)
-		}
-		
+				result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+			} else {			
+						
+				if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+				
+					errorMessage <- "BayesFactor is infinity: plotting not possible"
+					index <- .addFootnote(footnotes, errorMessage)
+					
+					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
+				} else {
+				
+																		
+					if(options$plotPriorAndPosterior){
+					
+						image <- .beginSaveImage(530, 400)
+						
+						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						z <- z + 1
+					}
+					if(options$plotBayesFactorRobustness){
+					
+						image <- .beginSaveImage(530, 400)
+						
+						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						z <- z + 1
+					}
+					if(options$plotSequentialAnalysis){
+					
+						image <- .beginSaveImage(530, 400)
+						
+						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						z <- z + 1
+					}
+					if(options$plotSequentialAnalysisRobustness){
+					
+						image <- .beginSaveImage(530, 400)
+						
+						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						z <- z + 1
+					}	
+				}
+			}
+			
+			ttest.rows[[i]] <- result
+	
+			i <- i + 1
+			}
+	}
+			
+	ttest[["data"]] <- ttest.rows
+	ttest[["footnotes"]] <- as.list(footnotes)
+	
+	results[["plots"]] <- plots.ttest
+	
+	results[["ttest"]] <- ttest
+	
+	if (callback(results) != 0)
+		return(NULL)
+				
 	results
 }
 

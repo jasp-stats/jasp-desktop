@@ -215,10 +215,14 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
 				} else {
 				
-					if(BF == Inf | BF == -Inf){
-						errorMessage <- "BayesFactor is infinity - plotting not possible"
-					} else {
-										
+					if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+				
+						errorMessage <- "BayesFactor is infinity: plotting not possible"
+						index <- .addFootnote(footnotes, errorMessage)
+						
+						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error, .footnotes=list(BF=list(index)))
+					} else {					
+																
 						if(options$plotPriorAndPosterior){
 						
 							image <- .beginSaveImage(530, 400)
@@ -278,9 +282,9 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							
 							plots.ttest[[z]] <- plot
 							z <- z + 1
-						}
+						}						
 					}
-				}
+				}			
 			
 			} else {
 			

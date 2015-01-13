@@ -1,4 +1,3 @@
-
 TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
 	dependents <- unlist(options$variables)
@@ -395,5 +394,3 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 	levenes
 }
-
-
