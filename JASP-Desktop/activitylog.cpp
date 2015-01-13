@@ -150,6 +150,15 @@ void ActivityLog::networkResponse()
 		if (_logFilePos > 0)
 			QTimer::singleShot(1000, this, SLOT(flushLogToServer()));
 	}
+	else if (_reply->error() == QNetworkReply::HostNotFoundError)
+	{
+		// do nothing, probably no internet connection
+	}
+	else
+	{
+		qDebug() << _reply->errorString();
+		qDebug() << QString::fromUtf8(_reply->readAll());
+	}
 
 	_lockFile.unlock();
 	_reply->deleteLater();
