@@ -38,27 +38,27 @@ string Dirs::appDataDir()
 		std::cerr << "App Data dir could not be retrieved\n";
 		std::cerr.flush();
 
-		return "";
+		throw std::exception();
 	}
 
 	dir = Utils::ws2s(buffer);
+	dir += "/JASP/" + string(APP_VERSION);
 
 #else
 
 	dir = string(getpwuid(getuid())->pw_dir);
+	dir += "/.JASP/" + string(APP_VERSION);
 
 #endif
-
-	dir += "/JASP/" + string(APP_VERSION);
 
 	if ( ! exists(dir))
 	{
 		if (create_directories(dir) == false)
 		{
-			std::cout << dir << " could not be created\n";
-			std::cout.flush();
+			std::cerr << dir << " could not be created\n";
+			std::cerr.flush();
 
-			return "";
+			throw std::exception();
 		}
 	}
 
@@ -76,19 +76,16 @@ string Dirs::tempDir()
 	string dir;
 	string appData = appDataDir();
 
-	if (appData == "")
-		return "";
-
 	dir = appData + "/temp";
 
 	if ( ! exists(dir))
 	{
 		if (create_directories(dir) == false)
 		{
-			std::cout << dir << " could not be created\n";
-			std::cout.flush();
+			std::cerr << dir << " could not be created\n";
+			std::cerr.flush();
 
-			return "";
+			throw exception();
 		}
 	}
 
@@ -142,8 +139,8 @@ string Dirs::exeDir()
 
 	if (ret <= 0)
 	{
-		cout << "Could not retrieve exe location\n";
-		cout.flush();
+		cerr << "Could not retrieve exe location\n";
+		cerr.flush();
 
 		throw exception();
 	}
