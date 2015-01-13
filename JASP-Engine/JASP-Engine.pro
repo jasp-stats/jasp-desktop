@@ -16,6 +16,7 @@ DEPENDPATH = ..
 PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
+LIBS += -lboost_filesystem -lboost_system
 
 macx {
 

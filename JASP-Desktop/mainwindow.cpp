@@ -309,9 +309,9 @@ void MainWindow::analysisSelectedHandler(int id)
 	{
 		showForm(_currentAnalysis);
 
-		QMap<QString, QVariant> info;
-		info["id"] = id;
-		info["analysis"] = tq(_currentAnalysis->name());
+		QString info("%1,%2");
+		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(id);
 
 		log.log("Analysis Selected", info);
 	}
@@ -323,9 +323,9 @@ void MainWindow::analysisUnselectedHandler()
 
 	if (_currentAnalysis != NULL)
 	{
-		QMap<QString, QVariant> info;
-		info["id"] = _currentAnalysis->id();
-		info["analysis"] = tq(_currentAnalysis->name());
+		QString info("%1,%2");
+		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(_currentAnalysis->id());
 
 		log.log("Analysis Unselected", info);
 	}
@@ -357,7 +357,7 @@ void MainWindow::tabChanged(int index)
 
 void MainWindow::helpToggled(bool on)
 {
-	log.log("Help Toggled", on);
+	log.log("Help Toggled", on ? "on" : "off");
 
 	static int helpWidth = 0;
 
@@ -522,9 +522,9 @@ void MainWindow::itemSelected(const QString &item)
 		showForm(_currentAnalysis);
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
 
-		QMap<QString, QVariant> info;
-		info["id"] = _currentAnalysis->id();
-		info["analysis"] = tq(_currentAnalysis->name());
+		QString info("%1,%2");
+		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(_currentAnalysis->id());
 
 		log.log("Analysis Created", info);
 	}
@@ -693,9 +693,9 @@ void MainWindow::analysisOKed()
 {
 	if (_currentOptionsWidget != NULL)
 	{
-		QMap<QString, QVariant> info;
-		info["id"] = _currentAnalysis->id();
-		info["analysis"] = tq(_currentAnalysis->name());
+		QString info("%1,%2");
+		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(_currentAnalysis->id());
 
 		log.log("Analysis OKed", info);
 
@@ -717,9 +717,9 @@ void MainWindow::analysisRemoved()
 		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
 
-		QMap<QString, QVariant> info;
-		info["id"] = _currentAnalysis->id();
-		info["analysis"] = tq(_currentAnalysis->name());
+		QString info("%1,%2");
+		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(_currentAnalysis->id());
 
 		log.log("Analysis Removed", info);
 	}
@@ -768,9 +768,9 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	if (analysis == NULL)
 		return;
 
-	QMap<QString, QVariant> info;
-	info["id"] = id;
-	info["analysis"] = tq(_currentAnalysis->name());
+	QString info("%1,%2");
+	info = info.arg(tq(analysis->name()));
+	info = info.arg(id);
 
 	log.log("Analysis Changed Downstream", info);
 

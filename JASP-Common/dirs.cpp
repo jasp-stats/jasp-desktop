@@ -5,17 +5,104 @@
 
 #ifdef __WIN32__
 #include <windows.h>
+#include <shlwapi.h>
+#include <shlobj.h>
 #else
 #include <libproc.h>
+#include <unistd.h>
+#include <pwd.h>
 #endif
+
+#include <boost/filesystem.hpp>
 
 #include "process.h"
 #include "utils.h"
+#include "version.h"
 
 using namespace std;
+using namespace boost::filesystem;
+
+string Dirs::appDataDir()
+{
+	static string p = "";
+
+	if (p != "")
+		return p;
+
+	string dir;
+
+#ifdef __WIN32__
+	TCHAR buffer[MAX_PATH];
+	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
+	{
+		std::cerr << "App Data dir could not be retrieved\n";
+		std::cerr.flush();
+
+		return "";
+	}
+
+	dir = Utils::ws2s(buffer);
+
+#else
+
+	dir = string(getpwuid(getuid())->pw_dir);
+
+#endif
+
+	dir += "/JASP/" + string(APP_VERSION);
+
+	if ( ! exists(dir))
+	{
+		if (create_directories(dir) == false)
+		{
+			std::cout << dir << " could not be created\n";
+			std::cout.flush();
+
+			return "";
+		}
+	}
+
+	p = path(dir).generic_string();
+
+	return p;
+}
+
+string Dirs::tempDir()
+{
+	static string p = "";
+	if (p != "")
+		return p;
+
+	string dir;
+	string appData = appDataDir();
+
+	if (appData == "")
+		return "";
+
+	dir = appData + "/temp";
+
+	if ( ! exists(dir))
+	{
+		if (create_directories(dir) == false)
+		{
+			std::cout << dir << " could not be created\n";
+			std::cout.flush();
+
+			return "";
+		}
+	}
+
+	p = path(dir).generic_string();
+
+	return p;
+}
 
 string Dirs::exeDir()
 {
+	static string p = "";
+	if (p != "")
+		return p;
+
 #ifdef __WIN32__
 	HMODULE hModule = GetModuleHandleW(NULL);
 	WCHAR path[MAX_PATH];
@@ -41,6 +128,8 @@ string Dirs::exeDir()
 	r = string(pathbuf, last);
 
 	delete[] pathbuf;
+
+	p = r;
 
 	return r;
 
@@ -71,7 +160,9 @@ string Dirs::exeDir()
 			}
 		}
 
-		return string(pathbuf);
+		p = string(pathbuf);
+
+		return p;
 	}
 
 #endif
