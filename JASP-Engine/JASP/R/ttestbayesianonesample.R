@@ -1754,6 +1754,17 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					index <- .addFootnote(footnotes, errorMessage)
 					
 					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
+				}
+				
+				ind <- which(variableData == variableData[1])
+				idData <- sum((ind+1)-(1:(length(ind))) == 1)
+				
+				if(idData > 1 & (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+					
+					errorMessage <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
+					index <- .addFootnote(footnotes, errorMessage)
+					
+					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
 				} else {
 				
 																		
