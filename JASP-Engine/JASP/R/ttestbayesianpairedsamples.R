@@ -217,77 +217,72 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 					if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
 				
-					errorMessage <- "BayesFactor is infinity: plotting not possible"
-					.addFootnote(footnotes, errorMessage)
-					} else {
-					
-						if(bf.raw == -Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
-					
-						errorMessage <- "BayesFactor is -infinity: plotting not possible"
-						.addFootnote(footnotes, errorMessage)
-						} else {
-											
-							if(options$plotPriorAndPosterior){
+						errorMessage <- "BayesFactor is infinity: plotting not possible"
+						index <- .addFootnote(footnotes, errorMessage)
+						
+						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error, .footnotes=list(BF=list(index)))
+					} else {					
+																
+						if(options$plotPriorAndPosterior){
+						
+							image <- .beginSaveImage(530, 400)
 							
-								image <- .beginSaveImage(530, 400)
-								
-								.plotPosterior.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
-													
-								content <- .endSaveImage(image)
-								
-								plot <- plots.ttest[[z]]
-								
-								plot[["data"]]  <- content
-								
-								plots.ttest[[z]] <- plot
-								z <- z + 1
-							}
-							if(options$plotBayesFactorRobustness){
+							.plotPosterior.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
+												
+							content <- .endSaveImage(image)
 							
-								image <- .beginSaveImage(530, 400)
-								
-								.plotBF.robustnessCheck.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
-													
-								content <- .endSaveImage(image)
-								
-								plot <- plots.ttest[[z]]
-								
-								plot[["data"]]  <- content
-								
-								plots.ttest[[z]] <- plot
-								z <- z + 1
-							}
-							if(options$plotSequentialAnalysis){
+							plot <- plots.ttest[[z]]
 							
-								image <- .beginSaveImage(530, 400)
-								
-								.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
-													
-								content <- .endSaveImage(image)
-								
-								plot <- plots.ttest[[z]]
-								
-								plot[["data"]]  <- content
-								
-								plots.ttest[[z]] <- plot
-								z <- z + 1
-							}
-							if(options$plotSequentialAnalysisRobustness){
+							plot[["data"]]  <- content
 							
-								image <- .beginSaveImage(530, 400)
-								
-								.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
-													
-								content <- .endSaveImage(image)
-								
-								plot <- plots.ttest[[z]]
-								
-								plot[["data"]]  <- content
-								
-								plots.ttest[[z]] <- plot
-								z <- z + 1
-							}
+							plots.ttest[[z]] <- plot
+							z <- z + 1
 						}
+						if(options$plotBayesFactorRobustness){
+						
+							image <- .beginSaveImage(530, 400)
+							
+							.plotBF.robustnessCheck.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}
+						if(options$plotSequentialAnalysis){
+						
+							image <- .beginSaveImage(530, 400)
+							
+							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}
+						if(options$plotSequentialAnalysisRobustness){
+						
+							image <- .beginSaveImage(530, 400)
+							
+							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
+												
+							content <- .endSaveImage(image)
+							
+							plot <- plots.ttest[[z]]
+							
+							plot[["data"]]  <- content
+							
+							plots.ttest[[z]] <- plot
+							z <- z + 1
+						}						
 					}
 				}			
 			

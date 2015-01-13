@@ -1428,77 +1428,72 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
 				
 					errorMessage <- "BayesFactor is infinity: plotting not possible"
-					.addFootnote(footnotes, errorMessage)
+					index <- .addFootnote(footnotes, errorMessage)
+					
+					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
 				} else {
 				
-					if(bf.raw == -Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
-				
-					errorMessage <- "BayesFactor is -infinity: plotting not possible"
-					.addFootnote(footnotes, errorMessage)
-					} else {
-				
-														
-						if(options$plotPriorAndPosterior){
+																		
+					if(options$plotPriorAndPosterior){
+					
+						image <- .beginSaveImage(530, 400)
 						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							z <- z + 1
-						}
-						if(options$plotBayesFactorRobustness){
+						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+											
+						content <- .endSaveImage(image)
 						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							z <- z + 1
-						}
-						if(options$plotSequentialAnalysis){
+						plot <- plots.ttest[[z]]
 						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							z <- z + 1
-						}
-						if(options$plotSequentialAnalysisRobustness){
+						plot[["data"]]  <- content
 						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							z <- z + 1
-						}
+						plots.ttest[[z]] <- plot
+						z <- z + 1
 					}
+					if(options$plotBayesFactorRobustness){
+					
+						image <- .beginSaveImage(530, 400)
+						
+						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						z <- z + 1
+					}
+					if(options$plotSequentialAnalysis){
+					
+						image <- .beginSaveImage(530, 400)
+						
+						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						z <- z + 1
+					}
+					if(options$plotSequentialAnalysisRobustness){
+					
+						image <- .beginSaveImage(530, 400)
+						
+						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						z <- z + 1
+					}	
 				}
 			}
 			

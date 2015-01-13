@@ -1,4 +1,3 @@
-
 TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
 	dependents <- unlist(options$variables)
@@ -313,10 +312,28 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					if (options$bayesFactorType == "BF01")
 						bf <- 1 / bf
 					
-					BF    <- .clean(exp(as.numeric(bf@bayesFactor$bf)))
+					bf.raw <- exp(as.numeric(bf@bayesFactor$bf))
+					BF    <- .clean(bf.raw)
 					error <- .clean(as.numeric(bf@bayesFactor$error))
-				
-					list(.variable=variable, BF=BF, error=error)					
+					errorMessage <- NULL
+					
+					if(bf.raw == Inf){
+						
+						if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
+					
+							errorMessage <- "BayesFactor is infinity: plotting not possible"
+							status <- "error"
+						}
+					}
+										
+					if(!is.null(errorMessage)){
+					
+						index <- .addFootnote(footnotes, errorMessage)
+						list(.variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
+					} else {
+					
+						list(.variable=variable, BF=BF, error=error)
+					}
 				})
 
 				if (class(result) == "try-error") {
@@ -346,6 +363,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					index <- .addFootnote(footnotes, errorMessage)
 
 					result <- list(.variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+					
+					status <- "error"
 				}
 				
 				ttest.rows[[rowNo]] <- result
@@ -353,11 +372,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				rowNo <- rowNo + 1
 			}
 			
-			if(exists("errorMessage")){
-				
-				status <- "error"
-			} 
-				
+							
 
 			if (options$hypothesis == "groupOneGreater") {
 			
@@ -387,4 +402,3 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	list(ttest, status)
 
 }
-
