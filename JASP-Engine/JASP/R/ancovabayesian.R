@@ -5,7 +5,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	if(is.null(base::options()$BFapproxLimits)) base::options(BFapproxLimits = c(-15,15))
 	if(is.null(base::options()$BFprogress)) base::options(BFprogress = interactive())
 	if(is.null(base::options()$BFfactorsMax)) base::options(BFfactorsMax = 5) 
-	
+
 	numeric.variables <- c(unlist(options$covariates),unlist(options$dependent),unlist(options$wlsWeight)) #
 	numeric.variables <- numeric.variables[numeric.variables != ""]
 	
@@ -315,6 +315,16 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		error.present <- 1
 		specific.error <- "all nuisance"
 	}
+
+	# error message when the number of effects, p, is at least as large as the number of observations, n, minus one.
+	if( perform == "run"){
+		n <- length(dataset[[.v(options$dependent)]])
+		p <- length(options$modelTerms)
+		if(p >= (n-1)){
+			error.present <- 1
+			specific.error <- "p>=(n-1)"
+		}
+	}
 	list(error.present = error.present, specific.error = specific.error)
 
 }
@@ -471,6 +481,9 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	
 	if (specific.error =="all nuisance"){
 		table[["error"]] <- list(errorType="badData", errorMessage="All modelterms are specified as nuisance")
+	}
+	if (specific.error == "p>=(n-1)"){
+		table[["error"]] <- list(errorType="badData", errorMessage="There needs to be at least one more (valid) observation than there are effects specified in the model")
 	}
 	
 	return(table)
