@@ -27,8 +27,8 @@ The directory structure should be as follows:
         - libstdc++-6.dll
         - libwinpthread-1.dll
         - libgomp-1.dll
-		- libboost_system.a
-		- libboost_filesystem.a
+		- libboost_system-mt.a
+		- libboost_filesystem-mt.a
 
  
 Mac OS X
@@ -49,8 +49,8 @@ The directory structure should be as follows:
     [-] Frameworks
        [+] R.framework
     [+] build-JASP- ... < build directory, created by QtCreator >
-	    - libboost_system.a
-	    - libboost_filesystem.a
+	    - libboost_system-mt.a
+	    - libboost_filesystem-mt.a
 
 Linux
 -----
