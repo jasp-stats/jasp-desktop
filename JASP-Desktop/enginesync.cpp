@@ -172,10 +172,7 @@ void EngineSync::process()
 
 				if (_log != NULL)
 				{
-					QString errorMessage;
-					errorMessage = tq(results.get("errorMessage", "").asString());
-					errorMessage = errorMessage.replace("'", "\\'");
-
+					QString errorMessage = tq(results.get("errorMessage", "").asString());
 					QString info = QString("%1,%2").arg(id).arg(errorMessage);
 					_log->log("Analysis Error", info);
 				}

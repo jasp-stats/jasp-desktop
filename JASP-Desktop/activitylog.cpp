@@ -41,8 +41,8 @@ void ActivityLog::log(const QString &action, const QString &info)
 {
 	QString line("%1,%2,%3,%4,%5,%6\n");
 
-	line = line.arg(_uid);
 	line = line.arg(APP_VERSION);
+	line = line.arg(_uid);
 	line = line.arg(Process::currentPID());
 	line = line.arg(Utils::currentMillis());
 	line = line.arg(action);
