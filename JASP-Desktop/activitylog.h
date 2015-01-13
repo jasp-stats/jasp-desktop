@@ -14,7 +14,7 @@ class ActivityLog : public QObject
 public:
 	ActivityLog(QObject *parent = 0);
 
-	void log(const QString &action, const QVariant &info = QVariant());
+	void log(const QString &action, const QString &info = "");
 
 public slots:
 	void flushLogToServer();

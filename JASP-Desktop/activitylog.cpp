@@ -8,45 +8,32 @@
 #include <QDir>
 
 #include "utils.h"
-#include "appdirs.h"
 #include "process.h"
+#include "dirs.h"
+#include "version.h"
+#include "qutils.h"
 
 using namespace std;
 
 ActivityLog::ActivityLog(QObject *parent)
-	: QObject(parent), _lockFile(AppDirs::tempDir() + "/log.csv.lock")
+	: QObject(parent), _lockFile(tq(Dirs::tempDir()) + "/log.csv.lock")
 {
 	_reply = NULL;
-	_logFile.setFileName(AppDirs::tempDir() + "/log.csv");
+	_logFile.setFileName(tq(Dirs::tempDir()) + "/log.csv");
 }
 
-void ActivityLog::log(const QString &action, const QVariant &info)
+void ActivityLog::log(const QString &action, const QString &info)
 {
 	QString line("%1,%2,%3,%4,%5\n");
 
-	line = line.arg("JASP 0.6 Alpha");
+	line = line.arg(APP_VERSION);
 	line = line.arg(Process::currentPID());
 	line = line.arg(Utils::currentMillis());
 	line = line.arg(action);
-
-	QString json;
-	if (info.canConvert<QString>())
-	{
-		json = info.toString();
-	}
-	else
-	{
-		QJsonDocument doc = QJsonDocument::fromVariant(info);
-		json = QString::fromUtf8(doc.toJson(QJsonDocument::Compact));
-	}
-
-	if (json == "")
-		json = "null";
-
-	line = line.arg(json);
+	line = line.arg(info);
 
 	if (_lockFile.tryLock())
-	{
+	{	
 		if (_logFile.open(QFile::Append))
 		{
 			QTextStream s(&_logFile);

@@ -156,7 +156,8 @@ HEADERS +=\
     analyses/crosstabsbayesian.h \
     analyses/regressionlinearbayesian.h \
     dirs.h \
-    utils.h
+    utils.h \
+    version.h
 
 OTHER_FILES += \
     analyses/frequencies.R \
