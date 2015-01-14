@@ -1705,6 +1705,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		
 		for (variable in options[["variables"]])
 		{
+			errorMessage <- NULL
+			
 			result <- try (silent = TRUE, expr = {
 				
 				variableData <- dataset[[ .v(variable) ]]
@@ -1763,9 +1765,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					index <- .addFootnote(footnotes, errorMessage)
 					
 					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
-				} else if(!exists("errorMessage")){
-				
-																		
+				} else if(is.null(errorMessage)){
+											
 					if(options$plotPriorAndPosterior){
 					
 						image <- .beginSaveImage(530, 400)
