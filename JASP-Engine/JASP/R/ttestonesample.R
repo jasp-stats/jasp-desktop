@@ -77,14 +77,14 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	
 	if (options$hypothesis == "greaterThanTestValue") {
 
-		message <- paste("All tests, hypothesis is sample mean is greater than ", options$testValue, sep="")
+		message <- paste("All tests, hypothesis is population mean is greater than ", options$testValue, sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		
 		testType <- "greater"
 
 	} else if (options$hypothesis == "lessThanTestValue") {
 
-		message <- paste("All tests, hypothesis is sample mean is less than ", options$testValue, sep="")
+		message <- paste("All tests, hypothesis is population mean is less than ", options$testValue, sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		
 		testType <- "less"
@@ -93,7 +93,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 
 		if (options$testValue != 0) {
 		
-			message <- paste("All tests, hypothesis is sample mean is different to ", options$testValue, sep="")
+			message <- paste("All tests, hypothesis is population mean is different to ", options$testValue, sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		}
 	
