@@ -288,16 +288,57 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	dataset
 }
 
-.anovaModel <- function(dataset, options) {
+.reorderModelTerms <- function(options) {
+        
+    if(length(options$modelTerms) > 0) {
+    
+        fixedFactors <- list()
+        covariates <- list()
+    
+        k <- 1
+        l <- 1
+    
+    
+        for(i in 1:length(options$modelTerms)) {
+            if (sum(unlist(options$modelTerms[[i]]$components) %in% options$covariates) > 0) {
+                covariates[[k]] <- options$modelTerms[[i]]
+                k <- k + 1
+            } else {
+                fixedFactors[[l]] <- options$modelTerms[[i]]
+                l <- l + 1
+            }
+        }
+        
+        if(length(covariates) > length(options$covariates)) {
+            modelTerms <- options$modelTerms
+            interactions <- TRUE
+        } else {
+            modelTerms <- c(fixedFactors,covariates)
+            interactions <- FALSE
+        }
+    
+    } else {
+    
+        modelTerms <- list()
+        interactions <- FALSE
+    }	
+    
+    list(modelTerms = modelTerms, interactions = interactions)
+}
 
+.anovaModel <- function(dataset, options) {
+	
+	reorderModelTerms <-  .reorderModelTerms(options)
+	modelTerms <- reorderModelTerms$modelTerms
+	
 	dependent.normal <- options$dependent
 	dependent.base64 <- .v(options$dependent)
 	
 	terms.base64 <- c()
 	terms.normal <- c()
-
-	for (term in options$modelTerms) {
-
+	        
+	for (term in modelTerms) {
+        
 		components <- unlist(term$components)
 		term.base64 <- paste(.v(components), collapse=":", sep="")
 		term.normal <- paste(components, collapse="*", sep="")
@@ -373,16 +414,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	anova[["schema"]] <- list(fields=fields)
 	
+	reorderModelTerms <-  .reorderModelTerms(options)
+	modelTerms <- reorderModelTerms$modelTerms
+	
 	dependent.normal <- options$dependent
 	dependent.base64 <- .v(options$dependent)
-
-	#terms <- options$modelTerms
-	#fixedFactors <- options$fixedFactors
 	
 	terms.base64 <- c()
 	terms.normal <- c()
 
-	for (term in options$modelTerms) {
+	for (term in modelTerms) {
 
 		components <- unlist(term$components)
 		term.base64 <- paste(.v(components), collapse=":", sep="")
@@ -414,12 +455,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		anova.rows <- list()
 
 		for (i in .indices(terms.normal)) {
+		
+		    if(i == 1 || (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
+			    newGroup <- TRUE   
+			} else {				
+				newGroup <- FALSE
+			}
 
-			row <- list("Cases"=terms.normal[i], "Sum of Squares"=".", "df"=".", "Mean Square"=".", "F"=".", "p"=".")
+			row <- list("Cases"=terms.normal[i], "Sum of Squares"=".", "df"=".", "Mean Square"=".", "F"=".", "p"=".", ".isNewGroup" = newGroup)
 			anova.rows[[length(anova.rows) + 1]] <- row
 		}
 
-		row <- list("Cases"="Residual", "Sum of Squares"=".", "df"=".", "Mean Square"=".", "F"=".", "p"=".")
+		row <- list("Cases"="Residual", "Sum of Squares"=".", "df"=".", "Mean Square"=".", "F"=".", "p"=".", ".isNewGroup" = TRUE)
 		anova.rows[[length(anova.rows) + 1]] <- row
 
 		anova[["data"]] <- anova.rows
@@ -438,9 +485,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			    
 				result <- base::tryCatch(stats::anova(model),error=function(e) e, warning=function(w) w)
 				
-				print(is.null(result$message))
-				print(result$message)
-				
 				if (!is.null(result$message) && result$message == "ANOVA F-tests on an essentially perfect fit are unreliable")
 				    stop(result$message)	
 				    
@@ -455,7 +499,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 				result <- car::Anova(model, type=3, singular.ok=TRUE)
 				SSt <- sum(result[-1,"Sum Sq"], na.rm = TRUE)
-
+				
 			}
 
 			for (i in 1:(length(terms.base64)+1)) {
@@ -479,11 +523,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				
 				F <- if (is.na(result[term,"F value"])) {""} else { result[term, "F value"] }
 				p <- if (is.na(result[term,"Pr(>F)"] )) {""} else { result[term, "Pr(>F)"] }
-			
+				
+				if(i == 1 || term == "Residuals" || 
+				   (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
+				    newGroup <- TRUE   
+				} else {				
+				    newGroup <- FALSE
+				}
+							
 				if (i <= length(terms.base64)) {
-					row <- list("Cases"=terms.normal[i], "Sum of Squares"=SS, "df"=df, "Mean Square"=MS, "F"=F, "p"=p)
+					row <- list("Cases"=terms.normal[i], "Sum of Squares"=SS, "df"=df, "Mean Square"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
 				} else {
-					row <- list("Cases"="Residual", "Sum of Squares"=SS, "df"=df, "Mean Square"=MS, "F"="", "p"="")
+					row <- list("Cases"="Residual", "Sum of Squares"=SS, "df"=df, "Mean Square"=MS, "F"="", "p"="", ".isNewGroup" = newGroup)
 				}
 			
 				if (options$misc[["effectSizeEstimates"]]) {
@@ -562,9 +613,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	if (no.contrasts)
 		return(list(result=NULL, status=status))
-
-
-	fixedFactors <- options$fixedFactors
 	
 	contrast.tables <- list()
 	
