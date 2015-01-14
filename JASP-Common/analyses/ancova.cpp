@@ -78,6 +78,7 @@ Options *Ancova::createOptions() const
 	options->add("misc/descriptives", new OptionBoolean());
 	options->add("misc/effectSizeEstimates", new OptionBoolean());
 	options->add("misc/homogeneityTests", new OptionBoolean());
+    options->add("misc_factorCovariateIndependence", new OptionBoolean());
 
     // plots
 

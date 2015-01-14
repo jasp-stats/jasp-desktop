@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>597</width>
-    <height>2086</height>
+    <width>594</width>
+    <height>2109</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -604,26 +604,6 @@
               </layout>
              </widget>
             </item>
-            <item row="2" column="3">
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="marginalMeans_compareMainEffects">
-              <property name="text">
-               <string>Compare main effects</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="0" colspan="4">
              <widget class="QWidget" name="marginalMeansContainer" native="true">
               <layout class="QGridLayout" name="gridLayout_13">
@@ -659,6 +639,26 @@
               </layout>
              </widget>
             </item>
+            <item row="2" column="3">
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <widget class="BoundCheckBox" name="marginalMeans_compareMainEffects">
+              <property name="text">
+               <string>Compare main effects</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -671,6 +671,34 @@
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="misc_factorCovariateIndependence">
+              <property name="text">
+               <string>Factor Covariate independence check</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="misc_descriptives">
+              <property name="text">
+               <string>Descriptive Statistics</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="misc_homogeneityTests">
+              <property name="text">
+               <string>Homogeneity tests</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="misc_effectSizeEstimates">
+              <property name="text">
+               <string>Estimates of effect size</string>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="1">
              <spacer name="horizontalSpacer_5">
               <property name="orientation">
@@ -683,27 +711,6 @@
                </size>
               </property>
              </spacer>
-            </item>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="misc_descriptives">
-              <property name="text">
-               <string>Descriptive Statistics</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="misc_effectSizeEstimates">
-              <property name="text">
-               <string>Estimates of effect size</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="misc_homogeneityTests">
-              <property name="text">
-               <string>Homogeneity tests</string>
-              </property>
-             </widget>
             </item>
            </layout>
           </widget>
