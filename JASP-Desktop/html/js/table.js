@@ -102,8 +102,11 @@ $.widget("jasp.table", {
 					formatted = { content : content, "class" : clazz }
 				}
 				
-				if (combined == false && cell.isNewGroup)
-					formatted["class"] += " new-group-row"
+				if (combined == false && cell.isStartOfGroup)
+					formatted.isStartOfGroup = true
+					
+				if (cell.isEndOfGroup)
+					formatted.isEndOfGroup = true
 					
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
@@ -237,7 +240,7 @@ $.widget("jasp.table", {
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
 					
-				if (cell.isNewGroup)
+				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
 				
 				columnCells[rowNo] = formatted
@@ -275,7 +278,7 @@ $.widget("jasp.table", {
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
 					
-				if (cell.isNewGroup)
+				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
 				
 				columnCells[rowNo] = formatted
@@ -305,7 +308,7 @@ $.widget("jasp.table", {
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
 					
-				if (cell.isNewGroup)
+				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
 					
 				columnCells[rowNo] = formatted
@@ -388,6 +391,7 @@ $.widget("jasp.table", {
 			// populate cells column-wise
 			
 			var column = Array(rowCount)
+			var isGrouped = false
 			
 			for (var rowNo = 0; rowNo < rowCount; rowNo++) {
 			
@@ -401,8 +405,24 @@ $.widget("jasp.table", {
 				if (colNo == 0 && columnDef.type == "string" && row[".rowLevel"])
 					cell.content = Array(row[".rowLevel"]+1).join("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") + cell.content
 					
-				if (row['.isNewGroup'])
-					cell.isNewGroup = true
+				if (row[".isNewGroup"]) {
+				
+					cell.isStartOfGroup = true
+					isGrouped = true
+				}
+				
+				if (isGrouped) {
+				
+					if (rowNo + 1 < rowCount) {
+					
+						if (rowData[rowNo + 1][".isNewGroup"])
+							cell.isEndOfGroup = true
+					}
+					else {
+					
+						cell.isEndOfGroup = true					
+					}
+				}
 				
 				column[rowNo] = cell
 			}
@@ -424,7 +444,6 @@ $.widget("jasp.table", {
 			cells[colNo] = this._formatColumn(column, type, format, alignNumbers, combine)
 		}
 		
-		var foldedRows = false
 		var columnsInColumn = { }  // dictionary of counts
 		var columnsInsertedInColumn = { }
 		var maxColumnsInColumn = 0
@@ -435,11 +454,8 @@ $.widget("jasp.table", {
 			var columnName = this.options.schema.fields[colNo].name
 			var subRowPos = columnName.indexOf("[")
 			
-			if (subRowPos != -1) {
-			
-				foldedRows = true
+			if (subRowPos != -1)
 				columnName = columnName.substr(0, subRowPos)
-			}
 			
 			columnNames[colNo] = columnName
 			
@@ -456,7 +472,7 @@ $.widget("jasp.table", {
 			columnsInColumn[columnName] = cic
 		}
 		
-		if (foldedRows) {
+		if (maxColumnsInColumn > 1) {  // do columns need to be folded
 		
 			var foldedColumnNames = _.uniq(columnNames)
 			var foldedCells = Array(foldedColumnNames.length)
@@ -491,6 +507,12 @@ $.widget("jasp.table", {
 				for (var rowNo = 0; rowNo < columnCells.length; rowNo++) {
 				
 					var cell = columnCells[rowNo]
+					
+					if (offset == 0)
+						cell.isStartOfGroup = true
+					if (offset == cic - 1)
+						cell.isEndOfGroup = true
+					
 					cell.span = maxColumnsInColumn / cic
 					column[rowNo * cic + offset] = cell
 				
@@ -585,8 +607,6 @@ $.widget("jasp.table", {
 			
 			chunks.push('<tr>')
 
-			var isNewGroup = false
-
 			for (var colNo = 0; colNo < columnCount; colNo++) {
 			
 				if (tableProgress[colNo].to == rowNo) {
@@ -595,8 +615,9 @@ $.widget("jasp.table", {
 					var cell = cells[colNo][fromIndex]
 					var cellHtml = ''
 
-					var cellClass = (cell.class ? cell.class + " " : "")
-					cellClass += (cell.isNewGroup || isNewGroup ? "new-group-row" : "")
+					var cellClass = cell.class
+					cellClass += (cell.isStartOfGroup ? " new-group-row" : "")
+					cellClass += (cell.isEndOfGroup ? " last-group-row" : "")
 
 					cellHtml += (cell.header ? '<th' : '<td')
 					cellHtml += ' class="value ' + cellClass + '"'
@@ -618,9 +639,7 @@ $.widget("jasp.table", {
 					if (cell.span) {
 					
 						tableProgress[colNo].to += cell.span
-						
-						if (cell.span > 1)
-							isNewGroup = true
+
 					}
 					else {
 					

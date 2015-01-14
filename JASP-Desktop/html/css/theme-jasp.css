@@ -97,7 +97,12 @@ tbody tr:last-child td {
 
 tbody tr td.new-group-row {
 
-	border-top: 1px solid lightgrey ;
+	padding-top: .9em ;
+}
+
+tbody tr:nth-last-child(2) td.last-group-row {
+
+	padding-bottom: .8em ;
 }
 
 td.text {

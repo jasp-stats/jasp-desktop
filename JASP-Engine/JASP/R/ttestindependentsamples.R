@@ -167,7 +167,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 		for (variable in options[["variables"]]) {
 
-			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, "Variances"="assumed equal")
+			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, "Variances"="assumed equal", .isNewGroup=TRUE)
 			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, "Variances"="no assumption")
 		}
 		
@@ -316,6 +316,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						result <- list(.variable=variable, "Variances"=assumption[i], t="NaN", df="", p="", "Mean Difference"="",
 								"lowerCI"="", "upperCI"="", "Std. Error Difference"="", .footnotes=list(t=list(index)))
 					}
+					
+					if (i == 1 && options$equalityOfVariances == "reportBoth")
+						result[[".isNewGroup"]] <- TRUE
 				
 					ttest.rows[[rowNo]] <- result
 					rowNo <- rowNo + 1

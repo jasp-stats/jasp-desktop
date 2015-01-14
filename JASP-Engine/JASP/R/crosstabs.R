@@ -899,7 +899,7 @@
 			}
 		}
 
-		if (i == 1) {
+		if (options$countsExpected == FALSE && i == 1) {
 
 			row[[".isNewGroup"]] <- TRUE
 		}
@@ -944,7 +944,8 @@
 	}
 	
 	row[[var.name]] <- "Total"
-	row[[".isNewGroup"]] <- TRUE
+	if (options$countsExpected == FALSE)
+		row[[".isNewGroup"]] <- TRUE
 	
 	for (layer in names(group)) {
 	
