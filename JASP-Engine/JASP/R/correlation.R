@@ -1,3 +1,211 @@
+#### histogram with density estimator ####
+.plotMarginalCor <- function(variable, cexYlab= 1.3, lwd= 2){
+	
+	variable <- variable[!is.na(variable)]
+	
+	density <- density(variable)
+	h <- hist(variable, plot = FALSE)
+	jitVar <- jitter(variable)
+	yhigh <- max(max(h$density), max(density$y))
+	ylow <- 0
+	xticks <- pretty(c(variable, jitVar), min.n= 3)
+	plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+	h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
+	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks)
+	par(las=0)
+	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.08*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.7, mgp= c(3, 0.7, 0))
+	rug(jitVar)
+	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+
+}
+
+
+#### scatterplots ####
+.plotScatter <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2){
+	
+	d <- data.frame(xx= xVar, yy= yVar)
+	d <- na.omit(d)
+	xVar <- d$xx
+	yVar <- d$yy
+	
+	# fit different types of regression
+	fit <- vector("list", 4)
+	fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
+	fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
+	fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
+	fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
+	
+	# find parsimonioust, best fitting regression model
+	Bic <- vector("numeric", 4)
+	for(i in 1:4){
+		Bic[i] <- BIC(fit[[i]])	
+	}
+	
+	bestModel <- which.min(Bic)
+	
+	# predictions of the model
+	poly.pred <- function(fit, line=FALSE){
+		# create function formula
+		f <- vector("character", 0)
+		for(i in seq_along(coef(fit))){
+			if(i ==1){
+				temp <- paste(coef(fit)[[i]])
+				f <- paste(f, temp, sep="")
+			}
+			if(i >1){
+				temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
+			f <- paste(f, temp, sep="+")
+			}
+		}
+		x <- seq(min(xVar, na.rm=TRUE), max(xVar, na.rm=TRUE), length.out = 100)
+		predY <- eval(parse(text=f))
+		
+		if(line == FALSE){
+		return(predY)
+		}
+		if(line){
+		lines(x, predY, lwd=lwd)
+		}
+	}
+	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
+	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+	ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(poly.pred(fit[[bestModel]], line= FALSE)))
+	yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(poly.pred(fit[[bestModel]], line= FALSE)))
+	xticks <- pretty(c(xlow, xhigh))
+	yticks <- pretty(c(ylow, yhigh))
+	plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
+	poly.pred(fit[[bestModel]], line= TRUE)
+	par(las=1)
+	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
+	axis(2, line= 0.2, labels= yticks, at= yticks, cex.axis= cexYAxis)
+
+}
+
+#### display correlation value ####
+.plotCorValue <- function(xVar, yVar, cexText= 2.5, cexCI= 1.8, hypothesis = "correlated", pearson=options$pearson,
+	kendallsTauB=options$kendallsTauB, spearman=options$spearman){
+
+	
+	tests <- c()
+	if (pearson)
+		tests <- c(tests, "pearson")
+	if (spearman)
+		tests <- c(tests, "spearman")
+	if (kendallsTauB)
+		tests <- c(tests, "kendall")
+
+	plot(1,1, type="n", axes=FALSE, ylab="", xlab="")
+	
+	lab <- vector("list")
+	
+	for(i in seq_along(tests)){
+	
+		if(cor.test(xVar, yVar, method=tests[i])$estimate>= 0 & cor.test(xVar, yVar, method=tests[i])$estimate < 1){
+		
+			if(tests[i] == "pearson"){
+				lab[[i]] <- bquote(italic(r) == .(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3), start=2, stop=5)))
+			}
+			if(tests[i] == "spearman"){
+				lab[[i]] <- bquote(rho == .(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3), start=2, stop=5)))
+			}
+			if(tests[i] == "kendall"){
+				lab[[i]] <- bquote(tau == .(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3), start=2, stop=5)))
+			}
+		}		
+		
+		if(cor.test(xVar, yVar, method=tests[i])$estimate <0 & cor.test(xVar, yVar, method=tests[i])$estimate > -1){
+		
+			if(tests[i] == "pearson"){
+				lab[[i]] <- bquote(italic(r) == -.(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format= "f", digits= 3), start=3, stop=6)))
+			}
+			if(tests[i] == "spearman"){
+				lab[[i]] <- bquote(italic(rho) == -.(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format= "f", digits= 3), start=3, stop=6)))
+			}
+			if(tests[i] == "kendall"){
+				lab[[i]] <- bquote(italic(tau) == -.(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format= "f", digits= 3), start=3, stop=6)))
+			}
+		}
+		
+		if(cor.test(xVar, yVar, method=tests[i])$estimate == 1){
+			if(tests[i] == "pearson"){
+				lab[[i]] <- bquote(italic(r) == 1.00)
+			}
+			if(tests[i] == "spearman"){
+				lab[[i]] <- bquote(italic(rho) == 1.00)
+			}
+			if(tests[i] == "kendall"){
+				lab[[i]] <- bquote(italic(tau) == 1.00)
+			}
+		}
+		
+		if(cor.test(xVar, yVar, method=tests[i])$estimate == -1){
+			if(tests[i] == "pearson"){
+				lab[[i]] <- bquote(italic(r) == -1.00)
+			}
+			if(tests[i] == "spearman"){
+				lab[[i]] <- bquote(italic(rho) == -1.00)
+			}
+			if(tests[i] == "kendall"){
+				lab[[i]] <- bquote(italic(tau) == -1.00)
+			}
+		}
+	}
+	
+	if(length(tests) == 1){
+		ypos <- 1
+	}
+	if(length(tests) == 2){
+		ypos <- c(1.1, 0.9)
+	}
+	if(length(tests) == 3){
+		ypos <- c(1.2, 1, 0.8)
+	}
+	
+	for(i in seq_along(tests)){
+	
+		text(1,ypos[i], labels= lab[[i]], cex= cexText)
+	}
+	
+	
+	if(hypothesis == "correlated" & length(tests) == 1 & any(tests == "pearson")){
+		
+		alternative <- "two.sided"
+		ctest <- cor.test(xVar, yVar, method= tests)
+	}
+	if(hypothesis != "correlated" & length(tests) == 1 & any(tests == "pearson")){
+		
+		result1 <- list(cor.test(xVar, yVar, method=tests, alternative="less"),cor.test(xVar, yVar, method=tests, alternative="greater"))
+		p.value  <- min(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value))
+		ctest <- result1[[which(c(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value)) == p.value)]]
+	}
+	
+	if(any(tests == "pearson")& length(tests) == 1){
+	
+		CIlow <- formatC(round(ctest$conf.int[1],2), format = "f",digits = 2)
+		CIhigh <- formatC(round(ctest$conf.int[2],2), format = "f",digits = 2)
+		
+		if(as.numeric(CIlow) < 0 & as.numeric(CIlow) > -1){
+			CIlow <- paste("-", substr(CIlow, 3, 5), sep="")
+		}
+		if(as.numeric(CIlow) > 0){
+			CIlow <- substr(CIlow, 2, 4)
+		}
+		if(as.numeric(CIlow) == -1){
+			CIlow <- "-1.00"
+		}
+		if(as.numeric(CIhigh) < 0){
+			CIhigh <- paste("-", substr(CIhigh, 3, 5), sep="")
+		}
+		if(as.numeric(CIhigh) > 0 & as.numeric(CIhigh) < 1){
+			CIhigh <- substr(CIhigh, 2, 4)
+		}
+		if(as.numeric(CIhigh) == 1){
+			CIhigh <- "1.00"
+		}
+		
+		text(1,0.8, labels= paste("95% CI: [", CIlow, ", ", CIhigh, "]", sep=""), cex= cexCI)
+	}
+}
 
 Correlation <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
@@ -22,7 +230,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 	results <- list()
 	
-	
 	meta <- list(
 		list(name="correlations", type="table"),
 		list(name="plots", type="images")
@@ -30,121 +237,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 	results[[".meta"]] <- meta
 	
-	#### histogram with density estimator ####
-	plotMarginal <- function(variable, cexYlab= 1.3, lwd= 2){
+	frequency.plots <- list()
 	
-		density <- density(variable)
-		h <- hist(variable, plot = FALSE)
-		jitVar <- jitter(variable)
-		yhigh <- max(max(h$density), max(density$y))
-		ylow <- 0
-		xticks <- pretty(c(variable, jitVar), min.n= 3)
-		plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
-		h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
-		ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks)
-		par(las=0)
-		ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.08*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.7, mgp= c(3, 0.7, 0))
-		rug(jitVar)
-		lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
-	}
-
-
-	#### scatterplots ####
-	plotScatter <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2){
-		
-		# fit different types of regression
-		fit <- vector("list", 4)
-		fit[[1]] <- lm(yVar ~ poly(xVar, 1, raw= TRUE))
-		fit[[2]] <- lm(yVar ~ poly(xVar, 2, raw= TRUE))
-		fit[[3]] <- lm(yVar ~ poly(xVar, 3, raw= TRUE))
-		fit[[4]] <- lm(yVar ~ poly(xVar, 4, raw= TRUE))
-		
-		# find parsimonioust, best fitting regression model
-		Bic <- vector("numeric", 4)
-		for(i in 1:4){
-			Bic[i] <- BIC(fit[[i]])	
-		}
-		
-		bestModel <- which.min(Bic)
-		
-		# predictions of the model
-		poly.pred <- function(fit, line=FALSE){
-			# create function formula
-			f <- vector("character", 0)
-			for(i in seq_along(coef(fit))){
-				if(i ==1){
-					temp <- paste(coef(fit)[[i]])
-					f <- paste(f, temp, sep="")
-				}
-				if(i >1){
-					temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
-				f <- paste(f, temp, sep="+")
-				}
-			}
-			x <- seq(min(xVar), max(xVar), length.out = 100)
-			predY <- eval(parse(text=f))
-			
-			if(line == FALSE){
-			return(predY)
-			}
-			if(line){
-			lines(x, predY, lwd=lwd)
-			}
-		}
-			
-		xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
-		xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
-		ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(poly.pred(fit[[bestModel]], line= FALSE)))
-		yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(poly.pred(fit[[bestModel]], line= FALSE)))
-		xticks <- pretty(c(xlow, xhigh))
-		yticks <- pretty(c(ylow, yhigh))
-		plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
-		poly.pred(fit[[bestModel]], line= TRUE)
-		par(las=1)
-		axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
-		axis(2, line= 0.2, labels= yticks, at= yticks, cex.axis= cexYAxis)
-	}
+	if(perform == "init" & options$plotCorrelationMatrix){
 	
-	
-	#### display correlation value ####
-	plotCorValue <- function(xVar, yVar, cexText= 2.5, cexCI= 1.8){
-	
-		plot(1,1, type="n", axes=FALSE, ylab="", xlab="")
-		
-		if(cor(xVar, yVar)>= 0 & cor(xVar, yVar) < 1){
-		lab=bquote(italic(r) == .(substr(x = formatC(round(cor(xVar, yVar),2), format="f", digits= 2), start=2, stop=4)))
-		text(1,1, labels= lab, cex= cexText)
-		}
-		if(cor(xVar, yVar)<0){
-		lab=bquote(italic(r) == -.(substr(x = formatC(round(cor(xVar, yVar),2), format= "f", digits= 2), start=3, stop=5)))
-		text(1,1, labels= lab, cex= cexText)
-		}
-		if(cor(xVar, yVar) == 1){
-			lab=bquote(italic(r) == 1)
-		text(1,1, labels= lab, cex= cexText)
-		}
-		
-		ctest <- cor.test(xVar, yVar)
-		CIlow <- formatC(round(ctest$conf.int[1],2), format = "f",digits = 2)
-		CIhigh <- formatC(round(ctest$conf.int[2],2), format = "f",digits = 2)
-		if(CIlow < 0){
-			CIlow <- paste("-", substr(CIlow, 3, 5), sep="")
-		}
-		if(CIlow > 0){
-			CIlow <- substr(CIlow, 2, 4)
-		}
-		if(CIhigh < 0){
-			CIhigh <- paste("-", substr(CIhigh, 3, 5), sep="")
-		}
-		if(CIhigh > 0){
-			CIhigh <- substr(CIhigh, 2, 4)
-		}
-		
-		text(1,0.8, labels= paste("95% CI: [", CIlow, ", ", CIhigh, "]", sep=""), cex= cexCI)
-	}
-	
-	if (perform == "run" & length(options$variables) > 0) {
-				
 		variables <- unlist(options$variables)
 		
 		l <- length(variables)
@@ -165,7 +261,61 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			width <- 1100
 			height <- 1100
 		}
+				
+		plot <- list()
+			
+		plot[["title"]] <- variables
+		plot[["width"]]  <- width
+		plot[["height"]] <- height
+		
+		frequency.plots[[1]] <- plot
+	}
 	
+	if (perform == "run" & length(options$variables) > 0 & options$plotCorrelationMatrix) {
+				
+		variables <- unlist(options$variables)
+		
+		# check for numeric/integer variables					
+		d <- vector("character", length(.v(variables)))
+		sdCheck <- vector("numeric", length(.v(variables)))
+		infCheck <- vector("logical", length(.v(variables)))
+		
+		for(i in seq_along(.v(variables))){
+			d[i] <- class(dataset[[.v(variables)[i]]])
+			sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE)
+			infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
+		}
+		
+		ind1 <- which(d == "numeric" | d == "integer")
+		ind2 <- which(sdCheck > 0)
+		ind <- ind1 %in% ind2
+		variables <- .v(variables)[ind]
+		ind3 <-which(infCheck == TRUE)
+		
+		if(length(ind3) > 0){	
+		
+			variables <- variables[-which(infCheck == TRUE)]
+		}
+		
+		l <- length(variables)
+		
+		if(l <= 2){
+			width <- 500
+			height <- 500
+		}
+		if(l == 3){
+			width <- 550
+			height <- 550
+		}
+		if(l == 4){
+			width <- 900
+			height <- 900
+		}
+		if(l >= 5){
+			width <- 1100
+			height <- 1100
+		}
+	    
 		frequency.plots <- list()
 				
 		plot <- list()
@@ -174,28 +324,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		plot[["width"]]  <- width
 		plot[["height"]] <- height
 				
-			
-		frequency.plots[[1]] <- plot
-				
-	
-		if (perform=="run" & length(options$variables) >0) {
-				
-			i <- 1
-													
-			# check for numeric/integer variables					
-			d <- vector("character", length(.v(variables)))
-			sdCheck <- vector("numeric", length(.v(variables)))
-			
-			for(i in seq_along(.v(variables))){
-				d[i] <- class(dataset[[.v(variables)[i]]])
-				sdCheck[i] <- sd(dataset[[.v(variables)[i]]])
-			}
-			ind1 <- which(d == "numeric" | d == "integer")
-			ind2 <- which(sdCheck > 0)
-			ind <- ind1 %in% ind2
-			variables <- .v(variables)[ind]
-					
-	
+		frequency.plots[[1]] <- plot	
+		
 		image <- .beginSaveImage(width, height)
 		
 		if(l == 1){
@@ -208,17 +338,17 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		for(row in seq_len(l)){
 			for(col in seq_len(l)){
 				if(row == col){
-					plotMarginal(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+					.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
 				}
 				if(col > row){
-					plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+					.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
 				}
 				if(col < row){
 					if(l < 7){
-						plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]]) # plot r= ...
+						.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis, pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman) # plot r= ...
 					}
 					if(l >= 7){
-						plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2) 
+						.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis, pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman) 
 					}
 				}		
 			}
@@ -241,11 +371,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				
 		plot[["data"]]  <- content
 				
-		frequency.plots[[1]] <- plot
-		results[["plots"]] <- frequency.plots
-		}			
+		frequency.plots[[1]] <- plot					
 	}	
-			
+	
+	results[["plots"]] <- frequency.plots
 		
 	results[["correlations"]] <- .correlationTable(dataset, perform,
 	variables=options$variables, pearson=options$pearson,
@@ -382,7 +511,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					
 					v1 <- dataset[[ .v(variable.name) ]]
 					v2 <- dataset[[ .v(variable.2.name) ]]
-		
+					
+							
 					if (perform == "run") {
 				
 						if (hypothesis == "correlated") {
@@ -408,6 +538,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 							
 								index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - one (or more) variables contain infinity")
 								row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+								
 							}
 						}
 						

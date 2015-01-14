@@ -384,7 +384,6 @@
 			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <-  sub("-", "+", x = newy)
-			#newy <- substring(newy, nchar(newy)-4, nchar(newy))
 			newy <- paste0("1/", newy)
 		}
 		
@@ -1043,7 +1042,6 @@
 			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <-  sub("-", "+", x = newy)
-			#newy <- substring(newy, nchar(newy)-4, nchar(newy))
 			newy <- paste0("1/", newy)
 		}
 		
@@ -1754,7 +1752,18 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					index <- .addFootnote(footnotes, errorMessage)
 					
 					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
-				} else {
+				}
+				
+				ind <- which(variableData == variableData[1])
+				idData <- sum((ind+1)-(1:(length(ind))) == 1)
+				
+				if(idData > 1 & (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+					
+					errorMessage <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
+					index <- .addFootnote(footnotes, errorMessage)
+					
+					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
+				} else if(!exists("errorMessage")){
 				
 																		
 					if(options$plotPriorAndPosterior){
