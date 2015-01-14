@@ -40,10 +40,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			min.weight <- min(dataset[[ weight.base64 ]] )
 			if (is.finite(min.weight)) {
 				if (min.weight <= 0) {
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Nonpositive weights encountered in ", wls.weight,".",sep="")
+					list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model undefined -- there are nonpositive weights encountered"
 				}
 			} else {
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Infinities encountered in ", wls.weight,".",sep="")
+				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model undefined -- the weights contain infinities"
 			}
 		}
 		
@@ -61,7 +61,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		#check on number of valid observations.
 		n.valid.cases <- nrow(x)
 		if (n.valid.cases == 0) {
-			list.of.errors[[ length(list.of.errors) + 1 ]] <- "No valid cases observed after listwise deletion of missing values."
+			list.of.errors[[ length(list.of.errors) + 1 ]] <- "The dependent variable has no observations. (Possibly only after rows with missing values are excluded)"
 		}
 		
 		#check for variance in variables.
@@ -69,13 +69,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		indicator <- which(number.of.values.vars <= 1)
 		if (length(indicator) != 0 ){
 			if (number.of.values.vars[1] <= 1){
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- "No variance in dependent variable."
+				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model is undefined -- the dependent variable contains all the same value (the variance is zero)"
 			} else {
 				if (length(indicator) == 1){
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("No variance in independent variable: ", independent.variables[indicator-1],".",sep="")
+					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable", independent.variables[indicator-1] ," contains all the same value (the variance is zero)",sep="")
 				} else {
 					var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("No variance in independent variable(s): ", var.names, ".", sep="")
+					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variables", var.names, " contain all the same value (their variance is zero)", sep="")
 				}
 			}
 		}
@@ -85,10 +85,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		indicator <- which(is.infinite(column.sums))
 		if (length(indicator) > 0 ){
 			if ( 1%in%indicator){
-				list.of.errors[[ length(list.of.errors) + 1 ]]  <- "Infinities encountered in dependent variable."
+				list.of.errors[[ length(list.of.errors) + 1 ]]  <- "Least squares regression model is undefined -- the dependent variable contains infinity"
 			} else {
 				var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
-				list.of.errors[[ length(list.of.errors) + 1 ]]  <- paste("Infinities encountered in ", var.names,".",sep="")
+				list.of.errors[[ length(list.of.errors) + 1 ]]  <- paste("Least squares regression model undefined -- the independent variable(s) ",var.names, " contain(s) infinity",sep="")
 			}
 		}
 	}

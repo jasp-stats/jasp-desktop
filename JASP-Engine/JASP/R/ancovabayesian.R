@@ -455,10 +455,10 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	specific.error <- errorcheck$specific.error
 	
 	if (specific.error == "interaction nuisance"){
-		table[["error"]] <- list(errorType="badData", errorMessage="Interactions as nuisance are only allowed when the corresponding main effects are specified as nuisance")
+		table[["error"]] <- list(errorType="badData", errorMessage="The main effects of variables should be specified as nuisance whenever their interaction is specified as nuisance")
 	}
 	if (specific.error == "interaction"){
-		table[["error"]] <- list(errorType="badData", errorMessage="Interactions are only allowed when the corresponding main effects are specified")
+		table[["error"]] <- list(errorType="badData", errorMessage="The main effects of variables should be included whenever their interaction is included")
 	}
 	
 	if (specific.error == "levels"){
@@ -476,11 +476,11 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		if(length(fact) > 1){
 			factor.names <- paste(factor.names,collapse=", ")
 		}
-		table[["error"]] <- list(errorType="badData", errorMessage=paste("After removing cases with missing values, less than 2 levels were observed for: ", factor.names,".",sep=""))
+		table[["error"]] <- list(errorType="badData", errorMessage=paste("Factor(s): ",factor.names," contain(s) less than two levels. (Possibly only after rows with missing values are excluded)",sep=""))
 	}
 	
 	if (specific.error =="all nuisance"){
-		table[["error"]] <- list(errorType="badData", errorMessage="All modelterms are specified as nuisance")
+		table[["error"]] <- list(errorType="badData", errorMessage="BayesFactor is undefined -- all effects are specified as nuisance")
 	}
 	if (specific.error == "p>=(n-1)"){
 		table[["error"]] <- list(errorType="badData", errorMessage="There needs to be at least one more (valid) observation than there are effects specified in the model")
