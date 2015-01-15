@@ -17,10 +17,10 @@
 using namespace std;
 
 ActivityLog::ActivityLog(QObject *parent)
-	: QObject(parent), _lockFile(tq(Dirs::tempDir()) + "/log.csv.lock")
+	: QObject(parent), _lockFile(tq(Dirs::appDataDir()) + "/log.csv.lock")
 {
 	_reply = NULL;
-	_logFile.setFileName(tq(Dirs::tempDir()) + "/log.csv");
+	_logFile.setFileName(tq(Dirs::appDataDir()) + "/log.csv");
 
 	QSettings settings;
 	QVariant uid = settings.value("uid");
