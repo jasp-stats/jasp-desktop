@@ -2,6 +2,9 @@
 
 #ifdef __WIN32__
 #include "windows.h"
+#else
+#include <sys/stat.h>
+#include <utime.h>
 #endif
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -60,5 +63,47 @@ long Utils::currentMillis()
 	time_duration elapsed = t - start_of_time;
 
 	return elapsed.total_milliseconds();
+}
+
+long Utils::currentSeconds()
+{
+	time_t now;
+	time(&now);
+
+	return now;
+}
+
+long Utils::getFileModificationTime(const std::string &filename)
+{
+#ifdef __WIN32__
+	TODO
+#elif __APPLE__
+
+	struct stat attrib;
+	stat(filename.c_str(), &attrib);
+	time_t modificationTime = attrib.st_mtimespec.tv_sec;
+
+	return modificationTime;
+
+#else
+	TODO
+#endif
+}
+
+void Utils::touch(const string &filename)
+{
+#ifdef __win32__
+	TODO
+#else
+	struct utimbuf newTime;
+
+	time_t newTimeT;
+	time(&newTimeT);
+
+	newTime.actime = newTimeT;
+	newTime.modtime = newTimeT;
+
+	utime(filename.c_str(), &newTime);
+#endif
 }
 

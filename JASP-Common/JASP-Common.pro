@@ -84,7 +84,8 @@ SOURCES += \
     analyses/crosstabsbayesian.cpp \
     analyses/regressionlinearbayesian.cpp \
     dirs.cpp \
-    utils.cpp
+    utils.cpp \
+    tempfiles.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -157,7 +158,8 @@ HEADERS +=\
     analyses/regressionlinearbayesian.h \
     dirs.h \
     utils.h \
-    version.h
+    version.h \
+    tempfiles.h
 
 OTHER_FILES += \
     analyses/frequencies.R \

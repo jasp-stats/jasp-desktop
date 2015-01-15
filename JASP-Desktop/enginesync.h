@@ -50,14 +50,15 @@ private:
 	IPCChannel *nextFreeProcess(Analysis *analysis);
 	void sendToProcess(int processNo, Analysis *analysis);
 
-	QTimer *_timer;
-
 	void sendMessages();
 	void startSlaveProcess(int no);
 
 	std::string _memoryName;
 
 private slots:
+
+	void deleteOrphanedTempFiles();
+	void heartbeatTempFiles();
 
 	void process();
 

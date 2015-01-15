@@ -15,6 +15,7 @@
 #include "process.h"
 #include "common.h"
 #include "qutils.h"
+#include "tempfiles.h"
 
 using namespace boost::interprocess;
 using namespace std;
@@ -30,14 +31,21 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
 	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
 
+	// delay start so as not to increase program start up time
+	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
 }
 
 EngineSync::~EngineSync()
 {
-	for (int i = 0; i < _slaveProcesses.size(); i++)
+	if (_engineStarted)
 	{
-		_slaveProcesses[i]->terminate();
-		_slaveProcesses[i]->kill();
+		for (int i = 0; i < _slaveProcesses.size(); i++)
+		{
+			_slaveProcesses[i]->terminate();
+			_slaveProcesses[i]->kill();
+		}
+
+		tempfiles_deleteAll();
 	}
 
 	shared_memory_object::remove(_memoryName.c_str());
@@ -80,9 +88,17 @@ void EngineSync::start()
 		startSlaveProcess(i);
 	}
 
-	_timer = new QTimer(this);
-	connect(_timer, SIGNAL(timeout()), this, SLOT(process()));
-	_timer->start(50);
+	QTimer *timer;
+
+	timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(process()));
+	timer->start(50);
+
+	timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(heartbeatTempFiles()));
+	timer->start(30000);
+
+	tempfiles_init(Process::currentPID());
 }
 
 bool EngineSync::engineStarted()
@@ -302,7 +318,16 @@ void EngineSync::startSlaveProcess(int no)
 	connect(slave, SIGNAL(error(QProcess::ProcessError)), this, SLOT(subProcessError(QProcess::ProcessError)));
 	connect(slave, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(subprocessFinished(int,QProcess::ExitStatus)));
 	connect(slave, SIGNAL(started()), this, SLOT(subProcessStarted()));
+}
 
+void EngineSync::deleteOrphanedTempFiles()
+{
+	tempfiles_deleteOrphans();
+}
+
+void EngineSync::heartbeatTempFiles()
+{
+	tempfiles_heartbeat();
 }
 
 void EngineSync::subProcessStandardOutput()
