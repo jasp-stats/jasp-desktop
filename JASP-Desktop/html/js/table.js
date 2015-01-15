@@ -123,6 +123,7 @@ $.widget("jasp.table", {
 		var p = NaN
 		var dp = NaN
 		var sf = NaN
+		var pc = false
 
 		for (var i = 0; i < formats.length; i++) {
 		
@@ -139,6 +140,10 @@ $.widget("jasp.table", {
 			if (f.indexOf("sf:") != -1) {
 
 				sf = f.substring(3)
+			}
+			if (f.indexOf("pc") != -1) {
+			
+				pc = true
 			}
 		}
 		
@@ -270,6 +275,10 @@ $.widget("jasp.table", {
 					
 					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
 				}
+				else if (pc) {
+				
+					formatted = { content : "" + (100 * content).toFixed(dp) + "&thinsp;%", "class" : "percentage" }
+				}
 				else {
 				
 					formatted = { content : content.toFixed(dp).replace(/-/g, "&minus;"), "class" : "number" }
@@ -283,6 +292,36 @@ $.widget("jasp.table", {
 				
 				columnCells[rowNo] = formatted
 			}
+		}
+		else if (pc) {
+		
+			for (var rowNo = 0; rowNo < column.length; rowNo++) {
+
+				var cell = column[rowNo]
+				var content = cell.content
+				var formatted
+				
+				if (typeof content == "undefined") {
+				
+					formatted = { content : "." }
+				}
+				else if (isNaN(parseFloat(content))) {  // isn't a number
+					
+					formatted = { content : content, "class" : "percentage" }
+				}
+				else {
+				
+					formatted = { content : "" + (100 * content.toFixed(0)) + "&thinsp;%", "class" : "percentage" }
+				}
+				
+				if (typeof cell.footnotes != "undefined")
+					formatted.footnotes = this._getFootnotes(cell.footnotes)
+					
+				if (cell.isStartOfGroup)
+					formatted["class"] += " new-group-row"
+				
+				columnCells[rowNo] = formatted
+			}			
 		}
 		else {
 		
