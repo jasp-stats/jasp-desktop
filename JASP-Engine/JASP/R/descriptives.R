@@ -51,6 +51,7 @@
 } 
 
 .barplotJASP <- function(column, variable){
+
 	yticks <- seq(0,max(summary(column)),1)
 	yticks <- pretty(yticks)
 	
@@ -81,13 +82,15 @@
 .plotMarginal <- function(variable, variableName, cexYlab= 1.3, lwd= 2){
 
 	par(mar= c(5, 4.5, 4, 2) + 0.1)
+	
 	density <- density(variable)
 	h <- hist(variable, plot = FALSE)
 	jitVar <- jitter(variable)
 	yhigh <- max(max(h$density), max(density$y))
 	ylow <- 0
-	xticks <- pretty(c(variable, jitVar), min.n= 3)
-	plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+	xticks <- pretty(c(variable, h$breaks), min.n= 3)
+	
+	plot(1, xlim= range(xticks), ylim= c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
 	h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
 	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
 	mtext(text = variableName, side = 1, cex=1.5, line = 3)
@@ -577,7 +580,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 										
 					.barplotJASP(column, variable)
 										
-				} else {
+				} else if(all(!is.infinite(column))){
 				
 						if (callback(results) != 0)
 							return()
@@ -588,17 +591,19 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				
 				}
 				
-				content <- .endSaveImage(image)
+				if(all(!is.infinite(column))){
 				
-				plot <- frequency.plots[[i]]
-				
-				plot[["data"]]  <- content
-				
-				frequency.plots[[i]] <- plot
-				i <- i + 1
-	
-				results[["plots"]] <- frequency.plots
-				
+					content <- .endSaveImage(image)
+					
+					plot <- frequency.plots[[i]]
+					
+					plot[["data"]]  <- content
+					
+					frequency.plots[[i]] <- plot
+					i <- i + 1
+		
+					results[["plots"]] <- frequency.plots
+				}
 			}
 		}
 		
