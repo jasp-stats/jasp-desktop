@@ -286,6 +286,7 @@
 		}
 	}
 	
+	
 	row[["type[N]"]] <- "N"
 
 		if (perform == "run" && status$error == FALSE) {
@@ -385,9 +386,7 @@
 	}
 	
 	if (options$oddsRatio) {
-
-		
-
+	
 		row[["type[oddsRatio]"]] <- "Odds ratio"
 
 		if (perform == "run" && status$error == FALSE) {
@@ -448,7 +447,7 @@
 					} 
 			
 				})
-						
+									
 				logOR<-log(odds.ratio)
 				z<-stats::density(logOR)
 				x.mode <- z$x[i.mode <- which.max(z$y)]
@@ -504,6 +503,10 @@
 		}
 	}
 	
+    #print(group)
+    group[group==""] <- "Total"
+    #group[group==""] <- names(group)
+
 	if (options$plotPosteriorOddsRatio ){
 	
 		oddsratio.plot <- list()
@@ -551,8 +554,9 @@
 					theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
 					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
-				} 
-					
+				}
+				
+				#layer.names <- unlist( lapply(options$layers, function(x) { x$variable }))
 				logOR<-log(odds.ratio)
 				z<-stats::density(logOR)
 				x.mode <- z$x[i.mode <- which.max(z$y)]
@@ -562,26 +566,38 @@
 				x1 <- unname(stats::quantile(logOR, p = (1-alpha)))
 				image <- .beginSaveImage(options$plotWidths, options$plotHeights)
 				
-				par(mar= c(5, 4.5, 4, 2) + 0.1)
+				par(mar= c(5, 4.5, 4, 2) + 0.1, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3)
 				digitsize <- 1.2
 				y.mode <- z$y[i.mode]
 				lim<-max(z$x)-min(z$x)
 				fit<-logspline::logspline(logOR)
 				ylim0 <- c(0,1.1*y.mode )
 				xticks <- pretty(logOR, min.n= 3)
-				plot(1,type="n", ylim=ylim0, xlim=range(xticks),
-					axes=F, 
-					main=" ", xlab="log(Odds ratio) ", ylab="Posterior Density")
-				plot(function(x)logspline::dlogspline(x, fit), xlim=range(xticks), lwd=2, add=TRUE)
-				axis(1, line = 0.3, at = xticks, lab=xticks, cex.axis = 1.2)
+				
+				if (length(group) > 0) {
+				
+				
+					plot(1, type="n", ylim=ylim0, xlim=range(xticks),
+						axes=F, 
+						main =paste(names(group),"=", group), xlab="log(Odds ratio)", ylab="Posterior Density")
+				
+				} else {
+
+					plot(1, type="n", ylim=ylim0, xlim=range(xticks),
+						axes=F, 
+						xlab="log(Odds ratio)", ylab="Posterior Density")
+				}
+						
+				plot(function(x)logspline::dlogspline(x, fit), xlim = range(xticks), lwd=2, add=TRUE)
+				axis(1, line=0.3, at=xticks, lab=xticks)
 				axis(2)
 				Sig1<-Sig*100
 				Sig1<-bquote(.(Sig1))
 				arrows(x0, 1.07*y.mode, x1, 1.07*y.mode, length = 0.05, angle = 90, code = 3, lwd=2)
 				#text(-1.5, 0.8, expression(log('BFI'[10]) == 22.60),cex=digitsize)
-				text(x.mode, y.mode+(y.mode/8.5), paste(Sig1,"%") ,cex=digitsize)
-				text(x0, 1.01*y.mode, round(x0, digits = 2) ,cex=digitsize)
-				text(x1, 1.01*y.mode, round(x1, digits = 2) ,cex=digitsize)
+				text(x.mode, y.mode+(y.mode/8.5), paste(Sig1,"%"), cex=digitsize)
+				text(x0, 1.01*y.mode, round(x0, digits = 2) , cex=digitsize)
+				text(x1, 1.01*y.mode, round(x1, digits = 2) , cex=digitsize)
 				
 				content <- .endSaveImage(image) 
 				
