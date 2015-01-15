@@ -326,29 +326,36 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
     list(modelTerms = modelTerms, interactions = interactions)
 }
 
-.anovaModel <- function(dataset, options) {
-	
-	reorderModelTerms <-  .reorderModelTerms(options)
-	modelTerms <- reorderModelTerms$modelTerms
-	
-	dependent.normal <- options$dependent
+.modelFormula <- function(modelTerms, options) {
+
+    dependent.normal <- options$dependent
 	dependent.base64 <- .v(options$dependent)
 	
 	terms.base64 <- c()
 	terms.normal <- c()
-	        
+		        
 	for (term in modelTerms) {
         
 		components <- unlist(term$components)
 		term.base64 <- paste(.v(components), collapse=":", sep="")
-		term.normal <- paste(components, collapse="*", sep="")
+		term.normal <- paste(components, collapse="\u2009*\u2009", sep="")
 
 		terms.base64 <- c(terms.base64, term.base64)
 		terms.normal <- c(terms.normal, term.normal)
 	}
 	
 	model.def <- paste(dependent.base64, "~", paste(terms.base64, collapse="+"))
-	model.formula <- as.formula(model.def)
+	
+	list(model.def = model.def, terms.base64 = terms.base64, terms.normal = terms.normal)   
+}
+
+.anovaModel <- function(dataset, options) {
+	
+	reorderModelTerms <-  .reorderModelTerms(options)
+	modelTerms <- reorderModelTerms$modelTerms
+	
+	modelDef <- .modelFormula(modelTerms, options)
+	model.formula <- as.formula(modelDef$model.def)
 	
 	WLS <- NULL
 	if ( ! is.null(options$wlsWeights))
@@ -417,21 +424,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	reorderModelTerms <-  .reorderModelTerms(options)
 	modelTerms <- reorderModelTerms$modelTerms
 	
-	dependent.normal <- options$dependent
-	dependent.base64 <- .v(options$dependent)
-	
-	terms.base64 <- c()
-	terms.normal <- c()
-
-	for (term in modelTerms) {
-
-		components <- unlist(term$components)
-		term.base64 <- paste(.v(components), collapse=":", sep="")
-		term.normal <- paste(components, collapse="*", sep="")
-
-		terms.base64 <- c(terms.base64, term.base64)
-		terms.normal <- c(terms.normal, term.normal)
-	}
+	modelDef <- .modelFormula(modelTerms, options)
+    terms.normal <- modelDef$terms.normal
+    terms.base64 <- modelDef$terms.base64
 	
 	footnotes <- .newFootnotes()
     
