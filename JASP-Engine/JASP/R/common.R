@@ -468,9 +468,8 @@ callback <- function(results=NULL) {
 .beginSaveImage <- function(width=320, height=320) {
 
 	file <- tempfile(fileext=".svg")
-	
-	#grDevices::svg(filename=file, width=width/72, height=height/72, bg="transparent")
-	grDevices::png(filename=file, width=2 * width, height=2 * height, bg="transparent", res=144)
+			
+	grDevices::svg(filename=file, width=width/72, height=height/72, bg="transparent")
 	
 	list(format="svg", encoding="dataURI;base64", file=file)
 }
@@ -485,8 +484,7 @@ callback <- function(results=NULL) {
 	
 	file.size <- base::file.info(file)$size - 2   # strip \r\n from end
 	
-	#content <- paste("data:image/svg+xml;base64,", base::readChar(file, file.size), sep="")
-	content <- paste("data:image/png;base64,", base::readChar(file, file.size), sep="")
+	content <- paste("data:image/svg+xml;base64,", base::readChar(file, file.size), sep="")
 	
 	base::file.remove(image.descriptor$file)
 	base::file.remove(file)
