@@ -18,6 +18,11 @@ Dependencies of depedencies (C++ API)
 * RcppEigen (0.3.2.2.0)
 * reshape2 (1.4.1)
 
+Dependencies of dependences (HACKED!)
+-------------------------------------
+
+* gnm (1.0-7)  **removed imports from the relimp package**
+
 Dependencies (C API)
 ------------
 
