@@ -101,8 +101,18 @@ DataSet* DataSetLoader::loadDataSet(const string &locator, boost::function<void(
 
 				progressCallback("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
 
+				string columnName = columns.at(colNo);
+
+				if (columnName == "")
+				{
+					stringstream ss;
+					ss << "V";
+					ss << (colNo + 1);
+					columnName = ss.str();
+				}
+
 				Column &column = dataSet->column(colNo);
-				initColumn(column, columns.at(colNo), cells.at(colNo));
+				initColumn(column, columnName, cells.at(colNo));
 
 			}
 			catch (boost::interprocess::bad_alloc &e)
