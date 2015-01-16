@@ -1072,23 +1072,7 @@
 			}
 		}
 
-		if (options$countsExpected == FALSE && i == 1) {
-
-			row[[".isNewGroup"]] <- TRUE
-		}
-		
-		if (options$percentages$row == FALSE && i == 1) {
-
-			row[[".isNewGroup"]] <- TRUE
-		}
-		
-		if (options$percentages$column == FALSE && i == 1) {
-
-			row[[".isNewGroup"]] <- TRUE
-		}
-		
-		
-		if (options$percentages$total == FALSE && i == 1) {
+		if (i == 1 && options$countsExpected == FALSE && options$percentages$row == FALSE && options$percentages$col == FALSE && options$percentages$total == FALSE) {
 
 			row[[".isNewGroup"]] <- TRUE
 		}
@@ -1166,7 +1150,7 @@
 			} else {
 				row.sum <- base::margin.table(counts.matrix, 1)
 				row.prop <- base::prop.table(row.sum) 
-				colproportions[["total[colproportions]"]] <- base::sum(row.prop )
+				colproportions[["total[colproportions]"]] <- base::sum(row.prop)
 			}
 			
 			colproportions<-c(row.colproportions, colproportions)
@@ -1203,17 +1187,8 @@
 	}
 	
 	row[[var.name]] <- "Total"
-	if (options$countsExpected == FALSE)
+	if (options$countsExpected == FALSE && options$percentages$row == FALSE && options$percentages$col == FALSE && options$percentages$total == FALSE)
 		row[[".isNewGroup"]] <- TRUE
-	
-	if (options$percentages$row == FALSE)
-		row[[".isNewGroup"]] <- TRUE
-		
-	if (options$percentages$col == FALSE)
-		row[[".isNewGroup"]] <- TRUE	
-		
-	if (options$percentages$total == FALSE)
-		row[[".isNewGroup"]] <- TRUE	
 	
 	for (layer in names(group)) {
 	
