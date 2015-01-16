@@ -104,23 +104,47 @@
 			counts.fp <- TRUE
 	}
 	
-	if (options$countsExpected) {
+	if (options$countsExpected || options$percentages$row || options$percentages$column || options$percentages$total ) {
+	
 	
 		counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
-		counts.fields[[length(counts.fields)+1]] <- list(name="type[expected]", title="", type="string")
+	
+		if (options$countsExpected) {	
+			counts.fields[[length(counts.fields)+1]] <- list(name="type[expected]", title="", type="string")
+			}
+	
+		if (options$percentages$row) {
+
+			#counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
+			counts.fields[[length(counts.fields)+1]] <- list(name="type[rowproportions]", title="", type="string")
+		}
+
+		if (options$percentages$column) {
+
+			#counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
+			counts.fields[[length(counts.fields)+1]] <- list(name="type[colproportions]", title="", type="string")
+		}
+
+		if (options$percentages$total) {
+
+			#counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
+			counts.fields[[length(counts.fields)+1]] <- list(name="type[proportions]", title="", type="string")
+		}
+	
 	}
+	
 	
 	for (column.name in lvls) {
 
 		private.name <- base::paste(column.name,"[counts]", sep="")
 
-		if (counts.fp || options$countsExpected) {
+		if (counts.fp || options$countsExpected || options$percentages$row || options$percentages$column || options$percentages$total ) {
 			
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
 		
 		} else {
 		
-			#counts.fields[[length(counts.fields)+1]] <- list(name="Count ",type="string")
+			#counts.fields[[length(counts.fields)+1]] <- list(name="Count",type="string")
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="integer")
 		}
 		
@@ -129,11 +153,29 @@
 			private.name <- base::paste(column.name,"[expected]", sep="")
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
 		}
+		
+		if (options$percentages$row) {
+			
+			private.name <- base::paste(column.name,"[rowproportions]", sep="")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="dp:1;pc")
+		}
+		
+		if (options$percentages$column) {
+			
+			private.name <- base::paste(column.name,"[colproportions]", sep="")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="dp:1;pc")
+		}
+		
+		if (options$percentages$total) {
+			
+			private.name <- base::paste(column.name,"[proportions]", sep="")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="dp:1;pc")
+		}
 	}
 	
 	# Totals columns
 	
-	if (counts.fp || options$countsExpected) {
+	if (counts.fp || options$countsExpected || options$percentages$row || options$percentages$column || options$percentages$total) {
 
 	
 		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]",   title="Total", type="number", format="sf:4;dp:2")	
@@ -146,6 +188,21 @@
 	if (options$countsExpected) {
 	
 		counts.fields[[length(counts.fields)+1]] <- list(name="total[expected]", title="Total", type="number", format="sf:4;dp:2")
+	}
+	
+	if (options$percentages$row) {
+	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[rowproportions]", title="Total", type="number", format="dp:1;pc")
+	}
+	
+	if (options$percentages$column) {
+	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[colproportions]", title="Total", type="number", format="dp:1;pc")
+	}
+	
+	if (options$percentages$total) {
+	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[proportions]", title="Total", type="number", format="dp:1;pc")
 	}
 
 	schema <- list(fields=counts.fields)
@@ -831,7 +888,11 @@
 	rows <- list()
 	row.count<-list()
 	row.expected<-list()
+	row.rowproportions<-list()
+	row.colproportions<-list()
+	row.proportions<-list()
 	row.count[["type[counts]"]] <- "Count"
+	#row.count[["type[proportions]"]] <- "Total Proportions"
 	
 	
 	if (perform == "run" && status$error == FALSE) {
@@ -851,6 +912,64 @@
 	
 		expected.matrix <- counts.matrix
 	}
+
+######percentages
+
+	if (perform == "run" && status$error == FALSE) {
+
+	rowproportions.matrix <- try({
+
+		base::prop.table(counts.matrix, 1)
+	})
+
+	if (class(rowproportions.matrix) == "try-error") {
+
+		rowproportions.matrix <- counts.matrix
+		rowproportions.matrix[,] <- "&nbsp;"
+	}
+		
+	} else {
+	
+		rowproportions.matrix <- counts.matrix
+	}
+	
+	if (perform == "run" && status$error == FALSE) {
+
+	colproportions.matrix <- try({
+
+		base::prop.table(counts.matrix, 2)
+	})
+
+	if (class(colproportions.matrix) == "try-error") {
+
+		colproportions.matrix <- counts.matrix
+		colproportions.matrix[,] <- "&nbsp;"
+	}
+		
+	} else {
+	
+		colproportions.matrix <- counts.matrix
+	}
+	
+
+	if (perform == "run" && status$error == FALSE) {
+
+	proportions.matrix <- try({
+
+		base::prop.table(counts.matrix, margin = NULL)
+	})
+
+	if (class(proportions.matrix) == "try-error") {
+
+		proportions.matrix <- counts.matrix
+		proportions.matrix[,] <- "&nbsp;"
+	}
+		
+	} else {
+	
+		proportions.matrix <- counts.matrix
+	}
+	
 
 	for (i in 1:dim(counts.matrix)[[1]]) {
 	
@@ -877,6 +996,60 @@
 				expected <- c(row.expected, expected)
 				row <- c(row, expected)
 			}
+			
+			if (options$percentages$row) {
+			
+				row.rowproportions[["type[rowproportions]"]] <- " % within row"
+
+				rowproportions <- as.list(rowproportions.matrix[i,])
+				names(rowproportions) <- paste(names(rowproportions),"[rowproportions]",  sep="")
+				
+				if (class(rowproportions.matrix[1,1]) == "character") {
+					rowproportions[["total[rowproportions]"]] <- ""
+				} else {
+					rowproportions[["total[rowproportions]"]] <- base::sum(rowproportions.matrix[i,])
+				}
+			
+				rowproportions <- c(row.rowproportions, rowproportions)
+				row <- c(row, rowproportions)
+			}
+			
+			if (options$percentages$column) {
+			
+				row.colproportions[["type[colproportions]"]] <- " % within column"
+
+				colproportions <- as.list(colproportions.matrix[i,])
+				names(colproportions) <- paste(names(colproportions),"[colproportions]",  sep="")
+				
+				if (class(colproportions.matrix[1,1]) == "character") {
+					colproportions[["total[colproportions]"]] <- ""
+				} else {
+					
+					row.sum <- base::margin.table(counts.matrix, 1)
+					row.prop <- as.list( base::prop.table(row.sum)) 
+					colproportions[["total[colproportions]"]] <- row.prop[[i]]
+				}
+			
+				colproportions <- c(row.colproportions, colproportions)
+				row <- c(row, colproportions)
+			}
+			
+			if (options$percentages$total) {
+			
+				row.proportions[["type[proportions]"]] <- " % of Total"
+
+				proportions <- as.list(proportions.matrix[i,])
+				names(proportions) <- paste(names(proportions),"[proportions]",  sep="")
+				
+				if (class(proportions.matrix[1,1]) == "character") {
+					proportions[["total[proportions]"]] <- ""
+				} else {
+					proportions[["total[proportions]"]] <- base::sum(proportions.matrix[i,])
+				}
+			
+				proportions <- c(row.proportions, proportions)
+				row <- c(row, proportions)
+			}
 		
 		} else {
 		
@@ -900,6 +1073,22 @@
 		}
 
 		if (options$countsExpected == FALSE && i == 1) {
+
+			row[[".isNewGroup"]] <- TRUE
+		}
+		
+		if (options$percentages$row == FALSE && i == 1) {
+
+			row[[".isNewGroup"]] <- TRUE
+		}
+		
+		if (options$percentages$column == FALSE && i == 1) {
+
+			row[[".isNewGroup"]] <- TRUE
+		}
+		
+		
+		if (options$percentages$total == FALSE && i == 1) {
 
 			row[[".isNewGroup"]] <- TRUE
 		}
@@ -938,6 +1127,76 @@
 			row <- c(row,  expected)
 		}
 		
+		if (options$percentages$row) {
+		
+			if (class(rowproportions.matrix[1,1]) == "character") {
+				rowproportions <- rowproportions.matrix[1,]
+			} else {
+				m <- base::margin.table(counts.matrix, 2)
+				rowproportion <- base::prop.table(m)
+			}
+
+			rowproportions <- as.list(rowproportion)
+			names(rowproportions) <- paste(names(rowproportions),"[rowproportions]", sep="")
+
+			if (class(rowproportions.matrix[1,1]) == "character") {
+				rowproportions[["total[rowproportions]"]] <- ""
+			} else {
+				rowproportions[["total[rowproportions]"]] <- base::sum(rowproportion)
+			}
+			
+			rowproportions<-c(row.rowproportions, rowproportions)
+			
+			row <- c(row,  rowproportions)
+		}
+		
+		if (options$percentages$column) {
+		
+			if (class(colproportions.matrix[1,1]) == "character") {
+				colproportions <- colproportions.matrix[1,]
+			} else {
+				colproportion <- apply(colproportions.matrix, 2, base::sum)
+			}
+
+			colproportions <- as.list(colproportion)
+			names(colproportions) <- paste(names(colproportions),"[colproportions]", sep="")
+
+			if (class(rowproportions.matrix[1,1]) == "character") {
+				colproportions[["total[colproportions]"]] <- ""
+			} else {
+				row.sum <- base::margin.table(counts.matrix, 1)
+				row.prop <- base::prop.table(row.sum) 
+				colproportions[["total[colproportions]"]] <- base::sum(row.prop )
+			}
+			
+			colproportions<-c(row.colproportions, colproportions)
+			
+			row <- c(row,  colproportions)
+		}
+		
+		
+		if (options$percentages$total) {
+		
+			if (class(proportions.matrix[1,1]) == "character") {
+				proportions <- proportions.matrix[1,]
+			} else {
+				proportions <- apply(proportions.matrix, 2, base::sum)
+			}
+
+			proportions <- as.list(proportions)
+			names(proportions) <- paste(names(proportions),"[proportions]", sep="")
+
+			if (class(proportions.matrix[1,1]) == "character") {
+				proportions[["total[proportions]"]] <- ""
+			} else {
+				proportions[["total[proportions]"]] <- base::sum(proportions.matrix)
+			}
+			
+			proportions<-c(row.proportions, proportions)
+			
+			row <- c(row,  proportions)
+		}
+		
 	} else {
 	
 		row <- list()
@@ -946,6 +1205,15 @@
 	row[[var.name]] <- "Total"
 	if (options$countsExpected == FALSE)
 		row[[".isNewGroup"]] <- TRUE
+	
+	if (options$percentages$row == FALSE)
+		row[[".isNewGroup"]] <- TRUE
+		
+	if (options$percentages$col == FALSE)
+		row[[".isNewGroup"]] <- TRUE	
+		
+	if (options$percentages$total == FALSE)
+		row[[".isNewGroup"]] <- TRUE	
 	
 	for (layer in names(group)) {
 	
