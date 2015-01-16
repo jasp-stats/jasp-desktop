@@ -1,5 +1,5 @@
 #### histogram with density estimator ####
-.plotMarginalCor <- function(variable, cexYlab= 1.3, lwd= 2){
+.plotMarginalCor <- function(variable, cexYlab= 1.3, lwd= 2, rugs= FALSE){
 	
 	variable <- variable[!is.na(variable)]
 	
@@ -14,7 +14,11 @@
 	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks)
 	par(las=0)
 	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.08*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.7, mgp= c(3, 0.7, 0))
-	rug(jitVar)
+	
+	if(rugs){
+		rug(jitVar)
+	}
+	
 	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
 
 }
