@@ -67,15 +67,20 @@
 		lines(x, predY, lwd=lwd)
 		}
 	}
+	
 	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
 	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
 	ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(poly.pred(fit[[bestModel]], line= FALSE)))
 	yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(poly.pred(fit[[bestModel]], line= FALSE)))
+	
 	xticks <- pretty(c(xlow, xhigh))
 	yticks <- pretty(c(ylow, yhigh))
+	
 	plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
 	poly.pred(fit[[bestModel]], line= TRUE)
+	
 	par(las=1)
+	
 	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
 	axis(2, line= 0.2, labels= yticks, at= yticks, cex.axis= cexYAxis)
 
@@ -172,12 +177,15 @@
 		alternative <- "two.sided"
 		ctest <- cor.test(xVar, yVar, method= tests)
 	}
+	
 	if(hypothesis != "correlated" & length(tests) == 1 & any(tests == "pearson")){
 		
 		result1 <- list(cor.test(xVar, yVar, method=tests, alternative="less"),cor.test(xVar, yVar, method=tests, alternative="greater"))
 		p.value  <- min(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value))
-		ctest <- result1[[which(c(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value)) == p.value)]]
+		
+		ctest <- result1[[which.min(c(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value)))]]
 	}
+	
 	
 	if(any(tests == "pearson")& length(tests) == 1){
 	
@@ -281,98 +289,109 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		infCheck <- vector("logical", length(.v(variables)))
 		
 		for(i in seq_along(.v(variables))){
+		
 			d[i] <- class(dataset[[.v(variables)[i]]])
 			sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE)
 			infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
 		}
 		
-		ind1 <- which(d == "numeric" | d == "integer")
-		ind2 <- which(sdCheck > 0)
-		ind <- ind1 %in% ind2
+		
+		ind1 <- d == "numeric" | d == "integer"
+		ind2 <- sdCheck > 0
+		ind <- ind1 & ind2 & !infCheck
+		
+		
 		variables <- .v(variables)[ind]
-		ind3 <-which(infCheck == TRUE)
-		
-		if(length(ind3) > 0){	
-		
-			variables <- variables[-which(infCheck == TRUE)]
-		}
-		
-		l <- length(variables)
-		
-		if(l <= 2){
-			width <- 500
-			height <- 500
-		}
-		if(l == 3){
-			width <- 550
-			height <- 550
-		}
-		if(l == 4){
-			width <- 900
-			height <- 900
-		}
-		if(l >= 5){
-			width <- 1100
-			height <- 1100
-		}
-	    
-		frequency.plots <- list()
-				
-		plot <- list()
+
+		if(length(variables) > 0){
 			
-		plot[["title"]] <- variables
-		plot[["width"]]  <- width
-		plot[["height"]] <- height
-				
-		frequency.plots[[1]] <- plot	
-		
-		image <- .beginSaveImage(width, height)
-		
-		if(l == 1){
-		par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))	
-		}
-		if(l > 1){
-		par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0, 2.2, 2, 0))
-		}
-		
-		for(row in seq_len(l)){
-			for(col in seq_len(l)){
-				if(row == col){
-					.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
-				}
-				if(col > row){
-					.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
-				}
-				if(col < row){
-					if(l < 7){
-						.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis, pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman) # plot r= ...
-					}
-					if(l >= 7){
-						.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis, pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman) 
-					}
-				}		
+			l <- length(variables)
+			
+			if(l <= 2){
+				width <- 500
+				height <- 500
 			}
-		}
-		
-		if(l == 1){
-			mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
-		}
-		if(l > 1){
-		textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
-			for(t in seq_along(textpos)){
-				mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.9, line= -0.8)
-				mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.9, line= -0.1)
+			if(l == 3){
+				width <- 550
+				height <- 550
 			}
-		}
-		
-		content <- .endSaveImage(image)
+			if(l == 4){
+				width <- 900
+				height <- 900
+			}
+			if(l >= 5){
+				width <- 1100
+				height <- 1100
+			}
+			
+			frequency.plots <- list()
+					
+			plot <- list()
 				
-		plot <- frequency.plots[[1]]
+			plot[["title"]] <- variables
+			plot[["width"]]  <- width
+			plot[["height"]] <- height
+					
+			frequency.plots[[1]] <- plot	
+			
+			image <- .beginSaveImage(width, height)
+			
+			if(l == 1){
+			
+			par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))	
+			}
+			
+			if(l > 1){
+			
+			par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0, 2.2, 2, 0))
+			}
+			
+			for(row in seq_len(l)){
+			
+				for(col in seq_len(l)){
 				
-		plot[["data"]]  <- content
+					if(row == col){
+						.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+					}
+					if(col > row){
+						.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+					}
+					if(col < row){
+						if(l < 7){
+							.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis, pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman) # plot r= ...
+						}
+						if(l >= 7){
+							.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis, pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman) 
+						}
+					}		
+				}
+			}
+			
+			if(l == 1){
+			
+				mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
+			}
+			
+			if(l > 1){
+			
+			textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
+			
+				for(t in seq_along(textpos)){
 				
-		frequency.plots[[1]] <- plot					
-	}	
+					mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.9, line= -0.8)
+					mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.9, line= -0.1)
+				}
+			}
+			
+			content <- .endSaveImage(image)
+					
+			plot <- frequency.plots[[1]]
+					
+			plot[["data"]]  <- content
+					
+			frequency.plots[[1]] <- plot					
+		}	
+	}
 	
 	results[["plots"]] <- frequency.plots
 		
