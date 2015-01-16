@@ -84,7 +84,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	posterior[["schema"]] <- schema
 	if (options$dependent != "" && length(options$modelTerms) > 0 ){
 		if ( perform == "run" && error.present == 0){
-		
 			if (length(terms.nuisance)> 0) {
 				fields[[1]][[".footnotes"]] <- list(0)
 				footrand <- paste(.unvf(terms.nuisance), collapse=" and ")
@@ -101,7 +100,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			withmain <- result$bf.object
 			BFmain <- result$bf
 			errormain <- result$error
-			
 			#####PREPARE VECTORS/MATRICES WITHOUT NUISANCE######
 			# Prepare for model selection: lists of components of effects and models
 			# Modelnames and effect names for table
@@ -142,7 +140,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			} else { #containing neither
 				posterior.probability <- c(BFmain.0)/sum(BFmain.0)				
 			}
-			
 			BFmodels <-	(posterior.probability/(1-posterior.probability))/(pprior/(1-pprior))
 			errormain.0 <- c(NA,errormain)
 
@@ -204,7 +201,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 				}
 			} else {	
 			#############PREPARE NAMES AND MATCHES 
-				
 				b <- .modelsandeffects(modelsmain, terms.nuisance, terms.as.strings)
 				for (n in 1: length(b)){
 				#This sets: n.comp.mod, comp.mod, n.eff, comp.eff, n.comp.eff
@@ -559,12 +555,12 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	result <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = mode, 
 		neverExclude = paste("^",terms.nuisance,"$", sep = ""), whichRandom = .v(options$randomFactors),
 		progress=FALSE, callback=jasp.callback)
-	
+
 	if (length(terms.nuisance) > 0) {
 		ind.nui <- which(names(result)$numerator == paste(terms.nuisance, collapse=" + ")) 
 		result <- result[-ind.nui]/result[ind.nui]
 	} 
-	
+
 	bf <- as.numeric(exp(result@bayesFactor$bf))
 	error <- as.numeric(result@bayesFactor$error)
 	models <- names(result)$numerator
@@ -659,9 +655,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		bottom <- result$bf.object
 		BFbot <- result$bf
 		errorbot <- result$error					
-			
 	# 2. Inclusion probabilities and Bayes factors 
-			
 		inclusion.probabilities <- rowSums(match.eff.mod * matrix(rep(posterior.probability[], each = n.eff) ,n.eff,n.mod.0))
 		prior.probabilities <- rowSums(match.eff.mod)/n.mod.0
 		Bayesfactor.inclusion <- (inclusion.probabilities/(1-inclusion.probabilities))/(prior.probabilities/(1- prior.probabilities))
@@ -676,14 +670,12 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		Reduced <-	rep(0, n.eff)
 		BF.Backward <-	rep(0, n.eff)
 		error.Backward <-	rep(0, n.eff)
-			
+
 		for (e in 1:n.eff) {
-				
 			if (n.include.eff[e] == 1) {
 			#If the effect only in one model: Should compare with null model
 				Full <-	which(match.eff.mod[e,] == 1)
-				Reduced <-	which(complexity.models == max(complexity.models[-Full]))	
-					
+				Reduced <-	which(complexity.models == max(complexity.models[-Full]))					
 			} else {
 			#Model has to meet the condition that the effect is included 
 			#Model shouldnt include a higher order interaction with the effect 
@@ -695,15 +687,21 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			# Look for the most complex model without the effect
 				mno3 <- which(match.eff.mod[e,] == 0)
 				Reduced <- mno3[which(complexity.models[mno3]==max(complexity.models[mno3]))]
-			}
 				
-			out <- withmain[Full-1]/withmain[Reduced-1]
+			}
+			if(Reduced > 1){
+				out <- withmain[Full-1]/withmain[Reduced-1]
+				print(out)
+			} else { 
+			#Most complex model without effect may be the null model (Reduced == 1). MM
+			#Should then compare against the null
+				out <- withmain[Full-1]				
+			}
 			BF.Backward <- as.numeric(exp(out@bayesFactor$bf))
 			error.Backward <- as.numeric(exp(out@bayesFactor$error))
 												
 			BFbottom <- .clean(BFbot[e])
 			errorbottom <- .clean(errorbot[e]*100)
-
 			if(n.comp.eff[e] == 1) {
 				ind.model.e <- which(models == effects[e])
 				BFbottom <- .clean(BFmain.0[ind.model.e])
