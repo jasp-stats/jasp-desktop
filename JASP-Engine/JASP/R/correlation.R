@@ -91,7 +91,7 @@
 }
 
 #### display correlation value ####
-.plotCorValue <- function(xVar, yVar, cexText= 2.5, cexCI= 1.8, hypothesis = "correlated", pearson=options$pearson,
+.plotCorValue <- function(xVar, yVar, cexText= 2.5, cexCI= 1.7, hypothesis = "correlated", pearson=options$pearson,
 	kendallsTauB=options$kendallsTauB, spearman=options$spearman){
 
 	
