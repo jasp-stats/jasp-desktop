@@ -475,9 +475,14 @@ callback <- function(results=NULL) {
 	#filename <- .requestTempFileNameNative("svg")
 	#grDevices::svg(filename=filename, width=width/72, height=height/72, bg="transparent")
 	
+	type <- "cairo"
+	
+	if (Sys.info()["sysname"]=="Darwin")  # OS X
+		type <- "quartz"
+	
 	multip <- .ppi / 96
 	filename <- .requestTempFileNameNative("png")
-	grDevices::png(filename=filename, width=width * multip, height=height * multip, bg="transparent", res=72 * multip)
+	grDevices::png(filename=filename, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
 	
 	filename
 }
