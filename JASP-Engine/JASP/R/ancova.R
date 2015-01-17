@@ -1116,6 +1116,31 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
             profilePlotList[[i]] <- profilePlot
             
 	    }
+	    
+    } else if (options$horizontalAxis != "") {
+        
+        if (options$seperatePlots != "") {
+        
+            nPlots <- length(levels(dataset[[ .v(options$seperatePlots) ]]))
+        
+        } else {
+        
+            nPlots <- 1
+            
+        }
+        
+        for (i in 1:nPlots) {
+        
+            profilePlot <- list()
+	        profilePlot[["title"]] <- ""
+	        profilePlot[["width"]] <- options$chartWidth
+	        profilePlot[["height"]] <- options$chartHeight
+	        profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+	        profilePlot[["data"]] <- ""
+	        
+	        profilePlotList[[i]] <- profilePlot
+	    }
+        
     }
     
     profilePlotList
