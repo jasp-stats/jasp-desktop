@@ -1563,10 +1563,12 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	meta <- list()
 	
-	meta[[1]] <- list(name="ttest", type="table")
-	meta[[2]] <- list(name="plots", type="images")
+	meta[[1]] <- list(name="title", type="title")
+	meta[[2]] <- list(name="ttest", type="table")
+	meta[[3]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
+	results[["title"]] <- "Bayesian T-Test"
 	
 	ttest <- list()
 	

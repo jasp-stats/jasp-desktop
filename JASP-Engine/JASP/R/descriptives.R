@@ -133,11 +133,13 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	meta <- list()
 	
-	meta[[1]] <- list(name="stats", type="table")
-	meta[[2]] <- list(name="tables", type="tables")
-	meta[[3]] <- list(name="plots", type="images")
+	meta[[1]] <- list(name="title", type="title")
+	meta[[2]] <- list(name="stats", type="table")
+	meta[[3]] <- list(name="tables", type="tables")
+	meta[[4]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
+	results[["title"]] <- "Descriptives"
 
 	#### STATS TABLE
 

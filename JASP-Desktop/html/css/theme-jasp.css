@@ -16,7 +16,17 @@ body.selected {
 
 h1 {
 	font-size: 150% ;
-	margin: .5em inherit ;
+	margin: .5em 0 ;
+}
+
+h2 {
+	font-size: 125% ;
+	margin: .5em 0 ;
+}
+
+h3 {
+	font-size: 100% ;
+	margin: .5em 0 ;
 }
 
 table {
