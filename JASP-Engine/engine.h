@@ -23,6 +23,8 @@ private:
 	void sendResults();
 	int callback(const std::string &results);
 
+	std::string provideTempFilename(const std::string &extension);
+
 	typedef enum { empty, toInit, initing, inited, toRun, running, complete, error } Status;
 
 	Status _status;
@@ -31,6 +33,7 @@ private:
 	std::string _analysisName;
 	std::string _analysisOptions;
 	std::string _analysisResults;
+	int _ppi;
 
 	IPCChannel *_channel;
 

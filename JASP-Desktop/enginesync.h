@@ -32,6 +32,8 @@ public:
 	bool engineStarted();
 	void setLog(ActivityLog *log);
 
+	void setPPI(int ppi);
+
 signals:
 
 	void updateReceived(QString data);
@@ -43,6 +45,8 @@ private:
 	bool _engineStarted;
 	ActivityLog *_log;
 
+	int _ppi;
+
 	std::vector<QProcess *> _slaveProcesses;
 	std::vector<IPCChannel *> _channels;
 	std::vector<Analysis *> _analysesInProgress;
@@ -50,14 +54,15 @@ private:
 	IPCChannel *nextFreeProcess(Analysis *analysis);
 	void sendToProcess(int processNo, Analysis *analysis);
 
-	QTimer *_timer;
-
 	void sendMessages();
 	void startSlaveProcess(int no);
 
 	std::string _memoryName;
 
 private slots:
+
+	void deleteOrphanedTempFiles();
+	void heartbeatTempFiles();
 
 	void process();
 

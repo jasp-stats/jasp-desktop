@@ -18,11 +18,12 @@ typedef struct
 	base64_encodestep step;
 	char result;
 	int stepcount;
+	const char *encoding;
 } base64_encodestate;
 
-void base64_init_encodestate(base64_encodestate* state_in);
+void base64_init_encodestate(base64_encodestate* state_in, const char *encoding);
 
-char base64_encode_value(char value_in);
+char base64_encode_value(char value_in, const char *encoding);
 
 int base64_encode_block(const char* plaintext_in, int length_in, char* code_out, base64_encodestate* state_in);
 

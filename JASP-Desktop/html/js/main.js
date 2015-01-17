@@ -1,6 +1,11 @@
 
 "use strict"
 
+window.getPPI = function() {
+
+	return 96 * window.devicePixelRatio
+}
+
 $(document).ready(function() {
 
 	var analyses = []

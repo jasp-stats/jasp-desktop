@@ -8,6 +8,7 @@
 #include "../JASP-Common/analysisloader.h"
 #include "../JASP-Common/process.h"
 #include "../JASP-Common/datasetloader.h"
+#include "../JASP-Common/tempfiles.h"
 
 #include "rbridge.h"
 
@@ -34,9 +35,12 @@ Engine::Engine()
 	_status = empty;
 
 	rbridge_init();
+	tempfiles_attach(Process::parentPID());
 
 	DataSet *dataSet = DataSetLoader::getDataSet();
 	rbridge_setDataSet(dataSet);
+
+	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFilename, this, _1));
 }
 
 void Engine::setSlaveNo(int no)
@@ -63,7 +67,7 @@ void Engine::runAnalysis()
 	}
 
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
-	_analysisResults = rbridge_run(_analysisName, _analysisOptions, perform, callback);
+	_analysisResults = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
 
 	if (receiveMessages())
 	{
@@ -124,6 +128,17 @@ bool Engine::receiveMessages(int timeout)
 			_status = toInit;
 		else
 			_status = toRun;
+
+		Json::Value settings = jsonRequest.get("settings", Json::nullValue);
+		if (settings.isObject())
+		{
+			Json::Value ppi = settings.get("ppi", Json::nullValue);
+			_ppi = ppi.isInt() ? ppi.asInt() : 96;
+		}
+		else
+		{
+			_ppi = 96;
+		}
 
 		return true;
 	}
@@ -191,5 +206,10 @@ int Engine::callback(const string &results)
 	}
 
 	return 0;
+}
+
+string Engine::provideTempFilename(const string &extension)
+{
+	return tempfiles_create(extension, _analysisId);
 }
 

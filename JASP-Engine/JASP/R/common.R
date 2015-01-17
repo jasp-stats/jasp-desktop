@@ -200,6 +200,11 @@ run <- function(name, options.as.json.string, perform="run") {
 	dataset
 }
 
+.requestTempFileName <- function(extension) {
+
+	.requestTimeFileNameNative(extension)
+}
+
 .saveState <- function(state) {
 
 	if (base::exists(".saveStateNative")) {
@@ -467,29 +472,26 @@ callback <- function(results=NULL) {
 
 .beginSaveImage <- function(width=320, height=320) {
 
-	file <- tempfile(fileext=".svg")
-			
-	grDevices::svg(filename=file, width=width/72, height=height/72, bg="transparent")
+	#filename <- .requestTempFileNameNative("svg")
+	#grDevices::svg(filename=filename, width=width/72, height=height/72, bg="transparent")
 	
-	list(format="svg", encoding="dataURI;base64", file=file)
+	type <- "cairo"
+	
+	if (Sys.info()["sysname"]=="Darwin")  # OS X
+		type <- "quartz"
+	
+	multip <- .ppi / 96
+	filename <- .requestTempFileNameNative("png")
+	grDevices::png(filename=filename, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
+	
+	filename
 }
 
-.endSaveImage <- function(image.descriptor) {
+.endSaveImage <- function(filename) {
 
 	grDevices::dev.off()
 	
-	file <- tempfile(fileext=".base64")
-	
-	base64::encode(image.descriptor$file, file, linesize=1024*1024*1024)
-	
-	file.size <- base::file.info(file)$size - 2   # strip \r\n from end
-	
-	content <- paste("data:image/svg+xml;base64,", base::readChar(file, file.size), sep="")
-	
-	base::file.remove(image.descriptor$file)
-	base::file.remove(file)
-
-	content
+	filename
 }
 
 .extractErrorMessage <- function(error) {

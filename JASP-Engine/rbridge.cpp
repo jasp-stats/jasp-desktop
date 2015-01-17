@@ -12,12 +12,14 @@ DataSet *rbridge_dataSet;
 
 using namespace std;
 
-RCallback rbridge_run_callback;
+RCallback rbridge_runCallback;
+boost::function<std::string(const std::string &)> rbridge_fileNameSource;
 
 Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 std::map<std::string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 SEXP rbridge_callbackSEXP(SEXP results);
+SEXP rbridge_requestTempFileNameSEXP(SEXP extension);
 
 int rbridge_callback(SEXP results);
 Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns);
@@ -30,7 +32,8 @@ void rbridge_makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordin
 void rbridge_init()
 {
 	rbridge_dataSet = NULL;
-	rbridge_run_callback = NULL;
+	rbridge_runCallback = NULL;
+	rbridge_fileNameSource = NULL;
 
 	rbridge_rinside = new RInside();
 
@@ -39,6 +42,7 @@ void rbridge_init()
 	rInside[".readDatasetToEndNative"] = Rcpp::InternalFunction(&rbridge_readDataSetSEXP);
 	rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&rbridge_readDataSetHeaderSEXP);
 	rInside[".callbackNative"] = Rcpp::InternalFunction(&rbridge_callbackSEXP);
+	rInside[".requestTempFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestTempFileNameSEXP);
 	rInside[".baseCitation"] = "Love, J., Selker, R., Verhagen, J., Smira, M., Wild, A., Marsman, M., Gronau, Q., Morey, R., Rouder, J. & Wagenmakers, E. J. (2014). JASP (Version 0.5)[Computer software].";
 
 	rInside["jasp.analyses"] = Rcpp::List();
@@ -52,20 +56,36 @@ void rbridge_setDataSet(DataSet *dataSet)
 	rbridge_dataSet = dataSet;
 }
 
-string rbridge_run(const string &name, const string &options, const string &perform, RCallback callback)
+void rbridge_setFileNameSource(boost::function<string (const string &)> source)
+{
+	rbridge_fileNameSource = source;
+}
+
+SEXP rbridge_requestTempFileNameSEXP(SEXP extension)
+{
+	if (rbridge_fileNameSource == NULL)
+		return R_NilValue;
+
+	string extensionAsString = Rcpp::as<string>(extension);
+
+	return Rcpp::CharacterVector(rbridge_fileNameSource(extensionAsString));
+}
+
+string rbridge_run(const string &name, const string &options, const string &perform, int ppi, RCallback callback)
 {
 	SEXP results;
 
-	rbridge_run_callback = callback;
+	rbridge_runCallback = callback;
 
 	RInside &rInside = rbridge_rinside->instance();
 
 	rInside["name"] = name;
 	rInside["options.as.json.string"] = options;
 	rInside["perform"] = perform;
+	rInside[".ppi"] = ppi;
 	rInside.parseEval("run(name=name, options.as.json.string=options.as.json.string, perform)", results);
 
-	rbridge_run_callback = NULL;
+	rbridge_runCallback = NULL;
 
 	return Rcpp::as<string>(results);
 }
@@ -92,7 +112,7 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 
 		string columnName = columnInfo.first;
 
-		string base64 = Base64::encode(dot, columnName);
+		string base64 = Base64::encode(dot, columnName, Base64::RVarEncoding);
 		columnNames.push_back(base64);
 
 		Column &column = rbridge_dataSet->columns().get(columnName);
@@ -245,7 +265,7 @@ Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<string, Column::ColumnT
 
 		string columnName = columnInfo.first;
 
-		string base64 = Base64::encode(dot, columnName);
+		string base64 = Base64::encode(dot, columnName, Base64::RVarEncoding);
 		columnNames.push_back(base64);
 
 		Columns &columns = rbridge_dataSet->columns();
@@ -330,15 +350,15 @@ void rbridge_makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &level
 
 int rbridge_callback(SEXP results)
 {
-	if (rbridge_run_callback != NULL)
+	if (rbridge_runCallback != NULL)
 	{
 		if (Rf_isNull(results))
 		{
-			return rbridge_run_callback("null");
+			return rbridge_runCallback("null");
 		}
 		else
 		{
-			return rbridge_run_callback(Rcpp::as<string>(results));
+			return rbridge_runCallback(Rcpp::as<string>(results));
 		}
 	}
 	else

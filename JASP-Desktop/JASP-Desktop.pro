@@ -123,7 +123,9 @@ SOURCES += main.cpp\
     application.cpp \
     analysisforms/regressionlinearbayesianform.cpp \
     qutils.cpp \
-    activitylog.cpp
+    activitylog.cpp \
+    lrnamreply.cpp \
+    lrnam.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -217,7 +219,9 @@ HEADERS  += \
     application.h \
     analysisforms/regressionlinearbayesianform.h \
     qutils.h \
-    activitylog.h
+    activitylog.h \
+    lrnamreply.h \
+    lrnam.h
 
 FORMS    += \
     backstageform.ui \

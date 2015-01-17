@@ -15,6 +15,7 @@
 #include "process.h"
 #include "common.h"
 #include "qutils.h"
+#include "tempfiles.h"
 
 using namespace boost::interprocess;
 using namespace std;
@@ -26,18 +27,26 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	_engineStarted = false;
 
 	_log = NULL;
+	_ppi = 96;
 
 	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
 	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
 
+	// delay start so as not to increase program start up time
+	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
 }
 
 EngineSync::~EngineSync()
 {
-	for (int i = 0; i < _slaveProcesses.size(); i++)
+	if (_engineStarted)
 	{
-		_slaveProcesses[i]->terminate();
-		_slaveProcesses[i]->kill();
+		for (int i = 0; i < _slaveProcesses.size(); i++)
+		{
+			_slaveProcesses[i]->terminate();
+			_slaveProcesses[i]->kill();
+		}
+
+		tempfiles_deleteAll();
 	}
 
 	shared_memory_object::remove(_memoryName.c_str());
@@ -80,9 +89,17 @@ void EngineSync::start()
 		startSlaveProcess(i);
 	}
 
-	_timer = new QTimer(this);
-	connect(_timer, SIGNAL(timeout()), this, SLOT(process()));
-	_timer->start(50);
+	QTimer *timer;
+
+	timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(process()));
+	timer->start(50);
+
+	timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(heartbeatTempFiles()));
+	timer->start(30000);
+
+	tempfiles_init(Process::currentPID());
 }
 
 bool EngineSync::engineStarted()
@@ -93,6 +110,11 @@ bool EngineSync::engineStarted()
 void EngineSync::setLog(ActivityLog *log)
 {
 	_log = log;
+}
+
+void EngineSync::setPPI(int ppi)
+{
+	_ppi = ppi;
 }
 
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
@@ -124,6 +146,11 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	json["options"] = analysis->options()->asJSON();
 	json["perform"] = (init ? "init" : "run");
 
+	Json::Value settings;
+	settings["ppi"] = _ppi;
+
+	json["settings"] = settings;
+
 	string str = json.toStyledString();
 
 	_channels[processNo]->send(str);
@@ -150,9 +177,9 @@ void EngineSync::process()
 		if (channel->receive(data))
 		{
 #ifdef QT_DEBUG
-            //std::cout << "message received\n";
-            //std::cout << data << "\n";
-            //std::cout.flush();
+			std::cout << "message received\n";
+			std::cout << data << "\n";
+			std::cout.flush();
 #endif
 
 			Json::Reader reader;
@@ -302,7 +329,16 @@ void EngineSync::startSlaveProcess(int no)
 	connect(slave, SIGNAL(error(QProcess::ProcessError)), this, SLOT(subProcessError(QProcess::ProcessError)));
 	connect(slave, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(subprocessFinished(int,QProcess::ExitStatus)));
 	connect(slave, SIGNAL(started()), this, SLOT(subProcessStarted()));
+}
 
+void EngineSync::deleteOrphanedTempFiles()
+{
+	tempfiles_deleteOrphans();
+}
+
+void EngineSync::heartbeatTempFiles()
+{
+	tempfiles_heartbeat();
 }
 
 void EngineSync::subProcessStandardOutput()

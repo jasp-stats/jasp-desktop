@@ -15,7 +15,9 @@ public:
 #endif
 
 	static long currentMillis();
-
+	static long currentSeconds();
+	static long getFileModificationTime(const std::string &filename);
+	static void touch(const std::string &filename);
 };
 
 #endif // UTILS_H
