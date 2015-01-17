@@ -1031,7 +1031,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
             }
         }
         
-        if (length(groupVars) == 3) {
+        if (options[["seperatePlots"]] != "") {
             subsetPlots <- levels(summaryStat[,"seperatePlots"])
 		    nPlots <- length(subsetPlots)
 	    } else {
@@ -1046,13 +1046,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	        profilePlot[["height"]] <- options$chartHeight
 	        profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
 				
-            if (length(groupVars) == 3) {
+            if (options[["seperatePlots"]] != "") {
                 summaryStatSubset <- subset(summaryStat,summaryStat[,"seperatePlots"] == subsetPlots[i])
             } else {
                 summaryStatSubset <- summaryStat
             }
             
-            if(length(groupVars) == 1) {
+            if(options[["seperateLines"]] == "") {
             
                 p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=horizontalAxis, 
                                               y=dependent,
