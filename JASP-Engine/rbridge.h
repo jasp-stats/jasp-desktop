@@ -17,10 +17,10 @@
 
 #include "../JASP-Common/dataset.h"
 
-	//typedef int (*RCallback)(std::string value);
 	typedef boost::function<int(const std::string &)> RCallback;
 
 	void rbridge_init();
+	void rbridge_setFileNameSource(boost::function<std::string(const std::string &)> source);
 	void rbridge_setDataSet(DataSet *dataSet);
 	std::string rbridge_run(const std::string &name, const std::string &options, const std::string &perform = "run", RCallback callback = NULL);
 

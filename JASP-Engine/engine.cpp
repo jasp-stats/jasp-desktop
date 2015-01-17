@@ -8,6 +8,7 @@
 #include "../JASP-Common/analysisloader.h"
 #include "../JASP-Common/process.h"
 #include "../JASP-Common/datasetloader.h"
+#include "../JASP-Common/tempfiles.h"
 
 #include "rbridge.h"
 
@@ -34,9 +35,12 @@ Engine::Engine()
 	_status = empty;
 
 	rbridge_init();
+	tempfiles_attach(Process::parentPID());
 
 	DataSet *dataSet = DataSetLoader::getDataSet();
 	rbridge_setDataSet(dataSet);
+
+	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFilename, this, _1));
 }
 
 void Engine::setSlaveNo(int no)
@@ -191,5 +195,10 @@ int Engine::callback(const string &results)
 	}
 
 	return 0;
+}
+
+string Engine::provideTempFilename(const string &extension)
+{
+	return tempfiles_create(extension, _analysisId);
 }
 

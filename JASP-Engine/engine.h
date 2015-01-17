@@ -23,6 +23,8 @@ private:
 	void sendResults();
 	int callback(const std::string &results);
 
+	std::string provideTempFilename(const std::string &extension);
+
 	typedef enum { empty, toInit, initing, inited, toRun, running, complete, error } Status;
 
 	Status _status;

@@ -47,6 +47,7 @@
 #include "qutils.h"
 #include "appdirs.h"
 
+#include "lrnam.h"
 #include "activitylog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -92,6 +93,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->webViewHelp->setContextMenuPolicy(Qt::NoContextMenu);
 #endif
 
+	// the LRNAM adds mime types to local resources; important for SVGs
+	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
 
 	_tableModel = new DataSetTableModel();

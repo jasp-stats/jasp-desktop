@@ -127,18 +127,21 @@ void tempfiles_heartbeat()
 	Utils::touch(tempfiles_statusFileName);
 }
 
-string tempfiles_create(const string &mimeType, int id)
+string tempfiles_create(const string &extension, int id)
 {
 	stringstream ss, ssn;
 
-	ss << tempfiles_sessionId << "-";
+	ss << Dirs::tempDir();
+	ss << "/";
+	ss << tempfiles_sessionId;
+	ss << "/";
 
-	if (id > 0)
+	if (id >= 0)
 	   ss << id << "-";
 
 	string suffix;
-	if (mimeType != "")
-		suffix = Base64::encode(".", mimeType);
+	if (extension != "")
+		suffix = string(".") + extension;
 
 	do
 	{
