@@ -28,6 +28,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	# META definitions
 
 	.meta <- list(
+	    list(name="title", type="title"),
 		list(name="anova", type="table"),
 		list(name="levene", type="table"),
 		list(name="contrasts", type="tables"),
@@ -37,6 +38,20 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	)
 
 	results[[".meta"]] <- .meta
+	
+	
+	
+	## Create Title
+	
+	if (is.null(options$covariates)) {
+	
+	    results[["title"]] <- "ANOVA"
+	
+	} else {
+	    
+	    results[["title"]] <- "ANCOVA"
+	
+	}
 	
 	
 	status <- .anovaCheck(dataset, options, perform)
