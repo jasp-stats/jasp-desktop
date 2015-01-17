@@ -28,6 +28,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	# META definitions
 
 	.meta <- list(
+	    list(name="title", type="title"),
 		list(name="anova", type="table"),
 		list(name="levene", type="table"),
 		list(name="contrasts", type="tables"),
@@ -37,6 +38,20 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	)
 
 	results[[".meta"]] <- .meta
+	
+	
+	
+	## Create Title
+	
+	if (is.null(options$covariates)) {
+	
+	    results[["title"]] <- "ANOVA"
+	
+	} else {
+	    
+	    results[["title"]] <- "ANCOVA"
+	
+	}
 	
 	
 	status <- .anovaCheck(dataset, options, perform)
@@ -1016,7 +1031,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
             }
         }
         
-        if (length(groupVars) == 3) {
+        if (options[["seperatePlots"]] != "") {
             subsetPlots <- levels(summaryStat[,"seperatePlots"])
 		    nPlots <- length(subsetPlots)
 	    } else {
@@ -1031,13 +1046,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	        profilePlot[["height"]] <- options$chartHeight
 	        profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
 				
-            if (length(groupVars) == 3) {
+            if (options[["seperatePlots"]] != "") {
                 summaryStatSubset <- subset(summaryStat,summaryStat[,"seperatePlots"] == subsetPlots[i])
             } else {
                 summaryStatSubset <- summaryStat
             }
             
-            if(length(groupVars) == 1) {
+            if(options[["seperateLines"]] == "") {
             
                 p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=horizontalAxis, 
                                               y=dependent,
@@ -1101,6 +1116,31 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
             profilePlotList[[i]] <- profilePlot
             
 	    }
+	    
+    } else if (options$horizontalAxis != "") {
+        
+        if (options$seperatePlots != "") {
+        
+            nPlots <- length(levels(dataset[[ .v(options$seperatePlots) ]]))
+        
+        } else {
+        
+            nPlots <- 1
+            
+        }
+        
+        for (i in 1:nPlots) {
+        
+            profilePlot <- list()
+	        profilePlot[["title"]] <- ""
+	        profilePlot[["width"]] <- options$chartWidth
+	        profilePlot[["height"]] <- options$chartHeight
+	        profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+	        profilePlot[["data"]] <- ""
+	        
+	        profilePlotList[[i]] <- profilePlot
+	    }
+        
     }
     
     profilePlotList
