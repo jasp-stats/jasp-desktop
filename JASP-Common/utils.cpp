@@ -58,9 +58,9 @@ void Utils::setEnv(const string &env, const string &value)
 
 long Utils::currentMillis()
 {
-	ptime start_of_time = from_iso_string("20150101T000000");
+	ptime epoch(boost::gregorian::date(1970,1,1));
 	ptime t = microsec_clock::local_time();
-	time_duration elapsed = t - start_of_time;
+	time_duration elapsed = t - epoch;
 
 	return elapsed.total_milliseconds();
 }
@@ -76,7 +76,29 @@ long Utils::currentSeconds()
 long Utils::getFileModificationTime(const std::string &filename)
 {
 #ifdef __WIN32__
-	TODO
+
+	wstring wfilename = Utils::s2ws(filename);
+	HANDLE file = CreateFile(wfilename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (file == INVALID_HANDLE_VALUE)
+		return -1;
+
+	FILETIME modTime;
+
+	bool success = GetFileTime(file, NULL, NULL, &modTime);
+	CloseHandle(file);
+
+	if (success)
+	{
+		ptime pt = from_ftime<ptime>(modTime);
+		ptime epoch(boost::gregorian::date(1970,1,1));
+
+		return (pt - epoch).total_seconds();
+	}
+	else
+	{
+		return -1;
+	}
 #elif __APPLE__
 
 	struct stat attrib;
@@ -92,8 +114,23 @@ long Utils::getFileModificationTime(const std::string &filename)
 
 void Utils::touch(const string &filename)
 {
-#ifdef __win32__
-	TODO
+#ifdef __WIN32__
+
+	wstring wfilename = Utils::s2ws(filename);
+	HANDLE file = CreateFile(wfilename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (file == INVALID_HANDLE_VALUE)
+		return;
+
+	FILETIME ft;
+	SYSTEMTIME st;
+
+	GetSystemTime(&st);
+	SystemTimeToFileTime(&st, &ft);
+	SetFileTime(file, NULL, NULL, &ft);
+
+	CloseHandle(file);
+
 #else
 	struct utimbuf newTime;
 
