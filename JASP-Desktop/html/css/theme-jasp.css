@@ -62,6 +62,11 @@ td {
 	vertical-align: top ;
 }
 
+thead tr:nth-child(2) th
+{
+	min-width: 4em ;
+}
+
 thead tr:first-child th {
 	padding: 6px 10px ;
 	font-style: bold ;
@@ -235,6 +240,11 @@ div.error-message-box
 	z-index: 100 ;
 	padding: 1em ;
 	border-radius: .4em ;
+}
+
+td.squash-left
+{
+	width: 99% ;
 }
 
 #intro {

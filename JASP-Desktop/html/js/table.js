@@ -689,6 +689,9 @@ $.widget("jasp.table", {
 				}
 				
 			}
+			
+			if (rowNo == 0) // squashes the table to the left
+				chunks.push('<td class="squash-left" rowspan="' + rowCount + '"></td>')
 
 			chunks.push('</tr>')
 		}
