@@ -100,6 +100,8 @@ private slots:
 	void updateMenuEnabledDisabledStatus();
 	void updateUIFromOptions();
 
+	void assignPPIFromWebView(bool success);
+
 	void engineCrashed();
 
 	void helpFirstLoaded(bool ok);

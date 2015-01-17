@@ -27,6 +27,7 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	_engineStarted = false;
 
 	_log = NULL;
+	_ppi = 96;
 
 	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
 	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
@@ -111,6 +112,11 @@ void EngineSync::setLog(ActivityLog *log)
 	_log = log;
 }
 
+void EngineSync::setPPI(int ppi)
+{
+	_ppi = ppi;
+}
+
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 {
 #ifdef QT_DEBUG
@@ -139,6 +145,11 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	json["name"] = analysis->name();
 	json["options"] = analysis->options()->asJSON();
 	json["perform"] = (init ? "init" : "run");
+
+	Json::Value settings;
+	settings["ppi"] = _ppi;
+
+	json["settings"] = settings;
 
 	string str = json.toStyledString();
 

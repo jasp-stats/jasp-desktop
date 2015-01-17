@@ -32,6 +32,8 @@ public:
 	bool engineStarted();
 	void setLog(ActivityLog *log);
 
+	void setPPI(int ppi);
+
 signals:
 
 	void updateReceived(QString data);
@@ -42,6 +44,8 @@ private:
 	Analyses *_analyses;
 	bool _engineStarted;
 	ActivityLog *_log;
+
+	int _ppi;
 
 	std::vector<QProcess *> _slaveProcesses;
 	std::vector<IPCChannel *> _channels;

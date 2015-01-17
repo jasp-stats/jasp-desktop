@@ -71,7 +71,7 @@ SEXP rbridge_requestTempFileNameSEXP(SEXP extension)
 	return Rcpp::CharacterVector(rbridge_fileNameSource(extensionAsString));
 }
 
-string rbridge_run(const string &name, const string &options, const string &perform, RCallback callback)
+string rbridge_run(const string &name, const string &options, const string &perform, int ppi, RCallback callback)
 {
 	SEXP results;
 
@@ -82,6 +82,7 @@ string rbridge_run(const string &name, const string &options, const string &perf
 	rInside["name"] = name;
 	rInside["options.as.json.string"] = options;
 	rInside["perform"] = perform;
+	rInside[".ppi"] = ppi;
 	rInside.parseEval("run(name=name, options.as.json.string=options.as.json.string, perform)", results);
 
 	rbridge_runCallback = NULL;

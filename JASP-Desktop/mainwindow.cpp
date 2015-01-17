@@ -96,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	// the LRNAM adds mime types to local resources; important for SVGs
 	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
+	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(assignPPIFromWebView(bool)));
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
@@ -469,6 +470,20 @@ void MainWindow::updateUIFromOptions()
 			ui->tabBar->removeTab(2);
 	}
 
+}
+
+void MainWindow::assignPPIFromWebView(bool success)
+{
+	if (success)
+	{
+		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
+
+		bool success;
+		int ppi = ppiv.toInt(&success);
+
+		if (success)
+			_engineSync->setPPI(ppi);
+	}
 }
 
 void MainWindow::engineCrashed()

@@ -33,6 +33,7 @@ private:
 	std::string _analysisName;
 	std::string _analysisOptions;
 	std::string _analysisResults;
+	int _ppi;
 
 	IPCChannel *_channel;
 

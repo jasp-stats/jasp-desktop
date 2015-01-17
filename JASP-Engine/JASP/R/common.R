@@ -472,10 +472,12 @@ callback <- function(results=NULL) {
 
 .beginSaveImage <- function(width=320, height=320) {
 
-	filename <- .requestTempFileNameNative("svg")
+	#filename <- .requestTempFileNameNative("svg")
+	#grDevices::svg(filename=filename, width=width/72, height=height/72, bg="transparent")
 	
-	grDevices::svg(filename=filename, width=width/72, height=height/72, bg="transparent")
-	#grDevices::png(filename=filename, width=2 * width, height=2 * height, bg="transparent", res=144)
+	multip <- .ppi / 96
+	filename <- .requestTempFileNameNative("png")
+	grDevices::png(filename=filename, width=width * multip, height=height * multip, bg="transparent", res=72 * multip)
 	
 	filename
 }

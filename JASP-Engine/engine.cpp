@@ -67,7 +67,7 @@ void Engine::runAnalysis()
 	}
 
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
-	_analysisResults = rbridge_run(_analysisName, _analysisOptions, perform, callback);
+	_analysisResults = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
 
 	if (receiveMessages())
 	{
@@ -128,6 +128,17 @@ bool Engine::receiveMessages(int timeout)
 			_status = toInit;
 		else
 			_status = toRun;
+
+		Json::Value settings = jsonRequest.get("settings", Json::nullValue);
+		if (settings.isObject())
+		{
+			Json::Value ppi = settings.get("ppi", Json::nullValue);
+			_ppi = ppi.isInt() ? ppi.asInt() : 96;
+		}
+		else
+		{
+			_ppi = 96;
+		}
 
 		return true;
 	}
