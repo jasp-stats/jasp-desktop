@@ -79,7 +79,7 @@
 	mtext(text = "Frequency", side = 2, cex=1.5, line = distLab+2, las=0)
 }
 
-.plotMarginal <- function(variable, variableName, cexYlab= 1.3, lwd= 2){
+.plotMarginal <- function(variable, variableName, cexYlab= 1.3, lwd= 2, rugs= FALSE){
 
 	par(mar= c(5, 4.5, 4, 2) + 0.1)
 	
@@ -96,7 +96,11 @@
 	mtext(text = variableName, side = 1, cex=1.5, line = 3)
 	par(las=0)
 	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.5, mgp= c(3, 0.7, 0))
-	rug(jitVar)
+	
+	if(rugs){
+		rug(jitVar)
+	}
+	
 	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
 }
 
