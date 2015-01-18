@@ -94,7 +94,7 @@ $.widget("jasp.table", {
 				}
 				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
 				
-					formatted = { content : "", class : clazz }
+					formatted = { content : "&nbsp;", class : clazz }
 					combined = true
 				}
 				else {
@@ -180,6 +180,8 @@ $.widget("jasp.table", {
 				minLSD = -dp
 			if (minLSD > 0)
 				minLSD = 0
+			else if (minLSD < -20)
+				minLSD = -20
 		
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
@@ -191,9 +193,13 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
+				else if (typeof content == "") {
+				
+					formatted = { content : "&nbsp;", "class" : "number" }
+				}
 				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
 				
-					formatted = { content : "", "class" : "number" }
+					formatted = { content : "&nbsp;", "class" : "number" }
 				}
 				else if (isNaN(parseFloat(content))) {  // isn't a number
 					
@@ -239,7 +245,14 @@ $.widget("jasp.table", {
 				}
 				else {
 					
-					formatted = { content : content.toFixed(-minLSD).replace(/-/g, "&minus;"), "class" : "number" }
+					if (alignNumbers) {
+					
+						formatted = { content : content.toFixed(-minLSD).replace(/-/g, "&minus;"), "class" : "number" }
+					}
+					else {
+					
+						formatted = { content : content.toPrecision(sf).replace(/-/g, "&minus;"), "class" : "number" }
+					}
 				}
 				
 				if (typeof cell.footnotes != "undefined")
@@ -263,9 +276,13 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
+				else if (content == "") {
+				
+					formatted = { content : "&nbsp;" }
+				}
 				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
 				
-					formatted = { content : "", "class" : "number" }
+					formatted = { content : "&nbsp;", "class" : "number" }
 				}
 				else if (isNaN(parseFloat(content))) {  // isn't a number
 					
@@ -305,6 +322,10 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
+				else if (content == "") {
+
+					formatted = { content : "&nbsp;" }				
+				}
 				else if (isNaN(parseFloat(content))) {  // isn't a number
 					
 					formatted = { content : content, "class" : "percentage" }
@@ -335,9 +356,13 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
+				else if (content == "") {
+
+					formatted = { content : "&nbsp;" }				
+				}
 				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
 				
-					formatted = { content : "" }
+					formatted = { content : "&nbsp;" }
 				}
 				else {
 				
@@ -407,7 +432,14 @@ $.widget("jasp.table", {
 				
 			var columnDef = columnDefs[colNo]
 			var columnName = columnDef.name
-			var title = (typeof columnDef.title != "undefined") ? columnDef.title : columnName
+
+			var title = columnDef.title
+			
+			if (typeof title == "undefined") 
+				title = columnName
+				
+			if (title == "")
+				title = "&nbsp;"
 			
 			var columnHeader = { content : title, header : true }
 
