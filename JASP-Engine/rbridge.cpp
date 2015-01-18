@@ -108,11 +108,10 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 	BOOST_FOREACH(const ColumnInfo &columnInfo, columns)
 	{
 		(void)columns;
-		string dot = ".";
 
 		string columnName = columnInfo.first;
 
-		string base64 = Base64::encode(dot, columnName, Base64::RVarEncoding);
+		string base64 = Base64::encode("X", columnName, Base64::RVarEncoding);
 		columnNames.push_back(base64);
 
 		Column &column = rbridge_dataSet->columns().get(columnName);
@@ -261,11 +260,10 @@ Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<string, Column::ColumnT
 	BOOST_FOREACH(const ColumnInfo &columnInfo, columns)
 	{
 		(void)columns;
-		string dot = ".";
 
 		string columnName = columnInfo.first;
 
-		string base64 = Base64::encode(dot, columnName, Base64::RVarEncoding);
+		string base64 = Base64::encode("X", columnName, Base64::RVarEncoding);
 		columnNames.push_back(base64);
 
 		Columns &columns = rbridge_dataSet->columns();

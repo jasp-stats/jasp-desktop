@@ -244,7 +244,7 @@ run <- function(name, options.as.json.string, perform="run") {
 	f  <- rm.factors[[length(rm.factors)]]
 	df <- data.frame(as.factor(unlist(f$levels)))
 	
-	names(df) <- paste("F", .v(f$name), sep="")
+	names(df) <- .v(f$name, "F")
 	
 	row.count <- dim(df)[1]
 	
@@ -299,12 +299,12 @@ run <- function(name, options.as.json.string, perform="run") {
 	df
 }
 
-.v <- function(variable.names) {
+.v <- function(variable.names, prefix="X") {
 
 	vs <- c()
 
 	for (v in variable.names)
-		vs[length(vs)+1] <- paste(".", .toBase64(v), sep="")
+		vs[length(vs)+1] <- paste(prefix, .toBase64(v), sep="")
 
 	vs
 }
@@ -321,10 +321,6 @@ run <- function(name, options.as.json.string, perform="run") {
 		firstChar <- charToRaw(substr(v, 1, 1))
 	
 		if (firstChar >= 0x41 && firstChar <= 0x5A) {  # A to Z
-		
-			vs[length(vs)+1] <- .fromBase64(substr(v, 3, nchar(v)))
-			
-		} else if (firstChar == 0x2E) {  # a dot
 		
 			vs[length(vs)+1] <- .fromBase64(substr(v, 2, nchar(v)))
 			

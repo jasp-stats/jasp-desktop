@@ -41,7 +41,7 @@ These functions return a data.frame containing the columns requested marshalled 
 
 `.readDataSetHeader()` returns a data.frame with no data (zero rows), and is intended for initialization of an analysis. `.readDataSetToEnd()` returns a data.frame containing all the rows for the requested columns.
 
-The names of the columns in these data.frames are encoded with *dot-prepended-base64-encoding*. This is so that special characters can be supported. These names can be converted back and forth using the `.v` and `.unv` functions (below)
+The names of the columns in these data.frames are encoded with *X-prepended-base64-encoding*. This is so that special characters can be supported. These names can be converted back and forth using the `.v` and `.unv` functions (below)
 
 The beginning of an analysis function will typically looks as follows:
 
@@ -61,9 +61,9 @@ The beginning of an analysis function will typically looks as follows:
         dataset <- .vdf(dataset, columns.as.numeric=...,)
     }
 
-### Converting to and from *dot-prepended-base64*
+### Converting to and from *X-prepended-base64*
 
-Column names in data frames read from JASP are encoded in *dot-prepended-base64*
+Column names in data frames read from JASP are encoded in *X-prepended-base64*
 
 `.v(column.names)`  
 `.unv(dp.base64.names)`  
@@ -72,28 +72,28 @@ Column names in data frames read from JASP are encoded in *dot-prepended-base64*
 
 `.vdf(dataset, columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
 
-`.v` returns a vector of column names converted to *dot-prepended-base64-encoding*
+`.v` returns a vector of column names converted to *X-prepended-base64-encoding*
 
-`.unv` returns a vector of normal column names converted from *dot-prepended-base64-encoding*
+`.unv` returns a vector of normal column names converted from *X-prepended-base64-encoding*
 
-`.vf` translates formulas to *dot-prepended-base64-encoding*
+`.vf` translates formulas to *X-prepended-base64-encoding*
 
-`.unvf` reverts formulas from *dot-prepended-base64-encoding*
+`.unvf` reverts formulas from *X-prepended-base64-encoding*
 
-`.vdf` transforms the column names of a dataframe to be *dot-prepended-base64-encoding*, other arguments are the same as
+`.vdf` transforms the column names of a dataframe to be *X-prepended-base64-encoding*, other arguments are the same as
 `.readDataSetToEnd()`
 
 for example:
 
 `.v("fred")`
 returns
-`".ZnJlZA"`
+`"XZnJlZA"`
 
-`.unv(".ZnJlZA")`
+`.unv("XZnJlZA")`
 returns
 `"fred"`
 
-`.unvf(".aXE ~ .Z2VuZGVy + .c2Vz + .Z2VuZGVy:.c2Vz")`
+`.unvf("XaXE ~ XZ2VuZGVy + Xc2Vz + XZ2VuZGVy:Xc2Vz")`
 returns
 `"iq ~ gender + ses + gender:ses"`
 
@@ -330,7 +330,7 @@ It is recommended to use the footnotes functions described above, rather than cr
         "title"  : "The images title",
         "width"  : 640,
         "height" : 480,
-        "data"   : "data:image/svg+xml;base64,PD94bWwgdm ... "
+        "data"   : " ... "
     }
     
 * `title` : The title of the image
