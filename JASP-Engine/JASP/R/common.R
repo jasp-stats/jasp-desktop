@@ -1,7 +1,7 @@
 
 run <- function(name, options.as.json.string, perform="run") {
 
-	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE)
+	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE, encoding="UTF-8")
 	analysis <- eval(parse(text=name))
 	
 	results <- try (silent = TRUE, expr = {
