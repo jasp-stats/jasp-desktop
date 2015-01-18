@@ -193,7 +193,7 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
-				else if (typeof content == "") {
+				else if (typeof content === "") {
 				
 					formatted = { content : "&nbsp;", "class" : "number" }
 				}
@@ -276,7 +276,7 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
-				else if (content == "") {
+				else if (content === "") {
 				
 					formatted = { content : "&nbsp;" }
 				}
@@ -322,7 +322,7 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
-				else if (content == "") {
+				else if (content === "") {
 
 					formatted = { content : "&nbsp;" }				
 				}
@@ -356,7 +356,7 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
-				else if (content == "") {
+				else if (content === "") {
 
 					formatted = { content : "&nbsp;" }				
 				}

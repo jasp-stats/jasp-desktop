@@ -103,9 +103,13 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	
 	ttest.rows <- list()
 	
-	for (variable in options[["variables"]]) {
+	variables <- options[["variables"]]
+	if (length(variables) == 0)
+		variables = "."
+	
+	for (variable in variables) {
 
-		if (perform == "run") {
+		if (perform == "run" && length(options$variables) > 0) {
 
 			result <- try (silent = TRUE, expr = {
 			
@@ -174,9 +178,13 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 		descriptives[["schema"]] <- list(fields=fields)
 		descriptives.results <- list()
 		
-		for (variable in options[["variables"]]) {
+		variables <- options[["variables"]]
+		if (length(variables) == 0)
+			variables = "."
+
+		for (variable in variables) {
 			
-			if (perform == "run") {
+			if (perform == "run" && length(options[["variables"]]) > 0) {
 
 				data <- na.omit(dataset[[ .v(variable) ]])
 

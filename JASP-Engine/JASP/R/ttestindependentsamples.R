@@ -70,9 +70,13 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	data <- list()
 	
-	for (variable in options[["variables"]]) {
+	variables <- options[["variables"]]
+	if (length(variables) == 0)
+		variables <- "."
 	
-		data[[length(data)+1]] <- list(Variable=variable)
+	for (variable in variables) {
+	
+		data[[length(data)+1]] <- list(Variable=variable, .isNewGroup=TRUE)
 		data[[length(data)+1]] <- list(Variable=variable)
 	}
 	
@@ -91,8 +95,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 			for (variable in options[["variables"]]) {
 		
-				for (level in levels) {
+				for (i in 1:2) {
 			
+					level <- levels[i]
 					variableData <- dataset[[ .v(variable) ]]
 				
 					groupData <- variableData[groupingData == level]
@@ -113,6 +118,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						n <- .clean(length(groupDataOm))
 						result <- list(Variable=variable, groups="", N=n, Mean="", "Std. Deviation"="", "Std. Error Mean"="")
 					}
+					
+					if (i == 1)
+						result[[".isNewGroup"]] <- TRUE
 				
 					data[[rowNo]] <- result
 					rowNo <- rowNo + 1
@@ -164,9 +172,13 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	ttest.rows <- list()
 	
+	variables <- options[["variables"]]
+	if (length(variables) == 0)
+		variables <- "."
+	
 	if (options$equalityOfVariances == "reportBoth") {
 
-		for (variable in options[["variables"]]) {
+		for (variable in variables) {
 
 			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, "Variances"="assumed equal", .isNewGroup=TRUE)
 			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, "Variances"="no assumption")
@@ -174,7 +186,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 	} else {
 	
-		for (variable in options[["variables"]]) {
+		for (variable in variables) {
 
 			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable)
 		}
@@ -356,7 +368,11 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	data <- list()
 	
-	for (variable in options[["variables"]])
+	variables <- options[["variables"]]
+	if (length(variables) == 0)
+		variables <- "."
+	
+	for (variable in variables)
 		data[[length(data)+1]] <- list(Variable=variable)
 	
 	if (perform == "run" && options$groupingVariable != "") {
