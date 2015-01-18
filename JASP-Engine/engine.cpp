@@ -66,6 +66,8 @@ void Engine::runAnalysis()
 		_status = running;
 	}
 
+	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
+
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
 	_analysisResults = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
 
@@ -85,6 +87,8 @@ void Engine::runAnalysis()
 		sendResults();
 		_status = empty;
 	}
+
+	tempfiles_deleteList(tempFilesFromLastTime);
 }
 
 void Engine::run()

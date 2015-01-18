@@ -4,6 +4,7 @@
 #include <sstream>
 #include <fstream>
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 
 #include "base64.h"
 #include "dirs.h"
@@ -131,13 +132,15 @@ string tempfiles_create(const string &extension, int id)
 {
 	stringstream ss, ssn;
 
-	ss << Dirs::tempDir();
-	ss << "/";
-	ss << tempfiles_sessionId;
-	ss << "/";
+	ss << tempfiles_sessionDirName;
 
 	if (id >= 0)
-	   ss << id << "-";
+	   ss << "/" << id;
+
+	string dir = ss.str();
+
+	if (filesystem::exists(dir) == false)
+		filesystem::create_directories(dir);
 
 	string suffix;
 	if (extension != "")
@@ -146,11 +149,68 @@ string tempfiles_create(const string &extension, int id)
 	do
 	{
 		ssn.clear();
-		ssn << ss.str();
+		ssn << dir;
+		ssn << "/";
 		ssn << tempfiles_nextFileId++;
 		ssn << suffix;
 	}
 	while (filesystem::exists(ssn.str()));
 
+	tempfiles_retrieveList(id);
+
 	return ssn.str();
+}
+
+
+vector<string> tempfiles_retrieveList(int id)
+{
+	vector<string> files;
+
+	system::error_code error;
+
+	string dir;
+	if (id >= 0)
+	{
+		stringstream ss;
+		ss << tempfiles_sessionDirName;
+		ss << "/";
+		ss << id;
+		dir = ss.str();
+	}
+	else
+	{
+		dir = tempfiles_sessionDirName;
+	}
+
+	filesystem::directory_iterator itr(dir, error);
+
+	if (error)
+		return files;
+
+	for (; itr != filesystem::directory_iterator(); itr++)
+	{
+		if (filesystem::is_regular_file(itr->status()))
+		{
+			string filename = itr->path().filename().generic_string();
+			if (filename == "state")
+				continue;
+
+			files.push_back(itr->path().generic_string());
+		}
+	}
+
+	return files;
+}
+
+
+void tempfiles_deleteList(const vector<string> &files)
+{
+	system::error_code error;
+
+	BOOST_FOREACH (const string &file, files)
+	{
+		(void)files;
+		filesystem::path p(file);
+		filesystem::remove(p, error);
+	}
 }

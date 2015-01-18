@@ -33,7 +33,7 @@ string Dirs::appDataDir()
 
 #ifdef __WIN32__
 	TCHAR buffer[MAX_PATH];
-	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
+	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, buffer)))
 	{
 		std::cerr << "App Data dir could not be retrieved\n";
 		std::cerr.flush();
@@ -70,13 +70,31 @@ string Dirs::appDataDir()
 string Dirs::tempDir()
 {
 	static string p = "";
+
 	if (p != "")
 		return p;
 
 	string dir;
-	string appData = appDataDir();
 
-	dir = appData + "/temp";
+#ifdef __WIN32__
+	TCHAR buffer[MAX_PATH];
+	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
+	{
+		std::cerr << "Local App Data dir could not be retrieved\n";
+		std::cerr.flush();
+
+		throw std::exception();
+	}
+
+	dir = Utils::ws2s(buffer);
+	dir += "/JASP/temp";
+
+#else
+
+	dir = string(getpwuid(getuid())->pw_dir);
+	dir += "/.JASP/temp";
+
+#endif
 
 	if ( ! exists(dir))
 	{
@@ -85,7 +103,7 @@ string Dirs::tempDir()
 			std::cerr << dir << " could not be created\n";
 			std::cerr.flush();
 
-			throw exception();
+			throw std::exception();
 		}
 	}
 
