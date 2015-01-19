@@ -272,7 +272,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		
 		
 		df <- cbind(cells, df)
-		names(df)[[1]] <- paste("F", .v(f$name), sep="")
+		names(df)[[1]] <- .v(f$name, "F")
 		
 		i <- i - 1
 	}
