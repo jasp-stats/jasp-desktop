@@ -71,7 +71,9 @@ void Engine::runAnalysis()
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
 	_analysisResults = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
 
-	if (receiveMessages())
+	receiveMessages();
+
+	if (_status == toInit)
 	{
 		// if a new message was received, the analysis was changed and we shouldn't send results
 	}
@@ -80,15 +82,18 @@ void Engine::runAnalysis()
 		_status = inited;
 		sendResults();
 		_status = empty;
+
+		tempfiles_deleteList(tempFilesFromLastTime);
 	}
 	else if (_status == running)
 	{
 		_status = complete;
 		sendResults();
 		_status = empty;
+
+		tempfiles_deleteList(tempFilesFromLastTime);
 	}
 
-	tempfiles_deleteList(tempFilesFromLastTime);
 }
 
 void Engine::run()

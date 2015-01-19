@@ -4,9 +4,18 @@ run <- function(name, options.as.json.string, perform="run") {
 	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE, encoding="UTF-8")
 	analysis <- eval(parse(text=name))
 	
+	if (perform == "init") {
+	
+		the.callback <- function(...) 0
+		
+	} else {
+	
+		the.callback <- callback
+	}
+	
 	results <- try (silent = TRUE, expr = {
 	
-		analysis(dataset=NULL, options=options, perform=perform, callback=callback)
+		analysis(dataset=NULL, options=options, perform=perform, callback=the.callback)
 	})
 	
 	if (class(results) == "try-error") {
