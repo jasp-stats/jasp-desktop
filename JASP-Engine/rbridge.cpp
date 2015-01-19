@@ -14,12 +14,14 @@ using namespace std;
 
 RCallback rbridge_runCallback;
 boost::function<std::string(const std::string &)> rbridge_fileNameSource;
+boost::function<std::string()> rbridge_stateFileSource;
 
 Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 std::map<std::string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 SEXP rbridge_callbackSEXP(SEXP results);
 SEXP rbridge_requestTempFileNameSEXP(SEXP extension);
+SEXP rbridge_requestStateFileNameSEXP();
 
 int rbridge_callback(SEXP results);
 Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns);
@@ -34,6 +36,7 @@ void rbridge_init()
 	rbridge_dataSet = NULL;
 	rbridge_runCallback = NULL;
 	rbridge_fileNameSource = NULL;
+	rbridge_stateFileSource = NULL;
 
 	rbridge_rinside = new RInside();
 
@@ -43,6 +46,7 @@ void rbridge_init()
 	rInside[".readDataSetHeaderNative"] = Rcpp::InternalFunction(&rbridge_readDataSetHeaderSEXP);
 	rInside[".callbackNative"] = Rcpp::InternalFunction(&rbridge_callbackSEXP);
 	rInside[".requestTempFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestTempFileNameSEXP);
+	rInside[".requestStateFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestStateFileNameSEXP);
 	rInside[".baseCitation"] = "Love, J., Selker, R., Verhagen, J., Smira, M., Wild, A., Marsman, M., Gronau, Q., Morey, R., Rouder, J. & Wagenmakers, E. J. (2014). JASP (Version 0.5)[Computer software].";
 
 	rInside["jasp.analyses"] = Rcpp::List();
@@ -61,6 +65,11 @@ void rbridge_setFileNameSource(boost::function<string (const string &)> source)
 	rbridge_fileNameSource = source;
 }
 
+void rbridge_setStateFileSource(boost::function<string ()> source)
+{
+	rbridge_stateFileSource = source;
+}
+
 SEXP rbridge_requestTempFileNameSEXP(SEXP extension)
 {
 	if (rbridge_fileNameSource == NULL)
@@ -69,6 +78,14 @@ SEXP rbridge_requestTempFileNameSEXP(SEXP extension)
 	string extensionAsString = Rcpp::as<string>(extension);
 
 	return Rcpp::CharacterVector(rbridge_fileNameSource(extensionAsString));
+}
+
+SEXP rbridge_requestStateFileNameSEXP()
+{
+	if (rbridge_stateFileSource == NULL)
+		return R_NilValue;
+
+	return Rcpp::CharacterVector(rbridge_stateFileSource());
 }
 
 string rbridge_run(const string &name, const string &options, const string &perform, int ppi, RCallback callback)
@@ -424,5 +441,3 @@ Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeri
 	map<string, Column::ColumnType> columnsRequested = rbridge_marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns);
 	return rbridge_readDataSetHeader(columnsRequested);
 }
-
-

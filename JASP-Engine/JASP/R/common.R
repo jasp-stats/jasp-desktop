@@ -216,14 +216,11 @@ run <- function(name, options.as.json.string, perform="run") {
 
 .saveState <- function(state) {
 
-	if (base::exists(".saveStateNative")) {
+	if (base::exists(".requestStateFileNameNative")) {
 
-		con <- rawConnection(raw(), "w")
-		save("state", file=con)
-		rawContent <- rawConnectionValue(con)
-		close(con)
-	
-		.saveStateNative(rawContent)
+		file <- .requestStateFileNameNative()
+
+		base::save(state, file=file, compress=FALSE)
 	}
 	
 	NULL
@@ -233,16 +230,11 @@ run <- function(name, options.as.json.string, perform="run") {
 
 	state <- NULL
 	
-	if (base::exists(".retrieveStateNative")) {
+	if (base::exists(".requestStateFileNameNative")) {
 
-		rawContent <- .retrieveStateNative()
-
-		if (is.null(rawContent) == FALSE) {
-	
-			con <- rawConnection(rawContent, "r")	
-			load(file=con)
-			close(con)
-		}	
+		file <- .requestStateFileNameNative()
+		
+		base::try(base::load(file))
 	}
 	
 	state

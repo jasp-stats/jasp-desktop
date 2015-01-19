@@ -9,6 +9,7 @@ void tempfiles_attach(long sessionId);
 void tempfiles_heartbeat();
 
 std::string tempfiles_create(const std::string &extension = "", int id = -1);
+std::string tempfiles_createSpecific(const std::string &name, int id = -1);
 
 std::vector<std::string> tempfiles_retrieveList(int id = -1);
 void tempfiles_deleteList(const std::vector<std::string> &files);

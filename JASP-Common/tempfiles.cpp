@@ -128,6 +128,27 @@ void tempfiles_heartbeat()
 	Utils::touch(tempfiles_statusFileName);
 }
 
+
+string tempfiles_createSpecific(const string &name, int id)
+{
+	stringstream ss;
+
+	ss << tempfiles_sessionDirName;
+
+	if (id >= 0)
+	   ss << "/" << id;
+
+	string dir = ss.str();
+
+	if (filesystem::exists(dir) == false)
+		filesystem::create_directories(dir);
+
+	ss << "/";
+	ss << name;
+
+	return ss.str();
+}
+
 string tempfiles_create(const string &extension, int id)
 {
 	stringstream ss, ssn;
@@ -151,6 +172,7 @@ string tempfiles_create(const string &extension, int id)
 		ssn.clear();
 		ssn << dir;
 		ssn << "/";
+		ssn << "_";
 		ssn << tempfiles_nextFileId++;
 		ssn << suffix;
 	}
@@ -192,7 +214,7 @@ vector<string> tempfiles_retrieveList(int id)
 		if (filesystem::is_regular_file(itr->status()))
 		{
 			string filename = itr->path().filename().generic_string();
-			if (filename == "state")
+			if (filename.at(0) != '_')
 				continue;
 
 			files.push_back(itr->path().generic_string());
@@ -214,3 +236,4 @@ void tempfiles_deleteList(const vector<string> &files)
 		filesystem::remove(p, error);
 	}
 }
+

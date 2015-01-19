@@ -40,7 +40,8 @@ Engine::Engine()
 	DataSet *dataSet = DataSetLoader::getDataSet();
 	rbridge_setDataSet(dataSet);
 
-	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFilename, this, _1));
+	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFileName, this, _1));
+	rbridge_setStateFileSource(boost::bind(&Engine::provideStateFileName, this));
 }
 
 void Engine::setSlaveNo(int no)
@@ -217,7 +218,12 @@ int Engine::callback(const string &results)
 	return 0;
 }
 
-string Engine::provideTempFilename(const string &extension)
+string Engine::provideStateFileName()
+{
+	return tempfiles_createSpecific("state", _analysisId);
+}
+
+string Engine::provideTempFileName(const string &extension)
 {
 	return tempfiles_create(extension, _analysisId);
 }
