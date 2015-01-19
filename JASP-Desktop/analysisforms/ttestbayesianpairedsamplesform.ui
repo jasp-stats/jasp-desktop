@@ -297,32 +297,45 @@
            <property name="flat">
             <bool>true</bool>
            </property>
-           <layout class="QGridLayout" name="gridLayout_12">
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="plotSequentialAnalysis">
-              <property name="text">
-               <string>Sequential analysis</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="0" colspan="2">
              <widget class="BoundCheckBox" name="plotPriorAndPosterior">
               <property name="text">
                <string>Prior and posterior</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="1" column="0" colspan="2">
              <widget class="BoundCheckBox" name="plotBayesFactorRobustness">
               <property name="text">
                <string>Bayes factor robustness check</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
-             <widget class="BoundCheckBox" name="plotSequentialAnalysisRobustness">
+            <item row="2" column="0" colspan="2">
+             <widget class="BoundCheckBox" name="plotSequentialAnalysis">
               <property name="text">
-               <string>Sequential analysis robustness check</string>
+               <string>Sequential analysis</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QWidget" name="widget_5" native="true">
+              <property name="maximumSize">
+               <size>
+                <width>16</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="BoundCheckBox" name="plotSequentialAnalysisRobustness">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Robustness check</string>
               </property>
              </widget>
             </item>
@@ -371,5 +384,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>plotSequentialAnalysis</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotSequentialAnalysisRobustness</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>417</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>431</x>
+     <y>357</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
