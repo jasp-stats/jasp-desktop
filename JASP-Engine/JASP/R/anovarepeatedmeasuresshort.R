@@ -37,11 +37,12 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	#######################################
 
 	.meta <- list(
+		list(name="title", type="title"),
 		list(name="anova", type="table")
 	)
 
 	results[[".meta"]] <- .meta
-	
+	results[["title"]] <- "Repeated Measures ANOVA"
 	
 	
 	#######################################

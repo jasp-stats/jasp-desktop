@@ -344,7 +344,7 @@ run <- function(name, options.as.json.string, perform="run") {
   
   in.pieces <- .decompose(formula)
   unved <- .jrapply(in.pieces, .unv)
-  .compose(unved)
+  .compose(unved, "\u2009\u273B\u2009")
 }
 
 .decompose <- function(formulas) {
@@ -366,14 +366,14 @@ run <- function(name, options.as.json.string, perform="run") {
   })
 }
 
-.compose <- function(formulas) {
+.compose <- function(formulas, i.symbol=":") {
   
   sapply(formulas, function(formula) {
     
     formula <- sapply(formula, function(side) {
       
       side <- sapply(side, function(term) {
-        paste(term, collapse=":")
+        paste(term, collapse=i.symbol)
       })
       
       paste(side, collapse=" + ")
