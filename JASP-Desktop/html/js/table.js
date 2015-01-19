@@ -100,7 +100,7 @@ $.widget("jasp.table", {
 				else {
 				
 					if (typeof content === "string")
-						content = content.replace("\u273B", "<small>\u273B</small>")
+						content = content.replace(/\u273B/g, "<small>\u273B</small>")
 					
 					formatted = { content : content, "class" : clazz }
 				}
