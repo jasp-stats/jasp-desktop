@@ -43,13 +43,12 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	if (options$dependent != "" && length(options$modelTerms) > 0) {
 		errorcheck <- .checkErrorsBayesianAnCova(options, dataset, perform)
 		error.present <- errorcheck$error.present
-		specific.error <- errorcheck$specific.error
+		specific.error <- errorcheck$specific.error		
 	} else {
 		error.present <- 0
 		specific.error <- "none"
 		errorcheck <- list(error.present = error.present, specific.error = specific.error)
 	}
-
 	#### Generate models
 	if (options$dependent != "" && length(options$modelTerms) > 0) {
 		tmp.models.list <- .generateBayesianAnCovaModels (options, errorcheck)
@@ -150,10 +149,9 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 				options = options, pprior = pprior, terms.nuisance = terms.nuisance )
 	
 		} else {
-			posterior.results <- .posteriorResultsBayesianAnCova (table = "init", null.name = null.name,
-				all.models = all.models, terms.nuisance = terms.nuisance)
-		}
-				
+				posterior.results <- .posteriorResultsBayesianAnCova (table = "init", null.name = null.name,
+					all.models = all.models, terms.nuisance = terms.nuisance)				
+		}				
 	} else {
 		posterior.results <- .posteriorResultsBayesianAnCova (table = "null")
 	}
@@ -195,8 +193,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			if (perform == "init" || error.present > 0) {
 			#This produces the effects table. MM
 				effect.results <- .effectResultsBayesianAnCova(nmodels = 0, options = options)
-
-				if (perform == "run" && error.present > 0) {
+				if (error.present > 0) {
 					effect[["error"]] <- list(errorType="badData")
 				}
 			} else {	
@@ -227,8 +224,11 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		results[["effect"]] <- effect	   
 	} 
 		
-	results
-	
+	if(perform == "run" || errorcheck$error.present > 0){
+		return(list(results = results, status = "complete"))
+	} else {
+		return(list(results = results, status = "inited"))
+	}
 }
 	
 #########################################################
@@ -249,8 +249,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 		}
 	}
-	if(error.present > 0)	
-		return(list(error.present = error.present, specific.error = specific.error))
 		
 	# error message when less than two levels are observed for a factor after deleting NA's
 	if(perform == "run"){
@@ -261,8 +259,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			} 
 		}
 	}
-	if(error.present > 0)
-		return(list(error.present = error.present, specific.error = specific.error))
 	
 	# error message when interaction specified without main effect	
 	for (term in options$modelTerms) {
@@ -280,8 +276,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 		}
 	}
-	if(error.present > 0)
-		return(list(error.present = error.present, specific.error = specific.error))
 
 	# error message when interaction specified without main effect in nuisance terms 	
 	for (term in options$modelTerms) {
@@ -301,8 +295,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 		}
 	}
-	if(error.present > 0)
-		return(list(error.present = error.present, specific.error = specific.error))
 	
 	# error message when all variables are specified as nuisance 	
 	no.nuisance <- 0
@@ -315,8 +307,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		error.present <- 1
 		specific.error <- "all nuisance"
 	}
-	if(error.present > 0)
-		return(list(error.present = error.present, specific.error = specific.error))
 
 	# error message when the number of effects, p, is at least as large as the number of observations, n, minus one.
 	if( perform == "run"){
@@ -327,13 +317,14 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			specific.error <- "p>=(n-1)"
 		}
 	}
-	if(error.present > 0)
-		return(list(error.present = error.present, specific.error = specific.error))
 	
-
 	# error message when higher order effects are included (in model builder) without the lower order effects 
+	# important to check this last, since tables should be made differently for this error.
+	
 	nmbr.mt <- length(options$modelTerms)
-	lngth.mt <- sapply(options$modelTerms,function(term) length(term))
+	lngth.mt <- sapply(1:nmbr.mt,function(i){
+		length(options$modelTerms[[i]]$components)
+	})
 	mx.lngth.mt <- max(lngth.mt)
 
 	if(mx.lngth.mt > 1){	
@@ -527,7 +518,10 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	if (specific.error == "p>=(n-1)"){
 		table[["error"]] <- list(errorType="badData", errorMessage="There needs to be at least one more (valid) observation than there are effects specified in the model")
 	}
-	
+
+	if (specific.error == "lower order effects"){
+		table[["error"]] <- list(errorType="badData", errorMessage="The main effects of variables should be included whenever their interaction is included")
+	}	
 	return(table)
 }
 
@@ -580,12 +574,18 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		}
 	}
 	
-	rhs <- paste(terms.as.strings, collapse="+")
-	model.def <- paste(.v(options$dependent), "~", rhs)
-	model.formula <- as.formula(model.def)
 	
-	all.models <- BayesFactor::enumerateGeneralModels(model.formula,
-	whichModels = "withmain", neverExclude = paste("^",terms.nuisance,"$", sep = ""))
+	if(errorcheck$specific.error == "lower order effects"){
+		all.models <- NULL
+		model.formula <- NULL
+	} else{
+		rhs <- paste(terms.as.strings, collapse="+")
+		model.def <- paste(.v(options$dependent), "~", rhs)
+		model.formula <- as.formula(model.def)
+		all.models <- BayesFactor::enumerateGeneralModels(model.formula,
+			whichModels = "withmain", neverExclude = paste("^",terms.nuisance,"$", sep = ""))			
+	}
+	
 	
 	return.list<- list(model.formula = model.formula, terms.nuisance = terms.nuisance,
 		terms.as.strings = terms.as.strings, null.name = null.name,
@@ -595,9 +595,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 
 .estimateBayesFactorBayesianAnCova <- function( mode, model.formula, dataset, terms.nuisance, options, jasp.callback ){
 	
-	if (mode != "bottom" & mode != "withmain")
-		stop( 'Mode is not correctly set for generalTestBF. Should be "bottom" or "withmain".' )
-
 	result <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = mode, 
 		neverExclude = paste("^",terms.nuisance,"$", sep = ""), whichRandom = .v(options$randomFactors),
 		progress=FALSE, callback=jasp.callback)
@@ -737,7 +734,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 			if(Reduced > 1){
 				out <- withmain[Full-1]/withmain[Reduced-1]
-				print(out)
 			} else { 
 			#Most complex model without effect may be the null model (Reduced == 1). MM
 			#Should then compare against the null
