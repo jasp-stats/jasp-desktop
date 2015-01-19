@@ -70,7 +70,7 @@ $(document).ready(function() {
 
 	window.unselectByClickingBody = function(event) {
 
-		if ($(event.target).is(".jasp-analysis *") == false) {
+		if (selectedAnalysisId !== -1 && $(event.target).is(".jasp-analysis *") == false) {
 	
 			window.unselect()
 			jasp.analysisUnselected()
