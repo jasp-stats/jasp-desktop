@@ -249,7 +249,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 		}
 	}
-	if(error.present > 0) 	return(list(error.present = error.present, specific.error = specific.error))
+	if(error.present > 0){	return(list(error.present = error.present, specific.error = specific.error))}
 		
 	# error message when less than two levels are observed for a factor after deleting NA's
 	if(perform == "run"){
@@ -260,7 +260,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			} 
 		}
 	}
-	if(error.present > 0) 	return(list(error.present = error.present, specific.error = specific.error))
+	if(error.present > 0){	return(list(error.present = error.present, specific.error = specific.error))}
 	
 	# error message when interaction specified without main effect	
 	for (term in options$modelTerms) {
@@ -278,7 +278,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 		}
 	}
-	if(error.present > 0) 	return(list(error.present = error.present, specific.error = specific.error))
+	if(error.present > 0){	return(list(error.present = error.present, specific.error = specific.error))}
 
 	# error message when interaction specified without main effect in nuisance terms 	
 	for (term in options$modelTerms) {
@@ -298,7 +298,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 		}
 	}
-	if(error.present > 0) 	return(list(error.present = error.present, specific.error = specific.error))
+	if(error.present > 0){	return(list(error.present = error.present, specific.error = specific.error))}
 	
 	# error message when all variables are specified as nuisance 	
 	no.nuisance <- 0
@@ -311,7 +311,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		error.present <- 1
 		specific.error <- "all nuisance"
 	}
-	if(error.present > 0) 	return(list(error.present = error.present, specific.error = specific.error))
+	if(error.present > 0){	return(list(error.present = error.present, specific.error = specific.error))}
 
 	# error message when the number of effects, p, is at least as large as the number of observations, n, minus one.
 	if( perform == "run"){
@@ -322,7 +322,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			specific.error <- "p>=(n-1)"
 		}
 	}
-	if(error.present > 0) 	return(list(error.present = error.present, specific.error = specific.error))
+	if(error.present > 0){	return(list(error.present = error.present, specific.error = specific.error))}
 	
 
 	# error message when higher order effects are included (in model builder) without the lower order effects 
@@ -350,13 +350,13 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 						error.present <- 1
 						specific.error <- "lower order effects"
 					}
-					if(error.present > 0) break
+					if(error.present > 0){ break }
 				}
 			} else{
 				error.present <- 1
 				specific.error <- "lower order effects"			
 			}		
-			if(error.present > 0) break
+			if(error.present > 0){ break }
 		}
 	}	
 	list(error.present = error.present, specific.error = specific.error)
