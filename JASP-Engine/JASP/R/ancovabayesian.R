@@ -249,8 +249,9 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 		}
 	}
-	
-
+	if(error.present > 0)	
+		return(list(error.present = error.present, specific.error = specific.error))
+		
 	# error message when less than two levels are observed for a factor after deleting NA's
 	if(perform == "run"){
 		for (fact in options$fixedFactors) {
@@ -260,8 +261,9 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			} 
 		}
 	}
+	if(error.present > 0)
+		return(list(error.present = error.present, specific.error = specific.error))
 	
-
 	# error message when interaction specified without main effect	
 	for (term in options$modelTerms) {
 		lmtc <- length(term$components)
@@ -278,7 +280,8 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 		}
 	}
-
+	if(error.present > 0)
+		return(list(error.present = error.present, specific.error = specific.error))
 
 	# error message when interaction specified without main effect in nuisance terms 	
 	for (term in options$modelTerms) {
@@ -298,8 +301,9 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 		}
 	}
+	if(error.present > 0)
+		return(list(error.present = error.present, specific.error = specific.error))
 	
-
 	# error message when all variables are specified as nuisance 	
 	no.nuisance <- 0
 	for (term in options$modelTerms) {
@@ -311,6 +315,8 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		error.present <- 1
 		specific.error <- "all nuisance"
 	}
+	if(error.present > 0)
+		return(list(error.present = error.present, specific.error = specific.error))
 
 	# error message when the number of effects, p, is at least as large as the number of observations, n, minus one.
 	if( perform == "run"){
@@ -321,6 +327,46 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			specific.error <- "p>=(n-1)"
 		}
 	}
+	if(error.present > 0)
+		return(list(error.present = error.present, specific.error = specific.error))
+	
+
+	# error message when higher order effects are included (in model builder) without the lower order effects 
+	nmbr.mt <- length(options$modelTerms)
+	lngth.mt <- sapply(options$modelTerms,function(term) length(term))
+	mx.lngth.mt <- max(lngth.mt)
+
+	if(mx.lngth.mt > 1){	
+		trms <- sapply(options$modelTerms,function(terms){	
+			cmpnnts <- paste(unlist(terms$components), collapse=":")
+		    as.character(sapply(cmpnnts, stringr::str_trim, simplify=FALSE))
+		})	
+		for(lngth in 2:mx.lngth.mt){
+			index.n <- which(lngth.mt == lngth)
+			if(length(index.n) > 0 ){
+				for(i in index.n){		
+					terms <- unlist(options$modelTerms[[i]]$components)
+					smpl.trms <- utils::combn(terms,(lngth-1),simplify = FALSE)
+					chck.trms <- sapply(smpl.trms,function(simple.terms){					
+						cmpnnts <- paste(unlist(simple.terms), collapse=":")
+				    	cmpnnts <- as.character(sapply(cmpnnts, stringr::str_trim, simplify=FALSE))
+						cmpnnts%in%trms
+					})				
+					if(sum(chck.trms) != choose(lngth,lngth-1)){
+						error.present <- 1
+						specific.error <- "lower order effects"
+					}
+					if(error.present > 0) 
+						break 
+				}
+			} else{
+				error.present <- 1
+				specific.error <- "lower order effects"			
+			}		
+			if(error.present > 0)
+				break 
+		}
+	}	
 	list(error.present = error.present, specific.error = specific.error)
 
 }
