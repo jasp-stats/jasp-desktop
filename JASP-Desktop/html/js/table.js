@@ -615,15 +615,6 @@ $.widget("jasp.table", {
 
 		if (this.options.error) {
 		
-			if (this.options.error.errorMessage) {
-		
-				chunks.push('<div style="height: 0px ; overflow: visible ; position: relative; top: 20px ;">')
-				chunks.push('<div style="" class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>')
-				chunks.push(this.options.error.errorMessage)
-				chunks.push('</div>')
-				chunks.push('</div>')
-			}
-		
 			chunks.push('<table class="error-state">')
 		}
 		else {
@@ -635,7 +626,18 @@ $.widget("jasp.table", {
 
 			chunks.push('<thead>')
 				chunks.push('<tr>')
-					chunks.push('<th nowrap colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="status"></div><div class="copy toolbar-button" style="visibility: hidden ;"></div><div class="cite toolbar-button" style="visibility: hidden ;"></div></div></th>')
+					chunks.push('<th nowrap colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="status"></div><div class="copy toolbar-button" style="visibility: hidden ;"></div><div class="cite toolbar-button" style="visibility: hidden ;"></div></div>')
+					
+					if (this.options.error && this.options.error.errorMessage) {
+		
+						chunks.push('<div style="height: 0px ; overflow: visible ; position: relative; top: 10px ; float: left ;">')
+						chunks.push('<div style="" class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>')
+						chunks.push(this.options.error.errorMessage)
+						chunks.push('</div>')
+						chunks.push('</div>')
+					}
+					
+					chunks.push('</th>')
 				chunks.push('</tr>')
 
 		if (this.options.subtitle) {
