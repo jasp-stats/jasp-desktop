@@ -29,7 +29,21 @@ run <- function(name, options.as.json.string, perform="run") {
 	
 	} else {
 	
-		results <- .addCitationToResults(results)
+		if ("state" %in% names(results)) {
+
+			state <- results$state		
+			base::save(state, file=.requestStateFileNameNative(), compress=FALSE)
+		}
+		
+		if ("results" %in% names(results$results)) {
+		
+			results$results <- .addCitationToResults(results$results)
+			
+		} else {
+		
+			results <- .addCitationToResults(results)
+		}
+		
 		RJSONIO::toJSON(results, digits=12)
 	}
 

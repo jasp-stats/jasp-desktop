@@ -8,6 +8,7 @@
 #endif
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/foreach.hpp>
 
 using namespace std;
 using namespace boost::posix_time;
@@ -142,5 +143,20 @@ void Utils::touch(const string &filename)
 
 	utime(filename.c_str(), &newTime);
 #endif
+}
+
+void Utils::remove(vector<string> &target, const vector<string> &toRemove)
+{
+	BOOST_FOREACH (const string &remove, toRemove)
+	{
+		vector<string>::iterator itr = target.begin();
+		while (itr != target.end())
+		{
+			if (*itr == remove)
+				target.erase(itr);
+			else
+				itr++;
+		}
+	}
 }
 

@@ -9,6 +9,7 @@
 #include "../JASP-Common/process.h"
 #include "../JASP-Common/datasetloader.h"
 #include "../JASP-Common/tempfiles.h"
+#include "../JASP-Common/utils.h"
 
 #include "rbridge.h"
 
@@ -70,31 +71,44 @@ void Engine::runAnalysis()
 	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
 
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
-	_analysisResults = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
+	_analysisResultsString = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
 
-	receiveMessages();
-
-	if (_status == toInit)
+	if (_status == toInit || receiveMessages())
 	{
 		// if a new message was received, the analysis was changed and we shouldn't send results
 	}
-	else if (_status == initing)
+	else if (_status == initing || _status == running)
 	{
-		_status = inited;
+		Json::Reader parser;
+		parser.parse(_analysisResultsString, _analysisResults, false);
+
+		_status = _status == initing ? inited : complete;
 		sendResults();
 		_status = empty;
 
-		tempfiles_deleteList(tempFilesFromLastTime);
-	}
-	else if (_status == running)
-	{
-		_status = complete;
-		sendResults();
-		_status = empty;
+		Json::Value filesToKeepValue = _analysisResults.get("keep", Json::nullValue);
+		vector<string> filesToKeep;
+
+		if (filesToKeepValue.isArray())
+		{
+			for (int i = 0; i < filesToKeepValue.size(); i++)
+			{
+				Json::Value fileToKeepValue = filesToKeepValue.get(i, Json::nullValue);
+				if ( ! fileToKeepValue.isString())
+					continue;
+
+				filesToKeep.push_back(fileToKeepValue.asString());
+			}
+		}
+		else if (filesToKeepValue.isString())
+		{
+			filesToKeep.push_back(filesToKeepValue.asString());
+		}
+
+		Utils::remove(tempFilesFromLastTime, filesToKeep);
 
 		tempfiles_deleteList(tempFilesFromLastTime);
 	}
-
 }
 
 void Engine::run()
@@ -162,7 +176,7 @@ void Engine::sendResults()
 	Value results;
 
 	Json::Reader parser;
-	parser.parse(_analysisResults, results, false);
+	parser.parse(_analysisResultsString, results, false);
 
 	response["id"] = _analysisId;
 	response["name"] = _analysisName;
@@ -211,7 +225,7 @@ int Engine::callback(const string &results)
 
 	if (results != "null")
 	{
-		_analysisResults = results;
+		_analysisResultsString = results;
 		sendResults();
 	}
 

@@ -33,8 +33,10 @@ private:
 	int _analysisId;
 	std::string _analysisName;
 	std::string _analysisOptions;
-	std::string _analysisResults;
+	std::string _analysisResultsString;
 	int _ppi;
+
+	Json::Value _analysisResults;
 
 	IPCChannel *_channel;
 
