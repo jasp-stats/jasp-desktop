@@ -28,8 +28,31 @@
 	
 	delta <- samples[,"delta"]
 	
+	# pdf cauchy prior
+	dprior <- function(x,r, oneSided= oneSided){
+		if(oneSided == "right"){
+			y <- ifelse(x < 0, 0, 2/(pi*r*(1+(x/r)^2)))
+			return(y)
+		}
+		if(oneSided == "left"){
+			y <- ifelse(x > 0, 0, 2/(pi*r*(1+(x/r)^2)))
+			return(y)
+		}	else{
+			return(1/(pi*r*(1+(x/r)^2)))
+		}
+	}
+	
+	BF <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval= nullInterval, posterior = FALSE, rscale= r)
+	BF10 <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+	BF01 <- 1 / BF10
+	
+	heightPosteriorAtZero <- BF01 * dprior(0,r, oneSided= oneSided)
+	
 	# fit denisty estimator
 	fit.posterior <-  logspline::logspline(delta)
+	
+	k <- heightPosteriorAtZero / logspline::dlogspline(0, fit.posterior)
+	
 	
 	# density function posterior
 	dposterior <- function(x, oneSided= oneSided, delta= delta){
@@ -47,19 +70,7 @@
 		}	
 	}	
 	
-	# pdf cauchy prior
-	dprior <- function(delta,r, oneSided= oneSided){
-		if(oneSided == "right"){
-			y <- ifelse(delta < 0, 0, 2/(pi*r*(1+(delta/r)^2)))
-			return(y)
-		}
-		if(oneSided == "left"){
-			y <- ifelse(delta > 0, 0, 2/(pi*r*(1+(delta/r)^2)))
-			return(y)
-		}	else{
-			return(1/(pi*r*(1+(delta/r)^2)))
-		}
-	}
+
 	
 	# set limits plot
 	xlim <- vector("numeric", 2)
@@ -103,16 +114,16 @@
 	par(mar= c(5, 5, 7, 4) + 0.1, las=1)
 	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
 	plot(1,1, xlim= xlim, ylim= range(yticks), ylab= "", xlab="", type= "n", axes= FALSE)
-	lines(seq(min(xticks), max(xticks),length.out = 1000),dposterior(x=seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, delta=delta), lwd= lwd, xlim= xlim, ylim= range(yticks), ylab= "", xlab= "")
+	lines(seq(min(xticks), max(xticks),length.out = 1000),dposterior(x= seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, delta=delta), lwd= lwd, xlim= xlim, ylim= range(yticks), ylab= "", xlab= "")
 	lines(seq(min(xticks), max(xticks),length.out = 1000), dprior(seq(min(xticks), max(xticks),length.out = 1000), r=r, oneSided= oneSided), lwd= lwd, lty=3)
 	
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at= yticks, labels= ylabels, , cex.axis= cexAxis, lwd= lwdAxis)
-	mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3)
+	mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.1)
 	mtext(expression(paste("Effect size", ~delta)), side = 1, cex = cexXlab, line= 2.5)
 	
 	points(0, dprior(0,r, oneSided= oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
-	points(0, dposterior(0, oneSided = oneSided, delta=delta), col="black", pch=21, bg = "grey", cex= cexPoints)
+	points(0, dposterior(0, delta=delta, oneSided=oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
 	
 	# 95% credible interval
 	dmax <- optimize(function(x)dposterior(x,oneSided= oneSided, delta=delta), interval= range(xticks), maximum = TRUE)$objective # get maximum density
@@ -132,10 +143,6 @@
 	par(xpd=TRUE)
 	
 	# display BF10 value
-	BF <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval= nullInterval, posterior = FALSE, rscale= r)
-	BF10 <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
-	BF01 <- 1 / BF10
-	
 	xx <- grconvertX(0.3, "ndc", "user")
 	yy <- grconvertY(0.822, "ndc", "user")
 	yy2 <- grconvertY(0.878, "ndc", "user")
@@ -249,52 +256,118 @@
 		nullInterval <- c(-Inf, 0)
 	}
 	
-	####################### get Bayes Factors #####################
 	
-	# BF10
-	BF10 <- vector("numeric", length(x))
 	
-	for(i in seq_along(x)){
-		
-		if(i == 1){
+	BF10 <- vector("numeric", max(length(x), length(y)))
+	
+	i <- 1
+	j <- 1
+	k <- 1
+	
+	while((i <= length(x) | j <= length(y)) & k <= length(BF10)){
+	
+		if(k < 2){
 			
-			BF10[i] <- 1
+			BF10[k] <- 1
+			
+			k <- k+1
+			
+			if(i < length(x)){
+				i <- i+1
+			}
+			if(j < length(x)){
+				j <- j+1
+			}
+			
 		} else{
 			
-			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:i], paired= paired, nullInterval= nullInterval, rscale= r)
-			BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j],paired = FALSE, rscale= r, nullInterval = nullInterval)
+			BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			
+			k <- k+1	
+			
+			if(i < length(x)){
+				i <- i+1
+			}
+			if(j < length(y)){
+				j <- j+1
+			}
 		}
 	}
 	
-	# BF10 "ultrawide" prior
-	BF10u <- vector("numeric", length(x))
 	
-	for(i in seq_along(x)){
-		
-		if(i == 1){
+	BF10u <- vector("numeric", max(length(x), length(y)))
+	
+	i <- 1
+	j <- 1
+	k <- 1
+	
+	while((i <= length(x) | j <= length(y)) & k <= length(BF10u)){
+	
+		if(k < 2){
 			
-			BF10u[i] <- 1
+			BF10u[k] <- 1
+			k <- k+1
+			
+			if(i < length(x)){
+				i <- i+1
+			}
+			if(j < length(x)){
+				j <- j+1
+			}
+			
 		} else{
 			
-			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:i], paired= paired, nullInterval= nullInterval, rscale= "ultrawide")
-			BF10u[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j],paired = FALSE, rscale= "ultrawide", nullInterval = nullInterval)
+			BF10u[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			
+			k <- k+1	
+			
+			if(i < length(x)){
+				i <- i+1
+			}
+			if(j < length(y)){
+				j <- j+1
+			}
 		}
 	}
 	
-	# BF10 "medium" prior
-	BF10m <- vector("numeric", length(x))
 	
-	for(i in seq_along(x)){
-		
-		if(i == 1){
+	BF10m <- vector("numeric", max(length(x), length(y)))
+	
+	i <- 1
+	j <- 1
+	k <- 1
+	
+	while((i <= length(x) | j <= length(y)) & k <= length(BF10m)){
+	
+		if(k < 2){
 			
-			BF10m[i] <- 1
+			BF10m[k] <- 1
+			k <- k+1
+			
+			if(i < length(x)){
+				i <- i+1
+			}
+			if(j < length(x)){
+				j <- j+1
+			}
 		} else{
 			
-			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:i], paired= paired, nullInterval= nullInterval, rscale= "medium")
-			BF10m[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j],paired = FALSE, rscale= "medium", nullInterval = nullInterval)
+			BF10m[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			
+			k <- k+1	
+			
+			if(i < length(x)){
+				i <- i+1
+			}
+			if(j < length(y)){
+				j <- j+1
+			}
 		}
-	}	
+	}
+	
 	
 	####################### scale y axis ###########################
 	

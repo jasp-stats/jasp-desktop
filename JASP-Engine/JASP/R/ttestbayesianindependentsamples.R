@@ -40,13 +40,15 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
 	results[["ttest"]] <- ttest.results[[1]]
 	status <- ttest.results[[2]]
-	results[["plots"]] <- .ttestBayesianIndependentSamplesTTestPlots(dataset, options, perform, status)
+	g1 <- ttest.results[[3]]
+	g2 <- ttest.results[[4]]
+	results[["plots"]] <- .ttestBayesianIndependentSamplesTTestPlots(dataset, options, perform, status, g1, g2)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
 	
 	results
 }
 
-.ttestBayesianIndependentSamplesTTestPlots <- function(dataset, options, perform, status) {
+.ttestBayesianIndependentSamplesTTestPlots <- function(dataset, options, perform, status, g1, g2) {
 	
 	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
 	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
@@ -126,22 +128,19 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			levels <- unique(dataset[[ .v(options$groupingVariable) ]])
 			r.size <- options$priorWidth
 			
-			group1 <- dataset[dataset[[.v(options$groupingVariable)]]== levels[1],.v(variable)]
-			group2 <- dataset[dataset[[.v(options$groupingVariable)]]== levels[2],.v(variable)]
+			group2 <- dataset[dataset[[.v(options$groupingVariable)]]== g1,.v(variable)] 
+			group1 <- dataset[dataset[[.v(options$groupingVariable)]]== g2,.v(variable)] 
 			
 			if (options$hypothesis == "groupOneGreater") {
 			
-				null.interval <- c(-Inf, 0)
 				oneSided <- "right"
 			
 			} else if (options$hypothesis == "groupTwoGreater") {
 
-				null.interval <- c(0, Inf)
 				oneSided <- "left"
 			
 			} else {
 			
-				null.interval <- c(-Inf, Inf)
 				oneSided <- FALSE
 			}
 			
@@ -150,7 +149,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 				image <- .beginSaveImage(530, 400)
 				
-				.plotPosterior.ttest(x= group1, y= group2, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
+				.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
 									
 				content <- .endSaveImage(image)
 				
@@ -161,11 +160,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plots.ttest[[z]] <- plot
 				z <- z + 1
 			}
+			
 			if(options$plotBayesFactorRobustness){
 			
 				image <- .beginSaveImage(530, 400)
 				
-				.plotBF.robustnessCheck.ttest(x= group1, y= group2, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
+				.plotBF.robustnessCheck.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
 									
 				content <- .endSaveImage(image)
 				
@@ -176,11 +176,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plots.ttest[[z]] <- plot
 				z <- z + 1
 			}
+			
 			if(options$plotSequentialAnalysis){
 			
 				image <- .beginSaveImage(530, 400)
 				
-				.plotSequentialBF.ttest(x= group1, y= group2, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
+				.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
 									
 				content <- .endSaveImage(image)
 				
@@ -191,11 +192,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plots.ttest[[z]] <- plot
 				z <- z + 1
 			}
+			
 			if(options$plotSequentialAnalysisRobustness){
 			
 				image <- .beginSaveImage(530, 400)
 				
-				.plotSequentialBF.ttest(x= group1, y= group2, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
+				.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
 									
 				content <- .endSaveImage(image)
 				
@@ -215,6 +217,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 .ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform) {
 
+	g1 <- NULL
+	g2 <- NULL
 	status <- "ready"
 
 	ttest <- list()
@@ -271,6 +275,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 
 		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
+		
+		gs <- base::levels(levels)
+				g1 <- gs[1]
+				g2 <- gs[2]		
 		
 		if (length(levels) != 2) {
 		
@@ -374,7 +382,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				rowNo <- rowNo + 1
 			}
 			
-							
+			
+					
 
 			if (options$hypothesis == "groupOneGreater") {
 			
@@ -401,6 +410,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	ttest[["data"]] <- ttest.rows
 	
-	list(ttest, status)
+	list(ttest, status, g1, g2)
 
 }
