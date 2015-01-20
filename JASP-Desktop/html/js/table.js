@@ -631,8 +631,9 @@ $.widget("jasp.table", {
 					if (this.options.error && this.options.error.errorMessage) {
 		
 						chunks.push('<div style="height: 0px ; overflow: visible ; position: relative; top: 10px ; float: left ;">')
-						chunks.push('<div style="" class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>')
-						chunks.push(this.options.error.errorMessage)
+						chunks.push('<div style="" class="error-message-box ui-state-error">')
+						chunks.push('<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em; "></span>')
+						chunks.push('<span style="margin-right: 2em ;">' + this.options.error.errorMessage + '</span>')
 						chunks.push('</div>')
 						chunks.push('</div>')
 					}
