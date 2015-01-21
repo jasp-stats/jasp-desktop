@@ -233,7 +233,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						idData2 <- sum((ind2+1)-(1:(length(ind2))) == 1)
 						
 																		
-						if(idData > 1 && idData2 > 1){
+						if(idData > 1 && idData2 > 1 && options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness){
 						
 							errorMessage <- "Sequential Analysis not possible: The first observations are identical"
 							index <- .addFootnote(footnotes, errorMessage)
