@@ -66,7 +66,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	q <- 1
 	
-	for (variable in options[["variables"]])
+	for (variable in options[["variables"]]){
+	
 		if (options$plotPriorAndPosterior){
 			plot <- list()
 			
@@ -114,6 +115,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			plots.ttest[[q]] <- plot
 			q <- q + 1
 		}
+	}
 		
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
@@ -121,6 +123,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		z <- 1
 	
 		for (variable in options[["variables"]]) {
+		
 
 			subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
 			subDataSet <- na.omit(subDataSet)
