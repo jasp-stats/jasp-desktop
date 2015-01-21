@@ -27,6 +27,7 @@
 #include "analysisforms/regressionlinearbayesianform.h"
 #include "analysisforms/correlationform.h"
 #include "analysisforms/correlationbayesianform.h"
+#include "analysisforms/correlationbayesianpairsform.h"
 #include "analysisforms/correlationpartialform.h"
 #include "analysisforms/crosstabsform.h"
 #include "analysisforms/crosstabsbayesianform.h"
@@ -257,6 +258,8 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new CorrelationForm(contentArea);
 	else if (name == "CorrelationBayesian")
 		form = new CorrelationBayesianForm(contentArea);
+	else if (name == "CorrelationBayesianPairs")
+		form = new CorrelationBayesianPairsForm(contentArea);
 	else if (name == "CorrelationPartial")
 		form = new CorrelationPartialForm(contentArea);
 	else if (name == "Crosstabs")
@@ -270,7 +273,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 	else if (name == "AnovaRepeatedMeasuresBayesian")
 		form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
 	else
-		qDebug() << "MainWidget::loadForm(); form not found : " << name.c_str();
+		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
 	if (form != NULL)
 		_analysisForms[name] = form;

@@ -120,6 +120,7 @@ SOURCES += main.cpp\
     analysisforms/anovarepeatedmeasuresbayesianform.cpp \
     analysisforms/correlationbayesianform.cpp \
     analysisforms/crosstabsbayesianform.cpp \
+	analysisforms/correlationbayesianpairsform.cpp \
     application.cpp \
     analysisforms/regressionlinearbayesianform.cpp \
     qutils.cpp \
@@ -216,6 +217,7 @@ HEADERS  += \
 	analysisforms/anovarepeatedmeasuresbayesianform.h \
     analysisforms/correlationbayesianform.h \
     analysisforms/crosstabsbayesianform.h \
+	analysisforms/correlationbayesianpairsform.h \
     application.h \
     analysisforms/regressionlinearbayesianform.h \
     qutils.h \
@@ -257,6 +259,7 @@ FORMS    += \
     analysisforms/ancovabayesianform.ui \
     analysisforms/anovarepeatedmeasuresbayesianform.ui \
     analysisforms/correlationbayesianform.ui \
+	analysisforms/correlationbayesianpairsform.ui \
     analysisforms/crosstabsbayesianform.ui \
     analysisforms/regressionlinearbayesianform.ui
 

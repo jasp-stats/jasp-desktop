@@ -81,6 +81,7 @@ SOURCES += \
     analyses/ancovabayesian.cpp \
     analyses/anovarepeatedmeasuresbayesian.cpp \
     analyses/correlationbayesian.cpp \
+	analyses/correlationbayesianpairs.cpp \
     analyses/crosstabsbayesian.cpp \
     analyses/regressionlinearbayesian.cpp \
     dirs.cpp \
@@ -154,6 +155,7 @@ HEADERS +=\
     analyses/ancovabayesian.h \
     analyses/anovarepeatedmeasuresbayesian.h \
     analyses/correlationbayesian.h \
+	analyses/correlationbayesianpairs.h \
     analyses/crosstabsbayesian.h \
     analyses/regressionlinearbayesian.h \
     dirs.h \
