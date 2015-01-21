@@ -349,53 +349,57 @@ run <- function(name, options.as.json.string, perform="run") {
 }
 
 .vf <- function(formula) {
-  
-  in.pieces <- .decompose(formula)
-  ved <- .jrapply(in.pieces, .v)
-  .compose(ved)
+	
+	in.pieces <- .decompose(formula)
+	ved <- .jrapply(in.pieces, .v)
+	.compose(ved)
 }
 
 .unvf <- function(formula) {
-  
-  in.pieces <- .decompose(formula)
-  unved <- .jrapply(in.pieces, .unv)
-  .compose(unved, "\u2009\u273B\u2009")
+	
+	in.pieces <- .decompose(formula)
+	unved <- .jrapply(in.pieces, .unv)
+	
+	interaction.symbol <- "\u2009\u273B\u2009"
+	base::Encoding(interaction.symbol) <- "UTF-8"
+	
+	.compose(unved, interaction.symbol)
 }
 
 .decompose <- function(formulas) {
-  
-  lapply(as.list(formulas), function(formula) {
-  
-    sides <- strsplit(formula, "~", fixed=TRUE)[[1]]
-    
-    lapply(sides, function(formula) {
-    
-      terms <- strsplit(formula, "+", fixed=TRUE)
-      
-      lapply(terms, function(term) {
-        components <- strsplit(term, ":")
-        components <- sapply(components, stringr::str_trim, simplify=FALSE)
-      })[[1]]
-      
-    })
-  })
+
+	lapply(as.list(formulas), function(formula) {
+
+		sides <- strsplit(formula, "~", fixed=TRUE)[[1]]
+		
+		lapply(sides, function(formula) {
+			
+			terms <- strsplit(formula, "+", fixed=TRUE)
+			
+			lapply(terms, function(term) {
+			components <- strsplit(term, ":")
+			components <- sapply(components, stringr::str_trim, simplify=FALSE)
+			
+			})[[1]]
+		})
+	})
 }
 
 .compose <- function(formulas, i.symbol=":") {
-  
-  sapply(formulas, function(formula) {
-    
-    formula <- sapply(formula, function(side) {
-      
-      side <- sapply(side, function(term) {
-        paste(term, collapse=i.symbol)
-      })
-      
-      paste(side, collapse=" + ")
-    })
-    
-    paste(formula, collapse=" ~ ")    
-  })
+
+	sapply(formulas, function(formula) {
+		
+		formula <- sapply(formula, function(side) {
+			
+			side <- sapply(side, function(term) {
+				paste(term, collapse=i.symbol)
+			})
+			
+			paste(side, collapse=" + ")
+		})
+		
+		paste(formula, collapse=" ~ ")
+	})
 }
 
 
