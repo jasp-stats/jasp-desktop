@@ -120,8 +120,8 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 				df <- as.numeric(r$parameter)
 				p  <- as.numeric(r$p.value)
 				m  <- as.numeric(r$estimate - r$null.value)
-				ciLow <- .clean(as.numeric(r$conf.int[1]) - as.numeric(r$null.value)) 
-				ciUp  <- .clean(as.numeric(r$conf.int[2]) - as.numeric(r$null.value)) 
+				ciLow <- .clean(as.numeric(r$conf.int[1]))
+				ciUp  <- .clean(as.numeric(r$conf.int[2]))
 			
 				list(.variable=variable, t=t, df=df, p=p, "Mean Difference"=m, "lowerCI"=ciLow, "upperCI"=ciUp)
 			})
