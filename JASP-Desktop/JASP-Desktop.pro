@@ -223,7 +223,8 @@ HEADERS  += \
     qutils.h \
     activitylog.h \
     lrnamreply.h \
-    lrnam.h
+    lrnam.h \
+    widgets/groupbox.h
 
 FORMS    += \
     backstageform.ui \

@@ -61,12 +61,9 @@
           <number>3</number>
          </property>
          <item row="0" column="0" rowspan="2">
-          <widget class="QGroupBox" name="statisticsPercentileValues">
+          <widget class="GroupBox" name="statisticsPercentileValues">
            <property name="title">
             <string>Percentile Values</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
             <item row="0" column="0" colspan="2">
@@ -148,12 +145,9 @@
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QGroupBox" name="statisticsDispersion">
+          <widget class="GroupBox" name="statisticsDispersion">
            <property name="title">
             <string>Dispersion</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
@@ -227,12 +221,9 @@
           </widget>
          </item>
          <item row="0" column="1" rowspan="2" colspan="2">
-          <widget class="QGroupBox" name="statistics__central_tendency">
+          <widget class="GroupBox" name="statistics__central_tendency">
            <property name="title">
             <string>Central Tendency</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
@@ -267,12 +258,9 @@
           </widget>
          </item>
          <item row="3" column="1" colspan="2">
-          <widget class="QGroupBox" name="groupBox_3">
+          <widget class="GroupBox" name="groupBox_3">
            <property name="title">
             <string>Distribution</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
@@ -315,9 +303,6 @@
         <property name="text">
          <string>Charts</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item row="1" column="0">
@@ -330,9 +315,6 @@
           <widget class="BoundGroupBox" name="chartType">
            <property name="title">
             <string>Chart Type</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
             <item row="4" column="0">
@@ -399,9 +381,6 @@
           <widget class="BoundGroupBox" name="chartValues">
            <property name="title">
             <string>Chart Values</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
             <item row="0" column="0">
@@ -506,9 +485,6 @@
            <property name="title">
             <string>Order by</string>
            </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
            <layout class="QGridLayout" name="gridLayout_14">
             <item row="0" column="0">
              <widget class="QRadioButton" name="_1ascendingValues">
@@ -567,9 +543,6 @@
           <widget class="QGroupBox" name="formatMultipleVariables">
            <property name="title">
             <string>Multiple Variables</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_12">
             <item row="0" column="0">
@@ -801,6 +774,12 @@
    <class>BoundGroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

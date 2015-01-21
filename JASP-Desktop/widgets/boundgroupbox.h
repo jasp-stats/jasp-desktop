@@ -10,8 +10,9 @@
 
 #include "bound.h"
 #include "itemmodelselectitem.h"
+#include "groupbox.h"
 
-class BoundGroupBox : public QGroupBox, public Bound
+class BoundGroupBox : public GroupBox, public Bound
 {
 	Q_OBJECT
 public:
