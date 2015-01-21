@@ -122,14 +122,15 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 		for (variable in options[["variables"]]) {
 
-			subDataSet <- subset(dataset,    subset=( ! is.na( dataset[[ .v(variable) ]] )), select=c(.v(variable), .v(options$groupingVariable)))
-			subDataSet <- subset(subDataSet, subset=( ! is.na( dataset[[ .v(options$groupingVariable) ]] )))
+			subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
+			subDataSet <- na.omit(subDataSet)
 			
-			levels <- unique(dataset[[ .v(options$groupingVariable) ]])
+			
 			r.size <- options$priorWidth
 			
-			group2 <- dataset[dataset[[.v(options$groupingVariable)]]== g1,.v(variable)] 
-			group1 <- dataset[dataset[[.v(options$groupingVariable)]]== g2,.v(variable)] 
+			group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g1,.v(variable)] 
+			group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g2,.v(variable)] 
+			
 			
 			if (options$hypothesis == "groupOneGreater") {
 			
