@@ -8,6 +8,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	if(is.null(options()$BFprogress)) options(BFprogress = interactive())
 	if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
 
+	plotSequentialStatus <- "ok"
 
 	all.variables <- unique(unlist(options$pairs))
 	all.variables <- all.variables[all.variables != ""]
@@ -223,7 +224,25 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						index <- .addFootnote(footnotes, errorMessage)
 						
 						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error, .footnotes=list(BF=list(index)))
-					} else {					
+					} else{
+
+						ind <- which(c1 == c1[1])
+						idData <- sum((ind+1)-(1:(length(ind))) == 1)
+					
+						ind2 <- which(c2 == c2[1])
+						idData2 <- sum((ind2+1)-(1:(length(ind2))) == 1)
+						
+																		
+						if(idData > 1 && idData2 > 1){
+						
+							errorMessage <- "Sequential Analysis not possible: The first observations are identical"
+							index <- .addFootnote(footnotes, errorMessage)
+							
+							plotSequentialStatus <- "error"
+						
+							result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error, .footnotes=list(BF=list(index)))
+						}
+						
 																
 						if(options$plotPriorAndPosterior){
 						
@@ -255,7 +274,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							plots.ttest[[z]] <- plot
 							z <- z + 1
 						}
-						if(options$plotSequentialAnalysis){
+						if(options$plotSequentialAnalysis && plotSequentialStatus == "ok"){
 						
 							image <- .beginSaveImage(530, 400)
 							
@@ -270,7 +289,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							plots.ttest[[z]] <- plot
 							z <- z + 1
 						}
-						if(options$plotSequentialAnalysisRobustness){
+						if(options$plotSequentialAnalysisRobustness && plotSequentialStatus == "ok"){
 						
 							image <- .beginSaveImage(530, 400)
 							

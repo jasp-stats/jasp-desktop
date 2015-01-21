@@ -1017,7 +1017,7 @@
 	rValues <- seq(0.0001, 1.5, length.out = 400)
 	
 	# BF10
-	BF10 <- vector("numeric", length(x))
+	BF10 <- vector("numeric", length(rValues))
 	
 	for(i in seq_along(rValues)){
 		BF <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= rValues[i])
