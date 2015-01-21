@@ -46,12 +46,9 @@
 	BF10 <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 	BF01 <- 1 / BF10
 	
-	heightPosteriorAtZero <- BF01 * dprior(0,r, oneSided= oneSided)
 	
 	# fit denisty estimator
 	fit.posterior <-  logspline::logspline(delta)
-	
-	k <- heightPosteriorAtZero / logspline::dlogspline(0, fit.posterior)
 	
 	
 	# density function posterior
@@ -70,8 +67,7 @@
 		}	
 	}	
 	
-
-	
+		
 	# set limits plot
 	xlim <- vector("numeric", 2)
 	if(oneSided == FALSE){
@@ -111,10 +107,13 @@
 		CIhigh <- quantile(delta[delta <= 0], probs = 0.975)[[1]]
 	}	
 	
+	
+	posteriorLine <- dposterior(x= seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, delta=delta)
+	
 	par(mar= c(5, 5, 7, 4) + 0.1, las=1)
 	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
 	plot(1,1, xlim= xlim, ylim= range(yticks), ylab= "", xlab="", type= "n", axes= FALSE)
-	lines(seq(min(xticks), max(xticks),length.out = 1000),dposterior(x= seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, delta=delta), lwd= lwd, xlim= xlim, ylim= range(yticks), ylab= "", xlab= "")
+	lines(seq(min(xticks), max(xticks),length.out = 1000),posteriorLine, lwd= lwd)
 	lines(seq(min(xticks), max(xticks),length.out = 1000), dprior(seq(min(xticks), max(xticks),length.out = 1000), r=r, oneSided= oneSided), lwd= lwd, lty=3)
 	
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
@@ -123,7 +122,21 @@
 	mtext(expression(paste("Effect size", ~delta)), side = 1, cex = cexXlab, line= 2.5)
 	
 	points(0, dprior(0,r, oneSided= oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
-	points(0, dposterior(0, delta=delta, oneSided=oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
+	
+	evalPosterior <- posteriorLine[posteriorLine > 0]
+	
+	if(oneSided == "right"){
+	
+		heightPosteriorAtZero <- evalPosterior[1]
+		points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
+	} else if(oneSided == "left"){
+	
+		heightPosteriorAtZero <- evalPosterior[length(evalPosterior)]
+		points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
+	} else{
+	
+		points(0, dposterior(0, delta=delta, oneSided=oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
+	}
 	
 	# 95% credible interval
 	dmax <- optimize(function(x)dposterior(x,oneSided= oneSided, delta=delta), interval= range(xticks), maximum = TRUE)$objective # get maximum density
