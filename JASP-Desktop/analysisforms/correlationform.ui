@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>663</width>
-    <height>861</height>
+    <width>667</width>
+    <height>880</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -250,6 +250,13 @@
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="_2correlatedInDirection">
+           <property name="text">
+            <string>Correlated positively</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QRadioButton" name="_1correlated">
            <property name="text">
@@ -257,10 +264,10 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="_2correlatedInDirection">
+         <item row="2" column="0">
+          <widget class="QRadioButton" name="radioButton">
            <property name="text">
-            <string>Correlated in direction (one-tailed)</string>
+            <string>Correlated negatively</string>
            </property>
           </widget>
          </item>
@@ -436,9 +443,19 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
@@ -447,19 +464,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

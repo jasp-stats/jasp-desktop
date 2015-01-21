@@ -455,9 +455,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		
 			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001", symbol="*")
 			
-		} else {
+		} else if (hypothesis == "correlatedPositively") {
 
-			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, all one-tailed", symbol="*")		
+			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, one-tailed correlated positively", symbol="*")
+			
+		} else {
+		
+			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, one-tailed correlated negatively", symbol="*")
 		}
 	}
 	
@@ -540,20 +544,20 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				
 						if (hypothesis == "correlated") {
 
-							result   <- cor.test(v1, v2, method=test, alternative="two.sided")
-							estimate <- as.numeric(result$estimate)
-
-							p.value  <- as.numeric(result$p.value)
-							
+							result <- cor.test(v1, v2, method=test, alternative="two.sided")
 						}
-						else {
+						else if (hypothesis == "correlatedPositively") {
 						
-							result1 <- cor.test(v1, v2, method=test, alternative="less")
-							result2 <- cor.test(v1, v2, method=test, alternative="greater")
-							estimate <- as.numeric(result1$estimate)
-
-							p.value  <- min(as.numeric(result1$p.value), as.numeric(result2$p.value))
+							result <- cor.test(v1, v2, method=test, alternative="greater")
+							
+						} else {
+						
+							result <- cor.test(v1, v2, method=test, alternative="less")
 						}
+
+						estimate <- as.numeric(result$estimate)
+						p.value  <- as.numeric(result$p.value)
+						
 						
 						if (is.na(estimate)) {
 							

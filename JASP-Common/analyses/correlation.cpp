@@ -20,7 +20,7 @@ Options *Correlation::createOptions() const
 	options->add("kendallsTauB", new OptionBoolean());
 	options->add("spearman", new OptionBoolean());
 
-	options->add("hypothesis", new OptionList(list("correlated", "correlatedInDirection")));
+	options->add("hypothesis", new OptionList(list("correlated", "correlatedPositively", "correlatedNegatively")));
 
 	options->add("reportSignificance", new OptionBoolean());
 	options->add("flagSignificant", new OptionBoolean());
