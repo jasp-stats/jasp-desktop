@@ -449,19 +449,27 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 	footnotes <- .newFootnotes()
 	
+	if (flagSignificant || reportSignificance) {
+	
+		if (hypothesis == "correlatedPositively") {
+
+			.addFootnote(footnotes, "all tests one-tailed, for positive correlation", symbol="<i>Note</i>.")
+			
+		} else if (hypothesis == "correlatedNegatively") {
+		
+			.addFootnote(footnotes, "all tests one-tailed, for negative correlation", symbol="<i>Note</i>.")
+		}
+	}
+	
 	if (flagSignificant) {
 	
 		if (hypothesis == "correlated") {
 		
 			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001", symbol="*")
 			
-		} else if (hypothesis == "correlatedPositively") {
-
-			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, one-tailed correlated positively", symbol="*")
-			
 		} else {
 		
-			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, one-tailed correlated negatively", symbol="*")
+			.addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, one-tailed", symbol="*")
 		}
 	}
 	
