@@ -66,7 +66,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	q <- 1
 	
-	for (variable in options[["variables"]])
+	for (variable in options[["variables"]]){
+	
 		if (options$plotPriorAndPosterior){
 			plot <- list()
 			
@@ -114,6 +115,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			plots.ttest[[q]] <- plot
 			q <- q + 1
 		}
+	}
 		
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
@@ -121,15 +123,17 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		z <- 1
 	
 		for (variable in options[["variables"]]) {
+		
 
-			subDataSet <- subset(dataset,    subset=( ! is.na( dataset[[ .v(variable) ]] )), select=c(.v(variable), .v(options$groupingVariable)))
-			subDataSet <- subset(subDataSet, subset=( ! is.na( dataset[[ .v(options$groupingVariable) ]] )))
+			subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
+			subDataSet <- na.omit(subDataSet)
 			
-			levels <- unique(dataset[[ .v(options$groupingVariable) ]])
+			
 			r.size <- options$priorWidth
 			
-			group2 <- dataset[dataset[[.v(options$groupingVariable)]]== g1,.v(variable)] 
-			group1 <- dataset[dataset[[.v(options$groupingVariable)]]== g2,.v(variable)] 
+			group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g1,.v(variable)] 
+			group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g2,.v(variable)] 
+			
 			
 			if (options$hypothesis == "groupOneGreater") {
 			
@@ -290,14 +294,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 			for (variable in options[["variables"]]) {
 				
-				group1 <- dataset[dataset[[.v(options$groupingVariable)]]== levels[1],.v(variable)]
-				group2 <- dataset[dataset[[.v(options$groupingVariable)]]== levels[2],.v(variable)]
-				
-				
+								
 				# BayesFactor package doesn't handle NAs, so it is necessary to exclude them
 				
 				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
 				subDataSet <- na.omit(subDataSet)
+				
+				gs <- base::levels(levels)
+				
+				group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== gs[1],.v(variable)] 
+				group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== gs[2],.v(variable)] 
 
 				f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
 				r.size <- options$priorWidth
@@ -332,6 +338,23 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
 					
 							errorMessage <- "BayesFactor is infinity: plotting not possible"
+							status <- "error"
+						}
+					}
+					
+					ind <- which(group1 == group1[1])
+					idData <- sum((ind+1)-(1:(length(ind))) == 1)
+					
+					ind2 <- which(group2 == group2[1])
+					idData2 <- sum((ind2+1)-(1:(length(ind2))) == 1)
+					
+					if(idData > 1 && idData2 > 1 && (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+					
+						if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
+						
+							errorMessage <- paste("Sequential Analysis not possible: The first observations are identical")
+							index <- .addFootnote(footnotes, errorMessage)
+							
 							status <- "error"
 						}
 					}
