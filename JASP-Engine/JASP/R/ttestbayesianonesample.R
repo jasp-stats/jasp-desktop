@@ -1786,6 +1786,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		}
 	}
 	
+	plotSequentialStatus <- "ok"
+	
 	if (perform == "run") {
 		
 		i <- 1
@@ -1849,11 +1851,14 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				if(idData > 1 & (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
 					
-					errorMessage <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
-					index <- .addFootnote(footnotes, errorMessage)
+					seqFootnote <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
+					index <- .addFootnote(footnotes, seqFootnote)
+					plotSequentialStatus <- "error"					
 					
 					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
-				} else if(is.null(errorMessage)){
+				}
+				
+				if(is.null(errorMessage)){
 											
 					if(options$plotPriorAndPosterior){
 					
@@ -1885,7 +1890,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						plots.ttest[[z]] <- plot
 						z <- z + 1
 					}
-					if(options$plotSequentialAnalysis){
+					if(options$plotSequentialAnalysis && plotSequentialStatus == "ok"){
 					
 						image <- .beginSaveImage(530, 400)
 						
@@ -1900,7 +1905,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						plots.ttest[[z]] <- plot
 						z <- z + 1
 					}
-					if(options$plotSequentialAnalysisRobustness){
+					if(options$plotSequentialAnalysisRobustness && plotSequentialStatus == "ok"){
 					
 						image <- .beginSaveImage(530, 400)
 						
