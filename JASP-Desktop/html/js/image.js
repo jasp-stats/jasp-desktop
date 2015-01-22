@@ -7,7 +7,7 @@ $.widget("jasp.image", {
         data: null,
         status : "waiting",
         resize : [ ],
-        custom : { },
+        custom : null,
         customchanged : [ ],
         itemoptionschanged : [ ]
 	},
@@ -67,13 +67,16 @@ $.widget("jasp.image", {
 		
 		var self = this
 
-		this.element.resizable( {
-			minWidth : 160,
-			minHeight: 160,
-			start  : function(event, ui) { self._startResize(event, ui) },
-			stop   : function(event, ui) { self._stopResize(event, ui) },
-			resize : function(event, ui) { self._resize(event, ui) }
-		} )
+		if (this.options.custom) {
+
+			this.element.resizable( {
+				minWidth : 160,
+				minHeight: 160,
+				start  : function(event, ui) { self._startResize(event, ui) },
+				stop   : function(event, ui) { self._stopResize(event, ui) },
+				resize : function(event, ui) { self._resize(event, ui) }
+			} )
+		}
 		
 	},
 	_destroy: function () {
