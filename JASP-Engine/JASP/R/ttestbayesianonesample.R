@@ -592,6 +592,7 @@
 				yLab1s <- c(yLab1s, newy)
 			}
 		}
+
 		
 		if(yLab1s[1] == "1"){
 			
@@ -1251,6 +1252,24 @@
 			}
 		}
 		
+		if(max(BF) > eval(parse(text= yLab1s[length(yLab1s)-1]))){
+			
+			if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
+					
+				newy <-  paste(strsplit(yLabs1[length(yLabs1)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLabs1[length(yLabs1)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
+			} else {
+					
+				newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
+			}
+				
+			if(eval(parse(text=newy)) >= 10^6){
+					
+				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
+			}
+				
+			yLab1s <- c(yLab1s, newy)
+		}		
+		
 		if(yLab1s[1] == "1"){
 			
 			yLab1s <- c(paste0(yLab1s[1], "/", "10"), yLab1s)
@@ -1280,6 +1299,28 @@
 					newy <- paste0("1/", newy)
 				}
 			}
+			
+			ylab1s <- c(newy, yLab1s)
+		}
+		
+		if(min(BF) < eval(parse(text= yLab1s[2]))){
+			
+			if(grepl(pattern = "e",yLab1s[1])){
+					
+				newy <- paste(strsplit(yLab1s[1], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[1],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
+			} else {
+					
+				newy <- paste(yLab1s[1], "0", sep= "")
+			}
+				
+			if(eval(parse(text= newy)) <= 10^(-6)){
+					
+				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
+				newy <-  sub("-", "+", x = newy)
+				newy <- substring(newy, nchar(newy)-4, nchar(newy))
+				newy <- paste0("1/", newy)
+			}
+			
 			
 			ylab1s <- c(newy, yLab1s)
 		}
