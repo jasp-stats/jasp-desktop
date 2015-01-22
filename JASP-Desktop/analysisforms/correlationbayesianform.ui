@@ -114,11 +114,11 @@
        <number>0</number>
       </property>
       <item row="1" column="0">
-       <widget class="BoundGroupBox" name="bayesFactorType">
-        <property name="title">
+       <widget class="BoundGroupBox" name="bayesFactorType" native="true">
+        <property name="title" stdset="0">
          <string>Bayes factor</string>
         </property>
-        <property name="flat">
+        <property name="flat" stdset="0">
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
@@ -140,11 +140,11 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="BoundGroupBox" name="hypothesis">
-        <property name="title">
+       <widget class="BoundGroupBox" name="hypothesis" native="true">
+        <property name="title" stdset="0">
          <string>Hypothesis</string>
         </property>
-        <property name="flat">
+        <property name="flat" stdset="0">
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
@@ -323,11 +323,11 @@
        <widget class="QWidget" name="panelOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_10">
          <item row="1" column="0">
-          <widget class="BoundGroupBox" name="missingValues">
-           <property name="title">
+          <widget class="BoundGroupBox" name="missingValues" native="true">
+           <property name="title" stdset="0">
             <string>Missing values</string>
            </property>
-           <property name="flat">
+           <property name="flat" stdset="0">
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
@@ -365,12 +365,9 @@
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QGroupBox" name="groupBox_3">
+          <widget class="GroupBox" name="groupBox_3">
            <property name="title">
             <string>Statistics</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="0" column="0">
@@ -415,9 +412,20 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>
@@ -426,14 +434,9 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
+   <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

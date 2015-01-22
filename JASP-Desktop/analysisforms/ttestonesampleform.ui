@@ -32,52 +32,58 @@
    <item row="1" column="0">
     <widget class="QWidget" name="widget_3" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="3" column="3">
-       <widget class="BoundGroupBox" name="missingValues">
-        <property name="title">
-         <string>Missing values</string>
+      <item row="0" column="0">
+       <widget class="QWidget" name="widget_5" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>240</width>
+          <height>0</height>
+         </size>
         </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_6">
+        <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
-          <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
+          <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Exclude cases analysis by analysis</string>
+            <string>Test value:</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="_2excludeListwise">
-           <property name="text">
-            <string>Exclude cases listwise</string>
+         <item row="0" column="1">
+          <widget class="BoundTextBox" name="testValue">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>16777215</height>
+            </size>
            </property>
           </widget>
+         </item>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>
       </item>
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="3" rowspan="3">
-       <widget class="QGroupBox" name="groupBox_7">
+      <item row="0" column="1" rowspan="2">
+       <widget class="GroupBox" name="groupBox_7">
         <property name="title">
          <string>Additional Statistics</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="2" column="0">
@@ -150,13 +156,13 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="0" colspan="3">
-       <widget class="BoundGroupBox" name="hypothesis">
-        <property name="title">
+      <item row="1" column="0">
+       <widget class="BoundGroupBox" name="hypothesis" native="true">
+        <property name="title" stdset="0">
          <string>Hypothesis</string>
         </property>
-        <property name="flat">
-         <bool>true</bool>
+        <property name="flat" stdset="0">
+         <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="1" column="0">
@@ -183,31 +189,31 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="BoundTextBox" name="testValue">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+      <item row="2" column="1">
+       <widget class="BoundGroupBox" name="missingValues" native="true">
+        <property name="title" stdset="0">
+         <string>Missing values</string>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>50</width>
-          <height>16777215</height>
-         </size>
+        <property name="flat" stdset="0">
+         <bool>false</bool>
         </property>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
+           <property name="text">
+            <string>Exclude cases analysis by analysis</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="_2excludeListwise">
+           <property name="text">
+            <string>Exclude cases listwise</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Test value:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QWidget" name="widget_5" native="true"/>
       </item>
      </layout>
     </widget>
@@ -397,9 +403,20 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>
@@ -408,14 +425,9 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
+   <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

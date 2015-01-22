@@ -5,6 +5,8 @@
 
 class GroupBox : public QGroupBox
 {
+	Q_OBJECT
+
 public:
 	explicit GroupBox(const QString &title, QWidget *parent = 0)
 		: QGroupBox(title, parent)
@@ -28,7 +30,7 @@ public:
 
 private:
 #ifdef __WIN32__
-	const char* styleSheet = "QGroupBox { border: none ; padding-top: 12px ; padding-left: 2px ; }";
+	const char* styleSheet = "QGroupBox { border: none ; padding-top: 12px ; padding-left: 6px ; font: bold ; }";
 #endif
 };
 

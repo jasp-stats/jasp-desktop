@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>612</width>
+    <width>555</width>
     <height>496</height>
    </rect>
   </property>
@@ -15,12 +15,12 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_7">
    <item row="4" column="0">
-    <widget class="BoundGroupBox" name="missingValues">
-     <property name="title">
+    <widget class="BoundGroupBox" name="missingValues" native="true">
+     <property name="title" stdset="0">
       <string>Missing Values</string>
      </property>
-     <property name="flat">
-      <bool>true</bool>
+     <property name="flat" stdset="0">
+      <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
       <item row="0" column="0">
@@ -185,12 +185,18 @@
        <number>0</number>
       </property>
       <item row="0" column="0" rowspan="2">
-       <widget class="BoundGroupBox" name="hypothesis">
-        <property name="title">
+       <widget class="BoundGroupBox" name="hypothesis" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>240</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="title" stdset="0">
          <string>Hypothesis</string>
         </property>
-        <property name="flat">
-         <bool>true</bool>
+        <property name="flat" stdset="0">
+         <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="1" column="0">
@@ -231,12 +237,9 @@
        </widget>
       </item>
       <item row="0" column="1" rowspan="2">
-       <widget class="QGroupBox" name="groupBox_7">
+       <widget class="GroupBox" name="groupBox_7">
         <property name="title">
          <string>Additional Statistics</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="3" column="0">
@@ -331,20 +334,26 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QWidget</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundPairsTable</class>
    <extends>QTableView</extends>
    <header>widgets/boundpairstable.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

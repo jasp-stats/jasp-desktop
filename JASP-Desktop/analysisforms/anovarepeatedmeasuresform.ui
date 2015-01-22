@@ -561,12 +561,9 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QGroupBox" name="groupBox">
+          <widget class="GroupBox" name="groupBox">
            <property name="title">
             <string>Equal Variances Assumed</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
             <item row="7" column="0">
@@ -937,12 +934,9 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QGroupBox" name="groupBox_2">
+          <widget class="GroupBox" name="groupBox_2">
            <property name="title">
             <string>Equal Variances Not Assumed</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_18">
             <property name="topMargin">
@@ -1259,12 +1253,9 @@
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="containerDisplay">
+          <widget class="GroupBox" name="containerDisplay">
            <property name="title">
             <string>Display</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="4" column="1">
@@ -1476,12 +1467,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BoundAssignWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/boundassignwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
    <header>widgets/assignbutton.h</header>
@@ -1508,9 +1493,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundTableView</class>
@@ -1518,9 +1509,15 @@
    <header>widgets/boundtableview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
+   <class>BoundAssignWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/boundassignwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>665</width>
-    <height>1182</height>
+    <width>610</width>
+    <height>936</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -350,12 +350,9 @@
           <number>3</number>
          </property>
          <item row="1" column="0" colspan="2">
-          <widget class="QGroupBox" name="groupBoxResiduals">
+          <widget class="GroupBox" name="groupBoxResiduals">
            <property name="title">
             <string>Residuals</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
             <item row="2" column="0">
@@ -444,12 +441,9 @@
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QGroupBox" name="groupBox">
+          <widget class="GroupBox" name="groupBox">
            <property name="title">
             <string>Regression Coefficients</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0" colspan="2">
@@ -522,12 +516,9 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QGroupBox" name="groupBox_2">
+          <widget class="GroupBox" name="groupBox_2">
            <property name="title">
             <string/>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="0" column="0">
@@ -607,12 +598,9 @@
           <number>3</number>
          </property>
          <item row="0" column="0">
-          <widget class="QGroupBox" name="groupBoxSteppingMethodCriteria">
+          <widget class="GroupBox" name="groupBoxSteppingMethodCriteria">
            <property name="title">
             <string>Stepping Method Criteria</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
             <property name="leftMargin">
@@ -793,12 +781,9 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QGroupBox" name="groupBox_5">
+          <widget class="GroupBox" name="groupBox_5">
            <property name="title">
             <string>Missing Values</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
             <property name="bottomMargin">
@@ -871,9 +856,20 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>
@@ -885,11 +881,6 @@
    <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -90,12 +90,9 @@
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <widget class="QGroupBox" name="groupBox_7">
+          <widget class="GroupBox" name="groupBox_7">
            <property name="title">
             <string>Grouping variable</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
             <item row="0" column="0">
@@ -130,12 +127,9 @@
           </widget>
          </item>
          <item row="0" column="2">
-          <widget class="QGroupBox" name="groupBox_5">
+          <widget class="GroupBox" name="groupBox_5">
            <property name="title">
             <string>Model Options</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_16">
             <property name="bottomMargin">
@@ -152,12 +146,9 @@
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="QGroupBox" name="groupBox_6">
+             <widget class="GroupBox" name="groupBox_6">
               <property name="title">
                <string>Factor Scaling</string>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_15">
                <property name="bottomMargin">
@@ -223,12 +214,9 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QGroupBox" name="groupBox_3">
+          <widget class="GroupBox" name="groupBox_3">
            <property name="title">
             <string>Estimator</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
             <property name="topMargin">
@@ -348,12 +336,9 @@
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <widget class="QGroupBox" name="groupBox_16">
+          <widget class="GroupBox" name="groupBox_16">
            <property name="title">
             <string>Options</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_19">
             <item row="0" column="0">
@@ -416,12 +401,9 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QGroupBox" name="groupBox_4">
+          <widget class="GroupBox" name="groupBox_4">
            <property name="title">
             <string>Emulation</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
             <property name="bottomMargin">
@@ -504,12 +486,9 @@
           <number>0</number>
          </property>
          <item row="0" column="1" rowspan="2">
-          <widget class="QGroupBox" name="groupBox_2">
+          <widget class="GroupBox" name="groupBox_2">
            <property name="title">
             <string>Additional Output</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
             <property name="bottomMargin">
@@ -655,12 +634,9 @@
           </widget>
          </item>
          <item row="0" column="0" rowspan="2">
-          <widget class="QGroupBox" name="groupBox">
+          <widget class="GroupBox" name="groupBox">
            <property name="title">
             <string>Error Calculation</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout">
             <item row="0" column="0">
@@ -787,9 +763,25 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundTextEdit</class>
-   <extends>QPlainTextEdit</extends>
-   <header>widgets/boundtextedit.h</header>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
@@ -798,19 +790,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
+   <class>BoundTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>widgets/boundtextedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>588</width>
+    <width>540</width>
     <height>499</height>
    </rect>
   </property>
@@ -77,7 +77,7 @@
    </item>
    <item row="1" column="0" colspan="2">
     <widget class="QWidget" name="options" native="true">
-     <layout class="QGridLayout" name="gridLayout_8">
+     <layout class="QGridLayout" name="gridLayout_7">
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -90,19 +90,22 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <property name="horizontalSpacing">
+      <property name="spacing">
        <number>0</number>
       </property>
       <item row="0" column="0">
        <widget class="QWidget" name="widget_2" native="true">
+        <property name="maximumSize">
+         <size>
+          <width>240</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="2" column="0">
-          <widget class="QGroupBox" name="groupBox">
+          <widget class="GroupBox" name="groupBox">
            <property name="title">
             <string>Prior</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
             <property name="topMargin">
@@ -148,12 +151,12 @@
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="BoundGroupBox" name="hypothesis">
-           <property name="title">
+          <widget class="BoundGroupBox" name="hypothesis" native="true">
+           <property name="title" stdset="0">
             <string>Hypothesis</string>
            </property>
-           <property name="flat">
-            <bool>true</bool>
+           <property name="flat" stdset="0">
+            <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
             <property name="bottomMargin">
@@ -197,12 +200,12 @@
           </spacer>
          </item>
          <item row="1" column="0">
-          <widget class="BoundGroupBox" name="bayesFactorType">
-           <property name="title">
+          <widget class="BoundGroupBox" name="bayesFactorType" native="true">
+           <property name="title" stdset="0">
             <string>Bayes Factor</string>
            </property>
-           <property name="flat">
-            <bool>true</bool>
+           <property name="flat" stdset="0">
+            <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
             <item row="1" column="0">
@@ -229,12 +232,12 @@
        <widget class="QWidget" name="widget_3" native="true">
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="2" column="0">
-          <widget class="BoundGroupBox" name="missingValues">
-           <property name="title">
+          <widget class="BoundGroupBox" name="missingValues" native="true">
+           <property name="title" stdset="0">
             <string>Missing Values</string>
            </property>
-           <property name="flat">
-            <bool>true</bool>
+           <property name="flat" stdset="0">
+            <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
             <property name="bottomMargin">
@@ -258,12 +261,9 @@
           </widget>
          </item>
          <item row="0" column="0" colspan="2">
-          <widget class="QGroupBox" name="additionalStatisticsGroup">
+          <widget class="GroupBox" name="additionalStatisticsGroup">
            <property name="title">
             <string>Additional Statistics</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="0" column="0" colspan="2">
@@ -290,12 +290,9 @@
           </spacer>
          </item>
          <item row="1" column="0">
-          <widget class="QGroupBox" name="plotsGroup">
+          <widget class="GroupBox" name="plotsGroup">
            <property name="title">
             <string>Plots</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0" colspan="2">
@@ -345,6 +342,19 @@
         </layout>
        </widget>
       </item>
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>50</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
      </layout>
     </widget>
    </item>
@@ -367,13 +377,19 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
+   <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>

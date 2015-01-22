@@ -433,12 +433,9 @@
           <number>0</number>
          </property>
          <item row="1" column="0">
-          <widget class="QGroupBox" name="groupBox_3">
+          <widget class="GroupBox" name="groupBox_3">
            <property name="title">
             <string>Percentages</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
             <item row="0" column="0">
@@ -466,12 +463,9 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QGroupBox" name="groupBox_4">
+          <widget class="GroupBox" name="groupBox_4">
            <property name="title">
             <string>Residuals</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
             <item row="0" column="0">
@@ -502,9 +496,6 @@
           <widget class="QGroupBox" name="groupBox">
            <property name="title">
             <string>Counts</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0" colspan="2">
@@ -568,9 +559,6 @@
           <widget class="QGroupBox" name="groupBox_2">
            <property name="title">
             <string>Z-Test</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="1" column="0">
@@ -642,11 +630,11 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="BoundGroupBox" name="rowOrder">
-        <property name="title">
+       <widget class="BoundGroupBox" name="rowOrder" native="true">
+        <property name="title" stdset="0">
          <string>Row Order</string>
         </property>
-        <property name="flat">
+        <property name="flat" stdset="0">
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_21">
@@ -785,11 +773,11 @@
           </widget>
          </item>
          <item row="0" column="0" colspan="3">
-          <widget class="BoundGroupBox" name="samplingModel">
-           <property name="title">
+          <widget class="BoundGroupBox" name="samplingModel" native="true">
+           <property name="title" stdset="0">
             <string>Sampling Model</string>
            </property>
-           <property name="flat">
+           <property name="flat" stdset="0">
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
@@ -925,13 +913,19 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
+   <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
