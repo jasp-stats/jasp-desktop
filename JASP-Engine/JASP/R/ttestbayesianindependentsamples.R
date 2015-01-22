@@ -58,7 +58,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
 	
 	
-	if (!options$plotPriorAndPosterior & !options$plotSequentialAnalysis & !options$plotSequentialAnalysisRobustness & !options$plotBayesFactorRobustness | status == "error"){
+	if (!options$plotPriorAndPosterior & !options$plotSequentialAnalysis & !options$plotSequentialAnalysisRobustness & !options$plotBayesFactorRobustness){
 		return(NULL)
 	}
 	
@@ -119,6 +119,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
+		
+		 if(status == "error"){
+		 
+			return(plots.ttest)
+		}
 		
 		z <- 1
 	
@@ -287,6 +292,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		if (length(levels) != 2) {
 		
 			ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
+			status <- "error"
 			
 		} else {
 		
@@ -376,6 +382,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					if (errorMessage == "Dependent variable must not contain missing or infinite values.") {
 					
 						errorMessage <- "BayesFactor is undefined - the dependent variable contains infinity"
+						status <- "error"
 						
 					} else if (errorMessage == "grouping factor must have exactly 2 levels") {
 					
@@ -383,14 +390,17 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						# This error means that all of one factor has been excluded because of missing values in the dependent
 						
 						errorMessage <- "BayesFactor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
+						status <- "error"
 						
 					} else if (errorMessage == "data are essentially constant") {
 					
 						errorMessage <- "BayesFactor is undefined - one or both levels of the dependent contain all the same value (the variance is zero)"
+						status <- "error"
 						
 					} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
 					
 						errorMessage <- "BayesFactor is undefined - one or both levels of the dependent contain too few observations"
+						status <- "error"
 					}
 										
 					index <- .addFootnote(footnotes, errorMessage)
