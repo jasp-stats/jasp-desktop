@@ -2,6 +2,7 @@
 #define GROUPBOX_H
 
 #include <QGroupBox>
+#include <QTimer>
 
 class GroupBox : public QGroupBox
 {
@@ -15,6 +16,7 @@ public:
 		setStyleSheet(styleSheet);
 #elif __APPLE__
 		setFlat(true);
+		QTimer::singleShot(0, this, SLOT(makeFlat()));
 #endif
 	}
 
@@ -25,12 +27,21 @@ public:
 		setStyleSheet(styleSheet);
 #elif __APPLE__
 		setFlat(true);
+		QTimer::singleShot(0, this, SLOT(makeFlat()));
 #endif
 	}
 
 private:
 #ifdef __WIN32__
 	const char* styleSheet = "QGroupBox { border: none ; padding-top: 12px ; padding-left: 6px ; font: bold ; }";
+#endif
+
+private slots:
+#ifdef __APPLE__
+	void makeFlat()
+	{
+		setFlat(true);
+	}
 #endif
 };
 
