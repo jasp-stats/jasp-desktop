@@ -53,15 +53,21 @@
 	
 	# density function posterior
 	dposterior <- function(x, oneSided= oneSided, delta= delta){
+		
 		if(oneSided == FALSE){
+			
 			k <- 1
 			return(k*logspline::dlogspline(x, fit.posterior))
 		}
+		
 		if(oneSided == "right"){
+			
 			k <- 1 / (length(delta[delta >= 0]) / length(delta))
 			return(ifelse(x < 0, 0, k*logspline::dlogspline(x, fit.posterior)))
 		}
+		
 		if(oneSided == "left"){
+			
 			k <- 1 / (length(delta[delta <= 0]) / length(delta))
 			return(ifelse(x > 0, 0, k*logspline::dlogspline(x, fit.posterior)))
 		}	
@@ -70,22 +76,27 @@
 		
 	# set limits plot
 	xlim <- vector("numeric", 2)
+	
 	if(oneSided == FALSE){
 		xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
+		stretch <- 1.36
 	}
 	if(oneSided == "right"){
 		xlim[1] <- min(-2, quantile(delta[delta >= 0], probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta[delta >= 0], probs = 0.99)[[1]])
+		stretch <- 1.48
 	}
 	if(oneSided == "left"){
 		xlim[1] <- min(-2, quantile(delta[delta <= 0], probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta[delta <= 0], probs = 0.99)[[1]])
+		stretch <- 1.48
 	}
 	
 	ylim <- vector("numeric", 2)
+	
 	ylim[1] <- 0
-	ylim[2] <- max(dprior(0,r, oneSided= oneSided), 1.28*max(dposterior(x= delta, oneSided= oneSided, delta=delta)))
+	ylim[2] <- max(stretch* dprior(0,r, oneSided= oneSided), stretch*max(dposterior(x= delta, oneSided= oneSided, delta=delta)))
 	
 	# calculate position of "nice" tick marks and create labels
 	xticks <- pretty(xlim)
@@ -93,31 +104,38 @@
 	xlabels <- formatC(pretty(xlim), 1, format= "f")
 	ylabels <- formatC(pretty(ylim), 1, format= "f")
 	
-	# 95% credible interval:
+	# compute 95% credible interval & median:
 	if(oneSided == FALSE){
 		CIlow <- quantile(delta, probs = 0.025)[[1]]
 		CIhigh <- quantile(delta, probs = 0.975)[[1]]
+		medianPosterior <- median(delta)
 	}
 	if(oneSided == "right"){
 		CIlow <- quantile(delta[delta >= 0], probs = 0.025)[[1]]
 		CIhigh <- quantile(delta[delta >= 0], probs = 0.975)[[1]]
+		medianPosterior <- median(delta[delta >= 0])
 	}
 	if(oneSided == "left"){
 		CIlow <- quantile(delta[delta <= 0], probs = 0.025)[[1]]
 		CIhigh <- quantile(delta[delta <= 0], probs = 0.975)[[1]]
+		medianPosterior <- median(delta[delta <= 0])
 	}	
 	
 	
 	posteriorLine <- dposterior(x= seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, delta=delta)
 	
 	par(mar= c(5, 5, 7, 4) + 0.1, las=1)
+	
 	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
+	
 	plot(1,1, xlim= xlim, ylim= range(yticks), ylab= "", xlab="", type= "n", axes= FALSE)
+	
 	lines(seq(min(xticks), max(xticks),length.out = 1000),posteriorLine, lwd= lwd)
 	lines(seq(min(xticks), max(xticks),length.out = 1000), dprior(seq(min(xticks), max(xticks),length.out = 1000), r=r, oneSided= oneSided), lwd= lwd, lty=3)
 	
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at= yticks, labels= ylabels, , cex.axis= cexAxis, lwd= lwdAxis)
+	
 	mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.1)
 	mtext(expression(paste("Effect size", ~delta)), side = 1, cex = cexXlab, line= 2.5)
 	
@@ -143,14 +161,19 @@
 	yCI <- grconvertY(dmax, "user", "ndc") + 0.08
 	yCIt <- grconvertY(dmax, "user", "ndc") + 0.04
 	y95 <- grconvertY(dmax, "user", "ndc") + 0.1
+	yMedian <- y95 + 0.039
 	yCI <- grconvertY(yCI, "ndc", "user")
 	yCIt <- grconvertY(yCIt, "ndc", "user")
 	y95 <- grconvertY(y95, "ndc", "user")
+	yMedian <- grconvertY(yMedian, "ndc", "user")
+	
 	arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
 	text(mean(c(CIlow, CIhigh)), y95,"95%", cex= cexCI)
+	text(CIlow, yCIt, bquote(.(formatC(CIlow,3, format="f"))), cex= cexCI)
+	text(CIhigh, yCIt, bquote(.(formatC(CIhigh,3, format= "f"))), cex= cexCI)
 	
-	text(CIlow, yCIt, bquote(.(formatC(CIlow,2, format="f"))), cex= cexCI)
-	text(CIhigh, yCIt, bquote(.(formatC(CIhigh,2, format= "f"))), cex= cexCI)
+	medianText <- formatC(medianPosterior, digits= 3, format="f")
+	text(medianPosterior, yMedian,bquote(median==.(medianText)), cex= cexCI)
 	
 	# enable plotting in margin
 	par(xpd=TRUE)
@@ -161,12 +184,12 @@
 	yy2 <- grconvertY(0.878, "ndc", "user")
 	
 	if(BF10 >= 1000000 | BF01 >= 1000000){
-		BF10t <- format(BF10, digits= 3, scientific = TRUE)
-		BF01t <- format(BF01, digits= 3, scientific = TRUE)
+		BF10t <- format(BF10, digits= 4, scientific = TRUE)
+		BF01t <- format(BF01, digits= 4, scientific = TRUE)
 	}
 	if(BF10 < 1000000 & BF01 < 1000000){
-		BF10t <- formatC(BF10,2, format = "f")
-		BF01t <- formatC(BF01,2, format = "f")
+		BF10t <- formatC(BF10,3, format = "f")
+		BF01t <- formatC(BF01,3, format = "f")
 	}
 	
 	if(oneSided == FALSE){
@@ -203,7 +226,8 @@
 	if(max(nchar(BF10t), nchar(BF01t)) > 8){
 		xx <- grconvertX(0.44 + 0.004* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
 	}
-	yy <- grconvertY(0.85, "ndc", "user")
+	
+	yy <- grconvertY(0.854, "ndc", "user")
 	
 	# make sure that colored area is centered
 	radius <- 0.06*diff(range(xticks))
@@ -214,8 +238,8 @@
 	# draw probability wheel
 	plotrix::floating.pie(xx, yy,c(BF10, 1),radius= radius, col=c("darkred", "white"), lwd=2,startpos = startpos)
 	
-	yy <- grconvertY(0.927, "ndc", "user")
-	yy2 <- grconvertY(0.77, "ndc", "user")
+	yy <- grconvertY(0.931, "ndc", "user")
+	yy2 <- grconvertY(0.774, "ndc", "user")
 	
 	if(oneSided == FALSE){
 		text(xx, yy, "data|H1", cex= cexCI)
@@ -232,10 +256,9 @@
 	
 	# add legend
 	xx <- grconvertX(0.57, "ndc", "user")
-	yy <- grconvertY(0.92, "ndc", "user")
+	yy <- grconvertY(0.926, "ndc", "user")
 	legend(xx, yy, legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend)
 }
-
 .plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6, cexTextBF= 1.4, cexText=1.2, cexLegend= 1.4, cexEvidence= 1.6, lwdAxis= 1.2, plotDifferentPriors= FALSE){
 	
 	#### settings ####
