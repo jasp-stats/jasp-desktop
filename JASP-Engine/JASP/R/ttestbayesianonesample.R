@@ -578,7 +578,7 @@
 				
 				if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
 					
-					newy <-  paste(strsplit(yLabs1[length(yLabs1)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLabs1[length(yLabs1)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
+					newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 				} else {
 					
 					newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
@@ -1237,7 +1237,7 @@
 				
 				if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
 					
-					newy <-  paste(strsplit(yLabs1[length(yLabs1)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLabs1[length(yLabs1)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
+					newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 				} else {
 					
 					newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
@@ -1256,7 +1256,7 @@
 			
 			if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
 					
-				newy <-  paste(strsplit(yLabs1[length(yLabs1)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLabs1[length(yLabs1)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
+				newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 			} else {
 					
 				newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
@@ -1922,6 +1922,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
 				}
 				
+				
+				
 				if(is.null(errorMessage)){
 											
 					if(options$plotPriorAndPosterior){
@@ -1991,6 +1993,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 			i <- i + 1
 			}
+			
 	}
 			
 	ttest[["data"]] <- ttest.rows
@@ -2000,8 +2003,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	results[["ttest"]] <- ttest
 	
-	if (callback(results) != 0)
-		return(NULL)
+
 				
 	results
 }
