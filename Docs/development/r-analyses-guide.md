@@ -107,7 +107,7 @@ JASP accepts images as SVGs encoded as base64 data URIs. The following functions
 `.beginSaveImage(width, height)`  
 `.endSaveImage(descriptor)`
 
-`.beginSaveImage()` starts the image capturing process, and returns a descriptor. Once the analysis has performed all the rendering it needs, it should call `.endSaveImage()`, passing in the descriptor provided by `.beginSaveImage()`. `.endSaveImage()` returns a base64 encoded data URI which can be assigned to the image object described below.
+`.beginSaveImage()` starts the image capturing process, and returns a descriptor. Once the analysis has performed all the rendering it needs, it should call `.endSaveImage()`, passing in the descriptor provided by `.beginSaveImage()`. `.endSaveImage()` returns a descriptor which can be assigned to the image object described below.
 
 
 ### Cleaning data
@@ -175,11 +175,33 @@ In place of statistics that will be subsequently created by the analysis, a `"."
 Results
 -------
 
-*In the following section, R lists will be represented in JSON notation. In this format, named lists are represented with `{ "name" : "value", "name 2" : "value 2" }`, and unnamed lists are represented with `[ "valueWithouName", "valueWithoutName 2" ]`. JSON is a particularly good format for representing nested/hierachical structures, which is why we make use of it.*
+In the following section, R lists will be represented in JSON notation. In this format, named lists are represented with
 
-The analysis function should return the results from the analysis, and must be a named list.
+    { "name" : "value", "name 2" : "value 2" }
 
-An example of a results list might be:
+and unnamed lists are represented with
+
+    [ "valueWithouName", "valueWithoutName 2" ]
+
+. JSON is a particularly good format for representing nested/hierachical structures, which is why we make use of it.
+
+The analysis function should return a results bundle and must be a named list.
+
+An example of a results bundle might be:
+
+    {
+        "results" : { ... },
+        "status" : "the status",
+        "state" : { ... }
+        "keep" : [ ... ]
+    }
+
+- `results` : a results object, descriped below
+- `status` : the status, this can be either `"inited"` (typically to be returned when `perform == "init"`) or `"complete"` (typically returned when `perform == "run"`)
+- `state`  : arbitrary data that can be retrieved in a subsequent call of this analysis with a call to `.retrieveState()`
+- `keep` : a list of file descriptors (from `.endSaveImage()`). This instructs the temporary file system to keep these files, and not delete them.
+
+### Results
 
     {
         ".meta" : [
@@ -336,10 +358,11 @@ It is recommended to use the footnotes functions described above, rather than cr
 * `title` : The title of the image
 * `width` : the width of the image
 * `height`: the height of the image
-* `data`  : base64 encoded data URI of an SVG image
+* `data`  : the image, returned by `.endSaveImage()`
 
 `data` is most easily produced with the functions:
-    - `.beginImageSave()`
-    - `.endImageSave()`
+    - `.beginSaveImage()`
+    - `.endSaveImage()`
+
 
 
