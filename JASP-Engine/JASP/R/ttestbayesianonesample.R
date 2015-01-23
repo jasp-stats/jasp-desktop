@@ -1053,18 +1053,22 @@
 	# BF10 "medium" prior
 	BF10m <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "medium")
 	BF10m <- BayesFactor::extractBF(BF10m, logbf = FALSE, onlybf = F)[1, "bf"]
+	BF10mText <- BF10m	
 	
 	# BF10 "wide" prior
 	BF10w <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "wide")
 	BF10w <- BayesFactor::extractBF(BF10w, logbf = FALSE, onlybf = F)[1, "bf"]
+	BF10wText <- BF10w
 	
 	# BF10 "ultrawide" prior
 	BF10ultra <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "ultrawide")
 	BF10ultra <- BayesFactor::extractBF(BF10ultra, logbf = FALSE, onlybf = F)[1, "bf"]
+	BF10ultraText <- BF10ultra
 	
 	# BF10 user prior
 	BF10user <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= r)
 	BF10user <- BayesFactor::extractBF(BF10user, logbf = FALSE, onlybf = F)[1, "bf"]
+	BF10userText <- BF10user
 	
 	####################### scale y axis ###########################
 	
@@ -1661,7 +1665,7 @@
 	# display BF10
 	lines(rValues,log(BF10), col="black", lwd = 2.7)
 	
-	# display "medium", "wide", and "ultrawide" prior BFs
+	# display "medium", user, and "ultrawide" prior BFs
 	points(r, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
 	points(sqrt(2) / 2, log(BF10m), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "medium" prior
 	points(sqrt(2), log(BF10ultra), pch=21, bg= "white", cex= 1.1, lwd= 1.3) # "ultrawide" prior
@@ -1670,22 +1674,22 @@
 	# BF values
 	
 	# BFuser
-	BF01user <- 1/BF10user
+	BF01userText <- 1 / BF10userText
 	
-	if (BF10user >= 1000000 | BF01user >= 1000000) {
+	if (BF10userText >= 1000000 | BF01userText >= 1000000) {
 	
-		BF10usert <- format(BF10user, digits= 4, scientific = TRUE)
-		BF01usert <- format(BF01user, digits= 4, scientific = TRUE)
+		BF10usert <- format(BF10userText, digits= 4, scientific = TRUE)
+		BF01usert <- format(BF01userText, digits= 4, scientific = TRUE)
 	}
-	if (BF10user < 1000000 & BF01user < 1000000) {
+	if (BF10userText < 1000000 & BF01userText < 1000000) {
 	
-		BF10usert <- formatC(BF10user, 3, format = "f")
-		BF01usert <- formatC(BF01user, 3, format = "f")
+		BF10usert <- formatC(BF10userText, 3, format = "f")
+		BF01usert <- formatC(BF01userText, 3, format = "f")
 	}
 	
 	if (oneSided == FALSE) {
 	
-		if( BF10user >= BF01user) {
+		if( BF10userText >= BF01userText) {
 			userBF <- bquote(BF[10]==.(BF10usert))
 		} else {
 			userBF <- bquote(BF[0][1]==.(BF01usert))
@@ -1693,7 +1697,7 @@
 	}
 	if (oneSided == "right") {
 	
-		if (BF10user >= BF01user) {
+		if (BF10userText >= BF01userText) {
 			userBF <- bquote(BF["+"][0]==.(BF10usert))
 		} else {
 			userBF <- bquote(BF[0]["+"]==.(BF01usert))
@@ -1701,7 +1705,7 @@
 	}
 	if (oneSided == "left") {
 	
-		if (BF10user >= BF01user) {
+		if (BF10userText >= BF01userText) {
 			userBF <- bquote(BF["-"][0]==.(BF10usert))
 		} else {
 			userBF <- bquote(BF[0]["-"]==.(BF01usert))
@@ -1709,20 +1713,20 @@
 	}
 	
 	# BFmedium
-	BF01m <- 1/BF10m
+	BF01mText <- 1 / BF10mText
 	
-	if (BF10m >= 1000000 | BF01m >= 1000000) {
-		BF10mt <- format(BF10m, digits= 4, scientific = TRUE)
-		BF01mt <- format(BF01m, digits= 4, scientific = TRUE)
+	if (BF10mText >= 1000000 | BF01mText >= 1000000) {
+		BF10mt <- format(BF10mText, digits= 4, scientific = TRUE)
+		BF01mt <- format(BF01mText, digits= 4, scientific = TRUE)
 	}
-	if (BF10m < 1000000 & BF01m < 1000000) {
-		BF10mt <- formatC(BF10m, 3, format = "f")
-		BF01mt <- formatC(BF01m, 3, format = "f")
+	if (BF10mText < 1000000 & BF01mText < 1000000) {
+		BF10mt <- formatC(BF10mText, 3, format = "f")
+		BF01mt <- formatC(BF01mText, 3, format = "f")
 	}
 	
 	if (oneSided == FALSE) {
 	
-		if (BF10m >= BF01m) {
+		if (BF10mText >= BF01mText) {
 			mBF <- bquote(BF[10]==.(BF10mt))
 		} else {
 			mBF <- bquote(BF[0][1]==.(BF01mt))
@@ -1730,7 +1734,7 @@
 	}
 	if (oneSided == "right") {
 	
-		if (BF10m >= BF01m) {
+		if (BF10mText >= BF01mText) {
 			mBF <- bquote(BF["+"][0]==.(BF10mt))
 		} else {
 			mBF <- bquote(BF[0]["+"]==.(BF01mt))
@@ -1738,7 +1742,7 @@
 	}
 	if (oneSided == "left") {
 	
-		if (BF10m >= BF01m) {
+		if (BF10mText >= BF01mText) {
 			mBF <- bquote(BF["-"][0]==.(BF10mt))
 		} else {
 			mBF <- bquote(BF[0]["-"]==.(BF01mt))
@@ -1746,20 +1750,20 @@
 	}
 	
 	# BFultrawide
-	BF01ultra <- 1/BF10ultra
+	BF01ultraText <- 1 / BF10ultraText
 	
-	if (BF10ultra >= 1000000 | BF01ultra >= 1000000) {
-		BF10ultrat <- format(BF10ultra, digits= 4, scientific = TRUE)
-		BF01ultrat <- format(BF01ultra, digits= 4, scientific = TRUE)
+	if (BF10ultraText >= 1000000 | BF01ultraText >= 1000000) {
+		BF10ultrat <- format(BF10ultraText, digits= 4, scientific = TRUE)
+		BF01ultrat <- format(BF01ultraText, digits= 4, scientific = TRUE)
 	}
-	if (BF10ultra < 1000000 & BF01ultra < 1000000) {
-		BF10ultrat <- formatC(BF10ultra, 3, format = "f")
-		BF01ultrat <- formatC(BF01ultra, 3, format = "f")
+	if (BF10ultraText < 1000000 & BF01ultraText < 1000000) {
+		BF10ultrat <- formatC(BF10ultraText, 3, format = "f")
+		BF01ultrat <- formatC(BF01ultraText, 3, format = "f")
 	}
 	
 	if (oneSided == FALSE) {
 	
-		if (BF10ultra >= BF01ultra) {
+		if (BF10ultraText >= BF01ultraText) {
 			ultraBF <- bquote(BF[10]==.(BF10ultrat))
 		} else {
 			ultraBF <- bquote(BF[0][1]==.(BF01ultrat))
@@ -1767,7 +1771,7 @@
 	}
 	if (oneSided == "right") {
 	
-		if (BF10ultra >= BF01ultra) {
+		if (BF10ultraText >= BF01ultraText) {
 			ultraBF <- bquote(BF["+"][0]==.(BF10ultrat))
 		} else{
 			ultraBF <- bquote(BF[0]["+"]==.(BF01ultrat))
@@ -1775,7 +1779,7 @@
 	}
 	if (oneSided == "left") {
 	
-		if (BF10ultra >= BF01ultra) {
+		if (BF10ultraText >= BF01ultraText) {
 			ultraBF <- bquote(BF["-"][0]==.(BF10ultrat))
 		} else {
 			ultraBF <- bquote(BF[0]["-"]==.(BF01ultrat))
@@ -1785,8 +1789,8 @@
 	xx <- grconvertX(0.2, "ndc", "user")
 	yy <- grconvertY(0.945, "ndc", "user")
 	
-	BFind <- sort(c(BF10user, BF10ultra, BF10m), decreasing = TRUE, index.return=TRUE)$ix
-	BFsort <- sort(c(BF10user, BF10ultra, BF10m), decreasing = TRUE, index.return=TRUE)$x
+	BFind <- sort(c(BF10userText, BF10ultraText, BF10mText), decreasing = TRUE, index.return=TRUE)$ix
+	BFsort <- sort(c(BF10userText, BF10ultraText, BF10mText), decreasing = TRUE, index.return=TRUE)$x
 	
 	legend <- c("user prior:", "ultrawide prior:", "medium prior:")
 	pt.bg <-  c("grey", "white", "black")
@@ -1800,9 +1804,9 @@
 	y3 <- grconvertY(0.782, "ndc", "user")
 	yy <- c(y1, y2, y3)
 	
-	text(xx, yy[BFsort== BF10user], userBF, cex= 1.3,pos = 4)
-	text(xx, yy[BFsort== BF10ultra], ultraBF, cex= 1.3, pos= 4)
-	text(xx, yy[BFsort== BF10m], mBF, cex= 1.3, pos= 4)
+	text(xx, yy[BFsort== BF10userText], userBF, cex= 1.3,pos = 4)
+	text(xx, yy[BFsort== BF10ultraText], ultraBF, cex= 1.3, pos= 4)
+	text(xx, yy[BFsort== BF10mText], mBF, cex= 1.3, pos= 4)
 }
 
 TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
