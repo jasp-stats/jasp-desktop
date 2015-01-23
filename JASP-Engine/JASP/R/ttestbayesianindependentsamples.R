@@ -42,13 +42,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	status <- ttest.results[[2]]
 	g1 <- ttest.results[[3]]
 	g2 <- ttest.results[[4]]
-	results[["plots"]] <- .ttestBayesianIndependentSamplesTTestPlots(dataset, options, perform, status, g1, g2)
+	BFH1H0 <- ttest.results[[5]]
+	results[["plots"]] <- .ttestBayesianIndependentSamplesTTestPlots(dataset, options, perform, status, g1, g2, BFH1H0)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
 	
 	results
 }
 
-.ttestBayesianIndependentSamplesTTestPlots <- function(dataset, options, perform, status, g1, g2) {
+.ttestBayesianIndependentSamplesTTestPlots <- function(dataset, options, perform, status, g1, g2, BFH1H0) {
 	
 	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
 	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
@@ -174,7 +175,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			
 				image <- .beginSaveImage(530, 400)
 				
-				.plotBF.robustnessCheck.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
+				.plotBF.robustnessCheck.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 									
 				content <- .endSaveImage(image)
 				
@@ -243,6 +244,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	if (options$bayesFactorType == "BF01") {
 	
+		BFH1H0 <- FALSE
+	
 		if (options$hypothesis == "groupsNotEqual"){
 			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
 		}
@@ -254,6 +257,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 		
 	} else {
+	
+		BFH1H0 <- TRUE
 	
 		if (options$hypothesis == "groupsNotEqual"){
 			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080")
@@ -443,6 +448,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	ttest[["data"]] <- ttest.rows
 	
-	list(ttest, status, g1, g2)
+	list(ttest, status, g1, g2, BFH1H0)
 
 }
