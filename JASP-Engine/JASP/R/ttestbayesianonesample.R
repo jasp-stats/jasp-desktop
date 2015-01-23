@@ -624,7 +624,7 @@
 				}
 			}
 			
-			ylab1s <- c(newy, yLab1s)
+			yLab1s <- c(newy, yLab1s)
 		}
 		
 		yLab <- yLab1s
@@ -1011,29 +1011,30 @@
 	}	
 }
 		
-.plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2 , cexEvidence= 1.6){ 
+.plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
+ cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE){ 
 	
 	#### settings ####
-	if(rscale == "medium"){
+	if (rscale == "medium") {
 		r <- sqrt(2) / 2
 	}
-	if(rscale == "wide"){
+	if (rscale == "wide") {
 		r <- 1
 	}
-	if(rscale == "ultrawide"){
+	if (rscale == "ultrawide") {
 		r <- sqrt(2)
 	}
-	if(mode(rscale) == "numeric"){
+	if (mode(rscale) == "numeric") {
 		r <- rscale
 	}
 	
-	if(oneSided == FALSE){
+	if (oneSided == FALSE) {
 		nullInterval <- NULL
 	}
-	if(oneSided == "right"){
+	if (oneSided == "right") {
 		nullInterval <- c(0, Inf)
 	}
-	if(oneSided == "left"){
+	if (oneSided == "left") {
 		nullInterval <- c(-Inf, 0)
 	}
 	
@@ -1043,7 +1044,8 @@
 	# BF10
 	BF10 <- vector("numeric", length(rValues))
 	
-	for(i in seq_along(rValues)){
+	for (i in seq_along(rValues)) {
+	
 		BF <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= rValues[i])
 		BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 	}
@@ -1068,21 +1070,31 @@
 	
 	BF <- c(BF10, BF10m, BF10w, BF10ultra, BF10user)
 	
+	if (!BFH1H0) {
+		
+		BF <- 1 / BF
+		BF10 <- 1 / BF10
+		BF10m  <- 1 / BF10m
+		BF10w <- 1 / BF10w
+		BF10ultra <- 1 / BF10ultra
+		BF10user <- 1 / BF10user
+	}
+	
 	# y-axis labels larger than 1
 	y1h <- "1"
 	i <- 1
 	
-	while(eval(parse(text= y1h[i])) < max(BF)){
+	while (eval(parse(text= y1h[i])) < max(BF)) {
 		
-		if(grepl(pattern = "e",y1h[i])){
+		if (grepl(pattern = "e",y1h[i])) {
 			
 			newy <- paste(strsplit(y1h[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y1h[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
-		} else{
+		} else {
 			
 			newy <- paste(y1h[i], "0", sep= "")
 		}
 		
-		if(eval(parse(text=newy)) >= 10^6){
+		if (eval(parse(text=newy)) >= 10^6) {
 			
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
@@ -1094,9 +1106,9 @@
 	y3h <- "3"
 	i <- 1
 	
-	while(eval(parse(text= y3h[i])) < max(BF)){
+	while (eval(parse(text= y3h[i])) < max(BF)) {
 		
-		if(grepl(pattern = "e",y3h[i])){
+		if (grepl(pattern = "e",y3h[i])) {
 			
 			newy <- paste(strsplit(y3h[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y3h[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
@@ -1104,7 +1116,7 @@
 			newy <- paste(y3h[i], "0", sep= "")
 		}
 		
-		if(as.numeric(newy) >= 10^6){
+		if (as.numeric(newy) >= 10^6) {
 			
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
@@ -1117,15 +1129,15 @@
 	o <- 1
 	e <- 1
 	
-	for(i in seq_along(yhigh)){
+	for (i in seq_along(yhigh)) {
 		
-		if(i %% 2 == 1){
+		if (i %% 2 == 1) {
 			
 			yhigh[i] <- y1h[o]
 			o <- o + 1
 		}
 		
-		if(i %% 2 == 0){
+		if (i %% 2 == 0) {
 			
 			yhigh[i] <- y3h[e]
 			e <- e + 1
@@ -1138,9 +1150,9 @@
 	y1l <- "1/1"
 	i <- 1
 	
-	while(eval(parse(text= y1l[i])) > min(BF)){
+	while (eval(parse(text= y1l[i])) > min(BF)) {
 		
-		if(grepl(pattern = "e",y1l[i])){
+		if (grepl(pattern = "e",y1l[i])) {
 			
 			newy <- paste(strsplit(y1l[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y1l[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
@@ -1148,7 +1160,7 @@
 			newy <- paste(y1l[i], "0", sep= "")
 		}
 		
-		if(eval(parse(text= newy)) <= 10^(-6)){
+		if (eval(parse(text= newy)) <= 10^(-6)) {
 			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <-  sub("-", "+", x = newy)
@@ -1162,9 +1174,9 @@
 	y3l <- "1/3"
 	i <- 1
 	
-	while(eval(parse(text= y3l[i])) > min(BF)){
+	while (eval(parse(text= y3l[i])) > min(BF)) {
 		
-		if(grepl(pattern = "e",y3l[i])){
+		if (grepl(pattern = "e",y3l[i])) {
 			
 			newy <- paste(strsplit(y3l[i], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(y3l[i],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 		} else {
@@ -1172,11 +1184,11 @@
 			newy <- paste(y3l[i], "0", sep= "")
 		}
 		
-		if(newy == "1/3e+9"){
+		if (newy == "1/3e+9") {
 			newy <- "1/3e+09"
 		}	
 		
-		if(eval(parse(text= newy)) <= 10^(-6) & eval(parse(text= newy)) > 10^(-9)){
+		if (eval(parse(text= newy)) <= 10^(-6) & eval(parse(text= newy)) > 10^(-9)) {
 			
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <- paste(substring(newy, 1, nchar(newy)-1), as.numeric(substring(newy, nchar(newy), nchar(newy)))-1,sep="")
@@ -1193,13 +1205,13 @@
 	o <- 1
 	e <- 1
 	
-	for(i in seq_along(ylow)){
+	for (i in seq_along(ylow)) {
 		
-		if(i %% 2 == 1){
+		if (i %% 2 == 1) {
 			ylow[i] <- y1l[o]
 			o <- o + 1
 		}
-		if(i %% 2 == 0){
+		if (i %% 2 == 0) {
 			ylow[i] <- y3l[e]
 			e <- e + 1
 		}
@@ -1210,7 +1222,7 @@
 	# remove 3's if yLab vector is too long
 	omit3s <- FALSE
 	
-	if(length(yLab) > 9){
+	if (length(yLab) > 9) {
 		
 		omit3s <- TRUE
 		
@@ -1218,10 +1230,10 @@
 		
 		yLabsHigh <- yLab[ind:length(yLab)]
 		
-		if(length(yLabsHigh) > 1){
+		if (length(yLabsHigh) > 1) {
 			
 			yLabsHigh <- yLabsHigh[seq(2, length(yLabsHigh),2)]
-		} else{
+		} else {
 			
 			yLabsHigh <- character(0)
 		}		
@@ -1231,11 +1243,11 @@
 		
 		yLab1s <- c(yLabsLow, yLabsHigh)
 		
-		if(max(BF) > eval(parse(text= yLab1s[length(yLab1s)]))){
+		if (max(BF) > eval(parse(text= yLab1s[length(yLab1s)]))) {
 			
-			for(i in 1:2){
+			for (i in 1:2) {
 				
-				if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
+				if (grepl(pattern = "e",yLab1s[length(yLab1s)])) {
 					
 					newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 				} else {
@@ -1243,7 +1255,7 @@
 					newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 				}
 				
-				if(eval(parse(text=newy)) >= 10^6){
+				if (eval(parse(text=newy)) >= 10^6) {
 					
 					newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 				}
@@ -1252,9 +1264,9 @@
 			}
 		}
 		
-		if(max(BF) > eval(parse(text= yLab1s[length(yLab1s)-1]))){
+		if (max(BF) > eval(parse(text= yLab1s[length(yLab1s)-1]))) {
 			
-			if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
+			if (grepl(pattern = "e",yLab1s[length(yLab1s)])) {
 					
 				newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 			} else {
@@ -1262,7 +1274,7 @@
 				newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 			}
 				
-			if(eval(parse(text=newy)) >= 10^6){
+			if (eval(parse(text=newy)) >= 10^6) {
 					
 				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			}
@@ -1270,20 +1282,20 @@
 			yLab1s <- c(yLab1s, newy)
 		}		
 		
-		if(yLab1s[1] == "1"){
+		if (yLab1s[1] == "1") {
 			
 			yLab1s <- c(paste0(yLab1s[1], "/", "10"), yLab1s)
 		}
-		if(yLab1s[length(yLab1s)] == "1"){
+		if (yLab1s[length(yLab1s)] == "1") {
 			
 			yLab1s <- c(yLab1s, "10")
 		}
 		
-		if(min(BF) < eval(parse(text= yLab1s[1]))){
+		if (min(BF) < eval(parse(text= yLab1s[1]))) {
 			
-			for(i in 1:2){
+			for (i in 1:2) {
 				
-				if(grepl(pattern = "e",yLab1s[1])){
+				if (grepl(pattern = "e",yLab1s[1])) {
 					
 					newy <- paste(strsplit(yLab1s[1], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[1],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 				} else {
@@ -1291,7 +1303,7 @@
 					newy <- paste(yLab1s[1], "0", sep= "")
 				}
 				
-				if(eval(parse(text= newy)) <= 10^(-6)){
+				if (eval(parse(text= newy)) <= 10^(-6)) {
 					
 					newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 					newy <-  sub("-", "+", x = newy)
@@ -1300,12 +1312,12 @@
 				}
 			}
 			
-			ylab1s <- c(newy, yLab1s)
+			yLab1s <- c(newy, yLab1s)
 		}
 		
-		if(min(BF) < eval(parse(text= yLab1s[2]))){
+		if (min(BF) < eval(parse(text= yLab1s[2]))) {
 			
-			if(grepl(pattern = "e",yLab1s[1])){
+			if (grepl(pattern = "e",yLab1s[1])) {
 					
 				newy <- paste(strsplit(yLab1s[1], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[1],split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 			} else {
@@ -1313,7 +1325,7 @@
 				newy <- paste(yLab1s[1], "0", sep= "")
 			}
 				
-			if(eval(parse(text= newy)) <= 10^(-6)){
+			if (eval(parse(text= newy)) <= 10^(-6)) {
 					
 				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 				newy <-  sub("-", "+", x = newy)
@@ -1322,54 +1334,54 @@
 			}
 			
 			
-			ylab1s <- c(newy, yLab1s)
+			yLab1s <- c(newy, yLab1s)
 		}
 		
 		yLab <- yLab1s
 	}
 	
-	while(length(yLab) > 9){
+	while (length(yLab) > 9) {
 		
 		ind <- which(yLab == "1")
 		
-		if(ind == 1){
+		if (ind == 1) {
 			
 			yLabLow <- character(0)
-		} else{
+		} else {
 			
 			yLabLow <- yLab[1:(ind-1)]
 		}
 		
-		if(ind == length(yLab)){
+		if (ind == length(yLab)) {
 			
 			yLabHigh <- character(0)
-		} else{
+		} else {
 			
 			yLabHigh <- yLab[(ind+1):length(yLab)]
 		}		
 		
-		if(length(yLabLow) > 1){
+		if (length(yLabLow) > 1) {
 			
 			yLabLow <- yLabLow[seq(length(yLabLow)-1, 1, -2)]
-		} else{
+		} else {
 			
 			yLabLow <- yLabLow
 		}
 		
 		
-		if(length(yLabHigh) > 1){
+		if (length(yLabHigh) > 1) {
 			
 			yLabHigh <- yLabHigh[seq(2, length(yLabHigh), 2)]
-		} else{
+		} else {
 			
 			yLabHigh <- yLabHigh
 		}
 		
-		if(length(yLabLow) == 1){
+		if (length(yLabLow) == 1) {
 			
 			yLabLow <- paste("1/", yLabHigh[1], sep="")
 		}
-		if(length(yLabHigh) == 1){
+		if (length(yLabHigh) == 1) {
 			
 			yLabHigh <- strsplit(x = yLabLow[1], "/", fixed=TRUE)[[1]][2]
 		}
@@ -1378,9 +1390,9 @@
 	}
 	
 	
-	while(eval(parse(text=yLab[1])) > min(BF)){
+	while (eval(parse(text=yLab[1])) > min(BF)) {
 		
-		for(i in 1:2){
+		for (i in 1:2) {
 			
 			interval <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[2], "+", fixed= TRUE)[[1]][2])
 			pot <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) + interval
@@ -1390,9 +1402,9 @@
 		}		
 	}		
 	
-	while(eval(parse(text=yLab[length(yLab)])) < max(BF)){
+	while (eval(parse(text=yLab[length(yLab)])) < max(BF)) {
 		
-		for(i in 1:2){
+		for (i in 1:2) {
 			
 			interval <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[length(yLab)-1], "+", fixed= TRUE)[[1]][2])
 			pot <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) + interval
@@ -1403,7 +1415,7 @@
 	
 	yAt <- vector("numeric", length(yLab))
 	
-	for(i in seq_along(yLab)){
+	for (i in seq_along(yLab)) {
 		
 		yAt[i] <- log(eval(parse(text= yLab[i])))
 	}	
@@ -1420,7 +1432,8 @@
 	
 	plot(1,1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
 	
-	for (i in seq_along(yAt)){
+	for (i in seq_along(yAt)) {
+		
 		lines(x= xlim, y= rep(yAt[i], 2), col='darkgrey', lwd= 1.3, lty=2)
 	}
 	
@@ -1435,79 +1448,127 @@
 	
 	yAthigh <- yAt[yAt >= 0]
 	
-	if(omit3s == FALSE){
+	if (omit3s == FALSE) {
 		
-		for(i in 1:(length(yAthigh)-1)){
+		for (i in 1:(length(yAthigh)-1)) {
 			yy <- mean(c(yAthigh[i], yAthigh[i+1]))
 			
-			if(yAthigh[i] == log(1)){
+			if (yAthigh[i] == log(1)) {
 				text(x = xx, yy,"Anecdotal", pos= 4, cex= cexText)
 			}
-			if(yAthigh[i] == log(3)){
+			if (yAthigh[i] == log(3)) {
 				text(x = xx, yy,"Moderate", pos= 4, cex= cexText)
 			}
-			if(yAthigh[i] == log(10)){
+			if (yAthigh[i] == log(10)) {
 				text(x = xx, yy,"Strong", pos= 4, cex= cexText)
 			}
-			if(yAthigh[i] == log(30)){
+			if (yAthigh[i] == log(30)) {
 				text(x = xx, yy,"Very strong", pos= 4, cex= cexText)
 			}
-			if(yAthigh[i] == log(100)){
+			if (yAthigh[i] == log(100)) {
 				text(x = xx, yy,"Extreme", pos= 4, cex= cexText)
 			}		
 		}
 		
 		yAtlow <- rev(yAt[yAt <= 0])
 		
-		for(i in 1:(length(yAtlow)-1)){
+		for (i in 1:(length(yAtlow)-1)) {
+		
 			yy <- mean(c(yAtlow[i], yAtlow[i+1]))
 			
-			if(yAtlow[i] == log(1)){
+			if (yAtlow[i] == log(1)) {
 				text(x = xx, yy,"Anecdotal", pos= 4, cex= cexText)
 			}
-			if(yAtlow[i] == log(1/3)){
+			if (yAtlow[i] == log(1/3)) {
 				text(x = xx, yy,"Moderate", pos= 4, cex= cexText)
 			}
-			if(yAtlow[i] == log(1/10)){
+			if (yAtlow[i] == log(1/10)) {
 				text(x = xx, yy,"Strong", pos= 4, cex= cexText)
 			}
-			if(yAtlow[i] == log(1/30)){
+			if (yAtlow[i] == log(1/30)) {
 				text(x = xx, yy,"Very strong", pos= 4, cex= cexText)
 			}
-			if(yAtlow[i] == log(1/100)){
+			if (yAtlow[i] == log(1/100)) {
 				text(x = xx, yy,"Extreme", pos= 4, cex= cexText)
 			}		
 		}		
 		
 		axis(side=4, at= yAt,tick=TRUE,las=2, cex.axis= cexAxis, lwd= lwdAxis, labels=FALSE, line= -0.6)
+		
 		xx <- grconvertX(0.96, "ndc", "user")
 		yy <- grconvertY(0.5, "npc", "user")
 		text(xx, yy, "Evidence", srt= -90, cex= cexEvidence)
 	}
 	
-	if(omit3s){
+	if (omit3s) {
 		
-		if(oneSided == FALSE){
-			mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+		if (oneSided == FALSE) {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+			} else {
+				
+				mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+			}			
 		}
-		if(oneSided == "right"){
-			mtext(text = expression(BF["+"][0]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+		
+		if (oneSided == "right") {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF["+"][0]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+			} else {
+				
+				mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+			}			
 		}
-		if(oneSided == "left"){
-			mtext(text = expression(BF["-"][0]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+		
+		if (oneSided == "left") {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF["-"][0]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+			} else {
+				
+				mtext(text = expression(BF[0]["-"]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+			}			
 		}
 	}
 	
-	if(omit3s == FALSE){
+	if (omit3s == FALSE) {
 		
-		if(oneSided == FALSE){
-			mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+		if (oneSided == FALSE) {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			} else {
+				
+				mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			}
 		}
-		if(oneSided == "right"){
-			mtext(text = expression(BF["+"][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+		
+		if (oneSided == "right") {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF["+"][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			} else {
+				
+				mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			}
 		}
-		if(oneSided == "left"){
-			mtext(text = expression(BF["-"][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+		
+		if (oneSided == "left") {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF["-"][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			} else {
+				
+				mtext(text = expression(BF[0]["-"]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			}			
 		}
 	}
 	
@@ -1523,14 +1584,37 @@
 	
 	xxt <- grconvertX(0.28, "npc", "user")
 	
-	if(oneSided == FALSE){
-		text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H1", cex= cexText)
+	if (oneSided == FALSE) {
+		
+		if (BFH1H0) {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H1", cex= cexText)
+		} else {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+		}		
 	}
-	if(oneSided == "right"){
-		text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
+	
+	if (oneSided == "right") {
+		
+		if (BFH1H0) {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
+		} else {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+		}		
 	}
-	if(oneSided == "left"){
-		text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H-", cex= cexText)
+	
+	if (oneSided == "left") {
+		
+		if (BFH1H0) {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H-", cex= cexText)
+		} else {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+		}		
 	}
 	
 	yy1 <- yAt[2]
@@ -1539,14 +1623,46 @@
 	yya2 <- yy1 + 3/4 * diff(c(yy1, yy2))
 	
 	arrows(xx, yya1, xx, yya2, length = 0.1, code = 2, lwd= lwd)
-	text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+	
+	if (oneSided == FALSE) {
+		
+		if (BFH1H0) {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+		} else {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H1", cex= cexText)
+		}		
+	}
+	
+	if (oneSided == "right"){
+		
+		if (BFH1H0) {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+		} else {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
+		}		
+	}
+	
+	if (oneSided == "left") {
+		
+		if (BFH1H0) {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+		} else {
+			
+			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H-", cex= cexText)
+		}		
+	}
+	
 	
 	# display BF10
 	lines(rValues,log(BF10), col="black", lwd = 2.7)
 	
 	# display "medium", "wide", and "ultrawide" prior BFs
 	points(r, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
-	# points(sqrt(2) / 2, log(BF10wide), pch=21, bg= "black", cex= 0.7, lwd= 1.3) # "wide" prior
 	points(sqrt(2) / 2, log(BF10m), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "medium" prior
 	points(sqrt(2), log(BF10ultra), pch=21, bg= "white", cex= 1.1, lwd= 1.3) # "ultrawide" prior
 	
@@ -1556,33 +1672,38 @@
 	# BFuser
 	BF01user <- 1/BF10user
 	
-	if(BF10user >= 1000000 | BF01user >= 1000000){
-		BF10usert <- format(BF10user, digits= 3, scientific = TRUE)
-		BF01usert <- format(BF01user, digits= 3, scientific = TRUE)
+	if (BF10user >= 1000000 | BF01user >= 1000000) {
+	
+		BF10usert <- format(BF10user, digits= 4, scientific = TRUE)
+		BF01usert <- format(BF01user, digits= 4, scientific = TRUE)
 	}
-	if(BF10user < 1000000 & BF01user < 1000000){
-		BF10usert <- formatC(BF10user,2, format = "f")
-		BF01usert <- formatC(BF01user,2, format = "f")
+	if (BF10user < 1000000 & BF01user < 1000000) {
+	
+		BF10usert <- formatC(BF10user, 3, format = "f")
+		BF01usert <- formatC(BF01user, 3, format = "f")
 	}
 	
-	if(oneSided == FALSE){
-		if(BF10user >= BF01user){
+	if (oneSided == FALSE) {
+	
+		if( BF10user >= BF01user) {
 			userBF <- bquote(BF[10]==.(BF10usert))
-		} else{
+		} else {
 			userBF <- bquote(BF[0][1]==.(BF01usert))
 		}		
 	}
-	if(oneSided == "right"){
-		if(BF10user >= BF01user){
+	if (oneSided == "right") {
+	
+		if (BF10user >= BF01user) {
 			userBF <- bquote(BF["+"][0]==.(BF10usert))
-		} else{
+		} else {
 			userBF <- bquote(BF[0]["+"]==.(BF01usert))
 		}	
 	}
-	if(oneSided == "left"){
-		if(BF10user >= BF01user){
+	if (oneSided == "left") {
+	
+		if (BF10user >= BF01user) {
 			userBF <- bquote(BF["-"][0]==.(BF10usert))
-		} else{
+		} else {
 			userBF <- bquote(BF[0]["-"]==.(BF01usert))
 		}	
 	}
@@ -1590,33 +1711,36 @@
 	# BFmedium
 	BF01m <- 1/BF10m
 	
-	if(BF10m >= 1000000 | BF01m >= 1000000){
-		BF10mt <- format(BF10m, digits= 3, scientific = TRUE)
-		BF01mt <- format(BF01m, digits= 3, scientific = TRUE)
+	if (BF10m >= 1000000 | BF01m >= 1000000) {
+		BF10mt <- format(BF10m, digits= 4, scientific = TRUE)
+		BF01mt <- format(BF01m, digits= 4, scientific = TRUE)
 	}
-	if(BF10m < 1000000 & BF01m < 1000000){
-		BF10mt <- formatC(BF10m,2, format = "f")
-		BF01mt <- formatC(BF01m,2, format = "f")
+	if (BF10m < 1000000 & BF01m < 1000000) {
+		BF10mt <- formatC(BF10m, 3, format = "f")
+		BF01mt <- formatC(BF01m, 3, format = "f")
 	}
 	
-	if(oneSided == FALSE){
-		if(BF10m >= BF01m){
+	if (oneSided == FALSE) {
+	
+		if (BF10m >= BF01m) {
 			mBF <- bquote(BF[10]==.(BF10mt))
-		} else{
+		} else {
 			mBF <- bquote(BF[0][1]==.(BF01mt))
 		}		
 	}
-	if(oneSided == "right"){
-		if(BF10m >= BF01m){
+	if (oneSided == "right") {
+	
+		if (BF10m >= BF01m) {
 			mBF <- bquote(BF["+"][0]==.(BF10mt))
-		} else{
+		} else {
 			mBF <- bquote(BF[0]["+"]==.(BF01mt))
 		}	
 	}
-	if(oneSided == "left"){
-		if(BF10m >= BF01m){
+	if (oneSided == "left") {
+	
+		if (BF10m >= BF01m) {
 			mBF <- bquote(BF["-"][0]==.(BF10mt))
-		} else{
+		} else {
 			mBF <- bquote(BF[0]["-"]==.(BF01mt))
 		}	
 	}
@@ -1624,33 +1748,36 @@
 	# BFultrawide
 	BF01ultra <- 1/BF10ultra
 	
-	if(BF10ultra >= 1000000 | BF01ultra >= 1000000){
-		BF10ultrat <- format(BF10ultra, digits= 3, scientific = TRUE)
-		BF01ultrat <- format(BF01ultra, digits= 3, scientific = TRUE)
+	if (BF10ultra >= 1000000 | BF01ultra >= 1000000) {
+		BF10ultrat <- format(BF10ultra, digits= 4, scientific = TRUE)
+		BF01ultrat <- format(BF01ultra, digits= 4, scientific = TRUE)
 	}
-	if(BF10ultra < 1000000 & BF01ultra < 1000000){
-		BF10ultrat <- formatC(BF10ultra,2, format = "f")
-		BF01ultrat <- formatC(BF01ultra,2, format = "f")
+	if (BF10ultra < 1000000 & BF01ultra < 1000000) {
+		BF10ultrat <- formatC(BF10ultra, 3, format = "f")
+		BF01ultrat <- formatC(BF01ultra, 3, format = "f")
 	}
 	
-	if(oneSided == FALSE){
-		if(BF10ultra >= BF01ultra){
+	if (oneSided == FALSE) {
+	
+		if (BF10ultra >= BF01ultra) {
 			ultraBF <- bquote(BF[10]==.(BF10ultrat))
-		} else{
+		} else {
 			ultraBF <- bquote(BF[0][1]==.(BF01ultrat))
 		}		
 	}
-	if(oneSided == "right"){
-		if(BF10ultra >= BF01ultra){
+	if (oneSided == "right") {
+	
+		if (BF10ultra >= BF01ultra) {
 			ultraBF <- bquote(BF["+"][0]==.(BF10ultrat))
 		} else{
 			ultraBF <- bquote(BF[0]["+"]==.(BF01ultrat))
 		}	
 	}
-	if(oneSided == "left"){
-		if(BF10ultra >= BF01ultra){
+	if (oneSided == "left") {
+	
+		if (BF10ultra >= BF01ultra) {
 			ultraBF <- bquote(BF["-"][0]==.(BF10ultrat))
-		} else{
+		} else {
 			ultraBF <- bquote(BF[0]["-"]==.(BF01ultrat))
 		}	
 	}	
@@ -1731,6 +1858,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	bf.type <- options$bayesFactorType
 	
 	if (bf.type == "BF10") {
+	
+		BFH1H0 <- TRUE
+		
 		if (options$hypothesis == "notEqualToTestValue") {
 			bf.title <- "BF\u2081\u2080"
 		}
@@ -1742,6 +1872,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		}
 		
 	} else {
+	
+		BFH1H0 <- FALSE
 		
 		if (options$hypothesis == "notEqualToTestValue") {
 			bf.title <- "BF\u2080\u2081"
@@ -1945,7 +2077,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 											
 						content <- .endSaveImage(image)
 						

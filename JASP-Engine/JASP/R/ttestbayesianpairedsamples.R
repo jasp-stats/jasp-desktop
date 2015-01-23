@@ -57,6 +57,9 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	bf.type <- options$bayesFactorType
 	
 	if (bf.type == "BF10") {
+	
+		BFH1H0 <- TRUE
+	
 		if (options$hypothesis == "groupsNotEqual") {
 			bf.title <- "BF\u2081\u2080"
 		}
@@ -67,6 +70,9 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			bf.title <- "BF\u208B\u2080"
 		}
 	} else {
+	
+		BFH1H0 <- FALSE
+	
 		if (options$hypothesis == "groupsNotEqual") {
 			bf.title <- "BF\u2080\u2081"
 		}
@@ -263,7 +269,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							.plotBF.robustnessCheck.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
+							.plotBF.robustnessCheck.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 												
 							content <- .endSaveImage(image)
 							
