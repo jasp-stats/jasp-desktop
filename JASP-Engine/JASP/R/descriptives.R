@@ -672,6 +672,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			i <- 1
 	
 			for (variable in variables) {
+<<<<<<< HEAD
 				
 				if (callback(results) != 0)
 					return()
@@ -683,6 +684,27 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				
 					if (!is.factor(column)) {
 					
+=======
+		
+				column <- dataset[[ .v(variable) ]]
+				
+				if (is.factor(column)) {
+					
+					column <- na.omit(column)
+					column <- as.character(column)
+					column <- column[column != "NA"]					
+					column <- as.factor(column)
+				} else {
+				
+					column <- column[!is.na(column)]
+				}
+				
+				
+				if (length(column) > 0 && is.factor(column) || length(column) > 0 && all(!is.infinite(column)) && all(column %% 1 == 0) && length(unique(column)) <= 24) {
+				
+					if (!is.factor(column)) {
+					
+>>>>>>> Descriptives plots: fixes #142 and fixes #198
 						column <- as.factor(column)
 					}
 				
@@ -695,12 +717,25 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					plot <- frequency.plots[[i]]
 					
 					plot[["data"]]  <- content
+<<<<<<< HEAD
 					plot[["status"]] <- "complete"
 					
 					frequency.plots[[i]] <- plot
 										
 				} else if (length(column) > 0 && !is.factor(column) && all(!is.infinite(column))) {
 				
+=======
+					
+					frequency.plots[[i]] <- plot
+					
+					i <- i + 1
+										
+				} else if (length(column) > 0 && !is.factor(column) && all(!is.infinite(column))) {
+				
+					if (callback(results) != 0)
+						return()
+				
+>>>>>>> Descriptives plots: fixes #142 and fixes #198
 					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
 				
 					.plotMarginal(column, variableName= variable)
@@ -713,12 +748,20 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					plot[["status"]] <- "complete"
 					
 					frequency.plots[[i]] <- plot
+<<<<<<< HEAD
 			
 				}				
 						
 				results[["plots"]] <- frequency.plots	
 
 				i <- i + 1
+=======
+					
+					i <- i + 1				
+				}				
+						
+				results[["plots"]] <- frequency.plots				
+>>>>>>> Descriptives plots: fixes #142 and fixes #198
 			}
 		}
 		
@@ -741,3 +784,112 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	}
 }
 
+<<<<<<< HEAD
+=======
+
+.descriptivesKurtosis <- function(x) {
+
+	# Kurtosis function as in SPSS: 
+	# http://www.ats.ucla.edu/stat/mult_pkg/faq/general/kurtosis.htm
+	# http://en.wikipedia.org/wiki/Kurtosis#Estimators_of_population_kurtosis
+	
+	n <- length(x)
+	s4 <- sum((x - mean(x))^4)
+	s2 <- sum((x - mean(x))^2)
+	v <- s2 / (n-1)
+	a <- (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3))
+	b <- s4 / (v^2)
+	c <- (-3 * (n - 1)^2) / ((n - 2) * (n - 3))
+	kurtosis <- a * b + c
+	return(kurtosis)
+}
+
+.descriptivesSkewness <- function(x) {
+
+	# Skewness function as in SPSS (for samlpes spaces): 
+	# http://suite101.com/article/skew-and-how-skewness-is-calculated-in-statistical-software-a231005
+	
+	n <- length(x)
+	m <- mean(x)
+	s <- sd(x) 
+	z <- (x - m) / s  # z scores
+	a <- n / ((n - 1) * (n - 2))
+	skewness <- sum(z^3) * a
+	return(skewness)
+}
+
+.descriptivesSES <- function(x) {
+
+	# Standard Error of Skewness
+	# Formula found http://web.ipac.caltech.edu/staff/fmasci/home/statistics_refs/SkewStatSignif.pdf
+	
+	n <- length(x)
+	SES <- sqrt((6 * n * (n - 1) / ((n - 2) * (n + 1) * (n + 3))))
+	return(SES)
+}
+
+.descriptivesSEK <- function(x) {
+
+	# Standard Error of Kurtosis
+	# Formula found http://web.ipac.caltech.edu/staff/fmasci/home/statistics_refs/SkewStatSignif.pdf
+	
+	n <- length(x)
+	SEK <- 2 * .descriptivesSES(x) * sqrt((n^2 - 1) / ((n - 3) * (n + 5)))
+	return(SEK)
+} 
+
+.barplotJASP <- function(column, variable){
+
+	yticks <- seq(0,max(summary(column)),1)
+	yticks <- pretty(yticks)
+	
+	yLabs <- vector("character", length(yticks))
+	
+	for(i in seq_along(yticks)){
+		
+		if(yticks[i] < 10^6){
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+			
+		} else{
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+		}		
+	}
+	
+	distLab <- max(nchar(yLabs))/1.8
+	
+	par(mar= c(5, 7.2, 4, 2) + 0.1)
+	barplot(summary(column), cex.names= 1.3, axes= FALSE, ylim= range(yticks))
+	axis(2, las=1, at= yticks, labels= yLabs, cex.axis= 1.4)
+	mtext(text = variable, side = 1, cex=1.5, line = 3)
+	mtext(text = "Frequency", side = 2, cex=1.5, line = distLab+2, las=0)
+}
+
+.plotMarginal <- function(variable, variableName, cexYlab= 1.3, lwd= 2, rugs= FALSE){
+
+	par(mar= c(5, 4.5, 4, 2) + 0.1)
+	
+	density <- density(variable)
+	
+	h <- hist(variable, plot = FALSE)
+	jitVar <- jitter(variable)
+	yhigh <- max(max(h$density), max(density$y))
+	ylow <- 0
+	xticks <- pretty(c(variable, h$breaks), min.n= 3)
+	
+	plot(1, xlim= range(xticks), ylim= c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+	h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
+	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
+	mtext(text = variableName, side = 1, cex=1.5, line = 3)
+	par(las=0)
+	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.5, mgp= c(3, 0.7, 0))
+	
+	if(rugs){
+		rug(jitVar)
+	}
+	
+	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+}
+
+>>>>>>> Descriptives plots: fixes #142 and fixes #198
