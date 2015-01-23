@@ -66,7 +66,6 @@
 		} else{
 			
 			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-			
 		}		
 	}
 	
@@ -84,6 +83,7 @@
 	par(mar= c(5, 4.5, 4, 2) + 0.1)
 	
 	density <- density(variable)
+	
 	h <- hist(variable, plot = FALSE)
 	jitVar <- jitter(variable)
 	yhigh <- max(max(h$density), max(density$y))
@@ -558,7 +558,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		for (variable in variables) {
 	
 			column <- dataset[[ .v(variable) ]]
-										
+			
+			
 			plot <- list()
 			
 			plot[["title"]] <- variable
@@ -579,25 +580,48 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			for (variable in variables) {
 		
 				column <- dataset[[ .v(variable) ]]
+				
+				if (is.factor(column)) {
 					
-				if (is.factor(column)){
+					column <- na.omit(column)
+					column <- as.character(column)
+					column <- column[column != "NA"]					
+					column <- as.factor(column)
+				} else {
+				
+					column <- column[!is.na(column)]
+				}
+				
+				
+				if (length(column) > 0 && is.factor(column) || length(column) > 0 && all(!is.infinite(column)) && all(column %% 1 == 0) && length(unique(column)) <= 24) {
+				
+					if (!is.factor(column)) {
+					
+						column <- as.factor(column)
+					}
 				
 					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
 										
 					.barplotJASP(column, variable)
+					
+					content <- .endSaveImage(image)
+					
+					plot <- frequency.plots[[i]]
+					
+					plot[["data"]]  <- content
+					
+					frequency.plots[[i]] <- plot
+					
+					i <- i + 1
 										
-				} else if(all(!is.infinite(column))){
+				} else if (length(column) > 0 && !is.factor(column) && all(!is.infinite(column))) {
 				
-						if (callback(results) != 0)
-							return()
+					if (callback(results) != 0)
+						return()
 				
-				image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
 				
-				.plotMarginal(column, variableName= variable)
-				
-				}
-				
-				if(all(!is.infinite(column))){
+					.plotMarginal(column, variableName= variable)
 				
 					content <- .endSaveImage(image)
 					
@@ -606,10 +630,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					plot[["data"]]  <- content
 					
 					frequency.plots[[i]] <- plot
-					i <- i + 1
-		
-					results[["plots"]] <- frequency.plots
-				}
+					
+					i <- i + 1				
+				}				
+						
+				results[["plots"]] <- frequency.plots				
 			}
 		}
 		
