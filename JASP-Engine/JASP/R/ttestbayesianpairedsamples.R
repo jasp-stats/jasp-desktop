@@ -238,8 +238,11 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						ind2 <- which(c2 == c2[1])
 						idData2 <- sum((ind2+1)-(1:(length(ind2))) == 1)
 						
+						print(idData)
+						print(idData2)
+						
 																		
-						if(idData > 1 && idData2 > 1 && options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness){
+						if(idData > 1 && idData2 > 1 && (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness)){
 						
 							errorMessage <- "Sequential Analysis not possible: The first observations are identical"
 							index <- .addFootnote(footnotes, errorMessage)
@@ -284,7 +287,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
+							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 												
 							content <- .endSaveImage(image)
 							
@@ -299,7 +302,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE)
+							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
 												
 							content <- .endSaveImage(image)
 							
