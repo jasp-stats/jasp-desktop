@@ -38,18 +38,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	results[["title"]] <- "Bayesian T-Test"
 	
 	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
+
 	results[["ttest"]] <- ttest.results[[1]]
 	status <- ttest.results[[2]]
 	g1 <- ttest.results[[3]]
 	g2 <- ttest.results[[4]]
 	BFH1H0 <- ttest.results[[5]]
-	results[["plots"]] <- .ttestBayesianIndependentSamplesTTestPlots(dataset, options, perform, status, g1, g2, BFH1H0)
-	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
+							
+	if (callback(results) != 0)
+		return()
 	
-	results
-}
-
-.ttestBayesianIndependentSamplesTTestPlots <- function(dataset, options, perform, status, g1, g2, BFH1H0) {
 	
 	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
 	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
@@ -58,172 +56,199 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	if(is.null(options()$BFprogress)) options(BFprogress = interactive())
 	if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
 	
-	
-	if (!options$plotPriorAndPosterior & !options$plotSequentialAnalysis & !options$plotSequentialAnalysisRobustness & !options$plotBayesFactorRobustness){
-		return(NULL)
-	}
-	
 	plots.ttest <- list()
 	
-	q <- 1
+	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness || options$plotBayesFactorRobustness){
 	
-	for (variable in options[["variables"]]){
-	
-		if (options$plotPriorAndPosterior){
-			plot <- list()
-			
-			plot[["title"]] <- variable
-			plot[["width"]]  <- 530
-			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
-			plots.ttest[[q]] <- plot
-			q <- q + 1
-		}
+		q <- 1
 		
-		if (options$plotSequentialAnalysis){
-			plot <- list()
-			
-			plot[["title"]] <- variable
-			plot[["width"]]  <- 530
-			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
-			plots.ttest[[q]] <- plot
-			q <- q + 1
-		}
+		for (variable in options[["variables"]]){
 		
-		if (options$plotSequentialAnalysisRobustness){
-			plot <- list()
-			
-			plot[["title"]] <- variable
-			plot[["width"]]  <- 530
-			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
-			plots.ttest[[q]] <- plot
-			q <- q + 1
-		}
-		
-		if (options$plotBayesFactorRobustness){
-			plot <- list()
-			
-			plot[["title"]] <- variable
-			plot[["width"]]  <- 530
-			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
-			plots.ttest[[q]] <- plot
-			q <- q + 1
-		}
-	}
-		
-	
-	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
-		
-		 if(status == "error"){
-		 
-			return(plots.ttest)
-		}
-		
-		z <- 1
-	
-		for (variable in options[["variables"]]) {
-		
-
-			subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
-			subDataSet <- na.omit(subDataSet)
-			
-			
-			r.size <- options$priorWidth
-			
-			group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g1,.v(variable)] 
-			group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g2,.v(variable)] 
-			
-			
-			if (options$hypothesis == "groupOneGreater") {
-			
-				oneSided <- "right"
-			
-			} else if (options$hypothesis == "groupTwoGreater") {
-
-				oneSided <- "left"
-			
-			} else {
-			
-				oneSided <- FALSE
+			if (options$plotPriorAndPosterior){
+				plot <- list()
+				
+				plot[["title"]] <- variable
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+				
+				plots.ttest[[q]] <- plot
+				q <- q + 1
 			}
 			
+			if (options$plotSequentialAnalysis) {
+				plot <- list()
+				
+				plot[["title"]] <- variable
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+				
+				plots.ttest[[q]] <- plot
+				q <- q + 1
+			}
 			
-			if(options$plotPriorAndPosterior){
+			if (options$plotSequentialAnalysisRobustness) {
+				plot <- list()
+				
+				plot[["title"]] <- variable
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+				
+				plots.ttest[[q]] <- plot
+				q <- q + 1
+			}
+			
+			if (options$plotBayesFactorRobustness) {
+				plot <- list()
+				
+				plot[["title"]] <- variable
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+				
+				plots.ttest[[q]] <- plot
+				q <- q + 1
+			}
+		}
+		
+		results[["plots"]] <- plots.ttest
+		
+		if (callback(results) != 0) 
+			return()
+		
+		
+		if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
+			
+			if (status != "error") {
+				
+				z <- 1
+			
+				for (variable in options[["variables"]]) {
+				
+		
+					subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
+					subDataSet <- na.omit(subDataSet)
+					
+					
+					r.size <- options$priorWidth
+					
+					group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g1,.v(variable)] 
+					group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g2,.v(variable)] 
+					
+					
+					if (options$hypothesis == "groupOneGreater") {
+					
+						oneSided <- "right"
+					
+					} else if (options$hypothesis == "groupTwoGreater") {
+		
+						oneSided <- "left"
+					
+					} else {
+					
+						oneSided <- FALSE
+					}
+					
+					
+					if (options$plotPriorAndPosterior) {
+								
+						image <- .beginSaveImage(530, 400)
 						
-				image <- .beginSaveImage(530, 400)
-				
-				.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
-									
-				content <- .endSaveImage(image)
-				
-				plot <- plots.ttest[[z]]
-				
-				plot[["data"]]  <- content
-				
-				plots.ttest[[z]] <- plot
-				z <- z + 1
-			}
-			
-			if(options$plotBayesFactorRobustness){
-			
-				image <- .beginSaveImage(530, 400)
-				
-				.plotBF.robustnessCheck.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-									
-				content <- .endSaveImage(image)
-				
-				plot <- plots.ttest[[z]]
-				
-				plot[["data"]]  <- content
-				
-				plots.ttest[[z]] <- plot
-				z <- z + 1
-			}
-			
-			if(options$plotSequentialAnalysis){
-			
-				image <- .beginSaveImage(530, 400)
-				
-				.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-									
-				content <- .endSaveImage(image)
-				
-				plot <- plots.ttest[[z]]
-				
-				plot[["data"]]  <- content
-				
-				plots.ttest[[z]] <- plot
-				z <- z + 1
-			}
-			
-			if(options$plotSequentialAnalysisRobustness){
-			
-				image <- .beginSaveImage(530, 400)
-				
-				.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
-									
-				content <- .endSaveImage(image)
-				
-				plot <- plots.ttest[[z]]
-				
-				plot[["data"]]  <- content
-				
-				plots.ttest[[z]] <- plot
-				z <- z + 1
+						.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						
+						results[["plots"]] <- plots.ttest
+		
+						if (callback(results) != 0) 
+							return()
+						
+						z <- z + 1
+					}
+					
+					if (options$plotBayesFactorRobustness) {
+					
+						image <- .beginSaveImage(530, 400)
+						
+						.plotBF.robustnessCheck.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						
+						results[["plots"]] <- plots.ttest
+		
+						if (callback(results) != 0) 
+							return()
+						
+						z <- z + 1
+					}
+					
+					if (options$plotSequentialAnalysis) {
+					
+						image <- .beginSaveImage(530, 400)
+						
+						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						
+						results[["plots"]] <- plots.ttest
+		
+						if (callback(results) != 0) 
+							return()
+						
+						z <- z + 1
+					}
+					
+					if (options$plotSequentialAnalysisRobustness) {
+					
+						image <- .beginSaveImage(530, 400)
+						
+						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
+											
+						content <- .endSaveImage(image)
+						
+						plot <- plots.ttest[[z]]
+						
+						plot[["data"]]  <- content
+						
+						plots.ttest[[z]] <- plot
+						
+						results[["plots"]] <- plots.ttest
+		
+						if (callback(results) != 0) 
+							return()
+						
+						z <- z + 1
+					}
+				}
 			}
 		}
 	}
 	
-	plots.ttest
-
+	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
+	
+	results
 }
+
 
 .ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform) {
 

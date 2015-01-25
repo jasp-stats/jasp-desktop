@@ -2046,6 +2046,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	ttest[["schema"]] <- list(fields=fields)
 	
+	results[["ttest"]] <- ttest
+	
 	footnotes <- .newFootnotes()
 	
 	#if (options$hypothesis == "greaterThanTestValue") {
@@ -2135,6 +2137,11 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		}
 	}
 	
+	results[["plots"]] <- plots.ttest
+		
+	if (callback(results) != 0) 
+		return()
+	
 	plotSequentialStatus <- "ok"
 	
 	if (perform == "run") {
@@ -2208,10 +2215,21 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				}
 				
 				
+				ttest.rows[[i]] <- result
 				
-				if(is.null(errorMessage)){
-											
-					if(options$plotPriorAndPosterior){
+				ttest[["data"]] <- ttest.rows
+				ttest[["footnotes"]] <- as.list(footnotes)
+				
+				results[["ttest"]] <- ttest
+				
+				
+				if (callback(results) != 0)
+					return()
+				
+				
+				if (is.null(errorMessage)) {
+				
+					if (options$plotPriorAndPosterior) {
 					
 						image <- .beginSaveImage(530, 400)
 						
@@ -2224,9 +2242,16 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						plot[["data"]]  <- content
 						
 						plots.ttest[[z]] <- plot
+						
+						results[["plots"]] <- plots.ttest
+						
+						if (callback(results) != 0)
+							return()
+						
 						z <- z + 1
 					}
-					if(options$plotBayesFactorRobustness){
+					
+					if (options$plotBayesFactorRobustness) {
 					
 						image <- .beginSaveImage(530, 400)
 						
@@ -2239,9 +2264,16 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						plot[["data"]]  <- content
 						
 						plots.ttest[[z]] <- plot
+						
+						results[["plots"]] <- plots.ttest
+						
+						if (callback(results) != 0)
+							return()
+						
 						z <- z + 1
 					}
-					if(options$plotSequentialAnalysis && plotSequentialStatus == "ok"){
+					
+					if (options$plotSequentialAnalysis && plotSequentialStatus == "ok") {
 					
 						image <- .beginSaveImage(530, 400)
 						
@@ -2254,14 +2286,21 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						plot[["data"]]  <- content
 						
 						plots.ttest[[z]] <- plot
+						
+						results[["plots"]] <- plots.ttest
+						
+						if (callback(results) != 0)
+							return()
+						
 						z <- z + 1
 					}
-					if(options$plotSequentialAnalysisRobustness && plotSequentialStatus == "ok"){
+					
+					if (options$plotSequentialAnalysisRobustness && plotSequentialStatus == "ok") {
 					
 						image <- .beginSaveImage(530, 400)
 						
 						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
-											
+						
 						content <- .endSaveImage(image)
 						
 						plot <- plots.ttest[[z]]
@@ -2269,27 +2308,21 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						plot[["data"]]  <- content
 						
 						plots.ttest[[z]] <- plot
+						
+						results[["plots"]] <- plots.ttest
+						
+						if (callback(results) != 0)
+							return()
+						
 						z <- z + 1
 					}	
 				}
 			}
 			
-			ttest.rows[[i]] <- result
-	
 			i <- i + 1
-			}
-			
+		}	
 	}
-			
-	ttest[["data"]] <- ttest.rows
-	ttest[["footnotes"]] <- as.list(footnotes)
 	
-	results[["plots"]] <- plots.ttest
-	
-	results[["ttest"]] <- ttest
-	
-
-				
 	results
 }
 
