@@ -1546,27 +1546,21 @@
 	}
 	
 	
-	while (eval(parse(text=yLab[1])) > min(BF)) {
+	while (eval(parse(text=yLab[2])) > min(BF)) {
 		
-		for (i in 1:2) {
-			
-			interval <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[2], "+", fixed= TRUE)[[1]][2])
+		interval <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[2], "+", fixed= TRUE)[[1]][2])
 			pot <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) + interval
 			
-			newy <- paste(strsplit(yLab[1], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
-			yLab <- c(newy, yLab)
-		}		
+		newy <- paste(strsplit(yLab[1], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
+		yLab <- c(newy, yLab)			
 	}		
 	
-	while (eval(parse(text=yLab[length(yLab)])) < max(BF)) {
+	while (eval(parse(text=yLab[length(yLab)-1])) < max(BF)) {
 		
-		for (i in 1:2) {
-			
-			interval <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[length(yLab)-1], "+", fixed= TRUE)[[1]][2])
-			pot <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) + interval
-			newy <- paste(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
-			yLab <- c( yLab, newy)
-		}
+		interval <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[length(yLab)-1], "+", fixed= TRUE)[[1]][2])
+		pot <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) + interval
+		newy <- paste(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
+		yLab <- c( yLab, newy)		
 	}		
 	
 	yAt <- vector("numeric", length(yLab))
