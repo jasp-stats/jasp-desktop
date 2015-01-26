@@ -71,7 +71,6 @@
 			fields[[length(fields)+1]] <- list(name=analysis[[j]], type="string", combine=TRUE)
 	}
 	
-
 	
 	### SETUP COUNTS TABLE SCHEMA
 
@@ -316,12 +315,12 @@
 		
 		ordinal.table <- list()
 		
-		ordinal.table[["title"]] <- "Ordinal"
+		ordinal.table[["title"]] <- "Ordinal Gamma"
 		
 		ordinal.fields <- fields
 			
-		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="type[gammaCoef]", title="", type="string")
-		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="value[gammaCoef]", title="gamma", type="number", format="sf:4;dp:3")
+		#ordinal.fields[[length(ordinal.fields)+1]] <- list(name="type[gammaCoef]", title="", type="string")
+		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="value[gammaCoef]", title="Gamma", type="number", format="sf:4;dp:3")
 		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="Sigma[gammaCoef]", title="std. error", type="number", format="dp:3")
 		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="low[gammaCoef]", title="Lower CI", type="number", format="dp:3")
 		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="up[gammaCoef]",  title="Upper CI", type="number", format="dp:3")
@@ -329,6 +328,27 @@
 		schema <- list(fields=ordinal.fields)
 		
 		ordinal.table[["schema"]] <- schema
+	}
+	
+	##########Kendall Tau-B table
+	
+	if (options$ordinal$kendallsTauB) {
+		
+		kendalls.table <- list()
+		
+		kendalls.table[["title"]] <- "Kendall's Tau"
+		
+		kendalls.fields <- fields
+			
+		#kendalls.fields[[length(kendalls.fields)+1]] <- list(name="type[kTauB]", title="", type="string")
+		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="value[kTauB]", title="Kendall's Tau B", type="number", format="sf:4;dp:3")
+		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="statistic[kTauB]", title="z statistic", type="number", format="dp:3")
+		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="p[kTauB]", title="p", type="number", format="dp:3;p:.001")
+		
+		
+		schema <- list(fields=kendalls.fields)
+		
+		kendalls.table[["schema"]] <- schema
 	}
 	
 	status <- list(error=FALSE)
@@ -352,11 +372,13 @@
 	oddsratio.rows <- list()
 	nominal.rows <- list()
 	ordinal.rows <- list()
+	kendalls.rows <- list()
 	
 	tests.footnotes <- .newFootnotes()
 	oddsratio.footnotes <- .newFootnotes()
 	nominal.footnotes <- .newFootnotes()
 	ordinal.footnotes <- .newFootnotes()
+	kendalls.footnotes <- .newFootnotes()
 
 	for (i in 1:length(group.matrices)) {
 	
@@ -385,6 +407,9 @@
 		
 		next.rows <- .crosstabsCreateOrdinalRows(analysis$rows, group.matrix, ordinal.footnotes, options, perform, group, status)
 		ordinal.rows <- c(ordinal.rows, next.rows)
+		
+		next.rows <- .crosstabsCreateOrdinalTau(analysis$rows, group.matrix, ordinal.footnotes, options, perform, group, status)
+		kendalls.rows <- c(kendalls.rows, next.rows)
 
 	}
 
@@ -435,6 +460,17 @@
 			ordinal.table[["error"]] <- list(errorType="badData")
 		
 		tables[[5]] <- ordinal.table
+	}
+	
+	if (options$ordinal$kendallsTauB) {
+	
+		kendalls.table[["data"]] <- kendalls.rows
+		kendalls.table[["footnotes"]] <- as.list(kendalls.footnotes)
+		
+		if (status$error)
+			kendalls.table[["error"]] <- list(errorType="badData")
+		
+		tables[[6]] <- kendalls.table
 	}
 
 	
@@ -529,7 +565,7 @@
 	}	
 ###############################################		
 	if (options$chiSquaredContinuityCorrection){	
-		row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 continuity correction"
+		row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 Continuity correction"
 
 
 		if (perform == "run" && status$error == FALSE) {
@@ -762,7 +798,7 @@
 	
 	if (options$ordinal$gamma) {
 		
-		row[["type[gammaCoef]"]] <- "Gamma Coefficient"
+		#row[["type[gammaCoef]"]] <- "Gamma Coefficient"
 		
 		
 		if (perform == "run" && status$error == FALSE) {
@@ -799,6 +835,73 @@
 		}
 		
 	}
+	
+	list(row)
+	
+}
+
+.crosstabsCreateOrdinalTau <- function(var.name, counts.matrix, footnotes, options, perform, group, status) {
+	
+	row <- list()
+	for (layer in names(group)) {
+		
+		level <- group[[layer]]
+		
+		if (level == "") {
+			
+			row[[layer]] <- "Total"
+			
+		} else {
+			
+			row[[layer]] <- level
+		}
+	}
+	
+	
+	if (options$ordinal$kendallsTauB) {
+		
+		#row[["type[kTauB]"]] <- "Kendall's Tau B"
+		
+		
+		if (perform == "run" && status$error == FALSE) {
+			
+			chi.result <- try({
+			
+				count.dat <- stats::ftable(counts.matrix)
+				count.dat <- as.data.frame(count.dat)
+				Var1<-rep(count.dat[,1],times=count.dat$Freq)
+				Var2<-rep(count.dat[,2],times=count.dat$Freq)
+				chi.result <- stats::cor.test(as.numeric(Var1), as.numeric(Var2), method="kendall")
+				
+			})
+			
+			if (class(chi.result) == "try-error") {
+				
+				row[["value[kTauB]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(chi.result)
+				
+				sup	<- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[kTauB]"=list(sup))
+				
+			} else {
+				
+				row[["value[kTauB]"]] <- unname(chi.result$estimate)
+				row[["p[kTauB]"]] <- chi.result$p.value
+				row[["statistic[kTauB]"]] <- unname(chi.result$statistic)
+				
+			}
+			
+		} else {
+			
+			 row[["value[kTauB]"]] <- "."
+			 row[["p[kTauB]"]] <- "."
+		  	 row[["statistic[kTauB]"]] <- "."
+		  	 
+		}
+		
+	}
+	
 	list(row)
 	
 }
@@ -814,7 +917,7 @@
 		if (level == "") {
 
 			row[[layer]] <- "Total"
-			row[[".isNewGroup"]] <- TRUE
+			#row[[".isNewGroup"]] <- TRUE
 						
 		} else {
 		
@@ -841,7 +944,7 @@
 			
 				chi.result <- try({
 
-					chi.result <- vcd::oddsratio(counts.matrix)
+					chi.result <- stats::fisher.test(counts.matrix, conf.level = options$oddsRatioConfidenceIntervalInterval)
 				})
 
 				if (class(chi.result) == "try-error") {
@@ -865,9 +968,9 @@
 
 				} else {
 
-					row[["value[oddsRatio]"]] <- exp(chi.result)
-					row[["low[oddsRatio]"]] <- exp(confint(chi.result)[1])
-					row[["up[oddsRatio]"]] <-  exp(confint(chi.result)[2])
+					row[["value[oddsRatio]"]] <- unname(chi.result$estimate)
+					row[["low[oddsRatio]"]] <- chi.result$conf.int[1]
+					row[["up[oddsRatio]"]] <-  chi.result$conf.int[2]
 				}
 	
 			}
@@ -879,18 +982,19 @@
 	}
 	
 	list(row)
-}	
+}
+
 
 
 
 .crosstabsCreateCountsRows <- function(var.name, counts.matrix, options, perform, group, status) {
 
 	rows <- list()
-	row.count<-list()
-	row.expected<-list()
-	row.rowproportions<-list()
-	row.colproportions<-list()
-	row.proportions<-list()
+	row.count <- list()
+	row.expected <- list()
+	row.rowproportions <- list()
+	row.colproportions <- list()
+	row.proportions <- list()
 	row.count[["type[counts]"]] <- "Count"
 	#row.count[["type[proportions]"]] <- "Total Proportions"
 	
@@ -1204,9 +1308,7 @@
 		}
 	}
 
-	
 	rows[[length(rows)+1]] <- row
-	
 
 	rows
 }

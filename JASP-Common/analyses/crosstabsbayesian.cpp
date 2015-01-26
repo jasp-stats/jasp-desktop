@@ -59,8 +59,8 @@ Options *CrosstabsBayesian::createOptions() const
 
 	options->add("rowOrder", new OptionList(list("ascending", "descending")));
 
-    options->add("plotWidths", new OptionInteger(440));
-    options->add("plotHeights", new OptionInteger(360));
+    options->add("plotWidths", new OptionInteger(400));
+    options->add("plotHeights", new OptionInteger(380));
 
 	return options;
 }
