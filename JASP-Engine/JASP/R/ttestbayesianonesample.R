@@ -1162,7 +1162,7 @@
 }
 		
 .plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
- cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE){ 
+ cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, variable){ 
 	
 	#### settings ####
 	if (rscale == "medium") {
@@ -1587,6 +1587,9 @@
 	ylim <- c(ylow, yhigh)
 	
 	plot(1,1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
+	
+	# add variable name
+	mtext(variable, side = 3, line = 5.5, cex= 1.7)
 	
 	for (i in seq_along(yAt)) {
 		
@@ -2264,7 +2267,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, variable= variable)
 											
 						content <- .endSaveImage(image)
 						
