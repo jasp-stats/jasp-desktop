@@ -1,5 +1,5 @@
 .plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
- cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.4, lwdAxis= 1.2){
+ cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.4, lwdAxis= 1.2, variable){
 	
 	if (rscale == "medium") {
 		r <- sqrt(2) / 2
@@ -141,7 +141,7 @@
 	posteriorLine <- dposterior(x= seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, delta=delta)
 	
 	
-	par(mar= c(5, 5, 7, 4) + 0.1, las=1)
+	par(mar= c(5.6, 5, 9.4, 4) + 0.1, las=1)
 	
 	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
 	
@@ -191,16 +191,16 @@
 	text(CIlow, yCIt, bquote(.(formatC(CIlow,3, format="f"))), cex= cexCI)
 	text(CIhigh, yCIt, bquote(.(formatC(CIhigh,3, format= "f"))), cex= cexCI)
 	
-	medianText <- formatC(medianPosterior, digits= 3, format="f")
-	text(medianPosterior, yMedian,bquote(median==.(medianText)), cex= cexCI)
-	
 	# enable plotting in margin
 	par(xpd=TRUE)
 	
+	medianText <- formatC(medianPosterior, digits= 3, format="f")
+	text(medianPosterior, yMedian, bquote(median==.(medianText)), cex= cexCI)	
+	
 	# display BF10 value
 	xx <- grconvertX(0.3, "ndc", "user")
-	yy <- grconvertY(0.822, "ndc", "user")
-	yy2 <- grconvertY(0.878, "ndc", "user")
+	yy <- grconvertY(0.778, "ndc", "user")
+	yy2 <- grconvertY(0.834, "ndc", "user")
 	
 	if (BF10 >= 1000000 | BF01 >= 1000000) {
 		BF10t <- format(BF10, digits= 4, scientific = TRUE)
@@ -250,7 +250,7 @@
 		xx <- grconvertX(0.44 + 0.004* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
 	}
 	
-	yy <- grconvertY(0.854, "ndc", "user")
+	yy <- grconvertY(0.81, "ndc", "user")
 	
 	# make sure that colored area is centered
 	radius <- 0.06*diff(range(xticks))
@@ -261,8 +261,8 @@
 	# draw probability wheel
 	plotrix::floating.pie(xx, yy,c(BF10, 1),radius= radius, col=c("darkred", "white"), lwd=2,startpos = startpos)
 	
-	yy <- grconvertY(0.931, "ndc", "user")
-	yy2 <- grconvertY(0.774, "ndc", "user")
+	yy <- grconvertY(0.887, "ndc", "user")
+	yy2 <- grconvertY(0.73, "ndc", "user")
 	
 	if (oneSided == FALSE) {
 	
@@ -283,8 +283,11 @@
 	
 	# add legend
 	xx <- grconvertX(0.57, "ndc", "user")
-	yy <- grconvertY(0.926, "ndc", "user")
+	yy <- grconvertY(0.886, "ndc", "user")
 	legend(xx, yy, legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend)
+	
+	# add variable name
+	mtext(variable,side = 3, line = 7.16, cex= 1.7)
 }
 
 .plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE,
@@ -2223,6 +2226,12 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				results[["ttest"]] <- ttest
 				
 				
+				#
+				if(callback() != 0)
+					return()
+				#
+				
+				
 				if (callback(results) != 0)
 					return()
 				
@@ -2233,7 +2242,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, variable= variable)
 											
 						content <- .endSaveImage(image)
 						
