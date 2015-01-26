@@ -199,8 +199,8 @@
 	
 	# display BF10 value
 	xx <- grconvertX(0.3, "ndc", "user")
-	yy <- grconvertY(0.778, "ndc", "user")
-	yy2 <- grconvertY(0.834, "ndc", "user")
+	yy <- grconvertY(0.776, "ndc", "user")
+	yy2 <- grconvertY(0.832, "ndc", "user")
 	
 	if (BF10 >= 1000000 | BF01 >= 1000000) {
 		BF10t <- format(BF10, digits= 4, scientific = TRUE)
@@ -250,7 +250,7 @@
 		xx <- grconvertX(0.44 + 0.004* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
 	}
 	
-	yy <- grconvertY(0.81, "ndc", "user")
+	yy <- grconvertY(0.808, "ndc", "user")
 	
 	# make sure that colored area is centered
 	radius <- 0.06*diff(range(xticks))
@@ -261,8 +261,8 @@
 	# draw probability wheel
 	plotrix::floating.pie(xx, yy,c(BF10, 1),radius= radius, col=c("darkred", "white"), lwd=2,startpos = startpos)
 	
-	yy <- grconvertY(0.887, "ndc", "user")
-	yy2 <- grconvertY(0.73, "ndc", "user")
+	yy <- grconvertY(0.885, "ndc", "user")
+	yy2 <- grconvertY(0.728, "ndc", "user")
 	
 	if (oneSided == FALSE) {
 	
@@ -282,8 +282,8 @@
 	}
 	
 	# add legend
-	xx <- grconvertX(0.57, "ndc", "user")
-	yy <- grconvertY(0.886, "ndc", "user")
+	xx <- grconvertX(0.568, "ndc", "user")
+	yy <- grconvertY(0.884, "ndc", "user")
 	legend(xx, yy, legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend)
 	
 	# add variable name
