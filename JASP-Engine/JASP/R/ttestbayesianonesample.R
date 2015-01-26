@@ -195,12 +195,12 @@
 	par(xpd=TRUE)
 	
 	medianText <- formatC(medianPosterior, digits= 3, format="f")
-	text(medianPosterior, yMedian,bquote(median==.(medianText)), cex= cexCI)	
+	text(medianPosterior, yMedian, bquote(median==.(medianText)), cex= cexCI)	
 	
 	# display BF10 value
 	xx <- grconvertX(0.3, "ndc", "user")
-	yy <- grconvertY(0.782, "ndc", "user")
-	yy2 <- grconvertY(0.838, "ndc", "user")
+	yy <- grconvertY(0.778, "ndc", "user")
+	yy2 <- grconvertY(0.834, "ndc", "user")
 	
 	if (BF10 >= 1000000 | BF01 >= 1000000) {
 		BF10t <- format(BF10, digits= 4, scientific = TRUE)
@@ -250,7 +250,7 @@
 		xx <- grconvertX(0.44 + 0.004* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
 	}
 	
-	yy <- grconvertY(0.814, "ndc", "user")
+	yy <- grconvertY(0.81, "ndc", "user")
 	
 	# make sure that colored area is centered
 	radius <- 0.06*diff(range(xticks))
@@ -261,8 +261,8 @@
 	# draw probability wheel
 	plotrix::floating.pie(xx, yy,c(BF10, 1),radius= radius, col=c("darkred", "white"), lwd=2,startpos = startpos)
 	
-	yy <- grconvertY(0.891, "ndc", "user")
-	yy2 <- grconvertY(0.734, "ndc", "user")
+	yy <- grconvertY(0.887, "ndc", "user")
+	yy2 <- grconvertY(0.73, "ndc", "user")
 	
 	if (oneSided == FALSE) {
 	
@@ -287,7 +287,7 @@
 	legend(xx, yy, legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend)
 	
 	# add variable name
-	mtext(variable,side = 3, line = 7.1, cex= 1.7)
+	mtext(variable,side = 3, line = 7.16, cex= 1.7)
 }
 
 .plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE,
