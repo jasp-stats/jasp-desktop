@@ -202,7 +202,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, variable= variable)
 											
 						content <- .endSaveImage(image)
 						
@@ -224,7 +224,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
+						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0,
+						variable= variable)
 											
 						content <- .endSaveImage(image)
 						
