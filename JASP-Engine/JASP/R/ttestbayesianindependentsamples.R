@@ -326,14 +326,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		gs <- base::levels(levels)
 				g1 <- gs[1]
 				g2 <- gs[2]		
+				
 		
 		if (length(levels) != 2) {
 		
 			ttest[["error"]] <- list(errorType="badData", errorMessage="The Grouping Variable must have 2 levels")
-			status <- "error"
+						
+			status <- rep("error", length(options$variables))
 			
 		} else {
-		
+			
 			rowNo <- 1
 		
 			for (variable in options[["variables"]]) {
