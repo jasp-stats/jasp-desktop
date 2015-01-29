@@ -70,8 +70,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["title"]] <- variable
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-				
+								
 				plots.ttest[[q]] <- plot
 				q <- q + 1
 			}
@@ -82,8 +81,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["title"]] <- variable
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-				
+								
 				plots.ttest[[q]] <- plot
 				q <- q + 1
 			}
@@ -94,8 +92,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["title"]] <- variable
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-				
+							
 				plots.ttest[[q]] <- plot
 				q <- q + 1
 			}
@@ -106,8 +103,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["title"]] <- variable
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-				
+								
 				plots.ttest[[q]] <- plot
 				q <- q + 1
 			}
