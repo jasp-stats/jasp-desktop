@@ -107,7 +107,7 @@
 	ylim <- vector("numeric", 2)
 	
 	ylim[1] <- 0
-	ylim[2] <- max(stretch* dprior(0,r, oneSided= oneSided), stretch*max(dposterior(x= delta, oneSided= oneSided, delta=delta)))
+	ylim[2] <- max(stretch * dprior(0,r, oneSided= oneSided), stretch * max(dposterior(x= delta, oneSided= oneSided, delta=delta)))
 	
 	# calculate position of "nice" tick marks and create labels
 	xticks <- pretty(xlim)
@@ -153,7 +153,18 @@
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at= yticks, labels= ylabels, , cex.axis= cexAxis, lwd= lwdAxis)
 	
-	mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.1)
+	
+	if (nchar(ylabels[length(ylabels)]) > 4) {
+	
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 4)
+	} else if (nchar(ylabels[length(ylabels)]) == 4) {
+	
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
+	} else if (nchar(ylabels[length(ylabels)]) < 4) {
+	
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
+	}
+	
 	mtext(expression(paste("Effect size", ~delta)), side = 1, cex = cexXlab, line= 2.5)
 	
 	points(0, dprior(0,r, oneSided= oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
@@ -176,26 +187,19 @@
 	# 95% credible interval
 	dmax <- optimize(function(x)dposterior(x,oneSided= oneSided, delta=delta), interval= range(xticks), maximum = TRUE)$objective # get maximum density
 
-	yCI <- grconvertY(dmax, "user", "ndc") + 0.08
-	yCIt <- grconvertY(dmax, "user", "ndc") + 0.04
-	y95 <- grconvertY(dmax, "user", "ndc") + 0.1
-	yMedian <- y95 + 0.039
-	
-	yCI <- grconvertY(yCI, "ndc", "user")
-	yCIt <- grconvertY(yCIt, "ndc", "user")
-	y95 <- grconvertY(y95, "ndc", "user")
-	yMedian <- grconvertY(yMedian, "ndc", "user")
-	
-	arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
-	text(mean(c(CIlow, CIhigh)), y95,"95%", cex= cexCI)
-	text(CIlow, yCIt, bquote(.(formatC(CIlow,3, format="f"))), cex= cexCI)
-	text(CIhigh, yCIt, bquote(.(formatC(CIhigh,3, format= "f"))), cex= cexCI)
-	
 	# enable plotting in margin
 	par(xpd=TRUE)
 	
+	yCI <- grconvertY(dmax, "user", "ndc") + 0.04
+	yCI <- grconvertY(yCI, "ndc", "user")
+	
+	arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
+	text(mean(c(CIlow, CIhigh)), yCI,"95%", cex= cexCI, pos= 3, offset= .7)
+	text(CIlow, yCI, bquote(.(formatC(CIlow,3, format="f"))), cex= cexCI, pos= 2, offset= .2)
+	text(CIhigh, yCI, bquote(.(formatC(CIhigh,3, format= "f"))), cex= cexCI, pos= 4, offset= .2)
+	
 	medianText <- formatC(medianPosterior, digits= 3, format="f")
-	text(medianPosterior, yMedian, bquote(median==.(medianText)), cex= cexCI)	
+	text(medianPosterior, yCI, bquote(median==.(medianText)), cex= cexCI, pos= 3, offset= 2)	
 	
 	# display BF10 value
 	xx <- grconvertX(0.3, "ndc", "user")
@@ -2097,8 +2101,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["title"]] <- variable
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
+						
 			plots.ttest[[q]] <- plot
 			q <- q + 1
 		}
@@ -2109,8 +2112,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["title"]] <- variable
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
+						
 			plots.ttest[[q]] <- plot
 			q <- q + 1
 		}
@@ -2121,8 +2123,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["title"]] <- variable
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
+						
 			plots.ttest[[q]] <- plot
 			q <- q + 1
 		}
@@ -2133,8 +2134,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["title"]] <- variable
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
+						
 			plots.ttest[[q]] <- plot
 			q <- q + 1
 		}

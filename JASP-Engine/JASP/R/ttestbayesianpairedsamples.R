@@ -122,8 +122,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			plot[["title"]] <- pair
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
+						
 			plots.ttest[[q]] <- plot
 			q <- q + 1
 		}
@@ -134,8 +133,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			plot[["title"]] <- pair
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
+						
 			plots.ttest[[q]] <- plot
 			q <- q + 1
 		}
@@ -146,8 +144,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			plot[["title"]] <- pair
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
+						
 			plots.ttest[[q]] <- plot
 			q <- q + 1
 		}
@@ -158,8 +155,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			plot[["title"]] <- pair
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-			
+						
 			plots.ttest[[q]] <- plot
 			q <- q + 1
 		}
@@ -243,10 +239,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						ind2 <- which(c2 == c2[1])
 						idData2 <- sum((ind2+1)-(1:(length(ind2))) == 1)
 						
-						print(idData)
-						print(idData2)
-						
-																		
+																								
 						if(idData > 1 && idData2 > 1 && (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness)){
 						
 							errorMessage <- "Sequential Analysis not possible: The first observations are identical"
