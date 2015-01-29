@@ -35,7 +35,7 @@ run <- function(name, options.as.json.string, perform="run") {
 			base::save(state, file=.requestStateFileNameNative(), compress=FALSE)
 		}
 		
-		if ("results" %in% names(results$results)) {
+		if ("results" %in% names(results)) {
 		
 			results$results <- .addCitationToResults(results$results)
 			

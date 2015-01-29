@@ -24,7 +24,6 @@
 
 using namespace std;
 using namespace boost::interprocess;
-using namespace Json;
 using namespace boost::posix_time;
 
 Engine::Engine()
@@ -86,23 +85,27 @@ void Engine::runAnalysis()
 		sendResults();
 		_status = empty;
 
-		Json::Value filesToKeepValue = _analysisResults.get("keep", Json::nullValue);
 		vector<string> filesToKeep;
 
-		if (filesToKeepValue.isArray())
+		if (_analysisResults.isObject())
 		{
-			for (int i = 0; i < filesToKeepValue.size(); i++)
-			{
-				Json::Value fileToKeepValue = filesToKeepValue.get(i, Json::nullValue);
-				if ( ! fileToKeepValue.isString())
-					continue;
+			Json::Value filesToKeepValue = _analysisResults.get("keep", Json::nullValue);
 
-				filesToKeep.push_back(fileToKeepValue.asString());
+			if (filesToKeepValue.isArray())
+			{
+				for (int i = 0; i < filesToKeepValue.size(); i++)
+				{
+					Json::Value fileToKeepValue = filesToKeepValue.get(i, Json::nullValue);
+					if ( ! fileToKeepValue.isString())
+						continue;
+
+					filesToKeep.push_back(fileToKeepValue.asString());
+				}
 			}
-		}
-		else if (filesToKeepValue.isString())
-		{
-			filesToKeep.push_back(filesToKeepValue.asString());
+			else if (filesToKeepValue.isString())
+			{
+				filesToKeep.push_back(filesToKeepValue.asString());
+			}
 		}
 
 		Utils::remove(tempFilesFromLastTime, filesToKeep);
@@ -138,13 +141,13 @@ bool Engine::receiveMessages(int timeout)
 
 	if (_channel->receive(data, timeout))
 	{
-		Value jsonRequest;
-		Reader r;
+		Json::Value jsonRequest;
+		Json::Reader r;
 		r.parse(data, jsonRequest, false);
 
 		_analysisId = jsonRequest.get("id", -1).asInt();
-		_analysisName = jsonRequest.get("name", nullValue).asString();
-		_analysisOptions = jsonRequest.get("options", nullValue).toStyledString();
+		_analysisName = jsonRequest.get("name", Json::nullValue).asString();
+		_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
 
 		string perform = jsonRequest.get("perform", "run").asString();
 
@@ -172,19 +175,19 @@ bool Engine::receiveMessages(int timeout)
 
 void Engine::sendResults()
 {
-	Value response = Value(objectValue);
-	Value results;
-
-	Json::Reader parser;
-	parser.parse(_analysisResultsString, results, false);
+	Json::Value response = Json::Value(Json::objectValue);
 
 	response["id"] = _analysisId;
 	response["name"] = _analysisName;
 
-	Json::Value resultsStatus = results.get("status", Json::nullValue);
+	Json::Value resultsStatus = Json::nullValue;
+
+	if (_analysisResults.isObject())
+		resultsStatus = _analysisResults.get("status", Json::nullValue);
+
 	if (resultsStatus != Json::nullValue)
 	{
-		response["results"] = results.get("results", Json::nullValue);
+		response["results"] = _analysisResults.get("results", Json::nullValue);
 		response["status"]  = resultsStatus.asString();
 	}
 	else
@@ -207,7 +210,7 @@ void Engine::sendResults()
 			break;
 		}
 
-		response["results"] = results;
+		response["results"] = _analysisResults;
 		response["status"] = status;
 	}
 
