@@ -64,6 +64,7 @@ Options *AnovaRepeatedMeasuresBayesian::createOptions() const
 
 	Options *termsTemplate = new Options();
 	termsTemplate->add("components", new OptionVariables());
+	termsTemplate->add("isNuisance", new OptionBoolean());
 
 	options->add("modelTerms", new OptionsTable(termsTemplate));
 	options->add("sumOfSquares", new OptionList(list("type1", "type2", "type3"), "type3"));

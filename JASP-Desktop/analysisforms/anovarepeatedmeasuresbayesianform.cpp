@@ -28,15 +28,15 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	_withinSubjectCellsListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->repeatedMeasuresCells->setModel(_withinSubjectCellsListModel);
 
-	_randomFactorsListModel = new TableModelVariablesAssigned(this);
-	_randomFactorsListModel->setSource(&_availableVariablesModel);
-	_randomFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->betweenSubjectFactors->setModel(_randomFactorsListModel);
+	_betweenSubjectsFactorsListModel = new TableModelVariablesAssigned(this);
+	_betweenSubjectsFactorsListModel->setSource(&_availableVariablesModel);
+	_betweenSubjectsFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	ui->betweenSubjectFactors->setModel(_betweenSubjectsFactorsListModel);
 
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->repeatedMeasuresCells);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->betweenSubjectFactors);
 
-	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
@@ -64,8 +64,10 @@ void AnovaRepeatedMeasuresBayesianForm::factorsChanged()
 {
 	Terms factorsAvailable;
 
-	//factorsAvailable.add(_fixedFactorsListModel->assigned());
-	factorsAvailable.add(_randomFactorsListModel->assigned());
+	foreach (const Factor &factor, _designTableModel->design())
+		factorsAvailable.add(factor.first);
+
+	factorsAvailable.add(_betweenSubjectsFactorsListModel->assigned());
 
 	_anovaModel->setVariables(factorsAvailable);
 	_contrastsModel->setVariables(factorsAvailable);
@@ -86,6 +88,7 @@ void AnovaRepeatedMeasuresBayesianForm::termsChanged()
 void AnovaRepeatedMeasuresBayesianForm::withinSubjectsDesignChanged()
 {
 	_withinSubjectCellsListModel->setDesign(_designTableModel->design());
+	factorsChanged();
 }
 
 void AnovaRepeatedMeasuresBayesianForm::anovaDesignTableClicked(QModelIndex index)
