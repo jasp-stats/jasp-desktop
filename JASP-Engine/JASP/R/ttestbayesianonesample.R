@@ -203,8 +203,8 @@
 		# display BF10 value
 		offsetTopPart <- 0.06	
 		
-		yy <- grconvertY(0.756 + offsetTopPart, "ndc", "user")
-		yy2 <- grconvertY(0.812 + offsetTopPart, "ndc", "user")
+		yy <- grconvertY(0.75 + offsetTopPart, "ndc", "user")
+		yy2 <- grconvertY(0.806 + offsetTopPart, "ndc", "user")
 		
 		xx <- min(xticks)
 		
@@ -235,6 +235,9 @@
 			text(xx, yy2, bquote(BF["-"][0]==.(BF10t)), cex= cexTextBF, pos = 4)
 			text(xx, yy, bquote(BF[0]["-"]==.(BF01t)), cex= cexTextBF, pos = 4)
 		}
+		
+		yy <- grconvertY(0.756 + offsetTopPart, "ndc", "user")
+		yy2 <- grconvertY(0.812 + offsetTopPart, "ndc", "user")
 		
 		CIText <- paste("95% CI: [",  bquote(.(formatC(CIlow,3, format="f"))), ", ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
 		medianLegendText <- paste("median =", medianText)
@@ -2028,6 +2031,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="plots", type="images")
+	
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian T-Test"
