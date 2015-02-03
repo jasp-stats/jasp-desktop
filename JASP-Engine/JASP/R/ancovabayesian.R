@@ -15,20 +15,16 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	all.variables <- c(numeric.variables, factor.variables)
 	
 	if (is.null(dataset)) {
-		
 		if (perform == "run") {
-			
 			dataset <-	.readDataSetToEnd(columns.as.numeric = numeric.variables,
 				columns.as.factor = factor.variables,
 				exclude.na.listwise = all.variables)
-			
 		} else {
-			
 			dataset <- .readDataSetHeader( columns.as.numeric = c(numeric.variables),
 				columns.as.factor = c(factor.variables) )
 		}
 	}
-	
+
 	#### META
 	results <- list()
 	meta <- list()
@@ -39,6 +35,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	results[[".meta"]] <- meta
 	 
 	jasp.callback <- function(...) as.integer(callback())
+
 	#### Check for errors
 	if (options$dependent != "" && length(options$modelTerms) > 0) {
 		errorcheck <- .checkErrorsBayesianAnCova(options, dataset, perform)
@@ -49,6 +46,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		specific.error <- "none"
 		errorcheck <- list(error.present = error.present, specific.error = specific.error)
 	}
+
 	#### Generate models
 	if (options$dependent != "" && length(options$modelTerms) > 0) {
 		tmp.models.list <- .generateBayesianAnCovaModels (options, errorcheck)
@@ -61,7 +59,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	} else {
 		null.name <- as.character("Null model")
 	}
-		
+
 	#####BUILD Bayesian ANOVA table ##########
 	
 	posterior <- list()
@@ -81,6 +79,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	
 	schema <- list(fields=fields)
 	posterior[["schema"]] <- schema
+
 	if (options$dependent != "" && length(options$modelTerms) > 0 ){
 		if ( perform == "run" && error.present == 0){
 			if (length(terms.nuisance)> 0) {
@@ -92,10 +91,9 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			
 			########ANALYSIS#######
 			#This estimates the Bayes Factors. MM
-
 			result <- .estimateBayesFactorBayesianAnCova( mode = "withmain", model.formula = model.formula, 
 				dataset = dataset, terms.nuisance = terms.nuisance, options = options, jasp.callback = jasp.callback)
-
+			
 			withmain <- result$bf.object
 			BFmain <- result$bf
 			errormain <- result$error
@@ -113,7 +111,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			#This sets: n.mod, n.mod.0, models.tab, models, models.no.null
 				assign(names(a)[n], a[[n]])
 			}
-			
 			##PROCESS RESULTS
 			BFmain.0	<- c(1,BFmain)
 			# prior probability: 1/ number of models
@@ -141,7 +138,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 			BFmodels <-	(posterior.probability/(1-posterior.probability))/(pprior/(1-pprior))
 			errormain.0 <- c(NA,errormain)
-
 			#This produces the results. MM
 			posterior.results <- .posteriorResultsBayesianAnCova (table = "run", n.mod.0 = n.mod.0, 
 				posterior.probability = posterior.probability, BFmain.0 = BFmain.0, 
@@ -166,8 +162,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	###################
 	###EFFECTS TABLE###
 	##################
-	
-	
+
 	if (options$outputEffects == TRUE) {
 		
 		effect <- list()
@@ -474,9 +469,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	
 	match.eff.interactions <- cbind(rep(0,n.eff),match.eff.interactions)
 	
-		################
-	
-	
 	list(n.comp.mod = n.comp.mod, comp.mod = comp.mod, n.eff=n.eff, 
 			 comp.eff = comp.eff, n.comp.eff = n.comp.eff, effects=effects, 
 			 effects.tab = effects.tab, match.eff.mod=match.eff.mod,
@@ -530,7 +522,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	terms.as.strings <- c()
 	terms.nuisance <- c()
 	null.name <- as.character("Null model")
-	
 	if ( errorcheck$error.present == 0){
 		
 		for (term in options$modelTerms) {
@@ -566,15 +557,13 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 					terms.nuisance <- c(terms.nuisance, term.nuisance)
 				}
 			}
-		}
-		
+		}		
 		if (length(terms.nuisance)> 0) {
 			nuisance.plus	<- paste(.unvf(terms.nuisance), collapse=" + ") #
 			null.name <- as.character(paste("Null model (incl. ",	nuisance.plus, ")", sep = "" ) )#
 		}
 	}
-	
-	
+		
 	if(errorcheck$specific.error == "lower order effects"){
 		all.models <- NULL
 		model.formula <- NULL
@@ -594,7 +583,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 }
 
 .estimateBayesFactorBayesianAnCova <- function( mode, model.formula, dataset, terms.nuisance, options, jasp.callback ){
-	
+
 	result <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = mode, 
 		neverExclude = paste("^",terms.nuisance,"$", sep = ""), whichRandom = .v(options$randomFactors),
 		progress=FALSE, callback=jasp.callback)
