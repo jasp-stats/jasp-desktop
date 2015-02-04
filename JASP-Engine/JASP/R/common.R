@@ -392,6 +392,9 @@ run <- function(name, options.as.json.string, perform="run") {
 		formula <- sapply(formula, function(side) {
 			
 			side <- sapply(side, function(term) {
+			
+				term <- sapply(term, function(component) { base::Encoding(component) <- "UTF-8" ; component })
+			
 				paste(term, collapse=i.symbol)
 			})
 			
