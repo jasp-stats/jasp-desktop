@@ -1,5 +1,5 @@
 .plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
- cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, variable, addInformation= TRUE){
+ cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= TRUE) {
 	
 	if (rscale == "medium") {
 		r <- sqrt(2) / 2
@@ -321,10 +321,9 @@
 	}
 }
 
-
 .plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE,
- lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6, cexTextBF= 1.4, cexText=1.2, cexLegend= 1.4, cexEvidence= 1.6,
- lwdAxis= 1.2, plotDifferentPriors= FALSE, BFH1H0= TRUE, variable){
+ lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6, cexTextBF= 1.4, cexText=1.2, cexLegend= 1.2, cexEvidence= 1.6,
+ lwdAxis= 1.2, plotDifferentPriors= FALSE, BFH1H0= TRUE) {
 	
 	#### settings ####
 	
@@ -486,7 +485,9 @@
 		BF10m <- 1 / BF10m
 	}
 	
+	
 	# y-axis labels larger than 1
+	
 	y1h <- "1"
 	i <- 1
 	
@@ -552,7 +553,9 @@
 	
 	yhighLab <- as.character(yhigh)
 	
+	
 	# y-axis labels smaller than 1
+	
 	y1l <- "1/1"
 	i <- 1
 	
@@ -625,7 +628,9 @@
 	
 	yLab <- c(rev(ylow[-1]), yhighLab)
 	
+	
 	# remove 3's if yLab vector is too long
+	
 	omit3s <- FALSE
 	
 	if (length(yLab) > 9) {
@@ -788,9 +793,10 @@
 		yAt[i] <- log(eval(parse(text= yLab[i])))
 	}	
 	
+	
 	####################### plot ###########################
 	
-	par(mar= c(4, 6, 8.8, 7) + 0.1, las=1)
+	par(mar= c(5.6, 6, 7, 7) + 0.1, las=1)
 	
 	xLab <- pretty(c(0, length(x)+2))
 	xlim <- range(xLab)
@@ -816,7 +822,7 @@
 	
 	yAthigh <- yAt[yAt >= 0]
 	
-	if (omit3s == FALSE) {
+	if (!omit3s & eval(parse(text= yLab[1])) >= 1/300 & eval(parse(text= yLab[length(yLab)])) <= 300) {
 		
 		for (i in 1:(length(yAthigh)-1)) {
 			yy <- mean(c(yAthigh[i], yAthigh[i+1]))
@@ -1028,80 +1034,102 @@
 		}		
 	}
 	
+	
 	# display BF10 value
+	
 	BFe <- BayesFactor::ttestBF(x=x, y=y, paired= paired, nullInterval= nullInterval, rscale= r)
 	BF10e <- BayesFactor::extractBF(BFe, logbf = FALSE, onlybf = F)[1, "bf"]
 	BF01e <- 1 / BF10e
 	
-	xx <- grconvertX(0.3, "ndc", "user")
-	yy <- grconvertY(0.752, "ndc", "user")
-	yy2 <- grconvertY(0.808, "ndc", "user")
+		
+	# display BF10 value
+		
+	offsetTopPart <- 0.06	
+	
+	xx <- min(xLab)
+	yy <- grconvertY(0.75 + offsetTopPart, "ndc", "user")
+	yy2 <- grconvertY(0.806 + offsetTopPart, "ndc", "user")
 	
 	if (BF10e >= 1000000 | BF01e >= 1000000) {
 		BF10t <- format(BF10e, digits= 4, scientific = TRUE)
 		BF01t <- format(BF01e, digits= 4, scientific = TRUE)
 	}
+	
 	if (BF10e < 1000000 & BF01e < 1000000) {
 		BF10t <- formatC(BF10e, 3, format = "f")
 		BF01t <- formatC(BF01e, 3, format = "f")
 	}
 	
 	if (oneSided == FALSE) {
-		text(xx, yy2, bquote(BF[10]==.(BF10t)), cex= cexTextBF)
-		text(xx, yy, bquote(BF[0][1]==.(BF01t)), cex= cexTextBF)
-	}
-	if (oneSided == "right") {
-		text(xx, yy2, bquote(BF["+"][0]==.(BF10t)), cex= cexTextBF)
-		text(xx, yy, bquote(BF[0]["+"]==.(BF01t)), cex= cexTextBF)
-	}
-	if (oneSided == "left") {
-		text(xx, yy2, bquote(BF["-"][0]==.(BF10t)), cex= cexTextBF)
-		text(xx, yy, bquote(BF[0]["-"]==.(BF01t)), cex= cexTextBF)
+		text(xx, yy2, bquote(BF[10]==.(BF10t)), cex= cexTextBF, pos= 4, offset= -.2)
+		text(xx, yy, bquote(BF[0][1]==.(BF01t)), cex= cexTextBF, pos= 4, offset= -.2)
 	}
 	
+	if (oneSided == "right") {
+		text(xx, yy2, bquote(BF["+"][0]==.(BF10t)), cex= cexTextBF, pos= 4, offset= -.2)
+		text(xx, yy, bquote(BF[0]["+"]==.(BF01t)), cex= cexTextBF, pos= 4, offset= -.2)
+	}
+	
+	if (oneSided == "left") {
+		text(xx, yy2, bquote(BF["-"][0]==.(BF10t)), cex= cexTextBF, pos= 4, offset= -.2)
+		text(xx, yy, bquote(BF[0]["-"]==.(BF01t)), cex= cexTextBF, pos= 4, offset= -.2)
+	}
+	
+	
 	# probability wheel
+	
 	if (max(nchar(BF10t), nchar(BF01t)) <= 4) {
 		xx <- grconvertX(0.44, "ndc", "user")
 	}
-	# probability wheel
+	
 	if (max(nchar(BF10t), nchar(BF01t)) == 5) {
 		xx <- grconvertX(0.44 +  0.001* 5, "ndc", "user")
 	}
-	# probability wheel
+	
 	if (max(nchar(BF10t), nchar(BF01t)) == 6) {
 		xx <- grconvertX(0.44 + 0.001* 6, "ndc", "user") 
 	}
+	
 	if (max(nchar(BF10t), nchar(BF01t)) == 7) {
 		xx <- grconvertX(0.44 + 0.002* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
 	}
+	
 	if (max(nchar(BF10t), nchar(BF01t)) == 8) {
 		xx <- grconvertX(0.44 + 0.003* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
 	}
+	
 	if (max(nchar(BF10t), nchar(BF01t)) > 8) {
-		xx <- grconvertX(0.44 + 0.004* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
+		xx <- grconvertX(0.445 + 0.005* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
 	}
-	yy <- grconvertY(0.78, "ndc", "user")
+	
+	yy <- grconvertY(0.788 + offsetTopPart, "ndc", "user")
+	
 	
 	# make sure that colored area is centered
+	
 	radius <- grconvertX(0.2, "ndc", "user") - grconvertX(0.16, "ndc", "user")
 	A <- radius^2*pi
 	alpha <- 2 / (BF01e + 1) * A / radius^2
 	startpos <- pi/2 - alpha/2
 	
+	
 	# draw probability wheel
+	
 	plotrix::floating.pie(xx, yy,c(BF10e, 1),radius= radius, col=c("darkred", "white"), lwd=2,startpos = startpos)
 	
-	yy <- grconvertY(0.857, "ndc", "user")
-	yy2 <- grconvertY(0.70, "ndc", "user")
+	yy <- grconvertY(0.865 + offsetTopPart, "ndc", "user")
+	yy2 <- grconvertY(0.708 + offsetTopPart, "ndc", "user")
 	
 	if (oneSided == FALSE) {
 		text(xx, yy, "data|H1", cex= 1.1)
 		text(xx, yy2, "data|H0", cex=  1.1)
 	}
+	
 	if (oneSided == "right") {
 		text(xx, yy, "data|H+", cex=  1.1)
 		text(xx, yy2, "data|H0", cex=  1.1)
 	}
+	
 	if (oneSided == "left") {
 		text(xx, yy, "data|H-", cex=  1.1)
 		text(xx, yy2, "data|H0", cex=  1.1)
@@ -1150,30 +1178,30 @@
 		if (BFevidence > 100) {
 			lab <- "Extreme"
 		}
-		xxT <- grconvertX(0.66, "ndc", "user")
-		yyT <- grconvertY(0.78, "ndc", "user")
+		xxT <- max(xLab)
+		yyT <- grconvertY(0.775 + offsetTopPart, "ndc", "user")
 		
 		if (BF10e >= 1) {
 			
 			if (oneSided == FALSE) {
-				text(xxT, yyT, paste("Evidence for H1:\n", lab), cex= 1.4)
+				text(xxT, yyT, paste("Evidence for H1:\n", lab), cex= 1.4, pos= 2, offset= -.2)
 			}
 			if (oneSided == "right") {
-				text(xxT, yyT, paste("Evidence for H+:\n", lab), cex= 1.4)
+				text(xxT, yyT, paste("Evidence for H+:\n", lab), cex= 1.4, pos= 2, offset= -.2)
 			}
 			if (oneSided == "left") {
-				text(xxT, yyT, paste("Evidence for H-:\n", lab), cex= 1.4)
+				text(xxT, yyT, paste("Evidence for H-:\n", lab), cex= 1.4, pos= 2, offset= -.2)
 			}
 		}
 		
 		if (BF10e < 1) {
-			text(xxT, yyT, paste("Evidence for H0:\n", lab), cex= 1.4)
+			text(xxT, yyT, paste("Evidence for H0:\n", lab), cex= 1.4, pos= 2, offset= -.2)
 		}
 		
 	} else {
 		# add legend
 		xx <- grconvertX(0.56, "ndc", "user")
-		yy <- grconvertY(0.875, "ndc", "user")
+		yy <- grconvertY(0.872 + offsetTopPart, "ndc", "user")
 		
 		BFind <- sort(c(BF10[length(x)], BF10u[length(x)], BF10m[length(x)]), decreasing = TRUE, index.return=TRUE)$ix
 		legend <- c("user prior", "ultrawide prior", "medium prior")
@@ -1185,19 +1213,18 @@
 			legend(xx, yy, legend = legend[BFind], pch=rep(21,3), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,3), pt.lwd=rep(1.3,3), pt.cex= pt.cex[BFind])
 		} else {
 			
+			xx <- grconvertX(0.55, "ndc", "user")
 			lty <- c(1, 1, 3)
 			lwd <- c(2.7, 1.3, 1.3)
 			col <- c("black", greycol2, greycol)
-			legend(xx, yy, legend = legend[BFind], lty= lty[BFind], bty= "n", cex= cexLegend, lwd= lwd[BFind], col= col[BFind])
+			legend(xx, yy, legend = legend[BFind], lty= lty[BFind], bty= "n", cex= cexLegend, lwd= lwd[BFind], col= col[BFind], seg.len= .7)
 		}		
-	}
-
-	# add variable name
-	mtext(variable, side = 3, line = 6, cex= 1.7)	
+	}	
 }
+
 		
 .plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
- cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, variable){ 
+ cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE) { 
 	
 	#### settings ####
 	if (rscale == "medium") {
@@ -1607,7 +1634,7 @@
 	
 	####################### plot ###########################
 	
-	par(mar= c(5, 6, 7, 7) + 0.1, las=1)
+	par(mar= c(5, 6, 6, 7) + 0.1, las=1)
 	
 	xLab <- c(0, 0.25, 0.5, 0.75, 1, 1.25, 1.5)
 	xlim <- range(xLab)
@@ -1617,8 +1644,6 @@
 	
 	plot(1,1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
 	
-	# add variable name
-	mtext(variable, side = 3, line = 5.5, cex= 1.7)
 	
 	for (i in seq_along(yAt)) {
 		
@@ -1636,7 +1661,7 @@
 	
 	yAthigh <- yAt[yAt >= 0]
 	
-	if (omit3s == FALSE) {
+	if (!omit3s & eval(parse(text= yLab[1])) >= 1/300 & eval(parse(text= yLab[length(yLab)])) <= 300) {
 		
 		for (i in 1:(length(yAthigh)-1)) {
 			yy <- mean(c(yAthigh[i], yAthigh[i+1]))
@@ -1971,7 +1996,7 @@
 	}	
 	
 	xx <- grconvertX(0.2, "ndc", "user")
-	yy <- grconvertY(0.945, "ndc", "user")
+	yy <- grconvertY(0.965, "ndc", "user")
 	
 	BFind <- sort(c(BF10userText, BF10ultraText, BF10mText), decreasing = TRUE, index.return=TRUE)$ix
 	BFsort <- sort(c(BF10userText, BF10ultraText, BF10mText), decreasing = TRUE, index.return=TRUE)$x
@@ -1983,9 +2008,9 @@
 	legend(xx, yy, legend = legend[BFind], pch=rep(21,3), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,3), pt.lwd=rep(1.3,3), pt.cex= pt.cex[BFind])
 	
 	xx <- grconvertX(0.5, "ndc", "user")
-	y1 <- grconvertY(0.882, "ndc", "user")
-	y2 <- grconvertY(0.832, "ndc", "user")
-	y3 <- grconvertY(0.782, "ndc", "user")
+	y1 <- grconvertY(0.902, "ndc", "user")
+	y2 <- grconvertY(0.852, "ndc", "user")
+	y3 <- grconvertY(0.802, "ndc", "user")
 	yy <- c(y1, y2, y3)
 	
 	text(xx, yy[BFsort== BF10userText], userBF, cex= 1.3,pos = 4)
@@ -2174,7 +2199,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	if (callback(results) != 0) 
 		return()
 	
-	plotSequentialStatus <- "ok"
+	
 	
 	if (perform == "run") {
 		
@@ -2183,6 +2208,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		
 		for (variable in options[["variables"]])
 		{
+		
+			plotSequentialStatus <- "ok"
 			errorMessage <- NULL
 			
 			result <- try (silent = TRUE, expr = {
@@ -2255,10 +2282,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				results[["ttest"]] <- ttest
 				
 				
-				#
 				if(callback() != 0)
 					return()
-				#
 				
 				
 				if (callback(results) != 0)
@@ -2271,7 +2296,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, variable= variable)
+						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
 											
 						content <- .endSaveImage(image)
 						
@@ -2293,7 +2318,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, variable= variable)
+						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 											
 						content <- .endSaveImage(image)
 						
@@ -2315,7 +2340,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, variable= variable)
+						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 											
 						content <- .endSaveImage(image)
 						
@@ -2337,7 +2362,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0, variable= variable)
+						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
 						
 						content <- .endSaveImage(image)
 						

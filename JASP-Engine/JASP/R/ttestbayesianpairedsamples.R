@@ -266,7 +266,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							.plotPosterior.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, variable= paste(pair[[1]], pair[[2]], sep="-"))
+							.plotPosterior.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
 												
 							content <- .endSaveImage(image)
 							
@@ -287,8 +287,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							.plotBF.robustnessCheck.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0,
-							variable= paste(pair[[1]], pair[[2]], sep="-"))
+							.plotBF.robustnessCheck.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 												
 							content <- .endSaveImage(image)
 							
@@ -309,8 +308,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0,
-							variable= paste(pair[[1]], pair[[2]], sep="-"))
+							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 												
 							content <- .endSaveImage(image)
 							
@@ -331,8 +329,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0,
-							variable= paste(pair[[1]], pair[[2]], sep="-"))
+							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
 												
 							content <- .endSaveImage(image)
 							
