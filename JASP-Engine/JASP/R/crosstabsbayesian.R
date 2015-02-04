@@ -450,7 +450,8 @@
 									
 				logOR<-log(odds.ratio)
 				z<-stats::density(logOR)
-				x.mode <- z$x[i.mode <- which.max(z$y)]
+				#x.mode <- z$x[i.mode <- which.max(z$y)]
+				x.median <- stats::median(odds.ratio)
 				Sig <- options$oddsRatioCredibleIntervalInterval
 				alpha <- (1 - Sig)/2
 				x0 <- unname(stats::quantile(logOR, p = alpha))
@@ -467,7 +468,7 @@
 		
 				} else  {
 		
-					row[["value[oddsRatio]"]] <- exp(x.mode)
+					row[["value[oddsRatio]"]] <- x.median
 					row[["low[oddsRatio]"]] <- exp(x0)
 					row[["up[oddsRatio]"]] <- exp(x1)
 				}
@@ -559,6 +560,7 @@
 				#layer.names <- unlist( lapply(options$layers, function(x) { x$variable }))
 				logOR<-log(odds.ratio)
 				z<-stats::density(logOR)
+				x.median <- stats::median(odds.ratio)
 				x.mode <- z$x[i.mode <- which.max(z$y)]
 				Sig <- options$oddsRatioCredibleIntervalInterval
 				alpha <- (1 - Sig)/2
@@ -566,13 +568,15 @@
 				x1 <- unname(stats::quantile(logOR, p = (1-alpha)))
 				image <- .beginSaveImage(options$plotWidths, options$plotHeights)
 				
-				par(mar= c(5, 4.5, 4, 2) + 0.1, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3)
+				par(mar= c(5, 4.5, 8, 2) + 0.1, xpd=TRUE, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3)
 				digitsize <- 1.2
 				y.mode <- z$y[i.mode]
 				lim<-max(z$x)-min(z$x)
 				fit<-logspline::logspline(logOR)
 				ylim0 <- c(0,1.1*y.mode )
-				xticks <- pretty(logOR, min.n= 3)
+				xlow<-unname(stats::quantile(logOR, p =0.0001))
+				xhigh<-unname(stats::quantile(logOR, p =0.9999))
+				xticks <- pretty(c(xlow,xhigh), min.n= 3)
 				
 				if (length(group) > 0) {
 				
@@ -595,9 +599,10 @@
 				Sig1<-bquote(.(Sig1))
 				arrows(x0, 1.07*y.mode, x1, 1.07*y.mode, length = 0.05, angle = 90, code = 3, lwd=2)
 				#text(-1.5, 0.8, expression(log('BFI'[10]) == 22.60),cex=digitsize)
-				text(x.mode, y.mode+(y.mode/8.5), paste(Sig1,"%"), cex=digitsize)
-				text(x0, 1.01*y.mode, round(x0, digits = 2) , cex=digitsize)
-				text(x1, 1.01*y.mode, round(x1, digits = 2) , cex=digitsize)
+				text(x.mode,y.mode+(y.mode/4), paste("Median =", round(x.median,digit=2)), cex=digitsize)
+				text(x.mode, y.mode+(y.mode/7), paste(Sig1,"%"), cex=digitsize)
+				text(x0, y.mode, round(x0, digits = 2) , cex=digitsize)
+				text(x1, y.mode, round(x1, digits = 2) , cex=digitsize)
 				
 				content <- .endSaveImage(image) 
 				
@@ -670,8 +675,10 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 		for (analysis in analyses)
 		{
 			res <- .crosstabBayesian(dataset, options, perform, analysis)
+			
 			for (table in res$tables)
 				crosstabs[[length(crosstabs)+1]] <- table
+				
 			for (plot in res$plots)
 				plots[[length(plots)+1]] <- plot
 		}
