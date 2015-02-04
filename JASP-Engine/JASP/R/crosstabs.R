@@ -266,16 +266,19 @@
 		
 		oddsratio.table <- list()
 		
-		oddsratio.table[["title"]] <- "Odds ratio"
+		oddsratio.table[["title"]] <- "Log Odds ratio"
 		
 		oddsratio.fields <- fields
 			
-		#oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="Odds ratio", type="number", format="sf:4;dp:3")
-		#oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="Sigma[oddsRatio]", title="std. error", type="number", format="dp:3")
-		
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="log(odds ratio)", type="number", format="sf:4;dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
+		
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[FisherTest]", title="", type="string")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[FisherTest]", title="Odds ratio", type="number", format="sf:4;dp:3")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[FisherTest]", title="Lower CI", type="number", format="dp:3")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[FisherTest]",  title="Upper CI", type="number", format="dp:3")
 		
 		schema <- list(fields=oddsratio.fields)
 		
@@ -563,7 +566,9 @@
 			
 		}
 	}	
-###############################################		
+	
+###############################################	
+	
 	if (options$chiSquaredContinuityCorrection){	
 		row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 Continuity correction"
 
@@ -944,7 +949,11 @@
 			
 				chi.result <- try({
 
-					chi.result <- stats::fisher.test(counts.matrix, conf.level = options$oddsRatioConfidenceIntervalInterval)
+					chi.result <- vcd::oddsratio(counts.matrix)
+					LogOR <- chi.result
+					CI <- stats::confint(chi.result, level = options$oddsRatioConfidenceIntervalInterval)
+					CI.low <- CI[1]
+					CI.high <- CI[2]
 				})
 
 				if (class(chi.result) == "try-error") {
@@ -968,18 +977,81 @@
 
 				} else {
 
-					row[["value[oddsRatio]"]] <- unname(chi.result$estimate)
-					row[["low[oddsRatio]"]] <- chi.result$conf.int[1]
-					row[["up[oddsRatio]"]] <-  chi.result$conf.int[2]
+					row[["value[oddsRatio]"]] <-LogOR
+					row[["low[oddsRatio]"]] <- CI.low
+					row[["up[oddsRatio]"]] <- CI.high
 				}
 	
 			}
 		}
 		 
-	}else {
+	} else {
 	
 		row[["value[oddsRatio]"]] <- "."
 	}
+	
+	if (options$oddsRatio ) {
+	
+		row[["type[FisherTest]"]] <- "Fisher's exact test "
+
+		if (perform == "run" && status$error == FALSE) {
+		
+			if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
+
+				row[["value[FisherTest]"]] <- .clean(NaN)
+				row[["low[FisherTest]"]] <- ""
+				row[["up[FisherTest]"]] <-  ""
+				
+				sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
+				row[[".footnotes"]] <- list("value[FisherTest]"=list(sup))
+				
+			} else {
+			
+				chi.result <- try({
+
+					chi.result <- stats::fisher.test(counts.matrix, conf.level = options$oddsRatioConfidenceIntervalInterval)
+					OR <- unname(chi.result$estimate)
+					logOR <- log(OR)
+					
+					CI.low <- chi.result$conf.int[1]
+					CI.high <- chi.result$conf.int[2]
+					
+				})
+
+				if (class(chi.result) == "try-error") {
+
+					row[["value[FisherTest]"]] <- .clean(NaN)
+
+					error <- .extractErrorMessage(chi.result)
+
+					if (error == "at least one entry of 'x' must be positive")
+						error <- "\u03A7\u00B2 could not be calculated, contains no observations"
+
+					sup   <- .addFootnote(footnotes, error)
+					row[[".footnotes"]] <- list("value[FisherTest]"=list(sup))
+
+				} else if (is.na(chi.result)) {
+
+					row[["value[FisherTest]"]] <- .clean(NaN)
+
+					sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
+					row[[".footnotes"]] <- list("value[FisherTest]"=list(sup))
+
+				} else {
+
+					row[["value[FisherTest]"]] <- logOR 
+					row[["low[FisherTest]"]] <- log(CI.low)
+					row[["up[FisherTest]"]] <-  log(CI.high)
+				}
+	
+			}
+		}
+		 
+	} else {
+	
+		row[["value[FisherTest]"]] <- "."
+	}
+	
 	
 	list(row)
 }

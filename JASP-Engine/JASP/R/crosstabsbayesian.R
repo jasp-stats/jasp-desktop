@@ -155,18 +155,9 @@
 	
 	tests.fields[[length(tests.fields)+1]] <- list(name="type[BF]", title="", type="string")
 	tests.fields[[length(tests.fields)+1]] <- list(name="value[BF]", title="Value", type="number", format="sf:4;dp:3")
-	
 	tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
 	tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value", type="integer")
-
-	#if (options$oddsRatio) {
 	
-	#	tests.fields[[length(tests.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
-	#	tests.fields[[length(tests.fields)+1]] <- list(name="value[oddsRatio]", title="Value", type="number", format="sf:4;dp:3")
-	#}
-	
-	
-
 	schema <- list(fields=tests.fields)
 	
 	tests.table[["schema"]] <- schema
@@ -176,7 +167,7 @@
 		
 		oddsratio.table <- list()
 		
-		oddsratio.table[["title"]] <- "Odds ratio"
+		oddsratio.table[["title"]] <- "Log odds ratio"
 		
 		oddsratio.fields <- fields
 			
@@ -451,7 +442,7 @@
 				logOR<-log(odds.ratio)
 				z<-stats::density(logOR)
 				#x.mode <- z$x[i.mode <- which.max(z$y)]
-				x.median <- stats::median(odds.ratio)
+				x.median <- stats::median(logOR)
 				Sig <- options$oddsRatioCredibleIntervalInterval
 				alpha <- (1 - Sig)/2
 				x0 <- unname(stats::quantile(logOR, p = alpha))
@@ -469,8 +460,8 @@
 				} else  {
 		
 					row[["value[oddsRatio]"]] <- x.median
-					row[["low[oddsRatio]"]] <- exp(x0)
-					row[["up[oddsRatio]"]] <- exp(x1)
+					row[["low[oddsRatio]"]] <- x0
+					row[["up[oddsRatio]"]] <- x1
 				}
 			}
 		}
@@ -518,7 +509,7 @@
 
 		if (perform == "run" && status$error == FALSE) {
 		
-			if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
+			if (! identical(dim(counts.matrix),as.integer(c(2,2)))) {
 			
 			} else if ( options$samplingModel== "hypergeometric") {
 			
@@ -560,12 +551,12 @@
 				#layer.names <- unlist( lapply(options$layers, function(x) { x$variable }))
 				logOR<-log(odds.ratio)
 				z<-stats::density(logOR)
-				x.median <- stats::median(odds.ratio)
+				x.median <- stats::median(logOR)
 				x.mode <- z$x[i.mode <- which.max(z$y)]
-				Sig <- options$oddsRatioCredibleIntervalInterval
-				alpha <- (1 - Sig)/2
-				x0 <- unname(stats::quantile(logOR, p = alpha))
-				x1 <- unname(stats::quantile(logOR, p = (1-alpha)))
+				alpha <- options$oddsRatioCredibleIntervalInterval
+				Sig <- (1 - alpha)/2
+				x0 <- unname(stats::quantile(logOR, p = Sig))
+				x1 <- unname(stats::quantile(logOR, p = (1-Sig)))
 				image <- .beginSaveImage(options$plotWidths, options$plotHeights)
 				
 				par(mar= c(5, 4.5, 8, 2) + 0.1, xpd=TRUE, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3)
@@ -599,10 +590,10 @@
 				Sig1<-bquote(.(Sig1))
 				arrows(x0, 1.07*y.mode, x1, 1.07*y.mode, length = 0.05, angle = 90, code = 3, lwd=2)
 				#text(-1.5, 0.8, expression(log('BFI'[10]) == 22.60),cex=digitsize)
-				text(x.mode,y.mode+(y.mode/4), paste("Median =", round(x.median,digit=2)), cex=digitsize)
+				text(x.mode,y.mode+(y.mode/4), paste("Median =", round(x.median,digit=3)), cex=digitsize)
 				text(x.mode, y.mode+(y.mode/7), paste(Sig1,"%"), cex=digitsize)
-				text(x0, y.mode, round(x0, digits = 2) , cex=digitsize)
-				text(x1, y.mode, round(x1, digits = 2) , cex=digitsize)
+				text(x0, y.mode, round(x0, digits = 3) , cex=digitsize)
+				text(x1, y.mode, round(x1, digits = 3) , cex=digitsize)
 				
 				content <- .endSaveImage(image) 
 				
