@@ -284,7 +284,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				
 		plot <- list()
 			
-		plot[["title"]] <- variables
+		plot[["title"]] <- variables #paste(variables,  collapse= ",")
 		plot[["width"]]  <- width
 		plot[["height"]] <- height
 		
@@ -346,7 +346,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					
 			plot <- list()
 				
-			plot[["title"]] <- variables
+			plot[["title"]] <- .unv(variables)
 			plot[["width"]]  <- width
 			plot[["height"]] <- height
 					
