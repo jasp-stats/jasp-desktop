@@ -29,6 +29,11 @@ $.widget("jasp.images", {
             	var options = this.options.items[i]
             	if ( ! options["status"])
             		options["status"] = this.options.status
+            	
+            	if (i > 0) {
+            		if (this.options.items[i-1].title == options.title)
+            			options.title = ""
+            	}
             
                 var image = $('<div class="jasp-images-image"></div>')
                 image.image(options)

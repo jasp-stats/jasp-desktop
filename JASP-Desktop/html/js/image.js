@@ -52,8 +52,13 @@ $.widget("jasp.image", {
 		this.element.css("width", this.options.width)
 		this.element.css("height", this.options.height)
 		
-		html += '<div class="jasp-image-image" style="width : 100% ; height : 100% ; '
+		if (this.options.title) {
 		
+			html += '<h2>' + this.options.title + '</h2>'
+		}
+		
+		html += '<div class="jasp-image-image" style="width : 100% ; height : 100% ; '
+
 		if (this.options.data) {
 		
 			html += 'background-image : url(\'file:///' + this.options.data + '\') ;'
