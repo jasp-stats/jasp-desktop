@@ -154,7 +154,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 								
 						image <- .beginSaveImage(530, 400)
 						
-						.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, variable= variable)
+						.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
 											
 						content <- .endSaveImage(image)
 						
@@ -176,7 +176,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotBF.robustnessCheck.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, variable= variable)
+						.plotBF.robustnessCheck.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 											
 						content <- .endSaveImage(image)
 						
@@ -198,7 +198,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, variable= variable)
+						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 											
 						content <- .endSaveImage(image)
 						
@@ -220,8 +220,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0,
-						variable= variable)
+						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
 											
 						content <- .endSaveImage(image)
 						
