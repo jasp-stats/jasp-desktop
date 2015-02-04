@@ -229,6 +229,10 @@ int Engine::callback(const string &results)
 	if (results != "null")
 	{
 		_analysisResultsString = results;
+
+		Json::Reader parser;
+		parser.parse(_analysisResultsString, _analysisResults, false);
+
 		sendResults();
 	}
 
