@@ -38,7 +38,6 @@ private:
 
 	TableModelAnovaModel *_anovaModel;
 
-	TableModelVariablesOptions *_contrastsModel;
 	TableModelVariablesAvailable *_factorsAvailableListModel;
 
 };

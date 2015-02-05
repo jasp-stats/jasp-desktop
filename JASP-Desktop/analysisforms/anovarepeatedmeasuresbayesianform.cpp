@@ -44,15 +44,15 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 
 	termsChanged();
 
-	_contrastsModel = new TableModelVariablesOptions();
-    ui->contrasts->setModel(_contrastsModel);
-
 	ui->containerModel->hide();
-	ui->containerFactors->hide();
-	ui->containerOptions->hide();
-	ui->containerPostHocTests->hide();
 
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
+
+#ifdef QT_NO_DEBUG
+	ui->modelContainer->hide();
+#else
+	ui->modelContainer->setStyleSheet("background-color: pink ;");
+#endif
 }
 
 AnovaRepeatedMeasuresBayesianForm::~AnovaRepeatedMeasuresBayesianForm()
@@ -70,19 +70,11 @@ void AnovaRepeatedMeasuresBayesianForm::factorsChanged()
 	factorsAvailable.add(_betweenSubjectsFactorsListModel->assigned());
 
 	_anovaModel->setVariables(factorsAvailable);
-	_contrastsModel->setVariables(factorsAvailable);
-
-	ui->postHocTests_variables->setVariables(factorsAvailable);
 }
 
 void AnovaRepeatedMeasuresBayesianForm::termsChanged()
 {
-	Terms terms;
 
-	terms.add(string("~OVERALL"));
-	terms.add(_anovaModel->terms());
-
-	ui->marginalMeans_terms->setVariables(terms);
 }
 
 void AnovaRepeatedMeasuresBayesianForm::withinSubjectsDesignChanged()
