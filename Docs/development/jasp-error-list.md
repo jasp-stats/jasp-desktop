@@ -97,6 +97,6 @@ value errors for *r* the sample correlation co-efficient
 
 * Sample correlation co-efficient is undefined - not enough observations
 * Sample correlation co-efficient is undefined - one (or more) variables contain infinity
-* Sample correlation co-efficient is undefined - one (or more) variables contain an NA, or do not vary
+* Sample correlation co-efficient is undefined - one (or more) variables do not vary
 
 
