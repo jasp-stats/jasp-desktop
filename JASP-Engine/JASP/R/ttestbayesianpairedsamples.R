@@ -115,7 +115,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		
 	for (pair in options$pairs)
 	{
-		
+				
 		if (options$plotPriorAndPosterior){
 			plot <- list()
 			
@@ -167,10 +167,12 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	if (callback(results) != 0) 
 		return()
 	
-	z <- 1
 	
 	for (pair in options$pairs)
 	{
+	
+		plotSequentialStatus <- "ok"
+		
 		if (pair[[1]] == "" || pair[[2]] == "") {
 		
 			p1 <- ifelse(pair[[1]] != "", pair[[1]], "...") 
@@ -261,6 +263,19 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						if (callback(results) != 0)
 							return()
 						
+						
+						
+						matchPair <- logical(length(pairs))
+						
+						for (i in seq_along(options$pairs)) {
+	
+							matchPair[i] <- identical(options$pairs[[i]], pair)
+						}
+						
+						numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis, 
+														options$plotSequentialAnalysisRobustness)
+							
+						z <- numberPlotsPerVariable * (which(matchPair) - 1) + 1
 						
 						if(options$plotPriorAndPosterior){
 						
