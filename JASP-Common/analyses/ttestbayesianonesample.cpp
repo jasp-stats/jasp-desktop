@@ -29,6 +29,7 @@ Options *TTestBayesianOneSample::createOptions() const
 	options->add("priorWidth", new OptionNumber(1));
 
 	options->add("plotPriorAndPosterior", new OptionBoolean());
+	options->add("plotPriorAndPosteriorAdditionalInfo", new OptionBoolean());
 	options->add("plotBayesFactorRobustness", new OptionBoolean());
 	options->add("plotSequentialAnalysis", new OptionBoolean());
 	options->add("plotSequentialAnalysisRobustness", new OptionBoolean());
