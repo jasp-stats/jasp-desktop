@@ -22,7 +22,7 @@ Options *Correlation::createOptions() const
 
 	options->add("hypothesis", new OptionList(list("correlated", "correlatedPositively", "correlatedNegatively")));
 
-	options->add("reportSignificance", new OptionBoolean());
+	options->add("reportSignificance", new OptionBoolean(true));
 	options->add("flagSignificant", new OptionBoolean());
 
 	options->add("confidenceIntervals", new OptionBoolean());

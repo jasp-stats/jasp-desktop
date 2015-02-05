@@ -32,7 +32,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	ui->classicalAnovaButton->setMenu(menu);
 
 	menu = new QMenu(this);
-	menu->addAction(QString("Correlation"), this, SLOT(itemSelected()))->setObjectName("Correlation");
+	menu->addAction(QString("Correlation Matrix"), this, SLOT(itemSelected()))->setObjectName("Correlation");
 	menu->addAction(QString("Partial Correlation"), this, SLOT(itemSelected()))->setObjectName("CorrelationPartial");
 	menu->addAction(QString("Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinear");
 

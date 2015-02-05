@@ -291,7 +291,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		frequency.plots[[1]] <- plot
 	}
 	
-	if (perform == "run" & length(options$variables) > 0 & options$plotCorrelationMatrix) {
+	if (perform == "run" && length(options$variables) > 0 && options$plotCorrelationMatrix) {
 				
 		variables <- unlist(options$variables)
 		
@@ -310,7 +310,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		
 		ind1 <- d == "numeric" | d == "integer"
 		ind2 <- sdCheck > 0
-		ind <- ind1 & ind2 & !infCheck
+		ind <- ind1 && ind2 && infCheck == FALSE
 		
 		
 		variables <- .v(variables)[ind]
@@ -464,7 +464,23 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	hypothesis=options$hypothesis, reportSignificance=options$reportSignificance,
 	flagSignificant=options$flagSignificant,
 	meansAndStdDev=options$meansAndStdDev, crossProducts=options$crossProducts)
-
+	
+	if (perform == "init") {
+	
+		if (length(options$variables) < 2) {
+		
+			results <- list(results=results, status="complete")
+			
+		} else {
+		
+			results <- list(results=results, status="inited")
+		}
+		
+	} else {
+	
+		results <- list(results=results, status="complete")
+	}
+	
 	results
 }
 
@@ -473,6 +489,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	flagSignificant=FALSE, meansAndStdDev=FALSE, crossProducts=FALSE) {
 	
 	correlation.table <- list()
+	
+	if (perform == "init") {
+	
+		if (length(variables) < 2)
+			variables <- c(variables, "...")
+		if (length(variables) < 2)
+			variables <- c(variables, "... ")
+	}
 	
 	tests <- c()
 	if (pearson)
