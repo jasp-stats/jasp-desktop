@@ -62,9 +62,13 @@ td {
 	vertical-align: top ;
 }
 
-thead tr:nth-child(2) th
-{
+thead tr:nth-child(2) th:not(.symbol) {
 	min-width: 4em ;
+}
+
+th.symbol, td.symbol {
+	padding-left: 0px ;
+	padding-right: 0px ;
 }
 
 thead tr:first-child th {

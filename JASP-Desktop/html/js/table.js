@@ -444,7 +444,11 @@ $.widget("jasp.table", {
 			if (title == "")
 				title = "&nbsp;"
 			
-			var columnHeader = { content : title, header : true }
+			var columnType = columnDef.type
+			if ( ! columnType)
+				columnType = ""
+			
+			var columnHeader = { content : title, header : true, type : columnType }
 
 			// At the moment this only supports combining two column headers
 			// Support for multiple can be added when necessary
@@ -662,7 +666,7 @@ $.widget("jasp.table", {
 
 				span *= 2  // times 2, because of footnote markers
 			
-				chunks.push('<th colspan="' + span + '" nowrap>' + cell.content)
+				chunks.push('<th colspan="' + span + '" class="' + cell.type + '" nowrap>' + cell.content)
 				if (cell.footnotes)
 					chunks.push(cell.footnotes.join(' '))
 				chunks.push('</th>')
