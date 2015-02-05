@@ -91,3 +91,12 @@ value errors for *BF*
 #### ANOVA
 
 * Factor(s): *X, Y, Z* contain(s) less than two levels. (Possibly only after rows with missing values are excluded)
+
+#### Bayesian Correlation Matrix
+value errors for *r* the sample correlation co-efficient
+
+* Sample correlation co-efficient r is undefined - not enough observations
+* Sample correlation co-efficient r is undefined - one (or more) variables contain infinity
+* Sample correlation co-efficient r is undefined - one (or more) variables do not vary
+
+
