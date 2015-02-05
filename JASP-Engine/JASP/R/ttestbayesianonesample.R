@@ -798,7 +798,7 @@
 	
 	par(mar= c(5.6, 6, 7, 7) + 0.1, las=1)
 	
-	xLab <- pretty(c(0, length(x)+2))
+	xLab <- pretty(c(0, length(BF10)+2))
 	xlim <- range(xLab)
 	ylow <- log(eval(parse(text= yLab[1])))
 	yhigh <- log(eval(parse(text= yLab[length(yLab)])))
