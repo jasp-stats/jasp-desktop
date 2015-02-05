@@ -2204,7 +2204,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	if (perform == "run") {
 		
 		i <- 1
-		z <- 1
 		
 		for (variable in options[["variables"]])
 		{
@@ -2291,6 +2290,12 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				
 				if (is.null(errorMessage)) {
+				
+				numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis, 
+												options$plotSequentialAnalysisRobustness)
+											
+				z <- numberPlotsPerVariable * (which(options$variables == variable) -1) + 1
+				
 				
 					if (options$plotPriorAndPosterior) {
 					

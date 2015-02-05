@@ -119,7 +119,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			
 			
 			statusInd <-1
-			z <- 1
 			
 			for (variable in options[["variables"]]) {
 			
@@ -149,6 +148,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 				
 				if (status[statusInd] != "error") {
+				
+				numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis, 
+												options$plotSequentialAnalysisRobustness)
+											
+				z <- numberPlotsPerVariable * (which(options$variables == variable) -1) + 1
+				
 				
 					if (options$plotPriorAndPosterior) {
 								
@@ -194,7 +199,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						z <- z + 1
 					}
 					
-					if (options$plotSequentialAnalysis) {
+					if (options$plotSequentialAnalysis && status[statusInd] != "sequentialNotPossible") {
 					
 						image <- .beginSaveImage(530, 400)
 						
@@ -216,7 +221,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						z <- z + 1
 					}
 					
-					if (options$plotSequentialAnalysisRobustness) {
+					if (options$plotSequentialAnalysisRobustness&& status[statusInd] != "sequentialNotPossible") {
 					
 						image <- .beginSaveImage(530, 400)
 						
@@ -396,7 +401,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							errorMessage <- paste("Sequential Analysis not possible: The first observations are identical")
 							index <- .addFootnote(footnotes, errorMessage)
 							
-							status[rowNo] <- "error"
+							status[rowNo] <- "sequentialNotPossible"
 						}
 					}
 										
