@@ -267,7 +267,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							image <- .beginSaveImage(530, 400)
 							
-							.plotPosterior.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth)
+							.plotPosterior.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
 												
 							content <- .endSaveImage(image)
 							
