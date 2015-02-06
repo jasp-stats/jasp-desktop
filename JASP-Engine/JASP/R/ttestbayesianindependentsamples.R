@@ -118,7 +118,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
 			
 			
-			statusInd <-1
+			statusInd <- 1
 			
 			for (variable in options[["variables"]]) {
 			
@@ -159,7 +159,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 								
 						image <- .beginSaveImage(530, 400)
 						
-						.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth)
+						.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
 											
 						content <- .endSaveImage(image)
 						

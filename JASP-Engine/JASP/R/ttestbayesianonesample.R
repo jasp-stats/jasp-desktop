@@ -52,10 +52,8 @@
 	BF10 <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 	BF01 <- 1 / BF10
 	
-	
 	# fit denisty estimator
-		fit.posterior <-  logspline::logspline(delta)
-	
+	fit.posterior <-  logspline::logspline(delta)
 	
 	# density function posterior
 	dposterior <- function(x, oneSided= oneSided, delta= delta){
@@ -141,7 +139,13 @@
 	posteriorLine <- dposterior(x= seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, delta=delta)
 	
 	
-	par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
+	if (addInformation) {
+	
+		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
+	} else {
+	
+		par(mar= c(5.6, 5, 2, 4) + 0.1, las=1)
+	}
 	
 	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
 	
@@ -2200,7 +2204,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		return()
 	
 	
-	
 	if (perform == "run") {
 		
 		i <- 1
@@ -2229,6 +2232,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				list(Variable=variable, BF=BF, error=error)
 			})
+			
 			
 			if (class(result) == "try-error") {
 				
@@ -2259,6 +2263,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
 				}
+
 				
 				ind <- which(variableData == variableData[1])
 				idData <- sum((ind+1)-(1:(length(ind))) == 1)
@@ -2301,7 +2306,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 						image <- .beginSaveImage(530, 400)
 						
-						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth)
+						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
 											
 						content <- .endSaveImage(image)
 						
@@ -2313,8 +2318,10 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 						results[["plots"]] <- plots.ttest
 						
+						
 						if (callback(results) != 0)
 							return()
+
 						
 						z <- z + 1
 					}
@@ -2391,6 +2398,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		}	
 	}
 	
+	print(options)
 	results
 }
 
