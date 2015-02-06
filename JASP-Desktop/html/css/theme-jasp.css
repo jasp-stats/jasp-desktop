@@ -62,11 +62,11 @@ td {
 	vertical-align: top ;
 }
 
-thead tr:nth-child(2) th:not(.symbol) {
-	min-width: 4em ;
+thead tr:nth-child(2) th:not(.separator) {
+	min-width: 3em ;
 }
 
-th.symbol, td.symbol {
+th.separator, td.separator {
 	padding-left: 0px ;
 	padding-right: 0px ;
 }

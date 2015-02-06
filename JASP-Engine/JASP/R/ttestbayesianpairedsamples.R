@@ -99,7 +99,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 	fields <- list(
 		list(name=".variable1", type="string", title=""),
-		list(name=".separator", type="symbol", title=""),
+		list(name=".separator", type="separator", title=""),
 		list(name=".variable2", type="string", title=""),
 		list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
 		list(name="error", type="number", format="sf:4;dp:3", title="error %"))
