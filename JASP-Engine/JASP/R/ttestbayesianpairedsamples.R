@@ -115,7 +115,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		
 	for (pair in options$pairs)
 	{
-				
+		
+		
 		if (options$plotPriorAndPosterior){
 			plot <- list()
 			
@@ -163,9 +164,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 	
 	results[["plots"]] <- plots.ttest
-		
-	if (callback(results) != 0) 
-		return()
 	
 	
 	for (pair in options$pairs)
@@ -233,7 +231,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						index <- .addFootnote(footnotes, errorMessage)
 						
 						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error, .footnotes=list(BF=list(index)))
-					} else{
+					} else {
 
 						ind <- which(c1 == c1[1])
 						idData <- sum((ind+1)-(1:(length(ind))) == 1)
@@ -251,18 +249,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 							result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error, .footnotes=list(BF=list(index)))
 						}
-						
-						
-						ttest.rows[[length(ttest.rows)+1]] <- result
-						
-						ttest[["data"]] <- ttest.rows
-						ttest[["footnotes"]] <- as.list(footnotes)
-						
-						results[["ttest"]] <- ttest
-	
-						if (callback(results) != 0)
-							return()
-						
 						
 						
 						matchPair <- logical(length(pairs))
@@ -293,9 +279,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							
 							results[["plots"]] <- plots.ttest
 						
-							if (callback(results) != 0)
-								return()
-							
 							z <- z + 1
 						}
 						if(options$plotBayesFactorRobustness){
@@ -314,9 +297,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							
 							results[["plots"]] <- plots.ttest
 						
-							if (callback(results) != 0)
-								return()
-							
 							z <- z + 1
 						}
 						if(options$plotSequentialAnalysis && plotSequentialStatus == "ok"){
@@ -335,9 +315,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							
 							results[["plots"]] <- plots.ttest
 						
-							if (callback(results) != 0)
-								return()
-							
 							z <- z + 1
 						}
 						if(options$plotSequentialAnalysisRobustness && plotSequentialStatus == "ok"){
@@ -356,9 +333,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							
 							results[["plots"]] <- plots.ttest
 						
-							if (callback(results) != 0)
-								return()
-							
 							z <- z + 1
 						}						
 					}
@@ -368,8 +342,18 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			
 				result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=".", error=".")
 			}
+			
+
 		}
+		
+		ttest.rows[[length(ttest.rows)+1]] <- result
+		
+		ttest[["data"]] <- ttest.rows
+		ttest[["footnotes"]] <- as.list(footnotes)
+		
+		results[["ttest"]] <- ttest
 	}
+	
 
 	if (options$descriptives) {
 	
