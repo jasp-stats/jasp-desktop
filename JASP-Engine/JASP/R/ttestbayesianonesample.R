@@ -2398,7 +2398,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		}	
 	}
 	
-	print(options)
 	results
 }
 
