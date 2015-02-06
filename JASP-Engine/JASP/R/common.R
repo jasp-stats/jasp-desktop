@@ -430,7 +430,7 @@ callback <- function(results=NULL) {
 		if (is.null(results)) {
 			json.string <- "null"
 		} else {
-			json.string <- RJSONIO::toJSON(results)
+			json.string <- RJSONIO::toJSON(results, digits=12)
 		}
 	
 		ret <- .callbackNative(json.string);
