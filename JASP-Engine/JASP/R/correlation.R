@@ -93,87 +93,93 @@
 
 #### display correlation value ####
 .plotCorValue <- function(xVar, yVar, cexText= 2.5, cexCI= 1.7, hypothesis = "correlated", pearson=options$pearson,
-	kendallsTauB=options$kendallsTauB, spearman=options$spearman){
+	kendallsTauB=options$kendallsTauB, spearman=options$spearman) {
 
+	CIPossible <- TRUE
 	
 	tests <- c()
+	
 	if (pearson)
 		tests <- c(tests, "pearson")
+		
 	if (spearman)
 		tests <- c(tests, "spearman")
+		
 	if (kendallsTauB)
 		tests <- c(tests, "kendall")
 
+		
 	plot(1,1, type="n", axes=FALSE, ylab="", xlab="")
 	
 	lab <- vector("list")
 	
 	for(i in seq_along(tests)){
 	
-		if(cor.test(xVar, yVar, method=tests[i])$estimate>= 0 & cor.test(xVar, yVar, method=tests[i])$estimate < 1){
+		if (round(cor.test(xVar, yVar, method=tests[i])$estimate, 8) == 1){
+		
+			CIPossible <- FALSE
 		
 			if(tests[i] == "pearson"){
-				lab[[i]] <- bquote(italic(r) == .(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3), start=2, stop=5)))
+				lab[[i]] <- bquote(italic(r) == "1.000")
 			}
+			
 			if(tests[i] == "spearman"){
-				lab[[i]] <- bquote(rho == .(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3), start=2, stop=5)))
+				lab[[i]] <- bquote(italic(rho) == "1.000")
 			}
+			
 			if(tests[i] == "kendall"){
-				lab[[i]] <- bquote(tau == .(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3), start=2, stop=5)))
+				lab[[i]] <- bquote(italic(tau) == "1.000")
 			}
-		}		
+			
+		} else if (round(cor.test(xVar, yVar, method=tests[i])$estimate, 8) == -1){
 		
-		if(cor.test(xVar, yVar, method=tests[i])$estimate <0 & cor.test(xVar, yVar, method=tests[i])$estimate > -1){
+			CIPossible <- FALSE
 		
 			if(tests[i] == "pearson"){
-				lab[[i]] <- bquote(italic(r) == -.(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format= "f", digits= 3), start=3, stop=6)))
+				lab[[i]] <- bquote(italic(r) == "-1.000")
 			}
+			
 			if(tests[i] == "spearman"){
-				lab[[i]] <- bquote(italic(rho) == -.(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format= "f", digits= 3), start=3, stop=6)))
+				lab[[i]] <- bquote(italic(rho) == "-1.000")
 			}
+			
 			if(tests[i] == "kendall"){
-				lab[[i]] <- bquote(italic(tau) == -.(substr(x = formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format= "f", digits= 3), start=3, stop=6)))
+				lab[[i]] <- bquote(italic(tau) == "-1.000")
 			}
-		}
+			
+		} else {
 		
-		if(cor.test(xVar, yVar, method=tests[i])$estimate == 1){
 			if(tests[i] == "pearson"){
-				lab[[i]] <- bquote(italic(r) == 1.00)
+				lab[[i]] <- bquote(italic(r) == .(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
 			}
+			
 			if(tests[i] == "spearman"){
-				lab[[i]] <- bquote(italic(rho) == 1.00)
+				lab[[i]] <- bquote(rho == .(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
 			}
+			
 			if(tests[i] == "kendall"){
-				lab[[i]] <- bquote(italic(tau) == 1.00)
-			}
-		}
-		
-		if(cor.test(xVar, yVar, method=tests[i])$estimate == -1){
-			if(tests[i] == "pearson"){
-				lab[[i]] <- bquote(italic(r) == -1.00)
-			}
-			if(tests[i] == "spearman"){
-				lab[[i]] <- bquote(italic(rho) == -1.00)
-			}
-			if(tests[i] == "kendall"){
-				lab[[i]] <- bquote(italic(tau) == -1.00)
+				lab[[i]] <- bquote(tau == .(formatC(round(cor.test(xVar, yVar, method=tests[i])$estimate,3), format="f", digits= 3)))
 			}
 		}
 	}
+
 	
 	if(length(tests) == 1){
 		ypos <- 1
 	}
+	
 	if(length(tests) == 2){
 		ypos <- c(1.1, 0.9)
 	}
+	
 	if(length(tests) == 3){
 		ypos <- c(1.2, 1, 0.8)
 	}
 	
+	
 	for(i in seq_along(tests)){
 	
-		text(1,ypos[i], labels= lab[[i]], cex= cexText)
+		text(1, ypos[i], labels= lab[[i]], cex= cexText)
 	}
 	
 	
@@ -192,29 +198,10 @@
 	}
 	
 	
-	if(any(tests == "pearson")& length(tests) == 1){
+	if(any(tests == "pearson")& length(tests) == 1 && CIPossible){
 	
 		CIlow <- formatC(round(ctest$conf.int[1],2), format = "f",digits = 2)
 		CIhigh <- formatC(round(ctest$conf.int[2],2), format = "f",digits = 2)
-		
-		if(as.numeric(CIlow) < 0 & as.numeric(CIlow) > -1){
-			CIlow <- paste("-", substr(CIlow, 3, 5), sep="")
-		}
-		if(as.numeric(CIlow) > 0){
-			CIlow <- substr(CIlow, 2, 4)
-		}
-		if(as.numeric(CIlow) == -1){
-			CIlow <- "-1.00"
-		}
-		if(as.numeric(CIhigh) < 0){
-			CIhigh <- paste("-", substr(CIhigh, 3, 5), sep="")
-		}
-		if(as.numeric(CIhigh) > 0 & as.numeric(CIhigh) < 1){
-			CIhigh <- substr(CIhigh, 2, 4)
-		}
-		if(as.numeric(CIhigh) == 1){
-			CIhigh <- "1.00"
-		}
 		
 		text(1,0.8, labels= paste("95% CI: [", CIlow, ", ", CIhigh, "]", sep=""), cex= cexCI)
 	}
@@ -307,10 +294,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
 		}
 		
+		print(infCheck)
 		
 		ind1 <- d == "numeric" | d == "integer"
 		ind2 <- sdCheck > 0
-		ind <- ind1 && ind2 && infCheck == FALSE
+		ind <- ind1 & ind2 & infCheck == FALSE
+		
+		print(ind)
 		
 		
 		variables <- .v(variables)[ind]
