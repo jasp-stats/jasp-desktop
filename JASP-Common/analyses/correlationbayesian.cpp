@@ -34,5 +34,9 @@ Options *CorrelationBayesian::createOptions() const
 
 	options->add("bayesFactorType", new OptionList(list("BF10", "BF01")));
 
+	options->add("plotCorrelationMatrix", new OptionBoolean());
+	options->add("plotDensitiesForVariables", new OptionBoolean());
+	options->add("plotPosteriors", new OptionBoolean());
+
 	return options;
 }
