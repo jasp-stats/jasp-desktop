@@ -448,7 +448,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Posteriors</string>
+         <string>Posteriors under H₁</string>
         </property>
        </widget>
       </item>
