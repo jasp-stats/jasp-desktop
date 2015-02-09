@@ -144,7 +144,7 @@
 		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
 	} else {
 	
-		par(mar= c(5.6, 5, 2, 4) + 0.1, las=1)
+		par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
 	}
 	
 	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
