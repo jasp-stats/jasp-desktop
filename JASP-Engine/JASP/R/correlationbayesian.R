@@ -11,27 +11,22 @@
 # "bayesFactorType": BF10/BF01
 
 CorrelationBayesian <- function(dataset=NULL, options, perform="run",
-							   callback=function(...) 0, ...) {
+								callback=function(...) 0, ...) {
 	# dataset is data.frame
 	# options is a list
 	#
 	if (is.null(dataset)) {
 		if (perform == "run") {
 			if (options$missingValues == "excludeListwise") {
-				dataset <-
-					.readDataSetToEnd(columns.as.numeric=options$variables,
-									  exclude.na.listwise=options$variables)
-			} else {
-				dataset <-
-					.readDataSetToEnd(columns.as.numeric=options$variables)
+				dataset <- .readDataSetToEnd(columns.as.numeric=options$variables, exclude.na.listwise=options$variables)
+			} else {				
+				dataset <- .readDataSetToEnd(columns.as.numeric=options$variables)
 			}
 		} else {
-			dataset <-
-				.readDataSetHeader(columns.as.numeric=options$variables)
+			dataset <- .readDataSetHeader(columns.as.numeric=options$variables)
 		}
-	} else {
-		dataset <- .vdf(dataset, columns.as.numeric=options$variables)
 	}
+	
 	results <- list()
 	
 	meta <- list()
@@ -52,7 +47,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								  credibleIntervals=options$credibleIntervals,
 								  credibleIntervalsInterval=options$credibleIntervalsInterval,
 								  priorWidth=options$priorWidth, 
-								  bayesFactorType=options$bayesFactorType)
+								  bayesFactorType=options$bayesFactorType, 
+								  missingValues=options$missingValues)
 	return(results)
 }
 
@@ -76,7 +72,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 									  credibleIntervals=FALSE,
 									  credibleIntervalsInterval=0.95,
 									  priorWidth=priorWidth,
-									  bayesFactorType=bayesFactorType) {
+									  bayesFactorType=bayesFactorType, 
+									  missingValues="excludePairwise") {
 	# TODO: check for all arguments in particular meansAndStdDev,
 	# hypothesis="correlated"
 	#
@@ -114,15 +111,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		tests <- c(tests, "kendall")
 	# Naming of the tests
 	if (length(tests) != 1) {
-		correlation.table[["title"]] <- paste("Bayes Factors ", bf.title, ": Correlation Table")
+		correlation.table[["title"]] <- paste("Bayesian Correlation Table")
 	} else if (pearson) {
-		correlation.table[["title"]] <- paste("Bayes Factors ", bf.title, ": Pearson Correlations")
+		correlation.table[["title"]] <- paste("Bayesian Pearson Correlations")
 	} else if (spearman) {
-		correlation.table[["title"]] <- paste("Bayes Factors ", bf.title, ": Spearman Correlations")
+		correlation.table[["title"]] <- paste("Bayesian Spearman Correlations")
 	} else if (kendallsTauB) {
-		correlation.table[["title"]] <- paste("Bayes Factors ", bf.title, ": Kendall's Tau")
+		correlation.table[["title"]] <- paste("Bayesian Kendall's Tau")
 	} else {
-		correlation.table[["title"]] <- paste("Bayes Factors ", bf.title, ": Correlation Table")
+		correlation.table[["title"]] <- paste("Bayesian Correlation Table")
 	}
 	# Describe column names to the returned object
 	fields <- list(list(name=".variable", title="", type="string"))
@@ -185,18 +182,31 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					# fill in blanks in table upper left-hand off diaganols
 					variable.2.name <- variables[[j]]
 					column.name <- paste(variable.2.name, "[", test, "]", sep="")
+					
 					v1 <- dataset[[ .v(variable.name) ]]
 					v2 <- dataset[[ .v(variable.2.name) ]]
+					
+					if (missingValues=="excludePairwise"){
+						removeIndex1 <- which(is.na(v1))
+						removeIndex2 <- which(is.na(v2))
+						removeIndex <- unique(c(removeIndex1, removeIndex2))
+						
+						if (length(removeIndex) > 0){
+							v1 <- v1[-(removeIndex)]
+							v2 <- v2[-(removeIndex)]
+						}
+					}
+					
 					if (perform == "run") {
 						some.r <- cor(v1, v2)
 						some.n <- length(v1)
 						if (is.na(some.r)) {
 							if (some.n <= 1){
-								index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - not enough observations")
+								index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - not enough observations")
 							} else if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
-								index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - one (or more) variables contain infinity")
+								index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - one (or more) variables contain infinity")
 							} else {
-								index <- .addFootnote(footnotes, "Standard deviation is undefined - one (or more) variables contain an NA, or do not vary")
+								index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - one (or more) variables do not vary")
 							}
 							#row.footnotes[[variable.2.name]] <- c(row.footnotes[[variable.name]], list(index))
 							row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
