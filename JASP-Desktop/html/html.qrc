@@ -35,5 +35,7 @@
         <file>js/images.js</file>
         <file>js/analysis.js</file>
         <file>css/images/cite.svg</file>
+        <file>css/images/running-large.gif</file>
+        <file>css/images/waiting-large.png</file>
     </qresource>
 </RCC>

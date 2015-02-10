@@ -1,5 +1,27 @@
 .plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
- cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= TRUE) {
+ cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= TRUE, dontPlotData=FALSE) {
+	
+	if (addInformation) {
+	
+		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
+		
+	} else {
+	
+		par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
+	}
+	
+	if (dontPlotData) {
+	
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
+		
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
+		mtext(expression(paste("Effect size", ~delta)), side = 1, cex = cexXlab, line= 2.5)
+	
+		return()
+	}
 	
 	if (rscale == "medium") {
 		r <- sqrt(2) / 2
@@ -137,15 +159,6 @@
 	
 	
 	posteriorLine <- dposterior(x= seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, delta=delta)
-	
-	
-	if (addInformation) {
-	
-		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
-	} else {
-	
-		par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
-	}
 	
 	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
 	

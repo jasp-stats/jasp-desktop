@@ -8,26 +8,24 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	if(is.null(options()$BFprogress)) options(BFprogress = interactive())
 	if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
 
-	plotSequentialStatus <- "ok"
-
 	all.variables <- unique(unlist(options$pairs))
 	all.variables <- all.variables[all.variables != ""]
 
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-		
-			if (options$missingValues == "excludeListwise") {
-		
-				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
 			
+			if (options$missingValues == "excludeListwise") {
+				
+				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
+				
 			} else {
-		
+				
 				dataset <- .readDataSetToEnd(columns.as.numeric=all.variables)
 			}
 			
 		} else {
-		
+			
 			dataset <- .readDataSetHeader(columns.as.numeric=all.variables)
 		}
 	}
@@ -110,55 +108,47 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	plots.ttest <- list()
 	
 	footnotes <- .newFootnotes()
-	
-	q <- 1
 		
 	for (pair in options$pairs)
 	{
-		
-		
-		if (options$plotPriorAndPosterior){
+		if (options$plotPriorAndPosterior) {
+
 			plot <- list()
 			
-			plot[["title"]] <- pair
+			plot[["title"]] <- paste(pair, collapse=" - ")
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
+			plot[["status"]] <- "waiting"
+			
+			image <- .beginSaveImage(530, 400)
+			.plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
+			plot[["data"]] <- .endSaveImage(image)
 						
-			plots.ttest[[q]] <- plot
-			q <- q + 1
+			plots.ttest[[length(plots.ttest)+1]] <- plot
+		}
+		
+		if (options$plotBayesFactorRobustness) {
+
+			plot <- list()
+			
+			plot[["title"]] <- paste(pair, collapse=" - ")
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["status"]] <- "waiting"
+						
+			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
 		
 		if (options$plotSequentialAnalysis){
+
 			plot <- list()
 			
-			plot[["title"]] <- pair
+			plot[["title"]] <- paste(pair, collapse=" - ")
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
+			plot[["status"]] <- "waiting"
 						
-			plots.ttest[[q]] <- plot
-			q <- q + 1
-		}
-		
-		if (options$plotSequentialAnalysisRobustness){
-			plot <- list()
-			
-			plot[["title"]] <- pair
-			plot[["width"]]  <- 530
-			plot[["height"]] <- 400
-						
-			plots.ttest[[q]] <- plot
-			q <- q + 1
-		}
-		
-		if (options$plotBayesFactorRobustness){
-			plot <- list()
-			
-			plot[["title"]] <- pair
-			plot[["width"]]  <- 530
-			plot[["height"]] <- 400
-						
-			plots.ttest[[q]] <- plot
-			q <- q + 1
+			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
 	}	
 	
@@ -166,21 +156,34 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	results[["plots"]] <- plots.ttest
 	
 	
-	for (pair in options$pairs)
-	{
+	pair.statuses <- list()
 	
-		plotSequentialStatus <- "ok"
-		
+	
+	for (i in .indices(options$pairs))
+	{
+		pair <- options$pairs[[i]]
+	
 		if (pair[[1]] == "" || pair[[2]] == "") {
 		
 			p1 <- ifelse(pair[[1]] != "", pair[[1]], "...") 
 			p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
 		
+			pair.statuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE)
+
 			result <- list(.variable1=p1, .separator="-", .variable2=p2, BF="", error="")
-			
+		
 		} else {
 
-			if (perform == "run") {
+			if (perform == "init") {
+			
+				pair.statuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE)
+
+				result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=".", error=".")		
+			
+			} else {
+			
+				unplotable <- FALSE
+				unplotableMessage <- NULL
 
 				result <- try (silent = TRUE, expr = {
 
@@ -193,6 +196,13 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE, r=options$priorWidth, nullInterval= nullInterval)
 					
 					bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
+					
+					if ( ! is.finite(bf.raw)) {
+					
+						unplotable <- TRUE
+						unplotableMessage <- "Bayes factor is infinite"
+					}
+					
 					if (bf.type == "BF01")
 						bf.raw <- 1 / bf.raw
 			
@@ -220,141 +230,35 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						errorMessage <- "BayesFactor is undefined - one or both of the variables has too few observations (possibly only after missing values are excluded)"	
 					}
 
+					pair.statuses[[i]] <- list(ready=FALSE, error=TRUE, errorMessage=errorMessage, unplotable=TRUE, unplotableMessage=errorMessage)
+
 					index <- .addFootnote(footnotes, errorMessage)
 
 					result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+					
 				} else {
 				
-					if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
-				
-						errorMessage <- "BayesFactor is infinity: plotting not possible"
-						index <- .addFootnote(footnotes, errorMessage)
+					pair.statuses[[i]] <- list(ready=TRUE, error=FALSE, unplotable=unplotable, unplotableMessage=unplotableMessage)
 						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error, .footnotes=list(BF=list(index)))
-					} else {
-
-						ind <- which(c1 == c1[1])
-						idData <- sum((ind+1)-(1:(length(ind))) == 1)
-					
-						ind2 <- which(c2 == c2[1])
-						idData2 <- sum((ind2+1)-(1:(length(ind2))) == 1)
-						
-																								
-						if(idData > 1 && idData2 > 1 && (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness)){
-						
-							errorMessage <- "Sequential Analysis not possible: The first observations are identical"
-							index <- .addFootnote(footnotes, errorMessage)
-							
-							plotSequentialStatus <- "error"
-						
-							result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error, .footnotes=list(BF=list(index)))
-						}
-						
-						
-						matchPair <- logical(length(pairs))
-						
-						for (i in seq_along(options$pairs)) {
-	
-							matchPair[i] <- identical(options$pairs[[i]], pair)
-						}
-						
-						numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis, 
-														options$plotSequentialAnalysisRobustness)
-							
-						z <- numberPlotsPerVariable * (which(matchPair) - 1) + 1
-						
-						if(options$plotPriorAndPosterior){
-						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotPosterior.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							
-							results[["plots"]] <- plots.ttest
-						
-							z <- z + 1
-						}
-						if(options$plotBayesFactorRobustness){
-						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotBF.robustnessCheck.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							
-							results[["plots"]] <- plots.ttest
-						
-							z <- z + 1
-						}
-						if(options$plotSequentialAnalysis && plotSequentialStatus == "ok"){
-						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							
-							results[["plots"]] <- plots.ttest
-						
-							z <- z + 1
-						}
-						if(options$plotSequentialAnalysisRobustness && plotSequentialStatus == "ok"){
-						
-							image <- .beginSaveImage(530, 400)
-							
-							.plotSequentialBF.ttest(x= c1, y= c2, paired= TRUE, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
-												
-							content <- .endSaveImage(image)
-							
-							plot <- plots.ttest[[z]]
-							
-							plot[["data"]]  <- content
-							
-							plots.ttest[[z]] <- plot
-							
-							results[["plots"]] <- plots.ttest
-						
-							z <- z + 1
-						}						
-					}
-				}			
-			
-			} else {
-			
-				result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=".", error=".")
+					result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error)
+				}
 			}
-			
-
 		}
 		
 		ttest.rows[[length(ttest.rows)+1]] <- result
-		
-		ttest[["data"]] <- ttest.rows
-		ttest[["footnotes"]] <- as.list(footnotes)
-		
-		results[["ttest"]] <- ttest
 	}
 	
-
+	if (length(ttest.rows) == 0)
+		ttest.rows <- list(list(.variable1="...", .separator="-", .variable2="...", BF="", error=""))
+	
+	ttest[["data"]] <- ttest.rows
+	ttest[["footnotes"]] <- as.list(footnotes)
+	
+	if (perform == "run")
+		ttest[["status"]] <- "complete"
+	
+	results[["ttest"]] <- ttest
+	
 	if (options$descriptives) {
 	
 		descriptives <- list()
@@ -369,50 +273,223 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			list(name="SE", type="number", format="dp:4;p:.001"))
 
 		descriptives[["schema"]] <- list(fields=fields)
-
-		if (perform == "run") {
 		
-			descriptives.results <- list()
-			
-			variables <- NULL
-			
-			for (pair in options$pairs) {	
+		descriptives.results <- list()
+		
+		variables <- unlist(options$pairs)
+		variables <- unique(variables)
+		variables <- variables[variables != ""]
+		
+		for (variable in variables) {
 
-				for (i in 1:2) {
+			if (perform == "run") {
 
-					result <- try (silent = TRUE, expr = {
-						
-						n <- .clean(as.numeric(length(dataset[[ .v(pair[[i]]) ]])))
-						m <- .clean(as.numeric(mean(dataset[[ .v(pair[[i]]) ]], na.rm = TRUE)))
-						std <- .clean(as.numeric(sd(dataset[[ .v(pair[[i]]) ]], na.rm = TRUE)))
-						if(is.numeric(std)){
-							se <- .clean(as.numeric(std/sqrt(n)))}
-						else
-							se <- .clean(NaN)
-										
-						list(.variable=pair[[i]], N=n, mean=m, sd=std, SE=se)
-					})
-					
-					if (class(result) == "try-error") {
-					
-						result <- list(.variable=pair[[i]], N="", mean="", sd="", SE="")
-					}
-					
-					if(is.na(match(pair[[i]],variables))){
-						descriptives.results[[length(descriptives.results)+1]] <- result
-						variables <- c(variables,pair[[i]])
-					}				
+				result <- try (silent = TRUE, expr = {
+				
+					n <- .clean(as.numeric(length(dataset[[ .v(variable) ]])))
+					m <- .clean(as.numeric(mean(dataset[[ .v(variable) ]], na.rm = TRUE)))
+					std <- .clean(as.numeric(sd(dataset[[ .v(variable) ]], na.rm = TRUE)))
+					if(is.numeric(std)){
+						se <- .clean(as.numeric(std/sqrt(n)))}
+					else
+						se <- .clean(NaN)
+								
+					list(.variable=variable, N=n, mean=m, sd=std, SE=se)
+				})
+			
+				if (class(result) == "try-error") {
+			
+					result <- list(.variable=variable, N="", mean="", sd="", SE="")
 				}
+				
+			} else {
+			
+				result <- list(.variable=variable, N=".", mean=".", sd=".", SE=".")
 			}
-			descriptives[["data"]] <- descriptives.results
-
+			
+			descriptives.results[[length(descriptives.results)+1]] <- result
 		}
+		
+		descriptives[["data"]] <- descriptives.results
+		descriptives[["status"]] <- "complete"
+		
 		results[["descriptives"]] <- descriptives
+	}
+	
+	
+	# PLOTS
+	
+	if (length(options$pairs) > 0 && (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis)) {
+	
+		results[["plots"]][[1]][["status"]] <- "running"
+
+		if (callback(results) != 0)
+			return()
+		
+		n.plots.per.variable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis)
+		n.plots <- length(options$pairs) * n.plots.per.variable
+		
+		j <- 1
+		
+		for (i in .indices(options$pairs)) {
+			
+			pair <- options$pairs[[i]]
+			
+			status <- pair.statuses[[i]]
+			
+			p1 <- ifelse(pair[[1]] != "", pair[[1]], "...") 
+			p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
+			
+			sequentialIsViable <- TRUE
+			
+			if (perform == "run" && status$unplotable == FALSE) {
+				
+				subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
+				subDataSet <- na.omit(subDataSet)
+				
+				c1 <- subDataSet[[ .v(pair[[1]]) ]]
+				c2 <- subDataSet[[ .v(pair[[2]]) ]]
+				
+				ind <- which(c1 == c1[1])
+				idData <- sum((ind+1)-(1:(length(ind))) == 1)
+				
+				ind2 <- which(c2 == c2[1])
+				idData2 <- sum((ind2+1)-(1:(length(ind2))) == 1)
+			}
+			else
+			{
+				c1 <- NULL
+				c2 <- NULL
+			}
+		
+			if (options$plotPriorAndPosterior) {
+			
+				plot <- plots.ttest[[j]]
+
+				if (status$unplotable == FALSE) {
+				
+					image <- .beginSaveImage(530, 400)
+					
+					.plotPosterior.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo)
+					
+					plot[["data"]] <- .endSaveImage(image)
+					
+				} else if (status$unplotable && "unplotableMessage" %in% names(status)) {
+				
+					message <- paste("Plotting is not possible:", status$unplotableMessage)
+					plot[["error"]] <- list(error="badData", errorMessage=message)
+				}
+				
+				plot[["status"]] <- "complete"
+				
+				plots.ttest[[j]] <- plot
+				
+				if (j < n.plots) {
+				
+					plots.ttest[[j+1]]$status <- "running"
+					results[["plots"]] <- plots.ttest
+
+					if (callback(results) != 0)
+						return()
+					
+				} else {
+			
+					results[["plots"]] <- plots.ttest
+				}
+				
+				j <- j + 1
+			}
+		
+			if (options$plotBayesFactorRobustness) {
+				
+				plot <- plots.ttest[[j]]
+
+				if (status$unplotable == FALSE) {
+				
+					image <- .beginSaveImage(530, 400)
+				
+					.plotBF.robustnessCheck.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
+				
+					content <- .endSaveImage(image)
+				
+					plot[["data"]]  <- content
+					
+				} else if (status$unplotable && "unplotableMessage" %in% names(status)) {
+				
+					message <- paste("Plotting is not possible:", status$unplotableMessage)
+					plot[["error"]] <- list(error="badData", errorMessage=message)
+				}
+				
+				plot[["status"]] <- "complete"
+				
+				plots.ttest[[j]] <- plot
+				
+				if (j < n.plots) {
+				
+					plots.ttest[[j+1]]$status <- "running"
+					results[["plots"]] <- plots.ttest
+					
+					if (callback(results) != 0)
+						return()
+					
+				} else {
+			
+					results[["plots"]] <- plots.ttest
+				}
+				
+				j <- j + 1
+			}
+		
+			if (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness) {
+		
+				plot <- plots.ttest[[j]]
+
+				if (status$unplotable == FALSE && sequentialIsViable) {
+
+					image <- .beginSaveImage(530, 400)
+
+					.plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=BFH1H0)
+
+					content <- .endSaveImage(image)
+			
+					plot[["data"]]  <- content
+				}
+				
+				if (sequentialIsViable == FALSE) {
+				
+					plot[["error"]] <- list(error="badData", errorMessage="Sequential Analysis not possible: The first observations are identical")
+
+				} else if (status$unplotable && "unplotableMessage" %in% names(status)) {
+				
+					message <- paste("Plotting is not possible:", status$unplotableMessage)
+					plot[["error"]] <- list(error="badData", errorMessage=message)	
+				}
+				
+				plot[["status"]] <- "complete"
+			
+				plots.ttest[[j]] <- plot
+				
+				if (j < n.plots) {
+				
+					plots.ttest[[j+1]]$status <- "running"
+					results[["plots"]] <- plots.ttest
+					
+					if (callback(results) != 0)
+						return()
+					
+				} else {
+			
+					results[["plots"]] <- plots.ttest
+				}
+		
+				j <- j + 1
+			}
+		}
 	}
 	
 	results[["ttest"]] <- ttest
 	results[["plots"]] <- plots.ttest
-		
+	
 	results
 }
 

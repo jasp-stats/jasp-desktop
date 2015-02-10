@@ -34,6 +34,7 @@ table {
 	font-style: normal ;
 	border-collapse: collapse ;
 	margin-bottom: 2em ;
+	white-space: nowrap;
 }
 
 th {
@@ -63,7 +64,7 @@ td {
 }
 
 thead tr:nth-child(2) th:not(.separator) {
-	min-width: 3em ;
+	min-width: 4em ;
 }
 
 th.separator, td.separator {
@@ -143,6 +144,7 @@ svg > text
 }
 
 .jasp-image {
+
 	float: left ;
 }
 
@@ -151,9 +153,50 @@ svg > text
 	border: 2px solid transparent ;
 	border-radius : 2px ;
 	padding: 0px ;
+	position: relative ;
+}
+
+.jasp-image-image {
+
+	position: absolute ;
+	top: 0 ;
+	left: 0 ;
+	width:  100% ;
+	height: 100% ;
+}
+
+.error-state .jasp-image-image {
+
+	opacity: 0.33 ;
+}
+
+.jasp-image-loader {
+
+	position: absolute ;
+	top : 0 ;
+	left: 0 ;
+	width: 100% ;
+	height: 100% ;
+	background-repeat:no-repeat;
+	background-position: center center;
+	visibility: hidden ;
+	z-index: 50 ;
+}
+
+.running .jasp-image-loader {
+
+	background-image : url('images/running-large.gif') ;
+	visibility: visible ;
+}
+
+.waiting .jasp-image-loader {
+
+	background-image : url('images/waiting-large.png') ;
+	visibility: visible ;
 }
 
 .jasp-image-resizer {
+
 	background-color : #BFD9F7 ;
 	border: 1px solid #7C95CB ;
 	border-radius : 3px ;
@@ -214,8 +257,6 @@ div.cite {
 	background : url(images/cite.svg) no-repeat;
 }
 
-
-
 div.status
 {
 	width: 16px ;
@@ -225,25 +266,56 @@ div.status
 	margin-left : 6px ;
 }
 
-div.status.running
-{
+div.status.running {
+
 	background : url(images/running.gif) no-repeat ;
 }
 
-div.status.waiting
-{
+div.status.waiting {
+
 	background : url(images/waiting.gif) no-repeat ;
 }
 
 .error-state {
+
 	color: silver ;
 }
 
-div.error-message-box
-{
+.error-message-positioner {
+
+	height: 0px ;
+	overflow: visible ;
+	position: relative;
+	top: 10px ;
+	float: left ;
+	z-index: 100 ;
+}
+
+.jasp-image-holder .error-message-positioner {
+
+	position: relative ;
+	top: 25% ;
+}
+
+.error-message-symbol {
+
+	float: left;
+	margin-right: .3em;
+}
+
+.error-message-box {
+
 	z-index: 100 ;
 	padding: 1em ;
 	border-radius: .4em ;
+	min-width: 200px ;
+	max-width: 380px ;
+	white-space: normal;
+	margin-left: 50px ;
+}
+
+.error-message-message {
+
 }
 
 td.squash-left

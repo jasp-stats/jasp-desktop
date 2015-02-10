@@ -445,8 +445,6 @@ $.widget("jasp.table", {
 				title = "&nbsp;"
 			
 			var columnType = columnDef.type
-			if ( ! columnType)
-				columnType = ""
 			
 			var columnHeader = { content : title, header : true, type : columnType }
 
@@ -630,14 +628,14 @@ $.widget("jasp.table", {
 
 			chunks.push('<thead>')
 				chunks.push('<tr>')
-					chunks.push('<th nowrap colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="status"></div><div class="copy toolbar-button" style="visibility: hidden ;"></div><div class="cite toolbar-button" style="visibility: hidden ;"></div></div>')
+					chunks.push('<th colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="status"></div><div class="copy toolbar-button" style="visibility: hidden ;"></div><div class="cite toolbar-button" style="visibility: hidden ;"></div></div>')
 					
 					if (this.options.error && this.options.error.errorMessage) {
 		
-						chunks.push('<div style="height: 0px ; overflow: visible ; position: relative; top: 10px ; float: left ;">')
-						chunks.push('<div style="" class="error-message-box ui-state-error">')
-						chunks.push('<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em; "></span>')
-						chunks.push('<span style="margin-right: 2em ;">' + this.options.error.errorMessage + '</span>')
+						chunks.push('<div  class="error-message-positioner">')
+						chunks.push('<div  class="error-message-box ui-state-error">')
+						chunks.push('<span class="error-message-symbol ui-icon ui-icon-alert"></span>')
+						chunks.push('<div  class="error-message-message">' + this.options.error.errorMessage + '</div>')
 						chunks.push('</div>')
 						chunks.push('</div>')
 					}
@@ -647,7 +645,7 @@ $.widget("jasp.table", {
 
 		if (this.options.subtitle) {
 				chunks.push('<tr>')
-					chunks.push('<th nowrap colspan="' + 2 * columnCount + '"></th>')
+					chunks.push('<th colspan="' + 2 * columnCount + '"></th>')
 				chunks.push('</tr>')
 		}
 
@@ -666,7 +664,7 @@ $.widget("jasp.table", {
 
 				span *= 2  // times 2, because of footnote markers
 			
-				chunks.push('<th colspan="' + span + '" class="' + cell.type + '" nowrap>' + cell.content)
+				chunks.push('<th colspan="' + span + '" class="' + cell.type + '">' + cell.content)
 				if (cell.footnotes)
 					chunks.push(cell.footnotes.join(' '))
 				chunks.push('</th>')
@@ -703,14 +701,14 @@ $.widget("jasp.table", {
 					cellHtml += (cell.header ? '<th' : '<td')
 					cellHtml += ' class="value ' + cellClass + '"'
 					cellHtml += (cell.span   ? ' rowspan="' + cell.span + '"' : '')
-					cellHtml += ' nowrap>'
+					cellHtml += '>'
 					cellHtml += (typeof cell.content   != "undefined" ? cell.content : '')
 					cellHtml += (cell.header ? '</th>' : '</td>')
 					
 					cellHtml += (cell.header ? '<th' : '<td')
 					cellHtml += ' class="symbol ' + cellClass + '"'
 					cellHtml += (cell.span   ? ' rowspan="' + cell.span + '"' : '')
-					cellHtml += ' nowrap>'
+					cellHtml += '>'
 					if (typeof cell.footnotes != "undefined")
 						cellHtml += cell.footnotes.join(' ')
 					cellHtml += (cell.header ? '</th>' : '</td>')

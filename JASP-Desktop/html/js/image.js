@@ -9,7 +9,8 @@ $.widget("jasp.image", {
         resize : [ ],
         custom : null,
         customchanged : [ ],
-        itemoptionschanged : [ ]
+        itemoptionschanged : [ ],
+        error : null
 	},
 	_create: function () {
 		this.element.addClass("jasp-image")
@@ -55,7 +56,16 @@ $.widget("jasp.image", {
 			html += '<h2>' + this.options.title + '</h2>'
 		}
 		
-		html += '<div class="jasp-image-image" style="width : ' + this.options.width + 'px ; height : ' + this.options.height + 'px ; '
+		var classes = ""
+		if (this.options.status)
+			classes += this.options.status
+			
+		if (this.options.error)
+			classes += " error-state"
+		
+		html += '<div class="jasp-image-holder ' + classes + '" style="width : ' + this.options.width + 'px ; height : ' + this.options.height + 'px ; ">'
+
+		html += '<div class="jasp-image-image" style="'
 
 		if (this.options.data) {
 		
@@ -63,7 +73,20 @@ $.widget("jasp.image", {
 			html += 'background-size : 100% 100% ;'
 		}
 		
-		html += '">'
+		html += '"></div>'
+
+		if (this.options.error && this.options.error.errorMessage) {
+
+			html += '<div  class="error-message-positioner">'
+			html += '<div  class="error-message-box ui-state-error">'
+			html += '<span class="error-message-symbol ui-icon ui-icon-alert"></span>'
+			html += '<div  class="error-message-message">' + this.options.error.errorMessage + '</div>'
+			html += '</div>'
+			html += '</div>'
+		}
+		
+		html += '<div class="jasp-image-loader"></div>'
+		
 		html += '</div>'
 
 		this.element.html(html)
@@ -72,7 +95,7 @@ $.widget("jasp.image", {
 
 		if (this.options.custom) {
 		
-			this.imageElement = this.element.find(".jasp-image-image")
+			this.imageElement = this.element.find(".jasp-image-holder")
 
 			this.imageElement.resizable( {
 				minWidth : 160,
