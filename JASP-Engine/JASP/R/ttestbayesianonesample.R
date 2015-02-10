@@ -226,8 +226,8 @@
 		xx <- min(xticks)
 		
 		if (BF10 >= 1000000 | BF01 >= 1000000) {
-			BF10t <- format(BF10, digits= 4, scientific = TRUE)
-			BF01t <- format(BF01, digits= 4, scientific = TRUE)
+			BF10t <- formatC(BF10,3, format = "e")
+			BF01t <- formatC(BF01,3, format = "e")
 		}
 		
 		if (BF10 < 1000000 & BF01 < 1000000) {
