@@ -1068,8 +1068,8 @@
 	yy2 <- grconvertY(0.806 + offsetTopPart, "ndc", "user")
 	
 	if (BF10e >= 1000000 | BF01e >= 1000000) {
-		BF10t <- format(BF10e, digits= 4, scientific = TRUE)
-		BF01t <- format(BF01e, digits= 4, scientific = TRUE)
+		BF10t <- formatC(BF10e,3, format = "e")
+		BF01t <- formatC(BF01e,3, format = "e")
 	}
 	
 	if (BF10e < 1000000 & BF01e < 1000000) {
@@ -1995,6 +1995,7 @@
 			ultraBF <- bquote(BF[0][1]==.(BF01ultrat))
 		}		
 	}
+	
 	if (oneSided == "right") {
 	
 		if (BF10ultraText >= BF01ultraText) {
@@ -2003,6 +2004,7 @@
 			ultraBF <- bquote(BF[0]["+"]==.(BF01ultrat))
 		}	
 	}
+	
 	if (oneSided == "left") {
 	
 		if (BF10ultraText >= BF01ultraText) {
@@ -2158,23 +2160,26 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
 	ttest.rows <- list()
 	plots.ttest <- list()
-	
-	q <- 1
+
 	
 	for (variable in options[["variables"]])
 	{
 		ttest.rows[[length(ttest.rows)+1]] <- list(Variable=variable, "BF"=".", error=".")
 		
-					
+		
 		if (options$plotPriorAndPosterior){
 			plot <- list()
 			
 			plot[["title"]] <- variable
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
+			plot[["status"]] <- "running"
+			
+			image <- .beginSaveImage(530, 400)
+			.plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
+			plot[["data"]] <- .endSaveImage(image)
 						
-			plots.ttest[[q]] <- plot
-			q <- q + 1
+			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
 		
 		if (options$plotSequentialAnalysis){
@@ -2183,9 +2188,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["title"]] <- variable
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
-						
-			plots.ttest[[q]] <- plot
-			q <- q + 1
+			
+			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
 		
 		if (options$plotSequentialAnalysisRobustness){
@@ -2195,8 +2199,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
 						
-			plots.ttest[[q]] <- plot
-			q <- q + 1
+			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
 		
 		if (options$plotBayesFactorRobustness){
@@ -2206,15 +2209,13 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
 						
-			plots.ttest[[q]] <- plot
-			q <- q + 1
+			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
 	}
 	
+	ttest[["data"]] <- ttest.rows
+	results[["ttest"]] <- ttest
 	results[["plots"]] <- plots.ttest
-		
-	if (callback(results) != 0) 
-		return()
 	
 	
 	if (perform == "run") {
@@ -2272,9 +2273,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
 				
 					errorMessage <- "BayesFactor is infinity: plotting not possible"
-					index <- .addFootnote(footnotes, errorMessage)
-					
-					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
 				}
 
 				
@@ -2284,10 +2282,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if(idData > 1 & (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
 					
 					seqFootnote <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
-					index <- .addFootnote(footnotes, seqFootnote)
 					plotSequentialStatus <- "error"					
-					
-					result <- list(Variable=variable, BF=BF, error=error, .footnotes=list(BF=list(index)))
 				}
 				
 				
@@ -2298,16 +2293,11 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				results[["ttest"]] <- ttest
 				
-				
 				if(callback() != 0)
 					return()
 				
-				
 				if (callback(results) != 0)
 					return()
-				
-				
-				if (is.null(errorMessage)) {
 				
 				numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis, 
 												options$plotSequentialAnalysisRobustness)
@@ -2315,96 +2305,127 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				z <- numberPlotsPerVariable * (which(options$variables == variable) -1) + 1
 				
 				
-					if (options$plotPriorAndPosterior) {
-					
+				if (options$plotPriorAndPosterior) {
+				
+					plot <- plots.ttest[[z]]
+				
+					if (is.null(errorMessage)) {
+				
 						image <- .beginSaveImage(530, 400)
-						
 						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
-											
 						content <- .endSaveImage(image)
-						
-						plot <- plots.ttest[[z]]
-						
 						plot[["data"]]  <- content
 						
-						plots.ttest[[z]] <- plot
-						
-						results[["plots"]] <- plots.ttest
-						
-						
-						if (callback(results) != 0)
-							return()
+					} else {
+					
+						plot[["error"]] <- list(error="badData", errorMessage= errorMessage)
+					}
+					
+					plot[["status"]] <- "complete"
+					
+					plots.ttest[[z]] <- plot
+					
+					results[["plots"]] <- plots.ttest
+					
+					if (callback(results) != 0)
+						return()
 
-						
-						z <- z + 1
-					}
-					
-					if (options$plotBayesFactorRobustness) {
-					
-						image <- .beginSaveImage(530, 400)
-						
-						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-											
-						content <- .endSaveImage(image)
-						
-						plot <- plots.ttest[[z]]
-						
-						plot[["data"]]  <- content
-						
-						plots.ttest[[z]] <- plot
-						
-						results[["plots"]] <- plots.ttest
-						
-						if (callback(results) != 0)
-							return()
-						
-						z <- z + 1
-					}
-					
-					if (options$plotSequentialAnalysis && plotSequentialStatus == "ok") {
-					
-						image <- .beginSaveImage(530, 400)
-						
-						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-											
-						content <- .endSaveImage(image)
-						
-						plot <- plots.ttest[[z]]
-						
-						plot[["data"]]  <- content
-						
-						plots.ttest[[z]] <- plot
-						
-						results[["plots"]] <- plots.ttest
-						
-						if (callback(results) != 0)
-							return()
-						
-						z <- z + 1
-					}
-					
-					if (options$plotSequentialAnalysisRobustness && plotSequentialStatus == "ok") {
-					
-						image <- .beginSaveImage(530, 400)
-						
-						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
-						
-						content <- .endSaveImage(image)
-						
-						plot <- plots.ttest[[z]]
-						
-						plot[["data"]]  <- content
-						
-						plots.ttest[[z]] <- plot
-						
-						results[["plots"]] <- plots.ttest
-						
-						if (callback(results) != 0)
-							return()
-						
-						z <- z + 1
-					}	
+					z <- z + 1
 				}
+				
+				if (options$plotBayesFactorRobustness) {
+				
+					plot <- plots.ttest[[z]]
+					
+					if (is.null(errorMessage)) {
+					
+						image <- .beginSaveImage(530, 400)
+						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)					
+						content <- .endSaveImage(image)
+						plot[["data"]]  <- content
+						
+					} else {
+					
+						plot[["error"]] <- list(error="badData", errorMessage= errorMessage)
+						
+					}
+					
+					plot[["status"]] <- "complete"
+					
+					plots.ttest[[z]] <- plot
+					
+					results[["plots"]] <- plots.ttest
+					
+					if (callback(results) != 0)
+						return()
+					
+					z <- z + 1
+				}
+				
+				if (options$plotSequentialAnalysis) {
+				
+					plot <- plots.ttest[[z]]
+					
+					if (is.null(errorMessage) && plotSequentialStatus == "ok") {
+					
+						image <- .beginSaveImage(530, 400)
+						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)					
+						content <- .endSaveImage(image)
+						plot[["data"]]  <- content
+						
+					} else if (!is.null(errorMessage)) {
+					
+						plot[["error"]] <- list(error="badData", errorMessage= errorMessage)
+						
+					} else if (plotSequentialStatus != "ok") {
+					
+						plot[["error"]] <- list(error="badData", errorMessage= seqFootnote)
+						
+					}
+					
+					plot[["status"]] <- "complete"
+					
+					plots.ttest[[z]] <- plot
+					
+					results[["plots"]] <- plots.ttest
+					
+					if (callback(results) != 0)
+						return()
+					
+					z <- z + 1
+				}
+				
+				if (options$plotSequentialAnalysisRobustness) {
+				
+					plot <- plots.ttest[[z]]
+					
+					if (is.null(errorMessage) && plotSequentialStatus == "ok") {
+				
+						image <- .beginSaveImage(530, 400)
+						.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, plotDifferentPriors= TRUE, BFH1H0= BFH1H0)
+						content <- .endSaveImage(image)
+						plot[["data"]]  <- content
+						
+					} else if (!is.null(errorMessage)) {
+					
+						plot[["error"]] <- list(error="badData", errorMessage= errorMessage)
+					
+					} else if (plotSequentialStatus != "ok") {
+					
+						plot[["error"]] <- list(error="badData", errorMessage= seqFootnote)
+					}
+					
+					plot[["status"]] <- "complete"
+					
+					plots.ttest[[z]] <- plot
+					
+					results[["plots"]] <- plots.ttest
+					
+					if (callback(results) != 0)
+						return()
+					
+					z <- z + 1
+				}	
 			}
 			
 			i <- i + 1
