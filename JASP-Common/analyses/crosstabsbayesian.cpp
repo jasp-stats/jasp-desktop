@@ -62,5 +62,7 @@ Options *CrosstabsBayesian::createOptions() const
     options->add("plotWidths", new OptionInteger(400));
     options->add("plotHeights", new OptionInteger(380));
 
+	options->add("hypothesis", new OptionList(list("groupsNotEqual", "groupOneGreater", "groupTwoGreater")));
+
 	return options;
 }

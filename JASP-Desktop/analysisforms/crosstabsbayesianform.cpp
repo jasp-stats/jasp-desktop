@@ -59,3 +59,13 @@ CrosstabsBayesianForm::~CrosstabsBayesianForm()
 {
 	delete ui;
 }
+
+void CrosstabsBayesianForm::independentMultinomialToggledOff()
+{
+	ui->hypothesis->setEnabled(false);
+}
+
+void CrosstabsBayesianForm::independentMultinomialToggledOn()
+{
+	ui->hypothesis->setEnabled(true);
+}
