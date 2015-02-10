@@ -158,9 +158,6 @@ svg > text
 
 .jasp-image-image {
 
-	position: absolute ;
-	top: 0 ;
-	left: 0 ;
 	width:  100% ;
 	height: 100% ;
 }
@@ -293,7 +290,7 @@ div.status.waiting {
 
 .jasp-image-holder .error-message-positioner {
 
-	position: relative ;
+	position: absolute ;
 	top: 25% ;
 }
 
