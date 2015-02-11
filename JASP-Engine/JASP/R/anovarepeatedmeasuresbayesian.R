@@ -83,11 +83,10 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 					modelTerms[[length(modelTerms)+1]] <- list(components = .unv(variable.names[i]), isNuisance = FALSE)
 				}
 			}
-			modelTerms[[length(modelTerms)+1]] <- list(components = "subject", isNuisance = TRUE)
 			options$modelTerms <- modelTerms
 		}
+		options$modelTerms[[length(options$modelTerms) + 1]] <- list(components = "subject", isNuisance = TRUE)		
 #end
-
 		results <- AncovaBayesian(dataset = dataset, options = options, perform = perform, callback = callback)
 	} else {
 		#Create empty table
@@ -100,8 +99,7 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 		posterior <- list()
 		posterior[["title"]] <- "Bayesian ANOVA: Model Comparison"
 		posterior <- list(
-			"Morey, R. D. & Rouder, J. N. (2014). BayesFactor (Version 0.99)[Computer software].",
-			"Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA 				Designs. Journal of Mathematical Psychology. 56. p. 356-374.")
+			"Morey, R. D. & Rouder, J. N. (2014). BayesFactor (Version 0.99)[Computer software].", "Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374.")
 
 		fields <- list(
 			list(name="Models", type="string"),

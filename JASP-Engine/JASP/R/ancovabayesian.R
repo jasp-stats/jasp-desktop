@@ -396,7 +396,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		
 		if (length(terms.nuisance > 0 )) {	# take the nuisance terms out of the model specification
 			a <- .decompose(modelsmain[i])[[1]][[1]]	 
-			comp.mod[[i]] <-	 a[-which(is.element(a, terms.nuisance))]
+			comp.mod[[i]] <- a[-which(is.element(a, terms.nuisance))]
 			n.comp.mod[i] <- length(comp.mod[[i]])
 		}
 	}
@@ -408,7 +408,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	# Make a list of all effects and their components	
 	effects <- terms.as.strings
 	if (length(terms.nuisance) > 0 ) {
-	effects <- terms.as.strings[-which(terms.as.strings %in% terms.nuisance)] 
+		effects <- terms.as.strings[-which(terms.as.strings %in% terms.nuisance)] 
 	}
 	n.eff<- length(effects)
 	comp.eff <- list()
@@ -623,14 +623,15 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			if(n > 1 && length(terms.nuisance) > 0) {
 				model.components <- unlist(strsplit(.vf(model.name), split = "+", fixed = TRUE))
 				model.components <- sapply(model.components, stringr::str_trim, simplify=FALSE)
+				model.componentsV <- unlist(strsplit(model.name, split = " + ", fixed = TRUE))
+				model.componentsV <- sapply(model.componentsV, stringr::str_trim, simplify=FALSE)
 				for(i in length(model.components):1){
 					if(model.components[i] %in% terms.nuisance ){
-						model.components <- model.components[-i]
+						model.componentsV <- model.componentsV[-i]
 					} 
 				}
-				model.name <- .unvf(paste(model.components, collapse=" + "))
+				model.name <- paste(model.componentsV, collapse=" + ")
 			}
-
 			
 			BFM <- .clean(BFmodels[n])
 			if (length(options$randomFactors) == 0 && length(options$covariates) == 0) {
@@ -766,7 +767,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	} else if (nmodels == 0){
 		for (term in options$modelTerms) {
 			if(term$isNuisance ==FALSE){
-				effect.results[[length(effect.results)+1]] <- list("Effects"=paste(term$components, collapse=":"))
+				effect.results[[length(effect.results)+1]] <- list("Effects"=paste(term$components, collapse="\u2009\u273B\u2009"))
 			}				
 		}   
 	}
