@@ -65,8 +65,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	posterior <- list()
 	posterior[["title"]] <- "Bayesian ANOVA: Model Comparison"
 	posterior <- list(
-		"Morey, R. D. & Rouder, J. N. (2014). BayesFactor (Version 0.99)[Computer software].",
-		"Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374.")
+		"Morey, R. D. & Rouder, J. N. (2014). BayesFactor (Version 0.99)[Computer software].","Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374.")
 	
 	fields <- list(
 		list(name="Models", type="string"),
@@ -81,6 +80,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	posterior[["schema"]] <- schema
 
 	if (options$dependent != "" && length(options$modelTerms) > 0 ){
+		posterior[["title"]] <- paste("Bayesian ANOVA - ",options$dependent,": Model Comparison",sep="")
 		if ( perform == "run" && error.present == 0){
 			if (length(terms.nuisance)> 0) {
 				fields[[1]][[".footnotes"]] <- list(0)
@@ -183,7 +183,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		effect[["schema"]] <- schema
 		
 		if (options$dependent != "" && length(options$modelTerms) > 0) {
-						
+			effect[["title"]] <- paste("Bayesian ANOVA - ",options$dependent,": Analysis of Effects",sep="")		
 			### TABLE when non-run or error 
 			if (perform == "init" || error.present > 0) {
 			#This produces the effects table. MM
