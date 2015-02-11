@@ -681,8 +681,6 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					plot[["data"]]  <- content
 					
 					frequency.plots[[i]] <- plot
-					
-					i <- i + 1
 										
 				} else if (length(column) > 0 && !is.factor(column) && all(!is.infinite(column))) {
 				
@@ -700,11 +698,12 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					plot[["data"]]  <- content
 					
 					frequency.plots[[i]] <- plot
-					
-					i <- i + 1				
+			
 				}				
 						
-				results[["plots"]] <- frequency.plots				
+				results[["plots"]] <- frequency.plots	
+
+				i <- i + 1
 			}
 		}
 		
