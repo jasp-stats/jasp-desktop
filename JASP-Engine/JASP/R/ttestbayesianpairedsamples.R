@@ -197,7 +197,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
 					
-					if ( ! is.finite(bf.raw)) {
+					if (is.finite(bf.raw)) {
 					
 						unplotable <- TRUE
 						unplotableMessage <- "Bayes factor is infinite"
