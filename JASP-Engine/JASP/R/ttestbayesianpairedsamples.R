@@ -203,6 +203,12 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						unplotableMessage <- "Bayes factor is infinite"
 					}
 					
+					if (is.infinite(1 / bf.raw)) {
+					
+						unplotable <- TRUE
+						unplotableMessage <- "Bayes factor is one divided by infinity"
+					}
+					
 					if (bf.type == "BF01")
 						bf.raw <- 1 / bf.raw
 			
