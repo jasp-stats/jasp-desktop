@@ -112,12 +112,18 @@
 	
 	if (oneSided == "right") {
 		
+		if (length(delta[delta >= 0]) < 10)
+			return("Plotting is not possible: To few posterior samples in tested interval")
+		
 		xlim[1] <- min(-2, quantile(delta[delta >= 0], probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta[delta >= 0], probs = 0.99)[[1]])
 		stretch <- 1.32
 	}
 	
 	if (oneSided == "left") {
+		
+		if (length(delta[delta <= 0]) < 10)
+			return("Plotting is not possible: To few posterior samples in tested interval")
 		
 		xlim[1] <- min(-2, quantile(delta[delta <= 0], probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta[delta <= 0], probs = 0.99)[[1]])
@@ -330,11 +336,11 @@
 	if (mostPosterior >= .5) {
 		
 		legendPosition <- min(xticks)
-		legend(legendPosition, max(yticks), legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend, xjust= 0, yjust= 1)
+		legend(legendPosition, max(yticks), legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend, xjust= 0, yjust= 1, x.intersp= .6, seg.len= 1.2)
 	} else {
 		
 		legendPosition <- max(xticks)
-		legend(legendPosition, max(yticks), legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend, xjust= 1, yjust= 1)
+		legend(legendPosition, max(yticks), legend = c("Posterior", "Prior"), lty=c(1,3), bty= "n", lwd = c(lwd,lwd), cex= cexLegend, xjust= 1, yjust= 1,  x.intersp= .6, seg.len= 1.2)
 	}
 }
 
@@ -2188,6 +2194,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["title"]] <- variable
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
+			plot[["status"]] <- "running"
 			
 			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
@@ -2198,6 +2205,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["title"]] <- variable
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
+			plot[["status"]] <- "running"
 						
 			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
@@ -2208,6 +2216,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["title"]] <- variable
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
+			plot[["status"]] <- "running"
 						
 			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
@@ -2272,9 +2281,13 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 				if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
 				
-					errorMessage <- "BayesFactor is infinity: plotting not possible"
+					errorMessage <- "Plotting is not possible: BayesFactor is infinite"
 				}
-
+				
+				if (is.infinite(1 / bf.raw)) {
+				
+					errorMessage <- "Plotting is not possible: BayesFactor is one divided by infinity"
+				}
 				
 				ind <- which(variableData == variableData[1])
 				idData <- sum((ind+1)-(1:(length(ind))) == 1)
@@ -2313,13 +2326,14 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 						image <- .beginSaveImage(530, 400)
 						.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
-						content <- .endSaveImage(image)
-						plot[["data"]]  <- content
+						content <- .endSaveImage(image)						
+							plot[["data"]]  <- content
 						
 					} else {
 					
-						plot[["error"]] <- list(error="badData", errorMessage= errorMessage)
+							plot[["error"]] <- list(error="badData", errorMessage= errorMessage)
 					}
+					
 					
 					plot[["status"]] <- "complete"
 					
