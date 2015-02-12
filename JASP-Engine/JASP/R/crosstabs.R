@@ -1472,9 +1472,12 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	### META
 
 	meta <- list()
-	meta[[1]] <- list(name="crosstabs", type="tables")
+	meta[[1]] <- list(name="title", type="title")
+	meta[[2]] <- list(name="crosstabs", type="tables")
 	
 	results[[".meta"]] <- meta
+	
+	results[["title"]] <- "Crosstabs"
 	
 	
 	### CROSS TABS

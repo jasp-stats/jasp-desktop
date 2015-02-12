@@ -635,11 +635,13 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	### META
 
 	meta <- list()
-	meta[[1]] <- list(name="crosstabs", type="tables")
-	meta[[2]] <- list(name="plots", type="images")
+	meta[[1]] <- list(name="title", type="title")
+	meta[[2]] <- list(name="crosstabs", type="tables")
+	meta[[3]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
 	
+	results[["title"]] <- "Bayesian Crosstabs"	
 	
 	### CROSS TABS
 	
