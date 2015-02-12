@@ -5,7 +5,7 @@ JASP 0.6 R Packages
 Dependencies (C++ API)
 ----------------------
 
-* BayesFactor (0.9.10 [Github 24d1570aea])
+* BayesFactor (0.9.10-2)
 * lme4 (1.1-7)
 * Rcpp (0.11.3)
 * RInside (0.2.11)
