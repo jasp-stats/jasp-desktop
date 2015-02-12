@@ -49,6 +49,23 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								  priorWidth=options$priorWidth, 
 								  bayesFactorType=options$bayesFactorType, 
 								  missingValues=options$missingValues)
+								  
+	if (perform == "init") {
+	
+		if (length(options$variables) < 2) {
+		
+			results <- list(results=results, status="complete")
+			
+		} else {
+		
+			results <- list(results=results, status="inited")
+		}
+		
+	} else {
+	
+		results <- list(results=results, status="complete")
+	}
+	
 	return(results)
 }
 
@@ -82,6 +99,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	correlation.table[["citation"]] <- list(
 		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
 	)
+	
+	if (perform == "init") {
+	
+		if (length(variables) < 2)
+			variables <- c(variables, "...")
+		if (length(variables) < 2)
+			variables <- c(variables, "... ")
+	}
+	
+	
 	if (hypothesis == "correlated") {
 		if (bayesFactorType=="BF10"){
 			bf.title <- "BF\u2081\u2080"
