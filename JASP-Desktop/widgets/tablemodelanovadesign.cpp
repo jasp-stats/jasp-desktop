@@ -141,14 +141,9 @@ void TableModelAnovaDesign::refresh()
 		Options *group = _groups.at(i);
 		OptionString *nameOption = static_cast<OptionString *>(group->get("name"));
 		string oldName = nameOption->value();
-		//string newName = fq(nameTemplate.arg(i + 1));
-
-		//if (oldName != newName)
-		//	nameOption->setValue(newName);
 
 		OptionVariables *variablesOption = static_cast<OptionVariables *>(group->get("levels"));
 
-		//_rows.append(Row(tq(newName), false, i));
 		_rows.append(Row(tq(oldName), false, i));
 
 		vector<string> variables = variablesOption->variables();
@@ -281,11 +276,26 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 			factorName->setValue(fq(name));
 
 			_groups.push_back(newRow);
+
+			Terms terms;
+			terms.add(Term(name));
+
+			emit factorAdded(terms);
 		}
 		else
 		{
 			OptionString *option = static_cast<OptionString *>(_groups.at(row.index())->get("name"));
+
+			Terms old;
+			old.add(Term(option->value()));
+
+			Terms n3w;
+			n3w.add(Term(name));
+
 			option->setValue(fq(name));
+
+			emit factorRemoved(old);
+			emit factorAdded(n3w);
 		}
 	}
 	else
@@ -351,6 +361,11 @@ void TableModelAnovaDesign::deleteRow(int rowNo)
 			for (int i = 0; i < row.index(); i++)
 				itr++;
 
+			Terms removed;
+			removed.add(Term(row.text()));
+
+			emit factorRemoved(removed);
+
 			_groups.erase(itr);
 		}
 		else
@@ -358,6 +373,16 @@ void TableModelAnovaDesign::deleteRow(int rowNo)
 			OptionString *factorNameTemplate = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
 			string defaultName = fq(tq(factorNameTemplate->value()).arg(rowNo + 1));
 			OptionString *factorNameOption = static_cast<OptionString *>(_groups.at(0)->get("name"));
+
+			Terms old;
+			old.add(factorNameOption->value());
+
+			Terms n3w;
+			n3w.add(defaultName);
+
+			emit factorRemoved(old);
+			emit factorAdded(n3w);
+
 			factorNameOption->setValue(defaultName);
 		}
 	}

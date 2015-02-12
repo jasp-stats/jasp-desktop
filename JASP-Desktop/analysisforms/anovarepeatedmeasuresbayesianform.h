@@ -20,12 +20,12 @@ class AnovaRepeatedMeasuresBayesianForm : public AnalysisForm
 public:
 	explicit AnovaRepeatedMeasuresBayesianForm(QWidget *parent = 0);
 	~AnovaRepeatedMeasuresBayesianForm();
+
+	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	
 private slots:
-	void factorsChanged();
-	void termsChanged();
-	void withinSubjectsDesignChanged();
 
+	void withinSubjectsDesignChanged();
 	void anovaDesignTableClicked(QModelIndex index);
 
 private:

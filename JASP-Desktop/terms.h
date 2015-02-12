@@ -45,6 +45,7 @@ public:
 	void remove(const Terms &terms);
 	void remove(int pos, int n = 1);
 	bool discardWhatDoesntContainTheseComponents(const Terms &terms);
+	bool discardWhatDoesContainTheseComponents(const Terms &terms);
 	bool discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded = NULL);
 
 	void clear();
@@ -63,6 +64,7 @@ public:
 
 	Terms crossCombinations() const;
 	Terms wayCombinations(int ways) const;
+	Terms ffCombinations(const Terms &terms);
 
 	std::string asString() const;
 

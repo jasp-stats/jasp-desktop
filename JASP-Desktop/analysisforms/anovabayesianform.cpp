@@ -29,12 +29,15 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->fixedFactors);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->randomFactors);
 
-	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
 	ui->modelTerms->hide();
+
+	connect(_fixedFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
+	connect(_fixedFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+
+	connect(_randomFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addRandomFactors(Terms)));
+	connect(_randomFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 #ifdef QT_NO_DEBUG
 	// temporary hides until the appropriate R code is implemented
@@ -53,13 +56,10 @@ AnovaBayesianForm::~AnovaBayesianForm()
 	delete ui;
 }
 
-void AnovaBayesianForm::factorsChanged()
+void AnovaBayesianForm::bindTo(Options *options, DataSet *dataSet)
 {
-	Terms factors;
+	AnalysisForm::bindTo(options, dataSet);
 
-	factors.add(_fixedFactorsListModel->assigned());
-	factors.add(_randomFactorsListModel->assigned());
-
-	_anovaModel->setVariables(factors);
+	_anovaModel->setVariables(_fixedFactorsListModel->assigned(), _randomFactorsListModel->assigned());
 }
 

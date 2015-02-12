@@ -6,6 +6,7 @@
 #include "variableinfo.h"
 
 #include "common.h"
+#include "terms.h"
 
 #include "options/optionvariables.h"
 #include "options/optionstring.h"
@@ -37,6 +38,8 @@ public:
 
 signals:
 	void designChanged();
+	void factorAdded(Terms term);
+	void factorRemoved(Terms term);
 
 protected:
 

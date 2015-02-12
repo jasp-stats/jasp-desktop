@@ -28,6 +28,9 @@ public:
 signals:
 	void assignmentsChanged();
 
+	void assignedTo(const Terms &variables);
+	void unassigned(const Terms &variables);
+
 private slots:
 	void sourceVariablesChanged();
 	void sendBack();

@@ -18,9 +18,6 @@ AnovaModelWidget::AnovaModelWidget(QWidget *parent) :
 	_boundTo = NULL;
 	_tableModelAnovaModel = NULL;
 
-	connect(ui->custom, SIGNAL(toggled(bool)), this, SLOT(setCustomModelMode(bool)));
-	setCustomModelMode(false);
-
 	_tableModelVariablesAvailable = new TableModelVariablesAvailable(this);
 	_tableModelVariablesAvailable->setSupportedDragActions(Qt::CopyAction);
 	_tableModelVariablesAvailable->setSupportedDropActions(Qt::MoveAction);
@@ -91,20 +88,10 @@ void AnovaModelWidget::setModel(TableModelAnovaModel *model)
 	if (_boundTo != NULL)
 		_tableModelAnovaModel->bindTo(_boundTo);
 
-	_tableModelAnovaModel->setCustomModelMode(_customModel);
-
 	ui->listModelTerms->setModel(model);
 
 	variablesAvailableChanged();
 	connect(_tableModelAnovaModel, SIGNAL(variablesAvailableChanged()), this, SLOT(variablesAvailableChanged()));
-}
-
-void AnovaModelWidget::setCustomModelMode(bool customModel)
-{
-	_customModel = customModel;
-	if (_tableModelAnovaModel != NULL)
-		_tableModelAnovaModel->setCustomModelMode(customModel);
-	ui->modelBuilder->setEnabled(customModel);
 }
 
 void AnovaModelWidget::variablesAvailableChanged()

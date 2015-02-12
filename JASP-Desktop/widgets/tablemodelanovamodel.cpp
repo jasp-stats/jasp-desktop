@@ -15,7 +15,6 @@ TableModelAnovaModel::TableModelAnovaModel(QObject *parent)
 	: TableModel(parent)
 {
 	_boundTo = NULL;
-	_customModel = false;
 
 	_terms.setSortParent(_variables);
 }
@@ -98,35 +97,20 @@ QStringList TableModelAnovaModel::mimeTypes() const
 	return types;
 }
 
-void TableModelAnovaModel::setVariables(const Terms &factors, const Terms &covariates)
+void TableModelAnovaModel::setVariables(const Terms &fixedFactors, const Terms &randomFactors, const Terms &covariates)
 {
-	beginResetModel();
-
+	_fixedFactors = fixedFactors;
+	_randomFactors = randomFactors;
 	_covariates = covariates;
-	_factors = factors;
 
-	_variables.clear();
-	_variables.add(factors);
-	_variables.add(covariates);
+	Terms all;
+	all.add(fixedFactors);
+	all.add(randomFactors);
+	all.add(covariates);
 
-	if (_customModel)
-	{
-		Terms terms = _terms;
-		terms.discardWhatDoesntContainTheseComponents(_variables);
-		if (terms.size() != _terms.size())
-			setTerms(terms);
-	}
-	else
-	{
-		Terms terms = _factors.crossCombinations();
-		terms.add(_covariates);
-		if (terms != _terms)
-			setTerms(terms);
-	}
+	_variables.set(all);
 
 	emit variablesAvailableChanged();
-
-	endResetModel();
 }
 
 const Terms &TableModelAnovaModel::variables() const
@@ -134,26 +118,23 @@ const Terms &TableModelAnovaModel::variables() const
 	return _variables;
 }
 
-void TableModelAnovaModel::setCustomModelMode(bool on)
-{
-	_customModel = on;
-
-	if (_customModel)
-	{
-		clear();
-	}
-	else
-	{
-		Terms terms = _factors.crossCombinations();
-		terms.add(_covariates);
-		if (terms != _terms)
-			setTerms(terms);
-	}
-}
-
 void TableModelAnovaModel::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable *>(option);
+
+	beginResetModel();
+
+	_rows = _boundTo->value();
+
+	foreach (Options *row, _rows)
+	{
+		OptionVariables *nameOption = static_cast<OptionVariables*>(row->get(0));
+		string name = nameOption->variables().front();
+
+		_terms.add(Term(name));
+	}
+
+	endResetModel();
 }
 
 void TableModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
@@ -181,6 +162,66 @@ void TableModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
 const Terms &TableModelAnovaModel::terms() const
 {
 	return _terms;
+}
+
+void TableModelAnovaModel::addFixedFactors(const Terms &terms)
+{
+	_fixedFactors.add(terms);
+	_variables.add(terms);
+
+	Terms existingTerms = _terms;
+
+	Terms newTerms = _terms;
+	newTerms.discardWhatDoesContainTheseComponents(_covariates);
+	existingTerms.add(newTerms.ffCombinations(terms));
+
+	setTerms(existingTerms);
+
+	emit variablesAvailableChanged();
+}
+
+void TableModelAnovaModel::addRandomFactors(const Terms &terms)
+{
+	_randomFactors.add(terms);
+	_variables.add(terms);
+
+	Terms existingTerms = _terms;
+
+	Terms newTerms = _terms;
+	newTerms.discardWhatDoesContainTheseComponents(_covariates);
+	existingTerms.add(newTerms.ffCombinations(terms));
+
+	setTerms(existingTerms);
+
+	emit variablesAvailableChanged();
+}
+
+void TableModelAnovaModel::addCovariates(const Terms &terms)
+{
+	_covariates.add(terms);
+	_variables.add(terms);
+
+	Terms newTerms = _terms;
+	newTerms.add(terms);
+
+	setTerms(newTerms);
+
+	emit variablesAvailableChanged();
+}
+
+void TableModelAnovaModel::removeVariables(const Terms &terms)
+{
+	_variables.remove(terms);
+	_fixedFactors.remove(terms);
+	_randomFactors.remove(terms);
+	_covariates.remove(terms);
+
+	Terms newTerms = _terms;
+	newTerms.discardWhatDoesContainTheseComponents(terms);
+
+	setTerms(newTerms);
+
+	emit variablesAvailableChanged();
 }
 
 bool TableModelAnovaModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const

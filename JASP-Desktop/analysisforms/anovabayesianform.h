@@ -18,8 +18,7 @@ public:
 	explicit AnovaBayesianForm(QWidget *parent = 0);
 	~AnovaBayesianForm();
 
-private slots:
-	void factorsChanged();
+	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	
 private:
 	Ui::AnovaBayesianForm *ui;

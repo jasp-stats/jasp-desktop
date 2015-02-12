@@ -18,6 +18,8 @@ class AncovaForm : public AnalysisForm
 public:
 	explicit AncovaForm(QWidget *parent = 0);
 	~AncovaForm();
+
+	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	
 private slots:
 	void factorsChanged();

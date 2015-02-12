@@ -66,7 +66,17 @@ Options *AnovaRepeatedMeasuresBayesian::createOptions() const
 	termsTemplate->add("components", new OptionVariables());
 	termsTemplate->add("isNuisance", new OptionBoolean());
 
-	options->add("modelTerms", new OptionsTable(termsTemplate));
+	OptionsTable *modelTerms = new OptionsTable(termsTemplate);
+
+	vector<Options*> rows;
+	Options *de4ault = static_cast<Options*>(termsTemplate->clone());
+	OptionVariables *name = static_cast<OptionVariables*>(de4ault->get(0));
+	name->setValue("RM Factor 1");
+	rows.push_back(de4ault);
+
+	modelTerms->setValue(rows);
+
+	options->add("modelTerms", modelTerms);
 	options->add("sumOfSquares", new OptionList(list("type1", "type2", "type3"), "type3"));
 
 

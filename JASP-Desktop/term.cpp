@@ -16,7 +16,7 @@ Term::Term(const std::vector<string> components)
 		if (first)
 			first = false;
 		else
-			_asString.append(" : ");
+			_asString.append(" \xE2\x9C\xBB ");  // star spoked asterisk
 
 		_asString.append(component);
 		_components.append(tq(component));

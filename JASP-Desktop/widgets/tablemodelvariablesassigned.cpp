@@ -168,6 +168,8 @@ void TableModelVariablesAssigned::assign(const Terms &variables)
 	}
 
 	setAssigned(v);
+
+	emit assignedTo(variables);
 }
 
 void TableModelVariablesAssigned::unassign(const Terms &variables)
@@ -176,6 +178,8 @@ void TableModelVariablesAssigned::unassign(const Terms &variables)
 	variablesToKeep.set(_variables);
 	variablesToKeep.remove(variables);
 	setAssigned(variablesToKeep);
+
+	emit unassigned(variables);
 }
 
 void TableModelVariablesAssigned::setAssigned(const Terms &variables)

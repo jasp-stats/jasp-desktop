@@ -36,13 +36,18 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->randomFactors);
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
-	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
 	ui->modelTerms->hide();
+
+	connect(_fixedFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
+	connect(_fixedFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+
+	connect(_randomFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addRandomFactors(Terms)));
+	connect(_randomFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+
+	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
+	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 #ifdef QT_NO_DEBUG
 	// temporary hides until the appropriate R code is implemented
@@ -60,13 +65,10 @@ AncovaBayesianForm::~AncovaBayesianForm()
 	delete ui;
 }
 
-void AncovaBayesianForm::factorsChanged()
+void AncovaBayesianForm::bindTo(Options *options, DataSet *dataSet)
 {
-	Terms factors;
+	AnalysisForm::bindTo(options, dataSet);
 
-	factors.add(_fixedFactorsListModel->assigned());
-	factors.add(_randomFactorsListModel->assigned());
-	factors.add(_covariatesListModel->assigned());
-
-	_anovaModel->setVariables(factors);
+	_anovaModel->setVariables(_fixedFactorsListModel->assigned(), _randomFactorsListModel->assigned(), _covariatesListModel->assigned());
 }
+

@@ -36,17 +36,17 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->repeatedMeasuresCells);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->betweenSubjectFactors);
 
-	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
-	connect(_anovaModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
 
-	termsChanged();
-
-	ui->containerModel->hide();
+	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
+	connect(_betweenSubjectsFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
+	connect(_designTableModel, SIGNAL(factorAdded(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
+	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+
+	ui->containerModel->hide();
 
 #ifdef QT_NO_DEBUG
 	ui->modelContainer->hide();
@@ -60,8 +60,10 @@ AnovaRepeatedMeasuresBayesianForm::~AnovaRepeatedMeasuresBayesianForm()
 	delete ui;
 }
 
-void AnovaRepeatedMeasuresBayesianForm::factorsChanged()
+void AnovaRepeatedMeasuresBayesianForm::bindTo(Options *options, DataSet *dataSet)
 {
+	AnalysisForm::bindTo(options, dataSet);
+
 	Terms factorsAvailable;
 
 	foreach (const Factor &factor, _designTableModel->design())
@@ -72,15 +74,9 @@ void AnovaRepeatedMeasuresBayesianForm::factorsChanged()
 	_anovaModel->setVariables(factorsAvailable);
 }
 
-void AnovaRepeatedMeasuresBayesianForm::termsChanged()
-{
-
-}
-
 void AnovaRepeatedMeasuresBayesianForm::withinSubjectsDesignChanged()
 {
 	_withinSubjectCellsListModel->setDesign(_designTableModel->design());
-	factorsChanged();
 }
 
 void AnovaRepeatedMeasuresBayesianForm::anovaDesignTableClicked(QModelIndex index)

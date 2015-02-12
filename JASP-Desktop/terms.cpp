@@ -305,6 +305,34 @@ Terms Terms::wayCombinations(int ways) const
 	return t;
 }
 
+Terms Terms::ffCombinations(const Terms &terms)
+{
+	// full factorial combinations
+
+	Terms combos = terms.crossCombinations();
+
+	Terms newTerms;
+
+	newTerms.add(*this);
+	newTerms.add(combos);
+
+	for (uint i = 0; i < _terms.size(); i++)
+	{
+		for (uint j = 0; j < combos.size(); j++)
+		{
+			QStringList term = _terms.at(i).components();
+			QStringList newTerm = combos.at(j).components();
+
+			term.append(newTerm);
+			newTerms.add(Term(term));
+		}
+	}
+
+	newTerms.add(terms);
+
+	return newTerms;
+}
+
 string Terms::asString() const
 {
 	if (_terms.size() == 0)
@@ -448,6 +476,50 @@ bool Terms::discardWhatDoesntContainTheseComponents(const Terms &terms)
 			}
 
 			citr++;
+		}
+
+		if (shouldRemove)
+		{
+			_terms.erase(titr);
+			changed = true;
+		}
+		else
+		{
+			titr++;
+		}
+	}
+
+	return changed;
+}
+
+bool Terms::discardWhatDoesContainTheseComponents(const Terms &terms)
+{
+	(void)terms;
+
+	bool changed = false;
+
+	vector<Term>::iterator titr = _terms.begin();
+
+	while (titr != _terms.end())
+	{
+		Term &existingTerm = *titr;
+		bool shouldRemove = false;
+
+		BOOST_FOREACH(const Term &term, terms)
+		{
+			(void)term;
+			(void)terms;
+
+			BOOST_FOREACH(const string &component, term.scomponents())
+			{
+				(void)term;
+
+				if (existingTerm.contains(component))
+				{
+					shouldRemove = true;
+					break;
+				}
+			}
 		}
 
 		if (shouldRemove)

@@ -39,7 +39,6 @@ public:
 	virtual Qt::DropActions supportedDragActions() const OVERRIDE;
 
 	const Terms &variables() const;
-	void setCustomModelMode(bool on);
 
 	virtual void bindTo(Option *option) OVERRIDE;
 
@@ -48,7 +47,13 @@ public:
 	const Terms &terms() const;
 
 public slots:
-	void setVariables(const Terms &factors, const Terms &covariates = Terms());
+
+	void setVariables(const Terms &fixedFactors, const Terms &randomFactors = Terms(), const Terms &covariates = Terms());
+
+	void addFixedFactors(const Terms &terms);
+	void addRandomFactors(const Terms &terms);
+	void addCovariates(const Terms &terms);
+	void removeVariables(const Terms &terms);
 
 signals:
 	void variablesAvailableChanged();
@@ -67,11 +72,12 @@ protected:
 
 	std::vector<Options *> _rows;
 
-	bool _customModel;
-
 	Terms _variables;
+
 	Terms _covariates;
-	Terms _factors;
+	Terms _fixedFactors;
+	Terms _randomFactors;
+
 	Terms _terms;
 
 };
