@@ -353,7 +353,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         
 		components <- unlist(term$components)
 		term.base64 <- paste(.v(components), collapse=":", sep="")
-		term.normal <- paste(components, collapse="\u2009*\u2009", sep="")
+		term.normal <- paste(components, collapse=" \u273B ", sep="")
 
 		terms.base64 <- c(terms.base64, term.base64)
 		terms.normal <- c(terms.normal, term.normal)
