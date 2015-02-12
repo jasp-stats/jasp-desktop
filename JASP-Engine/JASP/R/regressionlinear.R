@@ -100,6 +100,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	results <- list()
 	
 	.meta <-  list(
+		list(name = "title", type = "title"),
 		list(name = "descriptives", type = "table"),
 		list(name = "correlations", type = "table"),
 		list(name = "model summary", type = "table"),
@@ -108,6 +109,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		list(name = "coefficient correlations", type = "table"))
 	
 	results[[".meta"]] <- .meta
+	
+	results[["title"]] <- "Linear Regression"
 	
 	#######################################
 	###	 	   LINEAR REGRESSION		###
