@@ -34,7 +34,6 @@ table {
 	font-style: normal ;
 	border-collapse: collapse ;
 	margin-bottom: 2em ;
-	white-space: nowrap;
 }
 
 th {
@@ -81,6 +80,7 @@ thead tr:first-child th {
 
 thead th {
 	text-align: center;
+	white-space: nowrap;
 }
 
 tbody th {
@@ -92,6 +92,7 @@ tbody td {
 
 	border-bottom : none ;
 	border-top : none;
+	white-space: nowrap;
 }
 
 thead tr:last-child th:nth-child(1n + 2)
