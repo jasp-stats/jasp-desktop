@@ -122,6 +122,9 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 				m  <- as.numeric(r$estimate - r$null.value)
 				ciLow <- .clean(as.numeric(r$conf.int[1]))
 				ciUp  <- .clean(as.numeric(r$conf.int[2]))
+				
+				if (is.na(t))
+					stop("data are essentially constant")
 			
 				list(.variable=variable, t=t, df=df, p=p, "Mean Difference"=m, "lowerCI"=ciLow, "upperCI"=ciUp)
 			})
