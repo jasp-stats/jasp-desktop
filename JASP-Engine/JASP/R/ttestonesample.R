@@ -175,7 +175,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			list(name=".variable", type="string", title=""),
 			list(name="N", type="number", format="sf:4;dp:3"),
 			list(name="Mean", type="number", format="sf:4;dp:3"),
-			list(name="Std. Deviation", type="number", format="dp:3;p:.001"),
+			list(name="Std. Deviation", type="number", format="sf:4;dp:3"),
 			list(name="Std. Error Mean", type="number", format="sf:4;dp:3"))
 
 		descriptives[["schema"]] <- list(fields=fields)
