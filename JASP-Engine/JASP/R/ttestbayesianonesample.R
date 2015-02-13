@@ -2247,6 +2247,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				list(Variable=variable, BF=BF, error=error)
 			})
 			
+			print(result)
+			
+			print(class(result))
 			
 			if (class(result) == "try-error") {
 				
@@ -2276,13 +2279,15 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
 			} else {			
 						
-				if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
+				if (is.na(bf.raw)) {
+				
+					status[i] <- "error"
+					plottingError[i] <- "Plotting is not possible: BayesFactor is NaN"
+				} else if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
 				
 					status[i] <- "error"
 					plottingError[i] <- "Plotting is not possible: BayesFactor is infinite"
-				}
-				
-				if (is.infinite(1 / bf.raw)) {
+				} else if (is.infinite(1 / bf.raw)) {
 				
 					status[i] <- "error"
 					plottingError[i] <- "Plotting is not possible: BayesFactor is one divided by infinity"
@@ -2309,7 +2314,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		
 		ttest[["data"]] <- ttest.rows
 		ttest[["footnotes"]] <- as.list(footnotes)
-				
+		ttest[["status"]] <- "complete"		
 		results[["ttest"]] <- ttest
 		
 		if(callback() != 0)
