@@ -56,6 +56,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	if(is.null(options()$BFprogress)) options(BFprogress = interactive())
 	if(is.null(options()$BFfactorsMax)) options(BFfactorsMax = 5)
 	
+	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
+	
+	
 	plots.ttest <- list()
 	
 	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness || options$plotBayesFactorRobustness){
@@ -103,6 +106,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 		
 		results[["plots"]] <- plots.ttest
+		#results[["descriptives"]][["status"]] <- "complete"
+		
 		
 		if (callback(results) != 0) 
 			return()
@@ -252,8 +257,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			}				
 		}
 	}
-	
-	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
 	
 	results
 }
