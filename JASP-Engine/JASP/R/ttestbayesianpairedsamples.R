@@ -374,11 +374,29 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 				if (status$unplotable == FALSE) {
 				
-					image <- .beginSaveImage(530, 400)
+					p <- try(silent= FALSE, expr= {
 					
-					.plotPosterior.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo)
+						image <- .beginSaveImage(530, 400)
 					
-					plot[["data"]] <- .endSaveImage(image)
+						.plotPosterior.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo)
+					
+						plot[["data"]] <- .endSaveImage(image)
+						})
+						
+					if (class(p) == "try-error") {
+					
+						errorMessage <- .extractErrorMessage(p)
+						
+						if (errorMessage == "not enough data") {
+						
+								errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+						} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
+						
+							errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+						}
+						
+						plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					}
 					
 				} else if (status$unplotable && "unplotableMessage" %in% names(status)) {
 				
