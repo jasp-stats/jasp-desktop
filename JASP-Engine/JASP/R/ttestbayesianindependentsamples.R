@@ -86,7 +86,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "running"
-7				
+				
 				plots.ttest[[q]] <- plot
 				q <- q + 1
 			}
@@ -310,6 +310,35 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	footnotes <- .newFootnotes()
 	
+	levels <- NULL
+	
+	if (perform == "init")
+		levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
+	if (is.null(levels))
+		levels <- base::unique(dataset[[ .v(options$groupingVariable) ]])
+	
+	if (length(levels) != 2) {
+	
+		g1 <- "1"
+		g2 <- "2"
+		
+	} else {
+	
+		g1 <- levels[1]
+		g2 <- levels[2]
+	}
+
+	if (options$hypothesis == "groupOneGreater") {
+
+		message <- paste("All tests, hypothesis is group <em>", g1, "</em> greater than group <em>", g2, "</em>", sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		
+	} else if (options$hypothesis == "groupTwoGreater") {
+	
+		message <- paste("All tests, hypothesis is group <em>", g1, "</em> less than group <em>", g2, "</em>", sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	}
+	
 	
 	ttest.rows <- list()
 	
@@ -323,13 +352,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	}
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
-
-		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
-		
-		gs <- base::levels(levels)
-				g1 <- gs[1]
-				g2 <- gs[2]		
-				
 		
 		if (length(levels) != 2) {
 		
@@ -475,35 +497,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				ttest.rows[[rowNo]] <- result
 			
 				rowNo <- rowNo + 1
-			}			
-					
-
-			if (options$hypothesis == "groupOneGreater") {
-			
-				gs <- base::levels(levels)
-				g1 <- gs[1]
-				g2 <- gs[2]
-				message <- paste("All tests, hypothesis is group <em>", g1, "</em> greater than group <em>", g2, "</em>", sep="")
-			
-				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-				
-			} else if (options$hypothesis == "groupTwoGreater") {
-			
-				gs <- base::levels(levels)
-				g1 <- gs[1]
-				g2 <- gs[2]
-				message <- paste("All tests, hypothesis is group <em>", g1, "</em> less than group <em>", g2, "</em>", sep="")
-			
-				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 			}
-			
-			ttest[["footnotes"]] <- as.list(footnotes)
 		}
 	}
 	
+	ttest[["footnotes"]] <- as.list(footnotes)	
 	ttest[["data"]] <- ttest.rows
 	
 	
 	list(ttest, status, g1, g2, BFH1H0, plottingError)
-
 }
