@@ -169,7 +169,7 @@ string tempfiles_create(const string &extension, int id)
 
 	do
 	{
-		ssn.clear();
+		ssn.str("");
 		ssn << dir;
 		ssn << "/";
 		ssn << "_";
