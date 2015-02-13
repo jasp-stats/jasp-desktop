@@ -37,6 +37,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian T-Test"
 	
+	
 	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
 
 	results[["ttest"]] <- ttest.results[[1]]
@@ -69,8 +70,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["title"]] <- variable
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				plot[["status"]] <- "running"
-				
+								
 				image <- .beginSaveImage(530, 400)
 				.plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
 				plot[["data"]] <- .endSaveImage(image)
@@ -85,8 +85,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["title"]] <- variable
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				plot[["status"]] <- "running"
-7				
+				7				
 				plots.ttest[[q]] <- plot
 				q <- q + 1
 			}
@@ -97,8 +96,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["title"]] <- variable
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				plot[["status"]] <- "running"
-				
+								
 				plots.ttest[[q]] <- plot
 				q <- q + 1
 			}
@@ -111,6 +109,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 		
 		if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
+			
+			#for (i in seq_along(results[["plots"]])) {
+			#	results[["plots"]][[i]][["status"]] <- "running"
+			#}
 			
 			statusInd <- 1
 			
@@ -146,110 +148,110 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				z <- numberPlotsPerVariable * (which(options$variables == variable) -1) + 1
 				
 				
-					if (options$plotPriorAndPosterior) {
-					
-						plot <- plots.ttest[[z]]
-								
-						if (status[statusInd] != "error") {
+				if (options$plotPriorAndPosterior) {
+				
+					plot <- plots.ttest[[z]]
 							
-							p <- try(silent= FALSE, expr= {
+					if (status[statusInd] != "error") {
+						
+						p <- try(silent= FALSE, expr= {
+				
+								image <- .beginSaveImage(530, 400)
+				
+								.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
+				
+								plot[["data"]] <- .endSaveImage(image)
+							})
 					
-									image <- .beginSaveImage(530, 400)
+						if (class(p) == "try-error") {
+				
+							errorMessage <- .extractErrorMessage(p)
 					
-									.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
+							if (errorMessage == "not enough data") {
 					
-									plot[["data"]] <- .endSaveImage(image)
-								})
-						
-							if (class(p) == "try-error") {
+								errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+							} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
 					
-								errorMessage <- .extractErrorMessage(p)
-						
-								if (errorMessage == "not enough data") {
-						
-									errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
-								} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-						
-									errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
-								}
-						
-								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+								errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
 							}
-						} else {
-						
-							plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
+					
+							plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 						}
-						
-						plot[["status"]] <- "complete"
-						
-						plots.ttest[[z]] <- plot
-						
-						results[["plots"]] <- plots.ttest
-			
-						if (callback(results) != 0) 
-							return()
-						
-						z <- z + 1
+					} else {
+					
+						plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
 					}
 					
-					if (options$plotBayesFactorRobustness) {
-						
-						plot <- plots.ttest[[z]]
+					plot[["status"]] <- "complete"
 					
-						if (status[statusInd] != "error") {
-							
-							image <- .beginSaveImage(530, 400)
-							.plotBF.robustnessCheck.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
-							content <- .endSaveImage(image)
-							plot[["data"]]  <- content
-						} else {
-						
-							plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
-						}
-						
-						plot[["status"]] <- "complete"
-						
-						plots.ttest[[z]] <- plot
-						
-						results[["plots"]] <- plots.ttest
+					plots.ttest[[z]] <- plot
+					
+					results[["plots"]] <- plots.ttest
 			
-						if (callback(results) != 0) 
-							return()
+					if (callback(results) != 0) 
+						return()
+					
+					z <- z + 1
+				}
+					
+				if (options$plotBayesFactorRobustness) {
+					
+					plot <- plots.ttest[[z]]
+				
+					if (status[statusInd] != "error") {
 						
-						z <- z + 1
+						image <- .beginSaveImage(530, 400)
+						.plotBF.robustnessCheck.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+						content <- .endSaveImage(image)
+						plot[["data"]]  <- content
+					} else {
+					
+						plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
 					}
 					
-					if (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness) {
+					plot[["status"]] <- "complete"
 					
-						plot <- plots.ttest[[z]]
+					plots.ttest[[z]] <- plot
 					
-						if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {						
-													
-							image <- .beginSaveImage(530, 400)
-							.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, plotDifferentPriors= options$plotSequentialAnalysisRobustness)
-							content <- .endSaveImage(image)						
-							plot[["data"]]  <- content
-						} else {
-						
-							plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
-						}
-						
-						plot[["status"]] <- "complete"						
-						
-						plots.ttest[[z]] <- plot
-						
-						results[["plots"]] <- plots.ttest
+					results[["plots"]] <- plots.ttest
 			
-						if (callback(results) != 0) 
-							return()
-						
-						z <- z + 1
-					}
+					if (callback(results) != 0) 
+						return()
+					
+					z <- z + 1
 				}
 				
+				if (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness) {
+				
+					plot <- plots.ttest[[z]]
+				
+					if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {						
+												
+						image <- .beginSaveImage(530, 400)
+						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, plotDifferentPriors= options$plotSequentialAnalysisRobustness)
+						content <- .endSaveImage(image)						
+						plot[["data"]]  <- content
+					} else {
+					
+						plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
+					}
+					
+					plot[["status"]] <- "complete"						
+					
+					plots.ttest[[z]] <- plot
+					
+					results[["plots"]] <- plots.ttest
+			
+					if (callback(results) != 0) 
+						return()
+					
+					z <- z + 1
+				}
+					
 				statusInd <- statusInd + 1
-			}
+			}				
 		}
+	}
 	
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
 	
@@ -323,7 +325,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	}
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
-
+	
+				
 		levels <- unique(dataset[[ .v(options$groupingVariable) ]])
 		
 		gs <- base::levels(levels)
@@ -382,7 +385,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					BF    <- .clean(bf.raw)
 					error <- .clean(as.numeric(bf@bayesFactor$error))
 					errorMessage <- NULL
-					
+										
 					if (is.na(bf.raw)) {
 				
 						status[rowNo] <- "error"
@@ -393,7 +396,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
 					
-							# errorMessage <- "Plotting is not possible: BayesFactor is infinite"
+							 
 							status[rowNo] <- "error"
 							plottingError[rowNo] <- "Plotting is not possible: BayesFactor is infinite"
 						}
