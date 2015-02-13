@@ -303,29 +303,28 @@
 		fixedMargin <- NULL
 		
 	} else if (options$samplingModel=="independentMultinomialRowsFixed") {
-
+	
 		if (options$hypothesis=="groupsNotEqual") {
-		
-			bfLabel <- "BF\u2081\u2080 independent multinomial"	
+		bfLabel <- "BF\u2081\u2080 independent multinomial"	
 		} else if(options$hypothesis=="groupOneGreater") {
-			bfLabel <- "BF\u208A\u2080 independent multinomial"	 
-		} else {
-			bfLabel <- "BF\\u208B\u2080 independent multinomial"	
+		bfLabel <- "BF\u002B\u2080 independent multinomial"	
+		} else if(options$hypothesis=="groupTwoGreater") {
+		bfLabel <- "BF\u2212\u2080 independent multinomial"	
 		}
-			#bfLabel <- "BF\u2081\u2080 independent multinomial"	
+		
 		sampleType <- "indepMulti"
 		fixedMargin <- "rows"
 		
 	} else if (options$samplingModel=="independentMultinomialColumnsFixed") {
 	
 		if (options$hypothesis=="groupsNotEqual") {
-			bfLabel <- "BF\u2081\u2080 independent multinomial"	
+		bfLabel <- "BF\u2081\u2080 independent multinomial"	
 		} else if(options$hypothesis=="groupOneGreater") {
-			bfLabel <- "BF\u208A\u2080 independent multinomial"	
-		} else {
-			bfLabel <- "BF\\u208B\u2080 independent multinomial"	
+		bfLabel <- "BF\u002B\u2080 independent multinomial"	
+		} else if(options$hypothesis=="groupTwoGreater") {
+		bfLabel <- "BF\u2212\u2080 independent multinomial"	
 		}
-		#bfLabel <- "BF\u2081\u2080 independent multinomial"	
+			
 		sampleType <- "indepMulti"
 		fixedMargin <- "cols"
 		
@@ -340,6 +339,7 @@
 		stop("wtf?")
 	}
 	
+
 	row[["type[BF]"]] <- bfLabel
 
 	if (perform == "run" && status$error == FALSE) {
@@ -349,56 +349,57 @@
 		
 			if (options$hypothesis=="groupsNotEqual") {
 			
-				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
-				bf0 <- exp(as.numeric(BF@bayesFactor$bf))
+			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
+			bf0 <- exp(as.numeric(BF@bayesFactor$bf))
 			
 			} else if (options$hypothesis=="groupOneGreater") {
 
-				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
-				bf0 <- exp(as.numeric(BF@bayesFactor$bf))
+			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType="indepMulti", priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
+			bf0 <- exp(as.numeric(BF@bayesFactor$bf))
 			
-				a <- options$priorConcentration
+			a <- options$priorConcentration
 			
-				s1 <- counts.matrix[1,1]
-				f1 <- counts.matrix[1,2]
+			s1 <- counts.matrix[1,1]
+			f1 <- counts.matrix[2,1]
 
-				s2 <- counts.matrix[2,1]
-				f2 <- counts.matrix[2,2]
+			s2 <- counts.matrix[1,2]
+			f2 <- counts.matrix[2,2]
 
-				p1 ~ stats::beta(a+s1, a+f1)
-				p2 ~ stats::beta(a+s2, a+f2)
+			p1 ~ stats::beta(a+s1, a+f1)
+			p2 ~ stats::beta(a+s2, a+f2)
 
 
-				N.sim <- 10000
-				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-				prop.consistent <- sum(p1.sim > p2.sim)/N.sim
-				bf0 <- bf0 * prop.consistent / 0.5
+			N.sim <- 10000
+			p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
+			p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
+			prop.consistent <- sum(p2.sim < p1.sim)/N.sim
+			bf0 <- bf0 * prop.consistent / 0.5
 			
 			} else if (options$hypothesis=="groupTwoGreater") {
 
-				BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
-				bf0 <- exp(as.numeric(BF@bayesFactor$bf))
+			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType="indepMulti", priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
+			bf0 <- exp(as.numeric(BF@bayesFactor$bf))
 			
-				a <- options$priorConcentration
+			a <- options$priorConcentration
+			counts.matrix <- t(counts.matrix)
 			
-				s1 <- counts.matrix[1,1]
-				f1 <- counts.matrix[1,2]
+			s1 <- counts.matrix[1,1]
+			f1 <- counts.matrix[2,1]
 
-				s2 <- counts.matrix[2,1]
-				f2 <- counts.matrix[2,2]
+			s2 <- counts.matrix[1,2]
+			f2 <- counts.matrix[2,2]
 
-				p1 ~ stats::beta(a+s1, a+f1)
-				p2 ~ stats::beta(a+s2, a+f2)
+			p1 ~ stats::beta(a+s1, a+f1)
+			p2 ~ stats::beta(a+s2, a+f2)
 
 
-				N.sim <- 10000
-				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-				prop.consistent <- sum(p2.sim > p1.sim)/N.sim
-				bf0 <- bf0 * prop.consistent / 0.5
+			N.sim <- 10000
+			p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
+			p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
+			prop.consistent <- sum(p2.sim > p1.sim)/N.sim
+			bf0 <- bf0 * prop.consistent / 0.5
 					
-			}
+					}
 			
 		})
 		
@@ -701,13 +702,11 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	### META
 
 	meta <- list()
-	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="crosstabs", type="tables")
-	meta[[3]] <- list(name="plots", type="images")
+	meta[[1]] <- list(name="crosstabs", type="tables")
+	meta[[2]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
 	
-	results[["title"]] <- "Bayesian Crosstabs"	
 	
 	### CROSS TABS
 	
