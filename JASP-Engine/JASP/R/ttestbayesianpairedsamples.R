@@ -196,7 +196,13 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE, r=options$priorWidth, nullInterval= nullInterval)
 					
 					bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
-
+					
+					if (is.na(bf.raw)) {
+				
+						unplotable <- TRUE
+						unplotableMessage <- "Bayes factor is NaN"
+					} 
+					
 					if (is.infinite(bf.raw)) {
 					
 						unplotable <- TRUE

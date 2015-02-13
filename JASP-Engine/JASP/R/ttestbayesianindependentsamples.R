@@ -383,6 +383,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					error <- .clean(as.numeric(bf@bayesFactor$error))
 					errorMessage <- NULL
 					
+					if (is.na(bf.raw)) {
+				
+						status[rowNo] <- "error"
+						plottingError[rowNo] <- "Plotting is not possible: BayesFactor is NaN"
+					}					
+					
 					if(is.infinite(bf.raw)){
 						
 						if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
