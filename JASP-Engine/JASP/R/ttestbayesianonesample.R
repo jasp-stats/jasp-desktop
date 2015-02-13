@@ -2335,12 +2335,30 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				plot <- plots.ttest[[z]]
 				
 				if (status[i] != "error") {
-			
-					image <- .beginSaveImage(530, 400)
-					.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
-					content <- .endSaveImage(image)						
-					plot[["data"]]  <- content
 					
+					p <- try(silent= FALSE, expr= {
+					
+							image <- .beginSaveImage(530, 400)
+					
+							.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
+					
+							plot[["data"]] <- .endSaveImage(image)
+						})
+						
+					if (class(p) == "try-error") {
+					
+						errorMessage <- .extractErrorMessage(p)
+						
+						if (errorMessage == "not enough data") {
+						
+								errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+						} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
+						
+							errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+						}
+						
+						plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					}					
 				} else {
 				
 						plot[["error"]] <- list(error="badData", errorMessage= plottingError[i])

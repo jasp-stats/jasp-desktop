@@ -151,14 +151,30 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						plot <- plots.ttest[[z]]
 								
 						if (status[statusInd] != "error") {
-								
-							image <- .beginSaveImage(530, 400)
+							
+							p <- try(silent= FALSE, expr= {
+					
+									image <- .beginSaveImage(530, 400)
+					
+									.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
+					
+									plot[["data"]] <- .endSaveImage(image)
+								})
 						
-							.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
-											
-							content <- .endSaveImage(image)
-												
-							plot[["data"]]  <- content
+							if (class(p) == "try-error") {
+					
+								errorMessage <- .extractErrorMessage(p)
+						
+								if (errorMessage == "not enough data") {
+						
+									errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+								} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
+						
+									errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+								}
+						
+								plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+							}
 						} else {
 						
 							plot[["error"]] <- list(error="badData", errorMessage=plottingError[statusInd])
