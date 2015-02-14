@@ -26,6 +26,7 @@ public:
 	const Terms &assigned() const;
 
 signals:
+	void assignmentsChanging();
 	void assignmentsChanged();
 
 	void assignedTo(const Terms &variables);
@@ -34,6 +35,7 @@ signals:
 private slots:
 	void sourceVariablesChanged();
 	void sendBack();
+	void delayAssignDroppedData();
 
 private:
 	void assign(const Terms &variables);
@@ -45,6 +47,7 @@ private:
 	bool _sorted;
 
 	Terms _toSendBack;
+	Terms _delayDropped;
 };
 
 #endif // TABLEMODELVARIABLESASSIGNED_H

@@ -99,21 +99,33 @@ bool TableModelVariablesAssigned::dropMimeData(const QMimeData *data, Qt::DropAc
 
 	QByteArray encodedData = data->data(_mimeType);
 
-	Terms variables;
-	variables.set(encodedData);
-	assign(variables);
+	_delayDropped.set(encodedData);
+	QTimer::singleShot(0, this, SLOT(delayAssignDroppedData()));
+
+	emit assignmentsChanging();
 
 	return true;
 }
 
+void TableModelVariablesAssigned::delayAssignDroppedData()
+{
+	assign(_delayDropped);
+
+	emit assignmentsChanged();
+}
+
 void TableModelVariablesAssigned::mimeDataMoved(const QModelIndexList &indices)
 {
+	emit assignmentsChanging();
+
 	Terms variablesToRemove;
 
 	foreach (const QModelIndex &index, indices)
 		variablesToRemove.add(_variables.at(index.row()));
 
 	unassign(variablesToRemove);
+
+	emit assignmentsChanged();
 }
 
 bool TableModelVariablesAssigned::setSorted(bool sorted)
@@ -131,6 +143,8 @@ const Terms &TableModelVariablesAssigned::assigned() const
 
 void TableModelVariablesAssigned::sourceVariablesChanged()
 {
+	emit assignmentsChanging();
+
 	const Terms &variables = _source->allVariables();
 	Terms variablesToKeep;
 	bool variableRemoved = false;
@@ -140,6 +154,8 @@ void TableModelVariablesAssigned::sourceVariablesChanged()
 
 	if (variableRemoved)
 		setAssigned(variablesToKeep);
+
+	emit assignmentsChanged();
 }
 
 void TableModelVariablesAssigned::assign(const Terms &variables)
@@ -199,8 +215,6 @@ void TableModelVariablesAssigned::setAssigned(const Terms &variables)
 	beginResetModel();
 	_variables.set(variables);
 	endResetModel();
-
-	emit assignmentsChanged();
 
 	if (_boundTo != NULL)
 		_boundTo->setValue(_variables.asVector());

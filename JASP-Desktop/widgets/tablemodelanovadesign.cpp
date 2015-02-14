@@ -24,6 +24,7 @@ void TableModelAnovaDesign::bindTo(Option *option)
 
 	if (_boundTo != NULL)
 	{
+		emit designChanging();
 		_groups = _boundTo->value();
 		refresh();
 		emit designChanged();
@@ -236,6 +237,8 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 	if (row.isHypothetical() == false && row.text() == tq(value))
 		return;
 
+	emit designChanging();
+
 	if (row.isHeading())
 	{
 		QString originalName = tq(value).trimmed();
@@ -341,6 +344,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 
 	refresh();
 	_boundTo->setValue(_groups);
+
 	emit designChanged();
 }
 
@@ -352,7 +356,10 @@ void TableModelAnovaDesign::deleteRow(int rowNo)
 	{
 		return;
 	}
-	else if (row.isHeading())
+
+	emit designChanging();
+
+	if (row.isHeading())
 	{
 		if (_groups.size() > 1)
 		{
@@ -411,6 +418,7 @@ void TableModelAnovaDesign::deleteRow(int rowNo)
 
 	refresh();
 	_boundTo->setValue(_groups);
+
 	emit designChanged();
 }
 

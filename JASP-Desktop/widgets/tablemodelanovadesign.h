@@ -37,6 +37,7 @@ public:
 	QList<Factor> design();
 
 signals:
+	void designChanging();
 	void designChanged();
 	void factorAdded(Terms term);
 	void factorRemoved(Terms term);

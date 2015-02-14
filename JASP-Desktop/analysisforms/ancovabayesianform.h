@@ -32,6 +32,10 @@ private:
 	TableModelAnovaModel *_anovaModel;
 
 	TableModelVariablesAvailable *_factorsAvailableListModel;
+
+private slots:
+	void factorsChanging();
+	void factorsChanged();
 };
 
 #endif // ANCOVABAYESIANFORM_H

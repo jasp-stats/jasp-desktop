@@ -39,9 +39,12 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
 
+	connect(_betweenSubjectsFactorsListModel, SIGNAL(factorsChanging()), this, SLOT(factorsChanging()));
+	connect(_betweenSubjectsFactorsListModel, SIGNAL(factorsChanged()), this, SLOT(factorsChanged()));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
+	connect(_designTableModel, SIGNAL(designChanging()), this, SLOT(factorsChanging()));
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
 	connect(_designTableModel, SIGNAL(factorAdded(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
 	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
@@ -77,6 +80,8 @@ void AnovaRepeatedMeasuresBayesianForm::bindTo(Options *options, DataSet *dataSe
 void AnovaRepeatedMeasuresBayesianForm::withinSubjectsDesignChanged()
 {
 	_withinSubjectCellsListModel->setDesign(_designTableModel->design());
+
+	factorsChanged();
 }
 
 void AnovaRepeatedMeasuresBayesianForm::anovaDesignTableClicked(QModelIndex index)
@@ -85,4 +90,16 @@ void AnovaRepeatedMeasuresBayesianForm::anovaDesignTableClicked(QModelIndex inde
 
 	if (index.column() == 1)
 		_designTableModel->removeRow(index.row());
+}
+
+void AnovaRepeatedMeasuresBayesianForm::factorsChanging()
+{
+	if (_options != NULL)
+		_options->blockSignals(true);
+}
+
+void AnovaRepeatedMeasuresBayesianForm::factorsChanged()
+{
+	if (_options != NULL)
+		_options->blockSignals(false);
 }

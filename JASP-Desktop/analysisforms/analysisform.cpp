@@ -19,6 +19,9 @@ AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 {
 	setObjectName(name);
 	_mainVariables = NULL;
+
+	_options = NULL;
+	_dataSet = NULL;
 }
 
 void AnalysisForm::bindTo(Options *options, DataSet *dataSet)

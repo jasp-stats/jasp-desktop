@@ -44,10 +44,12 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->modelTerms->setModel(_anovaModel);
 	connect(_anovaModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
 
+	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_fixedFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
 	connect(_fixedFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
+	connect(_randomFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addRandomFactors(Terms)));
 	connect(_randomFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
@@ -102,10 +104,18 @@ void AnovaForm::bindTo(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::bindTo(options, dataSet);
 
+	factorsChanging();
+
 	_anovaModel->setVariables(_fixedFactorsListModel->assigned(), _randomFactorsListModel->assigned());
 
 	factorsChanged();
 	termsChanged();
+}
+
+void AnovaForm::factorsChanging()
+{
+	if (_options != NULL)
+		_options->blockSignals(true);
 }
 
 void AnovaForm::factorsChanged()
@@ -119,6 +129,9 @@ void AnovaForm::factorsChanged()
     _plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 
 	ui->postHocTests_variables->setVariables(factorsAvailable);
+
+	if (_options != NULL)
+		_options->blockSignals(false);
 }
 
 void AnovaForm::termsChanged()
