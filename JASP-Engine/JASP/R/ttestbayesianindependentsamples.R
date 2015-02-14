@@ -316,13 +316,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	footnotes <- .newFootnotes()
 	
-	levels <- NULL
-	
-	if (perform == "init")
-		levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
-	if (is.null(levels))
-		levels <- base::unique(dataset[[ .v(options$groupingVariable) ]])
-	
+	levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
+
 	if (length(levels) != 2) {
 	
 		g1 <- "1"
