@@ -221,7 +221,7 @@ void Engine::sendResults()
 
 int Engine::callback(const string &results)
 {
-	if (receiveMessages())
+	if (receiveMessages() || _status == empty)
 	{
 		return 1; // abort analysis
 	}
