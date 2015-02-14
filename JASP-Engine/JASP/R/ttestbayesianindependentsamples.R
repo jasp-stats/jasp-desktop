@@ -107,7 +107,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 		
 		results[["plots"]] <- plots.ttest
-		#results[["descriptives"]][["status"]] <- "complete"
+		# results[["descriptives"]][["status"]] <- "complete"
 		
 		
 		if (callback(results) != 0) 
@@ -175,10 +175,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 							if (errorMessage == "not enough data") {
 					
-								errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 							} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
 					
-								errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 							}
 					
 							plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
@@ -428,7 +428,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 							# errorMessage <- "BayesFactor is one divided by infinity: plotting not possible"
 							status[rowNo] <- "error"
-							plottingError[rowNo] <- "Plotting is not possible: BayesFactor is one divided by infinity"
+							plottingError[rowNo] <- "Plotting is not possible: The Bayes factor is too small"
 						}
 					}
 					

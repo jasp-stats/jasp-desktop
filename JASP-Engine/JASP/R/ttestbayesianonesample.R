@@ -2290,7 +2290,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				} else if (is.infinite(1 / bf.raw)) {
 				
 					status[i] <- "error"
-					plottingError[i] <- "Plotting is not possible: BayesFactor is one divided by infinity"
+					plottingError[i] <- "Plotting is not possible: The Bayes factor is too small"
 				}
 				
 				ind <- which(variableData == variableData[1])
@@ -2356,10 +2356,10 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						
 						if (errorMessage == "not enough data") {
 						
-								errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 						} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
 						
-							errorMessage <- "Plotting is not possible: Too few posterior samples in tested interval"
+							errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 						}
 						
 						plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
