@@ -172,6 +172,7 @@ void TableModelAnovaModel::addFixedFactors(const Terms &terms)
 	Terms existingTerms = _terms;
 
 	Terms newTerms = _terms;
+	newTerms.discardWhatDoesContainTheseComponents(_randomFactors);
 	newTerms.discardWhatDoesContainTheseComponents(_covariates);
 	existingTerms.add(newTerms.ffCombinations(terms));
 
@@ -185,13 +186,10 @@ void TableModelAnovaModel::addRandomFactors(const Terms &terms)
 	_randomFactors.add(terms);
 	_variables.add(terms);
 
-	Terms existingTerms = _terms;
-
 	Terms newTerms = _terms;
-	newTerms.discardWhatDoesContainTheseComponents(_covariates);
-	existingTerms.add(newTerms.ffCombinations(terms));
+	newTerms.add(terms);
 
-	setTerms(existingTerms);
+	setTerms(newTerms, true);
 
 	emit variablesAvailableChanged();
 }
@@ -374,7 +372,7 @@ OptionVariables *TableModelAnovaModel::termOptionFromRow(Options *row)
 	return static_cast<OptionVariables *>(row->get(0));
 }
 
-void TableModelAnovaModel::setTerms(const Terms &terms)
+void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance)
 {
 	_terms.set(terms);
 
@@ -383,19 +381,90 @@ void TableModelAnovaModel::setTerms(const Terms &terms)
 
 	beginResetModel();
 
-	BOOST_FOREACH(Options *row, _rows)
-		delete row;
+	Terms::const_iterator itr;
+	vector<Options *>::iterator otr;
 
-	_rows.clear();
+	otr = _rows.begin();
 
-	BOOST_FOREACH(const Term &term, _terms.terms())
+	while (otr != _rows.end())
 	{
-		(void)_terms;
-		Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
-		OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
-		termCell->setValue(term.scomponents());
+		Options *row = *otr;
+		OptionVariables *termCell = termOptionFromRow(row);
+		Term existingTerm = Term(termCell->variables());
 
-		_rows.push_back(row);
+		bool shouldRemove = true;
+
+		itr = terms.begin();
+
+		while (itr != terms.end())
+		{
+			const Term &term = *itr;
+
+			if (term == existingTerm)
+			{
+				shouldRemove = false;
+				break;
+			}
+
+			itr++;
+		}
+
+		if (shouldRemove)
+		{
+			_rows.erase(otr);
+			delete row;
+		}
+		else
+		{
+			otr++;
+		}
+	}
+
+	itr = terms.begin();
+
+	for (int i = 0; i < terms.size(); i++)
+	{
+		const Term &term = *itr;
+
+		if (i < _rows.size())
+		{
+			otr = _rows.begin();
+			otr += i;
+			Options *row = *otr;
+			OptionVariables *termCell = termOptionFromRow(row);
+			Term existingTerm = Term(termCell->variables());
+
+			if (existingTerm != term)
+			{
+				Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
+				OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
+				termCell->setValue(term.scomponents());
+
+				if (row->size() > 1 && newTermsAreNuisance)
+				{
+					OptionBoolean *nuisance = static_cast<OptionBoolean *>(row->get(1));
+					nuisance->setValue(true);
+				}
+
+				_rows.insert(otr, row);
+			}
+		}
+		else
+		{
+			Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
+			OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
+			termCell->setValue(term.scomponents());
+
+			if (row->size() > 1 && newTermsAreNuisance)
+			{
+				OptionBoolean *nuisance = static_cast<OptionBoolean *>(row->get(1));
+				nuisance->setValue(true);
+			}
+
+			_rows.push_back(row);
+		}
+
+		itr++;
 	}
 
 	_boundTo->setValue(_rows);

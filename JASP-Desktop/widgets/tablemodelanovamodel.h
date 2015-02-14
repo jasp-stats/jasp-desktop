@@ -63,7 +63,7 @@ protected:
 
 	static OptionVariables* termOptionFromRow(Options *row);
 
-	void setTerms(const Terms &terms);
+	void setTerms(const Terms &terms, bool newTermsAreNuisance = false);
 
 	void clear();
 	void assign(const Terms &terms);

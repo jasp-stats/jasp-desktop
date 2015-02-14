@@ -115,6 +115,11 @@ bool Term::operator==(const Term &other) const
 	return components() == other.components();
 }
 
+bool Term::operator!=(const Term &other) const
+{
+	return this->operator==(other) == false;
+}
+
 size_t Term::size() const
 {
 	return _components.size();
