@@ -213,6 +213,10 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 				BOOST_FOREACH(double value, column.AsDoubles)
 				{
 					(void)column;
+
+					if (isnan(value))
+						continue;
+
 					int intValue = (int)(value * 1000);
 					uniqueValues.insert(intValue);
 				}
@@ -223,7 +227,9 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 
 				BOOST_FOREACH(int value, uniqueValues)
 				{
+					(void)value;
 					(void)uniqueValues;
+
 					valueToIndex[value] = index;
 
 					stringstream ss;
