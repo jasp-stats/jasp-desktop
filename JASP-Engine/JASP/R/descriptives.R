@@ -242,7 +242,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 		if (central.tendency[["mean"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 			
 				if (perform == "run")
 					variable.results[["Mean"]] <- .clean(mean(na.omitted))
@@ -257,7 +257,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (central.tendency[["median"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 
 				if (perform == "run")			
 					variable.results[["Median"]] <- .clean(median(na.omitted))
@@ -272,7 +272,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (central.tendency[["mode"]]) {
 	
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 		
 				if (perform == "run") {
 
@@ -305,7 +305,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (central.tendency[["sum"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 
 				if (perform == "run")
 					variable.results[["Sum"]] <- .clean(sum(na.omitted))
@@ -320,7 +320,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (dispersion[["maximum"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 
 				if (perform == "run")			
 					variable.results[["Maximum"]] <- .clean(max(na.omitted))
@@ -335,7 +335,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (dispersion[["minimum"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 			
 				if (perform == "run")
 					variable.results[["Minimum"]] <- .clean(min(na.omitted))
@@ -350,7 +350,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (dispersion[["range"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 
 				if (perform == "run")			
 					variable.results[["Range"]] <- .clean(range(na.omitted)[2]-range(na.omitted)[1])
@@ -365,7 +365,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (dispersion[["standardDeviation"]]) {
 		
-			if (class(na.omitted) != "factor"){
+			if (base::is.factor(na.omitted) == FALSE){
 			
 				if (perform == "run")
 					variable.results[["Std. Deviation"]] <- .clean(sd(na.omitted))
@@ -380,7 +380,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (dispersion[["standardErrorMean"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 
 				if (perform == "run")
 					variable.results[["Std. Error of Mean"]] <- .clean(sd(na.omitted)/sqrt(length(na.omitted)))
@@ -395,7 +395,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (dispersion[["variance"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 
 				if (perform == "run")
 					variable.results[["Variance"]] <- .clean(var(na.omitted))
@@ -410,7 +410,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (distribution[["kurtosis"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 
 				if (perform == "run") {
 				
@@ -431,7 +431,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (distribution[["skewness"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 			
 				if (perform == "run") {
 				
@@ -453,7 +453,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (percentileValues[["quartiles"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 			
 				if (perform == "run") {
 				
@@ -478,7 +478,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		if (percentileValues[["equalGroups"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 			
 				if (perform == "run") {
 			
@@ -501,7 +501,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 		if (percentileValues[["percentiles"]]) {
 		
-			if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 			
 				if (perform == "run") {
 			
@@ -540,7 +540,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 			column <- dataset[[ .v(variable) ]]
 		
-			if (class(column) != "factor")
+			if (base::is.factor(column) == FALSE)
 				next		
 			
 			frequency.table <- list()
