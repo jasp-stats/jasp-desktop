@@ -368,6 +368,8 @@ void Terms::set(QByteArray &array)
 	int count;
 	stream >> count;
 
+	clear();
+
 	while ( ! stream.atEnd())
 	{
 		QString variable;
