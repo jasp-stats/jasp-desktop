@@ -16,6 +16,9 @@ $(document).ready(function() {
     var introVisible = true
     var introHiding  = false
     var introHidingResultsWaiting = [ ]
+    
+	var $instructions = $("#instructions")
+    var showInstructions = false;
 
 	window.select = function(id) {
 
@@ -32,6 +35,18 @@ $(document).ready(function() {
 
 		analysis.addClass("selected").removeClass("unselected")
 		$("body").addClass("selected")
+	}
+	
+	window.showInstructions = function() {
+	
+		showInstructions = true
+	}
+	
+	window.hideInstructions = function() {
+	
+		showInstructions = false
+		
+		$instructions.slideUp(400, "easeOutCubic")
 	}
 	
 	window.scrollIntoView = function(item) {
@@ -58,6 +73,9 @@ $(document).ready(function() {
 
 		selectedAnalysisId = -1
 		selectedAnalysis = null
+		
+		if (showInstructions)
+			hideInstructions()
 	}
 
 	window.remove = function(id) {
@@ -66,6 +84,9 @@ $(document).ready(function() {
 
 		var analysis = $('#id-' + id)
 		analysis.remove()
+		
+		if (showInstructions)
+			hideInstructions()
 	}
 
 	window.unselectByClickingBody = function(event) {
@@ -74,6 +95,9 @@ $(document).ready(function() {
 	
 			window.unselect()
 			jasp.analysisUnselected()
+			
+			if (showInstructions)
+				hideInstructions()
 		}
 	}
 
@@ -128,6 +152,9 @@ $(document).ready(function() {
 			
 			return
 		}
+		
+		if (showInstructions)
+			$instructions.show()
 
         var id = "id-" + analysis.id
 		var results = analysis.results

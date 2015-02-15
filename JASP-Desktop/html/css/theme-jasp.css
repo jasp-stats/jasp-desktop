@@ -207,7 +207,7 @@ svg > text
 	border-radius : 2px ;
 }
 
-.jasp-analysis-inner {
+#instructions, .jasp-analysis-inner {
 
 	margin: .7em ;
 	padding: 1em ;

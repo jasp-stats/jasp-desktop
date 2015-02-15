@@ -62,6 +62,7 @@ private:
 
 	int _tableViewWidthBeforeOptionsMadeVisible;
 
+	QSettings _settings;
 	ActivityLog log;
 
 signals:

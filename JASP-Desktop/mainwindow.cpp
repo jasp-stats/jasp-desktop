@@ -200,6 +200,19 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
+	static bool showInstructions = true;
+
+	if (showInstructions)
+	{
+		if (_settings.value("instructionsShown", false).toBool() == false)
+		{
+			_settings.setValue("instructionsShown", true);
+			ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.showInstructions()");
+		}
+
+		showInstructions = false;
+	}
+
 	QString results = tq(analysis->asJSON().toStyledString());
 
 	results = results.replace("'", "\\'");
@@ -461,8 +474,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 
 void MainWindow::updateUIFromOptions()
 {
-	QSettings settings;
-	QVariant sem = settings.value("plugins/sem", false);
+	QVariant sem = _settings.value("plugins/sem", false);
 	if (sem.canConvert(QVariant::Bool) && sem.toBool())
 	{
 		ui->tabBar->addTab("SEM");
