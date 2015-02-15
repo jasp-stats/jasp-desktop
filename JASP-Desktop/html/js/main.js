@@ -46,7 +46,9 @@ $(document).ready(function() {
 	
 		showInstructions = false
 		
-		$instructions.slideUp(400, "easeOutCubic")
+		$instructions.animate({opacity: 0}, 400, "easeOutCubic", function() {
+			$instructions.slideUp()
+		})
 	}
 	
 	window.scrollIntoView = function(item) {
@@ -58,10 +60,20 @@ $(document).ready(function() {
 
 		//console.log(itemTop, itemBottom, windowTop, windowBottom)
 
-		if (itemTop < windowTop && itemBottom < windowBottom)
-			$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
-		else if (itemBottom > windowBottom && item.height() < window.innerHeight)
-			$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing'});
+		if (item.height() < window.innerHeight) {
+
+			if (itemTop < windowTop)
+				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
+			else if (itemBottom > windowBottom)
+				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing'});
+		}
+		else
+		{
+			if (itemTop > windowTop)
+				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
+			else if (itemBottom < windowBottom)
+				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing'});
+		}
 	
 	}
 
@@ -83,7 +95,11 @@ $(document).ready(function() {
 		window.unselect()
 
 		var analysis = $('#id-' + id)
-		analysis.remove()
+		
+		analysis.animate({opacity: 0}, 400, "easeOutCubic", function() {
+		
+			analysis.slideUp(400)
+		})
 		
 		if (showInstructions)
 			hideInstructions()
@@ -152,9 +168,9 @@ $(document).ready(function() {
 			
 			return
 		}
-		
+
 		if (showInstructions)
-			$instructions.show()
+			$instructions.fadeIn(400, "easeOutCubic")
 
         var id = "id-" + analysis.id
 		var results = analysis.results
@@ -187,7 +203,9 @@ $(document).ready(function() {
 		else
 		{
 			var spacer = $("#spacer")
+			newItem.css("opacity", 0)
 			spacer.before(newItem)
+			newItem.animate({"opacity" : 1}, 400, "easeOutCubic")
 		}
 
 		item = newItem
