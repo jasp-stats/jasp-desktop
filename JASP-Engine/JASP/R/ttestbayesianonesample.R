@@ -346,7 +346,7 @@
 
 .plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE,
  lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6, cexTextBF= 1.4, cexText=1.2, cexLegend= 1.2, cexEvidence= 1.6,
- lwdAxis= 1.2, plotDifferentPriors= FALSE, BFH1H0= TRUE) {
+ lwdAxis= 1.2, plotDifferentPriors= FALSE, BFH1H0= TRUE, dontPlotData= FALSE) {
 	
 	#### settings ####
 	
@@ -383,6 +383,53 @@
 		nullInterval <- c(-Inf, 0)
 	}
 	
+	
+	par(mar= c(5.6, 6, 7, 7) + 0.1, las=1)
+	
+	if (dontPlotData) {
+	
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
+		
+		mtext("n", side = 1, cex = cexXlab, line= 2.5)
+		
+		if (oneSided == FALSE) {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYlab, line= 3.1)
+			} else {
+				
+				mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYlab, line= 3.1)
+			}
+		}
+		
+		if (oneSided == "right") {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF["+"][0]), side = 2, las=0, cex = cexYlab, line= 3.1)
+			} else {
+				
+				mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYlab, line= 3.1)
+			}
+		}
+		
+		if (oneSided == "left") {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF["-"][0]), side = 2, las=0, cex = cexYlab, line= 3.1)
+			} else {
+				
+				mtext(text = expression(BF[0]["-"]), side = 2, las=0, cex = cexYlab, line= 3.1)
+			}			
+		}
+	
+		return()
+	}
 	
 	
 	BF10 <- vector("numeric", max(length(x), length(y)))
@@ -819,8 +866,6 @@
 	
 	####################### plot ###########################
 	
-	par(mar= c(5.6, 6, 7, 7) + 0.1, las=1)
-	
 	xLab <- pretty(c(0, length(BF10)+2))
 	xlim <- range(xLab)
 	ylow <- log(eval(parse(text= yLab[1])))
@@ -1247,7 +1292,7 @@
 
 		
 .plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
- cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE) { 
+ cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, dontPlotData= FALSE) { 
 	
 	#### settings ####
 	if (rscale == "medium") {
@@ -1271,6 +1316,55 @@
 	}
 	if (oneSided == "left") {
 		nullInterval <- c(-Inf, 0)
+	}
+	
+	
+	par(mar= c(5, 6, 6, 7) + 0.1, las=1)
+	
+	if (dontPlotData) {
+	
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
+		
+		
+		if (oneSided == FALSE) {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			} else {
+				
+				mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			}
+		}
+		
+		if (oneSided == "right") {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF["+"][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			} else {
+				
+				mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			}
+		}
+		
+		if (oneSided == "left") {
+			
+			if (BFH1H0) {
+				
+				mtext(text = expression(BF["-"][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			} else {
+				
+				mtext(text = expression(BF[0]["-"]), side = 2, las=0, cex = cexYXlab, line= 3.1)
+			}			
+		}
+	
+		mtext("Cauchy prior width", side = 1, cex = cexYXlab, line= 2.5)
+	
+		return()
 	}
 	
 	#### get BFs ###
@@ -1656,8 +1750,6 @@
 	}	
 	
 	####################### plot ###########################
-	
-	par(mar= c(5, 6, 6, 7) + 0.1, las=1)
 	
 	xLab <- c(0, 0.25, 0.5, 0.75, 1, 1.25, 1.5)
 	xlim <- range(xLab)
@@ -2182,9 +2274,24 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["status"]] <- "running"
 			
 			image <- .beginSaveImage(530, 400)
-			.plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
+			.plotPosterior.ttest(x=NULL, y=NULL, paired=FALSE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
 			plot[["data"]] <- .endSaveImage(image)
 						
+			plots.ttest[[length(plots.ttest)+1]] <- plot
+		}
+		
+		if (options$plotBayesFactorRobustness){
+			plot <- list()
+			
+			plot[["title"]] <- variable
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["status"]] <- "running"
+			
+			image <- .beginSaveImage(530, 400)
+			.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+			plot[["data"]] <- .endSaveImage(image)
+			
 			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
 		
@@ -2196,23 +2303,15 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			plot[["height"]] <- 400
 			plot[["status"]] <- "running"
 			
-			plots.ttest[[length(plots.ttest)+1]] <- plot
-		}
-		
-		if (options$plotBayesFactorRobustness){
-			plot <- list()
+			image <- .beginSaveImage(530, 400)
+			.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+			plot[["data"]] <- .endSaveImage(image)
 			
-			plot[["title"]] <- variable
-			plot[["width"]]  <- 530
-			plot[["height"]] <- 400
-			plot[["status"]] <- "running"
-						
 			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
 	}
 	
 	ttest[["data"]] <- ttest.rows
-	ttest[["status"]] <- "complete"
 	results[["ttest"]] <- ttest
 	results[["plots"]] <- plots.ttest
 	
@@ -2247,9 +2346,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				list(Variable=variable, BF=BF, error=error)
 			})
 			
-			print(result)
-			
-			print(class(result))
 			
 			if (class(result) == "try-error") {
 				
@@ -2318,7 +2414,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		results[["ttest"]] <- ttest
 		
 		if(callback() != 0)
-					return()
+			return()
 				
 		if (callback(results) != 0)
 					return()
