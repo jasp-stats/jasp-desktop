@@ -135,6 +135,10 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
 			plot[["status"]] <- "waiting"
+			
+			image <- .beginSaveImage(530, 400)
+			.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+			plot[["data"]] <- .endSaveImage(image)
 						
 			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
@@ -147,6 +151,10 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
 			plot[["status"]] <- "waiting"
+			
+			image <- .beginSaveImage(530, 400)
+			.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+			plot[["data"]] <- .endSaveImage(image)
 						
 			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}

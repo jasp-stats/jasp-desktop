@@ -41,13 +41,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
 
 	results[["ttest"]] <- ttest.results[[1]]
-	results[["ttest"]][["status"]] <- "complete"
 	status <- ttest.results[[2]]
 	g1 <- ttest.results[[3]]
 	g2 <- ttest.results[[4]]
 	BFH1H0 <- ttest.results[[5]]
 	plottingError <- ttest.results[[6]]
-	
 	
 	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
 	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
@@ -58,6 +56,18 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
 	
+	if (options$hypothesis == "groupOneGreater") {
+	
+		oneSided <- "right"
+	
+	} else if (options$hypothesis == "groupTwoGreater") {
+		  
+		oneSided <- "left"
+	
+	} else {
+	
+		oneSided <- FALSE
+	}	
 	
 	plots.ttest <- list()
 	
@@ -82,6 +92,21 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				q <- q + 1
 			}
 			
+			if (options$plotBayesFactorRobustness) {
+				plot <- list()
+				
+				plot[["title"]] <- variable
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				
+				image <- .beginSaveImage(530, 400)
+				.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+				plot[["data"]] <- .endSaveImage(image)
+				
+				plots.ttest[[q]] <- plot
+				q <- q + 1
+			}
+			
 			if (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness) {
 				plot <- list()
 				
@@ -90,17 +115,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["height"]] <- 400
 				plot[["status"]] <- "running"
 				
-				plots.ttest[[q]] <- plot
-				q <- q + 1
-			}
-			
-			if (options$plotBayesFactorRobustness) {
-				plot <- list()
+				image <- .beginSaveImage(530, 400)
+				.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+				plot[["data"]] <- .endSaveImage(image)
 				
-				plot[["title"]] <- variable
-				plot[["width"]]  <- 530
-				plot[["height"]] <- 400
-								
 				plots.ttest[[q]] <- plot
 				q <- q + 1
 			}
@@ -133,20 +151,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 				group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g1,.v(variable)] 
 				group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g2,.v(variable)] 
-				
-				
-				if (options$hypothesis == "groupOneGreater") {
-				
-					oneSided <- "right"
-				
-				} else if (options$hypothesis == "groupTwoGreater") {
-		
-					oneSided <- "left"
-				
-				} else {
-				
-					oneSided <- FALSE
-				}				
 				
 				
 				numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, any(options$plotSequentialAnalysis, options$plotSequentialAnalysisRobustness))
@@ -506,10 +510,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				rowNo <- rowNo + 1
 			}
 		}
+		
+		ttest[["status"]] <- "complete"
 	}
 	
 	ttest[["footnotes"]] <- as.list(footnotes)	
 	ttest[["data"]] <- ttest.rows
+	
 	
 	
 	list(ttest, status, g1, g2, BFH1H0, plottingError)
