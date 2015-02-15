@@ -238,11 +238,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	results <- list()
 	
 	meta <- list(
+		list(name="title", type="title"),
 		list(name="correlations", type="table"),
-		list(name="plots", type="images")
-		)
+		list(name="plots", type="images"))
 	
 	results[[".meta"]] <- meta
+	
+	results[["title"]] <- "Correlation Matrix"
 	
 	frequency.plots <- list()
 	
