@@ -573,7 +573,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		model.def <- paste(.v(options$dependent), "~", rhs)
 		model.formula <- as.formula(model.def)
 		all.models <- BayesFactor::enumerateGeneralModels(model.formula,
-			whichModels = "withmain", neverExclude = paste("\\^",terms.nuisance,"\\$", sep = ""))
+			whichModels = "withmain", neverExclude = paste("^",terms.nuisance,"$", sep = ""))
 	}
 
 
@@ -586,7 +586,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 .estimateBayesFactorBayesianAnCova <- function( mode, model.formula, dataset, terms.nuisance, options, jasp.callback ){
 
 	result <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = mode,
-		neverExclude = paste("\\^",terms.nuisance,"\\$", sep = ""), whichRandom = .v(options$randomFactors),
+		neverExclude = paste("^",terms.nuisance,"$", sep = ""), whichRandom = .v(options$randomFactors),
 		progress=FALSE, callback=jasp.callback)
 
 	if (length(terms.nuisance) > 0) {
