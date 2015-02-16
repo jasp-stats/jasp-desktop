@@ -347,6 +347,21 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 						error.present <- 1
 						specific.error <- "lower order effects"
 					}
+					if(options$modelTerms[[i]]$isNuisance){
+						chck.trms <- sapply(smpl.trms,function(simple.terms){
+							cmpnnts <- paste(unlist(simple.terms), collapse=":")
+				    		cmpnnts <- as.character(sapply(cmpnnts, stringr::str_trim, simplify=FALSE))
+							nsnc <- sapply(cmpnnts,function(cmpnnt){
+								j <- which(trms == cmpnnt)
+								options$modelTerms[[j]]$isNuisance
+							})
+							sum(nsnc)
+						})
+						if(sum(chck.trms) != choose(lngth,lngth-1)){
+							error.present <- 1
+							specific.error <- "lower order effects nuisance"
+						}
+					}					
 					if(error.present > 0)
 						break
 				}
@@ -512,6 +527,10 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		table[["error"]] <- list(errorType="badData", errorMessage="Bayes Factor is undefined -- there are too few observations to estimate all specified effects (possibly only after rows with missing values are excluded)")
 	}
 
+	if (specific.error == "lower order effects nuisance"){
+		table[["error"]] <- list(errorType="badData", errorMessage="The main effects and lower order interactions of variables must be specified as nuisance whenever their corresponding higher order interactions are specified as nuisance")
+	}
+
 	if (specific.error == "lower order effects"){
 		table[["error"]] <- list(errorType="badData", errorMessage="The main effects and lower order interactions of variables must be included whenever their corresponding higher order interactions are included")
 	}
@@ -632,7 +651,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 				model.name <- paste(model.components, collapse = " + ")
 				model.name <- .unvf(model.name)
 			}
-#list("Effects"=paste(term$components, 					collapse="\u2009\u273B\u2009"))
 
 			BFM <- .clean(BFmodels[n])
 			if (length(options$randomFactors) == 0 && length(options$covariates) == 0) {
