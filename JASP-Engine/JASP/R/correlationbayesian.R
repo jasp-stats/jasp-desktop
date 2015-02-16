@@ -154,11 +154,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# create footnote function
 	footnotes <- .newFootnotes()
 	if (flagSupported) {
-		if (hypothesis == "correlated") {
-			.addFootnote(footnotes, paste(bf.title, " > 3, ** , ", bf.title, " > 10, *** ", bf.title, " > 30"), symbol="*")
-		} else {
-			.addFootnote(footnotes, paste(bf.title, " > 3, ** , ", bf.title, " > 10, *** ", bf.title, " > 30, all one-tailed"), symbol="*")
-		}
+		.addFootnote(footnotes, paste(bf.title, " > 10, ** , ", bf.title, " > 30, *** ", bf.title, " > 100"), symbol="*")
 	}
 	v.c <- length(variables)
 	if (v.c > 0) {
@@ -262,11 +258,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						
 						row[[length(row)+1]] <- .clean(some.r)
 						if (flagSupported && is.na(some.bf) == FALSE) {
-							if (some.bf > 30) {
+							if (some.bf > 100) {
 								row.footnotes[[column.name]] <- list("***")
-							} else if (some.bf > 10) {
+							} else if (some.bf > 30) {
 								row.footnotes[[column.name]] <- list("**")
-							} else if (some.bf > 3) {
+							} else if (some.bf > 10) {
 								row.footnotes[[column.name]] <- list("*")
 							}
 						}
