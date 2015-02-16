@@ -146,7 +146,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	## Create Profile Plots
 	
-	results[["profilePlot"]] <- .anovaProfilePlot(dataset, options, perform, status)
+	result <- .anovaProfilePlot(dataset, options, perform, status)
+	results[["profilePlot"]] <- result$result
+	status <- result$status
 	
 	if (options$horizontalAxis != "")
 	    results[["headerProfilePlot"]] <- "Profile Plot(s)"
@@ -1011,7 +1013,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
     profilePlotList <- list()
             
-    if (perform == "run" && status$ready && options$horizontalAxis != "" && options$dependent != "") {
+    if (perform == "run" && status$ready && !status$error && options$horizontalAxis != "" && options$dependent != "") {
         
         groupVars <- c(options[["horizontalAxis"]], options[["seperateLines"]], options[["seperatePlots"]])
         groupVars <- groupVars[groupVars != ""]
@@ -1174,10 +1176,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	        profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
 	        profilePlot[["data"]] <- ""
 	        
+	        if (status$error)
+			    profilePlot[["error"]] <- list(errorType="badData")
+	        
 	        profilePlotList[[i]] <- profilePlot
 	    }
         
     }
     
-    profilePlotList
+    list(result=profilePlotList, status=status)
 }
