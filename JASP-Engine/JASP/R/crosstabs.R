@@ -543,7 +543,7 @@
 				row[["df[chiSquared]"]]<- " "
 				row[["p[chiSquared]"]]<- " "
 				
-				message <- "\u03A7\u00B2 could not be calculated - At least one row or column contains all zeros "
+				message <- "\u03A7\u00B2 could not be calculated - At least one row or column contains all zeros"
 				
 				#sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
 				#row.footnotes[["value[oddsRatio]"]]=list(sup)
