@@ -30,16 +30,20 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	.meta <- list(
 	    list(name="title", type="title"),
 		list(name="anova", type="table"),
+		list(name="headerLevene", type="h1"),
 		list(name="levene", type="table"),
+		list(name="headerContrasts", type="h1"),
 		list(name="contrasts", type="tables"),
+		list(name="headerPosthoc", type="h1"),
 		list(name="posthoc", type="tables"),
+		list(name="headerDescriptives", type="h1"),
 		list(name="descriptives", type="table"),
+		list(name="headerProfilePlot", type="h1"),
 		list(name="profilePlot", type="images")
 	)
 
 	results[[".meta"]] <- .meta
-	
-	
+
 	
 	## Create Title
 	
@@ -86,23 +90,35 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 		
 				
-	## Create Contrasts Table
+	## Create Contrasts Tables
 	
 	result <- .anovaContrastsTable(dataset, options, perform, model, status)
 	
 	results[["contrasts"]] <- result$result
 	status <- result$status
 	
+	if (!is.null(results[["contrasts"]]))
+	    results[["headerContrasts"]] <- "Contrasts"
+	
 
 	
-	## Create Post Hoc Table
+	## Create Post Hoc Tables
 	
 	result <- .anovaPostHocTable(dataset, options, perform, status)
 	
 	results[["posthoc"]] <- result$result
 	status <- result$status
 	
+	if (!is.null(unlist(results[["posthoc"]])))
+	    results[["headerPosthoc"]] <- "Post-Hoc Tests"
+	
 
+
+	## Create Marginal Means Table
+	
+#	result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular)
+	
+	
 	
 	## Create Descriptives Table
 	
@@ -110,6 +126,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	results[["descriptives"]] <- result$result
 	status <- result$status
+	
+	if (!is.null(results[["descriptives"]]))
+	    results[["headerDescriptives"]] <- "Descriptives"
 	
 
 
@@ -120,11 +139,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	results[["levene"]] <- result$result
 	status <- result$status
 	
+	if (!is.null(results[["levene"]]))
+	    results[["headerLevene"]] <- "Levene's Test"
+	
 	
 	
 	## Create Profile Plots
 	
 	results[["profilePlot"]] <- .anovaProfilePlot(dataset, options, perform, status)
+	
+	if (options$horizontalAxis != "")
+	    results[["headerProfilePlot"]] <- "Profile Plot(s)"
 	
 	results
 }
@@ -969,6 +994,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	list(result=levenes.table, status=status)
 }
+
+#.anovaMarginalMeans <- function(dataset, options, perform, model, status, singular) {
+#    
+#    marginalMeans <- list()
+#        
+#    for (term in options$marginalMeans$terms) {
+#        print(term)
+#        marginalMeans[[i]] <- effects::effect(.v(term), model)
+#    }
+#
+#}
 
 
 .anovaProfilePlot <- function(dataset, options, perform, status) {
