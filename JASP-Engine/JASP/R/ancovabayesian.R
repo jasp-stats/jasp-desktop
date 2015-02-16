@@ -620,19 +620,19 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			}
 
 			model.name <- models.tab[n]
-
 			if(n > 1 && length(terms.nuisance) > 0) {
+				model.name <- gsub("\u2009\u273B\u2009",":",model.name)
 				model.components <- unlist(strsplit(.vf(model.name), split = "+", fixed = TRUE))
 				model.components <- sapply(model.components, stringr::str_trim, simplify=FALSE)
-				model.componentsV <- unlist(strsplit(model.name, split = " + ", fixed = TRUE))
-				model.componentsV <- sapply(model.componentsV, stringr::str_trim, simplify=FALSE)
 				for(i in length(model.components):1){
 					if(model.components[i] %in% terms.nuisance ){
-						model.componentsV <- model.componentsV[-i]
+						model.components <- model.components[-i]
 					}
 				}
-				model.name <- paste(model.componentsV, collapse=" + ")
+				model.name <- paste(model.components, collapse = " + ")
+				model.name <- .unvf(model.name)
 			}
+#list("Effects"=paste(term$components, 					collapse="\u2009\u273B\u2009"))
 
 			BFM <- .clean(BFmodels[n])
 			if (length(options$randomFactors) == 0 && length(options$covariates) == 0) {
