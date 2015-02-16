@@ -26,11 +26,14 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
-	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
 	ui->modelTerms->hide();
+
+	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(assignmentsChanging()));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(assignmentsChanged()));
+	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
+	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 #ifdef QT_NO_DEBUG
 	// temporary hides until the appropriate R code is implemented
@@ -48,7 +51,25 @@ RegressionLinearBayesianForm::~RegressionLinearBayesianForm()
 	delete ui;
 }
 
+void RegressionLinearBayesianForm:: bindTo(Options *options, DataSet *dataSet)
+{
+	AnalysisForm::bindTo(options, dataSet);
+
+	factorsChanging();
+
+	_anovaModel->setVariables(Terms(), Terms(), _covariatesListModel->assigned());
+
+	factorsChanged();
+}
+
+void RegressionLinearBayesianForm::factorsChanging()
+{
+	if (_options != NULL)
+		_options->blockSignals(true);
+}
+
 void RegressionLinearBayesianForm::factorsChanged()
 {
-	_anovaModel->setVariables(_covariatesListModel->assigned());
+	if (_options != NULL)
+		_options->blockSignals(false);
 }
