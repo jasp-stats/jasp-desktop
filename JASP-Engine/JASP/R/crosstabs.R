@@ -266,7 +266,7 @@
 		
 		oddsratio.table <- list()
 		
-		oddsratio.table[["title"]] <- "Log Odds ratio"
+		oddsratio.table[["title"]] <- "Log Odds Ratio"
 		
 		oddsratio.fields <- fields
 			
@@ -930,6 +930,8 @@
 		}
 	}
 	
+	row.footnotes <- list()
+	
 	if (options$oddsRatio ) {
 	
 		row[["type[oddsRatio]"]] <- "Odds ratio"
@@ -943,7 +945,7 @@
 				row[["up[oddsRatio]"]] <-  ""
 				
 				sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
-				row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+				row.footnotes[["value[oddsRatio]"]]=list(sup)
 				
 			} else {
 			
@@ -966,14 +968,14 @@
 						error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 
 					sup   <- .addFootnote(footnotes, error)
-					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+					row.footnotes[["value[oddsRatio]"]]=list(sup)
 
 				} else if (is.na(chi.result)) {
 
 					row[["value[oddsRatio]"]] <- .clean(NaN)
 
 					sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+					row.footnotes[["value[oddsRatio]"]]=list(sup)
 
 				} else {
 
@@ -1003,7 +1005,7 @@
 				row[["up[FisherTest]"]] <-  ""
 				
 				sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
-				row[[".footnotes"]] <- list("value[FisherTest]"=list(sup))
+				row.footnotes[["value[FisherTest]"]]=list(sup)
 				
 			} else {
 			
@@ -1028,14 +1030,14 @@
 						error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 
 					sup   <- .addFootnote(footnotes, error)
-					row[[".footnotes"]] <- list("value[FisherTest]"=list(sup))
+					row.footnotes[["value[FisherTest]"]]=list(sup)
 
 				} else if (is.na(chi.result)) {
 
 					row[["value[FisherTest]"]] <- .clean(NaN)
 
 					sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-					row[[".footnotes"]] <- list("value[FisherTest]"=list(sup))
+					row.footnotes[["value[FisherTest]"]]=list(sup)
 
 				} else {
 
@@ -1051,6 +1053,8 @@
 	
 		row[["value[FisherTest]"]] <- "."
 	}
+	
+	row[[".footnotes"]] <- row.footnotes
 	
 	
 	list(row)
