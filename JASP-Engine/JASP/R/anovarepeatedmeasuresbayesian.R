@@ -9,7 +9,7 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 	options$outputEffects <- FALSE
 	options$posteriorDistributions <- FALSE
 	options$posteriorEstimates <- FALSE
-
+	options$effectsStepwise <- FALSE
 	#These are the options that we need to build:
 	#options$dependent
 	#options$fixedFactors  		These are the between subject factors as well as the RM factors.
@@ -88,17 +88,25 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 		options$modelTerms[[length(options$modelTerms) + 1]] <- list(components = "subject", isNuisance = TRUE)		
 #end
 		results <- AncovaBayesian(dataset = dataset, options = options, perform = perform, callback = callback)
+
+		results$results$title <- "Bayesian Repeated Measures ANOVA"		
+		results$results$posterior$title <- "Model Comparison"
+		if(options$outputEffects == TRUE){
+			results$results$effect$title <- "Analysis of Effects"
+		}
 	} else {
 		#Create empty table
 		results <- list()
 		meta <- list()
-		meta[[1]] <- list(name="posterior", type="table")
-		meta[[2]] <- list(name="effect", type="table")
+		meta[[1]] <- list(name="title", type="title")
+		meta[[2]] <- list(name="posterior", type="table")
+		meta[[3]] <- list(name="effect", type="table")
 		results[[".meta"]] <- meta
+		results[["title"]] <- "Bayesian Repeated Measures ANOVA"
 
 		posterior <- list()
-		posterior[["title"]] <- "Bayesian ANOVA: Model Comparison"
-		posterior <- list(
+		posterior[["title"]] <- "Model Comparison"
+		posterior[["citation"]] <- list(
 			"Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].",
 			"Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374.")
 
@@ -114,21 +122,21 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 		schema <- list(fields=fields)
 		posterior[["schema"]] <- schema
 		posterior[["data"]] <- list(list("Models" = "Null model"))
+
 		results[["posterior"]] <- posterior
 
 		if(options$outputEffects == TRUE){
 			effect <- list()
-			effect[["title"]] <- "Bayesian ANOVA: Analysis of Effects"
+			effect[["title"]] <- "Analysis of Effects"
+			effect[["citation"]] <- list(
+				"Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].",
+				"Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374.")
 
 			fields <- list(
 				list(name="Effects", type="string"),
 				list(name="P(incl)", type="number", format="sf:4;dp:3"),
 				list(name="P(incl|data)", type="number", format="sf:4;dp:3"),
-				list(name="BF<sub>Inclusion</sub>", type="number", format="sf:4;dp:3"),
-				list(name="BF<sub>Backward</sub>", type="number", format="sf:4;dp:3"),
-				list(name="% errorB", type="number", format="sf:4;dp:3"),
-				list(name="BF<sub>Forward</sub>", type="number", format="sf:4;dp:3"),
-				list(name="% errorF", type="number", format="sf:4;dp:3")
+				list(name="BF<sub>Inclusion</sub>", type="number", format="sf:4;dp:3")
 			)
 
 			schema <- list(fields=fields)
