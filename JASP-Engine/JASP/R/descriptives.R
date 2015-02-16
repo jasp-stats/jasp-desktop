@@ -52,8 +52,19 @@
 
 .barplotJASP <- function(column, variable){
 
-	yticks <- seq(0,max(summary(column)),1)
-	yticks <- pretty(yticks)
+	maxFrequency <- max(summary(column))
+	yticks <- seq(0, maxFrequency, 1)
+	
+	while (length(yticks) > 8) {
+		
+		yticks <- yticks[seq(1,length(yticks), 2)]
+	}
+	
+	while (max(yticks) < maxFrequency) {
+		
+		stepSize <- yticks[2] - yticks[1]
+		yticks <- c(yticks, yticks[length(yticks)] + stepSize)		
+	}
 	
 	yLabs <- vector("character", length(yticks))
 	
