@@ -648,21 +648,13 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			i <- 1
 	
 			for (variable in variables) {
-		
-				column <- dataset[[ .v(variable) ]]
 				
-				if (is.factor(column)) {
+				if (callback(results) != 0)
+					return()
 					
-					column <- na.omit(column)
-					column <- as.character(column)
-					column <- column[column != "NA"]					
-					column <- as.factor(column)
-				} else {
-				
-					column <- column[!is.na(column)]
-				}
-				
-				
+				column <- dataset[[ .v(variable) ]]				
+				column <- na.omit(column)
+								
 				if (length(column) > 0 && is.factor(column) || length(column) > 0 && all(!is.infinite(column)) && all(column %% 1 == 0) && length(unique(column)) <= 24) {
 				
 					if (!is.factor(column)) {
@@ -679,13 +671,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					plot <- frequency.plots[[i]]
 					
 					plot[["data"]]  <- content
+					plot[["status"]] <- "complete"
 					
 					frequency.plots[[i]] <- plot
 										
 				} else if (length(column) > 0 && !is.factor(column) && all(!is.infinite(column))) {
-				
-					if (callback(results) != 0)
-						return()
 				
 					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
 				
@@ -696,6 +686,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					plot <- frequency.plots[[i]]
 					
 					plot[["data"]]  <- content
+					plot[["status"]] <- "complete"
 					
 					frequency.plots[[i]] <- plot
 			
