@@ -355,6 +355,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		return(NULL)
 		
 	levenes <- list()
+	footnotes <- .newFootnotes()
 
 	levenes[["title"]] <- "Test of Inequality of Variances (Levene's)"
 	
@@ -392,12 +393,20 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 				result <- try (silent=TRUE, expr= {
 
 					levene <- car::leveneTest(dataset[[ .v(variable) ]], dataset[[ .v(options$groupingVariable) ]], "mean")
+
+					F  <- .clean(levene[1,"F value"])
+					df <- .clean(levene[1,"Df"])
+					p  <- .clean(levene[1,"Pr(>F)"])
 		
-					F  <- .clean(as.numeric(levene[1,1]))
-					df <- .clean(as.numeric(levene[1,2]))
-					p  <- .clean(as.numeric(levene[1,3]))
-		
-					list(Variable=variable, F=F, df=df, p=p)
+					row <- list(Variable=variable, F=F, df=df, p=p)
+					
+					if (is.na(levene[1,"F value"])) {
+					
+						index <- .addFootnote(footnotes, "F-statistic could not be calculated")
+						row[[".footnotes"]] <- list(F=list(index))
+					}
+					
+					row
 				})
 
 				if (class(result) == "try-error")
@@ -411,6 +420,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	}
 	
 	levenes[["data"]] <- data
+	levenes[["footnotes"]] <- as.list(footnotes)
 
 	levenes
 }
