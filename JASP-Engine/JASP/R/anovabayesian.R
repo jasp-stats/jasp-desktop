@@ -1,12 +1,12 @@
 
 AnovaBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 	
+	options$covariates <- NULL
 
-    options$covariates <- NULL
+	results <- AncovaBayesian(dataset, options, perform, callback)
+	results$results$title <- "Bayesian ANOVA"	
 
-    results <- AncovaBayesian(dataset, options, perform, callback)
-    
-    return(results)
+return(results)
 }
 
 
