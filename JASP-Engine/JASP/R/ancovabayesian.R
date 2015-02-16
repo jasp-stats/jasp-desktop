@@ -250,16 +250,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	specific.error <- "none"
 	error.present <- 0
 
-	# error message when less than two levels are observed for a factor
-	if(perform == "run"){
-		for (fact in options$fixedFactors) {
-			if (length(levels(dataset[[.v(fact)]])) < 2){
-				error.present <- 1
-				specific.error <- "levels"
-			}
-		}
-	}
-
 	# error message when less than two levels are observed for a factor after deleting NA's
 	if(perform == "run"){
 		for (fact in options$fixedFactors) {
@@ -501,10 +491,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		table[["error"]] <- list(errorType="badData", errorMessage="The main effects of variables should be included whenever their interaction is included")
 	}
 
-	if (specific.error == "levels"){
-		table[["error"]] <- list(errorType="badData", errorMessage="Factors must have 2 or more levels")
-	}
-
 	if (specific.error == "observed levels"){
 		observed.levels <- vector(length = length(options$fixedFactors))
 		counter <- 0
@@ -516,18 +502,18 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		if(length(fact) > 1){
 			factor.names <- paste(factor.names,collapse=", ")
 		}
-		table[["error"]] <- list(errorType="badData", errorMessage=paste("Factor(s): ",factor.names," contain(s) less than two levels. (Possibly only after rows with missing values are excluded)",sep=""))
+		table[["error"]] <- list(errorType="badData", errorMessage=paste("Bayes Factor is undefined -- the factor(s): ",factor.names," contain(s) less than two levels (possibly only after rows with missing values are excluded)",sep=""))
 	}
 
 	if (specific.error =="all nuisance"){
-		table[["error"]] <- list(errorType="badData", errorMessage="BayesFactor is undefined -- all effects are specified as nuisance")
+		table[["error"]] <- list(errorType="badData", errorMessage="Bayes Factor is undefined -- all effects are specified as nuisance")
 	}
 	if (specific.error == "p>=(n-1)"){
-		table[["error"]] <- list(errorType="badData", errorMessage="There needs to be at least one more (valid) observation than there are effects specified in the model")
+		table[["error"]] <- list(errorType="badData", errorMessage="Bayes Factor is undefined -- there are too few observations to estimate all specified effects (possibly only after rows with missing values are excluded)")
 	}
 
 	if (specific.error == "lower order effects"){
-		table[["error"]] <- list(errorType="badData", errorMessage="The main effects of variables should be included whenever their interaction is included")
+		table[["error"]] <- list(errorType="badData", errorMessage="The main effects and lower order interactions of variables must be included whenever their corresponding higher order interactions are included")
 	}
 	return(table)
 }
