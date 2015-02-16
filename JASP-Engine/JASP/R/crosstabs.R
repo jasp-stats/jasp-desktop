@@ -266,7 +266,7 @@
 		
 		oddsratio.table <- list()
 		
-		oddsratio.table[["title"]] <- "Log Odds ratio"
+		oddsratio.table[["title"]] <- "Log Odds Ratio"
 		
 		oddsratio.fields <- fields
 			
@@ -511,7 +511,6 @@
 	
 		row[["value[N]"]] <- "."
 	}
-	
 
 	if (options$chiSquared) {
 	
@@ -536,7 +535,7 @@
 					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 				
 				sup	<- .addFootnote(footnotes, error)
-				row.footnotes <- c(row.footnotes, list("value[chiSquared]"=list(sup)))
+				row.footnotes[["value[chiSquared]"]]=list(sup)
 			
 			} else if (is.na(chi.result$statistic)) {
 			
@@ -544,14 +543,17 @@
 				row[["df[chiSquared]"]]<- " "
 				row[["p[chiSquared]"]]<- " "
 				
-				message <- "\u03A7\u00B2 could not be calculated"
+				message <- "\u03A7\u00B2 could not be calculated - At least one row or column contains all zeros "
+				
+				#sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
+				#row.footnotes[["value[oddsRatio]"]]=list(sup)
 
-				warn <- warnings()
-				if (length(warn) > 0)
-					message <- paste(message, names(warn)[1], sep=" : ")
+				#warn <- warnings()
+				#if (length(warn) > 0)
+				#	message <- paste(message, names(warn)[1], sep=" : ")
 			
 				sup <- .addFootnote(footnotes, message)
-				row.footnotes <- c(row.footnotes, list("value[chiSquared]"=list(sup)))
+				row.footnotes [["value[chiSquared]"]]=list(sup)
 			
 			} else {
 			
@@ -593,7 +595,7 @@
 					error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 				
 				sup	<- .addFootnote(footnotes, error)
-				row.footnotes <- c(row.footnotes, list("value[chiSquared-cc]"=list(sup)))
+				row.footnotes [["value[chiSquared-cc]"]]=list(sup)
 			
 			} else if (is.na(chi.result$statistic)) {
 			
@@ -601,8 +603,8 @@
 				row[["df[chiSquared-cc]"]]<- " "
 				row[["p[chiSquared-cc]"]]<- " "
 			
-				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-				row.footnotes <- c(row.footnotes, list("value[chiSquared-cc]"=list(sup)))
+				sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated - At least one row or column contains all zeros")
+				row.footnotes [["value[chiSquared-cc]"]]=list(sup)
 			
 			} else {
 			
@@ -641,7 +643,7 @@
 				error <- .extractErrorMessage(chi.result)
 				
 				sup	<- .addFootnote(footnotes, error)
-				row.footnotes <- c(row.footnotes, list("value[likelihood]"=list(sup)))
+				row.footnotes[["value[likelihood]"]] = list(sup)
 			
 			} else {
 			
@@ -677,6 +679,8 @@
 			row[[layer]] <- level
 		}
 	}
+	
+	row.footnotes <- list ()
 
 	if (options$nominal$contingencyCoefficient) {
 		 
@@ -698,8 +702,15 @@
 				error <- .extractErrorMessage(chi.result)
 				
 				sup	<- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[ContCoef]"=list(sup))
-				
+				row.footnotes[["value[ContCoef]"]] <- list(sup)
+			
+			} else if (is.na(chi.result$contingency)) {
+			
+					row[["value[ContCoef]"]] <- .clean(NaN)
+		
+					sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row or column contains all zeros")
+					row.footnotes[["value[ContCoef]"]] <- list(sup)	
+			
 			} else {
 				 
 				 row[["value[ContCoef]"]] <- chi.result$contingency
@@ -731,7 +742,15 @@
 					error <- .extractErrorMessage(chi.result)
 				
 					sup	<- .addFootnote(footnotes, error)
-					row[[".footnotes"]] <- list("value[PhiCoef]"=list(sup))
+					row[["value[PhiCoef]"]] <- list(sup)
+				
+				} else if (is.na(chi.result$phi)) {
+			
+					row[["value[PhiCoef]"]] <- .clean(NaN)
+		
+					sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row or column contains all zeros")
+					row.footnotes[["value[PhiCoef]"]] <- list(sup)
+					#row.footnotes <- c(row.footnotes, list("value[PhiCoef]"=list(sup)))
 				
 				} else {
 					
@@ -765,8 +784,15 @@
 					error <- .extractErrorMessage(chi.result)
 					
 					sup	<- .addFootnote(footnotes, error)
-					row[[".footnotes"]] <- list("value[CramerV]"=list(sup))
+					row.footnotes[["value[CramerV]"]] <- list(sup)
 					
+				} else if (is.na(chi.result$cramer)) {
+			
+					row[["value[CramerV]"]] <- .clean(NaN)
+		
+					sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row or column contains all zeros")
+					row.footnotes[["value[CramerV]"]] <- list(sup)
+				
 				} else {
 					
 					row[["value[CramerV]"]] <- chi.result$cramer
@@ -779,6 +805,7 @@
 			
 		}
 
+	 row[[".footnotes"]] <- row.footnotes
 	 list(row)
 
 	 }
@@ -930,6 +957,8 @@
 		}
 	}
 	
+	row.footnotes <- list()
+	
 	if (options$oddsRatio ) {
 	
 		row[["type[oddsRatio]"]] <- "Odds ratio"
@@ -943,7 +972,7 @@
 				row[["up[oddsRatio]"]] <-  ""
 				
 				sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
-				row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+				row.footnotes[["value[oddsRatio]"]]=list(sup)
 				
 			} else {
 			
@@ -966,14 +995,14 @@
 						error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 
 					sup   <- .addFootnote(footnotes, error)
-					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+					row.footnotes[["value[oddsRatio]"]]=list(sup)
 
 				} else if (is.na(chi.result)) {
 
 					row[["value[oddsRatio]"]] <- .clean(NaN)
 
 					sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+					row.footnotes[["value[oddsRatio]"]]=list(sup)
 
 				} else {
 
@@ -1003,7 +1032,7 @@
 				row[["up[FisherTest]"]] <-  ""
 				
 				sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
-				row[[".footnotes"]] <- list("value[FisherTest]"=list(sup))
+				row.footnotes[["value[FisherTest]"]]=list(sup)
 				
 			} else {
 			
@@ -1028,14 +1057,14 @@
 						error <- "\u03A7\u00B2 could not be calculated, contains no observations"
 
 					sup   <- .addFootnote(footnotes, error)
-					row[[".footnotes"]] <- list("value[FisherTest]"=list(sup))
+					row.footnotes[["value[FisherTest]"]]=list(sup)
 
 				} else if (is.na(chi.result)) {
 
 					row[["value[FisherTest]"]] <- .clean(NaN)
 
 					sup <- .addFootnote(footnotes, "\u03A7\u00B2 could not be calculated")
-					row[[".footnotes"]] <- list("value[FisherTest]"=list(sup))
+					row.footnotes[["value[FisherTest]"]]=list(sup)
 
 				} else {
 
@@ -1051,6 +1080,8 @@
 	
 		row[["value[FisherTest]"]] <- "."
 	}
+	
+	row[[".footnotes"]] <- row.footnotes
 	
 	
 	list(row)

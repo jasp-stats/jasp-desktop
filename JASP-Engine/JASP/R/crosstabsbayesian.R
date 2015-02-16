@@ -304,13 +304,28 @@
 		
 	} else if (options$samplingModel=="independentMultinomialRowsFixed") {
 
-		bfLabel <- "BF\u2081\u2080 independent multinomial"	
+		if (options$hypothesis=="groupsNotEqual") {
+		
+			bfLabel <- "BF\u2081\u2080 independent multinomial"	
+		} else if(options$hypothesis=="groupOneGreater") {
+			bfLabel <- "BF\u208A\u2080 independent multinomial"	 
+		} else {
+			bfLabel <- "BF\\u208B\u2080 independent multinomial"	
+		}
+			#bfLabel <- "BF\u2081\u2080 independent multinomial"	
 		sampleType <- "indepMulti"
 		fixedMargin <- "rows"
 		
 	} else if (options$samplingModel=="independentMultinomialColumnsFixed") {
 	
-		bfLabel <- "BF\u2081\u2080 independent multinomial"	
+		if (options$hypothesis=="groupsNotEqual") {
+			bfLabel <- "BF\u2081\u2080 independent multinomial"	
+		} else if(options$hypothesis=="groupOneGreater") {
+			bfLabel <- "BF\u208A\u2080 independent multinomial"	
+		} else {
+			bfLabel <- "BF\\u208B\u2080 independent multinomial"	
+		}
+		#bfLabel <- "BF\u2081\u2080 independent multinomial"	
 		sampleType <- "indepMulti"
 		fixedMargin <- "cols"
 		
@@ -325,28 +340,113 @@
 		stop("wtf?")
 	}
 	
-
 	row[["type[BF]"]] <- bfLabel
 
 	if (perform == "run" && status$error == FALSE) {
 	
-		BF <- try({
-
-			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
-		})
+			BF <- try({
 		
+			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
+			bf1 <- exp(as.numeric(BF@bayesFactor$bf))
+
+			if (options$hypothesis=="groupsNotEqual") {
+
+				bf0 <- bf1
+	
+			} else if (options$hypothesis=="groupOneGreater") {
+		
+				if ( options$samplingModel=="independentMultinomialColumnsFixed"){
+					count.matrix <- base::t(counts.matrix)
+			
+				}else if (options$samplingModel=="independentMultinomialRowsFixed"){
+					count.matrix <- counts.matrix
+				}
+		
+					a <- options$priorConcentration
+	
+					s1 <- count.matrix[1,1]
+					f1 <- count.matrix[1,2]
+
+					s2 <- count.matrix[2,1]
+					f2 <- count.matrix[2,2]
+
+					p1 ~ stats::beta(a+s1, a+f1)
+					p2 ~ stats::beta(a+s2, a+f2)
+
+					N.sim <- 10000
+					p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
+					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
+					prop.consistent <- sum(p1.sim > p2.sim)/N.sim
+					bf0 <- bf1 * prop.consistent / 0.5
+			
+
+				} else if (options$hypothesis=="groupTwoGreater") {
+			
+					if ( options$samplingModel=="independentMultinomialColumnsFixed"){
+						count.matrix <- base::t(counts.matrix)
+				
+					}else if (options$samplingModel=="independentMultinomialRowsFixed"){
+						count.matrix <- counts.matrix
+					}
+			
+	
+					a <- options$priorConcentration
+	
+					s1 <- count.matrix[1,1]
+					f1 <- count.matrix[1,2]
+
+					s2 <- count.matrix[2,1]
+					f2 <- count.matrix[2,2]
+
+					p1 ~ stats::beta(a+s1, a+f1)
+					p2 ~ stats::beta(a+s2, a+f2)
+					
+					N.sim <- 10000
+					p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
+					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
+					prop.consistent <- sum(p2.sim > p1.sim)/N.sim
+					bf0 <- bf1 * prop.consistent / 0.5
+				}
+			
+			})
+						
 		if (class(BF) == "try-error") {
 
 			row[["value[BF]"]] <- .clean(NaN)
 			
-			error <- .extractErrorMessage(BF)
+			if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$samplingModel=="hypergeometric") {
 			
-			sup   <- .addFootnote(footnotes, error)
+				row[["value[BF]"]] <- .clean(NaN)
+			
+				sup <- .addFootnote(footnotes, "Hypergeometric contingency tables test restricted to  2 x 2 tables")
+				row[[".footnotes"]] <- list("value[BF]"=list(sup))	
+			
+			}else {
+			
+				error <- .extractErrorMessage(BF)
+			
+				sup   <- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[BF]"=list(sup))
+			
+			}
+		
+		} else if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$hypothesis=="groupOneGreater") {
+			
+			row[["value[BF]"]] <- .clean(NaN)
+			
+			sup <- .addFootnote(footnotes, "Proportion test restricted to 2 x 2 tables")
+			row[[".footnotes"]] <- list("value[BF]"=list(sup))
+		
+		} else if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$hypothesis=="groupTwoGreater") {
+			
+			row[["value[BF]"]] <- .clean(NaN)
+			
+			sup <- .addFootnote(footnotes, "Proportion test restricted to 2 x 2 tables")
 			row[[".footnotes"]] <- list("value[BF]"=list(sup))
 		
 		} else {
 		
-			row[["value[BF]"]] <- exp(as.numeric(BF@bayesFactor$bf))
+			row[["value[BF]"]] <- .clean(bf0)
 		}
 		
 	} else {
@@ -553,13 +653,13 @@
 				z<-stats::density(logOR)
 				x.median <- stats::median(logOR)
 				x.mode <- z$x[i.mode <- which.max(z$y)]
-				alpha <- options$oddsRatioCredibleIntervalInterval
-				Sig <- (1 - alpha)/2
+				CI <- options$oddsRatioCredibleIntervalInterval
+				Sig <- (1 - CI)/2
 				x0 <- unname(stats::quantile(logOR, p = Sig))
 				x1 <- unname(stats::quantile(logOR, p = (1-Sig)))
 				image <- .beginSaveImage(options$plotWidths, options$plotHeights)
 				
-				par(mar= c(5, 4.5, 8, 2) + 0.1, xpd=TRUE, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3)
+				par(mar= c(5, 4.5, 8, 2) + 0.1, xpd=TRUE, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3, las=1)
 				digitsize <- 1.2
 				y.mode <- z$y[i.mode]
 				lim<-max(z$x)-min(z$x)
@@ -570,7 +670,6 @@
 				xticks <- pretty(c(xlow,xhigh), min.n= 3)
 				
 				if (length(group) > 0) {
-				
 				
 					plot(1, type="n", ylim=ylim0, xlim=range(xticks),
 						axes=F, 
@@ -586,12 +685,12 @@
 				plot(function(x)logspline::dlogspline(x, fit), xlim = range(xticks), lwd=2, add=TRUE)
 				axis(1, line=0.3, at=xticks, lab=xticks)
 				axis(2)
-				Sig1<-Sig*100
-				Sig1<-bquote(.(Sig1))
+				CI1<-CI*100
+				CI1<-bquote(.(CI1))
 				arrows(x0, 1.07*y.mode, x1, 1.07*y.mode, length = 0.05, angle = 90, code = 3, lwd=2)
 				#text(-1.5, 0.8, expression(log('BFI'[10]) == 22.60),cex=digitsize)
 				text(x.mode,y.mode+(y.mode/4), paste("Median =", round(x.median,digit=3)), cex=digitsize)
-				text(x.mode, y.mode+(y.mode/7), paste(Sig1,"%"), cex=digitsize)
+				text(x.mode, y.mode+(y.mode/7), paste(CI1,"%"), cex=digitsize)
 				text(x0, y.mode, round(x0, digits = 3) , cex=digitsize)
 				text(x1, y.mode, round(x1, digits = 3) , cex=digitsize)
 				
