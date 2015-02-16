@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>547</width>
-    <height>617</height>
+    <height>642</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -335,6 +335,9 @@
          </item>
          <item row="1" column="1">
           <widget class="BoundCheckBox" name="effectsStepwise">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Stepwise</string>
            </property>
@@ -388,5 +391,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>outputEffects</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>effectsStepwise</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>231</x>
+     <y>283</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>152</x>
+     <y>306</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
