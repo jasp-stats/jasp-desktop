@@ -1403,6 +1403,8 @@
 			
 		} else {
 		
+			counts <- stats::na.omit(counts)
+		
 			ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
 			ss.matrix[is.na(ss.matrix)] <- 0
 		}
