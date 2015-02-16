@@ -40,20 +40,40 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 	ui->rowOrder->hide();
 
 #ifdef QT_NO_DEBUG
-	ui->groupOrdinal->hide();
-	ui->groupNominal->hide();
+	ui->nominal_lambda->hide();
+	ui->nominal_uncertaintyCoefficient->hide();
+
+	ui->ordinal_somersD->hide();
+	ui->ordinal_kendallsTauC->hide();
+
 	ui->groupNominalByInterval->hide();
 	ui->groupCochrans->hide();
 
-	ui->groupCellDisplay->hide();
+	ui->hideSmallCounts->hide();
+	ui->hideSmallCountsLessThan->hide();
+	ui->counts_hideSmallCountsLessThanLabel->hide();
+
+	ui->groupZTest->hide();
+	ui->groupResiduals->hide();
+
 	ui->groupOptions->hide();
 #else
-	ui->groupOrdinal->setStyleSheet("background-color: pink;");
-	ui->groupNominal->setStyleSheet("background-color: pink;");
+	ui->nominal_lambda->setStyleSheet("background-color: pink;");
+	ui->nominal_uncertaintyCoefficient->setStyleSheet("background-color: pink;");
+
+	ui->ordinal_somersD->setStyleSheet("background-color: pink;");
+	ui->ordinal_kendallsTauC->setStyleSheet("background-color: pink;");
+
 	ui->groupNominalByInterval->setStyleSheet("background-color: pink;");
 	ui->groupCochrans->setStyleSheet("background-color: pink;");
 
-	ui->groupCellDisplay->setStyleSheet("background-color: pink;");
+	ui->hideSmallCounts->setStyleSheet("background-color: pink;");
+	ui->hideSmallCountsLessThan->setStyleSheet("background-color: pink;");
+	ui->counts_hideSmallCountsLessThanLabel->setStyleSheet("background-color: pink;");
+
+	ui->groupZTest->setStyleSheet("background-color: pink;");
+	ui->groupResiduals->setStyleSheet("background-color: pink;");
+
 	ui->groupOptions->setStyleSheet("background-color: pink;");
 #endif
 

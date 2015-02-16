@@ -36,20 +36,11 @@ CrosstabsBayesianForm::CrosstabsBayesianForm(QWidget *parent) :
 	ui->buttonAssignLayers->setSourceAndTarget(ui->listAvailableFields, ui->layers);
 
 	ui->panelStatistics->hide();
-	ui->panelCells->hide();
 	ui->rowOrder->hide();
 
 #ifdef QT_NO_DEBUG
-	ui->groupOddsRatio->hide();
-	ui->groupPlotPosterior->hide();
-
-	ui->groupCellDisplay->hide();
 	ui->groupOptions->hide();
 #else
-	ui->groupOddsRatio->setStyleSheet("background-color: pink;");
-	ui->groupPlotPosterior->setStyleSheet("background-color: pink;");
-
-	ui->groupCellDisplay->setStyleSheet("background-color: pink;");
 	ui->groupOptions->setStyleSheet("background-color: pink;");
 #endif
 
