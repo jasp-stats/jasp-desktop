@@ -1440,6 +1440,8 @@
 			ss.matrix[is.na(ss.matrix)] <- 0
 		}
 		
+		ss.matrix[base::is.na(ss.matrix)] <- 0
+		
 		matrices[[1]] <- ss.matrix
 	
 	} else {
@@ -1468,6 +1470,8 @@
 		
 				ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
 			}
+			
+			ss.matrix[base::is.na(ss.matrix)] <- 0
 
 			matrices[[length(matrices)+1]] <- ss.matrix
 		}
