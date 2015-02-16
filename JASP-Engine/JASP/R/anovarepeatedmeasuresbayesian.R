@@ -109,6 +109,7 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 		posterior[["citation"]] <- list(
 			"Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].",
 			"Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374.")
+		posterior[["footnotes"]] <- list("All models include subject")
 
 		fields <- list(
 			list(name="Models", type="string"),
@@ -121,7 +122,7 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 
 		schema <- list(fields=fields)
 		posterior[["schema"]] <- schema
-		posterior[["data"]] <- list(list("Models" = "Null model"))
+		posterior[["data"]] <- list(list("Models" = "Null model (incl. subject)"))
 
 		results[["posterior"]] <- posterior
 
