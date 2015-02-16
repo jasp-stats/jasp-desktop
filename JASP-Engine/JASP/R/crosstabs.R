@@ -357,7 +357,7 @@
 	status <- list(error=FALSE)
 	if (is.null(counts.var) == FALSE) {
 
-		counts <- dataset[[ .v(counts.var) ]]
+		counts <- stats::na.omit(dataset[[ .v(counts.var) ]])
 		
 		if (any(counts < 0)|| any(is.infinite(counts)))
 			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinities")
