@@ -344,29 +344,26 @@
 
 	if (perform == "run" && status$error == FALSE) {
 	
-	
 			BF <- try({
-             
-             print(counts.matrix)
-                
-            BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
-            bf1 <- exp(as.numeric(BF@bayesFactor$bf))
 		
-            if (options$hypothesis=="groupsNotEqual") {
-        
+			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
+			bf1 <- exp(as.numeric(BF@bayesFactor$bf))
+
+			if (options$hypothesis=="groupsNotEqual") {
+
 				bf0 <- bf1
+	
+			} else if (options$hypothesis=="groupOneGreater") {
+		
+				if ( options$samplingModel=="independentMultinomialColumnsFixed"){
+					count.matrix <- base::t(counts.matrix)
 			
-            } else if (options$hypothesis=="groupOneGreater") {
-                
-                if ( options$samplingModel=="independentMultinomialColumnsFixed"){
-                    count.matrix <- base::t(counts.matrix)
-                    
-                }else if (options$samplingModel=="independentMultinomialRowsFixed"){
-                    count.matrix <- counts.matrix
-                }
-                
+				}else if (options$samplingModel=="independentMultinomialRowsFixed"){
+					count.matrix <- counts.matrix
+				}
+		
 					a <- options$priorConcentration
-			
+	
 					s1 <- count.matrix[1,1]
 					f1 <- count.matrix[1,2]
 
@@ -375,27 +372,26 @@
 
 					p1 ~ stats::beta(a+s1, a+f1)
 					p2 ~ stats::beta(a+s2, a+f2)
-
 
 					N.sim <- 10000
 					p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
 					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
 					prop.consistent <- sum(p1.sim > p2.sim)/N.sim
 					bf0 <- bf1 * prop.consistent / 0.5
-					
-	
+			
+
 				} else if (options$hypothesis=="groupTwoGreater") {
-                    
-                    if ( options$samplingModel=="independentMultinomialColumnsFixed"){
-                        count.matrix <- base::t(counts.matrix)
-                        
-                    }else if (options$samplingModel=="independentMultinomialRowsFixed"){
-                        count.matrix <- counts.matrix
-                    }
-                    
 			
+					if ( options$samplingModel=="independentMultinomialColumnsFixed"){
+						count.matrix <- base::t(counts.matrix)
+				
+					}else if (options$samplingModel=="independentMultinomialRowsFixed"){
+						count.matrix <- counts.matrix
+					}
+			
+	
 					a <- options$priorConcentration
-			
+	
 					s1 <- count.matrix[1,1]
 					f1 <- count.matrix[1,2]
 
@@ -404,26 +400,35 @@
 
 					p1 ~ stats::beta(a+s1, a+f1)
 					p2 ~ stats::beta(a+s2, a+f2)
-
-
+					
 					N.sim <- 10000
 					p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
 					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
 					prop.consistent <- sum(p2.sim > p1.sim)/N.sim
 					bf0 <- bf1 * prop.consistent / 0.5
 				}
-					
-			})
 			
-		
+			})
+						
 		if (class(BF) == "try-error") {
 
 			row[["value[BF]"]] <- .clean(NaN)
 			
-			error <- .extractErrorMessage(BF)
+			if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$samplingModel=="hypergeometric") {
 			
-			sup   <- .addFootnote(footnotes, error)
-			row[[".footnotes"]] <- list("value[BF]"=list(sup))
+				row[["value[BF]"]] <- .clean(NaN)
+			
+				sup <- .addFootnote(footnotes, "Hypergeometric contingency tables test restricted to  2 x 2 tables")
+				row[[".footnotes"]] <- list("value[BF]"=list(sup))	
+			
+			}else {
+			
+				error <- .extractErrorMessage(BF)
+			
+				sup   <- .addFootnote(footnotes, error)
+				row[[".footnotes"]] <- list("value[BF]"=list(sup))
+			
+			}
 		
 		} else if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$hypothesis=="groupOneGreater") {
 			
