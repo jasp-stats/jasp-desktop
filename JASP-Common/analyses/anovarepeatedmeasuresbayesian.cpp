@@ -77,64 +77,9 @@ Options *AnovaRepeatedMeasuresBayesian::createOptions() const
 	modelTerms->setValue(rows);
 
 	options->add("modelTerms", modelTerms);
-	options->add("sumOfSquares", new OptionList(list("type1", "type2", "type3"), "type3"));
 
-
-	// contrasts
-
-	Options *contrastsTemplate = new Options();
-	contrastsTemplate->add("variable", new OptionVariable());
-
-	contrastsTemplate->add("contrast", new OptionList(list(
-		"none",
-		"deviation",
-		"simple",
-		"difference",
-		"helmert",
-		"repeated",
-		"polynomial")));
-
-	options->add("contrasts", new OptionsTable(contrastsTemplate));
-
-
-	// post hoc tests
-
-	options->add("postHocTests/variables", new OptionVariables());
-	options->add("postHocTests/bonferroni", new OptionBoolean());
-	options->add("postHocTests/holm", new OptionBoolean());
-	options->add("postHocTests/FDR", new OptionBoolean());
-	options->add("postHocTests/hochberg", new OptionBoolean());
-	options->add("postHocTests/hommel", new OptionBoolean());
-	options->add("postHocTests/benjamini", new OptionBoolean());
-	options->add("postHocTests/tukey", new OptionBoolean());
-
-	options->add("postHocTests/wallerDuncan", new OptionBoolean());
-	options->add("postHocTests/wallerDuncanRatio", new OptionInteger(100));
-
-	options->add("postHocTests/dunnett", new OptionBoolean());
-	options->add("postHocTests/dunnettControl", new OptionList(list("first", "last"), "last"));
-	options->add("postHocTests/dunnettSides", new OptionList(list("both", "lessThan", "greaterThan")));
-
-	options->add("postHocTests/tamhaneT2", new OptionBoolean());
-	options->add("postHocTests/dunnettT3", new OptionBoolean());
-	options->add("postHocTests/gamesHowell", new OptionBoolean());
-	options->add("postHocTests/dunnettC", new OptionBoolean());
-
-
-	// options
-
-	options->add("marginalMeans/terms", new OptionVariables());
-	options->add("marginalMeans/compareMainEffects", new OptionBoolean());
-	options->add("marginalMeans/ciAdjustment", new OptionList(list("LSD", "bonferroni")));
-
-	options->add("misc/descriptives", new OptionBoolean());
-	options->add("misc/effectSizeEstimates", new OptionBoolean());
-	options->add("misc/observedPower", new OptionBoolean());
-	options->add("misc/parameterEstimates", new OptionBoolean());
-	options->add("misc/contrastCoefficients", new OptionBoolean());
-	options->add("misc/homogeneityTests", new OptionBoolean());
-
-	options->add("significanceLevel", new OptionNumber(.05, .0001, .5));
+	options->add("outputEffects", new OptionBoolean());
+	options->add("effectsStepwise", new OptionBoolean());
 
 	return options;
 }

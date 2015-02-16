@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>575</width>
-    <height>780</height>
+    <width>581</width>
+    <height>865</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,38 +47,81 @@
       <property name="verticalSpacing">
        <number>6</number>
       </property>
-      <item row="7" column="2" rowspan="2" colspan="3">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Between Subject Factors</string>
+      <item row="0" column="0" rowspan="2">
+       <widget class="QWidget" name="widget_2" native="true">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>20</height>
+         </size>
         </property>
        </widget>
+      </item>
+      <item row="2" column="1" rowspan="2">
+       <widget class="QWidget" name="widget_4" native="true"/>
+      </item>
+      <item row="10" column="1">
+       <widget class="QWidget" name="widget_6" native="true"/>
       </item>
       <item row="6" column="1">
        <widget class="QWidget" name="widget_5" native="true"/>
       </item>
-      <item row="2" column="0" rowspan="9">
-       <widget class="AvailableFieldsListView" name="listAvailableFields">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+      <item row="0" column="2" rowspan="3" colspan="3">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Repeated Measures Factors</string>
         </property>
+       </widget>
+      </item>
+      <item row="4" column="2" colspan="3">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Repeated Measures Cells</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" rowspan="2">
+       <widget class="AssignButton" name="buttonAssignFixed">
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="2" rowspan="2">
+       <widget class="BoundListView" name="betweenSubjectFactors">
         <property name="minimumSize">
          <size>
-          <width>0</width>
-          <height>240</height>
+          <width>210</width>
+          <height>80</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>200</width>
-          <height>16777215</height>
+          <width>210</width>
+          <height>80</height>
          </size>
         </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1" rowspan="3">
+       <widget class="AssignButton" name="buttonAssignRandom">
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>
@@ -140,6 +183,13 @@
         </attribute>
        </widget>
       </item>
+      <item row="7" column="2" rowspan="2" colspan="3">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Between Subject Factors</string>
+        </property>
+       </widget>
+      </item>
       <item row="5" column="2" rowspan="2" colspan="3">
        <widget class="BoundTableView" name="repeatedMeasuresCells">
         <property name="sizePolicy">
@@ -198,18 +248,24 @@
         </attribute>
        </widget>
       </item>
-      <item row="9" column="2" rowspan="2">
-       <widget class="BoundListView" name="betweenSubjectFactors">
+      <item row="2" column="0" rowspan="9">
+       <widget class="AvailableFieldsListView" name="listAvailableFields">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
-          <width>210</width>
-          <height>80</height>
+          <width>0</width>
+          <height>240</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>210</width>
-          <height>80</height>
+          <width>200</width>
+          <height>16777215</height>
          </size>
         </property>
         <property name="selectionMode">
@@ -217,66 +273,10 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1" rowspan="2">
-       <widget class="AssignButton" name="buttonAssignFixed">
-        <property name="maximumSize">
-         <size>
-          <width>50</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2" colspan="3">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Repeated Measures Cells</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1" rowspan="2">
-       <widget class="QWidget" name="widget_4" native="true"/>
-      </item>
-      <item row="0" column="2" rowspan="3" colspan="3">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Repeated Measures Factors</string>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="1">
-       <widget class="QWidget" name="widget_6" native="true"/>
-      </item>
-      <item row="7" column="1" rowspan="3">
-       <widget class="AssignButton" name="buttonAssignRandom">
-        <property name="maximumSize">
-         <size>
-          <width>50</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" rowspan="2">
-       <widget class="QWidget" name="widget_2" native="true">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>20</height>
-         </size>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QWidget" name="modelContainer" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -291,13 +291,6 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderModel">
-        <property name="text">
-         <string>Model</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QWidget" name="containerModel" native="true">
         <layout class="QGridLayout" name="gridLayout_6">
@@ -326,6 +319,55 @@
              <width>0</width>
              <height>200</height>
             </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderModel">
+        <property name="text">
+         <string>Model</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="GroupBox" name="groupBox_3">
+        <property name="title">
+         <string>Output</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="1" column="1" rowspan="2">
+          <widget class="BoundCheckBox" name="effectsStepwise">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Stepwise</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" rowspan="2">
+          <widget class="QWidget" name="widget" native="true">
+           <property name="maximumSize">
+            <size>
+             <width>20</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="BoundCheckBox" name="outputEffects">
+           <property name="text">
+            <string>Effects</string>
            </property>
           </widget>
          </item>
@@ -365,11 +407,39 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTableView</class>
    <extends>QTableView</extends>
    <header>widgets/boundtableview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>outputEffects</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>effectsStepwise</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>293</x>
+     <y>531</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>554</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
