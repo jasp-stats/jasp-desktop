@@ -40,8 +40,10 @@ CrosstabsBayesianForm::CrosstabsBayesianForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->groupOptions->hide();
+	ui->bayesFactorType->hide();
 #else
 	ui->groupOptions->setStyleSheet("background-color: pink;");
+	ui->bayesFactorType->setStyleSheet("background-color: pink;");
 #endif
 
 }

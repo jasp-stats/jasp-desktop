@@ -40,6 +40,7 @@ Options *CrosstabsBayesian::createOptions() const
 
 	options->add("plotPosteriorOddsRatio", new OptionBoolean());
 
+	options->add("plotPosteriorOddsRatioAdditionalInfo", new OptionBoolean());
 
 	options->add("countsObserved", new OptionBoolean());
 	options->add("countsExpected", new OptionBoolean());
@@ -63,6 +64,7 @@ Options *CrosstabsBayesian::createOptions() const
     options->add("plotHeights", new OptionInteger(380));
 
 	options->add("hypothesis", new OptionList(list("groupsNotEqual", "groupOneGreater", "groupTwoGreater")));
+	options->add("bayesFactorType", new OptionList(list("BF10", "BF01")));
 
 	return options;
 }
