@@ -223,8 +223,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	stats.results[["schema"]] <- list(fields=fields)
 	stats.results[["casesAcrossColumns"]] <- TRUE
 
-	footnotes <- list()
-
+	footnotes <- .newFootnotes()
+	
+	note.symbol <- "<i>Note.</i>"
+	na.for.categorical <- "Not all values are available for nominal and ordinal variables"
+	
 	
 	stats.values <- list()
 
@@ -262,7 +265,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				
 			} else {
 			
-				variable.results[["Mean"]] <- ""
+				variable.results[["Mean"]] <- ""				
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -278,6 +282,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			} else {
 			
 				variable.results[["Median"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -291,12 +296,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 					if (length(mode) > 1) {
 
-						warning <- "More than one mode exists, only the first is reported"
-						if ( ! (warning %in% footnotes))
-							footnotes[[length(footnotes)+1]] <- warning
-						index <- which.max(footnotes == warning) - 1
-				
-						variable.results[[".footnotes"]] <- list(Mode=list(index));
+						index <- .addFootnote(footnotes, "More than one mode exists, only the first is reported")
+						variable.results[[".footnotes"]] <- list(Mode=list(index))
 					}
 		
 					variable.results[["Mode"]] <- .clean(mode[1])
@@ -309,6 +310,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			} else {
 		
 				variable.results[["Mode"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		
 		
@@ -326,6 +328,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			} else {
 			
 				variable.results[["Sum"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -341,6 +344,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			} else {
 			
 				variable.results[["Maximum"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -356,6 +360,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			} else {
 			
 				variable.results[["Minimum"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -371,6 +376,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			} else {
 			
 				variable.results[["Range"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -386,6 +392,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			} else {
 			
 				variable.results[["Std. Deviation"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -401,6 +408,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			} else {
 			
 				variable.results[["Std. Error of Mean"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -416,6 +424,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			} else {
 			
 				variable.results[["Variance"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -437,6 +446,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 				variable.results[["Kurtosis"]] <- ""
 				variable.results[["Std. Error of Kurtosis"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -459,6 +469,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 				variable.results[["Skewness"]] <- ""
 				variable.results[["Std. Error of Skewness"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -484,6 +495,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				variable.results[["q1"]] <- ""
 				variable.results[["q2"]] <- ""
 				variable.results[["q3"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -506,7 +518,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 				for (i in seq(equalGroupsNo - 1))
 					variable.results[[paste("eg", i, sep="")]] <- ""
-					
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 			
@@ -529,6 +541,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 				for (i in percentilesPercentiles)
 					variable.results[[paste("pc", i, sep="")]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		}
 		
@@ -536,7 +549,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 	
 		stats.results[["data"]] <- stats.values
-		stats.results[["footnotes"]] <- footnotes
+		stats.results[["footnotes"]] <- as.list(footnotes)
 	}
 
 	results[["stats"]] <- stats.results
