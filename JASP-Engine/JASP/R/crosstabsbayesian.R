@@ -207,6 +207,11 @@
 	tests.footnotes <- .newFootnotes()
 	oddsratio.footnotes <- .newFootnotes()
 
+	samples <- NULL
+	CI <- NULL
+	medianSamples <- NULL
+	BF <- NULL
+	
 	for (i in 1:length(group.matrices)) {
 	
 		group.matrix <- group.matrices[[i]]
@@ -225,11 +230,15 @@
 		
 		next.rows <- .crosstabsBayesianCreateTestsRows(analysis$rows, group.matrix, tests.footnotes, options, perform, group, status)
 		tests.rows <- c(tests.rows, next.rows)
+		BF <- next.rows[[1]]$`value[BF]`
 		
 		next.rows <- .crosstabsBayesianCreateoddratioRows(analysis$rows, group.matrix, oddsratio.footnotes, options, perform, group, status)
-		oddsratio.rows <- c(oddsratio.rows, next.rows)
+		oddsratio.rows <- c(oddsratio.rows, next.rows[[1]])
+		samples <- next.rows$samples
+		CI <- next.rows$CI
+		medianSamples <- next.rows$medianSamples
 		
-		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status)
+		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF)
 		plots <- c(plots, plot)
 	}
 
@@ -247,6 +256,8 @@
 	tables[[2]] <- tests.table
 	
 	if (options$oddsRatio || options$oddsRatioCredibleInterval) {
+		 
+	
 		oddsratio.table[["data"]] <- oddsratio.rows 
 		oddsratio.table[["footnotes"]] <- as.list(oddsratio.footnotes)
 	
@@ -460,6 +471,11 @@
 .crosstabsBayesianCreateoddratioRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) { 
 
 	row <- list()
+	samples <- NULL
+	CI <- NULL
+	medianSamples <- NULL
+	BF <- NULL
+	
 	
 	for (layer in names(group)) {
 	
@@ -540,13 +556,19 @@
 				})
 									
 				logOR<-log(odds.ratio)
+				samples <- logOR
+				BF <- BayesFactor::extractBF(BF)[1, "bf"]
+				
 				z<-stats::density(logOR)
 				#x.mode <- z$x[i.mode <- which.max(z$y)]
 				x.median <- stats::median(logOR)
+				medianSamples <- x.median
 				Sig <- options$oddsRatioCredibleIntervalInterval
 				alpha <- (1 - Sig)/2
 				x0 <- unname(stats::quantile(logOR, p = alpha))
 				x1 <- unname(stats::quantile(logOR, p = (1-alpha)))
+				
+				CI <- c(x0, x1)
 				
 				if (class(OR) == "try-error") {
 		
@@ -571,13 +593,240 @@
 		row[["value[oddsRatio]"]] <- "."
 	}
 
-	list(row)
+	
+	list(list(row), samples=samples, CI=CI, medianSamples=medianSamples, BF= BF)
 
 }
 
-.crosstabsBayesianPlotoddsratio <- function(var.name, counts.matrix, options, perform, group, status) { 
+.plotPosterior.crosstabs <- function(samples, CI, medianSamples, BF, oneSided= FALSE, iterations= 10000, lwd= 2, cexPoints= 1.5,
+ cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= FALSE, dontPlotData=FALSE, selectedCI= options$oddsRatioCredibleIntervalInterval) {
+	
+	if (addInformation) {
+	
+		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
+		
+	} else {
+	
+		par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
+	}
+	
+	if (dontPlotData) {
+	
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
+		
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
+		mtext("log(Odds ratio)", side = 1, cex = cexXlab, line= 2.5)
+	
+		return()
+	}
+	
+	
+	BF10 <- BF
+	BF01 <- 1 / BF10
+	
+	# fit denisty estimator
+	fit.posterior <-  logspline::logspline(samples)
+	
+	# density function posterior
+	dposterior <- function(x, oneSided= oneSided, samples= samples){
+	
+		return(logspline::dlogspline(x, fit.posterior))
+	}
+	
+	
+	# set limits plot
+	xlim <- vector("numeric", 2)
+	
+	xlim[1] <- min(-2, quantile(samples, probs = 0.01)[[1]])
+	xlim[2] <- max(2, quantile(samples, probs = 0.99)[[1]])
+	stretch <- 1.2	
 
+	
+	ylim <- vector("numeric", 2)
+	
+	ylim[1] <- 0
+	ylim[2] <- stretch * max(dposterior(x= samples, oneSided= oneSided, samples=samples))
+	
+	# calculate position of "nice" tick marks and create labels
+	xticks <- pretty(xlim)
+	yticks <- pretty(ylim)
+	xlabels <- formatC(xticks, 1, format= "f")
+	ylabels <- formatC(yticks, 1, format= "f")
+	
+	# compute 95% credible interval & median:
+	
+	CIlow <- CI[1]
+	CIhigh <- CI[2]
+	medianPosterior <- medianSamples
+	
+	
+	posteriorLine <- dposterior(x= seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, samples=samples)
+	
+	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
+	
+	plot(1,1, xlim= xlim, ylim= range(yticks), ylab= "", xlab="", type= "n", axes= FALSE)
+	
+	lines(seq(min(xticks), max(xticks),length.out = 1000),posteriorLine, lwd= lwd)
+		
+	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
+	axis(2, at= yticks, labels= ylabels, , cex.axis= cexAxis, lwd= lwdAxis)
+	
+	
+	if (nchar(ylabels[length(ylabels)]) > 4) {
+		
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 4)
+	} else if (nchar(ylabels[length(ylabels)]) == 4) {
+		
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
+	} else if (nchar(ylabels[length(ylabels)]) < 4) {
+		
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
+	}
+	
+	mtext("log(Odds ratio)", side = 1, cex = cexXlab, line= 2.5)	
+	
+	
+	# credible interval
+	dmax <- optimize(function(x)dposterior(x,oneSided= oneSided, samples=samples), interval= range(xticks), maximum = TRUE)$objective # get maximum density
+	
+	# enable plotting in margin
+	par(xpd=TRUE)
+	
+	yCI <- grconvertY(dmax, "user", "ndc") + 0.04
+	yCI <- grconvertY(yCI, "ndc", "user")
+	
+	arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
+	
+	medianText <- formatC(medianPosterior, digits= 3, format="f")
+	
+	
+	if (addInformation) {
+		
+		# display BF10 value
+		offsetTopPart <- 0.06	
+		
+		yy <- grconvertY(0.75 + offsetTopPart, "ndc", "user")
+		yy2 <- grconvertY(0.806 + offsetTopPart, "ndc", "user")
+		
+		xx <- min(xticks)
+		
+		if (BF10 >= 1000000 | BF01 >= 1000000) {
+			BF10t <- formatC(BF10,3, format = "e")
+			BF01t <- formatC(BF01,3, format = "e")
+		}
+		
+		if (BF10 < 1000000 & BF01 < 1000000) {
+			BF10t <- formatC(BF10,3, format = "f")
+			BF01t <- formatC(BF01,3, format = "f")
+		}
+		
+		if (oneSided == FALSE) {
+			
+			text(xx, yy2, bquote(BF[10]==.(BF10t)), cex= cexTextBF, pos = 4)
+			text(xx, yy, bquote(BF[0][1]==.(BF01t)), cex= cexTextBF, pos = 4)
+		}
+		
+		if (oneSided == "right") {
+			
+			text(xx, yy2, bquote(BF["+"][0]==.(BF10t)), cex= cexTextBF, pos = 4)
+			text(xx, yy, bquote(BF[0]["+"]==.(BF01t)), cex= cexTextBF, pos = 4)
+		}
+		
+		if (oneSided == "left") {
+			
+			text(xx, yy2, bquote(BF["-"][0]==.(BF10t)), cex= cexTextBF, pos = 4)
+			text(xx, yy, bquote(BF[0]["-"]==.(BF01t)), cex= cexTextBF, pos = 4)
+		}
+		
+		yy <- grconvertY(0.756 + offsetTopPart, "ndc", "user")
+		yy2 <- grconvertY(0.812 + offsetTopPart, "ndc", "user")
+		
+		
+		CIwidth <- selectedCI * 100
+		CInumber <- paste(CIwidth, "% CI: [", sep="")
+		CIText <- paste(CInumber,  bquote(.(formatC(CIlow,3, format="f"))), ", ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
+		medianLegendText <- paste("median =", medianText)
+		
+		text(max(xticks) , yy2, medianLegendText, cex= 1.1, pos= 2)
+		text(max(xticks) , yy, CIText, cex= 1.1, pos= 2)
+		
+		# probability wheel
+		if (max(nchar(BF10t), nchar(BF01t)) <= 4) {
+			xx <- grconvertX(0.44, "ndc", "user")
+		}
+		
+		if (max(nchar(BF10t), nchar(BF01t)) == 5) {
+			xx <- grconvertX(0.44 +  0.001* 5, "ndc", "user")
+		}
+		
+		if (max(nchar(BF10t), nchar(BF01t)) == 6) {
+			xx <- grconvertX(0.44 + 0.001* 6, "ndc", "user") 
+		}
+		
+		if (max(nchar(BF10t), nchar(BF01t)) == 7) {
+			xx <- grconvertX(0.44 + 0.002* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
+		}
+		
+		if (max(nchar(BF10t), nchar(BF01t)) == 8) {
+			xx <- grconvertX(0.44 + 0.003* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
+		}
+		
+		if (max(nchar(BF10t), nchar(BF01t)) > 8) {
+			xx <- grconvertX(0.44 + 0.005* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
+		}
+		
+		yy <- grconvertY(0.788 + offsetTopPart, "ndc", "user")
+		
+		# make sure that colored area is centered		
+		radius <- 0.06 * diff(range(xticks))
+		A <- radius^2 * pi
+		alpha <- 2 / (BF01 + 1) * A / radius^2
+		startpos <- pi/2 - alpha/2
+		
+		# draw probability wheel		
+		plotrix::floating.pie(xx, yy,c(BF10, 1),radius= radius, col=c("darkred", "white"), lwd=2,startpos = startpos)
+		
+		yy <- grconvertY(0.865 + offsetTopPart, "ndc", "user")
+		yy2 <- grconvertY(0.708 + offsetTopPart, "ndc", "user")
+		
+		if (oneSided == FALSE) {
+			
+			text(xx, yy, "data|H1", cex= cexCI)
+			text(xx, yy2, "data|H0", cex= cexCI)
+		}
+		
+		if (oneSided == "right") {
+			
+			text(xx, yy, "data|H+", cex= cexCI)
+			text(xx, yy2, "data|H0", cex= cexCI)
+		}
+		
+		if (oneSided == "left") {
+			
+			text(xx, yy, "data|H-", cex= cexCI)
+			text(xx, yy2, "data|H0", cex= cexCI)
+		}
+		
+		# add legend		
+		CIText <- paste("95% CI: [",  bquote(.(formatC(CIlow,3, format="f"))), " ; ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
+		
+		medianLegendText <- paste("median =", medianText)
+	}
+	
+	mostPosterior <- mean(samples > mean(range(xticks)))
+}
+
+.crosstabsBayesianPlotoddsratio <- function(var.name, counts.matrix, options, perform, group, status, medi, samples, CI, medianSamples, BF10) { 
+
+
+	if (!options$plotPosteriorOddsRatio )
+		return()
+	
 	OddratioPlots <- list()
+	oddsratio.plot <- list()
 	row <- list()
 	
 	for (layer in names(group)) {
@@ -595,24 +844,41 @@
 		}
 	}
 	
-    #print(group)
     group[group==""] <- "Total"
     #group[group==""] <- names(group)
 
 	if (options$plotPosteriorOddsRatio ){
 	
-		oddsratio.plot <- list()
-		oddsratio.plot[["title"]] <- "Odds ratio"
-		oddsratio.plot[["width"]]  <- options$plotWidths
-		oddsratio.plot[["height"]] <- options$plotHeights
-		oddsratio.plot[["custom"]] <- list(width="plotWidths", height="plotHeights")
-
+		if (length(group) == 0) {
+		
+			oddsratio.plot[["title"]] <- "Odds ratio"
+			
+		} else if (length(group) > 0) {
+			
+			layerLevels <- paste(names(group),"=", group)
+			layerLevels <- gsub(pattern = " = Total", layerLevels, replacement = "")
+			# print(paste(layerLevels, collapse="; "))
+			plotTitle <- paste(layerLevels, collapse="; ")
+			oddsratio.plot[["title"]] <- plotTitle
+		}		
+		
+		oddsratio.plot[["width"]]  <- 530
+		oddsratio.plot[["height"]] <- 400
+		#oddsratio.plot[["custom"]] <- list(width="plotWidths", height="plotHeights")
+		
+		image <- .beginSaveImage(530, 400)
+		.plotPosterior.crosstabs(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
+		oddsratio.plot[["data"]] <- .endSaveImage(image) 	
+		oddsratio.plot[["status"]] <- "running"
+			
 		if (perform == "run" && status$error == FALSE) {
 		
 			if (! identical(dim(counts.matrix),as.integer(c(2,2)))) {
 			
 			} else if ( options$samplingModel== "hypergeometric") {
 			
+				oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Odd ratio for this model not yet implemented")
+				oddsratio.plot[["status"]] <- "complete"
 			} else {
 			
 				if(options$samplingModel== "poisson"){
@@ -648,61 +914,116 @@
 		
 				}
 				
-				#layer.names <- unlist( lapply(options$layers, function(x) { x$variable }))
-				logOR<-log(odds.ratio)
-				z<-stats::density(logOR)
-				x.median <- stats::median(logOR)
-				x.mode <- z$x[i.mode <- which.max(z$y)]
-				CI <- options$oddsRatioCredibleIntervalInterval
-				Sig <- (1 - CI)/2
-				x0 <- unname(stats::quantile(logOR, p = Sig))
-				x1 <- unname(stats::quantile(logOR, p = (1-Sig)))
-				image <- .beginSaveImage(options$plotWidths, options$plotHeights)
 				
-				par(mar= c(5, 4.5, 8, 2) + 0.1, xpd=TRUE, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3, las=1)
-				digitsize <- 1.2
-				y.mode <- z$y[i.mode]
-				lim<-max(z$x)-min(z$x)
-				fit<-logspline::logspline(logOR)
-				ylim0 <- c(0,1.1*y.mode )
-				xlow<-unname(stats::quantile(logOR, p =0.0001))
-				xhigh<-unname(stats::quantile(logOR, p =0.9999))
-				xticks <- pretty(c(xlow,xhigh), min.n= 3)
+								
+				# do this if no values are parsed to plotting function
+				if (is.null(samples) && is.null(CI) && is.null(medianSamples)) {
 				
-				if (length(group) > 0) {
-				
-					plot(1, type="n", ylim=ylim0, xlim=range(xticks),
-						axes=F, 
-						main =paste(names(group),"=", group), xlab="log(Odds ratio)", ylab="Posterior Density")
-				
-				} else {
-
-					plot(1, type="n", ylim=ylim0, xlim=range(xticks),
-						axes=F, 
-						xlab="log(Odds ratio)", ylab="Posterior Density")
+					# BF10 <- BayesFactor::extractBF(BF)[1, "bf"]
+					logOR <-log(odds.ratio)
+					samples <- logOR
+					medianSamples <- stats::median(logOR)					
+					CI <- options$oddsRatioCredibleIntervalInterval
+					Sig <- (1 - CI)/2
+					x0 <- unname(stats::quantile(logOR, p = Sig))
+					x1 <- unname(stats::quantile(logOR, p = (1-Sig)))
+					CI <- c(x0, x1)
 				}
+				
+				
+				#image <- .beginSaveImage(530, 400)
+				
+				# par(mar= c(5, 4.5, 8, 2) + 0.1, xpd=TRUE, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3, las=1)
+				# digitsize <- 1.2
+				# y.mode <- z$y[i.mode]
+				# lim<-max(z$x)-min(z$x)
+				# fit<-logspline::logspline(logOR)
+				# ylim0 <- c(0,1.1*y.mode )
+				# xlow<-unname(stats::quantile(logOR, p =0.0001))
+				# xhigh<-unname(stats::quantile(logOR, p =0.9999))
+				# xticks <- pretty(c(xlow,xhigh), min.n= 3)
+				# 
+				# if (length(group) > 0) {
+				# 
+				# 	plot(1, type="n", ylim=ylim0, xlim=range(xticks),
+				# 		axes=F, 
+				# 		main =paste(names(group),"=", group), xlab="log(Odds ratio)", ylab="Posterior Density")
+				# 
+				# } else {
+                # 
+				# 	plot(1, type="n", ylim=ylim0, xlim=range(xticks),
+				# 		axes=F, 
+				# 		xlab="log(Odds ratio)", ylab="Posterior Density")
+				# }
+				# 		
+				# plot(function(x)logspline::dlogspline(x, fit), xlim = range(xticks), lwd=2, add=TRUE)
+				# axis(1, line=0.3, at=xticks, lab=xticks)
+				# axis(2)
+				# CI1<-CI*100
+				# CI1<-bquote(.(CI1))
+				# arrows(x0, 1.07*y.mode, x1, 1.07*y.mode, length = 0.05, angle = 90, code = 3, lwd=2)
+				# #text(-1.5, 0.8, expression(log('BFI'[10]) == 22.60),cex=digitsize)
+				# text(x.mode,y.mode+(y.mode/4), paste("Median =", round(x.median,digit=3)), cex=digitsize)
+				# text(x.mode, y.mode+(y.mode/7), paste(CI1,"%"), cex=digitsize)
+				# text(x0, y.mode, round(x0, digits = 3) , cex=digitsize)
+				# text(x1, y.mode, round(x1, digits = 3) , cex=digitsize)
+				
+				#.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval)
+				if (BF10 == "NaN") {
+				
+					oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is NaN")
+					
+				}
+				 else if (is.infinite(1 / BF10)) {
+				
+					oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is too small")
+					
+				} else if (is.infinite(BF10)) {
+				
+					oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: BayesFactor is infinite")
+					
+				} else {
+				
+					p <- try(silent= FALSE, expr= {
 						
-				plot(function(x)logspline::dlogspline(x, fit), xlim = range(xticks), lwd=2, add=TRUE)
-				axis(1, line=0.3, at=xticks, lab=xticks)
-				axis(2)
-				CI1<-CI*100
-				CI1<-bquote(.(CI1))
-				arrows(x0, 1.07*y.mode, x1, 1.07*y.mode, length = 0.05, angle = 90, code = 3, lwd=2)
-				#text(-1.5, 0.8, expression(log('BFI'[10]) == 22.60),cex=digitsize)
-				text(x.mode,y.mode+(y.mode/4), paste("Median =", round(x.median,digit=3)), cex=digitsize)
-				text(x.mode, y.mode+(y.mode/7), paste(CI1,"%"), cex=digitsize)
-				text(x0, y.mode, round(x0, digits = 3) , cex=digitsize)
-				text(x1, y.mode, round(x1, digits = 3) , cex=digitsize)
+								image <- .beginSaveImage(530, 400)
+						
+									if (options$hypothesis=="groupTwoGreater") {
+										oneSided <- "left"
+									} else if (options$hypothesis=="groupOneGreater") {
+										oneSided <- "right"
+									} else {
+										oneSided <- FALSE
+									}
+								
+								.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval,
+								addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided= oneSided)
+						
+								oddsratio.plot[["data"]] <- .endSaveImage(image)
+							})
+							
+					if (class(p) == "try-error") {
+						
+						errorMessage <- .extractErrorMessage(p)
+						
+						if (errorMessage == "not enough data") {
+						
+								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+						} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
+						
+							errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+						}
+						
+						oddsratio.plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					}
+				}
 				
-				content <- .endSaveImage(image) 
-				
-				oddsratio.plot[["data"]]  <- content
-
-				OddratioPlots[[length(OddratioPlots)+1]] <- oddsratio.plot
+				oddsratio.plot[["status"]] <- "complete"				
 			}
 		}
 	}
-		
+	
+	OddratioPlots[[length(OddratioPlots)+1]] <- oddsratio.plot
 	OddratioPlots
 }
 	
