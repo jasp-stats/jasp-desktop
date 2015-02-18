@@ -60,7 +60,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	fields <- list(
 		list(name="Variable", title="", type="string", combine=TRUE),
-		list(name="groups", type="string"),
+		list(name="Groups", type="string"),
 		list(name="N", type="number"),
 		list(name="Mean", type="number", format="sf:4;dp:3"),
 		list(name="Std. Deviation", type="number", format="sf:4;dp:3"),
