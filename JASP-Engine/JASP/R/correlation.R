@@ -8,7 +8,7 @@
 	jitVar <- jitter(variable)
 	yhigh <- max(max(h$density), max(density$y))
 	ylow <- 0
-	xticks <- pretty(c(variable, jitVar), min.n= 3)
+	xticks <- pretty(c(variable, h$breaks), min.n= 3)
 	plot(range(xticks), c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
 	h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
 	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks)
