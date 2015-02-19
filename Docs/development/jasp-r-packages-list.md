@@ -5,7 +5,7 @@ JASP 0.6 R Packages
 Dependencies (C++ API)
 ----------------------
 
-* BayesFactor (0.9.10-2)
+* BayesFactor (0.9.11 - 95bb7acfd9512062f47f78be7400675e128b8150)
 * lme4 (1.1-7)
 * Rcpp (0.11.3)
 * RInside (0.2.11)
@@ -18,7 +18,7 @@ Dependencies of depedencies (C++ API)
 * RcppEigen (0.3.2.2.0)
 * reshape2 (1.4.1)
 
-Dependencies of dependences (HACKED!)
+Dependencies of dependences (Modified!)
 -------------------------------------
 
 * gnm (1.0-7)  **removed imports from the relimp package**
