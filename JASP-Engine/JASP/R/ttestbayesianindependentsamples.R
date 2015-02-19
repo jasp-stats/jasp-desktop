@@ -449,8 +449,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							# errorMessage <- paste("Sequential Analysis not possible: The first observations are identical")
 							# index <- .addFootnote(footnotes, errorMessage)
 							
-							status[rowNo] <- "sequentialNotPossible"
-							plottingError[rowNo] <- "Sequential Analysis not possible: The first observations are identical"
+							# status[rowNo] <- "sequentialNotPossible"
+							# plottingError[rowNo] <- "Sequential Analysis not possible: The first observations are identical"
 						}
 					}
 										
