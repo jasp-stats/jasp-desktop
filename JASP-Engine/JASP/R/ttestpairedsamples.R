@@ -41,15 +41,15 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	ttest[["title"]] <- "Paired Samples T-Test"
 
 	fields <- list(
-		list(name=".variable1", type="string", title=""),
-		list(name=".separator", type="separator", title=""),
-		list(name=".variable2", type="string", title=""),
-		list(name="t", type="number", format="sf:4;dp:3"),
-		list(name="df", type="integer"),
-		list(name="p", type="number", format="dp:3;p:.001"))
+		list(name="v1",  type="string", title=""),
+		list(name="sep", type="separator", title=""),
+		list(name="v2",  type="string", title=""),
+		list(name="t",   type="number", format="sf:4;dp:3"),
+		list(name="df",  type="integer"),
+		list(name="p",   type="number", format="dp:3;p:.001"))
 
 	if(options$meanDifference){
-		fields[[length(fields)+1]] <- list(name="mean difference", type="number", format="sf:4;dp:3")
+		fields[[length(fields)+1]] <- list(name="md", title="Mean Difference", type="number", format="sf:4;dp:3")
 	}
 	
 	if(options$effectSize){
@@ -84,7 +84,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 	for (pair in options$pairs)
 	{
-		row <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]])
+		row <- list(v1=pair[[1]], sep="-", v2=pair[[2]])
 		
 		if (perform == "run") {
 		
@@ -176,7 +176,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 			
 			if (options$meanDifference) {
 			
-				row[["mean difference"]] <- m
+				row[["md"]] <- m
 			}
 			
 			if (options$effectSize) {
@@ -207,11 +207,11 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		descriptives[["title"]] <- "Descriptives"
 
 		fields <- list(
-			list(name=".variable", type="string", title=""),
-			list(name="N",    type="integer"),
-			list(name="mean", type="number", format="sf:4;dp:3"),
-			list(name="sd",   type="number", format="sf:4;dp:3"),
-			list(name="SE",   type="number", format="sf:4;dp:3"))
+			list(name="v",    title="",     type="string"),
+			list(name="N",                  type="integer"),
+			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
+			list(name="sd",   title="SD",   type="number", format="sf:4;dp:3"),
+			list(name="se",   title="SE",   type="number", format="sf:4;dp:3"))
 
 		descriptives[["schema"]] <- list(fields=fields)
 		
@@ -222,7 +222,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		
 		for (var in desc.vars) {
 		
-			row <- list(.variable=var)
+			row <- list(v=var)
 
 			if (perform == "run") {
 				
@@ -238,7 +238,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				row[["N"]] <- n
 				row[["mean"]] <- m
 				row[["sd"]] <- std
-				row[["SE"]] <- se
+				row[["se"]] <- se
 			
 			}
 			

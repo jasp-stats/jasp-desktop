@@ -53,7 +53,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	ttest[["title"]] <- "One Sample T-Test"
 
 	fields <- list(
-		list(name=".variable", type="string", title=""),
+		list(name="v", type="string", title=""),
 		list(name="t", type="number", format="sf:4;dp:3"),
 		list(name="df", type="number", format="sf:4;dp:3"),
 		list(name="p", type="number", format="dp:3;p:.001"))
@@ -126,7 +126,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 				if (is.na(t))
 					stop("data are essentially constant")
 			
-				list(.variable=variable, t=t, df=df, p=p, "Mean Difference"=m, "lowerCI"=ciLow, "upperCI"=ciUp)
+				list(v=variable, t=t, df=df, p=p, "Mean Difference"=m, "lowerCI"=ciLow, "upperCI"=ciUp)
 			})
 				
 			if (class(result) == "try-error") {
@@ -149,12 +149,12 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 				
 				index <- .addFootnote(footnotes, errorMessage)
 		
-				result <- list(.variable=variable, t=.clean(NaN), df="", p="", "Mean Difference"="", "lowerCI"="", "upperCI"="", .footnotes=list(t=list(index)))
+				result <- list(v=variable, t=.clean(NaN), df="", p="", "Mean Difference"="", "lowerCI"="", "upperCI"="", .footnotes=list(t=list(index)))
 			}
 			
 		} else {
 
-			result <- list(.variable=variable, t=".", df=".", p=".", "Mean Difference"=".", "lowerCI"=".", "upperCI"=".")
+			result <- list(v=variable, t=".", df=".", p=".", "Mean Difference"=".", "lowerCI"=".", "upperCI"=".")
 		
 		}
 		
@@ -172,11 +172,11 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 		descriptives[["cases"]] <- I(options$variables)
 
 		fields <- list(
-			list(name=".variable", type="string", title=""),
-			list(name="N", type="number", format="sf:4;dp:3"),
-			list(name="Mean", type="number", format="sf:4;dp:3"),
-			list(name="Std. Deviation", type="number", format="sf:4;dp:3"),
-			list(name="Std. Error Mean", type="number", format="sf:4;dp:3"))
+			list(name="v",    title="",   type="string"),
+			list(name="N",    title="N",  type="number",   format="sf:4;dp:3"),
+			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
+			list(name="sd",   title="SD", type="number",   format="sf:4;dp:3"),
+			list(name="se",   title="SE", type="number",   format="sf:4;dp:3"))
 
 		descriptives[["schema"]] <- list(fields=fields)
 		descriptives.results <- list()
@@ -198,17 +198,16 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 					stdDeviation <- .clean(sd(data))
 					stdErrorMean <- .clean(sd(data)/sqrt(length(data)))
 
-					result <- list(.variable=variable, N = n, Mean = mean, "Std. Deviation" = stdDeviation,
-									"Std. Error Mean" = stdErrorMean)
+					result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean)
 				} else {
 			
 					n <- .clean(length(data))
-					result <- list(.variable=variable, N = n, Mean = "", "Std. Deviation" = "", "Std. Error Mean" = "")
+					result <- list(v=variable, N=n, mean="", sd="", se="")
 				}
 			
 			} else {
 			
-				result <- list(.variable=variable, N = ".", Mean = ".", "Std. Deviation" = ".", "Std. Error Mean" = ".")			
+				result <- list(v=variable, N=".", mean=".", sd= ".", se=".")			
 			
 			}
 			
