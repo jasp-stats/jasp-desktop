@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <shlwapi.h>
 #include <shlobj.h>
-#elifdef __APPLE__
+#elif defined(__APPLE__)
 #include <libproc.h>
 #include <unistd.h>
 #include <pwd.h>
@@ -156,7 +156,7 @@ string Dirs::exeDir()
 
 	return r;
 
-#elifdef __APPLE__
+#elif defined(__APPLE__)
 
 	unsigned long pid = Process::currentPID();
 
