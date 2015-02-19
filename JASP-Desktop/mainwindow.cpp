@@ -73,7 +73,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->tabBar->addTab("File");
 	ui->tabBar->addTab("Common");
 	ui->tabBar->addOptionsTab();
+
+#ifdef QT_DEBUG
 	ui->tabBar->addHelpTab();
+#endif
+
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 	connect(ui->tabBar, SIGNAL(helpToggled(bool)), this, SLOT(helpToggled(bool)));
 
