@@ -303,13 +303,25 @@
 		
 	if (options$samplingModel=="poisson") {
 	
-		bfLabel <- "BF\u2081\u2080 Poisson"
+		if (options$bayesFactorType == "BF10"){
+			bfLabel <- "BF\u2081\u2080 Poisson"
+			
+		}else if (options$bayesFactorType == "BF01"){
+			bfLabel <- "BF\u2080\u2081 Poisson"
+			}
+	
 		sampleType <- "poisson"
 		fixedMargin <- NULL
 		
 	} else if (options$samplingModel=="jointMultinomial") {
 	
-		bfLabel <- "BF\u2081\u2080 joint multinomial"
+		if (options$bayesFactorType == "BF10"){
+			bfLabel <- "BF\u2081\u2080 joint multinomial"
+			
+		}else if (options$bayesFactorType == "BF01"){
+			bfLabel <- "BF\u2080\u2081 joint multinomial"
+			}
+		
 		sampleType <- "jointMulti"
 		fixedMargin <- NULL
 		
@@ -317,32 +329,79 @@
 
 		if (options$hypothesis=="groupsNotEqual") {
 		
-			bfLabel <- "BF\u2081\u2080 independent multinomial"	
+			if (options$bayesFactorType == "BF10"){
+			bfLabel <- "BF\u2081\u2080 independent multinomial"
+			
+			}else if (options$bayesFactorType == "BF01"){
+			bfLabel <- "BF\u2080\u2081 independent multinomial"
+			}
+				
 		} else if(options$hypothesis=="groupOneGreater") {
-			bfLabel <- "BF\u208A\u2080 independent multinomial"	 
-		} else {
-			bfLabel <- "BF\\u208B\u2080 independent multinomial"	
+			
+			if (options$bayesFactorType == "BF10"){
+			bfLabel <- "BF\u208A\u2080 independent multinomial"
+			
+			}else if (options$bayesFactorType == "BF01"){
+			bfLabel <- "BF\u2080\u208A independent multinomial"
+			}
+			
+			 
+		} else if(options$hypothesis=="groupTwoGreater") {
+			if (options$bayesFactorType == "BF10"){
+			bfLabel <- "BF\u208B\u2080 independent multinomial"
+			
+			}else if (options$bayesFactorType == "BF01"){
+			bfLabel <- "BF\u2080\u208B independent multinomial"
+			}
+				
 		}
-			#bfLabel <- "BF\u2081\u2080 independent multinomial"	
+				
 		sampleType <- "indepMulti"
 		fixedMargin <- "rows"
 		
 	} else if (options$samplingModel=="independentMultinomialColumnsFixed") {
 	
 		if (options$hypothesis=="groupsNotEqual") {
-			bfLabel <- "BF\u2081\u2080 independent multinomial"	
+		
+			if (options$bayesFactorType == "BF10"){
+			bfLabel <- "BF\u2081\u2080 independent multinomial"
+			
+			}else if (options$bayesFactorType == "BF01"){
+			bfLabel <- "BF\u2080\u2081 independent multinomial"
+			}
+				
 		} else if(options$hypothesis=="groupOneGreater") {
-			bfLabel <- "BF\u208A\u2080 independent multinomial"	
-		} else {
-			bfLabel <- "BF\\u208B\u2080 independent multinomial"	
+			
+			if (options$bayesFactorType == "BF10"){
+			bfLabel <- "BF\u208A\u2080 independent multinomial"
+			
+			}else if (options$bayesFactorType == "BF01"){
+			bfLabel <- "BF\u2080\u208A independent multinomial"
+			}
+			
+				 
+		} else if(options$hypothesis=="groupTwoGreater"){
+			if (options$bayesFactorType == "BF10"){
+			bfLabel <- "BF\u208B\u2080 independent multinomial"
+			
+			}else if (options$bayesFactorType == "BF01"){
+			bfLabel <- "BF\u2080\u208B independent multinomial"
+			}
+				
 		}
-		#bfLabel <- "BF\u2081\u2080 independent multinomial"	
+			
 		sampleType <- "indepMulti"
 		fixedMargin <- "cols"
 		
 	} else if (options$samplingModel=="hypergeometric") {
 
-		bfLabel <- "BF\u2081\u2080 hypergeometric"
+		if (options$bayesFactorType == "BF10"){
+			bfLabel <- "BF\u2081\u2080 hypergeometric"
+			
+		}else if (options$bayesFactorType == "BF01"){
+			bfLabel <- "BF\u2080\u2081 hypergeometric"
+			}
+		
 		sampleType <- "hypergeom"
 		fixedMargin <- NULL
 		
@@ -359,20 +418,13 @@
 		
 			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
 			bf1 <- exp(as.numeric(BF@bayesFactor$bf))
+			bf0 <- bf1
 
-			if (options$hypothesis=="groupsNotEqual") {
-
-				bf0 <- bf1
-	
-			} else if (options$hypothesis=="groupOneGreater") {
 		
-				if ( options$samplingModel=="independentMultinomialColumnsFixed"){
+		 if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
+		
+				
 					count.matrix <- base::t(counts.matrix)
-			
-				}else if (options$samplingModel=="independentMultinomialRowsFixed"){
-					count.matrix <- counts.matrix
-				}
-		
 					a <- options$priorConcentration
 	
 					s1 <- count.matrix[1,1]
@@ -390,17 +442,29 @@
 					prop.consistent <- sum(p1.sim > p2.sim)/N.sim
 					bf0 <- bf1 * prop.consistent / 0.5
 			
-
-				} else if (options$hypothesis=="groupTwoGreater") {
-			
-					if ( options$samplingModel=="independentMultinomialColumnsFixed"){
-						count.matrix <- base::t(counts.matrix)
-				
-					}else if (options$samplingModel=="independentMultinomialRowsFixed"){
-						count.matrix <- counts.matrix
-					}
-			
+			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
+					count.matrix <- counts.matrix
+					a <- options$priorConcentration
 	
+					s1 <- count.matrix[1,1]
+					f1 <- count.matrix[1,2]
+
+					s2 <- count.matrix[2,1]
+					f2 <- count.matrix[2,2]
+
+					p1 ~ stats::beta(a+s1, a+f1)
+					p2 ~ stats::beta(a+s2, a+f2)
+
+					N.sim <- 10000
+					p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
+					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
+					prop.consistent <- sum(p1.sim > p2.sim)/N.sim
+					bf0 <- bf1 * prop.consistent / 0.5
+			
+			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
+			
+				
+					count.matrix <- base::t(counts.matrix)
 					a <- options$priorConcentration
 	
 					s1 <- count.matrix[1,1]
@@ -417,9 +481,36 @@
 					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
 					prop.consistent <- sum(p2.sim > p1.sim)/N.sim
 					bf0 <- bf1 * prop.consistent / 0.5
-				}
+				
+			}else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
+					
+					count.matrix <- counts.matrix
+					a <- options$priorConcentration
+	
+					s1 <- count.matrix[1,1]
+					f1 <- count.matrix[1,2]
+
+					s2 <- count.matrix[2,1]
+					f2 <- count.matrix[2,2]
+
+					p1 ~ stats::beta(a+s1, a+f1)
+					p2 ~ stats::beta(a+s2, a+f2)
+					
+					N.sim <- 10000
+					p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
+					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
+					prop.consistent <- sum(p2.sim > p1.sim)/N.sim
+					bf0 <- bf1 * prop.consistent / 0.5
+			}
 			
 			})
+			
+		if (options$bayesFactorType == "BF10"){
+			bf0<-bf0
+			
+		}else if (options$bayesFactorType == "BF01"){
+			bf0<-1/bf0
+			}
 						
 		if (class(BF) == "try-error") {
 
