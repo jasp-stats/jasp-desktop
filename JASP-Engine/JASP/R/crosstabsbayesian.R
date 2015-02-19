@@ -9,9 +9,13 @@
 		counts.var <- NULL
 	
 	all.vars <- c(unlist(analysis), counts.var)
-
+	
 	dataset <- subset(dataset, select=.v(all.vars))
 	
+	rowsAnalysis <- analysis$rows
+	colsAnalysis <- analysis$columns
+	
+
 	
 	# the following creates a 'groups' list
 	# a 'group' represents a combinations of the levels from the layers
@@ -199,6 +203,14 @@
 
 	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var))
 	
+	if (all(dim(group.matrices[[1]]) == c(2,2))) {
+	
+		isTwoByTwo <- TRUE
+	} else {
+	
+		isTwoByTwo <- FALSE
+	}
+	
 	plots <- list()
 	counts.rows <- list()
 	tests.rows <- list()
@@ -238,7 +250,7 @@
 		CI <- next.rows$CI
 		medianSamples <- next.rows$medianSamples
 		
-		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF)
+		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF, isTwoByTwo= isTwoByTwo)
 		plots <- c(plots, plot)
 	}
 
@@ -819,10 +831,10 @@
 	mostPosterior <- mean(samples > mean(range(xticks)))
 }
 
-.crosstabsBayesianPlotoddsratio <- function(var.name, counts.matrix, options, perform, group, status, medi, samples, CI, medianSamples, BF10) { 
+.crosstabsBayesianPlotoddsratio <- function(var.name, counts.matrix, options, perform, group, status, medi, samples, CI, medianSamples, BF10, isTwoByTwo) { 
 
 
-	if (!options$plotPosteriorOddsRatio )
+	if (!options$plotPosteriorOddsRatio || !isTwoByTwo)
 		return()
 	
 	OddratioPlots <- list()
