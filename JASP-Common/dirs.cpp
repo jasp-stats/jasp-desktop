@@ -7,11 +7,19 @@
 #include <windows.h>
 #include <shlwapi.h>
 #include <shlobj.h>
-#else
+#elifdef __APPLE__
 #include <libproc.h>
 #include <unistd.h>
 #include <pwd.h>
+#else
+#include <pwd.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
 #endif
+
 
 #include <boost/filesystem.hpp>
 
@@ -148,7 +156,7 @@ string Dirs::exeDir()
 
 	return r;
 
-#else
+#elifdef __APPLE__
 
 	unsigned long pid = Process::currentPID();
 
@@ -179,6 +187,47 @@ string Dirs::exeDir()
 
 		return p;
 	}
+#else
+
+	char buf[65];
+	char linkname[64]; /* /proc/<pid>/exe */
+	pid_t pid;
+	int ret;
+
+	/* Get our PID and build the name of the link in /proc */
+	pid = getpid();
+
+	if (snprintf(linkname, sizeof(linkname), "/proc/%i/exe", pid) < 0)
+		{
+		/* This should only happen on large word systems. I'm not sure
+		   what the proper response is here.
+		   Since it really is an assert-like condition, aborting the
+		   program seems to be in order. */
+		abort();
+		}
+
+
+	/* Now read the symbolic link */
+	ret = readlink(linkname, buf, sizeof(buf));
+
+	/* In case of an error, leave the handling up to the caller */
+	if (ret == -1)
+		return NULL;
+
+	/* Report insufficient buffer size */
+	if (ret >= sizeof(buf))
+	{
+		errno = ERANGE;
+		return NULL;
+	}
+
+	/* Ensure proper NUL termination */
+	buf[ret] = 0;
+
+	std::cout << buf << "\n";
+	std::cout.flush();
+
+	return string(buf);
 
 #endif
 

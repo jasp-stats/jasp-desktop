@@ -22,7 +22,10 @@ windows:INCLUDEPATH += ../../boost_1_54_0
 PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
-LIBS += -lboost_filesystem-mt -lboost_system-mt
+
+windows:LIBS += -lboost_filesystem-mt -lboost_system-mt
+   macx:LIBS += -lboost_filesystem-mt -lboost_system-mt
+  linux:LIBS += -lboost_filesystem    -lboost_system
 
 macx:ICON = icon.icns
 windows:RC_FILE = icon.rc

@@ -109,7 +109,11 @@ long Utils::getFileModificationTime(const std::string &filename)
 	return modificationTime;
 
 #else
-	TODO
+    struct stat attrib;
+    stat(filename.c_str(), &attrib);
+    time_t modificationTime = attrib.st_mtim.tv_sec;
+
+    return modificationTime;
 #endif
 }
 

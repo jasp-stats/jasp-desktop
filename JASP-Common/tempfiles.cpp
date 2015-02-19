@@ -136,7 +136,7 @@ string tempfiles_createSpecific(const string &name, int id)
 	ss << tempfiles_sessionDirName;
 
 	if (id >= 0)
-	   ss << "/" << id;
+		ss << "/" << id;
 
 	string dir = ss.str();
 
@@ -156,7 +156,7 @@ string tempfiles_create(const string &extension, int id)
 	ss << tempfiles_sessionDirName;
 
 	if (id >= 0)
-	   ss << "/" << id;
+		ss << "/" << id;
 
 	string dir = ss.str();
 
