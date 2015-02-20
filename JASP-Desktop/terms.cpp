@@ -562,6 +562,30 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 	return changed;
 }
 
+bool Terms::discardWhatIsTheseTerms(const Terms &terms, Terms *discarded)
+{
+	bool changed = false;
+
+	vector<Term>::iterator titr = _terms.begin();
+
+	while (titr != _terms.end())
+	{
+		if (terms.contains(*titr))
+		{
+			if (discarded != NULL)
+				discarded->add(*titr);
+			_terms.erase(titr);
+			changed = true;
+		}
+		else
+		{
+			titr++;
+		}
+	}
+
+	return changed;
+}
+
 void Terms::clear()
 {
 	_terms.clear();

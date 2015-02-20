@@ -47,6 +47,7 @@ public:
 	bool discardWhatDoesntContainTheseComponents(const Terms &terms);
 	bool discardWhatDoesContainTheseComponents(const Terms &terms);
 	bool discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded = NULL);
+	bool discardWhatIsTheseTerms(const Terms &terms, Terms *discarded = NULL);
 
 	void clear();
 
