@@ -277,7 +277,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	if (options$rSquaredChange == TRUE) {
 		fields[[ length(fields) + 1 ]] <- list(name = "R2c", title = "R\u00B2 Change", type = "number", format = "dp:3")
-		fields[[ length(fields) + 1 ]] <- list(name = "Fc", title = "F Change", type = "number", format = "dp:3")
+		fields[[ length(fields) + 1 ]] <- list(name = "Fc", title = "F Change", type = "number", format = "sf:4;dp:3")
 		fields[[ length(fields) + 1 ]] <- list(name = "df1", type = "integer")
 		fields[[ length(fields) + 1 ]] <- list(name = "df2", type = "integer")
 		fields[[ length(fields) + 1 ]] <- list(name = "p", type = "number",format = "dp:3;p:.001")
@@ -365,10 +365,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		fields <- list(
 			list(name = "Model", type = "integer"),
 			list(name = "Cases", title = " ", type = "string"),
-			list(name = "Sum of Squares", type = "number", format = "dp:3"),
+			list(name = "Sum of Squares", type = "number", format = "sf:4;dp:3"),
 			list(name = "df", type = "integer"),
-			list(name = "Mean Square", type = "number", format = "dp:3"),
-			list(name = "F", type = "number", format = "dp:3"),
+			list(name = "Mean Square", type = "number", format = "sf:4;dp:3"),
+			list(name = "F", type = "number", format = "sf:4;dp:3"),
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
 		
 		anova[["schema"]] <- list(fields = fields)
@@ -494,7 +494,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			list(name = "Coefficient", title = "Unstandardized", type = "number", format = "dp:3"),
 			list(name = "Standard Error", type="number", format = "dp:3"),
 			list(name = "Standardized Coefficient", title = "Standardized", type = "number", format = "dp:3"),
-			list(name = "t-value", type="number", format = "dp:3"),
+			list(name = "t-value", type="number", format = "sf:4;dp:3"),
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
 		
 		empty.line <- list( #for empty elements in tables when given output
