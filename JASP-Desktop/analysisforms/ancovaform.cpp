@@ -98,12 +98,10 @@ AncovaForm::AncovaForm(QWidget *parent) :
 #ifdef QT_NO_DEBUG
 	ui->groupComareMainEffects->hide();
 	ui->marginalMeansContainer->hide();
-    ui->profilePlot->hide();
     ui->misc_factorCovariateIndependence->hide();
 #else
 	ui->groupComareMainEffects->setStyleSheet("background-color: pink ;");
 	ui->marginalMeansContainer->setStyleSheet("background-color: pink ;");
-    ui->profilePlot->setStyleSheet("background-color: pink ;");
     ui->misc_factorCovariateIndependence->setStyleSheet("background-color: pink ;");
 #endif
 

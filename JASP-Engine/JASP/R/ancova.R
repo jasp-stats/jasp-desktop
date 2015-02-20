@@ -1047,7 +1047,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
         base_breaks_x <- function(x){
             b <- unique(as.numeric(x))
             d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
-            list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 2))#,
+            list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))#,
 #                 ggplot2::scale_x_continuous(breaks=unique(as.numeric(x)),
 #                                   labels=levels(x), 
 #                                   limits=c(min(as.numeric(x)) - (length(levels(x)) * .1), 
@@ -1059,12 +1059,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
                 ci.pos <- c(x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
                 b <- pretty(ci.pos)
                 d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
-                list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 2),
+                list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
                      ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
             } else {
                 b <- pretty(x[,"dependent"])
                 d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
-                list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 2),
+                list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
                      ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
             }
         }
@@ -1099,45 +1099,53 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
             } else {
             
                 p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=horizontalAxis, 
-                                              y=dependent, 
-                                              colour=seperateLines, 
-                                              group=seperateLines))
+                                              y=dependent,
+                                              group=seperateLines,
+                                              shape=seperateLines,
+#                                              color=seperateLines,
+                                              fill=seperateLines))
             
             } 
                     
             if (options[["errorBars"]]) {
             
-                pd <- ggplot2::position_dodge(.15)
+                pd <- ggplot2::position_dodge(.2)
                 p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, 
                                                             ymax=ciUpper), 
-                                                            colour="black", width=.15, position=pd)
+                                                            colour="black", width=.2, position=pd)
             
             } else {
             
                 pd <- ggplot2::position_dodge(0)
             
             }
-                        
-            p <- p + ggplot2::geom_line(position=pd, size = 1.5) + ggplot2::geom_point(position=pd, size=3, shape=21, fill="white") +
+                                    
+            p <- p + ggplot2::geom_line(position=pd, size = .7) + 
+                ggplot2::geom_point(position=pd, size=4) +
+                ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100))) +
+                ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112)) + 
+                ggplot2::scale_color_manual(values = rep("black",200)) +
                 ggplot2::ylab(options[["dependent"]]) +
                 ggplot2::xlab(options[["horizontalAxis"]]) +
-                ggplot2::labs(colour=options[["seperateLines"]]) +
+                ggplot2::labs(shape=options[["seperateLines"]], fill=options[["seperateLines"]]) +
+#                ggplot2::guides(col = ggplot2::guide_legend(nrow = 14)) + 
                 ggplot2::theme_bw() +
-                ggplot2::theme(legend.justification=c(1,0), legend.position=c(1,0),
-                      panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=20),
+                ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
+                      panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
                       panel.grid.major=ggplot2::element_blank(),
-                      axis.title.x = ggplot2::element_text(size=20), axis.title.y = ggplot2::element_text(size=20),
+                      axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
                       axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
                       panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
                       plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
                       legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
                       panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
+                      legend.key = ggplot2::element_blank(), #legend.key.width = grid::unit(10,"mm"),
                       legend.title = ggplot2::element_text(size=12),
                       legend.text = ggplot2::element_text(size = 12),
-                      axis.ticks = ggplot2::element_line(size = 1.2),
+                      axis.ticks = ggplot2::element_line(size = 0.5),
                       axis.ticks.margin = grid::unit(1,"mm"),
                       axis.ticks.length = grid::unit(3, "mm"),
-                      plot.margin = grid::unit(c(0,.1,0,0), "cm")) +
+                      plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
                 base_breaks_y(summaryStatSubset, options[["errorBars"]]) +
                 base_breaks_x(summaryStatSubset[,"horizontalAxis"])
                         
