@@ -12,10 +12,6 @@
 	
 	dataset <- subset(dataset, select=.v(all.vars))
 	
-	rowsAnalysis <- analysis$rows
-	colsAnalysis <- analysis$columns
-	
-
 	
 	# the following creates a 'groups' list
 	# a 'group' represents a combinations of the levels from the layers
@@ -195,6 +191,7 @@
 		if (any(counts < 0) || any(is.infinite(counts)))
 			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinite number")
 	}
+	
 
 
 	# POPULATE TABLES
@@ -250,7 +247,7 @@
 		CI <- next.rows$CI
 		medianSamples <- next.rows$medianSamples
 		
-		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF, isTwoByTwo= isTwoByTwo)
+		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status=status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF, isTwoByTwo= isTwoByTwo)
 		plots <- c(plots, plot)
 	}
 
@@ -950,8 +947,9 @@
     group[group==""] <- "Total"
     #group[group==""] <- names(group)
 
-	if (options$plotPosteriorOddsRatio ){
+	if (options$plotPosteriorOddsRatio){
 	
+		
 		if (length(group) == 0) {
 		
 			oddsratio.plot[["title"]] <- "Odds ratio"
@@ -973,8 +971,19 @@
 		.plotPosterior.crosstabs(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
 		oddsratio.plot[["data"]] <- .endSaveImage(image) 	
 		oddsratio.plot[["status"]] <- "running"
+		
+		
+		if (status$error) {
+		
+			oddsratio.plot[["error"]] <- list(error="badData", errorMessage=status$errorMessage)
+			oddsratio.plot[["status"]] <- "complete"
+			OddratioPlots[[length(OddratioPlots)+1]] <- oddsratio.plot
 			
+			return(OddratioPlots)
+		}
+		
 		if (perform == "run" && status$error == FALSE) {
+		
 		
 			if (! identical(dim(counts.matrix),as.integer(c(2,2)))) {
 			
@@ -1072,6 +1081,8 @@
 				# text(x1, y.mode, round(x1, digits = 3) , cex=digitsize)
 				
 				#.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval)
+				
+				
 				if (BF10 == "NaN") {
 				
 					oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is NaN")
