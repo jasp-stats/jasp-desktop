@@ -286,11 +286,11 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		descriptives[["title"]] <- "Descriptives"
 
 		fields <- list(
-			list(name=".variable", type="string", title=""),
-			list(name="N", type="integer"),
-			list(name="mean", type="number", format="sf:4"),
-			list(name="sd", type="number", format="dp:4;p:.001"),
-			list(name="SE", type="number", format="dp:4;p:.001"))
+			list(name="v", type="string", title=""),
+			list(name="N",                  type="integer"),
+			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
+			list(name="sd",   title="SD",   type="number", format="sf:4;dp:3"),
+			list(name="se",   title="SE",   type="number", format="sf:4;dp:3"))
 
 		descriptives[["schema"]] <- list(fields=fields)
 		
@@ -314,17 +314,17 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					else
 						se <- .clean(NaN)
 								
-					list(.variable=variable, N=n, mean=m, sd=std, SE=se)
+					list(v=variable, N=n, mean=m, sd=std, se=se)
 				})
 			
 				if (class(result) == "try-error") {
 			
-					result <- list(.variable=variable, N="", mean="", sd="", SE="")
+					result <- list(v=variable, N="", mean="", sd="", se="")
 				}
 				
 			} else {
 			
-				result <- list(.variable=variable, N=".", mean=".", sd=".", SE=".")
+				result <- list(v=variable, N=".", mean=".", sd=".", se=".")
 			}
 			
 			descriptives.results[[length(descriptives.results)+1]] <- result
