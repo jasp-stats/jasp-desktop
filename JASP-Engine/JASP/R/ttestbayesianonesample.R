@@ -107,8 +107,24 @@
 		
 		xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
-		stretch <- 1.2
+		
+		if (length(x) < 10) {
+			
+			if (addInformation) {
+			
+				stretch <- 1.52
+			} else {
+			
+				stretch <- 1.4
+			}
+			
+		} else {
+		
+			stretch <- 1.2
+		}
+		
 	}
+	
 	
 	if (oneSided == "right") {
 		
@@ -134,6 +150,7 @@
 	
 	ylim[1] <- 0
 	ylim[2] <- max(stretch * dprior(0,r, oneSided= oneSided), stretch * max(dposterior(x= delta, oneSided= oneSided, delta=delta)))
+	
 	
 	# calculate position of "nice" tick marks and create labels
 	xticks <- pretty(xlim)
