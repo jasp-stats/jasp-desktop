@@ -34,6 +34,7 @@ table {
 	font-style: normal ;
 	border-collapse: collapse ;
 	margin-bottom: 2em ;
+	cursor: default;
 }
 
 th {
