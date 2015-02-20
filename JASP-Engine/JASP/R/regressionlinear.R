@@ -320,11 +320,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					
 					p <- pf(q = F.change, df1 = df1, df2 = df2, lower.tail = FALSE )
 					
-					table.rows[[ m ]]$"R2c" <- as.numeric(r.squared.change)
-					table.rows[[ m ]]$"Fc" <- as.numeric(F.change)
-					table.rows[[ m ]]$"df1" <- as.integer(df1)
-					table.rows[[ m ]]$"df2" <- as.integer(df2)
-					table.rows[[ m ]]$"p" <- as.numeric(p)
+					table.rows[[ m ]]$"R2c" <- .clean(r.squared.change)
+					table.rows[[ m ]]$"Fc" <- .clean(F.change)
+					table.rows[[ m ]]$"df1" <- .clean(df1)
+					table.rows[[ m ]]$"df2" <- .clean(df2)
+					table.rows[[ m ]]$"p" <- .clean(p)
 					
 					r.squared.old <- r.squared
 				}
