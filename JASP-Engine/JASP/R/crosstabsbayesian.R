@@ -9,13 +9,8 @@
 		counts.var <- NULL
 	
 	all.vars <- c(unlist(analysis), counts.var)
-	
-	dataset <- subset(dataset, select=.v(all.vars))
-	
-	rowsAnalysis <- analysis$rows
-	colsAnalysis <- analysis$columns
-	
 
+	dataset <- subset(dataset, select=.v(all.vars))
 	
 	# the following creates a 'groups' list
 	# a 'group' represents a combinations of the levels from the layers
@@ -62,9 +57,7 @@
 		groups <- NULL
 	}
 	
-
 	tables <- list()
-
 
     ### SETUP COLUMNS COMMON TO BOTH TABLES
 
@@ -75,9 +68,7 @@
 		for (j in length(analysis):3)
 			fields[[length(fields)+1]] <- list(name=analysis[[j]], type="string", combine=TRUE)
 	}
-	
-
-	
+		
 	### SETUP COUNTS TABLE SCHEMA
 
 	counts.table <- list()
@@ -154,7 +145,6 @@
 	
 	tests.table[["title"]] <- "Bayesian Crosstabs Tests"
 	
-	
 	tests.fields <- fields
 	
 	tests.fields[[length(tests.fields)+1]] <- list(name="type[BF]", title="", type="string")
@@ -203,19 +193,10 @@
 
 	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var))
 	
-	if (all(dim(group.matrices[[1]]) == c(2,2))) {
-	
-		isTwoByTwo <- TRUE
-	} else {
-	
-		isTwoByTwo <- FALSE
-	}
-	
 	plots <- list()
 	counts.rows <- list()
 	tests.rows <- list()
-	oddsratio.rows <- list()
-	
+	oddsratio.rows <- list()	
 	tests.footnotes <- .newFootnotes()
 	oddsratio.footnotes <- .newFootnotes()
 
@@ -250,7 +231,7 @@
 		CI <- next.rows$CI
 		medianSamples <- next.rows$medianSamples
 		
-		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF, isTwoByTwo= isTwoByTwo)
+		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF)
 		plots <- c(plots, plot)
 	}
 
@@ -313,56 +294,56 @@
 	}
 	
 		
-	if (options$samplingModel=="poisson") {
+	if (options$samplingModel == "poisson") {
 	
 		if (options$bayesFactorType == "BF10"){
 			bfLabel <- "BF\u2081\u2080 Poisson"
 			
-		}else if (options$bayesFactorType == "BF01"){
+		} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u2081 Poisson"
-			}
+		}
 	
 		sampleType <- "poisson"
 		fixedMargin <- NULL
 		
-	} else if (options$samplingModel=="jointMultinomial") {
+	} else if (options$samplingModel == "jointMultinomial") {
 	
 		if (options$bayesFactorType == "BF10"){
 			bfLabel <- "BF\u2081\u2080 joint multinomial"
 			
-		}else if (options$bayesFactorType == "BF01"){
+		} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u2081 joint multinomial"
-			}
+		}
 		
 		sampleType <- "jointMulti"
 		fixedMargin <- NULL
 		
-	} else if (options$samplingModel=="independentMultinomialRowsFixed") {
+	} else if (options$samplingModel =="independentMultinomialRowsFixed") {
 
 		if (options$hypothesis=="groupsNotEqual") {
 		
 			if (options$bayesFactorType == "BF10"){
 			bfLabel <- "BF\u2081\u2080 independent multinomial"
 			
-			}else if (options$bayesFactorType == "BF01"){
+			} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u2081 independent multinomial"
 			}
 				
-		} else if(options$hypothesis=="groupOneGreater") {
+		} else if (options$hypothesis=="groupOneGreater") {
 			
 			if (options$bayesFactorType == "BF10"){
 			bfLabel <- "BF\u208A\u2080 independent multinomial"
 			
-			}else if (options$bayesFactorType == "BF01"){
+			} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u208A independent multinomial"
 			}
-			
-			 
-		} else if(options$hypothesis=="groupTwoGreater") {
+						 
+		} else if(options$hypothesis =="groupTwoGreater") { 
+		
 			if (options$bayesFactorType == "BF10"){
 			bfLabel <- "BF\u208B\u2080 independent multinomial"
 			
-			}else if (options$bayesFactorType == "BF01"){
+			} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u208B independent multinomial"
 			}
 				
@@ -378,7 +359,7 @@
 			if (options$bayesFactorType == "BF10"){
 			bfLabel <- "BF\u2081\u2080 independent multinomial"
 			
-			}else if (options$bayesFactorType == "BF01"){
+			} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u2081 independent multinomial"
 			}
 				
@@ -387,19 +368,18 @@
 			if (options$bayesFactorType == "BF10"){
 			bfLabel <- "BF\u208A\u2080 independent multinomial"
 			
-			}else if (options$bayesFactorType == "BF01"){
+			} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u208A independent multinomial"
 			}
+							 
+		} else if (options$hypothesis=="groupTwoGreater"){
 			
-				 
-		} else if(options$hypothesis=="groupTwoGreater"){
 			if (options$bayesFactorType == "BF10"){
 			bfLabel <- "BF\u208B\u2080 independent multinomial"
 			
-			}else if (options$bayesFactorType == "BF01"){
+			} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u208B independent multinomial"
-			}
-				
+			}				
 		}
 			
 		sampleType <- "indepMulti"
@@ -410,9 +390,9 @@
 		if (options$bayesFactorType == "BF10"){
 			bfLabel <- "BF\u2081\u2080 hypergeometric"
 			
-		}else if (options$bayesFactorType == "BF01"){
+		} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u2081 hypergeometric"
-			}
+		}
 		
 		sampleType <- "hypergeom"
 		fixedMargin <- NULL
@@ -426,103 +406,93 @@
 
 	if (perform == "run" && status$error == FALSE) {
 	
-			BF <- try({
-		
+		BF <- try({
+
 			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
 			bf1 <- exp(as.numeric(BF@bayesFactor$bf))
-			bf0 <- bf1
-
 		
-		 if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
-		
+			if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
 				
-					count.matrix <- base::t(counts.matrix)
-					a <- options$priorConcentration
-	
-					s1 <- count.matrix[1,1]
-					f1 <- count.matrix[1,2]
+				count.matrix <- base::t(counts.matrix)
+				a <- options$priorConcentration
 
-					s2 <- count.matrix[2,1]
-					f2 <- count.matrix[2,2]
+				s1 <- count.matrix[1,1]
+				f1 <- count.matrix[1,2]
 
-					p1 ~ stats::beta(a+s1, a+f1)
-					p2 ~ stats::beta(a+s2, a+f2)
+				s2 <- count.matrix[2,1]
+				f2 <- count.matrix[2,2]
 
-					N.sim <- 10000
-					p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-					prop.consistent <- sum(p1.sim > p2.sim)/N.sim
-					bf0 <- bf1 * prop.consistent / 0.5
+				p1 ~ stats::beta(a+s1, a+f1)
+				p2 ~ stats::beta(a+s2, a+f2)
+
+				N.sim <- 10000
+				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
+				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
+				prop.consistent <- sum(p1.sim > p2.sim)/N.sim
+				bf1 <- bf1 * prop.consistent / 0.5
 			
 			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
-					count.matrix <- counts.matrix
-					a <- options$priorConcentration
-	
-					s1 <- count.matrix[1,1]
-					f1 <- count.matrix[1,2]
+					
+				count.matrix <- counts.matrix
+				a <- options$priorConcentration
 
-					s2 <- count.matrix[2,1]
-					f2 <- count.matrix[2,2]
+				s1 <- count.matrix[1,1]
+				f1 <- count.matrix[1,2]
 
-					p1 ~ stats::beta(a+s1, a+f1)
-					p2 ~ stats::beta(a+s2, a+f2)
+				s2 <- count.matrix[2,1]
+				f2 <- count.matrix[2,2]
 
-					N.sim <- 10000
-					p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-					prop.consistent <- sum(p1.sim > p2.sim)/N.sim
-					bf0 <- bf1 * prop.consistent / 0.5
+				p1 ~ stats::beta(a+s1, a+f1)
+				p2 ~ stats::beta(a+s2, a+f2)
+
+				N.sim <- 10000
+				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
+				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
+				prop.consistent <- sum(p1.sim > p2.sim)/N.sim
+				bf1 <- bf1 * prop.consistent / 0.5
 			
 			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
-			
+							
+				count.matrix <- base::t(counts.matrix)
+				a <- options$priorConcentration
+
+				s1 <- count.matrix[1,1]
+				f1 <- count.matrix[1,2]
+
+				s2 <- count.matrix[2,1]
+				f2 <- count.matrix[2,2]
+
+				p1 ~ stats::beta(a+s1, a+f1)
+				p2 ~ stats::beta(a+s2, a+f2)
+		
+				N.sim <- 10000
+				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
+				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
+				prop.consistent <- sum(p2.sim > p1.sim)/N.sim
+				bf1 <- bf1 * prop.consistent / 0.5
 				
-					count.matrix <- base::t(counts.matrix)
-					a <- options$priorConcentration
-	
-					s1 <- count.matrix[1,1]
-					f1 <- count.matrix[1,2]
-
-					s2 <- count.matrix[2,1]
-					f2 <- count.matrix[2,2]
-
-					p1 ~ stats::beta(a+s1, a+f1)
-					p2 ~ stats::beta(a+s2, a+f2)
+			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
 					
-					N.sim <- 10000
-					p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-					prop.consistent <- sum(p2.sim > p1.sim)/N.sim
-					bf0 <- bf1 * prop.consistent / 0.5
-				
-			}else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
-					
-					count.matrix <- counts.matrix
-					a <- options$priorConcentration
-	
-					s1 <- count.matrix[1,1]
-					f1 <- count.matrix[1,2]
+				count.matrix <- counts.matrix
+				a <- options$priorConcentration
 
-					s2 <- count.matrix[2,1]
-					f2 <- count.matrix[2,2]
+				s1 <- count.matrix[1,1]
+				f1 <- count.matrix[1,2]
 
-					p1 ~ stats::beta(a+s1, a+f1)
-					p2 ~ stats::beta(a+s2, a+f2)
-					
-					N.sim <- 10000
-					p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-					p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-					prop.consistent <- sum(p2.sim > p1.sim)/N.sim
-					bf0 <- bf1 * prop.consistent / 0.5
+				s2 <- count.matrix[2,1]
+				f2 <- count.matrix[2,2]
+
+				p1 ~ stats::beta(a+s1, a+f1)
+				p2 ~ stats::beta(a+s2, a+f2)
+		
+				N.sim <- 10000
+				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
+				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
+				prop.consistent <- sum(p2.sim > p1.sim)/N.sim
+				bf1 <- bf1 * prop.consistent / 0.5
 			}
-			
-			})
-			
-		if (options$bayesFactorType == "BF10"){
-			bf0<-bf0
-			
-		}else if (options$bayesFactorType == "BF01"){
-			bf0<-1/bf0
-			}
+					
+		})
 						
 		if (class(BF) == "try-error") {
 
@@ -535,7 +505,7 @@
 				sup <- .addFootnote(footnotes, "Hypergeometric contingency tables test restricted to  2 x 2 tables")
 				row[[".footnotes"]] <- list("value[BF]"=list(sup))	
 			
-			}else {
+			} else {
 			
 				error <- .extractErrorMessage(BF)
 			
@@ -560,7 +530,16 @@
 		
 		} else {
 		
-			row[["value[BF]"]] <- .clean(bf0)
+			if (options$bayesFactorType == "BF10"){
+			
+				bf1 <- bf1
+			
+			} else if (options$bayesFactorType == "BF01"){
+			
+				bf1 <- 1/bf1
+			}
+		
+			row[["value[BF]"]] <- .clean(bf1)
 		}
 		
 	} else {
@@ -578,7 +557,6 @@
 	CI <- NULL
 	medianSamples <- NULL
 	BF <- NULL
-	
 	
 	for (layer in names(group)) {
 	
@@ -623,14 +601,14 @@
 
 				OR <- try({
 	
-					if(options$samplingModel== "poisson"){
+					if(options$samplingModel == "poisson"){
 						sampleType <- "poisson"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
 						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
 						lambda<-as.data.frame(chi.result,col.names=c("lambda11","lambda21","lambda12","lambda22"))
 						odds.ratio<-(lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
 			
-					} else if (options$samplingModel== "jointMultinomial"){
+					} else if (options$samplingModel == "jointMultinomial"){
 			
 						sampleType <- "jointMulti"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
@@ -638,7 +616,7 @@
 						theta <- as.data.frame(chi.result,col.names=c("theta11","theta21","theta12","theta22"))
 						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 				
-					} else if (options$samplingModel== "independentMultinomialRowsFixed"){
+					} else if (options$samplingModel == "independentMultinomialRowsFixed"){
 			
 						sampleType <- "indepMulti"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
@@ -646,16 +624,14 @@
 						theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
 						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 				
-					} else if (options$samplingModel== "independentMultinomialColumnsFixed"){
+					} else if (options$samplingModel == "independentMultinomialColumnsFixed"){
 			
 						sampleType <- "indepMulti"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
 						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
 						theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
-						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
-				
+						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])				
 					} 
-			
 				})
 									
 				logOR<-log(odds.ratio)
@@ -695,10 +671,8 @@
 
 		row[["value[oddsRatio]"]] <- "."
 	}
-
-	
+		
 	list(list(row), samples=samples, CI=CI, medianSamples=medianSamples, BF= BF)
-
 }
 
 .plotPosterior.crosstabs <- function(samples, CI, medianSamples, BF, oneSided= FALSE, iterations= 10000, lwd= 2, cexPoints= 1.5,
@@ -922,10 +896,10 @@
 	mostPosterior <- mean(samples > mean(range(xticks)))
 }
 
-.crosstabsBayesianPlotoddsratio <- function(var.name, counts.matrix, options, perform, group, status, medi, samples, CI, medianSamples, BF10, isTwoByTwo) { 
+.crosstabsBayesianPlotoddsratio <- function(var.name, counts.matrix, options, perform, group, status, medi, samples, CI, medianSamples, BF10) { 
 
 
-	if (!options$plotPosteriorOddsRatio || !isTwoByTwo)
+	if (!options$plotPosteriorOddsRatio )
 		return()
 	
 	OddratioPlots <- list()
@@ -1032,46 +1006,7 @@
 					x1 <- unname(stats::quantile(logOR, p = (1-Sig)))
 					CI <- c(x0, x1)
 				}
-				
-				
-				#image <- .beginSaveImage(530, 400)
-				
-				# par(mar= c(5, 4.5, 8, 2) + 0.1, xpd=TRUE, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3, las=1)
-				# digitsize <- 1.2
-				# y.mode <- z$y[i.mode]
-				# lim<-max(z$x)-min(z$x)
-				# fit<-logspline::logspline(logOR)
-				# ylim0 <- c(0,1.1*y.mode )
-				# xlow<-unname(stats::quantile(logOR, p =0.0001))
-				# xhigh<-unname(stats::quantile(logOR, p =0.9999))
-				# xticks <- pretty(c(xlow,xhigh), min.n= 3)
-				# 
-				# if (length(group) > 0) {
-				# 
-				# 	plot(1, type="n", ylim=ylim0, xlim=range(xticks),
-				# 		axes=F, 
-				# 		main =paste(names(group),"=", group), xlab="log(Odds ratio)", ylab="Posterior Density")
-				# 
-				# } else {
-                # 
-				# 	plot(1, type="n", ylim=ylim0, xlim=range(xticks),
-				# 		axes=F, 
-				# 		xlab="log(Odds ratio)", ylab="Posterior Density")
-				# }
-				# 		
-				# plot(function(x)logspline::dlogspline(x, fit), xlim = range(xticks), lwd=2, add=TRUE)
-				# axis(1, line=0.3, at=xticks, lab=xticks)
-				# axis(2)
-				# CI1<-CI*100
-				# CI1<-bquote(.(CI1))
-				# arrows(x0, 1.07*y.mode, x1, 1.07*y.mode, length = 0.05, angle = 90, code = 3, lwd=2)
-				# #text(-1.5, 0.8, expression(log('BFI'[10]) == 22.60),cex=digitsize)
-				# text(x.mode,y.mode+(y.mode/4), paste("Median =", round(x.median,digit=3)), cex=digitsize)
-				# text(x.mode, y.mode+(y.mode/7), paste(CI1,"%"), cex=digitsize)
-				# text(x0, y.mode, round(x0, digits = 3) , cex=digitsize)
-				# text(x1, y.mode, round(x1, digits = 3) , cex=digitsize)
-				
-				#.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval)
+								
 				if (BF10 == "NaN") {
 				
 					oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is NaN")
@@ -1089,21 +1024,24 @@
 				
 					p <- try(silent= FALSE, expr= {
 						
-								image <- .beginSaveImage(530, 400)
+							image <- .beginSaveImage(530, 400)
 						
-									if (options$hypothesis=="groupTwoGreater") {
-										oneSided <- "left"
-									} else if (options$hypothesis=="groupOneGreater") {
-										oneSided <- "right"
-									} else {
-										oneSided <- FALSE
-									}
+							if (options$hypothesis=="groupTwoGreater") {
+								oneSided <- "left"
+						
+							} else if (options$hypothesis=="groupOneGreater") {
+								oneSided <- "right"
+						
+							} else {
+								oneSided <- FALSE
+							}
 								
-								.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval,
-								addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided= oneSided)
+							.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval,
+									addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided= oneSided)
 						
-								oddsratio.plot[["data"]] <- .endSaveImage(image)
-							})
+							oddsratio.plot[["data"]] <- .endSaveImage(image)
+						}
+					)
 							
 					if (class(p) == "try-error") {
 						
