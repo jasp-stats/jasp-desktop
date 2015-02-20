@@ -6,7 +6,6 @@ AnovaRepeatedMeasuresBayesian <- function(dataset=NULL, options, perform="run", 
 
 	#These options are currently part of Bayesian Ancova, but will not be used (for now):
 	options$covariates <- NULL
-	options$outputEffects <- FALSE
 	options$posteriorDistributions <- FALSE
 	options$posteriorEstimates <- FALSE
 	options$effectsStepwise <- FALSE
