@@ -157,7 +157,7 @@
 	tests.table[["schema"]] <- schema
 	
 	##### Odds ratio
-	if (options$oddsRatio || options$oddsRatioCredibleInterval) {
+	if (options$oddsRatio) {
 		
 		oddsratio.table <- list()
 		
@@ -248,7 +248,7 @@
 		
 	tables[[2]] <- tests.table
 	
-	if (options$oddsRatio || options$oddsRatioCredibleInterval) {
+	if (options$oddsRatio) {
 		 
 	
 		oddsratio.table[["data"]] <- oddsratio.rows 

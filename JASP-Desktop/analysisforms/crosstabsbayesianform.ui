@@ -272,8 +272,8 @@
             <property name="topMargin">
              <number>0</number>
             </property>
-            <item row="3" column="1">
-             <widget class="QWidget" name="widget_20" native="true">
+            <item row="2" column="1">
+             <widget class="QWidget" name="oddsRatioCredibleIntervalContainer" native="true">
               <layout class="QGridLayout" name="gridLayout_22">
                <property name="leftMargin">
                 <number>24</number>
@@ -287,7 +287,7 @@
                <item row="0" column="0">
                 <widget class="QLabel" name="label_5">
                  <property name="text">
-                  <string>Interval</string>
+                  <string>Credible Interval</string>
                  </property>
                 </widget>
                </item>
@@ -311,33 +311,10 @@
               </layout>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QWidget" name="widget_15" native="true">
-              <property name="minimumSize">
-               <size>
-                <width>20</width>
-                <height>0</height>
-               </size>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="0" colspan="2">
              <widget class="BoundCheckBox" name="oddsRatio">
               <property name="text">
                <string>Odds ratio (2x2 only)</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="BoundCheckBox" name="oddsRatioCredibleInterval">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>1</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Credible Interval</string>
               </property>
              </widget>
             </item>

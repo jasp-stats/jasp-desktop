@@ -30,7 +30,6 @@ Options *CrosstabsBayesian::createOptions() const
 	options->add("layers", new OptionsTable(layerOptionsTemplate));
 
 	options->add("oddsRatio", new OptionBoolean());
-	options->add("oddsRatioCredibleInterval", new OptionBoolean());
 	options->add("oddsRatioCredibleIntervalInterval", new OptionNumber(.95, 0, 1, "%"));
 
 	options->add("bfIndependence", new OptionBoolean());
