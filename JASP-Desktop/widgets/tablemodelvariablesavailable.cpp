@@ -37,7 +37,10 @@ void TableModelVariablesAvailable::setVariables(const Terms &variables)
 	ordered.add(forbidden);
 
 	_allVariables.set(ordered);
+	_assigned.discardWhatIsntTheseTerms(variables);
+
 	_variables.set(ordered);
+	_variables.discardWhatIsTheseTerms(_assigned);
 
 	_variables.setSortParent(_allVariables);
 
@@ -75,6 +78,24 @@ QStringList TableModelVariablesAvailable::mimeTypes() const
 	return TableModelVariables::mimeTypes();
 }
 
+void TableModelVariablesAvailable::mimeDataMoved(const QModelIndexList &indexes)
+{
+	beginResetModel();
+
+	QModelIndexList sorted = indexes;
+
+	qSort(sorted.begin(), sorted.end(), qGreater<QModelIndex>());
+
+	foreach (const QModelIndex &index, sorted)
+	{
+		Term assigned = _variables.at(index.row());
+		_assigned.add(assigned);
+		_variables.remove(index.row());
+	}
+
+	endResetModel();
+}
+
 const Terms &TableModelVariablesAvailable::allVariables() const
 {
 	return _allVariables;
@@ -87,6 +108,7 @@ void TableModelVariablesAvailable::notifyAlreadyAssigned(const Terms &variables)
 
 	beginResetModel();
 	_variables.remove(variables);
+	_assigned.add(variables);
 	endResetModel();
 }
 
@@ -94,6 +116,7 @@ void TableModelVariablesAvailable::sendBack(Terms &variables)
 {
 	beginResetModel();
 	_variables.add(variables);
+	_assigned.remove(variables);
 	endResetModel();
 }
 

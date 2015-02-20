@@ -19,6 +19,7 @@ public:
 	void setVariables(const Terms &variables);
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const OVERRIDE;
     virtual QStringList mimeTypes() const OVERRIDE;
+	void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
 
 	const Terms &allVariables() const;
 
@@ -34,6 +35,7 @@ public slots:
 
 private:
 	Terms _allVariables;
+	Terms _assigned;
 
 };
 
