@@ -48,7 +48,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		specific.error <- "none"
 		errorcheck <- list(error.present = error.present, specific.error = specific.error)
 	}
-
+		
 	#### Generate models
 	if (options$dependent != "" && length(options$modelTerms) > 0) {
 		tmp.models.list <- .generateBayesianAnCovaModels (options, errorcheck)
@@ -78,7 +78,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		list(name="BF10", type="number", format="sf:4;dp:3", title="BF<sub>10</sub>"),
 		list(name="% error", type="number", format="sf:4;dp:3")
 	)
-
 	schema <- list(fields=fields)
 	posterior[["schema"]] <- schema
 
@@ -249,6 +248,13 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	# Error messages
 	specific.error <- "none"
 	error.present <- 0
+
+	# error message when the dependent variable contains infinity
+	if( any(!is.finite(dataset[[.v(options$dependent)]]))){
+		error.present <- 1
+		specific.error <- "infinite dependent"		
+	}
+
 
 	# error message when less than two levels are observed for a factor after deleting NA's
 	if(perform == "run"){
@@ -499,9 +505,14 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 .errorMessageBayesianAnCova <- function(table, errorcheck, options, dataset){
 	specific.error <- errorcheck$specific.error
 
+	if (specific.error == "infinite dependent"){
+		table[["error"]] <- list(errorType="badData", errorMessage="Bayes Factor is undefined -- the dependent variable contains infinity")
+	}
+
 	if (specific.error == "interaction nuisance"){
 		table[["error"]] <- list(errorType="badData", errorMessage="The main effects of variables should be specified as nuisance whenever their interaction is specified as nuisance")
 	}
+	
 	if (specific.error == "interaction"){
 		table[["error"]] <- list(errorType="badData", errorMessage="The main effects of variables should be included whenever their interaction is included")
 	}

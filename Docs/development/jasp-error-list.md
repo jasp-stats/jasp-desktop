@@ -117,6 +117,7 @@ value errors for *BF*
 * Bayes Factor is undefined -- all effects are specified as nuisance
 * Bayes Factor is undefined -- there are too few observations to estimate all specified effects (possibly only after rows with missing values are excluded)
 * Bayes Factor is undefined -- the factor(s): *X, Y, Z* contain(s) less than two levels (possibly only after rows with missing values are excluded)
+* Bayes Factor is undefined -- the dependent variable contains infinity
 
 #### Bayesian Correlation Matrix
 value errors for *r* the sample correlation co-efficient
