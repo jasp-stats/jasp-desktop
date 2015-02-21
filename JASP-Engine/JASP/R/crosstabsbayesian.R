@@ -194,6 +194,14 @@
 
 	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var))
 	
+	if (all(dim(group.matrices[[1]]) == c(2,2))) {
+	
+		isTwoByTwo <- TRUE
+	} else {
+	
+		isTwoByTwo <- FALSE
+	}
+	
 	plots <- list()
 	counts.rows <- list()
 	tests.rows <- list()
@@ -898,10 +906,10 @@
 	mostPosterior <- mean(samples > mean(range(xticks)))
 }
 
-.crosstabsBayesianPlotoddsratio <- function(var.name, counts.matrix, options, perform, group, status, medi, samples, CI, medianSamples, BF10) { 
+.crosstabsBayesianPlotoddsratio <- function(var.name, counts.matrix, options, perform, group, status, medi, samples, CI, medianSamples, BF10, isTwoByTwo) { 
 
 
-	if (!options$plotPosteriorOddsRatio )
+	if (!options$plotPosteriorOddsRatio || !isTwoByTwo)
 		return()
 	
 	OddratioPlots <- list()
