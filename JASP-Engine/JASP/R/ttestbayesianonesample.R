@@ -2495,7 +2495,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				list(Variable=variable, BF=BF, error=error)
 			})
 			
-			
+						
 			if (class(result) == "try-error") {
 				
 				errorMessage <- .extractErrorMessage(result)
@@ -2522,6 +2522,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				index <- .addFootnote(footnotes, errorMessage)
 				
 				result <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index)))
+				ttest.rows[[i]] <- result
+				
 			} else {			
 						
 				if (is.na(bf.raw)) {
@@ -2550,8 +2552,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				}
 				
 				
-				ttest.rows[[i]] <- result
-				
+				ttest.rows[[i]] <- result				
 			}
 			
 			i <- i + 1
