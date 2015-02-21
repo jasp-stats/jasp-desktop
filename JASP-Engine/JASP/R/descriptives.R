@@ -667,6 +667,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 		results[["plots"]] <- frequency.plots
 	
+	
 		if (perform=="run") {
 				
 			i <- 1
@@ -678,14 +679,21 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					
 				column <- dataset[[ .v(variable) ]]				
 				column <- na.omit(column)
-								
-				if (length(column) > 0 && is.factor(column) || length(column) > 0 && all(!is.infinite(column)) && all(column %% 1 == 0) && length(unique(column)) <= 24) {
+				
+				if (any(is.infinite(column))) {
+						
+						plot <- frequency.plots[[i]]
+						plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
+						plot[["status"]] <- "complete"
+						frequency.plots[[i]] <- plot
+						
+				} else if (length(column) > 0 && is.factor(column) || length(column) > 0  && all(column %% 1 == 0) && length(unique(column)) <= 24) {
 				
 					if (!is.factor(column)) {
 					
 						column <- as.factor(column)
 					}
-				
+					
 					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
 										
 					.barplotJASP(column, variable)
@@ -695,22 +703,29 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					plot <- frequency.plots[[i]]
 					
 					plot[["data"]]  <- content
-					plot[["status"]] <- "complete"
+					plot[["status"]] <- "complete"					
 					
 					frequency.plots[[i]] <- plot
 										
-				} else if (length(column) > 0 && !is.factor(column) && all(!is.infinite(column))) {
-				
-					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
-				
-					.plotMarginal(column, variableName= variable)
-				
-					content <- .endSaveImage(image)
+				} else if (length(column) > 0 && !is.factor(column)) {
 					
-					plot <- frequency.plots[[i]]
+					if (any(is.infinite(column))) {
 					
-					plot[["data"]]  <- content
-					plot[["status"]] <- "complete"
+						plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
+						plot[["status"]] <- "complete"
+					} else {
+					
+						image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+					
+						.plotMarginal(column, variableName= variable)
+					
+						content <- .endSaveImage(image)
+						
+						plot <- frequency.plots[[i]]
+						
+						plot[["data"]]  <- content
+						plot[["status"]] <- "complete"
+					}
 					
 					frequency.plots[[i]] <- plot
 			
