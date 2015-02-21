@@ -295,7 +295,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		if (length(independentsWithLessThanTwoLevels) > 0) {
 		
 			error <- TRUE
-			errorMessage <- paste("Factor(s): <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain(s) less than two levels.<br><br>(Possibly only after rows with missing values are excluded)", sep="")
+			errorMessage <- paste("Factor(s): <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain(s) less than two levels.<br><br>(Possible only after rows with missing values are excluded)", sep="")
 		}
 		
 		if (sum(is.infinite(dataset[[ .v(options$dependent) ]])) > 0) {
@@ -329,7 +329,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		if (sum(is.infinite(dataset[[ .v(options$wlsWeights) ]])) > 0) {
 		
 			error <- TRUE
-			errorMessage <- paste("The variable: <em>", options$wlsWeights, "</em>, contains infinite values.<br><br>(Possibly only after rows with infinite values are excluded)", sep="")
+			errorMessage <- paste("The variable: <em>", options$wlsWeights, "</em>, contains infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
 		}
 		
 	}
@@ -1004,7 +1004,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		levene.formula <- as.formula(levene.def)
 
 		r <- car::leveneTest(levene.formula, dataset, center = "mean")
-
+		
+#		r <- base::tryCatch(car::leveneTest(levene.formula, dataset, center = "mean"),error=function(e) e, warning=function(w) w)
+#		
+#		if (!is.null(r$message) && r$message == "Levene's test on an essentially perfect fit is unreliable")
+#		    stop(r$message)
+		
 		levenes.table[["data"]] <- list(list("F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3]))
 		
 	} else {
