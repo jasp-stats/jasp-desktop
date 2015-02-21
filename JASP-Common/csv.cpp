@@ -223,14 +223,21 @@ void CSV::determineDelimiters()
 	{
 		char ch = _utf8Buffer[i];
 
-		switch (ch)
+		if (ch == '"')
 		{
-		case '"':
 			if (inQuote && i + 1 < _utf8BufferEndPos && _utf8Buffer[i + 1] == '"')
 				i++;
 			else
 				inQuote = !inQuote;
-			break;
+
+			continue;
+		}
+
+		if (inQuote)
+			continue;
+
+		switch (ch)
+		{
 		case ',':
 			counts[COMMA]++;
 			break;
