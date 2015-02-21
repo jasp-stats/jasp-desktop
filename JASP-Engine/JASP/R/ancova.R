@@ -980,8 +980,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="p", type="number", format="dp:3;p:.001"))
 
 	levenes.table[["schema"]] <- list(fields=fields)
-
-	if (perform == "run" && status$ready && status$error == FALSE) {
+        
+	if (perform == "run" && status$ready && status$error == FALSE && length(options$fixedFactors) > 0) {
 
 		interaction <- paste(.v(options$fixedFactors), collapse=":", sep="")
 		levene.def <- paste(.v(options$dependent), "~", interaction)
