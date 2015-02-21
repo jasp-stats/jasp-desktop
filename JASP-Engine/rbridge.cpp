@@ -217,7 +217,15 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 					if (isnan(value))
 						continue;
 
-					int intValue = (int)(value * 1000);
+					int intValue;
+
+					if (isfinite(value))
+						intValue = (int)(value * 1000);
+					else if (value < 0)
+						intValue = INT_MIN;
+					else
+						intValue = INT_MAX;
+
 					uniqueValues.insert(intValue);
 				}
 
@@ -232,9 +240,20 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 
 					valueToIndex[value] = index;
 
-					stringstream ss;
-					ss << ((double)value / 1000);
-					labels.push_back(ss.str());
+					if (value == INT_MAX)
+					{
+						labels.push_back("Inf");
+					}
+					else if (value == INT_MIN)
+					{
+						labels.push_back("-Inf");
+					}
+					else
+					{
+						stringstream ss;
+						ss << ((double)value / 1000);
+						labels.push_back(ss.str());
+					}
 
 					index++;
 				}
@@ -244,11 +263,15 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 					(void)column;
 
 					if (isnan(value))
-						v[rowNo++] = INT_MIN;
+						v[rowNo] = INT_MIN;
+					else if (isfinite(value))
+						v[rowNo] = valueToIndex[(int)(value * 1000)] + 1;
+					else if (value > 0)
+						v[rowNo] = valueToIndex[INT_MAX] + 1;
 					else
-					{
-						v[rowNo++] = valueToIndex[(int)(value * 1000)] + 1;
-					}
+						v[rowNo] = valueToIndex[INT_MIN] + 1;
+
+					rowNo++;
 				}
 
 				rbridge_makeFactor(v, labels, ordinal);
