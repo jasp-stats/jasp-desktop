@@ -150,8 +150,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	results[["profilePlot"]] <- result$result
 	status <- result$status
 	
-	if (options$horizontalAxis != "")
-	    results[["headerProfilePlot"]] <- "Profile Plot(s)"
+	if (options$horizontalAxis != "") {
+	    if (options$seperatePlots != "") {
+	        results[["headerProfilePlot"]] <- "Profile Plots"
+	    } else {
+	        results[["headerProfilePlot"]] <- "Profile Plot"
+	    }
+	}
 	
 	results
 }
@@ -1122,13 +1127,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
                                     
             p <- p + ggplot2::geom_line(position=pd, size = .7) + 
                 ggplot2::geom_point(position=pd, size=4) +
-                ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100))) +
-                ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112)) + 
-                ggplot2::scale_color_manual(values = rep("black",200)) +
+                ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
+                ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) + 
+                ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
                 ggplot2::ylab(options[["dependent"]]) +
                 ggplot2::xlab(options[["horizontalAxis"]]) +
                 ggplot2::labs(shape=options[["seperateLines"]], fill=options[["seperateLines"]]) +
-#                ggplot2::guides(col = ggplot2::guide_legend(nrow = 14)) + 
                 ggplot2::theme_bw() +
                 ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
                       panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
