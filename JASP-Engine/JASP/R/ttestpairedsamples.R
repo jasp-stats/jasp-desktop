@@ -106,7 +106,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	
 				r <- try( { t.test(c1, c2, paired = TRUE, conf.level = ci, alternative = tail) } )
 				
-				if (class(r) != "try-error") {
+				if (class(r) != "try-error" && is.na(r$statistic) == FALSE) {
 			
 					t  <- .clean(as.numeric(r$statistic))
 					df <- as.numeric(r$parameter)
@@ -124,7 +124,14 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 						
 				} else {
 				
-					errorMessage <- .extractErrorMessage(r)
+					if (class(r) != "try-error") {
+					
+						errorMessage <- "could not be calculated"
+						
+					} else {
+				
+						errorMessage <- .extractErrorMessage(r)
+					}
 					
 					if (errorMessage == "missing value where TRUE/FALSE needed") {
 					
@@ -233,7 +240,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				if (is.numeric(std)) {
 					se <- .clean(as.numeric(std/sqrt(n)))}
 				else
-					se <- "NaN"
+					se <- .clean(NaN)
 					
 				row[["N"]] <- n
 				row[["mean"]] <- m
