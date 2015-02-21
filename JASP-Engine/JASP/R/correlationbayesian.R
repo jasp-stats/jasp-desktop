@@ -9,7 +9,6 @@
 # "credibleIntervalsInterval": OptionNumber(.95, 0, 1, "%"));
 # "priorWidth": c(0.5, Inf)
 # "bayesFactorType": BF10/BF01
-
 CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								callback=function(...) 0, ...) {
 	# dataset is data.frame
@@ -19,21 +18,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		if (perform == "run") {
 			if (options$missingValues == "excludeListwise") {
 				dataset <- .readDataSetToEnd(columns.as.numeric=options$variables, exclude.na.listwise=options$variables)
-			} else {				
+			} else {
 				dataset <- .readDataSetToEnd(columns.as.numeric=options$variables)
 			}
 		} else {
 			dataset <- .readDataSetHeader(columns.as.numeric=options$variables)
 		}
 	}
-	
 	results <- list()
-	
 	meta <- list()
-	
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="correlations", type="table")
-	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Correlation Matrix"
 	results[["correlations"]] <-
@@ -42,33 +37,24 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								  kendallsTauB=options$kendallsTauB,
 								  spearman=options$spearman,
 								  hypothesis=options$hypothesis,
-								  reportBayesFactors=options$reportBayesFactors, 
+								  reportBayesFactors=options$reportBayesFactors,
 								  flagSupported=options$flagSupported,
 								  credibleIntervals=options$credibleIntervals,
 								  credibleIntervalsInterval=options$credibleIntervalsInterval,
-								  priorWidth=options$priorWidth, 
-								  bayesFactorType=options$bayesFactorType, 
+								  priorWidth=options$priorWidth,
+								  bayesFactorType=options$bayesFactorType,
 								  missingValues=options$missingValues)
-								  
 	if (perform == "init") {
-	
 		if (length(options$variables) < 2) {
-		
 			results <- list(results=results, status="complete")
-			
 		} else {
-		
 			results <- list(results=results, status="inited")
 		}
-		
 	} else {
-	
 		results <- list(results=results, status="complete")
 	}
-	
 	return(results)
 }
-
 # "variables": data.frame thingie vfc
 # "pearson": TRUE/FALSE
 # "kendallsTauB": TRUE/FALSE
@@ -80,7 +66,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # "credibleIntervalsInterval": OptionNumber(.95, 0, 1, "%"));
 # "priorWidth": c(0.5, Inf)
 # "bayesFactorType": BF10/BF01
-
 .correlationTableBayesian <- function(dataset, perform, variables, pearson=TRUE,
 									  kendallsTauB=FALSE, spearman=FALSE,
 									  hypothesis="correlated",
@@ -89,7 +74,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 									  credibleIntervals=FALSE,
 									  credibleIntervalsInterval=0.95,
 									  priorWidth=priorWidth,
-									  bayesFactorType=bayesFactorType, 
+									  bayesFactorType=bayesFactorType,
 									  missingValues="excludePairwise") {
 	# TODO: check for all arguments in particular meansAndStdDev,
 	# hypothesis="correlated"
@@ -99,16 +84,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	correlation.table[["citation"]] <- list(
 		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
 	)
-	
 	if (perform == "init") {
-	
 		if (length(variables) < 2)
 			variables <- c(variables, "...")
 		if (length(variables) < 2)
 			variables <- c(variables, "... ")
 	}
-	
-	
 	if (hypothesis == "correlated") {
 		if (bayesFactorType=="BF10"){
 			bf.title <- "BF\u2081\u2080"
@@ -128,7 +109,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			bf.title <- "BF\u2080\u208B"
 		}
 	}
-	# test contains the tests that are performed
+	# Note: test contains the tests that are performed
 	tests <- c()
 	if (pearson)
 		tests <- c(tests, "pearson")
@@ -136,7 +117,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		tests <- c(tests, "spearman")
 	if (kendallsTauB)
 		tests <- c(tests, "kendall")
-	# Naming of the tests
+	# Note: Naming of the table
 	if (length(tests) != 1) {
 		correlation.table[["title"]] <- paste("Bayesian Correlation Table")
 	} else if (pearson) {
@@ -148,31 +129,40 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	} else {
 		correlation.table[["title"]] <- paste("Bayesian Correlation Table")
 	}
-	# Describe column names to the returned object
+	
+	# Note: Describe column names to the returned object
 	fields <- list(list(name=".variable", title="", type="string"))
 	rows <- list()
-	# create footnote function
+	
+	# Note: create footnote function
 	footnotes <- .newFootnotes()
 	if (flagSupported) {
 		.addFootnote(footnotes, paste(bf.title, " > 10, ** , ", bf.title, " > 30, *** ", bf.title, " > 100"), symbol="*")
 	}
+	
+	# Note: Go over each variable
 	v.c <- length(variables)
 	if (v.c > 0) {
-		# If there are variables
+		# Note: There are variables: 
 		test.names <- list(pearson="Pearson's R", spearman="Spearman's Rho", kendall="Kendall's Tau B")
 		column.names <- c()
 		for (test in tests) {
-			# Creating columns
+			
+			# Note: create columns per test
 			if (length(tests) > 1 || reportBayesFactors) {
 				column.name <- paste(".test[", test, "]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
 				fields[[length(fields)+1]] <- list(name=column.name, title="", type="string")
 			}
+			
+			# Note: create columns per test variable 
 			for (variable.name in variables) {
 				column.name <- paste(variable.name, "[", test, "]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
 				fields[[length(fields)+1]] <- list(name=column.name, title=variable.name, type="number", format="dp:3")
 			}
+			
+			# Note: create column for bfs
 			if (reportBayesFactors) {
 				column.name <- paste(".test[", test, "-p]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
@@ -184,36 +174,44 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				}
 			}
 		}
+		
 		for (i in 1:v.c) {
-			# For each variable
+			# Note: Create row given a column
 			row <- list()
 			row.footnotes <- list()
 			variable.name <- variables[[i]]
+			
 			for (test in tests) {
+				# Note: Create test row given a column
 				bayes.factors <- list()
+				
 				if (length(tests) > 1 || reportBayesFactors)
+					# Note: Create test name for each test row given a column
 					row[[length(row)+1]] <- test.names[[test]]
 				if (reportBayesFactors)
+					# Note: Create bf row each test given each column (variable)
 					bayes.factors[[length(bayes.factors)+1]] <- bf.title
 				for (j in .seqx(1, i-1)) {
+					# Note: Fill in blanks
 					row[[length(row)+1]] <- ""
 					bayes.factors[[length(bayes.factors)+1]] <- ""
 				}
-				row[[length(row)+1]] <- "\u2014" # em-dash
+				
+				row[[length(row)+1]] <- "\u2014" # em-dash # Note: Fill in blanks
 				bayes.factors[[length(bayes.factors)+1]] <- ""
+				
 				for (j in .seqx(i+1, v.c)) {
-					# fill in blanks in table upper left-hand off diaganols
+					# Note: fill in blanks in table upper left-hand off diaganols
 					variable.2.name <- variables[[j]]
 					column.name <- paste(variable.2.name, "[", test, "]", sep="")
-					
 					v1 <- dataset[[ .v(variable.name) ]]
 					v2 <- dataset[[ .v(variable.2.name) ]]
 					
+					# Note: Data screening 
 					if (missingValues=="excludePairwise"){
 						removeIndex1 <- which(is.na(v1))
 						removeIndex2 <- which(is.na(v2))
 						removeIndex <- unique(c(removeIndex1, removeIndex2))
-						
 						if (length(removeIndex) > 0){
 							v1 <- v1[-(removeIndex)]
 							v2 <- v2[-(removeIndex)]
@@ -221,9 +219,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					}
 					
 					if (perform == "run") {
+						# Note: Data: PREPARE
 						some.r <- cor(v1, v2)
 						some.n <- length(v1)
-						if (is.na(some.r)) {
+						
+						# Note: Data and bfs check [start]
+						if (is.na(some.r) || some.n <= 1) {
+							# Note: Data: NOT ok, 
+							# 		bf10: can't
 							if (some.n <= 1){
 								index <- .addFootnote(footnotes, "Sample correlation co-efficient r is undefined - not enough observations")
 							} else if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
@@ -233,30 +236,78 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							}
 							#row.footnotes[[variable.2.name]] <- c(row.footnotes[[variable.name]], list(index))
 							row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+							
 							some.r <- NaN
-							some.bf <- NaN
+							some.bf10 <- NaN
+							some.bfPlus0 <- NaN
+							some.bfMin0 <- NaN
+						} else {
+							# Note: Data: OK, 
+							# 		bf10: PREPARE
+							some.bf10 <- as.numeric(.bf10Corrie(n=some.n, r=some.r))
+							
+							if (is.na(some.bf10)){
+								# Note: Data: OK
+								# 		bf10: NOT ok 
+								some.bfPlus0 <- NaN
+								some.bfMin0 <- NaN
+							} else {
+								# Note: Data: OK, 
+								# 		bf10: OK. 
+								#		bfPlus0, bfMin0: PREPARE
+								some.bfPlus0 <- as.numeric(.bfPlus0(n=some.n, r=some.r))
+								some.bfMin0 <- as.numeric(.bfMin0(n=some.n, r=some.r))
+								
+								if (some.r > 0 && some.bfPlus0 > 1 && some.bfMin0 > 1){
+									# Note: Data: OK, 
+									# 		bf10: OK. 
+									#		bfPlus0: OK
+									#		bfMin0: NOT ok 
+									# 
+									# bfMin0 is bigger than one due to overflow: bfMin0 = 2*bf10 - bfPlus0. 
+									# Example: 2*1.2.... 10^ 24 - 2.... 10^24 = 1... 10^12 (due to round off)
+									#
+									some.bfMin0 <- 10^(-317) 
+									some.bfPlus0 <- 2*some.bf10 - some.bfMin0
+								} else if (some.r < 0 && some.bfPlus0 > 1 && some.bfMin0 > 1){
+									# Note: Data: OK, 
+									# 		bf10: OK. 
+									#		bfPlus0: NOT ok
+									#		bfMin0: OK
+									some.bfPlus0 <- 10^(-317) 
+									some.bfMin0 <- 2*some.bf10 - some.bfPlus0
+								} 
+								# Note: bf10 [close]
+							}
+							# Note: data [close]
 						}
+						
+						# Note: Assign bfs to be reported
 						if (hypothesis == "correlated") {
-							# TODOTODO:
-							# Check up on NA for some.bf
-							some.bf <- as.numeric(.bf10Corrie(n=some.n, r=some.r))
+							some.bf <- some.bf10
+							
 							if (bayesFactorType == "BF01"){
 								some.bf <- 1/some.bf
 							}
 						} else if (hypothesis == "correlatedPositively"){
 							# TODO: Still need to implement this for general rho0, rather than rho0=0
-							some.bf <- as.numeric(.bfPlus0(n=some.n, r=some.r))
-							if (bayesFactorType == "BF01"){
-								some.bf <- 1/some.bf
-							} 
-						} else if (hypothesis == "correlatedNegatively") {
-							some.bf <- as.numeric(.bfMin0(n=some.n, r=some.r))
+							some.bf <- some.bfPlus0
+							
 							if (bayesFactorType == "BF01"){
 								some.bf <- 1/some.bf
 							}
-						} 
+						} else if (hypothesis == "correlatedNegatively") {
+							some.bf <- some.bfMin0
+							
+							if (bayesFactorType == "BF01"){
+								some.bf <- 1/some.bf
+							}
+						}
 						
+						# Note: Data [report]
 						row[[length(row)+1]] <- .clean(some.r)
+						
+						# Note: Flagging at the data [report]
 						if (flagSupported && is.na(some.bf) == FALSE) {
 							if (some.bf > 100) {
 								row.footnotes[[column.name]] <- list("***")
@@ -266,18 +317,28 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								row.footnotes[[column.name]] <- list("*")
 							}
 						}
-						if (reportBayesFactors)
+						
+						# Note: Flagging and report bfs [report]
+						if (reportBayesFactors) {
 							bayes.factors[[length(bayes.factors)+1]] <- .clean(some.bf)
+						} 
+						# Note: run end, fill in blanks
 					} else {
+						# Note: run == NO
 						row[[length(row)+1]] <- "."
 						bayes.factors[[length(bayes.factors)+1]] <- "."
 					}
 				}
+				
+				
 				if (reportBayesFactors) {
-					for (bf in bayes.factors)
+					for (bf in bayes.factors){
 						row[[length(row)+1]] <- bf
+					}
 				}
+				# Note: close each test	
 			}
+			
 			names(row) <- column.names
 			row[[".variable"]] <- variable.name
 			if (length(row.footnotes) > 0)
@@ -291,9 +352,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	correlation.table[["footnotes"]] <- as.list(footnotes)
 	correlation.table
 }
-
-
-
 ## Help functions ------------------------------------------------------------
 # 0. Prior specification
 .priorRho <- function(rho, alpha=1) {
@@ -302,7 +360,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	result <- exp(logNormalisationConstant)*priorDensity
 	return(result)
 }
-
 .priorRhoPlus <- function(rho, alpha=1) {
 	nonNegativeIndex <- rho >=0
 	lessThanOneIndex <- rho <=1
@@ -311,14 +368,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	myResult[valueIndex] <- 2*.priorRho(rho[valueIndex], alpha)
 	return(myResult)
 }
-
 # 1.0. Built-up for likelihood functions
 .myAFunction <- function(n, r, rho) {
 	hyperTerm <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), (1/2), (r*rho)^2))
 	myResult <- (1-rho^2)^((n-1)/2)*hyperTerm
 	return(myResult)
 }
-
 .myBFunction <- function(n, r, rho) {
 	hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), (1/2), (r*rho)^2))
 	hyperTerm2 <- Re(hypergeo::hypergeo((n/2), (n/2), (-1/2), (r*rho)^2))
@@ -331,7 +386,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	myResult <- .myAFunction(n, r, rho) + .myBFunction(n, r, rho)
 	return(myResult)
 }
-
 .jeffreysApproxH <- function(n, r, rho) {
 	return(((1 - rho^(2))^(0.5*(n - 1)))/((1 - rho*r)^(n - 1 - 0.5)))
 }
@@ -345,7 +399,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(.m0MarginalLikelihood(s, t, n)*
 		   	(.myAFunction(n, r, rho)+.myBFunction(n, r, rho)))
 }
-
 #
 # 2.1 Two-sided main Bayes factor ----------------------------------------------
 .bf10Corrie <- function(n, r, alpha=1) {
@@ -360,9 +413,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	if (alpha <= 1 && n > 2 && checkR) {
 		return(Inf)
 	}
-	
 	myExactResult <- .bf10Exact(n, r, alpha)
-	
 	if (is.na(myExactResult) || myExactResult < 0 ){
 		# Exact failed :(
 		if (alpha == 1){
@@ -396,7 +447,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			} else if (numericalResult >= 0){
 				# Numerical result success (Exact failed)
 				return(numericalResult)
-			} 
+			}
 		}
 	} else if (myExactResult >= 0){
 		return(myExactResult)
@@ -405,7 +456,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		return(NaN)
 	}
 }
-
 .bf10Exact <- function(n, r, alpha=1) {
 	# Ly et al 2014
 	# This is the exact result with symmetric beta prior on rho
@@ -427,7 +477,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#return(realResult)
 	return(realResult)
 }
-
 # 2.2 Two-sided secondairy Bayes factor
 .bf10JeffreysIntegrate <- function(n, r) {
 	# Jeffreys' test for whether a correlation is zero or not
@@ -449,7 +498,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	myResult <- sqrt(pi)/2*exp(logTerm)*hyperTerm
 	return(myResult)
 }
-
 # 2.3 Two-sided third Bayes factor
 .bf10Numerical <- function(n, r, alpha=1) {
 	# Jeffreys' test for whether a correlation is zero or not
@@ -462,7 +510,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#
 	# TODO: REMOVE ALL NUMERICAL STUFF
 	return(NaN)
-	
 	if ( any(is.na(r)) ){
 		return(NaN)
 	}
@@ -470,24 +517,21 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	if (n > 2 && abs(r)==1) {
 		return(Inf)
 	}
-	
 	# TODO: be very careful here, might integrate over non-finite function
 	integrand <- function(rho){.myHFunction(n, r, rho)*priorRho(rho, alpha)}
 	exactIntegrate <- integrate(integrand, -1, 1)
-	
 	if (is.na(exactIntegrate) || exactIntegrate < 0){
 		# Exact Integrate failed
 		if (alpha==1){
 			# TODO: be very careful here, might integrate over non-finite function
 			integrand <- function(rho){.jeffreysApproxH(n, r, rho)*priorRho(rho, alpha=1)}
 			jeffreysNumericalIntegrate <- integrate(integrand, -1, 1)
-			
 			if (is.na(jeffreysNumericalIntegrate) || jeffreysNumericalIntegrate < 0){
 				return(NaN)
 			} else if (jeffreysNumericalIntegrate >= 0){
 				# jeffreys numerical integrate success (exact Integrate failed)
 				return(jeffreysNumericalIntegrate)
-			} 
+			}
 		} else if (alpha != 1){
 			# ALL failed :(
 			return(NaN)
@@ -500,7 +544,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		return(NaN)
 	}
 }
-
 # 2.4. Two-sided fourth Bayes factor
 .bf10JeffreysApprox <- function(n, r) {
 	#Jeffreys' test for whether a correlation is zero or not
@@ -516,8 +559,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	myResult <- ((2*n-3)/pi)^(.5)*(1-r^2)^((n-4)/2)
 	return(1/myResult)
 }
-
-
 # 3.0 One-sided preparation ----------------------------------------------------
 .mPlusMarginalB <- function(n, r, alpha=1){
 	# Ly et al 2014
@@ -540,7 +581,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	result <- productTerm*exp(logTerm)*sumTerm
 	return(result)
 }
-
 # 3.1 One-sided 1 BF
 .bfPlus0 <- function(n, r, alpha=1){
 	# Ly et al 2014
@@ -553,7 +593,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#
 	#
 	# TODO: 1. check for n=1, n=2, as r is then undefined
-	#	
+	#
 	if ( any(is.na(r)) ){
 		return(NaN)
 	}
@@ -562,14 +602,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	} else if (alpha <= 1 && n > 2 && r<=-1){
 		return(0)
 	}
-	
-	# TODO: Calculate TWO SIDED FIRST, if it is infinite 
-	# 	and everythings going into the same direction then just return infinity as well
+	# TODO: Calculate TWO SIDED FIRST, if it is infinite
+	# and everythings going into the same direction then just return infinity as well
 	#
 	#TODO: Test for NAs
 	myResult <- .bf10Exact(n, r, alpha) + .mPlusMarginalB(n, r, alpha)
 	# TODO: use which to make it dynamic (only when I actually want to draw it as a function of r)
-	
 	if (is.na(myResult) || myResult < 0){
 		# Exact BFPlus failed (negative or undefined)
 		if (alpha==1){
@@ -577,7 +615,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			bf10EJ <- .bf10JeffreysIntegrate(n, r)
 			mPlusEJ <- .mPlusMarginalBJeffreysIntegrate(n, r)
 			ejResult <- bf10EJ+mPlusEJ
-			
 			if (is.na(ejResult) || ejResult < 0){
 				# EJs BF failed (negative or undefined)
 				# Try numerical BF
@@ -586,10 +623,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				if (is.na(numericalResult) || numericalResult < 0){
 					# ALL failed :(
 					if (r > 0 && n > 2 && alpha <= 1){
-						# postive hypothesis and positive r 
+						# postive hypothesis and positive r
 						return(Inf)
-					} else if  (r < 0 && n > 2  && alpha <= 1){
-						# postive hypothesis and negative r 
+					} else if (r < 0 && n > 2 && alpha <= 1){
+						# postive hypothesis and negative r
 						return(0)
 					} else {
 						# Totally no idea EVERYTHING FAILED UNIVERSAL COLLAPSE ETC
@@ -606,7 +643,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		} else if (alpha != 1){
 			# Try numerical BF
 			numericalResult <- .numericalPlus0(n, r, alpha)
-			
 			if (is.na(numericalResult) || numericalResult < 0){
 				# ALL failed
 				return(NaN)
@@ -623,11 +659,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		return(NaN)
 	}
 }
-
-
 .numericalPlus0 <- function(n, r, alpha=1){
 	# Ly et al 2014
-	# This is a numerical approximation 
+	# This is a numerical approximation
 	# with parameter alpha. If alpha = 1 then uniform prior on rho
 	# bf positive vs null
 	#
@@ -636,10 +670,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#
 	#
 	# TODO: 1. check for n=1, n=2, as r is then undefined
-	#	
+	#
 	# TODO: REMOVE ALL NUMERICAL STUFF
 	return(NaN)
-	
 	if ( any(is.na(r)) ){
 		return(NaN)
 	}
@@ -648,14 +681,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	} else if (alpha <= 1 && n > 2 && r<=-1){
 		return(0)
 	}
-	
 	if (alpha == 1){
 		# TODO: be very careful here, might integrate over non-finite function
-		# 
+		#
 		integrand <- function(rho){.jeffreysApproxH(n, r, rho)*
 								   	.priorRhoPlus(rho, alpha)}
 		myJeffreysHResult <- integrate(integrand, lower=0, upper=1)
-		
 		if (is.na(myJeffreysHResult) || myJeffreysHResult < 0){
 			# All numerical failed
 			return(NaN)
@@ -669,9 +700,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# NO IDEA, EVERYTHING FAILED :(
 	return (NaN)
 }
-	
-	
-
 .bfMin0 <- function(n, r, alpha=1){
 	# Ly et al 2014
 	# This is the exact result with symmetric beta prior on rho
@@ -686,9 +714,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	myResult <- .bfPlus0(n, -r, alpha=alpha)
 	return(myResult)
 }
-
-
-
 .mPlusMarginalBJeffreysIntegrate <- function(n, r) {
 	# Jeffreys' test for whether a correlation is zero or not
 	# Jeffreys (1961), pp. 289-292
@@ -711,12 +736,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	myResult <- (2*n-3)/(2*n+2)*r*hyperTerm
 	return(myResult)
 }
-
 .bfPlus0JeffreysIntegrate <- function(n, r){
 	myResult <- .bf10JeffreysIntegrate(n, r) + .mPlusMarginalBJeffreysIntegrate(n, r)
 	return(myResult)
 }
-
 # 4.0 Posteriors to graph TODO: we have to think about this, different
 # results, thus, also switching of the illustrations?
 #
