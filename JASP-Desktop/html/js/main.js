@@ -280,6 +280,7 @@ var stringify = function(element, tabs) {
 						.replace(/'/g, '&#39;')
 						.replace(/</g, '&lt;')
 						.replace(/>/g, '&gt;')
+						.replace(/\u2212/g, '-')
 				
 					text += "\n" + tabs + value + "\n"
 				}
