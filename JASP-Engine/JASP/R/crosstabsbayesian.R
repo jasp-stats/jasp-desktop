@@ -9,7 +9,7 @@
 		counts.var <- NULL
 	
 	all.vars <- c(unlist(analysis), counts.var)
-
+	
 	dataset <- subset(dataset, select=.v(all.vars))
 	
 	# the following creates a 'groups' list
@@ -185,6 +185,7 @@
 		if (any(counts < 0) || any(is.infinite(counts)))
 			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinite number")
 	}
+	
 
 
 	# POPULATE TABLES
@@ -231,7 +232,8 @@
 		CI <- next.rows$CI
 		medianSamples <- next.rows$medianSamples
 		
-		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF)
+		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status=status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF, isTwoByTwo= isTwoByTwo)
+
 		plots <- c(plots, plot)
 	}
 
@@ -924,8 +926,9 @@
     group[group==""] <- "Total"
     #group[group==""] <- names(group)
 
-	if (options$plotPosteriorOddsRatio ){
+	if (options$plotPosteriorOddsRatio){
 	
+		
 		if (length(group) == 0) {
 		
 			oddsratio.plot[["title"]] <- "Odds ratio"
@@ -947,8 +950,19 @@
 		.plotPosterior.crosstabs(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
 		oddsratio.plot[["data"]] <- .endSaveImage(image) 	
 		oddsratio.plot[["status"]] <- "running"
+		
+		
+		if (status$error) {
+		
+			oddsratio.plot[["error"]] <- list(error="badData", errorMessage=status$errorMessage)
+			oddsratio.plot[["status"]] <- "complete"
+			OddratioPlots[[length(OddratioPlots)+1]] <- oddsratio.plot
 			
+			return(OddratioPlots)
+		}
+		
 		if (perform == "run" && status$error == FALSE) {
+		
 		
 			if (! identical(dim(counts.matrix),as.integer(c(2,2)))) {
 			
@@ -1006,7 +1020,48 @@
 					x1 <- unname(stats::quantile(logOR, p = (1-Sig)))
 					CI <- c(x0, x1)
 				}
-								
+				
+				
+				#image <- .beginSaveImage(530, 400)
+				
+				# par(mar= c(5, 4.5, 8, 2) + 0.1, xpd=TRUE, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3, las=1)
+				# digitsize <- 1.2
+				# y.mode <- z$y[i.mode]
+				# lim<-max(z$x)-min(z$x)
+				# fit<-logspline::logspline(logOR)
+				# ylim0 <- c(0,1.1*y.mode )
+				# xlow<-unname(stats::quantile(logOR, p =0.0001))
+				# xhigh<-unname(stats::quantile(logOR, p =0.9999))
+				# xticks <- pretty(c(xlow,xhigh), min.n= 3)
+				# 
+				# if (length(group) > 0) {
+				# 
+				# 	plot(1, type="n", ylim=ylim0, xlim=range(xticks),
+				# 		axes=F, 
+				# 		main =paste(names(group),"=", group), xlab="log(Odds ratio)", ylab="Posterior Density")
+				# 
+				# } else {
+                # 
+				# 	plot(1, type="n", ylim=ylim0, xlim=range(xticks),
+				# 		axes=F, 
+				# 		xlab="log(Odds ratio)", ylab="Posterior Density")
+				# }
+				# 		
+				# plot(function(x)logspline::dlogspline(x, fit), xlim = range(xticks), lwd=2, add=TRUE)
+				# axis(1, line=0.3, at=xticks, lab=xticks)
+				# axis(2)
+				# CI1<-CI*100
+				# CI1<-bquote(.(CI1))
+				# arrows(x0, 1.07*y.mode, x1, 1.07*y.mode, length = 0.05, angle = 90, code = 3, lwd=2)
+				# #text(-1.5, 0.8, expression(log('BFI'[10]) == 22.60),cex=digitsize)
+				# text(x.mode,y.mode+(y.mode/4), paste("Median =", round(x.median,digit=3)), cex=digitsize)
+				# text(x.mode, y.mode+(y.mode/7), paste(CI1,"%"), cex=digitsize)
+				# text(x0, y.mode, round(x0, digits = 3) , cex=digitsize)
+				# text(x1, y.mode, round(x1, digits = 3) , cex=digitsize)
+				
+				#.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval)
+				
+				
 				if (BF10 == "NaN") {
 				
 					oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is NaN")
