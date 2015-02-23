@@ -99,53 +99,59 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 			withmain <- result$bf.object
 			BFmain <- result$bf
 			errormain <- result$error
+			
 			#####PREPARE VECTORS/MATRICES WITHOUT NUISANCE######
 			# Prepare for model selection: lists of components of effects and models
 			# Modelnames and effect names for table
 			# Matrix of effects (of interest -without nuisance) vs models
 
 			# Make a list of all models and their components, without nuisance terms, for later use
+			if(result$error.present == 0){			
+				modelsmain <- result$models
 
-			modelsmain <- result$models
-
-			a <- .modelnames(modelsmain,null.name,terms.nuisance)
-			for (n in 1: length(a)){
-			#This sets: n.mod, n.mod.0, models.tab, models, models.no.null
-				assign(names(a)[n], a[[n]])
-			}
+				a <- .modelnames(modelsmain,null.name,terms.nuisance)
+				for (n in 1: length(a)){
+					#This sets: n.mod, n.mod.0, models.tab, models, models.no.null
+					assign(names(a)[n], a[[n]])
+				}
 			##PROCESS RESULTS
-			BFmain.0	<- c(1,BFmain)
+				BFmain.0	<- c(1,BFmain)
 			# prior probability: 1/ number of models
-			pprior <- .clean(1/n.mod.0)
+				pprior <- .clean(1/n.mod.0)
 			# posterior probability: computed from Bayes factors (only with equal prior probability)
 
-			warning.message <- NULL
-			if( any(BFmain.0 == "NaN") || any(!is.finite(BFmain.0))){
-				if (all(is.finite(BFmain.0))){ #containing nan, but not infinity
-					tmp <- which(BFmain.0 != "NaN")
-					posterior.probability <- rep(0,length(BFmain.0))
-					posterior.probability[tmp] <- c(BFmain.0[tmp])/sum(BFmain.0[tmp])
-				} else if(all(BFmain.0 != "NaN")){ #containing infinity, but not nan
-					tmp <- which(!is.finite(BFmain.0))
-					posterior.probability <- rep(0,length(BFmain.0))
-					posterior.probability[tmp] <- 1/length(tmp)
-
-				} else{ #containing both
-					tmp <- which(BFmain.0 == "Inf")
-					posterior.probability <- rep(0,length(BFmain.0))
-					posterior.probability[tmp] <- 1/length(tmp)
+				warning.message <- NULL
+				if( any(BFmain.0 == "NaN") || any(!is.finite(BFmain.0))){
+					if (all(is.finite(BFmain.0))){ #containing nan, but not infinity
+						tmp <- which(BFmain.0 != "NaN")
+						posterior.probability <- rep(0,length(BFmain.0))
+						posterior.probability[tmp] <- c(BFmain.0[tmp])/sum(BFmain.0[tmp])
+					} else if(all(BFmain.0 != "NaN")){ #containing infinity, but not nan
+							tmp <- which(!is.finite(BFmain.0))
+							posterior.probability <- rep(0,length(BFmain.0))
+							posterior.probability[tmp] <- 1/length(tmp)
+					} else{ #containing both
+							tmp <- which(BFmain.0 == "Inf")
+							posterior.probability <- rep(0,length(BFmain.0))
+							posterior.probability[tmp] <- 1/length(tmp)
+					}
+				} else { #containing neither
+					posterior.probability <- c(BFmain.0)/sum(BFmain.0)
 				}
-			} else { #containing neither
-				posterior.probability <- c(BFmain.0)/sum(BFmain.0)
-			}
-			BFmodels <-	(posterior.probability/(1-posterior.probability))/(pprior/(1-pprior))
-			errormain.0 <- c(NA,errormain)
+				BFmodels <-	(posterior.probability/(1-posterior.probability))/(pprior/(1-pprior))
+				errormain.0 <- c(NA,errormain)
 			#This produces the results. MM
-			posterior.results <- .posteriorResultsBayesianAnCova (table = "run", n.mod.0 = n.mod.0,
-				posterior.probability = posterior.probability, BFmain.0 = BFmain.0,
-				errormain.0 = errormain.0, models.tab = models.tab, BFmodels = BFmodels,
-				options = options, pprior = pprior, terms.nuisance = terms.nuisance )
-
+				posterior.results <- .posteriorResultsBayesianAnCova (table = "run", n.mod.0 = n.mod.0,
+					posterior.probability = posterior.probability, BFmain.0 = BFmain.0,
+					errormain.0 = errormain.0, models.tab = models.tab, BFmodels = BFmodels,
+					options = options, pprior = pprior, terms.nuisance = terms.nuisance )
+			} else { #there is now an error.
+				error.present <- result$error.present
+				specific.error <- result$specific.error
+				errorcheck <- list(error.present = error.present, specific.error = specific.error)
+				posterior.results <- .posteriorResultsBayesianAnCova (table = "init", null.name = null.name,
+					all.models = all.models, terms.nuisance = terms.nuisance)				
+			}
 		} else {
 				posterior.results <- .posteriorResultsBayesianAnCova (table = "init", null.name = null.name,
 					all.models = all.models, terms.nuisance = terms.nuisance)
@@ -164,7 +170,6 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	###################
 	###EFFECTS TABLE###
 	##################
-
 	if (options$outputEffects == TRUE) {
 
 		effect <- list()
@@ -545,6 +550,11 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	if (specific.error == "lower order effects"){
 		table[["error"]] <- list(errorType="badData", errorMessage="The main effects and lower order interactions of variables must be included whenever their corresponding higher order interactions are included")
 	}
+
+	if (specific.error == "unknown error"){
+		table[["error"]] <- list(errorType="badData", errorMessage="Bayes Factor could not be computed")
+	}
+	
 	return(table)
 }
 
@@ -614,21 +624,25 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 }
 
 .estimateBayesFactorBayesianAnCova <- function( mode, model.formula, dataset, terms.nuisance, options, jasp.callback ){
-
+	error.present <- 0
+	specific.error <- "none"
 	result <- BayesFactor::generalTestBF(model.formula, dataset, whichModels = mode,
 		neverExclude = paste("^",terms.nuisance,"$", sep = ""), whichRandom = .v(options$randomFactors),
 		progress=FALSE, callback=jasp.callback)
-
+	
 	if (length(terms.nuisance) > 0) {
 		ind.nui <- which(names(result)$numerator == paste(terms.nuisance, collapse=" + "))
 		result <- result[-ind.nui]/result[ind.nui]
 	}
-
 	bf <- as.numeric(exp(result@bayesFactor$bf))
 	error <- as.numeric(result@bayesFactor$error)
 	models <- names(result)$numerator
 
-	return(list(bf = bf, error = error, models = models, bf.object = result))
+	if(any(is.na(bf))){		
+		error.present <- 1
+		specific.error <- "unknown error"
+	}
+	return(list(bf = bf, error = error, models = models, bf.object = result, error.present = error.present, specific.error = specific.error))
 }
 
 .posteriorResultsBayesianAnCova <- function( table = "null" , null.name = "Null model", n.mod.0 = NULL,
