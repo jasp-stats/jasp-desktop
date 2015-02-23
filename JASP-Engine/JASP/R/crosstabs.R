@@ -76,7 +76,7 @@
 
 	counts.table <- list()
 	
-	counts.table[["title"]] <- "Crosstabs"
+	counts.table[["title"]] <- "Contingency Tables"
 	
 	counts.fields <- fields
 	
@@ -981,8 +981,8 @@
 					chi.result <- vcd::oddsratio(counts.matrix)
 					LogOR <- chi.result
 					CI <- stats::confint(chi.result, level = options$oddsRatioConfidenceIntervalInterval)
-					CI.low <- CI[1]
-					CI.high <- CI[2]
+					log.CI.low <- CI[1]
+					log.CI.high <- CI[2]
 				})
 
 				if (class(chi.result) == "try-error") {
@@ -1005,18 +1005,22 @@
 					row.footnotes[["value[oddsRatio]"]]=list(sup)
 
 				} else {
-
+				
 					row[["value[oddsRatio]"]] <-LogOR
-					row[["low[oddsRatio]"]] <- CI.low
-					row[["up[oddsRatio]"]] <- CI.high
+					row[["low[oddsRatio]"]] <- log.CI.low
+					row[["up[oddsRatio]"]] <- log.CI.high
 				}
-	
+				
+				row[["value[oddsRatio]"]] <- .clean(LogOR)
+				row[["low[oddsRatio]"]] <- .clean(log.CI.low)
+				row[["up[oddsRatio]"]] <-  .clean(log.CI.high)	
 			}
 		}
 		 
 	} else {
 	
 		row[["value[oddsRatio]"]] <- "."
+		
 	}
 	
 	if (options$oddsRatio ) {
@@ -1042,8 +1046,8 @@
 					OR <- unname(chi.result$estimate)
 					logOR <- log(OR)
 					
-					CI.low <- chi.result$conf.int[1]
-					CI.high <- chi.result$conf.int[2]
+					log.CI.low <- log(chi.result$conf.int[1])
+					log.CI.high <- log(chi.result$conf.int[2])
 					
 				})
 
@@ -1069,10 +1073,13 @@
 				} else {
 
 					row[["value[FisherTest]"]] <- logOR 
-					row[["low[FisherTest]"]] <- log(CI.low)
-					row[["up[FisherTest]"]] <-  log(CI.high)
+					row[["low[FisherTest]"]] <- log.CI.low
+					row[["up[FisherTest]"]] <-  log.CI.high
 				}
-	
+				
+				row[["value[FisherTest]"]] <- .clean(logOR)
+				row[["low[FisherTest]"]] <- .clean(log.CI.low)
+				row[["up[FisherTest]"]] <-  .clean(log.CI.high)			
 			}
 		}
 		 
@@ -1510,11 +1517,11 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 
 	meta <- list()
 	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="crosstabs", type="tables")
+	meta[[2]] <- list(name="Contingency Tables", type="tables")
 	
 	results[[".meta"]] <- meta
 	
-	results[["title"]] <- "Crosstabs"
+	results[["title"]] <- "Contingency Tables"
 	
 	
 	### CROSS TABS
@@ -1547,10 +1554,10 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 	} else {
 	
-		crosstabs[[1]] <- list(title = "Crosstabs", cases = list(), schema = list(fields=list()))
+		crosstabs[[1]] <- list(title = "Contingency Tables", cases = list(), schema = list(fields=list()))
 	}
 
-	results[["crosstabs"]] <- crosstabs
+	results[["Contingency Tables"]] <- crosstabs
 
 	results
 }
