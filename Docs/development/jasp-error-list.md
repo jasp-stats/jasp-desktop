@@ -116,6 +116,7 @@ value errors for *BF*
 * Bayes factor is undefined -- too few observations (possibly only after rows with missing values are excluded)
 * Bayes factor is undefined -- the factor(s) *X, Y, Z* contain(s) less than two levels (possibly only after rows with missing values are excluded)
 * Bayes factor is undefined -- the dependent variable contains infinity
+* Bayes factor could not be computed
 * *Note.* All models include *X, Y, Z*
 
 #### Bayesian Correlation Matrix
