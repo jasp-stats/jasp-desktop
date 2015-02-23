@@ -63,9 +63,9 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	menu = new QMenu(this);
 
-	menu->addAction(QString("Crosstabs"), this, SLOT(itemSelected()))->setObjectName("Crosstabs");
+	menu->addAction(QString("Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("Crosstabs");
 	menu->addSeparator();
-	menu->addAction(QString("Bayesian Crosstabs"), this, SLOT(itemSelected()))->setObjectName("CrosstabsBayesian");
+	menu->addAction(QString("Bayesian Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("CrosstabsBayesian");
 
 	ui->classicalCrosstabsButton->setMenu(menu);
 }
