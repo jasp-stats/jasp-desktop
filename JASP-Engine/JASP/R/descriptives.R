@@ -53,18 +53,37 @@
 .barplotJASP <- function(column, variable){
 
 	maxFrequency <- max(summary(column))
-	yticks <- seq(0, maxFrequency, 1)
 	
-	while (length(yticks) > 8) {
+	i <- 1
+	step <- 1
+	
+	while (maxFrequency / step > 10) {
 		
-		yticks <- yticks[seq(1,length(yticks), 2)]
+		if (i == 2) {
+			
+			step <- 2 * step
+			i <- i + 1
+			
+		} else if (i %% 3 == 0) {
+			
+			step <- 2.5 * step
+			i <- i + 1
+			
+		} else {
+			
+			step <- 2 * step
+			i <- i + 1
+		}	
+		
 	}
 	
-	while (max(yticks) < maxFrequency) {
+	yticks <- 0
+	
+	while (yticks[length(yticks)] < maxFrequency) {
 		
-		stepSize <- yticks[2] - yticks[1]
-		yticks <- c(yticks, yticks[length(yticks)] + stepSize)		
+		yticks <- c(yticks, yticks[length(yticks)] + step)
 	}
+	
 	
 	yLabs <- vector("character", length(yticks))
 	
