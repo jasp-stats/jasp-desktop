@@ -73,7 +73,7 @@
 
 	counts.table <- list()
 	
-	counts.table[["title"]] <- "Bayesian Crosstabs"
+	counts.table[["title"]] <- "Bayesian Contingency Tables"
 	
 	counts.fields <- fields
 	
@@ -143,7 +143,7 @@
 
 	tests.table <- list()
 	
-	tests.table[["title"]] <- "Bayesian Crosstabs Tests"
+	tests.table[["title"]] <- "Bayesian Contingency Tables Tests"
 	
 	tests.fields <- fields
 	
@@ -1160,12 +1160,12 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 
 	meta <- list()
 	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="crosstabs", type="tables")
+	meta[[2]] <- list(name="Contingency Tables", type="tables")
 	meta[[3]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
 	
-	results[["title"]] <- "Bayesian Crosstabs"	
+	results[["title"]] <- "Bayesian Contingency Tables"	
 	
 	### CROSS TABS
 	
@@ -1202,10 +1202,10 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	
 	} else {
 	
-		crosstabs[[1]] <- list(title = "Bayesian Crosstabs", cases = list(), schema = list(fields=list()))
+		crosstabs[[1]] <- list(title = "Bayesian Contingency Tables", cases = list(), schema = list(fields=list()))
 	}
 
-	results[["crosstabs"]] <- crosstabs
+	results[["Contingency Tables"]] <- crosstabs
 	results[["plots"]] <- plots
 
 	results

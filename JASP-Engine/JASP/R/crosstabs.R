@@ -76,7 +76,7 @@
 
 	counts.table <- list()
 	
-	counts.table[["title"]] <- "Crosstabs"
+	counts.table[["title"]] <- "Contingency Tables"
 	
 	counts.fields <- fields
 	
@@ -1517,11 +1517,11 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 
 	meta <- list()
 	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="crosstabs", type="tables")
+	meta[[2]] <- list(name="Contingency Tables", type="tables")
 	
 	results[[".meta"]] <- meta
 	
-	results[["title"]] <- "Crosstabs"
+	results[["title"]] <- "Contingency Tables"
 	
 	
 	### CROSS TABS
@@ -1554,10 +1554,10 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 	} else {
 	
-		crosstabs[[1]] <- list(title = "Crosstabs", cases = list(), schema = list(fields=list()))
+		crosstabs[[1]] <- list(title = "Contingency Tables", cases = list(), schema = list(fields=list()))
 	}
 
-	results[["crosstabs"]] <- crosstabs
+	results[["Contingency Tables"]] <- crosstabs
 
 	results
 }
