@@ -26,7 +26,7 @@ Options *TTestBayesianOneSample::createOptions() const
 	options->add("hypothesis", new OptionList(list("notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue")));
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
 
-	options->add("priorWidth", new OptionNumber(1));
+	options->add("priorWidth", new OptionNumber(.707));
 
 	options->add("plotPriorAndPosterior", new OptionBoolean());
 	options->add("plotPriorAndPosteriorAdditionalInfo", new OptionBoolean());
