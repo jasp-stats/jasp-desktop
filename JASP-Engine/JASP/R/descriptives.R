@@ -50,7 +50,19 @@
 	return(SEK)
 } 
 
-.barplotJASP <- function(column, variable){
+.barplotJASP <- function(column, variable, dontPlotData= FALSE){
+
+	if (dontPlotData) {
+	
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis= 1.4, xlab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
+		
+		mtext(text = variable, side = 1, cex=1.5, line = 3)
+		
+		return()
+	}
 
 	maxFrequency <- max(summary(column))
 	
@@ -679,6 +691,12 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			plot[["width"]]  <- options$chartWidth
 			plot[["height"]] <- options$chartHeight
 			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+						
+			image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+										
+			.barplotJASP(variable=variable, dontPlotData=TRUE)
+					
+			plot[["data"]] <- .endSaveImage(image)
 			
 			frequency.plots[[i]] <- plot
 			i <- i + 1
