@@ -139,7 +139,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 						
 					} else if (errorMessage == "data are essentially constant") {
 					
-						errorMessage <- "t-statistic is undefined - one or both of the variables contain all the same value (the variance is zero)"
+						errorMessage <- "t-statistic is undefined - one or both of the variables contain all the same value (zero variance)"
 						
 					} else if (errorMessage == "not enough 'x' observations") {
 					

@@ -413,7 +413,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					if (is.na(bf.raw)) {
 				
 						status[rowNo] <- "error"
-						plottingError[rowNo] <- "Plotting is not possible: BayesFactor is NaN"
+						plottingError[rowNo] <- "Plotting is not possible: Bayes factor is NaN"
 					}					
 					
 					if(is.infinite(bf.raw)){
@@ -422,7 +422,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 							 
 							status[rowNo] <- "error"
-							plottingError[rowNo] <- "Plotting is not possible: BayesFactor is infinite"
+							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is infinite"
 						}
 					}
 					
@@ -430,7 +430,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						if(options$plotPriorAndPosterior | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness | options$plotBayesFactorRobustness){
 					
-							# errorMessage <- "BayesFactor is one divided by infinity: plotting not possible"
 							status[rowNo] <- "error"
 							plottingError[rowNo] <- "Plotting is not possible: The Bayes factor is too small"
 						}
@@ -472,30 +471,30 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					if (errorMessage == "Dependent variable must not contain missing or infinite values.") {
 					
-						errorMessage <- "BayesFactor is undefined - the dependent variable contains infinity"
+						errorMessage <- "Bayes factor is undefined - the dependent variable contains infinity"
 						status[rowNo] <- "error"
-						plottingError[rowNo] <- "Plotting is not possible: BayesFactor is undefined - the dependent variable contains infinity"
+						plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - the dependent variable contains infinity"
 						
 					} else if (errorMessage == "grouping factor must have exactly 2 levels") {
 					
 						# We know that the grouping factor *does* have two levels, because we've checked this earlier on
 						# This error means that all of one factor has been excluded because of missing values in the dependent
 						
-						errorMessage <- "BayesFactor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
+						errorMessage <- "Bayes factor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
 						status[rowNo] <- "error"
-						plottingError[rowNo] <- "Plotting is not possible: BayesFactor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
+						plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - the grouping variable contains less than two levels once missing values in the dependent are excluded"
 						
 					} else if (errorMessage == "data are essentially constant") {
 					
-						errorMessage <- "BayesFactor is undefined - one or both levels of the dependent contain all the same value (the variance is zero)"
+						errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
 						status[rowNo] <- "error"
-						plottingError[rowNo] <- "Plotting is not possible: BayesFactor is undefined - one or both levels of the dependent contain all the same value (the variance is zero)"
+						plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain all the same value (zero variance)"
 						
 					} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
 					
-						errorMessage <- "BayesFactor is undefined - one or both levels of the dependent contain too few observations"
+						errorMessage <- "Bayes factor is undefined - one or both levels of the dependent contain too few observations"
 						status[rowNo] <- "error"
-						plottingError[rowNo] <- "Plotting is not possible: BayesFactor is undefined - one or both levels of the dependent contain too few observations"
+						plottingError[rowNo] <- "Plotting is not possible: Bayes factor is undefined - one or both levels of the dependent contain too few observations"
 					}
 										
 					index <- .addFootnote(footnotes, errorMessage)

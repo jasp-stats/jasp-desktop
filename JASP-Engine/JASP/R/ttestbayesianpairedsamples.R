@@ -239,15 +239,15 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					if (errorMessage == "x or y must not contain missing or infinite values.") {
 				
-						errorMessage <- paste("BayesFactor is undefined - one or both of the variables contain infinity")
+						errorMessage <- paste("Bayes factor is undefined - one or both of the variables contain infinity")
 					
 					} else if (errorMessage == "data are essentially constant") {
 									
-						errorMessage <- paste("BayesFactor is undefined - the sample contains all the same value (the variance is zero)")
+						errorMessage <- paste("Bayes factor is undefined - the sample contains all the same value (zero variance)")
 					
 					} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
 					
-						errorMessage <- "BayesFactor is undefined - one or both of the variables has too few observations (possibly only after missing values are excluded)"	
+						errorMessage <- "Bayes factor is undefined - one or both of the variables has too few observations (possibly only after missing values are excluded)"	
 					}
 
 					pair.statuses[[i]] <- list(ready=FALSE, error=TRUE, errorMessage=errorMessage, unplotable=TRUE, unplotableMessage=errorMessage)

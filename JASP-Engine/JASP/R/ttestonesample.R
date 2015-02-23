@@ -139,7 +139,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 					
 				} else if (errorMessage == "data are essentially constant") {
 				
-					errorMessage <- paste("t-statistic is undefined - the sample contains all the same value (the variance is zero)")
+					errorMessage <- paste("t-statistic is undefined - the sample contains all the same value (zero variance)")
 				
 				} else if (errorMessage == "not enough 'x' observations") {
 					

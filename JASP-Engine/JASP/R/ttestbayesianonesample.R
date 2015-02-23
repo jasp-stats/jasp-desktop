@@ -2502,21 +2502,21 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				if (errorMessage == "x or y must not contain missing or infinite values.") {
 					
-					errorMessage <- paste("BayesFactor is undefined - the sample contains infinity")
+					errorMessage <- paste("Bayes factor is undefined - the sample contains infinity")
 					
 					status[i] <- "error"
-					plottingError[i] <- "Plotting is not possible: BayesFactor is undefined - the sample contains infinity"
+					plottingError[i] <- "Plotting is not possible: Bayes factor is undefined - the sample contains infinity"
 					
 					#} else if (errorMessage == "data are essentially constant") {
 					#				
-					#	errorMessage <- paste("BayesFactor is undefined - the sample contains all the same value (the variance is zero)")
+					#	errorMessage <- paste("Bayes factor is undefined - the sample contains all the same value (zero variance)")
 					#
 				} else if (errorMessage == "Insufficient sample size for t analysis." || errorMessage == "not enough observations") {
 					
-					errorMessage <- "BayesFactor is undefined - the sample has too few observations"	
+					errorMessage <- "Bayes factor is undefined - too few observations"	
 					
 					status[i] <- "error"
-					plottingError[i] <- "Plotting is not possible: BayesFactor is undefined - the sample has too few observations"
+					plottingError[i] <- "Plotting is not possible: Bayes factor is undefined - the sample has too few observations"
 				}
 				
 				index <- .addFootnote(footnotes, errorMessage)
@@ -2529,11 +2529,11 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if (is.na(bf.raw)) {
 				
 					status[i] <- "error"
-					plottingError[i] <- "Plotting is not possible: BayesFactor is NaN"
+					plottingError[i] <- "Plotting is not possible: Bayes factor is NaN"
 				} else if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
 				
 					status[i] <- "error"
-					plottingError[i] <- "Plotting is not possible: BayesFactor is infinite"
+					plottingError[i] <- "Plotting is not possible: Bayes factor is infinite"
 				} else if (is.infinite(1 / bf.raw)) {
 				
 					status[i] <- "error"

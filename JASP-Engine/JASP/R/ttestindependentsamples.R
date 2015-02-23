@@ -317,7 +317,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 							
 						} else if (errorMessage == "data are essentially constant") {
 						
-							errorMessage <- "t-statistic is undefined - one or both levels of the dependent contains all the same value (the variance is zero)"
+							errorMessage <- "t-statistic is undefined - one or both levels of the dependent contains all the same value (zero variance)"
 							
 						} else if (errorMessage == "not enough observations") {
 					
