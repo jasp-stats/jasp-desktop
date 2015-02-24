@@ -1216,12 +1216,13 @@
 				row.rowproportions[["type[rowproportions]"]] <- " % within row"
 
 				rowproportions <- as.list(rowproportions.matrix[i,])
+				rowproportions <- .clean(rowproportions)
 				names(rowproportions) <- paste(names(rowproportions),"[rowproportions]",  sep="")
 				
 				if (class(rowproportions.matrix[1,1]) == "character") {
 					rowproportions[["total[rowproportions]"]] <- ""
 				} else {
-					rowproportions[["total[rowproportions]"]] <- base::sum(rowproportions.matrix[i,])
+					rowproportions[["total[rowproportions]"]] <- .clean(base::sum(rowproportions.matrix[i,]))
 				}
 			
 				rowproportions <- c(row.rowproportions, rowproportions)
@@ -1233,6 +1234,7 @@
 				row.colproportions[["type[colproportions]"]] <- " % within column"
 
 				colproportions <- as.list(colproportions.matrix[i,])
+				colproportions <- .clean(colproportions)
 				names(colproportions) <- paste(names(colproportions),"[colproportions]",  sep="")
 				
 				if (class(colproportions.matrix[1,1]) == "character") {
@@ -1240,7 +1242,8 @@
 				} else {
 					
 					row.sum <- base::margin.table(counts.matrix, 1)
-					row.prop <- as.list( base::prop.table(row.sum)) 
+					row.prop <- as.list( base::prop.table(row.sum))
+					row.prop <- .clean(row.prop)
 					colproportions[["total[colproportions]"]] <- row.prop[[i]]
 				}
 			
@@ -1253,12 +1256,13 @@
 				row.proportions[["type[proportions]"]] <- " % of Total"
 
 				proportions <- as.list(proportions.matrix[i,])
+				proportions <- .clean(proportions)
 				names(proportions) <- paste(names(proportions),"[proportions]",  sep="")
 				
 				if (class(proportions.matrix[1,1]) == "character") {
 					proportions[["total[proportions]"]] <- ""
 				} else {
-					proportions[["total[proportions]"]] <- base::sum(proportions.matrix[i,])
+					proportions[["total[proportions]"]] <- .clean(base::sum(proportions.matrix[i,]))
 				}
 			
 				proportions <- c(row.proportions, proportions)
@@ -1335,12 +1339,13 @@
 			}
 
 			rowproportions <- as.list(rowproportion)
+			rowproportions <- .clean(rowproportions)
 			names(rowproportions) <- paste(names(rowproportions),"[rowproportions]", sep="")
 
 			if (class(rowproportions.matrix[1,1]) == "character") {
 				rowproportions[["total[rowproportions]"]] <- ""
 			} else {
-				rowproportions[["total[rowproportions]"]] <- base::sum(rowproportion)
+				rowproportions[["total[rowproportions]"]] <- .clean(base::sum(rowproportion))
 			}
 			
 			rowproportions<-c(row.rowproportions, rowproportions)
@@ -1357,6 +1362,7 @@
 			}
 
 			colproportions <- as.list(colproportion)
+			colproportions <- .clean(colproportions)
 			names(colproportions) <- paste(names(colproportions),"[colproportions]", sep="")
 
 			if (class(rowproportions.matrix[1,1]) == "character") {
@@ -1364,7 +1370,7 @@
 			} else {
 				row.sum <- base::margin.table(counts.matrix, 1)
 				row.prop <- base::prop.table(row.sum) 
-				colproportions[["total[colproportions]"]] <- base::sum(row.prop)
+				colproportions[["total[colproportions]"]] <- .clean(base::sum(row.prop))
 			}
 			
 			colproportions<-c(row.colproportions, colproportions)
@@ -1382,12 +1388,13 @@
 			}
 
 			proportions <- as.list(proportions)
+			proportions <- .clean(proportions)
 			names(proportions) <- paste(names(proportions),"[proportions]", sep="")
 
 			if (class(proportions.matrix[1,1]) == "character") {
 				proportions[["total[proportions]"]] <- ""
 			} else {
-				proportions[["total[proportions]"]] <- base::sum(proportions.matrix)
+				proportions[["total[proportions]"]] <- .clean(base::sum(proportions.matrix))
 			}
 			
 			proportions<-c(row.proportions, proportions)

@@ -565,6 +565,22 @@ callback <- function(results=NULL) {
 
 .clean <- function(value) {
 
+	if (is.list(value)) {
+	
+		if (is.null(names(value))) {
+			
+			for (i in length(value))
+				value[[i]] <- .clean(value[[i]])
+				
+		} else {
+		
+			for (name in names(value))
+				value[[name]] <- .clean(value[[name]])
+		}
+		
+		return(value)
+	}
+
 	if (is.null(value))
 		return ("")
 
