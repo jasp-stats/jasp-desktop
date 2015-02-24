@@ -370,7 +370,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 						})
 						if(sum(chck.trms) != choose(lngth,lngth-1)){
 							error.present <- 1
-							specific.error <- "lower order effects nuisance"
+							specific.error <- "interaction nuisance"
 						}
 					}					
 					if(error.present > 0)
@@ -378,7 +378,7 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 				}
 			} else{
 				error.present <- 1
-				specific.error <- "lower order effects"
+				specific.error <- "interaction"
 			}
 			if(error.present > 0)
 				break
@@ -511,15 +511,15 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 	specific.error <- errorcheck$specific.error
 
 	if (specific.error == "infinite dependent"){
-		table[["error"]] <- list(errorType="badData", errorMessage="Bayes Factor is undefined -- the dependent variable contains infinity")
+		table[["error"]] <- list(errorType="badData", errorMessage="Bayes factor is undefined -- the dependent variable contains infinity")
 	}
 
 	if (specific.error == "interaction nuisance"){
-		table[["error"]] <- list(errorType="badData", errorMessage="The main effects of variables should be specified as nuisance whenever their interaction is specified as nuisance")
+		table[["error"]] <- list(errorType="badData", errorMessage="Main effects and lower-order interactions must be specified as nuisance whenever the corresponding higher-order interaction is specified as nuisance")
 	}
 	
 	if (specific.error == "interaction"){
-		table[["error"]] <- list(errorType="badData", errorMessage="The main effects of variables should be included whenever their interaction is included")
+		table[["error"]] <- list(errorType="badData", errorMessage="Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included")
 	}
 
 	if (specific.error == "observed levels"){
@@ -533,26 +533,18 @@ AncovaBayesian	 <- function(dataset=NULL, options, perform="run", callback=funct
 		if(length(fact) > 1){
 			factor.names <- paste(factor.names,collapse=", ")
 		}
-		table[["error"]] <- list(errorType="badData", errorMessage=paste("Bayes Factor is undefined -- the factor(s): ",factor.names," contain(s) less than two levels (possibly only after rows with missing values are excluded)",sep=""))
+		table[["error"]] <- list(errorType="badData", errorMessage=paste("Bayes factor is undefined -- the factor(s) ",factor.names," contain(s) less than two levels (possibly only after rows with missing values are excluded)",sep=""))
 	}
 
 	if (specific.error =="all nuisance"){
-		table[["error"]] <- list(errorType="badData", errorMessage="Bayes Factor is undefined -- all effects are specified as nuisance")
+		table[["error"]] <- list(errorType="badData", errorMessage="Bayes factor is undefined -- all effects are specified as nuisance")
 	}
 	if (specific.error == "p>=(n-1)"){
-		table[["error"]] <- list(errorType="badData", errorMessage="Bayes Factor is undefined -- there are too few observations to estimate all specified effects (possibly only after rows with missing values are excluded)")
-	}
-
-	if (specific.error == "lower order effects nuisance"){
-		table[["error"]] <- list(errorType="badData", errorMessage="The main effects and lower order interactions of variables must be specified as nuisance whenever their corresponding higher order interactions are specified as nuisance")
-	}
-
-	if (specific.error == "lower order effects"){
-		table[["error"]] <- list(errorType="badData", errorMessage="The main effects and lower order interactions of variables must be included whenever their corresponding higher order interactions are included")
+		table[["error"]] <- list(errorType="badData", errorMessage="Bayes factor is undefined -- too few observations (possibly only after rows with missing values are excluded)")
 	}
 
 	if (specific.error == "unknown error"){
-		table[["error"]] <- list(errorType="badData", errorMessage="Bayes Factor could not be computed")
+		table[["error"]] <- list(errorType="badData", errorMessage="Bayes factor could not be computed")
 	}
 	
 	return(table)
