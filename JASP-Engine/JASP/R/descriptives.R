@@ -69,7 +69,7 @@
 	i <- 1
 	step <- 1
 	
-	while (maxFrequency / step > 10) {
+	while (maxFrequency / step > 9) {
 		
 		if (i == 2) {
 			
