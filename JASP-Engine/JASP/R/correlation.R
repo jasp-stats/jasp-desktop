@@ -368,8 +368,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))
 				
 				.plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
-				mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
-				mtext(text = .unv(variables)[2], side = 2, cex=1.9, line = 2.7, las=0)
+				mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
+				mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = 2.85, las=0)
 			} else if (l > 1) {
 			
 				par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0, 2.2, 2, 0))
@@ -431,10 +431,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				
 						for (t in seq_along(textpos)) {
 						
-							mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.9, line= -0.8)
+							mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
 							
 							if (t < length(textpos)) {
-								mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.9, line= -0.1, las= 0)
+								mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
 							}
 						}
 					
@@ -442,8 +442,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				
 					for (t in seq_along(textpos)) {
 						
-							mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.9, line= -0.8)
-							mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.9, line= -0.1, las= 0)
+							mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
+							mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
 					}
 				}
 			}
