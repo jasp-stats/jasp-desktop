@@ -259,7 +259,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			width <- 580
 			height <- 580
 			
-		} else if (l == 2) {
+		} else if (l <= 2) {
 		
 			width <- 400
 			height <- 400
@@ -323,7 +323,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				width <- 580
 				height <- 580
 				
-			} else if (l == 2) {
+			} else if (l <= 2) {
 			
 				width <- 400
 				height <- 400
