@@ -312,8 +312,8 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="BoundGroupBox" name="chartType">
-           <property name="title">
+          <widget class="BoundGroupBox" name="chartType" native="true">
+           <property name="title" stdset="0">
             <string>Chart Type</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
@@ -378,8 +378,8 @@
           </widget>
          </item>
          <item>
-          <widget class="BoundGroupBox" name="chartValues">
-           <property name="title">
+          <widget class="BoundGroupBox" name="chartValues" native="true">
+           <property name="title" stdset="0">
             <string>Chart Values</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
@@ -670,10 +670,28 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="0" colspan="4">
-       <widget class="BoundCheckBox" name="main_displayFrequencyTables">
-        <property name="text">
-         <string>Display Frequency Tables (nominal and ordinal variables)</string>
+      <item row="0" column="0">
+       <widget class="AvailableFieldsListView" name="listAvailableFields">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>210</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
         </property>
        </widget>
       </item>
@@ -702,35 +720,24 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="AvailableFieldsListView" name="listAvailableFields">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>200</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>210</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::ExtendedSelection</enum>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="BoundCheckBox" name="plots">
         <property name="text">
          <string>Display Plots</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="4">
+       <widget class="BoundCheckBox" name="main_displayFrequencyTables">
+        <property name="text">
+         <string>Display Frequency Tables (nominal and ordinal variables)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="BoundCheckBox" name="displayCorrelationPlot">
+        <property name="text">
+         <string>Display Correlation Plot</string>
         </property>
        </widget>
       </item>
@@ -756,14 +763,15 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>
@@ -772,15 +780,14 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
+   <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

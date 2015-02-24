@@ -25,6 +25,7 @@ Options *Descriptives::createOptions() const
 	options->add("main/displayFrequencyTables", new OptionBoolean());
 
 	options->add("plots", new OptionBoolean());
+	options->add("displayCorrelationPlot", new OptionBoolean());
 
 	options->add("statistics/percentileValues/quartiles", new OptionBoolean());
 	options->add("statistics/percentileValues/equalGroups", new OptionBoolean());
