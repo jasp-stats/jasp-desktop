@@ -161,7 +161,7 @@
 		
 		oddsratio.table <- list()
 		
-		oddsratio.table[["title"]] <- "Log odds ratio"
+		oddsratio.table[["title"]] <- "Log Odds Ratio"
 		
 		oddsratio.fields <- fields
 			
