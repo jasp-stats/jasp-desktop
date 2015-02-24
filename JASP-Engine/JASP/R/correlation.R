@@ -13,7 +13,7 @@
 	h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
 	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks)
 	par(las=0)
-	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.08*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.7, mgp= c(3, 0.7, 0))
+	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.08*diff(range(ax1)), cex.axis= 1.7, mgp= c(3, 0.7, 0))
 	
 	if(rugs){
 		rug(jitVar)
@@ -254,21 +254,31 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		
 		l <- length(variables)
 		
-		if(l <= 2){
-			width <- 500
-			height <- 500
-		}
-		if(l == 3){
-			width <- 550
-			height <- 550
-		}
-		if(l == 4){
+		if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
+		
+			width <- 580
+			height <- 580
+			
+		} else if (l == 2) {
+		
+			width <- 400
+			height <- 400
+			
+		} else if (l == 3) {
+		
+			width <- 700
+			height <- 700
+			
+		} else if (l == 4) {
+		
 			width <- 900
 			height <- 900
-		}
-		if(l >= 5){
+			
+		} else if (l >= 5) {
+		
 			width <- 1100
 			height <- 1100
+			
 		}
 				
 		plot <- list()
@@ -296,42 +306,43 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
 		}
 		
-		print(infCheck)
-		
+	
 		ind1 <- d == "numeric" | d == "integer"
 		ind2 <- sdCheck > 0
 		ind <- ind1 & ind2 & infCheck == FALSE
 		
-		print(ind)
-		
-		
+				
 		variables <- .v(variables)[ind]
 
 		if (length(variables) > 0) {
 			
 			l <- length(variables)
 			
+			if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
 			
-			if (l <= 2) {
-			
-				width <- 500
-				height <- 500
+				width <- 580
+				height <- 580
+				
 			} else if (l == 2) {
 			
-				width <- 500
-				height <- 500
-			}
-			if (l == 3) {
+				width <- 400
+				height <- 400
+				
+			} else if (l == 3) {
+			
 				width <- 700
 				height <- 700
-			}
-			if (l == 4) {
+				
+			} else if (l == 4) {
+			
 				width <- 900
 				height <- 900
-			}
-			if (l >= 5) {
+				
+			} else if (l >= 5) {
+			
 				width <- 1100
 				height <- 1100
+				
 			}
 			
 			frequency.plots <- list()
