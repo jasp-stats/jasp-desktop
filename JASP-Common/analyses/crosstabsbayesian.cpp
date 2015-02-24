@@ -63,7 +63,7 @@ Options *CrosstabsBayesian::createOptions() const
     options->add("plotHeights", new OptionInteger(240));
 
 	options->add("hypothesis", new OptionList(list("groupsNotEqual", "groupOneGreater", "groupTwoGreater")));
-	options->add("bayesFactorType", new OptionList(list("BF10", "BF01")));
+	options->add("bayesFactorType", new OptionList(list("BF10", "BF01", "LogBF10")));
 
 	return options;
 }

@@ -32,8 +32,8 @@ Options *RegressionLinearBayesian::createOptions() const
 
 	options->add("outputEffects", new OptionBoolean());
 	options->add("effectsStepwise", new OptionBoolean());
-	options->add("posteriorEstimates", new OptionBoolean());
-	options->add("posteriorDistributions", new OptionBoolean());
+
+	options->add("bayesFactorType", new OptionList(list("BF10", "BF01", "LogBF10")));
 
 	return options;
 }

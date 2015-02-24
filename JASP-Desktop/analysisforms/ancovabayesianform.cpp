@@ -54,16 +54,6 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(assignmentsChanged()));
 	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
-
-#ifdef QT_NO_DEBUG
-	// temporary hides until the appropriate R code is implemented
-
-	ui->posteriorDistributions->hide();
-	ui->posteriorEstimates->hide();
-#else
-	ui->posteriorDistributions->setStyleSheet("background-color: pink;");
-	ui->posteriorEstimates->setStyleSheet("background-color: pink;");
-#endif
 }
 
 AncovaBayesianForm::~AncovaBayesianForm()

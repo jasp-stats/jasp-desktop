@@ -208,6 +208,13 @@
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1">
+              <property name="text">
+               <string>BF₁₀</string>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="0">
              <widget class="QRadioButton" name="_2">
               <property name="text">
@@ -215,10 +222,10 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="_1">
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="_3">
               <property name="text">
-               <string>BF₁₀</string>
+               <string>Log( BF₁₀ )</string>
               </property>
              </widget>
             </item>

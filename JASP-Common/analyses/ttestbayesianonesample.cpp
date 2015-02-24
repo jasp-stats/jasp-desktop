@@ -37,7 +37,7 @@ Options *TTestBayesianOneSample::createOptions() const
 	options->add("plotWidth", new OptionInteger(320));
 	options->add("plotHeight", new OptionInteger(240));
 
-	options->add("bayesFactorType", new OptionList(list("BF10", "BF01")));
+	options->add("bayesFactorType", new OptionList(list("BF10", "BF01", "LogBF10")));
 
 	return options;
 }

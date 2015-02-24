@@ -32,7 +32,7 @@ Options *CorrelationBayesian::createOptions() const
 
 	options->add("missingValues", new OptionList(list("excludePairwise", "excludeListwise")));
 
-	options->add("bayesFactorType", new OptionList(list("BF10", "BF01")));
+	options->add("bayesFactorType", new OptionList(list("BF10", "BF01", "LogBF10")));
 
 	options->add("plotCorrelationMatrix", new OptionBoolean());
 	options->add("plotDensitiesForVariables", new OptionBoolean());
