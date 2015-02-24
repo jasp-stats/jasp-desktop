@@ -27,6 +27,7 @@
 #include "analysisforms/regressionlinearbayesianform.h"
 #include "analysisforms/correlationform.h"
 #include "analysisforms/correlationbayesianform.h"
+#include "analysisforms/correlationbayesianpairsform.h"
 #include "analysisforms/correlationpartialform.h"
 #include "analysisforms/crosstabsform.h"
 #include "analysisforms/crosstabsbayesianform.h"
@@ -40,11 +41,15 @@
 #include <QClipboard>
 #include <QWebElement>
 #include <QMessageBox>
-
+#include <QTimer>
 #include <QStringBuilder>
 
 #include "analysisloader.h"
-#include "utils.h"
+#include "qutils.h"
+#include "appdirs.h"
+
+#include "lrnam.h"
+#include "activitylog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -60,8 +65,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-	ui->pageOptions->hide();
-
 	QList<int> sizes = QList<int>();
 	sizes.append(590);
 	ui->splitter->setSizes(sizes);
@@ -69,8 +72,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
 	ui->tabBar->addTab("Common");
-	ui->tabBar->addLastTab("Options");
+	ui->tabBar->addOptionsTab();
+
+#ifdef QT_DEBUG
+	ui->tabBar->addHelpTab();
+#endif
+
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+	connect(ui->tabBar, SIGNAL(helpToggled(bool)), this, SLOT(helpToggled(bool)));
 
 #ifdef __WIN32__
     QFont font = ui->tabBar->font();
@@ -83,11 +92,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+	ui->webViewHelp->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
 #else
 	ui->webViewResults->setContextMenuPolicy(Qt::NoContextMenu);
+	ui->webViewHelp->setContextMenuPolicy(Qt::NoContextMenu);
 #endif
 
+	// the LRNAM adds mime types to local resources; important for SVGs
+	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
+	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(assignPPIFromWebView(bool)));
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
@@ -130,20 +144,46 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanel->setLayout(_buttonPanelLayout);
 
 	_okButton = new QPushButton(QString("OK"), _buttonPanel);
-	_removeButton = new QPushButton(QString("Remove"), _buttonPanel);
+	_okButton->setDefault(true);
+	_menuButton = new QPushButton(QString("..."), _buttonPanel);
+
+	QMenu *menu = new QMenu(_menuButton);
+	menu->addAction("Remove Analysis", this, SLOT(analysisRemoved()));
+	_menuButton->setMenu(menu);
 
 	_buttonPanelLayout->addWidget(_okButton);
-	_buttonPanelLayout->addWidget(_removeButton);
+	_buttonPanelLayout->addWidget(_menuButton);
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
+	_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
 
-	QTimer::singleShot(0, this, SLOT(repositionButtonPanel()));
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
-	connect(_removeButton, SIGNAL(clicked()), this, SLOT(analysisRemoved()));
+
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
 
 	updateUIFromOptions();
+
+	ui->panelMid->hide();
+
+	_tableViewWidthBeforeOptionsMadeVisible = -1;
+
+	QUrl userGuide = QUrl::fromLocalFile(AppDirs::help() + "/index.html");
+	ui->webViewHelp->setUrl(userGuide);
+	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
+	ui->panelHelp->hide();
+
+	log.log("Application Start");
+
+	ui->backStage->setLog(&log);
+	_engineSync->setLog(&log);
+
+	log.flushLogToServer();
+
+	QTimer *timer = new QTimer(this);
+	timer->setInterval(30000);
+	connect(timer, SIGNAL(timeout()), &log, SLOT(flushLogToServer()));
+	timer->start();
 }
 
 void MainWindow::open(QString filename)
@@ -159,12 +199,24 @@ MainWindow::~MainWindow()
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
 	QMainWindow::resizeEvent(event);
-	repositionButtonPanel();
 	adjustOptionsPanelWidth();
 }
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
+	static bool showInstructions = true;
+
+	if (showInstructions)
+	{
+		if (_settings.value("instructionsShown", false).toBool() == false)
+		{
+			_settings.setValue("instructionsShown", true);
+			ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.showInstructions()");
+		}
+
+		showInstructions = false;
+	}
+
 	QString results = tq(analysis->asJSON().toStyledString());
 
 	results = results.replace("'", "\\'");
@@ -223,6 +275,8 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new CorrelationForm(contentArea);
 	else if (name == "CorrelationBayesian")
 		form = new CorrelationBayesianForm(contentArea);
+	else if (name == "CorrelationBayesianPairs")
+		form = new CorrelationBayesianPairsForm(contentArea);
 	else if (name == "CorrelationPartial")
 		form = new CorrelationPartialForm(contentArea);
 	else if (name == "Crosstabs")
@@ -236,7 +290,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 	else if (name == "AnovaRepeatedMeasuresBayesian")
 		form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
 	else
-		qDebug() << "MainWidget::loadForm(); form not found : " << name.c_str();
+		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
 	if (form != NULL)
 		_analysisForms[name] = form;
@@ -262,26 +316,46 @@ void MainWindow::showForm(Analysis *analysis)
 
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);
-		ui->pageOptions->show();
+
+		if (ui->panelMid->isVisible() == false)
+			showOptionsPanel();
 
 		_buttonPanel->raise();
 		_buttonPanel->show();
 
-		adjustOptionsPanelWidth();
+		QString helpPage = QString("analyses/") + tq(analysis->name()).toLower();
+		requestHelpPage(helpPage);
 	}
 }
 
 void MainWindow::analysisSelectedHandler(int id)
 {
 	_currentAnalysis = _analyses->get(id);
+
 	if (_currentAnalysis != NULL)
+	{
 		showForm(_currentAnalysis);
+
+		QString info("%1,%2");
+		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(id);
+
+		log.log("Analysis Selected", info);
+	}
 }
 
 void MainWindow::analysisUnselectedHandler()
 {
-	ui->pageOptions->hide();
-	ui->tableView->show();
+	hideOptionsPanel();
+
+	if (_currentAnalysis != NULL)
+	{
+		QString info("%1,%2");
+		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(_currentAnalysis->id());
+
+		log.log("Analysis Unselected", info);
+	}
 }
 
 void MainWindow::tabChanged(int index)
@@ -308,6 +382,34 @@ void MainWindow::tabChanged(int index)
 	}
 }
 
+void MainWindow::helpToggled(bool on)
+{
+	log.log("Help Toggled", on ? "on" : "off");
+
+	static int helpWidth = 0;
+
+	if (on)
+	{
+		if (helpWidth < 200)
+			helpWidth = 200;
+
+		QList<int> sizes = ui->splitter->sizes();
+
+		int resultsWidth = sizes.at(2) - ui->splitter->handleWidth() - 2 - helpWidth;
+
+		sizes[2] = resultsWidth;
+		sizes[3] = helpWidth;
+
+		ui->panelHelp->show();
+		ui->splitter->setSizes(sizes);
+	}
+	else
+	{
+		helpWidth = ui->panelHelp->width();
+		ui->panelHelp->hide();
+	}
+}
+
 void MainWindow::dataSetSelected(const QString &filename)
 {
 	if (_dataSet != NULL)
@@ -317,12 +419,6 @@ void MainWindow::dataSetSelected(const QString &filename)
 	}
 	else
 	{
-		/*if (_dataSet != NULL)
-		{
-			_loader.free(_dataSet);
-			_dataSet = NULL;
-		}*/
-
 		_loader.load(filename);
 		_alert->show();
 	}
@@ -382,8 +478,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 
 void MainWindow::updateUIFromOptions()
 {
-	QSettings settings;
-	QVariant sem = settings.value("plugins/sem", false);
+	QVariant sem = _settings.value("plugins/sem", false);
 	if (sem.canConvert(QVariant::Bool) && sem.toBool())
 	{
 		ui->tabBar->addTab("SEM");
@@ -396,8 +491,24 @@ void MainWindow::updateUIFromOptions()
 
 }
 
+void MainWindow::assignPPIFromWebView(bool success)
+{
+	if (success)
+	{
+		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
+
+		bool success;
+		int ppi = ppiv.toInt(&success);
+
+		if (success)
+			_engineSync->setPPI(ppi);
+	}
+}
+
 void MainWindow::engineCrashed()
 {
+	log.log("Engine Crashed");
+
 	static bool exiting = false;
 
 	if (exiting == false)
@@ -409,6 +520,39 @@ void MainWindow::engineCrashed()
 	}
 }
 
+void MainWindow::helpFirstLoaded(bool ok)
+{
+	if (ok)
+		requestHelpPage("index");
+}
+
+void MainWindow::requestHelpPage(const QString &pageName)
+{
+	QFile file(AppDirs::help() + "/" + pageName + ".md");
+
+	QString content;
+
+	if (file.exists())
+	{
+		file.open(QFile::ReadOnly);
+		content = QString::fromUtf8(file.readAll());
+		file.close();
+	}
+	else
+	{
+		content = "404\n===\n\n**" + pageName + "** could not be found";
+	}
+
+	content.replace("\"", "\\\"");
+	content.replace("\r\n", "\\n");
+	content.replace("\r", "\\n");
+	content.replace("\n", "\\n");
+
+	QString js = "window.render(\"" + content + "\")";
+
+	ui->webViewHelp->page()->mainFrame()->evaluateJavaScript(js);
+}
+
 void MainWindow::itemSelected(const QString &item)
 {
 	string name = item.toStdString();
@@ -417,6 +561,12 @@ void MainWindow::itemSelected(const QString &item)
 	{
 		showForm(_currentAnalysis);
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
+
+		QString info("%1,%2");
+		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(_currentAnalysis->id());
+
+		log.log("Analysis Created", info);
 	}
 }
 
@@ -449,6 +599,8 @@ void MainWindow::exportSelected(const QString &filename)
 	QFile file(filename);
 	file.open(QIODevice::WriteOnly | QIODevice::Truncate);
 	QTextStream stream(&file);
+	stream.setCodec("UTF-8");
+
 	stream << element.toOuterXml();
 	stream.flush();
 	file.close();
@@ -458,61 +610,143 @@ void MainWindow::exportSelected(const QString &filename)
 
 void MainWindow::adjustOptionsPanelWidth()
 {
-	int splitterPos = ui->splitter->sizes()[0];
-
-	if (splitterPos < ui->pageOptions->minimumWidth())
-		splitterPos = ui->pageOptions->minimumWidth();
-
-	if (ui->pageOptions->width() == ui->pageOptions->maximumWidth() && ui->tableView->isHidden())
+	if (ui->panelMid->width() == ui->panelMid->maximumWidth() && ui->tableView->isHidden())
 	{
-		ui->tableView->show();
-		repositionButtonPanel(ui->pageOptions->minimumWidth());
+		showTableView();
 	}
-	else if (ui->tableView->width() == ui->tableView->minimumWidth() && ui->tableView->isVisible() && ui->pageOptions->isVisible())
+	else if (ui->tableView->width() == ui->tableView->minimumWidth() && ui->tableView->isVisible() && ui->panelMid->isVisible())
 	{
-		ui->tableView->hide();
-		repositionButtonPanel(splitterPos);
+		hideTableView();
 	}
-	else if (splitterPos > ui->pageOptions->maximumWidth())
-	{
-		repositionButtonPanel(ui->pageOptions->minimumWidth());
-	}
-	else
-	{
-		repositionButtonPanel();
-	}
-
 }
 
 void MainWindow::splitterMovedHandler(int, int)
 {
-	repositionButtonPanel();
 	adjustOptionsPanelWidth();
+	_tableViewWidthBeforeOptionsMadeVisible = -1;
 }
 
-void MainWindow::repositionButtonPanel(int parentWidth)
+void MainWindow::hideOptionsPanel()
 {
-	int overallWidth = parentWidth;
-	if (parentWidth == -1)
-		overallWidth = ui->pageOptions->width();
-	int panelWidth = _buttonPanel->width();
+	int newTableWidth = 0;
 
-	_buttonPanel->move(overallWidth - panelWidth, 0);
-	_buttonPanel->raise();
+	QList<int> sizes = ui->splitter->sizes();
+
+	if (_tableViewWidthBeforeOptionsMadeVisible > 0)
+	{
+		newTableWidth = _tableViewWidthBeforeOptionsMadeVisible;
+	}
+	else
+	{
+		newTableWidth += sizes.at(0);
+
+		if (ui->tableView->isVisible())
+			newTableWidth += ui->splitter->handleWidth() + 2;
+
+		newTableWidth += sizes.at(1);
+	}
+
+	sizes[0] = newTableWidth;
+	sizes[1] = 0;
+
+	ui->panelMid->hide();
+	ui->tableView->show();
+	ui->splitter->setSizes(sizes);
+}
+
+void MainWindow::showOptionsPanel()
+{
+	QList<int> sizes = ui->splitter->sizes();
+
+	int tableWidth = sizes.at(0);
+	int newTableWidth = tableWidth;
+	newTableWidth -= ui->panelMid->minimumWidth();
+	newTableWidth -= ui->splitter->handleWidth();
+
+	ui->panelMid->show();
+
+	if (newTableWidth < ui->tableView->minimumWidth())
+	{
+		int midPanelWidth = tableWidth;
+		if (midPanelWidth < ui->panelMid->minimumWidth())
+		{
+			_tableViewWidthBeforeOptionsMadeVisible = midPanelWidth;
+			midPanelWidth = ui->panelMid->minimumWidth();
+		}
+
+		int w = 0;
+		w += ui->panelMid->minimumWidth();
+		w += ui->tableView->minimumWidth();
+		w += ui->splitter->handleWidth();
+
+		ui->panelMid->setMaximumWidth(w+8);
+		ui->tableView->hide();
+
+		sizes[0] = 0;
+		sizes[1] = midPanelWidth;
+
+		ui->splitter->setSizes(sizes);
+	}
+	else
+	{
+		ui->panelMid->setMaximumWidth(ui->panelMid->minimumWidth());
+
+		sizes[0] = newTableWidth - 2;
+		sizes[1] = ui->panelMid->minimumWidth();
+
+		ui->splitter->setSizes(sizes);
+	}
+}
+
+void MainWindow::showTableView()
+{
+	QList<int> sizes = ui->splitter->sizes();
+
+	sizes[0] = ui->tableView->minimumWidth()+8;
+	sizes[1] = ui->panelMid->minimumWidth();
+
+	ui->splitter->setSizes(sizes);
+
+	ui->panelMid->setMaximumWidth(ui->panelMid->minimumWidth());
+	ui->tableView->show();
+}
+
+void MainWindow::hideTableView()
+{
+	QList<int> sizes = ui->splitter->sizes();
+
+	int w = 0;
+	w += ui->panelMid->minimumWidth();
+	w += ui->tableView->minimumWidth();
+	w += ui->splitter->handleWidth();
+
+	ui->panelMid->setMaximumWidth(w+8);
+	ui->tableView->hide();
+
+	sizes[0] = 0;
+	sizes[1] = w;
+
+	ui->splitter->setSizes(sizes);
 }
 
 void MainWindow::analysisOKed()
 {
 	if (_currentOptionsWidget != NULL)
 	{
+		QString info("%1,%2");
+		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(_currentAnalysis->id());
+
+		log.log("Analysis OKed", info);
+
 		_currentOptionsWidget->hide();
 		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
 	}
 
-	ui->pageOptions->hide();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.unselect()");
-	ui->tableView->show();
+
+	hideOptionsPanel();
 }
 
 void MainWindow::analysisRemoved()
@@ -522,15 +756,23 @@ void MainWindow::analysisRemoved()
 		_currentOptionsWidget->hide();
 		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
+
+		QString info("%1,%2");
+		info = info.arg(tq(_currentAnalysis->name()));
+		info = info.arg(_currentAnalysis->id());
+
+		log.log("Analysis Removed", info);
 	}
 
-	ui->pageOptions->hide();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
-	ui->tableView->show();
+
+	hideOptionsPanel();
 }
 
 void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data)
 {
+	log.log("Copy");
+
 	QMimeData *mimeData = new QMimeData();
 
 	if (mimeType == "text/html")
@@ -565,6 +807,12 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	Analysis *analysis = _analyses->get(id);
 	if (analysis == NULL)
 		return;
+
+	QString info("%1,%2");
+	info = info.arg(tq(analysis->name()));
+	info = info.arg(id);
+
+	log.log("Analysis Changed Downstream", info);
 
 	string utf8 = fq(options);
 

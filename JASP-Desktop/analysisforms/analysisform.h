@@ -25,8 +25,8 @@ class AnalysisForm : public QWidget, protected VariableInfoProvider
 
 public:
 	explicit AnalysisForm(QString name, QWidget *parent = 0);
-	void bindTo(Options *options, DataSet *dataSet);
-	void unbind();
+	virtual void bindTo(Options *options, DataSet *dataSet);
+	virtual void unbind();
 
 protected:
 

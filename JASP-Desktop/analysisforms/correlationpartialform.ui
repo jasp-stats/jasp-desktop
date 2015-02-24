@@ -252,9 +252,6 @@
         <property name="title">
          <string>Test of Significance</string>
         </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
         <layout class="QGridLayout" name="gridLayout_13">
          <property name="leftMargin">
           <number>0</number>
@@ -377,9 +374,6 @@
         <property name="title">
          <string>Statistics</string>
         </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
         <layout class="QGridLayout" name="gridLayout_20">
          <item row="0" column="0">
           <widget class="BoundCheckBox" name="meansAndStdDev">
@@ -412,9 +406,6 @@
        <widget class="QGroupBox" name="groupBox_8">
         <property name="title">
          <string>Missing Values</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_21">
          <property name="leftMargin">

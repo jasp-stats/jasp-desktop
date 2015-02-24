@@ -14,7 +14,12 @@ ExpanderButton::ExpanderButton(QWidget *parent) :
 
 	setCheckable(true);
 	setIcon(_contractedIcon);
-	setStyleSheet(QString("QPushButton { text-align: left ; /*padding: 3px 9px ;*/ }"));
+
+#ifdef __APPLE__
+	setStyleSheet(QString("QPushButton { text-align: left ; }"));
+#else
+	setStyleSheet(QString("QPushButton { text-align: left ; padding: 3px 9px ; }"));
+#endif
 
 }
 

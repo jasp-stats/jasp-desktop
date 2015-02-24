@@ -3,7 +3,7 @@
 #include "column.h"
 
 #include <QDebug>
-#include "utils.h"
+#include "qutils.h"
 
 using namespace std;
 
@@ -36,7 +36,12 @@ void TableModelVariablesAvailable::setVariables(const Terms &variables)
 	ordered.add(allowed);
 	ordered.add(forbidden);
 
+	Terms assigned = _allVariables;
+	assigned.remove(_variables);
+
 	_allVariables.set(ordered);
+
+	ordered.remove(assigned);
 	_variables.set(ordered);
 
 	_variables.setSortParent(_allVariables);

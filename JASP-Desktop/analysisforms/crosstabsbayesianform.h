@@ -17,6 +17,10 @@ public:
 	explicit CrosstabsBayesianForm(QWidget *parent = 0);
 	~CrosstabsBayesianForm();
 
+private slots:
+	void independentMultinomialToggledOn();
+	void independentMultinomialToggledOff();
+
 private:
 	Ui::CrosstabsBayesianForm *ui;
 

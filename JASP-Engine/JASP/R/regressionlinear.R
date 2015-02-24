@@ -40,10 +40,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			min.weight <- min(dataset[[ weight.base64 ]] )
 			if (is.finite(min.weight)) {
 				if (min.weight <= 0) {
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Nonpositive weights encountered in ", wls.weight,".",sep="")
+					list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model undefined -- there are nonpositive weights encountered"
 				}
 			} else {
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Infinities encountered in ", wls.weight,".",sep="")
+				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model undefined -- the weights contain infinities"
 			}
 		}
 		
@@ -61,7 +61,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		#check on number of valid observations.
 		n.valid.cases <- nrow(x)
 		if (n.valid.cases == 0) {
-			list.of.errors[[ length(list.of.errors) + 1 ]] <- "No valid cases observed after listwise deletion of missing values."
+			list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model is undefined -- there are no observations for the dependent variable (possibly only after rows with missing values are excluded)"
 		}
 		
 		#check for variance in variables.
@@ -69,13 +69,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		indicator <- which(number.of.values.vars <= 1)
 		if (length(indicator) != 0 ){
 			if (number.of.values.vars[1] <= 1){
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- "No variance in dependent variable."
+				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model is undefined -- the dependent variable contains all the same value (the variance is zero)"
 			} else {
 				if (length(indicator) == 1){
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("No variance in independent variable: ", independent.variables[indicator-1],".",sep="")
+					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable(s)", independent.variables[indicator-1] ," contain(s) all the same value (the variance is zero)",sep="")
 				} else {
 					var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("No variance in independent variable(s): ", var.names, ".", sep="")
+					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable(s)", var.names, " contain(s) all the same value (their variance is zero)", sep="")
 				}
 			}
 		}
@@ -85,10 +85,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		indicator <- which(is.infinite(column.sums))
 		if (length(indicator) > 0 ){
 			if ( 1%in%indicator){
-				list.of.errors[[ length(list.of.errors) + 1 ]]  <- "Infinities encountered in dependent variable."
+				list.of.errors[[ length(list.of.errors) + 1 ]]  <- "Least squares regression model is undefined -- the dependent variable contains infinity"
 			} else {
 				var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
-				list.of.errors[[ length(list.of.errors) + 1 ]]  <- paste("Infinities encountered in ", var.names,".",sep="")
+				list.of.errors[[ length(list.of.errors) + 1 ]]  <- paste("Least squares regression model undefined -- the independent variable(s) ",var.names, " contain(s) infinity",sep="")
 			}
 		}
 	}
@@ -100,6 +100,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	results <- list()
 	
 	.meta <-  list(
+		list(name = "title", type = "title"),
 		list(name = "descriptives", type = "table"),
 		list(name = "correlations", type = "table"),
 		list(name = "model summary", type = "table"),
@@ -108,6 +109,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		list(name = "coefficient correlations", type = "table"))
 	
 	results[[".meta"]] <- .meta
+	
+	results[["title"]] <- "Linear Regression"
 	
 	#######################################
 	###	 	   LINEAR REGRESSION		###
@@ -274,7 +277,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	if (options$rSquaredChange == TRUE) {
 		fields[[ length(fields) + 1 ]] <- list(name = "R2c", title = "R\u00B2 Change", type = "number", format = "dp:3")
-		fields[[ length(fields) + 1 ]] <- list(name = "Fc", title = "F Change", type = "number", format = "dp:3")
+		fields[[ length(fields) + 1 ]] <- list(name = "Fc", title = "F Change", type = "number", format = "sf:4;dp:3")
 		fields[[ length(fields) + 1 ]] <- list(name = "df1", type = "integer")
 		fields[[ length(fields) + 1 ]] <- list(name = "df2", type = "integer")
 		fields[[ length(fields) + 1 ]] <- list(name = "p", type = "number",format = "dp:3;p:.001")
@@ -317,11 +320,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					
 					p <- pf(q = F.change, df1 = df1, df2 = df2, lower.tail = FALSE )
 					
-					table.rows[[ m ]]$"R2c" <- as.numeric(r.squared.change)
-					table.rows[[ m ]]$"Fc" <- as.numeric(F.change)
-					table.rows[[ m ]]$"df1" <- as.integer(df1)
-					table.rows[[ m ]]$"df2" <- as.integer(df2)
-					table.rows[[ m ]]$"p" <- as.numeric(p)
+					table.rows[[ m ]]$"R2c" <- .clean(r.squared.change)
+					table.rows[[ m ]]$"Fc" <- .clean(F.change)
+					table.rows[[ m ]]$"df1" <- .clean(df1)
+					table.rows[[ m ]]$"df2" <- .clean(df2)
+					table.rows[[ m ]]$"p" <- .clean(p)
 					
 					r.squared.old <- r.squared
 				}
@@ -362,10 +365,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		fields <- list(
 			list(name = "Model", type = "integer"),
 			list(name = "Cases", title = " ", type = "string"),
-			list(name = "Sum of Squares", type = "number", format = "dp:3"),
+			list(name = "Sum of Squares", type = "number", format = "sf:4;dp:3"),
 			list(name = "df", type = "integer"),
-			list(name = "Mean Square", type = "number", format = "dp:3"),
-			list(name = "F", type = "number", format = "dp:3"),
+			list(name = "Mean Square", type = "number", format = "sf:4;dp:3"),
+			list(name = "F", type = "number", format = "sf:4;dp:3"),
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
 		
 		anova[["schema"]] <- list(fields = fields)
@@ -491,7 +494,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			list(name = "Coefficient", title = "Unstandardized", type = "number", format = "dp:3"),
 			list(name = "Standard Error", type="number", format = "dp:3"),
 			list(name = "Standardized Coefficient", title = "Standardized", type = "number", format = "dp:3"),
-			list(name = "t-value", type="number", format = "dp:3"),
+			list(name = "t-value", type="number", format = "sf:4;dp:3"),
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
 		
 		empty.line <- list( #for empty elements in tables when given output

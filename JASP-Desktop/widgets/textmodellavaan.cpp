@@ -5,7 +5,7 @@
 #include <QRegExp>
 #include <QDebug>
 
-#include "utils.h"
+#include "qutils.h"
 
 TextModelLavaan::TextModelLavaan(QObject *parent)
 	: QTextDocument(parent)

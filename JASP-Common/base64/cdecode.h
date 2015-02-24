@@ -17,11 +17,12 @@ typedef struct
 {
 	base64_decodestep step;
 	char plainchar;
+	char decoding[128];
 } base64_decodestate;
 
-void base64_init_decodestate(base64_decodestate* state_in);
+void base64_init_decodestate(base64_decodestate* state_in, const char *encoding);
 
-int base64_decode_value(char value_in);
+int base64_decode_value(char value_in, const char *decoding);
 
 int base64_decode_block(const char* code_in, const int length_in, char* plaintext_out, base64_decodestate* state_in);
 

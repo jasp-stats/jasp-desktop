@@ -91,3 +91,38 @@ value errors for *BF*
 #### ANOVA
 
 * Factor(s): *X, Y, Z* contain(s) less than two levels. (Possibly only after rows with missing values are excluded)
+
+
+#### Classical Linear Regression
+
+value errors for *b*
+
+* Least squares regression model is undefined -- there are no observations for the dependent variable (possibly only after rows with missing values are excluded)
+* Least squares regression model is undefined -- the dependent variable contains all the same value (the variance is zero)
+* Least squares regression model is undefined -- the independent variable(s) *X, Y, Z* contain(s) all the same value (the variance is zero)
+* Least squares regression model is undefined -- the dependent variable contains infinity
+* Least squares regression model is undefined -- the independent variable(s) *X, Y, Z* contain(s) infinity
+
+#### Bayesian ANOVA / ANCOVA / Repeated Measures ANOVA / Linear Regression
+
+overall errors
+
+* The main effects of variables must be specified as nuisance whenever their interaction is specified as nuisance
+* The main effects of variables must be included whenever their interaction is included
+* The main effects and lower order interactions of variables must be specified as nuisance whenever their corresponding higer order interaction is specified as nuisance
+* The main effects and lower order interactions of variables must be included whenever their corresponding higher order interactions are included 
+	
+value errors for *BF*
+
+* Bayes Factor is undefined -- all effects are specified as nuisance
+* Bayes Factor is undefined -- there are too few observations to estimate all specified effects (possibly only after rows with missing values are excluded)
+* Bayes Factor is undefined -- the factor(s): *X, Y, Z* contain(s) less than two levels (possibly only after rows with missing values are excluded)
+* Bayes Factor is undefined -- the dependent variable contains infinity
+
+#### Bayesian Correlation Matrix
+value errors for *r* the sample correlation co-efficient
+
+* Sample correlation co-efficient r is undefined - not enough observations
+* Sample correlation co-efficient r is undefined - one (or more) variables contain infinity
+* Sample correlation co-efficient r is undefined - one (or more) variables do not vary
+

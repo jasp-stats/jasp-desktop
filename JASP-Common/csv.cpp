@@ -223,14 +223,21 @@ void CSV::determineDelimiters()
 	{
 		char ch = _utf8Buffer[i];
 
-		switch (ch)
+		if (ch == '"')
 		{
-		case '"':
 			if (inQuote && i + 1 < _utf8BufferEndPos && _utf8Buffer[i + 1] == '"')
 				i++;
 			else
 				inQuote = !inQuote;
-			break;
+
+			continue;
+		}
+
+		if (inQuote)
+			continue;
+
+		switch (ch)
+		{
 		case ',':
 			counts[COMMA]++;
 			break;
@@ -338,7 +345,8 @@ bool CSV::readLine(vector<string> &items)
 			bool success = readUtf8();
 			if (success)
 			{
-				i = 0;
+				i = -1;
+				inQuote = false;
 			}
 			else // eof
 			{
@@ -355,7 +363,7 @@ bool CSV::readLine(vector<string> &items)
 	for (int i = 0; i < items.size(); i++)
 	{
 		string item = items.at(i);
-		if (item.size() > 2 && item[0] == '"' && item[item.size()-1] == '"')
+		if (item.size() >= 2 && item[0] == '"' && item[item.size()-1] == '"')
 			item = item.substr(1, item.size()-2);
 		items[i] = item;
 	}

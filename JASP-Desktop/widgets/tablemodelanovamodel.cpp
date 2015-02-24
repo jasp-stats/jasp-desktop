@@ -4,7 +4,7 @@
 #include <QMimeData>
 #include <QDebug>
 
-#include "utils.h"
+#include "qutils.h"
 #include <boost/foreach.hpp>
 
 #include "options/optionboolean.h"
@@ -15,7 +15,6 @@ TableModelAnovaModel::TableModelAnovaModel(QObject *parent)
 	: TableModel(parent)
 {
 	_boundTo = NULL;
-	_customModel = false;
 
 	_terms.setSortParent(_variables);
 }
@@ -98,29 +97,20 @@ QStringList TableModelAnovaModel::mimeTypes() const
 	return types;
 }
 
-void TableModelAnovaModel::setVariables(const Terms &variables)
+void TableModelAnovaModel::setVariables(const Terms &fixedFactors, const Terms &randomFactors, const Terms &covariates)
 {
-	beginResetModel();
+	_fixedFactors = fixedFactors;
+	_randomFactors = randomFactors;
+	_covariates = covariates;
 
-	_variables.set(variables);
+	Terms all;
+	all.add(fixedFactors);
+	all.add(randomFactors);
+	all.add(covariates);
 
-	if (_customModel)
-	{
-		Terms terms = _terms;
-		terms.discardWhatDoesntContainTheseComponents(_variables);
-		if (terms.size() != _terms.size())
-			setTerms(terms);
-	}
-	else
-	{
-		Terms terms = _variables.crossCombinations();
-		if (terms != _terms)
-			setTerms(terms);
-	}
+	_variables.set(all);
 
 	emit variablesAvailableChanged();
-
-	endResetModel();
 }
 
 const Terms &TableModelAnovaModel::variables() const
@@ -128,19 +118,23 @@ const Terms &TableModelAnovaModel::variables() const
 	return _variables;
 }
 
-void TableModelAnovaModel::setCustomModelMode(bool on)
-{
-	_customModel = on;
-
-	if (_customModel)
-		clear();
-	else
-		setTerms(_variables.crossCombinations());
-}
-
 void TableModelAnovaModel::bindTo(Option *option)
 {
 	_boundTo = dynamic_cast<OptionsTable *>(option);
+
+	beginResetModel();
+
+	_rows = _boundTo->value();
+
+	foreach (Options *row, _rows)
+	{
+		OptionVariables *nameOption = static_cast<OptionVariables*>(row->get(0));
+		string name = nameOption->variables().front();
+
+		_terms.add(Term(name));
+	}
+
+	endResetModel();
 }
 
 void TableModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
@@ -168,6 +162,64 @@ void TableModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
 const Terms &TableModelAnovaModel::terms() const
 {
 	return _terms;
+}
+
+void TableModelAnovaModel::addFixedFactors(const Terms &terms)
+{
+	_fixedFactors.add(terms);
+	_variables.add(terms);
+
+	Terms existingTerms = _terms;
+
+	Terms newTerms = _terms;
+	newTerms.discardWhatDoesContainTheseComponents(_randomFactors);
+	newTerms.discardWhatDoesContainTheseComponents(_covariates);
+	existingTerms.add(newTerms.ffCombinations(terms));
+
+	setTerms(existingTerms);
+
+	emit variablesAvailableChanged();
+}
+
+void TableModelAnovaModel::addRandomFactors(const Terms &terms)
+{
+	_randomFactors.add(terms);
+	_variables.add(terms);
+
+	Terms newTerms = _terms;
+	newTerms.add(terms);
+
+	setTerms(newTerms, true);
+
+	emit variablesAvailableChanged();
+}
+
+void TableModelAnovaModel::addCovariates(const Terms &terms)
+{
+	_covariates.add(terms);
+	_variables.add(terms);
+
+	Terms newTerms = _terms;
+	newTerms.add(terms);
+
+	setTerms(newTerms);
+
+	emit variablesAvailableChanged();
+}
+
+void TableModelAnovaModel::removeVariables(const Terms &terms)
+{
+	_variables.remove(terms);
+	_fixedFactors.remove(terms);
+	_randomFactors.remove(terms);
+	_covariates.remove(terms);
+
+	Terms newTerms = _terms;
+	newTerms.discardWhatDoesContainTheseComponents(terms);
+
+	setTerms(newTerms);
+
+	emit variablesAvailableChanged();
 }
 
 bool TableModelAnovaModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
@@ -320,7 +372,7 @@ OptionVariables *TableModelAnovaModel::termOptionFromRow(Options *row)
 	return static_cast<OptionVariables *>(row->get(0));
 }
 
-void TableModelAnovaModel::setTerms(const Terms &terms)
+void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance)
 {
 	_terms.set(terms);
 
@@ -329,19 +381,90 @@ void TableModelAnovaModel::setTerms(const Terms &terms)
 
 	beginResetModel();
 
-	BOOST_FOREACH(Options *row, _rows)
-		delete row;
+	Terms::const_iterator itr;
+	vector<Options *>::iterator otr;
 
-	_rows.clear();
+	otr = _rows.begin();
 
-	BOOST_FOREACH(const Term &term, _terms.terms())
+	while (otr != _rows.end())
 	{
-		(void)_terms;
-		Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
-		OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
-		termCell->setValue(term.scomponents());
+		Options *row = *otr;
+		OptionVariables *termCell = termOptionFromRow(row);
+		Term existingTerm = Term(termCell->variables());
 
-		_rows.push_back(row);
+		bool shouldRemove = true;
+
+		itr = terms.begin();
+
+		while (itr != terms.end())
+		{
+			const Term &term = *itr;
+
+			if (term == existingTerm)
+			{
+				shouldRemove = false;
+				break;
+			}
+
+			itr++;
+		}
+
+		if (shouldRemove)
+		{
+			_rows.erase(otr);
+			delete row;
+		}
+		else
+		{
+			otr++;
+		}
+	}
+
+	itr = terms.begin();
+
+	for (int i = 0; i < terms.size(); i++)
+	{
+		const Term &term = *itr;
+
+		if (i < _rows.size())
+		{
+			otr = _rows.begin();
+			otr += i;
+			Options *row = *otr;
+			OptionVariables *termCell = termOptionFromRow(row);
+			Term existingTerm = Term(termCell->variables());
+
+			if (existingTerm != term)
+			{
+				Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
+				OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
+				termCell->setValue(term.scomponents());
+
+				if (row->size() > 1 && newTermsAreNuisance)
+				{
+					OptionBoolean *nuisance = static_cast<OptionBoolean *>(row->get(1));
+					nuisance->setValue(true);
+				}
+
+				_rows.insert(otr, row);
+			}
+		}
+		else
+		{
+			Options *row = static_cast<Options *>(_boundTo->rowTemplate()->clone());
+			OptionTerms *termCell = static_cast<OptionTerms *>(row->get(0));
+			termCell->setValue(term.scomponents());
+
+			if (row->size() > 1 && newTermsAreNuisance)
+			{
+				OptionBoolean *nuisance = static_cast<OptionBoolean *>(row->get(1));
+				nuisance->setValue(true);
+			}
+
+			_rows.push_back(row);
+		}
+
+		itr++;
 	}
 
 	_boundTo->setValue(_rows);

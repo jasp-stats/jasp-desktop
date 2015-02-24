@@ -18,7 +18,10 @@ public:
 	explicit RegressionLinearBayesianForm(QWidget *parent = 0);
 	~RegressionLinearBayesianForm();
 
+	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
+
 private slots:
+	void factorsChanging();
 	void factorsChanged();
 	
 private:

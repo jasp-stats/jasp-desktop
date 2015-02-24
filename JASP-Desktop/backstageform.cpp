@@ -20,7 +20,9 @@ BackStageForm::BackStageForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::BackStageForm)
 {
-    ui->setupUi(this);
+	_log = NULL;
+
+	ui->setupUi(this);
 
 	connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(fileItemSelected()));
 	connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(closeItemSelected()));
@@ -56,6 +58,11 @@ bool BackStageForm::eventFilter(QObject *object, QEvent *event)
 	return QWidget::eventFilter(object, event);
 }
 
+void BackStageForm::setLog(ActivityLog *log)
+{
+	_log = log;
+}
+
 void BackStageForm::setFileLoaded(bool loaded)
 {
 	ui->buttonClose->setEnabled(loaded);
@@ -77,11 +84,17 @@ void BackStageForm::fileItemSelected()
 		addToRecentList(filename);
 
 		emit dataSetSelected(filename);
+
+		if (_log != NULL)
+			_log->log("Open File");
 	}
 }
 
 void BackStageForm::closeItemSelected()
 {
+	if (_log != NULL)
+		_log->log("Close File");
+
 	emit closeDataSetSelected();
 }
 
@@ -99,16 +112,27 @@ void BackStageForm::exportItemSelected()
 		_settings.sync();
 
 		emit exportSelected(filename);
+
+		if (_log != NULL)
+			_log->log("Export Results");
 	}
 }
 
 void BackStageForm::exampleSelectedHandler(QString path)
 {
+	qDebug() << QFileInfo(path).baseName();
+
+	if (_log != NULL)
+		_log->log("Open Example", QFileInfo(path).baseName());
+
 	emit dataSetSelected(path);
 }
 
 void BackStageForm::recentSelectedHandler(QString path)
 {
+	if (_log != NULL)
+		_log->log("Open Recent");
+
 	addToRecentList(path);
 	emit dataSetSelected(path);
 }

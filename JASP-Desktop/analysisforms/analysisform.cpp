@@ -9,7 +9,7 @@
 #include <QResizeEvent>
 #include "widgets/boundlistview.h"
 #include "widgets/boundpairstable.h"
-#include "utils.h"
+#include "qutils.h"
 
 using namespace std;
 
@@ -19,6 +19,9 @@ AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 {
 	setObjectName(name);
 	_mainVariables = NULL;
+
+	_options = NULL;
+	_dataSet = NULL;
 }
 
 void AnalysisForm::bindTo(Options *options, DataSet *dataSet)

@@ -24,12 +24,14 @@ TTestBayesianOneSampleForm::TTestBayesianOneSampleForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->additionalStatisticsGroup->hide();
-	ui->plotsGroup->hide();
-	ui->hypothesis->hide();
+	ui->plotBayesFactorRobustness->hide();
+	ui->plotSequentialAnalysis->hide();
+	ui->plotSequentialAnalysisRobustness->hide();
 #else
 	ui->additionalStatisticsGroup->setStyleSheet("background-color: pink;");
-	ui->plotsGroup->setStyleSheet("background-color: pink;");
-	ui->hypothesis->setStyleSheet("background-color: pink;");
+	ui->plotBayesFactorRobustness->setStyleSheet("background-color: pink;");
+	ui->plotSequentialAnalysis->setStyleSheet("background-color: pink;");
+	ui->plotSequentialAnalysisRobustness->setStyleSheet("background-color: pink;");
 #endif
 }
 

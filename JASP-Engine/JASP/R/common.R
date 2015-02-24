@@ -1,47 +1,49 @@
 
-init <- function(name, options.as.json.string) {
+run <- function(name, options.as.json.string, perform="run") {
 
-	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE)
+	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE, encoding="UTF-8")
 	analysis <- eval(parse(text=name))
 	
-	results <- try (silent = TRUE, expr = {
+	if (perform == "init") {
 	
-		analysis(dataset=NULL, options=options, perform="init")
-	})
-	
-	if (class(results) == "try-error") {
-	
-		print(results)
-	
-		"{ \"error\" : 	1, \"errorMessage\" : \"This analysis terminated unexpectedly. Please contact its author.\" }"
-	
+		the.callback <- function(...) 0
+		
 	} else {
-
-		results <- .addCitationToResults(results)	
-		RJSONIO::toJSON(results, digits=12)
+	
+		the.callback <- callback
 	}
-
-}
-
-run <- function(name, options.as.json.string) {
-
-	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE)
-	analysis <- eval(parse(text=name))
 	
 	results <- try (silent = TRUE, expr = {
 	
-		analysis(dataset=NULL, options=options, perform="run", callback=callback)
+		analysis(dataset=NULL, options=options, perform=perform, callback=the.callback)
 	})
 	
 	if (class(results) == "try-error") {
+
+		error <- gsub("\n", "\\\\n", as.character(results), fixed=TRUE)
+		errorMessage <- paste("This analysis terminated unexpectedly. Please contact its author.", error, sep="\\\\n\\\\n")
 	
-		print(results)
-	
-		"{ \"error\" : 	1, \"errorMessage\" : \"This analysis terminated unexpectedly. Please contact its author.\" }"
+		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
+		
+		errorResponse
 	
 	} else {
 	
-		results <- .addCitationToResults(results)
+		if ("state" %in% names(results)) {
+
+			state <- results$state		
+			base::save(state, file=.requestStateFileNameNative(), compress=FALSE)
+		}
+		
+		if ("results" %in% names(results)) {
+		
+			results$results <- .addCitationToResults(results$results)
+			
+		} else {
+		
+			results <- .addCitationToResults(results)
+		}
+		
 		RJSONIO::toJSON(results, digits=12)
 	}
 
@@ -127,21 +129,65 @@ run <- function(name, options.as.json.string) {
 
 .vdf <- function(df, columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {
 
-	new.df <- data.frame()
+	new.df <- NULL
+	namez <- NULL
 	
-	for (column.name in columns)
-		new.df <- cbind(new.df, df[[column.name]])
-		
-	for (column.name in columns.as.ordinal)
-		new.df <- cbind(new.df, as.ordered(df[[column.name]]))
-		
-	for (column.name in columns.as.factor)
-		new.df <- cbind(new.df, as.factor(df[[column.name]]))
-		
-	for (column.name in columns.as.numeric)
-		new.df <- cbind(new.df, as.numeric(as.character(df[[column.name]])))
+	for (column.name in columns) {
+	
+		column <- df[[column.name]]
 
-	names(new.df) <- .v(names(new.df))
+		if (is.null(new.df)) {
+			new.df <- data.frame(column)
+		} else {
+			new.df <- data.frame(new.df, column)
+		}
+		
+		namez <- c(namez, column.name)
+	}
+		
+	for (column.name in columns.as.ordinal) {
+	
+		column <- as.ordered(df[[column.name]])
+	
+		if (is.null(new.df)) {
+			new.df <- data.frame(column)
+		} else {
+			new.df <- data.frame(new.df, column)
+		}
+
+		namez <- c(namez, column.name)
+	}
+		
+	for (column.name in columns.as.factor) {
+	
+		column <- as.factor(df[[column.name]])
+
+		if (is.null(new.df)) {
+			new.df <- data.frame(column)
+		} else {
+			new.df <- data.frame(new.df, column)
+		}
+	
+		namez <- c(namez, column.name)
+	}
+		
+	for (column.name in columns.as.numeric) {
+
+		column <- as.numeric(as.character(df[[column.name]]))
+
+		if (is.null(new.df)) {
+			new.df <- data.frame(column)
+		} else {
+			new.df <- data.frame(new.df, column)
+		}
+	
+		namez <- c(namez, column.name)
+	}
+
+	if (is.null(new.df))
+		return (data.frame())
+
+	names(new.df) <- .v(namez)
 	
 	new.df <- .excludeNaListwise(new.df, exclude.na.listwise)
 	
@@ -177,16 +223,18 @@ run <- function(name, options.as.json.string) {
 	dataset
 }
 
+.requestTempFileName <- function(extension) {
+
+	.requestTimeFileNameNative(extension)
+}
+
 .saveState <- function(state) {
 
-	if (base::exists(".saveStateNative")) {
+	if (base::exists(".requestStateFileNameNative")) {
 
-		con <- rawConnection(raw(), "w")
-		save("state", file=con)
-		rawContent <- rawConnectionValue(con)
-		close(con)
-	
-		.saveStateNative(rawContent)
+		file <- .requestStateFileNameNative()
+
+		base::save(state, file=file, compress=FALSE)
 	}
 	
 	NULL
@@ -196,16 +244,11 @@ run <- function(name, options.as.json.string) {
 
 	state <- NULL
 	
-	if (base::exists(".retrieveStateNative")) {
+	if (base::exists(".requestStateFileNameNative")) {
 
-		rawContent <- .retrieveStateNative()
-
-		if (is.null(rawContent) == FALSE) {
-	
-			con <- rawConnection(rawContent, "r")	
-			load(file=con)
-			close(con)
-		}	
+		file <- .requestStateFileNameNative()
+		
+		base::try(base::load(file))
 	}
 	
 	state
@@ -216,7 +259,7 @@ run <- function(name, options.as.json.string) {
 	f  <- rm.factors[[length(rm.factors)]]
 	df <- data.frame(as.factor(unlist(f$levels)))
 	
-	names(df) <- paste("F", .v(f$name), sep="")
+	names(df) <- .v(f$name, "F")
 	
 	row.count <- dim(df)[1]
 	
@@ -244,7 +287,7 @@ run <- function(name, options.as.json.string) {
 		
 		
 		df <- cbind(cells, df)
-		names(df)[[1]] <- paste("F", .v(f$name), sep="")
+		names(df)[[1]] <- .v(f$name, "F")
 		
 		i <- i - 1
 	}
@@ -271,12 +314,12 @@ run <- function(name, options.as.json.string) {
 	df
 }
 
-.v <- function(variable.names) {
+.v <- function(variable.names, prefix="X") {
 
 	vs <- c()
 
 	for (v in variable.names)
-		vs[length(vs)+1] <- paste(".", .toBase64(v), sep="")
+		vs[length(vs)+1] <- paste(prefix, .toBase64(v), sep="")
 
 	vs
 }
@@ -294,10 +337,6 @@ run <- function(name, options.as.json.string) {
 	
 		if (firstChar >= 0x41 && firstChar <= 0x5A) {  # A to Z
 		
-			vs[length(vs)+1] <- .fromBase64(substr(v, 3, nchar(v)))
-			
-		} else if (firstChar == 0x2E) {  # a dot
-		
 			vs[length(vs)+1] <- .fromBase64(substr(v, 2, nchar(v)))
 			
 		} else {
@@ -310,53 +349,60 @@ run <- function(name, options.as.json.string) {
 }
 
 .vf <- function(formula) {
-  
-  in.pieces <- .decompose(formula)
-  ved <- .jrapply(in.pieces, .v)
-  .compose(ved)
+	
+	in.pieces <- .decompose(formula)
+	ved <- .jrapply(in.pieces, .v)
+	.compose(ved)
 }
 
 .unvf <- function(formula) {
-  
-  in.pieces <- .decompose(formula)
-  unved <- .jrapply(in.pieces, .unv)
-  .compose(unved)
+	
+	in.pieces <- .decompose(formula)
+	unved <- .jrapply(in.pieces, .unv)
+	
+	interaction.symbol <- "\u2009\u273B\u2009"
+	base::Encoding(interaction.symbol) <- "UTF-8"
+	
+	.compose(unved, interaction.symbol)
 }
 
 .decompose <- function(formulas) {
-  
-  lapply(as.list(formulas), function(formula) {
-  
-    sides <- strsplit(formula, "~", fixed=TRUE)[[1]]
-    
-    lapply(sides, function(formula) {
-    
-      terms <- strsplit(formula, "+", fixed=TRUE)
-      
-      lapply(terms, function(term) {
-        components <- strsplit(term, ":")
-        components <- sapply(components, stringr::str_trim, simplify=FALSE)
-      })[[1]]
-      
-    })
-  })
+
+	lapply(as.list(formulas), function(formula) {
+
+		sides <- strsplit(formula, "~", fixed=TRUE)[[1]]
+		
+		lapply(sides, function(formula) {
+			
+			terms <- strsplit(formula, "+", fixed=TRUE)
+			
+			lapply(terms, function(term) {
+			components <- strsplit(term, ":")
+			components <- sapply(components, stringr::str_trim, simplify=FALSE)
+			
+			})[[1]]
+		})
+	})
 }
 
-.compose <- function(formulas) {
-  
-  sapply(formulas, function(formula) {
-    
-    formula <- sapply(formula, function(side) {
-      
-      side <- sapply(side, function(term) {
-        paste(term, collapse=":")
-      })
-      
-      paste(side, collapse=" + ")
-    })
-    
-    paste(formula, collapse=" ~ ")    
-  })
+.compose <- function(formulas, i.symbol=":") {
+
+	sapply(formulas, function(formula) {
+		
+		formula <- sapply(formula, function(side) {
+			
+			side <- sapply(side, function(term) {
+			
+				term <- sapply(term, function(component) { base::Encoding(component) <- "UTF-8" ; component })
+			
+				paste(term, collapse=i.symbol)
+			})
+			
+			paste(side, collapse=" + ")
+		})
+		
+		paste(formula, collapse=" ~ ")
+	})
 }
 
 
@@ -384,7 +430,7 @@ callback <- function(results=NULL) {
 		if (is.null(results)) {
 			json.string <- "null"
 		} else {
-			json.string <- RJSONIO::toJSON(results)
+			json.string <- RJSONIO::toJSON(results, digits=12)
 		}
 	
 		ret <- .callbackNative(json.string);
@@ -444,29 +490,26 @@ callback <- function(results=NULL) {
 
 .beginSaveImage <- function(width=320, height=320) {
 
-	file <- tempfile(fileext=".svg")
-			
-	grDevices::svg(filename=file, width=width/72, height=height/72, bg="transparent")
+	#filename <- .requestTempFileNameNative("svg")
+	#grDevices::svg(filename=filename, width=width/72, height=height/72, bg="transparent")
 	
-	list(format="svg", encoding="dataURI;base64", file=file)
+	type <- "cairo"
+	
+	if (Sys.info()["sysname"]=="Darwin")  # OS X
+		type <- "quartz"
+	
+	multip <- .ppi / 96
+	filename <- .requestTempFileNameNative("png")
+	grDevices::png(filename=filename, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
+	
+	filename
 }
 
-.endSaveImage <- function(image.descriptor) {
+.endSaveImage <- function(filename) {
 
 	grDevices::dev.off()
 	
-	file <- tempfile(fileext=".base64")
-	
-	base64::encode(image.descriptor$file, file, linesize=1024*1024*1024)
-	
-	file.size <- base::file.info(file)$size - 2   # strip \r\n from end
-	
-	content <- paste("data:image/svg+xml;base64,", base::readChar(file, file.size), sep="")
-	
-	base::file.remove(image.descriptor$file)
-	base::file.remove(file)
-
-	content
+	filename
 }
 
 .extractErrorMessage <- function(error) {
@@ -521,6 +564,22 @@ callback <- function(results=NULL) {
 }
 
 .clean <- function(value) {
+
+	if (is.list(value)) {
+	
+		if (is.null(names(value))) {
+			
+			for (i in length(value))
+				value[[i]] <- .clean(value[[i]])
+				
+		} else {
+		
+			for (name in names(value))
+				value[[name]] <- .clean(value[[name]])
+		}
+		
+		return(value)
+	}
 
 	if (is.null(value))
 		return ("")

@@ -58,12 +58,7 @@ AncovaMultivariateForm::~AncovaMultivariateForm()
 
 void AncovaMultivariateForm::factorsChanged()
 {
-	Terms factorsAvailable;
 
-	factorsAvailable.add(_fixedFactorsListModel->assigned());
-	factorsAvailable.add(_covariatesListModel->assigned());
-
-	_anovaModel->setVariables(factorsAvailable);
 }
 
 void AncovaMultivariateForm::dependentChanged()

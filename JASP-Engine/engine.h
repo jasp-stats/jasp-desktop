@@ -1,10 +1,8 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include "rcppbridge.h"
-
+#include "../JASP-Common/dataset.h"
 #include "../JASP-Common/lib_json/json.h"
-#include "../JASP-Common/analysis.h"
 #include "../JASP-Common/ipcchannel.h"
 #include "../JASP-Common/process.h"
 
@@ -20,26 +18,31 @@ public:
 	
 private:
 
-	void receiveMessages(int timeout = 0);
+	bool receiveMessages(int timeout = 0);
 	void runAnalysis();
-	void analysisResultsChanged(Analysis *analysis);
-	void analysisYield();
+	void sendResults();
+	int callback(const std::string &results);
 
-	Analysis *_currentAnalysis;
-	Analysis *_nextAnalysis;
+	std::string provideTempFileName(const std::string &extension);
+	std::string provideStateFileName();
 
-	void send(Analysis *analysis);
+	typedef enum { empty, toInit, initing, inited, toRun, running, complete, error } Status;
 
-	Json::Value _currentRequest;
+	Status _status;
+
+	int _analysisId;
+	std::string _analysisName;
+	std::string _analysisOptions;
+	std::string _analysisResultsString;
+	int _ppi;
+
+	Json::Value _analysisResults;
 
 	IPCChannel *_channel;
 
 	DataSet *_dataSet;
 
-	RcppBridge _R;
-
 	int _slaveNo;
-
 };
 
 #endif // ENGINE_H

@@ -94,16 +94,22 @@ $.widget("jasp.table", {
 				}
 				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
 				
-					formatted = { content : "", class : clazz }
+					formatted = { content : "&nbsp;", class : clazz }
 					combined = true
 				}
 				else {
 				
+					if (typeof content === "string")
+						content = content.replace(/\u273B/g, "<small>\u273B</small>")
+					
 					formatted = { content : content, "class" : clazz }
 				}
 				
-				if (combined == false && cell.isNewGroup)
-					formatted["class"] += " new-group-row"
+				if (combined == false && cell.isStartOfGroup)
+					formatted.isStartOfGroup = true
+					
+				if (cell.isEndOfGroup)
+					formatted.isEndOfGroup = true
 					
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
@@ -120,6 +126,7 @@ $.widget("jasp.table", {
 		var p = NaN
 		var dp = NaN
 		var sf = NaN
+		var pc = false
 
 		for (var i = 0; i < formats.length; i++) {
 		
@@ -136,6 +143,10 @@ $.widget("jasp.table", {
 			if (f.indexOf("sf:") != -1) {
 
 				sf = f.substring(3)
+			}
+			if (f.indexOf("pc") != -1) {
+			
+				pc = true
 			}
 		}
 		
@@ -172,6 +183,8 @@ $.widget("jasp.table", {
 				minLSD = -dp
 			if (minLSD > 0)
 				minLSD = 0
+			else if (minLSD < -20)
+				minLSD = -20
 		
 			for (var rowNo = 0; rowNo < column.length; rowNo++) {
 
@@ -183,9 +196,13 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
+				else if (typeof content === "") {
+				
+					formatted = { content : "&nbsp;", "class" : "number" }
+				}
 				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
 				
-					formatted = { content : "", "class" : "number" }
+					formatted = { content : "&nbsp;", "class" : "number" }
 				}
 				else if (isNaN(parseFloat(content))) {  // isn't a number
 					
@@ -231,13 +248,20 @@ $.widget("jasp.table", {
 				}
 				else {
 					
-					formatted = { content : content.toFixed(-minLSD).replace(/-/g, "&minus;"), "class" : "number" }
+					if (alignNumbers) {
+					
+						formatted = { content : content.toFixed(-minLSD).replace(/-/g, "&minus;"), "class" : "number" }
+					}
+					else {
+					
+						formatted = { content : content.toPrecision(sf).replace(/-/g, "&minus;"), "class" : "number" }
+					}
 				}
 				
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
 					
-				if (cell.isNewGroup)
+				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
 				
 				columnCells[rowNo] = formatted
@@ -255,9 +279,13 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
+				else if (content === "") {
+				
+					formatted = { content : "&nbsp;" }
+				}
 				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
 				
-					formatted = { content : "", "class" : "number" }
+					formatted = { content : "&nbsp;", "class" : "number" }
 				}
 				else if (isNaN(parseFloat(content))) {  // isn't a number
 					
@@ -267,6 +295,10 @@ $.widget("jasp.table", {
 					
 					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
 				}
+				else if (pc) {
+				
+					formatted = { content : "" + (100 * content).toFixed(dp) + "&thinsp;%", "class" : "percentage" }
+				}
 				else {
 				
 					formatted = { content : content.toFixed(dp).replace(/-/g, "&minus;"), "class" : "number" }
@@ -275,11 +307,45 @@ $.widget("jasp.table", {
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
 					
-				if (cell.isNewGroup)
+				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
 				
 				columnCells[rowNo] = formatted
 			}
+		}
+		else if (pc) {
+		
+			for (var rowNo = 0; rowNo < column.length; rowNo++) {
+
+				var cell = column[rowNo]
+				var content = cell.content
+				var formatted
+				
+				if (typeof content == "undefined") {
+				
+					formatted = { content : "." }
+				}
+				else if (content === "") {
+
+					formatted = { content : "&nbsp;" }				
+				}
+				else if (isNaN(parseFloat(content))) {  // isn't a number
+					
+					formatted = { content : content, "class" : "percentage" }
+				}
+				else {
+				
+					formatted = { content : "" + (100 * content.toFixed(0)) + "&thinsp;%", "class" : "percentage" }
+				}
+				
+				if (typeof cell.footnotes != "undefined")
+					formatted.footnotes = this._getFootnotes(cell.footnotes)
+					
+				if (cell.isStartOfGroup)
+					formatted["class"] += " new-group-row"
+				
+				columnCells[rowNo] = formatted
+			}			
 		}
 		else {
 		
@@ -293,9 +359,13 @@ $.widget("jasp.table", {
 				
 					formatted = { content : "." }
 				}
+				else if (content === "") {
+
+					formatted = { content : "&nbsp;" }				
+				}
 				else if (combine && rowNo > 0 && column[rowNo-1].content == content) {
 				
-					formatted = { content : "" }
+					formatted = { content : "&nbsp;" }
 				}
 				else {
 				
@@ -305,7 +375,7 @@ $.widget("jasp.table", {
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
 					
-				if (cell.isNewGroup)
+				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
 					
 				columnCells[rowNo] = formatted
@@ -365,9 +435,18 @@ $.widget("jasp.table", {
 				
 			var columnDef = columnDefs[colNo]
 			var columnName = columnDef.name
-			var title = (typeof columnDef.title != "undefined") ? columnDef.title : columnName
+
+			var title = columnDef.title
 			
-			var columnHeader = { content : title, header : true }
+			if (typeof title == "undefined") 
+				title = columnName
+				
+			if (title == "")
+				title = "&nbsp;"
+			
+			var columnType = columnDef.type
+			
+			var columnHeader = { content : title, header : true, type : columnType }
 
 			// At the moment this only supports combining two column headers
 			// Support for multiple can be added when necessary
@@ -388,6 +467,7 @@ $.widget("jasp.table", {
 			// populate cells column-wise
 			
 			var column = Array(rowCount)
+			var isGrouped = false
 			
 			for (var rowNo = 0; rowNo < rowCount; rowNo++) {
 			
@@ -401,8 +481,24 @@ $.widget("jasp.table", {
 				if (colNo == 0 && columnDef.type == "string" && row[".rowLevel"])
 					cell.content = Array(row[".rowLevel"]+1).join("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") + cell.content
 					
-				if (row['.isNewGroup'])
-					cell.isNewGroup = true
+				if (row[".isNewGroup"]) {
+				
+					cell.isStartOfGroup = true
+					isGrouped = true
+				}
+				
+				if (isGrouped) {
+				
+					if (rowNo + 1 < rowCount) {
+					
+						if (rowData[rowNo + 1][".isNewGroup"])
+							cell.isEndOfGroup = true
+					}
+					else {
+					
+						cell.isEndOfGroup = true					
+					}
+				}
 				
 				column[rowNo] = cell
 			}
@@ -424,7 +520,6 @@ $.widget("jasp.table", {
 			cells[colNo] = this._formatColumn(column, type, format, alignNumbers, combine)
 		}
 		
-		var foldedRows = false
 		var columnsInColumn = { }  // dictionary of counts
 		var columnsInsertedInColumn = { }
 		var maxColumnsInColumn = 0
@@ -435,11 +530,8 @@ $.widget("jasp.table", {
 			var columnName = this.options.schema.fields[colNo].name
 			var subRowPos = columnName.indexOf("[")
 			
-			if (subRowPos != -1) {
-			
-				foldedRows = true
+			if (subRowPos != -1)
 				columnName = columnName.substr(0, subRowPos)
-			}
 			
 			columnNames[colNo] = columnName
 			
@@ -456,7 +548,7 @@ $.widget("jasp.table", {
 			columnsInColumn[columnName] = cic
 		}
 		
-		if (foldedRows) {
+		if (maxColumnsInColumn > 1) {  // do columns need to be folded
 		
 			var foldedColumnNames = _.uniq(columnNames)
 			var foldedCells = Array(foldedColumnNames.length)
@@ -491,6 +583,12 @@ $.widget("jasp.table", {
 				for (var rowNo = 0; rowNo < columnCells.length; rowNo++) {
 				
 					var cell = columnCells[rowNo]
+					
+					if (offset == 0)
+						cell.isStartOfGroup = true
+					if (offset == cic - 1)
+						cell.isEndOfGroup = true
+					
 					cell.span = maxColumnsInColumn / cic
 					column[rowNo * cic + offset] = cell
 				
@@ -519,15 +617,6 @@ $.widget("jasp.table", {
 
 		if (this.options.error) {
 		
-			if (this.options.error.errorMessage) {
-		
-				chunks.push('<div style="height: 0px ; overflow: visible ; position: relative; top: 20px ;">')
-				chunks.push('<div style="" class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>')
-				chunks.push(this.options.error.errorMessage)
-				chunks.push('</div>')
-				chunks.push('</div>')
-			}
-		
 			chunks.push('<table class="error-state">')
 		}
 		else {
@@ -539,12 +628,24 @@ $.widget("jasp.table", {
 
 			chunks.push('<thead>')
 				chunks.push('<tr>')
-					chunks.push('<th nowrap colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="status"></div><div class="copy toolbar-button" style="visibility: hidden ;"></div><div class="cite toolbar-button" style="visibility: hidden ;"></div></div></th>')
+					chunks.push('<th colspan="' + 2 * columnCount + '">' + this.options.title + '<div class="toolbar do-not-copy"><div class="status"></div><div class="copy toolbar-button" style="visibility: hidden ;"></div><div class="cite toolbar-button" style="visibility: hidden ;"></div></div>')
+					
+					if (this.options.error && this.options.error.errorMessage) {
+		
+						chunks.push('<div  class="error-message-positioner">')
+						chunks.push('<div  class="error-message-box ui-state-error">')
+						chunks.push('<span class="error-message-symbol ui-icon ui-icon-alert"></span>')
+						chunks.push('<div  class="error-message-message">' + this.options.error.errorMessage + '</div>')
+						chunks.push('</div>')
+						chunks.push('</div>')
+					}
+					
+					chunks.push('</th>')
 				chunks.push('</tr>')
 
 		if (this.options.subtitle) {
 				chunks.push('<tr>')
-					chunks.push('<th nowrap colspan="' + 2 * columnCount + '"></th>')
+					chunks.push('<th colspan="' + 2 * columnCount + '"></th>')
 				chunks.push('</tr>')
 		}
 
@@ -563,7 +664,7 @@ $.widget("jasp.table", {
 
 				span *= 2  // times 2, because of footnote markers
 			
-				chunks.push('<th colspan="' + span + '" nowrap>' + cell.content)
+				chunks.push('<th colspan="' + span + '" class="' + cell.type + '">' + cell.content)
 				if (cell.footnotes)
 					chunks.push(cell.footnotes.join(' '))
 				chunks.push('</th>')
@@ -585,8 +686,6 @@ $.widget("jasp.table", {
 			
 			chunks.push('<tr>')
 
-			var isNewGroup = false
-
 			for (var colNo = 0; colNo < columnCount; colNo++) {
 			
 				if (tableProgress[colNo].to == rowNo) {
@@ -595,20 +694,21 @@ $.widget("jasp.table", {
 					var cell = cells[colNo][fromIndex]
 					var cellHtml = ''
 
-					var cellClass = (cell.class ? cell.class + " " : "")
-					cellClass += (cell.isNewGroup || isNewGroup ? "new-group-row" : "")
+					var cellClass = cell.class
+					cellClass += (cell.isStartOfGroup ? " new-group-row" : "")
+					cellClass += (cell.isEndOfGroup ? " last-group-row" : "")
 
 					cellHtml += (cell.header ? '<th' : '<td')
 					cellHtml += ' class="value ' + cellClass + '"'
 					cellHtml += (cell.span   ? ' rowspan="' + cell.span + '"' : '')
-					cellHtml += ' nowrap>'
+					cellHtml += '>'
 					cellHtml += (typeof cell.content   != "undefined" ? cell.content : '')
 					cellHtml += (cell.header ? '</th>' : '</td>')
 					
 					cellHtml += (cell.header ? '<th' : '<td')
 					cellHtml += ' class="symbol ' + cellClass + '"'
 					cellHtml += (cell.span   ? ' rowspan="' + cell.span + '"' : '')
-					cellHtml += ' nowrap>'
+					cellHtml += '>'
 					if (typeof cell.footnotes != "undefined")
 						cellHtml += cell.footnotes.join(' ')
 					cellHtml += (cell.header ? '</th>' : '</td>')
@@ -618,9 +718,7 @@ $.widget("jasp.table", {
 					if (cell.span) {
 					
 						tableProgress[colNo].to += cell.span
-						
-						if (cell.span > 1)
-							isNewGroup = true
+
 					}
 					else {
 					
@@ -631,6 +729,9 @@ $.widget("jasp.table", {
 				}
 				
 			}
+			
+			if (rowNo == 0) // squashes the table to the left
+				chunks.push('<td class="squash-left" rowspan="' + rowCount + '"></td>')
 
 			chunks.push('</tr>')
 		}

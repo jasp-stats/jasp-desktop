@@ -12,7 +12,7 @@ Analyses in JASP, when implemented in R, should be of the following form:
 
 `AnalysisName <- function(dataset, options, perform="run", callback=function(...) 0, ...) {`
 
-* `dataset` : will always be `NULL`. `dataset` is included should you wish to make your function useable from outside of JASP. Inside JASP you should read the dataset with the included functions (details below)
+* `dataset` : will always be `NULL` in JASP. `dataset` is used when an analysis is run outside of JASP. Inside JASP you should read the dataset with the included functions (details below)
 * `options` : a list containing values corresponding to the state of each of the user interface elements in the analysis' user interface
 * `perform` : will either be equal to `"init"` or `"run"`, for initializing and running the analysis respectively
 * `callback` : a function to call periodically to notify JASP that the analysis is still running, and (not implemented yet) to provide progress updates (such as percentage complete). this function will return a non-zero value if the user has aborted the analysis, and your function should terminate in response to this.
@@ -29,7 +29,7 @@ An assortment of useful functions are available to JASP R analyses. These are de
 
 In order for the analysis to read the data from JASP, one of two functions must be called:
 
-`.readDataSetHeader(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`  
+`.readDataSetHeader(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
 `.readDataSetToEnd(columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
 
 - `columns` : a vector of column names to be read
@@ -41,33 +41,59 @@ These functions return a data.frame containing the columns requested marshalled 
 
 `.readDataSetHeader()` returns a data.frame with no data (zero rows), and is intended for initialization of an analysis. `.readDataSetToEnd()` returns a data.frame containing all the rows for the requested columns.
 
-The names of the columns in these data.frames are encoded with *dot-prepended-base64-encoding*. This is so that special characters can be supported. These names can be converted back and forth using the `.v` and `.unv` functions (below)
+The names of the columns in these data.frames are encoded with *X-prepended-base64-encoding*. This is so that special characters can be supported. These names can be converted back and forth using the `.v` and `.unv` functions (below)
 
-### Converting to and from *dot-prepended-base64*
+The beginning of an analysis function will typically looks as follows:
 
-Column names in data frames read from JASP are encoded in *dot-prepended-base64*
+    if (is.null(dataset)) {
+    
+        if (perform == "run") {
+        
+            dataset <- .readDataSetToEnd(columns.as.numeric=...,)
+            
+        } else {
+        
+            dataset <- .readDataSetHeader(columns.as.numeric=...,)
+        }
+        
+    } else {
+    
+        dataset <- .vdf(dataset, columns.as.numeric=...,)
+    }
+
+### Converting to and from *X-prepended-base64*
+
+Column names in data frames read from JASP are encoded in *X-prepended-base64*
 
 `.v(column.names)`  
 `.unv(dp.base64.names)`  
 `.vf(formulas)`  
 `.unvf(formulas)`
 
-`.v` returns a vector of column names converted to *dot-prepended-base64-encoding*
-`.unv` returns a vector of normal column names converted from *dot-prepended-base64-encoding*
-`.vf` translates formulas to *dot-prepended-base64-encoding*
-`.unvf` reverts formulas from *dot-prepended-base64-encoding*
+`.vdf(dataset, columns, columns.as.numeric, columns.as.ordered, columns.as.factor)`
+
+`.v` returns a vector of column names converted to *X-prepended-base64-encoding*
+
+`.unv` returns a vector of normal column names converted from *X-prepended-base64-encoding*
+
+`.vf` translates formulas to *X-prepended-base64-encoding*
+
+`.unvf` reverts formulas from *X-prepended-base64-encoding*
+
+`.vdf` transforms the column names of a dataframe to be *X-prepended-base64-encoding*, other arguments are the same as
+`.readDataSetToEnd()`
 
 for example:
 
 `.v("fred")`
 returns
-`".ZnJlZA"`
+`"XZnJlZA"`
 
-`.unv(".ZnJlZA")`
+`.unv("XZnJlZA")`
 returns
 `"fred"`
 
-`.unvf(".aXE ~ .Z2VuZGVy + .c2Vz + .Z2VuZGVy:.c2Vz")`
+`.unvf("XaXE ~ XZ2VuZGVy + Xc2Vz + XZ2VuZGVy:Xc2Vz")`
 returns
 `"iq ~ gender + ses + gender:ses"`
 
@@ -81,7 +107,7 @@ JASP accepts images as SVGs encoded as base64 data URIs. The following functions
 `.beginSaveImage(width, height)`  
 `.endSaveImage(descriptor)`
 
-`.beginSaveImage()` starts the image capturing process, and returns a descriptor. Once the analysis has performed all the rendering it needs, it should call `.endSaveImage()`, passing in the descriptor provided by `.beginSaveImage()`. `.endSaveImage()` returns a base64 encoded data URI which can be assigned to the image object described below.
+`.beginSaveImage()` starts the image capturing process, and returns a descriptor. Once the analysis has performed all the rendering it needs, it should call `.endSaveImage()`, passing in the descriptor provided by `.beginSaveImage()`. `.endSaveImage()` returns a descriptor which can be assigned to the image object described below.
 
 
 ### Cleaning data
@@ -149,11 +175,33 @@ In place of statistics that will be subsequently created by the analysis, a `"."
 Results
 -------
 
-*In the following section, R lists will be represented in JSON notation. In this format, named lists are represented with `{ "name" : "value", "name 2" : "value 2" }`, and unnamed lists are represented with `[ "valueWithouName", "valueWithoutName 2" ]`. JSON is a particularly good format for representing nested/hierachical structures, which is why we make use of it.*
+In the following section, R lists will be represented in JSON notation. In this format, named lists are represented with
 
-The analysis function should return the results from the analysis, and must be a named list.
+    { "name" : "value", "name 2" : "value 2" }
 
-An example of a results list might be:
+and unnamed lists are represented with
+
+    [ "valueWithouName", "valueWithoutName 2" ]
+
+. JSON is a particularly good format for representing nested/hierachical structures, which is why we make use of it.
+
+The analysis function should return a results bundle and must be a named list.
+
+An example of a results bundle might be:
+
+    {
+        "results" : { ... },
+        "status" : "the status",
+        "state" : { ... }
+        "keep" : [ ... ]
+    }
+
+- `results` : a results object, descriped below
+- `status` : the status, this can be either `"inited"` (typically to be returned when `perform == "init"`) or `"complete"` (typically returned when `perform == "run"`)
+- `state`  : arbitrary data that can be retrieved in a subsequent call of this analysis with a call to `.retrieveState()`
+- `keep` : a list of file descriptors (from `.endSaveImage()`). This instructs the temporary file system to keep these files, and not delete them.
+
+### Results
 
     {
         ".meta" : [
@@ -210,13 +258,22 @@ Taken from here: http://dataprotocols.org/json-table-schema/
         ]
     }
 
-- `name` : the column name
+- `name` : the column name (note the use of [ ] in the name invokes column folding, see below)
 - `title` : optional, displayed at the top of the column; if not specified the column name is used
 - `type` : one of `"string"`, `"number"`, `"integer"`
 - `format` : format specifiers (multiple can be specified, separated with semicolons)
     - `dp:X` - format to X decimal places
     - `sf:X` - format to X significant figures
-    - `p:X` - if the value is less than X, substitute `p < X` in it's place (`p:.001` is common)
+    - `p:X`  - if the value is less than X, substitute `p < X` in it's place (`p:.001` is common)
+    - `pc`   - format the number as a percentage (multiply it by 100, and add a % sign) (does not work in conjunction with sf)
+
+##### Column folding
+Column folding is where multiple columns are folded into one. This can be done for a number of reasons, but the most common is because a single column requires heterogeneous formatting. For example, the correlation table has a column which contains an r-value, a p-value directly underneath, then another r-value, etc.; these require different formatting. To achieve this, two separate columns are created for r-value and p-value, each with their own formatting, but with special names which instruct the table renderer to combine or fold these columns into one. In the case of the r-value and the p-value, the column names:
+
+- `value[pValue]`
+- `value[rValue]`
+
+might be chosen. The table renderer matches the name before the `[`, and knows to combine or fold these columns into one.
     
 #### data
 
@@ -295,15 +352,17 @@ It is recommended to use the footnotes functions described above, rather than cr
         "title"  : "The images title",
         "width"  : 640,
         "height" : 480,
-        "data"   : "data:image/svg+xml;base64,PD94bWwgdm ... "
+        "data"   : " ... "
     }
     
 * `title` : The title of the image
 * `width` : the width of the image
 * `height`: the height of the image
-* `data`  : base64 encoded data URI of an SVG image
+* `data`  : the image, returned by `.endSaveImage()`
 
 `data` is most easily produced with the functions:
-    - `.beginImageSave()`
-    - `.endImageSave()`
+    - `.beginSaveImage()`
+    - `.endSaveImage()`
+
+
 

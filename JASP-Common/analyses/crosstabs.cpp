@@ -32,6 +32,8 @@ Options *Crosstabs::createOptions() const
 	options->add("chiSquared", new OptionBoolean(true));
 	options->add("chiSquaredContinuityCorrection", new OptionBoolean(false));
 	options->add("likelihoodRatio", new OptionBoolean(false));
+	options->add("oddsRatio", new OptionBoolean(false));
+	options->add("oddsRatioConfidenceIntervalInterval", new OptionNumber(.95, 0, 1, "%"));
 
 	options->add("nominal/contingencyCoefficient", new OptionBoolean());
 	options->add("nominal/phiAndCramersV", new OptionBoolean());

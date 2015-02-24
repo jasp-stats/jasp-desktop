@@ -35,7 +35,7 @@ $.widget("jasp.images", {
                 this.images.append(image)
                 
                 var self = this
-                var allImages = this.element.children()
+                var allImages = this.element.find(".jasp-image-holder");
                 
 				image.bind("imageresize", function(event, ui) {
                 

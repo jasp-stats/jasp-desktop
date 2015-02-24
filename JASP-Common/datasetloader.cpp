@@ -13,11 +13,8 @@ using boost::lexical_cast;
 using namespace boost::interprocess;
 using namespace std;
 
-DataSetLoader::DataSetLoader()
-{
-}
 
-DataSet* DataSetLoader::loadDataSet(const string &locator)
+DataSet* DataSetLoader::loadDataSet(const string &locator, boost::function<void(const string &, int)> progressCallback)
 {
 	struct stat fileInfo;
 	stat(locator.c_str(), &fileInfo);
@@ -46,7 +43,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 		progress = 50 * csv.pos() / csv.size();
 		if (progress != lastProgress)
 		{
-			this->progress("Loading Data Set", progress);
+			progressCallback("Loading Data Set", progress);
 			lastProgress = progress;
 		}
 
@@ -102,10 +99,20 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 
 			try {
 
-				this->progress("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
+				progressCallback("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
+
+				string columnName = columns.at(colNo);
+
+				if (columnName == "")
+				{
+					stringstream ss;
+					ss << "V";
+					ss << (colNo + 1);
+					columnName = ss.str();
+				}
 
 				Column &column = dataSet->column(colNo);
-				initColumn(column, columns.at(colNo), cells.at(colNo));
+				initColumn(column, columnName, cells.at(colNo));
 
 			}
 			catch (boost::interprocess::bad_alloc &e)
@@ -133,6 +140,12 @@ DataSet* DataSetLoader::loadDataSet(const string &locator)
 void DataSetLoader::freeDataSet(DataSet *dataSet)
 {
 	SharedMemory::get()->destroy_ptr(dataSet);
+}
+
+DataSet *DataSetLoader::getDataSet()
+{
+	boost::interprocess::managed_shared_memory *mem = SharedMemory::get();
+	return mem->find<DataSet>(boost::interprocess::unique_instance).first;
 }
 
 void DataSetLoader::initColumn(Column &column, const string &name, const vector<string> &cells)

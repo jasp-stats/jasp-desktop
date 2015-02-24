@@ -5,6 +5,7 @@
 
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodel.h"
+#include "widgets/tablemodelvariablesoptions.h"
 
 namespace Ui {
 class AncovaForm;
@@ -17,10 +18,13 @@ class AncovaForm : public AnalysisForm
 public:
 	explicit AncovaForm(QWidget *parent = 0);
 	~AncovaForm();
+
+	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	
 private slots:
+	void factorsChanging();
 	void factorsChanged();
-	void dependentChanged();
+	void termsChanged();
 
 private:
 	Ui::AncovaForm *ui;
@@ -33,7 +37,13 @@ private:
 
 	TableModelAnovaModel *_anovaModel;
 
+	TableModelVariablesOptions *_contrastsModel;
 	TableModelVariablesAvailable *_factorsAvailableListModel;
+
+    TableModelVariablesAvailable *_plotFactorsAvailableTableModel;
+    TableModelVariablesAssigned *_horizontalAxisTableModel;
+    TableModelVariablesAssigned *_seperateLinesTableModel;
+    TableModelVariablesAssigned *_seperatePlotsTableModel;
 
 };
 

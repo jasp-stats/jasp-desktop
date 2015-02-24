@@ -1,11 +1,11 @@
 
-JASP R Packages
-===============
+JASP 0.6 R Packages
+===================
 
 Dependencies (C++ API)
 ----------------------
 
-* BayesFactor (0.9.10 [Github 24d1570aea])
+* BayesFactor (0.9.11 - 95bb7acfd9512062f47f78be7400675e128b8150)
 * lme4 (1.1-7)
 * Rcpp (0.11.3)
 * RInside (0.2.11)
@@ -18,17 +18,25 @@ Dependencies of depedencies (C++ API)
 * RcppEigen (0.3.2.2.0)
 * reshape2 (1.4.1)
 
+Dependencies of dependences (Modified!)
+-------------------------------------
+
+* gnm (1.0-7)  **removed imports from the relimp package**
+
 Dependencies (C API)
 ------------
 
 * afex (0.12-135)
 * base64 (1.1)
 * car (2.0-22)
+* effects (3.0-3)
 * qgraph (1.3)
+* hypergeo (1.2-9)
 * lavaan (0.5-17)
 * logspline (2.1.5)
 * plotrix (3.5-10)
 * RJSONIO (1.3-0)
+* semTools (0.4-6)
 * vcd (1.3-2)
 * vcdExtra (0.6-3)
 
@@ -39,11 +47,13 @@ Dependencies of dependencies (C API)
 * coda (0.16-1)
 * coin (1.0-24)
 * colorspace (1.2-4)
+* contfrac (1.1-9)
 * corpcor (1.6.7)
 * d3Network (0.5.1)
 * dichromat (2.0-0)
 * digest (0.6.6)
 * ellipse (0.3-8)
+* elliptic (1.3-5)
 * fdrtool (1.2.13)
 * Formula (1.1-2)
 * ggm (2.2)

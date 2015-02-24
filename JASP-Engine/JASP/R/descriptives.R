@@ -50,19 +50,115 @@
 	return(SEK)
 } 
 
+.barplotJASP <- function(column, variable, dontPlotData= FALSE){
+
+	if (dontPlotData) {
+	
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis= 1.4, xlab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
+		
+		mtext(text = variable, side = 1, cex=1.5, line = 3)
+		
+		return()
+	}
+
+	maxFrequency <- max(summary(column))
+	
+	i <- 1
+	step <- 1
+	
+	while (maxFrequency / step > 10) {
+		
+		if (i == 2) {
+			
+			step <- 2 * step
+			i <- i + 1
+			
+		} else if (i %% 3 == 0) {
+			
+			step <- 2.5 * step
+			i <- i + 1
+			
+		} else {
+			
+			step <- 2 * step
+			i <- i + 1
+		}	
+		
+	}
+	
+	yticks <- 0
+	
+	while (yticks[length(yticks)] < maxFrequency) {
+		
+		yticks <- c(yticks, yticks[length(yticks)] + step)
+	}
+	
+	
+	yLabs <- vector("character", length(yticks))
+	
+	for(i in seq_along(yticks)){
+		
+		if(yticks[i] < 10^6){
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+			
+		} else{
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+		}		
+	}
+	
+	distLab <- max(nchar(yLabs))/1.8
+	
+	par(mar= c(5, 7.2, 4, 2) + 0.1)
+	barplot(summary(column), cex.names= 1.3, axes= FALSE, ylim= range(yticks))
+	axis(2, las=1, at= yticks, labels= yLabs, cex.axis= 1.4)
+	mtext(text = variable, side = 1, cex=1.5, line = 3)
+	mtext(text = "Frequency", side = 2, cex=1.5, line = distLab+2, las=0)
+}
+
+.plotMarginal <- function(variable, variableName, cexYlab= 1.3, lwd= 2, rugs= FALSE){
+
+	par(mar= c(5, 4.5, 4, 2) + 0.1)
+	
+	density <- density(variable)
+	
+	h <- hist(variable, plot = FALSE)
+	jitVar <- jitter(variable)
+	yhigh <- max(max(h$density), max(density$y))
+	ylow <- 0
+	xticks <- pretty(c(variable, h$breaks), min.n= 3)
+	
+	plot(1, xlim= range(xticks), ylim= c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+	h <- hist(variable, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(variable)/5))
+	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
+	mtext(text = variableName, side = 1, cex=1.5, line = 3)
+	par(las=0)
+	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.5, mgp= c(3, 0.7, 0))
+	
+	if(rugs){
+		rug(jitVar)
+	}
+	
+	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+}
+
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
 	variables <- unlist(options$main$fields)
-
+	
 	if (is.null(dataset)) {
 	
 		if (perform == "run") {
 		
-			dataset <- .readDataSetToEnd(columns.as.numeric=variables)
+			dataset <- .readDataSetToEnd(columns=variables)
 			
 		} else {
 		
-			dataset <- .readDataSetHeader(columns.as.numeric=variables)
+			dataset <- .readDataSetHeader(columns=variables)
 		}
 	}
 
@@ -82,11 +178,14 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	meta <- list()
 	
-	meta[[1]] <- list(name="stats", type="table")
-	meta[[2]] <- list(name="tables", type="tables")
-	meta[[3]] <- list(name="plots", type="images")
+	meta[[1]] <- list(name="title", type="title")
+	meta[[2]] <- list(name="stats", type="table")
+	meta[[3]] <- list(name="frequenciesHeading", type="h1")
+	meta[[4]] <- list(name="tables", type="tables")
+	meta[[5]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
+	results[["title"]] <- "Descriptives"
 
 	#### STATS TABLE
 
@@ -134,264 +233,354 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	if (percentileValues[["quartiles"]]) {
 	
-		fields[[length(fields) + 1]] <- list(name="25th percentile", type="number", format="sf:4")
-		fields[[length(fields) + 1]] <- list(name="50th percentile", type="number", format="sf:4")
-		fields[[length(fields) + 1]] <- list(name="75th percentile", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="q1", title="25th percentile", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="q2", title="50th percentile", type="number", format="sf:4")
+		fields[[length(fields) + 1]] <- list(name="q3", title="75th percentile", type="number", format="sf:4")
 	}
 	
 	if (percentileValues[["equalGroups"]]) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
 	
 		for (i in seq(equalGroupsNo - 1))
-			fields[[length(fields) + 1]] <- list(name=paste(100 * i / equalGroupsNo, "th percentile", sep=""), type="number", format="sf:4")
+			fields[[length(fields) + 1]] <- list(name=paste("eg", i, sep=""), title=paste(100 * i / equalGroupsNo, "th percentile", sep=""), type="number", format="sf:4")
 	}
 	
 	if (percentileValues[["percentiles"]]) { 
 	
 		for (i in percentilesPercentiles) 
-			fields[[length(fields) + 1]] <- list(name=paste(i, "th percentile", sep=""), type="number", format="sf:4")
+			fields[[length(fields) + 1]] <- list(name=paste("pc", i, sep=""), title=paste(i, "th percentile", sep=""), type="number", format="sf:4")
 	} 
   
 	stats.results[["title"]] <- "Descriptive Statistics"
 	stats.results[["schema"]] <- list(fields=fields)
 	stats.results[["casesAcrossColumns"]] <- TRUE
 
-	footnotes <- list()
-
-	if (perform == "init") {
+	footnotes <- .newFootnotes()
 	
-		stats.values <- list()
-
-		for (variable in variables)
-			stats.values[[length(stats.values)+1]] <- list(Variable=variable)
-		
-		stats.results[["data"]] <- stats.values
-
-	} else if (perform == "run") {
+	note.symbol <- "<i>Note.</i>"
+	na.for.categorical <- "Not all values are available for nominal and ordinal variables"
 	
-		stats.values <- list()
+	
+	stats.values <- list()
 
-		for (variable in variables) {
+	for (variable in variables) {
 
-			variable.results <- list(Variable=variable)
-			column <- dataset[[ .v(variable) ]]
+		variable.results <- list(Variable=variable)
+		column <- dataset[[ .v(variable) ]]
+
+		if (perform == "run") {
 
 			rows <- nrow(dataset)
-			na.omitted = na.omit(column)
-
+			na.omitted <- na.omit(column)
+			
 			variable.results[["Valid"]] = length(na.omitted)
 			variable.results[["Missing"]] = rows - length(na.omitted)
+		}
+		else {
 
-			if (central.tendency[["mean"]]) {
-			
-				if (class(na.omitted) != "factor") {
-				
-					variable.results[["Mean"]] <- .clean(mean(na.omitted))
-					
-				} else {
-				
-					variable.results[["Mean"]] <- ""
-				}
-			}
-			
-			if (central.tendency[["median"]]) {
-			
-				if (class(na.omitted) != "factor") {
-				
-					variable.results[["Median"]] <- .clean(median(na.omitted))
-					
-				} else {
-				
-					variable.results[["Median"]] <- ""
-				}
-			}
-			
-			if (central.tendency[["mode"]]) {
+			na.omitted <- column
+
+			variable.results[["Valid"]] = "."
+			variable.results[["Missing"]] = "."
+		}
+
+
+
+		if (central.tendency[["mean"]]) {
 		
-				if (class(na.omitted) != "factor") {
+			if (base::is.factor(na.omitted) == FALSE) {
 			
+				if (perform == "run")
+					variable.results[["Mean"]] <- .clean(mean(na.omitted))
+				else
+					variable.results[["Mean"]] <- "."
+				
+			} else {
+			
+				variable.results[["Mean"]] <- ""				
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
+			}
+		}
+		
+		if (central.tendency[["median"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
+
+				if (perform == "run")			
+					variable.results[["Median"]] <- .clean(median(na.omitted))
+				else
+					variable.results[["Median"]] <- "."
+				
+			} else {
+			
+				variable.results[["Median"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
+			}
+		}
+		
+		if (central.tendency[["mode"]]) {
+	
+			if (base::is.factor(na.omitted) == FALSE) {
+		
+				if (perform == "run") {
+
 					mode <- as.numeric(names(table(na.omitted)[table(na.omitted)==max(table(na.omitted))]))
 
 					if (length(mode) > 1) {
 
-						warning <- "More than one mode exists, only the first is reported"
-						if ( ! (warning %in% footnotes))
-							footnotes[[length(footnotes)+1]] <- warning
-						index <- which.max(footnotes == warning) - 1
-					
-						variable.results[[".footnotes"]] <- list(Mode=list(index));
+						index <- .addFootnote(footnotes, "More than one mode exists, only the first is reported")
+						variable.results[[".footnotes"]] <- list(Mode=list(index))
 					}
-			
+		
 					variable.results[["Mode"]] <- .clean(mode[1])
-				
+					
 				} else {
-			
-					variable.results[["Mode"]] <- ""
+				
+					variable.results[["Mode"]] <- "."
 				}
 			
-			
+			} else {
+		
+				variable.results[["Mode"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
-			
-			if (central.tendency[["sum"]]) {
-			
-				if (class(na.omitted) != "factor") {
-				
+		
+		
+		}
+		
+		if (central.tendency[["sum"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
+
+				if (perform == "run")
 					variable.results[["Sum"]] <- .clean(sum(na.omitted))
-					
-				} else {
+				else
+					variable.results[["Sum"]] <- "."
 				
-					variable.results[["Sum"]] <- ""
-				}
+			} else {
+			
+				variable.results[["Sum"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
-			
-			if (dispersion[["maximum"]]) {
-			
-				if (class(na.omitted) != "factor") {
-				
+		}
+		
+		if (dispersion[["maximum"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
+
+				if (perform == "run")			
 					variable.results[["Maximum"]] <- .clean(max(na.omitted))
-					
-				} else {
+				else
+					variable.results[["Maximum"]] <- "."
 				
-					variable.results[["Maximum"]] <- ""
-				}
+			} else {
+			
+				variable.results[["Maximum"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
+		}
+		
+		if (dispersion[["minimum"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
 			
-			if (dispersion[["minimum"]]) {
-			
-				if (class(na.omitted) != "factor") {
-				
+				if (perform == "run")
 					variable.results[["Minimum"]] <- .clean(min(na.omitted))
-					
-				} else {
+				else
+					variable.results[["Minimum"]] <- "."
 				
-					variable.results[["Minimum"]] <- ""
-				}
+			} else {
+			
+				variable.results[["Minimum"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
-			
-			if (dispersion[["range"]]) {
-			
-				if (class(na.omitted) != "factor") {
-				
+		}
+		
+		if (dispersion[["range"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
+
+				if (perform == "run")			
 					variable.results[["Range"]] <- .clean(range(na.omitted)[2]-range(na.omitted)[1])
-					
-				} else {
+				else
+					variable.results[["Range"]] <- "."
 				
-					variable.results[["Range"]] <- ""
-				}
+			} else {
+			
+				variable.results[["Range"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
+		}
+		
+		if (dispersion[["standardDeviation"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE){
 			
-			if (dispersion[["standardDeviation"]]) {
-			
-				if (class(na.omitted) != "factor"){
-				
+				if (perform == "run")
 					variable.results[["Std. Deviation"]] <- .clean(sd(na.omitted))
-					
-				} else {
+				else
+					variable.results[["Std. Deviation"]] <- "."
 				
-					variable.results[["Std. Deviation"]] <- ""
-				}
+			} else {
+			
+				variable.results[["Std. Deviation"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
-			
-			if (dispersion[["standardErrorMean"]]) {
-			
-				if (class(na.omitted) != "factor") {
-				
+		}
+		
+		if (dispersion[["standardErrorMean"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
+
+				if (perform == "run")
 					variable.results[["Std. Error of Mean"]] <- .clean(sd(na.omitted)/sqrt(length(na.omitted)))
-					
-				} else {
+				else
+					variable.results[["Std. Error of Mean"]] <- "."
 				
-					variable.results[["Std. Error of Mean"]] <- ""
-				}
+			} else {
+			
+				variable.results[["Std. Error of Mean"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
-			
-			if (dispersion[["variance"]]) {
-			
-				if (class(na.omitted) != "factor") {
-				
+		}
+		
+		if (dispersion[["variance"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
+
+				if (perform == "run")
 					variable.results[["Variance"]] <- .clean(var(na.omitted))
-					
-				} else {
+				else
+					variable.results[["Variance"]] <- "."
 				
-					variable.results[["Variance"]] <- ""
-				}
+			} else {
+			
+				variable.results[["Variance"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
-			
-			if (distribution[["kurtosis"]]) {
-			
-				if (class(na.omitted) != "factor") {
+		}
+		
+		if (distribution[["kurtosis"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
+
+				if (perform == "run") {
 				
 					variable.results[["Kurtosis"]] <- .clean(.descriptivesKurtosis(na.omitted))
 					variable.results[["Std. Error of Kurtosis"]] <- .clean(.descriptivesSEK(na.omitted))
 					
 				} else {
-				
-					variable.results[["Kurtosis"]] <- ""
-					variable.results[["Std. Error of Kurtosis"]] <- ""
+					variable.results[["Kurtosis"]] <- "."
+					variable.results[["Std. Error of Kurtosis"]] <- "."
 				}
+				
+			} else {
+			
+				variable.results[["Kurtosis"]] <- ""
+				variable.results[["Std. Error of Kurtosis"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
+		}
+		
+		if (distribution[["skewness"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
 			
-			if (distribution[["skewness"]]) {
-			
-				if (class(na.omitted) != "factor") {
+				if (perform == "run") {
 				
 					variable.results[["Skewness"]] <- .clean(.descriptivesSkewness(na.omitted))
 					variable.results[["Std. Error of Skewness"]] <- .clean(.descriptivesSES(na.omitted))
 					
 				} else {
-				
-					variable.results[["Skewness"]] <- ""
-					variable.results[["Std. Error of Skewness"]] <- ""
+
+					variable.results[["Skewness"]] <- "."
+					variable.results[["Std. Error of Skewness"]] <- "."
 				}
-			}
-			
-			if (percentileValues[["quartiles"]]) {
-			
-				if (class(na.omitted) != "factor") {
 				
-					variable.results[["25th percentile"]] <- .clean(quantile(na.omitted, c(.25), type=6, names=F))
-					variable.results[["50th percentile"]] <- .clean(quantile(na.omitted, c(.5), type=6, names=F))
-					variable.results[["75th percentile"]] <- .clean(quantile(na.omitted, c(.75), type=6, names=F))
+			} else {
+			
+				variable.results[["Skewness"]] <- ""
+				variable.results[["Std. Error of Skewness"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
+			}
+		}
+		
+		if (percentileValues[["quartiles"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
+			
+				if (perform == "run") {
+				
+					variable.results[["q1"]] <- .clean(quantile(na.omitted, c(.25), type=6, names=F))
+					variable.results[["q2"]] <- .clean(quantile(na.omitted, c(.5), type=6, names=F))
+					variable.results[["q3"]] <- .clean(quantile(na.omitted, c(.75), type=6, names=F))
 					
 				} else {
 				
-					variable.results[["25th percentile"]] <- ""
-					variable.results[["50th percentile"]] <- ""
-					variable.results[["75th percentile"]] <- ""
+					variable.results[["q1"]] <- "."
+					variable.results[["q2"]] <- "."
+					variable.results[["q3"]] <- "."
 				}
-			}
+				
+			} else {
 			
-			if (percentileValues[["equalGroups"]]) {
-			
-				if (class(na.omitted) != "factor") {
-				
-					for (i in seq(equalGroupsNo - 1))
-						variable.results[[paste(100 * i / equalGroupsNo, "th percentile", sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
-						
-				} else {
-				
-					for (i in seq(equalGroupsNo - 1))
-						variable.results[[paste(100 * i / equalGroupsNo, "th percentile", sep="")]] <- ""
-						
-				}
+				variable.results[["q1"]] <- ""
+				variable.results[["q2"]] <- ""
+				variable.results[["q3"]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
-				
-			if (percentileValues[["percentiles"]]) {
-			
-				if (class(na.omitted) != "factor") {
-				
-					for (i in percentilesPercentiles)
-						variable.results[[paste(i,"th percentile", sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
-						
-				} else {
-				
-					for (i in percentilesPercentiles)
-						variable.results[[paste(i,"th percentile", sep="")]] <- ""
-				}
-			}
-			stats.values[[length(stats.values) + 1]] <- variable.results
 		}
+		
+		if (percentileValues[["equalGroups"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
+			
+				if (perform == "run") {
+			
+					for (i in seq(equalGroupsNo - 1))
+						variable.results[[paste("eg", i, sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
+					
+				} else {
+
+					for (i in seq(equalGroupsNo - 1))
+						variable.results[[paste("eg", i, sep="")]] <- "."
+				}
+					
+			} else {
+			
+				for (i in seq(equalGroupsNo - 1))
+					variable.results[[paste("eg", i, sep="")]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
+			}
+		}
+			
+		if (percentileValues[["percentiles"]]) {
+		
+			if (base::is.factor(na.omitted) == FALSE) {
+			
+				if (perform == "run") {
+			
+					for (i in percentilesPercentiles)
+						variable.results[[paste("pc", i, sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
+					
+				} else {
+				
+					for (i in percentilesPercentiles)
+						variable.results[[paste("pc", i, sep="")]] <- "."
+				}
+					
+			} else {
+			
+				for (i in percentilesPercentiles)
+					variable.results[[paste("pc", i, sep="")]] <- ""
+				.addFootnote(footnotes, na.for.categorical, note.symbol)
+			}
+		}
+		
+		stats.values[[length(stats.values) + 1]] <- variable.results
+			
 	
 		stats.results[["data"]] <- stats.values
-		stats.results[["footnotes"]] <- footnotes
+		stats.results[["footnotes"]] <- as.list(footnotes)
 	}
 
 	results[["stats"]] <- stats.results
@@ -406,7 +595,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 			column <- dataset[[ .v(variable) ]]
 		
-			if (class(column) == "numeric")
+			if (base::is.factor(column) == FALSE)
 				next		
 			
 			frequency.table <- list()
@@ -421,18 +610,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			frequency.table[["title"]] <- paste("Frequencies for", variable)
 			frequency.table[["schema"]] <- list(fields=fields)
 		
-			if (perform == "run") {
-		
-				lvls <- c()
+			lvls <- levels(dataset[[ .v(variable) ]])
 
-				if (class(column) == "factor") {
-				
-					lvls <- levels(dataset[[ .v(variable) ]])
-					
-				} else if (class(column) == "integer") {
-				
-					lvls <- sort(unique(dataset[[ .v(variable) ]]))
-				}
+			if (perform == "run") {
 
 				t <- table(column)
 				total <- sum(t)
@@ -474,86 +654,128 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			} else {
 			
 				data <- list()
-		
-				if (class(column) == "factor") {
-			
-					for (level in levels(dataset[[ .v(variable) ]]))
-						data[[length(data)+1]] <- list(level=level)
-				
-				}
+
+				for (level in lvls)
+					data[[length(data)+1]] <- list(level=level)
+					
+				data[[length(data)+1]] <- list(level="Total", "Cumulative Percent"="")
 				
 				frequency.table[["data"]] <- data
 			}
 		
 			frequency.tables[[length(frequency.tables)+1]] <- frequency.table
 		}
+		
+		if (length(frequency.tables) > 0)
+			results[["frequenciesHeading"]] <- "Frequencies"
+		
 		results[["tables"]] <- frequency.tables
 	}
 
-	#### FREQUENCY PLOTS
-
-	if (options$chartType != "noCharts") {
+    ####  PLOTS
 	
+	if (options$plots == TRUE) {
+		
 		frequency.plots <- list()
-		
+			
 		i <- 1
-
+	
 		for (variable in variables) {
-
+	
 			column <- dataset[[ .v(variable) ]]
-
-			if (class(column) == "numeric" || is.factor(column))
-				next
-				
+			
+			
 			plot <- list()
-		
+			
 			plot[["title"]] <- variable
 			plot[["width"]]  <- options$chartWidth
 			plot[["height"]] <- options$chartHeight
 			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-		
+						
+			image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+										
+			.barplotJASP(variable=variable, dontPlotData=TRUE)
+					
+			plot[["data"]] <- .endSaveImage(image)
+			
 			frequency.plots[[i]] <- plot
 			i <- i + 1
 		}
-		
-		results[["plots"]] <- frequency.plots
-
-		if (perform=="run") {
 			
-			i <- 1
-
-			for (variable in variables) {
+		results[["plots"]] <- frequency.plots
 	
-				column <- dataset[[ .v(variable) ]]
-
-				if (class(column) == "numeric" || is.factor(column))
-					next
+	
+		if (perform=="run") {
+				
+			i <- 1
+	
+			for (variable in variables) {
 				
 				if (callback(results) != 0)
 					return()
+					
+				column <- dataset[[ .v(variable) ]]				
+				column <- na.omit(column)
+				
+				if (any(is.infinite(column))) {
+						
+						plot <- frequency.plots[[i]]
+						plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
+						plot[["status"]] <- "complete"
+						frequency.plots[[i]] <- plot
+						
+				} else if (length(column) > 0 && is.factor(column) || length(column) > 0  && all(column %% 1 == 0) && length(unique(column)) <= 24) {
+				
+					if (!is.factor(column)) {
+					
+						column <- as.factor(column)
+					}
+					
+					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+										
+					.barplotJASP(column, variable)
+					
+					content <- .endSaveImage(image)
+					
+					plot <- frequency.plots[[i]]
+					
+					plot[["data"]]  <- content
+					plot[["status"]] <- "complete"					
+					
+					frequency.plots[[i]] <- plot
+										
+				} else if (length(column) > 0 && !is.factor(column)) {
+					
+					if (any(is.infinite(column))) {
+					
+						plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
+						plot[["status"]] <- "complete"
+					} else {
+					
+						image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+					
+						.plotMarginal(column, variableName= variable)
+					
+						content <- .endSaveImage(image)
+						
+						plot <- frequency.plots[[i]]
+						
+						plot[["data"]]  <- content
+						plot[["status"]] <- "complete"
+					}
+					
+					frequency.plots[[i]] <- plot
 			
-				image <- .beginSaveImage(options$chartWidth, options$chartHeight)
-			
-				par(lwd=2)
-				hist(column, main=paste("Frequencies for", variable), xlab=variable, col=rainbow(10))
-			
-				content <- .endSaveImage(image)
-			
-				plot <- frequency.plots[[i]]
-			
-				plot[["data"]]  <- content
-			
-				frequency.plots[[i]] <- plot
+				}				
+						
+				results[["plots"]] <- frequency.plots	
+
 				i <- i + 1
-
-				results[["plots"]] <- frequency.plots
-			
 			}
-		
 		}
-	
+		
 	}
-
+	
 	if (perform == "init") {
 	
 		if (length(variables) == 0) {
@@ -570,3 +792,4 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		return(list(results=results, status="complete"))
 	}
 }
+

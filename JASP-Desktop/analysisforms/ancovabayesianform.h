@@ -18,8 +18,7 @@ public:
 	explicit AncovaBayesianForm(QWidget *parent = 0);
 	~AncovaBayesianForm();
 
-private slots:
-	void factorsChanged();
+	void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	
 private:
 	Ui::AncovaBayesianForm *ui;
@@ -33,6 +32,10 @@ private:
 	TableModelAnovaModel *_anovaModel;
 
 	TableModelVariablesAvailable *_factorsAvailableListModel;
+
+private slots:
+	void factorsChanging();
+	void factorsChanged();
 };
 
 #endif // ANCOVABAYESIANFORM_H

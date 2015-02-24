@@ -7,12 +7,14 @@ $.widget("jasp.image", {
         data: null,
         status : "waiting",
         resize : [ ],
-        custom : { },
+        custom : null,
         customchanged : [ ],
-        itemoptionschanged : [ ]
+        itemoptionschanged : [ ],
+        error : null
 	},
 	_create: function () {
 		this.element.addClass("jasp-image")
+		this.imageElement = null
 		this.refresh()
 	},
 	_setOptions: function (options) {
@@ -22,7 +24,7 @@ $.widget("jasp.image", {
 	},
 	_startResize : function(event, ui) {
 	
-		this.element.addClass("jasp-image-resizable")
+		this.imageElement.addClass("jasp-image-resizable")
 	},
 	_resize : function(event, ui) {
 	
@@ -30,7 +32,7 @@ $.widget("jasp.image", {
 	},
 	_stopResize : function(event, ui) {
 
-		this.element.removeClass("jasp-image-resizable")
+		this.imageElement.removeClass("jasp-image-resizable")
 
 		var custom = this.options.custom
 
@@ -49,31 +51,60 @@ $.widget("jasp.image", {
 		
 		var html = ''
 		
-		this.element.css("width", this.options.width)
-		this.element.css("height", this.options.height)
+		if (this.options.title) {
 		
-		html += '<div class="jasp-image-image" style="width : 100% ; height : 100% ; '
+			html += '<h2>' + this.options.title + '</h2>'
+		}
 		
+		var classes = ""
+		if (this.options.status)
+			classes += this.options.status
+			
+		if (this.options.error)
+			classes += " error-state"
+		
+		html += '<div class="jasp-image-holder ' + classes + '" style="width : ' + this.options.width + 'px ; height : ' + this.options.height + 'px ; ">'
+
+		html += '<div class="jasp-image-image" style="'
+
 		if (this.options.data) {
 		
-			html += 'background-image : url(' + this.options.data + ') ;'
+			html += 'background-image : url(\'file:///' + this.options.data + '\') ;'
 			html += 'background-size : 100% 100% ;'
 		}
 		
-		html += '">'
+		html += '"></div>'
+
+		if (this.options.error && this.options.error.errorMessage) {
+
+			html += '<div  class="error-message-positioner">'
+			html += '<div  class="error-message-box ui-state-error">'
+			html += '<span class="error-message-symbol ui-icon ui-icon-alert"></span>'
+			html += '<div  class="error-message-message">' + this.options.error.errorMessage + '</div>'
+			html += '</div>'
+			html += '</div>'
+		}
+		
+		html += '<div class="jasp-image-loader"></div>'
+		
 		html += '</div>'
 
 		this.element.html(html)
 		
 		var self = this
 
-		this.element.resizable( {
-			minWidth : 160,
-			minHeight: 160,
-			start  : function(event, ui) { self._startResize(event, ui) },
-			stop   : function(event, ui) { self._stopResize(event, ui) },
-			resize : function(event, ui) { self._resize(event, ui) }
-		} )
+		if (this.options.custom) {
+		
+			this.imageElement = this.element.find(".jasp-image-holder")
+
+			this.imageElement.resizable( {
+				minWidth : 160,
+				minHeight: 160,
+				start  : function(event, ui) { self._startResize(event, ui) },
+				stop   : function(event, ui) { self._stopResize(event, ui) },
+				resize : function(event, ui) { self._resize(event, ui) }
+			} )
+		}
 		
 	},
 	_destroy: function () {

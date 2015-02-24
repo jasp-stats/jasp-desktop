@@ -23,13 +23,17 @@ CorrelationBayesianForm::CorrelationBayesianForm(QWidget *parent) :
 	ui->panelOptions->hide();
 
 #ifdef QT_NO_DEBUG
+	ui->correlationMatrixContainer->hide();
 	ui->optionsWidget->hide();
     ui->credibleIntervalsIntervalContainer->hide();
     ui->credibleIntervals->hide();
+	ui->groupPrior->hide();
 #else
+	ui->correlationMatrixContainer->setStyleSheet("background-color: pink ;");
 	ui->optionsWidget->setStyleSheet("background-color: pink ;");
 	ui->credibleIntervalsIntervalContainer->setStyleSheet("background-color: pink ;");
 	ui->credibleIntervals->setStyleSheet("background-color: pink ;");
+	ui->groupPrior->setStyleSheet("background-color: pink ;");
 #endif
 
 

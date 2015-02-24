@@ -12,6 +12,7 @@
 #include "analyses/anovarepeatedmeasuresshort.h"
 #include "analyses/correlation.h"
 #include "analyses/correlationbayesian.h"
+#include "analyses/correlationbayesianpairs.h"
 #include "analyses/correlationpartial.h"
 #include "analyses/crosstabs.h"
 #include "analyses/crosstabsbayesian.h"
@@ -25,8 +26,6 @@
 #include "analyses/ttestindependentsamples.h"
 #include "analyses/ttestonesample.h"
 #include "analyses/ttestpairedsamples.h"
-
-#include "analysispart.h"
 
 Analysis *AnalysisLoader::load(int id, string analysisName)
 {
@@ -69,6 +68,8 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		return new Correlation(id);
 	else if (analysisName == "CorrelationBayesian")
 		return new CorrelationBayesian(id);
+	else if (analysisName == "CorrelationBayesianPairs")
+		return new CorrelationBayesianPairs(id);
 	else if (analysisName == "CorrelationPartial")
 		return new CorrelationPartial(id);
 	else if (analysisName == "Crosstabs")

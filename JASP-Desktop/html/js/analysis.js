@@ -17,40 +17,56 @@ $.widget("jasp.analysis", {
 	},
 	_render : function($element, result, status, metaEntry) {
 	
-		var item
-
-		if (_.isArray(result)) {
+		if (metaEntry.type == "title") {
 		
-			item = $('<div></div>')
-				.appendTo($element)
-				[metaEntry.type]({ items : result, status : status })
+			$element.append("<h1>" + result + "</h1>")
+		}
+		else if (metaEntry.type == "h1") {
 		
+			$element.append("<h2>" + result + "</h2>")
+		}
+		else if (metaEntry.type == "h2") {
+		
+			$element.append("<h3>" + result + "</h3>")
 		}
 		else {
 
-			if ( ! _.has(result, "status"))
-				result.status = status
+			var item
 
-			item = $('<div></div>')
-				.appendTo($element)
-				[metaEntry.type](result)
+			if (_.isArray(result)) {
+		
+				item = $('<div></div>')
+					.appendTo($element)
+					[metaEntry.type]({ items : result, status : status })
+		
+			}
+			else {
+
+				if ( ! _.has(result, "status"))
+					result.status = status
+
+				item = $('<div></div>')
+					.appendTo($element)
+					[metaEntry.type](result)
+			}
+		
+			var self = this
+
+			item.bind("imagesitemoptionschanged", function(event, data) {
+
+				data = { id : self.options.id, options : data }
+				self._trigger("optionschanged", null, data)
+		
+			})
+		
+			item.bind("imageitemoptionschanged", function(event, data) {
+
+				data = { id : self.options.id, options : data }
+				self._trigger("optionschanged", null, data)
+		
+			})
+		
 		}
-		
-		var self = this
-
-		item.bind("imagesitemoptionschanged", function(event, data) {
-
-			data = { id : self.options.id, options : data }
-			self._trigger("optionschanged", null, data)
-		
-		})
-		
-		item.bind("imageitemoptionschanged", function(event, data) {
-
-			data = { id : self.options.id, options : data }
-			self._trigger("optionschanged", null, data)
-		
-		})
 	
 	},
 	refresh: function () {
@@ -61,7 +77,12 @@ $.widget("jasp.analysis", {
 
         if (this.options.results.error) {
         
-            $innerElement.append('<div class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + this.options.results.errorMessage + '</div>')
+        	var error = this.options.results.errorMessage
+        	
+        	error = error.replace(/\n/g, '<br>')
+        	error = error.replace(/  /g, '&nbsp;&nbsp;')
+        
+            $innerElement.append('<div class="error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
             
         }
 		else if (this.options.results[".meta"]) {

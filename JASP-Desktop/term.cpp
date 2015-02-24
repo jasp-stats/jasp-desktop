@@ -1,6 +1,6 @@
 
 #include "term.h"
-#include "utils.h"
+#include "qutils.h"
 
 #include <sstream>
 #include <boost/foreach.hpp>
@@ -16,7 +16,7 @@ Term::Term(const std::vector<string> components)
 		if (first)
 			first = false;
 		else
-			_asString.append(" : ");
+			_asString.append(" \xE2\x9C\xBB ");  // star spoked asterisk
 
 		_asString.append(component);
 		_components.append(tq(component));
@@ -113,6 +113,11 @@ bool Term::operator==(const Term &other) const
 		return true;
 
 	return components() == other.components();
+}
+
+bool Term::operator!=(const Term &other) const
+{
+	return this->operator==(other) == false;
 }
 
 size_t Term::size() const

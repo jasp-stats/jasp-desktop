@@ -18,8 +18,11 @@ class AnovaForm : public AnalysisForm
 public:
 	explicit AnovaForm(QWidget *parent = 0);
 	~AnovaForm();
+
+	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	
 private slots:
+	void factorsChanging();
 	void factorsChanged();
 	void termsChanged();
 

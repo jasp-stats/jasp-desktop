@@ -26,10 +26,12 @@ CorrelationForm::CorrelationForm(QWidget *parent) :
 	ui->optionsWidget->hide();
 	ui->confidenceIntervalsIntervalContainer->hide();
 	ui->confidenceIntervals->hide();
+	ui->plotsContainer->hide();
 #else
 	ui->optionsWidget->setStyleSheet("background-color: pink ;");
 	ui->confidenceIntervalsIntervalContainer->setStyleSheet("background-color: pink ;");
 	ui->confidenceIntervals->setStyleSheet("background-color: pink ;");
+	ui->plotsContainer->setStyleSheet("background-color: pink ;");
 #endif
 
 

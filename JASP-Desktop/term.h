@@ -30,6 +30,7 @@ public:
 	const QString &at(int i) const;
 
 	bool operator==(const Term &other) const;
+	bool operator!=(const Term &other) const;
 
 	size_t size() const;
 

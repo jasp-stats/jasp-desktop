@@ -15,7 +15,7 @@ CONFIG -= app_bundle
 
 INCLUDEPATH += ../JASP-Common/
 
-unix:INCLUDEPATH += ../../boost_1_54_0
+macx:INCLUDEPATH += ../../boost_1_54_0
 
 windows:INCLUDEPATH += ../../boost_1_54_0
 
@@ -23,7 +23,11 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
 
-unix:ICON = icon.icns
+windows:LIBS += -lboost_filesystem-mt -lboost_system-mt
+   macx:LIBS += -lboost_filesystem-mt -lboost_system-mt
+  linux:LIBS += -lboost_filesystem    -lboost_system
+
+macx:ICON = icon.icns
 windows:RC_FILE = icon.rc
 
 windows:LIBS += -lole32 -loleaut32
@@ -83,7 +87,6 @@ SOURCES += main.cpp\
     widgets/boundassignwidget.cpp \
     analysisforms/anovarepeatedmeasuresform.cpp \
     analysisforms/crosstabsform.cpp \
-    utils.cpp \
     analysisforms/correlationpartialform.cpp \
     ribbons/ribbonwidget.cpp \
     ribbons/ribbonsem.cpp \
@@ -120,8 +123,13 @@ SOURCES += main.cpp\
     analysisforms/anovarepeatedmeasuresbayesianform.cpp \
     analysisforms/correlationbayesianform.cpp \
     analysisforms/crosstabsbayesianform.cpp \
+	analysisforms/correlationbayesianpairsform.cpp \
     application.cpp \
-    analysisforms/regressionlinearbayesianform.cpp
+    analysisforms/regressionlinearbayesianform.cpp \
+    qutils.cpp \
+    activitylog.cpp \
+    lrnamreply.cpp \
+    lrnam.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -174,7 +182,6 @@ HEADERS  += \
     widgets/tableviewmenueditordelegate.h \
     widgets/boundassignwidget.h \
     analysisforms/anovarepeatedmeasuresform.h \
-    utils.h \
     analysisforms/crosstabsform.h \
     analysisforms/correlationpartialform.h \
     ribbons/ribbonwidget.h \
@@ -213,8 +220,14 @@ HEADERS  += \
 	analysisforms/anovarepeatedmeasuresbayesianform.h \
     analysisforms/correlationbayesianform.h \
     analysisforms/crosstabsbayesianform.h \
+	analysisforms/correlationbayesianpairsform.h \
     application.h \
-    analysisforms/regressionlinearbayesianform.h
+    analysisforms/regressionlinearbayesianform.h \
+    qutils.h \
+    activitylog.h \
+    lrnamreply.h \
+    lrnam.h \
+    widgets/groupbox.h
 
 FORMS    += \
     backstageform.ui \
@@ -250,6 +263,7 @@ FORMS    += \
     analysisforms/ancovabayesianform.ui \
     analysisforms/anovarepeatedmeasuresbayesianform.ui \
     analysisforms/correlationbayesianform.ui \
+	analysisforms/correlationbayesianpairsform.ui \
     analysisforms/crosstabsbayesianform.ui \
     analysisforms/regressionlinearbayesianform.ui
 
@@ -389,3 +403,33 @@ OTHER_FILES += \
     analysisforms/AnovaRepeatedMeasuresShortForm.qml \
     html/css/images/waiting.svg
 
+HELPPATH = $${PWD}/../Docs/help
+
+win32 {
+
+	HELPPATHDEST = $${OUT_PWD}/../Help/
+
+	HELPPATH ~= s,/,\\,g
+	HELPPATHDEST ~= s,/,\\,g
+
+	copydocs.commands += $$quote(cmd /c xcopy /S /I /Y $${HELPPATH} $${HELPPATHDEST})
+}
+
+macx {
+
+	HELPPATHDEST = $${OUT_PWD}/../../Resources/Help/
+
+	copydocs.commands += $(MKDIR) $$HELPPATHDEST ;
+	copydocs.commands += cp -R $$HELPPATH/* $$HELPPATHDEST ;
+}
+
+linux {
+
+	HELPPATHDEST = $${OUT_PWD}/../Help/
+
+	copydocs.commands += $(MKDIR) $$HELPPATHDEST ;
+	copydocs.commands += cp -R $$HELPPATH/* $$HELPPATHDEST ;
+}
+
+QMAKE_EXTRA_TARGETS += copydocs
+POST_TARGETDEPS += copydocs

@@ -29,8 +29,6 @@ public:
 	
 private slots:
 
-	void setCustomModelMode(bool customModel);
-
 	void variablesAvailableChanged();
 	void sourceSelectionChanged();
 
@@ -42,8 +40,6 @@ private slots:
 	void assign5ways();
 
 private:
-
-	bool _customModel;
 
 	QAction *_assignInteraction;
 	QAction *_assignMainEffects;

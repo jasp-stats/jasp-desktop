@@ -33,6 +33,7 @@ Options *AncovaBayesian::createOptions() const
 	options->add("modelTerms", new OptionsTable(termsTemplate));
 
 	options->add("outputEffects", new OptionBoolean());
+	options->add("effectsStepwise", new OptionBoolean());
 	options->add("posteriorEstimates", new OptionBoolean());
 	options->add("posteriorDistributions", new OptionBoolean());
 

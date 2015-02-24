@@ -2,6 +2,8 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include "utils.h"
+
 using namespace std;
 using namespace boost::interprocess;
 using namespace boost::posix_time;
@@ -12,7 +14,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	_channelNumber = channelNumber;
 	_isSlave = isSlave;
 
-	_memory = new managed_shared_memory(boost::interprocess::open_or_create, name.c_str(), 1024*1024);
+	_memory = new managed_shared_memory(boost::interprocess::open_or_create, name.c_str(), 16*1024*1024);
 
 	stringstream mutexInName;
 	stringstream mutexOutName;
@@ -68,8 +70,8 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	}
 #elif defined __WIN32__
 
-	wstring inName = s2ws(semaphoreInName.str());
-	wstring outName = s2ws(semaphoreOutName.str());
+	wstring inName = Utils::s2ws(semaphoreInName.str());
+	wstring outName = Utils::s2ws(semaphoreOutName.str());
 
 	LPCWSTR inLPCWSTR = inName.c_str();
 	LPCWSTR outLPCWSTR = outName.c_str();
@@ -177,17 +179,3 @@ bool IPCChannel::tryWait(int timeout)
 	return messageWaiting;
 
 }
-
-#ifdef __WIN32__
-wstring IPCChannel::s2ws(const string &s)
-{
-	int len;
-	int slength = (int)s.length() + 1;
-	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
-	wchar_t* buf = new wchar_t[len];
-	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-	std::wstring r(buf);
-	delete[] buf;
-	return r;
-}
-#endif

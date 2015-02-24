@@ -1,15 +1,19 @@
 #include "engine.h"
 
 #include <strstream>
+#include <sstream>
 #include <cstdio>
 
 #include "../JASP-Common/lib_json/json.h"
-#include "../JASP-Common/rinterface.h"
 #include "../JASP-Common/analysisloader.h"
 #include "../JASP-Common/process.h"
-#include "../JASP-Common/sharedmemory.h"
+#include "../JASP-Common/datasetloader.h"
+#include "../JASP-Common/tempfiles.h"
+#include "../JASP-Common/utils.h"
 
-#include <sstream>
+#include "rbridge.h"
+
+
 
 #ifdef __WIN32__
 
@@ -20,7 +24,6 @@
 
 using namespace std;
 using namespace boost::interprocess;
-using namespace Json;
 using namespace boost::posix_time;
 
 Engine::Engine()
@@ -28,51 +31,87 @@ Engine::Engine()
 	_dataSet = NULL;
 	_channel = NULL;
 	_slaveNo = 0;
-	_currentAnalysis = NULL;
-	_nextAnalysis = NULL;
 
-	_R.yield.connect(boost::bind(&Engine::analysisYield, this));
+	_status = empty;
+
+	rbridge_init();
+	tempfiles_attach(Process::parentPID());
+
+	DataSet *dataSet = DataSetLoader::getDataSet();
+	rbridge_setDataSet(dataSet);
+
+	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFileName, this, _1));
+	rbridge_setStateFileSource(boost::bind(&Engine::provideStateFileName, this));
+}
+
+void Engine::setSlaveNo(int no)
+{
+	_slaveNo = no;
 }
 
 void Engine::runAnalysis()
 {
-	if (_currentAnalysis == NULL || _currentAnalysis->status() == Analysis::Complete || _currentAnalysis->status() == Analysis::Aborted)
+	if (_status == empty)
+		return;
+
+	string perform;
+
+	if (_status == toInit)
 	{
-		if (_nextAnalysis != NULL)
-		{
-			if (_currentAnalysis != NULL)
-				delete _currentAnalysis;
-			_currentAnalysis = _nextAnalysis;
-			_nextAnalysis = NULL;
-		}
-		else
-		{
-			return;
-		}
+		perform = "init";
+		_status = initing;
+	}
+	else
+	{
+		perform = "run";
+		_status = running;
 	}
 
-	while (_currentAnalysis->status() == Analysis::Empty || _currentAnalysis->status() == Analysis::Running)
+	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
+
+	RCallback callback = boost::bind(&Engine::callback, this, _1);
+	_analysisResultsString = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
+
+	if (_status == toInit || receiveMessages())
 	{
-		while (_currentAnalysis->status() == Analysis::Empty)
-			_currentAnalysis->init();
-
-		while (_currentAnalysis->status() == Analysis::Running)
-			_currentAnalysis->run();
+		// if a new message was received, the analysis was changed and we shouldn't send results
 	}
+	else if (_status == initing || _status == running)
+	{
+		Json::Reader parser;
+		parser.parse(_analysisResultsString, _analysisResults, false);
 
-}
+		_status = _status == initing ? inited : complete;
+		sendResults();
+		_status = empty;
 
-void Engine::analysisResultsChanged(Analysis *analysis)
-{
-	receiveMessages();
+		vector<string> filesToKeep;
 
-	if (analysis->status() != Analysis::Empty) // i.e. didn't become uninitialised by the messages received
-		send(analysis);
-}
+		if (_analysisResults.isObject())
+		{
+			Json::Value filesToKeepValue = _analysisResults.get("keep", Json::nullValue);
 
-void Engine::analysisYield()
-{
-	receiveMessages();
+			if (filesToKeepValue.isArray())
+			{
+				for (int i = 0; i < filesToKeepValue.size(); i++)
+				{
+					Json::Value fileToKeepValue = filesToKeepValue.get(i, Json::nullValue);
+					if ( ! fileToKeepValue.isString())
+						continue;
+
+					filesToKeep.push_back(fileToKeepValue.asString());
+				}
+			}
+			else if (filesToKeepValue.isString())
+			{
+				filesToKeep.push_back(filesToKeepValue.asString());
+			}
+		}
+
+		Utils::remove(tempFilesFromLastTime, filesToKeep);
+
+		tempfiles_deleteList(tempFilesFromLastTime);
+	}
 }
 
 void Engine::run()
@@ -85,115 +124,128 @@ void Engine::run()
 
 	do
 	{
-        receiveMessages(100);
+		receiveMessages(100);
 		if ( ! Process::isParentRunning())
 			break;
 		runAnalysis();
 
 	}
-    while(1);
+	while(1);
 
 	shared_memory_object::remove(memoryName.c_str());
 }
 
-void Engine::setSlaveNo(int no)
-{
-	_slaveNo = no;
-}
-
-void Engine::receiveMessages(int timeout)
+bool Engine::receiveMessages(int timeout)
 {
 	string data;
 
 	if (_channel->receive(data, timeout))
 	{
-		Value jsonRequest;
-		Reader r;
+		Json::Value jsonRequest;
+		Json::Reader r;
 		r.parse(data, jsonRequest, false);
 
-		string analysisName = jsonRequest.get("name", nullValue).asString();
-		int id = jsonRequest.get("id", -1).asInt();
-		bool run = jsonRequest.get("perform", "run").asString() == "run";
-		Value jsonOptions = jsonRequest.get("options", nullValue);
+		_analysisId = jsonRequest.get("id", -1).asInt();
+		_analysisName = jsonRequest.get("name", Json::nullValue).asString();
+		_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
 
-		if (_currentAnalysis != NULL && _currentAnalysis->id() == id)
+		string perform = jsonRequest.get("perform", "run").asString();
+
+		if (perform == "init")
+			_status = toInit;
+		else
+			_status = toRun;
+
+		Json::Value settings = jsonRequest.get("settings", Json::nullValue);
+		if (settings.isObject())
 		{
-			_currentAnalysis->options()->set(jsonOptions);
-			if (run)
-				_currentAnalysis->setStatus(Analysis::Running);
-			else
-				_currentAnalysis->setStatus(Analysis::Empty);
-		}
-		else if (_nextAnalysis != NULL && _nextAnalysis->id() == id)
-		{
-			_nextAnalysis->options()->set(jsonOptions);
-			if (run)
-				_nextAnalysis->setStatus(Analysis::Running);
-			else
-				_nextAnalysis->setStatus(Analysis::Empty);
+			Json::Value ppi = settings.get("ppi", Json::nullValue);
+			_ppi = ppi.isInt() ? ppi.asInt() : 96;
 		}
 		else
 		{
-			Analysis *analysis = AnalysisLoader::load(id, analysisName);
-			analysis->options()->set(jsonOptions);
-			if (run)
-				analysis->setStatus(Analysis::Running);
-
-			if (_dataSet == NULL)
-			{
-				managed_shared_memory *mem = SharedMemory::get();
-				_dataSet = mem->find<DataSet>(boost::interprocess::unique_instance).first;
-				_R.setDataSet(_dataSet);
-			}
-
-			analysis->setDataSet(_dataSet);
-			analysis->setRInterface(&_R);
-			analysis->resultsChanged.connect(boost::bind(&Engine::analysisResultsChanged, this, _1));
-
-			if (_nextAnalysis != NULL)
-				delete _nextAnalysis;
-
-			_nextAnalysis = analysis;
-
-			if (_currentAnalysis != NULL)
-				_currentAnalysis->setStatus(Analysis::Aborted);
+			_ppi = 96;
 		}
+
+		return true;
 	}
+
+	return false;
 }
 
-void Engine::send(Analysis *analysis)
+void Engine::sendResults()
 {
-	Value results = Value(objectValue);
+	Json::Value response = Json::Value(Json::objectValue);
 
-	results["id"] = analysis->id();
-	results["name"] = analysis->name();
-	results["results"] = analysis->results();
+	response["id"] = _analysisId;
+	response["name"] = _analysisName;
 
-	string status;
+	Json::Value resultsStatus = Json::nullValue;
 
-	switch (analysis->status())
+	if (_analysisResults.isObject())
+		resultsStatus = _analysisResults.get("status", Json::nullValue);
+
+	if (resultsStatus != Json::nullValue)
 	{
-	case Analysis::Inited:
-		status = "inited";
-		break;
-	case Analysis::Running:
-		status = "running";
-		break;
-	case Analysis::Complete:
-		status = "complete";
-		break;
-	default:
-		status = "error";
-		break;
+		response["results"] = _analysisResults.get("results", Json::nullValue);
+		response["status"]  = resultsStatus.asString();
+	}
+	else
+	{
+		string status;
+
+		switch (_status)
+		{
+		case inited:
+			status = "inited";
+			break;
+		case running:
+			status = "running";
+			break;
+		case complete:
+			status = "complete";
+			break;
+		default:
+			status = "error";
+			break;
+		}
+
+		response["results"] = _analysisResults;
+		response["status"] = status;
 	}
 
-	results["status"] = status;
-
-	string message = results.toStyledString();
-
-	//cout << message;
-	//cout.flush();
+	string message = response.toStyledString();
 
 	_channel->send(message);
+}
+
+int Engine::callback(const string &results)
+{
+	if (receiveMessages() || _status == empty)
+	{
+		return 1; // abort analysis
+	}
+
+	if (results != "null")
+	{
+		_analysisResultsString = results;
+
+		Json::Reader parser;
+		parser.parse(_analysisResultsString, _analysisResults, false);
+
+		sendResults();
+	}
+
+	return 0;
+}
+
+string Engine::provideStateFileName()
+{
+	return tempfiles_createSpecific("state", _analysisId);
+}
+
+string Engine::provideTempFileName(const string &extension)
+{
+	return tempfiles_create(extension, _analysisId);
 }
 

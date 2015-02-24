@@ -2,16 +2,16 @@
 #define DATASETLOADER_H
 
 #include "dataset.h"
-#include "boost/signals2.hpp"
+#include "boost/function.hpp"
 
 class DataSetLoader
 {
 public:
-    DataSetLoader();
-	DataSet *loadDataSet(const std::string &locator);
-	void freeDataSet(DataSet *dataSet);
 
-	boost::signals2::signal<void (const std::string &stage, int progress)> progress;
+	static DataSet *loadDataSet(const std::string &locator, boost::function<void (const std::string &stage, int progress)> progressCallback = NULL);
+	static void freeDataSet(DataSet *dataSet);
+
+	static DataSet *getDataSet();
 
 private:
 	static void initColumn(Column &column, const std::string &name, const std::vector<std::string> &cells);

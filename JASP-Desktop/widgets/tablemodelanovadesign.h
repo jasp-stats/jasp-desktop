@@ -6,13 +6,14 @@
 #include "variableinfo.h"
 
 #include "common.h"
+#include "terms.h"
 
 #include "options/optionvariables.h"
 #include "options/optionstring.h"
 #include "options/optionlist.h"
 #include "options/optionstable.h"
 
-#include "utils.h"
+#include "qutils.h"
 
 typedef QPair<QString, QStringList> Factor;
 
@@ -36,7 +37,10 @@ public:
 	QList<Factor> design();
 
 signals:
+	void designChanging();
 	void designChanged();
+	void factorAdded(Terms term);
+	void factorRemoved(Terms term);
 
 protected:
 

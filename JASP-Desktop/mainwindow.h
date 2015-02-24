@@ -12,6 +12,7 @@
 #include "analysisforms/analysisform.h"
 #include "asyncloader.h"
 #include "optionsform.h"
+#include "activitylog.h"
 
 namespace Ui {
 class MainWindow;
@@ -53,11 +54,16 @@ private:
 	QWidget *_buttonPanel;
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
-	QPushButton *_removeButton;
+	QPushButton *_menuButton;
 
 	OptionsForm *_optionsForm;
 
 	std::map<std::string, AnalysisForm *> _analysisForms;
+
+	int _tableViewWidthBeforeOptionsMadeVisible;
+
+	QSettings _settings;
+	ActivityLog log;
 
 signals:
 	void analysisSelected(int id);
@@ -73,6 +79,7 @@ private slots:
 	void analysisChangedDownstreamHandler(int id, QString options);
 
     void tabChanged(int index);
+	void helpToggled(bool on);
 	void dataSetSelected(const QString &filename);
 	void dataSetCloseRequested();
 	void dataSetLoaded(const QString &dataSetName, DataSet *dataSet);
@@ -82,7 +89,11 @@ private slots:
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);
-	void repositionButtonPanel(int parentWidth = -1);
+
+	void hideOptionsPanel();
+	void showOptionsPanel();
+	void showTableView();
+	void hideTableView();
 
 	void analysisOKed();
 	void analysisRemoved();
@@ -90,7 +101,12 @@ private slots:
 	void updateMenuEnabledDisabledStatus();
 	void updateUIFromOptions();
 
+	void assignPPIFromWebView(bool success);
+
 	void engineCrashed();
+
+	void helpFirstLoaded(bool ok);
+	void requestHelpPage(const QString &pageName);
 };
 
 #endif // MAINWIDGET_H

@@ -20,6 +20,8 @@ class AnovaRepeatedMeasuresShortForm : public AnalysisForm
 public:
 	explicit AnovaRepeatedMeasuresShortForm(QWidget *parent = 0);
 	~AnovaRepeatedMeasuresShortForm();
+
+	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	
 private slots:
 	void factorsChanged();

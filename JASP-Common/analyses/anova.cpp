@@ -112,6 +112,8 @@ Options *Anova::createOptions() const
     options->add("seperateLines", new OptionVariable());
     options->add("seperatePlots", new OptionVariable());
     options->add("errorBars", new OptionBoolean());
+    options->add("chartWidth", new OptionInteger(450));
+    options->add("chartHeight", new OptionInteger(300));
 
 	return options;
 }

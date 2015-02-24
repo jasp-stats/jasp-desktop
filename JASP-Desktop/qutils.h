@@ -1,5 +1,5 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef QUTILS_H
+#define QUTILS_H
 
 #include <QString>
 #include <list>
@@ -10,4 +10,4 @@ std::string fq(const QString &from);
 QString tq(const std::string &from);
 QStringList tql(const std::vector<std::string> &from);
 
-#endif // UTILS_H
+#endif // QUTILS_H

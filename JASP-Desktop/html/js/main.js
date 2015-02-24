@@ -1,6 +1,11 @@
 
 "use strict"
 
+window.getPPI = function() {
+
+	return 96 * window.devicePixelRatio
+}
+
 $(document).ready(function() {
 
 	var analyses = []
@@ -11,6 +16,9 @@ $(document).ready(function() {
     var introVisible = true
     var introHiding  = false
     var introHidingResultsWaiting = [ ]
+    
+	var $instructions = $("#instructions")
+    var showInstructions = false;
 
 	window.select = function(id) {
 
@@ -29,6 +37,20 @@ $(document).ready(function() {
 		$("body").addClass("selected")
 	}
 	
+	window.showInstructions = function() {
+	
+		showInstructions = true
+	}
+	
+	window.hideInstructions = function() {
+	
+		showInstructions = false
+		
+		$instructions.animate({opacity: 0}, 400, "easeOutCubic", function() {
+			$instructions.slideUp()
+		})
+	}
+	
 	window.scrollIntoView = function(item) {
 	
 		var itemTop = item.offset().top
@@ -38,10 +60,20 @@ $(document).ready(function() {
 
 		//console.log(itemTop, itemBottom, windowTop, windowBottom)
 
-		if (itemTop < windowTop && itemBottom < windowBottom)
-			$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
-		else if (itemBottom > windowBottom && item.height() < window.innerHeight)
-			$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing'});
+		if (item.height() < window.innerHeight) {
+
+			if (itemTop < windowTop)
+				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
+			else if (itemBottom > windowBottom)
+				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing'});
+		}
+		else
+		{
+			if (itemTop > windowTop)
+				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing'});
+			else if (itemBottom < windowBottom)
+				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing'});
+		}
 	
 	}
 
@@ -53,6 +85,9 @@ $(document).ready(function() {
 
 		selectedAnalysisId = -1
 		selectedAnalysis = null
+		
+		if (showInstructions)
+			hideInstructions()
 	}
 
 	window.remove = function(id) {
@@ -60,15 +95,25 @@ $(document).ready(function() {
 		window.unselect()
 
 		var analysis = $('#id-' + id)
-		analysis.remove()
+		
+		analysis.animate({opacity: 0}, 400, "easeOutCubic", function() {
+		
+			analysis.slideUp(400)
+		})
+		
+		if (showInstructions)
+			hideInstructions()
 	}
 
 	window.unselectByClickingBody = function(event) {
 
-		if ($(event.target).is(".jasp-analysis *") == false) {
+		if (selectedAnalysisId !== -1 && $(event.target).is(".jasp-analysis *") == false) {
 	
 			window.unselect()
 			jasp.analysisUnselected()
+			
+			if (showInstructions)
+				hideInstructions()
 		}
 	}
 
@@ -124,6 +169,9 @@ $(document).ready(function() {
 			return
 		}
 
+		if (showInstructions)
+			$instructions.fadeIn(400, "easeOutCubic")
+
         var id = "id-" + analysis.id
 		var results = analysis.results
 		var status = analysis.status
@@ -155,7 +203,9 @@ $(document).ready(function() {
 		else
 		{
 			var spacer = $("#spacer")
+			newItem.css("opacity", 0)
 			spacer.before(newItem)
+			newItem.animate({"opacity" : 1}, 400, "easeOutCubic")
 		}
 
 		item = newItem
@@ -230,6 +280,7 @@ var stringify = function(element, tabs) {
 						.replace(/'/g, '&#39;')
 						.replace(/</g, '&lt;')
 						.replace(/>/g, '&gt;')
+						.replace(/\u2212/g, '-')
 				
 					text += "\n" + tabs + value + "\n"
 				}

@@ -16,7 +16,17 @@ body.selected {
 
 h1 {
 	font-size: 150% ;
-	margin: .5em inherit ;
+	margin: .5em 0 ;
+}
+
+h2 {
+	font-size: 125% ;
+	margin: .7em 0 .2em ;
+}
+
+h3 {
+	font-size: 100% ;
+	margin: .5em 0 .2em ;
 }
 
 table {
@@ -24,6 +34,7 @@ table {
 	font-style: normal ;
 	border-collapse: collapse ;
 	margin-bottom: 2em ;
+	cursor: default;
 }
 
 th {
@@ -52,6 +63,15 @@ td {
 	vertical-align: top ;
 }
 
+thead tr:nth-child(2) th:not(.separator) {
+	min-width: 4em ;
+}
+
+th.separator, td.separator {
+	padding-left: 0px ;
+	padding-right: 0px ;
+}
+
 thead tr:first-child th {
 	padding: 6px 10px ;
 	font-style: bold ;
@@ -61,6 +81,7 @@ thead tr:first-child th {
 
 thead th {
 	text-align: center;
+	white-space: nowrap;
 }
 
 tbody th {
@@ -72,6 +93,7 @@ tbody td {
 
 	border-bottom : none ;
 	border-top : none;
+	white-space: nowrap;
 }
 
 thead tr:last-child th:nth-child(1n + 2)
@@ -97,7 +119,12 @@ tbody tr:last-child td {
 
 tbody tr td.new-group-row {
 
-	border-top: 1px solid lightgrey ;
+	padding-top: .9em ;
+}
+
+tbody tr:nth-last-child(2) td.last-group-row {
+
+	padding-bottom: .8em ;
 }
 
 td.text {
@@ -119,6 +146,7 @@ svg > text
 }
 
 .jasp-image {
+
 	float: left ;
 }
 
@@ -127,9 +155,47 @@ svg > text
 	border: 2px solid transparent ;
 	border-radius : 2px ;
 	padding: 0px ;
+	position: relative ;
+}
+
+.jasp-image-image {
+
+	width:  100% ;
+	height: 100% ;
+}
+
+.error-state .jasp-image-image {
+
+	opacity: 0.33 ;
+}
+
+.jasp-image-loader {
+
+	position: absolute ;
+	top : 0 ;
+	left: 0 ;
+	width: 100% ;
+	height: 100% ;
+	background-repeat:no-repeat;
+	background-position: center center;
+	visibility: hidden ;
+	z-index: 50 ;
+}
+
+.running .jasp-image-loader {
+
+	background-image : url('images/running-large.gif') ;
+	visibility: visible ;
+}
+
+.waiting .jasp-image-loader {
+
+	background-image : url('images/waiting-large.png') ;
+	visibility: visible ;
 }
 
 .jasp-image-resizer {
+
 	background-color : #BFD9F7 ;
 	border: 1px solid #7C95CB ;
 	border-radius : 3px ;
@@ -142,7 +208,7 @@ svg > text
 	border-radius : 2px ;
 }
 
-.jasp-analysis-inner {
+#instructions, .jasp-analysis-inner {
 
 	margin: .7em ;
 	padding: 1em ;
@@ -190,8 +256,6 @@ div.cite {
 	background : url(images/cite.svg) no-repeat;
 }
 
-
-
 div.status
 {
 	width: 16px ;
@@ -201,25 +265,61 @@ div.status
 	margin-left : 6px ;
 }
 
-div.status.running
-{
+div.status.running {
+
 	background : url(images/running.gif) no-repeat ;
 }
 
-div.status.waiting
-{
+div.status.waiting {
+
 	background : url(images/waiting.gif) no-repeat ;
 }
 
 .error-state {
+
 	color: silver ;
 }
 
-div.error-message-box
-{
+.error-message-positioner {
+
+	height: 0px ;
+	overflow: visible ;
+	position: relative;
+	top: 10px ;
+	float: left ;
+	z-index: 100 ;
+}
+
+.jasp-image-holder .error-message-positioner {
+
+	position: absolute ;
+	top: 25% ;
+}
+
+.error-message-symbol {
+
+	float: left;
+	margin-right: .3em;
+}
+
+.error-message-box {
+
 	z-index: 100 ;
 	padding: 1em ;
 	border-radius: .4em ;
+	min-width: 200px ;
+	max-width: 380px ;
+	white-space: normal;
+	margin-left: 50px ;
+}
+
+.error-message-message {
+
+}
+
+td.squash-left
+{
+	width: 99% ;
 }
 
 #intro {

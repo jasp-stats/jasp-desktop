@@ -2,7 +2,7 @@
 #include "tablemodelanovawithinsubjectcells.h"
 
 #include "terms.h"
-#include "utils.h"
+#include "qutils.h"
 
 #include <QSize>
 #include <QMimeData>

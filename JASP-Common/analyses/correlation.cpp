@@ -20,9 +20,9 @@ Options *Correlation::createOptions() const
 	options->add("kendallsTauB", new OptionBoolean());
 	options->add("spearman", new OptionBoolean());
 
-	options->add("hypothesis", new OptionList(list("correlated", "correlatedInDirection")));
+	options->add("hypothesis", new OptionList(list("correlated", "correlatedPositively", "correlatedNegatively")));
 
-	options->add("reportSignificance", new OptionBoolean());
+	options->add("reportSignificance", new OptionBoolean(true));
 	options->add("flagSignificant", new OptionBoolean());
 
 	options->add("confidenceIntervals", new OptionBoolean());
@@ -32,6 +32,10 @@ Options *Correlation::createOptions() const
 	options->add("crossProducts", new OptionBoolean());
 
 	options->add("missingValues", new OptionList(list("excludePairwise", "excludeListwise")));
+
+	options->add("plotCorrelationMatrix", new OptionBoolean());
+	options->add("plotDensities", new OptionBoolean());
+	options->add("plotStatistics", new OptionBoolean());
 
 	return options;
 }

@@ -30,7 +30,6 @@ Options *CrosstabsBayesian::createOptions() const
 	options->add("layers", new OptionsTable(layerOptionsTemplate));
 
 	options->add("oddsRatio", new OptionBoolean());
-	options->add("oddsRatioCredibleInterval", new OptionBoolean());
 	options->add("oddsRatioCredibleIntervalInterval", new OptionNumber(.95, 0, 1, "%"));
 
 	options->add("bfIndependence", new OptionBoolean());
@@ -40,6 +39,7 @@ Options *CrosstabsBayesian::createOptions() const
 
 	options->add("plotPosteriorOddsRatio", new OptionBoolean());
 
+	options->add("plotPosteriorOddsRatioAdditionalInfo", new OptionBoolean());
 
 	options->add("countsObserved", new OptionBoolean());
 	options->add("countsExpected", new OptionBoolean());
@@ -58,6 +58,12 @@ Options *CrosstabsBayesian::createOptions() const
 	options->add("residuals/adjustedStandardized", new OptionBoolean());
 
 	options->add("rowOrder", new OptionList(list("ascending", "descending")));
+
+    options->add("plotWidths", new OptionInteger(320));
+    options->add("plotHeights", new OptionInteger(240));
+
+	options->add("hypothesis", new OptionList(list("groupsNotEqual", "groupOneGreater", "groupTwoGreater")));
+	options->add("bayesFactorType", new OptionList(list("BF10", "BF01")));
 
 	return options;
 }

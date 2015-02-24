@@ -1,4 +1,3 @@
-
 TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
 	dependents <- unlist(options$variables)
@@ -34,12 +33,13 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	meta <- list()
 	
-	meta[[1]] <- list(name="ttest", type="table")
-	meta[[2]] <- list(name="inequalityOfVariances", type="table")
-	meta[[3]] <- list(name="descriptives", type="table")
+	meta[[1]] <- list(name="title", type="title")
+	meta[[2]] <- list(name="ttest", type="table")
+	meta[[3]] <- list(name="inequalityOfVariances", type="table")
+	meta[[4]] <- list(name="descriptives", type="table")
 	
 	results[[".meta"]] <- meta
-	
+	results[["title"]] <- "T-Test"
 	
 
 	results[["ttest"]] <- .ttestIndependentSamplesTTest(dataset, options, perform)
@@ -59,21 +59,25 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	descriptives[["title"]] <- "Group Descriptives"
 	
 	fields <- list(
-		list(name="Variable", title="", type="string", combine=TRUE),
-		list(name="groups", type="string"),
-		list(name="N", type="number"),
-		list(name="Mean", type="number", format="sf:4;dp:3"),
-		list(name="Std. Deviation", type="number", format="sf:4;dp:3"),
-		list(name="Std. Error Mean", type="number", format="sf:4;dp:3"))
+		list(name="variable", title="", type="string", combine=TRUE),
+		list(name="group",    title="Group", type="string"),
+		list(name="N",        title="N", type="number"),
+		list(name="mean",     title="Mean", type="number", format="sf:4;dp:3"),
+		list(name="sd",       title="SD", type="number", format="sf:4;dp:3"),
+		list(name="se",       title="SE", type="number", format="sf:4;dp:3"))
 
 	descriptives[["schema"]] <- list(fields=fields)
 	
 	data <- list()
 	
-	for (variable in options[["variables"]]) {
+	variables <- options[["variables"]]
+	if (length(variables) == 0)
+		variables <- "."
 	
-		data[[length(data)+1]] <- list(Variable=variable)
-		data[[length(data)+1]] <- list(Variable=variable)
+	for (variable in variables) {
+	
+		data[[length(data)+1]] <- list(variable=variable, .isNewGroup=TRUE)
+		data[[length(data)+1]] <- list(variable=variable)
 	}
 	
 	if (perform == "run" && options$groupingVariable != "") {
@@ -91,8 +95,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 			for (variable in options[["variables"]]) {
 		
-				for (level in levels) {
+				for (i in 1:2) {
 			
+					level <- levels[i]
 					variableData <- dataset[[ .v(variable) ]]
 				
 					groupData <- variableData[groupingData == level]
@@ -105,14 +110,17 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						stdDeviation <- .clean(sd(groupDataOm))
 						stdErrorMean <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
 					
-						result <- list(Variable=variable, groups=level, N=n, Mean=mean, "Std. Deviation"=stdDeviation,
-							"Std. Error Mean"=stdErrorMean)						
+						result <- list(variable=variable, group=level, N=n, mean=mean, "sd"=stdDeviation,
+							"se"=stdErrorMean)						
 							
 					} else {
 				
 						n <- .clean(length(groupDataOm))
-						result <- list(Variable=variable, groups="", N=n, Mean="", "Std. Deviation"="", "Std. Error Mean"="")
+						result <- list(variable=variable, group="", N=n, mean="", "sd"="", "se"="")
 					}
+					
+					if (i == 1)
+						result[[".isNewGroup"]] <- TRUE
 				
 					data[[rowNo]] <- result
 					rowNo <- rowNo + 1
@@ -133,11 +141,11 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	ttest[["title"]] <- "Independent Samples T-Test"
 
 	fields <- list(
-		list(name=".variable", title="", type="string", combine=TRUE))
+		list(name="v", title="", type="string", combine=TRUE))
 	
 	if (options$equalityOfVariances == "reportBoth")	{
 	
-		fields[[length(fields)+1]] <- list(name="Variances", type="string")
+		fields[[length(fields)+1]] <- list(name="variances", title="Variances", type="string")
 	}
 	
 	fields[[length(fields)+1]] <- list(name="t", type="number", format="sf:4;dp:3")
@@ -146,8 +154,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 	if (options$meanDifference) {
 	
-		fields[[length(fields) + 1]] <- list(name="Mean Difference", type="number", format="sf:4;dp:3")
-		fields[[length(fields) + 1]] <- list(name="Std. Error Difference", type="number", format="sf:4;dp:3")	
+		fields[[length(fields) + 1]] <- list(name="md",  title="Mean Difference", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="sed", title="SE Difference", type="number", format="sf:4;dp:3")	
 	}
 	
 	if (options$confidenceInterval) {
@@ -164,19 +172,23 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	ttest.rows <- list()
 	
+	variables <- options[["variables"]]
+	if (length(variables) == 0)
+		variables <- "."
+	
 	if (options$equalityOfVariances == "reportBoth") {
 
-		for (variable in options[["variables"]]) {
+		for (variable in variables) {
 
-			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, "Variances"="assumed equal")
-			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable, "Variances"="no assumption")
+			ttest.rows[[length(ttest.rows)+1]] <- list(v=variable, variances="assumed equal", .isNewGroup=TRUE)
+			ttest.rows[[length(ttest.rows)+1]] <- list(v=variable, variances="no assumption")
 		}
 		
 	} else {
 	
-		for (variable in options[["variables"]]) {
+		for (variable in variables) {
 
-			ttest.rows[[length(ttest.rows)+1]] <- list(.variable=variable)
+			ttest.rows[[length(ttest.rows)+1]] <- list(v=variable)
 		}
 	}
 	
@@ -283,8 +295,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 							sed <- ""# .clean((m - ciLow) / (qt(options$confidenceIntervalInterval,r$parameter)))
 						}
 					
-						list(.variable=variable, "Variances"=assumption[i], t=t, df=df, p=p, "Mean Difference"=m, 
-							 "lowerCI"=ciLow, "upperCI"=ciUp, "Std. Error Difference"=sed, ".footnotes"=row.footnotes)
+						list(v=variable, variances=assumption[i], t=t, df=df, p=p, md=m, 
+							 lowerCI=ciLow, upperCI=ciUp, sed=sed, .footnotes=row.footnotes)
 						
 					})
 
@@ -305,7 +317,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 							
 						} else if (errorMessage == "data are essentially constant") {
 						
-							errorMessage <- "t-statistic is undefined - one or both levels of the dependent contains all the same value (the variance is zero)"
+							errorMessage <- "t-statistic is undefined - one or both levels of the dependent contains all the same value (zero variance)"
 							
 						} else if (errorMessage == "not enough observations") {
 					
@@ -314,9 +326,12 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						
 						index <- .addFootnote(footnotes, errorMessage)
 				
-						result <- list(.variable=variable, "Variances"=assumption[i], t="NaN", df="", p="", "Mean Difference"="",
-								"lowerCI"="", "upperCI"="", "Std. Error Difference"="", .footnotes=list(t=list(index)))
+						result <- list(v=variable, variances=assumption[i], t="NaN", df="", p="", md="",
+								lowerCI="", upperCI="", sed="", .footnotes=list(t=list(index)))
 					}
+					
+					if (i == 1 && options$equalityOfVariances == "reportBoth")
+						result[[".isNewGroup"]] <- TRUE
 				
 					ttest.rows[[rowNo]] <- result
 					rowNo <- rowNo + 1
@@ -340,21 +355,26 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		return(NULL)
 		
 	levenes <- list()
+	footnotes <- .newFootnotes()
 
 	levenes[["title"]] <- "Test of Inequality of Variances (Levene's)"
 	
 	fields <- list(
-		list(name="Variable", title="", type="string"),
+		list(name="variable", title="", type="string"),
 		list(name="F", type="number", format="sf:4;dp:3"),
-		list(name="df", type="number", format="sf:4;dp:3"),
+		list(name="df", type="integer"),
 		list(name="p", type="number", format="dp:3;p:.001"))
 
 	levenes[["schema"]] <- list(fields=fields)
 	
 	data <- list()
 	
-	for (variable in options[["variables"]])
-		data[[length(data)+1]] <- list(Variable=variable)
+	variables <- options[["variables"]]
+	if (length(variables) == 0)
+		variables <- "."
+	
+	for (variable in variables)
+		data[[length(data)+1]] <- list(variable=variable)
 	
 	if (perform == "run" && options$groupingVariable != "") {
 	
@@ -373,16 +393,24 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 				result <- try (silent=TRUE, expr= {
 
 					levene <- car::leveneTest(dataset[[ .v(variable) ]], dataset[[ .v(options$groupingVariable) ]], "mean")
+
+					F  <- .clean(levene[1,"F value"])
+					df <- .clean(levene[1,"Df"])
+					p  <- .clean(levene[1,"Pr(>F)"])
 		
-					F  <- .clean(as.numeric(levene[1,1]))
-					df <- .clean(as.numeric(levene[1,2]))
-					p  <- .clean(as.numeric(levene[1,3]))
-		
-					list(Variable=variable, F=F, df=df, p=p)
+					row <- list(variable=variable, F=F, df=df, p=p)
+					
+					if (is.na(levene[1,"F value"])) {
+					
+						index <- .addFootnote(footnotes, "F-statistic could not be calculated")
+						row[[".footnotes"]] <- list(F=list(index))
+					}
+					
+					row
 				})
 
 				if (class(result) == "try-error")
-					result <- list(Variable=variable, F="", df="", p="")
+					result <- list(variable=variable, F="", df="", p="")
 	
 				data[[rowNo]] <- result
 				rowNo <- rowNo + 1
@@ -392,8 +420,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	}
 	
 	levenes[["data"]] <- data
+	levenes[["footnotes"]] <- as.list(footnotes)
 
 	levenes
 }
-
-

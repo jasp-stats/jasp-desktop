@@ -29,9 +29,13 @@ TTestBayesianIndependentSamplesForm::TTestBayesianIndependentSamplesForm(QWidget
 	ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
 
 #ifdef QT_NO_DEBUG
-	ui->plotsGroup->hide();
+	ui->plotBayesFactorRobustness->hide();
+	ui->plotSequentialAnalysis->hide();
+	ui->plotSequentialAnalysisRobustness->hide();
 #else
-	ui->plotsGroup->setStyleSheet("background-color: pink;");
+	ui->plotBayesFactorRobustness->setStyleSheet("background-color: pink;");
+	ui->plotSequentialAnalysis->setStyleSheet("background-color: pink;");
+	ui->plotSequentialAnalysisRobustness->setStyleSheet("background-color: pink;");
 #endif
 }
 

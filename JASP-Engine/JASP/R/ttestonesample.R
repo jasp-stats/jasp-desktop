@@ -17,7 +17,19 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			}
 		
 		} else {
+		
 			dataset <- .readDataSetHeader(columns.as.numeric=all.variables)
+		}
+		
+	} else {
+	
+		if (options$missingValues == "excludeListwise") {
+		
+			dataset <- .vdf(dataset, columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
+		}
+		else {
+		
+			dataset <- .vdf(dataset, columns.as.numeric=all.variables)
 		}
 	}
 
@@ -27,11 +39,12 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	
 	meta <- list()
 	
-	meta[[1]] <- list(name="ttest", type="table")
-	meta[[2]] <- list(name="descriptives", type="table")
+	meta[[1]] <- list(name="title", type="title")
+	meta[[2]] <- list(name="ttest", type="table")
+	meta[[3]] <- list(name="descriptives", type="table")
 	
 	results[[".meta"]] <- meta
-	
+	results[["title"]] <- "T-Test"
 	
 
 	ttest <- list()
@@ -40,7 +53,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	ttest[["title"]] <- "One Sample T-Test"
 
 	fields <- list(
-		list(name=".variable", type="string", title=""),
+		list(name="v", type="string", title=""),
 		list(name="t", type="number", format="sf:4;dp:3"),
 		list(name="df", type="number", format="sf:4;dp:3"),
 		list(name="p", type="number", format="dp:3;p:.001"))
@@ -65,14 +78,14 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	
 	if (options$hypothesis == "greaterThanTestValue") {
 
-		message <- paste("All tests, hypothesis is sample mean is greater than ", options$testValue, sep="")
+		message <- paste("All tests, hypothesis is population mean is greater than ", options$testValue, sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		
 		testType <- "greater"
 
 	} else if (options$hypothesis == "lessThanTestValue") {
 
-		message <- paste("All tests, hypothesis is sample mean is less than ", options$testValue, sep="")
+		message <- paste("All tests, hypothesis is population mean is less than ", options$testValue, sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		
 		testType <- "less"
@@ -81,7 +94,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 
 		if (options$testValue != 0) {
 		
-			message <- paste("All tests, hypothesis is sample mean is different to ", options$testValue, sep="")
+			message <- paste("All tests, hypothesis is population mean is different to ", options$testValue, sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		}
 	
@@ -90,9 +103,13 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	
 	ttest.rows <- list()
 	
-	for (variable in options[["variables"]]) {
+	variables <- options[["variables"]]
+	if (length(variables) == 0)
+		variables = "."
+	
+	for (variable in variables) {
 
-		if (perform == "run") {
+		if (perform == "run" && length(options$variables) > 0) {
 
 			result <- try (silent = TRUE, expr = {
 			
@@ -103,10 +120,13 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 				df <- as.numeric(r$parameter)
 				p  <- as.numeric(r$p.value)
 				m  <- as.numeric(r$estimate - r$null.value)
-				ciLow <- .clean(as.numeric(r$conf.int[1]) - as.numeric(r$null.value)) 
-				ciUp  <- .clean(as.numeric(r$conf.int[2]) - as.numeric(r$null.value)) 
+				ciLow <- .clean(as.numeric(r$conf.int[1]))
+				ciUp  <- .clean(as.numeric(r$conf.int[2]))
+				
+				if (is.na(t))
+					stop("data are essentially constant")
 			
-				list(.variable=variable, t=t, df=df, p=p, "Mean Difference"=m, "lowerCI"=ciLow, "upperCI"=ciUp)
+				list(v=variable, t=t, df=df, p=p, "Mean Difference"=m, "lowerCI"=ciLow, "upperCI"=ciUp)
 			})
 				
 			if (class(result) == "try-error") {
@@ -119,7 +139,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 					
 				} else if (errorMessage == "data are essentially constant") {
 				
-					errorMessage <- paste("t-statistic is undefined - the sample contains all the same value (the variance is zero)")
+					errorMessage <- paste("t-statistic is undefined - the sample contains all the same value (zero variance)")
 				
 				} else if (errorMessage == "not enough 'x' observations") {
 					
@@ -129,12 +149,12 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 				
 				index <- .addFootnote(footnotes, errorMessage)
 		
-				result <- list(.variable=variable, t=.clean(NaN), df="", p="", "Mean Difference"="", "lowerCI"="", "upperCI"="", .footnotes=list(t=list(index)))
+				result <- list(v=variable, t=.clean(NaN), df="", p="", "Mean Difference"="", "lowerCI"="", "upperCI"="", .footnotes=list(t=list(index)))
 			}
 			
 		} else {
 
-			result <- list(.variable=variable, t=".", df=".", p=".", "Mean Difference"=".", "lowerCI"=".", "upperCI"=".")
+			result <- list(v=variable, t=".", df=".", p=".", "Mean Difference"=".", "lowerCI"=".", "upperCI"=".")
 		
 		}
 		
@@ -152,18 +172,22 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 		descriptives[["cases"]] <- I(options$variables)
 
 		fields <- list(
-			list(name=".variable", type="string", title=""),
-			list(name="N", type="number", format="sf:4;dp:3"),
-			list(name="Mean", type="number", format="sf:4;dp:3"),
-			list(name="Std. Deviation", type="number", format="dp:3;p:.001"),
-			list(name="Std. Error Mean", type="number", format="sf:4;dp:3"))
+			list(name="v",    title="",   type="string"),
+			list(name="N",    title="N",  type="number",   format="sf:4;dp:3"),
+			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
+			list(name="sd",   title="SD", type="number",   format="sf:4;dp:3"),
+			list(name="se",   title="SE", type="number",   format="sf:4;dp:3"))
 
 		descriptives[["schema"]] <- list(fields=fields)
 		descriptives.results <- list()
 		
-		for (variable in options[["variables"]]) {
+		variables <- options[["variables"]]
+		if (length(variables) == 0)
+			variables = "."
+
+		for (variable in variables) {
 			
-			if (perform == "run") {
+			if (perform == "run" && length(options[["variables"]]) > 0) {
 
 				data <- na.omit(dataset[[ .v(variable) ]])
 
@@ -174,17 +198,16 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 					stdDeviation <- .clean(sd(data))
 					stdErrorMean <- .clean(sd(data)/sqrt(length(data)))
 
-					result <- list(.variable=variable, N = n, Mean = mean, "Std. Deviation" = stdDeviation,
-									"Std. Error Mean" = stdErrorMean)
+					result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean)
 				} else {
 			
 					n <- .clean(length(data))
-					result <- list(.variable=variable, N = n, Mean = "", "Std. Deviation" = "", "Std. Error Mean" = "")
+					result <- list(v=variable, N=n, mean="", sd="", se="")
 				}
 			
 			} else {
 			
-				result <- list(.variable=variable, N = ".", Mean = ".", "Std. Deviation" = ".", "Std. Error Mean" = ".")			
+				result <- list(v=variable, N=".", mean=".", sd= ".", se=".")			
 			
 			}
 			

@@ -5,6 +5,7 @@
 #include <QSettings>
 
 #include "common.h"
+#include "activitylog.h"
 
 namespace Ui {
 class BackStageForm;
@@ -20,6 +21,8 @@ public:
 
 	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
 
+	void setLog(ActivityLog *log);
+
 public slots:
 	void setFileLoaded(bool loaded);
 
@@ -33,6 +36,7 @@ private:
 	QSettings _settings;
 	QStringList _recents;
 
+	ActivityLog *_log;
 	const int _maxRecents = 5;
 
 private slots:

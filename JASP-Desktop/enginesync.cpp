@@ -14,6 +14,8 @@
 
 #include "process.h"
 #include "common.h"
+#include "qutils.h"
+#include "tempfiles.h"
 
 using namespace boost::interprocess;
 using namespace std;
@@ -24,17 +26,27 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	_analyses = analyses;
 	_engineStarted = false;
 
+	_log = NULL;
+	_ppi = 96;
+
 	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
 	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
 
+	// delay start so as not to increase program start up time
+	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
 }
 
 EngineSync::~EngineSync()
 {
-	for (int i = 0; i < _slaveProcesses.size(); i++)
+	if (_engineStarted)
 	{
-		_slaveProcesses[i]->terminate();
-		_slaveProcesses[i]->kill();
+		for (int i = 0; i < _slaveProcesses.size(); i++)
+		{
+			_slaveProcesses[i]->terminate();
+			_slaveProcesses[i]->kill();
+		}
+
+		tempfiles_deleteAll();
 	}
 
 	shared_memory_object::remove(_memoryName.c_str());
@@ -46,10 +58,6 @@ void EngineSync::start()
 		return;
 
 	_engineStarted = true;
-
-	_timer = new QTimer(this);
-	connect(_timer, SIGNAL(timeout()), this, SLOT(process()));
-	_timer->start(50);
 
 	try {
 
@@ -80,11 +88,33 @@ void EngineSync::start()
 		_analysesInProgress.push_back(NULL);
 		startSlaveProcess(i);
 	}
+
+	QTimer *timer;
+
+	timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(process()));
+	timer->start(50);
+
+	timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(heartbeatTempFiles()));
+	timer->start(30000);
+
+	tempfiles_init(Process::currentPID());
 }
 
 bool EngineSync::engineStarted()
 {
 	return _engineStarted;
+}
+
+void EngineSync::setLog(ActivityLog *log)
+{
+	_log = log;
+}
+
+void EngineSync::setPPI(int ppi)
+{
+	_ppi = ppi;
 }
 
 void EngineSync::sendToProcess(int processNo, Analysis *analysis)
@@ -116,6 +146,11 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	json["options"] = analysis->options()->asJSON();
 	json["perform"] = (init ? "init" : "run");
 
+	Json::Value settings;
+	settings["ppi"] = _ppi;
+
+	json["settings"] = settings;
+
 	string str = json.toStyledString();
 
 	_channels[processNo]->send(str);
@@ -143,7 +178,7 @@ void EngineSync::process()
 		{
 #ifdef QT_DEBUG
 			std::cout << "message received\n";
-            std::cout << data << "\n";
+			std::cout << data << "\n";
 			std::cout.flush();
 #endif
 
@@ -151,12 +186,25 @@ void EngineSync::process()
 			Json::Value json;
 			reader.parse(data, json);
 
-			//int id = json.get("id", -1).asInt();
-			//bool init = json.get("perform", "init").asString() == "init";
+			int id = json.get("id", -1).asInt();
 			Json::Value results = json.get("results", Json::nullValue);
 			string status = json.get("status", "error").asString();
 
-			if (status == "complete")
+			if (status == "error")
+			{
+				analysis->setStatus(Analysis::Complete);
+				analysis->setResults(results);
+				_analysesInProgress[i] = NULL;
+				sendMessages();
+
+				if (_log != NULL)
+				{
+					QString errorMessage = tq(results.get("errorMessage", "").asString());
+					QString info = QString("%1,%2").arg(id).arg(errorMessage);
+					_log->log("Analysis Error", info);
+				}
+			}
+			else if (status == "complete")
 			{
 				analysis->setStatus(Analysis::Complete);
 				analysis->setResults(results);
@@ -266,7 +314,7 @@ void EngineSync::startSlaveProcess(int no)
 	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources"));
 #else
     env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R/lib") + ";" + programDir.absoluteFilePath("R/library/RInside/lib") + ";" + programDir.absoluteFilePath("R/library/Rcpp/lib"));
-    env.insert("R_HOME", programDir.absoluteFilePath("R"));
+	env.insert("R_HOME", programDir.absoluteFilePath("R"));
 #endif
 
 
@@ -281,7 +329,16 @@ void EngineSync::startSlaveProcess(int no)
 	connect(slave, SIGNAL(error(QProcess::ProcessError)), this, SLOT(subProcessError(QProcess::ProcessError)));
 	connect(slave, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(subprocessFinished(int,QProcess::ExitStatus)));
 	connect(slave, SIGNAL(started()), this, SLOT(subProcessStarted()));
+}
 
+void EngineSync::deleteOrphanedTempFiles()
+{
+	tempfiles_deleteOrphans();
+}
+
+void EngineSync::heartbeatTempFiles()
+{
+	tempfiles_heartbeat();
 }
 
 void EngineSync::subProcessStandardOutput()

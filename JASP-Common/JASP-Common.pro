@@ -8,8 +8,7 @@ CONFIG += staticlib
 
 windows:CONFIG += c++11
 
-unix:INCLUDEPATH += ../../boost_1_54_0
-
+macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
 
 windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
@@ -29,7 +28,6 @@ SOURCES += \
     columns.cpp \
     column.cpp \
     analyses.cpp \
-    analysispart.cpp \
     lib_json/json_writer.cpp \
     lib_json/json_valueiterator.inl \
     lib_json/json_value.cpp \
@@ -83,8 +81,12 @@ SOURCES += \
     analyses/ancovabayesian.cpp \
     analyses/anovarepeatedmeasuresbayesian.cpp \
     analyses/correlationbayesian.cpp \
+	analyses/correlationbayesianpairs.cpp \
     analyses/crosstabsbayesian.cpp \
-    analyses/regressionlinearbayesian.cpp
+    analyses/regressionlinearbayesian.cpp \
+    dirs.cpp \
+    utils.cpp \
+    tempfiles.cpp
 
 HEADERS +=\
     datasetloader.h \
@@ -94,7 +96,6 @@ HEADERS +=\
     columns.h \
     column.h \
     analyses.h \
-    analysispart.h \
     lib_json/writer.h \
     lib_json/value.h \
     lib_json/reader.h \
@@ -154,17 +155,13 @@ HEADERS +=\
     analyses/ancovabayesian.h \
     analyses/anovarepeatedmeasuresbayesian.h \
     analyses/correlationbayesian.h \
+	analyses/correlationbayesianpairs.h \
     analyses/crosstabsbayesian.h \
-    analyses/regressionlinearbayesian.h
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/lib
-    }
-    INSTALLS += target
-}
+    analyses/regressionlinearbayesian.h \
+    dirs.h \
+    utils.h \
+    version.h \
+    tempfiles.h
 
 OTHER_FILES += \
     analyses/frequencies.R \

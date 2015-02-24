@@ -29,9 +29,14 @@ Options *TTestBayesianIndependentSamples::createOptions() const
 	options->add("hypothesis", new OptionList(list("groupsNotEqual", "groupOneGreater", "groupTwoGreater")));
 	options->add("missingValues", new OptionList(list("excludeAnalysisByAnalysis", "excludeListwise")));
 
-	options->add("priorWidth", new OptionNumber(1));
+	options->add("priorWidth", new OptionNumber(.707));
 
-	options->add("plots", new OptionBoolean());
+	options->add("plotPriorAndPosterior", new OptionBoolean());
+	options->add("plotPriorAndPosteriorAdditionalInfo", new OptionBoolean());
+	options->add("plotBayesFactorRobustness", new OptionBoolean());
+	options->add("plotSequentialAnalysis", new OptionBoolean());
+	options->add("plotSequentialAnalysisRobustness", new OptionBoolean());
+
 	options->add("plotWidth", new OptionInteger(320));
 	options->add("plotHeight", new OptionInteger(240));
 

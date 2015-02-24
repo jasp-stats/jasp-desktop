@@ -50,7 +50,7 @@ AnovaMultivariateForm::~AnovaMultivariateForm()
 
 void AnovaMultivariateForm::factorsChanged()
 {
-	_anovaModel->setVariables(_fixedFactorsListModel->assigned());
+
 }
 
 void AnovaMultivariateForm::dependentChanged()

@@ -10,11 +10,10 @@
 #include <boost/foreach.hpp>
 
 BoundGroupBox::BoundGroupBox(QWidget *parent) :
-	QGroupBox(parent)
+	GroupBox(parent)
 {	
 	_timer = new QTimer(this);
 	_buttonGroup = new QButtonGroup(this);
-	setFlat(true);
 
 	connect(_buttonGroup, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(itemSelected(QAbstractButton*)));
 }

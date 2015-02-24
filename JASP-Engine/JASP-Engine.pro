@@ -17,6 +17,10 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
 
+windows:LIBS += -lboost_filesystem-mt -lboost_system-mt
+   macx:LIBS += -lboost_filesystem-mt -lboost_system-mt
+  linux:LIBS += -lboost_filesystem    -lboost_system
+
 macx {
 
 	INCLUDEPATH += ../../boost_1_54_0
@@ -26,8 +30,6 @@ macx {
 }
 
 linux {
-
-	INCLUDEPATH += /opt/local/include
 
 	R_HOME = $$OUT_PWD/../R
 	R_EXE  = $$R_HOME/bin/R
@@ -81,11 +83,8 @@ PRE_TARGETDEPS += RPackage
 
 SOURCES += main.cpp \
 	engine.cpp \
-	rcppbridge.cpp
+    rbridge.cpp
 
 HEADERS += \
 	engine.h \
-	analysistask.h \
-	rcppbridge.h
-
-RESOURCES +=
+    rbridge.h

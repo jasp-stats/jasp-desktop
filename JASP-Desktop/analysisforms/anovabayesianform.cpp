@@ -29,12 +29,19 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->fixedFactors);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->randomFactors);
 
-	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
 	ui->modelTerms->hide();
+
+	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_fixedFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
+	connect(_fixedFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+
+	connect(_randomFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_randomFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addRandomFactors(Terms)));
+	connect(_randomFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 #ifdef QT_NO_DEBUG
 	// temporary hides until the appropriate R code is implemented
@@ -53,13 +60,28 @@ AnovaBayesianForm::~AnovaBayesianForm()
 	delete ui;
 }
 
+void AnovaBayesianForm::bindTo(Options *options, DataSet *dataSet)
+{
+	AnalysisForm::bindTo(options, dataSet);
+
+	factorsChanging();
+
+	_anovaModel->setVariables(_fixedFactorsListModel->assigned(), _randomFactorsListModel->assigned());
+
+	factorsChanged();
+}
+
+void AnovaBayesianForm::factorsChanging()
+{
+	if (_options != NULL)
+		_options->blockSignals(true);
+}
+
 void AnovaBayesianForm::factorsChanged()
 {
-	Terms factors;
-
-	factors.add(_fixedFactorsListModel->assigned());
-	factors.add(_randomFactorsListModel->assigned());
-
-	_anovaModel->setVariables(factors);
+	if (_options != NULL)
+		_options->blockSignals(false);
 }
+
+
 

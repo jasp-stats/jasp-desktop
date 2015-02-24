@@ -58,8 +58,6 @@ private:
     HANDLE _semaphoreOut;
     HANDLE _semaphoreIn;
 
-    static std::wstring s2ws(const std::string& s);
-
 #else
 	boost::interprocess::named_semaphore* _semaphoreOut;
 	boost::interprocess::named_semaphore* _semaphoreIn;
