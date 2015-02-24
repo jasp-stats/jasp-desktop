@@ -28,7 +28,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	results <- list()
 	meta <- list()
 	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="correlations", type="table")
+	meta[[2]] <- list(name="correlations", type="table")	
+	meta[[3]] <- list(name="plots", type="images")
+	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Correlation Matrix"
 	results[["correlations"]] <-
@@ -44,6 +46,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								  priorWidth=options$priorWidth,
 								  bayesFactorType=options$bayesFactorType,
 								  missingValues=options$missingValues)
+	results[["plots"]] <- .correlationMatrixPlotBayesian(dataset, perform, options, hypothesis=options$hypothesis)
+	
 	if (perform == "init") {
 		if (length(options$variables) < 2) {
 			results <- list(results=results, status="complete")
@@ -364,6 +368,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	nonNegativeIndex <- rho >=0
 	lessThanOneIndex <- rho <=1
 	valueIndex <- as.logical(nonNegativeIndex*lessThanOneIndex)
+	myResult <- rho*0
+	myResult[valueIndex] <- 2*.priorRho(rho[valueIndex], alpha)
+	return(myResult)
+}
+.priorRhoMin <- function(rho, alpha=1) {
+	negativeIndex <- rho <=0
+	greaterThanMinOneIndex <- rho >= -1
+	valueIndex <- as.logical(negativeIndex*greaterThanMinOneIndex)
 	myResult <- rho*0
 	myResult[valueIndex] <- 2*.priorRho(rho[valueIndex], alpha)
 	return(myResult)
@@ -749,4 +761,314 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 .posteriorRhoPlus <- function(n, r, rho, alpha=1){
 	return(1/.bfPlus0(n, r, alpha)*.myHFunction(n, r, rho)*.priorRhoPlus(rho, alpha))
+}
+.posteriorRhoMin <- function(n, r, rho, alpha=1){
+	return(1/.bfMin0(n, r, alpha)*.myHFunction(n, r, rho)*.priorRhoMin(rho, alpha))
+}
+
+
+#------------------------------------------------- Matrix Plot -------------------------------------------------#
+
+#### Plotting Function for posterior ####
+.plotPosterior.BayesianCorrelationMatrix <- function(x, y, alpha=1, oneSided= FALSE, addInformation= FALSE, drawCI= FALSE, lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.28, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {
+
+
+	r <- cor(x, y)
+	n <- length(x)
+	
+	# set limits plot
+	xlim <- c(-1, 1)
+	
+	if (oneSided == FALSE) {
+		stretch <- 1.2
+	}
+	
+	if (oneSided == "right") {
+		stretch <- 1.32
+	}
+	
+	if (oneSided == "left") {
+		stretch <- 1.32
+	}
+	
+	ylim <- vector("numeric", 2)
+	
+	if (oneSided == FALSE) {
+		
+		dmax <- optimize(f= function(x).posteriorRho(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+		
+	} else if (oneSided == "right") {
+		
+		dmax <- optimize(f= function(x).posteriorRhoPlus(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+		
+	} else if (oneSided == "left") {
+		
+		dmax <- optimize(f= function(x).posteriorRhoMin(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+	}
+	
+	
+	ylim[1] <- 0
+	ylim[2] <- stretch * dmax
+	
+	# calculate position of "nice" tick marks and create labels
+	xticks <- seq(-1.0, 1.0, 0.25)
+	yticks <- pretty(ylim)
+	xlabels <- c("-1", "-0.75", "-0.5", "-0.25", "0", "0.25", "0.5", "0.75", "1")
+	ylabels <- formatC(yticks, 1, format= "f")
+	
+	rho <- seq(min(xticks), max(xticks),length.out = 1000)	
+	
+	
+	if (oneSided == FALSE) {
+		
+		posteriorLine <- .posteriorRho(rho= rho, n= n, r= r, alpha= alpha)
+		
+	} else if (oneSided == "right") {
+		
+		posteriorLine <- .posteriorRhoPlus(rho= rho, n= n, r= r, alpha= alpha)
+		
+	} else if (oneSided == "left") {
+		
+		posteriorLine <- .posteriorRhoMin(rho= rho, n= n, r= r, alpha= alpha)
+		
+	}
+	
+	ylim <- range(yticks)
+	
+	plot(1, 1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
+	
+	lines(rho, posteriorLine, lwd= lwd)
+		
+	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
+	axis(2, at = c(ylim[1], mean(ylim), ylim[2]) , pos= range(xticks)- 0.08*diff(range(xticks)), labels = c("", "Density", ""), lwd.ticks=0, cex.axis= 1.7, mgp= c(3, 0.7, 0), las=0)
+	
+	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.08)
+	
+}
+
+
+#### Matrix Plot function #####
+.correlationMatrixPlotBayesian <- function(dataset, perform, options, hypothesis=options$hypothesis) {
+
+	if (!options$plotCorrelationMatrix)
+		return()
+	
+	correlation.plot <- list()
+	
+	if (hypothesis == "correlated") {
+	
+		oneSided <- FALSE
+		
+	} else if (hypothesis == "correlatedPositively") {
+	
+		oneSided <- "right"
+		
+	} else if (hypothesis == "correlatedNegatively") {
+	
+		oneSided <- "left"
+		
+	}
+
+	if (perform == "init") {
+	
+		variables <- unlist(options$variables)
+		
+		l <- length(variables)
+		
+		
+		if (l <= 2 && (options$plotDensities || options$plotPosteriors)) {
+		
+			width <- 580
+			height <- 580
+			
+		} else if (l == 2) {
+		
+			width <- 400
+			height <- 400
+			
+		} else if (l == 3) {
+		
+			width <- 700
+			height <- 700
+			
+		} else if (l == 4) {
+		
+			width <- 900
+			height <- 900
+			
+		} else if (l >= 5) {
+		
+			width <- 1100
+			height <- 1100
+			
+		}
+				
+		plot <- list()
+			
+		plot[["title"]] <- variables 
+		plot[["width"]]  <- width
+		plot[["height"]] <- height
+
+		correlation.plot[[1]] <- plot
+	}
+	
+	if (perform == "run" && length(options$variables) > 0) {
+				
+		variables <- unlist(options$variables)
+		
+		l <- length(variables)
+		
+		# check for numeric/integer variables & !infinity & standard deviation > 0				
+		d <- vector("character", length(.v(variables)))
+		sdCheck <- vector("numeric", length(.v(variables)))
+		infCheck <- vector("logical", length(.v(variables)))
+		
+		for (i in seq_along(.v(variables))) {
+		
+			d[i] <- class(dataset[[.v(variables)[i]]])
+			sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE)
+			infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
+		}
+		
+	
+		ind1 <- d == "numeric" | d == "integer"
+		ind2 <- sdCheck > 0
+		ind <- ind1 & ind2 & infCheck == FALSE
+		
+				
+		variables <- .v(variables)[ind]
+		
+		l <- length(variables)
+			
+			
+		if (l <= 2 && (options$plotDensities || options$plotPosteriors)) {
+		
+			width <- 580
+			height <- 580
+			
+		} else if (l == 2) {
+		
+			width <- 400
+			height <- 400
+			
+		} else if (l == 3) {
+		
+			width <- 700
+			height <- 700
+			
+		} else if (l == 4) {
+		
+			width <- 900
+			height <- 900
+			
+		} else if (l >= 5) {
+		
+			width <- 1100
+			height <- 1100
+			
+		}
+		
+		correlation.plot <- list()
+				
+		plot <- list()
+			
+		plot[["title"]] <- .unv(variables)
+		plot[["width"]]  <- width
+		plot[["height"]] <- height
+				
+		correlation.plot[[1]] <- plot
+
+		if (length(variables) > 0) {
+								
+			image <- .beginSaveImage(width, height)
+			
+				if (l == 1) {
+				
+					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))	
+					
+					.plotMarginalCor(dataset[[variables[1]]]) 
+					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)	
+					
+				} else if (l == 2 && !options$plotDensities && !options$plotPosteriors) {
+					
+					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))
+					
+					.plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
+					mtext(text = .unv(variables)[2], side = 2, cex=1.9, line = 2.7, las=0)
+					
+				} else if (l > 1) {
+				
+					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0, 2.2, 2, 0))
+				
+					for (row in seq_len(l)) {
+					
+						for (col in seq_len(l)) {
+						
+							if (row == col) {
+								
+								if (options$plotDensities) {
+									.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+								} else {
+									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								}
+							}
+								
+							if (col > row) {
+							
+								if (options$plotCorrelationMatrix) {
+									.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+								} else {
+									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								}
+							}
+							
+							if (col < row) {							
+							
+									if (options$plotPosteriors) {
+										.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided)
+									} else {
+										plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+									}
+							}
+						}		
+					}
+				}
+				
+				
+				if (l > 2 || ((l == 2 && options$plotDensities) || (l == 2 && options$plotPosteriors))) {
+				
+					textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
+					
+					if (!options$plotDensities && !options$plotPosteriors) {
+					
+							for (t in seq_along(textpos)) {
+							
+								mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.9, line= -0.8)
+								
+								if (t < length(textpos)) {
+									mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.9, line= -0.1, las= 0)
+								}
+							}
+						
+					} else {
+					
+						for (t in seq_along(textpos)) {
+							
+								mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.9, line= -0.8)
+								mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.9, line= -0.1, las= 0)
+						}
+					}
+				}
+			
+			content <- .endSaveImage(image)
+					
+			plot <- correlation.plot[[1]]
+			plot[["data"]]  <- content
+			correlation.plot[[1]] <- plot
+			
+		}	
+	}
+	
+	correlation.plot
 }

@@ -137,7 +137,7 @@
 	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
 	mtext(text = variableName, side = 1, cex=1.5, line = 3)
 	par(las=0)
-	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.5, mgp= c(3, 0.7, 0))
+	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), cex.axis= 1.5, mgp= c(3, 0.7, 0))
 	
 	if(rugs){
 		rug(jitVar)
