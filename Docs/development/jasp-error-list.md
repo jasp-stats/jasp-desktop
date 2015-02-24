@@ -29,13 +29,13 @@ overall errors
 value errors for *t*
 
 - t-statistic is undefined -- the dependent variable contains infinity
-- t-statistic is undefined -- the grouping variable contains less than two levels once missing values in the dependent are excluded
+- t-statistic is undefined -- the grouping variable contains fewer than two levels once missing values in the dependent are excluded
 - t-statistic is undefined -- one or both levels of the dependent contains all the same value (zero variance)
 - t-statistic is undefined -- one or both levels of the dependent contain too few observations
 - *Note.* All tests, variances of groups assumed equal
 - *Note.* All tests, variances of groups not assumed equal
 - *Note.* All tests, hypothesis is group *X* greater than group *Y*
-- *Note.* All tests, hypothesis is group *X* less than group *Y*
+- *Note.* All tests, hypothesis is group *X* fewer than group *Y*
 - Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption
 
 #### Bayesian Independent Samples T-Test
@@ -47,11 +47,11 @@ overall errors
 value errors for *BF*
 
 * Bayes factor is undefined -- the dependent variable contains infinity
-* Bayes factor is undefined -- the grouping variable contains less than two levels once missing values in the dependent are excluded
+* Bayes factor is undefined -- the grouping variable contains fewer than two levels once missing values in the dependent are excluded
 * Bayes factor is undefined -- one or both levels of the dependent contain all the same value (zero variance)
 * Bayes factor is undefined -- one or both levels of the dependent contain too few observations
 * *Note.* All tests, hypothesis is group *$X* greater than group *Y*
-* *Note.* All tests, hypothesis is group *$X* less than group *Y*
+* *Note.* All tests, hypothesis is group *$X* fewer than group *Y*
 
 #### One Sample T-Test
 
@@ -61,7 +61,7 @@ value errors for *t*
 * t-statistic is undefined -- the sample contains all the same value (zero variance)
 * t-statistic is undefined -- sample contains only one value
 * *Note.* All tests, hypothesis is sample mean is greater than *X*
-* *Note.* All tests, hypothesis is sample mean is less than *X*
+* *Note.* All tests, hypothesis is sample mean is fewer than *X*
 * *Note.* All tests, hypothesis is sample mean is different to *X*
 
 #### Bayesian One Sample T-Test
@@ -79,7 +79,7 @@ value errors for *t*
 * t-statistic is undefined -- one or both of the variables contain all the same value (zero variance)
 * t-statistic is undefined -- one or both of the variables contain only one value
 * *Note.* All tests, hypothesis is group one greater than group two
-* *Note.* All tests, hypothesis is group one less than group two
+* *Note.* All tests, hypothesis is group one fewer than group two
 
 #### Bayesian Paired Sample T-Test
 
@@ -90,7 +90,7 @@ value errors for *BF*
 
 #### ANOVA
 
-* Factor(s) *X, Y, Z* contain(s) less than two levels (possibly only after rows with missing values are excluded)
+* Factor(s) *X, Y, Z* contain(s) fewer than two levels (possibly only after rows with missing values are excluded)
 
 
 #### Classical Linear Regression
@@ -114,7 +114,7 @@ value errors for *BF*
 
 * Bayes factor is undefined -- all effects are specified as nuisance
 * Bayes factor is undefined -- too few observations (possibly only after rows with missing values are excluded)
-* Bayes factor is undefined -- the factor(s) *X, Y, Z* contain(s) less than two levels (possibly only after rows with missing values are excluded)
+* Bayes factor is undefined -- the factor(s) *X, Y, Z* contain(s) fewer than two levels (possibly only after rows with missing values are excluded)
 * Bayes factor is undefined -- the dependent variable contains infinity
 * Bayes factor could not be computed
 * *Note.* All models include *X, Y, Z*
@@ -122,7 +122,7 @@ value errors for *BF*
 #### Bayesian Correlation Matrix
 value errors for *r* 
 
-* Sample correlation coefficient r is undefined - too few observations
-* Sample correlation coefficient r is undefined - one or more of the variables contain infinity
-* Sample correlation coefficient r is undefined - one or more of the variables contain all the same value (zero variance)
+* Sample correlation coefficient r is undefined -- too few observations
+* Sample correlation coefficient r is undefined -- one or more of the variables contain infinity
+* Sample correlation coefficient r is undefined -- one or more of the variables contain all the same value (zero variance)
 
