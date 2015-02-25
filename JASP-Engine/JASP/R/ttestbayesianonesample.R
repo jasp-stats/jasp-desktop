@@ -372,7 +372,7 @@
 	} else {
 		
 		evidenceText <-  FALSE
-	}	
+	}
 	
 	
 	if (rscale == "medium") {
@@ -462,7 +462,7 @@
 	
 	
 	BF10 <- vector("numeric", max(length(x), length(y)))
-	BF10m <- vector("numeric", max(length(x), length(y)))
+	BF10w <- vector("numeric", max(length(x), length(y)))
 	BF10u <- vector("numeric", max(length(x), length(y)))
 	
 	idData <- 1
@@ -498,7 +498,7 @@
 	
 	
 	BF10[1:idData] <- 1
-	BF10m[1:idData] <- 1
+	BF10w[1:idData] <- 1
 	BF10u[1:idData] <- 1
 	
 	
@@ -527,7 +527,7 @@
 	
 	while ((i <= length(x) | j <= length(y)) & k <= length(BF10)) {
 		
-		BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j],paired = FALSE, rscale= r, nullInterval = nullInterval)
+		BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = FALSE, rscale= r, nullInterval = nullInterval)
 		BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 		
 		k <- k+1	
@@ -572,7 +572,7 @@
 		
 		while ((i <= length(x) | j <= length(y)) & k <= length(BF10u)) {
 			
-			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j],paired = FALSE, rscale= "ultrawide", nullInterval = nullInterval)
+			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = FALSE, rscale= "ultrawide", nullInterval = nullInterval)
 			BF10u[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 			
 			k <- k+1	
@@ -614,10 +614,10 @@
 		k <- idData + 1
 		
 		
-		while ((i <= length(x) | j <= length(y)) & k <= length(BF10m)) {
+		while ((i <= length(x) | j <= length(y)) & k <= length(BF10w)) {
 			
-			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j],paired = FALSE, rscale= "medium", nullInterval = nullInterval)
-			BF10m[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = FALSE, rscale= "wide", nullInterval = nullInterval)
+			BF10w[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 			
 			k <- k+1	
 			
@@ -631,7 +631,7 @@
 			}
 		}
 		
-		BF10m <- BF10m[is.finite(BF10m)]
+		BF10w <- BF10w[is.finite(BF10w)]
 		
 	}
 	
@@ -641,7 +641,7 @@
 	
 	if (plotDifferentPriors) {
 		
-		BF <- c(BF10, BF10u, BF10m)
+		BF <- c(BF10, BF10u, BF10w)
 		
 	} else {
 		
@@ -658,7 +658,7 @@
 		if (plotDifferentPriors) {
 			
 			BF10u  <- 1 / BF10u
-			BF10m <- 1 / BF10m
+			BF10w <- 1 / BF10w
 		}
 	}
 	
@@ -851,8 +851,7 @@
 				
 				if(grepl(pattern = "e",yLab1s[length(yLab1s)])){
 					
-					newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],
-																																																										 split = "+", fixed=TRUE)[[1]][2])+1, sep="")
+					newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)], split = "+", fixed=TRUE)[[1]][2])+1, sep="")
 				} else {
 					
 					newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
@@ -1362,13 +1361,13 @@
 		if (length(x) <= 60) {
 			
 			points(log(BF10u), pch=21, bg= "white", cex= 0.7, lwd= 1.3) # "ultrawide" prior
-			points(log(BF10m), pch=21, bg= "black", cex= 0.7, lwd= 1.3) # "medium" prior
+			points(log(BF10w), pch=21, bg= "black", cex= 0.7, lwd= 1.3) # "wide" prior
 		} else {
 			
 			greycol <- rgb(0,0,0, alpha=0.95)
 			greycol2 <- rgb(0,0,0, alpha=0.5)
 			lines(log(BF10u), col= greycol2, cex= 0.7, lwd= 1.3, lty= 1) # "ultrawide" prior
-			lines(log(BF10m), col= greycol, cex= 0.7, lwd= 1.3, lty=3) # "medium" prior
+			lines(log(BF10w), col= greycol, cex= 0.7, lwd= 1.3, lty=3) # "wide" prior
 		}
 	}
 	
@@ -1420,8 +1419,8 @@
 		xx <- grconvertX(0.56, "ndc", "user")
 		yy <- grconvertY(0.872 + offsetTopPart, "ndc", "user")
 		
-		BFind <- sort(c(BF10[length(x)], BF10u[length(x)], BF10m[length(x)]), decreasing = TRUE, index.return=TRUE)$ix
-		legend <- c("user prior", "ultrawide prior", "medium prior")
+		BFind <- sort(c(BF10[length(x)], BF10u[length(x)], BF10w[length(x)]), decreasing = TRUE, index.return=TRUE)$ix
+		legend <- c("user prior", "ultrawide prior", "wide prior")
 		
 		if (length(x) <= 60) {
 			
@@ -1537,6 +1536,8 @@
 	BF10w <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "wide")
 	BF10w <- BayesFactor::extractBF(BF10w, logbf = FALSE, onlybf = F)[1, "bf"]
 	BF10wText <- BF10w
+	
+	print(BF10w)
 	
 	# BF10 "ultrawide" prior
 	BF10ultra <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "ultrawide")
@@ -2112,7 +2113,7 @@
 		}		
 	}
 	
-	if (oneSided == "right"){
+	if (oneSided == "right") {
 		
 		if (BFH1H0) {
 			
@@ -2138,9 +2139,9 @@
 	# display BF10
 	lines(rValues,log(BF10), col="black", lwd = 2.7)
 	
-	# display "medium", user, and "ultrawide" prior BFs
+	# display "wide", user, and "ultrawide" prior BFs
 	points(r, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
-	points(sqrt(2) / 2, log(BF10m), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "medium" prior
+	points(1, log(BF10w), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "wide" prior
 	points(sqrt(2), log(BF10ultra), pch=21, bg= "white", cex= 1.1, lwd= 1.3) # "ultrawide" prior
 	
 	#### add legend
@@ -2185,40 +2186,40 @@
 		}	
 	}
 	
-	# BFmedium
-	BF01mText <- 1 / BF10mText
+	# BFwide
+	BF01wText <- 1 / BF10wText
 	
-	if (BF10mText >= 1000000 | BF01mText >= 1000000) {
-		BF10mt <- format(BF10mText, digits= 4, scientific = TRUE)
-		BF01mt <- format(BF01mText, digits= 4, scientific = TRUE)
+	if (BF10wText >= 1000000 | BF01wText >= 1000000) {
+		BF10wt <- format(BF10wText, digits= 4, scientific = TRUE)
+		BF01wt <- format(BF01wText, digits= 4, scientific = TRUE)
 	}
-	if (BF10mText < 1000000 & BF01mText < 1000000) {
-		BF10mt <- formatC(BF10mText, 3, format = "f")
-		BF01mt <- formatC(BF01mText, 3, format = "f")
+	if (BF10wText < 1000000 & BF01wText < 1000000) {
+		BF10wt <- formatC(BF10wText, 3, format = "f")
+		BF01wt <- formatC(BF01wText, 3, format = "f")
 	}
 	
 	if (oneSided == FALSE) {
 	
-		if (BF10mText >= BF01mText) {
-			mBF <- bquote(BF[10]==.(BF10mt))
+		if (BF10wText >= BF01wText) {
+			wBF <- bquote(BF[10]==.(BF10wt))
 		} else {
-			mBF <- bquote(BF[0][1]==.(BF01mt))
+			wBF <- bquote(BF[0][1]==.(BF01wt))
 		}		
 	}
 	if (oneSided == "right") {
 	
-		if (BF10mText >= BF01mText) {
-			mBF <- bquote(BF["+"][0]==.(BF10mt))
+		if (BF10wText >= BF01wText) {
+			wBF <- bquote(BF["+"][0]==.(BF10wt))
 		} else {
-			mBF <- bquote(BF[0]["+"]==.(BF01mt))
+			wBF <- bquote(BF[0]["+"]==.(BF01wt))
 		}	
 	}
 	if (oneSided == "left") {
 	
-		if (BF10mText >= BF01mText) {
-			mBF <- bquote(BF["-"][0]==.(BF10mt))
+		if (BF10wText >= BF01wText) {
+			wBF <- bquote(BF["-"][0]==.(BF10wt))
 		} else {
-			mBF <- bquote(BF[0]["-"]==.(BF01mt))
+			wBF <- bquote(BF[0]["-"]==.(BF01wt))
 		}	
 	}
 	
@@ -2264,10 +2265,10 @@
 	xx <- grconvertX(0.2, "ndc", "user")
 	yy <- grconvertY(0.965, "ndc", "user")
 	
-	BFind <- sort(c(BF10userText, BF10ultraText, BF10mText), decreasing = TRUE, index.return=TRUE)$ix
-	BFsort <- sort(c(BF10userText, BF10ultraText, BF10mText), decreasing = TRUE, index.return=TRUE)$x
+	BFind <- sort(c(BF10userText, BF10ultraText, BF10wText), decreasing = TRUE, index.return=TRUE)$ix
+	BFsort <- sort(c(BF10userText, BF10ultraText, BF10wText), decreasing = TRUE, index.return=TRUE)$x
 	
-	legend <- c("user prior:", "ultrawide prior:", "medium prior:")
+	legend <- c("user prior:", "ultrawide prior:", "wide prior:")
 	pt.bg <-  c("grey", "white", "black")
 	pt.cex <-  c(cexPoints, 1.1, 1.1)
 	
@@ -2281,7 +2282,7 @@
 	
 	text(xx, yy[BFsort== BF10userText], userBF, cex= 1.3,pos = 4)
 	text(xx, yy[BFsort== BF10ultraText], ultraBF, cex= 1.3, pos= 4)
-	text(xx, yy[BFsort== BF10mText], mBF, cex= 1.3, pos= 4)
+	text(xx, yy[BFsort== BF10wText], wBF, cex= 1.3, pos= 4)
 }
 
 TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
