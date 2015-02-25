@@ -271,12 +271,12 @@
 		oddsratio.fields <- fields
 			
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="log(odds ratio)", type="number", format="sf:4;dp:3")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
 		
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[FisherTest]", title="", type="string")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[FisherTest]", title="Odds ratio", type="number", format="sf:4;dp:3")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[FisherTest]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[FisherTest]", title="Lower CI", type="number", format="dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[FisherTest]",  title="Upper CI", type="number", format="dp:3")
 		
