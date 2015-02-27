@@ -49,24 +49,32 @@
 	
 	# predictions of the model
 	poly.pred <- function(fit, line=FALSE, xMin, xMax){
+	
 		# create function formula
 		f <- vector("character", 0)
+		
 		for(i in seq_along(coef(fit))){
-			if(i ==1){
+		
+			if(i == 1){
+			
 				temp <- paste(coef(fit)[[i]])
 				f <- paste(f, temp, sep="")
 			}
-			if(i >1){
+			
+			if(i > 1){
+			
 				temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
-			f <- paste(f, temp, sep="+")
+				f <- paste(f, temp, sep="+")
 			}
 		}
+		
 		x <- seq(xMin, xMax, length.out = 100)
 		predY <- eval(parse(text=f))
 		
 		if(line == FALSE){
 		return(predY)
 		}
+		
 		if(line){
 		lines(x, predY, lwd=lwd)
 		}
@@ -81,13 +89,29 @@
 
 	yticks <- pretty(c(ylow, yhigh))
 	
+	yLabs <- vector("character", length(yticks))
+	
+	for(i in seq_along(yticks)){
+		
+		if(yticks[i] < 10^6){
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+			
+		} else{
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+		}		
+	}
+	
 	plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
 	poly.pred(fit[[bestModel]], line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)])
 	
 	par(las=1)
 	
 	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
-	axis(2, line= 0.2, labels= yticks, at= yticks, cex.axis= cexYAxis)
+	axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis)
+	
+	invisible(max(nchar(yLabs)))
 
 }
 
@@ -254,31 +278,23 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		
 		l <- length(variables)
 		
+			l <- length(variables)
+			
 		if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
-		
+			
 			width <- 580
 			height <- 580
-			
+				
 		} else if (l <= 2) {
-		
+			
 			width <- 400
 			height <- 400
+				
+		} else {
 			
-		} else if (l == 3) {
-		
-			width <- 700
-			height <- 700
-			
-		} else if (l == 4) {
-		
-			width <- 900
-			height <- 900
-			
-		} else if (l >= 5) {
-		
-			width <- 1100
-			height <- 1100
-			
+			width <- 250 * l
+			height <- 250 * l
+				
 		}
 				
 		plot <- list()
@@ -328,20 +344,10 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				width <- 400
 				height <- 400
 				
-			} else if (l == 3) {
+			} else {
 			
-				width <- 700
-				height <- 700
-				
-			} else if (l == 4) {
-			
-				width <- 900
-				height <- 900
-				
-			} else if (l >= 5) {
-			
-				width <- 1100
-				height <- 1100
+				width <- 250 * l
+				height <- 250 * l
 				
 			}
 			
@@ -359,20 +365,24 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			
 			if (l == 1) {
 			
-				par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))	
+				par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
 				
 				.plotMarginalCor(dataset[[variables[1]]]) # plot marginal (histogram with density estimator)
-				mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)				
+				mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
+				
 			} else if (l == 2 && !options$plotDensities && !options$plotStatistics) {
 				
-				par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))
+				par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
 				
-				.plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+				maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+				distLab <- maxYlab / 1.8
+				
 				mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
-				mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = 2.85, las=0)
+				mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
+				
 			} else if (l > 1) {
 			
-				par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0, 2.2, 2, 0))
+				par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
 			
 				for (row in seq_len(l)) {
 				
@@ -381,18 +391,26 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 						if (row == col) {
 							
 							if (options$plotDensities) {
+							
 								.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+								
 							} else {
+							
 								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								
 							}
 						}
 							
 						if (col > row) {
 						
 							if (options$plotCorrelationMatrix) {
+							
 								.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+								
 							} else {
+							
 								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								
 							}
 						}
 						
@@ -401,20 +419,28 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 							if (l < 7) {
 							
 								if (options$plotStatistics) {
+								
 									.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
 									pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman) # plot r= ...
+									
 								} else {
+								
 									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+									
 								}
 							}
 								
 							if (l >= 7) {
 							
 								if (options$plotStatistics) {
+								
 									.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
 									pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman)
+									
 								} else {
+								
 									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+									
 								}
 							}
 						}		
@@ -434,7 +460,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 							mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
 							
 							if (t < length(textpos)) {
+							
 								mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
+								
 							}
 						}
 					
