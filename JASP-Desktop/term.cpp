@@ -43,7 +43,7 @@ Term::Term(const QStringList components)
 		if (first)
 			first = false;
 		else
-			_asQString += " : ";
+			_asQString += " \xE2\x9C\xBB ";
 
 		_asQString += component;
 		_components.append(component);
