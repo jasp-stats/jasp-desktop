@@ -75,7 +75,18 @@
 	BF01 <- 1 / BF10
 	
 	# fit denisty estimator
-	fit.posterior <-  logspline::logspline(delta)
+	if (oneSided == FALSE) {
+	
+		fit.posterior <-  logspline::logspline(delta)
+		
+	} else if (oneSided == "right") {
+	
+		fit.posterior <-  logspline::logspline(delta, lbound= 0)
+	
+	} else if (oneSided == "left") {
+	
+		fit.posterior <-  logspline::logspline(delta, ubound= 0)
+	}
 	
 	# density function posterior
 	dposterior <- function(x, oneSided= oneSided, delta= delta){
@@ -88,13 +99,13 @@
 		
 		if (oneSided == "right") {
 			
-			k <- 1 / (length(delta[delta >= 0]) / length(delta))
+			k <- 1 #/ (length(delta[delta >= 0]) / length(delta))
 			return(ifelse(x < 0, 0, k*logspline::dlogspline(x, fit.posterior)))
 		}
 		
 		if (oneSided == "left") {
 			
-			k <- 1 / (length(delta[delta <= 0]) / length(delta))
+			k <- 1 #/ (length(delta[delta <= 0]) / length(delta))
 			return(ifelse(x > 0, 0, k*logspline::dlogspline(x, fit.posterior)))
 		}	
 	}	
@@ -1537,8 +1548,6 @@
 	BF10w <- BayesFactor::extractBF(BF10w, logbf = FALSE, onlybf = F)[1, "bf"]
 	BF10wText <- BF10w
 	
-	print(BF10w)
-	
 	# BF10 "ultrawide" prior
 	BF10ultra <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "ultrawide")
 	BF10ultra <- BayesFactor::extractBF(BF10ultra, logbf = FALSE, onlybf = F)[1, "bf"]
@@ -2337,6 +2346,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16(2), 225–237.")
 	
 	bf.type <- options$bayesFactorType
+	
 	
 	if (bf.type == "BF10") {
 	
