@@ -250,21 +250,11 @@
 			width <- 580
 			height <- 580
 			
-		} else if (l == 3) {
-		
-			width <- 700
-			height <- 700
+		} else {
 			
-		} else if (l == 4) {
-		
-			width <- 900
-			height <- 900
-			
-		} else if (l >= 5) {
-		
-			width <- 1100
-			height <- 1100
-			
+			width <- 250 * l
+			height <- 250 * l
+				
 		}
 		
 				
@@ -313,21 +303,11 @@
 			width <- 580
 			height <- 580
 			
-		} else if (l == 3) {
-		
-			width <- 700
-			height <- 700
+		} else {
 			
-		} else if (l == 4) {
-		
-			width <- 900
-			height <- 900
-			
-		} else if (l >= 5) {
-		
-			width <- 1100
-			height <- 1100
-			
+			width <- 250 * l
+			height <- 250 * l
+				
 		}
 		
 		matrix.plot <- list()
@@ -354,7 +334,7 @@
 					
 				} else if (l > 1) {
 				
-					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0, 2.2, 2, 0))
+					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
 				
 					for (row in seq_len(l)) {
 					

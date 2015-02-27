@@ -879,28 +879,18 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 			width <- 580
 			height <- 580
-			
+				
 		} else if (l <= 2) {
-		
+			
 			width <- 400
 			height <- 400
+				
+		} else {
 			
-		} else if (l == 3) {
-		
-			width <- 700
-			height <- 700
+			width <- 250 * l
+			height <- 250 * l
 			
-		} else if (l == 4) {
-		
-			width <- 900
-			height <- 900
-			
-		} else if (l >= 5) {
-		
-			width <- 1100
-			height <- 1100
-			
-		}
+		}	
 				
 		plot <- list()
 			
@@ -944,28 +934,39 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 			width <- 580
 			height <- 580
-			
+				
 		} else if (l <= 2) {
-		
+			
 			width <- 400
 			height <- 400
+				
+		} else {
 			
-		} else if (l == 3) {
-		
-			width <- 700
-			height <- 700
+			width <- 250 * l
+			height <- 250 * l
 			
-		} else if (l == 4) {
-		
-			width <- 900
-			height <- 900
-			
-		} else if (l >= 5) {
-		
-			width <- 1100
-			height <- 1100
-			
-		}
+		}	
+		# } else if (l <= 2) {
+		# 
+		# 	width <- 400
+		# 	height <- 400
+		# 	
+		# } else if (l == 3) {
+		# 
+		# 	width <- 700
+		# 	height <- 700
+		# 	
+		# } else if (l == 4) {
+		# 
+		# 	width <- 900
+		# 	height <- 900
+		# 	
+		# } else if (l >= 5) {
+		# 
+		# 	width <- 1100
+		# 	height <- 1100
+		# 	
+		# }
 		
 		correlation.plot <- list()
 				
@@ -983,22 +984,24 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			
 				if (l == 1) {
 				
-					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))	
+					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))	
 					
 					.plotMarginalCor(dataset[[variables[1]]]) 
 					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)	
 					
 				} else if (l == 2 && !options$plotDensities && !options$plotPosteriors) {
 					
-					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))
+					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
 					
-					.plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+					maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+					distLab <- maxYlab / 1.8
+					
 					mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
-					mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = 2.85, las=0)
+					mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
 					
 				} else if (l > 1) {
 				
-					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0, 2.2, 2, 0))
+					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
 				
 					for (row in seq_len(l)) {
 					
