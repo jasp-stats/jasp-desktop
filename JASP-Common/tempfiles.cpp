@@ -20,6 +20,8 @@ int tempfiles_nextFileId;
 
 void tempfiles_init(long sessionId)
 {
+	system::error_code error;
+
 	tempfiles_sessionId = sessionId;
 	tempfiles_nextFileId = 0;
 
@@ -34,10 +36,13 @@ void tempfiles_init(long sessionId)
 
 	tempfiles_statusFileName = ss.str();
 
-	if (filesystem::exists(tempfiles_sessionDirName))
-		filesystem::remove_all(tempfiles_sessionDirName);
+	if (filesystem::exists(tempfiles_sessionDirName, error))
+		filesystem::remove_all(tempfiles_sessionDirName, error);
 
-	filesystem::create_directories(tempfiles_sessionDirName);
+	if (error)
+		return;
+
+	filesystem::create_directories(tempfiles_sessionDirName, error);
 
 	fstream f;
 	f.open(tempfiles_statusFileName.c_str(), ios_base::out);
@@ -64,7 +69,9 @@ void tempfiles_attach(long sessionId)
 
 void tempfiles_deleteAll()
 {
-	filesystem::remove_all(tempfiles_sessionDirName);
+	system::error_code error;
+
+	filesystem::remove_all(tempfiles_sessionDirName, error);
 }
 
 
@@ -72,35 +79,49 @@ void tempfiles_deleteOrphans()
 {
 	system::error_code error;
 
-	filesystem::directory_iterator itr(Dirs::tempDir(), error);
+	try {
 
-	if (error)
-	{
-		perror(error.message().c_str());
-		return;
-	}
+		filesystem::directory_iterator itr(Dirs::tempDir(), error);
 
-	for (; itr != filesystem::directory_iterator(); itr++)
-	{
-		filesystem::path p = itr->path();
-
-		if (p.compare(tempfiles_sessionDirName) == 0)
-			continue;
-
-		if (std::atoi(filesystem::basename(p).c_str()) == 0)
-			continue;
-
-		if (filesystem::is_directory(p, error) == false || error)
-			continue;
-
-		filesystem::path statusFile(itr->path().string() + "/status");
-
-		if (filesystem::exists(statusFile, error))
+		if (error)
 		{
-			long modTime = Utils::getFileModificationTime(statusFile.generic_string());
-			long now = Utils::currentSeconds();
+			perror(error.message().c_str());
+			return;
+		}
 
-			if (now - modTime > 70)
+		for (; itr != filesystem::directory_iterator(); itr++)
+		{
+			filesystem::path p = itr->path();
+
+			if (p.compare(tempfiles_sessionDirName) == 0)
+				continue;
+
+			if (std::atoi(filesystem::basename(p).c_str()) == 0)
+				continue;
+
+			if (filesystem::is_directory(p, error) == false || error)
+				continue;
+
+			filesystem::path statusFile(itr->path().string() + "/status");
+
+			if (filesystem::exists(statusFile, error))
+			{
+				long modTime = Utils::getFileModificationTime(statusFile.generic_string());
+				long now = Utils::currentSeconds();
+
+				if (now - modTime > 70)
+				{
+					filesystem::remove_all(p, error);
+
+					if (error)
+						perror(error.message().c_str());
+				}
+			}
+			else if (error)
+			{
+				continue;
+			}
+			else // no status file
 			{
 				filesystem::remove_all(p, error);
 
@@ -108,17 +129,13 @@ void tempfiles_deleteOrphans()
 					perror(error.message().c_str());
 			}
 		}
-		else if (error)
-		{
-			continue;
-		}
-		else // no status file
-		{
-			filesystem::remove_all(p, error);
 
-			if (error)
-				perror(error.message().c_str());
-		}
+	}
+	catch (runtime_error e)
+	{
+		perror("Could not delete orphans");
+		perror(e.what());
+		return;
 	}
 }
 
@@ -132,6 +149,7 @@ void tempfiles_heartbeat()
 string tempfiles_createSpecific(const string &name, int id)
 {
 	stringstream ss;
+	system::error_code error;
 
 	ss << tempfiles_sessionDirName;
 
@@ -140,8 +158,8 @@ string tempfiles_createSpecific(const string &name, int id)
 
 	string dir = ss.str();
 
-	if (filesystem::exists(dir) == false)
-		filesystem::create_directories(dir);
+	if (filesystem::exists(dir, error) == false)
+		filesystem::create_directories(dir, error);
 
 	ss << "/";
 	ss << name;
@@ -152,6 +170,7 @@ string tempfiles_createSpecific(const string &name, int id)
 string tempfiles_create(const string &extension, int id)
 {
 	stringstream ss, ssn;
+	system::error_code error;
 
 	ss << tempfiles_sessionDirName;
 
@@ -160,8 +179,8 @@ string tempfiles_create(const string &extension, int id)
 
 	string dir = ss.str();
 
-	if (filesystem::exists(dir) == false)
-		filesystem::create_directories(dir);
+	if (filesystem::exists(dir, error) == false)
+		filesystem::create_directories(dir, error);
 
 	string suffix;
 	if (extension != "")

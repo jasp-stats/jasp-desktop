@@ -2,6 +2,7 @@
 #include "dirs.h"
 
 #include <iostream>
+#include <sstream>
 
 #ifdef __WIN32__
 #include <windows.h>
@@ -22,13 +23,14 @@
 
 
 #include <boost/filesystem.hpp>
+#include <boost/system/error_code.hpp>
 
 #include "process.h"
 #include "utils.h"
 #include "version.h"
 
 using namespace std;
-using namespace boost::filesystem;
+using namespace boost;
 
 string Dirs::appDataDir()
 {
@@ -41,12 +43,14 @@ string Dirs::appDataDir()
 
 #ifdef __WIN32__
 	TCHAR buffer[MAX_PATH];
-	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, buffer)))
-	{
-		std::cerr << "App Data dir could not be retrieved\n";
-		std::cerr.flush();
 
-		throw std::exception();
+	HRESULT ret = SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, buffer);
+
+	if ( ! SUCCEEDED(ret))
+	{
+		stringstream ss;
+		ss << "App Data directory could not be retrieved (" << ret << ")";
+		throw Exception(ss.str());
 	}
 
 	dir = Utils::ws2s(buffer);
@@ -59,18 +63,21 @@ string Dirs::appDataDir()
 
 #endif
 
-	if ( ! exists(dir))
+	if ( ! filesystem::exists(dir))
 	{
-		if (create_directories(dir) == false)
-		{
-			std::cerr << dir << " could not be created\n";
-			std::cerr.flush();
+		system::error_code ec;
 
-			throw std::exception();
+		filesystem::create_directories(dir, ec);
+
+		if (ec)
+		{
+			stringstream ss;
+			ss << "App Data directory could not be created: " << dir;
+			throw Exception(ss.str());
 		}
 	}
 
-	p = path(dir).generic_string();
+	p = filesystem::path(dir).generic_string();
 
 	return p;
 }
@@ -87,12 +94,7 @@ string Dirs::tempDir()
 #ifdef __WIN32__
 	TCHAR buffer[MAX_PATH];
 	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
-	{
-		std::cerr << "Local App Data dir could not be retrieved\n";
-		std::cerr.flush();
-
-		throw std::exception();
-	}
+		throw Exception("App Data directory could not be retrieved");
 
 	dir = Utils::ws2s(buffer);
 	dir += "/JASP/temp";
@@ -104,18 +106,20 @@ string Dirs::tempDir()
 
 #endif
 
-	if ( ! exists(dir))
+	if ( ! filesystem::exists(dir))
 	{
-		if (create_directories(dir) == false)
-		{
-			std::cerr << dir << " could not be created\n";
-			std::cerr.flush();
+		system::error_code ec;
+		filesystem::create_directories(dir, ec);
 
-			throw std::exception();
+		if (ec)
+		{
+			stringstream ss;
+			ss << "Temp Data directory could not be created (" << ec << ") : " << dir;
+			throw Exception(ss.str());
 		}
 	}
 
-	p = path(dir).generic_string();
+	p = filesystem::path(dir).generic_string();
 
 	return p;
 }
@@ -129,7 +133,15 @@ string Dirs::exeDir()
 #ifdef __WIN32__
 	HMODULE hModule = GetModuleHandleW(NULL);
 	WCHAR path[MAX_PATH];
-	GetModuleFileNameW(hModule, path, MAX_PATH);
+
+	int ret = GetModuleFileNameW(hModule, path, MAX_PATH);
+
+	if (ret != ERROR_SUCCESS)
+	{
+		stringstream ss;
+		ss << "Executable directory could not be retrieved (" << ret << ")";
+		throw Exception(ss.str());
+	}
 
 	wstring s(path);
 	string r = Utils::ws2s(path);
@@ -165,10 +177,7 @@ string Dirs::exeDir()
 
 	if (ret <= 0)
 	{
-		cerr << "Could not retrieve exe location\n";
-		cerr.flush();
-
-		throw exception();
+		throw Exception("Executable directory could not be retrieved");
 	}
 	else
 	{
@@ -194,38 +203,21 @@ string Dirs::exeDir()
 	pid_t pid;
 	int ret;
 
-	/* Get our PID and build the name of the link in /proc */
 	pid = getpid();
 
 	if (snprintf(linkname, sizeof(linkname), "/proc/%i/exe", pid) < 0)
-		{
-		/* This should only happen on large word systems. I'm not sure
-		   what the proper response is here.
-		   Since it really is an assert-like condition, aborting the
-		   program seems to be in order. */
-		abort();
-		}
+		throw Exception("Executable directory could not be retrieved");
 
-
-	/* Now read the symbolic link */
 	ret = readlink(linkname, buf, sizeof(buf));
 
-	/* In case of an error, leave the handling up to the caller */
 	if (ret == -1)
-		return NULL;
+		throw Exception("Executable directory could not be retrieved");
 
-	/* Report insufficient buffer size */
 	if (ret >= sizeof(buf))
-	{
-		errno = ERANGE;
-		return NULL;
-	}
+		throw Exception("Executable directory could not be retrieved: insufficient buffer size");
 
 	/* Ensure proper NUL termination */
 	buf[ret] = 0;
-
-	std::cout << buf << "\n";
-	std::cout.flush();
 
 	return string(buf);
 

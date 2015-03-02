@@ -112,7 +112,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, this);
-	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(engineCrashed()));
+	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
 	_analyses->analysisResultsChanged.connect(boost::bind(&MainWindow::analysisResultsChangedHandler, this, _1));
 
@@ -173,17 +173,27 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
 	ui->panelHelp->hide();
 
-	log.log("Application Start");
+	try {
 
-	ui->backStage->setLog(&log);
-	_engineSync->setLog(&log);
+		_log = new ActivityLog();
+		_log->log("Application Start");
 
-	log.flushLogToServer();
+		ui->backStage->setLog(_log);
+		_engineSync->setLog(_log);
 
-	QTimer *timer = new QTimer(this);
-	timer->setInterval(30000);
-	connect(timer, SIGNAL(timeout()), &log, SLOT(flushLogToServer()));
-	timer->start();
+		_log->flushLogToServer();
+
+		QTimer *timer = new QTimer(this);
+		timer->setInterval(30000);
+		connect(timer, SIGNAL(timeout()), _log, SLOT(flushLogToServer()));
+		timer->start();
+	}
+	catch (std::runtime_error &e)
+	{
+		_log = NULL;
+		_fatalError = tq(e.what());
+		QTimer::singleShot(0, this, SLOT(fatalError()));
+	}
 }
 
 void MainWindow::open(QString filename)
@@ -340,7 +350,8 @@ void MainWindow::analysisSelectedHandler(int id)
 		info = info.arg(tq(_currentAnalysis->name()));
 		info = info.arg(id);
 
-		log.log("Analysis Selected", info);
+		if (_log != NULL)
+			_log->log("Analysis Selected", info);
 	}
 }
 
@@ -348,13 +359,13 @@ void MainWindow::analysisUnselectedHandler()
 {
 	hideOptionsPanel();
 
-	if (_currentAnalysis != NULL)
+	if (_log != NULL && _currentAnalysis != NULL)
 	{
 		QString info("%1,%2");
 		info = info.arg(tq(_currentAnalysis->name()));
 		info = info.arg(_currentAnalysis->id());
 
-		log.log("Analysis Unselected", info);
+		_log->log("Analysis Unselected", info);
 	}
 }
 
@@ -384,7 +395,8 @@ void MainWindow::tabChanged(int index)
 
 void MainWindow::helpToggled(bool on)
 {
-	log.log("Help Toggled", on ? "on" : "off");
+	if (_log != NULL)
+		_log->log("Help Toggled", on ? "on" : "off");
 
 	static int helpWidth = 0;
 
@@ -505,9 +517,10 @@ void MainWindow::assignPPIFromWebView(bool success)
 	}
 }
 
-void MainWindow::engineCrashed()
+void MainWindow::fatalError()
 {
-	log.log("Engine Crashed");
+	if (_log != NULL)
+		_log->log("Terminal Error");
 
 	static bool exiting = false;
 
@@ -515,7 +528,7 @@ void MainWindow::engineCrashed()
 	{
 		exiting = true;
 
-		QMessageBox::warning(this, "Error", "The JASP Statistics Engine has terminated unexpectedly.\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.");
+		QMessageBox::warning(this, "Error", "JASP has experienced an unexpected internal error.\n\n\"" + _fatalError + "\"\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.\n\n");
 		QApplication::exit(1);
 	}
 }
@@ -566,7 +579,8 @@ void MainWindow::itemSelected(const QString &item)
 		info = info.arg(tq(_currentAnalysis->name()));
 		info = info.arg(_currentAnalysis->id());
 
-		log.log("Analysis Created", info);
+		if (_log != NULL)
+			_log->log("Analysis Created", info);
 	}
 }
 
@@ -737,7 +751,8 @@ void MainWindow::analysisOKed()
 		info = info.arg(tq(_currentAnalysis->name()));
 		info = info.arg(_currentAnalysis->id());
 
-		log.log("Analysis OKed", info);
+		if (_log != NULL)
+			_log->log("Analysis OKed", info);
 
 		_currentOptionsWidget->hide();
 		_currentOptionsWidget->unbind();
@@ -761,7 +776,8 @@ void MainWindow::analysisRemoved()
 		info = info.arg(tq(_currentAnalysis->name()));
 		info = info.arg(_currentAnalysis->id());
 
-		log.log("Analysis Removed", info);
+		if (_log != NULL)
+			_log->log("Analysis Removed", info);
 	}
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
@@ -771,7 +787,8 @@ void MainWindow::analysisRemoved()
 
 void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data)
 {
-	log.log("Copy");
+	if (_log != NULL)
+		_log->log("Copy");
 
 	QMimeData *mimeData = new QMimeData();
 
@@ -812,7 +829,8 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	info = info.arg(tq(analysis->name()));
 	info = info.arg(id);
 
-	log.log("Analysis Changed Downstream", info);
+	if (_log != NULL)
+		_log->log("Analysis Changed Downstream", info);
 
 	string utf8 = fq(options);
 
