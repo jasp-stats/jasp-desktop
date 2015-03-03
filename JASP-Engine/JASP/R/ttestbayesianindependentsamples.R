@@ -46,6 +46,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	g2 <- ttest.results[[4]]
 	BFH1H0 <- ttest.results[[5]]
 	plottingError <- ttest.results[[6]]
+	BF10post <- ttest.results[[7]]
 	
 	if(is.null(options()$BFMaxModels)) options(BFMaxModels = 50000)
 	if(is.null(options()$BFpretestIterations)) options(BFpretestIterations = 100)
@@ -139,6 +140,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			#}
 			
 			statusInd <- 1
+			i <- 1
 			
 			for (variable in options[["variables"]]) {
 			
@@ -168,7 +170,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 								image <- .beginSaveImage(530, 400)
 				
-								.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
+								.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i])
 				
 								plot[["data"]] <- .endSaveImage(image)
 							})
@@ -259,6 +261,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				}
 					
 				statusInd <- statusInd + 1
+				i <- i + 1
 			}				
 		}
 	}
@@ -271,7 +274,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 	g1 <- NULL
 	g2 <- NULL
-	
+	BF10post <- NULL
 
 	ttest <- list()
 
@@ -313,8 +316,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}	
 	}
 	
+	if (options$hypothesis == "groupsNotEqual") {
 	
-	fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3", title="error %")
+		fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3", title="error %")
+		
+	} else {
+	
+		fields[[length(fields)+1]] <- list(name="error", type="number", format="sf:4;dp:3;~", title="error %")
+	}
 		
 	ttest[["schema"]] <- list(fields=fields)
 	
@@ -368,6 +377,10 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		} else {
 			
 			rowNo <- 1
+			
+			i <- 1
+			
+			BF10post <- numeric()			
 		
 			for (variable in options[["variables"]]) {
 				
@@ -379,8 +392,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 				gs <- base::levels(levels)
 				
-				group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== gs[1],.v(variable)] 
-				group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== gs[2],.v(variable)] 
+				group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g1,.v(variable)] 
+				group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g2,.v(variable)] 
 
 				f <- as.formula(paste( .v(variable), "~", .v(options$groupingVariable)))
 				r.size <- options$priorWidth
@@ -388,28 +401,69 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				if (options$hypothesis == "groupOneGreater") {
 			
 					null.interval <- c(0, Inf)
+					oneSided <- "right"
 			
 				} else if (options$hypothesis == "groupTwoGreater") {
 
 					null.interval <- c(-Inf, 0)
+					oneSided <- "left"
 			
 				} else {
 			
 					null.interval <- c(-Inf, Inf)
+					oneSided <- FALSE
 				}				
 				
 				result <- try (silent=FALSE, expr= {
 				
-					bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, nullInterval=null.interval)[1]
-					
-					if (options$bayesFactorType == "BF01")
-						bf <- 1 / bf
+					bf    <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size)[1]
 					
 					bf.raw <- exp(as.numeric(bf@bayesFactor$bf))
+					
+					N1 <- length(group2)
+					N2 <- length(group1)
+					
+					sdPooled <- sqrt(((N1 - 1) * var(group2) + (N2 - 1) * var(group1)) / (N1 + N2))
+					deltaHat <- (mean(group2) - mean(group1)) / sdPooled
+					df <- N1 + N2 - 2
+					sigmaStart <- sqrt(N1 * N2 / (N1 + N2))
+					
+					
+					if (oneSided == "right") {
+						
+							samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
+							delta <- samples[, "delta"]
+							
+							parameters <- optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par
+							
+							bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)
+					}
+						
+					if (oneSided == "left") {
+					
+						samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
+						delta <- samples[, "delta"]
+						
+						parameters <- optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par
+						
+						bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
+					}
+					
+										
+					if (options$bayesFactorType == "BF01")
+						bf.raw <- 1 / bf.raw
+					
+					
 					BF    <- .clean(bf.raw)
+					BF10post[i] <- BF
+					
+					if (options$bayesFactorType == "LogBF10")
+						BF <- log(BF)
+					
 					error <- .clean(as.numeric(bf@bayesFactor$error))
 					errorMessage <- NULL
-										
+					
+					
 					if (is.na(bf.raw)) {
 				
 						status[rowNo] <- "error"
@@ -507,6 +561,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				ttest.rows[[rowNo]] <- result
 			
 				rowNo <- rowNo + 1
+				i <- i + 1
 			}
 		}
 		
@@ -517,6 +572,5 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	ttest[["data"]] <- ttest.rows
 	
 	
-	
-	list(ttest, status, g1, g2, BFH1H0, plottingError)
+	list(ttest, status, g1, g2, BFH1H0, plottingError, BF10post)
 }
