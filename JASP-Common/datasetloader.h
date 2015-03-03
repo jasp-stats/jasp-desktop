@@ -14,6 +14,9 @@ public:
 	static DataSet *getDataSet();
 
 private:
+
+	static std::string deEuropeanise(const std::string &value);
+
 	static void initColumn(Column &column, const std::string &name, const std::vector<std::string> &cells);
 	static void growMemory(DataSet *&dataSet, boost::interprocess::managed_shared_memory *&mem);
 

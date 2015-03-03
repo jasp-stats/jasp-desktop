@@ -205,6 +205,43 @@ bool CSV::readUtf8()
 		_rawBufferStartPos = _rawBufferEndPos;
 	}
 
+	for (int i = 0 ; i < _utf8BufferEndPos; i++)
+	{
+		if ((unsigned char)_utf8Buffer[i] < 0x80) // ascii
+		{
+			continue;
+		}
+		else if ((unsigned char)_utf8Buffer[i] < 0xC0) // illegal
+		{
+			_utf8Buffer[i] = '.';
+		}
+		else if ((unsigned char)_utf8Buffer[i] < 0xE0) // 2 bytes
+		{
+			if (i < _utf8BufferEndPos - 1 && (unsigned char)_utf8Buffer[i+1] < 0x80)
+				_utf8Buffer[i] = '.';
+			else
+				i += 1;
+		}
+		else if ((unsigned char)_utf8Buffer[i] < 0xF0) // 3 bytes
+		{
+			if (i < _utf8BufferEndPos - 2 && (unsigned char)_utf8Buffer[i+1] < 0x80 && (unsigned char)_utf8Buffer[i+2] < 0x80)
+				_utf8Buffer[i] = '.';
+			else
+				i += 2;
+		}
+		else if ((unsigned char)_utf8Buffer[i] < 0xF8) // 4 bytes
+		{
+			if (i < _utf8BufferEndPos - 3 && (unsigned char)_utf8Buffer[i+1] < 0x80 && (unsigned char)_utf8Buffer[i+2] < 0x80 && (unsigned char)_utf8Buffer[i+3] < 0x80)
+				_utf8Buffer[i] = '.';
+			else
+				i += 3;
+		}
+		else
+		{
+			_utf8Buffer[i] = '.';
+		}
+	}
+
 	return true;
 }
 
@@ -212,12 +249,12 @@ bool CSV::readUtf8()
 void CSV::determineDelimiters()
 {
 	bool inQuote = false;
-
-	enum { COMMA = 0, SEMICOLON = 1, SPACE = 2, TAB = 3 };
-
-	int counts[] = { 0, 0, 0, 0 };
-
 	bool eol = false;
+
+	int commas = 0;
+	int semicolons = 0;
+	int spaces = 0;
+	int tabs = 0;
 
 	for (int i = 0; i < _utf8BufferEndPos && eol == false; i++)
 	{
@@ -239,16 +276,16 @@ void CSV::determineDelimiters()
 		switch (ch)
 		{
 		case ',':
-			counts[COMMA]++;
+			commas++;
 			break;
 		case ';':
-			counts[SEMICOLON]++;
+			semicolons++;
 			break;
 		case ' ':
-			counts[SPACE]++;
+			spaces++;
 			break;
 		case '\t':
-			counts[TAB]++;
+			tabs++;
 			break;
 		case '\r':
 		case '\n':
@@ -257,28 +294,16 @@ void CSV::determineDelimiters()
 		}
 	}
 
-	int maxi = 0;
-	for (int i = 1; i < 4; i++)
-	{
-		if (counts[maxi] < counts[i])
-			maxi = i;
-	}
-
-	switch (maxi)
-	{
-	case SEMICOLON:
-		_delim = ';';
-		break;
-	case SPACE:
-		_delim = ' ';
-		break;
-	case TAB:
-		_delim = '\t';
-		break;
-	default:
+	if (commas > 0)
 		_delim = ',';
-		break;
-	}
+	else if (semicolons > 0)
+		_delim = ';';
+	else if (tabs > 0)
+		_delim = '\t';
+	else if (spaces > 0)
+		_delim = ' ';
+	else
+		_delim = ',';
 }
 
 bool CSV::readLine(vector<string> &items)
@@ -300,6 +325,12 @@ bool CSV::readLine(vector<string> &items)
 	while (true)
 	{
 		char ch = _utf8Buffer[i];
+
+		if ((unsigned char)ch >= 0xF8)  // illegal utf-8
+		{
+			ch = '.';
+			_utf8Buffer[i] = '.';
+		}
 
 		if (ch == '"')
 		{

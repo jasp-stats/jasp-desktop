@@ -47,7 +47,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator, boost::function<void(
 			lastProgress = progress;
 		}
 
-        int i = 0;
+		int i = 0;
 		for (; i < line.size() && i < columnCount; i++)
 			cells[i].push_back(line[i]);
         for (; i < columnCount; i++)
@@ -148,6 +148,55 @@ DataSet *DataSetLoader::getDataSet()
 	return mem->find<DataSet>(boost::interprocess::unique_instance).first;
 }
 
+string DataSetLoader::deEuropeanise(const string &value)
+{
+	int dots = 0;
+	int commas = 0;
+
+	for (uint i = 0; i < value.length(); i++)
+	{
+		if (value[i] == '.')
+			dots++;
+		else if (value[i] == ',')
+			commas++;
+	}
+
+	if (commas > 0)
+	{
+		string uneurope = value;
+
+		if (dots > 0)
+		{
+			uint i = 0;
+			uint j = 0;
+
+			for (;i < value.size(); i++)
+			{
+				if (value[i] == '.')
+					continue;
+				uneurope[j] = value[i];
+
+				j++;
+			}
+
+			uneurope.resize(j);
+		}
+
+		for (uint i = 0; i < uneurope.length(); i++)
+		{
+			if (uneurope[i] == ',')
+			{
+				uneurope[i] = '.';
+				break;
+			}
+		}
+
+		return uneurope;
+	}
+
+	return value;
+}
+
 void DataSetLoader::initColumn(Column &column, const string &name, const vector<string> &cells)
 {
 	// we treat single spaces as missing values, because SPSS saves missing values as a single space in CSV files
@@ -220,22 +269,15 @@ void DataSetLoader::initColumn(Column &column, const string &name, const vector<
 	Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
 	success = true;
 
-	BOOST_FOREACH(string value, cells)
-	{
-		for (int i = 0; i < value.length(); i++)
-		{
-			if (value[i] == ',') // in case of european (,) decimal place indicator
-			{
-				value[i] = '.';
-				break;
-			}
-		}
+	BOOST_FOREACH(const string &value, cells)
+	{	
+		string v = deEuropeanise(value);
 
-		if (value != "" && value != " ")
+		if (v != "" && v != " ")
 		{
 			try
 			{
-				*doubleInputItr = lexical_cast<double>(value);
+				*doubleInputItr = lexical_cast<double>(v);
 			}
 			catch (...)
 			{
