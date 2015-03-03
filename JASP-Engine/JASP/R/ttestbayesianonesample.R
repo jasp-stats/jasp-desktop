@@ -2358,7 +2358,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	bf.type <- options$bayesFactorType
 	
 	
-	if (bf.type == "BF10" || bf.type == "LogBF10") {
+	if (bf.type == "BF10") {
 	
 		BFH1H0 <- TRUE
 		
@@ -2372,7 +2372,21 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			bf.title <- "BF\u208B\u2080"
 		}
 		
-	} else {
+	} else if (bf.type == "LogBF10") {
+		
+		BFH1H0 <- TRUE
+		
+		if (options$hypothesis == "notEqualToTestValue") {
+			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+		}
+		if (options$hypothesis == "greaterThanTestValue") {
+			bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
+		}
+		if (options$hypothesis == "lessThanTestValue") {
+			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
+		}
+		
+	} else if (bf.type == "BF10") {
 	
 		BFH1H0 <- FALSE
 		

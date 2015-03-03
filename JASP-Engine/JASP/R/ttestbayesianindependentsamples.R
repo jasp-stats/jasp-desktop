@@ -301,7 +301,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u208B")
 		}
 		
-	} else {
+	} else if (options$bayesFactorType == "BF10") {
 	
 		BFH1H0 <- TRUE
 	
@@ -313,6 +313,20 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 		if (options$hypothesis == "groupTwoGreater"){
 			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u208B\u2080")
+		}	
+		
+	} else if (options$bayesFactorType == "LogBF10") {
+	
+		BFH1H0 <- TRUE
+	
+		if (options$hypothesis == "groupsNotEqual"){
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(\u2009\u0042\u0046\u2081\u2080\u2009)")
+		}
+		if (options$hypothesis == "groupOneGreater"){
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(\u2009\u0042\u0046\u208A\u2080\u2009)")
+		}
+		if (options$hypothesis == "groupTwoGreater"){
+			fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(\u2009\u0042\u0046\u208B\u2080\u2009)")
 		}	
 	}
 	
