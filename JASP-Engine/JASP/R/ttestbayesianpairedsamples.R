@@ -82,7 +82,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
 		}
 		
-	} else if (bf.type == "BF10") {
+	} else if (bf.type == "BF01") {
 	
 		BFH1H0 <- FALSE
 	
