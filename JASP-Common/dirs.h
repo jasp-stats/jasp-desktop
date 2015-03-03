@@ -12,6 +12,7 @@ public:
 	static std::string tempDir();
 	static std::string exeDir();
 	static std::string rHomeDir();
+	static std::string libraryDir();
 
 	class Exception : public std::runtime_error
 	{

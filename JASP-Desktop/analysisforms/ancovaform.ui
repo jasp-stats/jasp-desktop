@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>594</width>
-    <height>2109</height>
+    <height>2252</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -148,7 +148,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="AvailableFieldsListView" name="plot_variables">
+             <widget class="AvailableFieldsListView" name="plotVariables">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -464,42 +464,42 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_hochberg">
+             <widget class="BoundCheckBox" name="postHocTestsHochberg">
               <property name="text">
                <string>Hochberg</string>
               </property>
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_benjamini">
+             <widget class="BoundCheckBox" name="postHocTestsBenjamini">
               <property name="text">
                <string>Benjamini</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_holm">
+             <widget class="BoundCheckBox" name="postHocTestsHolm">
               <property name="text">
                <string>Holm</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_bonferroni">
+             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
               <property name="text">
                <string>Bonferroni</string>
               </property>
              </widget>
             </item>
             <item row="5" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_FDR">
+             <widget class="BoundCheckBox" name="postHocTestsFDR">
               <property name="text">
                <string>FDR</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_hommel">
+             <widget class="BoundCheckBox" name="postHocTestsHommel">
               <property name="text">
                <string>Hommel</string>
               </property>
@@ -582,7 +582,7 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="BoundComboBox" name="marginalMeans_ciAdjustment">
+                <widget class="BoundComboBox" name="marginalMeansCiAdjustment">
                  <item>
                   <property name="text">
                    <string>LSD (none)</string>
@@ -647,7 +647,7 @@
              </spacer>
             </item>
             <item row="1" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="marginalMeans_compareMainEffects">
+             <widget class="BoundCheckBox" name="marginalMeansCompareMainEffects">
               <property name="text">
                <string>Compare main effects</string>
               </property>
@@ -663,28 +663,28 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="misc_factorCovariateIndependence">
+             <widget class="BoundCheckBox" name="miscFactorCovariateIndependence">
               <property name="text">
                <string>Factor Covariate independence check</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="misc_descriptives">
+             <widget class="BoundCheckBox" name="miscDescriptives">
               <property name="text">
                <string>Descriptive Statistics</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="misc_homogeneityTests">
+             <widget class="BoundCheckBox" name="miscHomogeneityTests">
               <property name="text">
                <string>Homogeneity tests</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="misc_effectSizeEstimates">
+             <widget class="BoundCheckBox" name="miscEffectSizeEstimates">
               <property name="text">
                <string>Estimates of effect size</string>
               </property>
@@ -1303,12 +1303,6 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>AnovaModelWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/anovamodelwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -1317,6 +1311,12 @@
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AnovaModelWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

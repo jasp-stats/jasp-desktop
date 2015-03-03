@@ -8,6 +8,10 @@ OptionIntegerArray::OptionIntegerArray()
 {
 }
 
+void OptionIntegerArray::loadData(Json::Value data)
+{
+}
+
 Json::Value OptionIntegerArray::asJSON() const
 {
 	Json::Value array = Json::arrayValue;

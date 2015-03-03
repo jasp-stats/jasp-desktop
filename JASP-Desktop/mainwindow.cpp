@@ -569,9 +569,12 @@ void MainWindow::requestHelpPage(const QString &pageName)
 void MainWindow::itemSelected(const QString &item)
 {
 	string name = item.toStdString();
-	_currentAnalysis = _analyses->create(name);
-	if (_currentAnalysis != NULL)
+
+	try
 	{
+		_currentAnalysis = _analyses->create(name);
+
+
 		showForm(_currentAnalysis);
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
 
@@ -581,6 +584,11 @@ void MainWindow::itemSelected(const QString &item)
 
 		if (_log != NULL)
 			_log->log("Analysis Created", info);
+	}
+	catch (std::runtime_error& e)
+	{
+		_fatalError = tq(e.what());
+		fatalError();
 	}
 }
 

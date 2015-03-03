@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>573</width>
-    <height>977</height>
+    <width>605</width>
+    <height>1237</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -67,7 +67,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
             <item row="0" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="statistics_percentileValues_quartiles">
+             <widget class="BoundCheckBox" name="statisticsPercentileValuesQuartiles">
               <property name="text">
                <string>Quartiles</string>
               </property>
@@ -81,7 +81,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="BoundTextBox" name="statistics_percentileValues_equalGroupsNo">
+             <widget class="BoundTextBox" name="statisticsPercentileValuesEqualGroupsNo">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -109,21 +109,21 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statistics_percentileValues_equalGroups">
+             <widget class="BoundCheckBox" name="statisticsPercentileValuesEqualGroups">
               <property name="text">
                <string>Cut points for :</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="statistics_percentileValues_percentiles">
+             <widget class="BoundCheckBox" name="statisticsPercentileValuesPercentiles">
               <property name="text">
                <string>Percentiles :</string>
               </property>
              </widget>
             </item>
             <item row="2" column="1" colspan="2">
-             <widget class="BoundTextBox" name="statistics_percentileValues_percentilesPercentiles">
+             <widget class="BoundTextBox" name="statisticsPercentileValuesPercentilesPercentiles">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -151,42 +151,42 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="statistics_dispersion_standardDeviation">
+             <widget class="BoundCheckBox" name="statisticsDispersionStandardDeviation">
               <property name="text">
                <string>Std. deviation</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="BoundCheckBox" name="statistics_dispersion_minimum">
+             <widget class="BoundCheckBox" name="statisticsDispersionMinimum">
               <property name="text">
                <string>Minimum</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statistics_dispersion_variance">
+             <widget class="BoundCheckBox" name="statisticsDispersionVariance">
               <property name="text">
                <string>Variance</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="BoundCheckBox" name="statistics_dispersion_maximum">
+             <widget class="BoundCheckBox" name="statisticsDispersionMaximum">
               <property name="text">
                <string>Maximum</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="statistics_dispersion_range">
+             <widget class="BoundCheckBox" name="statisticsDispersionRange">
               <property name="text">
                <string>Range</string>
               </property>
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="BoundCheckBox" name="statistics_dispersion_standardErrorMean">
+             <widget class="BoundCheckBox" name="statisticsDispersionStandardErrorMean">
               <property name="text">
                <string>S. E. Mean</string>
               </property>
@@ -211,7 +211,7 @@
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="statistics_valuesAreGroupMidpoints">
+             <widget class="BoundCheckBox" name="statisticsValuesAreGroupMidpoints">
               <property name="text">
                <string>Values are group midpoints</string>
               </property>
@@ -227,28 +227,28 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="statistics_centralTendency_mean">
+             <widget class="BoundCheckBox" name="statisticsCentralTendencyMean">
               <property name="text">
                <string>Mean</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statistics_centralTendency_median">
+             <widget class="BoundCheckBox" name="statisticsCentralTendencyMedian">
               <property name="text">
                <string>Median</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="statistics_centralTendency_mode">
+             <widget class="BoundCheckBox" name="statisticsCentralTendencyMode">
               <property name="text">
                <string>Mode</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="statistics_centralTendency_sum">
+             <widget class="BoundCheckBox" name="statisticsCentralTendencySum">
               <property name="text">
                <string>Sum</string>
               </property>
@@ -264,14 +264,14 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="statistics_distribution_skewness">
+             <widget class="BoundCheckBox" name="statisticsDistributionSkewness">
               <property name="text">
                <string>Skewness</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statistics_distribution_kurtosis">
+             <widget class="BoundCheckBox" name="statisticsDistributionKurtosis">
               <property name="text">
                <string>Kurtosis</string>
               </property>
@@ -312,8 +312,8 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="BoundGroupBox" name="chartType" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="chartType">
+           <property name="title">
             <string>Chart Type</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
@@ -378,8 +378,8 @@
           </widget>
          </item>
          <item>
-          <widget class="BoundGroupBox" name="chartValues" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="chartValues">
+           <property name="title">
             <string>Chart Values</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
@@ -696,7 +696,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="BoundListView" name="main_fields">
+       <widget class="BoundListView" name="mainFields">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -728,7 +728,7 @@
        </widget>
       </item>
       <item row="3" column="0" colspan="4">
-       <widget class="BoundCheckBox" name="main_displayFrequencyTables">
+       <widget class="BoundCheckBox" name="mainDisplayFrequencyTables">
         <property name="text">
          <string>Display Frequency Tables (nominal and ordinal variables)</string>
         </property>
@@ -763,15 +763,14 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>
@@ -780,22 +779,23 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
  <connections>
   <connection>
-   <sender>statistics_percentileValues_percentiles</sender>
+   <sender>statisticsPercentileValuesPercentiles</sender>
    <signal>clicked(bool)</signal>
-   <receiver>statistics_percentileValues_percentilesPercentiles</receiver>
+   <receiver>statisticsPercentileValuesPercentilesPercentiles</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -809,9 +809,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>statistics_percentileValues_equalGroups</sender>
+   <sender>statisticsPercentileValuesEqualGroups</sender>
    <signal>clicked(bool)</signal>
-   <receiver>statistics_percentileValues_equalGroupsNo</receiver>
+   <receiver>statisticsPercentileValuesEqualGroupsNo</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

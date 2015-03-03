@@ -1,0 +1,77 @@
+[
+   {
+      "name" : "betweenSubjectFactors",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : false,
+      "type" : "Variables"
+   },
+   {
+      "default" : [
+         {
+            "levels" : [ "Level 1", "Level 2" ],
+            "name" : "RM Factor 1"
+         }
+      ],
+      "name" : "repeatedMeasuresFactors",
+      "template" : [
+         {
+            "default" : "RM Factor %1",
+            "name" : "name",
+            "type" : "String"
+         },
+         {
+            "name" : "levels",
+            "onlyOneComponent" : true,
+            "onlyOneTerm" : false,
+            "type" : "Variables"
+         }
+      ],
+      "type" : "Table"
+   },
+   {
+      "name" : "repeatedMeasuresCells",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : false,
+      "type" : "Variables"
+   },
+   {
+      "default" : [
+         {
+            "components" : [ "RM Factor 1" ],
+            "isNuisance" : false
+         }
+      ],
+      "name" : "modelTerms",
+      "template" : [
+         {
+            "name" : "components",
+            "onlyOneComponent" : true,
+            "onlyOneTerm" : false,
+            "type" : "Variables"
+         },
+         {
+            "default" : false,
+            "name" : "isNuisance",
+            "type" : "Boolean"
+         }
+      ],
+      "type" : "Table"
+   },
+   {
+      "default" : false,
+      "name" : "outputEffects",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "effectsStepwise",
+      "type" : "Boolean"
+   },
+   {
+      "options" : [ "BF10", "BF01", "LogBF10" ],
+	  "default" : "BF10",
+      "name" : "bayesFactorType",
+      "type" : "List"
+   }
+]
+

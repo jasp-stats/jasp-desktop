@@ -476,7 +476,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="F", type="number", format="sf:4;dp:3"),
 		list(name="p", type="number", format="dp:3;p:.001"))
 		
-	if (options$misc[["effectSizeEstimates"]]) {
+	if (options$miscEffectSizeEstimates) {
 	
 		fields[[length(fields) + 1]] <- list(name="&eta;&sup2;", type="number", format="dp:3")
 		fields[[length(fields) + 1]] <- list(name="&omega;&sup2;", type="number", format="dp:3")
@@ -595,7 +595,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row <- list("Cases"="Residual", "Sum of Squares"=SS, "df"=df, "Mean Square"=MS, "F"="", "p"="", ".isNewGroup" = newGroup)
 				}
 			
-				if (options$misc[["effectSizeEstimates"]]) {
+				if (options$miscEffectSizeEstimates) {
 					MSr <- result["Residuals","Sum Sq"]/result["Residuals","Df"]
 				
 					if (i <= length(terms.base64)) {
@@ -748,7 +748,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaPostHocTable <- function(dataset, options, perform, status) {
 
-	posthoc.variables <- unlist(options$postHocTests[["variables"]])
+	posthoc.variables <- unlist(options$postHocTestsVariables)
 	
 	posthoc.tables <- list()
 	
@@ -766,22 +766,22 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			list(name="df", type="number", format="dp:0"),
 			list(name="p", type="number", format="dp:3;p:.001"))
 		
-		if (options$postHocTests[["holm"]])
+		if (options$postHocTestsHolm)
 			fields[[length(fields) + 1]] <- list(name="p holm", type="number", format="dp:3")
 		
-		if (options$postHocTests[["bonferroni"]])
+		if (options$postHocTestsBonferroni)
 			fields[[length(fields) + 1]] <- list(name="p bonferroni", type="number", format="dp:3")
 		
-		if (options$postHocTests[["hochberg"]])
+		if (options$postHocTestsHochberg)
 			fields[[length(fields) + 1]] <- list(name="p hochberg", type="number", format="dp:3")
 		
-		if (options$postHocTests[["hommel"]])
+		if (options$postHocTestsHommel)
 			fields[[length(fields) + 1]] <- list(name="p hommel", type="number", format="dp:3")
 		
-		if (options$postHocTests[["benjamini"]])
+		if (options$postHocTestsBenjamini)
 			fields[[length(fields) + 1]] <- list(name="p benjamini", type="number", format="dp:3")
 		
-		if (options$postHocTests[["FDR"]])
+		if (options$postHocTestsFDR)
 			fields[[length(fields) + 1]] <- list(name="p FDR", type="number", format="dp:3")
 		
 		posthoc.table[["schema"]] <- list(fields=fields)
@@ -837,42 +837,42 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 		if (perform == "run" && status$ready && status$error == FALSE) {
 		
-			if (options$postHocTests[["holm"]]) {
+			if (options$postHocTestsHolm) {
 		
 				ps.adjusted <- p.adjust(ps, method="holm")
 				for (i in 1:length(rows))
 					rows[[i]][["p holm"]] <- ps.adjusted[[i]]
 			}
 
-			if (options$postHocTests[["bonferroni"]]) {
+			if (options$postHocTestsBonferroni) {
 		
 				ps.adjusted <- p.adjust(ps, method="bonferroni")
 				for (i in 1:length(rows))
 					rows[[i]][["p bonferroni"]] <- ps.adjusted[[i]]
 			}
 		
-			if (options$postHocTests[["hochberg"]]) {
+			if (options$postHocTestsHochberg) {
 		
 				ps.adjusted <- p.adjust(ps, method="hochberg")
 				for (i in 1:length(rows))
 					rows[[i]][["p hochberg"]] <- ps.adjusted[[i]]
 			}
 		
-			if (options$postHocTests[["hommel"]]) {
+			if (options$postHocTestsHommel) {
 		
 				ps.adjusted <- p.adjust(ps, method="hommel")
 				for (i in 1:length(rows))
 					rows[[i]][["p hommel"]] <- ps.adjusted[[i]]
 			}		
 		
-			if (options$postHocTests[["benjamini"]]) {
+			if (options$postHocTestsBenjamini) {
 		
 				ps.adjusted <- p.adjust(ps, method="BY")
 				for (i in 1:length(rows))
 					rows[[i]][["p benjamini"]] <- ps.adjusted[[i]]
 			}
 		
-			if (options$postHocTests[["FDR"]]) {
+			if (options$postHocTestsFDR) {
 		
 				ps.adjusted <- p.adjust(ps, method="fdr")
 				for (i in 1:length(rows))
@@ -893,7 +893,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaDescriptivesTable <- function(dataset, options, perform, status) {
 
-	if (options$misc$descriptives == FALSE)
+	if (options$miscDescriptives == FALSE)
 		return(list(result=NULL, status=status))
 
 	descriptives.table <- list()
@@ -982,7 +982,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaLevenesTable <- function(dataset, options, perform, status) {
 
-	if (options$misc[["homogeneityTests"]] == FALSE)
+	if (options$miscHomogeneityTests == FALSE)
 		return (list(result=NULL, status=status))
 		
 	levenes.table <- list()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>584</width>
-    <height>2317</height>
+    <width>655</width>
+    <height>2380</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -558,7 +558,7 @@
                    </spacer>
                   </item>
                   <item row="0" column="1">
-                   <widget class="BoundComboBox" name="postHocTests_dunnettControl">
+                   <widget class="BoundComboBox" name="postHocTestsDunnettControl">
                     <item>
                      <property name="text">
                       <string>First</string>
@@ -572,7 +572,7 @@
                    </widget>
                   </item>
                   <item row="2" column="0" colspan="3">
-                   <widget class="BoundGroupBox" name="postHocTests_dunnettSides" native="true">
+                   <widget class="BoundGroupBox" name="postHocTests_dunnettSides">
                     <layout class="QGridLayout" name="gridLayout_13">
                      <property name="leftMargin">
                       <number>0</number>
@@ -652,7 +652,7 @@
                    <number>0</number>
                   </property>
                   <item row="0" column="1">
-                   <widget class="BoundTextBox" name="postHocTests_wallerDuncanRatio">
+                   <widget class="BoundTextBox" name="postHocTestsWallerDuncanRatio">
                     <property name="maximumSize">
                      <size>
                       <width>60</width>
@@ -685,7 +685,7 @@
                 </widget>
                </item>
                <item row="3" column="0">
-                <widget class="BoundCheckBox" name="postHocTests_dunnett">
+                <widget class="BoundCheckBox" name="postHocTestsDunnett">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -700,7 +700,7 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="BoundCheckBox" name="postHocTests_wallerDuncan">
+                <widget class="BoundCheckBox" name="postHocTestsWallerDuncan">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -721,7 +721,7 @@
              <widget class="QWidget" name="widget_18" native="true"/>
             </item>
             <item row="1" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_SNK">
+             <widget class="BoundCheckBox" name="postHocTestsSNK">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -736,7 +736,7 @@
              </widget>
             </item>
             <item row="6" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_gabriel">
+             <widget class="BoundCheckBox" name="postHocTestsGabriel">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -751,14 +751,14 @@
              </widget>
             </item>
             <item row="5" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_benjamini">
+             <widget class="BoundCheckBox" name="postHocTestsBenjamini">
               <property name="text">
                <string>Benjamini</string>
               </property>
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_duncan">
+             <widget class="BoundCheckBox" name="postHocTestsDuncan">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -773,14 +773,14 @@
              </widget>
             </item>
             <item row="6" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_FDR">
+             <widget class="BoundCheckBox" name="postHocTestsFDR">
               <property name="text">
                <string>FDR</string>
               </property>
              </widget>
             </item>
             <item row="5" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_hochbergGT2">
+             <widget class="BoundCheckBox" name="postHocTestsHochbergGT2">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -795,21 +795,21 @@
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_bonferroni">
+             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
               <property name="text">
                <string>Bonferroni</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_holm">
+             <widget class="BoundCheckBox" name="postHocTestsHolm">
               <property name="text">
                <string>Holm</string>
               </property>
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_tukey">
+             <widget class="BoundCheckBox" name="postHocTestsTukey">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -824,14 +824,14 @@
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_hochberg">
+             <widget class="BoundCheckBox" name="postHocTestsHochberg">
               <property name="text">
                <string>Hochberg</string>
               </property>
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_tukeyB">
+             <widget class="BoundCheckBox" name="postHocTestsTukeyB">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -846,7 +846,7 @@
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_hommel">
+             <widget class="BoundCheckBox" name="postHocTestsHommel">
               <property name="text">
                <string>Hommel</string>
               </property>
@@ -868,7 +868,7 @@
              <number>24</number>
             </property>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="postHocTests_tamhaneT2">
+             <widget class="BoundCheckBox" name="postHocTestsTamhaneT2">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -883,7 +883,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="BoundCheckBox" name="postHocTests_dunnettT3">
+             <widget class="BoundCheckBox" name="postHocTestsDunnettT3">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -898,7 +898,7 @@
              </widget>
             </item>
             <item row="0" column="3">
-             <widget class="BoundCheckBox" name="postHocTests_dunnettC">
+             <widget class="BoundCheckBox" name="postHocTestsDunnettC">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -913,7 +913,7 @@
              </widget>
             </item>
             <item row="0" column="2">
-             <widget class="BoundCheckBox" name="postHocTests_gamesHowell">
+             <widget class="BoundCheckBox" name="postHocTestsGamesHowell">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -1038,7 +1038,7 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="BoundComboBox" name="marginalMeans_ciAdjustment">
+                <widget class="BoundComboBox" name="marginalMeansCiAdjustment">
                  <item>
                   <property name="text">
                    <string>LSD (none)</string>
@@ -1055,7 +1055,7 @@
              </widget>
             </item>
             <item row="0" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="marginalMeans_compareMainEffects">
+             <widget class="BoundCheckBox" name="marginalMeansCompareMainEffects">
               <property name="text">
                <string>Compare main effects</string>
               </property>
@@ -1071,7 +1071,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="4" column="1">
-             <widget class="BoundCheckBox" name="misc_lackOfFit">
+             <widget class="BoundCheckBox" name="miscLackOfFit">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -1086,7 +1086,7 @@
              </widget>
             </item>
             <item row="5" column="1">
-             <widget class="BoundCheckBox" name="misc_estimableFunction">
+             <widget class="BoundCheckBox" name="miscEstimableFunction">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -1114,7 +1114,7 @@
              </spacer>
             </item>
             <item row="1" column="1">
-             <widget class="BoundCheckBox" name="misc_spreadVsLevelPlot">
+             <widget class="BoundCheckBox" name="miscSpreadVsLevelPlot">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -1129,7 +1129,7 @@
              </widget>
             </item>
             <item row="5" column="0">
-             <widget class="BoundCheckBox" name="misc_contrastCoefficients">
+             <widget class="BoundCheckBox" name="miscContrastCoefficients">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -1144,14 +1144,14 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="misc_descriptives">
+             <widget class="BoundCheckBox" name="miscDescriptives">
               <property name="text">
                <string>Descriptive Statistics</string>
               </property>
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="BoundCheckBox" name="misc_parameterEstimates">
+             <widget class="BoundCheckBox" name="miscParameterEstimates">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -1166,21 +1166,21 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="misc_effectSizeEstimates">
+             <widget class="BoundCheckBox" name="miscEffectSizeEstimates">
               <property name="text">
                <string>Estimates of effect size</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="misc_homogeneityTests">
+             <widget class="BoundCheckBox" name="miscHomogeneityTests">
               <property name="text">
                <string>Homogeneity tests</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="BoundCheckBox" name="misc_observedPower">
+             <widget class="BoundCheckBox" name="miscObservedPower">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -1195,7 +1195,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="BoundCheckBox" name="misc_residualPlot">
+             <widget class="BoundCheckBox" name="miscResidualPlot">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -1299,20 +1299,31 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>AnovaModelWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/anovamodelwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AnovaModelWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -1331,22 +1342,11 @@
    <extends>QComboBox</extends>
    <header>widgets/boundcombobox.h</header>
   </customwidget>
-  <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
-  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
   <connection>
-   <sender>postHocTests_wallerDuncan</sender>
+   <sender>postHocTestsWallerDuncan</sender>
    <signal>toggled(bool)</signal>
    <receiver>wallerDuncanOptions</receiver>
    <slot>setEnabled(bool)</slot>
@@ -1362,7 +1362,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>postHocTests_dunnett</sender>
+   <sender>postHocTestsDunnett</sender>
    <signal>toggled(bool)</signal>
    <receiver>dunnettOptions</receiver>
    <slot>setEnabled(bool)</slot>

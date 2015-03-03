@@ -9,6 +9,10 @@ OptionVariablesGroups::OptionVariablesGroups()
 {
 }
 
+void OptionVariablesGroups::loadData(Json::Value data)
+{
+}
+
 Json::Value OptionVariablesGroups::asJSON() const
 {
 	Json::Value v = Json::arrayValue;

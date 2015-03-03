@@ -9,6 +9,9 @@ class OptionTerms : public OptionI<std::vector<std::vector<std::string> > >
 {
 public:
 	OptionTerms();
+
+	virtual void loadData(Json::Value data) OVERRIDE;
+
 	virtual void set(Json::Value& value) OVERRIDE;
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual Option* clone() const OVERRIDE;

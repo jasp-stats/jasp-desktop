@@ -1,4 +1,5 @@
 #include "optionlist.h"
+#include <boost/foreach.hpp>
 
 OptionList::OptionList(const std::vector<std::string> &options, std::string selected)
 {
@@ -7,6 +8,25 @@ OptionList::OptionList(const std::vector<std::string> &options, std::string sele
 		_value = options.at(0);
 	else
 		_value = selected;
+}
+
+OptionList::OptionList()
+{
+
+}
+
+void OptionList::loadData(Json::Value data)
+{
+	_options = std::vector<std::string>();
+
+	Json::Value &array = data["options"];
+	for (Json::ValueIterator itr = array.begin(); itr != array.end(); itr++)
+		_options.push_back((*itr).asString());
+
+	if (data.isMember("default"))
+		_value = data["default"].asString();
+	else
+		_value = _options.at(0);
 }
 
 Json::Value OptionList::asJSON() const

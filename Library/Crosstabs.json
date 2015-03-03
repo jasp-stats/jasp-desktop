@@ -1,0 +1,190 @@
+[
+   {
+      "name" : "rows",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : false,
+      "type" : "Variables"
+   },
+   {
+      "name" : "columns",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : false,
+      "type" : "Variables"
+   },
+   {
+      "name" : "counts",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : true,
+      "type" : "Variable"
+   },
+   {
+      "name" : "layers",
+      "template" : [
+         {
+            "default" : "Layer %1",
+            "name" : "name",
+            "type" : "String"
+         },
+         {
+            "name" : "variables",
+            "onlyOneComponent" : true,
+            "onlyOneTerm" : false,
+            "type" : "Variables"
+         }
+      ],
+      "type" : "Table"
+   },
+   {
+      "default" : true,
+      "name" : "chiSquared",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "chiSquaredContinuityCorrection",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "likelihoodRatio",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "oddsRatio",
+      "type" : "Boolean"
+   },
+   {
+      "format" : "%",
+      "max" : 1.0,
+      "min" : 0.0,
+      "name" : "oddsRatioConfidenceIntervalInterval",
+      "type" : "Number",
+      "value" : 0.950
+   },
+   {
+      "default" : false,
+      "name" : "nominalContingencyCoefficient",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "nominalPhiAndCramersV",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "nominalLambda",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "nominalUncertaintyCoefficient",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "ordinalGamma",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "ordinalSomersD",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "ordinalKendallsTauB",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "ordinalKendallsTauC",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "nominalByIntervalEta",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "cochransAndMantel",
+      "type" : "Boolean"
+   },
+   {
+      "format" : "",
+      "max" : 999999.0,
+      "min" : -999999.0,
+      "name" : "testOddsRatioEquals",
+      "type" : "Number",
+      "value" : 1.0
+   },
+   {
+      "default" : true,
+      "name" : "countsObserved",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "countsExpected",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "hideSmallCounts",
+      "type" : "Boolean"
+   },
+   {
+      "default" : 5,
+      "name" : "hideSmallCountsLessThan",
+      "type" : "Integer"
+   },
+   {
+      "default" : false,
+      "name" : "zTestCompareColumns",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "zTestAdjustPValues",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "percentagesRow",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "percentagesColumn",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "percentagesTotal",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "residualsUnstandardized",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "residualsStandardized",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "residualsAdjustedStandardized",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "rowOrder",
+      "options" : [ "ascending", "descending" ],
+      "default" : "ascending",
+      "type" : "List"
+   }
+]
+

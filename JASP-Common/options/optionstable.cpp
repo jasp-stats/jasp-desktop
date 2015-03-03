@@ -12,6 +12,19 @@ OptionsTable::OptionsTable(Options *rowTemplate)
 	_template = rowTemplate;
 }
 
+OptionsTable::OptionsTable()
+{
+}
+
+void OptionsTable::loadData(Json::Value data)
+{
+	_template = new Options();
+	_template->loadData(data["template"]);
+
+	set(data["default"]);
+
+}
+
 Json::Value OptionsTable::asJSON() const
 {
 	Value v = arrayValue;

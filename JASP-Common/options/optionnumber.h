@@ -10,7 +10,10 @@
 class OptionNumber : public OptionI<double>
 {
 public:
+	OptionNumber();
 	OptionNumber(double value, double min = -999999, double max = 999999, std::string format = "");
+
+	virtual void loadData(Json::Value data) OVERRIDE;
 
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(Json::Value& value) OVERRIDE;

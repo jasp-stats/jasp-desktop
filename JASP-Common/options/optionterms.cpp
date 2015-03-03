@@ -16,6 +16,12 @@ OptionTerms::OptionTerms(bool onlyOneComponent, bool onlyOneTerm)
 	_onlyOneTerm = onlyOneTerm;
 }
 
+void OptionTerms::loadData(Json::Value data)
+{
+	_onlyOneComponent = data["onlyOneComponent"].asBool();
+	_onlyOneTerm = data["onlyOneTerm"].asBool();
+}
+
 void OptionTerms::set(Json::Value &value)
 {
 

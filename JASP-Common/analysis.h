@@ -56,6 +56,8 @@ protected:
 
 	int callback(Json::Value results);
 
+    Options *createOptions(std::string name);
+
 	static std::vector<std::string> list(
 			std::string one,
 			std::string two   = "",
