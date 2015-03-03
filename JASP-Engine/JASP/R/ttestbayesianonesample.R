@@ -1,4 +1,47 @@
-.plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
+.likelihoodShiftedT <- function(par, data) {
+	
+	- sum(log( dt((data - par[1]) / par[2], par[3]) / par[2]))
+	
+}
+
+.dposteriorShiftedT <- function(x, parameters, oneSided) {
+	
+	if (oneSided == FALSE) {
+		
+		dt((x - parameters[1]) / parameters[2], parameters[3]) / parameters[2]
+		
+	} else if (oneSided == "right") {
+		
+		ifelse (x >= 0, (dt((x - parameters[1]) / parameters[2], parameters[3]) / parameters[2]) / pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE) , 0 )
+		
+	} else if (oneSided == "left") {
+		
+		ifelse (x <= 0, (dt((x - parameters[1]) / parameters[2], parameters[3]) / parameters[2]) / pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE), 0)
+		
+	}
+	
+}
+
+# pdf cauchy prior
+.dprior <- function(x, r, oneSided= oneSided){
+	
+	if (oneSided == "right") {
+		
+		y <- ifelse(x < 0, 0, 2/(pi*r*(1+(x/r)^2)))
+		return(y)
+	}
+	
+	if (oneSided == "left") {
+		
+		y <- ifelse(x > 0, 0, 2/(pi*r*(1+(x/r)^2)))
+		return(y)
+	}	else {
+		
+		return(1/(pi*r*(1+(x/r)^2)))
+	}
+}
+
+.plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, BF, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
  cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= TRUE, dontPlotData=FALSE) {
 	
 	if (addInformation) {
@@ -47,68 +90,44 @@
 	}
 	
 	# sample from delta posterior
-	samples <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval= nullInterval, posterior = TRUE, iterations = iterations, rscale= r)
+	samples <- BayesFactor::ttestBF(x=x, y=y, paired=paired, posterior = TRUE, iterations = iterations, rscale= r)
 	
 	delta <- samples[,"delta"]
 	
-	# pdf cauchy prior
-	dprior <- function(x,r, oneSided= oneSided){
+	# fit shifted t distribution
+	if (is.null(y)) {
+	
+		deltaHat <- mean(x) / sd(x)
+		N <- length(x)
+		df <- N - 1
+		sigmaStart <- 1 / N
 		
-		if (oneSided == "right") {
-			
-			y <- ifelse(x < 0, 0, 2/(pi*r*(1+(x/r)^2)))
-			return(y)
-		}
+	} else if (paired) {
+	
+		deltaHat <- mean(x - y) / sd(x - y)
+		N <- length(x)
+		df <- N - 1
+		sigmaStart <- 1 / N
+	
+	} else if (!is.null(y) && !paired) {
 		
-		if (oneSided == "left") {
-			
-			y <- ifelse(x > 0, 0, 2/(pi*r*(1+(x/r)^2)))
-			return(y)
-		}	else {
-			
-			return(1/(pi*r*(1+(x/r)^2)))
-		}
+		N1 <- length(x)
+		N2 <- length(y)
+		sdPooled <- sqrt(((N1 - 1) * var(x) + (N2 - 1) * var(y)) / (N1 + N2))
+		deltaHat <- (mean(x) - mean(y)) / sdPooled
+		df <- N1 + N2 - 2
+		sigmaStart <- sqrt(N1 * N2 / (N1 + N2))
 	}
 	
-	BF <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval= nullInterval, posterior = FALSE, rscale= r)
-	BF10 <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+	parameters <- optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par
+	
+	
+	#BF <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval= nullInterval, posterior = FALSE, rscale= r)
+	#BF10 <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+	#BF01 <- 1 / BF10
+	
+	BF10 <- BF
 	BF01 <- 1 / BF10
-	
-	# fit denisty estimator
-	if (oneSided == FALSE) {
-	
-		fit.posterior <-  logspline::logspline(delta)
-		
-	} else if (oneSided == "right") {
-	
-		fit.posterior <-  logspline::logspline(delta, lbound= 0)
-	
-	} else if (oneSided == "left") {
-	
-		fit.posterior <-  logspline::logspline(delta, ubound= 0)
-	}
-	
-	# density function posterior
-	dposterior <- function(x, oneSided= oneSided, delta= delta){
-		
-		if (oneSided == FALSE) {
-			
-			k <- 1
-			return(k*logspline::dlogspline(x, fit.posterior))
-		}
-		
-		if (oneSided == "right") {
-			
-			k <- 1 #/ (length(delta[delta >= 0]) / length(delta))
-			return(ifelse(x < 0, 0, k*logspline::dlogspline(x, fit.posterior)))
-		}
-		
-		if (oneSided == "left") {
-			
-			k <- 1 #/ (length(delta[delta <= 0]) / length(delta))
-			return(ifelse(x > 0, 0, k*logspline::dlogspline(x, fit.posterior)))
-		}	
-	}	
 	
 	
 	# set limits plot
@@ -134,8 +153,7 @@
 			stretch <- 1.2
 		}
 		
-	}
-	
+	}	
 	
 	if (oneSided == "right") {
 		
@@ -160,7 +178,7 @@
 	ylim <- vector("numeric", 2)
 	
 	ylim[1] <- 0
-	ylim[2] <- max(stretch * dprior(0,r, oneSided= oneSided), stretch * max(dposterior(x= delta, oneSided= oneSided, delta=delta)))
+	ylim[2] <- max(stretch * .dprior(0,r, oneSided= oneSided), stretch * max(.dposteriorShiftedT(x= delta, parameters=parameters, oneSided= oneSided)))
 	
 	
 	# calculate position of "nice" tick marks and create labels
@@ -192,14 +210,14 @@
 	}	
 	
 	
-	posteriorLine <- dposterior(x= seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, delta=delta)
+	posteriorLine <- .dposteriorShiftedT(x= seq(min(xticks), max(xticks),length.out = 1000), parameters=parameters, oneSided = oneSided)
 	
 	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
 	
 	plot(1,1, xlim= xlim, ylim= range(yticks), ylab= "", xlab="", type= "n", axes= FALSE)
 	
 	lines(seq(min(xticks), max(xticks),length.out = 1000),posteriorLine, lwd= lwd)
-	lines(seq(min(xticks), max(xticks),length.out = 1000), dprior(seq(min(xticks), max(xticks),length.out = 1000), r=r, oneSided= oneSided), lwd= lwd, lty=3)
+	lines(seq(min(xticks), max(xticks),length.out = 1000), .dprior(seq(min(xticks), max(xticks),length.out = 1000), r=r, oneSided= oneSided), lwd= lwd, lty=3)
 	
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at= yticks, labels= ylabels, , cex.axis= cexAxis, lwd= lwdAxis)
@@ -208,35 +226,28 @@
 	if (nchar(ylabels[length(ylabels)]) > 4) {
 		
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 4)
+		
 	} else if (nchar(ylabels[length(ylabels)]) == 4) {
 		
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
+		
 	} else if (nchar(ylabels[length(ylabels)]) < 4) {
 		
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
+		
 	}
 	
 	mtext(expression(paste("Effect size", ~delta)), side = 1, cex = cexXlab, line= 2.5)
 	
-	points(0, dprior(0,r, oneSided= oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
+	points(0, .dprior(0,r, oneSided= oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
 	
-	evalPosterior <- posteriorLine[posteriorLine > 0]
 	
-	if (oneSided == "right") {
-		
-		heightPosteriorAtZero <- evalPosterior[1]
-		points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
-	} else if (oneSided == "left") {
-		
-		heightPosteriorAtZero <- evalPosterior[length(evalPosterior)]
-		points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
-	} else {
-		
-		points(0, dposterior(0, delta=delta, oneSided=oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
-	}
-	
+	heightPosteriorAtZero <- .dposteriorShiftedT(0, parameters=parameters, oneSided=oneSided)
+	points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
+
+
 	# 95% credible interval
-	dmax <- optimize(function(x)dposterior(x,oneSided= oneSided, delta=delta), interval= range(xticks), maximum = TRUE)$objective # get maximum density
+	dmax <- optimize(function(x).dposteriorShiftedT(x, parameters=parameters, oneSided= oneSided), interval= range(xticks), maximum = TRUE)$objective # get maximum density
 	
 	# enable plotting in margin
 	par(xpd=TRUE)
@@ -246,8 +257,7 @@
 	
 	arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
 	
-	medianText <- formatC(medianPosterior, digits= 3, format="f")
-	
+	medianText <- formatC(medianPosterior, digits= 3, format="f")	
 	
 	if (addInformation) {
 		
@@ -2348,7 +2358,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	bf.type <- options$bayesFactorType
 	
 	
-	if (bf.type == "BF10") {
+	if (bf.type == "BF10" || bf.type == "LogBF10") {
 	
 		BFH1H0 <- TRUE
 		
@@ -2377,10 +2387,21 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		}
 	}
 	
-	fields <- list(
-		list(name="Variable", type="string", title=""),
-		list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
-		list(name="error", type="number", format="sf:4;dp:3", title="error %"))
+	
+	if (options$hypothesis == "notEqualToTestValue") {
+	
+		fields <- list(
+			list(name="Variable", type="string", title=""),
+			list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
+			list(name="error", type="number", format="sf:4;dp:3", title="error %"))
+	
+	} else {
+	
+		fields <- list(
+			list(name="Variable", type="string", title=""),
+			list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
+			list(name="error", type="number", format="sf:4;dp:3;~", title="error %"))
+	}
 	
 	ttest[["schema"]] <- list(fields=fields)
 	
@@ -2478,6 +2499,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	if (perform == "run") {
 		
+		BF10post <- numeric(length(options$variables))
+		
 		i <- 1
 		
 		status <- rep("ok", length(options$variables))
@@ -2492,14 +2515,45 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				variableData <- dataset[[ .v(variable) ]]
 				variableData <- variableData[ ! is.na(variableData) ]
 				
-				r <- BayesFactor::ttestBF(variableData, r=options$priorWidth, nullInterval = nullInterval)
+				r <- BayesFactor::ttestBF(variableData, r=options$priorWidth)
 				
 				bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
+				
+				deltaHat <- mean(variableData) / sd(variableData)
+				N <- length(variableData)
+				df <- N - 1
+				sigmaStart <- 1 / N
+				
+				if (oneSided == "right") {
+				
+					samples <- BayesFactor::ttestBF(variableData, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
+					delta <- samples[, "delta"]
+					
+					parameters <- optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par
+					
+					bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)
+				}
+				
+				if (oneSided == "left") {
+				
+					samples <- BayesFactor::ttestBF(variableData, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
+					delta <- samples[, "delta"]
+					
+					parameters <- optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par
+					
+					bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
+				}
+					
 								
 				if (bf.type == "BF01")
 					bf.raw <- 1 / bf.raw
 				
 				BF <- .clean(bf.raw)
+				
+				BF10post[i] <- BF
+				
+				if (options$bayesFactorType == "LogBF10")
+						BF <- log(BF)
 				
 				error <- .clean(as.numeric(r@bayesFactor$error)[1])
 				
@@ -2602,7 +2656,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 							image <- .beginSaveImage(530, 400)
 					
-							.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo)
+							.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i])
 					
 							plot[["data"]] <- .endSaveImage(image)
 						})
