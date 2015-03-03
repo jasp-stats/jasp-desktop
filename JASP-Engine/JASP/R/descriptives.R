@@ -240,7 +240,7 @@
 
 	if (perform == "init") {
 	
-		variables <- unlist(options$main$fields)
+		variables <- unlist(options$mainFields)
 		
 		l <- length(variables)
 		
@@ -268,10 +268,10 @@
 	}
 	
 	
-	if (perform == "run" && length(unlist(options$main$fields)) > 0) {
+	if (perform == "run" && length(unlist(options$mainFields)) > 0) {
 
 	
-		variables <- unlist(options$main$fields)
+		variables <- unlist(options$mainFields)
 		
 		l <- length(variables)
 		
@@ -387,7 +387,7 @@
 
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
-	variables <- unlist(options$main$fields)
+	variables <- unlist(options$mainFields)
 	
 	if (is.null(dataset)) {
 	
@@ -401,13 +401,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		}
 	}
 
-	stats.options <- options[["statistics"]]
-	central.tendency <- stats.options[["centralTendency"]]
-	dispersion <- stats.options[["dispersion"]]
-	distribution <- stats.options[["distribution"]]
-	percentileValues <- stats.options[["percentileValues"]]
-	equalGroupsNo <- options$statistics$percentileValues$equalGroupsNo 
-	percentilesPercentiles  <- options$statistics$percentileValues$percentilesPercentiles
+	equalGroupsNo <- options$statisticsPercentileValuesEqualGroupsNo 
+	percentilesPercentiles  <- options$statisticsPercentileValuesPercentilesPercentiles
 
 	run <- perform == "run"
 
@@ -436,54 +431,55 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	fields[[length(fields) + 1]] <- list(name="Valid", type="integer")
 	fields[[length(fields) + 1]] <- list(name="Missing", type="integer")
 
-	if (central.tendency[["mean"]])
+
+	if (options$statisticsCentralTendencyMean)
 		fields[[length(fields) + 1]] <- list(name="Mean", type="number", format="sf:4")
-	if (dispersion[["standardErrorMean"]])
+	if (options$statisticsDispersionStandardErrorMean)
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Mean", type="number", format="sf:4")
-	if (central.tendency[["median"]])
+	if (options$statisticsCentralTendencyMedian)
 		fields[[length(fields) + 1]] <- list(name="Median", type="number", format="sf:4")
-	if (central.tendency[["mode"]])
+	if (options$statisticsCentralTendencyMode)
 		fields[[length(fields) + 1]] <- list(name="Mode", type="number", format="sf:4")
-	if (dispersion[["standardDeviation"]])
+	if (options$statisticsDispersionStandardDeviation)
 		fields[[length(fields) + 1]] <- list(name="Std. Deviation", type="number", format="sf:4")
-	if (dispersion[["variance"]])
+	if (options$statisticsDispersionVariance)
 		fields[[length(fields) + 1]] <- list(name="Variance", type="number", format="sf:4")
 		
-	if (distribution[["skewness"]]) {
+	if (options$statisticsDistributionSkewness) {
 	
 		fields[[length(fields) + 1]] <- list(name="Skewness", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Skewness", type="number", format="sf:4")
 	}
 	
-	if (distribution[["kurtosis"]]) {
+	if (options$statisticsDistributionKurtosis) {
 	
 		fields[[length(fields) + 1]] <- list(name="Kurtosis", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Kurtosis", type="text", format="sf:4")
 	}
 	
-	if (dispersion[["range"]])
+	if (options$statisticsDispersionRange)
 		fields[[length(fields) + 1]] <- list(name="Range", type="number", format="sf:4")
-	if (dispersion[["minimum"]])
+	if (options$statisticsDispersionMinimum)
 		fields[[length(fields) + 1]] <- list(name="Minimum", type="number", format="sf:4")
-	if (dispersion[["maximum"]])
+	if (options$statisticsDispersionMaximum)
 		fields[[length(fields) + 1]] <- list(name="Maximum", type="number", format="sf:4")
-	if (central.tendency[["sum"]])
+	if (options$statisticsCentralTendencySum)
 		fields[[length(fields) + 1]] <- list(name="Sum", type="number", format="sf:4")
 	
-	if (percentileValues[["quartiles"]]) {
+	if (options$statisticsPercentileValuesQuartiles) {
 	
 		fields[[length(fields) + 1]] <- list(name="q1", title="25th percentile", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="q2", title="50th percentile", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="q3", title="75th percentile", type="number", format="sf:4")
 	}
 	
-	if (percentileValues[["equalGroups"]]) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
+	if (options$statisticsPercentileValuesEqualGroups) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
 	
 		for (i in seq(equalGroupsNo - 1))
 			fields[[length(fields) + 1]] <- list(name=paste("eg", i, sep=""), title=paste(100 * i / equalGroupsNo, "th percentile", sep=""), type="number", format="sf:4")
 	}
 	
-	if (percentileValues[["percentiles"]]) { 
+	if (options$statisticsPercentileValuesPercentiles) { 
 	
 		for (i in percentilesPercentiles) 
 			fields[[length(fields) + 1]] <- list(name=paste("pc", i, sep=""), title=paste(i, "th percentile", sep=""), type="number", format="sf:4")
@@ -524,7 +520,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 
 
-		if (central.tendency[["mean"]]) {
+		if (options$statisticsCentralTendencyMean) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -540,7 +536,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (central.tendency[["median"]]) {
+		if (options$statisticsCentralTendencyMedian) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -556,7 +552,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (central.tendency[["mode"]]) {
+		if (options$statisticsCentralTendencyMode) {
 	
 			if (base::is.factor(na.omitted) == FALSE) {
 		
@@ -586,7 +582,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		}
 		
-		if (central.tendency[["sum"]]) {
+		if (options$statisticsCentralTendencySum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -602,7 +598,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["maximum"]]) {
+		if (options$statisticsDispersionMaximum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -618,7 +614,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["minimum"]]) {
+		if (options$statisticsDispersionMinimum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -634,7 +630,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["range"]]) {
+		if (options$statisticsDispersionRange) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -650,7 +646,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["standardDeviation"]]) {
+		if (options$statisticsDispersionStandardDeviation) {
 		
 			if (base::is.factor(na.omitted) == FALSE){
 			
@@ -666,7 +662,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["standardErrorMean"]]) {
+		if (options$statisticsDispersionStandardErrorMean) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -682,7 +678,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["variance"]]) {
+		if (options$statisticsDispersionVariance) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -698,7 +694,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (distribution[["kurtosis"]]) {
+		if (options$statisticsDistributionKurtosis) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -720,7 +716,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (distribution[["skewness"]]) {
+		if (options$statisticsDistributionSkewness) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -743,7 +739,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (percentileValues[["quartiles"]]) {
+		if (options$statisticsPercentileValuesQuartiles) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -769,7 +765,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (percentileValues[["equalGroups"]]) {
+		if (options$statisticsPercentileValuesEqualGroups) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -792,7 +788,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 			
-		if (percentileValues[["percentiles"]]) {
+		if (options$statisticsPercentileValuesPercentiles) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -826,7 +822,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	#### FREQUENCIES TABLES
 
-	if (options$main$displayFrequencyTables) {
+	if (options$mainDisplayFrequencyTables) {
 	
 		frequency.tables <- list()
 		

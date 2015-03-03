@@ -1,0 +1,153 @@
+[
+   {
+      "name" : "dependent",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : true,
+      "type" : "Variable"
+   },
+   {
+      "name" : "blocks",
+      "template" : [
+         {
+            "default" : "Block %1",
+            "name" : "name",
+            "type" : "String"
+         },
+         {
+            "name" : "variables",
+            "onlyOneComponent" : true,
+            "onlyOneTerm" : false,
+            "type" : "Variables"
+         },
+         {
+            "name" : "method",
+            "options" : [ "Enter" ],
+            "default" : "Enter",
+            "type" : "List"
+         }
+      ],
+      "type" : "Table"
+   },
+   {
+      "name" : "wlsWeights",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : true,
+      "type" : "Variable"
+   },
+   {
+      "default" : true,
+      "name" : "regressionCoefficientsEstimates",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "regressionCoefficientsConfidenceIntervals",
+      "type" : "Boolean"
+   },
+   {
+      "default" : 95,
+      "name" : "regressionCoefficientsConfidenceIntervalsInterval",
+      "type" : "Integer"
+   },
+   {
+      "default" : false,
+      "name" : "regressionCoefficientsCovarianceMatrix",
+      "type" : "Boolean"
+   },
+   {
+      "default" : true,
+      "name" : "modelFit",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "rSquaredChange",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "descriptives",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "partAndPartialCorrelations",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "collinearityDiagnostics",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "residualsDurbinWatson",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "residualsCasewiseDiagnostics",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "residualsCasewiseDiagnosticsType",
+      "options" : [ "outliersOutside", "allCases" ],
+      "default" : "outliersOutside",
+      "type" : "List"
+   },
+   {
+      "default" : 3,
+      "name" : "residualsCasewiseDiagnosticsOutliersOutside",
+      "type" : "Integer"
+   },
+   {
+      "name" : "steppingMethodCriteriaType",
+      "options" : [ "usePValue", "useFValue" ],
+      "default" : "usePValue",
+      "type" : "List"
+   },
+   {
+      "format" : "",
+      "max" : 999999.0,
+      "min" : -999999.0,
+      "name" : "steppingMethodCriteriaPEntry",
+      "type" : "Number",
+      "value" : 0.050
+   },
+   {
+      "format" : "",
+      "max" : 999999.0,
+      "min" : -999999.0,
+      "name" : "steppingMethodCriteriaPRemoval",
+      "type" : "Number",
+      "value" : 0.10
+   },
+   {
+      "format" : "",
+      "max" : 999999.0,
+      "min" : -999999.0,
+      "name" : "steppingMethodCriteriaFEntry",
+      "type" : "Number",
+      "value" : 3.840
+   },
+   {
+      "format" : "",
+      "max" : 999999.0,
+      "min" : -999999.0,
+      "name" : "steppingMethodCriteriaFRemoval",
+      "type" : "Number",
+      "value" : 2.710
+   },
+   {
+      "default" : true,
+      "name" : "includeConstant",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "missingValues",
+      "options" : [ "excludeCasesListwise", "excludeCasesPairwise", "replaceWithMeans" ],
+      "default" : "excludeCasesListwise",
+      "type" : "List"
+   }
+]
+

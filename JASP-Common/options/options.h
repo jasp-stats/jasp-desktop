@@ -18,9 +18,11 @@ public:
 	Options();
 	~Options();
 
+	void loadData(Json::Value data) OVERRIDE;
+
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(Json::Value &json) OVERRIDE;
-
+	Option* createOption(std::string typeString);
 	void add(std::string name, Option *option);
     Option *get(std::string name) const;
 	Option *get(int index);
@@ -37,6 +39,8 @@ public:
 	private:
 
 		std::vector<OptionNamed> *_options;
+
+
 
 		Names(std::vector<OptionNamed> *options)
 		{

@@ -16,6 +16,7 @@ public:
 	Option();
 	virtual ~Option();
 
+	virtual void loadData(Json::Value data) = 0;
 	virtual Json::Value asJSON() const = 0;
 	virtual void set(Json::Value& value) = 0;
 	virtual Option *clone() const = 0;

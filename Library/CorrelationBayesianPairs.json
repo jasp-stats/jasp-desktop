@@ -1,0 +1,63 @@
+[
+   {
+      "name" : "pairs",
+      "type" : "VariablesGroups"
+   },
+   {
+      "name" : "hypothesis",
+      "options" : [ "correlated", "correlatedPositively", "correlatedNegatively" ],
+      "default" : "correlated",
+      "type" : "List"
+   },
+   {
+      "name" : "missingValues",
+      "options" : [ "excludeAnalysisByAnalysis", "excludeListwise" ],
+      "default" : "excludeAnalysisByAnalysis",
+      "type" : "List"
+   },
+   {
+      "format" : "",
+      "max" : 999999.0,
+      "min" : -999999.0,
+      "name" : "priorWidth",
+      "type" : "Number",
+      "value" : 1.0
+   },
+   {
+      "default" : false,
+      "name" : "plotPriorAndPosterior",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "plotBayesFactorRobustness",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "plotSequentialAnalysis",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "plotSequentialAnalysisRobustness",
+      "type" : "Boolean"
+   },
+   {
+      "default" : 320,
+      "name" : "plotWidth",
+      "type" : "Integer"
+   },
+   {
+      "default" : 240,
+      "name" : "plotHeight",
+      "type" : "Integer"
+   },
+   {
+      "name" : "bayesFactorType",
+      "options" : [ "BF10", "BF01", "LogBF10" ],
+      "default" : "BF10",
+      "type" : "List"
+   }
+]
+

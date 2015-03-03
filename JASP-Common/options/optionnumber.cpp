@@ -10,6 +10,18 @@ OptionNumber::OptionNumber(double value, double min, double max, string format)
 	_format = format;
 }
 
+OptionNumber::OptionNumber()
+{
+}
+
+void OptionNumber::loadData(Json::Value data)
+{
+	_value = data["value"].asDouble();
+	_min = data["min"].asDouble();
+	_max = data["max"].asDouble();
+	_format = data["format"].asString();
+}
+
 Json::Value OptionNumber::asJSON() const
 {
 	return Json::Value(_value);

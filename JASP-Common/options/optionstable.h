@@ -12,6 +12,9 @@ class OptionsTable : public OptionI<std::vector<Options*> >
 {
 public:
 	OptionsTable(Options *rowTemplate);
+	OptionsTable();
+
+	virtual void loadData(Json::Value data) OVERRIDE;
 
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(Json::Value &value) OVERRIDE;

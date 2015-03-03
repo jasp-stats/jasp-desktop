@@ -5,6 +5,18 @@
 
 #include <boost/foreach.hpp>
 
+#include "options/optionboolean.h"
+#include "options/optioninteger.h"
+#include "options/optionintegerarray.h"
+#include "options/optionlist.h"
+#include "options/optionnumber.h"
+#include "options/optionstable.h"
+#include "options/optionstring.h"
+#include "options/optionterm.h"
+#include "options/optionterms.h"
+#include "options/optionvariable.h"
+#include "options/optionvariables.h"
+#include "options/optionvariablesgroups.h"
 
 using namespace std;
 
@@ -17,6 +29,61 @@ Options::~Options()
 {
 	BOOST_FOREACH(OptionNamed item, _options)
 		delete item.second;
+}
+
+void Options::loadData(Json::Value array)
+{
+	for (Json::ValueIterator itr = array.begin(); itr != array.end(); itr++)
+	{
+		Json::Value value = (*itr);
+
+		Json::Value &name = value["name"];
+		Json::Value &type = value["type"];
+
+		string typeString = type.asString();
+		Option *option = createOption(typeString);
+
+		if (option != NULL)
+		{
+			option->loadData(value);
+			add(name.asString(), option);
+		}
+		else
+		{
+			cout << "Unknown data type: " << typeString << "\n";
+			cout.flush();
+		}
+	}
+}
+
+Option* Options::createOption(string typeString)
+{
+	if (typeString == "Boolean")
+		return new OptionBoolean();
+	else if (typeString == "Integer")
+		return new OptionInteger();
+	else if (typeString == "IntegerArray")
+		return new OptionIntegerArray();
+	else if (typeString == "List")
+		return new OptionList();
+	else if (typeString == "Number")
+		return new OptionNumber();
+	else if (typeString == "Table")
+		return new OptionsTable();
+	else if (typeString == "String")
+		return new OptionString();
+	else if (typeString == "Term")
+		return new OptionTerm();
+	else if (typeString == "Terms")
+		return new OptionTerms();
+	else if (typeString == "Variable")
+		return new OptionVariable();
+	else if (typeString == "Variables")
+		return new OptionVariables();
+	else if (typeString == "VariablesGroups")
+		return new OptionVariablesGroups();
+
+	return NULL;
 }
 
 void Options::add(string name, Option *option)

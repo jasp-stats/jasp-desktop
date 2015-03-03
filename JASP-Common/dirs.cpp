@@ -240,3 +240,12 @@ string Dirs::rHomeDir()
 	return dir;
 }
 
+
+string Dirs::libraryDir()
+{
+    string dir = exeDir();
+
+    dir += "/Library";
+
+    return dir;
+}

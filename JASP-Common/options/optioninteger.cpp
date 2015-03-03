@@ -6,6 +6,11 @@ OptionInteger::OptionInteger(int value)
 	_value = value;
 }
 
+void OptionInteger::loadData(Json::Value data)
+{
+	_value = data["default"].asInt();
+}
+
 Json::Value OptionInteger::asJSON() const
 {
 	return Json::Value(_value);

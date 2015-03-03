@@ -1,0 +1,140 @@
+[
+   {
+      "name" : "mainFields",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : false,
+      "type" : "Variables"
+   },
+   {
+      "default" : false,
+      "name" : "mainDisplayFrequencyTables",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "plots",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "displayCorrelationPlot",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsPercentileValuesQuartiles",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsPercentileValuesEqualGroups",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsPercentileValuesPercentiles",
+      "type" : "Boolean"
+   },
+   {
+      "default" : 4,
+      "name" : "statisticsPercentileValuesEqualGroupsNo",
+      "type" : "Integer"
+   },
+   {
+      "name" : "statisticsPercentileValuesPercentilesPercentiles",
+      "type" : "IntegerArray"
+   },
+   {
+      "default" : true,
+      "name" : "statisticsCentralTendencyMean",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsCentralTendencyMedian",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsCentralTendencyMode",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsCentralTendencySum",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsValuesAreGroupMidpoints",
+      "type" : "Boolean"
+   },
+   {
+      "default" : true,
+      "name" : "statisticsDispersionStandardDeviation",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsDispersionVariance",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsDispersionRange",
+      "type" : "Boolean"
+   },
+   {
+      "default" : true,
+      "name" : "statisticsDispersionMinimum",
+      "type" : "Boolean"
+   },
+   {
+      "default" : true,
+      "name" : "statisticsDispersionMaximum",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsDispersionStandardErrorMean",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsDistributionSkewness",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "statisticsDistributionKurtosis",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "chartType",
+      "options" : [ "noCharts", "barCharts", "barCharts", "barCharts" ],
+      "default" : "noCharts",
+      "type" : "List"
+   },
+   {
+      "default" : false,
+      "name" : "chartShowNormalCurve",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "chartValues",
+      "options" : [ "frequencies", "percentages" ],
+      "default" : "frequencies",
+      "type" : "List"
+   },
+   {
+      "default" : 480,
+      "name" : "chartWidth",
+      "type" : "Integer"
+   },
+   {
+      "default" : 320,
+      "name" : "chartHeight",
+      "type" : "Integer"
+   }
+]
+

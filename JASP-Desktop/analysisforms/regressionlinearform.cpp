@@ -42,7 +42,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->collinearityDiagnostics->hide();
 	ui->includeConstant->hide();
 	ui->descriptives->hide();
-	ui->regressionCoefficients_covarianceMatrix->hide();
+	ui->regressionCoefficientsCovarianceMatrix->hide();
 	ui->widgetOptions->hide();
 	ui->widget_5->hide(); // wls weights
 #else
@@ -52,7 +52,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->collinearityDiagnostics->setStyleSheet("background-color: pink ;");
 	ui->includeConstant->setStyleSheet("background-color: pink ;");
 	ui->descriptives->setStyleSheet("background-color: pink ;");
-	ui->regressionCoefficients_covarianceMatrix->setStyleSheet("background-color: pink ;");
+	ui->regressionCoefficientsCovarianceMatrix->setStyleSheet("background-color: pink ;");
 	ui->widgetOptions->setStyleSheet("background-color: pink ;");
 	ui->widget_5->setStyleSheet("background-color: pink ;");
 #endif

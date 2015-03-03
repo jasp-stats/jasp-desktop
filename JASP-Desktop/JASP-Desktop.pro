@@ -403,33 +403,46 @@ OTHER_FILES += \
     analysisforms/AnovaRepeatedMeasuresShortForm.qml \
     html/css/images/waiting.svg
 
-HELPPATH = $${PWD}/../Docs/help
+HELP_PATH = $${PWD}/../Docs/help
+LIBRARY_PATH = $${PWD}/../Library
 
 win32 {
 
-	HELPPATHDEST = $${OUT_PWD}/../Help/
+        HELP_PATH_DEST = $${OUT_PWD}/../Help/
+        LIBRARY_PATH_DEST = $${OUT_PWD}/../Library
 
-	HELPPATH ~= s,/,\\,g
-	HELPPATHDEST ~= s,/,\\,g
+        HELP_PATH ~= s,/,\\,g
+        HELP_PATH_DEST ~= s,/,\\,g
 
-	copydocs.commands += $$quote(cmd /c xcopy /S /I /Y $${HELPPATH} $${HELPPATHDEST})
+        LIBRARY_PATH ~= s,/,\\,g
+        LIBRARY_PATH_DEST ~= s,/,\\,g
+
+        copydocs.commands += $$quote(cmd /c xcopy /S /I /Y $${HELP_PATH} $${HELP_PATH_DEST})
+        copylibrary.commands += $$quote(cmd /c xcopy /S /I /Y $${LIBRARY_PATH} $${LIBRARY_PATH_DEST})
 }
 
 macx {
 
-	HELPPATHDEST = $${OUT_PWD}/../../Resources/Help/
+        HELP_PATH_DEST = $${OUT_PWD}/../../Resources/Help/
+        LIBRARY_PATH_DEST = $${OUT_PWD}/../../Resources/Library/
 
-	copydocs.commands += $(MKDIR) $$HELPPATHDEST ;
-	copydocs.commands += cp -R $$HELPPATH/* $$HELPPATHDEST ;
+        copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
+        copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
+
+        copylibrary.commands += $(MKDIR) $$LIBRARY_PATH_DEST ;
+        copylibrary.commands += cp -R $$LIBRARY_PATH/* $$LIBRARY_PATH_DEST ;
 }
 
 linux {
 
-	HELPPATHDEST = $${OUT_PWD}/../Help/
+        HELP_PATH_DEST = $${OUT_PWD}/../Help/
 
-	copydocs.commands += $(MKDIR) $$HELPPATHDEST ;
-	copydocs.commands += cp -R $$HELPPATH/* $$HELPPATHDEST ;
+        copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
+        copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
+
+        copylibrary.commands += $(MKDIR) $$LIBRARY_PATH_DEST ;
+        copylibrary.commands += cp -R $$LIBRARY_PATH/* $$LIBRARY_PATH_DEST ;
 }
 
-QMAKE_EXTRA_TARGETS += copydocs
-POST_TARGETDEPS += copydocs
+QMAKE_EXTRA_TARGETS += copydocs copylibrary
+POST_TARGETDEPS += copydocs copylibrary

@@ -1,0 +1,172 @@
+[
+   {
+      "name" : "dependent",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : true,
+      "type" : "Variable"
+   },
+   {
+      "name" : "fixedFactors",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : false,
+      "type" : "Variables"
+   },
+   {
+      "name" : "randomFactors",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : false,
+      "type" : "Variables"
+   },
+   {
+      "name" : "wlsWeights",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : true,
+      "type" : "Variable"
+   },
+   {
+      "name" : "modelTerms",
+      "template" : [
+         {
+            "name" : "components",
+            "onlyOneComponent" : true,
+            "onlyOneTerm" : false,
+            "type" : "Variables"
+         }
+      ],
+      "type" : "Table"
+   },
+   {
+      "name" : "sumOfSquares",
+      "options" : [ "type1", "type2", "type3" ],
+      "default" : "type3",
+      "type" : "List"
+   },
+   {
+      "name" : "contrasts",
+      "template" : [
+         {
+            "name" : "variable",
+            "onlyOneComponent" : true,
+            "onlyOneTerm" : true,
+            "type" : "Variable"
+         },
+         {
+            "name" : "contrast",
+            "options" : [
+               "none",
+               "deviation",
+               "simple",
+               "difference",
+               "helmert",
+               "repeated",
+               "polynomial"
+            ],
+            "default" : "none",
+            "type" : "List"
+         }
+      ],
+      "type" : "Table"
+   },
+   {
+      "name" : "postHocTestsVariables",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : false,
+      "type" : "Variables"
+   },
+   {
+      "default" : false,
+      "name" : "postHocTestsBonferroni",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "postHocTestsHolm",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "postHocTestsFDR",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "postHocTestsHochberg",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "postHocTestsHommel",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "postHocTestsBenjamini",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "marginalMeansTerms",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : false,
+      "type" : "Variables"
+   },
+   {
+      "default" : false,
+      "name" : "marginalMeansCompareMainEffects",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "marginalMeansCiAdjustment",
+      "options" : [ "LSD", "bonferroni" ],
+      "default" : "LSD",
+      "type" : "List"
+   },
+   {
+      "default" : false,
+      "name" : "miscDescriptives",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "miscEffectSizeEstimates",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "miscHomogeneityTests",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "horizontalAxis",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : true,
+      "type" : "Variable"
+   },
+   {
+      "name" : "seperateLines",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : true,
+      "type" : "Variable"
+   },
+   {
+      "name" : "seperatePlots",
+      "onlyOneComponent" : true,
+      "onlyOneTerm" : true,
+      "type" : "Variable"
+   },
+   {
+      "default" : false,
+      "name" : "errorBars",
+      "type" : "Boolean"
+   },
+   {
+      "default" : 450,
+      "name" : "chartWidth",
+      "type" : "Integer"
+   },
+   {
+      "default" : 300,
+      "name" : "chartHeight",
+      "type" : "Integer"
+   }
+]
+

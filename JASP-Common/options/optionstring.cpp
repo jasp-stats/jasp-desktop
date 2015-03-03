@@ -7,6 +7,11 @@ OptionString::OptionString(string value)
 	_value = value;
 }
 
+void OptionString::loadData(Json::Value data)
+{
+	_value = data["default"].asString();
+}
+
 Json::Value OptionString::asJSON() const
 {
 	return _value;

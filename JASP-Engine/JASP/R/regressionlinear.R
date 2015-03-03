@@ -482,7 +482,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	################################################################################
 	
 	
-	if (options$regressionCoefficients[["estimates"]] == TRUE) {
+	if (options$regressionCoefficientsEstimates == TRUE) {
 		
 		regression <- list()
 		regression[["title"]] <- "Coefficients"
@@ -514,8 +514,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			"t-value" = ".",
 			"p" = ".")			
 		
-		if (options$regressionCoefficients[["confidenceIntervals"]] == TRUE) {
-			alpha <- options$regressionCoefficients[["confidenceIntervalsInterval"]]
+		if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
+			alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
 			alpha <- alpha / 100
 			fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = paste(round(100*(1-alpha)/2,1),"%",sep=""), type = "number", format = "dp:3")
 			fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = paste(round(100*(1+alpha)/2,1),"%",sep=""), type = "number", format = "dp:3")
@@ -543,7 +543,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					}
 					lm.summary = summary(lm.model[[ m ]]$lm.fit)
 					lm.estimates <- lm.summary$coefficients
-					if (options$regressionCoefficients[["confidenceIntervals"]] == TRUE) {
+					if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 						lm.confidence.interval <- confint(lm.model[[ m ]]$lm.fit, level = alpha)
 					}
 					
@@ -561,7 +561,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							regression.result[[ len.reg ]]$"t-value" <- as.numeric(lm.estimates[v,3])
 							regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v,4])
 						
-							if (options$regressionCoefficients[["confidenceIntervals"]] == TRUE) {
+							if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 								regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v,1] )
 								regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v,2] )
 							}
@@ -602,7 +602,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								regression.result[[ len.reg ]]$"t-value" <- as.numeric(lm.estimates[v+var,3])
 								regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v+var,4])
 							
-								if (options$regressionCoefficients[["confidenceIntervals"]] == TRUE) {
+								if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 									regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v+var,1] )
 									regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v+var,2] )
 								}
