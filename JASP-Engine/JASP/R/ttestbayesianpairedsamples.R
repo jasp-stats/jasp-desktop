@@ -54,7 +54,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 	bf.type <- options$bayesFactorType
 	
-	if (bf.type == "BF10" || bf.type == "LogBF10") {
+	if (bf.type == "BF10") {
 	
 		BFH1H0 <- TRUE
 	
@@ -67,7 +67,22 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		if (options$hypothesis == "groupTwoGreater") {
 			bf.title <- "BF\u208B\u2080"
 		}
-	} else {
+		
+	} else if (bf.type == "LogBF10") {
+		
+		BFH1H0 <- TRUE
+		
+		if (options$hypothesis == "groupsNotEqual") {
+			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+		}
+		if (options$hypothesis == "groupOneGreater") {
+			bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
+		}
+		if (options$hypothesis == "groupTwoGreater") {
+			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
+		}
+		
+	} else if (bf.type == "BF01") {
 	
 		BFH1H0 <- FALSE
 	
@@ -106,7 +121,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 	} else {
 	
-				fields <- list(
+		fields <- list(
 			list(name=".variable1", type="string", title=""),
 			list(name=".separator", type="separator", title=""),
 			list(name=".variable2", type="string", title=""),
@@ -310,7 +325,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			}
 		}
 		
-		ttest.rows[[length(ttest.rows)+1]] <- result#
+		ttest.rows[[length(ttest.rows)+1]] <- result
 		i <- i + 1
 	}
 	
