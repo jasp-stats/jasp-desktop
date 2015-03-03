@@ -2,11 +2,18 @@
 
 #include "dirs.h"
 
+#include <fstream>
+#include <string>
+
+using namespace std;
+
 Analysis *AnalysisLoader::load(int id, string analysisName)
 {
 	Options *options = new Options();
 
-	std::ifstream myfile(Dirs::libraryDir() + "/" + analysisName + ".json");
+	string path = Dirs::libraryDir() + "/" + analysisName + ".json";
+
+	ifstream myfile(path.c_str(), fstream::in);
 	if (myfile.is_open())
 	{
 		Json::Value descriptiveJson;
@@ -18,9 +25,9 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		myfile.close();
 
 		cout << "Analysis loaded";
-		std::cout.flush();
+		cout.flush();
 		return new Analysis(id, analysisName, options);
 	}
 
-	throw std::runtime_error("Could not access analysis definition.");
+	throw runtime_error("Could not access analysis definition.");
 }

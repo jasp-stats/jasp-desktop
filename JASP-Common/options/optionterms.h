@@ -24,7 +24,7 @@ public:
 	bool onlyOneComponent() const;
 
 protected:
-	OptionTerms(bool onlyOneComponent = false, bool onlyOneTerm = false);
+	OptionTerms(bool onlyOneComponent, bool onlyOneTerm = false);
 
 	bool _onlyOneComponent;
 	bool _onlyOneTerm;

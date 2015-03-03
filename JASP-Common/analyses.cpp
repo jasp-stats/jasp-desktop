@@ -3,6 +3,8 @@
 #include "analysisloader.h"
 #include "boost/foreach.hpp"
 
+using namespace std;
+
 Analyses::Analyses()
 {
 	_nextId = 0;

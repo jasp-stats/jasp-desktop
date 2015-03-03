@@ -245,7 +245,13 @@ string Dirs::libraryDir()
 {
     string dir = exeDir();
 
-    dir += "/Library";
+#ifdef __WIN32__
+	dir += "/Library";
+#elif __APPLE__
+	dir += "/../Resources/Library";
+#else
+	dir += "/Library";
+#endif
 
     return dir;
 }
