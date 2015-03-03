@@ -30,6 +30,11 @@
    },
    {
       "default" : false,
+      "name" : "plotPriorAndPosteriorAdditionalInfo",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
       "name" : "plotBayesFactorRobustness",
       "type" : "Boolean"
    },
