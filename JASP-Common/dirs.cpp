@@ -136,7 +136,7 @@ string Dirs::exeDir()
 
 	int ret = GetModuleFileNameW(hModule, path, MAX_PATH);
 
-	if (ret != ERROR_SUCCESS)
+	if (ret == 0)
 	{
 		stringstream ss;
 		ss << "Executable directory could not be retrieved (" << ret << ")";
