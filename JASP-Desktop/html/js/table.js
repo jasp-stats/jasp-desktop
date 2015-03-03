@@ -127,27 +127,26 @@ $.widget("jasp.table", {
 		var dp = NaN
 		var sf = NaN
 		var pc = false
+		var approx = false
 
 		for (var i = 0; i < formats.length; i++) {
 		
 			var f = formats[i]
 			
 			if (f.indexOf("p:") != -1)
-			{
 				p = f.substring(2)
-			}
-			if (f.indexOf("dp:") != -1) {
 
+			if (f.indexOf("dp:") != -1)
 				dp = f.substring(3)
-			}
-			if (f.indexOf("sf:") != -1) {
-
-				sf = f.substring(3)
-			}
-			if (f.indexOf("pc") != -1) {
 			
+			if (f.indexOf("sf:") != -1)
+				sf = f.substring(3)
+				
+			if (f.indexOf("pc") != -1)
 				pc = true
-			}
+				
+			if (f.indexOf("~") != -1)
+				approx = true;
 		}
 		
 		if (isFinite(sf)) {
@@ -257,6 +256,9 @@ $.widget("jasp.table", {
 						formatted = { content : content.toPrecision(sf).replace(/-/g, "&minus;"), "class" : "number" }
 					}
 				}
+				
+				if (approx)
+					formatted.content = "&#x2248;&thinsp;" + formatted.content
 				
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
