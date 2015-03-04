@@ -26,11 +26,6 @@ CorrelationBayesianPairsForm::CorrelationBayesianPairsForm(QWidget *parent) :
 
 	ui->assignButton->setSourceAndTarget(ui->availableFields, ui->pairs);
 
-#ifdef QT_NO_DEBUG
-	ui->plotsGroup->hide();
-#else
-	ui->plotsGroup->setStyleSheet("background-color: pink;");
-#endif
 }
 
 CorrelationBayesianPairsForm::~CorrelationBayesianPairsForm()
