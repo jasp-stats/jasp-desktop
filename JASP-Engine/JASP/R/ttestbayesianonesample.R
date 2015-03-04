@@ -41,7 +41,7 @@
 	}
 }
 
-.plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, BF, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
+.plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, BF, BFH1H0, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
  cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= TRUE, dontPlotData=FALSE) {
 	
 	if (addInformation) {
@@ -126,8 +126,17 @@
 	#BF10 <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 	#BF01 <- 1 / BF10
 	
-	BF10 <- BF
-	BF01 <- 1 / BF10
+	if (BFH1H0) {
+	
+		BF10 <- BF
+		BF01 <- 1 / BF10
+		
+	} else {
+	
+		BF01 <- BF
+		BF10 <- 1 / BF01
+	}
+	
 	
 	
 	# set limits plot
@@ -2670,7 +2679,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 							image <- .beginSaveImage(530, 400)
 					
-							.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i])
+							.plotPosterior.ttest(x= variableData, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
 					
 							plot[["data"]] <- .endSaveImage(image)
 						})
