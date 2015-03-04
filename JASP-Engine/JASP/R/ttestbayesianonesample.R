@@ -119,7 +119,12 @@
 		sigmaStart <- sqrt(N1 * N2 / (N1 + N2))
 	}
 	
-	parameters <- optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par
+	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+	
+	if (class(parameters) == "try-error") {
+	
+		parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+	}
 	
 	
 	#BF <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval= nullInterval, posterior = FALSE, rscale= r)
@@ -166,8 +171,8 @@
 	
 	if (oneSided == "right") {
 		
-		if (length(delta[delta >= 0]) < 10)
-			return("Plotting is not possible: To few posterior samples in tested interval")
+		#if (length(delta[delta >= 0]) < 10)
+		#	return("Plotting is not possible: To few posterior samples in tested interval")
 		
 		xlim[1] <- min(-2, quantile(delta[delta >= 0], probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta[delta >= 0], probs = 0.99)[[1]])
@@ -176,8 +181,8 @@
 	
 	if (oneSided == "left") {
 		
-		if (length(delta[delta <= 0]) < 10)
-			return("Plotting is not possible: To few posterior samples in tested interval")
+		#if (length(delta[delta <= 0]) < 10)
+		#	return("Plotting is not possible: To few posterior samples in tested interval")
 		
 		xlim[1] <- min(-2, quantile(delta[delta <= 0], probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta[delta <= 0], probs = 0.99)[[1]])
@@ -2552,7 +2557,12 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					samples <- BayesFactor::ttestBF(variableData, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
 					delta <- samples[, "delta"]
 					
-					parameters <- optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par
+					parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+	
+					if (class(parameters) == "try-error") {
+					
+						parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+					}
 					
 					bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)
 				}
@@ -2562,7 +2572,12 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					samples <- BayesFactor::ttestBF(variableData, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
 					delta <- samples[, "delta"]
 					
-					parameters <- optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par
+					parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+	
+					if (class(parameters) == "try-error") {
+					
+						parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+					}
 					
 					bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
 				}
