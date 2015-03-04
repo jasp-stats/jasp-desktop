@@ -127,6 +127,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 				}
 			}
 		}
+		
+		descriptives[["status"]] <- "complete"
 	}
 	
 	descriptives[["data"]] <- data
