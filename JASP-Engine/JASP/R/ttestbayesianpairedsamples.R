@@ -170,7 +170,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
 		
-		if (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness){
+		if (options$plotSequentialAnalysis){
 
 			plot <- list()
 			
@@ -540,7 +540,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				j <- j + 1
 			}
 		
-			if (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness) {
+			if (options$plotSequentialAnalysis) {
 		
 				plot <- plots.ttest[[j]]
 
