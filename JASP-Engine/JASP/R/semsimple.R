@@ -403,7 +403,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 
 	### MODIFICATION INDICES ###
 ## SORT THEM
-	if (options$output$modificationIndices) {
+	if (options$outputModificationIndices) {
 
 		modIndices <- list()
 		modIndices[["title"]] <- "Modification Indices"
@@ -438,9 +438,9 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 			sem_modind <- sem_modind[order(sem_modind$mi,decreasing = TRUE),,drop=FALSE]
 
 			### Remove low indices:
-			if (options$output$modificationIndicesHideLowIndices)
+			if (options$outputModificationIndicesHideLowIndices)
 			{
-				sem_modind <- sem_modind[sem_modind$mi > options$output$modificationIndicesHideLowIndicesThreshold,,  drop = FALSE]
+				sem_modind <- sem_modind[sem_modind$mi > options$outputModificationIndicesHideLowIndicesThreshold,,  drop = FALSE]
 			}
 
 			modIndices[["cases"]] <- rep("",nrow(sem_modind))
@@ -458,7 +458,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 
 
 	## FIT MEASURES ###
-# if (options$output$additionalFitMeasures){
+# if (options$outputAdditionalFitMeasures){
 #   fitMeasures <- list()
 #   fitMeasures[["title"]] <- "Fit Measures"
 #   fitMeasures[["schema"]] <- list(fields = list(
@@ -493,7 +493,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 # }
 
 
-	if (options$output$additionalFitMeasures){
+	if (options$outputAdditionalFitMeasures){
 
 	   if (!is.null(semResults))
 	   {
@@ -624,7 +624,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 
 
    ### Mardia coefficient
-	if (options$output$mardiasCoefficients){
+	if (options$outputMardiasCoefficients){
 		mardiasCoefficient <- list()
 		mardiasCoefficient[["title"]] <- "Mardia's coefficients"
 		mardiasCoefficient[["schema"]] <- list(fields = list(
@@ -653,10 +653,10 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
 
 	### Covariance table:
 	# Only if observed, fitted or residual 
-	if( options$output$observedCovarianceCorrelations | options$output$fittedCovarianceCorrelations | options$output$residualCovarianceCorrelations) {
+	if( options$outputObservedCovarianceCorrelations | options$outputFittedCovarianceCorrelations | options$outputResidualCovarianceCorrelations) {
 		if (!is.null(semResults))
 		{
-			results[["covcor"]] <- .covTable(semResults, "Covariances (lower triangle) / correlations (upper triangle)", include = c("observed","fitted","residual")[ c(options$output$observedCovarianceCorrelations , options$output$fittedCovarianceCorrelations ,options$output$residualCovarianceCorrelations) ] )
+			results[["covcor"]] <- .covTable(semResults, "Covariances (lower triangle) / correlations (upper triangle)", include = c("observed","fitted","residual")[ c(options$outputObservedCovarianceCorrelations , options$outputFittedCovarianceCorrelations ,options$outputResidualCovarianceCorrelations) ] )
 		}
 	}
 	
