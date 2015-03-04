@@ -17,7 +17,7 @@ DataSet* DataSetLoader::loadDataSet(const string &locator, boost::function<void(
 {
 	filesystem::path path(locator);
 
-	if (path.extension().compare(".sav") == 0)
+	if (path.extension().compare(string(".sav")) == 0)
 		return SPSSImporter::loadDataSet(locator, progress);
 	else
 		return CSVImporter::loadDataSet(locator, progress);
