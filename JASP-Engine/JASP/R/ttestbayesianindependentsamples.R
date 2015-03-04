@@ -73,7 +73,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	plots.ttest <- list()
 	
 	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness || options$plotBayesFactorRobustness){
-	
+		
+		i <- 1
 		q <- 1
 		
 		for (variable in options[["variables"]]){
@@ -123,6 +124,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plots.ttest[[q]] <- plot
 				q <- q + 1
 			}
+			
+			
 		}
 		
 		results[["plots"]] <- plots.ttest
@@ -170,7 +173,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 								image <- .beginSaveImage(530, 400)
 				
-								.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i])
+								.plotPosterior.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, addInformation= options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
 				
 								plot[["data"]] <- .endSaveImage(image)
 							})
