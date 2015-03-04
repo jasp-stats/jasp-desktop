@@ -153,7 +153,7 @@ string DataSetLoader::deEuropeanise(const string &value)
 	int dots = 0;
 	int commas = 0;
 
-	for (uint i = 0; i < value.length(); i++)
+	for (int i = 0; i < value.length(); i++)
 	{
 		if (value[i] == '.')
 			dots++;
@@ -167,8 +167,8 @@ string DataSetLoader::deEuropeanise(const string &value)
 
 		if (dots > 0)
 		{
-			uint i = 0;
-			uint j = 0;
+			int i = 0;
+			int j = 0;
 
 			for (;i < value.size(); i++)
 			{
@@ -182,7 +182,7 @@ string DataSetLoader::deEuropeanise(const string &value)
 			uneurope.resize(j);
 		}
 
-		for (uint i = 0; i < uneurope.length(); i++)
+		for (int i = 0; i < uneurope.length(); i++)
 		{
 			if (uneurope[i] == ',')
 			{
