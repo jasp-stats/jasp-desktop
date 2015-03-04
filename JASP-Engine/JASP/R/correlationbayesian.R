@@ -312,10 +312,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						# Note: Data [report]
 						# TODO: also for other alphas and find place to report the credible interval
 						#	We now report the posterior median 
-						median.rho <- .rhoQuantile(some.n, some.r, alpha=1)[2]
+						median.rho <- try(.rhoQuantile(some.n, some.r, alpha=1)[2])
 						
-						# TODO: The criteria of .25 is somewhat arbitrary here
-						if (abs(median.rho-some.r) > .25){
+						if (is(median.rho, "try-error")){
 							report.r <- some.r
 						} else {
 							report.r <- median.rho
@@ -433,6 +432,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(.m0MarginalLikelihood(s, t, n)*
 		   	(.myAFunction(n, r, rho)+.myBFunction(n, r, rho)))
 }
+
 #
 # 2.1 Two-sided main Bayes factor ----------------------------------------------
 .bf10Exact <- function(n, r, alpha=1) {
@@ -484,7 +484,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	integrand <- function(rho){.jeffreysApproxH(n, r, rho)*.priorRho(rho, alpha)}
 	someIntegral <- try(integrate(integrand, lowerRho, upperRho))
 	
-	if (is(someIntegral)[1]=="try-error") {
+	if (is(someIntegral, "try-error")) {
 		return(NA)
 	}
 	
@@ -912,8 +912,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 .rhoQuantile <- function(n, r, alpha=1, ciPercentage=.95){
 	# Fitting parameters
-	myA <- .posteriorAParameter(n, r, alpha)
-	myB <- .posteriorBParameter(n, r, alpha)
+	myA <- try(.posteriorAParameter(n, r, alpha))
+	myB <- try(.posteriorBParameter(n, r, alpha))
+	
+	if (is(myA, "try-error") || is(myB, "try-error") || is.na(myA) || is.na(myB)) {
+		return(c(NA, r, NA))
+	}
 	
 	# Output median
 	someMedian <- 2*qbeta(.5, myA, myB)-1
@@ -921,9 +925,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# Calculate CI
 	typeOne <- 1-ciPercentage
 	
-	leftCI <- 2*qbeta(typeOne/2, myA, myB)-1
-	rightCI <- 2*qbeta((1-typeOne/2), myA, myB)-1
-	return(c(leftCI, someMedian, rightCI))
+	leftCI <- try(2*qbeta(typeOne/2, myA, myB)-1)
+	rightCI <- try(2*qbeta((1-typeOne/2), myA, myB)-1)
+	
+	# TODO: This actually doesn't override leftCI or rigthCI even if they are try-errors
+	if ( is(leftCI, "try-error") || is(rightCI, "try-error") || is.na(leftCI) || is.na(rightCI) ){
+		return(c(NA, r, NA))
+	} else {
+		return(c(leftCI, someMedian, rightCI))
+	}
 }
 
 #------------------------------------------------- Matrix Plot -------------------------------------------------#
