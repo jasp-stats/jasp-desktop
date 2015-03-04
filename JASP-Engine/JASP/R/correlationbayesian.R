@@ -310,7 +310,18 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						}
 						
 						# Note: Data [report]
-						row[[length(row)+1]] <- .clean(some.r)
+						# TODO: also for other alphas and find place to report the credible interval
+						#	We now report the posterior median 
+						median.rho <- .rhoQuantile(some.n, some.r, alpha=1)[2]
+						
+						# TODO: The criteria of .25 is somewhat arbitrary here
+						if (abs(median.rho-some.r) > .25){
+							report.r <- some.r
+						} else {
+							report.r <- median.rho
+						}
+						
+						row[[length(row)+1]] <- .clean(report.r)
 						
 						# Note: Flagging at the data [report]
 						if (flagSupported && is.na(report.bf) == FALSE) {
@@ -858,7 +869,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	someFactor <- exp(logTerm)*hyperTerm1/hyperTerm2
 	
 	myResult <- 2*r/(n+2*alpha)*someFactor
-	#myResult <- exp(logTerm)*hyperTerm1/hyperTerm2
 	return(myResult)
 }
 
@@ -897,8 +907,24 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	myVar <- .posteriorVariance(n, r, alpha)/2^2
 	
 	myB <- (1-myMu)*(myMu*(1-myMu)/myVar-1)
+	return(myB)
 }
 
+.rhoQuantile <- function(n, r, alpha=1, ciPercentage=.95){
+	# Fitting parameters
+	myA <- .posteriorAParameter(n, r, alpha)
+	myB <- .posteriorBParameter(n, r, alpha)
+	
+	# Output median
+	someMedian <- 2*qbeta(.5, myA, myB)-1
+	
+	# Calculate CI
+	typeOne <- 1-ciPercentage
+	
+	leftCI <- 2*qbeta(typeOne/2, myA, myB)-1
+	rightCI <- 2*qbeta((1-typeOne/2), myA, myB)-1
+	return(c(leftCI, someMedian, rightCI))
+}
 
 #------------------------------------------------- Matrix Plot -------------------------------------------------#
 
