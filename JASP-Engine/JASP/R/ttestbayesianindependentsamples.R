@@ -72,7 +72,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	plots.ttest <- list()
 	
-	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness || options$plotBayesFactorRobustness){
+	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis || options$plotBayesFactorRobustness){
 		
 		i <- 1
 		q <- 1
@@ -109,7 +109,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				q <- q + 1
 			}
 			
-			if (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness) {
+			if (options$plotSequentialAnalysis) {
 				plot <- list()
 				
 				plot[["title"]] <- variable
@@ -236,7 +236,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					z <- z + 1
 				}
 				
-				if (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness) {
+				if (options$plotSequentialAnalysis) {
 				
 					plot <- plots.ttest[[z]]
 				
