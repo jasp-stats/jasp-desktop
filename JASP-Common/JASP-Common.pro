@@ -29,11 +29,13 @@ SOURCES += \
 	base64/cencode.cpp \
 	column.cpp \
 	columns.cpp \
-	csv.cpp \
 	datablock.cpp \
 	dataset.cpp \
 	datasetloader.cpp \
 	dirs.cpp \
+	importers/csv.cpp \
+	importers/csvimporter.cpp \
+	importers/spssimporter.cpp \
 	ipcchannel.cpp \
 	label.cpp \
 	labels.cpp \
@@ -72,11 +74,13 @@ HEADERS += \
 	column.h \
 	columns.h \
 	common.h \
-	csv.h \
 	datablock.h \
 	dataset.h \
 	datasetloader.h \
 	dirs.h \
+	importers/csv.h \
+	importers/csvimporter.h \
+	importers/spssimporter.h \
 	ipcchannel.h \
 	label.h \
 	labels.h \

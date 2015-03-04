@@ -73,7 +73,12 @@ void BackStageForm::fileItemSelected()
 {
 	_settings.sync();
 	QString path = _settings.value("openPath", QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first()).toString();
+
+#ifdef QT_NO_DEBUG
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open CSV File"), path, tr("CSV Files (*.csv)"));
+#else
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open Data File"), path, tr("Data Files (*.csv *.sav)"));
+#endif
 
 	if ( ! filename.isNull() && QFile::exists(filename))
 	{
