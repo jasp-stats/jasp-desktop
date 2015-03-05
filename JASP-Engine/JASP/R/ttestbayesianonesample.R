@@ -1,12 +1,12 @@
-.oneSidedTtestBFRichard <- function(x=NULL, y=NULL, paired=FALSE, oneSided="right", r= sqrt(2)/2, iterations=10000, data=NULL, formula=NULL) {
+.oneSidedTtestBFRichard <- function(x=NULL, y=NULL, paired=FALSE, oneSided="right", r= sqrt(2)/2, iterations=10000) {
 	
 	# sample from delta posterior
-	samples <- BayesFactor::ttestBF(x=x, y=y, paired=paired, posterior = TRUE, iterations = iterations, rscale= r)
+	samples <- BayesFactor::ttestBF(x=x, y=y, paired=paired, posterior=TRUE, iterations=iterations, rscale=r)
 	
-	if (is.null(y) || paired ) {
+	if (is.null(y) || paired) {
 		
-		N  <-  length(x)
-		varBeta   <-  samples[,'sig2'] / ( 1 * N + 1/samples[,'g'] )
+		N <- length(x)
+		varBeta <- samples[,'sig2'] / (1 * N + 1/samples[,'g'])
 		
 		if (paired) {
 			
@@ -22,14 +22,14 @@
 		sumN <- length(y) + length(x)
 		diffN <- length(y) - length(x)
 		
-		varBeta  <- samples[,'sig2'] / ( sumN/4 + 1/samples[,'g'] )
+		varBeta <- samples[,'sig2'] / (sumN/4 + 1/samples[,'g'])
 		
-		meanBeta <- varBeta / samples[,'sig2'] * ( (sum(x) - sum(y)) + samples[,'mu'] * ( diffN ) ) / 2
+		meanBeta <- varBeta / samples[,'sig2'] * ((sum(x) - sum(y)) + samples[,'mu'] * (diffN)) / 2
 	}
 	
 	logProbMin <- BayesFactor::logSummaryStats(pnorm(0, meanBeta, sqrt(varBeta), log=TRUE))$logMean
 	
-	BF <- BayesFactor::ttestBF(x, y, paired=paired, rscale=r, data=data, formula=formula)
+	BF <- BayesFactor::ttestBF(x, y, paired=paired, rscale=r)
 	BF10 <- BayesFactor::extractBF(BF,onlybf = TRUE, logbf=TRUE)
 	
 	if (oneSided == "right") {
@@ -2666,8 +2666,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				# sigmaStart <- 1 / N
 				# 
 				# if (sigmaStart < .01) 
-				# 	sigmaStart <- .01
-				
+				# 	sigmaStart <- .01				
 							
 				if (oneSided == "right") {
 				
@@ -2730,8 +2729,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 						# 
 						# bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
 					}
-				}
-					
+				}					
 								
 				if (bf.type == "BF01")
 					bf.raw <- 1 / bf.raw
