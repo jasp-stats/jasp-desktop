@@ -773,26 +773,26 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			list(name="(J) response", type="string"),
 			list(name="Mean Difference", type="number", format="sf:4;dp:3"),
 			list(name="t", type="number", format="sf:4;dp:3"),
-			list(name="df", type="number", format="dp:0"),
-			list(name="p", type="number", format="dp:3;p:.001"))
+			list(name="df", type="number", format="dp:0"))
+#			list(name="p", type="number", format="dp:3;p:.001"))
 		
 		if (options$postHocTestsHolm)
-			fields[[length(fields) + 1]] <- list(name="p holm", type="number", format="dp:3")
+			fields[[length(fields) + 1]] <- list(name="p holm", type="number", format="dp:3;p:.001")
 		
 		if (options$postHocTestsBonferroni)
-			fields[[length(fields) + 1]] <- list(name="p bonferroni", type="number", format="dp:3")
+			fields[[length(fields) + 1]] <- list(name="p bonferroni", type="number", format="dp:3;p:.001")
 		
 		if (options$postHocTestsHochberg)
-			fields[[length(fields) + 1]] <- list(name="p hochberg", type="number", format="dp:3")
+			fields[[length(fields) + 1]] <- list(name="p hochberg", type="number", format="dp:3;p:.001")
 		
 		if (options$postHocTestsHommel)
-			fields[[length(fields) + 1]] <- list(name="p hommel", type="number", format="dp:3")
+			fields[[length(fields) + 1]] <- list(name="p hommel", type="number", format="dp:3;p:.001")
 		
 		if (options$postHocTestsBenjamini)
-			fields[[length(fields) + 1]] <- list(name="p benjamini", type="number", format="dp:3")
+			fields[[length(fields) + 1]] <- list(name="p benjamini", type="number", format="dp:3;p:.001")
 		
 		if (options$postHocTestsFDR)
-			fields[[length(fields) + 1]] <- list(name="p FDR", type="number", format="dp:3")
+			fields[[length(fields) + 1]] <- list(name="p FDR", type="number", format="dp:3;p:.001")
 		
 		posthoc.table[["schema"]] <- list(fields=fields)
 
@@ -836,7 +836,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row[["Mean Difference"]] <- md
 					row[["t"]]  <- t
 					row[["df"]] <- df
-					row[["p"]]  <- p
+#					row[["p"]]  <- p
 					
 					ps <- c(ps, p)
 				}
