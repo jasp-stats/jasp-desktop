@@ -59,7 +59,7 @@ SOURCES += \
 	options/optionvariable.cpp \
 	options/optionvariables.cpp \
 	options/optionvariablesgroups.cpp \
-	process.cpp \
+	processinfo.cpp \
 	sharedmemory.cpp \
 	tempfiles.cpp \
 	utils.cpp
@@ -108,7 +108,7 @@ HEADERS += \
 	options/optionvariable.h \
 	options/optionvariables.h \
 	options/optionvariablesgroups.h \
-	process.h \
+	processinfo.h \
 	rinterface.h \
 	sharedmemory.h \
 	tempfiles.h \

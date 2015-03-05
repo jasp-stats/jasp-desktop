@@ -1,5 +1,5 @@
 
-#include "process.h"
+#include "processinfo.h"
 
 #ifdef __WIN32__
 #include <windows.h>
@@ -8,7 +8,7 @@
 #include "unistd.h"
 #endif
 
-unsigned long Process::currentPID()
+unsigned long ProcessInfo::currentPID()
 {
 
 #ifdef __WIN32__
@@ -18,7 +18,7 @@ unsigned long Process::currentPID()
 #endif
 }
 
-unsigned long Process::parentPID()
+unsigned long ProcessInfo::parentPID()
 {
 
 #ifdef __WIN32__
@@ -50,7 +50,7 @@ unsigned long Process::parentPID()
 #endif
 }
 
-bool Process::isParentRunning()
+bool ProcessInfo::isParentRunning()
 {
 #ifdef __WIN32__
 
