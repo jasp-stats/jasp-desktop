@@ -679,6 +679,9 @@ $.widget("jasp.table", {
 
 			var cell = columnHeaders[colNo]
 			
+			if (cell.content == "\u03B7\u00B2\u209A")
+				cell.content = '&eta;&sup2;<small><sub style="position: relative; left: -1ex;">p</sub></small>'
+			
 			var span = cell.span
 			if (typeof span == "undefined")
 				span = 1
