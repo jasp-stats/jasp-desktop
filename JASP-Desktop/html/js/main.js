@@ -8,6 +8,11 @@ window.getPPI = function() {
 
 $(document).ready(function() {
 
+	var ua = navigator.userAgent.toLowerCase();
+	
+	if (ua.indexOf("windows") !== -1)
+		$("body").addClass("windows")
+
 	var analyses = []
 	var selectedAnalysisId = -1;
 	var selectedAnalysis = null

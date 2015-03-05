@@ -5,9 +5,12 @@
 
 body {
 	font-family: sans-serif ;
-	font-size: 12px ;
 	margin: 0 ;
 	cursor: default;
+}
+
+body:not(.windows) {
+	font-size: 12px ;
 }
 
 body.selected {
@@ -30,7 +33,6 @@ h3 {
 }
 
 table {
-	font-size: 12px ;
 	font-style: normal ;
 	border-collapse: collapse ;
 	margin-bottom: 2em ;
