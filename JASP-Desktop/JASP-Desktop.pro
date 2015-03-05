@@ -401,7 +401,8 @@ OTHER_FILES += \
 	html/js/analysis.js \
     resources/icons/variable-nominal-text.svg \
     analysisforms/AnovaRepeatedMeasuresShortForm.qml \
-    html/css/images/waiting.svg
+    html/css/images/waiting.svg \
+    resources/icons/analysis-classical-sem.svg
 
 HELP_PATH = $${PWD}/../Docs/help
 LIBRARY_PATH = $${PWD}/../Library

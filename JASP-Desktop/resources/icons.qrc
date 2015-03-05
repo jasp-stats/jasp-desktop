@@ -60,5 +60,6 @@
         <file>icons/variable-ordinal-inactive.svg</file>
         <file>icons/variable-nominal-inactive.svg</file>
         <file>icons/variable-nominal-text.svg</file>
+        <file>icons/analysis-classical-sem.svg</file>
     </qresource>
 </RCC>
