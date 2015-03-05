@@ -22,6 +22,27 @@
 	
 }
 
+.qShiftedT <- function(q, parameters, oneSided) {
+	
+	if (oneSided == FALSE) {
+		
+		qt(q, df=parameters[3]) * parameters[2] + parameters[1]
+		
+	} else if (oneSided == "right") {
+		
+		areaSmallerZero <- pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
+		
+		qt(areaSmallerZero + q * (1 - areaSmallerZero), df=parameters[3]) * parameters[2] + parameters[1]
+		
+	} else if (oneSided == "left") {
+		
+		areaSmallerZero <- pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
+		
+		qt(q * areaSmallerZero, df=parameters[3]) * parameters[2] + parameters[1]
+		
+	}	
+}
+
 # pdf cauchy prior
 .dprior <- function(x, r, oneSided= oneSided){
 	
@@ -176,6 +197,14 @@
 		
 		xlim[1] <- min(-2, quantile(delta[delta >= 0], probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta[delta >= 0], probs = 0.99)[[1]])
+		
+		if (any(is.na(xlim))) {
+		
+			xlim[1] <- min(-2, .qShiftedT(0.01, parameters, oneSided="right"))
+			xlim[2] <- max(2, .qShiftedT(0.99, parameters, oneSided="right"))
+			
+		}
+		
 		stretch <- 1.32
 	}
 	
@@ -186,17 +215,26 @@
 		
 		xlim[1] <- min(-2, quantile(delta[delta <= 0], probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta[delta <= 0], probs = 0.99)[[1]])
+		
+		if (any(is.na(xlim))) {
+		
+			xlim[1] <-  min(-2, .qShiftedT(0.01, parameters, oneSided="left"))
+			xlim[2] <- max(2,.qShiftedT(0.99, parameters, oneSided="left"))
+			
+		}
+		
 		stretch <- 1.32
 	}
+	
+	xticks <- pretty(xlim)
 	
 	ylim <- vector("numeric", 2)
 	
 	ylim[1] <- 0
-	ylim[2] <- max(stretch * .dprior(0,r, oneSided= oneSided), stretch * max(.dposteriorShiftedT(x= delta, parameters=parameters, oneSided= oneSided)))
-	
+	dmax <- optimize(function(x).dposteriorShiftedT(x, parameters=parameters, oneSided= oneSided), interval= range(xticks), maximum = TRUE)$objective
+	ylim[2] <- max(stretch * .dprior(0,r, oneSided= oneSided), stretch * dmax)# get maximum density
 	
 	# calculate position of "nice" tick marks and create labels
-	xticks <- pretty(xlim)
 	yticks <- pretty(ylim)
 	xlabels <- formatC(xticks, 1, format= "f")
 	ylabels <- formatC(yticks, 1, format= "f")
@@ -207,6 +245,13 @@
 		CIlow <- quantile(delta, probs = 0.025)[[1]]
 		CIhigh <- quantile(delta, probs = 0.975)[[1]]
 		medianPosterior <- median(delta)
+		
+		if (any(is.na(c(CIlow, CIhigh, medianPosterior)))) {
+		
+			CIlow <- .qShiftedT(0.025, parameters, oneSided=FALSE)
+			CIhigh <- .qShiftedT(0.975, parameters, oneSided=FALSE)
+			medianPosterior <- .qShiftedT(0.5, parameters, oneSided=FALSE)
+		}
 	}
 	
 	if (oneSided == "right") {
@@ -214,6 +259,13 @@
 		CIlow <- quantile(delta[delta >= 0], probs = 0.025)[[1]]
 		CIhigh <- quantile(delta[delta >= 0], probs = 0.975)[[1]]
 		medianPosterior <- median(delta[delta >= 0])
+		
+		if (any(is.na(c(CIlow, CIhigh, medianPosterior)))) {
+		
+			CIlow <- .qShiftedT(0.025, parameters, oneSided="right")
+			CIhigh <- .qShiftedT(0.975, parameters, oneSided="right")
+			medianPosterior <- .qShiftedT(0.5, parameters, oneSided="right")
+		}
 	}
 	
 	if (oneSided == "left") {
@@ -221,6 +273,14 @@
 		CIlow <- quantile(delta[delta <= 0], probs = 0.025)[[1]]
 		CIhigh <- quantile(delta[delta <= 0], probs = 0.975)[[1]]
 		medianPosterior <- median(delta[delta <= 0])
+		
+		if (any(is.na(c(CIlow, CIhigh, medianPosterior)))) {
+		
+			CIlow <- .qShiftedT(0.025, parameters, oneSided="left")
+			CIhigh <- .qShiftedT(0.975, parameters, oneSided="left")
+			medianPosterior <- .qShiftedT(0.5, parameters, oneSided="left")
+		}
+		
 	}	
 	
 	
@@ -261,7 +321,7 @@
 
 
 	# 95% credible interval
-	dmax <- optimize(function(x).dposteriorShiftedT(x, parameters=parameters, oneSided= oneSided), interval= range(xticks), maximum = TRUE)$objective # get maximum density
+	
 	
 	# enable plotting in margin
 	par(xpd=TRUE)
