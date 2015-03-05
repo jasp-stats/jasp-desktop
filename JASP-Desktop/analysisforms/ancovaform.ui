@@ -692,21 +692,21 @@
                 <number>0</number>
                </property>
                <item row="0" column="2">
-                <widget class="BoundCheckBox" name="effectSizeOmegaSquared_2">
+                <widget class="BoundCheckBox" name="effectSizeOmegaSquared">
                  <property name="text">
                   <string>ω²</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="BoundCheckBox" name="effectSizePartialEtaSquared_2">
+                <widget class="BoundCheckBox" name="effectSizePartialEtaSquared">
                  <property name="text">
                   <string>partial η²</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="BoundCheckBox" name="effectSizeEtaSquared_2">
+                <widget class="BoundCheckBox" name="effectSizeEtaSquared">
                  <property name="text">
                   <string>η²</string>
                  </property>
