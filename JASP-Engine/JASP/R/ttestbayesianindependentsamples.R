@@ -445,20 +445,37 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					df <- N1 + N2 - 2
 					sigmaStart <- sqrt(N1 * N2 / (N1 + N2))
 					
+					if (sigmaStart < .01) 
+							sigmaStart <- .01
+					
 					
 					if (oneSided == "right") {
 						
 						samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
 						delta <- samples[, "delta"]
 						
-						parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-			
-						if (class(parameters) == "try-error") {
+						if (is.infinite(bf.raw)) {
+					
+							if (mean(delta) > 0) {
+					
+								bf.raw <- Inf
+								
+							} else {
+							
+								bf.raw <- 1 / Inf
+							}
 						
-							parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+						} else {
+						
+							parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+				
+							if (class(parameters) == "try-error") {
+							
+								parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+							}
+							
+							bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)
 						}
-						
-						bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)
 					}
 						
 					if (oneSided == "left") {
@@ -466,14 +483,28 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
 						delta <- samples[, "delta"]
 						
-						parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-	
-						if (class(parameters) == "try-error") {
+						if (is.infinite(bf.raw)) {
+					
+							if (mean(delta) < 0) {
+					
+								bf.raw <- Inf
+								
+							} else {
+							
+								bf.raw <- 1 / Inf
+							}
+							
+						} else {
 						
-							parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+							parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+		
+							if (class(parameters) == "try-error") {
+							
+								parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+							}
+							
+							bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
 						}
-						
-						bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
 					}
 					
 										
