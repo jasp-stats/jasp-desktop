@@ -1,13 +1,15 @@
-.plotPosterior.correlation <- function(r, n, alpha=1, oneSided= FALSE, BF, BFH1H0, addInformation= TRUE, dontPlotData=FALSE, drawCI= FALSE, lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {	
+.plotPosterior.correlation <- function(r, n, alpha=1, oneSided= FALSE, BF, BFH1H0, addInformation= TRUE, dontPlotData=FALSE, lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {	
 	
 	
 	if (addInformation) {
 	
 		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
+		drawCI <- TRUE
 		
 	} else {
 	
 		par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
+		drawCI <- FALSE
 	}
 	
 	
@@ -66,14 +68,16 @@
 	
 
 	# compute 95% credible interval & median:
+	if (oneSided != FALSE)
+		drawCI <- FALSE
+		
 	if (drawCI) {
 		
-		if (oneSided == FALSE) {
-		
-			CIlow <- myQPosterior(p = 0.025, n = n, r = r)
-			CIhigh <- myQPosterior(p = 0.975, n = n, r = r)
-			medianPosterior <- myQPosterior(p = 0.5, n = n, r = r)
-		}
+		rhoQuantiles <- .rhoQuantile(n = n, r = r)
+		CIlow <- rhoQuantiles[1]
+		CIhigh <- rhoQuantiles[3]
+		medianPosterior <- rhoQuantiles[2]
+	
 	}
 	
 	rho <- seq(min(xticks), max(xticks),length.out = 1000)	
@@ -190,11 +194,13 @@
 		xx <- min(xticks)
 		
 		if (BF10 >= 1000000 | BF01 >= 1000000) {
+		
 			BF10t <- format(BF10, digits= 4, scientific = TRUE)
 			BF01t <- format(BF01, digits= 4, scientific = TRUE)
 		}
 		
 		if (BF10 < 1000000 & BF01 < 1000000) {
+		
 			BF10t <- formatC(BF10,3, format = "f")
 			BF01t <- formatC(BF01,3, format = "f")
 		}
