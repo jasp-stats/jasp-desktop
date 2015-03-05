@@ -477,9 +477,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="p", type="number", format="dp:3;p:.001"))
 		
 	if (options$miscEffectSizeEstimates) {
-	
-		fields[[length(fields) + 1]] <- list(name="&eta;&sup2;", type="number", format="dp:3")
-		fields[[length(fields) + 1]] <- list(name="&omega;&sup2;", type="number", format="dp:3")
+	    
+	    if(options$effectSizeEtaSquared) {
+	        fields[[length(fields) + 1]] <- list(name="\u03B7\u00B2", type="number", format="dp:3")
+	    }
+	    if(options$effectSizePartialEtaSquared) {
+	        fields[[length(fields) + 1]] <- list(name="\u03B7\u00B2\u209A", type="number", format="dp:3")
+	    }
+	    if(options$effectSizeOmegaSquared) {
+	        fields[[length(fields) + 1]] <- list(name="\u03C9\u00B2", type="number", format="dp:3")
+	    }
 	}
 	
 	anova[["schema"]] <- list(fields=fields)
@@ -596,23 +603,26 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				}
 			
 				if (options$miscEffectSizeEstimates) {
-					MSr <- result["Residuals","Sum Sq"]/result["Residuals","Df"]
+					SSr <- result["Residuals","Sum Sq"]
+					MSr <- SSr/result["Residuals","Df"]
 				
 					if (i <= length(terms.base64)) {
 					
-						row[["&eta;&sup2;"]] <- SS / SSt
+						row[["\u03B7\u00B2"]] <- SS / SSt
+						row[["\u03B7\u00B2\u209A"]] <- SS / (SS + SSr)
 						omega <- (SS - (df * MSr)) / (SSt + MSr)
 					
 						if (omega < 0) {
-							row[["&omega;&sup2;"]] <- 0
+							row[["\u03C9\u00B2"]] <- 0
 						} else {
-							row[["&omega;&sup2;"]] <- omega
+							row[["\u03C9\u00B2"]] <- omega
 						}
 					
 					} else {
 					
-						row[["&eta;&sup2;"]] <- ""
-						row[["&omega;&sup2;"]] <- ""
+						row[["\u03B7\u00B2"]] <- ""
+						row[["\u03B7\u00B2\u209A"]] <- ""
+						row[["\u03C9\u00B2"]] <- ""
 					}
 
 				}
