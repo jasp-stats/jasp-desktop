@@ -1,7 +1,7 @@
 
 #include "sharedmemory.h"
 
-#include "process.h"
+#include "processinfo.h"
 
 #include <sstream>
 
@@ -17,7 +17,7 @@ DataSet *SharedMemory::createDataSet()
 	{
 		stringstream ss;
 		ss << "JASP-DATA-";
-		ss << Process::currentPID();
+		ss << ProcessInfo::currentPID();
 		_memoryName = ss.str();
 
 		interprocess::shared_memory_object::remove(_memoryName.c_str());
@@ -33,7 +33,7 @@ DataSet *SharedMemory::retrieveDataSet()
 	{
 		stringstream ss;
 		ss << "JASP-DATA-";
-		ss << Process::parentPID();
+		ss << ProcessInfo::parentPID();
 		_memoryName = ss.str();
 
 		_memory = new interprocess::managed_shared_memory(interprocess::open_read_only, _memoryName.c_str());

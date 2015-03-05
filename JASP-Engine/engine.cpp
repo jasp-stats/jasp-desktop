@@ -6,7 +6,7 @@
 
 #include "../JASP-Common/lib_json/json.h"
 #include "../JASP-Common/analysisloader.h"
-#include "../JASP-Common/process.h"
+#include "../JASP-Common/processinfo.h"
 #include "../JASP-Common/datasetloader.h"
 #include "../JASP-Common/tempfiles.h"
 #include "../JASP-Common/utils.h"
@@ -35,7 +35,7 @@ Engine::Engine()
 	_status = empty;
 
 	rbridge_init();
-	tempfiles_attach(Process::parentPID());
+	tempfiles_attach(ProcessInfo::parentPID());
 
 	DataSet *dataSet = DataSetLoader::getDataSet();
 	rbridge_setDataSet(dataSet);
@@ -117,7 +117,7 @@ void Engine::runAnalysis()
 void Engine::run()
 {
 	stringstream ss;
-	ss << "JASP-IPC-" << Process::parentPID();
+	ss << "JASP-IPC-" << ProcessInfo::parentPID();
 	string memoryName = ss.str();
 
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
@@ -125,7 +125,7 @@ void Engine::run()
 	do
 	{
 		receiveMessages(100);
-		if ( ! Process::isParentRunning())
+		if ( ! ProcessInfo::isParentRunning())
 			break;
 		runAnalysis();
 

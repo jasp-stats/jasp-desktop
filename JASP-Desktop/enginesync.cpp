@@ -12,7 +12,7 @@
 
 #include "lib_json/json.h"
 
-#include "process.h"
+#include "processinfo.h"
 #include "common.h"
 #include "qutils.h"
 #include "tempfiles.h"
@@ -61,7 +61,7 @@ void EngineSync::start()
 
 	try {
 
-		unsigned long pid = Process::currentPID();
+		unsigned long pid = ProcessInfo::currentPID();
 
 		stringstream ss;
 		ss << "JASP-IPC-" << pid;
@@ -99,7 +99,7 @@ void EngineSync::start()
 	connect(timer, SIGNAL(timeout()), this, SLOT(heartbeatTempFiles()));
 	timer->start(30000);
 
-	tempfiles_init(Process::currentPID());
+	tempfiles_init(ProcessInfo::currentPID());
 }
 
 bool EngineSync::engineStarted()
@@ -305,7 +305,7 @@ void EngineSync::startSlaveProcess(int no)
 	env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
 	env.insert("R_HOME", programDir.absoluteFilePath("R"));
 
-    unsigned long processId = Process::currentPID();
+	unsigned long processId = ProcessInfo::currentPID();
     args << QString::number(processId);
 
 #undef ARCH_SUBPATH

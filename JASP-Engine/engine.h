@@ -4,7 +4,7 @@
 #include "../JASP-Common/dataset.h"
 #include "../JASP-Common/lib_json/json.h"
 #include "../JASP-Common/ipcchannel.h"
-#include "../JASP-Common/process.h"
+#include "../JASP-Common/processinfo.h"
 
 class Engine
 {
