@@ -190,6 +190,7 @@ $.widget("jasp.table", {
 				var cell = column[rowNo]
 				var content = cell.content
 				var formatted
+				var isNumber = false
 				
 				if (typeof content == "undefined") {
 				
@@ -221,6 +222,8 @@ $.widget("jasp.table", {
 						formatted = { content : zero.toFixed(dp), "class" : "number" }
 					else
 						formatted = { content : zero.toPrecision(sf), "class" : "number" }
+						
+					isNumber = true
 					
 				}
 				else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
@@ -244,6 +247,8 @@ $.widget("jasp.table", {
 					var reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum
 				
 					formatted = { content : reassembled, "class" : "number" }
+					
+					isNumber = true
 				}
 				else {
 					
@@ -255,10 +260,9 @@ $.widget("jasp.table", {
 					
 						formatted = { content : content.toPrecision(sf).replace(/-/g, "&minus;"), "class" : "number" }
 					}
+					
+					isNumber = true
 				}
-				
-				if (approx)
-					formatted.content = "&#x2248;&thinsp;" + formatted.content
 				
 				if (typeof cell.footnotes != "undefined")
 					formatted.footnotes = this._getFootnotes(cell.footnotes)
@@ -266,6 +270,9 @@ $.widget("jasp.table", {
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
 				
+				if (isNumber && approx)
+					formatted.content = "~&thinsp;" + formatted.content
+									
 				columnCells[rowNo] = formatted
 			}
 		}
@@ -276,6 +283,8 @@ $.widget("jasp.table", {
 				var cell = column[rowNo]
 				var content = cell.content
 				var formatted
+				
+				var isNumber = false
 				
 				if (typeof content == "undefined") {
 				
@@ -296,14 +305,17 @@ $.widget("jasp.table", {
 				else if (content < p) {
 					
 					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
+
 				}
 				else if (pc) {
 				
 					formatted = { content : "" + (100 * content).toFixed(dp) + "&thinsp;%", "class" : "percentage" }
+					isNumber = true
 				}
 				else {
 				
 					formatted = { content : content.toFixed(dp).replace(/-/g, "&minus;"), "class" : "number" }
+					isNumber = true
 				}
 				
 				if (typeof cell.footnotes != "undefined")
@@ -311,6 +323,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (isNumber && approx)
+					formatted.content = "~&thinsp;" + formatted.content
 				
 				columnCells[rowNo] = formatted
 			}
@@ -322,6 +337,8 @@ $.widget("jasp.table", {
 				var cell = column[rowNo]
 				var content = cell.content
 				var formatted
+				
+				var isNumber = false
 				
 				if (typeof content == "undefined") {
 				
@@ -338,6 +355,7 @@ $.widget("jasp.table", {
 				else {
 				
 					formatted = { content : "" + (100 * content.toFixed(0)) + "&thinsp;%", "class" : "percentage" }
+					isNumber = true
 				}
 				
 				if (typeof cell.footnotes != "undefined")
@@ -345,6 +363,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (isNumber && approx)
+					formatted.content = "~&thinsp;" + formatted.content
 				
 				columnCells[rowNo] = formatted
 			}			
