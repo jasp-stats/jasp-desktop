@@ -1,14 +1,10 @@
 [
    {
       "name" : "variables",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
       "name" : "groupingVariable",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {
@@ -30,8 +26,6 @@
    },
    {
       "format" : "",
-      "max" : 999999.0,
-      "min" : -999999.0,
       "name" : "priorWidth",
       "type" : "Number",
       "value" : 0.7070

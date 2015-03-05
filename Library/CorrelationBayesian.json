@@ -1,8 +1,6 @@
 [
    {
       "name" : "variables",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
@@ -51,7 +49,6 @@
    },
    {
       "format" : "",
-      "max" : 999999.0,
       "min" : 0.50,
       "name" : "priorWidth",
       "type" : "Number",

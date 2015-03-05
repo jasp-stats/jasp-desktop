@@ -8,7 +8,7 @@ OptionVariable::OptionVariable()
 {
 }
 
-void OptionVariable::set(Json::Value &value)
+void OptionVariable::set(const Json::Value &value)
 {
 	string asString = value.asString();
 

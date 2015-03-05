@@ -1,8 +1,6 @@
 [
    {
       "name" : "betweenSubjectFactors",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
@@ -21,8 +19,6 @@
          },
          {
             "name" : "levels",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : false,
             "type" : "Variables"
          }
       ],
@@ -30,8 +26,6 @@
    },
    {
       "name" : "repeatedMeasuresCells",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
@@ -45,8 +39,6 @@
       "template" : [
          {
             "name" : "components",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : false,
             "type" : "Variables"
          },
          {

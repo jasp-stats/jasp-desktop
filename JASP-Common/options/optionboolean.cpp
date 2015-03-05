@@ -6,9 +6,9 @@ OptionBoolean::OptionBoolean(bool defaultValue)
 	_value = defaultValue;
 }
 
-void OptionBoolean::loadData(Json::Value data)
+void OptionBoolean::loadData(const Json::Value &data)
 {
-	_value = data["default"].asBool();
+	_value = data.get("default", false).asBool();
 }
 
 Json::Value OptionBoolean::asJSON() const
@@ -16,7 +16,7 @@ Json::Value OptionBoolean::asJSON() const
 	return Json::Value(value());
 }
 
-void OptionBoolean::set(Json::Value &value)
+void OptionBoolean::set(const Json::Value &value)
 {
 	setValue(value.asBool());
 }

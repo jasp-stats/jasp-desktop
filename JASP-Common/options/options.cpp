@@ -31,7 +31,7 @@ Options::~Options()
 		delete item.second;
 }
 
-void Options::loadData(Json::Value array)
+void Options::loadData(const Json::Value &array)
 {
 	for (Json::ValueIterator itr = array.begin(); itr != array.end(); itr++)
 	{
@@ -111,7 +111,7 @@ Json::Value Options::asJSON() const
 	return top;
 }
 
-void Options::set(Json::Value &json)
+void Options::set(const Json::Value &json)
 {
 	BOOST_FOREACH(OptionNamed item, _options)
 	{
@@ -124,7 +124,7 @@ void Options::set(Json::Value &json)
 	optionsChanged(this);
 }
 
-void Options::insertValue(string &name, Json::Value &value, Json::Value &root)
+void Options::insertValue(const string &name, Json::Value &value, Json::Value &root)
 {
 	size_t endPos;
 
@@ -141,7 +141,7 @@ void Options::insertValue(string &name, Json::Value &value, Json::Value &root)
 	}
 }
 
-bool Options::extractValue(string &name, Json::Value &root, Json::Value &value)
+bool Options::extractValue(const string &name, const Json::Value &root, Json::Value &value)
 {
 	size_t endPos;
 

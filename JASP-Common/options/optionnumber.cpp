@@ -14,12 +14,12 @@ OptionNumber::OptionNumber()
 {
 }
 
-void OptionNumber::loadData(Json::Value data)
+void OptionNumber::loadData(const Json::Value &data)
 {
-	_value = data["value"].asDouble();
-	_min = data["min"].asDouble();
-	_max = data["max"].asDouble();
-	_format = data["format"].asString();
+	_value = data.get("value", 0.0).asDouble();
+	_min = data.get("min", -999999.0).asDouble();
+	_max = data.get("max",  999999.0).asDouble();
+	_format = data.get("format", "").asString();
 }
 
 Json::Value OptionNumber::asJSON() const
@@ -27,7 +27,7 @@ Json::Value OptionNumber::asJSON() const
 	return Json::Value(_value);
 }
 
-void OptionNumber::set(Json::Value &value)
+void OptionNumber::set(const Json::Value &value)
 {
 	_value = value.asDouble();
 }

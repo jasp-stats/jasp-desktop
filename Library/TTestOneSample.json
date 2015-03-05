@@ -1,14 +1,10 @@
 [
    {
       "name" : "variables",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
       "format" : "",
-      "max" : 999999.0,
-      "min" : -999999.0,
       "name" : "testValue",
       "type" : "Number",
       "value" : 0.0

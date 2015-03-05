@@ -1,14 +1,10 @@
 [
    {
       "name" : "variables",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
       "name" : "controllingFor",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {

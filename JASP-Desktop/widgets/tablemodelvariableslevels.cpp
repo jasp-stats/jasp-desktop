@@ -297,7 +297,7 @@ QMimeData *TableModelVariablesLevels::mimeData(const QModelIndexList &indexes) c
 	for (int i = 0; i < indexes.length(); i++)
 	{
 		Row row = _rows.at(indexes.at(i).row());
-		dataStream << row.title();
+		dataStream << QStringList(row.title());
 	}
 
 	mimeData->setData("application/vnd.list.variable", encodedData);

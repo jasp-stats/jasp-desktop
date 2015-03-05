@@ -1,8 +1,6 @@
 [
    {
       "name" : "mainFields",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {

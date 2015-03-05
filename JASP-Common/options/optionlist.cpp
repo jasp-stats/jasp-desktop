@@ -15,11 +15,11 @@ OptionList::OptionList()
 
 }
 
-void OptionList::loadData(Json::Value data)
+void OptionList::loadData(const Json::Value &data)
 {
 	_options = std::vector<std::string>();
 
-	Json::Value &array = data["options"];
+	const Json::Value &array = data["options"];
 	for (Json::ValueIterator itr = array.begin(); itr != array.end(); itr++)
 		_options.push_back((*itr).asString());
 
@@ -34,7 +34,7 @@ Json::Value OptionList::asJSON() const
 	return _value;
 }
 
-void OptionList::set(Json::Value &value)
+void OptionList::set(const Json::Value &value)
 {
 	_value = value.asString();
 }

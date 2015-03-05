@@ -10,10 +10,10 @@ public:
 	OptionList(const std::vector<std::string> &options, std::string selected = "");
 	OptionList();
 
-	virtual void loadData(Json::Value data) OVERRIDE;
+	virtual void loadData(const Json::Value &data) OVERRIDE;
 
 	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(Json::Value& value) OVERRIDE;
+	virtual void set(const Json::Value& value) OVERRIDE;
 	void set(int index);
 	const std::vector<std::string> options() const;
 	virtual Option* clone() const OVERRIDE;

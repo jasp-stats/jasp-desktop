@@ -12,7 +12,7 @@ class OptionVariable : public OptionVariables
 {
 public:
 	OptionVariable();
-	virtual void set(Json::Value& value) OVERRIDE;
+	virtual void set(const Json::Value& value) OVERRIDE;
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
 

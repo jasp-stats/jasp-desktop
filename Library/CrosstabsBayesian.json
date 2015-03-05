@@ -1,20 +1,14 @@
 [
    {
       "name" : "rows",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
       "name" : "columns",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
       "name" : "counts",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {
@@ -27,8 +21,6 @@
          },
          {
             "name" : "variables",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : false,
             "type" : "Variables"
          }
       ],

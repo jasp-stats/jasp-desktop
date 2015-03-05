@@ -260,7 +260,7 @@ QMimeData *TableModelAnovaWithinSubjectCells::mimeData(const QModelIndexList &in
 		if (index.isValid())
 		{
 			Term term = _variables.at(index.row());
-			dataStream << term.asQString();
+			dataStream << term.components();
 		}
 	}
 

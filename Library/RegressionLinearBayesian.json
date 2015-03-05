@@ -1,14 +1,10 @@
 [
    {
       "name" : "dependent",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {
       "name" : "covariates",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
@@ -16,8 +12,6 @@
       "template" : [
          {
             "name" : "components",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : false,
             "type" : "Variables"
          },
          {

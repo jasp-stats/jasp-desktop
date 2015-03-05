@@ -1,8 +1,6 @@
 [
    {
       "name" : "dependent",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {
@@ -15,8 +13,6 @@
          },
          {
             "name" : "variables",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : false,
             "type" : "Variables"
          },
          {
@@ -30,8 +26,6 @@
    },
    {
       "name" : "wlsWeights",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {
@@ -108,32 +102,24 @@
    },
    {
       "format" : "",
-      "max" : 999999.0,
-      "min" : -999999.0,
       "name" : "steppingMethodCriteriaPEntry",
       "type" : "Number",
       "value" : 0.050
    },
    {
       "format" : "",
-      "max" : 999999.0,
-      "min" : -999999.0,
       "name" : "steppingMethodCriteriaPRemoval",
       "type" : "Number",
       "value" : 0.10
    },
    {
       "format" : "",
-      "max" : 999999.0,
-      "min" : -999999.0,
       "name" : "steppingMethodCriteriaFEntry",
       "type" : "Number",
       "value" : 3.840
    },
    {
       "format" : "",
-      "max" : 999999.0,
-      "min" : -999999.0,
       "name" : "steppingMethodCriteriaFRemoval",
       "type" : "Number",
       "value" : 2.710

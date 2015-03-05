@@ -1,8 +1,6 @@
 [
    {
       "name" : "betweenSubjectFactors",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
@@ -21,8 +19,6 @@
          },
          {
             "name" : "levels",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : false,
             "type" : "Variables"
          }
       ],
@@ -39,8 +35,6 @@
       "template" : [
          {
             "name" : "components",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : false,
             "type" : "Variables"
          }
       ],
@@ -57,8 +51,6 @@
       "template" : [
          {
             "name" : "variable",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : true,
             "type" : "Variable"
          },
          {
@@ -80,8 +72,6 @@
    },
    {
       "name" : "postHocTestsVariables",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
@@ -168,8 +158,6 @@
    },
    {
       "name" : "marginalMeansTerms",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {

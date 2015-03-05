@@ -25,7 +25,7 @@ Json::Value OptionTerm::asJSON() const
 	return v;
 }
 
-void OptionTerm::set(Json::Value &value)
+void OptionTerm::set(const Json::Value &value)
 {
 	vector<string> terms;
 

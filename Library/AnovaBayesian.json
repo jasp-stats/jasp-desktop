@@ -1,20 +1,14 @@
 [
    {
       "name" : "dependent",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {
       "name" : "fixedFactors",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
       "name" : "randomFactors",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
@@ -22,8 +16,6 @@
       "template" : [
          {
             "name" : "components",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : false,
             "type" : "Variables"
          },
          {

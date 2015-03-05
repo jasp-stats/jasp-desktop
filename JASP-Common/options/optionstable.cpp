@@ -16,7 +16,7 @@ OptionsTable::OptionsTable()
 {
 }
 
-void OptionsTable::loadData(Json::Value data)
+void OptionsTable::loadData(const Json::Value &data)
 {
 	_template = new Options();
 	_template->loadData(data["template"]);
@@ -36,7 +36,7 @@ Json::Value OptionsTable::asJSON() const
 	return v;
 }
 
-void OptionsTable::set(Json::Value &value)
+void OptionsTable::set(const Json::Value &value)
 {
 	BOOST_FOREACH(Options *row, _value)
 		delete row;

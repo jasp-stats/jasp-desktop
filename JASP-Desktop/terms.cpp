@@ -212,7 +212,11 @@ vector<vector<string> > Terms::asVectorOfVectors() const
 	{
 		vector<string> components = term.scomponents();
 		items.push_back(components);
+
+		int t = items.size();
 	}
+
+	int s = items.size();
 
 	return items;
 }
@@ -372,9 +376,9 @@ void Terms::set(QByteArray &array)
 
 	while ( ! stream.atEnd())
 	{
-		QString variable;
+		QStringList variable;
 		stream >> variable;
-		add(variable);
+		add(Term(variable));
 	}
 }
 

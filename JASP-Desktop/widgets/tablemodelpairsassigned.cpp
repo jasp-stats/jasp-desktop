@@ -139,13 +139,13 @@ bool TableModelPairsAssigned::dropMimeData(const QMimeData *data, Qt::DropAction
 		if (count == 0)
 			return false;
 
-		QString item1;
+		QStringList item1;
 		stream >> item1;
 
 		if (parent.isValid()) // drop into cell
 		{
 			QStringList row = _values.at(parent.row());
-			row.replace(parent.column(), item1);
+			row.replace(parent.column(), item1.first());
 			_values.replace(parent.row(), row);
 			emit dataChanged(parent, parent);
 		}
@@ -154,7 +154,7 @@ bool TableModelPairsAssigned::dropMimeData(const QMimeData *data, Qt::DropAction
 			int row = _values.length() - 1;
 			int column = _values.at(row).length() - 1;
 
-			_values.last().last() = item1;
+			_values.last().last() = item1.first();
 
 			emit dataChanged(index(row, column), index(row, column));
 		}

@@ -16,9 +16,9 @@ public:
 	Option();
 	virtual ~Option();
 
-	virtual void loadData(Json::Value data) = 0;
+	virtual void loadData(const Json::Value &) { };
 	virtual Json::Value asJSON() const = 0;
-	virtual void set(Json::Value& value) = 0;
+	virtual void set(const Json::Value& value) = 0;
 	virtual Option *clone() const = 0;
 
 	boost::signals2::signal<void (Option *)> changed;

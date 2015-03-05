@@ -14,10 +14,10 @@ public:
 	OptionsTable(Options *rowTemplate);
 	OptionsTable();
 
-	virtual void loadData(Json::Value data) OVERRIDE;
+	virtual void loadData(const Json::Value &data) OVERRIDE;
 
 	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(Json::Value &value) OVERRIDE;
+	virtual void set(const Json::Value &value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
 	virtual void setValue(std::vector<Options *> value) OVERRIDE;
 

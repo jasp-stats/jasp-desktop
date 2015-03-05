@@ -8,10 +8,6 @@ OptionIntegerArray::OptionIntegerArray()
 {
 }
 
-void OptionIntegerArray::loadData(Json::Value data)
-{
-}
-
 Json::Value OptionIntegerArray::asJSON() const
 {
 	Json::Value array = Json::arrayValue;
@@ -22,8 +18,8 @@ Json::Value OptionIntegerArray::asJSON() const
 	return array;
 }
 
-void OptionIntegerArray::set(Json::Value &value)
-{
+void OptionIntegerArray::set(const Json::Value &value)
+{	
 	vector<int> ints;
 
 	for (Json::ValueIterator itr = value.begin(); itr != value.end(); itr++)

@@ -1,32 +1,22 @@
 [
    {
       "name" : "dependent",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {
       "name" : "fixedFactors",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
       "name" : "randomFactors",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
       "name" : "covariates",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
       "name" : "wlsWeights",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {
@@ -34,8 +24,6 @@
       "template" : [
          {
             "name" : "components",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : false,
             "type" : "Variables"
          }
       ],
@@ -52,8 +40,6 @@
       "template" : [
          {
             "name" : "variable",
-            "onlyOneComponent" : true,
-            "onlyOneTerm" : true,
             "type" : "Variable"
          },
          {
@@ -75,8 +61,6 @@
    },
    {
       "name" : "postHocTestsVariables",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
@@ -111,8 +95,6 @@
    },
    {
       "name" : "marginalMeansTerms",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
@@ -148,20 +130,14 @@
    },
    {
       "name" : "horizontalAxis",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {
       "name" : "seperateLines",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {
       "name" : "seperatePlots",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : true,
       "type" : "Variable"
    },
    {

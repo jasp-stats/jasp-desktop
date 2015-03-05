@@ -1,8 +1,6 @@
 [
    {
       "name" : "variables",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
