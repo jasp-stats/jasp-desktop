@@ -235,6 +235,76 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
 					
+					deltaHat <- mean(c1 - c2) / sd(c1 - c2)
+						
+					N <- length(c1)
+					df <- N - 1
+					sigmaStart <- 1 / N
+					
+					if (sigmaStart < .01) 
+						sigmaStart <- .01
+					
+					
+					if (oneSided == "right") {
+						
+						samples <- BayesFactor::ttestBF(c1, c2, paired=TRUE, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
+						delta <- samples[, "delta"]
+						
+						if (is.infinite(bf.raw)) {
+					
+							if (mean(delta) > 0) {
+					
+								bf.raw <- Inf
+								
+							} else {
+							
+								bf.raw <- 1 / Inf
+							}
+					
+						} else {
+							
+							parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+							
+		
+							if (class(parameters) == "try-error") {
+							
+								parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+							}
+							
+							bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)
+							
+						}
+					}
+					
+					if (oneSided == "left") {
+						
+						samples <- BayesFactor::ttestBF(c1, c2, paired=TRUE, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
+						delta <- samples[, "delta"]
+						
+						if (is.infinite(bf.raw)) {
+					
+							if (mean(delta) < 0) {
+					
+								bf.raw <- Inf
+								
+							} else {
+							
+								bf.raw <- 1 / Inf
+							}
+							
+						} else {
+						
+							parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+				
+							if (class(parameters) == "try-error") {
+							
+								parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+							}
+							
+							bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
+						}
+					}
+					
 					if (is.na(bf.raw)) {
 				
 						unplotable <- TRUE
@@ -249,44 +319,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 						unplotable <- TRUE
 						unplotableMessage <- "The Bayes factor is too small"
-						
-					} else {
-					
-						deltaHat <- mean(c1 - c2) / sd(c1 - c2)
-						N <- length(c1)
-						df <- N - 1
-						sigmaStart <- 1 / N
-					
-						if (oneSided == "right") {
-						
-							samples <- BayesFactor::ttestBF(c1, c2, paired=TRUE, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
-							delta <- samples[, "delta"]
-							
-							parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-	
-							if (class(parameters) == "try-error") {
-							
-								parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
-							}
-							
-							bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)
-						}
-						
-						if (oneSided == "left") {
-						
-							samples <- BayesFactor::ttestBF(c1, c2, paired=TRUE, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
-							delta <- samples[, "delta"]
-							
-							parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-			
-							if (class(parameters) == "try-error") {
-							
-								parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
-							}
-							
-							bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
-						}
 					}
+						
 					
 					if (bf.type == "BF01")
 						bf.raw <- 1 / bf.raw
@@ -302,7 +336,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error)
 			
 				})
-		
+				
+				
 				if (class(result) == "try-error") {
 				
 					errorMessage <- .extractErrorMessage(result)
