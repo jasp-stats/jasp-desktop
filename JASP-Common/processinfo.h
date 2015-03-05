@@ -1,7 +1,7 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef PROCESSINFO_H
+#define PROCESSINFO_H
 
-class Process
+class ProcessInfo
 {
 public:
 
