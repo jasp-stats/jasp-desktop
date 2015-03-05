@@ -47,10 +47,13 @@ DataSet *SharedMemory::enlargeDataSet(DataSet *)
 	interprocess::managed_shared_memory::grow(_memoryName.c_str(), _memory->get_size());
 	_memory = new interprocess::managed_shared_memory(interprocess::open_only, _memoryName.c_str());
 
-	return retrieveDataSet();
+	DataSet *dataSet = retrieveDataSet();
+	dataSet->setSharedMemory(_memory);
+
+	return dataSet;
 }
 
-void *SharedMemory::deleteDataSet(DataSet *dataSet)
+void SharedMemory::deleteDataSet(DataSet *dataSet)
 {
 	_memory->destroy_ptr(dataSet);
 }

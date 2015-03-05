@@ -11,7 +11,7 @@ public:
 	static DataSet *createDataSet();
 	static DataSet *retrieveDataSet();
 	static DataSet *enlargeDataSet(DataSet *dataSet);
-	static void *deleteDataSet(DataSet *dataSet);
+	static void deleteDataSet(DataSet *dataSet);
 
 private:
 
