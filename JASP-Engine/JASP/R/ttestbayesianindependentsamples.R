@@ -448,7 +448,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					# if (sigmaStart < .01) 
 					# 	sigmaStart <- .01
 					
-					
 					if (oneSided == "right") {
 						
 						samples <- BayesFactor::ttestBF(data=subDataSet, formula=f, r=r.size, posterior = TRUE, iterations = 10000)
@@ -509,11 +508,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							# bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
 						}
 					}
-					
 										
 					if (options$bayesFactorType == "BF01")
-						bf.raw <- 1 / bf.raw
-					
+						bf.raw <- 1 / bf.raw					
 					
 					BF    <- .clean(bf.raw)
 					BF10post[i] <- BF
@@ -522,8 +519,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						BF <- log(BF)
 					
 					error <- .clean(as.numeric(bf@bayesFactor$error))
-					errorMessage <- NULL
-					
+					errorMessage <- NULL					
 					
 					if (is.na(bf.raw)) {
 				
