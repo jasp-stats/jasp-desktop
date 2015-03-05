@@ -25,7 +25,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/system/error_code.hpp>
 
-#include "process.h"
+#include "processinfo.h"
 #include "utils.h"
 #include "version.h"
 
@@ -170,7 +170,7 @@ string Dirs::exeDir()
 
 #elif defined(__APPLE__)
 
-	unsigned long pid = Process::currentPID();
+	unsigned long pid = ProcessInfo::currentPID();
 
 	char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
 	int ret = proc_pidpath (pid, pathbuf, sizeof(pathbuf));
