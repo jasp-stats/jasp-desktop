@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>594</width>
-    <height>2252</height>
+    <width>591</width>
+    <height>2136</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -447,7 +447,7 @@
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <widget class="BoundAssignWidget" name="postHocTests_variables" native="true">
+          <widget class="BoundAssignWidget" name="postHocTestsVariables" native="true">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -463,45 +463,45 @@
             <string/>
            </property>
            <layout class="QGridLayout" name="gridLayout_17">
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsHochberg">
-              <property name="text">
-               <string>Hochberg</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsBenjamini">
-              <property name="text">
-               <string>Benjamini</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
+            <item row="1" column="0">
              <widget class="BoundCheckBox" name="postHocTestsHolm">
               <property name="text">
                <string>Holm</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
+            <item row="5" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsBenjamini">
               <property name="text">
-               <string>Bonferroni</string>
+               <string>Benjamini</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="0">
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsHochberg">
+              <property name="text">
+               <string>Hochberg</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
              <widget class="BoundCheckBox" name="postHocTestsFDR">
               <property name="text">
                <string>FDR</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
+            <item row="4" column="0">
              <widget class="BoundCheckBox" name="postHocTestsHommel">
               <property name="text">
                <string>Hommel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
+              <property name="text">
+               <string>Bonferroni</string>
               </property>
              </widget>
             </item>
@@ -621,7 +621,7 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="BoundAssignWidget" name="marginalMeans_terms" native="true">
+                <widget class="BoundAssignWidget" name="marginalMeansTerms" native="true">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -662,13 +662,6 @@
             <string>Display</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
-            <item row="3" column="0">
-             <widget class="BoundCheckBox" name="miscFactorCovariateIndependence">
-              <property name="text">
-               <string>Factor Covariate independence check</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="miscDescriptives">
               <property name="text">
@@ -676,32 +669,78 @@
               </property>
              </widget>
             </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="miscEffectSizeEstimates">
+              <property name="text">
+               <string>Estimates of effect size:</string>
+              </property>
+             </widget>
+            </item>
             <item row="2" column="0">
+             <widget class="QWidget" name="widgetEffectSizeTypes" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_27">
+               <property name="leftMargin">
+                <number>24</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="2">
+                <widget class="BoundCheckBox" name="effectSizeOmegaSquared_2">
+                 <property name="text">
+                  <string>ω²</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="BoundCheckBox" name="effectSizePartialEtaSquared_2">
+                 <property name="text">
+                  <string>partial η²</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="BoundCheckBox" name="effectSizeEtaSquared_2">
+                 <property name="text">
+                  <string>η²</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <spacer name="horizontalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>279</width>
+                   <height>17</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="3" column="0">
              <widget class="BoundCheckBox" name="miscHomogeneityTests">
               <property name="text">
                <string>Homogeneity tests</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="miscEffectSizeEstimates">
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="miscFactorCovariateIndependence">
               <property name="text">
-               <string>Estimates of effect size</string>
+               <string>Factor Covariate independence check</string>
               </property>
              </widget>
-            </item>
-            <item row="1" column="1">
-             <spacer name="horizontalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>
@@ -1337,5 +1376,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>miscEffectSizeEstimates</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetEffectSizeTypes</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>219</x>
+     <y>1913</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>414</x>
+     <y>1867</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

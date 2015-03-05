@@ -80,7 +80,7 @@
       "type" : "Variables"
    },
    {
-      "default" : false,
+      "default" : true,
       "name" : "postHocTestsBonferroni",
       "type" : "Boolean"
    },
@@ -178,6 +178,21 @@
       "default" : 300,
       "name" : "chartHeight",
       "type" : "Integer"
+   },
+      {
+      "default" : true,
+      "name" : "effectSizeEtaSquared",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "effectSizePartialEtaSquared",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "effectSizeOmegaSquared",
+      "type" : "Boolean"
    }
 ]
 

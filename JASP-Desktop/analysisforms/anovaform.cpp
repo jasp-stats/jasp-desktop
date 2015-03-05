@@ -126,7 +126,7 @@ void AnovaForm::factorsChanged()
 	_contrastsModel->setVariables(factorsAvailable);
 	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 
-	ui->postHocTests_variables->setVariables(factorsAvailable);
+    ui->postHocTestsVariables->setVariables(factorsAvailable);
 
 	if (_options != NULL)
 		_options->blockSignals(false);
@@ -134,10 +134,5 @@ void AnovaForm::factorsChanged()
 
 void AnovaForm::termsChanged()
 {
-	Terms terms;
-
-	terms.add(string("~OVERALL"));
-	terms.add(_anovaModel->terms());
-
-	ui->marginalMeans_terms->setVariables(terms);
+    ui->marginalMeansTerms->setVariables(_anovaModel->terms());
 }
