@@ -440,13 +440,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					N1 <- length(group2)
 					N2 <- length(group1)
 					
-					sdPooled <- sqrt(((N1 - 1) * var(group2) + (N2 - 1) * var(group1)) / (N1 + N2))
-					deltaHat <- (mean(group2) - mean(group1)) / sdPooled
-					df <- N1 + N2 - 2
-					sigmaStart <- sqrt(N1 * N2 / (N1 + N2))
-					
-					if (sigmaStart < .01) 
-							sigmaStart <- .01
+					# sdPooled <- sqrt(((N1 - 1) * var(group2) + (N2 - 1) * var(group1)) / (N1 + N2))
+					# deltaHat <- (mean(group2) - mean(group1)) / sdPooled
+					# df <- N1 + N2 - 2
+					# sigmaStart <- sqrt(N1 * N2 / (N1 + N2))
+					# 
+					# if (sigmaStart < .01) 
+					# 	sigmaStart <- .01
 					
 					
 					if (oneSided == "right") {
@@ -467,14 +467,16 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						} else {
 						
-							parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-				
-							if (class(parameters) == "try-error") {
-							
-								parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
-							}
-							
-							bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)
+							bf.raw <- .oneSidedTtestBFRichard(x=group2, y=group1, r=r.size, oneSided="right")
+						
+							# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+				            # 
+							# if (class(parameters) == "try-error") {
+							# 
+							# 	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+							# }
+							# 
+							# bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)
 						}
 					}
 						
@@ -496,14 +498,15 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							
 						} else {
 						
-							parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-		
-							if (class(parameters) == "try-error") {
-							
-								parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
-							}
-							
-							bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
+							bf.raw <- .oneSidedTtestBFRichard(x=group2, y=group1, r=r.size, oneSided="left")
+							# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+		                    # 
+							# if (class(parameters) == "try-error") {
+							# 
+							# 	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+							# }
+							# 
+							# bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
 						}
 					}
 					
