@@ -38,6 +38,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="posthoc", type="tables"),
 		list(name="headerDescriptives", type="h1"),
 		list(name="descriptives", type="table"),
+		list(name="headerMarginalMeans", type="h1"),
+		list(name="marginalMeans", type="tables"),
 		list(name="headerProfilePlot", type="h1"),
 		list(name="profilePlot", type="images")
 	)
@@ -116,7 +118,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	## Create Marginal Means Table
 	
-#	result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular)
+	result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular)
+	
+	results[["marginalMeans"]] <- result$result
+	status <- result$status
+	
+	if(!is.null(unlist(results[["marginalMeans"]])))
+	    results[["headerMarginalMeans"]] <- "Marginal Means"
 	
 	
 	
@@ -1033,16 +1041,115 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=levenes.table, status=status)
 }
 
-#.anovaMarginalMeans <- function(dataset, options, perform, model, status, singular) {
-#    
-#    marginalMeans <- list()
-#        
-#    for (term in options$marginalMeans$terms) {
-#        print(term)
-#        marginalMeans[[i]] <- effects::effect(.v(term), model)
-#    }
-#
-#}
+.anovaMarginalMeans <- function(dataset, options, perform, model, status, singular) {
+    
+    if (is.null(options$marginalMeansTerms))
+		return (list(result=NULL, status=status))
+	
+	terms <- options$marginalMeansTerms
+	
+	terms.base64 <- c()
+	terms.normal <- c()
+	
+	for (term in terms) {
+        
+		components <- unlist(term)
+		term.base64 <- paste(.v(components), collapse=":", sep="")
+		term.normal <- paste(components, collapse=" \u273B ", sep="")
+
+		terms.base64 <- c(terms.base64, term.base64)
+		terms.normal <- c(terms.normal, term.normal)
+	}
+	
+	marginalMeans <- list()
+		
+	for(i in .indices(terms.base64)) {
+	    
+	    result <- list()
+	    
+	    result[["title"]] <- paste("Marginal Means - ",terms.normal[i], sep="")
+	    
+	    fields <- list()
+	    
+	    for(j in .indices(terms[[i]]))
+	        fields[[j]] <- list(name=terms[[i]][[j]], type="string")
+	    
+	    fields[[length(fields) + 1]] <- list(name="Marginal Mean", type="number", format="sf:4;dp:3")
+	    fields[[length(fields) + 1]] <- list(name="SE", type="number", format="sf:4;dp:3")
+	    fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4;dp:3")
+	    fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4;dp:3")
+	    
+	    footnotes <- .newFootnotes()	
+	    
+	    if(options$marginalMeansCompareMainEffects) {
+	        fields[[length(fields) + 1]] <- list(name="t", type="number", format="sf:4;dp:3")
+	        fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
+	        
+	        if(options$marginalMeansCiAdjustment == "bonferroni") {
+		        .addFootnote(footnotes, text = "Bonferroni CI adjustment", symbol = "<em>Note.</em>")
+		    } else if(options$marginalMeansCiAdjustment == "sidak") {
+		        .addFootnote(footnotes, text = "Sidak CI adjustment", symbol = "<em>Note.</em>")
+		    }   
+	    }
+	    
+	    result[["schema"]] <- list(fields=fields)
+	    	    
+	    if (perform == "run" && status$ready && status$error == FALSE)  {
+		    
+		    formula <- as.formula(paste("~", terms.base64[i]))
+		    
+		    if(options$marginalMeansCiAdjustment == "bonferroni") {
+		        adjMethod <- "bonferroni"
+		    } else if(options$marginalMeansCiAdjustment == "sidak") {
+		        adjMethod <- "sidak"
+		    } else {
+		        adjMethod <- "none"
+		    }
+		    		    		    
+		    r <- summary(lsmeans::lsmeans(model, formula), adjust = adjMethod, infer = c(TRUE,TRUE))
+		    		    
+		    rows <- list()
+		    		    
+		    for(k in 1:length(r$SE)) {
+		        
+		        row <- list()
+		        
+		        for(j in .indices(terms[[i]]))
+		            row[[ terms[[i]][[j]] ]] <- r[[ .v(terms[[i]][[j]]) ]][k]
+		        
+		        row[["Marginal Mean"]] <- r$lsmean[k]
+		        row[["SE"]] <- r$SE[k]
+		        row[["Lower CI"]] <- r$lower.CL[k]
+		        row[["Upper CI"]] <- r$upper.CL[k]
+		        
+		        if(options$marginalMeansCompareMainEffects) {
+		            row[["t"]] <- r$t.ratio[k]
+		            row[["p"]] <- r$p.value[k]
+		        }
+		        
+		        rows[[k]] <- row
+		        
+		    }
+		    
+		    result[["data"]] <- rows
+		
+	    } else {
+	
+		    result[["data"]] <- list(list("Marginal Mean"=".", "SE"=".", "Lower CI"=".", "Upper CI"="."))
+	    }
+	    
+	    result[["footnotes"]] <- as.list(footnotes)
+	    
+	    if (status$error)
+	        result[["error"]] <- list(error="badData")
+	        
+	    marginalMeans[[i]] <- result
+	
+	}
+	
+	list(result=marginalMeans, status=status)
+
+}
 
 
 .anovaProfilePlot <- function(dataset, options, perform, status) {

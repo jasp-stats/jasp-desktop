@@ -548,10 +548,16 @@
           <widget class="QWidget" name="groupComareMainEffects" native="true">
            <layout class="QGridLayout" name="gridLayout_5">
             <property name="leftMargin">
-             <number>12</number>
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
             </property>
             <item row="2" column="0">
-             <widget class="QWidget" name="widget_16" native="true">
+             <widget class="QWidget" name="widgetCIAdjustmentTypes" native="true">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -585,12 +591,17 @@
                 <widget class="BoundComboBox" name="marginalMeansCiAdjustment">
                  <item>
                   <property name="text">
-                   <string>LSD (none)</string>
+                   <string>None</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
                    <string>Bonferroni</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Sidak</string>
                   </property>
                  </item>
                 </widget>
@@ -1390,6 +1401,22 @@
     <hint type="destinationlabel">
      <x>414</x>
      <y>1867</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>marginalMeansCompareMainEffects</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetCIAdjustmentTypes</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>203</x>
+     <y>1610</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>194</x>
+     <y>1639</y>
     </hint>
    </hints>
   </connection>
