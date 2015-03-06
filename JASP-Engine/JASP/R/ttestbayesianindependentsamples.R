@@ -85,6 +85,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["title"]] <- variable
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
+				plot[["status"]] <- "waiting"
 								
 				image <- .beginSaveImage(530, 400)
 				.plotPosterior.ttest(x=NULL, y=NULL, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, dontPlotData=TRUE)
@@ -100,6 +101,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["title"]] <- variable
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
+				plot[["status"]] <- "waiting"
 				
 				image <- .beginSaveImage(530, 400)
 				.plotBF.robustnessCheck.ttest (oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
@@ -115,7 +117,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				plot[["title"]] <- variable
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				plot[["status"]] <- "running"
+				plot[["status"]] <- "waiting"
 				
 				image <- .beginSaveImage(530, 400)
 				.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
@@ -129,26 +131,22 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		}
 		
 		results[["plots"]] <- plots.ttest
-		# results[["descriptives"]][["status"]] <- "complete"
 		
+		if (perform == "run" && length(options$variables) > 0) {
 		
-		if (callback(results) != 0) 
-			return()
-		
-		
-		if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
-			
-			#for (i in seq_along(results[["plots"]])) {
-			#	results[["plots"]][[i]][["status"]] <- "running"
-			#}
-			
+			if (length(options$variables) > 0 && (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis))	
+				results[["plots"]][[1]][["status"]] <- "running"
+				
+			if (callback(results) != 0) 
+				return()
+				
 			statusInd <- 1
 			i <- 1
 			z <- 1
 			
 			for (variable in options[["variables"]]) {
 			
-		
+			
 				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
 				subDataSet <- na.omit(subDataSet)
 				
@@ -199,10 +197,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					results[["plots"]] <- plots.ttest
 			
-					if (callback(results) != 0) 
-						return()
-					
 					z <- z + 1
+					
+					if (z <= length(plots.ttest))
+						results[["plots"]][[z]][["status"]] <- "running"
+						
+					if (callback(results) != 0)
+						return()
 				}
 					
 				if (options$plotBayesFactorRobustness) {
@@ -226,10 +227,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					results[["plots"]] <- plots.ttest
 			
-					if (callback(results) != 0) 
-						return()
-					
 					z <- z + 1
+					
+					if (z <= length(plots.ttest))
+						results[["plots"]][[z]][["status"]] <- "running"
+						
+					if (callback(results) != 0)
+						return()
 				}
 				
 				if (options$plotSequentialAnalysis) {
@@ -253,15 +257,18 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					results[["plots"]] <- plots.ttest
 			
-					if (callback(results) != 0) 
-						return()
-					
 					z <- z + 1
+					
+					if (z <= length(plots.ttest))
+						results[["plots"]][[z]][["status"]] <- "running"
+						
+					if (callback(results) != 0)
+						return()
 				}
 					
 				statusInd <- statusInd + 1
 				i <- i + 1
-			}				
+			}
 		}
 	}
 	
