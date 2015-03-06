@@ -128,10 +128,10 @@ void TableModelAnovaModel::bindTo(Option *option)
 
 	foreach (Options *row, _rows)
 	{
-		OptionVariables *nameOption = static_cast<OptionVariables*>(row->get(0));
-		string name = nameOption->variables().front();
+		OptionTerm *nameOption = static_cast<OptionTerm*>(row->get(0));
+		vector<string> term = nameOption->term();
 
-		_terms.add(Term(name));
+		_terms.add(Term(term));
 	}
 
 	endResetModel();
@@ -367,9 +367,9 @@ Qt::DropActions TableModelAnovaModel::supportedDragActions() const
 	return Qt::MoveAction;
 }
 
-OptionVariables *TableModelAnovaModel::termOptionFromRow(Options *row)
+OptionTerm *TableModelAnovaModel::termOptionFromRow(Options *row)
 {
-	return static_cast<OptionVariables *>(row->get(0));
+	return static_cast<OptionTerm *>(row->get(0));
 }
 
 void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance)
@@ -389,8 +389,8 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 	while (otr != _rows.end())
 	{
 		Options *row = *otr;
-		OptionVariables *termCell = termOptionFromRow(row);
-		Term existingTerm = Term(termCell->variables());
+		OptionTerm *termCell = termOptionFromRow(row);
+		Term existingTerm = Term(termCell->term());
 
 		bool shouldRemove = true;
 
@@ -431,8 +431,8 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 			otr = _rows.begin();
 			otr += i;
 			Options *row = *otr;
-			OptionVariables *termCell = termOptionFromRow(row);
-			Term existingTerm = Term(termCell->variables());
+			OptionTerm *termCell = termOptionFromRow(row);
+			Term existingTerm = Term(termCell->term());
 
 			if (existingTerm != term)
 			{

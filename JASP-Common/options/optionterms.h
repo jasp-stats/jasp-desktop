@@ -14,9 +14,9 @@ public:
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
 
-	void setValue(std::vector<std::vector<std::string> > value) OVERRIDE;
-	void setValue(std::vector<std::string> value);
-	void setValue(std::string value);
+	virtual void setValue(const std::vector<std::vector<std::string> > &value) OVERRIDE;
+	virtual void setValue(const std::vector<std::string> &value);
+	virtual void setValue(const std::string &value);
 
 	bool onlyOneTerm() const;
 	bool onlyOneComponent() const;

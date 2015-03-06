@@ -16,10 +16,9 @@
       "template" : [
          {
             "name" : "components",
-            "type" : "Variables"
+            "type" : "Term"
          },
          {
-            "default" : false,
             "name" : "isNuisance",
             "type" : "Boolean"
          }
@@ -27,22 +26,18 @@
       "type" : "Table"
    },
    {
-      "default" : false,
       "name" : "outputEffects",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "effectsStepwise",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "posteriorEstimates",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "posteriorDistributions",
       "type" : "Boolean"
    },

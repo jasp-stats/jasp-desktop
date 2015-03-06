@@ -20,10 +20,9 @@
       "template" : [
          {
             "name" : "components",
-            "type" : "Variables"
+            "type" : "Term"
          },
          {
-            "default" : false,
             "name" : "isNuisance",
             "type" : "Boolean"
          }
@@ -31,30 +30,26 @@
       "type" : "Table"
    },
    {
-      "default" : false,
       "name" : "outputEffects",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "effectsStepwise",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "posteriorEstimates",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "posteriorDistributions",
       "type" : "Boolean"
    },
    {
-      "options" : [ "BF10", "BF01", "LogBF10" ],
-	  "default" : "BF10",
       "name" : "bayesFactorType",
-      "type" : "List"
+      "type" : "List",
+      "options" : [ "BF10", "BF01", "LogBF10" ],
+	  "default" : "BF10"
    }
 ]
 

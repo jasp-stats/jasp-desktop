@@ -47,8 +47,6 @@ void OptionsTable::set(const Json::Value &value)
 		Options *row = static_cast<Options *>(_template->clone());
 		row->set(value[i]);
 		_value.push_back(row);
-
-		//row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
 	}
 }
 
@@ -60,7 +58,7 @@ Option *OptionsTable::clone() const
 	return NULL;
 }
 
-void OptionsTable::setValue(vector<Options *> value)
+void OptionsTable::setValue(const vector<Options *> &value)
 {
 	_value = value;
 	notifyChanged();
@@ -70,18 +68,3 @@ Options *OptionsTable::rowTemplate() const
 {
 	return _template;
 }
-
-/*Options *OptionsTable::at(int index) const
-{
-	return _value.at(index);
-}
-
-size_t OptionsTable::size() const
-{
-	return _value.size();
-}
-
-void OptionsTable::rowChanged()
-{
-	notifyChanged();
-}*/

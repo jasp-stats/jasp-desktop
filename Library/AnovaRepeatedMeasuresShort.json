@@ -26,8 +26,6 @@
    },
    {
       "name" : "repeatedMeasuresCells",
-      "onlyOneComponent" : true,
-      "onlyOneTerm" : false,
       "type" : "Variables"
    },
    {
@@ -35,7 +33,7 @@
       "template" : [
          {
             "name" : "components",
-            "type" : "Variables"
+            "type" : "Term"
          }
       ],
       "type" : "Table"
@@ -75,54 +73,46 @@
       "type" : "Variables"
    },
    {
-      "default" : false,
       "name" : "postHocTestsBonferroni",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsHolm",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsFDR",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsHochberg",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsHommel",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsBenjamini",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsTukey",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsWallerDuncan",
       "type" : "Boolean"
    },
    {
-      "default" : 100,
       "name" : "postHocTestsWallerDuncanRatio",
-      "type" : "Integer"
+      "type" : "Integer",
+      "default" : 100
    },
    {
-      "default" : false,
       "name" : "postHocTestsDunnett",
-      "type" : "Boolean"
+      "type" : "Boolean",
+      "default" : false
    },
    {
       "name" : "postHocTestsDunnettControl",

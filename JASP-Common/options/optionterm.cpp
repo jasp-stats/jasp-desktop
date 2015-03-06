@@ -41,11 +41,18 @@ void OptionTerm::set(const Json::Value &value)
 Option *OptionTerm::clone() const
 {
 	OptionTerm *c = new OptionTerm();
-	c->setValue(value());
+	c->setValue(this->term());
 	return c;
 }
 
-std::vector<string> OptionTerm::term()
+void OptionTerm::setValue(const vector<string> &value)
+{
+	vector<vector<string> > terms;
+	terms.push_back(value);
+	OptionTerms::setValue(terms);
+}
+
+vector<string> OptionTerm::term() const
 {
 	if (_value.size() > 0)
 		return _value.front();

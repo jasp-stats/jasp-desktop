@@ -20,7 +20,7 @@
       "template" : [
          {
             "name" : "components",
-            "type" : "Variables"
+            "type" : "Term"
          }
       ],
       "type" : "Table"
@@ -60,32 +60,27 @@
       "type" : "Variables"
    },
    {
-      "default" : true,
       "name" : "postHocTestsBonferroni",
-      "type" : "Boolean"
+      "type" : "Boolean",
+      "default" : true
    },
    {
-      "default" : false,
       "name" : "postHocTestsHolm",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsFDR",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsHochberg",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsHommel",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsBenjamini",
       "type" : "Boolean"
    },
@@ -94,7 +89,6 @@
       "type" : "Terms"
    },
    {
-      "default" : false,
       "name" : "marginalMeansCompareMainEffects",
       "type" : "Boolean"
    },
@@ -105,17 +99,14 @@
       "type" : "List"
    },
    {
-      "default" : false,
       "name" : "miscDescriptives",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "miscEffectSizeEstimates",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "miscHomogeneityTests",
       "type" : "Boolean"
    },
@@ -132,32 +123,29 @@
       "type" : "Variable"
    },
    {
-      "default" : false,
       "name" : "errorBars",
       "type" : "Boolean"
    },
    {
-      "default" : 450,
       "name" : "chartWidth",
-      "type" : "Integer"
+      "type" : "Integer",
+      "default" : 450
    },
    {
-      "default" : 300,
       "name" : "chartHeight",
-      "type" : "Integer"
+      "type" : "Integer",
+      "default" : 300
    },
    {
-      "default" : true,
       "name" : "effectSizeEtaSquared",
-      "type" : "Boolean"
+      "type" : "Boolean",
+      "default" : true
    },
    {
-      "default" : false,
       "name" : "effectSizePartialEtaSquared",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "effectSizeOmegaSquared",
       "type" : "Boolean"
    }

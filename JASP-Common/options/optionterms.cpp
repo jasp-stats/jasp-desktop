@@ -72,15 +72,17 @@ Option *OptionTerms::clone() const
 	return c;
 }
 
-void OptionTerms::setValue(vector<vector<string> > value)
+void OptionTerms::setValue(const vector<vector<string> > &value)
 {
+	vector<vector<string> > v = value;
+
 	if (_onlyOneTerm && value.size() > 1)
 	{
-		value.erase(++value.begin(), value.end());
+		v.erase(++v.begin(), v.end());
 
-		if (_onlyOneComponent && _onlyOneTerm && value.front().size() > 1)
+		if (_onlyOneComponent && _onlyOneTerm && v.front().size() > 1)
 		{
-			vector<string> &term = value.front();
+			vector<string> &term = v.front();
 			term.erase(++term.begin(), term.end());
 		}
 	}
@@ -88,7 +90,7 @@ void OptionTerms::setValue(vector<vector<string> > value)
 	OptionI::setValue(value);
 }
 
-void OptionTerms::setValue(vector<string> value)
+void OptionTerms::setValue(const vector<string> &value)
 {
 	vector<vector<string> > terms;
 
@@ -102,7 +104,7 @@ void OptionTerms::setValue(vector<string> value)
 	setValue(terms);
 }
 
-void OptionTerms::setValue(string value)
+void OptionTerms::setValue(const string &value)
 {
 	vector<string> term;
 	vector<vector<string> > terms;

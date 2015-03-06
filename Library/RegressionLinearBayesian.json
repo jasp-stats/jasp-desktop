@@ -12,7 +12,7 @@
       "template" : [
          {
             "name" : "components",
-            "type" : "Variables"
+            "type" : "Term"
          },
          {
             "default" : false,
