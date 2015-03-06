@@ -144,6 +144,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			
 			statusInd <- 1
 			i <- 1
+			z <- 1
 			
 			for (variable in options[["variables"]]) {
 			
@@ -156,11 +157,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 				group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g1,.v(variable)] 
 				group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g2,.v(variable)] 
-				
-				
-				numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, any(options$plotSequentialAnalysis, options$plotSequentialAnalysisRobustness))
-											
-				z <- numberPlotsPerVariable * (which(options$variables == variable) -1) + 1
 				
 				
 				if (options$plotPriorAndPosterior) {
@@ -216,7 +212,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					if (status[statusInd] != "error") {
 						
 						image <- .beginSaveImage(530, 400)
-						.plotBF.robustnessCheck.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+						.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=BF10post[i], paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 						content <- .endSaveImage(image)
 						plot[["data"]]  <- content
 					} else {

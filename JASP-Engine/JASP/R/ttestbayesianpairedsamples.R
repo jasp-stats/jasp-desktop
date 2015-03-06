@@ -555,7 +555,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 					image <- .beginSaveImage(530, 400)
 				
-					.plotBF.robustnessCheck.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
+					.plotBF.robustnessCheck.ttest(x=c1, y=c2, BF10post=BF10post[i], paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
 				
 					content <- .endSaveImage(image)
 				
