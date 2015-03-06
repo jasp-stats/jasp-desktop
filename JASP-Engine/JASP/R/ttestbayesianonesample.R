@@ -677,12 +677,12 @@
 		
 		if (oneSided == FALSE) {
 		
-			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale= r, nullInterval = nullInterval)
+			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale=r, nullInterval = nullInterval)
 			BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 		
 		} else {
 		
-			BF10[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r= r, oneSided=oneSided)
+			BF10[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r=r, oneSided=oneSided)
 		}
 		
 		k <- k + 1	
@@ -729,7 +729,7 @@
 			
 			if (oneSided == FALSE) {
 			
-				BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale= "ultrawide", nullInterval = nullInterval)
+				BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale="ultrawide", nullInterval = nullInterval)
 				BF10u[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 			
 			} else {
@@ -1608,7 +1608,7 @@
 }
 
 		
-.plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
+.plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, BF10post, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
  cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, dontPlotData= FALSE) { 
 	
 	#### settings ####
@@ -1692,28 +1692,59 @@
 	
 	for (i in seq_along(rValues)) {
 	
-		BF <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= rValues[i])
-		BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+		if (oneSided == FALSE) {
+		
+			BF <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval=nullInterval, rscale=rValues[i])
+			BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			
+		} else {
+		
+			BF10[i] <- .oneSidedTtestBFRichard(x=x, y=y, paired=paired, oneSided=oneSided, r=rValues[i])
+		}
 	}
 	
 	# BF10 "medium" prior
-	BF10m <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "medium")
-	BF10m <- BayesFactor::extractBF(BF10m, logbf = FALSE, onlybf = F)[1, "bf"]
+	if (oneSided == FALSE) {
+		
+		BF10m <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval=nullInterval, rscale= "medium")
+		BF10m <- BayesFactor::extractBF(BF10m, logbf = FALSE, onlybf = F)[1, "bf"]
+		
+	} else {
+	
+		BF10m <- .oneSidedTtestBFRichard(x=x, y=y, paired=paired, oneSided=oneSided, r="medium")
+	}
+	
 	BF10mText <- BF10m	
 	
 	# BF10 "wide" prior
-	BF10w <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "wide")
-	BF10w <- BayesFactor::extractBF(BF10w, logbf = FALSE, onlybf = F)[1, "bf"]
+	if (oneSided == FALSE) {
+		
+		BF10w <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "wide")
+		BF10w <- BayesFactor::extractBF(BF10w, logbf = FALSE, onlybf = F)[1, "bf"]
+	
+	} else {
+	
+		BF10w <- .oneSidedTtestBFRichard(x=x, y=y, paired=paired, oneSided=oneSided, r="wide")
+	}
+	
 	BF10wText <- BF10w
 	
 	# BF10 "ultrawide" prior
-	BF10ultra <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "ultrawide")
-	BF10ultra <- BayesFactor::extractBF(BF10ultra, logbf = FALSE, onlybf = F)[1, "bf"]
+	if (oneSided == FALSE) {
+	
+		BF10ultra <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= "ultrawide")
+		BF10ultra <- BayesFactor::extractBF(BF10ultra, logbf = FALSE, onlybf = F)[1, "bf"]
+	
+	} else {
+	
+		BF10ultra <- .oneSidedTtestBFRichard(x=x, y=y, paired=paired, oneSided=oneSided, r="ultrawide")
+	}
+	
 	BF10ultraText <- BF10ultra
 	
 	# BF10 user prior
-	BF10user <- BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= r)
-	BF10user <- BayesFactor::extractBF(BF10user, logbf = FALSE, onlybf = F)[1, "bf"]
+	BF10user <- BF10post #BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= r)
+	# BF10user <- BayesFactor::extractBF(BF10user, logbf = FALSE, onlybf = F)[1, "bf"]
 	BF10userText <- BF10user
 	
 	####################### scale y axis ###########################
@@ -1727,7 +1758,7 @@
 		BF10m  <- 1 / BF10m
 		BF10w <- 1 / BF10w
 		BF10ultra <- 1 / BF10ultra
-		BF10user <- 1 / BF10user
+		# BF10user <- 1 / BF10user
 	}
 	
 	# y-axis labels larger than 1
@@ -2045,7 +2076,7 @@
 	while (eval(parse(text=yLab[2])) > min(BF)) {
 		
 		interval <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[2], "+", fixed= TRUE)[[1]][2])
-			pot <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) + interval
+		pot <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) + interval
 			
 		newy <- paste(strsplit(yLab[1], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
 		yLab <- c(newy, yLab)			
@@ -2906,7 +2937,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if (status[i] != "error") {
 				
 					image <- .beginSaveImage(530, 400)
-					.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)					
+					.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, BF10post=BF10post[i], rscale = options$priorWidth, BFH1H0= BFH1H0)					
 					content <- .endSaveImage(image)
 					plot[["data"]]  <- content
 					
