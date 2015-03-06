@@ -100,8 +100,8 @@
    },
    {
       "name" : "marginalMeansCiAdjustment",
-      "options" : [ "LSD", "bonferroni" ],
-      "default" : "LSD",
+      "options" : [ "none", "bonferroni", "sidak" ],
+      "default" : "none",
       "type" : "List"
    },
    {

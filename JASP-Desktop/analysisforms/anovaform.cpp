@@ -84,11 +84,9 @@ AnovaForm::AnovaForm(QWidget *parent) :
     ui->containerProfilePlot->hide();
 
 #ifdef QT_NO_DEBUG
-	ui->groupComareMainEffects->hide();
-	ui->marginalMeansContainer->hide();
+	ui->randomFactorsBox->hide();
 #else
-	ui->groupComareMainEffects->setStyleSheet("background-color: pink ;");
-	ui->marginalMeansContainer->setStyleSheet("background-color: pink ;");
+	ui->randomFactorsBox->setStyleSheet("background-color: pink ;");
 #endif
 
 }
