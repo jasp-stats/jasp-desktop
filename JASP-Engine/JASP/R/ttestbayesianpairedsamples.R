@@ -595,7 +595,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 					image <- .beginSaveImage(530, 400)
 
-					.plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=BFH1H0)
+					.plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BF10post=BF10post[i], plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=BFH1H0)
 
 					content <- .endSaveImage(image)
 			
