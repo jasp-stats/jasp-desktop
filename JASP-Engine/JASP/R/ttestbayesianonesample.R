@@ -1449,7 +1449,15 @@
 		BF10e <- 1
 	}	
 	
-	BF01e <- 1 / BF10e
+	if (BFH1H0) {
+	
+		BF01e <- 1 / BF10e
+		
+	} else {
+	
+		BF01e <- BF10e
+		BF10e <- 1 / BF01e
+	}
 	
 	
 	# display BF10 value
