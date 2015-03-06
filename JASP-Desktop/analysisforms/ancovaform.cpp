@@ -148,5 +148,7 @@ void AncovaForm::factorsChanged()
 
 void AncovaForm::termsChanged()
 {
-    ui->marginalMeansTerms->setVariables(_anovaModel->terms());
+	Terms terms = _anovaModel->terms();
+	terms.discardWhatDoesContainTheseComponents(_covariatesListModel->assigned());
+	ui->marginalMeansTerms->setVariables(terms);
 }
