@@ -509,7 +509,7 @@
 	}
 }
 
-.plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6,
+.plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, BF10post, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6,
  cexTextBF= 1.4, cexText=1.2, cexLegend= 1.2, cexEvidence= 1.6,	lwdAxis= 1.2, plotDifferentPriors= FALSE, BFH1H0= TRUE, dontPlotData= FALSE) {
 	
 	#### settings ####
@@ -675,18 +675,25 @@
 	
 	while ((i <= length(x) | j <= length(y)) & k <= length(BF10)) {
 		
-		BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = FALSE, rscale= r, nullInterval = nullInterval)
-		BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+		if (oneSided == FALSE) {
 		
-		k <- k+1	
+			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale= r, nullInterval = nullInterval)
+			BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+		
+		} else {
+		
+			BF10[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r= r, oneSided=oneSided)
+		}
+		
+		k <- k + 1	
 		
 		if (i < length(x)) {
 			
-			i <- i+1
+			i <- i + 1
 		}
 		if (j < length(y)) {
 			
-			j <- j+1
+			j <- j + 1
 		}
 	}
 	
@@ -720,18 +727,25 @@
 		
 		while ((i <= length(x) | j <= length(y)) & k <= length(BF10u)) {
 			
-			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = FALSE, rscale= "ultrawide", nullInterval = nullInterval)
-			BF10u[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			if (oneSided == FALSE) {
 			
-			k <- k+1	
+				BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale= "ultrawide", nullInterval = nullInterval)
+				BF10u[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			
+			} else {
+			
+				BF10u[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r="ultrawide", oneSided=oneSided)
+			}
+			
+			k <- k + 1	
 			
 			if (i < length(x)) {
 				
-				i <- i+1
+				i <- i + 1
 			}
 			if (j < length(y)) {
 				
-				j <- j+1
+				j <- j + 1
 			}
 		}
 		
@@ -764,18 +778,25 @@
 		
 		while ((i <= length(x) | j <= length(y)) & k <= length(BF10w)) {
 			
-			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = FALSE, rscale= "wide", nullInterval = nullInterval)
-			BF10w[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			if (oneSided == FALSE) {
 			
-			k <- k+1	
+				BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale= "wide", nullInterval = nullInterval)
+				BF10w[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+			
+			} else {
+			
+				BF10w[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r="wide", oneSided=oneSided)
+			}
+			
+			k <- k + 1	
 			
 			if (i < length(x)) {
 				
-				i <- i+1
+				i <- i + 1
 			}
 			if (j < length(y)) {
 				
-				j <- j+1
+				j <- j + 1
 			}
 		}
 		
@@ -1384,8 +1405,8 @@
 	# display BF10 value
 	if (idData < length(BF10)) {
 		
-		BFe <- BayesFactor::ttestBF(x=x, y=y, paired= paired, nullInterval= nullInterval, rscale= r)
-		BF10e <- BayesFactor::extractBF(BFe, logbf = FALSE, onlybf = F)[1, "bf"]
+		# BFe <- BayesFactor::ttestBF(x=x, y=y, paired= paired, nullInterval= nullInterval, rscale= r)
+		BF10e <- BF10post # BayesFactor::extractBF(BFe, logbf = FALSE, onlybf = F)[1, "bf"]
 		
 	} else {
 		
@@ -2915,7 +2936,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if (status[i] != "error" && status[i] != "sequentialNotPossible") {	
 				
 					image <- .beginSaveImage(530, 400)
-					.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, , plotDifferentPriors= options$plotSequentialAnalysisRobustness)					
+					.plotSequentialBF.ttest (x= variableData, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i], plotDifferentPriors= options$plotSequentialAnalysisRobustness)					
 					content <- .endSaveImage(image)
 					plot[["data"]]  <- content
 					
