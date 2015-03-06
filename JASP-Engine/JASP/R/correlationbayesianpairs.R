@@ -77,6 +77,9 @@
 		CIlow <- rhoQuantiles[1]
 		CIhigh <- rhoQuantiles[3]
 		medianPosterior <- rhoQuantiles[2]
+		
+		if (any(is.na(rhoQuantiles)))
+				drawCI <- FALSE
 	
 	}
 	
@@ -357,13 +360,13 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		} else {
 	
 			dataset <- .vdf(dataset, columns.as.numeric=all.variables)
-		}	
+		}
 	}
 	
-	dataset <- na.omit(dataset)	
+	dataset <- na.omit(dataset)
 	
 
-	results <- list()	
+	results <- list()
 	
 	meta <- list()
 	
@@ -527,6 +530,12 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				#----------------------- compute r & BF ----------------------#
 				some.r <- cor(v1, v2)
 				some.n <- length(v1)
+				
+				if (identical(all.equal(some.r, 1), TRUE) || identical(all.equal(some.r, -1), TRUE)) {
+				
+					unplotable <- TRUE
+					unplotableMessage <- "Sample correlation co-efficient r is 1 or -1"
+				}
 				
 								
 				# Note: Data and bfs check [start]
