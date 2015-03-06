@@ -890,7 +890,7 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>400</height>
+       <height>350</height>
       </size>
      </property>
      <layout class="QGridLayout" name="gridLayout_7">
