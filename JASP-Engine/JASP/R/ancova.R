@@ -705,7 +705,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 			contrast.table <- list()
 			
-			contrast.table[["title"]] <- paste("Contrast", contrast.type, variable, sep=" ")
+			contrastType <- unlist(strsplit(contrast.type,""))
+            contrastType[1] <- toupper(contrastType[1])
+            contrastType <- paste(contrastType, collapse="")
+			
+			contrast.table[["title"]] <- paste(contrastType, " Contrast", " - ",  variable, sep="")
 			
 			contrast.table[["schema"]] <- list(fields = list(
 				list(name="Comparison", type="string"),
@@ -774,7 +778,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 		posthoc.table <- list()
 
-		posthoc.table[["title"]] <- paste("Post-Hoc Comparisons", posthoc.var, sep=" ")
+		posthoc.table[["title"]] <- paste("Post-Hoc Comparisons - ", posthoc.var, sep="")
 		
 		fields <- list(
 			list(name="(I) response", type="string", combine=TRUE),
