@@ -112,7 +112,7 @@
 	}
 }
 
-.plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, BF, BFH1H0, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
+.plotPosterior.ttest <- function(x= NULL, y= NULL, paired= FALSE, oneSided= FALSE, BF, BFH1H0, callback=function(...) 0, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
  cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= TRUE, dontPlotData=FALSE) {
 	
 	if (addInformation) {
@@ -165,6 +165,9 @@
 	
 	delta <- samples[,"delta"]
 	
+	if(callback() != 0)
+		return()
+	
 	# fit shifted t distribution
 	if (is.null(y)) {
 	
@@ -200,6 +203,8 @@
 		parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
 	}
 	
+	if(callback() != 0)
+		return()
 	
 	#BF <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval= nullInterval, posterior = FALSE, rscale= r)
 	#BF10 <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
@@ -215,8 +220,6 @@
 		BF01 <- BF
 		BF10 <- 1 / BF01
 	}
-	
-	
 	
 	# set limits plot
 	xlim <- vector("numeric", 2)
@@ -287,6 +290,9 @@
 	dmax <- optimize(function(x).dposteriorShiftedT(x, parameters=parameters, oneSided= oneSided), interval= range(xticks), maximum = TRUE)$objective
 	ylim[2] <- max(stretch * .dprior(0,r, oneSided= oneSided), stretch * dmax)# get maximum density
 	
+	if(callback() != 0)
+		return()
+	
 	# calculate position of "nice" tick marks and create labels
 	yticks <- pretty(ylim)
 	xlabels <- formatC(xticks, 1, format= "f")
@@ -334,8 +340,7 @@
 			medianPosterior <- .qShiftedT(0.5, parameters, oneSided="left")
 		}
 		
-	}	
-	
+	}
 	
 	posteriorLine <- .dposteriorShiftedT(x= seq(min(xticks), max(xticks),length.out = 1000), parameters=parameters, oneSided = oneSided)
 	
@@ -373,8 +378,7 @@
 	points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
 
 
-	# 95% credible interval
-	
+	# 95% credible interval	
 	
 	# enable plotting in margin
 	par(xpd=TRUE)
@@ -509,7 +513,7 @@
 	}
 }
 
-.plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, BF10post, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6,
+.plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, BF10post, callback=function(...) 0, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6,
  cexTextBF= 1.4, cexText=1.2, cexLegend= 1.2, cexEvidence= 1.6,	lwdAxis= 1.2, plotDifferentPriors= FALSE, BFH1H0= TRUE, dontPlotData= FALSE) {
 	
 	#### settings ####
@@ -644,6 +648,8 @@
 		}
 	}
 	
+	if(callback() != 0)
+			return()
 	
 	BF10[1:idData] <- 1
 	BF10w[1:idData] <- 1
@@ -695,10 +701,15 @@
 			
 			j <- j + 1
 		}
+		
+		if(callback() != 0)
+			return()
 	}
 	
 	BF10 <- BF10[is.finite(BF10)]
 	
+	if(callback() != 0)
+			return()
 	
 	if (plotDifferentPriors) {
 		
@@ -747,10 +758,16 @@
 				
 				j <- j + 1
 			}
+			
+			if(callback() != 0)
+				return()
 		}
 		
 		
 		BF10u <- BF10u[is.finite(BF10u)]
+		
+		if(callback() != 0)
+			return()
 		
 		
 		if (idData < length(x)) {
@@ -798,9 +815,15 @@
 				
 				j <- j + 1
 			}
+			
+			if(callback() != 0)
+				return()
 		}
 		
 		BF10w <- BF10w[is.finite(BF10w)]
+		
+		if(callback() != 0)
+			return()
 		
 	}
 	
@@ -882,6 +905,8 @@
 		i <- i + 1
 	}
 	
+	if(callback() != 0)
+				return()
 	
 	yhigh <- vector("numeric", length(y1h) + length(y3h))
 	
@@ -965,6 +990,9 @@
 		y3l <- c(y3l, newy)
 		i <- i + 1
 	}
+	
+	if(callback() != 0)
+				return()
 	
 	ylow <- vector("numeric", length(y1l) + length(y3l))
 	o <- 1
@@ -1073,6 +1101,9 @@
 		yLab <- yLab1s
 	}
 	
+	if(callback() != 0)
+		return()
+	
 	while (length(yLab) > 9) {
 		
 		ind <- which(yLab == "1")
@@ -1146,6 +1177,9 @@
 			yLab <- c( yLab, newy)
 		}
 	}		
+	
+	if(callback() != 0)
+		return()
 	
 	yAt <- vector("numeric", length(yLab))
 	
@@ -1234,6 +1268,8 @@
 			}		
 		}
 		
+		if(callback() != 0)
+				return()
 		
 		axis(side=4, at= yAt,tick=TRUE,las=2, cex.axis= cexAxis, lwd= lwdAxis, labels=FALSE, line= -0.6)
 		
@@ -1491,6 +1527,8 @@
 	alpha <- 2 / (BF01e + 1) * A / radius^2
 	startpos <- pi/2 - alpha/2
 	
+	if(callback() != 0)
+				return()
 	
 	# draw probability wheel
 	
@@ -1608,7 +1646,7 @@
 }
 
 		
-.plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, BF10post, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
+.plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, BF10post, callback=function(...) 0, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
  cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, dontPlotData= FALSE) { 
 	
 	#### settings ####
@@ -1701,6 +1739,9 @@
 		
 			BF10[i] <- .oneSidedTtestBFRichard(x=x, y=y, paired=paired, oneSided=oneSided, r=rValues[i])
 		}
+		
+		if(callback() != 0)
+			return()
 	}
 	
 	# BF10 "medium" prior
@@ -1746,6 +1787,9 @@
 	BF10user <- BF10post #BayesFactor::ttestBF(x = x, y=y, paired= paired, nullInterval= nullInterval, rscale= r)
 	# BF10user <- BayesFactor::extractBF(BF10user, logbf = FALSE, onlybf = F)[1, "bf"]
 	BF10userText <- BF10user
+	
+	if(callback() != 0)
+			return()
 	
 	####################### scale y axis ###########################
 	
@@ -1886,6 +1930,9 @@
 	o <- 1
 	e <- 1
 	
+	if(callback() != 0)
+			return()
+	
 	for (i in seq_along(ylow)) {
 		
 		if (i %% 2 == 1) {
@@ -2023,6 +2070,9 @@
 		yLab <- yLab1s
 	}
 	
+	if(callback() != 0)
+			return()
+	
 	while (length(yLab) > 9) {
 		
 		ind <- which(yLab == "1")
@@ -2072,6 +2122,9 @@
 		yLab <- c(rev(yLabLow), "1", yLabHigh)
 	}
 	
+	
+	if(callback() != 0)
+			return()
 	
 	while (eval(parse(text=yLab[2])) > min(BF)) {
 		
@@ -2333,6 +2386,8 @@
 		}		
 	}
 	
+	if(callback() != 0)
+			return()
 	
 	# display BF10
 	lines(rValues,log(BF10), col="black", lwd = 2.7)
