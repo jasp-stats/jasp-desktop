@@ -401,13 +401,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 # 1.0. Built-up for likelihood functions
 .myAFunction <- function(n, r, rho) {
-	hyperTerm <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), (1/2), (r*rho)^2))
+	#hyperTerm <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), (1/2), (r*rho)^2))
+	hyperTerm <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=(1/2), z=(r*rho)^2))
 	myResult <- (1-rho^2)^((n-1)/2)*hyperTerm
 	return(myResult)
 }
 .myBFunction <- function(n, r, rho) {
-	hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), (1/2), (r*rho)^2))
-	hyperTerm2 <- Re(hypergeo::hypergeo((n/2), (n/2), (-1/2), (r*rho)^2))
+	#hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), (1/2), (r*rho)^2))
+	#hyperTerm2 <- Re(hypergeo::hypergeo((n/2), (n/2), (-1/2), (r*rho)^2))
+	hyperTerm1 <- Re(hypergeo::genhypergeo(U=c(n/2, n/2), L=(1/2), z=(r*rho)^2))
+	hyperTerm2 <- Re(hypergeo::genhypergeo(U=c(n/2, n/2), L=(-1/2), z=(r*rho)^2))
 	logTerm <- 2*lgamma(n/2)-2*lgamma((n+1)/2)
 	myResult <- 2^(-1)*(1-rho^2)^((n-1)/2)*exp(logTerm)*
 		((1-2*n*(r*rho)^2)/(r*rho)*hyperTerm1 -(1-(r*rho)^2)/(r*rho)*hyperTerm2)
@@ -449,7 +452,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	if (alpha <= 1 && n > 2 && checkR) {
 		return(Inf)
 	}
-	logHyperTerm <- log(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2*alpha)/2), r^2))
+	#logHyperTerm <- log(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2*alpha)/2), r^2))
+	logHyperTerm <- log(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=((n+2*alpha)/2), z=r^2))
 	myLogResult <- log(2^(1-2*alpha))+0.5*log(pi)-lbeta(alpha, alpha)+
 		lgamma((n+2*alpha-1)/2)-lgamma((n+2*alpha)/2)+logHyperTerm
 	realResult <- exp(Re(myLogResult))
@@ -842,6 +846,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 }
 
+
 # 4.2 
 .posteriorMean <- function(n, r, alpha=1){
 	# Posterior mean of the .bf10Exact
@@ -863,8 +868,40 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# 	}
 	
 	logTerm <- 2*(lgamma(n/2)-lgamma((n-1)/2))
-	hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), ((n+2*alpha+2)/2), r^2))
-	hyperTerm2 <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2*alpha)/2), r^2))
+	
+	# Note: interestingly, it breaks down from n=199 to n=200 when using hypergeo
+	# that is:
+	#
+	# 	.posteriorMean(200, 0.8) yields -2.600069e+26
+	# 	.posteriorMean(199, 0.8) yields 0.7948551
+	#
+	#hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), ((n+2*alpha+2)/2), r^2))
+	#hyperTerm2 <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2*alpha)/2), r^2))
+	
+	# Note: interestingly, it breaks down from n=199 to n=200 when using the integral form f15.3.1
+	# that is:
+	#
+	# 	.posteriorMean(339, 0.8) yields 0.796992
+	# 	.posteriorMean(340, 0.8) yields Inf
+	# 
+	# 		In hypergeo::f15.3.1((n/2), (n/2), ((n + 2 * alpha + 2)/2), r^2) :
+	#			value out of range in 'gammafn'
+	#
+	#
+	#hyperTerm1 <- Re(hypergeo::f15.3.1((n/2), (n/2), ((n+2*alpha+2)/2), r^2))
+	#hyperTerm2 <- Re(hypergeo::f15.3.1(((n-1)/2), ((n-1)/2), ((n+2*alpha)/2), r^2))
+	
+	# Note: interestingly, the continued fraction solution goes haywire, that is:
+	#
+	#
+	#	.posteriorMean(n=67, 0.8) yielding 0.8526101  (a peak)
+	#	.posteriorMean(n=299, 0.8) yielding -1.179415
+	#
+	#hyperTerm1 <- Re(hypergeo::hypergeo_contfrac((n/2), (n/2), ((n+2*alpha+2)/2), r^2))
+	#hyperTerm2 <- Re(hypergeo::hypergeo_contfrac(((n-1)/2), ((n-1)/2), ((n+2*alpha)/2), r^2))
+	
+	hyperTerm1 <- Re(hypergeo::genhypergeo(U=c(n/2, n/2), L=c((n+2*alpha+2)/2), z=r^2))
+	hyperTerm2 <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=c((n+2*alpha)/2), z=r^2))
 	
 	someFactor <- exp(logTerm)*hyperTerm1/hyperTerm2
 	
@@ -878,9 +915,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#
 	# TODO: add safeguard for large n as then hyperTerm1/hyperTerm2 is almost 1
 	# 	and also for logTerm almost being 1
-	
-	hyperTerm3 <- Re(hypergeo::hypergeo(((n-1)/2), ((n+1)/2), ((n+2*alpha)/2), r^2))
-	hyperTerm4 <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2*alpha)/2), r^2))
+	#
+	# 	.posteriorVariance(199, 0.8) yields 6808.702
+	# 	
+	#
+	hyperTerm3 <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n+1)/2),L=(n+2*alpha)/2, z=r^2))
+	hyperTerm4 <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=(n+2*alpha)/2, z=r^2))
 	
 	myResult0 <- 1/((r+2*alpha*r)^2)*(
 		(n-1)*(n+2*alpha-1)-
