@@ -476,7 +476,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	if (options$statisticsPercentileValuesEqualGroups) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
 	
 		for (i in seq(equalGroupsNo - 1))
-			fields[[length(fields) + 1]] <- list(name=paste("eg", i, sep=""), title=paste(100 * i / equalGroupsNo, "th percentile", sep=""), type="number", format="sf:4")
+			fields[[length(fields) + 1]] <- list(name=paste("eg", i, sep=""), title=paste(as.integer(100 * i / equalGroupsNo), "th percentile", sep=""), type="number", format="sf:4")
 	}
 	
 	if (options$statisticsPercentileValuesPercentiles) { 
