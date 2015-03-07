@@ -313,7 +313,7 @@
 			bfLabel <- "BF\u2080\u2081 Poisson"
 		
 		} else if (options$bayesFactorType == "LogBF10") {
-			bfLabel <- " Log\u2009(\u2009BF\u2080\u2081) Poisson"		
+			bfLabel <- " Log\u2009(\u2009BF\u2081\u2080\u2009) Poisson"		
 		}
 		
 		sampleType <- "poisson"
@@ -328,7 +328,7 @@
 			bfLabel <- "BF\u2080\u2081 joint multinomial"
 			
 		} else if (options$bayesFactorType == "LogBF10") {
-			bfLabel <- "Log\u2009(\u2009BF\u2080\u2081) joint multinomial"
+			bfLabel <- "Log\u2009(\u2009BF\u2081\u2080\u2009) joint multinomial"
 		}
 		
 		sampleType <- "jointMulti"
@@ -345,7 +345,7 @@
 				bfLabel <- "BF\u2080\u2081 independent multinomial"
 			
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-	"Log\u2009(\u2009BF\u2080\u2081) independent multinomial"
+				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
 			
 				
@@ -357,7 +357,7 @@
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u208A independent multinomial"
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-	"Log\u2009(\u2009BF\u2080\u2081) independent multinomial"
+				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
 						 
 		} else if(options$hypothesis =="groupTwoGreater") { 
@@ -369,7 +369,7 @@
 				bfLabel <- "BF\u2080\u208B independent multinomial"
 			
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-"Log\u2009(\u2009BF\u2080\u2081) independent multinomial"
+				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}				
 		}
 				
@@ -387,7 +387,7 @@
 				bfLabel <- "BF\u2080\u2081 independent multinomial"
 			
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-"Log\u2009(\u2009BF\u2080\u2081) independent multinomial"
+				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
 				
 		} else if(options$hypothesis=="groupOneGreater") {
@@ -399,7 +399,7 @@
 				bfLabel <- "BF\u2080\u208A independent multinomial"
 			
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-"Log\u2009(\u2009BF\u2080\u2081) independent multinomial"
+				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
 							 
 		} else if (options$hypothesis=="groupTwoGreater"){
@@ -410,7 +410,7 @@
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u208B independent multinomial"
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-"Log\u2009(\u2009BF\u2080\u2081) independent multinomial"
+				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}				
 		}
 			
@@ -425,7 +425,7 @@
 		} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u2081 hypergeometric"
 		} else if (options$bayesFactorType == "LogBF10") {
-			bfLabel <-"Log\u2009(\u2009BF\u2080\u2081) hypergeometric"
+			bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) hypergeometric"
 		}
 		
 		sampleType <- "hypergeom"
