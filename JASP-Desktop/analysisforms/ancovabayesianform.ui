@@ -34,10 +34,13 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>500</height>
+       <height>400</height>
       </size>
      </property>
      <layout class="QGridLayout" name="gridLayout_10">
+      <property name="verticalSpacing">
+       <number>0</number>
+      </property>
       <item row="0" column="2" rowspan="2">
        <widget class="QWidget" name="widget_6" native="true">
         <layout class="QGridLayout" name="gridLayout_3">
@@ -394,7 +397,16 @@
    </item>
    <item row="1" column="0" colspan="2">
     <widget class="QWidget" name="widget_12" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <layout class="QGridLayout" name="gridLayout_4">
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item row="0" column="0">
        <widget class="BoundGroupBox" name="bayesFactorType" native="true">
         <property name="title" stdset="0">
@@ -597,5 +609,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>outputEffects</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>effectsStepwise</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>487</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>216</x>
+     <y>510</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
