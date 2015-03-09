@@ -105,17 +105,13 @@ value errors for *b*
 
 #### Bayesian ANOVA / ANCOVA / Repeated Measures ANOVA / Linear Regression
 
-overall errors
-
-* Main effects and lower-order interactions must be specified as nuisance whenever the corresponding higher-order interaction is specified as nuisance
-* Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included 
-	
 value errors for *BF*
 
 * Bayes factor is undefined -- all effects are specified as nuisance
 * Bayes factor is undefined -- too few observations (possibly only after rows with missing values are excluded)
 * Bayes factor is undefined -- the factor(s) *X, Y, Z* contain(s) fewer than two levels (possibly only after rows with missing values are excluded)
 * Bayes factor is undefined -- the dependent variable contains infinity
+* Bayes factor is undefined -- the null model could not be computed
 * Bayes factor could not be computed
 * *Note.* All models include *X, Y, Z*
 
