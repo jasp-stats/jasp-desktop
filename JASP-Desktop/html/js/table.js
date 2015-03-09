@@ -269,6 +269,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+					
+				if (cell.isEndOfGroup)
+					formatted["class"] += " last-group-row"
 				
 				if (isNumber && approx)
 					formatted.content = "~&thinsp;" + formatted.content
@@ -323,6 +326,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+					
+				if (cell.isEndOfGroup)
+					formatted["class"] += " last-group-row"
 				
 				if (isNumber && approx)
 					formatted.content = "~&thinsp;" + formatted.content
@@ -364,6 +370,9 @@ $.widget("jasp.table", {
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
 				
+				if (cell.isEndOfGroup)
+					formatted["class"] += " last-group-row"
+				
 				if (isNumber && approx)
 					formatted.content = "~&thinsp;" + formatted.content
 				
@@ -400,6 +409,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (cell.isEndOfGroup)
+					formatted["class"] += " last-group-row"
 					
 				columnCells[rowNo] = formatted
 			}
