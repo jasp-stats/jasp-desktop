@@ -731,9 +731,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 			if (perform == "init" || status$error || !status$ready) {
 			
-				for (case in cases)
-					contrast.rows[[length(contrast.rows)+1]] <- list(Comparison=case)			
-			
+				for (case in cases) {
+				    
+				    row <- list(Comparison=case)	
+				    
+				    if(length(contrast.rows) == 0)  {
+			            row[[".isNewGroup"]] <- TRUE   
+			        } else {				
+				        row[[".isNewGroup"]] <- FALSE
+			        }
+				    				
+					contrast.rows[[length(contrast.rows)+1]] <- row	
+			    }
 			} else {
 								
 				for (i in .indices(cases)) {
@@ -751,7 +760,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 						p <- ""
 				
 					row <- list("Comparison"=case, "Estimate"=est, "Std. Error"=SE, "t"=t, "p"=p)
-				
+				    
+				    if(length(contrast.rows) == 0)  {
+			            row[[".isNewGroup"]] <- TRUE   
+			        } else {				
+				        row[[".isNewGroup"]] <- FALSE
+			        }
+				    
 					contrast.rows[[length(contrast.rows)+1]] <- row
 				}
 			}
@@ -815,6 +830,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 			
 		variable.levels <- levels(dataset[[ .v(posthoc.var) ]])
+		nLevels <- length(variable.levels)
 		
 		ps <- c()
 		
@@ -848,10 +864,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row[["Mean Difference"]] <- md
 					row[["t"]]  <- t
 					row[["df"]] <- df
-#					row[["p"]]  <- p
+#					row[["p"]]  <- p                
 					
 					ps <- c(ps, p)
 				}
+				
+				if(length(rows) == 0)  {
+			        row[[".isNewGroup"]] <- TRUE   
+			    } else {				
+				    row[[".isNewGroup"]] <- FALSE
+			    }
 				
 				rows[[length(rows)+1]] <- row
 			}
@@ -920,8 +942,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	descriptives.table <- list()
 	
-	descriptives.table[["title"]] <- "Descriptives"
-	
+	if (options$dependent != "") {
+	    
+	    descriptives.table[["title"]] <- paste("Descriptives - ", options$dependent, sep = "")
+	    
+	} else {
+	    
+	    descriptives.table[["title"]] <- "Descriptives"
+	    
+	}
+		
 	fields <- list()
 	
 	for (variable in options$fixedFactors) {
@@ -943,26 +973,25 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 		factor <- dataset[[ .v(variable) ]]
 		factors[[length(factors)+1]] <- factor
-		lvls[[length(lvls)+1]] <- levels(factor)
+		lvls[[ variable ]] <- levels(factor)
 	}
 		
-	cases <- expand.grid(rev(lvls))
+	cases <- rev(expand.grid(rev(lvls)))
 	
+	namez <- unlist(options$fixedFactors)
+	column.names <- paste(".", namez, sep="")
 	
 	if (length(options$fixedFactors) > 0) {
-	
-		namez <- rev(unlist(options$fixedFactors))
-		column.names <- paste(".", namez, sep="")
 
 		rows <- list()
 	
 		for (i in 1:dim(cases)[1]) {
 	
 			row <- list()
-
+			
 			for (j in 1:dim(cases)[2])
 				row[[ column.names[[j]] ]] <- as.character(cases[i, j])
-				
+								
 			if (perform == "run" && status$ready && status$error == FALSE) {
 			
 				sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, "\"", sep="", collapse=" & ")))
@@ -988,13 +1017,21 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row[["Mean"]] <- base::mean(data)
 					row[["SD"]]   <- stats::sd(data)
 				}
+				
+			}
+			
+			if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][1]) {
+			    row[[".isNewGroup"]] <- TRUE   
+			} else {				
+				row[[".isNewGroup"]] <- FALSE
 			}
 		
 			rows[[i]] <- row
 		}
 		
 		descriptives.table[["data"]] <- rows
-	}
+		
+	} 
 	
 	if (status$error)
 	    descriptives.table[["error"]] <- list(error="badData")
@@ -1032,11 +1069,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 #		if (!is.null(r$message) && r$message == "Levene's test on an essentially perfect fit is unreliable")
 #		    stop(r$message)
 		
-		levenes.table[["data"]] <- list(list("F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3]))
+		levenes.table[["data"]] <- list(list("F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3], ".isNewGroup"=TRUE))
 		
 	} else {
 	
-		levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"="."))
+		levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"=".", ".isNewGroup"=TRUE))
 	}
 	
 	if (status$error)
@@ -1076,7 +1113,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	    fields <- list()
 	    
 	    for(j in .indices(terms[[i]]))
-	        fields[[j]] <- list(name=terms[[i]][[j]], type="string")
+	        fields[[j]] <- list(name=terms[[i]][[j]], type="string", combine=TRUE)
 	    
 	    fields[[length(fields) + 1]] <- list(name="Marginal Mean", type="number", format="sf:4;dp:3")
 	    fields[[length(fields) + 1]] <- list(name="SE", type="number", format="sf:4;dp:3")
@@ -1097,6 +1134,24 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	    }
 	    
 	    result[["schema"]] <- list(fields=fields)
+	    
+	    termsTemp <- as.vector(terms[[i]])
+	        
+	    lvls <- list()
+	    factors <- list()
+        
+	    for (variable in termsTemp) {
+	
+		    factor <- dataset[[ .v(variable) ]]
+		    factors[[length(factors)+1]] <- factor
+		    lvls[[variable]] <- levels(factor)
+	    }
+		
+	    cases <- rev(expand.grid(rev(lvls)))
+	    cases <- as.data.frame(apply(cases,2,as.character))
+	        
+	    nRows <- dim(cases)[1]
+        nCol <- dim(cases)[2]
 	    	    
 	    if (perform == "run" && status$ready && status$error == FALSE)  {
 		    
@@ -1114,22 +1169,34 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		    		    
 		    rows <- list()
 		    		    
-		    for(k in 1:length(r$SE)) {
+		    for(k in 1:nRows) {
 		        
 		        row <- list()
 		        
-		        for(j in .indices(terms[[i]]))
-		            row[[ terms[[i]][[j]] ]] <- r[[ .v(terms[[i]][[j]]) ]][k]
+	            for(j in 1:nCol) 
+		            row[[ colnames(cases)[j] ]] <- cases[k,j]
 		        
-		        row[["Marginal Mean"]] <- r$lsmean[k]
-		        row[["SE"]] <- r$SE[k]
-		        row[["Lower CI"]] <- r$lower.CL[k]
-		        row[["Upper CI"]] <- r$upper.CL[k]
+		        if(nCol > 1) {
+		            index <- apply(r[,1:nCol], 1, function(x) all(x==cases[k,]))
+		        } else {
+		            index <- k
+		        }
+		        		        
+		        row[["Marginal Mean"]] <- r$lsmean[index]
+		        row[["SE"]] <- r$SE[index]
+		        row[["Lower CI"]] <- r$lower.CL[index]
+		        row[["Upper CI"]] <- r$upper.CL[index]
 		        
 		        if(options$marginalMeansCompareMainEffects) {
-		            row[["t"]] <- r$t.ratio[k]
-		            row[["p"]] <- r$p.value[k]
+		            row[["t"]] <- r$t.ratio[index]
+		            row[["p"]] <- r$p.value[index]
 		        }
+		        
+		        if(cases[k,nCol] == lvls[[ nCol ]][1]) {
+			        row[[".isNewGroup"]] <- TRUE   
+			    } else {				
+				    row[[".isNewGroup"]] <- FALSE
+			    }
 		        
 		        rows[[k]] <- row
 		        
@@ -1138,8 +1205,37 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		    result[["data"]] <- rows
 		
 	    } else {
-	
-		    result[["data"]] <- list(list("Marginal Mean"=".", "SE"=".", "Lower CI"=".", "Upper CI"="."))
+	    
+	        rows <- list()
+	        
+	        for(k in 1:nRows) {
+	        
+	            row <- list()
+	            
+	            for(j in 1:nCol)
+		            row[[ colnames(cases)[j] ]] <- cases[k,j]
+	            
+	            row[["Marginal Mean"]] <- "."
+		        row[["SE"]] <- "."
+		        row[["Lower CI"]] <- "."
+		        row[["Upper CI"]] <- "."
+		        
+		        if(options$marginalMeansCompareMainEffects) {
+		            row[["t"]] <- "."
+		            row[["p"]] <- "."
+		        }
+		        		        
+		        if(cases[k,nCol] == lvls[[ nCol ]][1]) {
+			        row[[".isNewGroup"]] <- TRUE   
+			    } else {				
+				    row[[".isNewGroup"]] <- FALSE
+			    }
+	            
+	            rows[[k]] <- row
+	            
+	        }
+ 	        	        	        
+		    result[["data"]] <- rows
 	    }
 	    
 	    result[["footnotes"]] <- as.list(footnotes)
