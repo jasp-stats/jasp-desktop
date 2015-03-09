@@ -81,12 +81,23 @@
 
 	lvls <- c()
 	if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
-
+	
 		lvls <- base::levels(dataset[[ .v(analysis$columns) ]])
+		if (options$columnOrder == "descending") {
+			lvls <- base::rev(lvls)
+		} else {
+			lvls <- lvls
+		}
 
-	} else  {
+	} else if (perform == "run") {
 	
 		lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
+		
+		if (options$columnOrder == "descending") {
+			lvls <- base::rev(lvls, decreasing = TRUE)
+		} else {
+			lvls <- lvls
+		}
 	}
 	
 	counts.fp <- FALSE  # whether the counts are float point or not; changes formatting
@@ -192,7 +203,7 @@
 
 	# create count matrices for each group
 
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var))
+	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var),options$rowOrder=="descending")
 	
 	if (all(dim(group.matrices[[1]]) == c(2,2))) {
 	
@@ -677,13 +688,20 @@
 						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])				
 					} 
 				})
-									
-				logOR<-log(odds.ratio)
-				samples <- logOR
+				
+				if (options$columnOrder == "descending") {					
+					logOR<- -log(odds.ratio)
+					samples <- -logOR
+				} else {
+					logOR<- log(odds.ratio)
+					samples <- logOR
+				}
+								
 				BF <- BayesFactor::extractBF(BF)[1, "bf"]
 				
 				z<-stats::density(logOR)
 				#x.mode <- z$x[i.mode <- which.max(z$y)]
+				
 				x.median <- stats::median(logOR)
 				medianSamples <- x.median
 				Sig <- options$oddsRatioCredibleIntervalInterval

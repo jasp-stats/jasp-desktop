@@ -18,7 +18,14 @@
 
 	if (length(analysis) >= 3)  # if layers are specified
 	{
-		lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+		#lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+		
+		if (options$rowOrder == "descending") {
+			lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+			lvls <- rev(lvls)
+		} else {
+			lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+		}
 		
 		if (length(lvls) < 2) {
 		
@@ -82,15 +89,26 @@
 	
 	counts.fields[[length(counts.fields)+1]] <- list(name=analysis$rows, type="string", combine=TRUE)
 	
-
 	lvls <- c()
+	
 	if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
-
+	
 		lvls <- base::levels(dataset[[ .v(analysis$columns) ]])
+		if (options$columnOrder == "descending") {
+			lvls <- base::rev(lvls)
+		} else {
+			lvls <- lvls
+		}
 
 	} else if (perform == "run") {
 	
 		lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
+		
+		if (options$columnOrder == "descending") {
+			lvls <- base::rev(lvls, decreasing = TRUE)
+		} else {
+			lvls <- lvls
+		}
 	}
 	
 
@@ -368,7 +386,7 @@
 
 	# create count matrices for each group
 
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var))
+	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var), options$rowOrder=="descending")
 	
 	counts.rows <- list()
 	tests.rows <- list()
@@ -979,10 +997,16 @@
 				chi.result <- try({
 
 					chi.result <- vcd::oddsratio(counts.matrix)
-					LogOR <- chi.result
 					CI <- stats::confint(chi.result, level = options$oddsRatioConfidenceIntervalInterval)
-					log.CI.low <- CI[1]
-					log.CI.high <- CI[2]
+					if (options$columnOrder == "descending") {
+						LogOR <- -chi.result
+						log.CI.low <- -CI[2]
+						log.CI.high <- -CI[1]
+					} else {
+						LogOR <- chi.result
+						log.CI.low <- CI[1]
+						log.CI.high <- CI[2]
+					}
 				})
 
 				if (class(chi.result) == "try-error") {
@@ -1044,10 +1068,16 @@
 
 					chi.result <- stats::fisher.test(counts.matrix, conf.level = options$oddsRatioConfidenceIntervalInterval)
 					OR <- unname(chi.result$estimate)
-					logOR <- log(OR)
 					
-					log.CI.low <- log(chi.result$conf.int[1])
-					log.CI.high <- log(chi.result$conf.int[2])
+					if (options$columnOrder == "descending") {
+						logOR <- -log(OR)
+						log.CI.low <- -log(chi.result$conf.int[2])
+						log.CI.high <- -log(chi.result$conf.int[1])
+					} else {
+						logOR <- log(OR)
+						log.CI.low <- log(chi.result$conf.int[1])
+						log.CI.high <- log(chi.result$conf.int[2])
+					}
 					
 				})
 
@@ -1431,7 +1461,7 @@
 }
 
 
-.crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, counts=NULL) {
+.crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, counts=NULL, rowOrderDescending=FALSE) {
 
 	# this creates count matrices for each of the groups
 
@@ -1451,7 +1481,14 @@
 			counts <- stats::na.omit(counts)
 		
 			ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
+			
 			ss.matrix[is.na(ss.matrix)] <- 0
+		}
+		
+		if (rowOrderDescending) {
+			ss.matrix <- base::apply(ss.matrix, 2, base::rev)
+		} else {
+			ss.matrix <- ss.matrix
 		}
 		
 		ss.matrix[base::is.na(ss.matrix)] <- 0
@@ -1483,9 +1520,17 @@
 			} else {
 		
 				ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
+				
+					
 			}
 			
 			ss.matrix[base::is.na(ss.matrix)] <- 0
+			
+			if (rowOrderDescending) {
+				ss.matrix <- base::apply(ss.matrix, 2, base::rev)
+			} else {
+				ss.matrix <- ss.matrix
+			}
 
 			matrices[[length(matrices)+1]] <- ss.matrix
 		}
