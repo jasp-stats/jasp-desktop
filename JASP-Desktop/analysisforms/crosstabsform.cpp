@@ -37,7 +37,7 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 
 	ui->panelStatistics->hide();
 	ui->panelCells->hide();
-	ui->rowOrder->hide();
+	ui->panelOptions->hide();
 
 #ifdef QT_NO_DEBUG
 	ui->nominalLambda->hide();

@@ -629,39 +629,53 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="BoundGroupBox" name="rowOrder">
-        <property name="title">
-         <string>Row Order</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
+      <item row="1" column="0" colspan="2">
+       <widget class="QWidget" name="panelOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_21">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
          <item row="0" column="0">
-          <widget class="QRadioButton" name="ascending">
-           <property name="text">
-            <string>Ascending</string>
+          <widget class="BoundGroupBox" name="rowOrder">
+           <property name="title">
+            <string>rowOrder</string>
            </property>
+           <layout class="QGridLayout" name="gridLayout_24">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1rowAscending">
+              <property name="text">
+               <string>Ascending</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2rowDescending">
+              <property name="text">
+               <string>Descending</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="descending">
-           <property name="text">
-            <string>Descending</string>
+         <item row="0" column="1">
+          <widget class="BoundGroupBox" name="columnOrder">
+           <property name="title">
+            <string>columnOrder</string>
            </property>
+           <layout class="QGridLayout" name="gridLayout_25">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1columnAscending">
+              <property name="text">
+               <string>Ascending</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2columnDescending">
+              <property name="text">
+               <string>Descending</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -963,25 +977,25 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
    <class>GroupBox</class>

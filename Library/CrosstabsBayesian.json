@@ -13,6 +13,7 @@
    },
    {
       "name" : "layers",
+      "type" : "Table",
       "template" : [
          {
             "default" : "Layer %1",
@@ -23,24 +24,21 @@
             "name" : "variables",
             "type" : "Variables"
          }
-      ],
-      "type" : "Table"
+      ]
    },
    {
-      "default" : false,
       "name" : "oddsRatio",
       "type" : "Boolean"
    },
    {
+      "name" : "oddsRatioCredibleIntervalInterval",
+      "type" : "Number",
       "format" : "%",
       "max" : 1.0,
       "min" : 0.0,
-      "name" : "oddsRatioCredibleIntervalInterval",
-      "type" : "Number",
       "value" : 0.950
    },
    {
-      "default" : false,
       "name" : "bfIndependence",
       "type" : "Boolean"
    },
@@ -57,110 +55,102 @@
       "type" : "List"
    },
    {
-      "format" : "",
-      "max" : 2.0,
-      "min" : 0.50,
       "name" : "priorConcentration",
       "type" : "Number",
-      "value" : 1.0
+      "value" : 1.0,
+      "max" : 2.0,
+      "min" : 0.5
    },
    {
-      "default" : false,
       "name" : "plotPosteriorOddsRatio",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "plotPosteriorOddsRatioAdditionalInfo",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "countsObserved",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "countsExpected",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "hideSmallCounts",
       "type" : "Boolean"
    },
    {
-      "default" : 5,
       "name" : "hideSmallCountsLessThan",
-      "type" : "Integer"
+      "type" : "Integer",
+      "default" : 5
    },
    {
-      "default" : false,
       "name" : "zTestCompareColumns",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "zTestAdjustPValues",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "percentagesRow",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "percentagesColumn",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "percentagesTotal",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "residualsUnstandardized",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "residualsStandardized",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "residualsAdjustedStandardized",
       "type" : "Boolean"
    },
    {
       "name" : "rowOrder",
+      "type" : "List",
       "options" : [ "ascending", "descending" ],
-      "default" : "ascending",
-      "type" : "List"
+      "default" : "ascending"
    },
    {
-      "default" : 320,
       "name" : "plotWidths",
-      "type" : "Integer"
+      "type" : "Integer",
+      "default" : 320
    },
    {
-      "default" : 240,
       "name" : "plotHeights",
-      "type" : "Integer"
+      "type" : "Integer",
+      "default" : 240
    },
    {
       "name" : "hypothesis",
+      "type" : "List",
       "options" : [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
-      "default" : "groupsNotEqual",
-      "type" : "List"
+      "default" : "groupsNotEqual"
    },
    {
       "name" : "bayesFactorType",
+      "type" : "List",
       "options" : [ "BF10", "BF01", "LogBF10" ],
-      "default" : "BF10",
-      "type" : "List"
+      "default" : "BF10"
+   },
+   {
+      "name" : "columnOrder",
+      "type" : "List",
+      "options" : [ "ascending", "descending" ],
+      "default" : "ascending"
    }
 ]
 
