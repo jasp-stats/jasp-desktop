@@ -64,6 +64,9 @@ bool TableModelVariablesAssigned::canDropMimeData(const QMimeData *data, Qt::Dro
 	if (_boundTo == NULL)
 		return false;
 
+	if (isDroppingToSelf(data))
+		return false;
+
 	if ( ! TableModelVariables::canDropMimeData(data, action, row, column, parent))
 		return false;
 
