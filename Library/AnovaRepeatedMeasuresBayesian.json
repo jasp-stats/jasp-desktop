@@ -1,16 +1,7 @@
 [
    {
-      "name" : "betweenSubjectFactors",
-      "type" : "Variables"
-   },
-   {
-      "default" : [
-         {
-            "levels" : [ "Level 1", "Level 2" ],
-            "name" : "RM Factor 1"
-         }
-      ],
       "name" : "repeatedMeasuresFactors",
+      "type" : "Table",
       "template" : [
          {
             "default" : "RM Factor %1",
@@ -22,31 +13,24 @@
             "type" : "Variables"
          }
       ],
-      "type" : "Table"
+      "default" : [
+         {
+            "levels" : [ "Level 1", "Level 2" ],
+            "name" : "RM Factor 1"
+         }
+      ]
    },
    {
       "name" : "repeatedMeasuresCells",
       "type" : "Variables"
    },
    {
-      "default" : [
-         {
-            "components" : [ "RM Factor 1" ],
-            "isNuisance" : false
-         }
-      ],
-      "name" : "modelTerms",
-      "template" : [
-         {
-            "name" : "components",
-            "type" : "Term"
-         },
-         {
-            "name" : "isNuisance",
-            "type" : "Boolean"
-         }
-      ],
-      "type" : "Table"
+      "name" : "betweenSubjectFactors",
+      "type" : "Variables"
+   },
+   {
+      "name" : "covariates",
+      "type" : "Variables"
    },
    {
       "name" : "outputEffects",
@@ -61,6 +45,26 @@
 	  "default" : "BF10",
       "name" : "bayesFactorType",
       "type" : "List"
+   },
+   {
+      "name" : "modelTerms",
+      "type" : "Table",
+      "template" : [
+         {
+            "name" : "components",
+            "type" : "Term"
+         },
+         {
+            "name" : "isNuisance",
+            "type" : "Boolean"
+         }
+      ],
+      "default" : [
+         {
+            "components" : [ "RM Factor 1" ],
+            "isNuisance" : false
+         }
+      ]
    }
 ]
 

@@ -33,6 +33,12 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	_betweenSubjectsFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->betweenSubjectFactors->setModel(_betweenSubjectsFactorsListModel);
 
+	_covariatesListModel = new TableModelVariablesAssigned(this);
+	_covariatesListModel->setSource(&_availableVariablesModel);
+	_covariatesListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_covariatesListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	ui->covariates->setModel(_covariatesListModel);
+
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->repeatedMeasuresCells);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->betweenSubjectFactors);
 
