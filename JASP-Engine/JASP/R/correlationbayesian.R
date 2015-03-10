@@ -808,7 +808,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		#		bfPlus0: NOT ok
 		#		bfMin0: OK
 		myOutput$bfPlus0 <- 10^(-317) 
-		myOutput$bfMin0 <- 2*myExactResult - myOutput$bfPlus0
+		myOutput$bfMin0 <- 2*myOutput$bf10 - myOutput$bfPlus0
 	}
 	return(myOutput)
 }
@@ -853,8 +853,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#	That is, (rho+1)/2, thus, on 0,1 scale to estimate a, b in a beta distribution
 	#
 	# TODO: add safeguard for large n as then hyperTerm1/hyperTerm2 is almost 1
-	# 	and also for logTerm almost being 1
-	#
+	# 	and also for logTerm almost being 1 (it works okay if I cut off the hyperTerm1 
+	# 	with three terms and hyperTerm2 with three terms and then divide them, though, 
+	#	this is rather bad as a formal procedure due to the fact that it violates the 
+	#	definition of products of sum sequences. Though it yields a good approximation.
 	#
 	# 	if (abs(r) < 0.5 && n <= 200){
 	# 		logTerm <- 2*(lgamma(n/2)-lgamma((n-1)/2))
