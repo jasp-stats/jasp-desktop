@@ -524,5 +524,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>outputEffects</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>effectsStepwise</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>345</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>216</x>
+     <y>368</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
