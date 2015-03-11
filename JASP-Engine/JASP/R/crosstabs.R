@@ -18,14 +18,14 @@
 
 	if (length(analysis) >= 3)  # if layers are specified
 	{
-		#lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+		lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
 		
-		if (options$rowOrder == "descending") {
-			lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
-			lvls <- rev(lvls)
-		} else {
-			lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
-		}
+		#if (options$rowOrder == "descending") {
+		#	lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+		#	lvls <- rev(lvls)
+		#} else {
+		#	lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+		#}
 		
 		if (length(lvls) < 2) {
 		
@@ -110,7 +110,6 @@
 			lvls <- lvls
 		}
 	}
-	
 
 	counts.fp <- FALSE  # whether the counts are float point or not; changes formatting
 	
@@ -386,7 +385,7 @@
 
 	# create count matrices for each group
 
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var), options$rowOrder=="descending")
+	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var), options$rowOrder=="descending", options$columnOrder=="descending")
 	
 	counts.rows <- list()
 	tests.rows <- list()
@@ -780,9 +779,9 @@
 				row[["value[PhiCoef]"]] <- "."
 			}
 			
-		# }
+		 }
 		
-		# if (options$nominalPhiAndCramersV) {
+		 if (options$nominalPhiAndCramersV) {
 			
 			row[["type[CramerV]"]] <- "Cramer's V "
 			
@@ -845,14 +844,15 @@
 		}
 	}
 	
+	 
 	
 	if (options$ordinalGamma) {
 		
-		#row[["type[gammaCoef]"]] <- "Gamma Coefficient"
+		row[["type[gammaCoef]"]] <- "Gamma Coefficient"
 		
 		
 		if (perform == "run" && status$error == FALSE) {
-			
+				
 			chi.result <- try({
 				
 				chi.result <- vcdExtra::GKgamma(counts.matrix)
@@ -906,11 +906,10 @@
 			row[[layer]] <- level
 		}
 	}
-	
-	
+			
 	if (options$ordinalKendallsTauB) {
 		
-		#row[["type[kTauB]"]] <- "Kendall's Tau B"
+		row[["type[kTauB]"]] <- "Kendall's Tau B"
 		
 		
 		if (perform == "run" && status$error == FALSE) {
@@ -946,8 +945,7 @@
 			
 			 row[["value[kTauB]"]] <- "."
 			 row[["p[kTauB]"]] <- "."
-		  	 row[["statistic[kTauB]"]] <- "."
-		  	 
+		  	 row[["statistic[kTauB]"]] <- "."		  	 
 		}
 		
 	}
@@ -993,20 +991,14 @@
 				row.footnotes[["value[oddsRatio]"]]=list(sup)
 				
 			} else {
-			
+				
 				chi.result <- try({
 
 					chi.result <- vcd::oddsratio(counts.matrix)
 					CI <- stats::confint(chi.result, level = options$oddsRatioConfidenceIntervalInterval)
-					if (options$columnOrder == "descending") {
-						LogOR <- -chi.result
-						log.CI.low <- -CI[2]
-						log.CI.high <- -CI[1]
-					} else {
-						LogOR <- chi.result
-						log.CI.low <- CI[1]
-						log.CI.high <- CI[2]
-					}
+					LogOR <- chi.result
+					log.CI.low <- CI[1]
+					log.CI.high <- CI[2]
 				})
 
 				if (class(chi.result) == "try-error") {
@@ -1068,16 +1060,9 @@
 
 					chi.result <- stats::fisher.test(counts.matrix, conf.level = options$oddsRatioConfidenceIntervalInterval)
 					OR <- unname(chi.result$estimate)
-					
-					if (options$columnOrder == "descending") {
-						logOR <- -log(OR)
-						log.CI.low <- -log(chi.result$conf.int[2])
-						log.CI.high <- -log(chi.result$conf.int[1])
-					} else {
-						logOR <- log(OR)
-						log.CI.low <- log(chi.result$conf.int[1])
-						log.CI.high <- log(chi.result$conf.int[2])
-					}
+					logOR <- log(OR)
+					log.CI.low <- log(chi.result$conf.int[1])
+					log.CI.high <- log(chi.result$conf.int[2])
 					
 				})
 
@@ -1461,7 +1446,7 @@
 }
 
 
-.crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, counts=NULL, rowOrderDescending=FALSE) {
+.crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, counts=NULL, rowOrderDescending=FALSE,columnOrderDescending=FALSE) {
 
 	# this creates count matrices for each of the groups
 
@@ -1487,6 +1472,12 @@
 		
 		if (rowOrderDescending) {
 			ss.matrix <- base::apply(ss.matrix, 2, base::rev)
+		} else {
+			ss.matrix <- ss.matrix
+		}
+		
+		if (columnOrderDescending) {
+			ss.matrix <- ss.matrix[ ,ncol(ss.matrix):1]
 		} else {
 			ss.matrix <- ss.matrix
 		}
@@ -1520,14 +1511,19 @@
 			} else {
 		
 				ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
-				
-					
+									
 			}
 			
 			ss.matrix[base::is.na(ss.matrix)] <- 0
 			
 			if (rowOrderDescending) {
 				ss.matrix <- base::apply(ss.matrix, 2, base::rev)
+			} else {
+				ss.matrix <- ss.matrix
+			}
+			
+			if (columnOrderDescending) {
+				ss.matrix <- ss.matrix[ , ncol(ss.matrix):1]
 			} else {
 				ss.matrix <- ss.matrix
 			}

@@ -203,7 +203,7 @@
 
 	# create count matrices for each group
 
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var),options$rowOrder=="descending")
+	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var),options$rowOrder=="descending", options$columnOrder=="descending")
 	
 	if (all(dim(group.matrices[[1]]) == c(2,2))) {
 	
@@ -452,93 +452,41 @@
 	if (perform == "run" && status$error == FALSE) {
 	
 		BF <- try({
+		
 
 			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
 			bf1 <- exp(as.numeric(BF@bayesFactor$bf))
 			lbf1 <- as.numeric(BF@bayesFactor$bf)
 			
-		
 			if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
-				
-				count.matrix <- base::t(counts.matrix)
-				a <- options$priorConcentration
-
-				s1 <- count.matrix[1,1]
-				f1 <- count.matrix[1,2]
-
-				s2 <- count.matrix[2,1]
-				f2 <- count.matrix[2,2]
-
-				p1 ~ stats::beta(a+s1, a+f1)
-				p2 ~ stats::beta(a+s2, a+f2)
-
-				N.sim <- 10000
-				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-				prop.consistent <- sum(p1.sim > p2.sim)/N.sim
+										
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+				prop.consistent <- mean(theta[,1] > theta[,2])  #sum(p1.sim > p2.sim)/N.sim
 				bf1 <- bf1 * prop.consistent / 0.5
 				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			
 			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
-					
-				count.matrix <- counts.matrix
-				a <- options$priorConcentration
-
-				s1 <- count.matrix[1,1]
-				f1 <- count.matrix[1,2]
-
-				s2 <- count.matrix[2,1]
-				f2 <- count.matrix[2,2]
-
-				p1 ~ stats::beta(a+s1, a+f1)
-				p2 ~ stats::beta(a+s2, a+f2)
-
-				N.sim <- 10000
-				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-				prop.consistent <- sum(p1.sim > p2.sim)/N.sim
+								
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+				prop.consistent <- mean(theta[,1] > theta[,2]) #sum(p1.sim > p2.sim)/N.sim
 				bf1 <- bf1 * prop.consistent / 0.5
 				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			
 			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
-							
-				count.matrix <- base::t(counts.matrix)
-				a <- options$priorConcentration
-
-				s1 <- count.matrix[1,1]
-				f1 <- count.matrix[1,2]
-
-				s2 <- count.matrix[2,1]
-				f2 <- count.matrix[2,2]
-
-				p1 ~ stats::beta(a+s1, a+f1)
-				p2 ~ stats::beta(a+s2, a+f2)
-		
-				N.sim <- 10000
-				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-				prop.consistent <- sum(p2.sim > p1.sim)/N.sim
+				
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+				prop.consistent <- mean(theta[,2] > theta[,1]) #sum(p1.sim > p2.sim)/N.sim
 				bf1 <- bf1 * prop.consistent / 0.5
 				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 				
 			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
-					
-				count.matrix <- counts.matrix
-				a <- options$priorConcentration
-
-				s1 <- count.matrix[1,1]
-				f1 <- count.matrix[1,2]
-
-				s2 <- count.matrix[2,1]
-				f2 <- count.matrix[2,2]
-
-				p1 ~ stats::beta(a+s1, a+f1)
-				p2 ~ stats::beta(a+s2, a+f2)
-		
-				N.sim <- 10000
-				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-				prop.consistent <- sum(p2.sim > p1.sim)/N.sim
+								
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+				prop.consistent <- mean(theta[,2] > theta[,1]) #sum(p1.sim > p2.sim)/N.sim
 				bf1 <- bf1 * prop.consistent / 0.5
 				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			}
@@ -659,43 +607,38 @@
 					if(options$samplingModel == "poisson"){
 						sampleType <- "poisson"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-						lambda<-as.data.frame(chi.result,col.names=c("lambda11","lambda21","lambda12","lambda22"))
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						lambda<-as.data.frame(ch.result,col.names=c("lambda11","lambda21","lambda12","lambda22"))
 						odds.ratio<-(lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
 			
 					} else if (options$samplingModel == "jointMultinomial"){
 			
 						sampleType <- "jointMulti"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-						theta <- as.data.frame(chi.result,col.names=c("theta11","theta21","theta12","theta22"))
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						theta <- as.data.frame(ch.result,col.names=c("theta11","theta21","theta12","theta22"))
 						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 				
 					} else if (options$samplingModel == "independentMultinomialRowsFixed"){
 			
 						sampleType <- "indepMulti"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
-						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-						theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						theta <- as.data.frame(ch.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
 						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 				
 					} else if (options$samplingModel == "independentMultinomialColumnsFixed"){
 			
 						sampleType <- "indepMulti"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
-						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-						theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						theta <- as.data.frame(ch.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
 						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])				
 					} 
 				})
 				
-				if (options$columnOrder == "descending") {					
-					logOR<- -log(odds.ratio)
-					samples <- -logOR
-				} else {
-					logOR<- log(odds.ratio)
-					samples <- logOR
-				}
+				logOR<- log(odds.ratio)
+				samples <- logOR
 								
 				BF <- BayesFactor::extractBF(BF)[1, "bf"]
 				
@@ -1035,43 +978,41 @@
 				if(options$samplingModel== "poisson"){
 					sampleType <- "poisson"
 					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-					lambda<-as.data.frame(chi.result,col.names=c("lambda11","lambda21","lambda12","lambda22"))
+					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+					lambda<-as.data.frame(ch.result,col.names=c("lambda11","lambda21","lambda12","lambda22"))
 					odds.ratio<-(lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
 	
 				} else if (options$samplingModel== "jointMultinomial"){
 	
 					sampleType <- "jointMulti"
 					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-					theta <- as.data.frame(chi.result,col.names=c("theta11","theta21","theta12","theta22"))
+					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result,col.names=c("theta11","theta21","theta12","theta22"))
 					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
 				} else if (options$samplingModel== "independentMultinomialRowsFixed"){
 	
 					sampleType <- "indepMulti"
 					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
-					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-					theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
 					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
 				} else if (options$samplingModel== "independentMultinomialColumnsFixed"){
 	
 					sampleType <- "indepMulti"
 					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
-					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-					theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
 					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
-				}
-				
-				
+				}				
 								
 				# do this if no values are parsed to plotting function
 				if (is.null(samples) && is.null(CI) && is.null(medianSamples)) {
 				
 					# BF10 <- BayesFactor::extractBF(BF)[1, "bf"]
-					logOR <-log(odds.ratio)
+					logOR <- log(odds.ratio)
 					samples <- logOR
 					medianSamples <- stats::median(logOR)					
 					CI <- options$oddsRatioCredibleIntervalInterval
