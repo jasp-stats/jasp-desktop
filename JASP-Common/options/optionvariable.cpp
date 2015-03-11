@@ -10,19 +10,16 @@ OptionVariable::OptionVariable()
 
 void OptionVariable::set(const Json::Value &value)
 {
-	string asString = value.asString();
+	vector<string> v;
 
-	if (asString == "")
+	if (value.isString())
 	{
-		vector<string> v;
-		setValue(v);
+		string asString = value.asString();
+		if (asString != "")
+			v.push_back(asString);
 	}
-	else
-	{
-		vector<string> v;
-		v.push_back(asString);
-		setValue(v);
-	}
+
+	setValue(v);
 }
 
 Json::Value OptionVariable::asJSON() const

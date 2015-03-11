@@ -15,7 +15,7 @@ OptionList::OptionList()
 
 }
 
-void OptionList::loadData(const Json::Value &data)
+void OptionList::init(const Json::Value &data)
 {
 	_options = std::vector<std::string>();
 

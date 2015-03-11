@@ -4,25 +4,26 @@
       "type" : "Variables"
    },
    {
+      "name" : "repeatedMeasuresFactors",
+      "type" : "Table",
+      "template" : [
+         {
+            "name" : "name",
+            "type" : "String",
+            "default" : "RM Factor %1"
+         },
+         {
+            "name" : "levels",
+            "type" : "Variables",
+            "default" : [ "Level 1", "Level 2" ]
+         }
+      ],
       "default" : [
          {
             "levels" : [ "Level 1", "Level 2" ],
             "name" : "RM Factor 1"
          }
-      ],
-      "name" : "repeatedMeasuresFactors",
-      "template" : [
-         {
-            "default" : "RM Factor %1",
-            "name" : "name",
-            "type" : "String"
-         },
-         {
-            "name" : "levels",
-            "type" : "Variables"
-         }
-      ],
-      "type" : "Table"
+      ]
    },
    {
       "name" : "repeatedMeasuresCells",
@@ -111,8 +112,7 @@
    },
    {
       "name" : "postHocTestsDunnett",
-      "type" : "Boolean",
-      "default" : false
+      "type" : "Boolean"
    },
    {
       "name" : "postHocTestsDunnettControl",
@@ -127,22 +127,18 @@
       "type" : "List"
    },
    {
-      "default" : false,
       "name" : "postHocTestsTamhaneT2",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsDunnettT3",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsGamesHowell",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "postHocTestsDunnettC",
       "type" : "Boolean"
    },
@@ -151,7 +147,6 @@
       "type" : "Variables"
    },
    {
-      "default" : false,
       "name" : "marginalMeansCompareMainEffects",
       "type" : "Boolean"
    },
@@ -162,41 +157,35 @@
       "type" : "List"
    },
    {
-      "default" : false,
       "name" : "miscDescriptives",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "miscEffectSizeEstimates",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "miscObservedPower",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "miscParameterEstimates",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "miscContrastCoefficients",
       "type" : "Boolean"
    },
    {
-      "default" : false,
       "name" : "miscHomogeneityTests",
       "type" : "Boolean"
    },
    {
+      "name" : "significanceLevel",
+      "type" : "Number",
       "format" : "",
       "max" : 0.50,
       "min" : 0.00010,
-      "name" : "significanceLevel",
-      "type" : "Number",
       "value" : 0.050
    }
 ]

@@ -14,7 +14,7 @@ OptionNumber::OptionNumber()
 {
 }
 
-void OptionNumber::loadData(const Json::Value &data)
+void OptionNumber::init(const Json::Value &data)
 {
 	_value = data.get("value", 0.0).asDouble();
 	_min = data.get("min", -999999.0).asDouble();

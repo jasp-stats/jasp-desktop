@@ -108,7 +108,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 				
 		options(contrasts=c("contr.sum","contr.poly"))
 		
-		df.rm.factor.names <- .v(rm.factor.names, "F")
+		df.rm.factor.names <- .v(rm.factor.names)
 		
 		bs.error <- paste("(", paste(.v(bt.vars), collapse="*"), ")")
 		

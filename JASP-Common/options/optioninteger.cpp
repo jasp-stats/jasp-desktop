@@ -6,7 +6,7 @@ OptionInteger::OptionInteger(int value)
 	_value = value;
 }
 
-void OptionInteger::loadData(const Json::Value &data)
+void OptionInteger::init(const Json::Value &data)
 {
 	_value = data.get("default", 0).asInt();
 }

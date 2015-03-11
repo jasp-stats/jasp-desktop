@@ -13,7 +13,7 @@ public:
 	OptionNumber();
 	OptionNumber(double value, double min = -999999, double max = 999999, std::string format = "");
 
-	virtual void loadData(const Json::Value &data) OVERRIDE;
+	virtual void init(const Json::Value &data) OVERRIDE;
 
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(const Json::Value& value) OVERRIDE;

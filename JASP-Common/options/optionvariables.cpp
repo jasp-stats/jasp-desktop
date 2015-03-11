@@ -36,7 +36,10 @@ void OptionVariables::set(const Json::Value &value)
 	if (value.isArray())
 	{
 		for (uint i = 0; i < value.size(); i++)
-			terms.push_back(value[i].asString());
+		{
+			string v = value[i].asString();
+			terms.push_back(v);
+		}
 	}
 
 	setValue(terms);

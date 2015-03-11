@@ -7,7 +7,7 @@ OptionString::OptionString(string value)
 	_value = value;
 }
 
-void OptionString::loadData(const Json::Value &data)
+void OptionString::init(const Json::Value &data)
 {
 	_value = data.get("default", "").asString();
 }

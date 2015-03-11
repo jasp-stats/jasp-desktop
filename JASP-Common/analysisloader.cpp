@@ -20,7 +20,7 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		Json::Reader parser;
 		parser.parse(myfile, descriptiveJson);
 
-		options->loadData(descriptiveJson);
+		options->init(descriptiveJson);
 
 		myfile.close();
 

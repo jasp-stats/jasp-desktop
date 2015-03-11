@@ -9,7 +9,7 @@ class OptionString : public OptionI<std::string>
 public:
 	OptionString(std::string value = "");
 
-	virtual void loadData(const Json::Value &data) OVERRIDE;
+	virtual void init(const Json::Value &data) OVERRIDE;
 
 	Json::Value asJSON() const OVERRIDE;
 	void set(const Json::Value &value) OVERRIDE;

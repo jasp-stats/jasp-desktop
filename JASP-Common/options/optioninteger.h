@@ -9,7 +9,7 @@ class OptionInteger : public OptionI<int>
 public:
 	OptionInteger(int value = 0);
 
-	virtual void loadData(const Json::Value &data) OVERRIDE;
+	virtual void init(const Json::Value &data) OVERRIDE;
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(const Json::Value& value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;

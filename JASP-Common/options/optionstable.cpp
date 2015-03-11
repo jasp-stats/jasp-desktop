@@ -14,15 +14,22 @@ OptionsTable::OptionsTable(Options *rowTemplate)
 
 OptionsTable::OptionsTable()
 {
+	_template = NULL;
 }
 
-void OptionsTable::loadData(const Json::Value &data)
+void OptionsTable::init(const Json::Value &data)
 {
 	_template = new Options();
-	_template->loadData(data["template"]);
 
-	set(data["default"]);
+	Json::Value templ4te = data.get("template", Json::nullValue);
 
+	if (templ4te.isNull() == false)
+		_template->init(templ4te);
+
+	Json::Value d3fault = data.get("default", Json::nullValue);
+
+	if (d3fault.isNull() == false)
+		set(d3fault);
 }
 
 Json::Value OptionsTable::asJSON() const

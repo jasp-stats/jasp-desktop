@@ -31,7 +31,7 @@ Options::~Options()
 		delete item.second;
 }
 
-void Options::loadData(const Json::Value &array)
+void Options::init(const Json::Value &array)
 {
 	for (Json::ValueIterator itr = array.begin(); itr != array.end(); itr++)
 	{
@@ -45,7 +45,7 @@ void Options::loadData(const Json::Value &array)
 
 		if (option != NULL)
 		{
-			option->loadData(value);
+			option->init(value);
 			add(name.asString(), option);
 		}
 		else

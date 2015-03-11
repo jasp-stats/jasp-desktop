@@ -18,9 +18,8 @@ public:
 	Options();
 	~Options();
 
-	void loadData(const Json::Value &data) OVERRIDE;
-
 	virtual Json::Value asJSON() const OVERRIDE;
+	void init(const Json::Value &data) OVERRIDE;
 	virtual void set(const Json::Value &json) OVERRIDE;
 	Option* createOption(std::string typeString);
 	void add(std::string name, Option *option);

@@ -72,6 +72,13 @@ Option *OptionTerms::clone() const
 	return c;
 }
 
+void OptionTerms::init(const Json::Value &data)
+{
+	Json::Value def4ult = data.get("default", Json::nullValue);
+	if (def4ult.isNull() == false)
+		set(def4ult);
+}
+
 void OptionTerms::setValue(const vector<vector<string> > &value)
 {
 	vector<vector<string> > v = value;

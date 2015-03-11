@@ -6,7 +6,7 @@ OptionBoolean::OptionBoolean(bool defaultValue)
 	_value = defaultValue;
 }
 
-void OptionBoolean::loadData(const Json::Value &data)
+void OptionBoolean::init(const Json::Value &data)
 {
 	_value = data.get("default", false).asBool();
 }

@@ -13,6 +13,7 @@ public:
 	virtual void set(const Json::Value& value) OVERRIDE;
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
+	virtual void init(const Json::Value &data) OVERRIDE;
 
 	virtual void setValue(const std::vector<std::vector<std::string> > &value) OVERRIDE;
 	virtual void setValue(const std::vector<std::string> &value);
