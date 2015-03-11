@@ -132,20 +132,13 @@ bool TableModelPairsAssigned::dropMimeData(const QMimeData *data, Qt::DropAction
 		QByteArray encodedData = data->data("application/vnd.list.variable");
 		QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
-		int count;
-
-		stream >> count;
-
-		if (count == 0)
-			return false;
-
-		QStringList item1;
-		stream >> item1;
+		Terms terms;
+		terms.set(encodedData);
 
 		if (parent.isValid()) // drop into cell
 		{
 			QStringList row = _values.at(parent.row());
-			row.replace(parent.column(), item1.first());
+			row.replace(parent.column(), terms.at(0).asQString());
 			_values.replace(parent.row(), row);
 			emit dataChanged(parent, parent);
 		}
@@ -154,7 +147,7 @@ bool TableModelPairsAssigned::dropMimeData(const QMimeData *data, Qt::DropAction
 			int row = _values.length() - 1;
 			int column = _values.at(row).length() - 1;
 
-			_values.last().last() = item1.first();
+			_values.last().last() = terms.at(0).asQString();
 
 			emit dataChanged(index(row, column), index(row, column));
 		}
@@ -169,22 +162,19 @@ bool TableModelPairsAssigned::dropMimeData(const QMimeData *data, Qt::DropAction
 
 			beginInsertRows(QModelIndex(), beginRow, beginRow);
 
-			if (count == 1)
+			if (terms.size() == 1)
 			{
 				QList<QString> newRow;
-				newRow.append(item1);
+				newRow.append(terms.at(0).asQString());
 				newRow.append("");
 
 				_values.insert(beginRow, newRow);
 			}
 			else
 			{
-				QString item2;
-				stream >> item2;
-
 				QList<QString> newRow;
-				newRow.append(item1);
-				newRow.append(item2);
+				newRow.append(terms.at(0).asQString());
+				newRow.append(terms.at(1).asQString());
 
 				_values.insert(beginRow, newRow);
 			}
