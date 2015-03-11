@@ -87,6 +87,28 @@ bool Term::contains(const string &component) const
 	return false;
 }
 
+bool Term::containsAll(const Term &term) const
+{
+	BOOST_FOREACH(const string &termComponent, _scomponents)
+	{
+		if ( ! term.contains(termComponent))
+			return false;
+	}
+
+	return true;
+}
+
+bool Term::containsAny(const Term &term) const
+{
+	BOOST_FOREACH(const string &termComponent, _scomponents)
+	{
+		if (term.contains(termComponent))
+			return true;
+	}
+
+	return false;
+}
+
 const QString &Term::asQString() const
 {
 	return _asQString;

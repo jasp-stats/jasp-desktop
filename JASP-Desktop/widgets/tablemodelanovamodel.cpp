@@ -78,6 +78,22 @@ bool TableModelAnovaModel::setData(const QModelIndex &index, const QVariant &val
 	{
 		Options *row = _rows.at(index.row());
 		OptionBoolean *booleanOption = static_cast<OptionBoolean *>(row->get(1));
+		OptionTerm *termOption = termOptionFromRow(row);
+		Term term = termOption->term();
+
+		if (value.toInt() == Qt::Checked)
+		{
+			BOOST_FOREACH(Options *row, _rows)
+			{
+				Term t = Term(termOptionFromRow(row)->term());
+				if (t.containsAll(term))
+					static_cast<OptionBoolean *>(row->get(1))->setValue(true);
+			}
+
+			emit dataChanged(this->index(0,1), this->index(_rows.size() - 1, 1));
+		}
+
+
 		booleanOption->setValue(value.toInt() == Qt::Checked);
 
 		_boundTo->setValue(_rows);

@@ -23,6 +23,8 @@ public:
 	typedef QStringList::iterator iterator;
 
 	bool contains(const std::string &component) const;
+	bool containsAll(const Term &term) const;
+	bool containsAny(const Term &term) const;
 
 	iterator begin();
 	iterator end();
