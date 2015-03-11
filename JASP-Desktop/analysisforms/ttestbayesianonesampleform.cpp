@@ -22,6 +22,11 @@ TTestBayesianOneSampleForm::TTestBayesianOneSampleForm(QWidget *parent) :
 
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 
+#ifdef QT_DEBUG
+	ui->additionalStatisticsGroup->setStyleSheet("background-color: pink;");
+#else
+	ui->additionalStatisticsGroup->hide();
+#endif
 }
 
 TTestBayesianOneSampleForm::~TTestBayesianOneSampleForm()
