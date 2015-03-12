@@ -150,13 +150,34 @@ void TableModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
 	int lastRowDeleted = -1;
 
 	Terms terms = _terms;
+	Terms toRemove;
 
 	foreach (const QModelIndex &index, sorted)
 	{
 		int rowNo = index.row();
+
 		if (rowNo != lastRowDeleted)
+		{
+			toRemove.add(terms.at(index.row()));
 			terms.remove(index.row());
+		}
+
 		lastRowDeleted = rowNo;
+	}
+
+	foreach (const Term &rem, toRemove)
+	{
+		int i = 0;
+
+		while (i < terms.size())
+		{
+			const Term &term = terms.at(i);
+
+			if (term.containsAll(rem))
+				terms.remove(i);
+			else
+				i++;
+		}
 	}
 
 	setTerms(terms);

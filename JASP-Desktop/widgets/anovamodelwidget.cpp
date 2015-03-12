@@ -94,6 +94,11 @@ void AnovaModelWidget::setModel(TableModelAnovaModel *model)
 	connect(_tableModelAnovaModel, SIGNAL(variablesAvailableChanged()), this, SLOT(variablesAvailableChanged()));
 }
 
+void AnovaModelWidget::setAssignPiecesVisible(bool visible)
+{
+	ui->buttonAssignMenu->setVisible(visible);
+}
+
 void AnovaModelWidget::variablesAvailableChanged()
 {
 	const Terms &variables = _tableModelAnovaModel->variables();

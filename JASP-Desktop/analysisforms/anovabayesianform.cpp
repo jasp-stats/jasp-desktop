@@ -31,6 +31,7 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
+	ui->modelTerms->setAssignPiecesVisible(false);
 	ui->modelTerms->hide();
 
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
