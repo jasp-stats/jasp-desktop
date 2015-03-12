@@ -328,10 +328,13 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						bf.raw <- 1 / bf.raw
 					
 					BF10post[i] <- bf.raw
-					BF <- .clean(bf.raw)					
+					BF <- .clean(bf.raw)
 					
-					if (options$bayesFactorType == "LogBF10")
-						BF <- log(BF)
+					if (options$bayesFactorType == "LogBF10") {
+							
+							BF <- log(BF10post[i])
+							BF <- .clean(BF)
+					}
 					
 					error <- .clean(as.numeric(r@bayesFactor$error))[1]
 			
@@ -495,9 +498,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			
 				plot <- plots.ttest[[j]]
 				
-				print(status)
-				print(BF10post[i])
-
 				if (status$unplotable == FALSE) {
 				
 					p <- try(silent= FALSE, expr= {
@@ -509,7 +509,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						plot[["data"]] <- .endSaveImage(image)
 						})
 						
-						print(1)
 						
 					if (class(p) == "try-error") {
 					
@@ -526,11 +525,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 					}
 					
-					print(2)
-					
 				} else if (status$unplotable && "unplotableMessage" %in% names(status)) {
-				
-				print(3)
 				
 					message <- paste("Plotting is not possible:", status$unplotableMessage)
 					plot[["error"]] <- list(error="badData", errorMessage=message)

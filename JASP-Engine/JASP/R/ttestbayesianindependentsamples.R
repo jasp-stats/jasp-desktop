@@ -150,7 +150,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				subDataSet <- subset(dataset, select=c(.v(variable), .v(options$groupingVariable)))
 				subDataSet <- na.omit(subDataSet)
 				
-				
 				r.size <- options$priorWidth
 				
 				group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g1,.v(variable)] 
@@ -515,11 +514,14 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					if (options$bayesFactorType == "BF01")
 						bf.raw <- 1 / bf.raw					
 					
-					BF    <- .clean(bf.raw)
-					BF10post[i] <- BF
-					
-					if (options$bayesFactorType == "LogBF10")
-						BF <- log(BF)
+					BF10post[i] <- bf.raw
+					BF <- .clean(bf.raw)
+				
+					if (options$bayesFactorType == "LogBF10") {
+						
+							BF <- log(BF10post[i])
+							BF <- .clean(BF)
+					}
 					
 					error <- .clean(as.numeric(bf@bayesFactor$error))
 					errorMessage <- NULL					

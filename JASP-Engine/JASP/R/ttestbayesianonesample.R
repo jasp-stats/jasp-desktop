@@ -2700,7 +2700,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
 	ttest.rows <- list()
 	plots.ttest <- list()
-
+	
+	
+	print(options)
 	
 	for (variable in options[["variables"]])
 	{
@@ -2708,6 +2710,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		
 		
 		if (options$plotPriorAndPosterior){
+		
+		print("ok1")
 			plot <- list()
 			
 			plot[["title"]] <- variable
@@ -2854,12 +2858,16 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if (bf.type == "BF01")
 					bf.raw <- 1 / bf.raw
 				
+				BF10post[i] <- bf.raw
 				BF <- .clean(bf.raw)
 				
-				BF10post[i] <- BF
-				
-				if (options$bayesFactorType == "LogBF10")
-						BF <- log(BF)
+				if (options$bayesFactorType == "LogBF10") {
+						
+						BF <- log(BF10post[i])
+						BF <- .clean(BF)
+				}
+						
+						print(BF)
 				
 				error <- .clean(as.numeric(r@bayesFactor$error)[1])
 				
@@ -2942,6 +2950,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		if (length(options$variables) > 0 && (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis))	
 			results[["plots"]][[1]][["status"]] <- "running"
 			
+			print("ok2")
+			
 		if (callback(results) != 0)
 			return()
 		
@@ -2956,6 +2966,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			
 			
 			if (options$plotPriorAndPosterior) {
+			
+			
 			
 				plot <- plots.ttest[[z]]
 				
