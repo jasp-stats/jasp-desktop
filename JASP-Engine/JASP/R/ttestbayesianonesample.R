@@ -221,6 +221,7 @@
 		BF10 <- 1 / BF01
 	}
 	
+	
 	# set limits plot
 	xlim <- vector("numeric", 2)
 	
@@ -2699,7 +2700,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 
 	ttest.rows <- list()
 	plots.ttest <- list()
-
+	
 	
 	for (variable in options[["variables"]])
 	{
@@ -2707,6 +2708,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		
 		
 		if (options$plotPriorAndPosterior){
+		
 			plot <- list()
 			
 			plot[["title"]] <- variable
@@ -2853,13 +2855,15 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if (bf.type == "BF01")
 					bf.raw <- 1 / bf.raw
 				
+				BF10post[i] <- bf.raw
 				BF <- .clean(bf.raw)
 				
-				BF10post[i] <- BF
-				
-				if (options$bayesFactorType == "LogBF10")
-						BF <- log(BF)
-				
+				if (options$bayesFactorType == "LogBF10") {
+						
+						BF <- log(BF10post[i])
+						BF <- .clean(BF)
+				}
+						
 				error <- .clean(as.numeric(r@bayesFactor$error)[1])
 				
 				list(Variable=variable, BF=BF, error=error)
@@ -2955,6 +2959,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			
 			
 			if (options$plotPriorAndPosterior) {
+			
+			
 			
 				plot <- plots.ttest[[z]]
 				

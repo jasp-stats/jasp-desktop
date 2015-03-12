@@ -326,12 +326,15 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					if (bf.type == "BF01")
 						bf.raw <- 1 / bf.raw
-			
-					BF <- .clean(bf.raw)					
-					BF10post[i] <- BF
 					
-					if (options$bayesFactorType == "LogBF10")
-						BF <- log(BF)
+					BF10post[i] <- bf.raw
+					BF <- .clean(bf.raw)
+					
+					if (options$bayesFactorType == "LogBF10") {
+							
+							BF <- log(BF10post[i])
+							BF <- .clean(BF)
+					}
 					
 					error <- .clean(as.numeric(r@bayesFactor$error))[1]
 			
@@ -494,7 +497,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			if (options$plotPriorAndPosterior) {
 			
 				plot <- plots.ttest[[j]]
-
+				
 				if (status$unplotable == FALSE) {
 				
 					p <- try(silent= FALSE, expr= {
@@ -505,6 +508,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 						plot[["data"]] <- .endSaveImage(image)
 						})
+						
 						
 					if (class(p) == "try-error") {
 					
@@ -632,7 +636,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				j <- j + 1
 			}
 			
-			i <- i + 1
+			#i <- i + 1
 		}
 	}
 	
