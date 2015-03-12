@@ -224,13 +224,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					
 					# Note: Data screening 
 					if (missingValues=="excludePairwise"){
-						removeIndex1 <- which(is.na(v1))
-						removeIndex2 <- which(is.na(v2))
-						removeIndex <- unique(c(removeIndex1, removeIndex2))
-						if (length(removeIndex) > 0){
-							v1 <- v1[-(removeIndex)]
-							v2 <- v2[-(removeIndex)]
-						}
+						pairwise.excluded.data <- .excludePairwiseCorData(v1, v2)
+						v1 <- pairwise.excluded.data$v1
+						v2 <- pairwise.excluded.data$v2
 					}
 					
 					if (perform == "run") {
@@ -372,6 +368,23 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 ## Help functions ------------------------------------------------------------
 # 0. Prior specification
+.excludePairwiseCorData <- function(v1, v2){
+	# To exclude the data pairwise
+	#
+	myScreenedData <- list(v1=v1, v2=v2)
+		
+	removeIndex1 <- which(is.na(v1))
+	removeIndex2 <- which(is.na(v2))
+	removeIndex <- unique(c(removeIndex1, removeIndex2))
+	if (length(removeIndex) > 0){
+		myScreenedData$v1 <- v1[-(removeIndex)]
+		myScreenedData$v2 <- v2[-(removeIndex)]
+	}
+	
+	return(myScreenedData)
+}
+
+
 .myScaledBeta <- function(rho, alpha, beta){
 	priorDensity <- ((1+rho)/2)^(alpha-1)*((1-rho)/2)^(beta-1)
 	logNormalisationConstant <- -lbeta(alpha, beta)
@@ -475,8 +488,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	if (n > 2 && abs(r)==1) {
 		return(Inf)
 	}
-	
-	hyperTerm <- Re(hypergeo::hypergeo((2*n-3)/4, (2*n-1)/4, (n+2*alpha)/2, r^2))
+	hyperTerm <- Re(hypergeo::genhypergeo(U=c((2*n-3)/4, (2*n-1)/4), L=(n+2*alpha)/2, z=r^2))
 	logTerm <- lgamma((n+2*alpha-1)/2)-lgamma((n+2*alpha)/2)-lbeta(alpha, alpha)
 	myResult <- sqrt(pi)*2^(1-2*alpha)*exp(logTerm)*hyperTerm
 	return(myResult)
