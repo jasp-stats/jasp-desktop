@@ -706,6 +706,7 @@
 			return()
 	}
 	
+	
 	BF10 <- BF10[is.finite(BF10)]
 	
 	if(callback() != 0)
@@ -1017,7 +1018,6 @@
 	
 	
 	# remove 3's if yLab vector is too long
-	
 	omit3s <- FALSE
 	
 	if (length(yLab) > 9) {
@@ -1188,7 +1188,7 @@
 		yAt[i] <- log(eval(parse(text= yLab[i])))
 	}	
 	
-	
+
 	####################### plot ###########################
 	
 	xLab <- pretty(c(0, length(BF10)+2))
@@ -2130,7 +2130,6 @@
 		yLab <- c(rev(yLabLow), "1", yLabHigh)
 	}
 	
-	
 	if(callback() != 0)
 			return()
 	
@@ -2144,12 +2143,16 @@
 	}		
 	
 	while (eval(parse(text=yLab[length(yLab)-1])) < max(BF)) {
-		
-		interval <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[length(yLab)-1], "+", fixed= TRUE)[[1]][2])
+				
+		interval <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)-1])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) + interval
+		
+		if (nchar(pot) == 1)
+			pot <- paste("0", pot, sep="")
+		
 		newy <- paste(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
-		yLab <- c( yLab, newy)		
-	}		
+		yLab <- c( yLab, newy)
+	}			
 	
 	yAt <- vector("numeric", length(yLab))
 	
@@ -2157,6 +2160,7 @@
 		
 		yAt[i] <- log(eval(parse(text= yLab[i])))
 	}	
+	
 	
 	####################### plot ###########################
 	
