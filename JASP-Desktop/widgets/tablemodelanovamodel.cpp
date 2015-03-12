@@ -517,7 +517,7 @@ void TableModelAnovaModel::updateNuisances(bool checked)
 
 				if (checked)
 				{
-					if (t.containsAny(term))
+					if (term.containsAll(t))
 						nOption->setValue(true);
 				}
 				else
