@@ -221,6 +221,7 @@
 		BF10 <- 1 / BF01
 	}
 	
+	
 	# set limits plot
 	xlim <- vector("numeric", 2)
 	
