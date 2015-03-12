@@ -76,25 +76,12 @@ bool TableModelAnovaModel::setData(const QModelIndex &index, const QVariant &val
 
 	if (index.column() == 1 && role == Qt::CheckStateRole)
 	{
+		bool checked = value.toInt() == Qt::Checked;
+
 		Options *row = _rows.at(index.row());
 		OptionBoolean *booleanOption = static_cast<OptionBoolean *>(row->get(1));
-		OptionTerm *termOption = termOptionFromRow(row);
-		Term term = termOption->term();
-
-		if (value.toInt() == Qt::Checked)
-		{
-			BOOST_FOREACH(Options *row, _rows)
-			{
-				Term t = Term(termOptionFromRow(row)->term());
-				if (t.containsAll(term))
-					static_cast<OptionBoolean *>(row->get(1))->setValue(true);
-			}
-
-			emit dataChanged(this->index(0,1), this->index(_rows.size() - 1, 1));
-		}
-
-
-		booleanOption->setValue(value.toInt() == Qt::Checked);
+		booleanOption->setValue(checked);
+		updateNuisances(checked);
 
 		_boundTo->setValue(_rows);
 
@@ -483,6 +470,8 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 		itr++;
 	}
 
+	updateNuisances();
+
 	_boundTo->setValue(_rows);
 
 	endResetModel();
@@ -500,4 +489,45 @@ void TableModelAnovaModel::assign(const Terms &terms)
 	Terms t = _terms;
 	t.add(terms);
 	setTerms(t);
+}
+
+void TableModelAnovaModel::updateNuisances(bool checked)
+{
+	// if a higher order interaction is specified as nuisance, then all lower order terms should be changed to nuisance as well
+
+	for (int i = 0; i < _rows.size(); i++)
+	{
+		Options *row = _rows.at(i);
+		OptionTerm *termOption = static_cast<OptionTerm*>(row->get(0));
+		OptionBoolean *nuisanceOption = static_cast<OptionBoolean*>(row->get(1));
+		Term term = Term(termOption->term());
+
+		if (nuisanceOption->value() == checked)
+		{
+			for (int j = 0; j < _rows.size(); j++)
+			{
+				if (i == j)
+					continue;
+
+				Options *r = _rows.at(j);
+
+				OptionTerm *tOption = static_cast<OptionTerm*>(r->get(0));
+				OptionBoolean *nOption = static_cast<OptionBoolean*>(r->get(1));
+				Term t = Term(tOption->term());
+
+				if (checked)
+				{
+					if (t.containsAny(term))
+						nOption->setValue(true);
+				}
+				else
+				{
+					if (t.containsAll(term))
+						nOption->setValue(false);
+				}
+			}
+		}
+	}
+
+	emit dataChanged(this->index(0,1), this->index(_rows.size() - 1, 1));
 }

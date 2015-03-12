@@ -67,6 +67,7 @@ protected:
 
 	void clear();
 	void assign(const Terms &terms);
+	void updateNuisances(bool checked = true);
 
 	OptionsTable *_boundTo;
 

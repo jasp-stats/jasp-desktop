@@ -89,9 +89,9 @@ bool Term::contains(const string &component) const
 
 bool Term::containsAll(const Term &term) const
 {
-	BOOST_FOREACH(const string &termComponent, _scomponents)
+	BOOST_FOREACH(const string &termComponent, term._scomponents)
 	{
-		if ( ! term.contains(termComponent))
+		if ( ! contains(termComponent))
 			return false;
 	}
 
