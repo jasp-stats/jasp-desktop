@@ -109,6 +109,50 @@
 		&& perform == "run"
 		&& (length (dataset[[.v(options$dependent)]]) <= (1 + length (options$modelTerms))))
 		error.message <- "Bayes factor is undefined -- too few observations (possibly only after rows with missing values are excluded)"
+	
+	if (!exists ("error.message")) {
+		max.no.components <- max (sapply (options$modelTerms, function(term){length (term$components)}))
+		if (max.no.components > 1) {
+			for (term in options$modelTerms) {
+				if (exists ("error.message"))
+					break		
+				components <- term$components
+				if (length (components) > 1) {
+					no.children <- 2^length (components) - 1
+					inclusion <- sapply (options$modelTerms, function (terms) {
+							term.components <- terms$components
+							if (sum (term.components %in% components) == length (term.components)) {
+								return (TRUE)
+							}
+							return (FALSE)
+						})
+					if (sum (inclusion) != no.children)
+						error.message <- "Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included"
+				}
+			}
+		}
+	}
+
+	if (!exists ("error.message")) {
+		for (term in options$modelTerms) {
+			if (exists ("error.message"))
+				break
+			if (term$isNuisance) {
+				components <- term$components
+				withmain.conflict <- sapply (options$modelTerms, function (terms) {
+					if (!terms$isNuisance) {
+						term.components <- terms$components
+						if (sum (term.components %in% components) == length (term.components)) {
+							return (TRUE)
+						}
+					}
+					return (FALSE)
+				})
+				if (any (withmain.conflict))
+					error.message <- "Main effects and lower-order interactions must be specified as nuisance whenever the corresponding higher-order interaction is specified as nuisance"
+			}
+		}
+	}
 
 	if (!exists ("error.message"))
 		return (list (ready = TRUE, error.message = NULL))
@@ -125,8 +169,13 @@
 	effects <- NULL
 
 	for (term in options$modelTerms) {
-		model.formula <- paste (model.formula, " + ",
-			paste (.v (term$components), collapse = ":"), sep = "")
+		if (is.null (effects) & is.null (neverExclude)){
+			model.formula <- paste (model.formula,
+				paste (.v (term$components), collapse = ":"), sep = "")			
+		} else {
+			model.formula <- paste (model.formula, " + ",
+				paste (.v (term$components), collapse = ":"), sep = "")
+		}
 		if (term$isNuisance) {
 			neverExclude <- c (neverExclude, paste (.v (term$components), collapse = ":"))
 		} else {
@@ -135,14 +184,28 @@
 	}
 	model.formula <- formula (model.formula)
 
-	model.list <- BayesFactor::enumerateGeneralModels (model.formula, whichModels = "withmain", neverExclude = neverExclude)
+	model.list <- try (BayesFactor::enumerateGeneralModels (model.formula, 
+		whichModels = "withmain", neverExclude = paste ("^", neverExclude, "$", sep = "")), 
+		silent = TRUE)
+		
+	if (class (model.list) == "try-error") {
+		if (is.null (status$error.message)) {
+			status$ready <- FALSE
+			status$error.message <- "An unknown error occured. Please contact the authors."
+			return (list (model =  list (models = NULL, effects = NULL, interactions.matrix = NULL, 
+				nuisance = neverExclude, null.model = NULL), status = status))
+		}
+		model.list <- list (model.formula)
+	}
 
 	if (callback () != 0)
 		return (NULL)
-	null.model <- list ("ready" = TRUE)
+
+	null.model <- list ()
 	if (!is.null (neverExclude)) {
 		for (m in 1:length (model.list)){
-			model.title <- base::strsplit(x = as.character (model.list [[m]]) [[3]], split = "+", fixed = TRUE) [[1]]
+			model.title <- base::strsplit(x = as.character (model.list [[m]]) [[3]], 
+				split = "+", fixed = TRUE) [[1]]
 			model.title <- stringr::str_trim (model.title)
 			model.title <- model.title [model.title != ""]
 			if (sum (!(model.title %in% neverExclude)) == 0) break
@@ -165,63 +228,89 @@
 	no.effects <- length (effects)
 	no.models <- length (model.list)
 
-	if (no.models == 0)
-		return(list (model =  list(models = NULL, effects = NULL, nuisance = neverExclude), status = status))
+	if (no.models > 0 && no.effects > 0) {
+		effects.matrix <- matrix (FALSE, nrow = no.models, ncol = no.effects)
+		colnames (effects.matrix) <- effects
+		rownames (effects.matrix) <- paste ("Model", 1:no.models)
+		effects <- stringr::str_trim (effects)
 
-	effects.matrix <- matrix (FALSE, nrow = no.models, ncol = no.effects)
-	colnames (effects.matrix) <- effects
-	rownames (effects.matrix) <- paste ("Model", 1:no.models)
-	effects <- stringr::str_trim (effects)
-
-	interactions.matrix <- matrix (TRUE, nrow = no.effects, ncol = no.effects)
-	rownames (interactions.matrix) = colnames (interactions.matrix) <- effects
-	if (no.effects > 1){
-		effect.components <- sapply (effects, function (effect) {
-			base::strsplit (effect, split = ":", fixed = TRUE) [[1]]
-		})
-		for (e in 1:no.effects)
-			interactions.matrix [e, ] <- sapply (1:no.effects, function(ee) {
-				(sum (effect.components [[e]] %in% effect.components [[ee]]) == length (effect.components [[e]]))
-			})
+		interactions.matrix <- matrix (FALSE, nrow = no.effects, ncol = no.effects)
+		rownames (interactions.matrix) = colnames (interactions.matrix) <- effects
+		if (no.effects > 1){
+			effect.components <- sapply (effects, function (effect) {
+				base::strsplit (effect, split = ":", fixed = TRUE)
+				})
+				for (e in 1:no.effects){
+					interactions.matrix [e, ] <- sapply (1:no.effects, function(ee) {
+						(sum (effect.components [[e]] %in% effect.components [[ee]]) == length (effect.components [[e]]))
+					})
+				}
 			diag (interactions.matrix) <- FALSE
-	}
-
-	model.object <- list()
-	for (m in 1:no.models) {
-		if (callback () != 0)
-			return (NULL)
-		model.object [[m]] <- list ("ready" = TRUE)
-		model.effects <- base::strsplit (x = as.character (model.list [[m]]) [[3]], split = "+", fixed = TRUE) [[1]]
-		model.effects <- stringr::str_trim (model.effects)
-
-		for (effect in model.effects) {
-			i <- which (effects == effect)
-			effects.matrix[m, i] <- TRUE
 		}
 
-		model.title <- base::strsplit (x = as.character (model.list [[m]]) [[3]], split = "+", fixed = TRUE) [[1]]
-		model.title <- stringr::str_trim (model.title)
-		model.title <- model.title [model.title != ""]
-		model.title <- model.title [!(model.title %in% neverExclude)]
-		model.object [[m]]$title <- .unvf (paste (model.title, collapse = " + "))
+		model.object <- list()
+		for (m in 1:no.models) {
+			if (callback () != 0)
+				return (NULL)
+			model.object [[m]] <- list ("ready" = TRUE)
+			model.effects <- base::strsplit (x = as.character (model.list [[m]]) [[3]], 
+				split = "+", fixed = TRUE) [[1]]
+			model.effects <- stringr::str_trim (model.effects)
 
-		if (perform == "run" && status$ready) {
-			bf <- try (BayesFactor::lmBF (model.list [[m]],
-				data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-				progress = FALSE, posterior = FALSE))
-			model.object [[m]]$bf <- bf
-
-			if (class (bf) == "try-error") {
-				model.object [[m]]$ready <- FALSE
-				model.object [[m]]$error.message <- "Bayes factor could not be computed"
+			if (no.effects > 1) {
+				for (effect in model.effects) {
+					components <- base::strsplit (effect, split = ":", fixed = TRUE) [[1]]
+					inclusion <- sapply (effect.components, function (effect.component) {
+						if (length (components) != length (effect.component)) {
+							return (FALSE)
+						} else {
+							if (sum (components %in% effect.component) == length (components)) {
+								return (TRUE)
+							} else {
+								return (FALSE)
+							}
+						}
+					})
+					effects.matrix[m, which (inclusion == TRUE)] <- TRUE
+				}
+			} else {
+				effects.matrix [1,1] <- TRUE
 			}
 
-			if (length (neverExclude) > 0){
-				model.object [[m]]$bf <- model.object [[m]]$bf / null.model$bf
+			model.title <- base::strsplit (x = as.character (model.list [[m]]) [[3]], 
+				split = "+", fixed = TRUE) [[1]]
+			model.title <- stringr::str_trim (model.title)
+			model.title <- model.title [model.title != ""]
+			model.title <- model.title [!(model.title %in% neverExclude)]
+			model.object [[m]]$title <- .unvf (paste (model.title, collapse = " + "))
+
+			if (perform == "run" && status$ready) {
+				bf <- try (BayesFactor::lmBF (model.list [[m]],
+					data = dataset, whichRandom = .v (unlist (options$randomFactors)),
+					progress = FALSE, posterior = FALSE))
+				model.object [[m]]$bf <- bf
+
+				if (class (bf) == "try-error") {
+					model.object [[m]]$ready <- FALSE
+					model.object [[m]]$error.message <- "Bayes factor could not be computed"
+				}
+
+				if (length (neverExclude) > 0){
+					model.object [[m]]$bf <- model.object [[m]]$bf / null.model$bf
+				}
 			}
-		}
+		}		
+		return (list (model =  list (models = model.object, effects = effects.matrix, 
+			interactions.matrix = interactions.matrix, nuisance = neverExclude, 
+			null.model = null.model), status = status))
+	} 
+
+	if (is.null (status$error.message)){
+			status$ready <- FALSE
+			status$error.message <- "An unknown error occured. Please contact the authors."
 	}
-	return (list (model =  list (models = model.object, effects = effects.matrix, interactions.matrix = interactions.matrix, nuisance = neverExclude, null.model = null.model), status = status))
+	return (list (model =  list (models = NULL, effects = NULL, interactions.matrix = NULL, 
+		nuisance = neverExclude, null.model = NULL), status = status))
 }
 
 .theBayesianLinearModelsComparison <- function (model = NULL, options = list (), perform = "init", status = list ()) {
@@ -311,6 +400,7 @@
 			rows [[1]] [["BFM"]] <- .clean (BFmodel [1])
 			rows [[1]] [["BF10"]] <- 1
 		}
+		rows [[1]] [["% error"]] <- ""
 
 		for (m in 1:no.models) {
 			if (model$models [[m]]$ready) {
@@ -422,7 +512,7 @@
 	no.effects <- ncol (effects.matrix)
 	effectNames <- colnames (effects.matrix)
 
-	if (!is.null(no.effects) && no.effects > 0) {
+	if (!is.null (no.effects) && no.effects > 0) {
 		rows <- list ()
 		for (e in 1:no.effects) {
 			row <- list ()
@@ -457,21 +547,29 @@
 						bf.forward <- model$models [[forward]]$bf
 					}
 					#Backward
-					no.interactions <- sapply (1:no.models, function (m) {
-						sum (effects.matrix [m, model$interactions.matrix[e, ] == TRUE]) == 0
-					})
-					include <- which ((effects.matrix [, e] == TRUE) & no.interactions)
-					backward <- include [which (model.complexity [include] == max (model.complexity [include]))]
-					effects.backward <- effects.matrix [backward, ]
-					effects.backward [e] <- FALSE
-					backward.effects <- sapply (1:no.models, function (m) {
-						((sum (effects.matrix [m, effects.backward == TRUE]) == sum (effects.backward))
-						&&
-						(sum (effects.matrix[m, effects.backward == FALSE]) == 0))
-					})
-					exclude <- which (backward.effects)
-					comparison <- exclude [which (model.complexity [exclude] == max (model.complexity [exclude]))]
-					bf.backward <- model$models [[backward]]$bf / model$models [[comparison]]$bf
+					if (sum (effects.matrix [, e]) == 1 ) {
+						bf.bacward <- model$models [[which (effects.matrix [, e] == TRUE)]]$bf
+					} else {
+						no.interactions <- sapply (1:no.models, function (m) {
+							sum (effects.matrix [m, model$interactions.matrix[e, ] == TRUE]) == 0
+						})
+						include <- which ((effects.matrix [, e] == TRUE) & no.interactions)
+						backward <- include [which (model.complexity [include] == max (model.complexity [include]))]
+						if (model.complexity [backward] > 1) {
+							effects.backward <- effects.matrix [backward, ]
+							effects.backward [e] <- FALSE
+							backward.effects <- sapply (1:no.models, function (m) {
+								((sum (effects.matrix [m, effects.backward == TRUE]) == sum (effects.backward))
+								&&
+								(sum (effects.matrix[m, effects.backward == FALSE]) == 0))
+							})
+							exclude <- which (backward.effects)
+							comparison <- exclude [which (model.complexity [exclude] == max (model.complexity [exclude]))]
+							bf.backward <- model$models [[backward]]$bf / model$models [[comparison]]$bf
+						} else {
+							bf.backward <- model$models [[backward]]$bf
+						}
+					}
 					#Output
 					if (options$bayesFactorType == "LogBF10"){
 						row [["BF<sub>Forward</sub>"]] <- .clean (bf.forward@bayesFactor$bf)
