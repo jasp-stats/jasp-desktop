@@ -866,7 +866,7 @@
 				
 			}
 			
-			if (i > 3 && !all(xx == yy)) {
+			if (length(xx) > 1 && length(yy) > 1 && !all(xx == yy)) {
 			
 				if (oneSided == FALSE) {
 				
