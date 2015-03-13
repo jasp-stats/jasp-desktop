@@ -527,7 +527,7 @@
 }
 
 .plotSequentialBF.ttest <- function(x= NULL, y= NULL, paired= FALSE, BF10post, callback=function(...) 0, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6,
- cexTextBF= 1.4, cexText=1.2, cexLegend= 1.2, cexEvidence= 1.6,	lwdAxis= 1.2, plotDifferentPriors= FALSE, BFH1H0= TRUE, dontPlotData= FALSE) {
+ cexTextBF= 1.4, cexText=1.2, cexLegend= 1.2, cexEvidence= 1.6,	lwdAxis= 1.2, plotDifferentPriors= FALSE, BFH1H0= TRUE, dontPlotData= FALSE, level1=NULL, level2= NULL, subDataSet=NULL) {
 	
 	#### settings ####
 	
@@ -626,162 +626,49 @@
 	}
 	
 	
-	BF10 <- vector("numeric", max(length(x), length(y)))
-	BF10w <- vector("numeric", max(length(x), length(y)))
-	BF10u <- vector("numeric", max(length(x), length(y)))
+	if (is.null(y) || paired) {
 	
-	idData <- 1
-	
-	if (is.null(y)) {
-		
-		ind <- which(x == x[1])
-		idData <- sum((ind+1)-(1:(length(ind))) == 1)
-		
-	} else {
+		BF10 <- vector("numeric", max(length(x), length(y)))
+		BF10w <- vector("numeric", max(length(x), length(y)))
+		BF10u <- vector("numeric", max(length(x), length(y)))
 		
 		idData <- 1
 		
-		
-		for (i in 2:(min(c(length(x), length(y))))) {
+		if (is.null(y)) {
 			
-			previous  <- c(x[i-1], y[i-1])
+			ind <- which(x == x[1])
+			idData <- sum((ind+1)-(1:(length(ind))) == 1)
 			
-			if (all(c(x[i], y[i]) == previous)) {
-				
-				idData <- idData + 1
-				
-			} else if (x[i] == y[i]) {
-				
-				idData <- idData + 1
-				
-			} else {
-				
-				break
-			}		
-		}
-	}
-	
-	if(callback() != 0)
-			return()
-	
-	BF10[1:idData] <- 1
-	BF10w[1:idData] <- 1
-	BF10u[1:idData] <- 1
-	
-	
-	if (idData < length(x)) {
-		
-		i <- idData + 1
-		
-	} else {
-		
-		i <- idData
-		
-	}
-	
-	if (idData < length(y)) {
-		
-		j <- idData + 1
-		
-	} else {
-		
-		j <- idData
-		
-	}
-	
-	k <- idData + 1
-	
-	
-	while ((i <= length(x) | j <= length(y)) & k <= length(BF10)) {
-		
-		if (oneSided == FALSE) {
-		
-			BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale=r, nullInterval = nullInterval)
-			BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
-		
 		} else {
-		
-			BF10[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r=r, oneSided=oneSided)
-		}
-		
-		k <- k + 1	
-		
-		if (i < length(x)) {
 			
-			i <- i + 1
-		}
-		if (j < length(y)) {
+			idData <- 1
 			
-			j <- j + 1
+			
+			for (i in 2:(min(c(length(x), length(y))))) {
+				
+				previous  <- c(x[i-1], y[i-1])
+				
+				if (all(c(x[i], y[i]) == previous)) {
+					
+					idData <- idData + 1
+					
+				} else if (x[i] == y[i]) {
+					
+					idData <- idData + 1
+					
+				} else {
+					
+					break
+				}		
+			}
 		}
 		
 		if(callback() != 0)
-			return()
-	}
-	
-	
-	BF10 <- BF10[is.finite(BF10)]
-	
-	if(callback() != 0)
-			return()
-	
-	if (plotDifferentPriors) {
-		
-		if (idData < length(x)) {
-			
-			i <- idData + 1
-			
-		} else {
-			
-			i <- idData
-			
-		}
-		
-		if (idData < length(y)) {
-			
-			j <- idData + 1
-			
-		} else {
-			
-			j <- idData
-			
-		}
-		
-		k <- idData + 1
-		
-		
-		while ((i <= length(x) | j <= length(y)) & k <= length(BF10u)) {
-			
-			if (oneSided == FALSE) {
-			
-				BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale="ultrawide", nullInterval = nullInterval)
-				BF10u[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
-			
-			} else {
-			
-				BF10u[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r="ultrawide", oneSided=oneSided)
-			}
-			
-			k <- k + 1	
-			
-			if (i < length(x)) {
-				
-				i <- i + 1
-			}
-			if (j < length(y)) {
-				
-				j <- j + 1
-			}
-			
-			if(callback() != 0)
 				return()
-		}
 		
-		
-		BF10u <- BF10u[is.finite(BF10u)]
-		
-		if(callback() != 0)
-			return()
+		BF10[1:idData] <- 1
+		BF10w[1:idData] <- 1
+		BF10u[1:idData] <- 1
 		
 		
 		if (idData < length(x)) {
@@ -807,16 +694,16 @@
 		k <- idData + 1
 		
 		
-		while ((i <= length(x) | j <= length(y)) & k <= length(BF10w)) {
+		while ((i <= length(x) | j <= length(y)) & k <= length(BF10)) {
 			
 			if (oneSided == FALSE) {
 			
-				BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale= "wide", nullInterval = nullInterval)
-				BF10w[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+				BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale=r, nullInterval = nullInterval)
+				BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 			
 			} else {
 			
-				BF10w[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r="wide", oneSided=oneSided)
+				BF10[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r=r, oneSided=oneSided)
 			}
 			
 			k <- k + 1	
@@ -834,14 +721,251 @@
 				return()
 		}
 		
-		BF10w <- BF10w[is.finite(BF10w)]
+		
+		BF10 <- BF10[is.finite(BF10)]
 		
 		if(callback() != 0)
-			return()
+				return()
 		
+		if (plotDifferentPriors) {
+			
+			if (idData < length(x)) {
+				
+				i <- idData + 1
+				
+			} else {
+				
+				i <- idData
+				
+			}
+			
+			if (idData < length(y)) {
+				
+				j <- idData + 1
+				
+			} else {
+				
+				j <- idData
+				
+			}
+			
+			k <- idData + 1
+			
+			
+			while ((i <= length(x) | j <= length(y)) & k <= length(BF10u)) {
+				
+				if (oneSided == FALSE) {
+				
+					BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale="ultrawide", nullInterval = nullInterval)
+					BF10u[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+				
+				} else {
+				
+					BF10u[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r="ultrawide", oneSided=oneSided)
+				}
+				
+				k <- k + 1	
+				
+				if (i < length(x)) {
+					
+					i <- i + 1
+				}
+				if (j < length(y)) {
+					
+					j <- j + 1
+				}
+				
+				if(callback() != 0)
+					return()
+			}
+			
+			
+			BF10u <- BF10u[is.finite(BF10u)]
+			
+			if(callback() != 0)
+				return()
+			
+			
+			if (idData < length(x)) {
+				
+				i <- idData + 1
+				
+			} else {
+				
+				i <- idData
+				
+			}
+			
+			if (idData < length(y)) {
+				
+				j <- idData + 1
+				
+			} else {
+				
+				j <- idData
+				
+			}
+			
+			k <- idData + 1
+			
+			
+			while ((i <= length(x) | j <= length(y)) & k <= length(BF10w)) {
+				
+				if (oneSided == FALSE) {
+				
+					BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale= "wide", nullInterval = nullInterval)
+					BF10w[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+				
+				} else {
+				
+					BF10w[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r="wide", oneSided=oneSided)
+				}
+				
+				k <- k + 1	
+				
+				if (i < length(x)) {
+					
+					i <- i + 1
+				}
+				if (j < length(y)) {
+					
+					j <- j + 1
+				}
+				
+				if(callback() != 0)
+					return()
+			}
+			
+			BF10w <- BF10w[is.finite(BF10w)]
+			
+			if(callback() != 0)
+				return()
+			
+		}
+	
+	} else if (!is.null(y) && !paired) {
+	
+		idData <- 1
+	
+		xx <- numeric()
+		yy <- numeric()
+
+		BF10 <- vector("numeric", nrow(subDataSet))
+		BF10w <- vector("numeric", nrow(subDataSet))
+		BF10u <- vector("numeric", nrow(subDataSet))
+
+		for (i in seq_len(nrow(subDataSet))) {	
+			
+			if (subDataSet[i, 2] == level1) {
+				
+				xx <- c(xx, subDataSet[i, 1])
+				
+			} else if (subDataSet[i, 2] == level2) {
+				
+				yy <- c(yy, subDataSet[i, 1])
+				
+			}
+			
+			if (i > 3 && !all(xx == yy)) {
+			
+				if (oneSided == FALSE) {
+				
+					BF <- BayesFactor::ttestBF(x = xx, y= yy, paired = paired, rscale= r, nullInterval = nullInterval)
+					BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+				
+				} else if (oneSided == "right") {
+				
+					BF10[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "right", r=r)
+					
+				} else if (oneSided == "left") {
+				
+					BF10[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "left", r=r)
+				}
+					
+			} else {
+				
+				BF10[i] <- 1
+			}	
+		}	
+	
+		
+		if (plotDifferentPriors) {
+			
+			xx <- numeric()
+			yy <- numeric()
+			
+			for (i in seq_len(nrow(subDataSet))) {	
+				
+				if (subDataSet[i, 2] == level1) {
+					
+					xx <- c(xx, subDataSet[i, 1])
+					
+				} else if (subDataSet[i, 2] == level2) {
+					
+					yy <- c(yy, subDataSet[i, 1])
+					
+				}
+				
+				if (i > 3 && !all(xx == yy)) {
+				
+					if (oneSided == FALSE) {
+					
+						BF <- BayesFactor::ttestBF(x = xx, y= yy, paired = paired, rscale= "ultrawide", nullInterval = nullInterval)
+						BF10u[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+					
+					} else if (oneSided == "right") {
+					
+						BF10u[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "right", r="ultrawide")
+						
+					} else if (oneSided == "left") {
+					
+						BF10u[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "left", r="ultrawide")
+					}
+						
+				} else {
+					
+					BF10u[i] <- 1
+				}	
+			}
+			
+			xx <- numeric()
+			yy <- numeric()
+			
+			for (i in seq_len(nrow(subDataSet))) {	
+				
+				if (subDataSet[i, 2] == level1) {
+					
+					xx <- c(xx, subDataSet[i, 1])
+					
+				} else if (subDataSet[i, 2] == level2) {
+					
+					yy <- c(yy, subDataSet[i, 1])
+					
+				}
+				
+				if (i > 3 && !all(xx == yy)) {
+				
+					if (oneSided == FALSE) {
+					
+						BF <- BayesFactor::ttestBF(x = xx, y= yy, paired = paired, rscale= "wide", nullInterval = nullInterval)
+						BF10w[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+					
+					} else if (oneSided == "right") {
+					
+						BF10w[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "right", r="wide")
+						
+					} else if (oneSided == "left") {
+					
+						BF10w[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "left", r="wide")
+					}
+						
+				} else {
+					
+					BF10w[i] <- 1
+				}	
+			}
+		}
 	}
-	
-	
 	
 	####################### scale y axis ###########################
 	
@@ -1470,8 +1594,7 @@
 	
 		BF01e <- BF10e
 		BF10e <- 1 / BF01e
-	}
-	
+	}	
 	
 	# display BF10 value
 	
@@ -1576,7 +1699,7 @@
 		text(xx, yy2, "data|H0", cex=  1.1)
 	}
 	
-	if (length(x) <= 60) {
+	if (length(BF10) <= 60) {
 		
 		points(log(BF10), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
 	} else {
@@ -1586,10 +1709,11 @@
 	
 	if (plotDifferentPriors) {
 		
-		if (length(x) <= 60) {
+		if (length(BF10) <= 60) {
 			
 			points(log(BF10u), pch=21, bg= "white", cex= 0.7, lwd= 1.3) # "ultrawide" prior
 			points(log(BF10w), pch=21, bg= "black", cex= 0.7, lwd= 1.3) # "wide" prior
+			
 		} else {
 			
 			greycol <- rgb(0,0,0, alpha=0.95)
@@ -1650,7 +1774,7 @@
 		BFind <- sort(c(BF10[length(x)], BF10u[length(x)], BF10w[length(x)]), decreasing = TRUE, index.return=TRUE)$ix
 		legend <- c("user prior", "ultrawide prior", "wide prior")
 		
-		if (length(x) <= 60) {
+		if (length(BF10) <= 60) {
 			
 			pt.bg <-  c("grey", "white", "black")
 			pt.cex <-  c(cexPoints, 0.7, 0.7)

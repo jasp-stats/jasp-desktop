@@ -242,8 +242,9 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {						
 												
 						image <- .beginSaveImage(530, 400)
-						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i], plotDifferentPriors= options$plotSequentialAnalysisRobustness)
-						content <- .endSaveImage(image)						
+						.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
+												plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2)
+						content <- .endSaveImage(image)
 						plot[["data"]]  <- content
 					} else {
 					
