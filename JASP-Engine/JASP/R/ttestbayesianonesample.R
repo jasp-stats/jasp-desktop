@@ -374,10 +374,22 @@
 	
 	points(0, .dprior(0,r, oneSided= oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
 	
+	if (oneSided == FALSE) {
 	
-	heightPosteriorAtZero <- .dposteriorShiftedT(0, parameters=parameters, oneSided=oneSided)
+		heightPosteriorAtZero <- .dposteriorShiftedT(0, parameters=parameters, oneSided=oneSided)
+	
+	} else if (oneSided == "right") {
+	
+		posteriorLineLargerZero <- posteriorLine[posteriorLine > 0]
+		heightPosteriorAtZero <- posteriorLineLargerZero[1]
+		
+	} else if (oneSided == "left") {
+	
+		posteriorLineLargerZero <- posteriorLine[posteriorLine > 0]
+		heightPosteriorAtZero <- posteriorLineLargerZero[length(posteriorLineLargerZero)]
+	}
+	
 	points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
-
 
 	# 95% credible interval	
 	
