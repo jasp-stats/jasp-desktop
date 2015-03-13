@@ -514,6 +514,13 @@ void TableModelAnovaModel::assign(const Terms &terms)
 
 void TableModelAnovaModel::updateNuisances(bool checked)
 {
+	if (_rows.size() > 0)
+	{
+		Options *row = _rows.front();
+		if (row->size() < 2)
+			return; // no nuisance terms
+	}
+
 	// if a higher order interaction is specified as nuisance, then all lower order terms should be changed to nuisance as well
 
 	for (int i = 0; i < _rows.size(); i++)
