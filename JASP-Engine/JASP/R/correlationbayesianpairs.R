@@ -41,32 +41,27 @@
 		stretch <- 1.32
 	}
 	
-	ylim <- vector("numeric", 2)
+	# 
+	# 
+	# if (oneSided == FALSE) {
+	# 	
+	# 	dmax <- optimize(f= function(x).posteriorRho(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+	# 	
+	# } else if (oneSided == "right") {
+	# 	
+	# 	dmax <- optimize(f= function(x).posteriorRhoPlus(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+	# 	
+	# } else if (oneSided == "left") {
+	# 	
+	# 	dmax <- optimize(f= function(x).posteriorRhoMin(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+	# }
 	
-	if (oneSided == FALSE) {
-		
-		dmax <- optimize(f= function(x).posteriorRho(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
-		
-	} else if (oneSided == "right") {
-		
-		dmax <- optimize(f= function(x).posteriorRhoPlus(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
-		
-	} else if (oneSided == "left") {
-		
-		dmax <- optimize(f= function(x).posteriorRhoMin(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
-	}
-	
-	
-	ylim[1] <- 0
-	ylim[2] <- stretch * dmax
 	
 	# calculate position of "nice" tick marks and create labels
 	xticks <- seq(-1.0, 1.0, 0.25)
-	yticks <- pretty(ylim)
 	xlabels <- c("-1", "-0.75", "-0.5", "-0.25", "0", "0.25", "0.5", "0.75", "1")
-	ylabels <- formatC(yticks, 1, format= "f")
 	
-
+	
 	# compute 95% credible interval & median:
 	if (oneSided != FALSE)
 		drawCI <- FALSE
@@ -90,16 +85,49 @@
 		priorLine <- .priorRho(rho=rho, alpha=alpha)
 		posteriorLine <- .posteriorRho(rho= rho, n= n, r= r, alpha= alpha)
 		
+		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, alpha=alpha)
+		
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
+		
+			aParameter <- .posteriorAParameter(n=n, r=r)
+			bParameter <- .posteriorBParameter(n=n, r=r)
+			
+			if (any(is.na(c(aParameter, bParameter))))
+				stop("Posterior is too peaked")
+			
+			posteriorLine <- .myScaledBeta(alpha=aParameter, beta=bParameter, rho=rho)
+			
+			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+				stop("Posterior is too peaked")
+		}
+		
 	} else if (oneSided == "right") {
 		
 		priorLine <- .priorRhoPlus(rho=rho, alpha=alpha)
 		posteriorLine <- .posteriorRhoPlus(rho= rho, n= n, r= r, alpha= alpha)
 		
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+			stop("Posterior is too peaked")
+		
 	} else if (oneSided == "left") {
 		
 		priorLine <- .priorRhoMin(rho=rho, alpha=alpha)
 		posteriorLine <- .posteriorRhoMin(rho= rho, n= n, r= r, alpha= alpha)
+		
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+			stop("Posterior is too peaked")
 	}	
+	
+	dmax <- max(posteriorLine)
+		
+	ylim <- vector("numeric", 2)
+	ylim[1] <- 0
+	ylim[2] <- stretch * dmax
+	
+	yticks <- pretty(ylim)
+	
+	ylim <- range(yticks)
+	ylabels <- formatC(yticks, 1, format= "f")
 	
 	
 	plot(1, 1, xlim= xlim, ylim= range(yticks), ylab= "", xlab="", type= "n", axes= FALSE)
@@ -363,9 +391,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		}
 	}
 	
-	dataset <- na.omit(dataset)
 	
-
 	results <- list()
 	
 	meta <- list()
@@ -716,11 +742,21 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 				if (status$unplotable == FALSE) {
 				
-					image <- .beginSaveImage(530, 400)
+					p <- try(silent=FALSE, expr= {
+				
+						image <- .beginSaveImage(530, 400)
+						
+						.plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo)
+						
+						plot[["data"]] <- .endSaveImage(image)
+					})
 					
-					.plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo)
+					if (class(p) == "try-error") {
 					
-					plot[["data"]] <- .endSaveImage(image)
+						errorMessage <- .extractErrorMessage(p)
+						plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+					}
+					
 				
 				} else if (status$unplotable && "unplotableMessage" %in% names(status)) {
 				

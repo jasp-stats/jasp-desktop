@@ -995,6 +995,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 #### Plotting Function for posterior ####
 .plotPosterior.BayesianCorrelationMatrix <- function(x, y, alpha=1, oneSided= FALSE, addInformation= FALSE, drawCI= FALSE, lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.28, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {
 	
+	screenedData <- .excludePairwiseCorData(x, y)
+	
+	x <- screenedData$v1
+	y <- screenedData$v2
 	
 	r <- cor(x, y)
 	n <- length(x)
@@ -1012,51 +1016,71 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	if (oneSided == "left") {
 		stretch <- 1.32
-	}
-	
-	ylim <- vector("numeric", 2)
-	
-	if (oneSided == FALSE) {
+	}	
 		
-		dmax <- optimize(f= function(x).posteriorRho(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
-		
-	} else if (oneSided == "right") {
-		
-		dmax <- optimize(f= function(x).posteriorRhoPlus(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
-		
-	} else if (oneSided == "left") {
-		
-		dmax <- optimize(f= function(x).posteriorRhoMin(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
-	}
-	
-	
-	ylim[1] <- 0
-	ylim[2] <- stretch * dmax
+	#if (oneSided == FALSE) {
+	#	
+	#	dmax <- optimize(f= function(x).posteriorRho(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+	#	
+	#} else if (oneSided == "right") {
+	#	
+	#	dmax <- optimize(f= function(x).posteriorRhoPlus(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+	#	
+	#} else if (oneSided == "left") {
+	#	
+	#	dmax <- optimize(f= function(x).posteriorRhoMin(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+	#}	
 	
 	# calculate position of "nice" tick marks and create labels
 	xticks <- seq(-1.0, 1.0, 0.25)
-	yticks <- pretty(ylim)
 	xlabels <- c("-1", "-0.75", "-0.5", "-0.25", "0", "0.25", "0.5", "0.75", "1")
-	ylabels <- formatC(yticks, 1, format= "f")
-	
+		
 	rho <- seq(min(xticks), max(xticks),length.out = 1000)	
 	
 	
 	if (oneSided == FALSE) {
 		
-		posteriorLine <- .posteriorRho(rho= rho, n= n, r= r, alpha= alpha)
+		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, alpha=alpha)
+		
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
+		
+			aParameter <- .posteriorAParameter(n=n, r=r)
+			bParameter <- .posteriorBParameter(n=n, r=r)
+			
+			if (any(is.na(c(aParameter, bParameter))))
+				stop("Posterior is too peaked")
+			
+			posteriorLine <- .myScaledBeta(alpha=aParameter, beta=bParameter, rho=rho)
+			
+			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+				stop("Posterior is too peaked")
+		}
 		
 	} else if (oneSided == "right") {
 		
-		posteriorLine <- .posteriorRhoPlus(rho= rho, n= n, r= r, alpha= alpha)
+		posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, alpha=alpha)
+		
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+			stop("Posterior is too peaked")
 		
 	} else if (oneSided == "left") {
 		
-		posteriorLine <- .posteriorRhoMin(rho= rho, n= n, r= r, alpha= alpha)
+		posteriorLine <- .posteriorRhoMin(rho=rho, n=n, r=r, alpha=alpha)
 		
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+			stop("Posterior is too peaked")
 	}
 	
+	dmax <- max(posteriorLine)
+		
+	ylim <- vector("numeric", 2)
+	ylim[1] <- 0
+	ylim[2] <- stretch * dmax
+	
+	yticks <- pretty(ylim)
+	
 	ylim <- range(yticks)
+	ylabels <- formatC(yticks, 1, format= "f")
 	
 	plot(1, 1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
 	
@@ -1202,94 +1226,104 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		correlation.plot[[1]] <- plot
 		
 		if (length(variables) > 0) {
-			
-			image <- .beginSaveImage(width, height)
-			
-			if (l == 1) {
+		
+			p <- try(silent=FALSE, expr= {
 				
-				par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))	
+				image <- .beginSaveImage(width, height)
 				
-				.plotMarginalCor(dataset[[variables[1]]]) 
-				mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)	
-				
-			} else if (l == 2 && !options$plotDensities && !options$plotPosteriors) {
-				
-				par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
-				
-				maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
-				distLab <- maxYlab / 1.8
-				
-				mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
-				mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
-				
-			} else if (l > 1) {
-				
-				par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
-				
-				for (row in seq_len(l)) {
+				if (l == 1) {
 					
-					for (col in seq_len(l)) {
+					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))	
+					
+					.plotMarginalCor(dataset[[variables[1]]]) 
+					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)	
+					
+				} else if (l == 2 && !options$plotDensities && !options$plotPosteriors) {
+					
+					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
+					
+					maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+					distLab <- maxYlab / 1.8
+					
+					mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
+					mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
+					
+				} else if (l > 1) {
+					
+					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
+					
+					for (row in seq_len(l)) {
 						
-						if (row == col) {
+						for (col in seq_len(l)) {
 							
-							if (options$plotDensities) {
-								.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
-							} else {
-								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+							if (row == col) {
+								
+								if (options$plotDensities) {
+									.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+								} else {
+									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								}
 							}
-						}
-						
-						if (col > row) {
 							
-							if (options$plotCorrelationMatrix) {
-								.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
-							} else {
-								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+							if (col > row) {
+								
+								if (options$plotCorrelationMatrix) {
+									.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+								} else {
+									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								}
 							}
-						}
-						
-						if (col < row) {							
 							
-							if (options$plotPosteriors) {
-								.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided)
-							} else {
-								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+							if (col < row) {							
+								
+								if (options$plotPosteriors) {
+									.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided)
+								} else {
+									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+								}
 							}
-						}
-					}		
+						}		
+					}
 				}
-			}
-			
-			
-			if (l > 2 || ((l == 2 && options$plotDensities) || (l == 2 && options$plotPosteriors))) {
 				
-				textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
 				
-				if (!options$plotDensities && !options$plotPosteriors) {
+				if (l > 2 || ((l == 2 && options$plotDensities) || (l == 2 && options$plotPosteriors))) {
 					
-					for (t in seq_along(textpos)) {
+					textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
+					
+					if (!options$plotDensities && !options$plotPosteriors) {
 						
-						mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
+						for (t in seq_along(textpos)) {
+							
+							mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
+							
+							if (t < length(textpos)) {
+								mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
+							}
+						}
 						
-						if (t < length(textpos)) {
+					} else {
+						
+						for (t in seq_along(textpos)) {
+							
+							mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
 							mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
 						}
 					}
-					
-				} else {
-					
-					for (t in seq_along(textpos)) {
-						
-						mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
-						mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
-					}
 				}
+				
+				content <- .endSaveImage(image)
+				
+				plot <- correlation.plot[[1]]
+				plot[["data"]]  <- content
+			})
+			
+			if (class(p) == "try-error") {
+			
+				errorMessage <- .extractErrorMessage(p)
+				plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 			}
 			
-			content <- .endSaveImage(image)
-			
-			plot <- correlation.plot[[1]]
-			plot[["data"]]  <- content
 			correlation.plot[[1]] <- plot
 			
 		}	
