@@ -1089,7 +1089,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at = c(ylim[1], mean(ylim), ylim[2]) , pos= range(xticks)- 0.08*diff(range(xticks)), labels = c("", "Density", ""), lwd.ticks=0, cex.axis= 1.7, mgp= c(3, 0.7, 0), las=0)
 	
-	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.08)
+	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.25)
 	
 }
 
