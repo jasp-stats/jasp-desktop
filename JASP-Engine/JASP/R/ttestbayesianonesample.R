@@ -1954,7 +1954,7 @@
 	y1h <- "1"
 	i <- 1
 	
-	while (eval(parse(text= y1h[i])) < max(BF)) {
+	while (eval(parse(text= y1h[i])) < max(BF10)) {
 		
 		if (grepl(pattern = "e",y1h[i])) {
 			
@@ -1976,7 +1976,7 @@
 	y3h <- "3"
 	i <- 1
 	
-	while (eval(parse(text= y3h[i])) < max(BF)) {
+	while (eval(parse(text= y3h[i])) < max(BF10)) {
 		
 		if (grepl(pattern = "e",y3h[i])) {
 			
@@ -2020,7 +2020,7 @@
 	y1l <- "1/1"
 	i <- 1
 	
-	while (eval(parse(text= y1l[i])) > min(BF)) {
+	while (eval(parse(text= y1l[i])) > min(BF10)) {
 		
 		if (grepl(pattern = "e",y1l[i])) {
 			
@@ -2044,7 +2044,7 @@
 	y3l <- "1/3"
 	i <- 1
 	
-	while (eval(parse(text= y3l[i])) > min(BF)) {
+	while (eval(parse(text= y3l[i])) > min(BF10)) {
 		
 		if (grepl(pattern = "e",y3l[i])) {
 			
@@ -2116,7 +2116,7 @@
 		
 		yLab1s <- c(yLabsLow, yLabsHigh)
 		
-		if (max(BF) > eval(parse(text= yLab1s[length(yLab1s)]))) {
+		if (max(BF10) > eval(parse(text= yLab1s[length(yLab1s)]))) {
 			
 			for (i in 1:2) {
 				
@@ -2138,7 +2138,7 @@
 			}
 		}
 		
-		if (max(BF) > eval(parse(text= yLab1s[length(yLab1s)-1]))) {
+		if (max(BF10) > eval(parse(text= yLab1s[length(yLab1s)-1]))) {
 			
 			if (grepl(pattern = "e",yLab1s[length(yLab1s)])) {
 					
@@ -2166,7 +2166,7 @@
 			yLab1s <- c(yLab1s, "10")
 		}
 		
-		if (min(BF) < eval(parse(text= yLab1s[1]))) {
+		if (min(BF10) < eval(parse(text= yLab1s[1]))) {
 			
 			for (i in 1:2) {
 				
@@ -2190,7 +2190,7 @@
 			yLab1s <- c(newy, yLab1s)
 		}
 		
-		if (min(BF) < eval(parse(text= yLab1s[2]))) {
+		if (min(BF10) < eval(parse(text= yLab1s[2]))) {
 			
 			if (grepl(pattern = "e",yLab1s[1])) {
 					
@@ -2269,27 +2269,40 @@
 	
 	if(callback() != 0)
 			return()
+
 	
-	while (eval(parse(text=yLab[2])) > min(BF)) {
+	while (eval(parse(text=yLab[2])) > min(BF10)) {
+	
+		interval <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[2])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2])
+		pot <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) + interval
+
+		if (nchar(pot) == 1)
+			pot <- paste("0", pot, sep="")
+
+		newy <- paste("1/1e", "+", pot, sep="")
+		yLab <- c(newy, yLab)
 		
-		interval <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[2], "+", fixed= TRUE)[[1]][2])
-		pot <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) + interval
-			
-		newy <- paste(strsplit(yLab[1], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
-		yLab <- c(newy, yLab)			
+		#interval <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(yLab[2], "+", fixed= TRUE)[[1]][2])
+		#pot <- as.numeric(strsplit(yLab[1], "+", fixed= TRUE)[[1]][2]) + interval
+		#	
+		#newy <- paste(strsplit(yLab[1], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
+		#yLab <- c(newy, yLab)			
 	}		
+
 	
-	while (eval(parse(text=yLab[length(yLab)-1])) < max(BF)) {
+	while (eval(parse(text=yLab[length(yLab)-1])) < max(BF10)) {
 				
 		interval <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)-1])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2])
-		pot <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) + interval
+		#pot <- as.numeric(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][2]) + interval
+		pot <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) + interval
 		
 		if (nchar(pot) == 1)
 			pot <- paste("0", pot, sep="")
 		
-		newy <- paste(strsplit(yLab[length(yLab)], "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
+		newy <- paste(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
 		yLab <- c( yLab, newy)
-	}			
+	}	
+
 	
 	yAt <- vector("numeric", length(yLab))
 	
@@ -2379,15 +2392,24 @@
 	}
 	
 	if (omit3s) {
+	
+		if (eval(parse(text= yLab[1])) <= 1/10^6) {
+			
+			line <- 4.75
+			
+		} else {
+				
+			line <- 4.3
+		}
 		
 		if (oneSided == FALSE) {
 			
 			if (BFH1H0) {
 				
-				mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+				mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= line)
 			} else {
 				
-				mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+				mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= line)
 			}			
 		}
 		
@@ -2395,10 +2417,10 @@
 			
 			if (BFH1H0) {
 				
-				mtext(text = expression(BF["+"][0]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+				mtext(text = expression(BF["+"][0]), side = 2, las=0, cex = cexYXlab, line= line)
 			} else {
 				
-				mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+				mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= line)
 			}			
 		}
 		
@@ -2406,10 +2428,10 @@
 			
 			if (BFH1H0) {
 				
-				mtext(text = expression(BF["-"][0]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+				mtext(text = expression(BF["-"][0]), side = 2, las=0, cex = cexYXlab, line= line)
 			} else {
 				
-				mtext(text = expression(BF[0]["-"]), side = 2, las=0, cex = cexYXlab, line= 4.3)
+				mtext(text = expression(BF[0]["-"]), side = 2, las=0, cex = cexYXlab, line= line)
 			}			
 		}
 	}
