@@ -2724,7 +2724,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="ttest", type="table")
-	meta[[3]] <- list(name="plots", type="images")
+	meta[[3]] <- list(name="descriptives", type="table")
+	meta[[4]] <- list(name="plots", type="images")
 	
 	
 	results[[".meta"]] <- meta
@@ -2893,6 +2894,61 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	ttest[["data"]] <- ttest.rows
 	results[["ttest"]] <- ttest
 	results[["plots"]] <- plots.ttest
+	
+	if (options$descriptives) {
+	
+	    descriptives <- list()
+	
+		descriptives[["title"]] <- "Descriptives"
+		descriptives[["cases"]] <- I(options$variables)
+
+		fields <- list(
+			list(name="v",    title="",   type="string"),
+			list(name="N",    title="N",  type="integer"),
+			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
+			list(name="sd",   title="SD", type="number",   format="sf:4;dp:3"),
+			list(name="se",   title="SE", type="number",   format="sf:4;dp:3"))
+
+		descriptives[["schema"]] <- list(fields=fields)
+		descriptives.results <- list()
+		
+		variables <- options[["variables"]]
+		if (length(variables) == 0)
+			variables = "."
+
+		for (variable in variables) {
+			
+			if (perform == "run" && length(options[["variables"]]) > 0) {
+
+				data <- na.omit(dataset[[ .v(variable) ]])
+
+				if (class(data) != "factor") {
+
+					n    <- .clean(length(data))
+					mean <- .clean(mean(data))
+					stdDeviation <- .clean(sd(data))
+					stdErrorMean <- .clean(sd(data)/sqrt(length(data)))
+
+					result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean)
+				} else {
+			
+					n <- .clean(length(data))
+					result <- list(v=variable, N=n, mean="", sd="", se="")
+				}
+			
+			} else {
+			
+				result <- list(v=variable, N=".", mean=".", sd= ".", se=".")			
+			
+			}
+			
+			descriptives.results[[length(descriptives.results)+1]] <- result
+		}
+		
+		descriptives[["data"]] <- descriptives.results
+		
+		results[["descriptives"]] <- descriptives
+	}
 	
 	
 	if (perform == "run") {

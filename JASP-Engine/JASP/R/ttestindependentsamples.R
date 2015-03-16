@@ -286,7 +286,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						p <- as.numeric(r$p.value)
 						m <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
 						
-						ns <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], length)
+						ns <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], function(x)length(na.omit(x)))
 						ms <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], mean, na.rm = TRUE)
 						sds <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], sd, na.rm = TRUE)
 												
