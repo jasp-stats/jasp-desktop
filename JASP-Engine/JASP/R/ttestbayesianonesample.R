@@ -2991,7 +2991,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				variableData <- dataset[[ .v(variable) ]]
 				variableData <- variableData[ ! is.na(variableData) ]
 				
-				r <- BayesFactor::ttestBF(variableData, r=options$priorWidth)
+				r <- BayesFactor::ttestBF(variableData, r=options$priorWidth, mu=options$testValue)
 				
 				bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
 				
@@ -3005,7 +3005,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 							
 				if (oneSided == "right") {
 				
-					samples <- BayesFactor::ttestBF(variableData, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
+					samples <- BayesFactor::ttestBF(variableData, posterior = TRUE, iterations = 10000, rscale= options$priorWidth, mu=options$testValue)
 					delta <- samples[, "delta"]
 				
 					if (is.infinite(bf.raw)) {
@@ -3037,7 +3037,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				if (oneSided == "left") {
 				
-					samples <- BayesFactor::ttestBF(variableData, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
+					samples <- BayesFactor::ttestBF(variableData, posterior = TRUE, iterations = 10000, rscale= options$priorWidth, mu=options$testValue)
 					delta <- samples[, "delta"]
 				
 					if (is.infinite(bf.raw)) {
