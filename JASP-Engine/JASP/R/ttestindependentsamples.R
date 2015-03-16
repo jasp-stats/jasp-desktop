@@ -160,6 +160,10 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		fields[[length(fields) + 1]] <- list(name="sed", title="SE Difference", type="number", format="sf:4;dp:3")	
 	}
 	
+	if(options$effectSize){
+		fields[[length(fields) + 1]] <- list(name="d", title="Cohen's d", type="number", format="sf:4;dp:3")
+	}
+	
 	if (options$confidenceInterval) {
 
 		interval <- 100 * options$confidenceIntervalInterval
@@ -281,6 +285,16 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						df <- as.numeric(r$parameter)
 						p <- as.numeric(r$p.value)
 						m <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
+						
+						ns <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], length)
+						ms <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], mean, na.rm = TRUE)
+						sds <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], sd, na.rm = TRUE)
+												
+						sdPooled <- sqrt(((ns[1]-1)*sds[1]^2 + (ns[2]-1)*sds[2]^2) / (ns[1] + ns[2] - 2))
+						d <- as.numeric((ms[1] - ms[2]) / sdPooled)
+						
+						print(d)
+						
 						ciLow <- .clean(r$conf.int[1])
 						ciUp <- .clean(r$conf.int[2])
 					
@@ -297,7 +311,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 							sed <- ""# .clean((m - ciLow) / (qt(options$confidenceIntervalInterval,r$parameter)))
 						}
 					
-						list(v=variable, variances=assumption[i], t=t, df=df, p=p, md=m, 
+						list(v=variable, variances=assumption[i], t=t, df=df, p=p, md=m, d=d,
 							 lowerCI=ciLow, upperCI=ciUp, sed=sed, .footnotes=row.footnotes)
 						
 					})
