@@ -63,6 +63,10 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 		fields[[length(fields) + 1]] <- list(name="Mean Difference", type="number", format="sf:4;dp:3")
 	}
 	
+	if(options$effectSize){
+		fields[[length(fields) + 1]] <- list(name="d", title="Cohen's d", type="number", format="sf:4;dp:3")
+	}
+	
 	if (options$confidenceInterval) {
 	
 		interval <- 100 * options$confidenceIntervalInterval
@@ -120,13 +124,14 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 				df <- as.numeric(r$parameter)
 				p  <- as.numeric(r$p.value)
 				m  <- as.numeric(r$estimate - r$null.value)
+				d <- .clean((mean(dataset[[ .v(variable) ]]) - options$testValue) / sd(dataset[[ .v(variable) ]]))
 				ciLow <- .clean(as.numeric(r$conf.int[1]))
 				ciUp  <- .clean(as.numeric(r$conf.int[2]))
 				
 				if (is.na(t))
 					stop("data are essentially constant")
 			
-				list(v=variable, t=t, df=df, p=p, "Mean Difference"=m, "lowerCI"=ciLow, "upperCI"=ciUp)
+				list(v=variable, t=t, df=df, p=p, "Mean Difference"=m, "d"=d, "lowerCI"=ciLow, "upperCI"=ciUp)
 			})
 				
 			if (class(result) == "try-error") {
@@ -154,7 +159,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			
 		} else {
 
-			result <- list(v=variable, t=".", df=".", p=".", "Mean Difference"=".", "lowerCI"=".", "upperCI"=".")
+			result <- list(v=variable, t=".", df=".", p=".", "Mean Difference"=".", "d"=".", "lowerCI"=".", "upperCI"=".")
 		
 		}
 		

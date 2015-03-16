@@ -21,6 +21,10 @@
       "type" : "Boolean"
    },
    {
+      "name" : "effectSize",
+      "type" : "Boolean"
+   },
+   {
       "default" : false,
       "name" : "confidenceInterval",
       "type" : "Boolean"
