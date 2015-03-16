@@ -106,6 +106,12 @@ void AnovaForm::bindTo(Options *options, DataSet *dataSet)
 
 	factorsChanged();
 	termsChanged();
+
+	Terms plotVariablesAssigned;
+	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
+	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
+	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
+	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
 }
 
 void AnovaForm::factorsChanging()
