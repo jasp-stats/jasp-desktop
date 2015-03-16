@@ -32,6 +32,10 @@
       "type" : "Boolean"
    },
    {
+      "name" : "descriptives",
+      "type" : "Boolean"
+   },
+   {
       "default" : false,
       "name" : "plotBayesFactorRobustness",
       "type" : "Boolean"

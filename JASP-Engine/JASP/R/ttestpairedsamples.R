@@ -113,7 +113,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 					df <- as.numeric(r$parameter)
 					p  <- as.numeric(r$p.value)
 					m  <- as.numeric(r$estimate)
-					sed <- sd(c1-c2)/length(c1-c2)
+					sed <- .clean(sd(c1-c2, na.rm = TRUE)/length(na.omit(c1-c2)))
 					
 					es <- .clean((mean(c1)-mean(c2))/(sqrt((sd(c1)^2+sd(c2)^2)/2)))
 			        
