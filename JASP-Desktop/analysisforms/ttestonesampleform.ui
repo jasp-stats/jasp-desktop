@@ -99,7 +99,7 @@
          <item row="2" column="0" colspan="3">
           <widget class="BoundCheckBox" name="confidenceInterval">
            <property name="text">
-            <string>Confidence Interval</string>
+            <string>Confidence interval</string>
            </property>
           </widget>
          </item>
@@ -156,7 +156,7 @@
          <item row="1" column="0">
           <widget class="BoundCheckBox" name="effectSize">
            <property name="text">
-            <string>Effect Size</string>
+            <string>Effect size</string>
            </property>
           </widget>
          </item>

@@ -47,6 +47,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	results[[".meta"]] <- .meta
 
 	
+	
 	## Create Title
 	
 	if (is.null(options$covariates)) {
@@ -82,6 +83,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		singular <- anovaModel$singular
 	
 	}
+
+
 
 	## Create ANOVA Table
 
@@ -1182,14 +1185,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		            index <- k
 		        }
 		        		        
-		        row[["Marginal Mean"]] <- r$lsmean[index]
-		        row[["SE"]] <- r$SE[index]
-		        row[["Lower CI"]] <- r$lower.CL[index]
-		        row[["Upper CI"]] <- r$upper.CL[index]
+		        row[["Marginal Mean"]] <- .clean(r$lsmean[index])
+		        row[["SE"]] <- .clean(r$SE[index])
+		        row[["Lower CI"]] <- .clean(r$lower.CL[index])
+		        row[["Upper CI"]] <- .clean(r$upper.CL[index])
 		        
 		        if(options$marginalMeansCompareMainEffects) {
-		            row[["t"]] <- r$t.ratio[index]
-		            row[["p"]] <- r$p.value[index]
+		            row[["t"]] <- .clean(r$t.ratio[index])
+		            row[["p"]] <- .clean(r$p.value[index])
 		        }
 		        
 		        if(cases[k,nCol] == lvls[[ nCol ]][1]) {
