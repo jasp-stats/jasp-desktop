@@ -50,6 +50,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 	if(options$meanDifference){
 		fields[[length(fields)+1]] <- list(name="md", title="Mean Difference", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="sed", title="SE Difference", type="number", format="sf:4;dp:3")	
 	}
 	
 	if(options$effectSize){
@@ -112,8 +113,10 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 					df <- as.numeric(r$parameter)
 					p  <- as.numeric(r$p.value)
 					m  <- as.numeric(r$estimate)
+					sed <- sd(c1-c2)/length(c1-c2)
+					
 					es <- .clean((mean(c1)-mean(c2))/(sqrt((sd(c1)^2+sd(c2)^2)/2)))
-			
+			        
 					ci.l <- as.numeric(r$conf.int[1])
 					ci.u <- as.numeric(r$conf.int[2])
 			
@@ -156,6 +159,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 					df <- ""
 					p  <- ""
 					m  <- ""
+					sed <- ""
 					es <- ""
 			
 					ci.l <- ""
@@ -171,6 +175,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				df <- ""
 				p  <- ""
 				m  <- ""
+				sed <- ""
 				es <- ""
 			
 				ci.l <- ""
@@ -184,6 +189,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 			if (options$meanDifference) {
 			
 				row[["md"]] <- m
+				row[["sed"]] <- sed
 			}
 			
 			if (options$effectSize) {

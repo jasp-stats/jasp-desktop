@@ -292,9 +292,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 												
 						sdPooled <- sqrt(((ns[1]-1)*sds[1]^2 + (ns[2]-1)*sds[2]^2) / (ns[1] + ns[2] - 2))
 						d <- as.numeric((ms[1] - ms[2]) / sdPooled)
-						
-						print(d)
-						
+												
 						ciLow <- .clean(r$conf.int[1])
 						ciUp <- .clean(r$conf.int[2])
 					

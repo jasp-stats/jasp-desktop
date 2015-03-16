@@ -200,7 +200,7 @@
       <item row="1" column="0">
        <widget class="BoundCheckBox" name="effectSize">
         <property name="text">
-         <string>Effect Size</string>
+         <string>Effect size</string>
         </property>
        </widget>
       </item>
