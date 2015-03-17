@@ -25,6 +25,10 @@
       "default" : false,
       "name" : "descriptives",
       "type" : "Boolean"
+   },   
+   {
+      "name" : "normalityTests",
+      "type" : "Boolean"
    },
    {
       "default" : false,
