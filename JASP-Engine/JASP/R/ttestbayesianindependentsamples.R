@@ -39,7 +39,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	
 	ttest.results <- .ttestBayesianIndependentSamplesTTest(dataset, options, perform)
-
+	
 	results[["ttest"]] <- ttest.results[[1]]
 	status <- ttest.results[[2]]
 	g1 <- ttest.results[[3]]
@@ -71,6 +71,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	}	
 	
 	plots.ttest <- list()
+	
 	
 	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis || options$plotBayesFactorRobustness){
 		
@@ -132,7 +133,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 		results[["plots"]] <- plots.ttest
 		
-		if (perform == "run" && length(options$variables) > 0) {
+		if (perform == "run" && length(options$variables) > 0 && !is.null(grouping)) {
 		
 			if (length(options$variables) > 0 && (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis))	
 				results[["plots"]][[1]][["status"]] <- "running"
