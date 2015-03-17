@@ -382,22 +382,23 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 												
 						sdPooled <- sqrt(((ns[1]-1)*sds[1]^2 + (ns[2]-1)*sds[2]^2) / (ns[1] + ns[2] - 2))
 						d <- as.numeric((ms[1] - ms[2]) / sdPooled)
-												
+						
+						sed <- .clean(as.numeric(sqrt(sds[1]^2/ns[1] + sds[2]^2/ns[2])))
 						ciLow <- .clean(r$conf.int[1])
 						ciUp <- .clean(r$conf.int[2])
-					
-						if (testType == "two.sided") {
-					
-							sed <- .clean((ciUp - ciLow) / (2 * qt(options$confidenceIntervalInterval,r$parameter)))  # beckward approach - getting spread of CI and deviding by critical value for t
-						
-						} else if (testType == "less") {
-					
-							sed <- ""# .clean((ciUp - m) / (qt(options$confidenceIntervalInterval,r$parameter)))
-						
-						} else {
-					
-							sed <- ""# .clean((m - ciLow) / (qt(options$confidenceIntervalInterval,r$parameter)))
-						}
+											
+#						if (testType == "two.sided") {
+#					
+#							sed <- .clean()  # beckward approach - getting spread of CI and deviding by critical value for t
+#						
+#						} else if (testType == "less") {
+#					
+#							sed <- ""# .clean((ciUp - m) / (qt(options$confidenceIntervalInterval,r$parameter)))
+#						
+#						} else {
+#					
+#							sed <- ""# .clean((m - ciLow) / (qt(options$confidenceIntervalInterval,r$parameter)))
+#						}
 					
 						list(v=variable, variances=assumption[i], t=t, df=df, p=p, md=m, d=d,
 							 lowerCI=ciLow, upperCI=ciUp, sed=sed, .footnotes=row.footnotes)
