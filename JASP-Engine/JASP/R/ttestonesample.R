@@ -42,6 +42,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="descriptives", type="table")
+	meta[[4]] <- list(name="normalityTests", type="table")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "T-Test"
@@ -202,17 +203,35 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 					mean <- .clean(mean(data))
 					stdDeviation <- .clean(sd(data))
 					stdErrorMean <- .clean(sd(data)/sqrt(length(data)))
+					
+					if(length(descriptives.results) == 0) {
+			            newGroup <- TRUE   
+			        } else {				
+				        newGroup <- FALSE
+			        }
 
-					result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean)
+					result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean, ".isNewGroup" = newGroup)
 				} else {
+				
+				    if(length(descriptives.results) == 0) {
+			            newGroup <- TRUE   
+			        } else {				
+				        newGroup <- FALSE
+			        }
 			
 					n <- .clean(length(data))
-					result <- list(v=variable, N=n, mean="", sd="", se="")
+					result <- list(v=variable, N=n, mean="", sd="", se="", ".isNewGroup" = newGroup)
 				}
 			
 			} else {
 			
-				result <- list(v=variable, N=".", mean=".", sd= ".", se=".")			
+			    if(length(descriptives.results) == 0) {
+			        newGroup <- TRUE   
+			    } else {				
+				    newGroup <- FALSE
+			    }
+			
+				result <- list(v=variable, N=".", mean=".", sd= ".", se=".", ".isNewGroup" = newGroup)			
 			
 			}
 			
@@ -220,6 +239,78 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 		}
 		
 		descriptives[["data"]] <- descriptives.results
+	}
+	
+	if (options$normalityTests) {
+	
+	    normalityTests <- list()
+	
+		normalityTests[["title"]] <- "Test of Normality (Shapiro-Wilk)"
+		normalityTests[["cases"]] <- I(options$variables)
+
+		fields <- list(
+			list(name="v", title="", type="string"),
+			list(name="W", title="W", type="number",   format="sf:4;dp:3"),
+			list(name="p", title="p", type="number", format="dp:3;p:.001"))
+
+		normalityTests[["schema"]] <- list(fields=fields)
+		normalityTests.results <- list()
+		
+		variables <- options[["variables"]]
+		if (length(variables) == 0)
+			variables = "."
+
+		for (variable in variables) {
+			
+			if (perform == "run" && length(options[["variables"]]) > 0) {
+
+				data <- na.omit(dataset[[ .v(variable) ]])
+
+				if (class(data) != "factor") {
+                    
+                    r <- stats::shapiro.test(data)
+                    
+					W <- .clean(as.numeric(r$statistic))
+					p <- .clean(r$p.value)
+					
+					if(length(normalityTests.results) == 0) {
+			            newGroup <- TRUE   
+			        } else {				
+				        newGroup <- FALSE
+			        }
+					
+					result <- list("v" = variable, "W" = W, "p" = p, ".isNewGroup" = newGroup)
+					
+				} else {
+			        
+			        if(length(normalityTests.results) == 0) {
+			            newGroup <- TRUE   
+			        } else {				
+				        newGroup <- FALSE
+			        }
+					
+					result <- list("v" = variable, "W" = "", "p" = "", ".isNewGroup" = newGroup)
+					
+				}
+			
+			} else {
+			
+			    if(length(normalityTests.results) == 0) {
+			        newGroup <- TRUE   
+			    } else {				
+				    newGroup <- FALSE
+			    }
+			
+				result <- list("v" = variable, "W" = ".", p = ".", ".isNewGroup" = newGroup)			
+			
+			}
+			
+			normalityTests.results[[length(normalityTests.results)+1]] <- result
+		}
+		
+		normalityTests[["data"]] <- normalityTests.results
+		
+		results[["normalityTests"]] <- normalityTests
 	}
 	
 	

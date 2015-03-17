@@ -32,6 +32,12 @@
       "type" : "Boolean"
    },
    {
+      "format" : "",
+      "name" : "testValue",
+      "type" : "Number",
+      "value" : 0.0
+   },
+   {
       "name" : "descriptives",
       "type" : "Boolean"
    },
