@@ -312,7 +312,7 @@
          <item row="5" column="0" colspan="3">
           <widget class="BoundCheckBox" name="normalityTests">
            <property name="text">
-            <string>Normality Tests</string>
+            <string>Normality tests</string>
            </property>
           </widget>
          </item>

@@ -281,6 +281,10 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 			list(name="p", title="p", type="number", format="dp:3;p:.001"))
 
 		normalityTests[["schema"]] <- list(fields=fields)
+		
+		footnotes <- .newFootnotes()
+        .addFootnote(footnotes, symbol="<em>Note.</em>", text="Significant results indicate a deviation from normality")
+		
 		normalityTests.results <- list()
 		
 		pairs <- options$pairs
@@ -340,6 +344,8 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		}
 		
 		normalityTests[["data"]] <- normalityTests.results
+		
+		normalityTests[["footnotes"]] <- as.list(footnotes)
 		
 		results[["normalityTests"]] <- normalityTests
 	}

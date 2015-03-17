@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>597</width>
-    <height>510</height>
+    <height>527</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -140,24 +140,23 @@
         </property>
        </widget>
       </item>
+      <item row="3" column="4">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item row="2" column="0" colspan="4">
        <widget class="BoundCheckBox" name="confidenceInterval">
         <property name="text">
          <string>Confidence interval</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>%</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="2">
-       <widget class="BoundCheckBox" name="descriptives">
-        <property name="text">
-         <string>Descriptives</string>
         </property>
        </widget>
       </item>
@@ -177,6 +176,20 @@
         </property>
        </widget>
       </item>
+      <item row="3" column="3">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>%</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="BoundCheckBox" name="effectSize">
+        <property name="text">
+         <string>Effect size</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0" colspan="4">
        <widget class="BoundCheckBox" name="meanDifference">
         <property name="text">
@@ -184,23 +197,17 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="4">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="1" column="0">
-       <widget class="BoundCheckBox" name="effectSize">
+      <item row="4" column="0" colspan="2">
+       <widget class="BoundCheckBox" name="descriptives">
         <property name="text">
-         <string>Effect size</string>
+         <string>Descriptives</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="3">
+       <widget class="BoundCheckBox" name="normalityTests">
+        <property name="text">
+         <string>Normality tests</string>
         </property>
        </widget>
       </item>
@@ -431,11 +438,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -456,6 +458,11 @@
    <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

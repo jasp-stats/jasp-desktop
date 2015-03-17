@@ -46,6 +46,10 @@
       "type" : "Boolean"
    },
    {
+      "name" : "normalityTests",
+      "type" : "Boolean"
+   },
+   {
       "name" : "missingValues",
       "options" : [ "excludeAnalysisByAnalysis", "excludeListwise" ],
       "default" : "excludeAnalysisByAnalysis",
