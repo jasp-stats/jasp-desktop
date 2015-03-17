@@ -55,8 +55,6 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 
 	ui->groupZTest->hide();
 	ui->groupResiduals->hide();
-
-	ui->groupOptions->hide();
 #else
 	ui->nominalLambda->setStyleSheet("background-color: pink;");
 	ui->nominalUncertaintyCoefficient->setStyleSheet("background-color: pink;");
@@ -73,8 +71,6 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 
 	ui->groupZTest->setStyleSheet("background-color: pink;");
 	ui->groupResiduals->setStyleSheet("background-color: pink;");
-
-	ui->groupOptions->setStyleSheet("background-color: pink;");
 #endif
 
 }

@@ -37,13 +37,6 @@ CrosstabsBayesianForm::CrosstabsBayesianForm(QWidget *parent) :
 
 	ui->panelStatistics->hide();
 	ui->panelOptions->hide();
-
-#ifdef QT_NO_DEBUG
-	ui->groupOptions->hide();
-#else
-	ui->groupOptions->setStyleSheet("background-color: pink;");
-#endif
-
 }
 
 CrosstabsBayesianForm::~CrosstabsBayesianForm()

@@ -633,9 +633,9 @@
        <widget class="QWidget" name="panelOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_21">
          <item row="0" column="0">
-          <widget class="BoundGroupBox" name="rowOrder">
-           <property name="title">
-            <string>rowOrder</string>
+          <widget class="BoundGroupBox" name="rowOrder" native="true">
+           <property name="title" stdset="0">
+            <string>Row Order</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_24">
             <item row="0" column="0">
@@ -656,9 +656,9 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="BoundGroupBox" name="columnOrder">
-           <property name="title">
-            <string>columnOrder</string>
+          <widget class="BoundGroupBox" name="columnOrder" native="true">
+           <property name="title" stdset="0">
+            <string>Column Order</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_25">
             <item row="0" column="0">
@@ -982,15 +982,10 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundGroupBox</class>
+   <class>GroupBox</class>
    <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
+   <header>widgets/groupbox.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>
@@ -998,10 +993,15 @@
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
+   <class>BoundGroupBox</class>
+   <extends>QWidget</extends>
+   <header>widgets/boundgroupbox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
