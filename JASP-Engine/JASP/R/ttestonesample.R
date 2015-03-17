@@ -254,6 +254,10 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			list(name="p", title="p", type="number", format="dp:3;p:.001"))
 
 		normalityTests[["schema"]] <- list(fields=fields)
+		
+		footnotes <- .newFootnotes()
+        .addFootnote(footnotes, symbol="<em>Note.</em>", text="Significant results indicate a deviation from normality")
+		
 		normalityTests.results <- list()
 		
 		variables <- options[["variables"]]
@@ -309,6 +313,8 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 		}
 		
 		normalityTests[["data"]] <- normalityTests.results
+		
+		normalityTests[["footnotes"]] <- as.list(footnotes)
 		
 		results[["normalityTests"]] <- normalityTests
 	}
