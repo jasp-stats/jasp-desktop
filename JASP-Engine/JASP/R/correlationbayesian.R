@@ -1002,7 +1002,7 @@ displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cex
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at = c(0, .5, 1), pos= range(xticks)- 0.08*diff(range(xticks)), labels = c("", "Density", ""), lwd.ticks=0, cex.axis= 1.7, mgp= c(3, 0.7, 0), las=0)
 	
-	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.25)
+	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.5) #2.25
 
 }
 
@@ -1122,7 +1122,7 @@ displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cex
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at = c(ylim[1], mean(ylim), ylim[2]) , pos= range(xticks)- 0.08*diff(range(xticks)), labels = c("", "Density", ""), lwd.ticks=0, cex.axis= 1.7, mgp= c(3, 0.7, 0), las=0)
 	
-	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.25)
+	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.5) #2.25
 	
 }
 
@@ -1283,7 +1283,7 @@ displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cex
 					
 				} else if (l > 1) {
 					
-					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
+					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(1, 2.2, 2, 0))
 					
 					for (row in seq_len(l)) {
 						
