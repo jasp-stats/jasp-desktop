@@ -992,6 +992,20 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 #------------------------------------------------- Matrix Plot -------------------------------------------------#
 
+### empty posterior Plot with error message ###
+displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cexText=1.6, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.28, lwdAxis= 1.2) {
+
+	plot(1, 1, xlim= xlim, ylim= 0:1, ylab= "", xlab="", type= "n", axes= FALSE)
+	
+	text(0, .5, errorMessage, cex=cexText)
+	
+	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
+	axis(2, at = c(0, .5, 1), pos= range(xticks)- 0.08*diff(range(xticks)), labels = c("", "Density", ""), lwd.ticks=0, cex.axis= 1.7, mgp= c(3, 0.7, 0), las=0)
+	
+	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.25)
+
+}
+
 #### Plotting Function for posterior ####
 .plotPosterior.BayesianCorrelationMatrix <- function(x, y, alpha=1, oneSided= FALSE, addInformation= FALSE, drawCI= FALSE, lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.28, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {
 	
@@ -1047,28 +1061,47 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			aParameter <- .posteriorAParameter(n=n, r=r)
 			bParameter <- .posteriorBParameter(n=n, r=r)
 			
-			if (any(is.na(c(aParameter, bParameter))))
-				stop("Posterior is too peaked")
+			if (any(is.na(c(aParameter, bParameter)))) {
+				
+				errorMessage <- "Posterior is too peaked"
+				displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
+				return()
+			}
 			
 			posteriorLine <- .myScaledBeta(alpha=aParameter, beta=bParameter, rho=rho)
 			
-			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
-				stop("Posterior is too peaked")
+			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
+				
+				errorMessage <- "Posterior is too peaked"
+				displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
+				return()
+			}
+			
 		}
 		
 	} else if (oneSided == "right") {
 		
 		posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, alpha=alpha)
 		
-		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
-			stop("Posterior is too peaked")
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
+				
+				errorMessage <- "Posterior is too peaked"
+				displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
+				return()
+		}
+			
+			
 		
 	} else if (oneSided == "left") {
 		
 		posteriorLine <- .posteriorRhoMin(rho=rho, n=n, r=r, alpha=alpha)
 		
-		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
-			stop("Posterior is too peaked")
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
+				
+				errorMessage <- "Posterior is too peaked"
+				displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
+				return()
+		}			
 	}
 	
 	dmax <- max(posteriorLine)
@@ -1141,7 +1174,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		plot <- list()
 		
-		plot[["title"]] <- variables 
+		plot[["title"]] <- ""
 		plot[["width"]]  <- width
 		plot[["height"]] <- height
 		
@@ -1219,7 +1252,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		plot <- list()
 		
-		plot[["title"]] <- .unv(variables)
+		plot[["title"]] <-  "" # .unv(variables)
 		plot[["width"]]  <- width
 		plot[["height"]] <- height
 		
