@@ -1,0 +1,75 @@
+[
+   {
+      "name" : "variables",
+      "type" : "Variables"
+   },
+   {
+      "name" : "groupingVariable",
+      "type" : "Variable"
+   },
+   {
+      "default" : false,
+      "name" : "descriptives",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "hypothesis",
+      "options" : [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
+      "default" : "groupsNotEqual",
+      "type" : "List"
+   },
+   {
+      "name" : "missingValues",
+      "options" : [ "excludeAnalysisByAnalysis", "excludeListwise" ],
+      "default" : "excludeAnalysisByAnalysis",
+      "type" : "List"
+   },
+   {
+      "format" : "",
+      "name" : "priorWidth",
+      "type" : "Number",
+      "value" : 0.7070
+   },
+   {
+      "default" : false,
+      "name" : "plotPriorAndPosterior",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "plotPriorAndPosteriorAdditionalInfo",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "plotBayesFactorRobustness",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "plotSequentialAnalysis",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "plotSequentialAnalysisRobustness",
+      "type" : "Boolean"
+   },
+   {
+      "default" : 320,
+      "name" : "plotWidth",
+      "type" : "Integer"
+   },
+   {
+      "default" : 240,
+      "name" : "plotHeight",
+      "type" : "Integer"
+   },
+   {
+      "name" : "bayesFactorType",
+      "options" : [ "BF10", "BF01", "LogBF10" ],
+      "default" : "BF10",
+      "type" : "List"
+   }
+]
+

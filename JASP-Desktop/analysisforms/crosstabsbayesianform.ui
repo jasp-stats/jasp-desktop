@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>585</width>
-    <height>908</height>
+    <height>926</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,33 +45,53 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="BoundGroupBox" name="rowOrder" native="true">
-        <layout class="QGridLayout" name="gridLayout_21">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
+      <item row="1" column="0" colspan="2">
+       <widget class="QWidget" name="panelOptions" native="true">
+        <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
-          <widget class="QRadioButton" name="ascending">
-           <property name="text">
-            <string>Ascending</string>
+          <widget class="BoundGroupBox" name="rowOrder">
+           <property name="title">
+            <string>Row Order</string>
            </property>
+           <layout class="QGridLayout" name="gridLayout_7">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1rowsAscending">
+              <property name="text">
+               <string>Ascending</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2rowsDescending">
+              <property name="text">
+               <string>Descending</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="descending">
-           <property name="text">
-            <string>Descending</string>
+         <item row="0" column="1">
+          <widget class="BoundGroupBox" name="columnOrder">
+           <property name="title">
+            <string>Column Order</string>
            </property>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1columnsAscending">
+              <property name="text">
+               <string>Ascending</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2columnsDescending">
+              <property name="text">
+               <string>Descending</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -102,8 +122,8 @@
           <number>6</number>
          </property>
          <item row="0" column="0" colspan="2">
-          <widget class="BoundGroupBox" name="samplingModel" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="samplingModel">
+           <property name="title">
             <string>Sampling</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
@@ -146,11 +166,11 @@
           </widget>
          </item>
          <item row="0" column="2" colspan="2">
-          <widget class="BoundGroupBox" name="hypothesis" native="true">
+          <widget class="BoundGroupBox" name="hypothesis">
            <property name="enabled">
             <bool>false</bool>
            </property>
-           <property name="title" stdset="0">
+           <property name="title">
             <string>Hypothesis</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
@@ -195,8 +215,8 @@
           </widget>
          </item>
          <item row="1" column="0" colspan="2">
-          <widget class="BoundGroupBox" name="bayesFactorType" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="bayesFactorType">
+           <property name="title">
             <string>Bayes factor</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
@@ -211,6 +231,13 @@
              <widget class="QRadioButton" name="_1BF10">
               <property name="text">
                <string>BF₁₀</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="_3LBF10">
+              <property name="text">
+               <string>Log( BF₁₀ )</string>
               </property>
              </widget>
             </item>
@@ -314,7 +341,7 @@
             <item row="1" column="0" colspan="2">
              <widget class="BoundCheckBox" name="oddsRatio">
               <property name="text">
-               <string>Odds ratio (2x2 only)</string>
+               <string>Log( odds ratio ) (2x2 only)</string>
               </property>
              </widget>
             </item>
@@ -793,25 +820,25 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

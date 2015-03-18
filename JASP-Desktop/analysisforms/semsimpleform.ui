@@ -495,21 +495,21 @@
              <number>0</number>
             </property>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="output_fittedCovarianceCorrelations">
+             <widget class="BoundCheckBox" name="outputFittedCovarianceCorrelations">
               <property name="text">
                <string>Fitted covariances / correlations</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="output_observedCovarianceCorrelations">
+             <widget class="BoundCheckBox" name="outputObservedCovarianceCorrelations">
               <property name="text">
                <string>Observed covariances / correlations</string>
               </property>
              </widget>
             </item>
             <item row="6" column="0">
-             <widget class="BoundCheckBox" name="output_modificationIndices">
+             <widget class="BoundCheckBox" name="outputModificationIndices">
               <property name="text">
                <string>Modification indices</string>
               </property>
@@ -546,7 +546,7 @@
                    <number>0</number>
                   </property>
                   <item row="0" column="0">
-                   <widget class="BoundCheckBox" name="output_modificationIndicesHideLowIndices">
+                   <widget class="BoundCheckBox" name="outputModificationIndicesHideLowIndices">
                     <property name="text">
                      <string>Hide low indices</string>
                     </property>
@@ -571,7 +571,7 @@
                       <number>0</number>
                      </property>
                      <item row="0" column="1">
-                      <widget class="BoundTextBox" name="output_modificationIndicesHideLowIndicesThreshold">
+                      <widget class="BoundTextBox" name="outputModificationIndicesHideLowIndicesThreshold">
                        <property name="maximumSize">
                         <size>
                          <width>60</width>
@@ -610,21 +610,21 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="output_additionalFitMeasures">
+             <widget class="BoundCheckBox" name="outputAdditionalFitMeasures">
               <property name="text">
                <string>Additional fit measures</string>
               </property>
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="BoundCheckBox" name="output_residualCovarianceCorrelations">
+             <widget class="BoundCheckBox" name="outputResidualCovarianceCorrelations">
               <property name="text">
                <string>Residual covariances / correlations</string>
               </property>
              </widget>
             </item>
             <item row="5" column="0">
-             <widget class="BoundCheckBox" name="output_mardiasCoefficients">
+             <widget class="BoundCheckBox" name="outputMardiasCoefficients">
               <property name="text">
                <string>Mardia's coefficients</string>
               </property>
@@ -758,11 +758,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -772,11 +767,6 @@
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTextBox</class>
@@ -790,6 +780,16 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundTextEdit</class>
    <extends>QPlainTextEdit</extends>
    <header>widgets/boundtextedit.h</header>
@@ -798,7 +798,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>output_modificationIndices</sender>
+   <sender>outputModificationIndices</sender>
    <signal>toggled(bool)</signal>
    <receiver>containerHideLowIndices</receiver>
    <slot>setEnabled(bool)</slot>
@@ -814,7 +814,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>output_modificationIndicesHideLowIndices</sender>
+   <sender>outputModificationIndicesHideLowIndices</sender>
    <signal>toggled(bool)</signal>
    <receiver>containerThreshold</receiver>
    <slot>setEnabled(bool)</slot>

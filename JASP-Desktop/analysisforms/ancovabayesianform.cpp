@@ -38,32 +38,23 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
+	ui->modelTerms->setAssignPiecesVisible(false);
 	ui->modelTerms->hide();
 
-	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(assignmentsChanging()));
-	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(assignmentsChanged()));
+	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_fixedFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
 	connect(_fixedFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
-	connect(_randomFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(assignmentsChanging()));
-	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(assignmentsChanged()));
+	connect(_randomFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addRandomFactors(Terms)));
 	connect(_randomFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
-	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(assignmentsChanging()));
-	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(assignmentsChanged()));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
-
-#ifdef QT_NO_DEBUG
-	// temporary hides until the appropriate R code is implemented
-
-	ui->posteriorDistributions->hide();
-	ui->posteriorEstimates->hide();
-#else
-	ui->posteriorDistributions->setStyleSheet("background-color: pink;");
-	ui->posteriorEstimates->setStyleSheet("background-color: pink;");
-#endif
 }
 
 AncovaBayesianForm::~AncovaBayesianForm()

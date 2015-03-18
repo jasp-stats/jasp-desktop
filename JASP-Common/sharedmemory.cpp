@@ -1,44 +1,59 @@
 
 #include "sharedmemory.h"
 
-#include "process.h"
+#include "processinfo.h"
 
 #include <sstream>
 
-boost::interprocess::managed_shared_memory *SharedMemory::_memory;
-std::string SharedMemory::_memoryName;
+using namespace std;
+using namespace boost;
 
-boost::interprocess::managed_shared_memory *SharedMemory::grow(int amount)
-{	
-	boost::interprocess::managed_shared_memory::grow(_memoryName.c_str(), amount);
-	_memory = new boost::interprocess::managed_shared_memory(boost::interprocess::open_only, _memoryName.c_str());
+interprocess::managed_shared_memory *SharedMemory::_memory;
+string SharedMemory::_memoryName;
 
-	return _memory;
-}
-
-boost::interprocess::managed_shared_memory *SharedMemory::get(bool master)
+DataSet *SharedMemory::createDataSet()
 {
 	if (_memory == NULL)
 	{
-		std::stringstream ss;
+		stringstream ss;
 		ss << "JASP-DATA-";
+		ss << ProcessInfo::currentPID();
+		_memoryName = ss.str();
 
-		if (master)
-		{   
-			ss << Process::currentPID();
-			_memoryName = ss.str();
-            boost::interprocess::shared_memory_object::remove(_memoryName.c_str());
-            _memory = new boost::interprocess::managed_shared_memory(boost::interprocess::create_only, _memoryName.c_str(), 6553600);
-		}
-		else
-		{
-			ss << Process::parentPID();
-			_memoryName = ss.str();
-			_memory = new boost::interprocess::managed_shared_memory(boost::interprocess::open_read_only, _memoryName.c_str());
-		}
-
-
+		interprocess::shared_memory_object::remove(_memoryName.c_str());
+		_memory = new interprocess::managed_shared_memory(interprocess::create_only, _memoryName.c_str(), 6553600);
 	}
 
-	return _memory;
+	return _memory->construct<DataSet>(interprocess::unique_instance)(_memory);
+}
+
+DataSet *SharedMemory::retrieveDataSet()
+{
+	if (_memory == NULL)
+	{
+		stringstream ss;
+		ss << "JASP-DATA-";
+		ss << ProcessInfo::parentPID();
+		_memoryName = ss.str();
+
+		_memory = new interprocess::managed_shared_memory(interprocess::open_read_only, _memoryName.c_str());
+	}
+
+	return _memory->find<DataSet>(interprocess::unique_instance).first;
+}
+
+DataSet *SharedMemory::enlargeDataSet(DataSet *)
+{
+	interprocess::managed_shared_memory::grow(_memoryName.c_str(), _memory->get_size());
+	_memory = new interprocess::managed_shared_memory(interprocess::open_only, _memoryName.c_str());
+
+	DataSet *dataSet = retrieveDataSet();
+	dataSet->setSharedMemory(_memory);
+
+	return dataSet;
+}
+
+void SharedMemory::deleteDataSet(DataSet *dataSet)
+{
+	_memory->destroy_ptr(dataSet);
 }

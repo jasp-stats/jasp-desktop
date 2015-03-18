@@ -67,7 +67,22 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		if (options$hypothesis == "groupTwoGreater") {
 			bf.title <- "BF\u208B\u2080"
 		}
-	} else {
+		
+	} else if (bf.type == "LogBF10") {
+		
+		BFH1H0 <- TRUE
+		
+		if (options$hypothesis == "groupsNotEqual") {
+			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+		}
+		if (options$hypothesis == "groupOneGreater") {
+			bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
+		}
+		if (options$hypothesis == "groupTwoGreater") {
+			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
+		}
+		
+	} else if (bf.type == "BF01") {
 	
 		BFH1H0 <- FALSE
 	
@@ -94,13 +109,25 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		nullInterval <- c(-Inf, 0)
 		oneSided <- "left"
 	}
-
-	fields <- list(
-		list(name=".variable1", type="string", title=""),
-		list(name=".separator", type="separator", title=""),
-		list(name=".variable2", type="string", title=""),
-		list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
-		list(name="error", type="number", format="sf:4;dp:3", title="error %"))
+	
+	if (options$hypothesis == "groupsNotEqual") {
+	
+		fields <- list(
+			list(name=".variable1", type="string", title=""),
+			list(name=".separator", type="separator", title=""),
+			list(name=".variable2", type="string", title=""),
+			list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
+			list(name="error", type="number", format="sf:4;dp:3", title="error %"))
+	
+	} else {
+	
+		fields <- list(
+			list(name=".variable1", type="string", title=""),
+			list(name=".separator", type="separator", title=""),
+			list(name=".variable2", type="string", title=""),
+			list(name="BF", type="number", format="sf:4;dp:3", title=bf.title),
+			list(name="error", type="number", format="sf:4;dp:3;~", title="error %"))
+	}
 
 	ttest[["schema"]] <- list(fields=fields)
 
@@ -143,7 +170,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			plots.ttest[[length(plots.ttest)+1]] <- plot
 		}
 		
-		if (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness){
+		if (options$plotSequentialAnalysis){
 
 			plot <- list()
 			
@@ -166,6 +193,9 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 	pair.statuses <- list()
 	
+	i <- 1
+	
+	BF10post <- numeric()
 	
 	for (i in .indices(options$pairs))
 	{
@@ -201,38 +231,118 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					c1 <- subDataSet[[ .v(pair[[1]]) ]]
 					c2 <- subDataSet[[ .v(pair[[2]]) ]]
 	
-					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE, r=options$priorWidth, nullInterval= nullInterval)
+					r <- BayesFactor::ttestBF(c1, c2, paired = TRUE, r=options$priorWidth)
 					
 					bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
+					
+					# deltaHat <- mean(c1 - c2) / sd(c1 - c2)
+					# 	
+					# N <- length(c1)
+					# df <- N - 1
+					# sigmaStart <- 1 / N
+					# 
+					# if (sigmaStart < .01) 
+					# 	sigmaStart <- .01					
+					
+					if (oneSided == "right") {
+						
+						samples <- BayesFactor::ttestBF(c1, c2, paired=TRUE, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
+						delta <- samples[, "delta"]
+						
+						if (is.infinite(bf.raw)) {
+					
+							if (mean(delta) > 0) {
+					
+								bf.raw <- Inf
+								
+							} else {
+							
+								bf.raw <- 1 / Inf
+							}
+					
+						} else {
+						
+							bf.raw <- .oneSidedTtestBFRichard(c1, c2, paired=TRUE, oneSided="right", r=options$priorWidth)
+							
+							# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+							# 
+		                    # 
+							# if (class(parameters) == "try-error") {
+							# 
+							# 	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+							# }
+							# 
+							# bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)							
+						}
+					}
+					
+					if (oneSided == "left") {
+						
+						samples <- BayesFactor::ttestBF(c1, c2, paired=TRUE, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
+						delta <- samples[, "delta"]
+						
+						if (is.infinite(bf.raw)) {
+					
+							if (mean(delta) < 0) {
+					
+								bf.raw <- Inf
+								
+							} else {
+							
+								bf.raw <- 1 / Inf
+							}
+							
+						} else {
+						
+							bf.raw <- .oneSidedTtestBFRichard(c1, c2, paired=TRUE, oneSided="left", r=options$priorWidth)
+						
+							# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
+				            # 
+							# if (class(parameters) == "try-error") {
+							# 
+							# 	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
+							# }
+							# 
+							# bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
+						}
+					}
 					
 					if (is.na(bf.raw)) {
 				
 						unplotable <- TRUE
 						unplotableMessage <- "Bayes factor is NaN"
-					} 
-					
-					if (is.infinite(bf.raw)) {
+						
+					} else if (is.infinite(bf.raw)) {
 					
 						unplotable <- TRUE
 						unplotableMessage <- "Bayes factor is infinite"
-					}
-					
-					if (is.infinite(1 / bf.raw)) {
+						
+					} else if (is.infinite(1 / bf.raw)) {
 					
 						unplotable <- TRUE
 						unplotableMessage <- "The Bayes factor is too small"
 					}
+						
 					
 					if (bf.type == "BF01")
 						bf.raw <- 1 / bf.raw
-			
+					
+					BF10post[i] <- bf.raw
 					BF <- .clean(bf.raw)
+					
+					if (options$bayesFactorType == "LogBF10") {
+							
+							BF <- log(BF10post[i])
+							BF <- .clean(BF)
+					}
+					
 					error <- .clean(as.numeric(r@bayesFactor$error))[1]
 			
 					list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=BF, error=error)
 			
 				})
-		
+				
+				
 				if (class(result) == "try-error") {
 				
 					errorMessage <- .extractErrorMessage(result)
@@ -266,6 +376,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		}
 		
 		ttest.rows[[length(ttest.rows)+1]] <- result
+		i <- i + 1
 	}
 	
 	if (length(ttest.rows) == 0)
@@ -350,6 +461,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		n.plots <- length(options$pairs) * n.plots.per.variable
 		
 		j <- 1
+		i <- 1
 		
 		for (i in .indices(options$pairs)) {
 			
@@ -385,17 +497,18 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			if (options$plotPriorAndPosterior) {
 			
 				plot <- plots.ttest[[j]]
-
+				
 				if (status$unplotable == FALSE) {
 				
 					p <- try(silent= FALSE, expr= {
 					
 						image <- .beginSaveImage(530, 400)
 					
-						.plotPosterior.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo)
+						.plotPosterior.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
 					
 						plot[["data"]] <- .endSaveImage(image)
 						})
+						
 						
 					if (class(p) == "try-error") {
 					
@@ -446,7 +559,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 					image <- .beginSaveImage(530, 400)
 				
-					.plotBF.robustnessCheck.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
+					.plotBF.robustnessCheck.ttest(x=c1, y=c2, BF10post=BF10post[i], paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
 				
 					content <- .endSaveImage(image)
 				
@@ -478,7 +591,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				j <- j + 1
 			}
 		
-			if (options$plotSequentialAnalysis || options$plotSequentialAnalysisRobustness) {
+			if (options$plotSequentialAnalysis) {
 		
 				plot <- plots.ttest[[j]]
 
@@ -486,7 +599,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 
 					image <- .beginSaveImage(530, 400)
 
-					.plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=BFH1H0)
+					.plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BF10post=BF10post[i], plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=BFH1H0)
 
 					content <- .endSaveImage(image)
 			
@@ -522,6 +635,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		
 				j <- j + 1
 			}
+			
+			#i <- i + 1
 		}
 	}
 	

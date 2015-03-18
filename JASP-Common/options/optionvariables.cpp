@@ -22,21 +22,24 @@ Json::Value OptionVariables::asJSON() const
 
 	if (_value.size() > 0)
 	{
-		BOOST_FOREACH(string field, _value.front())
-			v.append(field);
+		BOOST_FOREACH(vector<string> variable, _value)
+			v.append(variable.front());
 	}
 
 	return v;
 }
 
-void OptionVariables::set(Json::Value &value)
+void OptionVariables::set(const Json::Value &value)
 {
 	vector<string> terms;
 
 	if (value.isArray())
 	{
 		for (uint i = 0; i < value.size(); i++)
-			terms.push_back(value[i].asString());
+		{
+			string v = value[i].asString();
+			terms.push_back(v);
+		}
 	}
 
 	setValue(terms);
@@ -51,9 +54,15 @@ Option *OptionVariables::clone() const
 
 vector<string> OptionVariables::variables() const
 {
-	if (_value.size() > 0)
-		return _value.front();
-	else
-		return vector<string>();
+	vector<string> variables;
+
+	for (int i = 0; i < _value.size(); i++)
+	{
+		const vector<string> &variable = _value.at(i);
+		if (variable.size() > 0)
+			variables.push_back(variable.at(0));
+	}
+
+	return variables;
 }
 

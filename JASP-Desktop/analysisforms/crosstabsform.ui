@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>550</width>
-    <height>1191</height>
+    <width>575</width>
+    <height>1417</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -439,21 +439,21 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="percentages_row">
+             <widget class="BoundCheckBox" name="percentagesRow">
               <property name="text">
                <string>Row</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="percentages_column">
+             <widget class="BoundCheckBox" name="percentagesColumn">
               <property name="text">
                <string>Column</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="percentages_total">
+             <widget class="BoundCheckBox" name="percentagesTotal">
               <property name="text">
                <string>Total</string>
               </property>
@@ -469,21 +469,21 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="residuals_unstandardized">
+             <widget class="BoundCheckBox" name="residualsUnstandardized">
               <property name="text">
                <string>Unstandardized</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="residuals_standardized">
+             <widget class="BoundCheckBox" name="residualsStandardized">
               <property name="text">
                <string>Standardized</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="residuals_adjustedStandardized">
+             <widget class="BoundCheckBox" name="residualsAdjustedStandardized">
               <property name="text">
                <string>Adjusted Standardized</string>
               </property>
@@ -572,14 +572,14 @@
              </widget>
             </item>
             <item row="0" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="zTest_compareColumns">
+             <widget class="BoundCheckBox" name="zTestCompareColumns">
               <property name="text">
                <string>Compare column proportions</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="BoundCheckBox" name="zTest_adjustPValues">
+             <widget class="BoundCheckBox" name="zTestAdjustPValues">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -629,39 +629,53 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="BoundGroupBox" name="rowOrder" native="true">
-        <property name="title" stdset="0">
-         <string>Row Order</string>
-        </property>
-        <property name="flat" stdset="0">
-         <bool>true</bool>
-        </property>
+      <item row="1" column="0" colspan="2">
+       <widget class="QWidget" name="panelOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_21">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
          <item row="0" column="0">
-          <widget class="QRadioButton" name="ascending">
-           <property name="text">
-            <string>Ascending</string>
+          <widget class="BoundGroupBox" name="rowOrder" native="true">
+           <property name="title" stdset="0">
+            <string>Row Order</string>
            </property>
+           <layout class="QGridLayout" name="gridLayout_24">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1rowAscending">
+              <property name="text">
+               <string>Ascending</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2rowDescending">
+              <property name="text">
+               <string>Descending</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="descending">
-           <property name="text">
-            <string>Descending</string>
+         <item row="0" column="1">
+          <widget class="BoundGroupBox" name="columnOrder" native="true">
+           <property name="title" stdset="0">
+            <string>Column Order</string>
            </property>
+           <layout class="QGridLayout" name="gridLayout_25">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1columnAscending">
+              <property name="text">
+               <string>Ascending</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2columnDescending">
+              <property name="text">
+               <string>Descending</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -776,7 +790,7 @@
             <item row="1" column="0" colspan="2">
              <widget class="BoundCheckBox" name="oddsRatio">
               <property name="text">
-               <string>Odds ratio (2x2 only)</string>
+               <string>Log( odds ratio ) (2x2 only)</string>
               </property>
              </widget>
             </item>
@@ -790,28 +804,28 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="nominal_contingencyCoefficient">
+             <widget class="BoundCheckBox" name="nominalContingencyCoefficient">
               <property name="text">
                <string>Contingency coefficient</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="nominal_phiAndCramersV">
+             <widget class="BoundCheckBox" name="nominalPhiAndCramersV">
               <property name="text">
                <string>Phi and Cramer's V</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="nominal_lambda">
+             <widget class="BoundCheckBox" name="nominalLambda">
               <property name="text">
                <string>Lambda</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="nominal_uncertaintyCoefficient">
+             <widget class="BoundCheckBox" name="nominalUncertaintyCoefficient">
               <property name="text">
                <string>Uncertainty coefficient</string>
               </property>
@@ -827,28 +841,28 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="ordinal_kendallsTauC">
+             <widget class="BoundCheckBox" name="ordinalKendallsTauC">
               <property name="text">
                <string>Kendall's tau-c</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="ordinal_kendallsTauB">
+             <widget class="BoundCheckBox" name="ordinalKendallsTauB">
               <property name="text">
                <string>Kendall's tau-b</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="ordinal_somersD">
+             <widget class="BoundCheckBox" name="ordinalSomersD">
               <property name="text">
                <string>Somers' d</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="ordinal_gamma">
+             <widget class="BoundCheckBox" name="ordinalGamma">
               <property name="text">
                <string>Gamma</string>
               </property>
@@ -963,11 +977,6 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -988,6 +997,11 @@
    <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -1057,9 +1071,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>zTest_compareColumns</sender>
+   <sender>zTestCompareColumns</sender>
    <signal>toggled(bool)</signal>
-   <receiver>zTest_adjustPValues</receiver>
+   <receiver>zTestAdjustPValues</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

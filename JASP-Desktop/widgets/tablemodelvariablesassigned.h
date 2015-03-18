@@ -4,7 +4,7 @@
 #include "tablemodelvariables.h"
 
 #include "tablemodelvariablesavailable.h"
-#include "options/optionvariables.h"
+#include "options/optionterms.h"
 
 #include "column.h"
 
@@ -22,7 +22,7 @@ public:
 	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) OVERRIDE;
 	virtual void mimeDataMoved(const QModelIndexList &indices) OVERRIDE;
 
-	bool setSorted(bool sorted);
+	void setSorted(bool sorted);
 	const Terms &assigned() const;
 
 signals:
@@ -42,7 +42,7 @@ private:
 	void unassign(const Terms &variables);
 	void setAssigned(const Terms &variables);
 
-	OptionVariables *_boundTo;
+	OptionTerms *_boundTo;
 	TableModelVariablesAvailable *_source;
 	bool _sorted;
 

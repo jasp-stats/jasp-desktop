@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>598</width>
-    <height>551</height>
+    <height>558</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -312,6 +312,13 @@
           <widget class="QRadioButton" name="_1">
            <property name="text">
             <string>BF₁₀</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QRadioButton" name="_3">
+           <property name="text">
+            <string>Log( BF₁₀ )</string>
            </property>
           </widget>
          </item>

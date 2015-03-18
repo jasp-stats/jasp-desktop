@@ -9,8 +9,10 @@ class OptionBoolean : public OptionI<bool>
 public:
 	OptionBoolean(bool defaultValue = false);
 
+
+	virtual void init(const Json::Value &data) OVERRIDE;
 	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(Json::Value& value) OVERRIDE;
+	virtual void set(const Json::Value& value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
 };
 

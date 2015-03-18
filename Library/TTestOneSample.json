@@ -1,0 +1,53 @@
+[
+   {
+      "name" : "variables",
+      "type" : "Variables"
+   },
+   {
+      "format" : "",
+      "name" : "testValue",
+      "type" : "Number",
+      "value" : 0.0
+   },
+   {
+      "name" : "hypothesis",
+      "options" : [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
+      "default" : "notEqualToTestValue",
+      "type" : "List"
+   },
+   {
+      "name" : "meanDifference",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "effectSize",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "confidenceInterval",
+      "type" : "Boolean"
+   },
+   {
+      "format" : "%",
+      "max" : 1.0,
+      "min" : 0.0,
+      "name" : "confidenceIntervalInterval",
+      "type" : "Number",
+      "value" : 0.950
+   },
+   {
+      "name" : "descriptives",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "normalityTests",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "missingValues",
+      "options" : [ "excludeAnalysisByAnalysis", "excludeListwise" ],
+      "default" : "excludeAnalysisByAnalysis",
+      "type" : "List"
+   }
+]
+

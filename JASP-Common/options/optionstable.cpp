@@ -12,6 +12,26 @@ OptionsTable::OptionsTable(Options *rowTemplate)
 	_template = rowTemplate;
 }
 
+OptionsTable::OptionsTable()
+{
+	_template = NULL;
+}
+
+void OptionsTable::init(const Json::Value &data)
+{
+	_template = new Options();
+
+	Json::Value templ4te = data.get("template", Json::nullValue);
+
+	if (templ4te.isNull() == false)
+		_template->init(templ4te);
+
+	Json::Value d3fault = data.get("default", Json::nullValue);
+
+	if (d3fault.isNull() == false)
+		set(d3fault);
+}
+
 Json::Value OptionsTable::asJSON() const
 {
 	Value v = arrayValue;
@@ -23,7 +43,7 @@ Json::Value OptionsTable::asJSON() const
 	return v;
 }
 
-void OptionsTable::set(Json::Value &value)
+void OptionsTable::set(const Json::Value &value)
 {
 	BOOST_FOREACH(Options *row, _value)
 		delete row;
@@ -34,8 +54,6 @@ void OptionsTable::set(Json::Value &value)
 		Options *row = static_cast<Options *>(_template->clone());
 		row->set(value[i]);
 		_value.push_back(row);
-
-		//row->changed.connect(boost::bind(&OptionsTable::rowChanged, this));
 	}
 }
 
@@ -47,7 +65,7 @@ Option *OptionsTable::clone() const
 	return NULL;
 }
 
-void OptionsTable::setValue(vector<Options *> value)
+void OptionsTable::setValue(const vector<Options *> &value)
 {
 	_value = value;
 	notifyChanged();
@@ -57,18 +75,3 @@ Options *OptionsTable::rowTemplate() const
 {
 	return _template;
 }
-
-/*Options *OptionsTable::at(int index) const
-{
-	return _value.at(index);
-}
-
-size_t OptionsTable::size() const
-{
-	return _value.size();
-}
-
-void OptionsTable::rowChanged()
-{
-	notifyChanged();
-}*/

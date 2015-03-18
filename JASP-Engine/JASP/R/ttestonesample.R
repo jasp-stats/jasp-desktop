@@ -42,6 +42,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="descriptives", type="table")
+	meta[[4]] <- list(name="normalityTests", type="table")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "T-Test"
@@ -61,6 +62,10 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	if (options$meanDifference) {
 	
 		fields[[length(fields) + 1]] <- list(name="Mean Difference", type="number", format="sf:4;dp:3")
+	}
+	
+	if(options$effectSize){
+		fields[[length(fields) + 1]] <- list(name="d", title="Cohen's d", type="number", format="sf:4;dp:3")
 	}
 	
 	if (options$confidenceInterval) {
@@ -120,13 +125,14 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 				df <- as.numeric(r$parameter)
 				p  <- as.numeric(r$p.value)
 				m  <- as.numeric(r$estimate - r$null.value)
+				d <- .clean((mean(dataset[[ .v(variable) ]]) - options$testValue) / sd(dataset[[ .v(variable) ]]))
 				ciLow <- .clean(as.numeric(r$conf.int[1]))
 				ciUp  <- .clean(as.numeric(r$conf.int[2]))
 				
 				if (is.na(t))
 					stop("data are essentially constant")
 			
-				list(v=variable, t=t, df=df, p=p, "Mean Difference"=m, "lowerCI"=ciLow, "upperCI"=ciUp)
+				list(v=variable, t=t, df=df, p=p, "Mean Difference"=m, "d"=d, "lowerCI"=ciLow, "upperCI"=ciUp)
 			})
 				
 			if (class(result) == "try-error") {
@@ -154,7 +160,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			
 		} else {
 
-			result <- list(v=variable, t=".", df=".", p=".", "Mean Difference"=".", "lowerCI"=".", "upperCI"=".")
+			result <- list(v=variable, t=".", df=".", p=".", "Mean Difference"=".", "d"=".", "lowerCI"=".", "upperCI"=".")
 		
 		}
 		
@@ -197,17 +203,35 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 					mean <- .clean(mean(data))
 					stdDeviation <- .clean(sd(data))
 					stdErrorMean <- .clean(sd(data)/sqrt(length(data)))
+					
+					if(length(descriptives.results) == 0) {
+			            newGroup <- TRUE   
+			        } else {				
+				        newGroup <- FALSE
+			        }
 
-					result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean)
+					result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean, ".isNewGroup" = newGroup)
 				} else {
+				
+				    if(length(descriptives.results) == 0) {
+			            newGroup <- TRUE   
+			        } else {				
+				        newGroup <- FALSE
+			        }
 			
 					n <- .clean(length(data))
-					result <- list(v=variable, N=n, mean="", sd="", se="")
+					result <- list(v=variable, N=n, mean="", sd="", se="", ".isNewGroup" = newGroup)
 				}
 			
 			} else {
 			
-				result <- list(v=variable, N=".", mean=".", sd= ".", se=".")			
+			    if(length(descriptives.results) == 0) {
+			        newGroup <- TRUE   
+			    } else {				
+				    newGroup <- FALSE
+			    }
+			
+				result <- list(v=variable, N=".", mean=".", sd= ".", se=".", ".isNewGroup" = newGroup)			
 			
 			}
 			
@@ -215,6 +239,84 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 		}
 		
 		descriptives[["data"]] <- descriptives.results
+	}
+	
+	if (options$normalityTests) {
+	
+	    normalityTests <- list()
+	
+		normalityTests[["title"]] <- "Test of Normality (Shapiro-Wilk)"
+		normalityTests[["cases"]] <- I(options$variables)
+
+		fields <- list(
+			list(name="v", title="", type="string"),
+			list(name="W", title="W", type="number",   format="sf:4;dp:3"),
+			list(name="p", title="p", type="number", format="dp:3;p:.001"))
+
+		normalityTests[["schema"]] <- list(fields=fields)
+		
+		footnotes <- .newFootnotes()
+        .addFootnote(footnotes, symbol="<em>Note.</em>", text="Significant results indicate a deviation from normality")
+		
+		normalityTests.results <- list()
+		
+		variables <- options[["variables"]]
+		if (length(variables) == 0)
+			variables = "."
+
+		for (variable in variables) {
+			
+			if (perform == "run" && length(options[["variables"]]) > 0) {
+
+				data <- na.omit(dataset[[ .v(variable) ]])
+
+				if (class(data) != "factor") {
+                    
+                    r <- stats::shapiro.test(data)
+                    
+					W <- .clean(as.numeric(r$statistic))
+					p <- .clean(r$p.value)
+					
+					if(length(normalityTests.results) == 0) {
+			            newGroup <- TRUE   
+			        } else {				
+				        newGroup <- FALSE
+			        }
+					
+					result <- list("v" = variable, "W" = W, "p" = p, ".isNewGroup" = newGroup)
+					
+				} else {
+			        
+			        if(length(normalityTests.results) == 0) {
+			            newGroup <- TRUE   
+			        } else {				
+				        newGroup <- FALSE
+			        }
+					
+					result <- list("v" = variable, "W" = "", "p" = "", ".isNewGroup" = newGroup)
+					
+				}
+			
+			} else {
+			
+			    if(length(normalityTests.results) == 0) {
+			        newGroup <- TRUE   
+			    } else {				
+				    newGroup <- FALSE
+			    }
+			
+				result <- list("v" = variable, "W" = ".", p = ".", ".isNewGroup" = newGroup)			
+			
+			}
+			
+			normalityTests.results[[length(normalityTests.results)+1]] <- result
+		}
+		
+		normalityTests[["data"]] <- normalityTests.results
+		
+		normalityTests[["footnotes"]] <- as.list(footnotes)
+		
+		results[["normalityTests"]] <- normalityTests
 	}
 	
 	

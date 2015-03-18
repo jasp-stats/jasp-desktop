@@ -259,7 +259,7 @@ run <- function(name, options.as.json.string, perform="run") {
 	f  <- rm.factors[[length(rm.factors)]]
 	df <- data.frame(as.factor(unlist(f$levels)))
 	
-	names(df) <- .v(f$name, "F")
+	names(df) <- .v(f$name)
 	
 	row.count <- dim(df)[1]
 	
@@ -287,7 +287,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		
 		
 		df <- cbind(cells, df)
-		names(df)[[1]] <- .v(f$name, "F")
+		names(df)[[1]] <- .v(f$name)
 		
 		i <- i - 1
 	}
@@ -658,4 +658,50 @@ as.list.footnotes <- function(footnotes) {
 		
 		return(index-1)
 	}
+}
+
+
+.diff <- function(one, two) {
+
+	# returns TRUE if identical
+	# returns FALSE if different or not really comparable
+	# returns a list of what has changed if non-identical named lists provided
+	
+	if (identical(one, two))
+		return(TRUE)
+	
+	if (is.null(names(one)) == ( ! is.null(names(two))))  # if one list has names, and the other not
+		return(FALSE)
+	
+	changed <- list()
+	
+	if (is.null(names(one)) == FALSE) {
+		
+		names1 <- names(one)
+		names2 <- names(two)
+		
+		for (name in names1) {
+			
+			if (name %in% names2) {
+				
+				item1 <- one[[name]]
+				item2 <- two[[name]]
+				
+				if (identical(item1, item2) == FALSE)
+					changed[[name]] <- .diff(item1, item2)
+			}
+		}
+		
+		for (name in names2) {
+			
+			if ((name %in% names1) == FALSE)
+				changed[[name]] <- FALSE
+		}
+		
+	} else {
+		
+		return(FALSE)
+	}
+	
+	changed
 }

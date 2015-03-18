@@ -57,6 +57,8 @@
 		groups <- NULL
 	}
 	
+	
+	
 	tables <- list()
 
     ### SETUP COLUMNS COMMON TO BOTH TABLES
@@ -81,12 +83,44 @@
 
 	lvls <- c()
 	if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
-
+	
 		lvls <- base::levels(dataset[[ .v(analysis$columns) ]])
+		if (options$columnOrder == "descending") {
+			lvls <- base::rev(lvls)
+		} else {
+			lvls <- lvls
+		}
 
-	} else  {
+	} else if (perform == "run") {
 	
 		lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
+		
+		if (options$columnOrder == "descending") {
+			lvls <- base::rev(lvls, decreasing = TRUE)
+		} else {
+			lvls <- lvls
+		}
+	}
+	
+	row.lvls <- c()
+	if (is.factor(dataset[[ .v(analysis$rows) ]] )) {
+	
+		row.lvls <- base::levels(dataset[[ .v(analysis$rows) ]])
+		if (options$rowOrder == "descending") {
+			row.lvls <- base::rev(row.lvls)
+		} else {
+			row.lvls <- row.lvls
+		}
+
+	} else if (perform == "run") {
+	
+		row.lvls <- base::unique(dataset[[ .v(analysis$rows) ]])
+		
+		if (options$rowOrder == "descending") {
+			row.lvls <- base::rev(row.lvls, decreasing = TRUE)
+		} else {
+			row.lvls <- row.lvls
+		}
 	}
 	
 	counts.fp <- FALSE  # whether the counts are float point or not; changes formatting
@@ -145,23 +179,29 @@
 	
 	tests.table[["title"]] <- "Bayesian Contingency Tables Tests"
 	
-	tests.fields <- fields
+	tests.fields <- fields 
+	
+	#if ((options$hypothesis=="groupOneGreater"|| options$hypothesis=="groupTwoGreater") && (options$samplingModel=="independentMultinomialColumnsFixed" || options$samplingModel=="independentMultinomialRowsFixed")){
+	#tests.fields[[length(tests.fields)+1]] <- list(name="Group[BF]", title="Hypothesis", type="string")
+	#}
 	
 	tests.fields[[length(tests.fields)+1]] <- list(name="type[BF]", title="", type="string")
 	tests.fields[[length(tests.fields)+1]] <- list(name="value[BF]", title="Value", type="number", format="sf:4;dp:3")
 	tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
 	tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value", type="integer")
 	
+	
 	schema <- list(fields=tests.fields)
 	
 	tests.table[["schema"]] <- schema
 	
 	##### Odds ratio
+	
 	if (options$oddsRatio) {
 		
 		oddsratio.table <- list()
 		
-		oddsratio.table[["title"]] <- "Log odds ratio"
+		oddsratio.table[["title"]] <- "Log Odds Ratio"
 		
 		oddsratio.fields <- fields
 			
@@ -184,15 +224,13 @@
 		
 		if (any(counts < 0) || any(is.infinite(counts)))
 			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinite number")
-	}
-	
-
+	}	
 
 	# POPULATE TABLES
 
 	# create count matrices for each group
 
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var))
+	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var),options$rowOrder=="descending", options$columnOrder=="descending")
 	
 	if (all(dim(group.matrices[[1]]) == c(2,2))) {
 	
@@ -302,7 +340,6 @@
 	
 		row[["value[N]"]] <- "."
 	}
-	
 		
 	if (options$samplingModel == "poisson") {
 	
@@ -311,8 +348,11 @@
 			
 		} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u2081 Poisson"
+		
+		} else if (options$bayesFactorType == "LogBF10") {
+			bfLabel <- " Log\u2009(\u2009BF\u2081\u2080\u2009) Poisson"		
 		}
-	
+		
 		sampleType <- "poisson"
 		fixedMargin <- NULL
 		
@@ -323,6 +363,9 @@
 			
 		} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u2081 joint multinomial"
+			
+		} else if (options$bayesFactorType == "LogBF10") {
+			bfLabel <- "Log\u2009(\u2009BF\u2081\u2080\u2009) joint multinomial"
 		}
 		
 		sampleType <- "jointMulti"
@@ -333,30 +376,39 @@
 		if (options$hypothesis=="groupsNotEqual") {
 		
 			if (options$bayesFactorType == "BF10"){
-			bfLabel <- "BF\u2081\u2080 independent multinomial"
+				bfLabel <- "BF\u2081\u2080 independent multinomial"
 			
 			} else if (options$bayesFactorType == "BF01"){
-			bfLabel <- "BF\u2080\u2081 independent multinomial"
+				bfLabel <- "BF\u2080\u2081 independent multinomial"
+			
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
+			
 				
 		} else if (options$hypothesis=="groupOneGreater") {
 			
 			if (options$bayesFactorType == "BF10"){
-			bfLabel <- "BF\u208A\u2080 independent multinomial"
+				bfLabel <- "BF\u208A\u2080 independent multinomial"
 			
 			} else if (options$bayesFactorType == "BF01"){
-			bfLabel <- "BF\u2080\u208A independent multinomial"
+				bfLabel <- "BF\u2080\u208A independent multinomial"
+				
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
 						 
 		} else if(options$hypothesis =="groupTwoGreater") { 
 		
 			if (options$bayesFactorType == "BF10"){
-			bfLabel <- "BF\u208B\u2080 independent multinomial"
+				bfLabel <- "BF\u208B\u2080 independent multinomial"
 			
 			} else if (options$bayesFactorType == "BF01"){
-			bfLabel <- "BF\u2080\u208B independent multinomial"
-			}
-				
+				bfLabel <- "BF\u2080\u208B independent multinomial"
+			
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
+			}				
 		}
 				
 		sampleType <- "indepMulti"
@@ -367,28 +419,37 @@
 		if (options$hypothesis=="groupsNotEqual") {
 		
 			if (options$bayesFactorType == "BF10"){
-			bfLabel <- "BF\u2081\u2080 independent multinomial"
+				bfLabel <- "BF\u2081\u2080 independent multinomial"
 			
 			} else if (options$bayesFactorType == "BF01"){
-			bfLabel <- "BF\u2080\u2081 independent multinomial"
+				bfLabel <- "BF\u2080\u2081 independent multinomial"
+			
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
 				
 		} else if(options$hypothesis=="groupOneGreater") {
 			
 			if (options$bayesFactorType == "BF10"){
-			bfLabel <- "BF\u208A\u2080 independent multinomial"
+				bfLabel <- "BF\u208A\u2080 independent multinomial"
 			
 			} else if (options$bayesFactorType == "BF01"){
-			bfLabel <- "BF\u2080\u208A independent multinomial"
+				bfLabel <- "BF\u2080\u208A independent multinomial"
+			
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
 							 
 		} else if (options$hypothesis=="groupTwoGreater"){
 			
 			if (options$bayesFactorType == "BF10"){
-			bfLabel <- "BF\u208B\u2080 independent multinomial"
+				bfLabel <- "BF\u208B\u2080 independent multinomial"
 			
 			} else if (options$bayesFactorType == "BF01"){
-			bfLabel <- "BF\u2080\u208B independent multinomial"
+				bfLabel <- "BF\u2080\u208B independent multinomial"
+				
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}				
 		}
 			
@@ -402,6 +463,9 @@
 			
 		} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u2081 hypergeometric"
+			
+		} else if (options$bayesFactorType == "LogBF10") {
+			bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) hypergeometric"
 		}
 		
 		sampleType <- "hypergeom"
@@ -417,89 +481,42 @@
 	if (perform == "run" && status$error == FALSE) {
 	
 		BF <- try({
-
+		
 			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
 			bf1 <- exp(as.numeric(BF@bayesFactor$bf))
-		
+			lbf1 <- as.numeric(BF@bayesFactor$bf)
+			
 			if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
-				
-				count.matrix <- base::t(counts.matrix)
-				a <- options$priorConcentration
-
-				s1 <- count.matrix[1,1]
-				f1 <- count.matrix[1,2]
-
-				s2 <- count.matrix[2,1]
-				f2 <- count.matrix[2,2]
-
-				p1 ~ stats::beta(a+s1, a+f1)
-				p2 ~ stats::beta(a+s2, a+f2)
-
-				N.sim <- 10000
-				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-				prop.consistent <- sum(p1.sim > p2.sim)/N.sim
+										
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result[,7:10])
+				prop.consistent <- mean(theta[,1] > theta[,3])  #sum(p1.sim > p2.sim)/N.sim
 				bf1 <- bf1 * prop.consistent / 0.5
+				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			
 			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
-					
-				count.matrix <- counts.matrix
-				a <- options$priorConcentration
-
-				s1 <- count.matrix[1,1]
-				f1 <- count.matrix[1,2]
-
-				s2 <- count.matrix[2,1]
-				f2 <- count.matrix[2,2]
-
-				p1 ~ stats::beta(a+s1, a+f1)
-				p2 ~ stats::beta(a+s2, a+f2)
-
-				N.sim <- 10000
-				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-				prop.consistent <- sum(p1.sim > p2.sim)/N.sim
+								
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result[,7:10])
+				prop.consistent <- mean(theta[,1] > theta[,2]) 
 				bf1 <- bf1 * prop.consistent / 0.5
+				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			
 			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
-							
-				count.matrix <- base::t(counts.matrix)
-				a <- options$priorConcentration
-
-				s1 <- count.matrix[1,1]
-				f1 <- count.matrix[1,2]
-
-				s2 <- count.matrix[2,1]
-				f2 <- count.matrix[2,2]
-
-				p1 ~ stats::beta(a+s1, a+f1)
-				p2 ~ stats::beta(a+s2, a+f2)
-		
-				N.sim <- 10000
-				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-				prop.consistent <- sum(p2.sim > p1.sim)/N.sim
+				
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result[,7:10])
+				prop.consistent <- mean(theta[,3] > theta[,1]) 
 				bf1 <- bf1 * prop.consistent / 0.5
+				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 				
 			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
-					
-				count.matrix <- counts.matrix
-				a <- options$priorConcentration
-
-				s1 <- count.matrix[1,1]
-				f1 <- count.matrix[1,2]
-
-				s2 <- count.matrix[2,1]
-				f2 <- count.matrix[2,2]
-
-				p1 ~ stats::beta(a+s1, a+f1)
-				p2 ~ stats::beta(a+s2, a+f2)
-		
-				N.sim <- 10000
-				p1.sim <- stats::rbeta(N.sim, a+s1, a+f1)
-				p2.sim <- stats::rbeta(N.sim, a+s2, a+f2)
-				prop.consistent <- sum(p2.sim > p1.sim)/N.sim
+								
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result[,7:10])
+				prop.consistent <- mean(theta[,2] > theta[,1])
 				bf1 <- bf1 * prop.consistent / 0.5
+				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			}
 					
 		})
@@ -507,10 +524,15 @@
 		if (class(BF) == "try-error") {
 
 			row[["value[BF]"]] <- .clean(NaN)
+			#row[["Group1[BF]"]] <- " "
+			#row[["Group2[BF]"]] <- " "
 			
 			if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$samplingModel=="hypergeometric") {
 			
 				row[["value[BF]"]] <- .clean(NaN)
+				#row[["Group1[BF]"]] <- " "
+				#row[["Group2[BF]"]] <- " "
+			
 			
 				sup <- .addFootnote(footnotes, "Hypergeometric contingency tables test restricted to  2 x 2 tables")
 				row[[".footnotes"]] <- list("value[BF]"=list(sup))	
@@ -527,6 +549,8 @@
 		} else if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$hypothesis=="groupOneGreater") {
 			
 			row[["value[BF]"]] <- .clean(NaN)
+			#row[["Group1[BF]"]] <- " "
+			#row[["Group2[BF]"]] <- " "
 			
 			sup <- .addFootnote(footnotes, "Proportion test restricted to 2 x 2 tables")
 			row[[".footnotes"]] <- list("value[BF]"=list(sup))
@@ -534,12 +558,49 @@
 		} else if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$hypothesis=="groupTwoGreater") {
 			
 			row[["value[BF]"]] <- .clean(NaN)
+			#row[["Group1[BF]"]] <- " "
+			#row[["Group2[BF]"]] <- " "
 			
 			sup <- .addFootnote(footnotes, "Proportion test restricted to 2 x 2 tables")
 			row[[".footnotes"]] <- list("value[BF]"=list(sup))
 		
 		} else {
+		   # row[["Group1[BF]"]] <- rownames(counts.matrix)[1] "\u003E"
+		   # row[["Group2[BF]"]] <- rownames(counts.matrix)[2]
 		
+		
+		
+			 if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
+				gp1 <- rownames(counts.matrix)[1]
+				gp2 <- rownames(counts.matrix)[2]
+				#row[["Group[BF]"]] <- paste(gp1, "\u2009\u003E\u2009", gp2)
+				message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", "<em>", gp2, "</em>", sep="")
+				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+
+			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
+				gp1 <- rownames(counts.matrix)[1]
+				gp2 <- rownames(counts.matrix)[2]
+				#row[["Group[BF]"]] <- paste(gp1, "\u2009\u003C\u2009", gp2)
+				message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
+				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)			
+
+			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
+				gp1 <- colnames(counts.matrix)[1]
+				gp2 <- colnames(counts.matrix)[2]
+				# row[["Group[BF]"]] <- paste(gp1, "\u2009\u003E\u2009", gp2)
+
+				message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", gp2, "</em>", sep="")
+				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	
+			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
+				gp1 <- colnames(counts.matrix)[1]
+				gp2 <- colnames(counts.matrix)[2]
+				# row[["Group[BF]"]] <- paste(gp1, "\u2009\u003C\u2009", gp2)	
+
+				message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
+				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+			}
+			
 			if (options$bayesFactorType == "BF10"){
 			
 				bf1 <- bf1
@@ -547,7 +608,11 @@
 			} else if (options$bayesFactorType == "BF01"){
 			
 				bf1 <- 1/bf1
-			}
+				
+			} else if (options$bayesFactorType == "LogBF10") {
+			
+				bf1 <- lbf1
+			}			
 		
 			row[["value[BF]"]] <- .clean(bf1)
 		}
@@ -614,42 +679,44 @@
 					if(options$samplingModel == "poisson"){
 						sampleType <- "poisson"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-						lambda<-as.data.frame(chi.result,col.names=c("lambda11","lambda21","lambda12","lambda22"))
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						lambda<-as.data.frame(ch.result)
 						odds.ratio<-(lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
 			
 					} else if (options$samplingModel == "jointMultinomial"){
 			
 						sampleType <- "jointMulti"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-						theta <- as.data.frame(chi.result,col.names=c("theta11","theta21","theta12","theta22"))
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						theta <- as.data.frame(ch.result)
 						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 				
 					} else if (options$samplingModel == "independentMultinomialRowsFixed"){
 			
 						sampleType <- "indepMulti"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
-						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-						theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						theta <- as.data.frame(ch.result[,7:10])
 						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 				
 					} else if (options$samplingModel == "independentMultinomialColumnsFixed"){
 			
 						sampleType <- "indepMulti"
 						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
-						chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-						theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						theta <- as.data.frame(ch.result[,7:10])
 						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])				
 					} 
 				})
-									
-				logOR<-log(odds.ratio)
+				
+				logOR<- log(odds.ratio)
 				samples <- logOR
+								
 				BF <- BayesFactor::extractBF(BF)[1, "bf"]
 				
 				z<-stats::density(logOR)
 				#x.mode <- z$x[i.mode <- which.max(z$y)]
+				
 				x.median <- stats::median(logOR)
 				medianSamples <- x.median
 				Sig <- options$oddsRatioCredibleIntervalInterval
@@ -686,7 +753,7 @@
 }
 
 .plotPosterior.crosstabs <- function(samples, CI, medianSamples, BF, oneSided= FALSE, iterations= 10000, lwd= 2, cexPoints= 1.5,
- cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= FALSE, dontPlotData=FALSE, selectedCI= options$oddsRatioCredibleIntervalInterval) {
+ cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= FALSE, dontPlotData=FALSE, selectedCI= options$oddsRatioCredibleIntervalInterval, options) {
 	
 	if (addInformation) {
 	
@@ -711,8 +778,22 @@
 	}
 	
 	
-	BF10 <- BF
-	BF01 <- 1 / BF10
+	if (options$bayesFactorType == "BF10") {
+	
+		BF10 <- BF
+		BF01 <- 1 / BF10
+	
+	} else if (options$bayesFactorType == "BF01") {
+	
+		BF01 <- BF
+		BF10 <- 1 / BF01
+		
+	} else if (options$bayesFactorType == "LogBF10") {
+	
+		BF10 <- exp(BF)
+		BF01 <- 1 / BF10
+		
+	}
 	
 	# fit denisty estimator
 	fit.posterior <-  logspline::logspline(samples)
@@ -983,43 +1064,41 @@
 				if(options$samplingModel== "poisson"){
 					sampleType <- "poisson"
 					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-					lambda<-as.data.frame(chi.result,col.names=c("lambda11","lambda21","lambda12","lambda22"))
+					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+					lambda<-as.data.frame(ch.result)
 					odds.ratio<-(lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
 	
 				} else if (options$samplingModel== "jointMultinomial"){
 	
 					sampleType <- "jointMulti"
 					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-					theta <- as.data.frame(chi.result,col.names=c("theta11","theta21","theta12","theta22"))
+					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result)
 					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
 				} else if (options$samplingModel== "independentMultinomialRowsFixed"){
 	
 					sampleType <- "indepMulti"
 					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
-					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-					theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result[,7:10])
 					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
 				} else if (options$samplingModel== "independentMultinomialColumnsFixed"){
 	
 					sampleType <- "indepMulti"
 					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
-					chi.result <- BayesFactor::posterior(BF, iterations = 10000)
-					theta <- as.data.frame(chi.result[,7:10],col.names=c("theta11","theta21","theta12","theta22"))
+					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result[,7:10])
 					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
-				}
-				
-				
+				}				
 								
 				# do this if no values are parsed to plotting function
 				if (is.null(samples) && is.null(CI) && is.null(medianSamples)) {
 				
 					# BF10 <- BayesFactor::extractBF(BF)[1, "bf"]
-					logOR <-log(odds.ratio)
+					logOR <- log(odds.ratio)
 					samples <- logOR
 					medianSamples <- stats::median(logOR)					
 					CI <- options$oddsRatioCredibleIntervalInterval
@@ -1100,7 +1179,7 @@
 							}
 								
 							.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval,
-									addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided= oneSided)
+									addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided= oneSided, options=options)
 						
 							oddsratio.plot[["data"]] <- .endSaveImage(image)
 						}

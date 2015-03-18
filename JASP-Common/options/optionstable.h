@@ -12,19 +12,19 @@ class OptionsTable : public OptionI<std::vector<Options*> >
 {
 public:
 	OptionsTable(Options *rowTemplate);
+	OptionsTable();
+
+	virtual void init(const Json::Value &data) OVERRIDE;
 
 	virtual Json::Value asJSON() const OVERRIDE;
-	virtual void set(Json::Value &value) OVERRIDE;
+	virtual void set(const Json::Value &value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
-	virtual void setValue(std::vector<Options *> value) OVERRIDE;
+	virtual void setValue(const std::vector<Options *> &value) OVERRIDE;
 
 	Options *rowTemplate() const;
-	/*Options *at(int index) const;
-	size_t size() const;*/
 
 private:
 	Options *_template;
-	//void rowChanged();
 };
 
 #endif // OPTIONSTABLE_H

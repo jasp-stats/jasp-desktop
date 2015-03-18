@@ -38,12 +38,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="posthoc", type="tables"),
 		list(name="headerDescriptives", type="h1"),
 		list(name="descriptives", type="table"),
+		list(name="headerMarginalMeans", type="h1"),
+		list(name="marginalMeans", type="tables"),
 		list(name="headerProfilePlot", type="h1"),
 		list(name="profilePlot", type="images")
 	)
 
 	results[[".meta"]] <- .meta
 
+	
 	
 	## Create Title
 	
@@ -81,6 +84,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	}
 
+
+
 	## Create ANOVA Table
 
 	result <- .anovaTable(dataset, options, perform, model, status, singular)
@@ -116,7 +121,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	## Create Marginal Means Table
 	
-#	result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular)
+	result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular)
+	
+	results[["marginalMeans"]] <- result$result
+	status <- result$status
+	
+	if(!is.null(unlist(results[["marginalMeans"]])))
+	    results[["headerMarginalMeans"]] <- "Marginal Means"
 	
 	
 	
@@ -476,10 +487,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="F", type="number", format="sf:4;dp:3"),
 		list(name="p", type="number", format="dp:3;p:.001"))
 		
-	if (options$misc[["effectSizeEstimates"]]) {
-	
-		fields[[length(fields) + 1]] <- list(name="&eta;&sup2;", type="number", format="dp:3")
-		fields[[length(fields) + 1]] <- list(name="&omega;&sup2;", type="number", format="dp:3")
+	if (options$miscEffectSizeEstimates) {
+	    
+	    if(options$effectSizeEtaSquared) {
+	        fields[[length(fields) + 1]] <- list(name="\u03B7\u00B2", type="number", format="dp:3")
+	    }
+	    if(options$effectSizePartialEtaSquared) {
+	        fields[[length(fields) + 1]] <- list(name="\u03B7\u00B2\u209A", type="number", format="dp:3")
+	    }
+	    if(options$effectSizeOmegaSquared) {
+	        fields[[length(fields) + 1]] <- list(name="\u03C9\u00B2", type="number", format="dp:3")
+	    }
 	}
 	
 	anova[["schema"]] <- list(fields=fields)
@@ -595,24 +613,27 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row <- list("Cases"="Residual", "Sum of Squares"=SS, "df"=df, "Mean Square"=MS, "F"="", "p"="", ".isNewGroup" = newGroup)
 				}
 			
-				if (options$misc[["effectSizeEstimates"]]) {
-					MSr <- result["Residuals","Sum Sq"]/result["Residuals","Df"]
+				if (options$miscEffectSizeEstimates) {
+					SSr <- result["Residuals","Sum Sq"]
+					MSr <- SSr/result["Residuals","Df"]
 				
 					if (i <= length(terms.base64)) {
 					
-						row[["&eta;&sup2;"]] <- SS / SSt
+						row[["\u03B7\u00B2"]] <- SS / SSt
+						row[["\u03B7\u00B2\u209A"]] <- SS / (SS + SSr)
 						omega <- (SS - (df * MSr)) / (SSt + MSr)
 					
 						if (omega < 0) {
-							row[["&omega;&sup2;"]] <- 0
+							row[["\u03C9\u00B2"]] <- 0
 						} else {
-							row[["&omega;&sup2;"]] <- omega
+							row[["\u03C9\u00B2"]] <- omega
 						}
 					
 					} else {
 					
-						row[["&eta;&sup2;"]] <- ""
-						row[["&omega;&sup2;"]] <- ""
+						row[["\u03B7\u00B2"]] <- ""
+						row[["\u03B7\u00B2\u209A"]] <- ""
+						row[["\u03C9\u00B2"]] <- ""
 					}
 
 				}
@@ -687,7 +708,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 			contrast.table <- list()
 			
-			contrast.table[["title"]] <- paste("Contrast", contrast.type, variable, sep=" ")
+			contrastType <- unlist(strsplit(contrast.type,""))
+            contrastType[1] <- toupper(contrastType[1])
+            contrastType <- paste(contrastType, collapse="")
+			
+			contrast.table[["title"]] <- paste(contrastType, " Contrast", " - ",  variable, sep="")
 			
 			contrast.table[["schema"]] <- list(fields = list(
 				list(name="Comparison", type="string"),
@@ -709,9 +734,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 			if (perform == "init" || status$error || !status$ready) {
 			
-				for (case in cases)
-					contrast.rows[[length(contrast.rows)+1]] <- list(Comparison=case)			
-			
+				for (case in cases) {
+				    
+				    row <- list(Comparison=case)	
+				    
+				    if(length(contrast.rows) == 0)  {
+			            row[[".isNewGroup"]] <- TRUE   
+			        } else {				
+				        row[[".isNewGroup"]] <- FALSE
+			        }
+				    				
+					contrast.rows[[length(contrast.rows)+1]] <- row	
+			    }
 			} else {
 								
 				for (i in .indices(cases)) {
@@ -729,7 +763,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 						p <- ""
 				
 					row <- list("Comparison"=case, "Estimate"=est, "Std. Error"=SE, "t"=t, "p"=p)
-				
+				    
+				    if(length(contrast.rows) == 0)  {
+			            row[[".isNewGroup"]] <- TRUE   
+			        } else {				
+				        row[[".isNewGroup"]] <- FALSE
+			        }
+				    
 					contrast.rows[[length(contrast.rows)+1]] <- row
 				}
 			}
@@ -748,7 +788,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaPostHocTable <- function(dataset, options, perform, status) {
 
-	posthoc.variables <- unlist(options$postHocTests[["variables"]])
+	posthoc.variables <- unlist(options$postHocTestsVariables)
 	
 	posthoc.tables <- list()
 	
@@ -756,33 +796,33 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 		posthoc.table <- list()
 
-		posthoc.table[["title"]] <- paste("Post-Hoc Comparisons", posthoc.var, sep=" ")
+		posthoc.table[["title"]] <- paste("Post-Hoc Comparisons - ", posthoc.var, sep="")
 		
 		fields <- list(
 			list(name="(I) response", type="string", combine=TRUE),
 			list(name="(J) response", type="string"),
 			list(name="Mean Difference", type="number", format="sf:4;dp:3"),
 			list(name="t", type="number", format="sf:4;dp:3"),
-			list(name="df", type="number", format="dp:0"),
-			list(name="p", type="number", format="dp:3;p:.001"))
+			list(name="df", type="number", format="dp:0"))
+#			list(name="p", type="number", format="dp:3;p:.001"))
 		
-		if (options$postHocTests[["holm"]])
-			fields[[length(fields) + 1]] <- list(name="p holm", type="number", format="dp:3")
+		if (options$postHocTestsHolm)
+			fields[[length(fields) + 1]] <- list(name="p holm", type="number", format="dp:3;p:.001")
 		
-		if (options$postHocTests[["bonferroni"]])
-			fields[[length(fields) + 1]] <- list(name="p bonferroni", type="number", format="dp:3")
+		if (options$postHocTestsBonferroni)
+			fields[[length(fields) + 1]] <- list(name="p bonferroni", type="number", format="dp:3;p:.001")
 		
-		if (options$postHocTests[["hochberg"]])
-			fields[[length(fields) + 1]] <- list(name="p hochberg", type="number", format="dp:3")
+		if (options$postHocTestsHochberg)
+			fields[[length(fields) + 1]] <- list(name="p hochberg", type="number", format="dp:3;p:.001")
 		
-		if (options$postHocTests[["hommel"]])
-			fields[[length(fields) + 1]] <- list(name="p hommel", type="number", format="dp:3")
+		if (options$postHocTestsHommel)
+			fields[[length(fields) + 1]] <- list(name="p hommel", type="number", format="dp:3;p:.001")
 		
-		if (options$postHocTests[["benjamini"]])
-			fields[[length(fields) + 1]] <- list(name="p benjamini", type="number", format="dp:3")
+		if (options$postHocTestsBenjamini)
+			fields[[length(fields) + 1]] <- list(name="p benjamini", type="number", format="dp:3;p:.001")
 		
-		if (options$postHocTests[["FDR"]])
-			fields[[length(fields) + 1]] <- list(name="p FDR", type="number", format="dp:3")
+		if (options$postHocTestsFDR)
+			fields[[length(fields) + 1]] <- list(name="p FDR", type="number", format="dp:3;p:.001")
 		
 		posthoc.table[["schema"]] <- list(fields=fields)
 
@@ -793,6 +833,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 			
 		variable.levels <- levels(dataset[[ .v(posthoc.var) ]])
+		nLevels <- length(variable.levels)
 		
 		ps <- c()
 		
@@ -826,10 +867,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row[["Mean Difference"]] <- md
 					row[["t"]]  <- t
 					row[["df"]] <- df
-					row[["p"]]  <- p
+#					row[["p"]]  <- p                
 					
 					ps <- c(ps, p)
 				}
+				
+				if(length(rows) == 0)  {
+			        row[[".isNewGroup"]] <- TRUE   
+			    } else {				
+				    row[[".isNewGroup"]] <- FALSE
+			    }
 				
 				rows[[length(rows)+1]] <- row
 			}
@@ -837,42 +884,42 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 		if (perform == "run" && status$ready && status$error == FALSE) {
 		
-			if (options$postHocTests[["holm"]]) {
+			if (options$postHocTestsHolm) {
 		
 				ps.adjusted <- p.adjust(ps, method="holm")
 				for (i in 1:length(rows))
 					rows[[i]][["p holm"]] <- ps.adjusted[[i]]
 			}
 
-			if (options$postHocTests[["bonferroni"]]) {
+			if (options$postHocTestsBonferroni) {
 		
 				ps.adjusted <- p.adjust(ps, method="bonferroni")
 				for (i in 1:length(rows))
 					rows[[i]][["p bonferroni"]] <- ps.adjusted[[i]]
 			}
 		
-			if (options$postHocTests[["hochberg"]]) {
+			if (options$postHocTestsHochberg) {
 		
 				ps.adjusted <- p.adjust(ps, method="hochberg")
 				for (i in 1:length(rows))
 					rows[[i]][["p hochberg"]] <- ps.adjusted[[i]]
 			}
 		
-			if (options$postHocTests[["hommel"]]) {
+			if (options$postHocTestsHommel) {
 		
 				ps.adjusted <- p.adjust(ps, method="hommel")
 				for (i in 1:length(rows))
 					rows[[i]][["p hommel"]] <- ps.adjusted[[i]]
 			}		
 		
-			if (options$postHocTests[["benjamini"]]) {
+			if (options$postHocTestsBenjamini) {
 		
 				ps.adjusted <- p.adjust(ps, method="BY")
 				for (i in 1:length(rows))
 					rows[[i]][["p benjamini"]] <- ps.adjusted[[i]]
 			}
 		
-			if (options$postHocTests[["FDR"]]) {
+			if (options$postHocTestsFDR) {
 		
 				ps.adjusted <- p.adjust(ps, method="fdr")
 				for (i in 1:length(rows))
@@ -893,13 +940,21 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaDescriptivesTable <- function(dataset, options, perform, status) {
 
-	if (options$misc$descriptives == FALSE)
+	if (options$miscDescriptives == FALSE)
 		return(list(result=NULL, status=status))
 
 	descriptives.table <- list()
 	
-	descriptives.table[["title"]] <- "Descriptives"
-	
+	if (options$dependent != "") {
+	    
+	    descriptives.table[["title"]] <- paste("Descriptives - ", options$dependent, sep = "")
+	    
+	} else {
+	    
+	    descriptives.table[["title"]] <- "Descriptives"
+	    
+	}
+		
 	fields <- list()
 	
 	for (variable in options$fixedFactors) {
@@ -921,26 +976,25 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 		factor <- dataset[[ .v(variable) ]]
 		factors[[length(factors)+1]] <- factor
-		lvls[[length(lvls)+1]] <- levels(factor)
+		lvls[[ variable ]] <- levels(factor)
 	}
 		
-	cases <- expand.grid(rev(lvls))
+	cases <- rev(expand.grid(rev(lvls)))
 	
+	namez <- unlist(options$fixedFactors)
+	column.names <- paste(".", namez, sep="")
 	
 	if (length(options$fixedFactors) > 0) {
-	
-		namez <- rev(unlist(options$fixedFactors))
-		column.names <- paste(".", namez, sep="")
 
 		rows <- list()
 	
 		for (i in 1:dim(cases)[1]) {
 	
 			row <- list()
-
+			
 			for (j in 1:dim(cases)[2])
 				row[[ column.names[[j]] ]] <- as.character(cases[i, j])
-				
+								
 			if (perform == "run" && status$ready && status$error == FALSE) {
 			
 				sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, "\"", sep="", collapse=" & ")))
@@ -966,13 +1020,21 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row[["Mean"]] <- base::mean(data)
 					row[["SD"]]   <- stats::sd(data)
 				}
+				
+			}
+			
+			if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][1]) {
+			    row[[".isNewGroup"]] <- TRUE   
+			} else {				
+				row[[".isNewGroup"]] <- FALSE
 			}
 		
 			rows[[i]] <- row
 		}
 		
 		descriptives.table[["data"]] <- rows
-	}
+		
+	} 
 	
 	if (status$error)
 	    descriptives.table[["error"]] <- list(error="badData")
@@ -982,7 +1044,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaLevenesTable <- function(dataset, options, perform, status) {
 
-	if (options$misc[["homogeneityTests"]] == FALSE)
+	if (options$miscHomogeneityTests == FALSE)
 		return (list(result=NULL, status=status))
 		
 	levenes.table <- list()
@@ -1010,11 +1072,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 #		if (!is.null(r$message) && r$message == "Levene's test on an essentially perfect fit is unreliable")
 #		    stop(r$message)
 		
-		levenes.table[["data"]] <- list(list("F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3]))
+		levenes.table[["data"]] <- list(list("F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3], ".isNewGroup"=TRUE))
 		
 	} else {
 	
-		levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"="."))
+		levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"=".", ".isNewGroup"=TRUE))
 	}
 	
 	if (status$error)
@@ -1023,16 +1085,174 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=levenes.table, status=status)
 }
 
-#.anovaMarginalMeans <- function(dataset, options, perform, model, status, singular) {
-#    
-#    marginalMeans <- list()
-#        
-#    for (term in options$marginalMeans$terms) {
-#        print(term)
-#        marginalMeans[[i]] <- effects::effect(.v(term), model)
-#    }
-#
-#}
+.anovaMarginalMeans <- function(dataset, options, perform, model, status, singular) {
+    
+    if (is.null(options$marginalMeansTerms))
+		return (list(result=NULL, status=status))
+	
+	terms <- options$marginalMeansTerms
+	
+	terms.base64 <- c()
+	terms.normal <- c()
+	
+	for (term in terms) {
+        
+		components <- unlist(term)
+		term.base64 <- paste(.v(components), collapse=":", sep="")
+		term.normal <- paste(components, collapse=" \u273B ", sep="")
+
+		terms.base64 <- c(terms.base64, term.base64)
+		terms.normal <- c(terms.normal, term.normal)
+	}
+	
+	marginalMeans <- list()
+		
+	for(i in .indices(terms.base64)) {
+	    
+	    result <- list()
+	    
+	    result[["title"]] <- paste("Marginal Means - ",terms.normal[i], sep="")
+	    
+	    fields <- list()
+	    
+	    for(j in .indices(terms[[i]]))
+	        fields[[j]] <- list(name=terms[[i]][[j]], type="string", combine=TRUE)
+	    
+	    fields[[length(fields) + 1]] <- list(name="Marginal Mean", type="number", format="sf:4;dp:3")
+	    fields[[length(fields) + 1]] <- list(name="SE", type="number", format="sf:4;dp:3")
+	    fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4;dp:3")
+	    fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4;dp:3")
+	    
+	    footnotes <- .newFootnotes()	
+	    
+	    if(options$marginalMeansCompareMainEffects) {
+	        fields[[length(fields) + 1]] <- list(name="t", type="number", format="sf:4;dp:3")
+	        fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
+	        
+	        if(options$marginalMeansCiAdjustment == "bonferroni") {
+		        .addFootnote(footnotes, text = "Bonferroni CI adjustment", symbol = "<em>Note.</em>")
+		    } else if(options$marginalMeansCiAdjustment == "sidak") {
+		        .addFootnote(footnotes, text = "Sidak CI adjustment", symbol = "<em>Note.</em>")
+		    }   
+	    }
+	    
+	    result[["schema"]] <- list(fields=fields)
+	    
+	    termsTemp <- as.vector(terms[[i]])
+	        
+	    lvls <- list()
+	    factors <- list()
+        
+	    for (variable in termsTemp) {
+	
+		    factor <- dataset[[ .v(variable) ]]
+		    factors[[length(factors)+1]] <- factor
+		    lvls[[variable]] <- levels(factor)
+	    }
+		
+	    cases <- rev(expand.grid(rev(lvls)))
+	    cases <- as.data.frame(apply(cases,2,as.character))
+	        
+	    nRows <- dim(cases)[1]
+        nCol <- dim(cases)[2]
+	    	    
+	    if (perform == "run" && status$ready && status$error == FALSE)  {
+		    
+		    formula <- as.formula(paste("~", terms.base64[i]))
+		    
+		    if(options$marginalMeansCiAdjustment == "bonferroni") {
+		        adjMethod <- "bonferroni"
+		    } else if(options$marginalMeansCiAdjustment == "sidak") {
+		        adjMethod <- "sidak"
+		    } else {
+		        adjMethod <- "none"
+		    }
+		    		    		    
+		    r <- summary(lsmeans::lsmeans(model, formula), adjust = adjMethod, infer = c(TRUE,TRUE))
+		    		    
+		    rows <- list()
+		    		    
+		    for(k in 1:nRows) {
+		        
+		        row <- list()
+		        
+	            for(j in 1:nCol) 
+		            row[[ colnames(cases)[j] ]] <- cases[k,j]
+		        
+		        if(nCol > 1) {
+		            index <- apply(r[,1:nCol], 1, function(x) all(x==cases[k,]))
+		        } else {
+		            index <- k
+		        }
+		        		        
+		        row[["Marginal Mean"]] <- .clean(r$lsmean[index])
+		        row[["SE"]] <- .clean(r$SE[index])
+		        row[["Lower CI"]] <- .clean(r$lower.CL[index])
+		        row[["Upper CI"]] <- .clean(r$upper.CL[index])
+		        
+		        if(options$marginalMeansCompareMainEffects) {
+		            row[["t"]] <- .clean(r$t.ratio[index])
+		            row[["p"]] <- .clean(r$p.value[index])
+		        }
+		        
+		        if(cases[k,nCol] == lvls[[ nCol ]][1]) {
+			        row[[".isNewGroup"]] <- TRUE   
+			    } else {				
+				    row[[".isNewGroup"]] <- FALSE
+			    }
+		        
+		        rows[[k]] <- row
+		        
+		    }
+		    
+		    result[["data"]] <- rows
+		
+	    } else {
+	    
+	        rows <- list()
+	        
+	        for(k in 1:nRows) {
+	        
+	            row <- list()
+	            
+	            for(j in 1:nCol)
+		            row[[ colnames(cases)[j] ]] <- cases[k,j]
+	            
+	            row[["Marginal Mean"]] <- "."
+		        row[["SE"]] <- "."
+		        row[["Lower CI"]] <- "."
+		        row[["Upper CI"]] <- "."
+		        
+		        if(options$marginalMeansCompareMainEffects) {
+		            row[["t"]] <- "."
+		            row[["p"]] <- "."
+		        }
+		        		        
+		        if(cases[k,nCol] == lvls[[ nCol ]][1]) {
+			        row[[".isNewGroup"]] <- TRUE   
+			    } else {				
+				    row[[".isNewGroup"]] <- FALSE
+			    }
+	            
+	            rows[[k]] <- row
+	            
+	        }
+ 	        	        	        
+		    result[["data"]] <- rows
+	    }
+	    
+	    result[["footnotes"]] <- as.list(footnotes)
+	    
+	    if (status$error)
+	        result[["error"]] <- list(error="badData")
+	        
+	    marginalMeans[[i]] <- result
+	
+	}
+	
+	list(result=marginalMeans, status=status)
+
+}
 
 
 .anovaProfilePlot <- function(dataset, options, perform, status) {

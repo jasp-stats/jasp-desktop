@@ -19,7 +19,7 @@ public:
 		return _value;
 	}
 
-	virtual void setValue(T value)
+	virtual void setValue(const T &value)
 	{
 		if (_value == value)
 			return;

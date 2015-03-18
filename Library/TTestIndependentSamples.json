@@ -1,0 +1,65 @@
+[
+   {
+      "name" : "variables",
+      "type" : "Variables"
+   },
+   {
+      "name" : "groupingVariable",
+      "type" : "Variable"
+   },
+   {
+      "name" : "equalityOfVariances",
+      "options" : [ "assumeEqual", "noAssumption", "reportBoth" ],
+      "default" : "assumeEqual",
+      "type" : "List"
+   },
+   {
+      "default" : false,
+      "name" : "testUnequalVariances",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "meanDifference",
+      "type" : "Boolean"
+   },
+   {
+      "default" : false,
+      "name" : "confidenceInterval",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "effectSize",
+      "type" : "Boolean"
+   },
+   {
+      "format" : "%",
+      "max" : 1.0,
+      "min" : 0.0,
+      "name" : "confidenceIntervalInterval",
+      "type" : "Number",
+      "value" : 0.950
+   },
+   {
+      "default" : false,
+      "name" : "descriptives",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "normalityTests",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "missingValues",
+      "options" : [ "excludeAnalysisByAnalysis", "excludeListwise" ],
+      "default" : "excludeAnalysisByAnalysis",
+      "type" : "List"
+   },
+   {
+      "name" : "hypothesis",
+      "options" : [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
+      "default" : "groupsNotEqual",
+      "type" : "List"
+   }
+]
+

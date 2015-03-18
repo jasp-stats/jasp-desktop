@@ -59,7 +59,7 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
     _plotFactorsAvailableTableModel = new TableModelVariablesAvailable();
     _plotFactorsAvailableTableModel->setInfoProvider(this);
-    ui->plot_variables->setModel(_plotFactorsAvailableTableModel);
+	ui->plotVariables->setModel(_plotFactorsAvailableTableModel);
 
     _horizontalAxisTableModel = new TableModelVariablesAssigned(this);
     _horizontalAxisTableModel->setSource(_plotFactorsAvailableTableModel);
@@ -73,9 +73,9 @@ AnovaForm::AnovaForm(QWidget *parent) :
     _seperatePlotsTableModel->setSource(_plotFactorsAvailableTableModel);
     ui->seperatePlots->setModel(_seperatePlotsTableModel);
 
-    ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plot_variables, ui->horizontalAxis);
-    ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plot_variables, ui->seperateLines);
-    ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plot_variables, ui->seperatePlots);
+	ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plotVariables, ui->horizontalAxis);
+	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->seperateLines);
+	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->seperatePlots);
 
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
@@ -84,11 +84,9 @@ AnovaForm::AnovaForm(QWidget *parent) :
     ui->containerProfilePlot->hide();
 
 #ifdef QT_NO_DEBUG
-	ui->groupComareMainEffects->hide();
-	ui->marginalMeansContainer->hide();
+	ui->randomFactorsBox->hide();
 #else
-	ui->groupComareMainEffects->setStyleSheet("background-color: pink ;");
-	ui->marginalMeansContainer->setStyleSheet("background-color: pink ;");
+	ui->randomFactorsBox->setStyleSheet("background-color: pink ;");
 #endif
 
 }
@@ -124,9 +122,15 @@ void AnovaForm::factorsChanged()
 	factorsAvailable.add(_randomFactorsListModel->assigned());
 
 	_contrastsModel->setVariables(factorsAvailable);
-    _plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 
-	ui->postHocTests_variables->setVariables(factorsAvailable);
+	Terms plotVariablesAssigned;
+	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
+	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
+	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
+	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
+
+    ui->postHocTestsVariables->setVariables(factorsAvailable);
 
 	if (_options != NULL)
 		_options->blockSignals(false);
@@ -134,10 +138,5 @@ void AnovaForm::factorsChanged()
 
 void AnovaForm::termsChanged()
 {
-	Terms terms;
-
-	terms.add(string("~OVERALL"));
-	terms.add(_anovaModel->terms());
-
-	ui->marginalMeans_terms->setVariables(terms);
+    ui->marginalMeansTerms->setVariables(_anovaModel->terms());
 }

@@ -37,6 +37,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="inequalityOfVariances", type="table")
 	meta[[4]] <- list(name="descriptives", type="table")
+	meta[[5]] <- list(name="normalityTests", type="table")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "T-Test"
@@ -45,9 +46,98 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	results[["ttest"]] <- .ttestIndependentSamplesTTest(dataset, options, perform)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
 	results[["inequalityOfVariances"]] <- .ttestIndependentSamplesInequalityOfVariances(dataset, options, perform)
+	results[["normalityTests"]] <- .ttestNormalityTests(dataset, options, perform)
 
 	results
 }
+
+.ttestNormalityTests <- function(dataset, options, perform) {
+
+	if (options$normalityTests == FALSE)
+		return(NULL)
+		
+    normalityTests <- list()
+
+    normalityTests[["title"]] <- "Test of Normality (Shapiro-Wilk)"
+
+    fields <- list(
+        list(name="dep",  type="string", title="", combine=TRUE),
+        list(name="lev",  type="string", title=""),
+        list(name="W", title="W", type="number",   format="sf:4;dp:3"),
+        list(name="p", title="p", type="number", format="dp:3;p:.001"))
+
+    normalityTests[["schema"]] <- list(fields=fields)
+    
+    footnotes <- .newFootnotes()
+    .addFootnote(footnotes, symbol="<em>Note.</em>", text="Significant results indicate a deviation from normality")
+    
+    normalityTests.results <- list()
+    
+	variables <- options$variables
+	if (length(variables) == 0)
+		variables = "."
+
+    for (variable in variables) {
+        
+        factor <- options$groupingVariable
+        levels <- levels(dataset[[ .v(factor) ]])
+        
+        for(level in levels) {
+                    
+            if (perform == "run" && length(options$variables) > 0) {
+                
+                data <- na.omit(dataset[[.v(variable)]][dataset[[.v(factor)]] == level])
+                
+                if (class(data) != "factor") {
+                
+                    r <- stats::shapiro.test(data)
+                
+                    W <- .clean(as.numeric(r$statistic))
+                    p <- .clean(r$p.value)
+                
+                    if(level == levels[1]) {
+                        newGroup <- TRUE   
+                    } else {				
+                        newGroup <- FALSE
+                    }
+                
+                    result <- list("dep"=variable, "lev"=level, "W" = W, "p" = p, ".isNewGroup" = newGroup)
+                
+                } else {
+                
+                    if(level == levels[1]) {
+                        newGroup <- TRUE   
+                    } else {				
+                        newGroup <- FALSE
+                    }
+                
+                    result <- list("dep"=variable, "lev"=level, "W" = "", "p" = "", ".isNewGroup" = newGroup)
+                
+                }
+        
+            } else {
+        
+                if(level == levels[1]) {
+                    newGroup <- TRUE   
+                } else {				
+                    newGroup <- FALSE
+                }
+        
+                result <- list("dep"=variable, "lev"=level, "W" = ".", "p" = ".", ".isNewGroup" = newGroup)
+        
+            }
+        
+            normalityTests.results[[length(normalityTests.results)+1]] <- result
+        }
+    }
+    
+    normalityTests[["data"]] <- normalityTests.results
+    
+    normalityTests[["footnotes"]] <- as.list(footnotes)
+    
+    normalityTests
+}
+
 
 .ttestIndependentSamplesDescriptives <- function(dataset, options, perform) {
 
@@ -127,6 +217,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 				}
 			}
 		}
+		
+		descriptives[["status"]] <- "complete"
 	}
 	
 	descriptives[["data"]] <- data
@@ -156,6 +248,10 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 		fields[[length(fields) + 1]] <- list(name="md",  title="Mean Difference", type="number", format="sf:4;dp:3")
 		fields[[length(fields) + 1]] <- list(name="sed", title="SE Difference", type="number", format="sf:4;dp:3")	
+	}
+	
+	if(options$effectSize){
+		fields[[length(fields) + 1]] <- list(name="d", title="Cohen's d", type="number", format="sf:4;dp:3")
 	}
 	
 	if (options$confidenceInterval) {
@@ -279,23 +375,32 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 						df <- as.numeric(r$parameter)
 						p <- as.numeric(r$p.value)
 						m <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
+						
+						ns <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], function(x)length(na.omit(x)))
+						ms <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], mean, na.rm = TRUE)
+						sds <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], sd, na.rm = TRUE)
+												
+						sdPooled <- sqrt(((ns[1]-1)*sds[1]^2 + (ns[2]-1)*sds[2]^2) / (ns[1] + ns[2] - 2))
+						d <- as.numeric((ms[1] - ms[2]) / sdPooled)
+						
+						sed <- .clean(as.numeric(sqrt(sds[1]^2/ns[1] + sds[2]^2/ns[2])))
 						ciLow <- .clean(r$conf.int[1])
 						ciUp <- .clean(r$conf.int[2])
+											
+#						if (testType == "two.sided") {
+#					
+#							sed <- .clean()  # beckward approach - getting spread of CI and deviding by critical value for t
+#						
+#						} else if (testType == "less") {
+#					
+#							sed <- ""# .clean((ciUp - m) / (qt(options$confidenceIntervalInterval,r$parameter)))
+#						
+#						} else {
+#					
+#							sed <- ""# .clean((m - ciLow) / (qt(options$confidenceIntervalInterval,r$parameter)))
+#						}
 					
-						if (testType == "two.sided") {
-					
-							sed <- .clean((ciUp - ciLow) / (2 * qt(options$confidenceIntervalInterval,r$parameter)))  # beckward approach - getting spread of CI and deviding by critical value for t
-						
-						} else if (testType == "less") {
-					
-							sed <- ""# .clean((ciUp - m) / (qt(options$confidenceIntervalInterval,r$parameter)))
-						
-						} else {
-					
-							sed <- ""# .clean((m - ciLow) / (qt(options$confidenceIntervalInterval,r$parameter)))
-						}
-					
-						list(v=variable, variances=assumption[i], t=t, df=df, p=p, md=m, 
+						list(v=variable, variances=assumption[i], t=t, df=df, p=p, md=m, d=d,
 							 lowerCI=ciLow, upperCI=ciUp, sed=sed, .footnotes=row.footnotes)
 						
 					})

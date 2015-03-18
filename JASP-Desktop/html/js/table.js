@@ -127,27 +127,26 @@ $.widget("jasp.table", {
 		var dp = NaN
 		var sf = NaN
 		var pc = false
+		var approx = false
 
 		for (var i = 0; i < formats.length; i++) {
 		
 			var f = formats[i]
 			
 			if (f.indexOf("p:") != -1)
-			{
 				p = f.substring(2)
-			}
-			if (f.indexOf("dp:") != -1) {
 
+			if (f.indexOf("dp:") != -1)
 				dp = f.substring(3)
-			}
-			if (f.indexOf("sf:") != -1) {
-
-				sf = f.substring(3)
-			}
-			if (f.indexOf("pc") != -1) {
 			
+			if (f.indexOf("sf:") != -1)
+				sf = f.substring(3)
+				
+			if (f.indexOf("pc") != -1)
 				pc = true
-			}
+				
+			if (f.indexOf("~") != -1)
+				approx = true;
 		}
 		
 		if (isFinite(sf)) {
@@ -191,6 +190,7 @@ $.widget("jasp.table", {
 				var cell = column[rowNo]
 				var content = cell.content
 				var formatted
+				var isNumber = false
 				
 				if (typeof content == "undefined") {
 				
@@ -222,6 +222,8 @@ $.widget("jasp.table", {
 						formatted = { content : zero.toFixed(dp), "class" : "number" }
 					else
 						formatted = { content : zero.toPrecision(sf), "class" : "number" }
+						
+					isNumber = true
 					
 				}
 				else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
@@ -245,6 +247,8 @@ $.widget("jasp.table", {
 					var reassembled = mantissa + "e&thinsp;" + padding + exponentSign + exponentNum
 				
 					formatted = { content : reassembled, "class" : "number" }
+					
+					isNumber = true
 				}
 				else {
 					
@@ -256,6 +260,8 @@ $.widget("jasp.table", {
 					
 						formatted = { content : content.toPrecision(sf).replace(/-/g, "&minus;"), "class" : "number" }
 					}
+					
+					isNumber = true
 				}
 				
 				if (typeof cell.footnotes != "undefined")
@@ -263,7 +269,13 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+					
+				if (cell.isEndOfGroup)
+					formatted["class"] += " last-group-row"
 				
+				if (isNumber && approx)
+					formatted.content = "~&thinsp;" + formatted.content
+									
 				columnCells[rowNo] = formatted
 			}
 		}
@@ -274,6 +286,8 @@ $.widget("jasp.table", {
 				var cell = column[rowNo]
 				var content = cell.content
 				var formatted
+				
+				var isNumber = false
 				
 				if (typeof content == "undefined") {
 				
@@ -294,14 +308,17 @@ $.widget("jasp.table", {
 				else if (content < p) {
 					
 					formatted = { content : "<&nbsp" + p, "class" : "p-value" }
+
 				}
 				else if (pc) {
 				
 					formatted = { content : "" + (100 * content).toFixed(dp) + "&thinsp;%", "class" : "percentage" }
+					isNumber = true
 				}
 				else {
 				
 					formatted = { content : content.toFixed(dp).replace(/-/g, "&minus;"), "class" : "number" }
+					isNumber = true
 				}
 				
 				if (typeof cell.footnotes != "undefined")
@@ -309,6 +326,12 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+					
+				if (cell.isEndOfGroup)
+					formatted["class"] += " last-group-row"
+				
+				if (isNumber && approx)
+					formatted.content = "~&thinsp;" + formatted.content
 				
 				columnCells[rowNo] = formatted
 			}
@@ -320,6 +343,8 @@ $.widget("jasp.table", {
 				var cell = column[rowNo]
 				var content = cell.content
 				var formatted
+				
+				var isNumber = false
 				
 				if (typeof content == "undefined") {
 				
@@ -336,6 +361,7 @@ $.widget("jasp.table", {
 				else {
 				
 					formatted = { content : "" + (100 * content.toFixed(0)) + "&thinsp;%", "class" : "percentage" }
+					isNumber = true
 				}
 				
 				if (typeof cell.footnotes != "undefined")
@@ -343,6 +369,12 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (cell.isEndOfGroup)
+					formatted["class"] += " last-group-row"
+				
+				if (isNumber && approx)
+					formatted.content = "~&thinsp;" + formatted.content
 				
 				columnCells[rowNo] = formatted
 			}			
@@ -377,6 +409,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (cell.isEndOfGroup)
+					formatted["class"] += " last-group-row"
 					
 				columnCells[rowNo] = formatted
 			}
@@ -655,6 +690,9 @@ $.widget("jasp.table", {
 		for (var colNo = 0; colNo < columnHeaders.length; colNo++) {
 
 			var cell = columnHeaders[colNo]
+			
+			if (cell.content == "\u03B7\u00B2\u209A")
+				cell.content = '&eta;&sup2;<small><sub style="position: relative; left: -1ex;">p</sub></small>'
 			
 			var span = cell.span
 			if (typeof span == "undefined")

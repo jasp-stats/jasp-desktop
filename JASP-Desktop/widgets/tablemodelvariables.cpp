@@ -91,10 +91,12 @@ QVariant TableModelVariables::data(const QModelIndex &index, int role) const
 
 bool TableModelVariables::insertRows(int row, int count, const QModelIndex &parent)
 {
-	/*beginInsertRows(parent, row, row + count - 1);
-	for (int i = 0; i < count; i++)
-		_variables.insert(row, ColumnInfo(QString(), 0));
-	endInsertRows();*/
+	(void) row;
+	(void) count;
+	(void) parent;
+
+	// handled else where, in mimeDataMoved()?
+
 	return true;
 }
 
@@ -145,7 +147,7 @@ QMimeData *TableModelVariables::mimeData(const QModelIndexList &indexes) const
 		if (index.isValid())
 		{
 			Term term = _variables.at(index.row());
-			dataStream << term.asQString();
+			dataStream << term.components();
 		}
 	}
 

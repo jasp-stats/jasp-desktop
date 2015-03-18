@@ -63,7 +63,8 @@ private:
 	int _tableViewWidthBeforeOptionsMadeVisible;
 
 	QSettings _settings;
-	ActivityLog log;
+	ActivityLog *_log;
+	QString _fatalError;
 
 signals:
 	void analysisSelected(int id);
@@ -103,7 +104,7 @@ private slots:
 
 	void assignPPIFromWebView(bool success);
 
-	void engineCrashed();
+	void fatalError();
 
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);

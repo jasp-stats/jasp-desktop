@@ -57,9 +57,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addSeparator();
 
 	menu->addAction(QString("Bayesian Correlation Matrix"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesian");
-#ifdef QT_DEBUG
 	menu->addAction(QString("Bayesian Correlation Pairs"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesianPairs");
-#endif
 	menu->addAction(QString("Bayesian Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinearBayesian");
 
 	ui->classicalRegressionButton->setMenu(menu);

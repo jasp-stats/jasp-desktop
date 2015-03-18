@@ -37,14 +37,14 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 
 	ui->panelStatistics->hide();
 	ui->panelCells->hide();
-	ui->rowOrder->hide();
+	ui->panelOptions->hide();
 
 #ifdef QT_NO_DEBUG
-	ui->nominal_lambda->hide();
-	ui->nominal_uncertaintyCoefficient->hide();
+	ui->nominalLambda->hide();
+	ui->nominalUncertaintyCoefficient->hide();
 
-	ui->ordinal_somersD->hide();
-	ui->ordinal_kendallsTauC->hide();
+	ui->ordinalSomersD->hide();
+	ui->ordinalKendallsTauC->hide();
 
 	ui->groupNominalByInterval->hide();
 	ui->groupCochrans->hide();
@@ -55,14 +55,12 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 
 	ui->groupZTest->hide();
 	ui->groupResiduals->hide();
-
-	ui->groupOptions->hide();
 #else
-	ui->nominal_lambda->setStyleSheet("background-color: pink;");
-	ui->nominal_uncertaintyCoefficient->setStyleSheet("background-color: pink;");
+	ui->nominalLambda->setStyleSheet("background-color: pink;");
+	ui->nominalUncertaintyCoefficient->setStyleSheet("background-color: pink;");
 
-	ui->ordinal_somersD->setStyleSheet("background-color: pink;");
-	ui->ordinal_kendallsTauC->setStyleSheet("background-color: pink;");
+	ui->ordinalSomersD->setStyleSheet("background-color: pink;");
+	ui->ordinalKendallsTauC->setStyleSheet("background-color: pink;");
 
 	ui->groupNominalByInterval->setStyleSheet("background-color: pink;");
 	ui->groupCochrans->setStyleSheet("background-color: pink;");
@@ -73,8 +71,6 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 
 	ui->groupZTest->setStyleSheet("background-color: pink;");
 	ui->groupResiduals->setStyleSheet("background-color: pink;");
-
-	ui->groupOptions->setStyleSheet("background-color: pink;");
 #endif
 
 }

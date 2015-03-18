@@ -29,13 +29,13 @@ overall errors
 value errors for *t*
 
 - t-statistic is undefined -- the dependent variable contains infinity
-- t-statistic is undefined -- the grouping variable contains less than two levels once missing values in the dependent are excluded
-- t-statistic is undefined -- one or both levels of the dependent contains all the same value (the variance is zero)
+- t-statistic is undefined -- the grouping variable contains fewer than two levels once missing values in the dependent are excluded
+- t-statistic is undefined -- one or both levels of the dependent contains all the same value (zero variance)
 - t-statistic is undefined -- one or both levels of the dependent contain too few observations
 - *Note.* All tests, variances of groups assumed equal
 - *Note.* All tests, variances of groups not assumed equal
 - *Note.* All tests, hypothesis is group *X* greater than group *Y*
-- *Note.* All tests, hypothesis is group *X* less than group *Y*
+- *Note.* All tests, hypothesis is group *X* fewer than group *Y*
 - Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption
 
 #### Bayesian Independent Samples T-Test
@@ -46,51 +46,51 @@ overall errors
 
 value errors for *BF*
 
-* BayesFactor is undefined -- the dependent variable contains infinity
-* BayesFactor is undefined -- the grouping variable contains less than two levels once missing values in the dependent are excluded
-* BayesFactor is undefined -- one or both levels of the dependent contain all the same value (the variance is zero)
-* BayesFactor is undefined -- one or both levels of the dependent contain too few observations
+* Bayes factor is undefined -- the dependent variable contains infinity
+* Bayes factor is undefined -- the grouping variable contains fewer than two levels once missing values in the dependent are excluded
+* Bayes factor is undefined -- one or both levels of the dependent contain all the same value (zero variance)
+* Bayes factor is undefined -- one or both levels of the dependent contain too few observations
 * *Note.* All tests, hypothesis is group *$X* greater than group *Y*
-* *Note.* All tests, hypothesis is group *$X* less than group *Y*
+* *Note.* All tests, hypothesis is group *$X* fewer than group *Y*
 
 #### One Sample T-Test
 
 value errors for *t*
 
 * t-statistic is undefined -- the sample contains infinity
-* t-statistic is undefined -- the sample contains all the same value (the variance is zero)
+* t-statistic is undefined -- the sample contains all the same value (zero variance)
 * t-statistic is undefined -- sample contains only one value
 * *Note.* All tests, hypothesis is sample mean is greater than *X*
-* *Note.* All tests, hypothesis is sample mean is less than *X*
+* *Note.* All tests, hypothesis is sample mean is fewer than *X*
 * *Note.* All tests, hypothesis is sample mean is different to *X*
 
 #### Bayesian One Sample T-Test
 
 value error for *BF*
 
-- BayesFactor is undefined -- the sample contains infinity
-- BayesFactor is undefined -- the sample has too few observations
+- Bayes factor is undefined -- the sample contains infinity
+- Bayes factor is undefined -- too few observations
 
 #### Paired Sample T-Test
 
 value errors for *t*
 
 * t-statistic is undefined -- one or both of the variables contain infinity
-* t-statistic is undefined -- one or both of the variables contain all the same value (the variance is zero)
+* t-statistic is undefined -- one or both of the variables contain all the same value (zero variance)
 * t-statistic is undefined -- one or both of the variables contain only one value
 * *Note.* All tests, hypothesis is group one greater than group two
-* *Note.* All tests, hypothesis is group one less than group two
+* *Note.* All tests, hypothesis is group one fewer than group two
 
 #### Bayesian Paired Sample T-Test
 
 value errors for *BF*
 
-* BayesFactor is undefined -- one or both of the variables contain infinity
-* BayesFactor is undefined -- one or both of the variables has too few observations (possibly only after missing values are excluded)
+* Bayes factor is undefined -- one or both of the variables contain infinity
+* Bayes factor is undefined -- one or both of the variables has too few observations (possibly only after missing values are excluded)
 
 #### ANOVA
 
-* Factor(s): *X, Y, Z* contain(s) less than two levels. (Possibly only after rows with missing values are excluded)
+* Factor(s) *X, Y, Z* contain(s) fewer than two levels (possibly only after rows with missing values are excluded)
 
 
 #### Classical Linear Regression
@@ -98,31 +98,27 @@ value errors for *BF*
 value errors for *b*
 
 * Least squares regression model is undefined -- there are no observations for the dependent variable (possibly only after rows with missing values are excluded)
-* Least squares regression model is undefined -- the dependent variable contains all the same value (the variance is zero)
-* Least squares regression model is undefined -- the independent variable(s) *X, Y, Z* contain(s) all the same value (the variance is zero)
+* Least squares regression model is undefined -- the dependent variable contains all the same value (zero variance)
+* Least squares regression model is undefined -- the independent variable(s) *X, Y, Z* contain(s) all the same value (zero variance)
 * Least squares regression model is undefined -- the dependent variable contains infinity
 * Least squares regression model is undefined -- the independent variable(s) *X, Y, Z* contain(s) infinity
 
 #### Bayesian ANOVA / ANCOVA / Repeated Measures ANOVA / Linear Regression
 
-overall errors
-
-* The main effects of variables must be specified as nuisance whenever their interaction is specified as nuisance
-* The main effects of variables must be included whenever their interaction is included
-* The main effects and lower order interactions of variables must be specified as nuisance whenever their corresponding higer order interaction is specified as nuisance
-* The main effects and lower order interactions of variables must be included whenever their corresponding higher order interactions are included 
-	
 value errors for *BF*
 
-* Bayes Factor is undefined -- all effects are specified as nuisance
-* Bayes Factor is undefined -- there are too few observations to estimate all specified effects (possibly only after rows with missing values are excluded)
-* Bayes Factor is undefined -- the factor(s): *X, Y, Z* contain(s) less than two levels (possibly only after rows with missing values are excluded)
-* Bayes Factor is undefined -- the dependent variable contains infinity
+* Bayes factor is undefined -- all effects are specified as nuisance
+* Bayes factor is undefined -- too few observations (possibly only after rows with missing values are excluded)
+* Bayes factor is undefined -- the factor(s) *X, Y, Z* contain(s) fewer than two levels (possibly only after rows with missing values are excluded)
+* Bayes factor is undefined -- the dependent variable contains infinity
+* Bayes factor is undefined -- the null model could not be computed
+* Bayes factor could not be computed
+* *Note.* All models include *X, Y, Z*
 
 #### Bayesian Correlation Matrix
-value errors for *r* the sample correlation co-efficient
+value errors for *r* 
 
-* Sample correlation co-efficient r is undefined - not enough observations
-* Sample correlation co-efficient r is undefined - one (or more) variables contain infinity
-* Sample correlation co-efficient r is undefined - one (or more) variables do not vary
+* Sample correlation coefficient r is undefined -- too few observations
+* Sample correlation coefficient r is undefined -- one or more of the variables contain infinity
+* Sample correlation coefficient r is undefined -- one or more of the variables contain all the same value (zero variance)
 

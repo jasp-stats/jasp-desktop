@@ -43,7 +43,7 @@ Term::Term(const QStringList components)
 		if (first)
 			first = false;
 		else
-			_asQString += " : ";
+			_asQString += " \xE2\x9C\xBB ";
 
 		_asQString += component;
 		_components.append(component);
@@ -81,6 +81,28 @@ bool Term::contains(const string &component) const
 	BOOST_FOREACH(const string &termComponent, _scomponents)
 	{
 		if (component == termComponent)
+			return true;
+	}
+
+	return false;
+}
+
+bool Term::containsAll(const Term &term) const
+{
+	BOOST_FOREACH(const string &termComponent, term._scomponents)
+	{
+		if ( ! contains(termComponent))
+			return false;
+	}
+
+	return true;
+}
+
+bool Term::containsAny(const Term &term) const
+{
+	BOOST_FOREACH(const string &termComponent, _scomponents)
+	{
+		if (term.contains(termComponent))
 			return true;
 	}
 

@@ -27,6 +27,12 @@ TTestIndependentSamplesForm::TTestIndependentSamplesForm(QWidget *parent) :
 
 	ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 	ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
+
+#ifdef QT_NO_DEBUG
+	ui->normalityTests->hide();
+#else
+	ui->normalityTests->setStyleSheet("background-color: pink;");
+#endif
 }
 
 TTestIndependentSamplesForm::~TTestIndependentSamplesForm()

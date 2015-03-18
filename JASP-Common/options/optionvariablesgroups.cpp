@@ -26,7 +26,7 @@ Json::Value OptionVariablesGroups::asJSON() const
 	return v;
 }
 
-void OptionVariablesGroups::set(Json::Value &value)
+void OptionVariablesGroups::set(const Json::Value &value)
 {
 	vector<vector<string> > groups;
 

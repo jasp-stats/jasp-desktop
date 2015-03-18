@@ -6,8 +6,6 @@
 #include <QTimer>
 #include <QDebug>
 
-#include "options/optionvariables.h"
-
 using namespace std;
 
 TableModelVariablesAssigned::TableModelVariablesAssigned(QObject *parent)
@@ -20,13 +18,13 @@ TableModelVariablesAssigned::TableModelVariablesAssigned(QObject *parent)
 
 void TableModelVariablesAssigned::bindTo(Option *option)
 {
-	_boundTo = dynamic_cast<OptionVariables *>(option);
+	_boundTo = dynamic_cast<OptionTerms *>(option);
 
 	if (_boundTo != NULL)
 	{
 		if (_source != NULL)
 		{
-			const vector<string> assigned = _boundTo->variables();
+			const vector<vector<string> > assigned = _boundTo->value();
 
 			beginResetModel();
 			_variables.set(assigned);
@@ -64,6 +62,9 @@ void TableModelVariablesAssigned::setSource(TableModelVariablesAvailable *source
 bool TableModelVariablesAssigned::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
 {
 	if (_boundTo == NULL)
+		return false;
+
+	if (isDroppingToSelf(data))
 		return false;
 
 	if ( ! TableModelVariables::canDropMimeData(data, action, row, column, parent))
@@ -128,7 +129,7 @@ void TableModelVariablesAssigned::mimeDataMoved(const QModelIndexList &indices)
 	emit assignmentsChanged();
 }
 
-bool TableModelVariablesAssigned::setSorted(bool sorted)
+void TableModelVariablesAssigned::setSorted(bool sorted)
 {
 	_sorted = sorted;
 
@@ -217,7 +218,7 @@ void TableModelVariablesAssigned::setAssigned(const Terms &variables)
 	endResetModel();
 
 	if (_boundTo != NULL)
-		_boundTo->setValue(_variables.asVector());
+		_boundTo->setValue(_variables.asVectorOfVectors());
 }
 
 void TableModelVariablesAssigned::sendBack()

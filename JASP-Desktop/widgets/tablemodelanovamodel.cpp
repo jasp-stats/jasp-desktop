@@ -76,9 +76,12 @@ bool TableModelAnovaModel::setData(const QModelIndex &index, const QVariant &val
 
 	if (index.column() == 1 && role == Qt::CheckStateRole)
 	{
+		bool checked = value.toInt() == Qt::Checked;
+
 		Options *row = _rows.at(index.row());
 		OptionBoolean *booleanOption = static_cast<OptionBoolean *>(row->get(1));
-		booleanOption->setValue(value.toInt() == Qt::Checked);
+		booleanOption->setValue(checked);
+		updateNuisances(checked);
 
 		_boundTo->setValue(_rows);
 
@@ -128,10 +131,10 @@ void TableModelAnovaModel::bindTo(Option *option)
 
 	foreach (Options *row, _rows)
 	{
-		OptionVariables *nameOption = static_cast<OptionVariables*>(row->get(0));
-		string name = nameOption->variables().front();
+		OptionTerm *nameOption = static_cast<OptionTerm*>(row->get(0));
+		vector<string> term = nameOption->term();
 
-		_terms.add(Term(name));
+		_terms.add(Term(term));
 	}
 
 	endResetModel();
@@ -147,13 +150,34 @@ void TableModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
 	int lastRowDeleted = -1;
 
 	Terms terms = _terms;
+	Terms toRemove;
 
 	foreach (const QModelIndex &index, sorted)
 	{
 		int rowNo = index.row();
+
 		if (rowNo != lastRowDeleted)
+		{
+			toRemove.add(terms.at(index.row()));
 			terms.remove(index.row());
+		}
+
 		lastRowDeleted = rowNo;
+	}
+
+	foreach (const Term &rem, toRemove)
+	{
+		int i = 0;
+
+		while (i < terms.size())
+		{
+			const Term &term = terms.at(i);
+
+			if (term.containsAll(rem))
+				terms.remove(i);
+			else
+				i++;
+		}
 	}
 
 	setTerms(terms);
@@ -367,9 +391,9 @@ Qt::DropActions TableModelAnovaModel::supportedDragActions() const
 	return Qt::MoveAction;
 }
 
-OptionVariables *TableModelAnovaModel::termOptionFromRow(Options *row)
+OptionTerm *TableModelAnovaModel::termOptionFromRow(Options *row)
 {
-	return static_cast<OptionVariables *>(row->get(0));
+	return static_cast<OptionTerm *>(row->get(0));
 }
 
 void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance)
@@ -389,8 +413,8 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 	while (otr != _rows.end())
 	{
 		Options *row = *otr;
-		OptionVariables *termCell = termOptionFromRow(row);
-		Term existingTerm = Term(termCell->variables());
+		OptionTerm *termCell = termOptionFromRow(row);
+		Term existingTerm = Term(termCell->term());
 
 		bool shouldRemove = true;
 
@@ -431,8 +455,8 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 			otr = _rows.begin();
 			otr += i;
 			Options *row = *otr;
-			OptionVariables *termCell = termOptionFromRow(row);
-			Term existingTerm = Term(termCell->variables());
+			OptionTerm *termCell = termOptionFromRow(row);
+			Term existingTerm = Term(termCell->term());
 
 			if (existingTerm != term)
 			{
@@ -467,6 +491,8 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 		itr++;
 	}
 
+	updateNuisances();
+
 	_boundTo->setValue(_rows);
 
 	endResetModel();
@@ -484,4 +510,52 @@ void TableModelAnovaModel::assign(const Terms &terms)
 	Terms t = _terms;
 	t.add(terms);
 	setTerms(t);
+}
+
+void TableModelAnovaModel::updateNuisances(bool checked)
+{
+	if (_rows.size() > 0)
+	{
+		Options *row = _rows.front();
+		if (row->size() < 2)
+			return; // no nuisance terms
+	}
+
+	// if a higher order interaction is specified as nuisance, then all lower order terms should be changed to nuisance as well
+
+	for (int i = 0; i < _rows.size(); i++)
+	{
+		Options *row = _rows.at(i);
+		OptionTerm *termOption = static_cast<OptionTerm*>(row->get(0));
+		OptionBoolean *nuisanceOption = static_cast<OptionBoolean*>(row->get(1));
+		Term term = Term(termOption->term());
+
+		if (nuisanceOption->value() == checked)
+		{
+			for (int j = 0; j < _rows.size(); j++)
+			{
+				if (i == j)
+					continue;
+
+				Options *r = _rows.at(j);
+
+				OptionTerm *tOption = static_cast<OptionTerm*>(r->get(0));
+				OptionBoolean *nOption = static_cast<OptionBoolean*>(r->get(1));
+				Term t = Term(tOption->term());
+
+				if (checked)
+				{
+					if (term.containsAll(t))
+						nOption->setValue(true);
+				}
+				else
+				{
+					if (t.containsAll(term))
+						nOption->setValue(false);
+				}
+			}
+		}
+	}
+
+	emit dataChanged(this->index(0,1), this->index(_rows.size() - 1, 1));
 }

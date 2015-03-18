@@ -31,6 +31,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="descriptives", type="table")
+	meta[[4]] <- list(name="normalityTests", type="table")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "T-Test"
@@ -50,6 +51,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 	if(options$meanDifference){
 		fields[[length(fields)+1]] <- list(name="md", title="Mean Difference", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="sed", title="SE Difference", type="number", format="sf:4;dp:3")	
 	}
 	
 	if(options$effectSize){
@@ -112,8 +114,10 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 					df <- as.numeric(r$parameter)
 					p  <- as.numeric(r$p.value)
 					m  <- as.numeric(r$estimate)
+					sed <- .clean(sd(c1-c2, na.rm = TRUE)/length(na.omit(c1-c2)))
+					
 					es <- .clean((mean(c1)-mean(c2))/(sqrt((sd(c1)^2+sd(c2)^2)/2)))
-			
+			        
 					ci.l <- as.numeric(r$conf.int[1])
 					ci.u <- as.numeric(r$conf.int[2])
 			
@@ -156,6 +160,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 					df <- ""
 					p  <- ""
 					m  <- ""
+					sed <- ""
 					es <- ""
 			
 					ci.l <- ""
@@ -171,6 +176,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				df <- ""
 				p  <- ""
 				m  <- ""
+				sed <- ""
 				es <- ""
 			
 				ci.l <- ""
@@ -184,6 +190,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 			if (options$meanDifference) {
 			
 				row[["md"]] <- m
+				row[["sed"]] <- sed
 			}
 			
 			if (options$effectSize) {
@@ -206,6 +213,8 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	ttest[["data"]] <- ttest.results
 	
 	ttest[["footnotes"]] <- as.list(footnotes)
+	
+	results[["ttest"]] <- ttest
 
 	if (options$descriptives) {
 	
@@ -257,8 +266,89 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		results[["descriptives"]] <- descriptives
 	}
 	
-	results[["ttest"]] <- ttest
+	if (options$normalityTests) {
 	
+	    normalityTests <- list()
+	
+		normalityTests[["title"]] <- "Test of Normality (Shapiro-Wilk)"
+		normalityTests[["cases"]] <- I(options$variables)
+
+		fields <- list(
+			list(name="v1",  type="string", title=""),
+		    list(name="sep", type="separator", title=""),
+		    list(name="v2",  type="string", title=""),
+			list(name="W", title="W", type="number",   format="sf:4;dp:3"),
+			list(name="p", title="p", type="number", format="dp:3;p:.001"))
+
+		normalityTests[["schema"]] <- list(fields=fields)
+		
+		footnotes <- .newFootnotes()
+        .addFootnote(footnotes, symbol="<em>Note.</em>", text="Significant results indicate a deviation from normality")
+		
+		normalityTests.results <- list()
+		
+		pairs <- options$pairs
+		if (length(pairs) == 0) {
+		    pairs[[1]] <- list(".", ".")
+		}
+
+		for (pair in pairs) {
+		    			
+			if (perform == "run" && length(options$pairs) > 0 && pair[[1]] != pair[[2]]) {
+                    
+                c1 <- dataset[[ .v(pair[[1]]) ]]
+				c2 <- dataset[[ .v(pair[[2]]) ]]
+                
+				data <- na.omit(c1 - c2)
+
+				if (class(data) != "factor") {
+                    
+                    r <- stats::shapiro.test(data)
+                    
+					W <- .clean(as.numeric(r$statistic))
+					p <- .clean(r$p.value)
+					
+					if(length(normalityTests.results) == 0) {
+			            newGroup <- TRUE   
+			        } else {				
+				        newGroup <- FALSE
+			        }
+					
+					result <- list(v1=pair[[1]], sep="-", v2=pair[[2]], "W" = W, "p" = p, ".isNewGroup" = newGroup)
+					
+				} else {
+			        
+			        if(length(normalityTests.results) == 0) {
+			            newGroup <- TRUE   
+			        } else {				
+				        newGroup <- FALSE
+			        }
+					
+					result <- list(v1=pair[[1]], sep="-", v2=pair[[2]], "W" = "", "p" = "", ".isNewGroup" = newGroup)
+					
+				}
+			
+			} else {
+			
+			    if(length(normalityTests.results) == 0) {
+			        newGroup <- TRUE   
+			    } else {				
+				    newGroup <- FALSE
+			    }
+			
+				result <- list(v1=pair[[1]], sep="-", v2=pair[[2]], "W" = ".", p = ".", ".isNewGroup" = newGroup)			
+			
+			}
+			
+			normalityTests.results[[length(normalityTests.results)+1]] <- result
+		}
+		
+		normalityTests[["data"]] <- normalityTests.results
+		
+		normalityTests[["footnotes"]] <- as.list(footnotes)
+		
+		results[["normalityTests"]] <- normalityTests
+	}
 		
 	results
 }

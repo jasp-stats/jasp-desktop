@@ -1,93 +1,33 @@
 #include "analysisloader.h"
 
-#include "analyses/ancova.h"
-#include "analyses/ancovamultivariate.h"
-#include "analyses/ancovabayesian.h"
-#include "analyses/anova.h"
-#include "analyses/anovabayesian.h"
-#include "analyses/anovamultivariate.h"
-#include "analyses/anovaoneway.h"
-#include "analyses/anovarepeatedmeasures.h"
-#include "analyses/anovarepeatedmeasuresbayesian.h"
-#include "analyses/anovarepeatedmeasuresshort.h"
-#include "analyses/correlation.h"
-#include "analyses/correlationbayesian.h"
-#include "analyses/correlationbayesianpairs.h"
-#include "analyses/correlationpartial.h"
-#include "analyses/crosstabs.h"
-#include "analyses/crosstabsbayesian.h"
-#include "analyses/descriptives.h"
-#include "analyses/regressionlinear.h"
-#include "analyses/regressionlinearbayesian.h"
-#include "analyses/semsimple.h"
-#include "analyses/ttestbayesianindependentsamples.h"
-#include "analyses/ttestbayesianonesample.h"
-#include "analyses/ttestbayesianpairedsamples.h"
-#include "analyses/ttestindependentsamples.h"
-#include "analyses/ttestonesample.h"
-#include "analyses/ttestpairedsamples.h"
+#include "dirs.h"
+
+#include <fstream>
+#include <string>
+
+using namespace std;
 
 Analysis *AnalysisLoader::load(int id, string analysisName)
 {
+	Options *options = new Options();
 
-	if (analysisName == "Descriptives")
-		return new Descriptives(id);
-	else if (analysisName == "TTestOneSample")
-		return new TTestOneSample(id);
-	else if (analysisName == "TTestIndependentSamples")
-		return new TTestIndependentSamples(id);
-	else if (analysisName == "TTestPairedSamples")
-		return new TTestPairedSamples(id);
-	else if (analysisName == "TTestBayesianOneSample")
-		return new TTestBayesianOneSample(id);
-	else if (analysisName == "TTestBayesianPairedSamples")
-		return new TTestBayesianPairedSamples(id);
-	else if (analysisName == "TTestBayesianIndependentSamples")
-		return new TTestBayesianIndependentSamples(id);
-	else if (analysisName == "AnovaOneWay")
-		return new AnovaOneWay(id);
-	else if (analysisName == "AnovaMultivariate")
-		return new AnovaMultivariate(id);
-	else if (analysisName == "AncovaMultivariate")
-		return new AncovaMultivariate(id);
-	else if (analysisName == "Anova")
-		return new Anova(id);
-	else if (analysisName == "AnovaRepeatedMeasures")
-		return new AnovaRepeatedMeasures(id);
-	else if (analysisName == "AnovaRepeatedMeasuresShort")
-		return new AnovaRepeatedMeasuresShort(id);
-	else if (analysisName == "Ancova")
-		return new Ancova(id);
-	else if (analysisName == "AnovaBayesian")
-		return new AnovaBayesian(id);
-	else if (analysisName == "RegressionLinear")
-		return new RegressionLinear(id);
-	else if (analysisName == "RegressionLinearBayesian")
-		return new RegressionLinearBayesian(id);
-	else if (analysisName == "Correlation")
-		return new Correlation(id);
-	else if (analysisName == "CorrelationBayesian")
-		return new CorrelationBayesian(id);
-	else if (analysisName == "CorrelationBayesianPairs")
-		return new CorrelationBayesianPairs(id);
-	else if (analysisName == "CorrelationPartial")
-		return new CorrelationPartial(id);
-	else if (analysisName == "Crosstabs")
-		return new Crosstabs(id);
-	else if (analysisName == "CrosstabsBayesian")
-		return new CrosstabsBayesian(id);
-	else if (analysisName == "SEMSimple")
-		return new SEMSimple(id);
-	else if (analysisName == "AncovaBayesian")
-		return new AncovaBayesian(id);
-	else if (analysisName == "AnovaRepeatedMeasuresBayesian")
-		return new AnovaRepeatedMeasuresBayesian(id);
-	else
+	string path = Dirs::libraryDir() + "/" + analysisName + ".json";
+
+	ifstream myfile(path.c_str(), fstream::in);
+	if (myfile.is_open())
 	{
-		std::cout << "AnalysisLoader::load(); Analysis not found: " << analysisName << "\n";
-		std::cout.flush();
+		Json::Value descriptiveJson;
+		Json::Reader parser;
+		parser.parse(myfile, descriptiveJson);
 
-		return NULL;
+		options->init(descriptiveJson);
+
+		myfile.close();
+
+		cout << "Analysis loaded";
+		cout.flush();
+		return new Analysis(id, analysisName, options);
 	}
 
+	throw runtime_error("Could not access analysis definition.");
 }

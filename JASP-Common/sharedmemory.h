@@ -2,13 +2,16 @@
 #define SHAREDMEMORY_H
 
 #include <boost/interprocess/managed_shared_memory.hpp>
+#include "dataset.h"
 
 class SharedMemory
 {
 public:
 
-	static boost::interprocess::managed_shared_memory *get(bool master = false);
-	static boost::interprocess::managed_shared_memory *grow(int amount);
+	static DataSet *createDataSet();
+	static DataSet *retrieveDataSet();
+	static DataSet *enlargeDataSet(DataSet *dataSet);
+	static void deleteDataSet(DataSet *dataSet);
 
 private:
 

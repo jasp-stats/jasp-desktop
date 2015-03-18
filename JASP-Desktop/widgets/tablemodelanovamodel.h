@@ -6,7 +6,7 @@
 
 #include "tablemodelvariablesavailable.h"
 #include "enhanceddroptarget.h"
-#include "options/optionvariables.h"
+#include "options/optionterm.h"
 #include "options/optionstable.h"
 
 #include "tablemodel.h"
@@ -61,12 +61,13 @@ signals:
 
 protected:
 
-	static OptionVariables* termOptionFromRow(Options *row);
+	static OptionTerm* termOptionFromRow(Options *row);
 
 	void setTerms(const Terms &terms, bool newTermsAreNuisance = false);
 
 	void clear();
 	void assign(const Terms &terms);
+	void updateNuisances(bool checked = true);
 
 	OptionsTable *_boundTo;
 

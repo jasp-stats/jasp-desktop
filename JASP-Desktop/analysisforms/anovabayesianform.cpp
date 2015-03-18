@@ -31,6 +31,7 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 
 	_anovaModel = new TableModelAnovaModel(this);
 	ui->modelTerms->setModel(_anovaModel);
+	ui->modelTerms->setAssignPiecesVisible(false);
 	ui->modelTerms->hide();
 
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
@@ -42,17 +43,6 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addRandomFactors(Terms)));
 	connect(_randomFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
-
-#ifdef QT_NO_DEBUG
-	// temporary hides until the appropriate R code is implemented
-
-	ui->posteriorDistributions->hide();
-	ui->posteriorEstimates->hide();
-
-#else
-	ui->posteriorDistributions->setStyleSheet("background-color: pink;");
-	ui->posteriorEstimates->setStyleSheet("background-color: pink;");
-#endif
 }
 
 AnovaBayesianForm::~AnovaBayesianForm()

@@ -20,6 +20,13 @@
 	{
 		lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
 		
+		#if (options$rowOrder == "descending") {
+		#	lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+		#	lvls <- rev(lvls)
+		#} else {
+		#	lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+		#}
+		
 		if (length(lvls) < 2) {
 		
 			lvls <- ""
@@ -82,17 +89,27 @@
 	
 	counts.fields[[length(counts.fields)+1]] <- list(name=analysis$rows, type="string", combine=TRUE)
 	
-
 	lvls <- c()
+	
 	if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
-
+	
 		lvls <- base::levels(dataset[[ .v(analysis$columns) ]])
+		if (options$columnOrder == "descending") {
+			lvls <- base::rev(lvls)
+		} else {
+			lvls <- lvls
+		}
 
 	} else if (perform == "run") {
 	
 		lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
+		
+		if (options$columnOrder == "descending") {
+			lvls <- base::rev(lvls, decreasing = TRUE)
+		} else {
+			lvls <- lvls
+		}
 	}
-	
 
 	counts.fp <- FALSE  # whether the counts are float point or not; changes formatting
 	
@@ -103,7 +120,7 @@
 			counts.fp <- TRUE
 	}
 	
-	if (options$countsExpected || options$percentages$row || options$percentages$column || options$percentages$total ) {
+	if (options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal ) {
 	
 	
 		counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
@@ -112,19 +129,19 @@
 			counts.fields[[length(counts.fields)+1]] <- list(name="type[expected]", title="", type="string")
 			}
 	
-		if (options$percentages$row) {
+		if (options$percentagesRow) {
 
 			#counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
 			counts.fields[[length(counts.fields)+1]] <- list(name="type[rowproportions]", title="", type="string")
 		}
 
-		if (options$percentages$column) {
+		if (options$percentagesColumn) {
 
 			#counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
 			counts.fields[[length(counts.fields)+1]] <- list(name="type[colproportions]", title="", type="string")
 		}
 
-		if (options$percentages$total) {
+		if (options$percentagesTotal) {
 
 			#counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
 			counts.fields[[length(counts.fields)+1]] <- list(name="type[proportions]", title="", type="string")
@@ -137,7 +154,7 @@
 
 		private.name <- base::paste(column.name,"[counts]", sep="")
 
-		if (counts.fp || options$countsExpected || options$percentages$row || options$percentages$column || options$percentages$total ) {
+		if (counts.fp || options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal ) {
 			
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
 		
@@ -153,19 +170,19 @@
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
 		}
 		
-		if (options$percentages$row) {
+		if (options$percentagesRow) {
 			
 			private.name <- base::paste(column.name,"[rowproportions]", sep="")
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="dp:1;pc")
 		}
 		
-		if (options$percentages$column) {
+		if (options$percentagesColumn) {
 			
 			private.name <- base::paste(column.name,"[colproportions]", sep="")
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="dp:1;pc")
 		}
 		
-		if (options$percentages$total) {
+		if (options$percentagesTotal) {
 			
 			private.name <- base::paste(column.name,"[proportions]", sep="")
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="dp:1;pc")
@@ -174,7 +191,7 @@
 	
 	# Totals columns
 	
-	if (counts.fp || options$countsExpected || options$percentages$row || options$percentages$column || options$percentages$total) {
+	if (counts.fp || options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal) {
 
 	
 		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]",   title="Total", type="number", format="sf:4;dp:2")	
@@ -189,17 +206,17 @@
 		counts.fields[[length(counts.fields)+1]] <- list(name="total[expected]", title="Total", type="number", format="sf:4;dp:2")
 	}
 	
-	if (options$percentages$row) {
+	if (options$percentagesRow) {
 	
 		counts.fields[[length(counts.fields)+1]] <- list(name="total[rowproportions]", title="Total", type="number", format="dp:1;pc")
 	}
 	
-	if (options$percentages$column) {
+	if (options$percentagesColumn) {
 	
 		counts.fields[[length(counts.fields)+1]] <- list(name="total[colproportions]", title="Total", type="number", format="dp:1;pc")
 	}
 	
-	if (options$percentages$total) {
+	if (options$percentagesTotal) {
 	
 		counts.fields[[length(counts.fields)+1]] <- list(name="total[proportions]", title="Total", type="number", format="dp:1;pc")
 	}
@@ -271,12 +288,12 @@
 		oddsratio.fields <- fields
 			
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="log(odds ratio)", type="number", format="sf:4;dp:3")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
 		
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[FisherTest]", title="", type="string")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[FisherTest]", title="Odds ratio", type="number", format="sf:4;dp:3")
+		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[FisherTest]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[FisherTest]", title="Lower CI", type="number", format="dp:3")
 		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[FisherTest]",  title="Upper CI", type="number", format="dp:3")
 		
@@ -287,7 +304,7 @@
 	
 	
 	##### Nominal Table (Symmetric Measures)
-	if (options$nominal$contingencyCoefficient|| options$nominal$phiAndCramersV) {
+	if (options$nominalContingencyCoefficient|| options$nominalPhiAndCramersV) {
 		
 		nominal.table <- list()
 
@@ -295,13 +312,13 @@
 
 		nominal.fields <- fields
 
-		if (options$nominal$contingencyCoefficient){
+		if (options$nominalContingencyCoefficient){
 
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[ContCoef]", title="", type="string")
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[ContCoef]", title="Value", type="number", format="sf:4;dp:3")
 		}
 
-		if (options$nominal$phiAndCramersV) {
+		if (options$nominalPhiAndCramersV) {
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[PhiCoef]", title="", type="string")
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[PhiCoef]", title="Value", type="number", format="sf:4;dp:3")
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[CramerV]", title="", type="string")
@@ -314,7 +331,7 @@
 	}
 	
 	##### Ordinal Table
-	if (options$ordinal$gamma) {
+	if (options$ordinalGamma) {
 		
 		ordinal.table <- list()
 		
@@ -335,7 +352,7 @@
 	
 	##########Kendall Tau-B table
 	
-	if (options$ordinal$kendallsTauB) {
+	if (options$ordinalKendallsTauB) {
 		
 		kendalls.table <- list()
 		
@@ -368,7 +385,7 @@
 
 	# create count matrices for each group
 
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var))
+	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var), options$rowOrder=="descending", options$columnOrder=="descending")
 	
 	counts.rows <- list()
 	tests.rows <- list()
@@ -443,7 +460,7 @@
 		tables[[3]] <- oddsratio.table
 	}
 	
-	if (options$nominal$contingencyCoefficient || options$nominal$phiAndCramersV) {
+	if (options$nominalContingencyCoefficient || options$nominalPhiAndCramersV) {
 	
 		nominal.table[["data"]] <- nominal.rows
 		nominal.table[["footnotes"]] <- as.list(nominal.footnotes)
@@ -454,7 +471,7 @@
 		tables[[4]] <- nominal.table
 	}
 	
-	if (options$ordinal$gamma) {
+	if (options$ordinalGamma) {
 	
 		ordinal.table[["data"]] <- ordinal.rows
 		ordinal.table[["footnotes"]] <- as.list(ordinal.footnotes)
@@ -465,7 +482,7 @@
 		tables[[5]] <- ordinal.table
 	}
 	
-	if (options$ordinal$kendallsTauB) {
+	if (options$ordinalKendallsTauB) {
 	
 		kendalls.table[["data"]] <- kendalls.rows
 		kendalls.table[["footnotes"]] <- as.list(kendalls.footnotes)
@@ -682,7 +699,7 @@
 	
 	row.footnotes <- list ()
 
-	if (options$nominal$contingencyCoefficient) {
+	if (options$nominalContingencyCoefficient) {
 		 
 		 row[["type[ContCoef]"]] <- "Contingency Coefficient"
 		 
@@ -723,7 +740,7 @@
 		
 		}
 	
-		if (options$nominal$phiAndCramersV) {
+		if (options$nominalPhiAndCramersV) {
 		
 			row[["type[PhiCoef]"]] <- "Phi-Coefficient"
 			
@@ -762,9 +779,9 @@
 				row[["value[PhiCoef]"]] <- "."
 			}
 			
-		# }
+		 }
 		
-		# if (options$nominal$phiAndCramersV) {
+		 if (options$nominalPhiAndCramersV) {
 			
 			row[["type[CramerV]"]] <- "Cramer's V "
 			
@@ -827,14 +844,15 @@
 		}
 	}
 	
+	 
 	
-	if (options$ordinal$gamma) {
+	if (options$ordinalGamma) {
 		
-		#row[["type[gammaCoef]"]] <- "Gamma Coefficient"
+		row[["type[gammaCoef]"]] <- "Gamma Coefficient"
 		
 		
 		if (perform == "run" && status$error == FALSE) {
-			
+				
 			chi.result <- try({
 				
 				chi.result <- vcdExtra::GKgamma(counts.matrix)
@@ -888,11 +906,10 @@
 			row[[layer]] <- level
 		}
 	}
-	
-	
-	if (options$ordinal$kendallsTauB) {
+			
+	if (options$ordinalKendallsTauB) {
 		
-		#row[["type[kTauB]"]] <- "Kendall's Tau B"
+		row[["type[kTauB]"]] <- "Kendall's Tau B"
 		
 		
 		if (perform == "run" && status$error == FALSE) {
@@ -928,8 +945,7 @@
 			
 			 row[["value[kTauB]"]] <- "."
 			 row[["p[kTauB]"]] <- "."
-		  	 row[["statistic[kTauB]"]] <- "."
-		  	 
+		  	 row[["statistic[kTauB]"]] <- "."		  	 
 		}
 		
 	}
@@ -975,12 +991,12 @@
 				row.footnotes[["value[oddsRatio]"]]=list(sup)
 				
 			} else {
-			
+				
 				chi.result <- try({
 
 					chi.result <- vcd::oddsratio(counts.matrix)
-					LogOR <- chi.result
 					CI <- stats::confint(chi.result, level = options$oddsRatioConfidenceIntervalInterval)
+					LogOR <- chi.result
 					log.CI.low <- CI[1]
 					log.CI.high <- CI[2]
 				})
@@ -1045,7 +1061,6 @@
 					chi.result <- stats::fisher.test(counts.matrix, conf.level = options$oddsRatioConfidenceIntervalInterval)
 					OR <- unname(chi.result$estimate)
 					logOR <- log(OR)
-					
 					log.CI.low <- log(chi.result$conf.int[1])
 					log.CI.high <- log(chi.result$conf.int[2])
 					
@@ -1211,7 +1226,7 @@
 				row <- c(row, expected)
 			}
 			
-			if (options$percentages$row) {
+			if (options$percentagesRow) {
 			
 				row.rowproportions[["type[rowproportions]"]] <- " % within row"
 
@@ -1229,7 +1244,7 @@
 				row <- c(row, rowproportions)
 			}
 			
-			if (options$percentages$column) {
+			if (options$percentagesColumn) {
 			
 				row.colproportions[["type[colproportions]"]] <- " % within column"
 
@@ -1251,7 +1266,7 @@
 				row <- c(row, colproportions)
 			}
 			
-			if (options$percentages$total) {
+			if (options$percentagesTotal) {
 			
 				row.proportions[["type[proportions]"]] <- " % of Total"
 
@@ -1290,7 +1305,7 @@
 			}
 		}
 
-		if (i == 1 && options$countsExpected == FALSE && options$percentages$row == FALSE && options$percentages$col == FALSE && options$percentages$total == FALSE) {
+		if (i == 1 && options$countsExpected == FALSE && options$percentagesRow == FALSE && options$percentagesCol == FALSE && options$percentagesTotal == FALSE) {
 
 			row[[".isNewGroup"]] <- TRUE
 		}
@@ -1329,7 +1344,7 @@
 			row <- c(row,  expected)
 		}
 		
-		if (options$percentages$row) {
+		if (options$percentagesRow) {
 		
 			if (class(rowproportions.matrix[1,1]) == "character") {
 				rowproportions <- rowproportions.matrix[1,]
@@ -1353,7 +1368,7 @@
 			row <- c(row,  rowproportions)
 		}
 		
-		if (options$percentages$column) {
+		if (options$percentagesColumn) {
 		
 			if (class(colproportions.matrix[1,1]) == "character") {
 				colproportions <- colproportions.matrix[1,]
@@ -1379,7 +1394,7 @@
 		}
 		
 		
-		if (options$percentages$total) {
+		if (options$percentagesTotal) {
 		
 			if (class(proportions.matrix[1,1]) == "character") {
 				proportions <- proportions.matrix[1,]
@@ -1408,7 +1423,7 @@
 	}
 	
 	row[[var.name]] <- "Total"
-	if (options$countsExpected == FALSE && options$percentages$row == FALSE && options$percentages$col == FALSE && options$percentages$total == FALSE)
+	if (options$countsExpected == FALSE && options$percentagesRow == FALSE && options$percentagesCol == FALSE && options$percentagesTotal == FALSE)
 		row[[".isNewGroup"]] <- TRUE
 	
 	for (layer in names(group)) {
@@ -1431,7 +1446,7 @@
 }
 
 
-.crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, counts=NULL) {
+.crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, counts=NULL, rowOrderDescending=FALSE,columnOrderDescending=FALSE) {
 
 	# this creates count matrices for each of the groups
 
@@ -1451,7 +1466,20 @@
 			counts <- stats::na.omit(counts)
 		
 			ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
+			
 			ss.matrix[is.na(ss.matrix)] <- 0
+		}
+		
+		if (rowOrderDescending) {
+			ss.matrix <- base::apply(ss.matrix, 2, base::rev)
+		} else {
+			ss.matrix <- ss.matrix
+		}
+		
+		if (columnOrderDescending) {
+			ss.matrix <- ss.matrix[ ,ncol(ss.matrix):1]
+		} else {
+			ss.matrix <- ss.matrix
 		}
 		
 		ss.matrix[base::is.na(ss.matrix)] <- 0
@@ -1483,9 +1511,22 @@
 			} else {
 		
 				ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
+									
 			}
 			
 			ss.matrix[base::is.na(ss.matrix)] <- 0
+			
+			if (rowOrderDescending) {
+				ss.matrix <- base::apply(ss.matrix, 2, base::rev)
+			} else {
+				ss.matrix <- ss.matrix
+			}
+			
+			if (columnOrderDescending) {
+				ss.matrix <- ss.matrix[ , ncol(ss.matrix):1]
+			} else {
+				ss.matrix <- ss.matrix
+			}
 
 			matrices[[length(matrices)+1]] <- ss.matrix
 		}

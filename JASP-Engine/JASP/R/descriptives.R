@@ -69,7 +69,7 @@
 	i <- 1
 	step <- 1
 	
-	while (maxFrequency / step > 10) {
+	while (maxFrequency / step > 9) {
 		
 		if (i == 2) {
 			
@@ -137,7 +137,7 @@
 	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
 	mtext(text = variableName, side = 1, cex=1.5, line = 3)
 	par(las=0)
-	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), mgp=c(3,0.2,0), cex.axis= 1.5, mgp= c(3, 0.7, 0))
+	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), cex.axis= 1.5, mgp= c(3, 0.7, 0))
 	
 	if(rugs){
 		rug(jitVar)
@@ -146,9 +146,248 @@
 	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
 }
 
+.plotScatterDescriptives <- function(xVar, yVar, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2){
+	
+	d <- data.frame(xx= xVar, yy= yVar)
+	d <- na.omit(d)
+	xVar <- d$xx
+	yVar <- d$yy
+	
+	# fit different types of regression
+	fit <- vector("list", 1)# vector("list", 4)
+	
+	fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), d)
+	fit[[2]] <- lm(yy ~ poly(xx, 2, raw= TRUE), d)
+	fit[[3]] <- lm(yy ~ poly(xx, 3, raw= TRUE), d)
+	fit[[4]] <- lm(yy ~ poly(xx, 4, raw= TRUE), d)
+	
+	# find parsimonious, best fitting regression model
+	Bic <- vector("numeric", 4)
+	
+	for (i in 1:4) {
+		
+		Bic[i] <- BIC(fit[[i]])	
+		
+	}
+	
+	bestModel <- which.min(Bic)
+	
+	# predictions of the model
+	poly.pred <- function(fit, line=FALSE, xMin, xMax){
+		
+		# create function formula		
+		f <- vector("character", 0)
+		
+		for (i in seq_along(coef(fit))) {
+			
+			if (i == 1) {
+				
+				temp <- paste(coef(fit)[[i]])
+				f <- paste(f, temp, sep="")
+				
+			}
+			
+			if (i > 1) {
+				
+				temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
+				f <- paste(f, temp, sep="+")
+				
+			}
+		}
+		
+		x <- seq(xMin, xMax, length.out = 100)
+		predY <- eval(parse(text=f))
+		
+		if (line == FALSE) {
+			
+			return(predY)
+		}
+		
+		if (line) {
+			
+		lines(x, predY, lwd=lwd)
+		
+		}
+	}
+	
+	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
+	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+	xticks <- pretty(c(xlow, xhigh))
+	
+	ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)])))
+	yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)])))
+	yticks <- pretty(c(ylow, yhigh))
+	
+	plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
+	
+	poly.pred(fit[[bestModel]], line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)])
+	
+	par(las=1)
+	
+	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
+	axis(2, line= 0.2, labels= yticks, at= yticks, cex.axis= cexYAxis)
+
+}
+
+#### Matrix Plot function #####
+.matrixPlot <- function(dataset, perform, options) {
+
+	if (!options$displayCorrelationPlot)
+		return()
+	
+	
+	matrix.plot <- list()	
+
+	if (perform == "init") {
+	
+		variables <- unlist(options$mainFields)
+		
+		l <- length(variables)
+		
+
+		if (l <= 2) {
+		
+			width <- 580
+			height <- 580
+			
+		} else {
+			
+			width <- 250 * l
+			height <- 250 * l
+				
+		}
+		
+				
+		plot <- list()
+			
+		plot[["title"]] <- variables 
+		plot[["width"]]  <- width
+		plot[["height"]] <- height
+
+		matrix.plot[[1]] <- plot
+	}
+	
+	
+	if (perform == "run" && length(unlist(options$mainFields)) > 0) {
+
+	
+		variables <- unlist(options$mainFields)
+		
+		l <- length(variables)
+		
+		# check for numeric/integer variables & !infinity & standard deviation > 0				
+		d <- vector("character", length(.v(variables)))
+		sdCheck <- vector("numeric", length(.v(variables)))
+		infCheck <- vector("logical", length(.v(variables)))
+		
+		for (i in seq_along(.v(variables))) {
+		
+			d[i] <- class(dataset[[.v(variables)[i]]])
+			sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE)
+			infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
+		}
+		
+	
+		ind1 <- d == "numeric" | d == "integer"
+		ind2 <- sdCheck > 0
+		ind <- ind1 & ind2 & infCheck == FALSE
+		
+				
+		variables <- .v(variables)[ind]
+		
+		l <- length(variables)
+			
+			
+		if (l <= 2) {
+		
+			width <- 580
+			height <- 580
+			
+		} else {
+			
+			width <- 250 * l
+			height <- 250 * l
+				
+		}
+		
+		matrix.plot <- list()
+				
+		plot <- list()
+			
+		plot[["title"]] <- .unv(variables)
+		plot[["width"]]  <- width
+		plot[["height"]] <- height
+				
+		matrix.plot[[1]] <- plot
+
+		
+		if (length(variables) > 0) {
+		
+			image <- .beginSaveImage(width, height)
+			
+				if (l == 1) {
+				
+					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))	
+					
+					.plotMarginalCor(dataset[[variables[1]]]) 
+					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)	
+					
+				} else if (l > 1) {
+				
+					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
+				
+					for (row in seq_len(l)) {
+					
+						for (col in seq_len(l)) {
+						
+							if (row == col) {
+								
+								.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+							
+							}
+								
+							if (col > row) {
+							
+								.plotScatterDescriptives(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+							
+							}
+							
+							if (col < row) {							
+							
+								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+									
+							}
+						}		
+					}
+				}
+				
+				
+				if (l > 1) {
+				
+					textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
+					
+					for (t in seq_along(textpos)) {
+							
+						mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
+						mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
+					}
+				}
+							
+			content <- .endSaveImage(image)
+					
+			plot <- matrix.plot[[1]]
+			plot[["data"]]  <- content
+			matrix.plot[[1]] <- plot
+			
+		}	
+	}
+	
+	matrix.plot
+}
+
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
-	variables <- unlist(options$main$fields)
+	variables <- unlist(options$mainFields)
 	
 	if (is.null(dataset)) {
 	
@@ -162,13 +401,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		}
 	}
 
-	stats.options <- options[["statistics"]]
-	central.tendency <- stats.options[["centralTendency"]]
-	dispersion <- stats.options[["dispersion"]]
-	distribution <- stats.options[["distribution"]]
-	percentileValues <- stats.options[["percentileValues"]]
-	equalGroupsNo <- options$statistics$percentileValues$equalGroupsNo 
-	percentilesPercentiles  <- options$statistics$percentileValues$percentilesPercentiles
+	equalGroupsNo <- options$statisticsPercentileValuesEqualGroupsNo 
+	percentilesPercentiles  <- options$statisticsPercentileValuesPercentilesPercentiles
 
 	run <- perform == "run"
 
@@ -197,54 +431,55 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	fields[[length(fields) + 1]] <- list(name="Valid", type="integer")
 	fields[[length(fields) + 1]] <- list(name="Missing", type="integer")
 
-	if (central.tendency[["mean"]])
+
+	if (options$statisticsCentralTendencyMean)
 		fields[[length(fields) + 1]] <- list(name="Mean", type="number", format="sf:4")
-	if (dispersion[["standardErrorMean"]])
+	if (options$statisticsDispersionStandardErrorMean)
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Mean", type="number", format="sf:4")
-	if (central.tendency[["median"]])
+	if (options$statisticsCentralTendencyMedian)
 		fields[[length(fields) + 1]] <- list(name="Median", type="number", format="sf:4")
-	if (central.tendency[["mode"]])
+	if (options$statisticsCentralTendencyMode)
 		fields[[length(fields) + 1]] <- list(name="Mode", type="number", format="sf:4")
-	if (dispersion[["standardDeviation"]])
+	if (options$statisticsDispersionStandardDeviation)
 		fields[[length(fields) + 1]] <- list(name="Std. Deviation", type="number", format="sf:4")
-	if (dispersion[["variance"]])
+	if (options$statisticsDispersionVariance)
 		fields[[length(fields) + 1]] <- list(name="Variance", type="number", format="sf:4")
 		
-	if (distribution[["skewness"]]) {
+	if (options$statisticsDistributionSkewness) {
 	
 		fields[[length(fields) + 1]] <- list(name="Skewness", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Skewness", type="number", format="sf:4")
 	}
 	
-	if (distribution[["kurtosis"]]) {
+	if (options$statisticsDistributionKurtosis) {
 	
 		fields[[length(fields) + 1]] <- list(name="Kurtosis", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Kurtosis", type="text", format="sf:4")
 	}
 	
-	if (dispersion[["range"]])
+	if (options$statisticsDispersionRange)
 		fields[[length(fields) + 1]] <- list(name="Range", type="number", format="sf:4")
-	if (dispersion[["minimum"]])
+	if (options$statisticsDispersionMinimum)
 		fields[[length(fields) + 1]] <- list(name="Minimum", type="number", format="sf:4")
-	if (dispersion[["maximum"]])
+	if (options$statisticsDispersionMaximum)
 		fields[[length(fields) + 1]] <- list(name="Maximum", type="number", format="sf:4")
-	if (central.tendency[["sum"]])
+	if (options$statisticsCentralTendencySum)
 		fields[[length(fields) + 1]] <- list(name="Sum", type="number", format="sf:4")
 	
-	if (percentileValues[["quartiles"]]) {
+	if (options$statisticsPercentileValuesQuartiles) {
 	
 		fields[[length(fields) + 1]] <- list(name="q1", title="25th percentile", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="q2", title="50th percentile", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="q3", title="75th percentile", type="number", format="sf:4")
 	}
 	
-	if (percentileValues[["equalGroups"]]) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
+	if (options$statisticsPercentileValuesEqualGroups) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
 	
 		for (i in seq(equalGroupsNo - 1))
-			fields[[length(fields) + 1]] <- list(name=paste("eg", i, sep=""), title=paste(100 * i / equalGroupsNo, "th percentile", sep=""), type="number", format="sf:4")
+			fields[[length(fields) + 1]] <- list(name=paste("eg", i, sep=""), title=paste(as.integer(100 * i / equalGroupsNo), "th percentile", sep=""), type="number", format="sf:4")
 	}
 	
-	if (percentileValues[["percentiles"]]) { 
+	if (options$statisticsPercentileValuesPercentiles) { 
 	
 		for (i in percentilesPercentiles) 
 			fields[[length(fields) + 1]] <- list(name=paste("pc", i, sep=""), title=paste(i, "th percentile", sep=""), type="number", format="sf:4")
@@ -285,7 +520,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 
 
-		if (central.tendency[["mean"]]) {
+		if (options$statisticsCentralTendencyMean) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -301,7 +536,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (central.tendency[["median"]]) {
+		if (options$statisticsCentralTendencyMedian) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -317,7 +552,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (central.tendency[["mode"]]) {
+		if (options$statisticsCentralTendencyMode) {
 	
 			if (base::is.factor(na.omitted) == FALSE) {
 		
@@ -347,7 +582,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		}
 		
-		if (central.tendency[["sum"]]) {
+		if (options$statisticsCentralTendencySum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -363,7 +598,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["maximum"]]) {
+		if (options$statisticsDispersionMaximum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -379,7 +614,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["minimum"]]) {
+		if (options$statisticsDispersionMinimum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -395,7 +630,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["range"]]) {
+		if (options$statisticsDispersionRange) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -411,7 +646,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["standardDeviation"]]) {
+		if (options$statisticsDispersionStandardDeviation) {
 		
 			if (base::is.factor(na.omitted) == FALSE){
 			
@@ -427,7 +662,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["standardErrorMean"]]) {
+		if (options$statisticsDispersionStandardErrorMean) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -443,7 +678,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (dispersion[["variance"]]) {
+		if (options$statisticsDispersionVariance) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -459,7 +694,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (distribution[["kurtosis"]]) {
+		if (options$statisticsDistributionKurtosis) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -481,7 +716,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (distribution[["skewness"]]) {
+		if (options$statisticsDistributionSkewness) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -504,7 +739,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (percentileValues[["quartiles"]]) {
+		if (options$statisticsPercentileValuesQuartiles) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -530,7 +765,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 		
-		if (percentileValues[["equalGroups"]]) {
+		if (options$statisticsPercentileValuesEqualGroups) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -553,7 +788,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		}
 			
-		if (percentileValues[["percentiles"]]) {
+		if (options$statisticsPercentileValuesPercentiles) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -587,7 +822,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	#### FREQUENCIES TABLES
 
-	if (options$main$displayFrequencyTables) {
+	if (options$mainDisplayFrequencyTables) {
 	
 		frequency.tables <- list()
 		
@@ -673,11 +908,10 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	}
 
     ####  PLOTS
+	frequency.plots <- list()
 	
-	if (options$plots == TRUE) {
+	if (options$plots) {
 		
-		frequency.plots <- list()
-			
 		i <- 1
 	
 		for (variable in variables) {
@@ -700,13 +934,22 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 			frequency.plots[[i]] <- plot
 			i <- i + 1
-		}
+		}		
+	}
+		
+	if (options$displayCorrelationPlot) {
+		
+		frequency.plots[[length(frequency.plots) + 1]] <- .matrixPlot(dataset, perform="init", options)[[1]] 
+		
+	}
 			
-		results[["plots"]] <- frequency.plots
+	results[["plots"]] <- frequency.plots
 	
 	
-		if (perform=="run") {
-				
+	if (perform=="run") {
+			
+		if (options$plots) {
+		
 			i <- 1
 	
 			for (variable in variables) {
@@ -750,6 +993,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					
 						plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
 						plot[["status"]] <- "complete"
+						
 					} else {
 					
 						image <- .beginSaveImage(options$chartWidth, options$chartHeight)
@@ -766,15 +1010,24 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					
 					frequency.plots[[i]] <- plot
 			
-				}				
+				}
 						
 				results[["plots"]] <- frequency.plots	
 
 				i <- i + 1
 			}
 		}
+			
+		if (options$displayCorrelationPlot) {
 		
-	}
+			frequency.plots[[length(frequency.plots)]] <- .matrixPlot(dataset, perform="run", options)[[1]] 
+		
+		}
+			
+		results[["plots"]] <- frequency.plots
+			
+	}	
+	
 	
 	if (perform == "init") {
 	
