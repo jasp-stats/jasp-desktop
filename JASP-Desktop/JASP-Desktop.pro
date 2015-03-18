@@ -437,6 +437,7 @@ macx {
 linux {
 
         HELP_PATH_DEST = $${OUT_PWD}/../Help/
+        LIBRARY_PATH_DEST = $${OUT_PWD}/../Library
 
         copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
         copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;

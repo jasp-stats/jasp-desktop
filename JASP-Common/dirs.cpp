@@ -216,8 +216,14 @@ string Dirs::exeDir()
 	if (ret >= sizeof(buf))
 		throw Exception("Executable directory could not be retrieved: insufficient buffer size");
 
-	/* Ensure proper NUL termination */
-	buf[ret] = 0;
+    for (int i = ret; i > 0; i--)
+    {
+        if (buf[i] == '/')
+        {
+            buf[i] = '\0'; // add null terminator
+            break;
+        }
+    }
 
 	return string(buf);
 
