@@ -198,8 +198,8 @@ string Dirs::exeDir()
 	}
 #else
 
-	char buf[65];
-	char linkname[64]; /* /proc/<pid>/exe */
+    char buf[512];
+    char linkname[512]; /* /proc/<pid>/exe */
 	pid_t pid;
 	int ret;
 
