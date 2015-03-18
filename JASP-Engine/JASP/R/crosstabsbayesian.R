@@ -753,7 +753,7 @@
 }
 
 .plotPosterior.crosstabs <- function(samples, CI, medianSamples, BF, oneSided= FALSE, iterations= 10000, lwd= 2, cexPoints= 1.5,
- cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= FALSE, dontPlotData=FALSE, selectedCI= options$oddsRatioCredibleIntervalInterval) {
+ cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= FALSE, dontPlotData=FALSE, selectedCI= options$oddsRatioCredibleIntervalInterval, options) {
 	
 	if (addInformation) {
 	
@@ -778,8 +778,22 @@
 	}
 	
 	
-	BF10 <- BF
-	BF01 <- 1 / BF10
+	if (options$bayesFactorType == "BF10") {
+	
+		BF10 <- BF
+		BF01 <- 1 / BF10
+	
+	} else if (options$bayesFactorType == "BF01") {
+	
+		BF01 <- BF
+		BF10 <- 1 / BF01
+		
+	} else if (options$bayesFactorType == "LogBF10") {
+	
+		BF10 <- exp(BF)
+		BF01 <- 1 / BF10
+		
+	}
 	
 	# fit denisty estimator
 	fit.posterior <-  logspline::logspline(samples)
@@ -1165,7 +1179,7 @@
 							}
 								
 							.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval,
-									addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided= oneSided)
+									addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided= oneSided, options=options)
 						
 							oddsratio.plot[["data"]] <- .endSaveImage(image)
 						}
