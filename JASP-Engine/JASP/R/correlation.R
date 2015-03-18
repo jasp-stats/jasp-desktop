@@ -215,10 +215,16 @@
 	
 	if(hypothesis != "correlated" & length(tests) == 1 & any(tests == "pearson")){
 		
-		result1 <- list(cor.test(xVar, yVar, method=tests, alternative="less"),cor.test(xVar, yVar, method=tests, alternative="greater"))
-		p.value  <- min(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value))
+		if (hypothesis == "correlatedPositively") {
 		
-		ctest <- result1[[which.min(c(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value)))]]
+			ctest <- cor.test(xVar, yVar, method=tests, alternative="greater")
+			# p.value  <- min(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value))
+		} else if (hypothesis == "correlatedNegatively") {
+		
+			ctest <- cor.test(xVar, yVar, method=tests, alternative="less")
+		}
+		
+		# ctest <- result1[[which.min(c(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value)))]]
 	}
 	
 	
@@ -239,6 +245,8 @@
 #}
 
 Correlation <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+
+print(options)
 
 	if (is.null(dataset))
 	{
