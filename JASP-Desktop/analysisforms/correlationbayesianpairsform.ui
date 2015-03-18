@@ -68,11 +68,23 @@
    <item row="1" column="0" colspan="2">
     <widget class="QWidget" name="options" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item row="0" column="0">
        <widget class="QWidget" name="widget_2" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="2" column="0">
-          <widget class="GroupBox" name="groupBox">
+          <widget class="GroupBox" name="groupPrior">
            <property name="title">
             <string>Prior</string>
            </property>
