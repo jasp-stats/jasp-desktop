@@ -246,7 +246,6 @@
 
 Correlation <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
-print(options)
 
 	if (is.null(dataset))
 	{
