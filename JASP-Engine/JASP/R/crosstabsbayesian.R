@@ -749,7 +749,7 @@
 		row[["value[oddsRatio]"]] <- "."
 	}
 		
-	list(list(row), samples=samples, CI=CI, medianSamples=medianSamples, BF= BF)
+	list(list(row), samples=samples, CI=CI, medianSamples=medianSamples, BF = BF)
 }
 
 .plotPosterior.crosstabs <- function(samples, CI, medianSamples, BF, oneSided= FALSE, iterations= 10000, lwd= 2, cexPoints= 1.5,
@@ -778,6 +778,7 @@
 	}
 	
 	
+<<<<<<< Updated upstream
 	if (options$bayesFactorType == "BF10") {
 	
 		BF10 <- BF
@@ -794,6 +795,11 @@
 		BF01 <- 1 / BF10
 		
 	}
+=======
+	BF10 <- BF
+	BF01 <- 1 / BF10	
+	
+>>>>>>> Stashed changes
 	
 	# fit denisty estimator
 	fit.posterior <-  logspline::logspline(samples)
@@ -854,7 +860,7 @@
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
 	}
 	
-	mtext("log(Odds ratio)", side = 1, cex = cexXlab, line= 2.5)	
+	mtext("Log(Odds ratio)", side = 1, cex = cexXlab, line= 2.5)	
 	
 	
 	# credible interval
@@ -947,6 +953,7 @@
 		}
 		
 		yy <- grconvertY(0.788 + offsetTopPart, "ndc", "user")
+		
 		
 		# make sure that colored area is centered		
 		radius <- 0.06 * diff(range(xticks))
@@ -1125,13 +1132,13 @@
 				# 
 				# 	plot(1, type="n", ylim=ylim0, xlim=range(xticks),
 				# 		axes=F, 
-				# 		main =paste(names(group),"=", group), xlab="log(Odds ratio)", ylab="Posterior Density")
+				# 		main =paste(names(group),"=", group), xlab="Log(Odds ratio)", ylab="Posterior Density")
 				# 
 				# } else {
                 # 
 				# 	plot(1, type="n", ylim=ylim0, xlim=range(xticks),
 				# 		axes=F, 
-				# 		xlab="log(Odds ratio)", ylab="Posterior Density")
+				# 		xlab="Log(Odds ratio)", ylab="Posterior Density")
 				# }
 				# 		
 				# plot(function(x)logspline::dlogspline(x, fit), xlim = range(xticks), lwd=2, add=TRUE)
