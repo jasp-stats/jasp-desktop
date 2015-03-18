@@ -120,12 +120,6 @@ void AncovaForm::bindTo(Options *options, DataSet *dataSet)
 
 	factorsChanged();
 	termsChanged();
-
-	Terms plotVariablesAssigned;
-	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
-	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
-	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
-	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
 }
 
 void AncovaForm::factorsChanging()
@@ -143,6 +137,12 @@ void AncovaForm::factorsChanged()
 
 	_contrastsModel->setVariables(factorsAvailable);
     _plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+
+	Terms plotVariablesAssigned;
+	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
+	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
+	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
+	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
 
     ui->postHocTestsVariables->setVariables(factorsAvailable);
 
