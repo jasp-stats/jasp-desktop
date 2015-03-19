@@ -1416,7 +1416,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			plot[["status"]] <- "waiting"
 			
 			image <- .beginSaveImage(530, 400)
-			.plotSequentialBF.ttest(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
+			.plotSequentialBF.correlation(oneSided= oneSided, BFH1H0= BFH1H0, dontPlotData= TRUE)
 			plot[["data"]] <- .endSaveImage(image)
 						
 			plots.correlation[[length(plots.correlation)+1]] <- plot
