@@ -466,9 +466,12 @@
 			
 			if (is.na(BF10[i]))
 				stop("One or more Bayes factors cannot be computed")
+			
+			if (is.infinite(BF10[i]))
+				stop("One or more Bayes factors are infinity")
 		}
 	}
-	
+
 	
 	if (BFH1H0) {
 	
