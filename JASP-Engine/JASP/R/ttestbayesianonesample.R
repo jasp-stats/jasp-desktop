@@ -3172,7 +3172,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			
 			variableData <- variableData - options$testValue
 				
-			numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, any(options$plotSequentialAnalysis, options$plotSequentialAnalysisRobustness))
+			numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis)
 			z <- numberPlotsPerVariable * (which(options$variables == variable) -1) + 1
 			
 			
