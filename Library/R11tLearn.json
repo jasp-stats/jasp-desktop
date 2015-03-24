@@ -1,0 +1,19 @@
+[
+   {
+      "name" : "subjectId",
+      "type" : "Variable"
+   },
+   {
+      "name" : "trialNumber",
+      "type" : "Variable"
+   },
+   {
+      "name" : "rewards",
+      "type" : "Variable"
+   },
+   {
+      "name" : "losses",
+      "type" : "Variable"
+   }
+]
+

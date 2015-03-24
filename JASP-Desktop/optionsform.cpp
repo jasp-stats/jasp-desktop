@@ -7,11 +7,24 @@ OptionsForm::OptionsForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	QVariant sem = _settings.value("plugins/sem", false);
-	if (sem.canConvert(QVariant::Bool))
-		ui->plugins_sem->setChecked(sem.toBool());
+	QVariant v;
+
+	v = _settings.value("plugins/sem", false);
+	if (v.canConvert(QVariant::Bool))
+		ui->plugins_sem->setChecked(v.toBool());
+
+	v = _settings.value("toolboxes/r11tLearn", false);
+	if (v.canConvert(QVariant::Bool))
+		ui->toolboxes_r11tLearn->setChecked(v.toBool());
 
 	connect(ui->plugins_sem, SIGNAL(clicked(bool)), this, SLOT(optionChangedHandler(bool)));
+	connect(ui->toolboxes_r11tLearn, SIGNAL(clicked(bool)), this, SLOT(optionChangedHandler(bool)));
+
+#ifdef QT_DEBUG
+	ui->toolboxes_r11tLearn->setStyleSheet("QWidget { background-color: pink ; }");
+#else
+	ui->toolboxes_r11tLearn->hide();
+#endif
 }
 
 OptionsForm::~OptionsForm()

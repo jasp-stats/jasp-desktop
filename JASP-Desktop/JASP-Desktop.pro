@@ -129,7 +129,9 @@ SOURCES += main.cpp\
     qutils.cpp \
     activitylog.cpp \
     lrnamreply.cpp \
-    lrnam.cpp
+    lrnam.cpp \
+    analysisforms/r11tlearnform.cpp \
+    ribbons/ribbonr11tlearn.cpp
 
 HEADERS  += \
     datasettablemodel.h \
@@ -227,7 +229,9 @@ HEADERS  += \
     activitylog.h \
     lrnamreply.h \
     lrnam.h \
-    widgets/groupbox.h
+    widgets/groupbox.h \
+    analysisforms/r11tlearnform.h \
+    ribbons/ribbonr11tlearn.h
 
 FORMS    += \
     backstageform.ui \
@@ -265,7 +269,9 @@ FORMS    += \
     analysisforms/correlationbayesianform.ui \
 	analysisforms/correlationbayesianpairsform.ui \
     analysisforms/crosstabsbayesianform.ui \
-    analysisforms/regressionlinearbayesianform.ui
+    analysisforms/regressionlinearbayesianform.ui \
+    analysisforms/r11tlearnform.ui \
+    ribbons/ribbonr11tlearn.ui
 
 
 RESOURCES += \

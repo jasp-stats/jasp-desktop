@@ -33,6 +33,7 @@
 #include "analysisforms/crosstabsbayesianform.h"
 
 #include "analysisforms/semsimpleform.h"
+#include "analysisforms/r11tlearnform.h"
 
 #include <QDebug>
 #include <QWebFrame>
@@ -89,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->ribbonAnalysis->setEnabled(false);
 	ui->ribbonSEM->setEnabled(false);
+	ui->ribbonR11tLearn->setEnabled(false);
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -118,6 +120,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
 	connect(ui->backStage, SIGNAL(closeDataSetSelected()), this, SLOT(dataSetCloseRequested()));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
@@ -299,6 +302,8 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new AncovaBayesianForm(contentArea);
 	else if (name == "AnovaRepeatedMeasuresBayesian")
 		form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
+	else if (name == "R11tLearn")
+		form = new R11tLearnForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -486,20 +491,22 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 
 	ui->ribbonAnalysis->setEnabled(enable);
 	ui->ribbonSEM->setEnabled(enable);
+	ui->ribbonR11tLearn->setEnabled(enable);
 }
 
 void MainWindow::updateUIFromOptions()
 {
 	QVariant sem = _settings.value("plugins/sem", false);
 	if (sem.canConvert(QVariant::Bool) && sem.toBool())
-	{
 		ui->tabBar->addTab("SEM");
-	}
 	else
-	{
-		if (ui->tabBar->count() >= 4)
-			ui->tabBar->removeTab(2);
-	}
+		ui->tabBar->removeTab("SEM");
+
+	QVariant rl = _settings.value("toolboxes/r11tLearn", false);
+	if (rl.canConvert(QVariant::Bool) && rl.toBool())
+		ui->tabBar->addTab("R11t Learn");
+	else
+		ui->tabBar->removeTab("R11t Learn");
 
 }
 
