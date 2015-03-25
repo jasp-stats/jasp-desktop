@@ -44,6 +44,7 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QStringBuilder>
+#include <QWebHistory>
 
 #include "analysisloader.h"
 #include "qutils.h"
@@ -103,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	// the LRNAM adds mime types to local resources; important for SVGs
 	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
-	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(assignPPIFromWebView(bool)));
+	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(resultsPageLoaded(bool)));
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
@@ -510,8 +511,11 @@ void MainWindow::updateUIFromOptions()
 
 }
 
-void MainWindow::assignPPIFromWebView(bool success)
+void MainWindow::resultsPageLoaded(bool success)
 {
+	// clear history, to prevent backspace from going 'back'
+	ui->webViewResults->history()->clear();
+
 	if (success)
 	{
 		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");

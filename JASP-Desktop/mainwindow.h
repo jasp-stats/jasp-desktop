@@ -102,7 +102,7 @@ private slots:
 	void updateMenuEnabledDisabledStatus();
 	void updateUIFromOptions();
 
-	void assignPPIFromWebView(bool success);
+	void resultsPageLoaded(bool success);
 
 	void fatalError();
 
