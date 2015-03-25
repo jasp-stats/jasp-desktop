@@ -23,9 +23,11 @@ private:
 	Ui::R11tLearnForm *ui;
 
 	TableModelVariablesAssigned *_subjectIdListModel;
+	TableModelVariablesAssigned *_groupListModel;
 	TableModelVariablesAssigned *_trialNumberListModel;
-	TableModelVariablesAssigned *_rewardsListModel;
-	TableModelVariablesAssigned *_lossesListModel;
+	TableModelVariablesAssigned *_deckListModel;
+	TableModelVariablesAssigned *_rewardListModel;
+	TableModelVariablesAssigned *_lossListModel;
 
 };
 

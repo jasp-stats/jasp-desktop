@@ -4,15 +4,23 @@
       "type" : "Variable"
    },
    {
+      "name" : "group",
+      "type" : "Variable"
+   },
+   {
       "name" : "trialNumber",
       "type" : "Variable"
    },
    {
-      "name" : "rewards",
+      "name" : "deck",
       "type" : "Variable"
    },
    {
-      "name" : "losses",
+      "name" : "reward",
+      "type" : "Variable"
+   },
+   {
+      "name" : "loss",
       "type" : "Variable"
    }
 ]
