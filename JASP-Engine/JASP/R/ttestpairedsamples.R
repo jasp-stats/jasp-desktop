@@ -300,8 +300,26 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				c2 <- dataset[[ .v(pair[[2]]) ]]
                 
 				data <- na.omit(c1 - c2)
+				
+				row.footnotes <- NULL
+                error <- FALSE
+                
+                if(length(data) < 3) {
+                
+                    foot.index <- .addFootnote(footnotes, "Too few datapoints (N < 3) to compute statistic reliably")
+					row.footnotes <- list(W=list(foot.index), p=list(foot.index))
+					error <- TRUE
+					
+                } else if(length(data) > 5000) {
+                
+                    foot.index <- .addFootnote(footnotes, "Too many datapoints (N > 5000) to compute statistic reliably")
+					row.footnotes <- list(W=list(foot.index), p=list(foot.index))
+					error <- TRUE
+					
+                }
+                
 
-				if (class(data) != "factor") {
+				if (!error) {
                     
                     r <- stats::shapiro.test(data)
                     
@@ -324,7 +342,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 				        newGroup <- FALSE
 			        }
 					
-					result <- list(v1=pair[[1]], sep="-", v2=pair[[2]], "W" = "", "p" = "", ".isNewGroup" = newGroup)
+					result <- list(v1=pair[[1]], sep="-", v2=pair[[2]], "W" = "NaN", "p" = "NaN", ".isNewGroup" = newGroup, .footnotes=row.footnotes)
 					
 				}
 			

@@ -88,7 +88,24 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
                 
                 data <- na.omit(dataset[[.v(variable)]][dataset[[.v(factor)]] == level])
                 
-                if (class(data) != "factor") {
+                row.footnotes <- NULL
+                error <- FALSE
+                
+                if(length(data) < 3) {
+                
+                    foot.index <- .addFootnote(footnotes, "Too few datapoints (N < 3) to compute statistic reliably")
+					row.footnotes <- list(W=list(foot.index), p=list(foot.index))
+					error <- TRUE
+					
+                } else if(length(data) > 5000) {
+                
+                    foot.index <- .addFootnote(footnotes, "Too many datapoints (N > 5000) to compute statistic reliably")
+					row.footnotes <- list(W=list(foot.index), p=list(foot.index))
+					error <- TRUE
+					
+                }
+                
+                if (!error) {
                 
                     r <- stats::shapiro.test(data)
                 
@@ -111,7 +128,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
                         newGroup <- FALSE
                     }
                 
-                    result <- list("dep"=variable, "lev"=level, "W" = "", "p" = "", ".isNewGroup" = newGroup)
+                    result <- list("dep"=variable, "lev"=level, "W" = "NaN", "p" = "NaN", ".isNewGroup" = newGroup, .footnotes=row.footnotes)
                 
                 }
         
