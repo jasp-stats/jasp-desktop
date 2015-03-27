@@ -31,8 +31,10 @@ run <- function(name, options.as.json.string, perform="run") {
 	
 		if ("state" %in% names(results)) {
 
-			state <- results$state		
-			base::save(state, file=.requestStateFileNameNative(), compress=FALSE)
+			state <- results$state
+			file <- .requestStateFileNameNative()
+			base::Encoding(file) <- "UTF-8"
+			base::save(state, file=file, compress=FALSE)
 		}
 		
 		if ("results" %in% names(results)) {
@@ -233,7 +235,7 @@ run <- function(name, options.as.json.string, perform="run") {
 	if (base::exists(".requestStateFileNameNative")) {
 
 		file <- .requestStateFileNameNative()
-
+		base::Encoding(file) <- "UTF-8"
 		base::save(state, file=file, compress=FALSE)
 	}
 	
@@ -247,7 +249,7 @@ run <- function(name, options.as.json.string, perform="run") {
 	if (base::exists(".requestStateFileNameNative")) {
 
 		file <- .requestStateFileNameNative()
-		
+		base::Encoding(file) <- "UTF-8"
 		base::try(base::load(file))
 	}
 	

@@ -173,7 +173,7 @@ string tempfiles_createSpecific(const string &name, int id)
 	string dir = ss.str();
 	filesystem::path path = Utils::osPath(dir);
 
-	if (filesystem::exists(path, error) == false)
+	if (filesystem::exists(path, error) == false || error)
 		filesystem::create_directories(path, error);
 
 	ss << "/";
