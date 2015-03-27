@@ -15,11 +15,12 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string name, Options *options)
+Analysis::Analysis(int id, string name, Options *options, bool autorun)
 {
 	_id = id;
 	_name = name;
 	_options = options;
+	_autorun = autorun;
 
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
@@ -81,6 +82,11 @@ void Analysis::run()
 		_status = Complete;
 		resultsChanged(this);
 	}
+}
+
+void Analysis::abort()
+{
+	_status = Aborted;
 }
 
 void Analysis::setResults(Json::Value results)
@@ -151,6 +157,11 @@ int Analysis::id() const
 	return _id;
 }
 
+bool Analysis::isAutorun() const
+{
+	return _autorun;
+}
+
 Options *Analysis::options() const
 {
 	return _options;
@@ -189,30 +200,3 @@ int Analysis::callback(Json::Value results)
 	}
 }
 
-std::vector<string> Analysis::list(string one, string two, string three, string four, string five, string six, string seven, string eight, string nine, string ten)
-{
-	vector<string> result;
-
-	result.push_back(one);
-
-	if (two != "")
-		result.push_back(two);
-	if (three != "")
-		result.push_back(three);
-	if (four != "")
-		result.push_back(four);
-	if (five != "")
-		result.push_back(five);
-	if (six != "")
-		result.push_back(six);
-	if (seven != "")
-		result.push_back(seven);
-	if (eight != "")
-		result.push_back(eight);
-	if (nine != "")
-		result.push_back(nine);
-	if (ten != "")
-		result.push_back(ten);
-
-	return result;
-}

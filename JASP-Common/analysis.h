@@ -17,7 +17,7 @@ class Analysis
 {
 
 public:
-	Analysis(int id, std::string name, Options *options);
+	Analysis(int id, std::string name, Options *options, bool isAutorun = true);
 	virtual ~Analysis();
 
 	Options *options() const;
@@ -31,15 +31,17 @@ public:
 
 	const std::string &name() const;
 	int id() const;
+	bool isAutorun() const;
 
 	virtual void init();
 	virtual void run();
+	virtual void abort();
 
 	void setRInterface(RInterface *r);
 	void setDataSet(DataSet *dataSet);
 	void setOptions(Options* options);
 
-	enum Status { Empty, Initing, Inited, Running, Complete, Aborted };
+	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborted };
 
 	Status status();
 	void setStatus(Status status);
@@ -58,21 +60,10 @@ protected:
 
     Options *createOptions(std::string name);
 
-	static std::vector<std::string> list(
-			std::string one,
-			std::string two   = "",
-			std::string three = "",
-			std::string four  = "",
-			std::string five  = "",
-			std::string six   = "",
-			std::string seven = "",
-			std::string eight = "",
-			std::string nine  = "",
-			std::string ten   = "");
-
 private:
 	int _id;
 	std::string _name;
+	bool _autorun;
 
 	void optionsChangedHandler(Option *option);
 

@@ -54,6 +54,7 @@ private:
 	QWidget *_buttonPanel;
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
+	QPushButton *_runButton;
 	QPushButton *_menuButton;
 
 	OptionsForm *_optionsForm;
@@ -97,6 +98,7 @@ private slots:
 	void hideTableView();
 
 	void analysisOKed();
+	void analysisRunned();
 	void analysisRemoved();
 
 	void updateMenuEnabledDisabledStatus();

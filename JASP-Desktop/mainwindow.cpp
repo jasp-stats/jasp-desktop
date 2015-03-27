@@ -149,6 +149,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_okButton = new QPushButton(QString("OK"), _buttonPanel);
 	_okButton->setDefault(true);
+	_runButton = new QPushButton(QString("Run"), _buttonPanel);
 	_menuButton = new QPushButton(QString("..."), _buttonPanel);
 
 	QMenu *menu = new QMenu(_menuButton);
@@ -156,6 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_menuButton->setMenu(menu);
 
 	_buttonPanelLayout->addWidget(_okButton);
+	_buttonPanelLayout->addWidget(_runButton);
 	_buttonPanelLayout->addWidget(_menuButton);
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
@@ -229,6 +231,20 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 		}
 
 		showInstructions = false;
+	}
+
+	if (analysis->status() == Analysis::Running || (analysis->status() == Analysis::Inited && analysis->isAutorun()))
+	{
+		_runButton->setEnabled(true);
+		_runButton->setText("Stop");
+	}
+	else
+	{
+		_runButton->setText("Run");
+		if (analysis->status() == Analysis::InitedAndWaiting)
+			_runButton->setEnabled(true);
+		else
+			_runButton->setEnabled(false);
 	}
 
 	QString results = tq(analysis->asJSON().toStyledString());
@@ -336,6 +352,7 @@ void MainWindow::showForm(Analysis *analysis)
 		if (ui->panelMid->isVisible() == false)
 			showOptionsPanel();
 
+		//_runButton->setVisible( ! _currentAnalysis->isAutorun());
 		_buttonPanel->raise();
 		_buttonPanel->show();
 
@@ -781,6 +798,17 @@ void MainWindow::analysisOKed()
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.unselect()");
 
 	hideOptionsPanel();
+}
+
+void MainWindow::analysisRunned()
+{
+	if (_currentAnalysis == NULL)
+		return;
+
+	if (_currentAnalysis->status() == Analysis::Running)
+		_currentAnalysis->abort();
+	//else if (_currentAnalysis->status() == Analysis::Inited)
+	//	_currentAnalysis->
 }
 
 void MainWindow::analysisRemoved()

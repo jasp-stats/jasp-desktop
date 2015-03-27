@@ -1,27 +1,30 @@
-[
-   {
-      "name" : "subjectId",
-      "type" : "Variable"
-   },
-   {
-      "name" : "group",
-      "type" : "Variable"
-   },
-   {
-      "name" : "trialNumber",
-      "type" : "Variable"
-   },
-   {
-      "name" : "deck",
-      "type" : "Variable"
-   },
-   {
-      "name" : "reward",
-      "type" : "Variable"
-   },
-   {
-      "name" : "loss",
-      "type" : "Variable"
-   }
-]
-
+{
+	"name" : "R11tLearn",
+	"autorun" : false,
+	"options" : [
+	   {
+		  "name" : "subjectId",
+		  "type" : "Variable"
+	   },
+	   {
+		  "name" : "group",
+		  "type" : "Variable"
+	   },
+	   {
+		  "name" : "trialNumber",
+		  "type" : "Variable"
+	   },
+	   {
+		  "name" : "deck",
+		  "type" : "Variable"
+	   },
+	   {
+		  "name" : "reward",
+		  "type" : "Variable"
+	   },
+	   {
+		  "name" : "loss",
+		  "type" : "Variable"
+	   }
+	]
+}
