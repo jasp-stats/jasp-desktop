@@ -164,7 +164,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
 
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
-
+	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
 
@@ -352,7 +352,8 @@ void MainWindow::showForm(Analysis *analysis)
 		if (ui->panelMid->isVisible() == false)
 			showOptionsPanel();
 
-		//_runButton->setVisible( ! _currentAnalysis->isAutorun());
+		_runButton->setVisible(_currentAnalysis->isAutorun() == false);
+		_runButton->setEnabled(_currentAnalysis->status() == Analysis::InitedAndWaiting);
 		_buttonPanel->raise();
 		_buttonPanel->show();
 
@@ -807,8 +808,8 @@ void MainWindow::analysisRunned()
 
 	if (_currentAnalysis->status() == Analysis::Running)
 		_currentAnalysis->abort();
-	//else if (_currentAnalysis->status() == Analysis::Inited)
-	//	_currentAnalysis->
+	else if (_currentAnalysis->status() == Analysis::InitedAndWaiting)
+		_currentAnalysis->scheduleRun();
 }
 
 void MainWindow::analysisRemoved()

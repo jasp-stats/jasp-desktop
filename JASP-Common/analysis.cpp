@@ -89,6 +89,15 @@ void Analysis::abort()
 	_status = Aborted;
 }
 
+void Analysis::scheduleRun()
+{
+	if (_autorun)
+		return;
+
+	setStatus(Inited);
+	optionsChanged(this);
+}
+
 void Analysis::setResults(Json::Value results)
 {
 	_results = results;

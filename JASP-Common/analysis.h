@@ -36,6 +36,7 @@ public:
 	virtual void init();
 	virtual void run();
 	virtual void abort();
+	void scheduleRun();
 
 	void setRInterface(RInterface *r);
 	void setDataSet(DataSet *dataSet);
