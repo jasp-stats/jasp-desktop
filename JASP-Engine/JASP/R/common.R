@@ -40,6 +40,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		if ("results" %in% names(results)) {
 		
 			results$results <- .addCitationToResults(results$results)
+			results$state   <- NULL # remove the state object
 			
 		} else {
 		
