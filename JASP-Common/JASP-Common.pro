@@ -8,8 +8,8 @@ CONFIG += staticlib
 
 windows:CONFIG += c++11
 
-macx:INCLUDEPATH += ../../boost_1_54_0
-windows:INCLUDEPATH += ../../boost_1_54_0
+macx:INCLUDEPATH += ../../boost_1_54_0 ../../nowide
+windows:INCLUDEPATH += ../../boost_1_54_0 ../../nowide
 
 windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
 

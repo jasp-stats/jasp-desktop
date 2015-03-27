@@ -500,6 +500,8 @@ callback <- function(results=NULL) {
 	
 	multip <- .ppi / 96
 	filename <- .requestTempFileNameNative("png")
+	base::Encoding(filename) <- "UTF-8"
+	
 	grDevices::png(filename=filename, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
 	
 	filename

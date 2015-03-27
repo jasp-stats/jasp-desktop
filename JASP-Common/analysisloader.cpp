@@ -1,11 +1,12 @@
 #include "analysisloader.h"
 
+#include <string>
+#include <boost/nowide/fstream.hpp>
+
 #include "dirs.h"
 
-#include <fstream>
-#include <string>
-
 using namespace std;
+using namespace boost;
 
 Analysis *AnalysisLoader::load(int id, string analysisName)
 {
@@ -13,7 +14,7 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 
 	string path = Dirs::libraryDir() + "/" + analysisName + ".json";
 
-	ifstream myfile(path.c_str(), fstream::in);
+	nowide::ifstream myfile(path.c_str(), fstream::in);
 	if (myfile.is_open())
 	{
 		Json::Value descriptiveJson;

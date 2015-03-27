@@ -1,14 +1,15 @@
 
 #include "csv.h"
 
-#include <sys/stat.h>
 #include <iostream>
 #include <cstring>
 #include <stdexcept>
 
+#include "utils.h"
+
 using namespace std;
 
-CSV::CSV(string path)
+CSV::CSV(const string &path)
 {
     _encoding = UTF8;
     _delim = ',';
@@ -22,13 +23,10 @@ CSV::CSV(string path)
 
 void CSV::open()
 {
-	struct stat fileInfo;
-	int error = stat(_path.c_str(), &fileInfo);
+	_fileSize = Utils::getFileSize(_path);
 
-	if (error != 0)
+	if (_fileSize < 0)
 		throw runtime_error("Could not access file");
-
-	_fileSize = fileInfo.st_size;
 
 	if (_fileSize == 0)
 	{
@@ -42,6 +40,7 @@ void CSV::open()
 	_utf8BufferEndPos = 0;
 
 	_stream.open(_path.c_str(), ios::in);
+
 	if ( ! _stream.is_open())
 	{
 		_status = Empty;

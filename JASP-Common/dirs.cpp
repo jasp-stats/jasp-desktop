@@ -24,6 +24,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/system/error_code.hpp>
+#include <boost/nowide/convert.hpp>
 
 #include "processinfo.h"
 #include "utils.h"
@@ -40,6 +41,7 @@ string Dirs::appDataDir()
 		return p;
 
 	string dir;
+	filesystem::path pa;
 
 #ifdef __WIN32__
 	TCHAR buffer[MAX_PATH];
@@ -53,21 +55,25 @@ string Dirs::appDataDir()
 		throw Exception(ss.str());
 	}
 
-	dir = Utils::ws2s(buffer);
+	dir = nowide::narrow(buffer);
 	dir += "/JASP/" + string(APP_VERSION);
+
+	pa = nowide::widen(dir);
 
 #else
 
 	dir = string(getpwuid(getuid())->pw_dir);
 	dir += "/.JASP/" + string(APP_VERSION);
 
+	pa = dir;
+
 #endif
 
-	if ( ! filesystem::exists(dir))
+	if ( ! filesystem::exists(pa))
 	{
 		system::error_code ec;
 
-		filesystem::create_directories(dir, ec);
+		filesystem::create_directories(pa, ec);
 
 		if (ec)
 		{
@@ -90,26 +96,31 @@ string Dirs::tempDir()
 		return p;
 
 	string dir;
+	filesystem::path pa;
 
 #ifdef __WIN32__
 	TCHAR buffer[MAX_PATH];
 	if ( ! SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
 		throw Exception("App Data directory could not be retrieved");
 
-	dir = Utils::ws2s(buffer);
+	dir = nowide::narrow(buffer);
 	dir += "/JASP/temp";
+
+	pa = nowide::widen(dir);
 
 #else
 
 	dir = string(getpwuid(getuid())->pw_dir);
 	dir += "/.JASP/temp";
 
+	pa = dir;
+
 #endif
 
-	if ( ! filesystem::exists(dir))
+	if ( ! filesystem::exists(pa))
 	{
 		system::error_code ec;
-		filesystem::create_directories(dir, ec);
+		filesystem::create_directories(pa, ec);
 
 		if (ec)
 		{
@@ -143,10 +154,9 @@ string Dirs::exeDir()
 		throw Exception(ss.str());
 	}
 
-	wstring s(path);
-	string r = Utils::ws2s(path);
+	string r = nowide::narrow(path);
 
-	char *pathbuf = new char[MAX_PATH];
+	char pathbuf[MAX_PATH];
 	r.copy(pathbuf, MAX_PATH);
 
 	int last = 0;
@@ -161,8 +171,6 @@ string Dirs::exeDir()
 	}
 
 	r = string(pathbuf, last);
-
-	delete[] pathbuf;
 
 	p = r;
 

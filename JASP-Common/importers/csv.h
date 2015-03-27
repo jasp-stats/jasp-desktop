@@ -1,16 +1,17 @@
 #ifndef CSV_H
 #define CSV_H
 
-#include <fstream>
 #include <vector>
 #include <map>
 
 #include <stdint.h>
 
+#include <boost/nowide/fstream.hpp>
+
 class CSV
 {
 public:
-	CSV(std::string path);
+	CSV(const std::string &path);
 
 	void open();
 	bool readLine(std::vector<std::string> &items);
@@ -45,7 +46,7 @@ private:
 	int _rawBufferStartPos, _rawBufferEndPos;
 	int _utf8BufferStartPos, _utf8BufferEndPos;
 	std::string _path;
-	std::ifstream _stream;
+	boost::nowide::ifstream _stream;
 	bool _eof;
 
 	char _rawBuffer[4096];
