@@ -46,7 +46,16 @@ run <- function(name, options.as.json.string, perform="run") {
 			results <- .addCitationToResults(results)
 		}
 		
-		RJSONIO::toJSON(results, digits=12)
+		json <- try({ RJSONIO::toJSON(results, digits=12) })
+		
+		if (class(json) == "try-error") {
+		
+			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
+			
+		} else {
+		
+			return(json)
+		}
 	}
 
 }
