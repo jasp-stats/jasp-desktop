@@ -42,7 +42,7 @@ public:
 	void setDataSet(DataSet *dataSet);
 	void setOptions(Options* options);
 
-	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborted };
+	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted };
 
 	Status status();
 	void setStatus(Status status);

@@ -86,7 +86,8 @@ void Analysis::run()
 
 void Analysis::abort()
 {
-	_status = Aborted;
+	_status = Aborting;
+	optionsChanged(this);
 }
 
 void Analysis::scheduleRun()
