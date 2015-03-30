@@ -159,6 +159,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanelLayout->addWidget(_okButton);
 	_buttonPanelLayout->addWidget(_runButton);
 	_buttonPanelLayout->addWidget(_menuButton);
+	_buttonPanelLayout->addStretch();
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
 	_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
