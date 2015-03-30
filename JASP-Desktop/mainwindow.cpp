@@ -33,6 +33,7 @@
 #include "analysisforms/crosstabsbayesianform.h"
 
 #include "analysisforms/semsimpleform.h"
+#include "analysisforms/r11tlearnform.h"
 
 #include <QDebug>
 #include <QWebFrame>
@@ -43,6 +44,7 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QStringBuilder>
+#include <QWebHistory>
 
 #include "analysisloader.h"
 #include "qutils.h"
@@ -89,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->ribbonAnalysis->setEnabled(false);
 	ui->ribbonSEM->setEnabled(false);
+	ui->ribbonR11tLearn->setEnabled(false);
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -101,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	// the LRNAM adds mime types to local resources; important for SVGs
 	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
-	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(assignPPIFromWebView(bool)));
+	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(resultsPageLoaded(bool)));
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
@@ -118,6 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
 	connect(ui->backStage, SIGNAL(closeDataSetSelected()), this, SLOT(dataSetCloseRequested()));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
@@ -145,6 +149,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_okButton = new QPushButton(QString("OK"), _buttonPanel);
 	_okButton->setDefault(true);
+	_runButton = new QPushButton(QString("Run"), _buttonPanel);
 	_menuButton = new QPushButton(QString("..."), _buttonPanel);
 
 	QMenu *menu = new QMenu(_menuButton);
@@ -152,13 +157,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	_menuButton->setMenu(menu);
 
 	_buttonPanelLayout->addWidget(_okButton);
+	_buttonPanelLayout->addWidget(_runButton);
 	_buttonPanelLayout->addWidget(_menuButton);
+	_buttonPanelLayout->addStretch();
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
 	_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
 
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
-
+	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
 
@@ -225,6 +232,20 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 		}
 
 		showInstructions = false;
+	}
+
+	if (analysis->status() == Analysis::Running || (analysis->status() == Analysis::Inited && analysis->isAutorun()))
+	{
+		_runButton->setEnabled(true);
+		_runButton->setText("Stop");
+	}
+	else
+	{
+		_runButton->setText("Run");
+		if (analysis->status() == Analysis::InitedAndWaiting)
+			_runButton->setEnabled(true);
+		else
+			_runButton->setEnabled(false);
 	}
 
 	QString results = tq(analysis->asJSON().toStyledString());
@@ -299,6 +320,8 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new AncovaBayesianForm(contentArea);
 	else if (name == "AnovaRepeatedMeasuresBayesian")
 		form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
+	else if (name == "R11tLearn")
+		form = new R11tLearnForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -330,6 +353,8 @@ void MainWindow::showForm(Analysis *analysis)
 		if (ui->panelMid->isVisible() == false)
 			showOptionsPanel();
 
+		_runButton->setVisible(_currentAnalysis->isAutorun() == false);
+		_runButton->setEnabled(_currentAnalysis->status() == Analysis::InitedAndWaiting);
 		_buttonPanel->raise();
 		_buttonPanel->show();
 
@@ -486,25 +511,30 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 
 	ui->ribbonAnalysis->setEnabled(enable);
 	ui->ribbonSEM->setEnabled(enable);
+	ui->ribbonR11tLearn->setEnabled(enable);
 }
 
 void MainWindow::updateUIFromOptions()
 {
 	QVariant sem = _settings.value("plugins/sem", false);
 	if (sem.canConvert(QVariant::Bool) && sem.toBool())
-	{
 		ui->tabBar->addTab("SEM");
-	}
 	else
-	{
-		if (ui->tabBar->count() >= 4)
-			ui->tabBar->removeTab(2);
-	}
+		ui->tabBar->removeTab("SEM");
+
+	QVariant rl = _settings.value("toolboxes/r11tLearn", false);
+	if (rl.canConvert(QVariant::Bool) && rl.toBool())
+		ui->tabBar->addTab("R11t Learn");
+	else
+		ui->tabBar->removeTab("R11t Learn");
 
 }
 
-void MainWindow::assignPPIFromWebView(bool success)
+void MainWindow::resultsPageLoaded(bool success)
 {
+	// clear history, to prevent backspace from going 'back'
+	ui->webViewResults->history()->clear();
+
 	if (success)
 	{
 		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
@@ -770,6 +800,17 @@ void MainWindow::analysisOKed()
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.unselect()");
 
 	hideOptionsPanel();
+}
+
+void MainWindow::analysisRunned()
+{
+	if (_currentAnalysis == NULL)
+		return;
+
+	if (_currentAnalysis->status() == Analysis::Running)
+		_currentAnalysis->abort();
+	else if (_currentAnalysis->status() == Analysis::InitedAndWaiting)
+		_currentAnalysis->scheduleRun();
 }
 
 void MainWindow::analysisRemoved()

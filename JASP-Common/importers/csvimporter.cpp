@@ -3,7 +3,6 @@
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
-#include <sys/stat.h>
 
 #include "sharedmemory.h"
 #include "dataset.h"
@@ -15,9 +14,6 @@ using namespace std;
 
 DataSet* CSVImporter::loadDataSet(const string &locator, boost::function<void(const string &, int)> progressCallback)
 {
-	struct stat fileInfo;
-	stat(locator.c_str(), &fileInfo);
-
 	CSV csv(locator);
 	csv.open();
 

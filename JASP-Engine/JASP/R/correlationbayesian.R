@@ -993,7 +993,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 #------------------------------------------------- Matrix Plot -------------------------------------------------#
 
 ### empty posterior Plot with error message ###
-displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cexText=1.6, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.28, lwdAxis= 1.2) {
+.displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cexText=1.6, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.28, lwdAxis= 1.2) {
 
 	plot(1, 1, xlim= xlim, ylim= 0:1, ylab= "", xlab="", type= "n", axes= FALSE)
 	
@@ -1064,7 +1064,7 @@ displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cex
 			if (any(is.na(c(aParameter, bParameter)))) {
 				
 				errorMessage <- "Posterior is too peaked"
-				displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
+				.displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
 				return()
 			}
 			
@@ -1073,7 +1073,7 @@ displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cex
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 				
 				errorMessage <- "Posterior is too peaked"
-				displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
+				.displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
 				return()
 			}
 			
@@ -1086,7 +1086,7 @@ displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cex
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 				
 				errorMessage <- "Posterior is too peaked"
-				displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
+				.displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
 				return()
 		}
 			
@@ -1099,7 +1099,7 @@ displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cex
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 				
 				errorMessage <- "Posterior is too peaked"
-				displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
+				.displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
 				return()
 		}			
 	}

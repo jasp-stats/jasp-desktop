@@ -217,7 +217,11 @@ void EngineSync::process()
 			}
 			else if (analysis->status() == Analysis::Initing)
 			{
-				analysis->setStatus(Analysis::Inited);
+				if (analysis->isAutorun())
+					analysis->setStatus(Analysis::Inited);
+				else
+					analysis->setStatus(Analysis::InitedAndWaiting);
+
 				analysis->setResults(results);
 				_analysesInProgress[i] = NULL;
 				sendMessages();

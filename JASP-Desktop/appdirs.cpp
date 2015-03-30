@@ -34,31 +34,3 @@ const QString AppDirs::help()
 
 	return dir;
 }
-
-const QString AppDirs::tempDir()
-{
-	QString path = QDir::home().absoluteFilePath(".JASP");
-
-	if (QDir(path).exists() == false)
-	{
-		if (QDir::home().mkdir(".JASP"))
-		{
-#ifdef __WIN32__
-
-			wstring wpath = Utils::s2ws(fq(path));
-
-			DWORD attributes;
-
-			attributes = GetFileAttributes(wpath.c_str());
-			attributes |= FILE_ATTRIBUTE_HIDDEN;
-			SetFileAttributes(wpath.c_str(), attributes);
-#endif
-		}
-		else
-		{
-			qDebug() << "temp dir could not be created :" << path;
-		}
-	}
-
-	return path;
-}

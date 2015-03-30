@@ -866,7 +866,7 @@
 				
 			}
 			
-			if (length(xx) > 1 && length(yy) > 1 && !all(xx == yy)) {
+			if (length(xx) > 1 && length(yy) > 1 && (sd(xx) > 0 || sd(yy) > 0)) {
 			
 				if (oneSided == FALSE) {
 				
@@ -906,7 +906,7 @@
 					
 				}
 				
-				if (i > 3 && !all(xx == yy)) {
+				if (length(xx) > 1 && length(yy) > 1 && (sd(xx) > 0 || sd(yy) > 0)) {
 				
 					if (oneSided == FALSE) {
 					
@@ -943,7 +943,7 @@
 					
 				}
 				
-				if (i > 3 && !all(xx == yy)) {
+				if (length(xx) > 1 && length(yy) > 1 && (sd(xx) > 0 || sd(yy) > 0)) {
 				
 					if (oneSided == FALSE) {
 					
@@ -3172,7 +3172,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			
 			variableData <- variableData - options$testValue
 				
-			numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, any(options$plotSequentialAnalysis, options$plotSequentialAnalysisRobustness))
+			numberPlotsPerVariable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis)
 			z <- numberPlotsPerVariable * (which(options$variables == variable) -1) + 1
 			
 			

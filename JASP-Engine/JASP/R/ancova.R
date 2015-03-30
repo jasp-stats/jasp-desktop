@@ -151,7 +151,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	status <- result$status
 	
 	if (!is.null(results[["levene"]]))
-	    results[["headerLevene"]] <- "Levene's Test"
+	    results[["headerLevene"]] <- "Test for Equality of Variances"
 	
 	
 	
@@ -1049,7 +1049,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 	levenes.table <- list()
 	
-	levenes.table[["title"]] <- "Levene's Test for Homogeneity of Variance"
+	levenes.table[["title"]] <- "Test for Equality of Variances (Levene's)"
 	
 	fields <- list(
 		list(name="F", type="number", format="sf:4;dp:3"),

@@ -269,8 +269,25 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			if (perform == "run" && length(options[["variables"]]) > 0) {
 
 				data <- na.omit(dataset[[ .v(variable) ]])
+				
+				row.footnotes <- NULL
+                error <- FALSE
+                
+                if(length(data) < 3) {
+                
+                    foot.index <- .addFootnote(footnotes, "Too few datapoints (N < 3) to compute statistic reliably")
+					row.footnotes <- list(W=list(foot.index), p=list(foot.index))
+					error <- TRUE
+					
+                } else if(length(data) > 5000) {
+                
+                    foot.index <- .addFootnote(footnotes, "Too many datapoints (N > 5000) to compute statistic reliably")
+					row.footnotes <- list(W=list(foot.index), p=list(foot.index))
+					error <- TRUE
+					
+                }
 
-				if (class(data) != "factor") {
+				if (!error) {
                     
                     r <- stats::shapiro.test(data)
                     
@@ -293,7 +310,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 				        newGroup <- FALSE
 			        }
 					
-					result <- list("v" = variable, "W" = "", "p" = "", ".isNewGroup" = newGroup)
+					result <- list("v" = variable, "W" = "NaN", "p" = "NaN", ".isNewGroup" = newGroup, .footnotes=row.footnotes)
 					
 				}
 			

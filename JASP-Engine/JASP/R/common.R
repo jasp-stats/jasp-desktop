@@ -31,20 +31,32 @@ run <- function(name, options.as.json.string, perform="run") {
 	
 		if ("state" %in% names(results)) {
 
-			state <- results$state		
-			base::save(state, file=.requestStateFileNameNative(), compress=FALSE)
+			state <- results$state
+			file <- .requestStateFileNameNative()
+			base::Encoding(file) <- "UTF-8"
+			base::save(state, file=file, compress=FALSE)
 		}
 		
 		if ("results" %in% names(results)) {
 		
 			results$results <- .addCitationToResults(results$results)
+			results$state   <- NULL # remove the state object
 			
 		} else {
 		
 			results <- .addCitationToResults(results)
 		}
 		
-		RJSONIO::toJSON(results, digits=12)
+		json <- try({ RJSONIO::toJSON(results, digits=12) })
+		
+		if (class(json) == "try-error") {
+		
+			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))
+			
+		} else {
+		
+			return(json)
+		}
 	}
 
 }
@@ -233,7 +245,7 @@ run <- function(name, options.as.json.string, perform="run") {
 	if (base::exists(".requestStateFileNameNative")) {
 
 		file <- .requestStateFileNameNative()
-
+		base::Encoding(file) <- "UTF-8"
 		base::save(state, file=file, compress=FALSE)
 	}
 	
@@ -247,7 +259,7 @@ run <- function(name, options.as.json.string, perform="run") {
 	if (base::exists(".requestStateFileNameNative")) {
 
 		file <- .requestStateFileNameNative()
-		
+		base::Encoding(file) <- "UTF-8"
 		base::try(base::load(file))
 	}
 	
@@ -500,6 +512,8 @@ callback <- function(results=NULL) {
 	
 	multip <- .ppi / 96
 	filename <- .requestTempFileNameNative("png")
+	base::Encoding(filename) <- "UTF-8"
+	
 	grDevices::png(filename=filename, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
 	
 	filename

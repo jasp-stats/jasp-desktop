@@ -9,53 +9,12 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/foreach.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/nowide/convert.hpp>
 
 using namespace std;
 using namespace boost::posix_time;
-
-#ifdef __WIN32__
-
-wstring Utils::s2ws(const string &s)
-{
-	int len;
-	int slength = (int)s.length() + 1;
-	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
-	wchar_t* buf = new wchar_t[len];
-	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-	wstring r(buf);
-	delete[] buf;
-	return r;
-}
-
-string Utils::ws2s(const wstring &s)
-{
-	char defaultChar = ' ';
-
-	int len;
-	int slength = (int)s.length() + 1;
-	len = WideCharToMultiByte(CP_ACP, 0, s.c_str(), slength, 0, 0, &defaultChar, NULL);
-	char* buf = new char[len];
-	WideCharToMultiByte(CP_ACP, 0, s.c_str(), slength, buf, len, &defaultChar, NULL);
-	string r(buf);
-	delete[] buf;
-	return r;
-}
-
-#endif
-
-void Utils::setEnv(const string &env, const string &value)
-{
-#ifdef __WIN32__
-
-	wstring wenv = Utils::s2ws(env);
-	wstring wvalue = Utils::s2ws(value);
-
-	SetEnvironmentVariableW(wenv.c_str(), wvalue.c_str());
-
-#else
-	::setenv(env.c_str(), value.c_str(), value.size());
-#endif
-}
+using namespace boost;
 
 long Utils::currentMillis()
 {
@@ -78,7 +37,7 @@ long Utils::getFileModificationTime(const std::string &filename)
 {
 #ifdef __WIN32__
 
-	wstring wfilename = Utils::s2ws(filename);
+	wstring wfilename = nowide::widen(filename);
 	HANDLE file = CreateFile(wfilename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (file == INVALID_HANDLE_VALUE)
@@ -117,11 +76,34 @@ long Utils::getFileModificationTime(const std::string &filename)
 #endif
 }
 
+long Utils::getFileSize(const string &filename)
+{
+	system::error_code ec;
+	filesystem::path path;
+
+#ifdef __WIN32__
+
+	path = boost::nowide::widen(filename);
+
+#else
+
+	path = filename;
+
+#endif
+
+	uintmax_t fileSize = filesystem::file_size(path, ec);
+
+	if (ec == 0)
+		return fileSize;
+	else
+		return -1;
+}
+
 void Utils::touch(const string &filename)
 {
 #ifdef __WIN32__
 
-	wstring wfilename = Utils::s2ws(filename);
+	wstring wfilename = nowide::widen(filename);
 	HANDLE file = CreateFile(wfilename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (file == INVALID_HANDLE_VALUE)
@@ -146,6 +128,24 @@ void Utils::touch(const string &filename)
 	newTime.modtime = newTimeT;
 
 	utime(filename.c_str(), &newTime);
+#endif
+}
+
+filesystem::path Utils::osPath(const string &path)
+{
+#ifdef __WIN32__
+	return filesystem::path(nowide::widen(path));
+#else
+	return filesystem::path(path);
+#endif
+}
+
+string Utils::osPath(const filesystem::path &path)
+{
+#ifdef __WIN32__
+	return nowide::narrow(path.generic_wstring());
+#else
+	return path.generic_string();
 #endif
 }
 

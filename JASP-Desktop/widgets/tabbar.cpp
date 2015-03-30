@@ -25,7 +25,14 @@ TabBar::TabBar(QWidget *parent) :
 
 void TabBar::addTab(QString tabName)
 {
+	foreach (QPushButton *button, _tabButtons)
+	{
+		if (button->objectName() == tabName)
+			return;
+	}
+
 	QPushButton *button = new QPushButton(tabName, this);
+	button->setObjectName(tabName);
 	button->setCheckable(true);
 	connect(button, SIGNAL(clicked()), this, SLOT(tabSelectedHandler()));
 
@@ -41,6 +48,20 @@ void TabBar::removeTab(int index)
 	QPushButton *button = _tabButtons.at(index);
 	_tabButtons.removeAt(index);
 	delete button;
+}
+
+void TabBar::removeTab(QString tabName)
+{
+	foreach (QPushButton *button, _tabButtons)
+	{
+		if (button->objectName() == tabName)
+		{
+			_tabButtons.removeAll(button);
+			delete button;
+
+			return;
+		}
+	}
 }
 
 void TabBar::addOptionsTab()

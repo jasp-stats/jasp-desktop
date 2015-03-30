@@ -11,6 +11,8 @@ windows:CONFIG += c++11
 macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
 
+INCLUDEPATH += ../../nowide
+
 windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions

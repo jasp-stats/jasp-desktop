@@ -17,10 +17,12 @@ int main(int argc, char *argv[])
 	Application a(argc, argv);
 	MainWindow w;
 
-    w.show();
+	w.show();
 
-	if (argc > 1)
-		w.open(QString(argv[1]));
+	QStringList args = QApplication::arguments();
+
+	if (args.length() > 1)
+		w.open(args.at(1));
     
     return a.exec();
 }

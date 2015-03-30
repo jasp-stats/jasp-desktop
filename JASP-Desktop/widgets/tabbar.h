@@ -14,6 +14,7 @@ public:
 	explicit TabBar(QWidget *parent = 0);
 
 	void addTab(QString tabName);
+	void removeTab(QString tabName);
 	void removeTab(int index);
 
 	void addOptionsTab();

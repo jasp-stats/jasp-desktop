@@ -1,11 +1,12 @@
 #include "ipcchannel.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/nowide/convert.hpp>
 
 #include "utils.h"
 
 using namespace std;
-using namespace boost::interprocess;
+using namespace boost;
 using namespace boost::posix_time;
 
 IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
@@ -14,7 +15,7 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	_channelNumber = channelNumber;
 	_isSlave = isSlave;
 
-	_memory = new managed_shared_memory(boost::interprocess::open_or_create, name.c_str(), 16*1024*1024);
+	_memory = new interprocess::managed_shared_memory(interprocess::open_or_create, name.c_str(), 16*1024*1024);
 
 	stringstream mutexInName;
 	stringstream mutexOutName;
@@ -49,8 +50,8 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	semaphoreInName << channelNumber;
 	semaphoreOutName << channelNumber;
 
-	_mutexIn  = _memory->find_or_construct<interprocess_mutex>(mutexInName.str().c_str())();
-	_mutexOut = _memory->find_or_construct<interprocess_mutex>(mutexOutName.str().c_str())();
+	_mutexIn  = _memory->find_or_construct<interprocess::interprocess_mutex>(mutexInName.str().c_str())();
+	_mutexOut = _memory->find_or_construct<interprocess::interprocess_mutex>(mutexOutName.str().c_str())();
 	_dataIn   = _memory->find_or_construct<String>(dataInName.str().c_str())(_memory->get_segment_manager());
 	_dataOut  = _memory->find_or_construct<String>(dataOutName.str().c_str())(_memory->get_segment_manager());
 
@@ -70,8 +71,8 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 	}
 #elif defined __WIN32__
 
-	wstring inName = Utils::s2ws(semaphoreInName.str());
-	wstring outName = Utils::s2ws(semaphoreOutName.str());
+	wstring inName = nowide::widen(semaphoreInName.str());
+	wstring outName = nowide::widen(semaphoreOutName.str());
 
 	LPCWSTR inLPCWSTR = inName.c_str();
 	LPCWSTR outLPCWSTR = outName.c_str();
@@ -91,16 +92,16 @@ IPCChannel::IPCChannel(std::string name, int channelNumber, bool isSlave)
 
     if (_isSlave == false)
     {
-        named_semaphore::remove(mutexInName.str().c_str());
-        named_semaphore::remove(mutexOutName.str().c_str());
+		interprocess::named_semaphore::remove(mutexInName.str().c_str());
+		interprocess::named_semaphore::remove(mutexOutName.str().c_str());
 
-        _semaphoreIn  = new named_semaphore(create_only, mutexInName.str().c_str(), 0);
-        _semaphoreOut = new named_semaphore(create_only, mutexOutName.str().c_str(), 0);
+		_semaphoreIn  = new interprocess::named_semaphore(interprocess::create_only, mutexInName.str().c_str(), 0);
+		_semaphoreOut = new interprocess::named_semaphore(interprocess::create_only, mutexOutName.str().c_str(), 0);
     }
     else
     {
-        _semaphoreIn  = new named_semaphore(open_only, mutexInName.str().c_str());
-        _semaphoreOut = new named_semaphore(open_only, mutexOutName.str().c_str());
+		_semaphoreIn  = new interprocess::named_semaphore(interprocess::open_only, mutexInName.str().c_str());
+		_semaphoreOut = new interprocess::named_semaphore(interprocess::open_only, mutexOutName.str().c_str());
     }
 
 
