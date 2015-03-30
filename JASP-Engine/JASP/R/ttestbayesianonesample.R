@@ -866,7 +866,7 @@
 				
 			}
 			
-			if (length(xx) > 1 && length(yy) > 1 && !all(xx == yy) && (sd(xx) > 0 || sd(yy) > 0)) {
+			if (length(xx) > 1 && length(yy) > 1 && (sd(xx) > 0 || sd(yy) > 0)) {
 			
 				if (oneSided == FALSE) {
 				
@@ -906,7 +906,7 @@
 					
 				}
 				
-				if (length(xx) > 1 && length(yy) > 1 && !all(xx == yy) && (sd(xx) > 0 || sd(yy) > 0)) {
+				if (length(xx) > 1 && length(yy) > 1 && (sd(xx) > 0 || sd(yy) > 0)) {
 				
 					if (oneSided == FALSE) {
 					
@@ -943,7 +943,7 @@
 					
 				}
 				
-				if (length(xx) > 1 && length(yy) > 1 && !all(xx == yy) && (sd(xx) > 0 || sd(yy) > 0)) {
+				if (length(xx) > 1 && length(yy) > 1 && (sd(xx) > 0 || sd(yy) > 0)) {
 				
 					if (oneSided == FALSE) {
 					
