@@ -24,6 +24,7 @@ public:
 	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	
 private slots:
+	void factorsChanging();
 	void factorsChanged();
 	void termsChanged();
 	void withinSubjectsDesignChanged();

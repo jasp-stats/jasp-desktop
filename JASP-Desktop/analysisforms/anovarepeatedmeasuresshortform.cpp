@@ -40,12 +40,18 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	ui->modelTerms->setModel(_anovaModel);
 	connect(_anovaModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
 
+	_contrastsModel = new TableModelVariablesOptions();
+    ui->contrasts->setModel(_contrastsModel);
+
+	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
-	_contrastsModel = new TableModelVariablesOptions();
-    ui->contrasts->setModel(_contrastsModel);
+	connect(_designTableModel, SIGNAL(designChanging()), this, SLOT(factorsChanging()));
+	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
+	connect(_designTableModel, SIGNAL(factorAdded(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
+	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
@@ -90,6 +96,12 @@ void AnovaRepeatedMeasuresShortForm::bindTo(Options *options, DataSet *dataSet)
 
 }
 
+void AnovaRepeatedMeasuresShortForm::factorsChanging()
+{
+	if (_options != NULL)
+		_options->blockSignals(true);
+}
+
 void AnovaRepeatedMeasuresShortForm::factorsChanged()
 {
 	Terms factorsAvailable;
@@ -102,6 +114,9 @@ void AnovaRepeatedMeasuresShortForm::factorsChanged()
 	_contrastsModel->setVariables(factorsAvailable);
 
 	ui->postHocTests_variables->setVariables(factorsAvailable);
+
+	if (_options != NULL)
+		_options->blockSignals(false);
 }
 
 void AnovaRepeatedMeasuresShortForm::termsChanged()
