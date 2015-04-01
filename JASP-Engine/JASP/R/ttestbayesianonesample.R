@@ -1794,6 +1794,7 @@
 .plotBF.robustnessCheck.ttest <- function(x= NULL, y= NULL, paired= FALSE, BF10post, callback=function(...) 0, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
  cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, dontPlotData= FALSE) { 
 	
+	
 	#### settings ####
 	if (rscale == "medium") {
 		r <- sqrt(2) / 2
@@ -1868,7 +1869,7 @@
 	}
 	
 	#### get BFs ###
-	rValues <- seq(0.0001, 1.5, length.out = 400)
+	rValues <- seq(0.0005, 1.5, length.out = 400)
 	
 	# BF10
 	BF10 <- vector("numeric", length(rValues))
@@ -2572,7 +2573,16 @@
 	# BF values
 	
 	# BFuser
-	BF01userText <- 1 / BF10userText
+	
+	if (BFH1H0) {
+	
+		BF01userText <- 1 / BF10userText
+		
+	} else {
+	
+		BF10userText <- 1 / BF10userText
+		BF01userText <- 1 / BF10userText		
+	}
 	
 	if (BF10userText >= 1000000 | BF01userText >= 1000000) {
 	
