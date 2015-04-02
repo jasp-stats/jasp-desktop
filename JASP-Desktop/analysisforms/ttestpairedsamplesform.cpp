@@ -24,12 +24,6 @@ TTestPairedSamplesForm::TTestPairedSamplesForm(QWidget *parent) :
 	ui->pairs->setModel(model);
 
 	ui->assignButton->setSourceAndTarget(ui->availableFields, ui->pairs);
-
-#ifdef QT_NO_DEBUG
-	ui->normalityTests->hide();
-#else
-	ui->normalityTests->setStyleSheet("background-color: pink;");
-#endif
 }
 
 TTestPairedSamplesForm::~TTestPairedSamplesForm()
