@@ -1167,14 +1167,21 @@
 					p <- try(silent= FALSE, expr= {
 						
 							image <- .beginSaveImage(530, 400)
-						
-							if (options$hypothesis=="groupTwoGreater") {
-								oneSided <- "left"
-						
-							} else if (options$hypothesis=="groupOneGreater") {
-								oneSided <- "right"
-						
+							
+							if (options$samplingModel=="independentMultinomialColumnsFixed" || options$samplingModel=="independentMultinomialRowsFixed") {
+							
+								if (options$hypothesis=="groupTwoGreater") {
+									oneSided <- "left"
+							
+								} else if (options$hypothesis=="groupOneGreater") {
+									oneSided <- "right"
+							
+								} else {
+									oneSided <- FALSE
+								}
+								
 							} else {
+							
 								oneSided <- FALSE
 							}
 								
