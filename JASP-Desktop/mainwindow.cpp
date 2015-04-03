@@ -817,6 +817,8 @@ void MainWindow::analysisRemoved()
 {
 	if (_currentOptionsWidget != NULL)
 	{
+		_currentAnalysis->abort();
+
 		_currentOptionsWidget->hide();
 		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;

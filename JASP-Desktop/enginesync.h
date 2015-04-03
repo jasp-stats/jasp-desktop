@@ -36,7 +36,6 @@ public:
 
 signals:
 
-	void updateReceived(QString data);
 	void engineTerminated();
 
 private:

@@ -26,7 +26,7 @@ private:
 	std::string provideTempFileName(const std::string &extension);
 	std::string provideStateFileName();
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, complete, error } Status;
+	typedef enum { empty, toInit, initing, inited, toRun, running, complete, error, aborted } Status;
 
 	Status _status;
 

@@ -124,16 +124,21 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	std::cout.flush();
 #endif
 
-	bool init;
+	string perform;
 
 	if (analysis->status() == Analysis::Empty)
 	{
-		init = true;
+		perform = "init";
 		analysis->setStatus(Analysis::Initing);
+	}
+	else if (analysis->status() == Analysis::Aborting)
+	{
+		perform = "abort";
+		analysis->setStatus(Analysis::Aborted);
 	}
 	else
 	{
-		init = false;
+		perform = "run";
 		analysis->setStatus(Analysis::Running);
 	}
 
@@ -142,14 +147,18 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	Json::Value json = Json::Value(Json::objectValue);
 
 	json["id"] = analysis->id();
-	json["name"] = analysis->name();
-	json["options"] = analysis->options()->asJSON();
-	json["perform"] = (init ? "init" : "run");
+	json["perform"] = perform;
 
-	Json::Value settings;
-	settings["ppi"] = _ppi;
+	if (analysis->status() != Analysis::Aborted)
+	{
+		json["name"] = analysis->name();
+		json["options"] = analysis->options()->asJSON();
 
-	json["settings"] = settings;
+		Json::Value settings;
+		settings["ppi"] = _ppi;
+
+		json["settings"] = settings;
+	}
 
 	string str = json.toStyledString();
 
@@ -242,11 +251,21 @@ void EngineSync::sendMessages()
 	std::cout.flush();
 #endif
 
-	for (int i = 0; i < _analysesInProgress.size(); i++)
+	for (int i = 0; i < _analysesInProgress.size(); i++) // this loop handles changes in running analyses
 	{
 		Analysis *analysis = _analysesInProgress[i];
-		if (analysis != NULL && analysis->status() == Analysis::Empty)
-			sendToProcess(i, analysis);
+		if (analysis != NULL)
+		{
+			if (analysis->status() == Analysis::Empty)
+			{
+				sendToProcess(i, analysis);
+			}
+			else if (analysis->status() == Analysis::Aborting)
+			{
+				sendToProcess(i, analysis);
+				_analysesInProgress[i] = NULL;
+			}
+		}
 	}
 
 	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)

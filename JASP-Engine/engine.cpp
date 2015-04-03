@@ -51,10 +51,11 @@ void Engine::setSlaveNo(int no)
 
 void Engine::runAnalysis()
 {
-	if (_status == empty)
+	if (_status == empty || _status == aborted)
 		return;
 
 	string perform;
+
 
 	if (_status == toInit)
 	{
@@ -72,7 +73,7 @@ void Engine::runAnalysis()
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
 	_analysisResultsString = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
 
-	if (_status == toInit || receiveMessages())
+	if (_status == toInit || _status == aborted || receiveMessages())
 	{
 		// if a new message was received, the analysis was changed and we shouldn't send results
 	}
@@ -146,25 +147,30 @@ bool Engine::receiveMessages(int timeout)
 		r.parse(data, jsonRequest, false);
 
 		_analysisId = jsonRequest.get("id", -1).asInt();
-		_analysisName = jsonRequest.get("name", Json::nullValue).asString();
-		_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
-
 		string perform = jsonRequest.get("perform", "run").asString();
 
 		if (perform == "init")
 			_status = toInit;
+		else if (perform == "abort")
+			_status = aborted;
 		else
 			_status = toRun;
 
-		Json::Value settings = jsonRequest.get("settings", Json::nullValue);
-		if (settings.isObject())
+		if (_status != aborted)
 		{
-			Json::Value ppi = settings.get("ppi", Json::nullValue);
-			_ppi = ppi.isInt() ? ppi.asInt() : 96;
-		}
-		else
-		{
-			_ppi = 96;
+			_analysisName = jsonRequest.get("name", Json::nullValue).asString();
+			_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
+
+			Json::Value settings = jsonRequest.get("settings", Json::nullValue);
+			if (settings.isObject())
+			{
+				Json::Value ppi = settings.get("ppi", Json::nullValue);
+				_ppi = ppi.isInt() ? ppi.asInt() : 96;
+			}
+			else
+			{
+				_ppi = 96;
+			}
 		}
 
 		return true;

@@ -52,6 +52,9 @@ R11tLearnForm::R11tLearnForm(QWidget *parent) :
 	ui->buttonAssignDeck->setSourceAndTarget(ui->listAvailableFields, ui->deck);
 	ui->buttonAssignReward->setSourceAndTarget(ui->listAvailableFields, ui->reward);
 	ui->buttonAssignLoss->setSourceAndTarget(ui->listAvailableFields, ui->loss);
+
+	ui->containerParameters->hide();
+	ui->containerSampling->hide();
 }
 
 R11tLearnForm::~R11tLearnForm()
