@@ -32,14 +32,6 @@ Labels &Column::labels()
 	return _labels;
 }
 
-int Column::actualFromRaw(int raw) const
-{
-	if (raw != INT_MIN && _labels.size() > 0)
-		return _labels.at(raw).value();
-	else
-		return raw;
-}
-
 Column &Column::operator=(const Column &column)
 {
 	if (&column != this)

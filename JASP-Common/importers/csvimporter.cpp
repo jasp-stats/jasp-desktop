@@ -174,23 +174,11 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 	if (success && uniqueValues.size() <= 24)
 	{
 		labels.clear();
-		map<int, int> actualToRaw;
 
-		int index = 0;
 		BOOST_FOREACH(int value, uniqueValues)
 		{
 			(void)uniqueValues;
-			int raw = labels.add(value);
-			actualToRaw[value] = raw;
-			index++;
-		}
-
-		Column::Ints::iterator intInputItr = column.AsInts.begin();
-		for (; intInputItr != column.AsInts.end(); intInputItr++)
-		{
-			int actual = *intInputItr;
-			if (actual != INT_MIN)
-				*intInputItr = actualToRaw.at(actual);
+			labels.add(value);
 		}
 
 		column._columnType = Column::ColumnTypeNominal;

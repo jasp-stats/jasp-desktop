@@ -129,7 +129,6 @@ public:
 	int rowCount() const;
 
 	Labels& labels();
-	int actualFromRaw(int value) const;
 
 	Column &operator=(const Column &columns);
 

@@ -162,7 +162,7 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 				BOOST_FOREACH(int value, column.AsInts)
 				{
 					(void)column;
-					v[rowNo++] = column.actualFromRaw(value);
+					v[rowNo++] = value;
 				}
 
 				list[colNo++] = v;
@@ -193,13 +193,24 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 
 			if (columnType != Column::ColumnTypeScale)
 			{
+				std::map<int, int> indices;
+				int i = 1; // R starts indices from 1
+
+				const Labels &labels = column.labels();
+
+				BOOST_FOREACH(const LabelEntry &labelEntry, labels)
+				{
+					(void)labels;
+					indices[labelEntry.first] = i++;
+				}
+
 				BOOST_FOREACH(int value, column.AsInts)
 				{
 					(void)column;
 					if (value == INT_MIN)
 						v[rowNo++] = INT_MIN;
 					else
-						v[rowNo++] = value + 1;
+						v[rowNo++] = indices.at(value);
 				}
 
 				rbridge_makeFactor(v, column.labels(), ordinal);
@@ -365,8 +376,8 @@ void rbridge_makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordin
 	}
 	else
 	{
-		for (int i = 0; i < levels.size(); i++)
-			labels.push_back(levels.at(i).text());
+		BOOST_FOREACH(const LabelEntry &level, levels)
+			labels.push_back(level.second.text());
 	}
 
 	v.attr("levels") = labels;
