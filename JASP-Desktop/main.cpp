@@ -14,6 +14,8 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
 
+	QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
+
 	Application a(argc, argv);
 	MainWindow w;
 
