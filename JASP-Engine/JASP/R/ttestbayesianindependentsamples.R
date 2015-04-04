@@ -138,7 +138,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			if (length(options$variables) > 0 && (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis))	
 				results[["plots"]][[1]][["status"]] <- "running"
 				
-			if (callback(results) != 0) 
+			if ( ! .shouldContinue(callback(results)))
 				return()
 				
 			statusInd <- 1
@@ -202,7 +202,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					if (z <= length(plots.ttest))
 						results[["plots"]][[z]][["status"]] <- "running"
 						
-					if (callback(results) != 0)
+					if ( ! .shouldContinue(callback(results)))
 						return()
 				}
 					
@@ -232,7 +232,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					if (z <= length(plots.ttest))
 						results[["plots"]][[z]][["status"]] <- "running"
 						
-					if (callback(results) != 0)
+					if ( ! .shouldContinue(callback(results)))
 						return()
 				}
 				
@@ -263,7 +263,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					if (z <= length(plots.ttest))
 						results[["plots"]][[z]][["status"]] <- "running"
 						
-					if (callback(results) != 0)
+					if ( ! .shouldContinue(callback(results)))
 						return()
 				}
 					

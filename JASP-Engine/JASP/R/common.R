@@ -26,6 +26,10 @@ run <- function(name, options.as.json.string, perform="run") {
 		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 		
 		errorResponse
+		
+	} else if (is.null(results)) {
+	
+		"null"
 	
 	} else {
 	
@@ -433,6 +437,11 @@ run <- function(name, options.as.json.string, perform="run") {
 	X
 }
 
+.shouldContinue <- function(value) {
+
+	base::identical(value, 0) || base::identical(value, as.integer(0)) || (is.list(value) && value$status == "ok")
+}
+
 callback <- function(results=NULL) {
 
 	ret <- 0
@@ -445,7 +454,16 @@ callback <- function(results=NULL) {
 			json.string <- RJSONIO::toJSON(results, digits=12)
 		}
 	
-		ret <- .callbackNative(json.string);
+		response <- .callbackNative(json.string)
+		
+		if (is.character(response)) {
+		
+			ret <- RJSONIO::fromJSON(base::paste("[", response, "]"), encoding="UTF-8", asText=TRUE, simplify=FALSE)[[1]]
+			
+		} else {
+		
+			ret <- response
+		}
 	}
 
 	ret

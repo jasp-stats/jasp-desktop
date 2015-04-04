@@ -21,12 +21,12 @@ private:
 	bool receiveMessages(int timeout = 0);
 	void runAnalysis();
 	void sendResults();
-	int callback(const std::string &results);
+	std::string callback(const std::string &results);
 
 	std::string provideTempFileName(const std::string &extension);
 	std::string provideStateFileName();
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, complete, error, aborted } Status;
+	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, aborted, stopped } Status;
 
 	Status _status;
 

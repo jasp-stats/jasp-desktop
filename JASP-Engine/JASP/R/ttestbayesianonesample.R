@@ -165,7 +165,7 @@
 	
 	delta <- samples[,"delta"]
 	
-	if(callback() != 0)
+	if ( ! .shouldContinue(callback()))
 		return()
 	
 	# fit shifted t distribution
@@ -203,7 +203,7 @@
 		parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
 	}
 	
-	if(callback() != 0)
+	if ( ! .shouldContinue(callback()))
 		return()
 	
 	#BF <- BayesFactor::ttestBF(x=x, y=y, paired=paired, nullInterval= nullInterval, posterior = FALSE, rscale= r)
@@ -291,7 +291,7 @@
 	dmax <- optimize(function(x).dposteriorShiftedT(x, parameters=parameters, oneSided= oneSided), interval= range(xticks), maximum = TRUE)$objective
 	ylim[2] <- max(stretch * .dprior(0,r, oneSided= oneSided), stretch * dmax)# get maximum density
 	
-	if(callback() != 0)
+	if ( ! .shouldContinue(callback()))
 		return()
 	
 	# calculate position of "nice" tick marks and create labels
@@ -663,8 +663,8 @@
 			}
 		}
 		
-		if(callback() != 0)
-				return()
+		if ( ! .shouldContinue(callback()))
+			return()
 		
 		BF10[1:idData] <- 1
 		BF10w[1:idData] <- 1
@@ -717,15 +717,15 @@
 				j <- j + 1
 			}
 			
-			if(callback() != 0)
+			if ( ! .shouldContinue(callback()))
 				return()
 		}
 		
 		
 		BF10 <- BF10[is.finite(BF10)]
 		
-		if(callback() != 0)
-				return()
+		if ( ! .shouldContinue(callback()))
+			return()
 		
 		if (plotDifferentPriors) {
 			
@@ -775,14 +775,14 @@
 					j <- j + 1
 				}
 				
-				if(callback() != 0)
+				if ( ! .shouldContinue(callback()))
 					return()
 			}
 			
 			
 			BF10u <- BF10u[is.finite(BF10u)]
 			
-			if(callback() != 0)
+			if ( ! .shouldContinue(callback()))
 				return()
 			
 			
@@ -832,13 +832,13 @@
 					j <- j + 1
 				}
 				
-				if(callback() != 0)
+				if ( ! .shouldContinue(callback()))
 					return()
 			}
 			
 			BF10w <- BF10w[is.finite(BF10w)]
 			
-			if(callback() != 0)
+			if ( ! .shouldContinue(callback()))
 				return()
 			
 		}
@@ -1043,8 +1043,8 @@
 		i <- i + 1
 	}
 	
-	if(callback() != 0)
-				return()
+	if ( ! .shouldContinue(callback()))
+		return()
 	
 	yhigh <- vector("numeric", length(y1h) + length(y3h))
 	
@@ -1129,8 +1129,8 @@
 		i <- i + 1
 	}
 	
-	if(callback() != 0)
-				return()
+	if ( ! .shouldContinue(callback()))
+		return()
 	
 	ylow <- vector("numeric", length(y1l) + length(y3l))
 	o <- 1
@@ -1238,7 +1238,7 @@
 		yLab <- yLab1s
 	}
 	
-	if(callback() != 0)
+	if ( ! .shouldContinue(callback()))
 		return()
 	
 	while (length(yLab) > 9) {
@@ -1315,7 +1315,7 @@
 		}
 	}		
 	
-	if(callback() != 0)
+	if ( ! .shouldContinue(callback()))
 		return()
 	
 	yAt <- vector("numeric", length(yLab))
@@ -1405,8 +1405,8 @@
 			}		
 		}
 		
-		if(callback() != 0)
-				return()
+		if ( ! .shouldContinue(callback()))
+			return()
 		
 		axis(side=4, at= yAt,tick=TRUE,las=2, cex.axis= cexAxis, lwd= lwdAxis, labels=FALSE, line= -0.6)
 		
@@ -1671,8 +1671,8 @@
 	alpha <- 2 / (BF01e + 1) * A / radius^2
 	startpos <- pi/2 - alpha/2
 	
-	if(callback() != 0)
-				return()
+	if ( ! .shouldContinue(callback()))
+		return()
 	
 	# draw probability wheel
 	
@@ -1886,7 +1886,7 @@
 			BF10[i] <- .oneSidedTtestBFRichard(x=x, y=y, paired=paired, oneSided=oneSided, r=rValues[i])
 		}
 		
-		if(callback() != 0)
+		if ( ! .shouldContinue(callback()))
 			return()
 	}
 	
@@ -1934,8 +1934,8 @@
 	# BF10user <- BayesFactor::extractBF(BF10user, logbf = FALSE, onlybf = F)[1, "bf"]
 	BF10userText <- BF10user
 	
-	if(callback() != 0)
-			return()
+	if ( ! .shouldContinue(callback()))
+		return()
 	
 	####################### scale y axis ###########################
 	
@@ -2076,8 +2076,8 @@
 	o <- 1
 	e <- 1
 	
-	if(callback() != 0)
-			return()
+	if ( ! .shouldContinue(callback()))
+		return()
 	
 	for (i in seq_along(ylow)) {
 		
@@ -2216,8 +2216,8 @@
 		yLab <- yLab1s
 	}
 	
-	if(callback() != 0)
-			return()
+	if ( ! .shouldContinue(callback()))
+		return()
 	
 	while (length(yLab) > 9) {
 		
@@ -2268,8 +2268,8 @@
 		yLab <- c(rev(yLabLow), "1", yLabHigh)
 	}
 	
-	if(callback() != 0)
-			return()
+	if ( ! .shouldContinue(callback()))
+		return()
 
 	
 	while (eval(parse(text=yLab[2])) > min(BF10)) {
@@ -2558,8 +2558,8 @@
 		}		
 	}
 	
-	if(callback() != 0)
-			return()
+	if ( ! .shouldContinue(callback()))
+		return()
 	
 	# display BF10
 	lines(rValues,log(BF10), col="black", lwd = 2.7)
@@ -3163,7 +3163,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		ttest[["status"]] <- "complete"		
 		results[["ttest"]] <- ttest
 		
-		if(callback() != 0)
+		if ( ! .shouldContinue(callback()))
 			return()
 		
 		i <- 1
@@ -3171,7 +3171,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		if (length(options$variables) > 0 && (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis))	
 			results[["plots"]][[1]][["status"]] <- "running"
 			
-		if (callback(results) != 0)
+		if ( ! .shouldContinue(callback()))
 			return()
 		
 		for (variable in options[["variables"]])
@@ -3233,7 +3233,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if (z <= length(plots.ttest))
 					results[["plots"]][[z]][["status"]] <- "running"
 					
-				if (callback(results) != 0)
+				if ( ! .shouldContinue(callback()))
 					return()
 			}
 			
@@ -3265,7 +3265,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if (z <= length(plots.ttest))
 					results[["plots"]][[z]][["status"]] <- "running"
 					
-				if (callback(results) != 0)
+				if ( ! .shouldContinue(callback()))
 					return()
 			}
 			
@@ -3296,7 +3296,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				if (z <= length(plots.ttest))
 					results[["plots"]][[z]][["status"]] <- "running"
 				
-				if (callback(results) != 0)
+				if ( ! .shouldContinue(callback()))
 					return()
 			}
 

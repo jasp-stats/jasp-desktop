@@ -198,7 +198,7 @@
 		model.list <- list (model.formula)
 	}
 
-	if (callback () != 0)
+	if ( ! .shouldContinue(callback()))
 		return (NULL)
 
 	null.model <- list ()
@@ -250,7 +250,7 @@
 
 		model.object <- list()
 		for (m in 1:no.models) {
-			if (callback () != 0)
+			if ( ! .shouldContinue(callback()))
 				return (NULL)
 			model.object [[m]] <- list ("ready" = TRUE)
 			model.effects <- base::strsplit (x = as.character (model.list [[m]]) [[3]], 

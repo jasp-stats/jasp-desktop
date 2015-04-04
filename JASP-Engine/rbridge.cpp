@@ -23,7 +23,7 @@ SEXP rbridge_callbackSEXP(SEXP results);
 SEXP rbridge_requestTempFileNameSEXP(SEXP extension);
 SEXP rbridge_requestStateFileNameSEXP();
 
-int rbridge_callback(SEXP results);
+SEXP rbridge_callback(SEXP results);
 Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns);
 Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<std::string, Column::ColumnType> &columns);
 
@@ -392,17 +392,17 @@ void rbridge_makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &level
 }
 
 
-int rbridge_callback(SEXP results)
+SEXP rbridge_callback(SEXP results)
 {
 	if (rbridge_runCallback != NULL)
 	{
 		if (Rf_isNull(results))
 		{
-			return rbridge_runCallback("null");
+			return Rcpp::CharacterVector(rbridge_runCallback("null"));
 		}
 		else
 		{
-			return rbridge_runCallback(Rcpp::as<string>(results));
+			return Rcpp::CharacterVector(rbridge_runCallback(Rcpp::as<string>(results)));
 		}
 	}
 	else
@@ -454,9 +454,7 @@ std::map<string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP co
 
 SEXP rbridge_callbackSEXP(SEXP results)
 {
-	Rcpp::NumericVector control(1);
-	control[0] = rbridge_callback(results);
-	return control;
+	return rbridge_callback(results);
 }
 
 Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)

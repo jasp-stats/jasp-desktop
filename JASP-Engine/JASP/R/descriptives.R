@@ -954,7 +954,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 			for (variable in variables) {
 				
-				if (callback(results) != 0)
+				if ( ! .shouldContinue(callback()))
 					return()
 					
 				column <- dataset[[ .v(variable) ]]				

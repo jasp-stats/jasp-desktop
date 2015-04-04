@@ -56,7 +56,6 @@ void Engine::runAnalysis()
 
 	string perform;
 
-
 	if (_status == toInit)
 	{
 		perform = "init";
@@ -71,13 +70,21 @@ void Engine::runAnalysis()
 	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
 
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
+
 	_analysisResultsString = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
 
-	if (_status == toInit || _status == aborted || receiveMessages())
+	if (_status == toInit || _status == aborted || _status == error)
 	{
-		// if a new message was received, the analysis was changed and we shouldn't send results
+		// analysis was aborted, and we shouldn't send the results
 	}
-	else if (_status == initing || _status == running)
+	else if (_status == changed && _analysisResultsString == "null")
+	{
+		// analysis was changed, and the analysis could not incorporate the changes
+		// so the analysis returned null, and now needs to be re-run
+
+		_status = toInit;
+	}
+	else
 	{
 		Json::Reader parser;
 		parser.parse(_analysisResultsString, _analysisResults, false);
@@ -146,17 +153,35 @@ bool Engine::receiveMessages(int timeout)
 		Json::Reader r;
 		r.parse(data, jsonRequest, false);
 
-		_analysisId = jsonRequest.get("id", -1).asInt();
+		int analysisId = jsonRequest.get("id", -1).asInt();
 		string perform = jsonRequest.get("perform", "run").asString();
 
-		if (perform == "init")
-			_status = toInit;
-		else if (perform == "abort")
-			_status = aborted;
-		else
-			_status = toRun;
+		if (analysisId == _analysisId && _status == running)
+		{
+			// if the current running analysis has changed
 
-		if (_status != aborted)
+			if (perform == "init")
+				_status = changed;
+			else if (perform == "stop")
+				_status = stopped;
+			else
+				_status = aborted;
+		}
+		else
+		{
+			// the new analysis should be init or run (existing analyses will be aborted)
+
+			_analysisId = analysisId;
+
+			if (perform == "init")
+				_status = toInit;
+			else if (perform == "run")
+				_status = toRun;
+			else
+				_status = error;
+		}
+
+		if (_status == toInit || _status == toRun || _status == changed)
 		{
 			_analysisName = jsonRequest.get("name", Json::nullValue).asString();
 			_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
@@ -206,10 +231,14 @@ void Engine::sendResults()
 			status = "inited";
 			break;
 		case running:
+		case changed:
 			status = "running";
 			break;
 		case complete:
 			status = "complete";
+			break;
+		case stopped:
+			status = "stopped";
 			break;
 		default:
 			status = "error";
@@ -225,12 +254,12 @@ void Engine::sendResults()
 	_channel->send(message);
 }
 
-int Engine::callback(const string &results)
+string Engine::callback(const string &results)
 {
-	if (receiveMessages() || _status == empty)
-	{
-		return 1; // abort analysis
-	}
+	receiveMessages();
+
+	if (_status == aborted || _status == toInit || _status == toRun)
+		return "{ \"status\" : \"aborted\" }"; // abort
 
 	if (results != "null")
 	{
@@ -242,7 +271,14 @@ int Engine::callback(const string &results)
 		sendResults();
 	}
 
-	return 0;
+	if (_status == changed)
+		return "{ \"status\" : \"changed\", \"options\" : \"" + _analysisOptions + "\" }";
+	else if (_status == stopped)
+		return "{ \"status\" : \"stopped\" }";
+	else if (_status == aborted)
+		return "{ \"status\" : \"aborted\" }";
+
+	return "{ \"status\" : \"ok\" }";
 }
 
 string Engine::provideStateFileName()

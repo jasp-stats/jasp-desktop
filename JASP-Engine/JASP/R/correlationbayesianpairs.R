@@ -533,7 +533,7 @@
 		i <- i + 1
 	}
 	
-	if(callback() != 0)
+	if ( ! .shouldContinue(callback()))
 				return()
 	
 	yhigh <- vector("numeric", length(y1h) + length(y3h))
@@ -619,8 +619,8 @@
 		i <- i + 1
 	}
 	
-	if(callback() != 0)
-				return()
+	if ( ! .shouldContinue(callback()))
+		return()
 	
 	ylow <- vector("numeric", length(y1l) + length(y3l))
 	o <- 1
@@ -731,7 +731,7 @@
 		yLab <- yLab1s
 	}
 	
-	if(callback() != 0)
+	if ( ! .shouldContinue(callback()))
 		return()
 	
 	while (length(yLab) > 9) {
@@ -812,7 +812,7 @@
 		}
 	}		
 	
-	if(callback() != 0)
+	if ( ! .shouldContinue(callback()))
 		return()
 	
 	yAt <- vector("numeric", length(yLab))
@@ -902,7 +902,7 @@
 			}		
 		}
 		
-		if(callback() != 0)
+	if ( ! .shouldContinue(callback()))
 				return()
 		
 		axis(side=4, at= yAt,tick=TRUE,las=2, cex.axis= cexAxis, lwd= lwdAxis, labels=FALSE, line= -0.6)
@@ -1170,7 +1170,7 @@
 	alpha <- 2 / (BF01e + 1) * A / radius^2
 	startpos <- pi/2 - alpha/2
 	
-	if(callback() != 0)
+	if ( ! .shouldContinue(callback()))
 				return()
 	
 	# draw probability wheel
@@ -1626,7 +1626,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	if (length(options$pairs) > 0 && (options$plotPriorAndPosterior || options$plotSequentialAnalysis)) {
 	
-		if (callback(results) != 0)
+	if ( ! .shouldContinue(callback()))
 			return()
 			
 		j <- 1
@@ -1660,7 +1660,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				results[["plots"]] <- plots.correlation
 				
-				if (callback(results) != 0)
+				if ( ! .shouldContinue(callback()))
 						return()
 			
 				plot <- plots.correlation[[j]]
@@ -1697,8 +1697,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				results[["plots"]] <- plots.correlation
 				
-				if (callback(results) != 0)
-						return()
+				if ( ! .shouldContinue(callback()))
+					return()
 			}
 			
 			if (options$plotSequentialAnalysis) {
@@ -1707,8 +1707,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				results[["plots"]] <- plots.correlation
 				
-				if (callback(results) != 0)
-						return()
+				if ( ! .shouldContinue(callback()))
+					return()
 			
 				plot <- plots.correlation[[j]]
 	
@@ -1744,8 +1744,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				results[["plots"]] <- plots.correlation
 				
-				if (callback(results) != 0)
-						return()
+				if ( ! .shouldContinue(callback()))
+					return()
 			}			
 		}
 	}				

@@ -17,7 +17,7 @@
 
 #include "../JASP-Common/dataset.h"
 
-	typedef boost::function<int(const std::string &)> RCallback;
+	typedef boost::function<std::string (const std::string &)> RCallback;
 
 	void rbridge_init();
 	void rbridge_setFileNameSource(boost::function<std::string(const std::string &)> source);
