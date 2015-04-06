@@ -47,6 +47,21 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	results[[".meta"]] <- .meta
 
 	
+	state <- .retrieveState()
+	anovaModel <- NULL
+
+	if ( ! is.null(state)) {  # is there state?
+	
+		diff <- .diff(options, state$options)  # compare old and new options
+
+		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE)) {
+		
+			# old model can be used
+			
+			anovaModel <- state$model
+		}
+	}
+	
 	
 	## Create Title
 	
@@ -75,20 +90,28 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	## Perform ANOVA
 
 	model <- NULL
-	singular <- NULL
-	if (perform == "run" && status$ready && status$error == FALSE) {
-		
-		anovaModel <- .anovaModel(dataset, options)
-		model <- anovaModel$model
-		singular <- anovaModel$singular
+	singular <- FALSE
 	
+	if (is.null(anovaModel)) { # if not retrieved from state
+	
+		if (perform == "run" && status$ready && status$error == FALSE) {
+		
+			anovaModel <- .anovaModel(dataset, options)
+			
+			model <- anovaModel$model
+			singular <- anovaModel$singular
+		}
+		
+	} else {
+	
+		model <- anovaModel$model
+		singular <- anovaModel$singular	
 	}
-
 
 
 	## Create ANOVA Table
 
-	result <- .anovaTable(dataset, options, perform, model, status, singular)
+	result <- .anovaTable(options, model, status, singular)
 	
 	results[["anova"]] <- result$result
 	status <- result$status
@@ -169,7 +192,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	    }
 	}
 	
-	results
+	state[["model"]] <- anovaModel
+	state[["options"]] <- options
+
+	if (perform == "init" && status$ready && status$error == FALSE) {
+
+		return(list(results=results, status="inited", state=state))
+		
+	} else {
+	
+		return(list(results=results, status="complete", state=state))	
+	}
 }
 
 .anovaContrastCases <- function(column, contrast.type) {
@@ -450,7 +483,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(model = model, singular = singular)
 }
 
-.anovaTable <- function(dataset, options, perform, model, status, singular) {
+.anovaTable <- function(options, model, status, singular) {
 	
 	anova <- list()
 	
@@ -526,7 +559,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}	
 	
 	
-	if (perform == "init" || status$ready == FALSE || status$error) {
+	if (is.null(model)) {
 	
 		anova.rows <- list()
 
@@ -669,6 +702,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		}
 		
 		anova[["data"]] <- anova.rows
+		anova[["status"]] <- "complete"
         			
 		if (singular)
 		    .addFootnote(footnotes, text = "Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables", symbol = "<em>Warning.</em>")
