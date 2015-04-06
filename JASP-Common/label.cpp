@@ -2,6 +2,7 @@
 #include "label.h"
 
 #include <sstream>
+#include <cstring>
 
 Label::Label(const std::string &label, int value)
 {
