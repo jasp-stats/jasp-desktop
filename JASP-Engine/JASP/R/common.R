@@ -695,15 +695,15 @@ as.list.footnotes <- function(footnotes) {
 
 .diff <- function(one, two) {
 
-	# returns TRUE if identical
-	# returns FALSE if different or not really comparable
+	# returns FALSE if identical
+	# returns TRUE if different or not really comparable
 	# returns a list of what has changed if non-identical named lists provided
 	
 	if (identical(one, two))
-		return(TRUE)
+		return(FALSE)
 	
 	if (is.null(names(one)) == ( ! is.null(names(two))))  # if one list has names, and the other not
-		return(FALSE)
+		return(TRUE)
 	
 	changed <- list()
 	
@@ -719,20 +719,26 @@ as.list.footnotes <- function(footnotes) {
 				item1 <- one[[name]]
 				item2 <- two[[name]]
 				
-				if (identical(item1, item2) == FALSE)
+				if (identical(item1, item2) == FALSE) {
+				
 					changed[[name]] <- .diff(item1, item2)
+					
+				} else {
+				
+					changed[[name]] <- FALSE
+				}
 			}
 		}
 		
 		for (name in names2) {
 			
 			if ((name %in% names1) == FALSE)
-				changed[[name]] <- FALSE
+				changed[[name]] <- TRUE
 		}
 		
 	} else {
 		
-		return(FALSE)
+		return(TRUE)
 	}
 	
 	changed
