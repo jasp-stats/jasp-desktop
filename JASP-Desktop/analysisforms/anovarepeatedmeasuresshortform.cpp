@@ -36,22 +36,26 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->repeatedMeasuresCells);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->betweenSubjectFactors);
 
-	_anovaModel = new TableModelAnovaModel(this);
-	ui->modelTerms->setModel(_anovaModel);
-	connect(_anovaModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
+	_withinSubjectsTermsModel = new TableModelAnovaModel(this);
+	ui->withinModelTerms->setModel(_withinSubjectsTermsModel);
+	connect(_withinSubjectsTermsModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
+
+	_betweenSubjectsTermsModel = new TableModelAnovaModel(this);
+	ui->betweenModelTerms->setModel(_betweenSubjectsTermsModel);
+	connect(_betweenSubjectsTermsModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
 
 	_contrastsModel = new TableModelVariablesOptions();
     ui->contrasts->setModel(_contrastsModel);
 
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
-	connect(_betweenSubjectsFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignedTo(Terms)), _betweenSubjectsTermsModel, SLOT(addFixedFactors(Terms)));
+	connect(_betweenSubjectsFactorsListModel, SIGNAL(unassigned(Terms)), _betweenSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
 	connect(_designTableModel, SIGNAL(designChanging()), this, SLOT(factorsChanging()));
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
-	connect(_designTableModel, SIGNAL(factorAdded(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
-	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+	connect(_designTableModel, SIGNAL(factorAdded(Terms)), _withinSubjectsTermsModel, SLOT(addFixedFactors(Terms)));
+	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _withinSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
@@ -87,13 +91,12 @@ void AnovaRepeatedMeasuresShortForm::bindTo(Options *options, DataSet *dataSet)
 	foreach (const Factor &factor, _designTableModel->design())
 		factors.add(factor.first);
 
-	factors.add(_betweenSubjectsFactorsListModel->assigned());
+	_withinSubjectsTermsModel->setVariables(factors);
 
-	_anovaModel->setVariables(factors);
+	if (_withinSubjectsTermsModel->terms().size() == 0)
+		_withinSubjectsTermsModel->addFixedFactors(factors);
 
-	if (_anovaModel->terms().size() == 0)
-		_anovaModel->addFixedFactors(factors);
-
+	_betweenSubjectsTermsModel->setVariables(_betweenSubjectsFactorsListModel->assigned());
 }
 
 void AnovaRepeatedMeasuresShortForm::factorsChanging()
@@ -128,7 +131,7 @@ void AnovaRepeatedMeasuresShortForm::termsChanged()
 	foreach (const Factor &factor, _designTableModel->design())
 		terms.add(factor.first);
 
-	terms.add(_anovaModel->terms());
+	terms.add(_withinSubjectsTermsModel->terms());
 
 	ui->marginalMeans_terms->setVariables(terms);
 }

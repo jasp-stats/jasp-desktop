@@ -101,6 +101,9 @@ void AnovaModelWidget::setAssignPiecesVisible(bool visible)
 
 void AnovaModelWidget::variablesAvailableChanged()
 {
+	if (_tableModelAnovaModel == NULL)
+		return;
+
 	const Terms &variables = _tableModelAnovaModel->variables();
 	_tableModelVariablesAvailable->setVariables(variables);
 }

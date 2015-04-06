@@ -21,6 +21,8 @@ void Option::blockSignals(bool block)
 	else
 	{
 		_signalsBlocked--;
+		if (_signalsBlocked < 0)
+			_signalsBlocked = 0;
 
 		if (_signalsBlocked == 0 && _shouldSignalOnceUnblocked)
 		{

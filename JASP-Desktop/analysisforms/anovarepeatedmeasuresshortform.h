@@ -39,7 +39,8 @@ private:
 	TableModelVariablesAssigned *_betweenSubjectsFactorsListModel;
 	TableModelVariablesAssigned *_wlsWeightsListModel;
 
-	TableModelAnovaModel *_anovaModel;
+	TableModelAnovaModel *_withinSubjectsTermsModel;
+	TableModelAnovaModel *_betweenSubjectsTermsModel;
 
 	TableModelVariablesOptions *_contrastsModel;
 	TableModelVariablesAvailable *_factorsAvailableListModel;

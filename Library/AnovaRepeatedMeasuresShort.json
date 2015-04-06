@@ -30,7 +30,17 @@
       "type" : "Variables"
    },
    {
-      "name" : "modelTerms",
+      "name" : "withinModelTerms",
+      "template" : [
+         {
+            "name" : "components",
+            "type" : "Term"
+         }
+      ],
+      "type" : "Table"
+   },
+   {
+      "name" : "betweenModelTerms",
       "template" : [
          {
             "name" : "components",
