@@ -215,7 +215,7 @@
                <item row="0" column="1">
                 <widget class="QLabel" name="label_8">
                  <property name="text">
-                  <string>Horizontal Axis</string>
+                  <string>Horizontal axis</string>
                  </property>
                 </widget>
                </item>
@@ -262,7 +262,7 @@
                <item row="0" column="1">
                 <widget class="QLabel" name="label_10">
                  <property name="text">
-                  <string>Seperate Lines</string>
+                  <string>Seperate lines</string>
                  </property>
                 </widget>
                </item>
@@ -351,7 +351,7 @@
                <item row="0" column="1">
                 <widget class="QLabel" name="label_13">
                  <property name="text">
-                  <string>Seperate Plots</string>
+                  <string>Seperate plots</string>
                  </property>
                 </widget>
                </item>
@@ -389,7 +389,7 @@
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="errorBars">
               <property name="text">
-               <string>Error Bars</string>
+               <string>Error bars</string>
               </property>
              </widget>
             </item>
@@ -650,7 +650,7 @@
                <item row="0" column="0">
                 <widget class="QLabel" name="label_9">
                  <property name="text">
-                  <string>Marginal Means</string>
+                  <string>Marginal means</string>
                  </property>
                 </widget>
                </item>
@@ -718,7 +718,7 @@
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="miscDescriptives">
               <property name="text">
-               <string>Descriptive Statistics</string>
+               <string>Descriptive statistics</string>
               </property>
              </widget>
             </item>
@@ -830,7 +830,7 @@
             <item>
              <widget class="QLabel" name="label_5">
               <property name="text">
-               <string>Sum of Squares</string>
+               <string>Sum of squares</string>
               </property>
              </widget>
             </item>
@@ -1270,6 +1270,12 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
+   <class>AnovaModelWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/anovamodelwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -1278,12 +1284,6 @@
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>AnovaModelWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
