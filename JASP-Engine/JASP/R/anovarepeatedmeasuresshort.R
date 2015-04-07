@@ -357,7 +357,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
                 
         }
         
-        row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", ".isNewGroup" = TRUE)
+        row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
         anova.rows[[length(anova.rows) + 1]] <- row
 
 		anova[["data"]] <- anova.rows
@@ -420,15 +420,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
             df <- resultTable["Residuals","Df"]
             MS <- resultTable["Residuals","Mean Sq"]
             
-            row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", ".isNewGroup" = TRUE)
-            
-            if (options$miscEffectSizeEstimates) {
-                                    
-                row[["eta"]] <- ""
-                row[["partialEta"]] <- ""
-                row[["omega"]] <- ""
-                
-            }
+            row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
                 
             anova.rows[[length(anova.rows) + 1]] <- row
             
@@ -492,15 +484,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
             df <- result[indexResidual,"den Df"]
             MS <- SS / df
             
-            row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", ".isNewGroup" = TRUE)
-            
-            if (options$miscEffectSizeEstimates) {
-                                    
-                row[["eta"]] <- ""
-                row[["partialEta"]] <- ""
-                row[["omega"]] <- ""
-                
-            }
+            row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
             
             anova.rows[[length(anova.rows) + 1]] <- row    
         
@@ -615,22 +599,22 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
             
             if (options$miscSphericityCorrections) {
                 
-                row <- list("case"="Residual", "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", ".isNewGroup" = FALSE)
+                row <- list("case"="Residual", "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = FALSE)
                 anova.rows[[length(anova.rows) + 1]] <- row
                 
                 if (options$sphericityGreenhouseGeisser) {
-                    row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", ".isNewGroup" = FALSE)
+                    row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = FALSE)
                     anova.rows[[length(anova.rows) + 1]] <- row
                 } 
                 
                 if (options$sphericityHuynhFeldt) {
-                    row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", ".isNewGroup" = FALSE)
+                    row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = FALSE)
                     anova.rows[[length(anova.rows) + 1]] <- row
                 }
                 
             } else {
             
-                row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", ".isNewGroup" = FALSE)
+                row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = FALSE)
                 anova.rows[[length(anova.rows) + 1]] <- row
                 
             }   
