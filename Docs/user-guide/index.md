@@ -68,7 +68,7 @@ In JASP there are 4 variable types:
 
 *Continuous* variables are variables with values which exist on a continuum, such as *Height* or *Weight*.
 
-Some users prefer not to have to specify the variable types (which can be arduous to specify, particularly for data sets with many columns), and so the variable types in JASP are generally not enforced. They usually serve only as guides; you can for example, assign a nominal variable as a dependent variable in a t-test. In this situation, the variable is treated as a continuous variable.
+Some users prefer not to have to specify the variable types (which can be arduous, particularly for data sets with many columns), and so the variable types in JASP are generally not enforced. They usually serve only as guides; you can, for example, assign a nominal variable as a dependent variable in a t-test. In this situation, the variable is treated as a continuous variable.
 (It should be noted that this is the same behaviour as SPSS)
 
 #### Variable Type Assignment
@@ -77,9 +77,9 @@ When loading a .csv file, JASP automatically assigns variable types according to
 
 1. If the variable contains only integer values and missing values, and contains less than 25 unique values, then it is assigned a variable type of *Nominal*.
 2. If the variable contains only integer values, floating point numbers, missing values, and +/- infinities, then it is assigned a type of *Continuous*.
-3. Otherwise the variable is assigned a type of *NominalText*.
+3. Otherwise the variable is assigned a type of *Nominal Text*.
 
-It should be noted that a value of *NA* is considered a text value in JASP, the same as in almost all statistical environments. However occasionally *R* users are tripped up by this.
+It should be noted that a value of *NA* is considered a text value in JASP, the same as in almost all statistical environments. However this occasionally trips up *R* users.
 
 #### Changing Variable Types
 
@@ -90,7 +90,7 @@ Values are changed to the new data type, and any incompatibilities are converted
 Analyses
 --------
 
-Having loaded a dataset, it is now possible to run analyses. Selecting an analysis from the Ribbon along the top, shows options for that analysis in the left panel (where the data occupied), and results in the right panel. As the options are specified, the analysis results automatically update, providing immediate feedback.
+Having loaded a dataset, it is now possible to run analyses. Selecting an analysis from the Ribbon along the top, shows options for that analysis in the left panel, and results in the right panel. As the options are specified, the analysis results automatically update, providing immediate feedback.
 
 When the analysis is specified the way you like, you can return to the data view by clicking the "OK" button. This dismisses the analysis options, and unselects the current analysis.
 
