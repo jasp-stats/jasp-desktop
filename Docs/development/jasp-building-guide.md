@@ -1,7 +1,15 @@
 Guide to Building JASP
 ======================
 
-JASP depends on [Qt (5+)](http://qt-project.org), [R](http://cran.r-project.org) [boost](http://boost.org), and [boost nowide](http://cppcms.com/files/nowide/html/).
+The easiest way to build JASP is to use Qt Creator. After cloning the [jasp-desktop project](https://github.com/jasp-stats/jasp-desktop), open the JASP.pro file in the jasp-desktop directory, in Qt Creator. This project contains two runnable sub-projects, *JASP-Desktop* and *JASP-Engine*. In order to run JASP, *JASP-Desktop* is the correct project to run.
+
+For those unfamiliar with using Qt Creator for development, there is some excellent documentation available [here](http://doc.qt.io/qtcreator/index.html).
+
+Alternatively, those that are more comfortable using command line tools can use QMake, the manual for which is available [here](http://doc.qt.io/qt-5.4/qmake-manual.html).
+
+Once the build process is configured, JASP will require several dependencies. We recommend that you begin the build process (creating the necessary output directories), wait for the build process to fail from a lack of dependencies, copy the appropriate dependencies into place, and then restart the build process.
+
+JASP depends on [Qt (5+)](http://qt-project.org), [R](http://cran.r-project.org), [boost](http://boost.org), and [boost nowide](http://cppcms.com/files/nowide/html/). Links to specific versions for each platform are provided below.
 
 Windows
 -------
@@ -70,3 +78,4 @@ The directory structure should be as follows:
     [+] jasp-desktop  < from github >
     [+] R
     [+] build-JASP- ... < build directory, created by QtCreator >
+
