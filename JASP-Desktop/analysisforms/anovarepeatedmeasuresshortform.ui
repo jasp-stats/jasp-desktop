@@ -574,45 +574,29 @@
       <property name="topMargin">
        <number>3</number>
       </property>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderOptions">
+        <property name="text">
+         <string>Options</string>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="0">
        <widget class="QWidget" name="containerOptions" native="true">
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>36</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Marginal means</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="BoundAssignWidget" name="marginalMeansTerms" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>160</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QWidget" name="containerEMM" native="true">
-           <layout class="QGridLayout" name="gridLayout_5">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QWidget" name="groupCompareMainEffects" native="true">
+           <layout class="QGridLayout" name="gridLayout_11">
             <property name="leftMargin">
-             <number>12</number>
+             <number>0</number>
             </property>
-            <item row="1" column="0">
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <item row="2" column="0">
              <widget class="QWidget" name="widgetCIAdjustmentTypes" native="true">
               <property name="enabled">
                <bool>false</bool>
@@ -623,7 +607,7 @@
                 <height>0</height>
                </size>
               </property>
-              <layout class="QGridLayout" name="gridLayout_22">
+              <layout class="QGridLayout" name="gridLayout_23">
                <property name="leftMargin">
                 <number>24</number>
                </property>
@@ -637,7 +621,7 @@
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="QLabel" name="label_14">
+                <widget class="QLabel" name="label_16">
                  <property name="text">
                   <string>Confidence interval adjustment</string>
                  </property>
@@ -665,8 +649,43 @@
               </layout>
              </widget>
             </item>
-            <item row="1" column="3">
-             <spacer name="horizontalSpacer_2">
+            <item row="0" column="0" colspan="4">
+             <widget class="QWidget" name="marginalMeansContainer" native="true">
+              <layout class="QGridLayout" name="gridLayout_13">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>Marginal means</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="BoundAssignWidget" name="marginalMeansTerms" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>160</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <spacer name="horizontalSpacer_5">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -678,7 +697,7 @@
               </property>
              </spacer>
             </item>
-            <item row="0" column="0" colspan="2">
+            <item row="1" column="0" colspan="2">
              <widget class="BoundCheckBox" name="marginalMeansCompareMainEffects">
               <property name="text">
                <string>Compare main effects</string>
@@ -688,7 +707,7 @@
            </layout>
           </widget>
          </item>
-         <item>
+         <item row="1" column="0">
           <widget class="GroupBox" name="containerDisplay">
            <property name="title">
             <string>Display</string>
@@ -832,13 +851,6 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderOptions">
-        <property name="text">
-         <string>Options</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
@@ -866,6 +878,12 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
+   <class>AnovaModelWidget</class>
+   <extends>QWidget</extends>
+   <header>widgets/anovamodelwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -874,12 +892,6 @@
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>AnovaModelWidget</class>
-   <extends>QWidget</extends>
-   <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -918,22 +930,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>marginalMeansCompareMainEffects</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetCIAdjustmentTypes</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>203</x>
-     <y>2069</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>194</x>
-     <y>2098</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>miscSphericityCorrections</sender>
    <signal>toggled(bool)</signal>
    <receiver>widgetSphericityCorrections</receiver>
@@ -946,6 +942,22 @@
     <hint type="destinationlabel">
      <x>327</x>
      <y>2278</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>marginalMeansCompareMainEffects</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetCIAdjustmentTypes</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>191</x>
+     <y>2030</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>182</x>
+     <y>2059</y>
     </hint>
    </hints>
   </connection>
