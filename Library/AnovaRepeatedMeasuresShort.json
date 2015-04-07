@@ -108,51 +108,6 @@
       "type" : "Boolean"
    },
    {
-      "name" : "postHocTestsTukey",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "postHocTestsWallerDuncan",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "postHocTestsWallerDuncanRatio",
-      "type" : "Integer",
-      "default" : 100
-   },
-   {
-      "name" : "postHocTestsDunnett",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "postHocTestsDunnettControl",
-      "options" : [ "first", "last" ],
-      "default" : "last",
-      "type" : "List"
-   },
-   {
-      "name" : "postHocTestsDunnettSides",
-      "options" : [ "both", "lessThan", "greaterThan" ],
-      "default" : "both",
-      "type" : "List"
-   },
-   {
-      "name" : "postHocTestsTamhaneT2",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "postHocTestsDunnettT3",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "postHocTestsGamesHowell",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "postHocTestsDunnettC",
-      "type" : "Boolean"
-   },
-   {
       "name" : "marginalMeansTerms",
       "type" : "Variables"
    },
@@ -162,8 +117,8 @@
    },
    {
       "name" : "marginalMeansCiAdjustment",
-      "options" : [ "LSD", "bonferroni" ],
-      "default" : "LSD",
+      "options" : [ "None", "Bonferroni", "Sidak" ],
+      "default" : "None",
       "type" : "List"
    },
    {
@@ -175,28 +130,37 @@
       "type" : "Boolean"
    },
    {
-      "name" : "miscObservedPower",
+      "name" : "effectSizeEtaSquared",
+      "type" : "Boolean",
+      "default" : true
+   },
+   {
+      "name" : "effectSizePartialEtaSquared",
       "type" : "Boolean"
    },
    {
-      "name" : "miscParameterEstimates",
+      "name" : "effectSizeOmegaSquared",
       "type" : "Boolean"
    },
    {
-      "name" : "miscContrastCoefficients",
+      "name" : "miscSphericityTests",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "miscSphericityCorrections",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "sphericityGreenhouseGeisser",
+      "type" : "Boolean"
+   },
+   {
+      "name" : "sphericityHuynhFeldt",
       "type" : "Boolean"
    },
    {
       "name" : "miscHomogeneityTests",
       "type" : "Boolean"
    },
-   {
-      "name" : "significanceLevel",
-      "type" : "Number",
-      "format" : "",
-      "max" : 0.50,
-      "min" : 0.00010,
-      "value" : 0.050
-   }
 ]
 
