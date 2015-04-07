@@ -116,7 +116,7 @@ void AnovaRepeatedMeasuresShortForm::factorsChanged()
 
 	_contrastsModel->setVariables(factorsAvailable);
 
-	ui->postHocTests_variables->setVariables(factorsAvailable);
+	ui->postHocTestsVariables->setVariables(factorsAvailable);
 
 	if (_options != NULL)
 		_options->blockSignals(false);
@@ -133,7 +133,7 @@ void AnovaRepeatedMeasuresShortForm::termsChanged()
 
 	terms.add(_withinSubjectsTermsModel->terms());
 
-	ui->marginalMeans_terms->setVariables(terms);
+	ui->marginalMeansTerms->setVariables(terms);
 }
 
 void AnovaRepeatedMeasuresShortForm::withinSubjectsDesignChanged()
