@@ -152,11 +152,13 @@
    },
    {
       "name" : "sphericityGreenhouseGeisser",
-      "type" : "Boolean"
+      "type" : "Boolean",
+      "default" : true
    },
    {
       "name" : "sphericityHuynhFeldt",
-      "type" : "Boolean"
+      "type" : "Boolean",
+      "default" : true
    },
    {
       "name" : "miscHomogeneityTests",
