@@ -69,13 +69,11 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	ui->groupPostHoc->hide();
 	ui->groupCompareMainEffects->hide();
 	ui->miscDescriptives->hide();
-	ui->miscHomogeneityTests->hide();
 #else
 	ui->groupContrasts->setStyleSheet("background-color: pink ;");
 	ui->groupPostHoc->setStyleSheet("background-color: pink ;");
 	ui->groupCompareMainEffects->setStyleSheet("background-color: pink ;");
 	ui->miscDescriptives->setStyleSheet("background-color: pink ;");
-	ui->miscHomogeneityTests->setStyleSheet("background-color: pink ;");
 #endif
 }
 
