@@ -46,7 +46,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	results[["title"]] <- "Repeated Measures ANOVA"
 	
 	
-	status <- .anovaMixedCheck(dataset, options, perform)
+	status <- .rmAnovaCheck(dataset, options, perform)
 	
 	
 	
@@ -55,11 +55,13 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	model <- NULL
 	epsilon <- NULL
 	mauchly <- NULL
+	epsilonError <- FALSE
 	if (perform == "run" && status$ready && status$error == FALSE) {
 		
-		anovaModel <- .anovaMixedModel(dataset, options, status)
+		anovaModel <- .rmAnovaModel(dataset, options, status)
 		model <- anovaModel$model
 		epsilon <- anovaModel$epsilon
+		epsilonError <- anovaModel$epsilonError
 		mauchly <- anovaModel$mauchly
 		status <- anovaModel$status
 	
@@ -69,7 +71,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     
     ## Create Sphericity Assumption Table
     
-    result <- .sphericityTest(dataset, options, perform, epsilon, mauchly, status) 
+    result <- .sphericityTest(dataset, options, perform, epsilon, epsilonError, mauchly, status) 
     
     results[["sphericity"]] <- result$result
 	status <- result$status
@@ -82,7 +84,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 	## Create Within Subjects Effects Table
 
-	result <- .anovaWithinSubjectsTable(dataset, options, perform, model, epsilonTable, status)
+	result <- .rmAnovaWithinSubjectsTable(dataset, options, perform, model, epsilonTable, epsilonError, status)
 	
 	results[["withinSubjectsEffects"]] <- result$result
 	status <- result$status
@@ -93,7 +95,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 	## Create Between Subjects Effects Table
 
-	result <- .anovaBetweenSubjectsTable(dataset, options, perform, model, status)
+	result <- .rmAnovaBetweenSubjectsTable(dataset, options, perform, model, status)
 	
 	results[["betweenSubjectsEffects"]] <- result$result
 	status <- result$status
@@ -105,7 +107,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	results
 }
 
-.anovaMixedCheck <- function(dataset, options, perform) {
+.rmAnovaCheck <- function(dataset, options, perform) {
 
 	error <- FALSE
 	errorMessage <- NULL
@@ -170,7 +172,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	list(ready=ready, error=error, errorMessage=errorMessage)
 }
 
-.modelMixedFormula <- function(options) {
+.rmModelFormula <- function(options) {
 
     termsRM.base64 <- c()
     termsRM.normal <- c()
@@ -226,9 +228,9 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     list(model.def = model.def, terms.normal = terms.normal, terms.base64 = terms.base64, termsRM.normal = termsRM.normal, termsRM.base64 = termsRM.base64)
 }
 
-.anovaMixedModel <- function(dataset, options, status) {
+.rmAnovaModel <- function(dataset, options, status) {
 	
-	modelDef <- .modelMixedFormula(options)
+	modelDef <- .rmModelFormula(options)
 	model.formula <- as.formula(modelDef$model.def)
 	
 	dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
@@ -249,13 +251,15 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		result <- try(afex::aov.car(model.formula, data=dataset, type= 3, return = "univariate"), silent = TRUE)
 	}
 	
+	model <- NULL
 	epsilon <- NULL
 	mauchly <- NULL
+	epsilonError <- FALSE
 	
     if (length(class(result)) == 1 && class(result) == "try-error") {
     
         status$error <- TRUE
-        status$errorMessage <- .extractErrorMessage(model)
+        status$errorMessage <- .extractErrorMessage(result)
         
     } else {
         
@@ -264,6 +268,11 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
             model <- summary(result)
             epsilon <- sphericityStatistics$sphericity.correction
             mauchly <- sphericityStatistics$mauchly
+        
+        } else if (options$sumOfSquares == "type1" && class(sphericityStatistics) == "try-error") {
+        
+            model <- summary(result)
+            epsilonError <- TRUE
         
         } else {
             
@@ -274,7 +283,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
         }
     }
 
-	list(model = model, epsilon = epsilon, mauchly = mauchly, status = status)
+	list(model = model, epsilon = epsilon, epsilonError = epsilonError, mauchly = mauchly, status = status)
 }
 
 .identicalTerms <- function(x,y) {
@@ -289,7 +298,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     }
 }
 
-.anovaBetweenSubjectsTable <- function(dataset, options, perform, model, status) {
+.rmAnovaBetweenSubjectsTable <- function(dataset, options, perform, model, status) {
 
     anova <- list()
 	    
@@ -335,7 +344,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 	}
     	
-	modelDef <- .modelMixedFormula(options)
+	modelDef <- .rmModelFormula(options)
 	terms.normal <- modelDef$terms.normal 
     terms.base64 <- modelDef$terms.base64
     termsRM.base64 <- modelDef$termsRM.base64
@@ -499,7 +508,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     list(result = anova, status = status)
 }
 
-.anovaWithinSubjectsTable <- function(dataset, options, perform, model, epsilon, status) {
+.rmAnovaWithinSubjectsTable <- function(dataset, options, perform, model, epsilon, epsilonError, status) {
 
     anova <- list()
 	    
@@ -555,12 +564,12 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 	}
     	
-	modelDef <- .modelMixedFormula(options)
+	modelDef <- .rmModelFormula(options)
 	terms.normal <- modelDef$terms.normal 
     terms.base64 <- modelDef$terms.base64
     termsRM.base64 <- modelDef$termsRM.base64
     
-    if (perform == "init" || status$ready == FALSE || status$error) {
+    if (perform == "init" || status$ready == FALSE || status$error || (options$miscSphericityCorrections && epsilonError)) {
     
         anova.rows <- list()
         
@@ -624,6 +633,9 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		
 		if (status$error)
 			anova[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
+
+        if (epsilonError)
+            anova[["error"]] <- list(errorType="badData", errorMessage="Could not estimate sphericity corrections due to problems with estimating the correction parameters.")
     
     } else {
     
@@ -673,8 +685,10 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
                     for (cor in corrections) {
                         
                         if (!options$miscSphericityCorrections) {
-                        
-                            if (epsilon[i-1,"p"] < .05) {
+                            
+                            print(epsilon)
+                            
+                            if (!is.null(epsilon) && epsilon[i-1,"p"] < .05) {
                             
                                 foot.index <- .addFootnote(footnotes, text="Mauchly's test of sphericity indicates that the assumption of sphericity is not met (p < .05).")
 				                row.footnotes <- list(SS=list(foot.index), df=list(foot.index), MS=list(foot.index), F=list(foot.index), p=list(foot.index))
@@ -800,7 +814,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
                         if (!options$miscSphericityCorrections) {
                         
-                            if (epsilon[i-1,"p"] < .05) {
+                            if (!is.null(epsilon) && epsilon[i-1,"p"] < .05) {
                             
                                 foot.index <- .addFootnote(footnotes, text="Mauchly's test of sphericity indicates that the assumption of sphericity is not met (p < .05).")
 				                row.footnotes <- list(SS=list(foot.index), df=list(foot.index), MS=list(foot.index), F=list(foot.index), p=list(foot.index))
@@ -917,7 +931,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     list(result = anova, status = status)
 }
 
-.sphericityTest <- function(dataset, options, perform, epsilon, mauchly, status) {
+.sphericityTest <- function(dataset, options, perform, epsilon, epsilonError, mauchly, status) {
     
     sphericity <- list()
 	    
@@ -934,15 +948,13 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 	footnotes <- .newFootnotes()
 	
-	modelDef <- .modelMixedFormula(options)
+	modelDef <- .rmModelFormula(options)
     termsRM.base64 <- modelDef$termsRM.base64
     termsRM.normal <- modelDef$termsRM.normal
     
-    epsilonTable <- as.data.frame(matrix(0, length(termsRM.base64), 3))
-    colnames(epsilonTable) <- c("GG", "HF", "p")
-    rownames(epsilonTable) <- termsRM.base64 
+    epsilonTable <- NULL
     
-    if (perform == "init" || status$ready == FALSE || status$error) {
+    if (perform == "init" || status$ready == FALSE || status$error || epsilonError) {
     
         sphericity.rows <- list()
         
@@ -963,10 +975,17 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
         
         if (status$error)
             sphericity[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
+            
+        if (epsilonError)
+            sphericity[["error"]] <- list(errorType="badData", errorMessage="Could not estimate sphericity parameters due to singularity problems.")
     
     } else {
-
+    
         sphericity.rows <- list()
+        
+        epsilonTable <- as.data.frame(matrix(0, length(termsRM.base64), 3))
+        colnames(epsilonTable) <- c("GG", "HF", "p")
+        rownames(epsilonTable) <- termsRM.base64 
         
         if (is.null(epsilon)) {
             modelTermsResults <- list()
