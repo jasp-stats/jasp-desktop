@@ -1626,7 +1626,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	if (length(options$pairs) > 0 && (options$plotPriorAndPosterior || options$plotSequentialAnalysis)) {
 	
-	if ( ! .shouldContinue(callback()))
+	if ( ! .shouldContinue(callback(results)))
 			return()
 			
 		j <- 1
@@ -1660,7 +1660,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				results[["plots"]] <- plots.correlation
 				
-				if ( ! .shouldContinue(callback()))
+				if ( ! .shouldContinue(callback(results)))
 						return()
 			
 				plot <- plots.correlation[[j]]
@@ -1697,7 +1697,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				results[["plots"]] <- plots.correlation
 				
-				if ( ! .shouldContinue(callback()))
+				if ( ! .shouldContinue(callback(results)))
 					return()
 			}
 			
@@ -1707,7 +1707,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				results[["plots"]] <- plots.correlation
 				
-				if ( ! .shouldContinue(callback()))
+				if ( ! .shouldContinue(callback(results)))
 					return()
 			
 				plot <- plots.correlation[[j]]
@@ -1744,7 +1744,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				results[["plots"]] <- plots.correlation
 				
-				if ( ! .shouldContinue(callback()))
+				if ( ! .shouldContinue(callback(results)))
 					return()
 			}			
 		}

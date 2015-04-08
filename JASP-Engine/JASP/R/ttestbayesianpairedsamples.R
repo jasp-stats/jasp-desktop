@@ -454,7 +454,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 		results[["plots"]][[1]][["status"]] <- "running"
 
-		if ( ! .shouldContinue(callback()))
+		if ( ! .shouldContinue(callback(results)))
 			return()
 		
 		n.plots.per.variable <- sum(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis)
@@ -540,7 +540,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j+1]]$status <- "running"
 					results[["plots"]] <- plots.ttest
 
-					if ( ! .shouldContinue(callback()))
+					if ( ! .shouldContinue(callback(results)))
 						return()
 					
 				} else {
@@ -580,7 +580,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j+1]]$status <- "running"
 					results[["plots"]] <- plots.ttest
 					
-					if ( ! .shouldContinue(callback()))
+					if ( ! .shouldContinue(callback(results)))
 						return()
 					
 				} else {
@@ -625,7 +625,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j+1]]$status <- "running"
 					results[["plots"]] <- plots.ttest
 					
-					if ( ! .shouldContinue(callback()))
+					if ( ! .shouldContinue(callback(results)))
 						return()
 					
 				} else {
