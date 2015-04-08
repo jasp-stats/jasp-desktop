@@ -1,9 +1,9 @@
 
 AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
-    numeric.variables <- c(unlist(options$dependent))
+    numeric.variables <- c(unlist(options$repeatedMeasuresCells))
     numeric.variables <- numeric.variables[numeric.variables != ""]
-    factor.variables <- c(unlist(options$repeatedMeasuresCells),unlist(options$betweenSubjectFactors))
+    factor.variables <- c(unlist(options$betweenSubjectFactors))
     factor.variables <- factor.variables[factor.variables != ""]
 
     if (is.null(dataset)) {
@@ -34,7 +34,9 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		list(name="headerBetweenSubjectsEffects", type="h1"),
 		list(name="betweenSubjectsEffects", type="table"),
 		list(name="headerSphericity", type="h1"),
-		list(name="sphericity", type="table")
+		list(name="sphericity", type="table"),
+		list(name="headerLevene", type="h1"),
+		list(name="levene", type="table")
 	)
 	
 	results[[".meta"]] <- .meta
@@ -101,6 +103,18 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	status <- result$status
 	
 	results[["headerBetweenSubjectsEffects"]] <- "Between Subjects Effects"
+	
+	
+	
+	## Create Levene's Table
+
+	result <- .rmAnovaLevenesTable(dataset, options, perform, status)
+	
+	results[["levene"]] <- result$result
+	status <- result$status
+	
+	if (options$miscHomogeneityTests)
+	    results[["headerLevene"]] <- "Test for Equality of Variances"
 	
 	
 	
@@ -302,7 +316,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
     anova <- list()
 	    
-	anova[["title"]] <- "Between Subjects ANOVA Results"
+	anova[["title"]] <- "Between Subjects ANOVA"
 	
 	fields <- list()
 	
@@ -512,7 +526,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
     anova <- list()
 	    
-	anova[["title"]] <- "Within Subjects ANOVA Results"
+	anova[["title"]] <- "Within Subjects ANOVA"
 	
 	corrections <- NULL
         
@@ -1082,4 +1096,74 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		return (list(result = NULL, epsilonTable = epsilonTable, status = status))
     
     list(result = sphericity, epsilonTable = epsilonTable, status = status)
+}
+
+.rmAnovaLevenesTable <- function(dataset, options, perform, status) {
+
+	if (options$miscHomogeneityTests == FALSE)
+		return (list(result=NULL, status=status))
+		
+	levenes.table <- list()
+	
+	levenes.table[["title"]] <- "Test for Equality of Variances (Levene's)"
+	
+	fields <- list(
+	    list(name="case", type="string", title=""),
+		list(name="F", type="number", format="sf:4;dp:3"),
+		list(name="df1", type="number", format="dp:0"),
+		list(name="df2", type="number", format="dp:0"),
+		list(name="p", type="number", format="dp:3;p:.001"))
+
+	levenes.table[["schema"]] <- list(fields=fields)
+        
+	if (perform == "run" && status$ready && status$error == FALSE && length(options$betweenSubjectFactors) > 0) {
+        
+        levenes.rows <- list()
+        
+        for (i in .indices(options$repeatedMeasuresCells)) {
+            
+            if (i == 1) {
+                newGroup <- TRUE                
+            } else {
+                newGroup <- FALSE
+            }            
+
+            interaction <- paste(.v(options$betweenSubjectFactors), collapse=":", sep="")
+		    levene.def <- paste(.v(options$repeatedMeasuresCells[i]), "~", interaction)
+		    levene.formula <- as.formula(levene.def)
+
+		    r <- car::leveneTest(levene.formula, dataset, center = "mean")
+		
+		    row <- list("case"=options$repeatedMeasuresCells[i],"F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3], ".isNewGroup"=newGroup)
+            
+            levenes.rows[[length(levenes.rows) + 1]] <- row
+            
+        }
+        
+        levenes.table[["data"]] <- levenes.rows
+		
+	} else {
+	
+	    levenes.rows <- list()
+	    
+	    for (i in .indices(options$repeatedMeasuresCells)) {
+
+            if (i == 1) {
+                newGroup <- TRUE                
+            } else {
+                newGroup <- FALSE
+            }
+            
+            row <- list("case"=options$repeatedMeasuresCells[i], "F"=".", "df1"=".", "df2"=".", "p"=".", ".isNewGroup"=newGroup)
+            levenes.rows[[length(levenes.rows) + 1]] <- row
+            
+	    }
+	    
+		levenes.table[["data"]] <- levenes.rows
+	}
+	
+	if (status$error)
+	    levenes.table[["error"]] <- list(error="badData")
+	
+	list(result=levenes.table, status=status)
 }
