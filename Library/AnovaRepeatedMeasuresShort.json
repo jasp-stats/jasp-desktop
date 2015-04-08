@@ -151,6 +151,11 @@
       "type" : "Boolean"
    },
    {
+      "name" : "sphericityNone",
+      "type" : "Boolean",
+      "default" : true
+   },
+   {
       "name" : "sphericityGreenhouseGeisser",
       "type" : "Boolean",
       "default" : true
