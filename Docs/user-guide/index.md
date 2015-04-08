@@ -29,7 +29,11 @@ Newer versions of OS X need to have their "Gatekeeper" options relaxed, before t
 
 You will need to change your Gatekeeper settings to "Allow applications to downloaded from anywhere".
 
-Having relaxed the Gatekeeper settings, the next step is to 'right click' or 'command-click' JASP in your Applications directory, and select 'Open' from the menu. This will present a window saying that JASP is from an unidentified developer; selecting "Open" will start JASP. From then on, you will be able to start JASP in the usual way.
+Having relaxed the Gatekeeper settings, the next step is to 'right click' or 'command-click' JASP in your Applications directory, and select 'Open' from the menu. This will present a window saying that JASP is from an unidentified developer; selecting "Open" will start JASP.
+
+(gatekeeper.png)
+
+From then on, you will be able to start JASP in the usual way.
 
 ### Linux
 
