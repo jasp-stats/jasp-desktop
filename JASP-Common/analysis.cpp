@@ -25,63 +25,11 @@ Analysis::Analysis(int id, string name, Options *options, bool autorun)
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
-
-	_dataSet = NULL;
-	_r = NULL;
 }
 
 Analysis::~Analysis()
 {
 	delete _options;
-}
-
-void Analysis::init()
-{
-	_status = Initing;
-
-	Json::Value returned = _r->init(_name, options()->asJSON());
-
-	string status = returned.get("status", "").asString();
-
-	if (status != "")
-	{
-		if (status == "complete")
-			_status = Complete;
-		else
-			_status = Inited;
-
-		_results = returned.get("results", Json::nullValue);
-	}
-	else
-	{
-		_results = returned;
-		_status = Inited;
-	}
-
-	resultsChanged(this);
-}
-
-void Analysis::run()
-{
-	_status = Running;
-
-	Json::Value returned = _r->run(_name, options()->asJSON(), boost::bind(&Analysis::callback, this, _1));
-
-	// status can be changed by subsequent messages, so we have to see if the analysis has
-	// changed. if it has, then we shouldn't bother sending the results
-
-	if (_status == Running)
-	{
-		Json::Value status = returned.get("status", Json::nullValue);
-
-		if (status != Json::nullValue)
-			_results = returned.get("results", Json::nullValue);
-		else
-			_results = returned;
-
-		_status = Complete;
-		resultsChanged(this);
-	}
 }
 
 void Analysis::abort()
@@ -105,12 +53,12 @@ void Analysis::setResults(Json::Value results)
 	resultsChanged(this);
 }
 
-Json::Value Analysis::results()
+const Json::Value &Analysis::results() const
 {
 	return _results;
 }
 
-Json::Value Analysis::asJSON()
+Json::Value Analysis::asJSON() const
 {
 	Json::Value analysisAsJson = Json::objectValue;
 
@@ -147,7 +95,7 @@ Json::Value Analysis::asJSON()
 	return analysisAsJson;
 }
 
-Analysis::Status Analysis::status()
+Analysis::Status Analysis::status() const
 {
 	return _status;
 }
@@ -181,16 +129,6 @@ void Analysis::optionsChangedHandler(Option *option)
 {
 	_status = Empty;
 	optionsChanged(this);
-}
-
-void Analysis::setRInterface(RInterface *r)
-{
-	_r = r;
-}
-
-void Analysis::setDataSet(DataSet *dataSet)
-{
-	_dataSet = dataSet;
 }
 
 int Analysis::callback(Json::Value results)

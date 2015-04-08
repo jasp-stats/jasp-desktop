@@ -6,10 +6,7 @@
 #include <map>
 #include <list>
 
-#include "dataset.h"
 #include "options/options.h"
-
-#include "rinterface.h"
 
 #include "common.h"
 
@@ -26,25 +23,21 @@ public:
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
 
 	void setResults(Json::Value results);
-	Json::Value results();
-	Json::Value asJSON();
+	const Json::Value &results() const;
+	Json::Value asJSON() const;
 
 	const std::string &name() const;
 	int id() const;
 	bool isAutorun() const;
 
-	virtual void init();
-	virtual void run();
 	virtual void abort();
 	void scheduleRun();
 
-	void setRInterface(RInterface *r);
-	void setDataSet(DataSet *dataSet);
 	void setOptions(Options* options);
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted };
 
-	Status status();
+	Status status() const;
 	void setStatus(Status status);
 
 protected:
@@ -52,14 +45,10 @@ protected:
 	Status _status;
 
 	Options* _options;
-	DataSet *_dataSet;
 
-	RInterface *_r;
 	Json::Value _results;
 
 	int callback(Json::Value results);
-
-    Options *createOptions(std::string name);
 
 private:
 	int _id;
