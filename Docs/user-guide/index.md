@@ -31,7 +31,7 @@ You will need to change your Gatekeeper settings to "Allow applications to downl
 
 Having relaxed the Gatekeeper settings, the next step is to 'right click' or 'command-click' JASP in your Applications directory, and select 'Open' from the menu. This will present a window saying that JASP is from an unidentified developer; selecting "Open" will start JASP.
 
-(gatekeeper.png)
+![Gatekeeper "Open"](https://raw.githubusercontent.com/jasp-stats/jasp-desktop/development/Docs/user-guide/gakekeeper.png)
 
 From then on, you will be able to start JASP in the usual way.
 
