@@ -1183,28 +1183,39 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 .rmAnovaDescriptivesTable <- function(dataset, options, perform, status) {
 
-	if (options$miscDescriptives == FALSE || perform != "run" || !status$ready)
+	if (options$miscDescriptives == FALSE)
 		return(list(result=NULL, status=status))
     
-    dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
-    
     rmFactors <- c()
+    rmLevels <- list()
     
     for (i in .indices(options$repeatedMeasuresFactors)) {
     
-        rmFactors <- c(rmFactors, options$repeatedMeasuresFactors[[i]]$name)
+        rmFactors[i] <- options$repeatedMeasuresFactors[[i]]$name
+        rmLevels[[i]] <- options$repeatedMeasuresFactors[[i]]$levels
         
     }
     
-    allFactors <- c(rmFactors, options$betweenSubjectFactors)
+    bsFactors <- c()
+    bsLevels <- list()
     
+    for (i in .indices(options$betweenSubjectFactors)) {
+    
+        bsFactors[i] <- options$betweenSubjectFactors[i]
+        bsLevels[[i]] <- levels(dataset[[ .v(options$betweenSubjectFactors[i]) ]])
+    
+    }
+    
+    factors <- c(rmFactors, bsFactors)
+    lvls <- c(rmLevels, bsLevels)
+        
 	descriptives.table <- list()
 	    
 	descriptives.table[["title"]] <- "Descriptives"
 		
 	fields <- list()
 	
-	for (variable in allFactors) {
+	for (variable in factors) {
 	
 		name <- paste(".", variable, sep="")  # in case variable is "Mean", "SD" or "N"
 		fields[[length(fields)+1]] <- list(name=name, type="string", title=variable, combine=TRUE)
@@ -1216,72 +1227,82 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	fields[[length(fields)+1]] <- list(name="N", type="number", format="dp:0")
 	
 	descriptives.table[["schema"]] <- list(fields=fields)
-	
-	lvls <- list()
-	factors <- list()
-
-	for (variable in allFactors) {
-	
-		factor <- dataset[[ .v(variable) ]]
-		factors[[length(factors)+1]] <- factor
-		lvls[[ variable ]] <- levels(factor)
-	}
 		
 	cases <- rev(expand.grid(rev(lvls)))
 	
-	namez <- unlist(allFactors)
+	namez <- unlist(factors)
 	column.names <- paste(".", namez, sep="")
 	
-	if (length(allFactors) > 0) {
-
-		rows <- list()
+	if (length(factors) > 0) {
 	
-		for (i in 1:dim(cases)[1]) {
+	    rows <- list()
+        
+        if (perform == "run" && status$ready && status$error == FALSE) {
+            
+            dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
+            
+            for (i in 1:dim(cases)[1]) {
 	
-			row <- list()
-			
-			for (j in 1:dim(cases)[2])
-				row[[ column.names[[j]] ]] <- as.character(cases[i, j])
-								
-			if (perform == "run" && status$ready && status$error == FALSE) {
-			
-				sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, "\"", sep="", collapse=" & ")))
-				
-				data <- base::subset(dataset, sub, select="dependent")[[1]]
-				
-				N <- base::length(data)
+                row <- list()
+            
+                for (j in 1:dim(cases)[2])
+                    row[[ column.names[[j]] ]] <- as.character(cases[i, j])
+            
+                sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, "\"", sep="", collapse=" & ")))
+            
+                data <- base::subset(dataset, sub, select="dependent")[[1]]
+            
+                N <- base::length(data)
 
-				row[["N"]] <- N
-				
-				if (N == 0) {
-				
-					row[["Mean"]] <- ""
-					row[["SD"]]   <- ""
-				
-				} else if (N == 1) {
-				
-					row[["Mean"]] <- data
-					row[["SD"]]   <- ""
-				
-				} else {
-				
-					row[["Mean"]] <- base::mean(data)
-					row[["SD"]]   <- stats::sd(data)
-				}
-				
-			}
-			
-			if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][1]) {
-			    row[[".isNewGroup"]] <- TRUE   
-			} else {				
-				row[[".isNewGroup"]] <- FALSE
-			}
-		
-			rows[[i]] <- row
-		}
-		
-		descriptives.table[["data"]] <- rows
-		
+                row[["N"]] <- N
+            
+                if (N == 0) {
+            
+                    row[["Mean"]] <- ""
+                    row[["SD"]]   <- ""
+            
+                } else if (N == 1) {
+            
+                    row[["Mean"]] <- data
+                    row[["SD"]]   <- ""
+            
+                } else {
+            
+                    row[["Mean"]] <- base::mean(data)
+                    row[["SD"]]   <- stats::sd(data)
+                }
+                
+                print(cases)
+                
+                if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][[1]]) {
+                    row[[".isNewGroup"]] <- TRUE   
+                } else {				
+                    row[[".isNewGroup"]] <- FALSE
+                }
+        
+                rows[[i]] <- row
+            }
+            
+        } else {
+            
+            for (i in 1:dim(cases)[1]) {
+            
+                row <- list()
+            
+                for (j in 1:dim(cases)[2])
+                    row[[ column.names[[j]] ]] <- as.character(cases[i, j])
+                
+                if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][[1]]) {
+                    row[[".isNewGroup"]] <- TRUE   
+                } else {				
+                    row[[".isNewGroup"]] <- FALSE
+                }
+        
+                rows[[i]] <- row
+            }
+        }
+        
+        descriptives.table[["data"]] <- rows		
 	} 
 	
 	if (status$error)
