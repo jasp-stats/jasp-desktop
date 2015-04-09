@@ -20,7 +20,7 @@
 	typedef boost::function<std::string (const std::string &)> RCallback;
 
 	void rbridge_init();
-	void rbridge_setFileNameSource(boost::function<std::string(const std::string &)> source);
+	void rbridge_setFileNameSource(boost::function<void(const std::string &, std::string &, std::string &)> source);
 	void rbridge_setStateFileSource(boost::function<std::string()> source);
 	void rbridge_setDataSet(DataSet *dataSet);
 	std::string rbridge_run(const std::string &name, const std::string &options, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL);

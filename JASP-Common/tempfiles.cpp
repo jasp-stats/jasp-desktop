@@ -165,7 +165,7 @@ string tempfiles_createSpecific(const string &name, int id)
 	stringstream ss;
 	system::error_code error;
 
-	ss << tempfiles_sessionDirName;
+	ss << tempfiles_sessionDirName << "/resources";
 
 	if (id >= 0)
 		ss << "/" << id;
@@ -182,21 +182,26 @@ string tempfiles_createSpecific(const string &name, int id)
 	return ss.str();
 }
 
-string tempfiles_create(const string &extension, int id)
+void tempfiles_create(const string &extension, int id, string &root, string &relativePath)
 {
-	stringstream ss, ssn;
+	stringstream ssRoot, ssRelative;
 	system::error_code error;
 
-	ss << tempfiles_sessionDirName;
+	ssRoot << tempfiles_sessionDirName;
+
+	root = ssRoot.str();
+
+	ssRoot << "/resources";
 
 	if (id >= 0)
-		ss << "/" << id;
+		ssRoot << "/" << id;
 
-	string dir = ss.str();
-	filesystem::path path = Utils::osPath(dir);
+	string resources = ssRoot.str();
 
-	if (filesystem::exists(path, error) == false)
-		filesystem::create_directories(path, error);
+	filesystem::path path = Utils::osPath(resources);
+
+	if (filesystem::exists(resources, error) == false)
+		filesystem::create_directories(resources, error);
 
 	string suffix;
 	if (extension != "")
@@ -204,20 +209,24 @@ string tempfiles_create(const string &extension, int id)
 
 	do
 	{
-		ssn.str("");
-		ssn << dir;
-		ssn << "/";
-		ssn << "_";
-		ssn << tempfiles_nextFileId++;
-		ssn << suffix;
+		ssRelative.str("");
+		ssRelative << "resources/";
 
-		path = Utils::osPath(ssn.str());
+		if (id >= 0)
+			ssRelative << id << "/";
+
+		ssRelative << "_";
+		ssRelative << tempfiles_nextFileId++;
+		ssRelative << suffix;
+
+		relativePath = ssRelative.str();
+		string fullPath = root + "/" + relativePath;
+
+		path = Utils::osPath(fullPath);
 	}
 	while (filesystem::exists(path));
 
-	tempfiles_retrieveList(id);
 
-	return ssn.str();
 }
 
 
@@ -232,7 +241,7 @@ vector<string> tempfiles_retrieveList(int id)
 	{
 		stringstream ss;
 		ss << tempfiles_sessionDirName;
-		ss << "/";
+		ss << "/resources/";
 		ss << id;
 		dir = ss.str();
 	}

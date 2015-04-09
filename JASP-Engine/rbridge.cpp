@@ -13,7 +13,7 @@ DataSet *rbridge_dataSet;
 using namespace std;
 
 RCallback rbridge_runCallback;
-boost::function<std::string(const std::string &)> rbridge_fileNameSource;
+boost::function<void(const std::string &, std::string &, std::string &)> rbridge_fileNameSource;
 boost::function<std::string()> rbridge_stateFileSource;
 
 Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
@@ -60,7 +60,7 @@ void rbridge_setDataSet(DataSet *dataSet)
 	rbridge_dataSet = dataSet;
 }
 
-void rbridge_setFileNameSource(boost::function<string (const string &)> source)
+void rbridge_setFileNameSource(boost::function<void (const string &, string &, string &)> source)
 {
 	rbridge_fileNameSource = source;
 }
@@ -76,8 +76,17 @@ SEXP rbridge_requestTempFileNameSEXP(SEXP extension)
 		return R_NilValue;
 
 	string extensionAsString = Rcpp::as<string>(extension);
+	string root;
+	string relativePath;
 
-	return Rcpp::CharacterVector(rbridge_fileNameSource(extensionAsString));
+	rbridge_fileNameSource(extensionAsString, root, relativePath);
+
+	Rcpp::List paths;
+
+	paths["root"] = root;
+	paths["relativePath"] = relativePath;
+
+	return paths;
 }
 
 SEXP rbridge_requestStateFileNameSEXP()
