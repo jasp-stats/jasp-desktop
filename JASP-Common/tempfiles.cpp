@@ -241,7 +241,8 @@ vector<string> tempfiles_retrieveList(int id)
 	{
 		stringstream ss;
 		ss << tempfiles_sessionDirName;
-		ss << "/resources/";
+		ss << "/";
+		ss << "resources/";
 		ss << id;
 		dir = ss.str();
 	}
@@ -265,7 +266,10 @@ vector<string> tempfiles_retrieveList(int id)
 			if (filename.at(0) != '_')
 				continue;
 
-			files.push_back(Utils::osPath(itr->path()));
+			string absPath = itr->path().generic_string();
+			string relPath = absPath.substr(tempfiles_sessionDirName.size()+1);
+
+			files.push_back(relPath);
 		}
 	}
 
@@ -280,7 +284,8 @@ void tempfiles_deleteList(const vector<string> &files)
 	BOOST_FOREACH (const string &file, files)
 	{
 		(void)files;
-		filesystem::path p = Utils::osPath(file);
+		string absPath = tempfiles_sessionDirName + "/" + file;
+		filesystem::path p = Utils::osPath(absPath);
 		filesystem::remove(p, error);
 	}
 }
