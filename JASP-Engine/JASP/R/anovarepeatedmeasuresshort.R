@@ -36,7 +36,9 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		list(name="headerSphericity", type="h1"),
 		list(name="sphericity", type="table"),
 		list(name="headerLevene", type="h1"),
-		list(name="levene", type="table")
+		list(name="levene", type="table"),
+		list(name="headerDescriptives", type="h1"),
+		list(name="descriptives", type="table")
 	)
 	
 	results[[".meta"]] <- .meta
@@ -116,6 +118,17 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	if (options$miscHomogeneityTests)
 	    results[["headerLevene"]] <- "Test for Equality of Variances"
 	
+	
+	
+	## Create Descriptives Table
+	
+	result <- .rmAnovaDescriptivesTable(dataset, options, perform, status)
+	
+	results[["descriptives"]] <- result$result
+	status <- result$status
+	
+	if (!is.null(results[["descriptives"]]))
+	    results[["headerDescriptives"]] <- "Descriptives"
 	
 	
 	results
@@ -1166,4 +1179,113 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	    levenes.table[["error"]] <- list(error="badData")
 	
 	list(result=levenes.table, status=status)
+}
+
+.rmAnovaDescriptivesTable <- function(dataset, options, perform, status) {
+
+	if (options$miscDescriptives == FALSE || perform != "run" || !status$ready)
+		return(list(result=NULL, status=status))
+    
+    dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
+    
+    rmFactors <- c()
+    
+    for (i in .indices(options$repeatedMeasuresFactors)) {
+    
+        rmFactors <- c(rmFactors, options$repeatedMeasuresFactors[[i]]$name)
+        
+    }
+    
+    allFactors <- c(rmFactors, options$betweenSubjectFactors)
+    
+	descriptives.table <- list()
+	    
+	descriptives.table[["title"]] <- "Descriptives"
+		
+	fields <- list()
+	
+	for (variable in allFactors) {
+	
+		name <- paste(".", variable, sep="")  # in case variable is "Mean", "SD" or "N"
+		fields[[length(fields)+1]] <- list(name=name, type="string", title=variable, combine=TRUE)
+		
+	}
+	
+	fields[[length(fields)+1]] <- list(name="Mean", type="number", format="sf:4;dp:3")
+	fields[[length(fields)+1]] <- list(name="SD", type="number", format="sf:4;dp:3")
+	fields[[length(fields)+1]] <- list(name="N", type="number", format="dp:0")
+	
+	descriptives.table[["schema"]] <- list(fields=fields)
+	
+	lvls <- list()
+	factors <- list()
+
+	for (variable in allFactors) {
+	
+		factor <- dataset[[ .v(variable) ]]
+		factors[[length(factors)+1]] <- factor
+		lvls[[ variable ]] <- levels(factor)
+	}
+		
+	cases <- rev(expand.grid(rev(lvls)))
+	
+	namez <- unlist(allFactors)
+	column.names <- paste(".", namez, sep="")
+	
+	if (length(allFactors) > 0) {
+
+		rows <- list()
+	
+		for (i in 1:dim(cases)[1]) {
+	
+			row <- list()
+			
+			for (j in 1:dim(cases)[2])
+				row[[ column.names[[j]] ]] <- as.character(cases[i, j])
+								
+			if (perform == "run" && status$ready && status$error == FALSE) {
+			
+				sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, "\"", sep="", collapse=" & ")))
+				
+				data <- base::subset(dataset, sub, select="dependent")[[1]]
+				
+				N <- base::length(data)
+
+				row[["N"]] <- N
+				
+				if (N == 0) {
+				
+					row[["Mean"]] <- ""
+					row[["SD"]]   <- ""
+				
+				} else if (N == 1) {
+				
+					row[["Mean"]] <- data
+					row[["SD"]]   <- ""
+				
+				} else {
+				
+					row[["Mean"]] <- base::mean(data)
+					row[["SD"]]   <- stats::sd(data)
+				}
+				
+			}
+			
+			if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][1]) {
+			    row[[".isNewGroup"]] <- TRUE   
+			} else {				
+				row[[".isNewGroup"]] <- FALSE
+			}
+		
+			rows[[i]] <- row
+		}
+		
+		descriptives.table[["data"]] <- rows
+		
+	} 
+	
+	if (status$error)
+	    descriptives.table[["error"]] <- list(error="badData")
+	
+	list(result=descriptives.table, status=status)
 }
