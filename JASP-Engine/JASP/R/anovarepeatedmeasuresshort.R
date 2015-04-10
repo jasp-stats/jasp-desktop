@@ -55,10 +55,10 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 		diff <- .diff(options, state$options)  # compare old and new options
 
-		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && diff[['repeatedMeasuresFactors']] == FALSE)) {
+		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && diff[['repeatedMeasuresFactors']] == FALSE && diff[['sumOfSquares']] == FALSE)) {
 		
 			# old model can be used
-						
+			
 			anovaModel <- state$model
 		}
 	}
@@ -185,7 +185,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 	error <- FALSE
 	errorMessage <- NULL
-	ready <- "" %in% options$repeatedMeasuresCells == FALSE
+	ready <- "" %in% options$repeatedMeasuresCells == FALSE && length(options$withinModelTerms) > 0
 	
 	if (ready && perform == "run") {
 	
@@ -283,7 +283,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
         if (is.null(termsBS.base64)) {
             terms.base64[[i+1]] <- termsRM.base64[i]
             terms.normal[[i+1]] <- termsRM.normal[i]
-        } else {
+        } else if (!is.null(termsRM.base64)){
             terms.base64[[i+1]] <- c(termsRM.base64[i], paste(termsRM.base64[i], termsBS.base64, sep = ":"))
             terms.normal[[i+1]] <- c(termsRM.normal[i], paste(termsRM.normal[i], termsBS.normal, sep = " \u273B "))
         }
@@ -293,8 +293,12 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     termsBS <- paste("(",paste(termsBS.base64, collapse=" + "),")", sep="")
     errorRM <- paste("Error(",paste("subject/(", termsRM.base64, ")",sep="", collapse=" + "),")",sep="")
     
-    if (is.null(termsBS.base64)) {
+    if (is.null(termsBS.base64) && is.null(termsRM.base64)) {
+        model.def <- dependent ~ 1
+    } else if (is.null(termsBS.base64)) {
         model.def <- paste("dependent", "~", paste(main, errorRM, sep=" + "))
+    } else if (is.null(termsRM.base64)) {
+        model.def <- paste("dependent", "~", main)
     } else {
         model.def <- paste("dependent", "~", paste(main, errorRM, termsBS, sep=" + "))
     }
@@ -426,18 +430,21 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     if (perform == "init" || status$ready == FALSE || status$error) {
     
         anova.rows <- list()
-                    
-        for (j in .indices(terms.base64[[1]])) {
         
-            if (j == 1) {
-                newGroup <- TRUE   
-            } else {				
-                newGroup <- FALSE
-            }
+        if (length(terms.base64) > 0) {
+                    
+            for (j in .indices(terms.base64[[1]])) {
+        
+                if (j == 1) {
+                    newGroup <- TRUE   
+                } else {				
+                    newGroup <- FALSE
+                }
             
-            row <- list("case"=terms.normal[[1]][j], "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = newGroup)
-            anova.rows[[length(anova.rows) + 1]] <- row
+                row <- list("case"=terms.normal[[1]][j], "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = newGroup)
+                anova.rows[[length(anova.rows) + 1]] <- row
                 
+            }
         }
         
         row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
@@ -663,75 +670,78 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     if (perform == "init" || status$ready == FALSE || status$error || (options$miscSphericityCorrections && epsilonError)) {
     
         anova.rows <- list()
-        
-        for (i in 2:length(terms.base64)) {
+                
+        if (length(terms.base64) > 1) {
+                        
+            for (i in 2:length(terms.base64)) {
             
-            for (j in .indices(terms.base64[[i]])) {
+                for (j in .indices(terms.base64[[i]])) {
             
-                if (j == 1) {
-			        newGroup <- TRUE   
-			    } else {				
-				    newGroup <- FALSE
-			    }
+                    if (j == 1) {
+                        newGroup <- TRUE   
+                    } else {				
+                        newGroup <- FALSE
+                    }
 
-			    if (options$miscSphericityCorrections && !is.null(corrections)) {
-			        
-			        counter <- 1
-			        
-			        if (options$sphericityNone) {
-                        row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1))
+                    if (options$miscSphericityCorrections && !is.null(corrections)) {
+                    
+                        counter <- 1
+                    
+                        if (options$sphericityNone) {
+                            row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1))
+                            anova.rows[[length(anova.rows) + 1]] <- row
+                            counter <- counter + 1
+                        }
+                    
+                        if (options$sphericityGreenhouseGeisser) {
+                            row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1))
+                            anova.rows[[length(anova.rows) + 1]] <- row
+                            counter <- counter + 1
+                        } 
+                    
+                        if (options$sphericityHuynhFeldt) {
+                            row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1))
+                            anova.rows[[length(anova.rows) + 1]] <- row
+                            counter <- counter + 1
+                        }
+                    
+                    } else {
+                
+                        row <- list("case"=terms.normal[[i]][j], "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = newGroup)
+                        anova.rows[[length(anova.rows) + 1]] <- row
+                    
+                    }
+                }
+            
+                if (options$miscSphericityCorrections && !is.null(corrections)) {
+                
+                    counter <- 1
+                
+                    if (options$sphericityNone) {
+                        row <- list("case"="Residual", "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
                         anova.rows[[length(anova.rows) + 1]] <- row
                         counter <- counter + 1
-			        }
-			        
-			        if (options$sphericityGreenhouseGeisser) {
-			            row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1))
-			            anova.rows[[length(anova.rows) + 1]] <- row
-			            counter <- counter + 1
-			        } 
-			        
-			        if (options$sphericityHuynhFeldt) {
-			            row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1))
-			            anova.rows[[length(anova.rows) + 1]] <- row
-			            counter <- counter + 1
-			        }
-			        
-			    } else {
-			    
-			        row <- list("case"=terms.normal[[i]][j], "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = newGroup)
-			        anova.rows[[length(anova.rows) + 1]] <- row
-			        
-			    }
+                    }
+                
+                    if (options$sphericityGreenhouseGeisser) {
+                        row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+                        anova.rows[[length(anova.rows) + 1]] <- row
+                        counter <- counter + 1
+                    } 
+                
+                    if (options$sphericityHuynhFeldt) {
+                        row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+                        anova.rows[[length(anova.rows) + 1]] <- row
+                        counter <- counter + 1
+                    }
+                
+                } else {
+            
+                    row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
+                    anova.rows[[length(anova.rows) + 1]] <- row
+                
+                }   
             }
-            
-            if (options$miscSphericityCorrections && !is.null(corrections)) {
-                
-                counter <- 1
-                
-                if (options$sphericityNone) {
-                    row <- list("case"="Residual", "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
-                    anova.rows[[length(anova.rows) + 1]] <- row
-                    counter <- counter + 1
-                }
-                
-                if (options$sphericityGreenhouseGeisser) {
-                    row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
-                    anova.rows[[length(anova.rows) + 1]] <- row
-                    counter <- counter + 1
-                } 
-                
-                if (options$sphericityHuynhFeldt) {
-                    row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
-                    anova.rows[[length(anova.rows) + 1]] <- row
-                    counter <- counter + 1
-                }
-                
-            } else {
-            
-                row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
-                anova.rows[[length(anova.rows) + 1]] <- row
-                
-            }   
 		}
 
 		anova[["data"]] <- anova.rows
