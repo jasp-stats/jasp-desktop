@@ -49,12 +49,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	state <- .retrieveState()
 	anovaModel <- NULL
-
+    
 	if ( ! is.null(state)) {  # is there state?
 	
 		diff <- .diff(options, state$options)  # compare old and new options
 
-		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE)) {
+		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['contrasts']] == FALSE)) {
 		
 			# old model can be used
 			
