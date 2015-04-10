@@ -427,7 +427,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     terms.base64 <- modelDef$terms.base64
     termsRM.base64 <- modelDef$termsRM.base64
     
-    if (perform == "init" || status$ready == FALSE || status$error) {
+    if (is.null(model)) {
     
         anova.rows <- list()
         
@@ -667,7 +667,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     terms.base64 <- modelDef$terms.base64
     termsRM.base64 <- modelDef$termsRM.base64
     
-    if (perform == "init" || status$ready == FALSE || status$error || (options$miscSphericityCorrections && epsilonError)) {
+    if (is.null(model) || (options$miscSphericityCorrections && perform == "init") || (options$miscSphericityCorrections && epsilonError)) {
     
         anova.rows <- list()
                 
@@ -1231,6 +1231,9 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	    
 		levenes.table[["data"]] <- levenes.rows
 	}
+	
+	if (length(options$betweenSubjectFactors) == 0)
+	    levenes.table[["error"]] <- list(errorType="badData", errorMessage="No between subjects factors specified.")
 	
 	if (status$error)
 	    levenes.table[["error"]] <- list(error="badData")
