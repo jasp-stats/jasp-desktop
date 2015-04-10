@@ -25,6 +25,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
     results <- list()
     
     
+    
     ## META definitions
 
 	.meta <- list(
@@ -45,6 +46,25 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 	
 	
+	## Retrieve State
+	
+    state <- .retrieveState()
+	anovaModel <- NULL
+    
+	if ( ! is.null(state)) {  # is there state?
+	
+		diff <- .diff(options, state$options)  # compare old and new options
+
+		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && diff[['repeatedMeasuresFactors']] == FALSE)) {
+		
+			# old model can be used
+						
+			anovaModel <- state$model
+		}
+	}
+	
+	
+	
 	## Create Title
 
 	results[["title"]] <- "Repeated Measures ANOVA"
@@ -60,15 +80,29 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	epsilon <- NULL
 	mauchly <- NULL
 	epsilonError <- FALSE
-	if (perform == "run" && status$ready && status$error == FALSE) {
-		
-		anovaModel <- .rmAnovaModel(dataset, options, status)
-		model <- anovaModel$model
-		epsilon <- anovaModel$epsilon
-		epsilonError <- anovaModel$epsilonError
-		mauchly <- anovaModel$mauchly
-		status <- anovaModel$status
 	
+	if (is.null(anovaModel)) { # if not retrieved from state
+	
+		if (perform == "run" && status$ready && status$error == FALSE) {
+		
+            anovaModel <- .rmAnovaModel(dataset, options, status)
+            
+            model <- anovaModel$model
+            epsilon <- anovaModel$epsilon
+            epsilonError <- anovaModel$epsilonError
+            mauchly <- anovaModel$mauchly
+            status <- anovaModel$status
+            
+		}
+		
+	} else {
+	
+        model <- anovaModel$model
+        epsilon <- anovaModel$epsilon
+        epsilonError <- anovaModel$epsilonError
+        mauchly <- anovaModel$mauchly
+        status <- anovaModel$status
+        
 	}
     
     
@@ -131,7 +165,20 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	    results[["headerDescriptives"]] <- "Descriptives"
 	
 	
-	results
+	
+	## Save State
+	
+	state[["model"]] <- anovaModel
+	state[["options"]] <- options
+
+	if (perform == "init" && status$ready && status$error == FALSE) {
+
+		return(list(results=results, status="inited", state=state))
+		
+	} else {
+	
+		return(list(results=results, status="complete", state=state))	
+	}
 }
 
 .rmAnovaCheck <- function(dataset, options, perform) {
@@ -1271,9 +1318,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
                     row[["Mean"]] <- base::mean(data)
                     row[["SD"]]   <- stats::sd(data)
                 }
-                
-                print(cases)
-                
+                                
                 if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][[1]]) {
                     row[[".isNewGroup"]] <- TRUE   
                 } else {				
