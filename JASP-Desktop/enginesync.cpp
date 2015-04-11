@@ -29,8 +29,8 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	_log = NULL;
 	_ppi = 96;
 
-	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
-	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
+	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(sendMessages()));
+	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(sendMessages()));
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));

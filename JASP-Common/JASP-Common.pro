@@ -23,7 +23,6 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 SOURCES += \
-	analyses.cpp \
 	analysis.cpp \
 	analysisloader.cpp \
 	base64.cpp \
@@ -67,7 +66,6 @@ SOURCES += \
 	utils.cpp
 
 HEADERS += \
-	analyses.h \
 	analysis.h \
 	analysisloader.h \
 	base64.h \
@@ -111,7 +109,6 @@ HEADERS += \
 	options/optionvariables.h \
 	options/optionvariablesgroups.h \
 	processinfo.h \
-	rinterface.h \
 	sharedmemory.h \
 	tempfiles.h \
 	utils.h \

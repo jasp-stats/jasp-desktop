@@ -5,9 +5,17 @@
 using namespace std;
 
 OptionTerms::OptionTerms()
+	: OptionI(true)
 {
 	_onlyOneComponent = false;
 	_onlyOneTerm = false;
+}
+
+OptionTerms::OptionTerms(bool onlyOneComponent, bool onlyOneTerm)
+	: OptionI(true)
+{
+	_onlyOneComponent = onlyOneComponent;
+	_onlyOneTerm = onlyOneTerm;
 }
 
 void OptionTerms::set(const Json::Value &value)
@@ -38,12 +46,6 @@ void OptionTerms::set(const Json::Value &value)
 	}
 
 	setValue(terms);
-}
-
-OptionTerms::OptionTerms(bool onlyOneComponent, bool onlyOneTerm)
-{
-	_onlyOneComponent = onlyOneComponent;
-	_onlyOneTerm = onlyOneTerm;
 }
 
 Json::Value OptionTerms::asJSON() const

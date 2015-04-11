@@ -19,6 +19,7 @@ public:
 	~Options();
 
 	virtual Json::Value asJSON() const OVERRIDE;
+	Json::Value asJSON(bool includeTransient) const;
 	void init(const Json::Value &data) OVERRIDE;
 	virtual void set(const Json::Value &json) OVERRIDE;
 	Option* createOption(std::string typeString);

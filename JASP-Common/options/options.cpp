@@ -31,6 +31,11 @@ Options::~Options()
 		delete item.second;
 }
 
+Json::Value Options::asJSON() const
+{
+	return asJSON(true);
+}
+
 void Options::init(const Json::Value &array)
 {
 	for (Json::ValueIterator itr = array.begin(); itr != array.end(); itr++)
@@ -97,12 +102,15 @@ void Options::optionsChanged(Option *option)
 	notifyChanged();
 }
 
-Json::Value Options::asJSON() const
+Json::Value Options::asJSON(bool includeTransient) const
 {
 	Json::Value top = Json::objectValue;
 
 	BOOST_FOREACH(OptionNamed item, _options)
 	{
+		if (includeTransient == false && item.second->isTransient())
+			continue;
+
 		string name = item.first;
 		Json::Value value = item.second->asJSON();
 		insertValue(name, value, top);

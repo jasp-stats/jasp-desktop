@@ -53,13 +53,13 @@ private:
 	IPCChannel *nextFreeProcess(Analysis *analysis);
 	void sendToProcess(int processNo, Analysis *analysis);
 
-	void sendMessages();
 	void startSlaveProcess(int no);
 
 	std::string _memoryName;
 
 private slots:
 
+	void sendMessages();
 	void deleteOrphanedTempFiles();
 	void heartbeatTempFiles();
 

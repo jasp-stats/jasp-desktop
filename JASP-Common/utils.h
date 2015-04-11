@@ -14,6 +14,7 @@ public:
 	static long getFileModificationTime(const std::string &filename);
 	static long getFileSize(const std::string &filename);
 	static void touch(const std::string &filename);
+	static bool renameAtomic(const std::string &oldName, const std::string &newName);
 
 	static boost::filesystem::path osPath(const std::string &path);
 	static std::string osPath(const boost::filesystem::path &path);

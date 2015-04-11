@@ -131,6 +131,17 @@ void Utils::touch(const string &filename)
 #endif
 }
 
+bool Utils::renameAtomic(const string &oldName, const string &newName)
+{
+	filesystem::path o = osPath(oldName);
+	filesystem::path n = osPath(newName);
+	system::error_code ec;
+
+	boost::filesystem::rename(o, n, ec);
+
+	return ec == 0;
+}
+
 filesystem::path Utils::osPath(const string &path)
 {
 #ifdef __WIN32__

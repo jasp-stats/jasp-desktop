@@ -11,8 +11,7 @@
 class OptionsTable : public OptionI<std::vector<Options*> >
 {
 public:
-	OptionsTable(Options *rowTemplate);
-	OptionsTable();
+	OptionsTable(Options *rowTemplate = NULL);
 
 	virtual void init(const Json::Value &data) OVERRIDE;
 

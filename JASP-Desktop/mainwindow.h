@@ -41,8 +41,6 @@ private:
 	Analyses *_analyses;
 	EngineSync* _engineSync;
 
-	void analysisResultsChangedHandler(Analysis* analysis);
-
 	AsyncLoader _loader;
 	ProgressWidget *_alert;
 
@@ -75,6 +73,7 @@ signals:
 
 private slots:
 
+	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
 	void pushToClipboardHandler(const QString &mimeType, const QString &data);

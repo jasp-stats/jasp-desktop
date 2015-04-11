@@ -41,6 +41,7 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 SOURCES += main.cpp\
+	analyses.cpp \
 	mainwindow.cpp \
 	datasettablemodel.cpp \
     backstageform.cpp \
@@ -134,6 +135,7 @@ SOURCES += main.cpp\
     ribbons/ribbonr11tlearn.cpp
 
 HEADERS  += \
+	analyses.h
     datasettablemodel.h \
     backstageform.h \
     enginesync.h \

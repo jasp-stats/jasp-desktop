@@ -117,7 +117,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_engineSync = new EngineSync(_analyses, this);
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
-	_analyses->analysisResultsChanged.connect(boost::bind(&MainWindow::analysisResultsChangedHandler, this, _1));
+	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
@@ -598,12 +598,9 @@ void MainWindow::requestHelpPage(const QString &pageName)
 
 void MainWindow::itemSelected(const QString &item)
 {
-	string name = item.toStdString();
-
 	try
 	{
-		_currentAnalysis = _analyses->create(name);
-
+		_currentAnalysis = _analyses->create(item);
 
 		showForm(_currentAnalysis);
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
