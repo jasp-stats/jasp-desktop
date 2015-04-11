@@ -135,7 +135,7 @@ SOURCES += main.cpp\
     ribbons/ribbonr11tlearn.cpp
 
 HEADERS  += \
-	analyses.h
+	analyses.h \
     datasettablemodel.h \
     backstageform.h \
     enginesync.h \
