@@ -29,6 +29,8 @@ public:
     
 protected:
 	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
+	virtual void dragEnterEvent(QDragEnterEvent *event) OVERRIDE;
+	virtual void dropEvent(QDropEvent *event) OVERRIDE;
 
 private:
 	Ui::MainWindow *ui;

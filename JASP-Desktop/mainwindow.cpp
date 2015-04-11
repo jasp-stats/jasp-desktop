@@ -38,6 +38,7 @@
 #include <QDebug>
 #include <QWebFrame>
 #include <QFile>
+#include <QFileInfo>
 #include <QToolTip>
 #include <QClipboard>
 #include <QWebElement>
@@ -45,6 +46,7 @@
 #include <QTimer>
 #include <QStringBuilder>
 #include <QWebHistory>
+#include <QDropEvent>
 
 #include "analysisloader.h"
 #include "qutils.h"
@@ -201,6 +203,8 @@ MainWindow::MainWindow(QWidget *parent) :
 		_fatalError = tq(e.what());
 		QTimer::singleShot(0, this, SLOT(fatalError()));
 	}
+
+	setAcceptDrops(true);
 }
 
 void MainWindow::open(QString filename)
@@ -217,6 +221,36 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 {
 	QMainWindow::resizeEvent(event);
 	adjustOptionsPanelWidth();
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+	const QMimeData *data = event->mimeData();
+
+	if (data->hasUrls())
+	{
+		QList<QUrl> urls = data->urls();
+		QUrl first = urls.first();
+		QFileInfo file(first.path());
+
+		if (file.exists() && file.completeSuffix() == "csv")
+			event->accept();
+		else
+			event->ignore();
+	}
+	else
+	{
+		event->ignore();
+	}
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+	const QMimeData *data = event->mimeData();
+	QUrl url = data->urls().first();
+	open(url.path());
+
+	event->accept();
 }
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
