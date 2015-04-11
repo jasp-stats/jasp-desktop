@@ -7,24 +7,24 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	factor.variables <- factor.variables[factor.variables != ""]
 
 	if (is.null(dataset)) {
-		
+
 		if (perform == "run") {
-		
+
 			dataset <- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=c(numeric.variables, factor.variables))
-			
+
 		} else {
-		
+
 			dataset <- .readDataSetHeader(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
 		}
-		
+
 	} else {
-	
+
 		dataset <- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)	
 	}
-	
+
 	results <- list()
-	
-	
+
+
 	# META definitions
 
 	.meta <- list(
@@ -54,7 +54,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 		diff <- .diff(options, state$options)  # compare old and new options
 
-		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE)) {
+		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['contrasts']] == FALSE)) {
 		
 			# old model can be used
 			
@@ -67,11 +67,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	if (is.null(options$covariates)) {
 	
-	    results[["title"]] <- "ANOVA"
+		results[["title"]] <- "ANOVA"
 	
 	} else {
-	    
-	    results[["title"]] <- "ANCOVA"
+
+		results[["title"]] <- "ANCOVA"
 	
 	}
 	
@@ -138,7 +138,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	status <- result$status
 	
 	if (!is.null(unlist(results[["posthoc"]])))
-	    results[["headerPosthoc"]] <- "Post-Hoc Tests"
+		results[["headerPosthoc"]] <- "Post-Hoc Tests"
 	
 
 
@@ -150,7 +150,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	status <- result$status
 	
 	if(!is.null(unlist(results[["marginalMeans"]])))
-	    results[["headerMarginalMeans"]] <- "Marginal Means"
+		results[["headerMarginalMeans"]] <- "Marginal Means"
 	
 	
 	
@@ -162,7 +162,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	status <- result$status
 	
 	if (!is.null(results[["descriptives"]]))
-	    results[["headerDescriptives"]] <- "Descriptives"
+		results[["headerDescriptives"]] <- "Descriptives"
 	
 
 
@@ -174,7 +174,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	status <- result$status
 	
 	if (!is.null(results[["levene"]]))
-	    results[["headerLevene"]] <- "Test for Equality of Variances"
+		results[["headerLevene"]] <- "Test for Equality of Variances"
 	
 	
 	
@@ -185,11 +185,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	status <- result$status
 	
 	if (options$horizontalAxis != "") {
-	    if (options$seperatePlots != "") {
-	        results[["headerProfilePlot"]] <- "Profile Plots"
-	    } else {
-	        results[["headerProfilePlot"]] <- "Profile Plot"
-	    }
+		if (options$seperatePlots != "") {
+			results[["headerProfilePlot"]] <- "Profile Plots"
+		} else {
+			results[["headerProfilePlot"]] <- "Profile Plot"
+		}
 	}
 	
 	state[["model"]] <- anovaModel
@@ -214,7 +214,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	if (n.levels == 1) {
 	
-	    cases[[1]] <- "."
+		cases[[1]] <- "."
 	
 	} else if (contrast.type == "deviation") {
 
@@ -222,10 +222,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			cases[[i]] <- paste(levels[i + 1], " - ", paste(levels,collapse=", "), sep="")
 		
 	} else if (contrast.type == "simple") {
-	   
+
 		for (i in 1:(n.levels - 1))
 			cases[[i]] <- paste(levels[i+1], " - ", levels[1], sep="")
-				   
+
 	} else if (contrast.type == "helmert") {
 		
 		for (i in 1:(n.levels - 1))
@@ -282,7 +282,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		coding <- matrix(rep(1 / n.levels, prod(dim(treatment))), ncol=n.levels - 1)
 		contr <- (treatment-coding)*n.levels
-				   
+
 	} else if (contrast.type == "helmert") {
 		
 		contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
@@ -350,7 +350,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 		covariatesData <- list()
 		for(i in options$covariates) {
-		    covariatesData[[i]] <- dataset[[.v(i)]]
+			covariatesData[[i]] <- dataset[[.v(i)]]
 		}
 		infiniteCov <- unlist(lapply(covariatesData,function(x)sum(is.infinite(x)) > 0))
 		
@@ -358,9 +358,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 			error <- TRUE
 			if(sum(infiniteCov) == 1) {
-			    errorMessage <- paste("The covariate: <em>", options$covariates[infiniteCov], "</em>, contains infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
+				errorMessage <- paste("The covariate: <em>", options$covariates[infiniteCov], "</em>, contains infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
 			} else {
-			    errorMessage <- paste("The covariates: <em>", paste(options$covariates[infiniteCov], collapse=", "), "</em>, contain infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
+				errorMessage <- paste("The covariates: <em>", paste(options$covariates[infiniteCov], collapse=", "), "</em>, contain infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
 			}
 		}
 		
@@ -389,60 +389,59 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 		column <- dataset[[v]]
 		contrasts(column) <- .anovaCreateContrast(column, contrast$contrast)
-		dataset[[v]] <- column			
+		dataset[[v]] <- column
 	}
 	
 	dataset
 }
 
 .reorderModelTerms <- function(options) {
-        
-    if(length(options$modelTerms) > 0) {
-    
-        fixedFactors <- list()
-        covariates <- list()
-    
-        k <- 1
-        l <- 1
-    
-    
-        for(i in 1:length(options$modelTerms)) {
-            if (sum(unlist(options$modelTerms[[i]]$components) %in% options$covariates) > 0) {
-                covariates[[k]] <- options$modelTerms[[i]]
-                k <- k + 1
-            } else {
-                fixedFactors[[l]] <- options$modelTerms[[i]]
-                l <- l + 1
-            }
-        }
-        
-        if(length(covariates) > length(options$covariates)) {
-            modelTerms <- options$modelTerms
-            interactions <- TRUE
-        } else {
-            modelTerms <- c(fixedFactors,covariates)
-            interactions <- FALSE
-        }
-    
-    } else {
-    
-        modelTerms <- list()
-        interactions <- FALSE
-    }	
-    
-    list(modelTerms = modelTerms, interactions = interactions)
+
+	if(length(options$modelTerms) > 0) {
+
+		fixedFactors <- list()
+		covariates <- list()
+
+		k <- 1
+		l <- 1
+
+		for(i in 1:length(options$modelTerms)) {
+			if (sum(unlist(options$modelTerms[[i]]$components) %in% options$covariates) > 0) {
+				covariates[[k]] <- options$modelTerms[[i]]
+				k <- k + 1
+			} else {
+				fixedFactors[[l]] <- options$modelTerms[[i]]
+				l <- l + 1
+			}
+		}
+
+		if(length(covariates) > length(options$covariates)) {
+			modelTerms <- options$modelTerms
+			interactions <- TRUE
+		} else {
+			modelTerms <- c(fixedFactors,covariates)
+			interactions <- FALSE
+		}
+
+	} else {
+
+		modelTerms <- list()
+		interactions <- FALSE
+	}
+
+	list(modelTerms = modelTerms, interactions = interactions)
 }
 
 .modelFormula <- function(modelTerms, options) {
 
-    dependent.normal <- options$dependent
+	dependent.normal <- options$dependent
 	dependent.base64 <- .v(options$dependent)
 	
 	terms.base64 <- c()
 	terms.normal <- c()
-		        
+
 	for (term in modelTerms) {
-        
+
 		components <- unlist(term$components)
 		term.base64 <- paste(.v(components), collapse=":", sep="")
 		term.normal <- paste(components, collapse=" \u273B ", sep="")
@@ -474,11 +473,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	errorMessage <- ""
 	
 	if (modelError) 
-	    errorMessage <- .extractErrorMessage(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE)))
+		errorMessage <- .extractErrorMessage(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE)))
 	
 	singular <- FALSE
 	if (errorMessage == "singular fit encountered")
-	    singular <- TRUE
+		singular <- TRUE
 
 	list(model = model, singular = singular)
 }
@@ -489,27 +488,27 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	if (is.null(options$covariates)) {
 	
-	    if (options$dependent != "") {
-	    
-	        anova[["title"]] <- paste("ANOVA - ", options$dependent, sep = "")
-	    
-	    } else {
-	    
-	        anova[["title"]] <- "ANOVA"
-	    
-	    }
-	    
+		if (options$dependent != "") {
+
+			anova[["title"]] <- paste("ANOVA - ", options$dependent, sep = "")
+
+		} else {
+
+			anova[["title"]] <- "ANOVA"
+
+		}
+
 	} else {
-	    
-	    if (options$dependent != "") {
-	    
-	        anova[["title"]] <- paste("ANCOVA - ", options$dependent, sep = "")
-	    
-	    } else {
-	    
-	        anova[["title"]] <- "ANCOVA"
-	    
-	    }	
+
+		if (options$dependent != "") {
+
+			anova[["title"]] <- paste("ANCOVA - ", options$dependent, sep = "")
+
+		} else {
+
+			anova[["title"]] <- "ANCOVA"
+
+		}
 	}
 	
 	fields <- list(
@@ -521,16 +520,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="p", type="number", format="dp:3;p:.001"))
 		
 	if (options$miscEffectSizeEstimates) {
-	    
-	    if(options$effectSizeEtaSquared) {
-	        fields[[length(fields) + 1]] <- list(name="\u03B7\u00B2", type="number", format="dp:3")
-	    }
-	    if(options$effectSizePartialEtaSquared) {
-	        fields[[length(fields) + 1]] <- list(name="\u03B7\u00B2\u209A", type="number", format="dp:3")
-	    }
-	    if(options$effectSizeOmegaSquared) {
-	        fields[[length(fields) + 1]] <- list(name="\u03C9\u00B2", type="number", format="dp:3")
-	    }
+
+		if(options$effectSizeEtaSquared) {
+			fields[[length(fields) + 1]] <- list(name="\u03B7\u00B2", type="number", format="dp:3")
+		}
+		if(options$effectSizePartialEtaSquared) {
+			fields[[length(fields) + 1]] <- list(name="\u03B7\u00B2\u209A", type="number", format="dp:3")
+		}
+		if(options$effectSizeOmegaSquared) {
+			fields[[length(fields) + 1]] <- list(name="\u03C9\u00B2", type="number", format="dp:3")
+		}
 	}
 	
 	anova[["schema"]] <- list(fields=fields)
@@ -539,22 +538,22 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	modelTerms <- reorderModelTerms$modelTerms
 	
 	modelDef <- .modelFormula(modelTerms, options)
-    terms.normal <- modelDef$terms.normal
-    terms.base64 <- modelDef$terms.base64
+	terms.normal <- modelDef$terms.normal
+	terms.base64 <- modelDef$terms.base64
 	
 	footnotes <- .newFootnotes()
-    
-    if (options$sumOfSquares == "type1") {
-    
-        .addFootnote(footnotes, text = "Type I Sum of Squares", symbol = "<em>Note.</em>")
-						
+
+	if (options$sumOfSquares == "type1") {
+
+		.addFootnote(footnotes, text = "Type I Sum of Squares", symbol = "<em>Note.</em>")
+
 	} else if (options$sumOfSquares == "type2") {
-			
-        .addFootnote(footnotes, text = "Type II Sum of Squares", symbol = "<em>Note.</em>")
+
+		.addFootnote(footnotes, text = "Type II Sum of Squares", symbol = "<em>Note.</em>")
 
 	} else if (options$sumOfSquares == "type3") {
-			
-        .addFootnote(footnotes, text = "Type III Sum of Squares", symbol = "<em>Note.</em>")
+
+		.addFootnote(footnotes, text = "Type III Sum of Squares", symbol = "<em>Note.</em>")
 
 	}	
 	
@@ -565,9 +564,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		for (i in .indices(terms.normal)) {
 		
-		    if(i == 1 || (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
-			    newGroup <- TRUE   
-			} else {				
+			if(i == 1 || (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
+				newGroup <- TRUE
+			} else {
 				newGroup <- FALSE
 			}
 
@@ -591,12 +590,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			rows <- list()
 					
 			if (options$sumOfSquares == "type1") {
-			    
+
 				result <- base::tryCatch(stats::anova(model),error=function(e) e, warning=function(w) w)
 				
 				if (!is.null(result$message) && result$message == "ANOVA F-tests on an essentially perfect fit are unreliable")
-				    stop(result$message)	
-				    
+					stop(result$message)	
+
 				SSt <- sum(result[,"Sum Sq"], na.rm = TRUE)
 							
 			} else if (options$sumOfSquares == "type2") {
@@ -622,8 +621,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				df <- result[term,"Df"]
 				
 				if (is.na(df) || df == 0) {
-				    SS <- 0
-				    df <- 0
+					SS <- 0
+					df <- 0
 					MS <- ""
 				} else {
 					SS <- result[term,"Sum Sq"]
@@ -633,13 +632,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				F <- if (is.na(result[term,"F value"])) {""} else { result[term, "F value"] }
 				p <- if (is.na(result[term,"Pr(>F)"] )) {""} else { result[term, "Pr(>F)"] }
 				
-				if(i == 1 || term == "Residuals" || 
-				   (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
-				    newGroup <- TRUE   
-				} else {				
-				    newGroup <- FALSE
+				if(i == 1 || term == "Residuals" || (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
+					newGroup <- TRUE
+				} else {
+					newGroup <- FALSE
 				}
-							
+				
 				if (i <= length(terms.base64)) {
 					row <- list("Cases"=terms.normal[i], "Sum of Squares"=SS, "df"=df, "Mean Square"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
 				} else {
@@ -679,10 +677,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 		if (class(anova.rows) == "try-error") {
 		
-		    errorMessage <- .extractErrorMessage(anova.rows)
+			errorMessage <- .extractErrorMessage(anova.rows)
 						
 			if (errorMessage == "NA/NaN/Inf in foreign function call (arg 1)" || errorMessage == "undefined columns selected" ||
-			    errorMessage == "ANOVA F-tests on an essentially perfect fit are unreliable") {
+				errorMessage == "ANOVA F-tests on an essentially perfect fit are unreliable") {
 				
 				errorMessage <- "Residual sums of squares and/or residual degrees of freedom are equal to zero indicating perfect fit.<br><br>(ANOVA F-tests on an essentially perfect fit are unreliable)"
 										
@@ -703,9 +701,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 		anova[["data"]] <- anova.rows
 		anova[["status"]] <- "complete"
-        			
+
 		if (singular)
-		    .addFootnote(footnotes, text = "Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables", symbol = "<em>Warning.</em>")
+			.addFootnote(footnotes, text = "Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables", symbol = "<em>Warning.</em>")
 							
 	}
 	
@@ -743,8 +741,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			contrast.table <- list()
 			
 			contrastType <- unlist(strsplit(contrast.type,""))
-            contrastType[1] <- toupper(contrastType[1])
-            contrastType <- paste(contrastType, collapse="")
+			contrastType[1] <- toupper(contrastType[1])
+			contrastType <- paste(contrastType, collapse="")
 			
 			contrast.table[["title"]] <- paste(contrastType, " Contrast", " - ",  variable, sep="")
 			
@@ -769,17 +767,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			if (perform == "init" || status$error || !status$ready) {
 			
 				for (case in cases) {
-				    
-				    row <- list(Comparison=case)	
-				    
-				    if(length(contrast.rows) == 0)  {
-			            row[[".isNewGroup"]] <- TRUE   
-			        } else {				
-				        row[[".isNewGroup"]] <- FALSE
-			        }
-				    				
+
+					row <- list(Comparison=case)	
+
+					if(length(contrast.rows) == 0)  {
+						row[[".isNewGroup"]] <- TRUE
+					} else {
+						row[[".isNewGroup"]] <- FALSE
+					}
+					
 					contrast.rows[[length(contrast.rows)+1]] <- row	
-			    }
+				}
 			} else {
 								
 				for (i in .indices(cases)) {
@@ -797,13 +795,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 						p <- ""
 				
 					row <- list("Comparison"=case, "Estimate"=est, "Std. Error"=SE, "t"=t, "p"=p)
-				    
-				    if(length(contrast.rows) == 0)  {
-			            row[[".isNewGroup"]] <- TRUE   
-			        } else {				
-				        row[[".isNewGroup"]] <- FALSE
-			        }
-				    
+
+					if(length(contrast.rows) == 0)  {
+						row[[".isNewGroup"]] <- TRUE
+					} else {				
+						row[[".isNewGroup"]] <- FALSE
+					}
+
 					contrast.rows[[length(contrast.rows)+1]] <- row
 				}
 			}
@@ -838,7 +836,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			list(name="Mean Difference", type="number", format="sf:4;dp:3"),
 			list(name="t", type="number", format="sf:4;dp:3"),
 			list(name="df", type="number", format="dp:0"))
-#			list(name="p", type="number", format="dp:3;p:.001"))
 		
 		if (options$postHocTestsHolm)
 			fields[[length(fields) + 1]] <- list(name="p holm", type="number", format="dp:3;p:.001")
@@ -901,16 +898,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row[["Mean Difference"]] <- md
 					row[["t"]]  <- t
 					row[["df"]] <- df
-#					row[["p"]]  <- p                
 					
 					ps <- c(ps, p)
 				}
 				
 				if(length(rows) == 0)  {
-			        row[[".isNewGroup"]] <- TRUE   
-			    } else {				
-				    row[[".isNewGroup"]] <- FALSE
-			    }
+					row[[".isNewGroup"]] <- TRUE
+				} else {
+					row[[".isNewGroup"]] <- FALSE
+				}
 				
 				rows[[length(rows)+1]] <- row
 			}
@@ -980,13 +976,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	descriptives.table <- list()
 	
 	if (options$dependent != "") {
-	    
-	    descriptives.table[["title"]] <- paste("Descriptives - ", options$dependent, sep = "")
-	    
+
+		descriptives.table[["title"]] <- paste("Descriptives - ", options$dependent, sep = "")
+
 	} else {
-	    
-	    descriptives.table[["title"]] <- "Descriptives"
-	    
+
+		descriptives.table[["title"]] <- "Descriptives"
+
 	}
 		
 	fields <- list()
@@ -1028,7 +1024,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 			for (j in 1:dim(cases)[2])
 				row[[ column.names[[j]] ]] <- as.character(cases[i, j])
-								
+
 			if (perform == "run" && status$ready && status$error == FALSE) {
 			
 				sub  <- eval(parse(text=paste("dataset$", .v(namez), " == \"", row, "\"", sep="", collapse=" & ")))
@@ -1058,7 +1054,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			}
 			
 			if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][1]) {
-			    row[[".isNewGroup"]] <- TRUE   
+				row[[".isNewGroup"]] <- TRUE   
 			} else {				
 				row[[".isNewGroup"]] <- FALSE
 			}
@@ -1071,7 +1067,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	} 
 	
 	if (status$error)
-	    descriptives.table[["error"]] <- list(error="badData")
+		descriptives.table[["error"]] <- list(error="badData")
 	
 	list(result=descriptives.table, status=status)
 }
@@ -1092,7 +1088,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="p", type="number", format="dp:3;p:.001"))
 
 	levenes.table[["schema"]] <- list(fields=fields)
-        
+
 	if (perform == "run" && status$ready && status$error == FALSE && length(options$fixedFactors) > 0) {
 
 		interaction <- paste(.v(options$fixedFactors), collapse=":", sep="")
@@ -1104,7 +1100,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 #		r <- base::tryCatch(car::leveneTest(levene.formula, dataset, center = "mean"),error=function(e) e, warning=function(w) w)
 #		
 #		if (!is.null(r$message) && r$message == "Levene's test on an essentially perfect fit is unreliable")
-#		    stop(r$message)
+#			stop(r$message)
 		
 		levenes.table[["data"]] <- list(list("F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3], ".isNewGroup"=TRUE))
 		
@@ -1114,14 +1110,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}
 	
 	if (status$error)
-	    levenes.table[["error"]] <- list(error="badData")
+		levenes.table[["error"]] <- list(error="badData")
 	
 	list(result=levenes.table, status=status)
 }
 
 .anovaMarginalMeans <- function(dataset, options, perform, model, status, singular) {
-    
-    if (is.null(options$marginalMeansTerms))
+
+	if (is.null(options$marginalMeansTerms))
 		return (list(result=NULL, status=status))
 	
 	terms <- options$marginalMeansTerms
@@ -1130,7 +1126,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	terms.normal <- c()
 	
 	for (term in terms) {
-        
+
 		components <- unlist(term)
 		term.base64 <- paste(.v(components), collapse=":", sep="")
 		term.normal <- paste(components, collapse=" \u273B ", sep="")
@@ -1142,334 +1138,333 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	marginalMeans <- list()
 		
 	for(i in .indices(terms.base64)) {
-	    
-	    result <- list()
-	    
-	    result[["title"]] <- paste("Marginal Means - ",terms.normal[i], sep="")
-	    
-	    fields <- list()
-	    
-	    for(j in .indices(terms[[i]]))
-	        fields[[j]] <- list(name=terms[[i]][[j]], type="string", combine=TRUE)
-	    
-	    fields[[length(fields) + 1]] <- list(name="Marginal Mean", type="number", format="sf:4;dp:3")
-	    fields[[length(fields) + 1]] <- list(name="SE", type="number", format="sf:4;dp:3")
-	    fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4;dp:3")
-	    fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4;dp:3")
-	    
-	    footnotes <- .newFootnotes()	
-	    
-	    if(options$marginalMeansCompareMainEffects) {
-	        fields[[length(fields) + 1]] <- list(name="t", type="number", format="sf:4;dp:3")
-	        fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
-	        
-	        if(options$marginalMeansCiAdjustment == "bonferroni") {
-		        .addFootnote(footnotes, text = "Bonferroni CI adjustment", symbol = "<em>Note.</em>")
-		    } else if(options$marginalMeansCiAdjustment == "sidak") {
-		        .addFootnote(footnotes, text = "Sidak CI adjustment", symbol = "<em>Note.</em>")
-		    }   
-	    }
-	    
-	    result[["schema"]] <- list(fields=fields)
-	    
-	    termsTemp <- as.vector(terms[[i]])
-	        
-	    lvls <- list()
-	    factors <- list()
-        
-	    for (variable in termsTemp) {
-	
-		    factor <- dataset[[ .v(variable) ]]
-		    factors[[length(factors)+1]] <- factor
-		    lvls[[variable]] <- levels(factor)
-	    }
-		
-	    cases <- rev(expand.grid(rev(lvls)))
-	    cases <- as.data.frame(apply(cases,2,as.character))
-	        
-	    nRows <- dim(cases)[1]
-        nCol <- dim(cases)[2]
-	    	    
-	    if (perform == "run" && status$ready && status$error == FALSE)  {
-		    
-		    formula <- as.formula(paste("~", terms.base64[i]))
-		    
-		    if(options$marginalMeansCiAdjustment == "bonferroni") {
-		        adjMethod <- "bonferroni"
-		    } else if(options$marginalMeansCiAdjustment == "sidak") {
-		        adjMethod <- "sidak"
-		    } else {
-		        adjMethod <- "none"
-		    }
-		    		    		    
-		    r <- summary(lsmeans::lsmeans(model, formula), adjust = adjMethod, infer = c(TRUE,TRUE))
-		    		    
-		    rows <- list()
-		    		    
-		    for(k in 1:nRows) {
-		        
-		        row <- list()
-		        
-	            for(j in 1:nCol) 
-		            row[[ colnames(cases)[j] ]] <- cases[k,j]
-		        
-		        if(nCol > 1) {
-		            index <- apply(r[,1:nCol], 1, function(x) all(x==cases[k,]))
-		        } else {
-		            index <- k
-		        }
-		        		        
-		        row[["Marginal Mean"]] <- .clean(r$lsmean[index])
-		        row[["SE"]] <- .clean(r$SE[index])
-		        row[["Lower CI"]] <- .clean(r$lower.CL[index])
-		        row[["Upper CI"]] <- .clean(r$upper.CL[index])
-		        
-		        if(options$marginalMeansCompareMainEffects) {
-		            row[["t"]] <- .clean(r$t.ratio[index])
-		            row[["p"]] <- .clean(r$p.value[index])
-		        }
-		        
-		        if(cases[k,nCol] == lvls[[ nCol ]][1]) {
-			        row[[".isNewGroup"]] <- TRUE   
-			    } else {				
-				    row[[".isNewGroup"]] <- FALSE
-			    }
-		        
-		        rows[[k]] <- row
-		        
-		    }
-		    
-		    result[["data"]] <- rows
-		
-	    } else {
-	    
-	        rows <- list()
-	        
-	        for(k in 1:nRows) {
-	        
-	            row <- list()
-	            
-	            for(j in 1:nCol)
-		            row[[ colnames(cases)[j] ]] <- cases[k,j]
-	            
-	            row[["Marginal Mean"]] <- "."
-		        row[["SE"]] <- "."
-		        row[["Lower CI"]] <- "."
-		        row[["Upper CI"]] <- "."
-		        
-		        if(options$marginalMeansCompareMainEffects) {
-		            row[["t"]] <- "."
-		            row[["p"]] <- "."
-		        }
-		        		        
-		        if(cases[k,nCol] == lvls[[ nCol ]][1]) {
-			        row[[".isNewGroup"]] <- TRUE   
-			    } else {				
-				    row[[".isNewGroup"]] <- FALSE
-			    }
-	            
-	            rows[[k]] <- row
-	            
-	        }
- 	        	        	        
-		    result[["data"]] <- rows
-	    }
-	    
-	    result[["footnotes"]] <- as.list(footnotes)
-	    
-	    if (status$error)
-	        result[["error"]] <- list(error="badData")
-	        
-	    marginalMeans[[i]] <- result
-	
-	}
-	
-	list(result=marginalMeans, status=status)
 
+		result <- list()
+
+		result[["title"]] <- paste("Marginal Means - ",terms.normal[i], sep="")
+
+		fields <- list()
+
+		for(j in .indices(terms[[i]]))
+			fields[[j]] <- list(name=terms[[i]][[j]], type="string", combine=TRUE)
+
+		fields[[length(fields) + 1]] <- list(name="Marginal Mean", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="SE", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="Lower CI", type="number", format="sf:4;dp:3")
+		fields[[length(fields) + 1]] <- list(name="Upper CI", type="number", format="sf:4;dp:3")
+
+		footnotes <- .newFootnotes()	
+
+		if(options$marginalMeansCompareMainEffects) {
+			fields[[length(fields) + 1]] <- list(name="t", type="number", format="sf:4;dp:3")
+			fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
+
+			if(options$marginalMeansCiAdjustment == "bonferroni") {
+				.addFootnote(footnotes, text = "Bonferroni CI adjustment", symbol = "<em>Note.</em>")
+			} else if(options$marginalMeansCiAdjustment == "sidak") {
+				.addFootnote(footnotes, text = "Sidak CI adjustment", symbol = "<em>Note.</em>")
+			}
+		}
+
+		result[["schema"]] <- list(fields=fields)
+
+		termsTemp <- as.vector(terms[[i]])
+
+		lvls <- list()
+		factors <- list()
+
+		for (variable in termsTemp) {
+
+			factor <- dataset[[ .v(variable) ]]
+			factors[[length(factors)+1]] <- factor
+			lvls[[variable]] <- levels(factor)
+		}
+
+		cases <- rev(expand.grid(rev(lvls)))
+		cases <- as.data.frame(apply(cases,2,as.character))
+
+		nRows <- dim(cases)[1]
+		nCol <- dim(cases)[2]
+
+		if (perform == "run" && status$ready && status$error == FALSE)  {
+
+			formula <- as.formula(paste("~", terms.base64[i]))
+
+			if(options$marginalMeansCiAdjustment == "bonferroni") {
+				adjMethod <- "bonferroni"
+			} else if(options$marginalMeansCiAdjustment == "sidak") {
+				adjMethod <- "sidak"
+			} else {
+				adjMethod <- "none"
+			}
+
+			r <- summary(lsmeans::lsmeans(model, formula), adjust = adjMethod, infer = c(TRUE,TRUE))
+
+			rows <- list()
+
+			for(k in 1:nRows) {
+
+				row <- list()
+
+				for(j in 1:nCol) 
+					row[[ colnames(cases)[j] ]] <- cases[k,j]
+
+				if(nCol > 1) {
+					index <- apply(r[,1:nCol], 1, function(x) all(x==cases[k,]))
+				} else {
+					index <- k
+				}
+
+				row[["Marginal Mean"]] <- .clean(r$lsmean[index])
+				row[["SE"]] <- .clean(r$SE[index])
+				row[["Lower CI"]] <- .clean(r$lower.CL[index])
+				row[["Upper CI"]] <- .clean(r$upper.CL[index])
+
+				if(options$marginalMeansCompareMainEffects) {
+					row[["t"]] <- .clean(r$t.ratio[index])
+					row[["p"]] <- .clean(r$p.value[index])
+				}
+
+				if(cases[k,nCol] == lvls[[ nCol ]][1]) {
+					row[[".isNewGroup"]] <- TRUE
+				} else {
+					row[[".isNewGroup"]] <- FALSE
+				}
+
+				rows[[k]] <- row
+
+			}
+
+			result[["data"]] <- rows
+
+		} else {
+
+			rows <- list()
+
+			for(k in 1:nRows) {
+
+				row <- list()
+
+				for(j in 1:nCol)
+					row[[ colnames(cases)[j] ]] <- cases[k,j]
+
+				row[["Marginal Mean"]] <- "."
+				row[["SE"]] <- "."
+				row[["Lower CI"]] <- "."
+				row[["Upper CI"]] <- "."
+
+				if(options$marginalMeansCompareMainEffects) {
+					row[["t"]] <- "."
+					row[["p"]] <- "."
+				}
+
+				if(cases[k,nCol] == lvls[[ nCol ]][1]) {
+					row[[".isNewGroup"]] <- TRUE
+				} else {
+					row[[".isNewGroup"]] <- FALSE
+				}
+
+				rows[[k]] <- row
+
+			}
+
+			result[["data"]] <- rows
+		}
+
+		result[["footnotes"]] <- as.list(footnotes)
+
+		if (status$error)
+			result[["error"]] <- list(error="badData")
+
+		marginalMeans[[i]] <- result
+
+	}
+
+	list(result=marginalMeans, status=status)
 }
 
 
 .anovaProfilePlot <- function(dataset, options, perform, status) {
 
-    profilePlotList <- list()
-            
-    if (perform == "run" && status$ready && !status$error && options$horizontalAxis != "" && options$dependent != "") {
-        
-        groupVars <- c(options[["horizontalAxis"]], options[["seperateLines"]], options[["seperatePlots"]])
-        groupVars <- groupVars[groupVars != ""]
-        groupVarsV <- .v(groupVars)
-        dependentV <- .v(options$dependent)
-        
-        summaryStat <- plyr::ddply(as.data.frame(dataset), groupVarsV, .drop = FALSE,
-                                   .fun = function(xx, col) {
-                                        c(N = length(xx[[col]]), "dependent" = mean(xx[[col]]), sd = sd(xx[[col]]))  
-                                   }, dependentV)   
-                
-        if ( options[["horizontalAxis"]] != "" ) {
-            colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["horizontalAxis"]]))] <- "horizontalAxis"
-        }
-        
-        if ( options[["seperateLines"]] != "" ) {
-            colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["seperateLines"]]))] <- "seperateLines"
-        }
-        
-        if ( options[["seperatePlots"]] != "" ) {
-            colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["seperatePlots"]]))] <- "seperatePlots"
-        }
-                
-        summaryStat$se <- summaryStat$sd / sqrt(summaryStat$N)
+	profilePlotList <- list()
 
-        ciMult <- qt(.95/2 + .5, summaryStat$N - 1)
-        summaryStat$ci <- summaryStat$se * ciMult
-        summaryStat$ciLower <- summaryStat[,"dependent"] - summaryStat[,"ci"]
-        summaryStat$ciUpper <- summaryStat[,"dependent"] + summaryStat[,"ci"]
-        
-        base_breaks_x <- function(x){
-            b <- unique(as.numeric(x))
-            d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
-            list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))#,
-#                 ggplot2::scale_x_continuous(breaks=unique(as.numeric(x)),
-#                                   labels=levels(x), 
-#                                   limits=c(min(as.numeric(x)) - (length(levels(x)) * .1), 
-#                                         max(as.numeric(x)) + (length(levels(x)) * .1))))
-        }
+	if (perform == "run" && status$ready && !status$error && options$horizontalAxis != "" && options$dependent != "") {
 
-        base_breaks_y <- function(x, errorBars){
-            if (errorBars) {
-                ci.pos <- c(x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
-                b <- pretty(ci.pos)
-                d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
-                list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
-                     ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
-            } else {
-                b <- pretty(x[,"dependent"])
-                d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
-                list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
-                     ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
-            }
-        }
-        
-        if (options[["seperatePlots"]] != "") {
-            subsetPlots <- levels(summaryStat[,"seperatePlots"])
-		    nPlots <- length(subsetPlots)
-	    } else {
-		    nPlots <- 1
-	    }
-	    	    	    
-	    for (i in 1:nPlots) {
-	    
-	        profilePlot <- list()
-	        profilePlot[["title"]] <- ""
-	        profilePlot[["width"]] <- options$chartWidth
-	        profilePlot[["height"]] <- options$chartHeight
-	        profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-				
-            if (options[["seperatePlots"]] != "") {
-                summaryStatSubset <- subset(summaryStat,summaryStat[,"seperatePlots"] == subsetPlots[i])
-            } else {
-                summaryStatSubset <- summaryStat
-            }
-            
-            if(options[["seperateLines"]] == "") {
-            
-                p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=horizontalAxis, 
-                                              y=dependent,
-                                              group=1)) 
-            
-            } else {
-            
-                p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=horizontalAxis, 
-                                              y=dependent,
-                                              group=seperateLines,
-                                              shape=seperateLines,
-#                                              color=seperateLines,
-                                              fill=seperateLines))
-            
-            } 
-                    
-            if (options[["errorBars"]]) {
-            
-                pd <- ggplot2::position_dodge(.2)
-                p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, 
-                                                            ymax=ciUpper), 
-                                                            colour="black", width=.2, position=pd)
-            
-            } else {
-            
-                pd <- ggplot2::position_dodge(0)
-            
-            }
-                                    
-            p <- p + ggplot2::geom_line(position=pd, size = .7) + 
-                ggplot2::geom_point(position=pd, size=4) +
-                ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
-                ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) + 
-                ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
-                ggplot2::ylab(options[["dependent"]]) +
-                ggplot2::xlab(options[["horizontalAxis"]]) +
-                ggplot2::labs(shape=options[["seperateLines"]], fill=options[["seperateLines"]]) +
-                ggplot2::theme_bw() +
-                ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
-                      panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
-                      panel.grid.major=ggplot2::element_blank(),
-                      axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
-                      axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
-                      panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-                      plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-                      legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
-                      panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
-                      legend.key = ggplot2::element_blank(), #legend.key.width = grid::unit(10,"mm"),
-                      legend.title = ggplot2::element_text(size=12),
-                      legend.text = ggplot2::element_text(size = 12),
-                      axis.ticks = ggplot2::element_line(size = 0.5),
-                      axis.ticks.margin = grid::unit(1,"mm"),
-                      axis.ticks.length = grid::unit(3, "mm"),
-                      plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-                base_breaks_y(summaryStatSubset, options[["errorBars"]]) +
-                base_breaks_x(summaryStatSubset[,"horizontalAxis"])
-                        
-            if (nPlots > 1) {
-                p <- p + ggplot2::ggtitle(paste(options[["seperatePlots"]],": ",subsetPlots[i], sep = ""))
-            }
-        
-            image <- .beginSaveImage(options$chartWidth, options$chartHeight)
-            print(p)
-            content <- .endSaveImage(image)
-            
-            profilePlot[["data"]] <- content
-            
-            profilePlotList[[i]] <- profilePlot
-            
-	    }
-	    
-    } else if (options$horizontalAxis != "") {
-        
-        if (options$seperatePlots != "") {
-        
-            nPlots <- length(levels(dataset[[ .v(options$seperatePlots) ]]))
-        
-        } else {
-        
-            nPlots <- 1
-            
-        }
-        
-        for (i in 1:nPlots) {
-        
-            profilePlot <- list()
-	        profilePlot[["title"]] <- ""
-	        profilePlot[["width"]] <- options$chartWidth
-	        profilePlot[["height"]] <- options$chartHeight
-	        profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
-	        profilePlot[["data"]] <- ""
-	        
-	        if (status$error)
-			    profilePlot[["error"]] <- list(errorType="badData")
-	        
-	        profilePlotList[[i]] <- profilePlot
-	    }
-        
-    }
-    
-    list(result=profilePlotList, status=status)
+		groupVars <- c(options[["horizontalAxis"]], options[["seperateLines"]], options[["seperatePlots"]])
+		groupVars <- groupVars[groupVars != ""]
+		groupVarsV <- .v(groupVars)
+		dependentV <- .v(options$dependent)
+
+		summaryStat <- plyr::ddply(as.data.frame(dataset), groupVarsV, .drop = FALSE,
+									.fun = function(xx, col) {
+										c(N = length(xx[[col]]), "dependent" = mean(xx[[col]]), sd = sd(xx[[col]]))
+									}, dependentV)
+
+		if ( options[["horizontalAxis"]] != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["horizontalAxis"]]))] <- "horizontalAxis"
+		}
+
+		if ( options[["seperateLines"]] != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["seperateLines"]]))] <- "seperateLines"
+		}
+
+		if ( options[["seperatePlots"]] != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["seperatePlots"]]))] <- "seperatePlots"
+		}
+
+		summaryStat$se <- summaryStat$sd / sqrt(summaryStat$N)
+
+		ciMult <- qt(.95/2 + .5, summaryStat$N - 1)
+		summaryStat$ci <- summaryStat$se * ciMult
+		summaryStat$ciLower <- summaryStat[,"dependent"] - summaryStat[,"ci"]
+		summaryStat$ciUpper <- summaryStat[,"dependent"] + summaryStat[,"ci"]
+
+		base_breaks_x <- function(x){
+			b <- unique(as.numeric(x))
+			d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
+			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))#,
+#				ggplot2::scale_x_continuous(breaks=unique(as.numeric(x)),
+#									labels=levels(x), 
+#									limits=c(min(as.numeric(x)) - (length(levels(x)) * .1), 
+#											max(as.numeric(x)) + (length(levels(x)) * .1))))
+		}
+
+		base_breaks_y <- function(x, errorBars){
+			if (errorBars) {
+				ci.pos <- c(x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
+				b <- pretty(ci.pos)
+				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
+					 ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
+			} else {
+				b <- pretty(x[,"dependent"])
+				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
+					 ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
+			}
+		}
+
+		if (options[["seperatePlots"]] != "") {
+			subsetPlots <- levels(summaryStat[,"seperatePlots"])
+			nPlots <- length(subsetPlots)
+		} else {
+			nPlots <- 1
+		}
+
+		for (i in 1:nPlots) {
+
+			profilePlot <- list()
+			profilePlot[["title"]] <- ""
+			profilePlot[["width"]] <- options$chartWidth
+			profilePlot[["height"]] <- options$chartHeight
+			profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+
+			if (options[["seperatePlots"]] != "") {
+				summaryStatSubset <- subset(summaryStat,summaryStat[,"seperatePlots"] == subsetPlots[i])
+			} else {
+				summaryStatSubset <- summaryStat
+			}
+
+			if(options[["seperateLines"]] == "") {
+
+				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=horizontalAxis, 
+											y=dependent,
+											group=1)) 
+
+			} else {
+
+				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=horizontalAxis, 
+											y=dependent,
+											group=seperateLines,
+											shape=seperateLines,
+#											color=seperateLines,
+											fill=seperateLines))
+
+			} 
+
+			if (options[["errorBars"]]) {
+
+				pd <- ggplot2::position_dodge(.2)
+				p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, 
+															ymax=ciUpper), 
+															colour="black", width=.2, position=pd)
+
+			} else {
+
+				pd <- ggplot2::position_dodge(0)
+
+			}
+
+			p <- p + ggplot2::geom_line(position=pd, size = .7) + 
+				ggplot2::geom_point(position=pd, size=4) +
+				ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
+				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) + 
+				ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
+				ggplot2::ylab(options[["dependent"]]) +
+				ggplot2::xlab(options[["horizontalAxis"]]) +
+				ggplot2::labs(shape=options[["seperateLines"]], fill=options[["seperateLines"]]) +
+				ggplot2::theme_bw() +
+				ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
+					panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
+					panel.grid.major=ggplot2::element_blank(),
+					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
+					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
+					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
+					legend.key = ggplot2::element_blank(), #legend.key.width = grid::unit(10,"mm"),
+					legend.title = ggplot2::element_text(size=12),
+					legend.text = ggplot2::element_text(size = 12),
+					axis.ticks = ggplot2::element_line(size = 0.5),
+					axis.ticks.margin = grid::unit(1,"mm"),
+					axis.ticks.length = grid::unit(3, "mm"),
+					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
+				base_breaks_y(summaryStatSubset, options[["errorBars"]]) +
+				base_breaks_x(summaryStatSubset[,"horizontalAxis"])
+
+			if (nPlots > 1) {
+				p <- p + ggplot2::ggtitle(paste(options[["seperatePlots"]],": ",subsetPlots[i], sep = ""))
+			}
+
+			image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+			print(p)
+			content <- .endSaveImage(image)
+
+			profilePlot[["data"]] <- content
+
+			profilePlotList[[i]] <- profilePlot
+
+		}
+
+	} else if (options$horizontalAxis != "") {
+
+		if (options$seperatePlots != "") {
+
+			nPlots <- length(levels(dataset[[ .v(options$seperatePlots) ]]))
+
+		} else {
+
+			nPlots <- 1
+
+		}
+
+		for (i in 1:nPlots) {
+
+			profilePlot <- list()
+			profilePlot[["title"]] <- ""
+			profilePlot[["width"]] <- options$chartWidth
+			profilePlot[["height"]] <- options$chartHeight
+			profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			profilePlot[["data"]] <- ""
+
+			if (status$error)
+				profilePlot[["error"]] <- list(errorType="badData")
+
+			profilePlotList[[i]] <- profilePlot
+		}
+
+	}
+
+	list(result=profilePlotList, status=status)
 }
