@@ -419,7 +419,8 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	} else if (options$sumOfSquares == "type3") {
 			
 		.addFootnote(footnotes, text = "Type III Sum of Squares", symbol = "<em>Note.</em>")
-
+	
+	}
 
 
 	modelDef <- .rmModelFormula(options)
@@ -1332,7 +1333,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 				if(cases[i,dim(cases)[2]] == lvls[[ dim(cases)[2] ]][[1]]) {
 					row[[".isNewGroup"]] <- TRUE
-				} else {				
+				} else {
 					row[[".isNewGroup"]] <- FALSE
 				}
 
