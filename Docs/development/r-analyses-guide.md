@@ -63,7 +63,7 @@ The beginning of an analysis function will typically looks as follows:
 
 ### Converting to and from *X-prepended-base64*
 
-Column names in data frames read from JASP are encoded in *X-prepended-base64*
+Column names in data frames read from JASP are encoded in *X-prepended-base64*. This allows us to use international characters in column names, etc.
 
 `.v(column.names)`  
 `.unv(dp.base64.names)`  
@@ -365,4 +365,85 @@ It is recommended to use the footnotes functions described above, rather than cr
     - `.endSaveImage()`
 
 
+Callbacks
+---------
 
+Callbacks allow analyses to:
+
+1. Provide partial results back to the UI
+2. Respond to user actions made while the analysis is running
+
+A callback function is passed as an argument into the analysis function. i.e.
+
+`TTestOneSample <- function(dataset=NULL, options, perform="run", callback=function(...) list(status="ok"), ...) {`
+
+### Providing partial results
+
+Providing partial results is useful, because it allows for analyses to progressively fill tables in as the results are calculated (rather than filling them all in in one go). At some point, we'll also have a progress bar.
+
+To send partical results, the results list is simply passed into the callback:
+
+`callback(results)`
+
+Even if results haven't changed, it is good to call the callback periodically, as this allows you to respond to user actions (see below). In this case, you can simply call the callback with no arguments.
+
+### Responding to user actions
+
+During the analysis, the analysis can (and should) periodically call the callback to see if the user has changed their mind. If things have changed, this will be reflected in the *return value* of the callback. the callback will return something like:
+
+    {
+        "status" : ...
+    }
+
+where `status` can be:
+
+- "ok",
+- "aborted"
+- "changed"
+- "stopped"
+
+`ok` indicates that the analysis has not changed, and should continue running
+`aborted` indicates that the analysis has been removed by the user (and there's no point continuing), the analysis can call just call `return()` to terminate itself
+`changed` indicates that the analysis has been changed by the user, more information below.
+`stopped` indicates that the analysis has been stopped by the user (for analyses which are not *autorun* there is a button to stop them, but few analyses aren't autorun, so you can ignore the possibility if receiving "stopped"). "stopped" is for all intents and purposes the same as "aborted", however, if pass partial results into your call to `return()`, these will be displayed.
+
+#### "changed"
+
+When the status is "changed", there will also be an options object present in the callbacks return value; i.e. the return value will be:
+
+    {
+        "status" : "changed",
+        "options" : {
+            ....
+        }
+    }
+
+The `options` object will contain the new options that the user has selected. Changes to options can have one of two consequences:
+
+1. that the analysis can incorporate the changes and continue to run
+2. that the analysis can not incorporate the changes, and must re-run from the beginning
+
+In the instance of 1. (that the analysis can incorporate the changes), the analysis continues to run, and returns a results list appropriate for the new options. If the analysis returns a results list, then JASP assumes that the analysis was able to incorporate the changes.
+
+In the instance of 2. (that the analysis is unable to incorporate the changes, and must re-run from the beginning), the analysis can simply return NULL (i.e. by calling `return()`). If the analysis returns NULL, then JASP assumes that the analysis was unable to incorporate the changes, and will re-run the analysis with the new options.
+
+Generally, only changes to certain settings require the analysis to restart. To determine whether a restart is in order, the `.diff()` function can be useful.
+
+`.diff(options.one, options.two)`
+
+It will return a named list with TRUE/FALSE values indicating which options have changed or not. So, for example, if changes to the options `variables` or `limit` would require a restart, the code might look as follows:
+
+    response <- callback()
+    
+    if (response$status == "aborted")
+	    return()
+	    
+    if (response$status == "changed") {
+    
+        changes <- .diff(options, response$options)
+        
+        if (changes$variables || changes$limit)
+            return()
+    }
+    
+    # otherwise continue
