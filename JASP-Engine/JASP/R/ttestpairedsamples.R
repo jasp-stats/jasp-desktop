@@ -63,8 +63,8 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		interval <- 100 * options$confidenceIntervalInterval
 		title    <- paste(interval, "% Confidence Interval", sep="")
 	
-		fields[[length(fields)+1]] <- list(name="lowerCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
-		fields[[length(fields)+1]] <- list(name="upperCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
+		fields[[length(fields)+1]] <- list(name="lowerCI", type="number", format="sf:4;dp:3", title="Lower", overTitle=title)
+		fields[[length(fields)+1]] <- list(name="upperCI", type="number", format="sf:4;dp:3", title="Upper", overTitle=title)
 	}
 
 	ttest[["schema"]] <- list(fields=fields)
@@ -209,6 +209,9 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		
 		ttest.results[[length(ttest.results)+1]] <- row
 	}
+	
+	if (length(ttest.results) == 0)
+		ttest.results[[1]] <- list()
 	
 	ttest[["data"]] <- ttest.results
 	

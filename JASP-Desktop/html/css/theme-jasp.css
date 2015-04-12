@@ -84,6 +84,8 @@ thead tr:first-child th {
 thead th {
 	text-align: center;
 	white-space: nowrap;
+	padding-top: .25em ;
+	padding-bottom: .25em ;
 }
 
 tbody th {

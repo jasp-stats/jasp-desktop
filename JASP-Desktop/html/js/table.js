@@ -464,6 +464,31 @@ $.widget("jasp.table", {
 		var columns = Array(columnCount)
 		
 
+		var lastOverTitle = "&nbsp;"
+		var firstWithThisOverTitleIndex = 0
+		var overTitles = { }
+		
+		for (var colNo = 0; colNo <= columnCount; colNo++) {
+			
+			var overTitle
+			if (colNo < columnCount)
+				overTitle = columnDefs[colNo].overTitle
+			else
+				overTitle = "&nbsp;"
+			
+			if ( ! overTitle)
+				overTitle = "&nbsp;"
+			
+			if (overTitle != lastOverTitle) {
+			
+				var columnDef = columnDefs[firstWithThisOverTitleIndex]
+				overTitles[columnDef.name] = { title : lastOverTitle, span: colNo - firstWithThisOverTitleIndex }
+				firstWithThisOverTitleIndex = colNo
+				lastOverTitle = overTitle
+			}
+		}
+		
+		
 		for (var colNo = 0; colNo < columnCount; colNo++) {
 		
 			// populate column headers
@@ -482,6 +507,12 @@ $.widget("jasp.table", {
 			var columnType = columnDef.type
 			
 			var columnHeader = { content : title, header : true, type : columnType }
+			
+			if (overTitles[columnName]) {
+			
+				columnHeader.overTitle     = overTitles[columnName].title
+				columnHeader.overTitleSpan = overTitles[columnName].span
+			}
 
 			// At the moment this only supports combining two column headers
 			// Support for multiple can be added when necessary
@@ -682,6 +713,26 @@ $.widget("jasp.table", {
 				chunks.push('<tr>')
 					chunks.push('<th colspan="' + 2 * columnCount + '"></th>')
 				chunks.push('</tr>')
+		}
+		
+		if (columnHeaders.length && columnHeaders[0].overTitle) {
+		
+				chunks.push('<tr>')
+
+			for (var colNo = 0; colNo < columnHeaders.length; colNo++) {
+			
+				var cell = columnHeaders[colNo]
+				if (cell.overTitleSpan) {
+				
+					chunks.push('<th colspan="' + 2 * cell.overTitleSpan + '">')
+					chunks.push(cell.overTitle)
+					chunks.push('</th>')
+				}
+			
+			}
+			
+				chunks.push('</tr>')
+		
 		}
 
 				chunks.push('<tr>')
