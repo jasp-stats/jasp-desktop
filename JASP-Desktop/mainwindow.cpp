@@ -558,7 +558,6 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, FilePackageData *pack
 	setWindowTitle(dataSetName);
 
 	_tableModel->setDataSet(packageData->dataSet);
-	updateMenuEnabledDisabledStatus();
 	ui->backStage->setFileLoaded(true, filename);
 	_analyses->clear();
 
@@ -600,6 +599,7 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, FilePackageData *pack
 	}
 
 	packageData->declareLoaded();
+	updateMenuEnabledDisabledStatus();
 
 	if (_engineSync->engineStarted() == false)
 		_engineSync->start();
