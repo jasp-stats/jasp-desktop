@@ -2,6 +2,7 @@
 #define MAINWIDGET_H
 
 #include <QMainWindow>
+
 #include "dataset.h"
 
 #include "datasettablemodel.h"
@@ -29,12 +30,13 @@ public:
     
 protected:
 	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
+	virtual void closeEvent(QCloseEvent *event) OVERRIDE;
 
 private:
 	Ui::MainWindow *ui;
 
 	AnalysisForm *_currentOptionsWidget;
-	DataSet *_dataSet;
+	FilePackageData *_packageData;
 	DataSetTableModel *_tableModel;
 	Analysis *_currentAnalysis;
 
@@ -42,6 +44,9 @@ private:
 	EngineSync* _engineSync;
 
 	void analysisResultsChangedHandler(Analysis* analysis);
+	void packageChanged(FilePackageData *package);
+
+	bool closeRequestCheck();
 
 	AsyncLoader _loader;
 	ProgressWidget *_alert;
@@ -63,6 +68,8 @@ private:
 
 	int _tableViewWidthBeforeOptionsMadeVisible;
 
+	bool _resultsViewLoaded = false;
+	QString _openOnLoadFilename;
 	QSettings _settings;
 	ActivityLog *_log;
 	QString _fatalError;
@@ -84,10 +91,11 @@ private slots:
 	void helpToggled(bool on);
 	void dataSetSelected(const QString &filename);
 	void dataSetCloseRequested();
-	void dataSetLoaded(const QString &dataSetName, DataSet *dataSet);
+	void dataSetLoaded(const QString &dataSetName, FilePackageData *packageData, const QString &filename);
 	void dataSetLoadFailed(const QString &message);
 	void itemSelected(const QString &item);
 	void exportSelected(const QString &filename);
+	void saveSelected(const QString &filename);
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);
@@ -105,6 +113,9 @@ private slots:
 	void updateUIFromOptions();
 
 	void resultsPageLoaded(bool success);
+
+	void saveKeysSelected();
+	void openKeysSelected();
 
 	void fatalError();
 

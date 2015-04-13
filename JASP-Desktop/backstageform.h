@@ -24,23 +24,28 @@ public:
 	void setLog(ActivityLog *log);
 
 public slots:
-	void setFileLoaded(bool loaded);
+	void setFileLoaded(bool loaded, QString filename);
+	void openFile();
+	bool saveAs();
+	bool save();
 
 signals:
 	void dataSetSelected(QString filename);
 	void closeDataSetSelected();
 	void exportSelected(QString filename);
+	void saveSelected(QString filename);
     
 private:
     Ui::BackStageForm *ui;
 	QSettings _settings;
 	QStringList _recents;
+	QString _filename;
 
 	ActivityLog *_log;
 	const int _maxRecents = 5;
+	bool _loaded = false;
 
 private slots:
-    void fileItemSelected();
 	void closeItemSelected();
 	void exportItemSelected();
 	void exampleSelectedHandler(QString path);

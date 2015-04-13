@@ -17,7 +17,7 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
 
-windows:LIBS += -lboost_filesystem-mt -lboost_system-mt
+windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
    macx:LIBS += -lboost_filesystem-mt -lboost_system-mt
   linux:LIBS += -lboost_filesystem    -lboost_system
 

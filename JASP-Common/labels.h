@@ -21,7 +21,9 @@ public:
 
 	void clear();
 	int add(int display);
-	int add(std::string &display);
+	int add(const std::string &display);
+	int add(int pos, const std::string &display);
+	int add(int pos, int display);
 
 	const Label &at(int raw) const;
 	size_t size() const;

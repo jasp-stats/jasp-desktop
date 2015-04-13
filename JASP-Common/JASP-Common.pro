@@ -13,7 +13,8 @@ windows:INCLUDEPATH += ../../boost_1_54_0
 
 INCLUDEPATH += ../../nowide
 
-windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
+windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32 -larchive.dll
+
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
@@ -64,7 +65,12 @@ SOURCES += \
 	processinfo.cpp \
 	sharedmemory.cpp \
 	tempfiles.cpp \
-	utils.cpp
+	utils.cpp \
+    exporters/jaspexporter.cpp \
+    importers/jaspimporter.cpp \
+    filepackagedata.cpp \
+    filereader.cpp
+
 
 HEADERS += \
 	analyses.h \
@@ -115,5 +121,12 @@ HEADERS += \
 	sharedmemory.h \
 	tempfiles.h \
 	utils.h \
-	version.h
+	version.h \
+    exporters/jaspexporter.h \
+    libzip/archive.h \
+    libzip/archive_entry.h \
+    importers/jaspimporter.h \
+    filepackagedata.h \
+    filereader.h
+
 

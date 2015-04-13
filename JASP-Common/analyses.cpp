@@ -10,16 +10,19 @@ Analyses::Analyses()
 	_nextId = 0;
 }
 
-Analysis *Analyses::create(string name)
+Analysis *Analyses::create(string name, Json::Value *optionsData, Analysis::Status status)
 {
-	return create(name, _nextId++);
+	return create(name, _nextId++, optionsData, status);
 }
 
-Analysis *Analyses::create(string name, int id)
+Analysis *Analyses::create(string name, int id, Json::Value *optionsData, Analysis::Status status)
 {
-	Analysis *analysis = AnalysisLoader::load(id, name);
+	if (id >= _nextId)
+		_nextId = id + 1;
 
-	if (_defaults.find(name) != _defaults.end())
+	Analysis *analysis = AnalysisLoader::load(id, name, optionsData, status);
+
+	if (optionsData == NULL && _defaults.find(name) != _defaults.end())
 	{
 		Json::Value opt = _defaults[name]->options()->asJSON();
 		analysis->options()->set(opt);
@@ -54,6 +57,11 @@ Analysis *Analyses::get(int id)
 		return _analyses.at(id);
 	else
 		return NULL;
+}
+
+int Analyses::size()
+{
+	return _analyses.size();
 }
 
 std::vector<Analysis*>::iterator Analyses::begin()

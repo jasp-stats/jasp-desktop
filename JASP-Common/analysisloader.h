@@ -7,7 +7,7 @@ class AnalysisLoader
 {
 public:
 
-	static Analysis *load(int id, std::string analysisName);
+	static Analysis *load(int id, std::string analysisName, Json::Value* data = NULL, Analysis::Status status = Analysis::Status::Empty);
 
 };
 
