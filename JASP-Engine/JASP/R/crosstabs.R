@@ -194,11 +194,11 @@
 	if (counts.fp || options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal) {
 
 	
-		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]",   title="Total", overTitle=analysis$columns, type="number", format="sf:4;dp:2")	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]",   title="Total", type="number", format="sf:4;dp:2")	
 		
 	} else {
 	
-		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]", title="Total", overTitle=analysis$columns, type="integer")
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]", title="Total", type="integer")
 	}
 
 	if (options$countsExpected) {
