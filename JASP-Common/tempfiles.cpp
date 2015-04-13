@@ -37,14 +37,8 @@ void tempfiles_init(long sessionId)
 	tempfiles_statusFileName = ss.str();
 
 	filesystem::path sessionPath = Utils::osPath(tempfiles_sessionDirName);
-	filesystem::path statusFilePath = Utils::osPath(tempfiles_statusFileName);
 
-	if (filesystem::exists(sessionPath, error))
-		filesystem::remove_all(sessionPath, error);
-
-	if (error)
-		return;
-
+	filesystem::remove_all(sessionPath, error);
 	filesystem::create_directories(sessionPath, error);
 
 	nowide::fstream f;
@@ -127,14 +121,6 @@ void tempfiles_deleteOrphans()
 						perror(error.message().c_str());
 				}
 			}
-#ifndef __WIN32__
-			else if (error)
-			{
-				// do nothing
-				// under windows, an error is thrown when the file doesn't exist
-				// so this is #ifdef'd out
-			}
-#endif
 			else // no status file
 			{
 				filesystem::remove_all(p, error);
