@@ -131,7 +131,7 @@ void Utils::touch(const string &filename)
 #endif
 }
 
-bool Utils::renameAtomic(const string &oldName, const string &newName)
+bool Utils::renameOverwrite(const string &oldName, const string &newName)
 {
 	filesystem::path o = osPath(oldName);
 	filesystem::path n = osPath(newName);

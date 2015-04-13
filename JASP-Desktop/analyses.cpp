@@ -95,7 +95,7 @@ void Analyses::flushDefaultsToDisk()
 			file.write(json.c_str(), json.length());
 			file.close();
 
-			if (Utils::renameAtomic(tmpFileName.toStdString(), fileName.toStdString()))
+			if (Utils::renameOverwrite(tmpFileName.toStdString(), fileName.toStdString()))
 				defaults.needsSync = false;
 			else
 				file.remove();
