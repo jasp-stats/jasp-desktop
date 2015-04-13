@@ -13,8 +13,7 @@ windows:INCLUDEPATH += ../../boost_1_54_0
 
 INCLUDEPATH += ../../nowide
 
-windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32 -larchive.dll
-
+windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter

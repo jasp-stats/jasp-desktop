@@ -17,8 +17,8 @@ class Analyses
 public:
 	Analyses();
 
-	Analysis *create(std::string name, Json::Value *optionsData = NULL, Analysis::Status status = Analysis::Status::Empty);
-	Analysis *create(std::string name, int id, Json::Value *optionsData = NULL, Analysis::Status status = Analysis::Status::Empty);
+    Analysis *create(std::string name, Json::Value *optionsData = NULL, Analysis::Status status = Analysis::Empty);
+    Analysis *create(std::string name, int id, Json::Value *optionsData = NULL, Analysis::Status status = Analysis::Empty);
 
 	Analysis *get(int id);
 	void clear();

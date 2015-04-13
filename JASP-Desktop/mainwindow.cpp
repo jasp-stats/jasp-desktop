@@ -531,9 +531,9 @@ bool MainWindow::closeRequestCheck()
 		title.chop(1);
 		QMessageBox::StandardButton reply = QMessageBox::warning(this, "Save Workspace?", QString("Save changes to workspace \"") + title +  QString("\" before closing?\n\nYour changes will be lost if you don't save them."), QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
 
-		if (reply == QMessageBox::StandardButton::Save)
+        if (reply == QMessageBox::Save)
 			cancel = !ui->backStage->save();
-		else if (reply == QMessageBox::StandardButton::Cancel)
+        else if (reply == QMessageBox::Cancel)
 			cancel = true;
 	}
 	return cancel;

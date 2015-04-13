@@ -193,7 +193,7 @@ void FileReader::close()
 		{
 			int r = archive_read_free(_archive);
 			if (r != ARCHIVE_OK)
-				throw runtime_error("Closing jasp archive failed: ERROR(" + to_string(r) + ")");
+                throw runtime_error("Closing jasp archive failed");
 		}
 		else
 			_file->close();

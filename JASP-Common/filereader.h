@@ -4,6 +4,8 @@
 #include <string>
 #include <boost/nowide/fstream.hpp>
 #include "libzip/archive.h"
+#include <stdlib.h>
+#include <vector>
 
 class FileReader
 {
@@ -24,7 +26,7 @@ public:
 	std::string fileName() const;
 	std::string extension() const;
 
-	static std::vector<std::string> getEntryPaths(const std::string &archivePath, const std::string &entryBaseDirectory = std::string());
+    static std::vector<std::string> getEntryPaths(const std::string &archivePath, const std::string &entryBaseDirectory = std::string());
 
 private:
 
