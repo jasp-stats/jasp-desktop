@@ -36,7 +36,7 @@ private:
 	Ui::MainWindow *ui;
 
 	AnalysisForm *_currentOptionsWidget;
-	FilePackageData *_packageData;
+	DataSetPackage *_package;
 	DataSetTableModel *_tableModel;
 	Analysis *_currentAnalysis;
 
@@ -44,7 +44,7 @@ private:
 	EngineSync* _engineSync;
 
 	void analysisResultsChangedHandler(Analysis* analysis);
-	void packageChanged(FilePackageData *package);
+	void packageChanged(DataSetPackage *package);
 
 	bool closeRequestCheck();
 
@@ -91,7 +91,7 @@ private slots:
 	void helpToggled(bool on);
 	void dataSetSelected(const QString &filename);
 	void dataSetCloseRequested();
-	void dataSetLoaded(const QString &dataSetName, FilePackageData *packageData, const QString &filename);
+	void dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename);
 	void dataSetLoadFailed(const QString &message);
 	void itemSelected(const QString &item);
 	void exportSelected(const QString &filename);

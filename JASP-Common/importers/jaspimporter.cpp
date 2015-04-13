@@ -53,7 +53,7 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 	return true;
 }
 
-void JASPImporter::loadDataSet(FilePackageData *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	DataSet *dataSet = SharedMemory::createDataSet();
 	bool success = false;

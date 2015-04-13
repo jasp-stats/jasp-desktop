@@ -23,18 +23,18 @@ int Labels::add(const std::string &display)
 	return add(_labels.size(), display);
 }
 
-int Labels::add(int pos, int display)
+int Labels::add(int raw, int display)
 {
-	_labels[pos] = Label(display);
+	_labels[raw] = Label(display);
 
 	return display;
 }
 
-int Labels::add(int pos, const std::string &display)
+int Labels::add(int raw, const std::string &display)
 {
-	_labels[pos] = Label(display, pos);
+	_labels[raw] = Label(display, raw);
 
-	return pos;
+	return raw;
 }
 
 const Label &Labels::at(int raw) const

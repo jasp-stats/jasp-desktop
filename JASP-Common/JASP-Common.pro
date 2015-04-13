@@ -33,6 +33,7 @@ SOURCES += \
 	columns.cpp \
 	datablock.cpp \
 	dataset.cpp \
+	datasetpackage.cpp \
 	datasetloader.cpp \
 	dirs.cpp \
 	importers/csv.cpp \
@@ -67,7 +68,6 @@ SOURCES += \
 	utils.cpp \
     exporters/jaspexporter.cpp \
     importers/jaspimporter.cpp \
-    filepackagedata.cpp \
     filereader.cpp
 
 
@@ -83,6 +83,7 @@ HEADERS += \
 	common.h \
 	datablock.h \
 	dataset.h \
+	datasetpackage.h \
 	datasetloader.h \
 	dirs.h \
 	importers/csv.h \
@@ -125,7 +126,7 @@ HEADERS += \
     libzip/archive.h \
     libzip/archive_entry.h \
     importers/jaspimporter.h \
-    filepackagedata.h \
+	filepackage.h \
     filereader.h
 
 

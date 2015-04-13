@@ -69,9 +69,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_optionsForm = NULL;
 
-	_packageData = new FilePackageData();
+	_package = new DataSetPackage();
 
-	_packageData->alteredStateChange.connect(boost::bind(&MainWindow::packageChanged, this, _1));
+	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged, this, _1));
 	QShortcut *saveShortcut = new QShortcut(QKeySequence("Ctrl+S"), this);
 	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
 	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
@@ -147,7 +147,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_alert->move(100, 80);
 	_alert->hide();
 
-	connect(&_loader, SIGNAL(complete(const QString&, FilePackageData*, const QString&)), this, SLOT(dataSetLoaded(const QString&, FilePackageData*, const QString&)));
+	connect(&_loader, SIGNAL(complete(const QString&, DataSetPackage*, const QString&)), this, SLOT(dataSetLoaded(const QString&, DataSetPackage*, const QString&)));
 	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
 	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(dataSetLoadFailed(QString)));
 
@@ -248,7 +248,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::saveKeysSelected()
 {
-	if (_packageData->alteredState())
+	if (_package->isModified())
 	{
 		ui->backStage->save();
 	}
@@ -259,10 +259,10 @@ void MainWindow::openKeysSelected()
 	ui->backStage->openFile();
 }
 
-void MainWindow::packageChanged(FilePackageData *package)
+void MainWindow::packageChanged(DataSetPackage *package)
 {
 	QString title = windowTitle();
-	if (package->alteredState())
+	if (package->isModified())
 	{
 		setWindowTitle(title.append("*"));
 	}
@@ -311,8 +311,8 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
 
-	if (_packageData->hasLoaded())
-		_packageData->setAlteredState(true);
+	if (_package->isLoaded())
+		_package->setModified(true);
 }
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
@@ -403,7 +403,7 @@ void MainWindow::showForm(Analysis *analysis)
 	if (_currentOptionsWidget != NULL)
 	{
 		Options *options = analysis->options();
-		DataSet *dataSet = _packageData->dataSet;
+		DataSet *dataSet = _package->dataSet;
 		_currentOptionsWidget->bindTo(options, dataSet);
 
 		_currentOptionsWidget->show();
@@ -508,14 +508,14 @@ void MainWindow::helpToggled(bool on)
 
 void MainWindow::dataSetSelected(const QString &filename)
 {
-	if (_packageData->hasLoaded())
+	if (_package->isLoaded())
 	{
 		// begin new instance
 		QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(filename));
 	}
 	else
 	{
-		_loader.load(_packageData, filename);
+		_loader.load(_package, filename);
 		_alert->show();
 	}
 
@@ -525,7 +525,7 @@ void MainWindow::dataSetSelected(const QString &filename)
 bool MainWindow::closeRequestCheck()
 {
 	bool cancel = false;
-	if (_packageData->alteredState())
+	if (_package->isModified())
 	{
 		QString title = windowTitle();
 		title.chop(1);
@@ -544,8 +544,8 @@ void MainWindow::dataSetCloseRequested()
 	if (!closeRequestCheck())
 	{
 		_tableModel->clearDataSet();
-		_loader.free(_packageData->dataSet);
-		_packageData->reset();
+		_loader.free(_package->dataSet);
+		_package->reset();
 		updateMenuEnabledDisabledStatus();
 		ui->backStage->setFileLoaded(false, NULL);
 		ui->webViewResults->reload();
@@ -553,11 +553,11 @@ void MainWindow::dataSetCloseRequested()
 	}
 }
 
-void MainWindow::dataSetLoaded(const QString &dataSetName, FilePackageData *packageData, const QString &filename)
+void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename)
 {
 	setWindowTitle(dataSetName);
 
-	_tableModel->setDataSet(packageData->dataSet);
+	_tableModel->setDataSet(package->dataSet);
 	ui->backStage->setFileLoaded(true, filename);
 	_analyses->clear();
 
@@ -571,9 +571,9 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, FilePackageData *pack
 		_inited = true;
 	}
 
-	if (packageData->hasAnalyses)
+	if (package->hasAnalyses)
 	{
-		Json::Value analysesData = packageData->analysesData;
+		Json::Value analysesData = package->analysesData;
 		for (Json::ValueIterator iter = analysesData.begin(); iter != analysesData.end(); iter++)
 		{
 			try
@@ -598,7 +598,7 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, FilePackageData *pack
 		}
 	}
 
-	packageData->declareLoaded();
+	package->setLoaded();
 	updateMenuEnabledDisabledStatus();
 
 	if (_engineSync->engineStarted() == false)
@@ -614,7 +614,7 @@ void MainWindow::dataSetLoadFailed(const QString &message)
 
 void MainWindow::updateMenuEnabledDisabledStatus()
 {
-	bool enable = _packageData->hasLoaded();
+	bool enable = _package->isLoaded();
 
 	ui->ribbonAnalysis->setEnabled(enable);
 	ui->ribbonSEM->setEnabled(enable);
@@ -738,7 +738,7 @@ void MainWindow::saveSelected(const QString &filename)
 	{
 		QWebElement element =  ui->webViewResults->page()->mainFrame()->documentElement();
 		QString qHTML = element.toOuterXml();
-		_packageData->analysesHTML = fq(qHTML);
+		_package->analysesHTML = fq(qHTML);
 
 		Json::Value analysesData = Json::arrayValue;
 		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
@@ -756,13 +756,13 @@ void MainWindow::saveSelected(const QString &filename)
 			}
 		}
 
-		_packageData->analysesData = analysesData;
-		_packageData->hasAnalyses = true;
+		_package->analysesData = analysesData;
+		_package->hasAnalyses = true;
 	}
 
-	_loader.save(filename, _packageData);
+	_loader.save(filename, _package);
 
-	_packageData->setAlteredState(false);
+	_package->setModified(false);
 
 	QString dataSetName = QFileInfo(filename).baseName();
 	setWindowTitle(dataSetName);
@@ -976,8 +976,8 @@ void MainWindow::analysisRemoved()
 		info = info.arg(tq(_currentAnalysis->name()));
 		info = info.arg(_currentAnalysis->id());
 
-		if (_packageData->hasLoaded())
-			_packageData->setAlteredState(true);
+		if (_package->isLoaded())
+			_package->setModified(true);
 
 		if (_log != NULL)
 			_log->log("Analysis Removed", info);

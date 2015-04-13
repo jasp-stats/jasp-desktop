@@ -21,7 +21,7 @@
 
 using namespace std;
 
-void JASPExporter::saveDataSet(const std::string &path, FilePackageData* package, boost::function<void (const std::string &, int)> progressCallback)
+void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 	DataSet *dataset = package->dataSet;
 

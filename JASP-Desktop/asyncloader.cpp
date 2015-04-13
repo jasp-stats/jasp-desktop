@@ -18,22 +18,22 @@ AsyncLoader::AsyncLoader(QObject *parent) :
 {
 	this->moveToThread(&_thread);
 
-	connect(this, SIGNAL(loads(FilePackageData*, QString)), this, SLOT(loadTask(FilePackageData*, QString)));
-	connect(this, SIGNAL(saves(QString, FilePackageData*)), this, SLOT(saveTask(QString, FilePackageData*)));
+	connect(this, SIGNAL(loads(DataSetPackage*, QString)), this, SLOT(loadTask(DataSetPackage*, QString)));
+	connect(this, SIGNAL(saves(QString, DataSetPackage*)), this, SLOT(saveTask(QString, DataSetPackage*)));
 
 	_thread.start();
 }
 
-void AsyncLoader::load(FilePackageData *packageData, const QString &filename)
+void AsyncLoader::load(DataSetPackage *package, const QString &filename)
 {
 	emit progress("Loading Data Set", 0);
-	emit loads(packageData, filename);
+	emit loads(package, filename);
 }
 
-void AsyncLoader::save(const QString &filename, FilePackageData *packageData)
+void AsyncLoader::save(const QString &filename, DataSetPackage *package)
 {
 	emit progress("Saving Data Set", 0);
-	emit saves(filename, packageData);
+	emit saves(filename, package);
 }
 
 void AsyncLoader::free(DataSet *dataSet)
@@ -41,15 +41,15 @@ void AsyncLoader::free(DataSet *dataSet)
 	_loader.freeDataSet(dataSet);
 }
 
-void AsyncLoader::loadTask(FilePackageData *packageData, const QString &filename)
+void AsyncLoader::loadTask(DataSetPackage *package, const QString &filename)
 {
 	try
 	{		
-		_loader.loadPackage(packageData, fq(filename), boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		_loader.loadPackage(package, fq(filename), boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 		QString name = QFileInfo(filename).baseName();
 
-		emit complete(name, packageData, filename);
+		emit complete(name, package, filename);
 	}
 	catch (runtime_error e)
 	{
@@ -66,13 +66,13 @@ void AsyncLoader::progressHandler(string status, int progress)
 	emit this->progress(QString::fromUtf8(status.c_str(), status.length()), progress);
 }
 
-void AsyncLoader::saveTask(const QString &filename, FilePackageData *dataSet)
+void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
 {
 	try
 	{
 		QString tempFilename = filename + tq(".tmp");
 
-		JASPExporter::saveDataSet(fq(tempFilename), dataSet, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		JASPExporter::saveDataSet(fq(tempFilename), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 		QFileInfo tempFileInfo = QFileInfo(tempFilename);
 		if (!tempFileInfo.exists() || tempFileInfo.size() == 0)

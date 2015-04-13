@@ -14,7 +14,7 @@ using namespace boost;
 using namespace std;
 
 
-void DataSetLoader::loadPackage(FilePackageData *packageData, const string &locator, boost::function<void(const string &, int)> progress)
+void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, boost::function<void(const string &, int)> progress)
 {
 	filesystem::path path(locator);
 

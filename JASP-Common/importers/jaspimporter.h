@@ -2,7 +2,7 @@
 #define JASPIMPORTER_H
 
 
-#include "filepackagedata.h"
+#include "datasetpackage.h"
 
 #include <boost/function.hpp>
 
@@ -12,7 +12,7 @@
 class JASPImporter
 {
 public:
-	static void loadDataSet(FilePackageData *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback);
+	static void loadDataSet(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback);
 
 private:
 	static Column::ColumnType getColumnType(std::string name);

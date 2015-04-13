@@ -1,7 +1,7 @@
 #ifndef JASPEXPORTER_H
 #define JASPEXPORTER_H
 
-#include "filepackagedata.h"
+#include "datasetpackage.h"
 
 #include <boost/function.hpp>
 
@@ -11,7 +11,7 @@
 class JASPExporter
 {
 public:
-	static void saveDataSet(const std::string &path, FilePackageData* package, boost::function<void (const std::string &, int)> progressCallback);
+	static void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback);
 
 private:
 	static void createJARContents(archive *a);

@@ -2,10 +2,12 @@
 #define FILEREADER_H
 
 #include <string>
-#include <boost/nowide/fstream.hpp>
-#include "libzip/archive.h"
-#include <stdlib.h>
 #include <vector>
+
+#include <stdlib.h>
+#include <boost/nowide/fstream.hpp>
+
+#include "libzip/archive.h"
 
 class FileReader
 {
