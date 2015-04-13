@@ -98,8 +98,6 @@ void EngineSync::start()
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(heartbeatTempFiles()));
 	timer->start(30000);
-
-	tempfiles_init(ProcessInfo::currentPID());
 }
 
 bool EngineSync::engineStarted()

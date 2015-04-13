@@ -17,10 +17,12 @@ class Analyses
 public:
 	Analyses();
 
-	Analysis *create(std::string name);
-	Analysis *create(std::string name, int id);
+    Analysis *create(std::string name, Json::Value *optionsData = NULL, Analysis::Status status = Analysis::Empty);
+    Analysis *create(std::string name, int id, Json::Value *optionsData = NULL, Analysis::Status status = Analysis::Empty);
+
 	Analysis *get(int id);
 	void clear();
+	int size();
 
 	boost::signals2::signal<void (Analysis *)> analysisInitialised;
 	boost::signals2::signal<void (Analysis *)> analysisOptionsChanged;

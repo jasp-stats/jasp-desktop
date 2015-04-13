@@ -15,7 +15,7 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string name, Options *options, bool autorun)
+Analysis::Analysis(int id, string name, Options *options, bool autorun, Status status)
 {
 	_id = id;
 	_name = name;
@@ -24,7 +24,7 @@ Analysis::Analysis(int id, string name, Options *options, bool autorun)
 
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
-	_status = Empty;
+	_status = status;
 }
 
 Analysis::~Analysis()
@@ -93,6 +93,16 @@ Json::Value Analysis::asJSON() const
 	analysisAsJson["status"] = status;
 
 	return analysisAsJson;
+}
+
+void Analysis::setVisible(bool visible)
+{
+	_visible = visible;
+}
+
+bool Analysis::visible()
+{
+	return _visible;
 }
 
 Analysis::Status Analysis::status() const

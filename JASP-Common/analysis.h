@@ -10,11 +10,15 @@
 
 #include "common.h"
 
+
+
 class Analysis
 {
-
 public:
-	Analysis(int id, std::string name, Options *options, bool isAutorun = true);
+
+    enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted };
+
+    Analysis(int id, std::string name, Options *options, bool isAutorun = true, Status status = Empty);
 	virtual ~Analysis();
 
 	Options *options() const;
@@ -35,14 +39,16 @@ public:
 
 	void setOptions(Options* options);
 
-	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted };
-
 	Status status() const;
+
 	void setStatus(Status status);
+	bool visible();
+	void setVisible(bool visible);
 
 protected:
 
 	Status _status;
+	bool _visible = true;
 
 	Options* _options;
 

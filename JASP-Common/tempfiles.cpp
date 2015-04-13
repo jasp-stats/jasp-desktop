@@ -14,7 +14,7 @@ using namespace std;
 using namespace boost;
 
 long tempfiles_sessionId;
-string tempfiles_sessionDirName;
+string _tempfiles_sessionDirName;
 string tempfiles_statusFileName;
 int tempfiles_nextFileId;
 
@@ -30,21 +30,15 @@ void tempfiles_init(long sessionId)
 	ss << "/";
 	ss << sessionId;
 
-	tempfiles_sessionDirName = ss.str();
+	_tempfiles_sessionDirName = ss.str();
 
 	ss << "/status";
 
 	tempfiles_statusFileName = ss.str();
 
-	filesystem::path sessionPath = Utils::osPath(tempfiles_sessionDirName);
-	filesystem::path statusFilePath = Utils::osPath(tempfiles_statusFileName);
+	filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
 
-	if (filesystem::exists(sessionPath, error))
-		filesystem::remove_all(sessionPath, error);
-
-	if (error)
-		return;
-
+	filesystem::remove_all(sessionPath, error);
 	filesystem::create_directories(sessionPath, error);
 
 	nowide::fstream f;
@@ -62,7 +56,7 @@ void tempfiles_attach(long sessionId)
 	ss << "/";
 	ss << sessionId;
 
-	tempfiles_sessionDirName = ss.str();
+	_tempfiles_sessionDirName = ss.str();
 
 	ss << "/status";
 
@@ -74,7 +68,7 @@ void tempfiles_deleteAll()
 {
 	system::error_code error;
 
-	filesystem::path sessionPath = Utils::osPath(tempfiles_sessionDirName);
+	filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
 
 	filesystem::remove_all(sessionPath, error);
 }
@@ -87,7 +81,7 @@ void tempfiles_deleteOrphans()
 	try {
 
 		filesystem::path tempPath = Utils::osPath(Dirs::tempDir());
-		filesystem::path sessionPath = Utils::osPath(tempfiles_sessionDirName);
+		filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
 
 		filesystem::directory_iterator itr(tempPath, error);
 
@@ -160,12 +154,31 @@ void tempfiles_heartbeat()
 }
 
 
+string tempfiles_createSpecific(const string &dir, const string &filename)
+{
+	stringstream ss;
+	system::error_code error;
+
+	ss << _tempfiles_sessionDirName << "/" << dir;
+
+	string fullPath = ss.str();
+	filesystem::path path = Utils::osPath(fullPath);
+
+	if (filesystem::exists(path, error) == false || error)
+		filesystem::create_directories(path, error);
+
+	ss << "/";
+	ss << filename;
+
+	return ss.str();
+}
+
 string tempfiles_createSpecific(const string &name, int id)
 {
 	stringstream ss;
 	system::error_code error;
 
-	ss << tempfiles_sessionDirName << "/resources";
+	ss << _tempfiles_sessionDirName << "/resources";
 
 	if (id >= 0)
 		ss << "/" << id;
@@ -187,7 +200,7 @@ void tempfiles_create(const string &extension, int id, string &root, string &rel
 	stringstream ssRoot, ssRelative;
 	system::error_code error;
 
-	ssRoot << tempfiles_sessionDirName;
+	ssRoot << _tempfiles_sessionDirName;
 
 	root = ssRoot.str();
 
@@ -240,7 +253,7 @@ vector<string> tempfiles_retrieveList(int id)
 	if (id >= 0)
 	{
 		stringstream ss;
-		ss << tempfiles_sessionDirName;
+		ss << _tempfiles_sessionDirName;
 		ss << "/";
 		ss << "resources/";
 		ss << id;
@@ -248,7 +261,7 @@ vector<string> tempfiles_retrieveList(int id)
 	}
 	else
 	{
-		dir = tempfiles_sessionDirName;
+		dir = _tempfiles_sessionDirName;
 	}
 
 	filesystem::path path = Utils::osPath(dir);
@@ -267,7 +280,7 @@ vector<string> tempfiles_retrieveList(int id)
 				continue;
 
 			string absPath = itr->path().generic_string();
-			string relPath = absPath.substr(tempfiles_sessionDirName.size()+1);
+			string relPath = absPath.substr(_tempfiles_sessionDirName.size()+1);
 
 			files.push_back(relPath);
 		}
@@ -276,6 +289,10 @@ vector<string> tempfiles_retrieveList(int id)
 	return files;
 }
 
+string tempfiles_sessionDirName()
+{
+	return _tempfiles_sessionDirName;
+}
 
 void tempfiles_deleteList(const vector<string> &files)
 {
@@ -284,7 +301,7 @@ void tempfiles_deleteList(const vector<string> &files)
 	BOOST_FOREACH (const string &file, files)
 	{
 		(void)files;
-		string absPath = tempfiles_sessionDirName + "/" + file;
+		string absPath = _tempfiles_sessionDirName + "/" + file;
 		filesystem::path p = Utils::osPath(absPath);
 		filesystem::remove(p, error);
 	}
