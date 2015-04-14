@@ -711,9 +711,6 @@
 				
 				logOR<- log(odds.ratio)
 				samples <- logOR
-								
-				BF <- BayesFactor::extractBF(BF)[1, "bf"]
-				
 				z<-stats::density(logOR)
 				#x.mode <- z$x[i.mode <- which.max(z$y)]
 				
@@ -749,7 +746,7 @@
 		row[["value[oddsRatio]"]] <- "."
 	}
 		
-	list(list(row), samples=samples, CI=CI, medianSamples=medianSamples, BF = BF)
+	list(list(row), samples=samples, CI=CI, medianSamples=medianSamples)
 }
 
 .plotPosterior.crosstabs <- function(samples, CI, medianSamples, BF, oneSided= FALSE, iterations= 10000, lwd= 2, cexPoints= 1.5,
@@ -776,8 +773,6 @@
 	
 		return()
 	}
-	
-	
 
 	if (options$bayesFactorType == "BF10") {
 	
@@ -795,8 +790,6 @@
 		BF01 <- 1 / BF10
 		
 	}
-
-
 	
 	# fit denisty estimator
 	fit.posterior <-  logspline::logspline(samples)
