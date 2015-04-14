@@ -1,4 +1,90 @@
 
+
+CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+
+	layer.variables <- c()
+
+	for (layer in options$layers)
+		layer.variables <- c(layer.variables, unlist(layer$variables))
+
+	counts.var <- options$counts
+	if (counts.var == "")
+		counts.var <- NULL
+
+	factors <- c(unlist(options$rows), unlist(options$columns), layer.variables)
+
+	if (is.null(dataset))
+	{
+		if (perform == "run") {
+			dataset <- .readDataSetToEnd(columns.as.factor=factors, columns.as.numeric=counts.var)
+		} else {
+			dataset <- .readDataSetHeader(columns.as.factor=factors, columns.as.numeric=counts.var)
+		}
+	}
+
+	results <- list()
+	
+	### META
+
+	meta <- list()
+	meta[[1]] <- list(name="title", type="title")
+	meta[[2]] <- list(name="Contingency Tables", type="tables")
+	meta[[3]] <- list(name="plots", type="images")
+	
+	results[[".meta"]] <- meta
+	
+	results[["title"]] <- "Bayesian Contingency Tables"	
+	
+	### CROSS TABS
+
+	crosstabs <- list()
+	plots     <- list()
+	
+	rows    <- as.vector(options$rows,    "character")
+	columns <- as.vector(options$columns, "character")
+	
+	if (length(rows) == 0)
+		rows <- ""
+	
+	if (length(columns) == 0)
+		columns <- ""
+
+	analyses <- data.frame("columns"=columns, stringsAsFactors=FALSE)
+	analyses <- cbind(analyses, "rows"=rep(rows, each=dim(analyses)[1]), stringsAsFactors=FALSE)
+	
+	for (layer in options$layers)
+	{
+		layer.vars <- as.vector(layer$variables, "character")
+		analyses <- cbind(analyses, rep(layer.vars, each=dim(analyses)[1]), stringsAsFactors=FALSE)
+		names(analyses)[dim(analyses)[2]] <- layer$name
+	}
+	
+	analyses <- .dataFrameToRowList(analyses)
+
+	for (analysis in analyses)
+	{		
+		res <- .crosstabBayesian(dataset, options, perform, analysis)
+		
+		for (table in res$tables)
+			crosstabs[[length(crosstabs)+1]] <- table
+			
+		for (plot in res$plots)
+			plots[[length(plots)+1]] <- plot
+	}
+
+	results[["Contingency Tables"]] <- crosstabs
+
+	if (perform == "run" || length(options$rows) == 0 || length(options$columns) == 0) {
+	
+		list(results=results, status="complete")
+		
+	} else {
+	
+		list(results=results, status="inited")
+	}
+}
+
+
 .crosstabBayesian <- function(dataset, options, perform, analysis) {
 
 	# analysis is a list of the form :
@@ -8,9 +94,17 @@
 	if (counts.var == "")
 		counts.var <- NULL
 	
-	all.vars <- c(unlist(analysis), counts.var)
+	status <- list(error=FALSE, ready=TRUE)
+
+	if (length(options$rows) == 0 || length(options$columns) == 0) {
 	
-	dataset <- subset(dataset, select=.v(all.vars))
+		status$ready <- FALSE
+		
+	} else {
+
+		all.vars <- c(unlist(analysis), counts.var)
+		dataset <- subset(dataset, select=.v(all.vars))	
+	}
 	
 	# the following creates a 'groups' list
 	# a 'group' represents a combinations of the levels from the layers
@@ -81,8 +175,14 @@
 	
 	counts.fields[[length(counts.fields)+1]] <- list(name=analysis$rows, type="string", combine=TRUE)
 
+	
 	lvls <- c()
-	if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
+	
+	if (analysis$columns == "") {
+	
+		lvls <- c(".", ". ")
+	
+	} else if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
 	
 		lvls <- base::levels(dataset[[ .v(analysis$columns) ]])
 		if (options$columnOrder == "descending") {
@@ -102,8 +202,14 @@
 		}
 	}
 	
+	
 	row.lvls <- c()
-	if (is.factor(dataset[[ .v(analysis$rows) ]] )) {
+	
+	if (analysis$rows == "") {
+	
+		row.lvls <- c(".", ". ")
+	
+	} else if (is.factor(dataset[[ .v(analysis$rows) ]] )) {
 	
 		row.lvls <- base::levels(dataset[[ .v(analysis$rows) ]])
 		if (options$rowOrder == "descending") {
@@ -132,23 +238,29 @@
 			counts.fp <- TRUE
 	}
 	
+
+	overTitle <- unlist(analysis$columns)
+	if (overTitle == "")
+		overTitle <- "."
+		
+	
 	for (column.name in lvls) {
 
 		private.name <- base::paste(column.name,"[counts]", sep="")
 		
 		if (counts.fp || options$countsExpected) {
 		
-			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, overTitle=overTitle, type="number", format="sf:4;dp:2")
 		
 		} else {
 		
-			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="integer")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, overTitle=overTitle, type="integer")
 		}
 		
 		if (options$countsExpected) {
 		
 			private.name <- base::paste(column.name,"[expected]", sep="")
-			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="sf:4;dp:2")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, overTitle=overTitle, type="number", format="sf:4;dp:2")
 		}
 	}
 	
@@ -216,25 +328,27 @@
 	
 	##### Odds ratio Plots
 	
-	
-	status <- list(error=FALSE)
 	if (is.null(counts.var) == FALSE) {
 
 		counts <- dataset[[ .v(counts.var) ]]
 		
-		if (any(counts < 0) || any(is.infinite(counts)))
-			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinite number")
+		if (any(counts < 0) || any(is.infinite(counts))) {
+		
+			status$error <- TRUE
+			status$errorMessage <- "Counts may not contain negative numbers or infinite number"
+		}
 	}	
 
 	# POPULATE TABLES
 
 	# create count matrices for each group
 
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var),options$rowOrder=="descending", options$columnOrder=="descending")
+	group.matrices <- .crosstabsCreateGroupMatrices(dataset, analysis$rows, analysis$columns, groups, counts.var, options$rowOrder=="descending", options$columnOrder=="descending", perform=perform, status=status)
 	
 	if (all(dim(group.matrices[[1]]) == c(2,2))) {
 	
 		isTwoByTwo <- TRUE
+		
 	} else {
 	
 		isTwoByTwo <- FALSE
@@ -1214,83 +1328,4 @@
 	OddratioPlots
 }
 	
-
-CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-
-	layer.variables <- c()
-
-	for (layer in options$layers)
-		layer.variables <- c(layer.variables, unlist(layer$variables))
-
-	counts.var <- options$counts
-	if (counts.var == "")
-		counts.var <- NULL
-
-	factors <- c(unlist(options$rows), unlist(options$columns), layer.variables)
-
-	if (is.null(dataset))
-	{
-		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.factor=factors, columns.as.numeric=counts.var)
-		} else {
-			dataset <- .readDataSetHeader(columns.as.factor=factors, columns.as.numeric=counts.var)
-		}
-	}
-
-	results <- list()
-	
-	### META
-
-	meta <- list()
-	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="Contingency Tables", type="tables")
-	meta[[3]] <- list(name="plots", type="images")
-	
-	results[[".meta"]] <- meta
-	
-	results[["title"]] <- "Bayesian Contingency Tables"	
-	
-	### CROSS TABS
-	
-	crosstabs <- list()
-	plots <- list()
-
-	if (length(options$rows) > 0 && length(options$columns) > 0)
-	{
-		rows <- as.vector(options$rows, "character")
-		columns <- as.vector(options$columns, "character")
-
-		analyses <- data.frame("columns"=columns, stringsAsFactors=FALSE)
-		analyses <- cbind(analyses, "rows"=rep(rows, each=dim(analyses)[1]), stringsAsFactors=FALSE)
-		
-		for (layer in options$layers)
-		{
-			layer.vars <- as.vector(layer$variables, "character")
-			analyses <- cbind(analyses, rep(layer.vars, each=dim(analyses)[1]), stringsAsFactors=FALSE)
-			names(analyses)[dim(analyses)[2]] <- layer$name
-		}
-		
-		analyses <- .dataFrameToRowList(analyses)
-
-		for (analysis in analyses)
-		{
-			res <- .crosstabBayesian(dataset, options, perform, analysis)
-			
-			for (table in res$tables)
-				crosstabs[[length(crosstabs)+1]] <- table
-				
-			for (plot in res$plots)
-				plots[[length(plots)+1]] <- plot
-		}
-	
-	} else {
-	
-		crosstabs[[1]] <- list(title = "Bayesian Contingency Tables", cases = list(), schema = list(fields=list()))
-	}
-
-	results[["Contingency Tables"]] <- crosstabs
-	results[["plots"]] <- plots
-
-	results
-}
 

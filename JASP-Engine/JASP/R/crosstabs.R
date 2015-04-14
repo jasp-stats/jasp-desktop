@@ -1,4 +1,85 @@
 
+
+Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+
+	layer.variables <- c()
+
+	for (layer in options$layers)
+		layer.variables <- c(layer.variables, unlist(layer$variables))
+		
+	counts.var <- options$counts
+	if (counts.var == "")
+		counts.var <- NULL
+
+	factors <- c(unlist(options$rows), unlist(options$columns), layer.variables)
+
+	if (is.null(dataset))
+	{
+		if (perform == "run") {
+			dataset <- .readDataSetToEnd(columns.as.factor=factors, columns.as.numeric=counts.var)
+		} else {
+			dataset <- .readDataSetHeader(columns.as.factor=factors, columns.as.numeric=counts.var)
+		}
+	}
+
+	results <- list()
+	
+	### META
+
+	meta <- list()
+	meta[[1]] <- list(name="title", type="title")
+	meta[[2]] <- list(name="Contingency Tables", type="tables")
+	
+	results[[".meta"]] <- meta
+	
+	results[["title"]] <- "Contingency Tables"
+	
+	
+	### CROSS TABS
+	
+	crosstabs <- list()
+
+	rows    <- as.vector(options$rows,    "character")
+	columns <- as.vector(options$columns, "character")
+	
+	if (length(rows) == 0)
+		rows <- ""
+	
+	if (length(columns) == 0)
+		columns <- ""
+
+	analyses <- data.frame("columns"=columns, stringsAsFactors=FALSE)
+	analyses <- cbind(analyses, "rows"=rep(rows, each=dim(analyses)[1]), stringsAsFactors=FALSE)
+	
+	for (layer in options$layers)
+	{
+		layer.vars <- as.vector(layer$variables, "character")
+		analyses <- cbind(analyses, rep(layer.vars, each=dim(analyses)[1]), stringsAsFactors=FALSE)
+		names(analyses)[dim(analyses)[2]] <- layer$name
+	}
+	
+	analyses <- .dataFrameToRowList(analyses)
+
+	for (analysis in analyses)
+	{
+		tables <- .crosstab(dataset, options, perform, analysis)
+		for (table in tables)
+			crosstabs[[length(crosstabs)+1]] <- table				
+	}
+
+	results[["Contingency Tables"]] <- crosstabs
+
+	if (perform == "run" || length(options$rows) == 0 || length(options$columns) == 0) {
+	
+		list(results=results, status="complete")
+		
+	} else {
+	
+		list(results=results, status="inited")
+	}
+}
+
+
 .crosstab <- function(dataset, options, perform, analysis) {
 
 	# analysis is a list of the form :
@@ -8,24 +89,25 @@
 	if (counts.var == "")
 		counts.var <- NULL
 	
-	all.vars <- c(unlist(analysis), counts.var)
+	status <- list(error=FALSE, ready=TRUE)
 
-	dataset <- subset(dataset, select=.v(all.vars))	
+	if (length(options$rows) == 0 || length(options$columns) == 0) {
+	
+		status$ready <- FALSE
+		
+	} else {
+
+		all.vars <- c(unlist(analysis), counts.var)
+		dataset <- subset(dataset, select=.v(all.vars))	
+	}
 	
 	# the following creates a 'groups' list
 	# a 'group' represents a combinations of the levels from the layers
 	# if no layers are specified, groups is null
 
-	if (length(analysis) >= 3)  # if layers are specified
-	{
-		lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
+	if (length(analysis) >= 3) {  # if layers are specified
 		
-		#if (options$rowOrder == "descending") {
-		#	lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
-		#	lvls <- rev(lvls)
-		#} else {
-		#	lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
-		#}
+		lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
 		
 		if (length(lvls) < 2) {
 		
@@ -91,7 +173,11 @@
 	
 	lvls <- c()
 	
-	if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
+	if (analysis$columns == "") {
+	
+		lvls <- c(".", ". ")
+	
+	} else if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
 	
 		lvls <- base::levels(dataset[[ .v(analysis$columns) ]])
 		if (options$columnOrder == "descending") {
@@ -122,33 +208,32 @@
 	
 	if (options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal ) {
 	
-	
 		counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
 	
 		if (options$countsExpected) {	
 			counts.fields[[length(counts.fields)+1]] <- list(name="type[expected]", title="", type="string")
-			}
+		}
 	
 		if (options$percentagesRow) {
 
-			#counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
-			counts.fields[[length(counts.fields)+1]] <- list(name="type[rowproportions]", title="", type="string")
+			counts.fields[[length(counts.fields)+1]] <- list(name="type[row.proportions]", title="", type="string")
 		}
 
 		if (options$percentagesColumn) {
 
-			#counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
-			counts.fields[[length(counts.fields)+1]] <- list(name="type[colproportions]", title="", type="string")
+			counts.fields[[length(counts.fields)+1]] <- list(name="type[col.proportions]", title="", type="string")
 		}
 
 		if (options$percentagesTotal) {
 
-			#counts.fields[[length(counts.fields)+1]] <- list(name="type[counts]", title="", type="string")
 			counts.fields[[length(counts.fields)+1]] <- list(name="type[proportions]", title="", type="string")
 		}
 	
 	}
-	
+
+	overTitle <- unlist(analysis$columns)
+	if (overTitle == "")
+		overTitle <- "."
 	
 	for (column.name in lvls) {
 
@@ -156,12 +241,11 @@
 
 		if (counts.fp || options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal ) {
 			
-			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, overTitle=analysis$columns, type="number", format="sf:4;dp:2")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, overTitle=overTitle, type="number", format="sf:4;dp:2")
 		
 		} else {
 		
-			#counts.fields[[length(counts.fields)+1]] <- list(name="Count",type="string")
-			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, overTitle=analysis$columns, type="integer")
+			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, overTitle=overTitle, type="integer")
 		}
 		
 		if (options$countsExpected) {
@@ -172,13 +256,13 @@
 		
 		if (options$percentagesRow) {
 			
-			private.name <- base::paste(column.name,"[rowproportions]", sep="")
+			private.name <- base::paste(column.name,"[row.proportions]", sep="")
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="dp:1;pc")
 		}
 		
 		if (options$percentagesColumn) {
 			
-			private.name <- base::paste(column.name,"[colproportions]", sep="")
+			private.name <- base::paste(column.name,"[col.proportions]", sep="")
 			counts.fields[[length(counts.fields)+1]] <- list(name=private.name, title=column.name, type="number", format="dp:1;pc")
 		}
 		
@@ -193,8 +277,7 @@
 	
 	if (counts.fp || options$countsExpected || options$percentagesRow || options$percentagesColumn || options$percentagesTotal) {
 
-	
-		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]",   title="Total", type="number", format="sf:4;dp:2")	
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[counts]", title="Total", type="number", format="sf:4;dp:2")	
 		
 	} else {
 	
@@ -208,12 +291,12 @@
 	
 	if (options$percentagesRow) {
 	
-		counts.fields[[length(counts.fields)+1]] <- list(name="total[rowproportions]", title="Total", type="number", format="dp:1;pc")
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[row.proportions]", title="Total", type="number", format="dp:1;pc")
 	}
 	
 	if (options$percentagesColumn) {
 	
-		counts.fields[[length(counts.fields)+1]] <- list(name="total[colproportions]", title="Total", type="number", format="dp:1;pc")
+		counts.fields[[length(counts.fields)+1]] <- list(name="total[col.proportions]", title="Total", type="number", format="dp:1;pc")
 	}
 	
 	if (options$percentagesTotal) {
@@ -279,31 +362,33 @@
 	}
 	
 	############# Odds ratio
+	
 	if (options$oddsRatio) {
 		
-		oddsratio.table <- list()
+		odds.ratio.table <- list()
 		
-		oddsratio.table[["title"]] <- "Log Odds Ratio"
+		odds.ratio.table[["title"]] <- "Log Odds Ratio"
 		
-		oddsratio.fields <- fields
+		odds.ratio.fields <- fields
 			
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[oddsRatio]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
 		
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="type[FisherTest]", title="", type="string")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[FisherTest]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[FisherTest]", title="Lower CI", type="number", format="dp:3")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[FisherTest]",  title="Upper CI", type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="type[FisherTest]", title="", type="string")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[FisherTest]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[FisherTest]", title="Lower CI", type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[FisherTest]",  title="Upper CI", type="number", format="dp:3")
 		
-		schema <- list(fields=oddsratio.fields)
+		schema <- list(fields=odds.ratio.fields)
 		
-		oddsratio.table[["schema"]] <- schema
+		odds.ratio.table[["schema"]] <- schema
 	}
 	
 	
 	##### Nominal Table (Symmetric Measures)
+	
 	if (options$nominalContingencyCoefficient|| options$nominalPhiAndCramersV) {
 		
 		nominal.table <- list()
@@ -331,6 +416,7 @@
 	}
 	
 	##### Ordinal Table
+	
 	if (options$ordinalGamma) {
 		
 		ordinal.table <- list()
@@ -350,7 +436,7 @@
 		ordinal.table[["schema"]] <- schema
 	}
 	
-	##########Kendall Tau-B table
+	########## Kendall Tau-B table
 	
 	if (options$ordinalKendallsTauB) {
 		
@@ -371,31 +457,33 @@
 		kendalls.table[["schema"]] <- schema
 	}
 	
-	status <- list(error=FALSE)
 	if (is.null(counts.var) == FALSE) {
 
 		counts <- stats::na.omit(dataset[[ .v(counts.var) ]])
 		
-		if (any(counts < 0)|| any(is.infinite(counts)))
-			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinities")
+		if (any(counts < 0)|| any(is.infinite(counts))) {
+			
+			status$error <- TRUE
+			status$errorMessage <- "Counts may not contain negative numbers or infinities"
+		}
 	}
 
 
 	# POPULATE TABLES
 
 	# create count matrices for each group
-
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, .v(analysis$rows), .v(analysis$columns), groups, .v(counts.var), options$rowOrder=="descending", options$columnOrder=="descending")
 	
+	group.matrices <- .crosstabsCreateGroupMatrices(dataset, analysis$rows, analysis$columns, groups, counts.var, options$rowOrder=="descending", options$columnOrder=="descending", perform=perform, status=status)
+
 	counts.rows <- list()
 	tests.rows <- list()
-	oddsratio.rows <- list()
+	odds.ratio.rows <- list()
 	nominal.rows <- list()
 	ordinal.rows <- list()
 	kendalls.rows <- list()
 	
 	tests.footnotes <- .newFootnotes()
-	oddsratio.footnotes <- .newFootnotes()
+	odds.ratio.footnotes <- .newFootnotes()
 	nominal.footnotes <- .newFootnotes()
 	ordinal.footnotes <- .newFootnotes()
 	kendalls.footnotes <- .newFootnotes()
@@ -419,8 +507,8 @@
 		next.rows <- .crosstabsCreateTestsRows(analysis$rows, group.matrix, tests.footnotes, options, perform, group, status)
 		tests.rows <- c(tests.rows, next.rows)
 		
-		next.rows <- .crosstabsCreateoddratioRows(analysis$rows, group.matrix, oddsratio.footnotes, options, perform, group, status)
-		oddsratio.rows <- c(oddsratio.rows, next.rows)
+		next.rows <- .crosstabsCreateOddsRatioRows(analysis$rows, group.matrix, odds.ratio.footnotes, options, perform, group, status)
+		odds.ratio.rows <- c(odds.ratio.rows, next.rows)
 		
 		next.rows <- .crosstabsCreateNominalRows(analysis$rows, group.matrix, nominal.footnotes, options, perform, group, status)
 		nominal.rows <- c(nominal.rows, next.rows)
@@ -430,7 +518,6 @@
 		
 		next.rows <- .crosstabsCreateOrdinalTau(analysis$rows, group.matrix, ordinal.footnotes, options, perform, group, status)
 		kendalls.rows <- c(kendalls.rows, next.rows)
-
 	}
 
 	counts.table[["data"]] <- counts.rows
@@ -451,13 +538,13 @@
 	}
 	
 	if (options$oddsRatio) {
-		oddsratio.table[["data"]] <- oddsratio.rows 
-		oddsratio.table[["footnotes"]] <- as.list(oddsratio.footnotes)
+		odds.ratio.table[["data"]] <- odds.ratio.rows 
+		odds.ratio.table[["footnotes"]] <- as.list(odds.ratio.footnotes)
 	
 		if (status$error)
-			oddsratio.table[["error"]] <- list(errorType="badData")
+			odds.ratio.table[["error"]] <- list(errorType="badData")
 			
-		tables[[3]] <- oddsratio.table
+		tables[[3]] <- odds.ratio.table
 	}
 	
 	if (options$nominalContingencyCoefficient || options$nominalPhiAndCramersV) {
@@ -493,7 +580,6 @@
 		tables[[6]] <- kendalls.table
 	}
 
-	
 	tables
 }
 
@@ -520,7 +606,7 @@
 	row[["df[N]"]] <- ""
 	row[["p[N]"]] <- ""
 
-	if (perform == "run" && status$error == FALSE) {
+	if (perform == "run" && status$error == FALSE && status$ready) {
 
 		row[["value[N]"]] <- base::sum(counts.matrix)
 		
@@ -533,7 +619,7 @@
 	
 		row[["type[chiSquared]"]] <- "\u03A7\u00B2"
 
-		if (perform == "run" && status$error == FALSE) {
+		if (perform == "run" && status$error == FALSE && status$ready) {
 		
 			chi.result <- try({
 
@@ -586,13 +672,11 @@
 		}
 	}	
 	
-###############################################	
+	if (options$chiSquaredContinuityCorrection) {
 	
-	if (options$chiSquaredContinuityCorrection){	
 		row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 Continuity correction"
 
-
-		if (perform == "run" && status$error == FALSE) {
+		if (perform == "run" && status$error == FALSE && status$ready) {
 		
 			chi.result <- try({
 
@@ -635,15 +719,12 @@
 			row[["value[chiSquared-cc]"]] <- "."
 		}
 	}
-	
-##################################################################
 
 	if (options$likelihoodRatio) {
 		
-	row[["type[likelihood]"]] <- "Likelihood ratio"
+		row[["type[likelihood]"]] <- "Likelihood ratio"
 
-
-		if (perform == "run" && status$error == FALSE) {
+		if (perform == "run" && status$error == FALSE && status$ready) {
 		
 			chi.result <- try({
 
@@ -683,6 +764,7 @@
 .crosstabsCreateNominalRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) {
 	
 	row <- list()
+	
 	for (layer in names(group)) {
 		
 		level <- group[[layer]]
@@ -701,8 +783,7 @@
 
 	if (options$nominalContingencyCoefficient) {
 		 
-		 row[["type[ContCoef]"]] <- "Contingency Coefficient"
-		 
+		row[["type[ContCoef]"]] <- "Contingency Coefficient" 
 		 
 		if (perform == "run" && status$error == FALSE) {
 			 
@@ -738,94 +819,91 @@
 			row[["value[ContCoef]"]] <- "."
 		}
 		
-		}
+	}
+
+	if (options$nominalPhiAndCramersV) {
 	
-		if (options$nominalPhiAndCramersV) {
+		row[["type[PhiCoef]"]] <- "Phi-Coefficient"
 		
-			row[["type[PhiCoef]"]] <- "Phi-Coefficient"
-			
-			
-			if (perform == "run" && status$error == FALSE) {
-			
-				chi.result <- try({
-				
-					chi.result <- vcd::assocstats(counts.matrix)
-				})
-			
-				if (class(chi.result) == "try-error") {
-				
-					row[["value[PhiCoef]"]] <- .clean(NaN)
-				
-					error <- .extractErrorMessage(chi.result)
-				
-					sup	<- .addFootnote(footnotes, error)
-					row[["value[PhiCoef]"]] <- list(sup)
-				
-				} else if (is.na(chi.result$phi)) {
-			
-					row[["value[PhiCoef]"]] <- .clean(NaN)
 		
-					sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row or column contains all zeros")
-					row.footnotes[["value[PhiCoef]"]] <- list(sup)
-					#row.footnotes <- c(row.footnotes, list("value[PhiCoef]"=list(sup)))
-				
-				} else {
-					
-					row[["value[PhiCoef]"]] <- chi.result$phi
-				}
-				
+		if (perform == "run" && status$error == FALSE) {
+		
+			chi.result <- try({
+			
+				chi.result <- vcd::assocstats(counts.matrix)
+			})
+		
+			if (class(chi.result) == "try-error") {
+			
+				row[["value[PhiCoef]"]] <- .clean(NaN)
+			
+				error <- .extractErrorMessage(chi.result)
+			
+				sup	<- .addFootnote(footnotes, error)
+				row[["value[PhiCoef]"]] <- list(sup)
+			
+			} else if (is.na(chi.result$phi)) {
+		
+				row[["value[PhiCoef]"]] <- .clean(NaN)
+	
+				sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row or column contains all zeros")
+				row.footnotes[["value[PhiCoef]"]] <- list(sup)
+				#row.footnotes <- c(row.footnotes, list("value[PhiCoef]"=list(sup)))
+			
 			} else {
 				
-				row[["value[PhiCoef]"]] <- "."
+				row[["value[PhiCoef]"]] <- chi.result$phi
 			}
 			
-		 }
-		
-		 if (options$nominalPhiAndCramersV) {
+		} else {
 			
-			row[["type[CramerV]"]] <- "Cramer's V "
-			
-			
-			if (perform == "run" && status$error == FALSE) {
-				
-				chi.result <- try({
-					
-					chi.result <- vcd::assocstats(counts.matrix)
-					
-				})
-				
-				if (class(chi.result) == "try-error") {
-					
-					row[["value[CramerV]"]] <- .clean(NaN)
-					
-					error <- .extractErrorMessage(chi.result)
-					
-					sup	<- .addFootnote(footnotes, error)
-					row.footnotes[["value[CramerV]"]] <- list(sup)
-					
-				} else if (is.na(chi.result$cramer)) {
-			
-					row[["value[CramerV]"]] <- .clean(NaN)
-		
-					sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row or column contains all zeros")
-					row.footnotes[["value[CramerV]"]] <- list(sup)
-				
-				} else {
-					
-					row[["value[CramerV]"]] <- chi.result$cramer
-				}
-				
-			} else {
-				
-				row[["value[CramerV]"]] <- "."
-			}
-			
+			row[["value[PhiCoef]"]] <- "."
 		}
-
-	 row[[".footnotes"]] <- row.footnotes
-	 list(row)
-
+		
 	 }
+	
+	 if (options$nominalPhiAndCramersV) {
+		
+		row[["type[CramerV]"]] <- "Cramer's V "
+		
+		if (perform == "run" && status$error == FALSE) {
+			
+			chi.result <- try({
+				
+				chi.result <- vcd::assocstats(counts.matrix)
+				
+			})
+			
+			if (class(chi.result) == "try-error") {
+				
+				row[["value[CramerV]"]] <- .clean(NaN)
+				
+				error <- .extractErrorMessage(chi.result)
+				
+				sup	<- .addFootnote(footnotes, error)
+				row.footnotes[["value[CramerV]"]] <- list(sup)
+				
+			} else if (is.na(chi.result$cramer)) {
+		
+				row[["value[CramerV]"]] <- .clean(NaN)
+	
+				sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row or column contains all zeros")
+				row.footnotes[["value[CramerV]"]] <- list(sup)
+			
+			} else {
+				
+				row[["value[CramerV]"]] <- chi.result$cramer
+			}
+			
+		} else {
+			
+			row[["value[CramerV]"]] <- "."
+		}
+	}
+
+	row[[".footnotes"]] <- row.footnotes
+	list(row)
+}
 	
 .crosstabsCreateOrdinalRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) {
 	
@@ -954,7 +1032,7 @@
 	
 }
 
-.crosstabsCreateoddratioRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) { 
+.crosstabsCreateOddsRatioRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) { 
 
 	row <- list()
 	
@@ -994,7 +1072,7 @@
 				
 				chi.result <- try({
 
-					chi.result <- vcd::oddsratio(counts.matrix)
+					chi.result <- vcd::odds.ratio(counts.matrix)
 					CI <- stats::confint(chi.result, level = options$oddsRatioConfidenceIntervalInterval)
 					LogOR <- chi.result
 					log.CI.low <- CI[1]
@@ -1117,14 +1195,14 @@
 	rows <- list()
 	row.count <- list()
 	row.expected <- list()
-	row.rowproportions <- list()
-	row.colproportions <- list()
+	row.row.proportions <- list()
+	row.col.proportions <- list()
 	row.proportions <- list()
 	row.count[["type[counts]"]] <- "Count"
 	#row.count[["type[proportions]"]] <- "Total Proportions"
 	
 	
-	if (perform == "run" && status$error == FALSE) {
+	if (perform == "run" && status$error == FALSE && status$ready) {
 	
 		expected.matrix <- try({
 
@@ -1144,55 +1222,55 @@
 
 ######percentages
 
-	if (perform == "run" && status$error == FALSE) {
+	if (perform == "run" && status$error == FALSE && status$ready) {
 
-	rowproportions.matrix <- try({
+		row.proportions.matrix <- try({
 
-		base::prop.table(counts.matrix, 1)
-	})
+			base::prop.table(counts.matrix, 1)
+		})
 
-	if (class(rowproportions.matrix) == "try-error") {
+		if (class(row.proportions.matrix) == "try-error") {
 
-		rowproportions.matrix <- counts.matrix
-		rowproportions.matrix[,] <- "&nbsp;"
-	}
+			row.proportions.matrix <- counts.matrix
+			row.proportions.matrix[,] <- "&nbsp;"
+		}
 		
 	} else {
 	
-		rowproportions.matrix <- counts.matrix
+		row.proportions.matrix <- counts.matrix
 	}
 	
-	if (perform == "run" && status$error == FALSE) {
+	if (perform == "run" && status$error == FALSE && status$ready) {
 
-	colproportions.matrix <- try({
+		col.proportions.matrix <- try({
 
-		base::prop.table(counts.matrix, 2)
-	})
+			base::prop.table(counts.matrix, 2)
+		})
 
-	if (class(colproportions.matrix) == "try-error") {
+		if (class(col.proportions.matrix) == "try-error") {
 
-		colproportions.matrix <- counts.matrix
-		colproportions.matrix[,] <- "&nbsp;"
-	}
+			col.proportions.matrix <- counts.matrix
+			col.proportions.matrix[,] <- "&nbsp;"
+		}
 		
 	} else {
 	
-		colproportions.matrix <- counts.matrix
+		col.proportions.matrix <- counts.matrix
 	}
 	
 
-	if (perform == "run" && status$error == FALSE) {
+	if (perform == "run" && status$error == FALSE && status$ready) {
 
-	proportions.matrix <- try({
+		proportions.matrix <- try({
 
-		base::prop.table(counts.matrix, margin = NULL)
-	})
+			base::prop.table(counts.matrix, margin = NULL)
+		})
 
-	if (class(proportions.matrix) == "try-error") {
+		if (class(proportions.matrix) == "try-error") {
 
-		proportions.matrix <- counts.matrix
-		proportions.matrix[,] <- "&nbsp;"
-	}
+			proportions.matrix <- counts.matrix
+			proportions.matrix[,] <- "&nbsp;"
+		}
 		
 	} else {
 	
@@ -1202,7 +1280,7 @@
 
 	for (i in 1:dim(counts.matrix)[[1]]) {
 	
-		if (perform == "run" && status$error == FALSE) {
+		if (perform == "run" && status$error == FALSE && status$ready) {
 
 			row <- as.list(counts.matrix[i,])
 			names(row) <- base::paste(names(row),"[counts]",	sep="")
@@ -1228,42 +1306,42 @@
 			
 			if (options$percentagesRow) {
 			
-				row.rowproportions[["type[rowproportions]"]] <- " % within row"
+				row.row.proportions[["type[row.proportions]"]] <- " % within row"
 
-				rowproportions <- as.list(rowproportions.matrix[i,])
-				rowproportions <- .clean(rowproportions)
-				names(rowproportions) <- paste(names(rowproportions),"[rowproportions]",  sep="")
+				row.proportions <- as.list(row.proportions.matrix[i,])
+				row.proportions <- .clean(row.proportions)
+				names(row.proportions) <- paste(names(row.proportions),"[row.proportions]",  sep="")
 				
-				if (class(rowproportions.matrix[1,1]) == "character") {
-					rowproportions[["total[rowproportions]"]] <- ""
+				if (class(row.proportions.matrix[1,1]) == "character") {
+					row.proportions[["total[row.proportions]"]] <- ""
 				} else {
-					rowproportions[["total[rowproportions]"]] <- .clean(base::sum(rowproportions.matrix[i,]))
+					row.proportions[["total[row.proportions]"]] <- .clean(base::sum(row.proportions.matrix[i,]))
 				}
 			
-				rowproportions <- c(row.rowproportions, rowproportions)
-				row <- c(row, rowproportions)
+				row.proportions <- c(row.row.proportions, row.proportions)
+				row <- c(row, row.proportions)
 			}
 			
 			if (options$percentagesColumn) {
 			
-				row.colproportions[["type[colproportions]"]] <- " % within column"
+				row.col.proportions[["type[col.proportions]"]] <- " % within column"
 
-				colproportions <- as.list(colproportions.matrix[i,])
-				colproportions <- .clean(colproportions)
-				names(colproportions) <- paste(names(colproportions),"[colproportions]",  sep="")
+				col.proportions <- as.list(col.proportions.matrix[i,])
+				col.proportions <- .clean(col.proportions)
+				names(col.proportions) <- paste(names(col.proportions),"[col.proportions]",  sep="")
 				
-				if (class(colproportions.matrix[1,1]) == "character") {
-					colproportions[["total[colproportions]"]] <- ""
+				if (class(col.proportions.matrix[1,1]) == "character") {
+					col.proportions[["total[col.proportions]"]] <- ""
 				} else {
 					
 					row.sum <- base::margin.table(counts.matrix, 1)
 					row.prop <- as.list( base::prop.table(row.sum))
 					row.prop <- .clean(row.prop)
-					colproportions[["total[colproportions]"]] <- row.prop[[i]]
+					col.proportions[["total[col.proportions]"]] <- row.prop[[i]]
 				}
 			
-				colproportions <- c(row.colproportions, colproportions)
-				row <- c(row, colproportions)
+				col.proportions <- c(row.col.proportions, col.proportions)
+				row <- c(row, col.proportions)
 			}
 			
 			if (options$percentagesTotal) {
@@ -1314,7 +1392,7 @@
 	}
 	
 	
-	if (perform == "run" && status$error == FALSE) {
+	if (perform == "run" && status$error == FALSE && status$ready) {
 
 		row <- apply(counts.matrix, 2, base::sum)
 		row <- as.list(row)
@@ -1346,51 +1424,51 @@
 		
 		if (options$percentagesRow) {
 		
-			if (class(rowproportions.matrix[1,1]) == "character") {
-				rowproportions <- rowproportions.matrix[1,]
+			if (class(row.proportions.matrix[1,1]) == "character") {
+				row.proportions <- row.proportions.matrix[1,]
 			} else {
 				m <- base::margin.table(counts.matrix, 2)
 				rowproportion <- base::prop.table(m)
 			}
 
-			rowproportions <- as.list(rowproportion)
-			rowproportions <- .clean(rowproportions)
-			names(rowproportions) <- paste(names(rowproportions),"[rowproportions]", sep="")
+			row.proportions <- as.list(rowproportion)
+			row.proportions <- .clean(row.proportions)
+			names(row.proportions) <- paste(names(row.proportions),"[row.proportions]", sep="")
 
-			if (class(rowproportions.matrix[1,1]) == "character") {
-				rowproportions[["total[rowproportions]"]] <- ""
+			if (class(row.proportions.matrix[1,1]) == "character") {
+				row.proportions[["total[row.proportions]"]] <- ""
 			} else {
-				rowproportions[["total[rowproportions]"]] <- .clean(base::sum(rowproportion))
+				row.proportions[["total[row.proportions]"]] <- .clean(base::sum(rowproportion))
 			}
 			
-			rowproportions<-c(row.rowproportions, rowproportions)
+			row.proportions<-c(row.row.proportions, row.proportions)
 			
-			row <- c(row,  rowproportions)
+			row <- c(row,  row.proportions)
 		}
 		
 		if (options$percentagesColumn) {
 		
-			if (class(colproportions.matrix[1,1]) == "character") {
-				colproportions <- colproportions.matrix[1,]
+			if (class(col.proportions.matrix[1,1]) == "character") {
+				col.proportions <- col.proportions.matrix[1,]
 			} else {
-				colproportion <- apply(colproportions.matrix, 2, base::sum)
+				colproportion <- apply(col.proportions.matrix, 2, base::sum)
 			}
 
-			colproportions <- as.list(colproportion)
-			colproportions <- .clean(colproportions)
-			names(colproportions) <- paste(names(colproportions),"[colproportions]", sep="")
+			col.proportions <- as.list(colproportion)
+			col.proportions <- .clean(col.proportions)
+			names(col.proportions) <- paste(names(col.proportions),"[col.proportions]", sep="")
 
-			if (class(rowproportions.matrix[1,1]) == "character") {
-				colproportions[["total[colproportions]"]] <- ""
+			if (class(row.proportions.matrix[1,1]) == "character") {
+				col.proportions[["total[col.proportions]"]] <- ""
 			} else {
 				row.sum <- base::margin.table(counts.matrix, 1)
 				row.prop <- base::prop.table(row.sum) 
-				colproportions[["total[colproportions]"]] <- .clean(base::sum(row.prop))
+				col.proportions[["total[col.proportions]"]] <- .clean(base::sum(row.prop))
 			}
 			
-			colproportions<-c(row.colproportions, colproportions)
+			col.proportions<-c(row.col.proportions, col.proportions)
 			
-			row <- c(row,  colproportions)
+			row <- c(row,  col.proportions)
 		}
 		
 		
@@ -1412,7 +1490,7 @@
 				proportions[["total[proportions]"]] <- .clean(base::sum(proportions.matrix))
 			}
 			
-			proportions<-c(row.proportions, proportions)
+			proportions <- c(row.proportions, proportions)
 			
 			row <- c(row,  proportions)
 		}
@@ -1446,7 +1524,7 @@
 }
 
 
-.crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, counts=NULL, rowOrderDescending=FALSE,columnOrderDescending=FALSE) {
+.crosstabsCreateGroupMatrices <- function(dataset, rows, columns, groups, counts=NULL, rowOrderDescending=FALSE,columnOrderDescending=FALSE, perform="run", status=NULL) {
 
 	# this creates count matrices for each of the groups
 
@@ -1454,19 +1532,28 @@
 
 	if (is.null(groups)) {
 
-		ss.dataset <- base::subset(dataset, select=c(rows, columns, counts))
+		if (status$ready == FALSE || perform == "init") {
+		
+			row.levels <- c(".", ". ")
+			col.levels <- c(".", ". ")
+			
+			if (rows != "")
+				row.levels <- base::levels(dataset[[ .v(rows) ]])
+			if (columns != "")
+				col.levels <- base::levels(dataset[[ .v(columns) ]])
+			
+			ss.matrix <- base::matrix(0, nrow=length(row.levels), ncol=length(col.levels), dimnames=list(row.levels, col.levels))
 
-		if (is.null(counts)) {
+		} else if (is.null(counts)) {
 
-			ss.table  <- base::table(ss.dataset)
-			ss.matrix <- base::matrix(ss.table, nrow=dim(ss.table)[1], ncol=dim(ss.table)[2], dimnames=dimnames(ss.table))
+			ss.dataset <- base::subset(dataset, select=.v(c(rows, columns)))
+			ss.table   <- base::table(ss.dataset)
+			ss.matrix  <- base::matrix(ss.table, nrow=dim(ss.table)[1], ncol=dim(ss.table)[2], dimnames=dimnames(ss.table))
 			
 		} else {
 		
-			counts <- stats::na.omit(counts)
-		
-			ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
-			
+			ss.dataset <- base::subset(dataset, select=.v(c(rows, columns, counts)))
+			ss.matrix  <- base::tapply(ss.dataset[[ .v(counts) ]], list(ss.dataset[[ .v(rows) ]], ss.dataset[[ .v(columns) ]]), base::sum)
 			ss.matrix[is.na(ss.matrix)] <- 0
 		}
 		
@@ -1477,7 +1564,7 @@
 		}
 		
 		if (columnOrderDescending) {
-			ss.matrix <- ss.matrix[ ,ncol(ss.matrix):1]
+			ss.matrix <- ss.matrix[ , ncol(ss.matrix):1]
 		} else {
 			ss.matrix <- ss.matrix
 		}
@@ -1492,26 +1579,34 @@
 		
 			group <- group[group != ""]
 
-			if (length(group) == 0) {
+			if (status$ready == FALSE) {
 			
-				ss.dataset <- base::subset(dataset, select=c(rows, columns, counts))
+				# do nothing
+
+			} else if (length(group) == 0) {
+			
+				ss.dataset <- base::subset(dataset, select=.v(c(rows, columns, counts)))
 			
 			} else {
 
 				ss.filter.string <- base::paste(.v(names(group)), "==\"", group, "\"", sep="", collapse="&")
 				ss.expression <- base::parse(text=ss.filter.string)
-				ss.dataset	  <- base::subset(dataset, select=c(rows, columns, counts), subset=eval(ss.expression))
+				ss.dataset	  <- base::subset(dataset, select=.v(c(rows, columns, counts)), subset=eval(ss.expression))
 			}
 			
-			if (is.null(counts)) {
+
+			if (status$ready == FALSE) {
+			
+				ss.matrix <- base::matrix(c(0,0,0,0), nrow=2, ncol=2)
+
+			} else if (is.null(counts)) {
 
 				ss.table  <- base::table(ss.dataset)
 				ss.matrix <- base::matrix(ss.table, nrow=dim(ss.table)[1], ncol=dim(ss.table)[2], dimnames=dimnames(ss.table))
 			
 			} else {
 		
-				ss.matrix <- base::tapply(ss.dataset[[counts]], list(ss.dataset[[rows]], ss.dataset[[columns]]), base::sum)
-									
+				ss.matrix <- base::tapply(ss.dataset[[ .v(counts) ]], list(ss.dataset[[ .v(rows) ]], ss.dataset[[ .v(columns) ]]), base::sum)
 			}
 			
 			ss.matrix[base::is.na(ss.matrix)] <- 0
@@ -1533,80 +1628,5 @@
 	}
 	
 	matrices
-}
-
-
-
-Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-
-	layer.variables <- c()
-
-	for (layer in options$layers)
-		layer.variables <- c(layer.variables, unlist(layer$variables))
-		
-	counts.var <- options$counts
-	if (counts.var == "")
-		counts.var <- NULL
-
-	factors <- c(unlist(options$rows), unlist(options$columns), layer.variables)
-
-	if (is.null(dataset))
-	{
-		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.factor=factors, columns.as.numeric=counts.var)
-		} else {
-			dataset <- .readDataSetHeader(columns.as.factor=factors, columns.as.numeric=counts.var)
-		}
-	}
-
-	results <- list()
-	
-	### META
-
-	meta <- list()
-	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="Contingency Tables", type="tables")
-	
-	results[[".meta"]] <- meta
-	
-	results[["title"]] <- "Contingency Tables"
-	
-	
-	### CROSS TABS
-	
-	crosstabs <- list()
-
-	if (length(options$rows) > 0 && length(options$columns) > 0)
-	{
-		rows <- as.vector(options$rows, "character")
-		columns <- as.vector(options$columns, "character")
-
-		analyses <- data.frame("columns"=columns, stringsAsFactors=FALSE)
-		analyses <- cbind(analyses, "rows"=rep(rows, each=dim(analyses)[1]), stringsAsFactors=FALSE)
-		
-		for (layer in options$layers)
-		{
-			layer.vars <- as.vector(layer$variables, "character")
-			analyses <- cbind(analyses, rep(layer.vars, each=dim(analyses)[1]), stringsAsFactors=FALSE)
-			names(analyses)[dim(analyses)[2]] <- layer$name
-		}
-		
-		analyses <- .dataFrameToRowList(analyses)
-
-		for (analysis in analyses)
-		{
-			tables <- .crosstab(dataset, options, perform, analysis)
-			for (table in tables)
-				crosstabs[[length(crosstabs)+1]] <- table				
-		}
-	
-	} else {
-	
-		crosstabs[[1]] <- list(title = "Contingency Tables", cases = list(), schema = list(fields=list()))
-	}
-
-	results[["Contingency Tables"]] <- crosstabs
-
-	results
 }
 

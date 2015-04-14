@@ -463,31 +463,6 @@ $.widget("jasp.table", {
 		var columnHeaders = Array(columnCount)
 		var columns = Array(columnCount)
 		
-
-		var lastOverTitle = "&nbsp;"
-		var firstWithThisOverTitleIndex = 0
-		var overTitles = { }
-		
-		for (var colNo = 0; colNo <= columnCount; colNo++) {
-			
-			var overTitle
-			if (colNo < columnCount)
-				overTitle = columnDefs[colNo].overTitle
-			else
-				overTitle = "&nbsp;"
-			
-			if ( ! overTitle)
-				overTitle = "&nbsp;"
-			
-			if (overTitle != lastOverTitle) {
-			
-				var columnDef = columnDefs[firstWithThisOverTitleIndex]
-				overTitles[columnDef.name] = { title : lastOverTitle, span: colNo - firstWithThisOverTitleIndex }
-				firstWithThisOverTitleIndex = colNo
-				lastOverTitle = overTitle
-			}
-		}
-		
 		
 		for (var colNo = 0; colNo < columnCount; colNo++) {
 		
@@ -497,6 +472,7 @@ $.widget("jasp.table", {
 			var columnName = columnDef.name
 
 			var title = columnDef.title
+			var overTitle = columnDef.overTitle
 			
 			if (typeof title == "undefined") 
 				title = columnName
@@ -508,22 +484,8 @@ $.widget("jasp.table", {
 			
 			var columnHeader = { content : title, header : true, type : columnType }
 			
-			if (overTitles[columnName]) {
-			
-				columnHeader.overTitle     = overTitles[columnName].title
-				columnHeader.overTitleSpan = overTitles[columnName].span
-			}
-
-			// At the moment this only supports combining two column headers
-			// Support for multiple can be added when necessary
-
-			if (columnDef.combineHeaders) {
-			
-				if (colNo + 1 < columnCount && columnDefs[colNo + 1].combineHeaders && columnDef.title == columnDefs[colNo + 1].title)
-					columnHeader.span = 2
-				else if (colNo - 1 >= 0 && columnDefs[colNo - 1].combineHeaders && columnDef.title == columnDefs[colNo - 1].title)
-					columnHeader.span = 0
-			}
+			if (overTitle)
+				columnHeader.overTitle = overTitle
 			
 			if (typeof columnDef[".footnotes"] != "undefined")
 				columnHeader.footnotes = this._getFootnotes(columnDef[".footnotes"])
@@ -715,24 +677,50 @@ $.widget("jasp.table", {
 				chunks.push('</tr>')
 		}
 		
-		if (columnHeaders.length && columnHeaders[0].overTitle) {
+		if (columnHeaders.length > 0) {
 		
-				chunks.push('<tr>')
+			var overTitles = false
 
-			for (var colNo = 0; colNo < columnHeaders.length; colNo++) {
-			
-				var cell = columnHeaders[colNo]
-				if (cell.overTitleSpan) {
-				
-					chunks.push('<th colspan="' + 2 * cell.overTitleSpan + '">')
-					chunks.push(cell.overTitle)
-					chunks.push('</th>')
-				}
-			
+			for (var i = 0; i < columnHeaders.length; i++) {
+
+				if (columnHeaders[i].overTitle) {
+					
+					overTitles = true
+					break;
+				}			
 			}
 			
+			if (overTitles) {
+			
+				chunks.push('<tr class="over-title">')
+				
+				var i = 0;
+				var span = 1;
+				var oldTitle = columnHeaders[0].overTitle
+				
+				if ( ! oldTitle)
+					oldTitle = ""
+
+				for (var colNo = 1; colNo < columnHeaders.length; colNo++) {
+			
+					var newTitle = columnHeaders[colNo].overTitle
+					if ( ! newTitle)
+						newTitle = ""
+					
+					if (newTitle == oldTitle) {
+					
+						span++;
+					}
+					else {
+						
+						chunks.push('<th colspan="' + (2 * span) + '">' + oldTitle + '</th>')
+						oldTitle = newTitle
+						span = 1
+					}
+				}
+			
 				chunks.push('</tr>')
-		
+			}
 		}
 
 				chunks.push('<tr>')
