@@ -42,7 +42,6 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 
 	a = archive_write_new();
 	archive_write_set_format_zip(a);
-	archive_write_zip_set_compression_store(a);
 
 
 
