@@ -281,8 +281,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	if (!is.null(state)) {
 	
 		diff <- .diff(options, state$options)
-		
-		print(diff)
 	
 	}
 	
