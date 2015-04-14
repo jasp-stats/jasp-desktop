@@ -116,6 +116,11 @@ tbody tr:last-child td {
 	border-bottom: 2px solid ;
 }
 
+tbody tr td.new-sub-group-row {
+
+	padding-top: .4em ;
+}
+
 tbody tr td.new-group-row,
 tbody tr:first-child td {
 

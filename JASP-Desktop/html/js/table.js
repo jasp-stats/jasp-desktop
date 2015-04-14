@@ -107,6 +107,9 @@ $.widget("jasp.table", {
 				
 				if (combined == false && cell.isStartOfGroup)
 					formatted.isStartOfGroup = true
+				
+				if (cell.isStartOfSubGroup)
+					formatted.isStartOfSubGroup = true
 					
 				if (cell.isEndOfGroup)
 					formatted.isEndOfGroup = true
@@ -269,6 +272,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (cell.isStartOfSubGroup)
+					formatted["class"] += " new-sub-group-row"
 					
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
@@ -326,6 +332,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (cell.isStartOfSubGroup)
+					formatted["class"] += " new-sub-group-row"
 					
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
@@ -370,6 +379,9 @@ $.widget("jasp.table", {
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
 				
+				if (cell.isStartOfSubGroup)
+					formatted["class"] += " new-sub-group-row"
+				
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
 				
@@ -409,6 +421,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (cell.isStartOfSubGroup)
+					formatted["class"] += " new-sub-group-row"
 				
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
@@ -512,6 +527,12 @@ $.widget("jasp.table", {
 				if (row[".isNewGroup"]) {
 				
 					cell.isStartOfGroup = true
+					isGrouped = true
+				}
+				
+				if (row[".isNewSubGroup"]) {
+				
+					cell.isStartOfSubGroup = true
 					isGrouped = true
 				}
 				
@@ -773,6 +794,7 @@ $.widget("jasp.table", {
 
 					var cellClass = cell.class
 					cellClass += (cell.isStartOfGroup ? " new-group-row" : "")
+					cellClass += (cell.isStartOfSubGroup ? " new-sub-group-row" : "")
 					cellClass += (cell.isEndOfGroup ? " last-group-row" : "")
 
 					cellHtml += (cell.header ? '<th' : '<td')
