@@ -11,6 +11,17 @@
 # "bayesFactorType": BF10/BF01/LogBF10
 CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								callback=function(...) 0, ...) {
+	
+	state <- .retrieveState()
+	
+	diff <- NULL
+	
+	if (!is.null(state)) {
+	
+		diff <- .diff(options, state$options)
+	
+	}
+	
 	# dataset is data.frame
 	# options is a list
 	#
@@ -45,19 +56,31 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								  credibleIntervalsInterval=options$credibleIntervalsInterval,
 								  priorWidth=options$priorWidth,
 								  bayesFactorType=options$bayesFactorType,
-								  missingValues=options$missingValues)
-	results[["plots"]] <- .correlationMatrixPlotBayesian(dataset, perform, options, hypothesis=options$hypothesis)
+								  missingValues=options$missingValues) 
+	
+	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$credibleIntervals == FALSE && diff$credibleIntervalsInterval == FALSE
+			&& diff$hypothesis == FALSE && diff$kendallsTauB == FALSE && diff$missingValues == FALSE && diff$pearson == FALSE && diff$plotCorrelationMatrix == FALSE
+			&& diff$plotDensitiesForVariables == FALSE && diff$plotPosteriors == FALSE && diff$spearman == FALSE && diff$variables == FALSE)))) {
+			
+			results[["plots"]] <- state$correlationPlots
+			
+	} else {
+	
+		results[["plots"]] <- .correlationMatrixPlotBayesian(dataset, perform, options, hypothesis=options$hypothesis)
+	}
 	
 	if (perform == "init") {
 		if (length(options$variables) < 2) {
 			results <- list(results=results, status="complete")
+			return(results)
 		} else {
 			results <- list(results=results, status="inited")
+			return(results)
 		}
 	} else {
-		results <- list(results=results, status="complete")
+		return(list(results=results, status="complete", state=list(options=options, results=results, correlationPlots=results$plots)))
 	}
-	return(results)
+	
 }
 # "variables": data.frame thingie vfc
 # "pearson": TRUE/FALSE
