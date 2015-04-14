@@ -31,6 +31,12 @@ void TableModelAnovaDesign::bindTo(Option *option)
 	}
 }
 
+void TableModelAnovaDesign::unbind()
+{
+	_boundTo = NULL;
+	_groups.clear();
+}
+
 int TableModelAnovaDesign::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);

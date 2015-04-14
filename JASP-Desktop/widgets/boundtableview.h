@@ -11,6 +11,7 @@ public:
 	BoundTableView(QWidget *parent = 0);
 
 	virtual void bindTo(Option *option) OVERRIDE;
+	virtual void unbind() OVERRIDE;
 	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
 
 private:

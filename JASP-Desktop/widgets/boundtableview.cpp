@@ -18,6 +18,12 @@ void BoundTableView::bindTo(Option *option)
 		_model->bindTo(option);
 }
 
+void BoundTableView::unbind()
+{
+	if (_model != NULL)
+		_model->unbind();
+}
+
 void BoundTableView::setModel(QAbstractItemModel *model)
 {
 	_model = dynamic_cast<BoundModel *>(model);

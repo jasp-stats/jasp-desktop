@@ -140,6 +140,16 @@ void TableModelAnovaModel::bindTo(Option *option)
 	endResetModel();
 }
 
+void TableModelAnovaModel::unbind()
+{
+	beginResetModel();
+
+	_boundTo = NULL;
+	_rows.clear();
+
+	endResetModel();
+}
+
 void TableModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
 {
 	// sort indices, and delete from end to beginning

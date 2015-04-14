@@ -26,6 +26,9 @@ AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 
 void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 {
+	if (_options != NULL)
+		unbind();
+
 	_dataSet = dataSet;
 
 	vector<string> columnNames;
@@ -60,6 +63,9 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 
 void AnalysisForm::unbind()
 {
+	if (_options == NULL)
+		return;
+
 	BOOST_FOREACH(const string &name, _options->names)
 	{
 		Option *option = _options->get(name);
@@ -74,6 +80,8 @@ void AnalysisForm::unbind()
 		if (boundChild != NULL)
 			boundChild->unbind();
 	}
+
+	_options = NULL;
 }
 
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
