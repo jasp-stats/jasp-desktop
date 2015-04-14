@@ -272,11 +272,25 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+	static bool closed = false;
+
+	if (closed)
+	{
+		// some times on osx we get two events
+		event->accept();
+		return;
+	}
+
 	bool cancel = closeRequestCheck();
 	if (cancel)
+	{
 		event->ignore();
+	}
 	else
+	{
 		event->accept();
+		closed = true;
+	}
 }
 
 void MainWindow::saveKeysSelected()
