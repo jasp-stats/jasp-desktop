@@ -272,7 +272,7 @@ string Engine::callback(const string &results)
 	}
 
 	if (_status == changed)
-		return "{ \"status\" : \"changed\", \"options\" : \"" + _analysisOptions + "\" }";
+		return "{ \"status\" : \"changed\", \"options\" : " + _analysisOptions + " }";
 	else if (_status == stopped)
 		return "{ \"status\" : \"stopped\" }";
 	else if (_status == aborted)
