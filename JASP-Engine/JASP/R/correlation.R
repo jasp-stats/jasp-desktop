@@ -273,88 +273,57 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 	results[["title"]] <- "Correlation Matrix"
 	
+	
+	state <- .retrieveState()
+	
+	diff <- NULL
+	
+	if (!is.null(state)) {
+	
+		diff <- .diff(options, state$options)
+		
+		print(diff)
+	
+	}
+	
 	correlation.plots <- list()
 	
 	if (perform == "init" & options$plotCorrelationMatrix) {
 	
-		variables <- unlist(options$variables)
 		
-		l <- length(variables)
-		
-			l <- length(variables)
+	
+		if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$confidenceIntervals == FALSE && diff$confidenceIntervalsInterval == FALSE
+			&& diff$hypothesis == FALSE && diff$kendallsTauB == FALSE && diff$missingValues == FALSE && diff$pearson == FALSE && diff$plotCorrelationMatrix == FALSE
+			&& diff$plotDensities == FALSE && diff$plotStatistics == FALSE && diff$spearman == FALSE && diff$variables == FALSE)))) {
 			
-		if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
+			# if only "Report significance", "Flag significant correlations", "Means and Standard Deviations" or "Cross-product deviations and covariances" have changed, the previous plot can be used
 			
-			width <- 580
-			height <- 580
-			
-		} else if (l <= 2) {
-			
-			width <- 400
-			height <- 400
+			correlation.plots[[1]] <- state$correlationPlots[[1]]
 			
 		} else {
-			
-			width <- 250 * l
-			height <- 250 * l
-			
-		}
-		
-		plot <- list()
-		
-		plot[["title"]] <- "" # variables #paste(variables,  collapse= ",")
-		plot[["width"]]  <- width
-		plot[["height"]] <- height
-		
-		correlation.plots[[1]] <- plot
-	}
 	
-	if (perform == "run" && length(options$variables) > 0 && options$plotCorrelationMatrix) {
-		
-		variables <- unlist(options$variables)
-		
-		# check for numeric/integer variables
-		d <- vector("character", length(.v(variables)))
-		sdCheck <- vector("numeric", length(.v(variables)))
-		infCheck <- vector("logical", length(.v(variables)))
-		
-		for (i in seq_along(.v(variables))) {
-		
-			d[i] <- class(dataset[[.v(variables)[i]]])
-			sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE)
-			infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
-		}
-		
-		
-		ind1 <- d == "numeric" | d == "integer"
-		ind2 <- sdCheck > 0
-		ind <- ind1 & ind2 & infCheck == FALSE
-		
-		
-		variables <- .v(variables)[ind]
-		
-		if (length(variables) > 0) {
+			variables <- unlist(options$variables)
 			
 			l <- length(variables)
 			
+				l <- length(variables)
+				
 			if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
-			
+				
 				width <- 580
 				height <- 580
 				
 			} else if (l <= 2) {
-			
+				
 				width <- 400
 				height <- 400
 				
 			} else {
-			
+				
 				width <- 250 * l
 				height <- 250 * l
 				
 			}
-			
-			correlation.plots <- list()
 			
 			plot <- list()
 			
@@ -363,130 +332,197 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			plot[["height"]] <- height
 			
 			correlation.plots[[1]] <- plot
+		}
+	}
+	
+	if (perform == "run" && length(options$variables) > 0 && options$plotCorrelationMatrix) {
+		
+		if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$confidenceIntervals == FALSE && diff$confidenceIntervalsInterval == FALSE
+			&& diff$hypothesis == FALSE && diff$kendallsTauB == FALSE && diff$missingValues == FALSE && diff$pearson == FALSE && diff$plotCorrelationMatrix == FALSE
+			&& diff$plotDensities == FALSE && diff$plotStatistics == FALSE && diff$spearman == FALSE && diff$variables == FALSE)))) {
 			
-			image <- .beginSaveImage(width, height)
+			# if only "Report significance", "Flag significant correlations", "Means and Standard Deviations" or "Cross-product deviations and covariances" have changed, the previous plot can be used
 			
-			if (l == 1) {
+			correlation.plots[[1]] <- state$correlationPlots[[1]]
 			
-				par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
-				
-				.plotMarginalCor(dataset[[variables[1]]]) # plot marginal (histogram with density estimator)
-				mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
-				
-			} else if (l == 2 && !options$plotDensities && !options$plotStatistics) {
-				
-				par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
-				
-				maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
-				distLab <- maxYlab / 1.8
-				
-				mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
-				mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
-				
-			} else if (l > 1) {
+		} else {
+		
+			variables <- unlist(options$variables)
 			
-				par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
+			# check for numeric/integer variables
+			d <- vector("character", length(.v(variables)))
+			sdCheck <- vector("numeric", length(.v(variables)))
+			infCheck <- vector("logical", length(.v(variables)))
 			
-				for (row in seq_len(l)) {
-				
-					for (col in seq_len(l)) {
-					
-						if (row == col) {
-							
-							if (options$plotDensities) {
-							
-								.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
-								
-							} else {
-							
-								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-								
-							}
-						}
-						
-						if (col > row) {
-						
-							if (options$plotCorrelationMatrix) {
-							
-								.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
-								
-							} else {
-							
-								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-								
-							}
-						}
-						
-						if (col < row) {
-						
-							if (l < 7) {
-							
-								if (options$plotStatistics) {
-								
-									.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
-									pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman) # plot r= ...
-									
-								} else {
-								
-									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-									
-								}
-							}
-							
-							if (l >= 7) {
-							
-								if (options$plotStatistics) {
-								
-									.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
-									pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman)
-									
-								} else {
-								
-									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-								
-								}
-							}
-						}
-					}
-				}
+			for (i in seq_along(.v(variables))) {
+			
+				d[i] <- class(dataset[[.v(variables)[i]]])
+				sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE)
+				infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
 			}
 			
 			
-			if (l > 2 || ((l == 2 && options$plotDensities) || (l == 2 && options$plotStatistics))) {
+			ind1 <- d == "numeric" | d == "integer"
+			ind2 <- sdCheck > 0
+			ind <- ind1 & ind2 & infCheck == FALSE
 			
-				textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
+			
+			variables <- .v(variables)[ind]
+			
+			if (length(variables) > 0) {
 				
-				if (!options$plotDensities && !options$plotStatistics) {
+				l <- length(variables)
 				
-						for (t in seq_along(textpos)) {
-						
-							mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
-							
-							if (t < length(textpos)) {
-							
-								mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
-								
-							}
-						}
+				if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
+				
+					width <- 580
+					height <- 580
+					
+				} else if (l <= 2) {
+				
+					width <- 400
+					height <- 400
 					
 				} else {
 				
-					for (t in seq_along(textpos)) {
+					width <- 250 * l
+					height <- 250 * l
+					
+				}
+				
+				correlation.plots <- list()
+				
+				plot <- list()
+				
+				plot[["title"]] <- ""
+				plot[["width"]]  <- width
+				plot[["height"]] <- height
+				
+				correlation.plots[[1]] <- plot
+				
+				image <- .beginSaveImage(width, height)
+				
+				if (l == 1) {
+				
+					par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
+					
+					.plotMarginalCor(dataset[[variables[1]]]) # plot marginal (histogram with density estimator)
+					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
+					
+				} else if (l == 2 && !options$plotDensities && !options$plotStatistics) {
+					
+					par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
+					
+					maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+					distLab <- maxYlab / 1.8
+					
+					mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
+					mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
+					
+				} else if (l > 1) {
+				
+					par(mfrow= c(l, l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
+				
+					for (row in seq_len(l)) {
+					
+						for (col in seq_len(l)) {
 						
-							mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
-							mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
+							if (row == col) {
+								
+								if (options$plotDensities) {
+								
+									.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+									
+								} else {
+								
+									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+									
+								}
+							}
+							
+							if (col > row) {
+							
+								if (options$plotCorrelationMatrix) {
+								
+									.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+									
+								} else {
+								
+									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+									
+								}
+							}
+							
+							if (col < row) {
+							
+								if (l < 7) {
+								
+									if (options$plotStatistics) {
+									
+										.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
+										pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman) # plot r= ...
+										
+									} else {
+									
+										plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+										
+									}
+								}
+								
+								if (l >= 7) {
+								
+									if (options$plotStatistics) {
+									
+										.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
+										pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman)
+										
+									} else {
+									
+										plot(1, type= "n", axes= FALSE, ylab="", xlab="")
+									
+									}
+								}
+							}
+						}
 					}
 				}
+				
+				
+				if (l > 2 || ((l == 2 && options$plotDensities) || (l == 2 && options$plotStatistics))) {
+				
+					textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
+					
+					if (!options$plotDensities && !options$plotStatistics) {
+					
+							for (t in seq_along(textpos)) {
+							
+								mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
+								
+								if (t < length(textpos)) {
+								
+									mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
+									
+								}
+							}
+						
+					} else {
+					
+						for (t in seq_along(textpos)) {
+							
+								mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
+								mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
+						}
+					}
+				}
+				
+				content <- .endSaveImage(image)
+				
+				plot <- correlation.plots[[1]]
+				
+				plot[["data"]]  <- content
+				
+				correlation.plots[[1]] <- plot
 			}
-			
-			content <- .endSaveImage(image)
-			
-			plot <- correlation.plots[[1]]
-			
-			plot[["data"]]  <- content
-			
-			correlation.plots[[1]] <- plot
-			
 		}
 	}
 	
@@ -504,18 +540,20 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		if (length(options$variables) < 2) {
 		
 			results <- list(results=results, status="complete")
+			return(results)
 			
 		} else {
 		
 			results <- list(results=results, status="inited")
+			return(results)
 		}
 		
 	} else {
 	
-		results <- list(results=results, status="complete")
+		return(list(results=results, status="complete", state=list(options=options, results=results, correlationPlots=correlation.plots))) # results <- list(results=results, status="complete")
 	}
 	
-	results
+	# results
 }
 
 .correlationTable <- function(dataset, perform, variables=c(), pearson=TRUE, kendallsTauB=FALSE,
