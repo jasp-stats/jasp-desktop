@@ -16,6 +16,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	}
 	
 	state <- .retrieveState()
+	
 
 	run <- perform == "run"
 
@@ -927,61 +928,23 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	bestModel <- which.min(Bic)
 	
-	# predictions of the model
-	poly.pred <- function(fit, line=FALSE, xMin, xMax){
-		
-		# create function formula		
-		f <- vector("character", 0)
-		
-		for (i in seq_along(coef(fit))) {
-			
-			if (i == 1) {
-				
-				temp <- paste(coef(fit)[[i]])
-				f <- paste(f, temp, sep="")
-				
-			}
-			
-			if (i > 1) {
-				
-				temp <- paste("(", coef(fit)[[i]], ")*", "x^", i-1, sep="")
-				f <- paste(f, temp, sep="+")
-				
-			}
-		}
-		
-		x <- seq(xMin, xMax, length.out = 100)
-		predY <- eval(parse(text=f))
-		
-		if (line == FALSE) {
-			
-			return(predY)
-		}
-		
-		if (line) {
-			
-		lines(x, predY, lwd=lwd)
-		
-		}
-	}
 	
 	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
 	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
 	xticks <- pretty(c(xlow, xhigh))
 	
-	ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)])))
-	yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)])))
+	ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)), min(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
+	yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)), max(.poly.pred(fit[[bestModel]], line= FALSE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)))
 	yticks <- pretty(c(ylow, yhigh))
 	
 	plot(xVar, yVar, col="black", pch=21, bg = "grey", ylab="", xlab="", axes=F, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
 	
-	poly.pred(fit[[bestModel]], line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)])
+	.poly.pred(fit[[bestModel]], line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd=lwd)
 	
 	par(las=1)
 	
 	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis)
 	axis(2, line= 0.2, labels= yticks, at= yticks, cex.axis= cexYAxis)
-
 }
 
 #### Matrix Plot function #####
