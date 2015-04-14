@@ -19,16 +19,16 @@ class Analyses : public QObject
 public:
 	Analyses();
 
-	Analysis *create(const QString &name);
-	Analysis *create(const QString &name, int id);
+	Analysis *create(const QString &name, Json::Value *options = NULL, Analysis::Status status = Analysis::Empty);
+	Analysis *create(const QString &name, int id, Json::Value *options = NULL, Analysis::Status status = Analysis::Empty);
 	Analysis *get(int id) const;
 	void clear();
-
-
 
 	typedef QList<Analysis*>::iterator iterator;
 	iterator begin();
 	iterator end();
+
+	int count() const;
 
 signals:
 	void analysisInitialised(Analysis *source);

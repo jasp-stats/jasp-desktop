@@ -529,12 +529,18 @@ callback <- function(results=NULL) {
 		type <- "quartz"
 	
 	multip <- .ppi / 96
-	filename <- .requestTempFileNameNative("png")
-	base::Encoding(filename) <- "UTF-8"
 	
-	grDevices::png(filename=filename, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
+	location <- .requestTempFileNameNative("png")
 	
-	filename
+	relativePath <- location$relativePath
+	base::Encoding(relativePath) <- "UTF-8"
+	
+	fullPath <- paste(location$root, location$relativePath, sep="/")
+	base::Encoding(fullPath) <- "UTF-8"
+	
+	grDevices::png(filename=fullPath, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
+	
+	relativePath
 }
 
 .endSaveImage <- function(filename) {

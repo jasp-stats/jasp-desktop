@@ -19,6 +19,7 @@ class Column
 	friend class boost::iterator_core_access;
 	friend class SPSSImporter;
 	friend class CSVImporter;
+	friend class JASPImporter;
 
 	typedef unsigned long long ull;
 	typedef boost::interprocess::allocator<boost::interprocess::offset_ptr<DataBlock>, boost::interprocess::managed_shared_memory::segment_manager> BlockAllocator;

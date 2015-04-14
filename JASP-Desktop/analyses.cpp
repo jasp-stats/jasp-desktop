@@ -24,16 +24,18 @@ Analyses::Analyses()
 	timer->start();
 }
 
-Analysis *Analyses::create(const QString &name)
+Analysis *Analyses::create(const QString &name, Json::Value *optionsData, Analysis::Status status)
 {
-	return create(name, _nextId++);
+	return create(name, _nextId++, optionsData, status);
 }
 
-Analysis *Analyses::create(const QString &name, int id)
+Analysis *Analyses::create(const QString &name, int id, Json::Value *options, Analysis::Status status)
 {
-	Analysis *analysis = AnalysisLoader::load(id, name.toStdString());
+	Analysis *analysis = AnalysisLoader::load(id, name.toStdString(), options);
+	analysis->setStatus(status);
 
-	assignDefaults(analysis);
+	if (options == NULL)
+		assignDefaults(analysis);
 
 	while (id >= _analyses.size())
 		_analyses.push_back(NULL);
@@ -74,6 +76,19 @@ QList<Analysis*>::iterator Analyses::begin()
 QList<Analysis*>::iterator Analyses::end()
 {
 	return _analyses.end();
+}
+
+int Analyses::count() const
+{
+	int c = 0;
+
+	BOOST_FOREACH(Analysis *analysis, _analyses)
+	{
+		if (analysis != NULL)
+			c++;
+	}
+
+	return c;
 }
 
 void Analyses::flushDefaultsToDisk()

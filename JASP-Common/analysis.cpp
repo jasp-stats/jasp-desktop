@@ -95,6 +95,16 @@ Json::Value Analysis::asJSON() const
 	return analysisAsJson;
 }
 
+void Analysis::setVisible(bool visible)
+{
+	_visible = visible;
+}
+
+bool Analysis::visible()
+{
+	return _visible;
+}
+
 Analysis::Status Analysis::status() const
 {
 	return _status;

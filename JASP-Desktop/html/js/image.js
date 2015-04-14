@@ -68,8 +68,8 @@ $.widget("jasp.image", {
 		html += '<div class="jasp-image-image" style="'
 
 		if (this.options.data) {
-		
-			html += 'background-image : url(\'file:///' + this.options.data + '\') ;'
+
+			html += 'background-image : url(\'' + this.options.data + '\') ;'
 			html += 'background-size : 100% 100% ;'
 		}
 		

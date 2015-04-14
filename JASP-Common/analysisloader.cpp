@@ -8,7 +8,7 @@
 using namespace std;
 using namespace boost;
 
-Analysis *AnalysisLoader::load(int id, string analysisName)
+Analysis *AnalysisLoader::load(int id, string analysisName, Json::Value *data)
 {
 	Options *options = new Options();
 
@@ -37,6 +37,9 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 
 			autorun = analysisDesc.get("autorun", false).asBool();
 		}
+
+		if (data != NULL)
+			options->set(*data);
 
 		file.close();
 

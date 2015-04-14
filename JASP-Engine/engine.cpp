@@ -40,7 +40,7 @@ Engine::Engine()
 	DataSet *dataSet = DataSetLoader::getDataSet();
 	rbridge_setDataSet(dataSet);
 
-	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFileName, this, _1));
+	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFileName, this, _1, _2, _3));
 	rbridge_setStateFileSource(boost::bind(&Engine::provideStateFileName, this));
 }
 
@@ -286,8 +286,8 @@ string Engine::provideStateFileName()
 	return tempfiles_createSpecific("state", _analysisId);
 }
 
-string Engine::provideTempFileName(const string &extension)
-{
-	return tempfiles_create(extension, _analysisId);
+void Engine::provideTempFileName(const string &extension, string &root, string &relativePath)
+{	
+	tempfiles_create(extension, _analysisId, root, relativePath);
 }
 
