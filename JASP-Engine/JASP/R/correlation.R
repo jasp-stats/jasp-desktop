@@ -548,7 +548,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		
 	} else {
 	
-		return(list(results=results, status="complete", state=list(options=options, results=results, correlationPlots=correlation.plots))) # results <- list(results=results, status="complete")
+		return(list(results=results, status="complete", state=list(options=options, results=results, correlationPlots=correlation.plots)))
 	}
 	
 	# results
