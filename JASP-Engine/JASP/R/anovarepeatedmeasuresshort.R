@@ -448,7 +448,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 			}
 		}
 
-		row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
+		row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
 		anova.rows[[length(anova.rows) + 1]] <- row
 
 		anova[["data"]] <- anova.rows
@@ -511,7 +511,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 			df <- resultTable["Residuals","Df"]
 			MS <- resultTable["Residuals","Mean Sq"]
 
-			row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
+			row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
 
 			anova.rows[[length(anova.rows) + 1]] <- row
 
@@ -575,7 +575,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 			df <- result[indexResidual,"den Df"]
 			MS <- SS / df
 
-			row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
+			row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
 
 			anova.rows[[length(anova.rows) + 1]] <- row    
 
@@ -689,19 +689,19 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 						counter <- 1
 
 						if (options$sphericityNone) {
-							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
 							anova.rows[[length(anova.rows) + 1]] <- row
 							counter <- counter + 1
 						}
 
 						if (options$sphericityGreenhouseGeisser) {
-							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
 							anova.rows[[length(anova.rows) + 1]] <- row
 							counter <- counter + 1
 						}
 
 						if (options$sphericityHuynhFeldt) {
-							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
 							anova.rows[[length(anova.rows) + 1]] <- row
 							counter <- counter + 1
 						}
@@ -719,26 +719,26 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 					counter <- 1
 
 					if (options$sphericityNone) {
-						row <- list("case"="Residual", "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+						row <- list("case"="Residual", "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 						anova.rows[[length(anova.rows) + 1]] <- row
 						counter <- counter + 1
 					}
 
 					if (options$sphericityGreenhouseGeisser) {
-						row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+						row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 						anova.rows[[length(anova.rows) + 1]] <- row
 						counter <- counter + 1
 					}
 
 					if (options$sphericityHuynhFeldt) {
-						row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+						row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 						anova.rows[[length(anova.rows) + 1]] <- row
 						counter <- counter + 1
 					}
 
 				} else {
 
-					row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
+					row <- list("case"="Residual", "SS"=".", "df"=".", "MS"=".", "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
 					anova.rows[[length(anova.rows) + 1]] <- row
 
 				}
@@ -811,7 +811,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 						} else if (cor == "None") {
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = (newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
 
 						} else if (cor == "Greenhouse-Geisser") {
 
@@ -820,7 +820,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 							dfRGG <- dfR * epsilon[i-1,"GG"]
 							pGG <-  pf(F,dfGG,dfRGG,lower.tail=FALSE)
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"=F, "p"=pGG, ".isNewGroup" = (newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"=F, "p"=pGG, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
 
 						} else if (cor == "Huynh-Feldt") {
 
@@ -829,7 +829,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 							dfRHF <- dfR * epsilon[i-1,"HF"]
 							pHF <- pf(F,dfHF,dfRHF,lower.tail=FALSE)
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"=F, "p"=pHF, ".isNewGroup" = (newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"=F, "p"=pHF, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
 
 						}
 
@@ -868,25 +868,25 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 					if (!options$miscSphericityCorrections || cor == "empty") {
 
-						row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
+						row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
 
 					} else if (cor == "None") {
 
-						row <- list("case"="Residual", "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+						row <- list("case"="Residual", "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 
 					} else if (cor == "Greenhouse-Geisser") {
 
 						dfGG <- df * epsilon[i-1,"GG"]
 						MSGG <- SS / dfGG
 
-						row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+						row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 
 					} else if (cor == "Huynh-Feldt") {
 
 						dfHF <- df * epsilon[i-1,"HF"]
 						MSHF <- SS / dfHF
 
-						row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+						row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 
 					}
 
@@ -944,7 +944,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 						} else if (cor == "None") {
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = (newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
 
 						} else if (cor == "Greenhouse-Geisser") {
 
@@ -953,7 +953,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 							dfRGG <- dfR * epsilon[i-1,"GG"]
 							pGG <-  pf(F,dfGG,dfRGG,lower.tail=FALSE)
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"=F, "p"=pGG, ".isNewGroup" = (newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"=F, "p"=pGG, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
 
 						} else if (cor == "Huynh-Feldt") {
 
@@ -962,7 +962,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 							dfRHF <- dfR * epsilon[i-1,"HF"]
 							pHF <- pf(F,dfHF,dfRHF,lower.tail=FALSE)
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"=F, "p"=pHF, ".isNewGroup" = (newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"=F, "p"=pHF, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
 
 						}
 
@@ -1012,25 +1012,25 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 					if (!options$miscSphericityCorrections || cor == "empty") {
 
-						row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = TRUE)
+						row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
 
 					} else if (cor == "None") {
 
-						row <- list("case"="Residual", "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+						row <- list("case"="Residual", "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 
 					} else if (cor == "Greenhouse-Geisser") {
 
 						dfGG <- df * epsilon[i-1,"GG"]
 						MSGG <- SS / dfGG
 
-						row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+						row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 
 					} else if (cor == "Huynh-Feldt") {
 
 						dfHF <- df * epsilon[i-1,"HF"]
 						MSHF <- SS / dfHF
 
-						row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewGroup" = (counter == 1))
+						row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 
 					}
 
