@@ -182,7 +182,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	v.c <- length(variables)
 	if (v.c > 0) {
 		# Note: There are variables: 
-		test.names <- list(pearson="Pearson's R", spearman="Spearman's Rho", kendall="Kendall's Tau B")
+		test.names <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau")
 		column.names <- c()
 		for (test in tests) {
 			
@@ -331,13 +331,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						# Note: Data [report]
 						# TODO: also for other alphas and find place to report the credible interval
 						#	We now report the posterior median 
-						median.rho <- try(.rhoQuantile(some.n, some.r, alpha=1)[2])
+						# median.rho <- try(.rhoQuantile(some.n, some.r, alpha=1)[2])
 						
-						if (is(median.rho, "try-error")){
-							report.r <- some.r
-						} else {
-							report.r <- median.rho
-						}
+						report.r <- some.r
 						
 						row[[length(row)+1]] <- .clean(report.r)
 						
@@ -409,9 +405,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 
 .myScaledBeta <- function(rho, alpha, beta){
-	priorDensity <- ((1+rho)/2)^(alpha-1)*((1-rho)/2)^(beta-1)
-	logNormalisationConstant <- -lbeta(alpha, beta)
-	result <- 1/2*exp(logNormalisationConstant)*priorDensity
+	result <- 1/2*dbeta((rho+1)/2, alpha, beta)
 	return(result)
 }
 
@@ -480,7 +474,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# with parameter alpha. If alpha = 1 then uniform prior on rho
 	#
 	#
-	if (any(is.na(r))){
+	if (n <= 2){
+		return(1)
+	} else if (any(is.na(r))){
 		return(NaN)
 	}
 	# TODO: use which
@@ -503,7 +499,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# Jeffreys (1961), pp. 289-292
 	# This is the exact result, see EJ
 	##
-	if ( any(is.na(r)) ){
+	if (n <= 2){
+		return(1)
+	} else if ( any(is.na(r)) ){
 		return(NaN)
 	}
 	
@@ -573,7 +571,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#Jeffreys' test for whether a correlation is zero or not
 	#Jeffreys (1961), pp. 291 Eq. 14
 	#
-	if ( any(is.na(r)) ){
+	if (n <= 2){
+		return(1)
+	} else if ( any(is.na(r)) ){
 		return(NA)
 	}
 	# TODO: use which
@@ -685,13 +685,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	# Note: Data check
 	#
+	
 	if ( any(is.na(r)) ){
 		return(myOutput)
 	}
 	# Note: Data: OK
 	
 	checkR <- abs(r) >= 1 # check whether |r| >= 1
-	if (alpha <= 1 && n > 2 && checkR) {
+	if (n <= 2){
+		myOutput$bf10 <- 1
+	} else if (alpha <= 1 && n > 2 && checkR) {
 		myOutput$bf10 <- Inf
 		if (r > 0){
 			myOutput$bfPlus0 <- Inf
@@ -967,43 +970,63 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(myResult)
 }
 
-.posteriorAParameter <- function(n, r, alpha=1){
-	# Method of moments estimate for a beta distribution
-	# First scale back to means on the (0, 1) domain
-	myMu <- (.posteriorMean(n, r, alpha)+1)/2
-	myVar <- .posteriorVariance(n, r, alpha)/2^2
+.betaParameterEstimates <- function(someMean, someVar){
+	# someMean \in (0, 1)
+	# TODO: think about someMean = 0
+	myA <- someMean*(someMean*(1-someMean)/someVar-1)
+	myB <- (1-someMean)*(someMean*(1-someMean)/someVar-1)
 	
-	myA <- myMu*(myMu*(1-myMu)/myVar-1)
-	return(myA)
+	result <- list(alpha=myA, beta=myB)
+	return(result)
 }
 
-.posteriorBParameter <- function(n, r, alpha=1){
-	# Method of moments estimate for a beta distribution
-	# First scale back to means on the (0, 1) domain
-	myMu <- (.posteriorMean(n, r, alpha)+1)/2
-	myVar <- .posteriorVariance(n, r, alpha)/2^2
+.posteriorBetaParameters <- function(n, r, alpha=1){
+	myMu <- try((.posteriorMean(n, r, alpha)+1)/2)
+	myVar <- try(.posteriorVariance(n, r, alpha)/2^2)
 	
-	myB <- (1-myMu)*(myMu*(1-myMu)/myVar-1)
-	return(myB)
+	if (is(myMu, "try-error") || is(myVar, "try-error") || is.na(myMu) || is.na(myVar)){
+		# TODO: Before doing this try the MH sampler
+		return(list(alpha=NA, beta=NA))
+	} else {
+		return(.betaParameterEstimates(myMu, myVar))
+	}
 }
+# 
+# .posteriorAParameter <- function(n, r, alpha=1){
+# 	# Method of moments estimate for a beta distribution
+# 	# First scale back to means on the (0, 1) domain
+# 	
+# 	
+# 	myA <- .betaAParameterFit(myMu, myVar)
+# 	return(myA)
+# }
+# 
+# .posteriorBParameter <- function(n, r, alpha=1){
+# 	# Method of moments estimate for a beta distribution
+# 	# First scale back to means on the (0, 1) domain
+# 	myMu <- (.posteriorMean(n, r, alpha)+1)/2
+# 	myVar <- .posteriorVariance(n, r, alpha)/2^2
+# 	
+# 	myB <- (1-myMu)*(myMu*(1-myMu)/myVar-1)
+# 	return(myB)
+# }
 
 .rhoQuantile <- function(n, r, alpha=1, ciPercentage=.95){
 	# Fitting parameters
-	myA <- try(.posteriorAParameter(n, r, alpha))
-	myB <- try(.posteriorBParameter(n, r, alpha))
+	betaFit <- try(.posteriorBetaParameters(n, r, alpha))
 	
-	if (is(myA, "try-error") || is(myB, "try-error") || is.na(myA) || is.na(myB)) {
+	if (is(betaFit, "try-error") || is.na(betaFit$alpha) || is.na(betaFit$beta)) {
 		return(c(NA, r, NA))
 	}
 	
 	# Output median
-	someMedian <- 2*qbeta(.5, myA, myB)-1
+	someMedian <- 2*qbeta(.5, betaFit$alpha, betaFit$beta)-1
 	
 	# Calculate CI
 	typeOne <- 1-ciPercentage
 	
-	leftCI <- try(2*qbeta(typeOne/2, myA, myB)-1)
-	rightCI <- try(2*qbeta((1-typeOne/2), myA, myB)-1)
+	leftCI <- try(2*qbeta(typeOne/2, betaFit$alpha, betaFit$beta)-1)
+	rightCI <- try(2*qbeta((1-typeOne/2), betaFit$alpha, betaFit$beta)-1)
 	
 	# TODO: This actually doesn't override leftCI or rigthCI even if they are try-errors
 	if ( is(leftCI, "try-error") || is(rightCI, "try-error") || is.na(leftCI) || is.na(rightCI) ){
@@ -1012,7 +1035,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		return(c(leftCI, someMedian, rightCI))
 	}
 }
-
 #------------------------------------------------- Matrix Plot -------------------------------------------------#
 
 ### empty posterior Plot with error message ###
