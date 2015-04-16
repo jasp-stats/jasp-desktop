@@ -78,13 +78,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
 	QObject::connect(openShortcut, SIGNAL(activated()), this, SLOT(openKeysSelected()));
 
-    ui->setupUi(this);
+	ui->setupUi(this);
 
 	QList<int> sizes = QList<int>();
 	sizes.append(590);
 	ui->splitter->setSizes(sizes);
 
-    ui->tabBar->setFocusPolicy(Qt::NoFocus);
+	ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
 	ui->tabBar->addTab("Common");
 	ui->tabBar->addOptionsTab();
@@ -97,9 +97,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->tabBar, SIGNAL(helpToggled(bool)), this, SLOT(helpToggled(bool)));
 
 #ifdef __WIN32__
-    QFont font = ui->tabBar->font();
-    font.setPointSize(10);
-    ui->tabBar->setFont(font);
+	QFont font = ui->tabBar->font();
+	font.setPointSize(10);
+	ui->tabBar->setFont(font);
 #endif
 
 	ui->ribbonAnalysis->setEnabled(false);
@@ -149,6 +149,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_alert->hide();
 
 	connect(&_loader, SIGNAL(complete(const QString&, DataSetPackage*, const QString&)), this, SLOT(dataSetLoaded(const QString&, DataSetPackage*, const QString&)));
+	connect(&_loader, SIGNAL(saveComplete(const QString&)), this, SLOT(saveComplete(const QString&)));
 	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
 	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(dataSetLoadFailed(QString)));
 
@@ -272,24 +273,27 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	static bool closed = false;
-
-	if (closed)
+	if (_isClosed)
 	{
 		// some times on osx we get two events
 		event->accept();
 		return;
 	}
 
-	bool cancel = closeRequestCheck();
+	bool isSaving = false;
+	bool cancel = closeRequestCheck(isSaving);
 	if (cancel)
 	{
 		event->ignore();
 	}
 	else
 	{
-		event->accept();
-		closed = true;
+		if (isSaving)
+			event->ignore(); // to circumvent a race condition between the saving thread and the closing of the main window cleaning up temp files
+		else
+			event->accept();
+
+		_isClosed = true;
 	}
 }
 
@@ -568,18 +572,23 @@ void MainWindow::dataSetSelected(const QString &filename)
 	ui->tabBar->setCurrentIndex(1);
 }
 
-bool MainWindow::closeRequestCheck()
+bool MainWindow::closeRequestCheck(bool &isSaving)
 {
 	bool cancel = false;
+	isSaving = false;
 	if (_package->isModified())
 	{
+
 		QString title = windowTitle();
 		title.chop(1);
 		QMessageBox::StandardButton reply = QMessageBox::warning(this, "Save Workspace?", QString("Save changes to workspace \"") + title +  QString("\" before closing?\n\nYour changes will be lost if you don't save them."), QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
 
-        if (reply == QMessageBox::Save)
-			cancel = !ui->backStage->save();
-        else if (reply == QMessageBox::Cancel)
+		if (reply == QMessageBox::Save)
+		{
+			isSaving = ui->backStage->save();
+			cancel = !isSaving;
+		}
+		else if (reply == QMessageBox::Cancel)
 			cancel = true;
 	}
 	return cancel;
@@ -587,7 +596,8 @@ bool MainWindow::closeRequestCheck()
 
 void MainWindow::dataSetCloseRequested()
 {
-	if (!closeRequestCheck())
+	bool isSaving = false;
+	if (!closeRequestCheck(isSaving))
 	{
 		_tableModel->clearDataSet();
 		_loader.free(_package->dataSet);
@@ -597,6 +607,13 @@ void MainWindow::dataSetCloseRequested()
 		ui->webViewResults->reload();
 		_inited = false;
 	}
+}
+
+void MainWindow::saveComplete(const QString &name)
+{
+	_alert->hide();
+	if (_isClosed)
+		this->close();
 }
 
 void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename)
@@ -805,6 +822,7 @@ void MainWindow::saveSelected(const QString &filename)
 	}
 
 	_loader.save(filename, _package);
+	_alert->show();
 
 	_package->setModified(false);
 

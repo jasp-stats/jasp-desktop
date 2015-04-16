@@ -16,7 +16,7 @@ class Analysis
 {
 public:
 
-    enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted };
+	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted };
 
 	Analysis(int id, std::string name, Options *options, bool isAutorun = true);
 	virtual ~Analysis();

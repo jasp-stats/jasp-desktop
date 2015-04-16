@@ -28,7 +28,7 @@ public:
 	std::string fileName() const;
 	std::string extension() const;
 
-    static std::vector<std::string> getEntryPaths(const std::string &archivePath, const std::string &entryBaseDirectory = std::string());
+	static std::vector<std::string> getEntryPaths(const std::string &archivePath, const std::string &entryBaseDirectory = std::string());
 
 private:
 
