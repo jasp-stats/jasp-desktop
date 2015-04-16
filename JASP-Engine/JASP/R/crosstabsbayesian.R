@@ -73,6 +73,7 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	}
 
 	results[["Contingency Tables"]] <- crosstabs
+	results[["plots"]] <- plots
 
 	if (perform == "run" || length(options$rows) == 0 || length(options$columns) == 0) {
 	
@@ -311,19 +312,19 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	
 	if (options$oddsRatio) {
 		
-		oddsratio.table <- list()
+		odds.ratio.table <- list()
 		
-		oddsratio.table[["title"]] <- "Log Odds Ratio"
+		odds.ratio.table[["title"]] <- "Log Odds Ratio"
 		
-		oddsratio.fields <- fields
+		odds.ratio.fields <- fields
 			
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="value[oddsRatio]", title="Odds ratio", type="number", format="sf:4;dp:3")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
-		oddsratio.fields[[length(oddsratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[oddsRatio]", title="Odds ratio", type="number", format="sf:4;dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
 		
-		schema <- list(fields=oddsratio.fields)
+		schema <- list(fields=odds.ratio.fields)
 		
-		oddsratio.table[["schema"]] <- schema
+		odds.ratio.table[["schema"]] <- schema
 	}
 	
 	##### Odds ratio Plots
@@ -357,9 +358,9 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	plots <- list()
 	counts.rows <- list()
 	tests.rows <- list()
-	oddsratio.rows <- list()	
+	odds.ratio.rows <- list()	
 	tests.footnotes <- .newFootnotes()
-	oddsratio.footnotes <- .newFootnotes()
+	odds.ratio.footnotes <- .newFootnotes()
 
 	samples <- NULL
 	CI <- NULL
@@ -386,13 +387,13 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 		tests.rows <- c(tests.rows, next.rows)
 		BF <- next.rows[[1]]$`value[BF]`
 		
-		next.rows <- .crosstabsBayesianCreateoddratioRows(analysis$rows, group.matrix, oddsratio.footnotes, options, perform, group, status)
-		oddsratio.rows <- c(oddsratio.rows, next.rows[[1]])
+		next.rows <- .crosstabsBayesianCreateOddsRatioRows(analysis$rows, group.matrix, odds.ratio.footnotes, options, perform, group, status)
+		odds.ratio.rows <- c(odds.ratio.rows, next.rows[[1]])
 		samples <- next.rows$samples
 		CI <- next.rows$CI
 		medianSamples <- next.rows$medianSamples
 		
-		plot <- .crosstabsBayesianPlotoddsratio(analysis$rows, group.matrix, options, perform, group, status=status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF, isTwoByTwo= isTwoByTwo)
+		plot <- .crosstabsBayesianPlotOddsRatio(analysis$rows, group.matrix, options, perform, group, status=status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF, isTwoByTwo= isTwoByTwo)
 
 		plots <- c(plots, plot)
 	}
@@ -413,13 +414,13 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	if (options$oddsRatio) {
 		 
 	
-		oddsratio.table[["data"]] <- oddsratio.rows 
-		oddsratio.table[["footnotes"]] <- as.list(oddsratio.footnotes)
+		odds.ratio.table[["data"]] <- odds.ratio.rows 
+		odds.ratio.table[["footnotes"]] <- as.list(odds.ratio.footnotes)
 	
 		if (status$error)
-			oddsratio.table[["error"]] <- list(errorType="badData")
+			odds.ratio.table[["error"]] <- list(errorType="badData")
 			
-		tables[[3]] <- oddsratio.table
+		tables[[3]] <- odds.ratio.table
 	}
 	
 	list(tables=tables, plots=plots)
@@ -739,7 +740,7 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	list(row)
 }
 
-.crosstabsBayesianCreateoddratioRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) { 
+.crosstabsBayesianCreateOddsRatioRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) { 
 
 	row <- list()
 	samples <- NULL
@@ -1098,14 +1099,14 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	mostPosterior <- mean(samples > mean(range(xticks)))
 }
 
-.crosstabsBayesianPlotoddsratio <- function(var.name, counts.matrix, options, perform, group, status, medi, samples, CI, medianSamples, BF10, isTwoByTwo) { 
+.crosstabsBayesianPlotOddsRatio <- function(var.name, counts.matrix, options, perform, group, status, medi, samples, CI, medianSamples, BF10, isTwoByTwo) { 
 
 
 	if (!options$plotPosteriorOddsRatio || !isTwoByTwo)
 		return()
 	
-	OddratioPlots <- list()
-	oddsratio.plot <- list()
+	OddsRatioPlots <- list()
+	odds.ratio.plot <- list()
 	row <- list()
 	
 	for (layer in names(group)) {
@@ -1131,7 +1132,7 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 		
 		if (length(group) == 0) {
 		
-			oddsratio.plot[["title"]] <- "Odds ratio"
+			odds.ratio.plot[["title"]] <- "Odds ratio"
 			
 		} else if (length(group) > 0) {
 			
@@ -1139,26 +1140,33 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 			layerLevels <- gsub(pattern = " = Total", layerLevels, replacement = "")
 			# print(paste(layerLevels, collapse="; "))
 			plotTitle <- paste(layerLevels, collapse="; ")
-			oddsratio.plot[["title"]] <- plotTitle
+			odds.ratio.plot[["title"]] <- plotTitle
 		}		
 		
-		oddsratio.plot[["width"]]  <- 530
-		oddsratio.plot[["height"]] <- 400
-		#oddsratio.plot[["custom"]] <- list(width="plotWidths", height="plotHeights")
+		odds.ratio.plot[["width"]]  <- 530
+		odds.ratio.plot[["height"]] <- 400
+		#odds.ratio.plot[["custom"]] <- list(width="plotWidths", height="plotHeights")
 		
 		image <- .beginSaveImage(530, 400)
 		.plotPosterior.crosstabs(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
-		oddsratio.plot[["data"]] <- .endSaveImage(image) 	
-		oddsratio.plot[["status"]] <- "running"
+		odds.ratio.plot[["data"]] <- .endSaveImage(image) 	
+		odds.ratio.plot[["status"]] <- "running"
 		
 		
 		if (status$error) {
 		
-			oddsratio.plot[["error"]] <- list(error="badData", errorMessage=status$errorMessage)
-			oddsratio.plot[["status"]] <- "complete"
-			OddratioPlots[[length(OddratioPlots)+1]] <- oddsratio.plot
+			odds.ratio.plot[["error"]] <- list(error="badData", errorMessage=status$errorMessage)
+			odds.ratio.plot[["status"]] <- "complete"
+			OddsRatioPlots[[length(OddsRatioPlots)+1]] <- odds.ratio.plot
 			
-			return(OddratioPlots)
+			return(OddsRatioPlots)
+			
+		} else if (status$ready == FALSE) {
+		
+			odds.ratio.plot[["status"]] <- "complete"
+			OddsRatioPlots[[length(OddsRatioPlots)+1]] <- odds.ratio.plot
+			
+			return(OddsRatioPlots)
 		}
 		
 		if (perform == "run" && status$error == FALSE) {
@@ -1168,8 +1176,8 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 			
 			} else if ( options$samplingModel== "hypergeometric") {
 			
-				oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Odd ratio for this model not yet implemented")
-				oddsratio.plot[["status"]] <- "complete"
+				odds.ratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Odd ratio for this model not yet implemented")
+				odds.ratio.plot[["status"]] <- "complete"
 			} else {
 			
 				if(options$samplingModel== "poisson"){
@@ -1262,16 +1270,16 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 				
 				if (BF10 == "NaN") {
 				
-					oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is NaN")
+					odds.ratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is NaN")
 					
 				}
 				 else if (is.infinite(1 / BF10)) {
 				
-					oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is too small")
+					odds.ratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is too small")
 					
 				} else if (is.infinite(BF10)) {
 				
-					oddsratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: BayesFactor is infinite")
+					odds.ratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: BayesFactor is infinite")
 					
 				} else {
 				
@@ -1299,7 +1307,7 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 							.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval,
 									addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided= oneSided, options=options)
 						
-							oddsratio.plot[["data"]] <- .endSaveImage(image)
+							odds.ratio.plot[["data"]] <- .endSaveImage(image)
 						}
 					)
 							
@@ -1315,17 +1323,17 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 							errorMessage <- "Plotting is not possible: The Bayes factor is too small"
 						}
 						
-						oddsratio.plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						odds.ratio.plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 					}
 				}
 				
-				oddsratio.plot[["status"]] <- "complete"				
+				odds.ratio.plot[["status"]] <- "complete"				
 			}
 		}
 	}
 	
-	OddratioPlots[[length(OddratioPlots)+1]] <- oddsratio.plot
-	OddratioPlots
+	OddsRatioPlots[[length(OddsRatioPlots)+1]] <- odds.ratio.plot
+	OddsRatioPlots
 }
 	
 
