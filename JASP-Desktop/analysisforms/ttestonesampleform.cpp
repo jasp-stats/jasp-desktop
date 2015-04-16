@@ -23,6 +23,8 @@ TTestOneSampleForm::TTestOneSampleForm(QWidget *parent) :
 	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
+
+	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 }
 
 TTestOneSampleForm::~TTestOneSampleForm()

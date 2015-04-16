@@ -73,6 +73,7 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 	ui->groupResiduals->setStyleSheet("background-color: pink;");
 #endif
 
+	ui->oddsRatioConfidenceIntervalInterval->setLabel("Confidence interval");
 }
 
 CrosstabsForm::~CrosstabsForm()

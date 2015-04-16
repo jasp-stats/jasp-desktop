@@ -24,6 +24,8 @@ TTestPairedSamplesForm::TTestPairedSamplesForm(QWidget *parent) :
 	ui->pairs->setModel(model);
 
 	ui->assignButton->setSourceAndTarget(ui->availableFields, ui->pairs);
+
+	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 }
 
 TTestPairedSamplesForm::~TTestPairedSamplesForm()

@@ -310,6 +310,22 @@ void MainWindow::openKeysSelected()
 	ui->backStage->openFile();
 }
 
+void MainWindow::illegalOptionStateChanged()
+{
+	if (_currentOptionsWidget == NULL)
+		return;
+
+	if (_currentOptionsWidget->hasIllegalValue())
+	{
+		ui->optionsErrorLabel->setText(_currentOptionsWidget->illegalValueMessage());
+		ui->optionsErrorPanel->show();
+	}
+	else
+	{
+		ui->optionsErrorPanel->hide();
+	}
+}
+
 void MainWindow::packageChanged(DataSetPackage *package)
 {
 	QString title = windowTitle();
@@ -443,6 +459,8 @@ void MainWindow::showForm(Analysis *analysis)
 {
 	if (_currentOptionsWidget != NULL)
 	{
+		disconnect(_currentOptionsWidget, SIGNAL(illegalChanged()), this, SLOT(illegalOptionStateChanged()));
+
 		_currentOptionsWidget->hide();
 		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
@@ -455,6 +473,9 @@ void MainWindow::showForm(Analysis *analysis)
 		Options *options = analysis->options();
 		DataSet *dataSet = _package->dataSet;
 		_currentOptionsWidget->bindTo(options, dataSet);
+
+		connect(_currentOptionsWidget, SIGNAL(illegalChanged()), this, SLOT(illegalOptionStateChanged()));
+		illegalOptionStateChanged();
 
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);

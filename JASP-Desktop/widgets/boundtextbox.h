@@ -17,6 +17,8 @@ public:
 	explicit BoundTextBox(QWidget *parent = 0);
 
 	virtual void bindTo(Option *option) OVERRIDE;
+
+	void setLabel(const QString &label);
 	
 signals:
 	
@@ -29,6 +31,8 @@ private:
 	OptionInteger *_integer;
 	OptionIntegerArray *_integerArray;
 	OptionNumber *_number;
+
+	QString _label;
 
 private slots:
 	void textEditedHandler(QString text);

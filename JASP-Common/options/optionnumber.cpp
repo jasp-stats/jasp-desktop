@@ -32,42 +32,22 @@ void OptionNumber::set(const Json::Value &value)
 	_value = value.asDouble();
 }
 
-void OptionNumber::setValue(const double &value)
-{
-	double v = value;
-
-	if (_format == "%")
-		v /= 100.0;
-
-	OptionI::setValue(v);
-}
-
-double OptionNumber::value() const
-{
-	double value = OptionI::value();
-
-	if (_format == "%")
-		value *= 100.0;
-
-	return value;
-}
-
 Option *OptionNumber::clone() const
 {
 	return new OptionNumber(_value, _min, _max, _format);
 }
 
-double OptionNumber::min()
+double OptionNumber::min() const
 {
 	return _min;
 }
 
-double OptionNumber::max()
+double OptionNumber::max() const
 {
 	return _max;
 }
 
-string OptionNumber::format()
+string OptionNumber::format() const
 {
 	return _format;
 }

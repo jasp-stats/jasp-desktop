@@ -37,6 +37,8 @@ CrosstabsBayesianForm::CrosstabsBayesianForm(QWidget *parent) :
 
 	ui->panelStatistics->hide();
 	ui->panelOptions->hide();
+
+	ui->oddsRatioCredibleIntervalInterval->setLabel("Credible interval");
 }
 
 CrosstabsBayesianForm::~CrosstabsBayesianForm()

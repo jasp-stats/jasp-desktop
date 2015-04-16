@@ -121,6 +121,7 @@ private slots:
 	void saveKeysSelected();
 	void openKeysSelected();
 
+	void illegalOptionStateChanged();
 	void fatalError();
 
 	void helpFirstLoaded(bool ok);

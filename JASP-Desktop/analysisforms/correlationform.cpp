@@ -32,7 +32,7 @@ CorrelationForm::CorrelationForm(QWidget *parent) :
 	ui->confidenceIntervals->setStyleSheet("background-color: pink ;");
 #endif
 
-
+	ui->confidenceIntervalsInterval->setLabel("Confidence intervals");
 }
 
 CorrelationForm::~CorrelationForm()

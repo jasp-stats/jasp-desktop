@@ -20,6 +20,8 @@ BoundTextBox::BoundTextBox(QWidget *parent) :
 
 void BoundTextBox::bindTo(Option *option)
 {
+	setLegal();
+
 	_integer = dynamic_cast<OptionInteger *>(option);
 
 	if (_integer != NULL)
@@ -41,11 +43,27 @@ void BoundTextBox::bindTo(Option *option)
 
 	if (_number != NULL)
 	{
-		this->setValidator(new QDoubleValidator(_number->min(), _number->max(), 4, this));
-		this->setText(QString::number(_number->value()));
+		double v = _number->value();
+		double min = _number->min();
+		double max = _number->max();
+
+		if (_number->format() == "%")
+		{
+			v *= 100;
+			min *= 100;
+			max *= 100;
+		}
+
+		this->setValidator(new QDoubleValidator(min, max, 4, this));
+		this->setText(QString::number(v));
 		return;
 	}
 
+}
+
+void BoundTextBox::setLabel(const QString &label)
+{
+	_label = label;
 }
 
 void BoundTextBox::keyPressEvent(QKeyEvent *event)
@@ -69,11 +87,45 @@ void BoundTextBox::finalise()
 		value = value.left(value.length() - 1);
 
 	if (_integerArray != NULL)
+	{
 		_integerArray->setValue(QIntArrayValidator::parse(value));
+	}
 	else if (_integer != NULL)
+	{
 		_integer->setValue(value.toInt());
+	}
 	else if (_number != NULL)
-		_number->setValue(value.toDouble());
+	{
+		double v = value.toDouble();
+		double min = _number->min();
+		double max = _number->max();
+
+		bool pc = _number->format() == "%";
+
+		if (pc)
+		{
+			v /= 100;
+			min *= 100;
+			max *= 100;
+		}
+
+		if (v > _number->max() || v < _number->min())
+		{
+			if (pc)
+			{
+				setIllegal(QString("%1 must be between %2% and %3%").arg(_label).arg(min).arg(max));
+			}
+			else
+			{
+				setIllegal(QString("%1 must be between %2 and %3").arg(_label).arg(min).arg(max));
+			}
+		}
+		else
+		{
+			_number->setValue(v);
+			setLegal();
+		}
+	}
 }
 
 void BoundTextBox::textEditedHandler(QString text)

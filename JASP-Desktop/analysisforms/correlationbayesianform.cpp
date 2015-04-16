@@ -34,7 +34,7 @@ CorrelationBayesianForm::CorrelationBayesianForm(QWidget *parent) :
 	ui->groupPrior->setStyleSheet("background-color: pink ;");
 #endif
 
-
+	ui->credibleIntervalsInterval->setLabel("Credible intervals");
 }
 
 CorrelationBayesianForm::~CorrelationBayesianForm()

@@ -27,6 +27,8 @@ TTestIndependentSamplesForm::TTestIndependentSamplesForm(QWidget *parent) :
 
 	ui->buttonAssignVariables->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 	ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
+
+	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 }
 
 TTestIndependentSamplesForm::~TTestIndependentSamplesForm()

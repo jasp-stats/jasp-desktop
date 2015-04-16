@@ -28,6 +28,12 @@ public:
 	virtual void bindTo(Options *options, DataSet *dataSet);
 	virtual void unbind();
 
+	bool hasIllegalValue() const;
+	const QString &illegalValueMessage() const;
+
+signals:
+	void illegalChanged();
+
 protected:
 
 	virtual QVariant requestInfo(const Term &term, VariableInfo::InfoType info) const OVERRIDE;
@@ -38,6 +44,13 @@ protected:
 	TableModelVariablesAvailable _availableVariablesModel;
 
 	OptionVariables *_mainVariables;
+
+	void updateIllegalStatus();
+
+	std::list<Bound *> _bounds;
+	void illegalValueHandler(Bound *source);
+	bool _hasIllegalValue;
+	QString _illegalMessage;
 	
 	
 };

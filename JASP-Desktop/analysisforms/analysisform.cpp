@@ -11,6 +11,8 @@
 #include "widgets/boundpairstable.h"
 #include "qutils.h"
 
+#include <boost/bind.hpp>
+
 using namespace std;
 
 AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
@@ -22,6 +24,8 @@ AnalysisForm::AnalysisForm(QString name, QWidget *parent) :
 
 	_options = NULL;
 	_dataSet = NULL;
+
+	_hasIllegalValue = false;
 }
 
 void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
@@ -53,16 +57,25 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 		Bound *boundChild = dynamic_cast<Bound*>(child);
 
 		if (boundChild != NULL)
+		{
+			_bounds.push_back(boundChild);
 			boundChild->bindTo(option);
+			boundChild->illegalChanged.connect(boost::bind(&AnalysisForm::illegalValueHandler, this, _1));
+		}
 		else
+		{
 			qDebug() << "child not found : " << qsName << " in AnalysisForm::setOptions()";
+		}
 	}
 
-
+	updateIllegalStatus();
 }
 
 void AnalysisForm::unbind()
 {
+	_bounds.clear();
+	updateIllegalStatus();
+
 	if (_options == NULL)
 		return;
 
@@ -84,6 +97,16 @@ void AnalysisForm::unbind()
 	_options = NULL;
 }
 
+bool AnalysisForm::hasIllegalValue() const
+{
+	return _hasIllegalValue;
+}
+
+const QString &AnalysisForm::illegalValueMessage() const
+{
+	return _illegalMessage;
+}
+
 QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info) const
 {
 	if (info == VariableInfo::VariableType)
@@ -103,5 +126,35 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 	{
 		return QVariant();
 	}
+}
+
+void AnalysisForm::updateIllegalStatus()
+{
+	QString message;
+	bool illegal = false;
+
+	foreach (Bound *bound, _bounds)
+	{
+		if (bound->isIllegal())
+		{
+			if ( ! illegal)
+				message = bound->illegalMessage();
+
+			illegal = true;
+		}
+	}
+
+	if (illegal != _hasIllegalValue || message != _illegalMessage)
+	{
+		_hasIllegalValue = illegal;
+		_illegalMessage = message;
+
+		emit illegalChanged();
+	}
+}
+
+void AnalysisForm::illegalValueHandler(Bound *source)
+{
+	updateIllegalStatus();
 }
 
