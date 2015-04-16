@@ -58,6 +58,22 @@ const Json::Value &Analysis::results() const
 	return _results;
 }
 
+Analysis::Status Analysis::getStatusValue(string name)
+{
+	if (name == "empty")
+		return Analysis::Empty;
+	else if (name == "waiting")
+		return Analysis::Inited;
+	else if (name == "running")
+		return Analysis::Running;
+	else if (name == "complete")
+		return Analysis::Complete;
+	else if (name == "aborted")
+		return Analysis::Aborted;
+	else
+		return Analysis::Error;
+}
+
 Json::Value Analysis::asJSON() const
 {
 	Json::Value analysisAsJson = Json::objectValue;

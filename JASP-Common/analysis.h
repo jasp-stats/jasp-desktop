@@ -16,7 +16,7 @@ class Analysis
 {
 public:
 
-	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted };
+	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error };
 
 	Analysis(int id, std::string name, Options *options, bool isAutorun = true);
 	virtual ~Analysis();
@@ -29,6 +29,8 @@ public:
 	void setResults(Json::Value results);
 	const Json::Value &results() const;
 	Json::Value asJSON() const;
+
+	static Status getStatusValue(std::string name);
 
 	const std::string &name() const;
 	int id() const;
