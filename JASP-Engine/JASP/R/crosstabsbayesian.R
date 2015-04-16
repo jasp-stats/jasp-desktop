@@ -333,7 +333,7 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 
 		counts <- dataset[[ .v(counts.var) ]]
 		
-		if (any(counts < 0) || any(is.infinite(counts))) {
+		if (any(counts) < 0 || any(is.infinite(counts))) {
 		
 			status$error <- TRUE
 			status$errorMessage <- "Counts may not contain negative numbers or infinite number"
