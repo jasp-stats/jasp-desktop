@@ -10,6 +10,7 @@
 #include <boost/bind.hpp>
 
 #include "qutils.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -74,22 +75,7 @@ void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
 
 		JASPExporter::saveDataSet(fq(tempFilename), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
-		QFileInfo tempFileInfo = QFileInfo(tempFilename);
-		if (!tempFileInfo.exists() || tempFileInfo.size() == 0)
-			throw runtime_error("Saving file has failed");
-
-		QFileInfo fileInfo = QFileInfo(filename);
-		if (fileInfo.exists())
-			QFile::remove(filename);
-
-		if (!QFile::copy(tempFilename, filename))
-			throw runtime_error("Saving file has failed");
-
-		fileInfo.refresh();
-		if (!fileInfo.exists() || fileInfo.size() != tempFileInfo.size())
-			throw runtime_error("Saving file has failed");
-
-		QFile::remove(tempFilename);
+		Utils::renameOverwrite(fq(tempFilename), fq(filename));
 
 		QString name = QFileInfo(filename).baseName();
 

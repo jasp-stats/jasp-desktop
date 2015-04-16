@@ -94,7 +94,7 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 
 		columnsData.append(columnMetaData);
 
-		progress = 50 * (i / columnCount);
+		progress = 49 * (i / columnCount);
 		if (progress != lastProgress)
 		{
 			progressCallback("Saving Meta Data", progress);
@@ -153,7 +153,7 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 			}
 		}
 
-		progress = 50 + 50 * (i / columnCount);
+	progress = 50 + 49 * (i / columnCount);
 		if (progress != lastProgress)
 		{
 			progressCallback("Saving Data Set", progress);
@@ -240,6 +240,8 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 	archive_write_close(a);
 	archive_write_free(a);
 
+	progress = 100;
+	progressCallback("Saving Data Set", progress);
 }
 
 void JASPExporter::createJARContents(archive *a)

@@ -21,13 +21,13 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
 	explicit MainWindow(QWidget *parent = 0);
 	void open(QString filename);
 	~MainWindow();
-    
+
 protected:
 	virtual void resizeEvent(QResizeEvent *event) OVERRIDE;
 	virtual void dragEnterEvent(QDragEnterEvent *event) OVERRIDE;
@@ -47,12 +47,13 @@ private:
 
 	void packageChanged(DataSetPackage *package);
 
-	bool closeRequestCheck();
+	bool closeRequestCheck(bool &isSaving);
 
 	AsyncLoader _loader;
 	ProgressWidget *_alert;
 
 	bool _inited;
+	bool _isClosed = false;
 
 	AnalysisForm* loadForm(Analysis *analysis);
 	void showForm(Analysis *analysis);
@@ -89,7 +90,7 @@ private slots:
 	void pushToClipboardHandler(const QString &mimeType, const QString &data);
 	void analysisChangedDownstreamHandler(int id, QString options);
 
-    void tabChanged(int index);
+	void tabChanged(int index);
 	void helpToggled(bool on);
 	void dataSetSelected(const QString &filename);
 	void dataSetCloseRequested();
@@ -98,6 +99,7 @@ private slots:
 	void itemSelected(const QString &item);
 	void exportSelected(const QString &filename);
 	void saveSelected(const QString &filename);
+	void saveComplete(const QString &name);
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);
