@@ -21,9 +21,15 @@ Under windows, **only** the first time you do a rebase, it is necessary to issue
 Subsequently on all platforms you can rebase your repo with the following commands:
 
     git stash
+    
+note the output from this command; does it say "No local changes to save" (or something like it)?
+    
     git fetch upstream
     git rebase upstream/development
     git push
+
+if the `git stash` above output "No local changes to save" then **do not** do this last command:
+
     git stash pop
 
 ### What this does:
