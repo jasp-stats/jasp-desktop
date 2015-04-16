@@ -118,7 +118,7 @@
 
 #### display correlation value ####
 .plotCorValue <- function(xVar, yVar, cexText= 2.5, cexCI= 1.7, hypothesis = "correlated", pearson=options$pearson,
-	kendallsTauB=options$kendallsTauB, spearman=options$spearman) {
+	kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=0.95) {
 	
 	CIPossible <- TRUE
 	
@@ -211,32 +211,31 @@
 	if (hypothesis == "correlated" & length(tests) == 1 & any(tests == "pearson")) {
 		
 		alternative <- "two.sided"
-		ctest <- cor.test(xVar, yVar, method= tests)
+		ctest <- cor.test(xVar, yVar, method= tests, conf.level=confidenceInterval)
 	}
 	
 	if (hypothesis != "correlated" & length(tests) == 1 & any(tests == "pearson")) {
 		
 		if (hypothesis == "correlatedPositively") {
 		
-			ctest <- cor.test(xVar, yVar, method=tests, alternative="greater")
-			# p.value  <- min(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value))
+			ctest <- cor.test(xVar, yVar, method=tests, alternative="greater", conf.level=confidenceInterval)
 			
 		} else if (hypothesis == "correlatedNegatively") {
 		
-			ctest <- cor.test(xVar, yVar, method=tests, alternative="less")
+			ctest <- cor.test(xVar, yVar, method=tests, alternative="less", conf.level=confidenceInterval)
 		}
 		
-		# ctest <- result1[[which.min(c(as.numeric(result1[[1]]$p.value), as.numeric(result1[[2]]$p.value)))]]
 	}
 	
 	
 	if (any(tests == "pearson")& length(tests) == 1 && CIPossible) {
 	
-		CIlow <- formatC(round(ctest$conf.int[1],2), format = "f",digits = 2)
-		CIhigh <- formatC(round(ctest$conf.int[2],2), format = "f",digits = 2)
+		CIlow <- formatC(round(ctest$conf.int[1],3), format = "f", digits = 3)
+		CIhigh <- formatC(round(ctest$conf.int[2],3), format = "f", digits = 3)
 		
-		text(1,0.8, labels= paste("95% CI: [", CIlow, ", ", CIhigh, "]", sep=""), cex= cexCI)
+		text(1,0.8, labels= paste(100 * confidenceInterval, "% CI: [", CIlow, ", ", CIhigh, "]", sep=""), cex= cexCI)
 	}
+	
 }
 
 
@@ -458,7 +457,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 									if (options$plotStatistics) {
 									
 										.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
-										pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman) # plot r= ...
+										pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) # plot r= ...
 										
 									} else {
 									
@@ -472,7 +471,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 									if (options$plotStatistics) {
 									
 										.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
-										pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman)
+										pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval)
 										
 									} else {
 									
@@ -531,12 +530,15 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 								kendallsTauB=options$kendallsTauB, spearman=options$spearman,
 								hypothesis=options$hypothesis, reportSignificance=options$reportSignificance,
 								flagSignificant=options$flagSignificant,
-								meansAndStdDev=options$meansAndStdDev, crossProducts=options$crossProducts, state=state, diff=diff)
+								meansAndStdDev=options$meansAndStdDev, crossProducts=options$crossProducts, state=state, diff=diff, options=options)
 	
 	tableVariables <- correlationTableOutput$variables
 	tableTests <- correlationTableOutput$tests
 	tableRows <- correlationTableOutput$rows
 	tablePValues <- correlationTableOutput$pValues
+	tableUpperCIs <- correlationTableOutput$upperCIs
+	tableLowerCIs <- correlationTableOutput$lowerCIs
+	
 	
 	results[["correlations"]] <- correlationTableOutput$correlationTable
 	
@@ -556,13 +558,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	} else {
 	
 		return(list(results=results, status="complete", state=list(options=options, results=results, correlationPlots=correlation.plots, tableVariables=tableVariables, tableTests=tableTests,
-					tableRows=tableRows, tablePValues=tablePValues)))
+					tableRows=tableRows, tablePValues=tablePValues, tableUpperCIs=tableUpperCIs, tableLowerCIs=tableLowerCIs)))
 	}
 }
 
 .correlationTable <- function(dataset, perform, variables=c(), pearson=TRUE, kendallsTauB=FALSE,
 	spearman=FALSE, hypothesis="correlated", reportSignificance=FALSE,
-	flagSignificant=FALSE, meansAndStdDev=FALSE, crossProducts=FALSE, state, diff) {
+	flagSignificant=FALSE, meansAndStdDev=FALSE, crossProducts=FALSE, state, diff, options) {
 	
 	correlation.table <- list()
 	
@@ -632,8 +634,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		}
 	}
 	
+	
 	v.c <- length(variables)
 	pValueList <- list()
+	upperCIList <- list()
+	lowerCIList <- list()
+	
 	
 	if (v.c > 0) {
 			
@@ -643,7 +649,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		
 		for (test in tests) {
 		
-			if (length(tests) > 1 || reportSignificance) {
+			if (length(tests) > 1 || reportSignificance || (test == "pearson" && options$confidenceIntervals)) {
 			
 				column.name <- paste(".test[", test, "]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
@@ -671,6 +677,33 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					fields[[length(fields)+1]] <- list(name=column.name, title=variable.name, type="number", format="dp:3;p:.001")
 				}
 			}
+			
+			if (test == "pearson" && options$confidenceIntervals) {
+			
+				column.name <- paste(".test[", test, "-upperCI]", sep="")
+				column.names[[length(column.names)+1]] <- column.name
+				fields[[length(fields)+1]] <- list(name=column.name, title="", type="string")
+				
+				
+				for (variable.name in variables) {
+				
+					column.name <- paste(variable.name, "[", test, "-upperCI]", sep="")
+					column.names[[length(column.names)+1]] <- column.name
+					fields[[length(fields)+1]] <- list(name=column.name, title=variable.name, type="number", format="dp:3")
+				}
+				
+				column.name <- paste(".test[", test, "-lowerCI]", sep="")
+				column.names[[length(column.names)+1]] <- column.name
+				fields[[length(fields)+1]] <- list(name=column.name, title="", type="string")
+				
+				
+				for (variable.name in variables) {
+				
+					column.name <- paste(variable.name, "[", test, "-lowerCI]", sep="")
+					column.names[[length(column.names)+1]] <- column.name
+					fields[[length(fields)+1]] <- list(name=column.name, title=variable.name, type="number", format="dp:3")
+				}
+			}
 		}
 		
 		
@@ -684,21 +717,34 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			for (test in tests) {
 			
 				p.values <- list()
+				upperCIs <- list()
+				lowerCIs <- list()
 				
-				if (length(tests) > 1 || reportSignificance)
+				if (length(tests) > 1 || reportSignificance || (test == "pearson" && options$confidenceIntervals))
 					row[[length(row)+1]] <- test.names[[test]]
 					
 				if (reportSignificance)
 					p.values[[length(p.values)+1]] <- "p-value"
-			
+					
+				if (test == "pearson" && options$confidenceIntervals) {
+				
+					upperCIs[[length(upperCIs)+1]] <- paste("upper ", 100 * options$confidenceIntervalsInterval, "% CI", sep="")
+					lowerCIs[[length(lowerCIs)+1]] <- paste("lower ", 100 * options$confidenceIntervalsInterval, "% CI", sep="")
+				}
+				
 				for (j in .seqx(1, i-1)) {
 				
 					row[[length(row)+1]] <- ""
 					p.values[[length(p.values)+1]] <- ""
+					upperCIs[[length(upperCIs)+1]] <- ""
+					lowerCIs[[length(lowerCIs)+1]] <- ""
 				}
 				
 				row[[length(row)+1]] <- "\u2014" # em-dash
 				p.values[[length(p.values)+1]] <- ""
+				upperCIs[[length(upperCIs)+1]] <- ""
+				lowerCIs[[length(lowerCIs)+1]] <- ""
+				
 				
 				for (j in .seqx(i+1, v.c)) {
 				
@@ -709,64 +755,85 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					v2 <- dataset[[ .v(variable.2.name) ]]
 					
 					
-					
 					if (!is.null(state) && !is.null(diff) && test %in% state$tableTests && variable.name %in% state$tableVariables && column.name %in% names(state$tableRows[[which(state$tableVariable == variable.name)]])
-						&& ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$hypothesis == FALSE && diff$missingValues == FALSE)))) {
+						&& ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$hypothesis == FALSE && diff$missingValues == FALSE && diff$confidenceIntervals == FALSE && diff$confidenceIntervalsInterval == FALSE)))) {
 						
 						variableIndex <- which(state$tableVariable == variable.name)
 						estimate <- state$tableRows[[variableIndex]][[column.name]]
 						p.value <- state$tablePValues[[variable.name]][[column.name]]
-						
+					
 						pValueList[[variable.name]][[column.name]] <- p.value
 						
+						if (test == "pearson" && options$confidenceIntervals) {
 						
-						if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
+							upperCI <- state$tableUpperCIs[[variable.name]][[column.name]]
+							lowerCI <- state$tableLowerCIs[[variable.name]][[column.name]]
 							
-								index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - one (or more) variables contain infinity")
-								row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
-								
+							upperCIList[[variable.name]][[column.name]] <- upperCI
+							lowerCIList[[variable.name]][[column.name]] <- lowerCI
+							
+							upperCIs[[length(upperCIs)+1]] <- .clean(upperCI)
+							lowerCIs[[length(lowerCIs)+1]] <- .clean(lowerCI)
 						}
-						
-						row[[length(row)+1]] <- estimate
-						
-						if (flagSignificant && is.numeric(p.value) && is.na(p.value) == FALSE) {
-						
-							if (p.value < .001) {
-							
-								row.footnotes[[column.name]] <- list("***")
-							
-							} else if (p.value < .01) {
-							
-								row.footnotes[[column.name]] <- list("**")
-							
-							} else if (p.value < .05) {
-							
-								row.footnotes[[column.name]] <- list("*")
-							}
-						}
-						
-						if (reportSignificance)
-							p.values[[length(p.values)+1]] <- .clean(p.value)
-						
-					} else {
+					 	
+					 	
+					 	if (base::any(base::is.infinite(v1)) || base::any(base::is.infinite(v2))) {
+					 		
+					 			index <- .addFootnote(footnotes, "Correlation co-efficient is undefined - one (or more) variables contain infinity")
+					 			row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+					 			
+					 	}
+					 	
+					 	row[[length(row)+1]] <- estimate
+					 	
+					 	if (flagSignificant && is.numeric(p.value) && is.na(p.value) == FALSE) {
+					 	
+					 		if (p.value < .001) {
+					 		
+					 			row.footnotes[[column.name]] <- list("***")
+					 		
+					 		} else if (p.value < .01) {
+					 		
+					 			row.footnotes[[column.name]] <- list("**")
+					 		
+					 		} else if (p.value < .05) {
+					 		
+					 			row.footnotes[[column.name]] <- list("*")
+					 		}
+					 	}
+					 	
+					 	if (reportSignificance)
+					 		p.values[[length(p.values)+1]] <- .clean(p.value)
+					 	
+					 } else {
 					
 						if (perform == "run") {
 					
 							if (hypothesis == "correlated") {
 							
-								result <- cor.test(v1, v2, method=test, alternative="two.sided")
+								result <- cor.test(v1, v2, method=test, alternative="two.sided", conf.level= options$confidenceIntervalsInterval)
 							}
 							else if (hypothesis == "correlatedPositively") {
 							
-								result <- cor.test(v1, v2, method=test, alternative="greater")
+								result <- cor.test(v1, v2, method=test, alternative="greater", conf.level= options$confidenceIntervalsInterval)
 								
 							} else {
 							
-								result <- cor.test(v1, v2, method=test, alternative="less")
+								result <- cor.test(v1, v2, method=test, alternative="less", conf.level= options$confidenceIntervalsInterval)
 							}
-	
+							
 							estimate <- as.numeric(result$estimate)
 							p.value  <- as.numeric(result$p.value)
+							
+							if (test == "pearson" && options$confidenceIntervals) {
+							
+								upperCI <- as.numeric(result$conf.int[2])
+								lowerCI <- as.numeric(result$conf.int[1])
+								
+								upperCIList[[variable.name]][[column.name]] <- upperCI
+								lowerCIList[[variable.name]][[column.name]] <- lowerCI
+							}
+							
 							
 							pValueList[[variable.name]][[column.name]] <- p.value
 							
@@ -801,12 +868,23 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 							
 							if (reportSignificance)
 								p.values[[length(p.values)+1]] <- .clean(p.value)
+								
+							if (test == "pearson" && options$confidenceIntervals) {
+							
+								upperCIs[[length(upperCIs)+1]] <- .clean(upperCI)
+								lowerCIs[[length(lowerCIs)+1]] <- .clean(lowerCI)
+							}
 						
 						} else {
 					
 							row[[length(row)+1]] <- "."
 							p.values[[length(p.values)+1]] <- "."
 							
+							if (test == "pearson" && options$confidenceIntervals) {
+							
+								upperCIs[[length(upperCIs)+1]] <- "."
+								lowerCIs[[length(lowerCIs)+1]] <- "."
+							}
 						}
 					}
 				}
@@ -816,8 +894,20 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					for (p.value in p.values)
 						row[[length(row)+1]] <- p.value
 				}
-			
+				
+				
+				if (test == "pearson" && options$confidenceIntervals) {
+				
+					for (upperCI in upperCIs)
+						row[[length(row)+1]] <- upperCI
+						
+					for (lowerCI in lowerCIs)
+						row[[length(row)+1]] <- lowerCI
+					
+				}
+				
 			}
+			
 			
 			names(row) <- column.names
 			row[[".variable"]] <- variable.name
@@ -836,5 +926,5 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	correlation.table[["data"]] <- rows
 	correlation.table[["footnotes"]] <- as.list(footnotes)
 	
-	return(list(correlationTable=correlation.table, rows=rows, tests=tests, variables=variables, pValues=pValueList))
+	return(list(correlationTable=correlation.table, rows=rows, tests=tests, variables=variables, pValues=pValueList, upperCIs=upperCIList, lowerCIs=lowerCIList))
 }
