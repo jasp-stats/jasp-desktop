@@ -657,29 +657,58 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 
 	if (package->hasAnalyses)
 	{
+		bool errorFound = false;
+
+		int corruptAnalyses = 0;
+		stringstream errorMsg;
+		stringstream corruptionStrings;
 		Json::Value analysesData = package->analysesData;
-		for (Json::ValueIterator iter = analysesData.begin(); iter != analysesData.end(); iter++)
+		if (!analysesData.isArray() || analysesData.isNull())
 		{
-			try
+			errorFound = true;
+			errorMsg << "An error has been detected and analyses could not be loaded.";
+		}
+		else
+		{
+			for (Json::ValueIterator iter = analysesData.begin(); iter != analysesData.end(); iter++)
 			{
-				Json::Value &analysisData = *iter;
-				Json::Value &optionsJson = analysisData["options"];
-				Json::Value &resultsJson = analysisData["results"];
+				try
+				{
+					QString name = QString();
+					Json::Value &analysisData = *iter;
 
-				int id = analysisData["id"].asInt();
-				QString name = QString::fromStdString(analysisData["name"].asString());
-				Analysis::Status status = Analysis::getStatusValue(analysisData["status"].asString());
+					name = QString::fromStdString(analysisData["name"].asString());
+					int id = analysisData["id"].asInt();
 
-				Analysis *analysis = _analyses->create(name, &optionsJson, status);
+					Json::Value &optionsJson = analysisData["options"];
+					Json::Value &resultsJson = analysisData["results"];
 
-				analysis->setResults(resultsJson);
-			}
-			catch (std::runtime_error& e)
-			{
-				_fatalError = tq(e.what());
-				fatalError();
+					Analysis::Status status = Analysis::getStatusValue(analysisData["status"].asString());
+
+					Analysis *analysis = _analyses->create(name, id, &optionsJson, status);
+
+					analysis->setResults(resultsJson);
+				}
+				catch (runtime_error e)
+				{
+					errorFound = true;
+					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
+				}
+				catch (exception e)
+				{
+					errorFound = true;
+					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
+				}
 			}
 		}
+
+		if (corruptAnalyses == 1)
+			errorMsg << "An error was detected in an analyses. This analyses has been removed for the following reason:\n" << corruptionStrings.str();
+		else if (corruptAnalyses > 1)
+			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
+
+		if (errorFound)
+			QMessageBox::warning(this, "", tq(errorMsg.str()));
 	}
 
 	package->setLoaded();
@@ -693,7 +722,7 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 void MainWindow::dataSetLoadFailed(const QString &message)
 {
 	_alert->hide();
-	QMessageBox::warning(this, "", "The Data set could not be loaded\n\n" + message);
+	QMessageBox::warning(this, "", "An error was detected and the data could not be loaded.\n\n" + message);
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
@@ -826,7 +855,7 @@ void MainWindow::saveSelected(const QString &filename)
 		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 		{
 			Analysis *analysis = *itr;
-			if (analysis->visible())
+			if (analysis != NULL && analysis->visible())
 			{
 				Json::Value analysisData = analysis->asJSON();
 				analysisData["options"] = analysis->options()->asJSON();

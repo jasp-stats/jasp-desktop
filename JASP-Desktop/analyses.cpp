@@ -31,6 +31,9 @@ Analysis *Analyses::create(const QString &name, Json::Value *optionsData, Analys
 
 Analysis *Analyses::create(const QString &name, int id, Json::Value *options, Analysis::Status status)
 {
+	if (id >= _nextId)
+		_nextId = id + 1;
+
 	Analysis *analysis = AnalysisLoader::load(id, name.toStdString(), options);
 	analysis->setStatus(status);
 
@@ -55,7 +58,7 @@ void Analyses::clear()
 	for (Analyses::iterator itr = this->begin(); itr != this->end(); itr++)
 	{
 		Analysis *analysis = *itr;
-		if (analysis->status() != Analysis::Complete)
+		if (analysis != NULL && analysis->status() != Analysis::Complete)
 			analysis->setStatus(Analysis::Aborted);
 	}
 }

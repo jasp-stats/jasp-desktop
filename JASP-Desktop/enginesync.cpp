@@ -269,6 +269,8 @@ void EngineSync::sendMessages()
 	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 	{
 		Analysis *analysis = *itr;
+		if (analysis == NULL)
+			continue;
 
 		if (analysis->status() == Analysis::Empty)
 		{
