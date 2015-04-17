@@ -317,7 +317,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
 		
 			pair.statuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE)
-
+			
 			result <- list(.variable1=p1, .separator="-", .variable2=p2, BF="", error="")
 		
 		} else {
@@ -327,7 +327,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				if (!is.null(state) && tablePairs[[i]] %in% state$tablePairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE)))) {
 				
-					stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))
+					stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))[1]
 					
 					pair.statuses[[i]] <- state$pairStatuses[[stateIndex]]
 				
@@ -360,7 +360,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				if (!is.null(state) && tablePairs[[i]] %in% state$tablePairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE)))) {
 				
-					stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))
+					stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))[1]
 				
 					if (state$errorFootnotes[stateIndex] == "no") {
 				
@@ -540,8 +540,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		i <- i + 1
 	}
 	
-	
-	
 	if (length(ttest.rows) == 0)
 		ttest.rows <- list(list(.variable1="...", .separator="-", .variable2="...", BF="", error=""))
 	
@@ -633,6 +631,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			
 			status <- pair.statuses[[i]]
 			
+			
 			p1 <- ifelse(pair[[1]] != "", pair[[1]], "...") 
 			p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
 			
@@ -684,6 +683,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				} else {
 			
 					plot <- plots.ttest[[j]]
+					
 					
 					if (status$unplotable == FALSE) {
 					

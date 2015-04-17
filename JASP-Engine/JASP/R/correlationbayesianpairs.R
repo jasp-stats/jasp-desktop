@@ -1545,7 +1545,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				if (!is.null(state) && tablePairs[[i]] %in% state$tablePairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE)))) {
 				
-					stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))
+					stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))[1]
 					
 					pair.statuses[[i]] <- state$pairStatuses[[stateIndex]]
 				
@@ -1577,7 +1577,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				if (!is.null(state) && tablePairs[[i]] %in% state$tablePairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE)))) {
 					
-					stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))
+					stateIndex <- which(state$tablePairs == paste(pair, collapse=" - "))[1]
 					
 					if (state$errorFootnotes[stateIndex] == "no") {
 					
