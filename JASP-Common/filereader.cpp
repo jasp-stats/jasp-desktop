@@ -88,6 +88,7 @@ void FileReader::openEntry(const string &archivePath, const string &entryPath)
 				if (string(archive_entry_pathname(entry)) == entryPath)//pathEntry.native())
 				//#endif
 				{
+					
 					_size = archive_entry_size(entry);
 					_exists = true;
 					success = true;
@@ -152,6 +153,11 @@ int FileReader::bytesAvailable() const
 	return 0;
 }
 
+int FileReader::pos() const
+{
+	return _currentRead;
+}
+
 bool FileReader::isSequential() const
 {
 	return true;
@@ -177,11 +183,29 @@ int FileReader::readData(char *data, int maxSize)
 		count = _file->gcount();
 	}
 
-	_currentRead += count;
+	if (count > 0)
+		_currentRead += count;
+
 	if (_currentRead >= _size)
 		close();
 
 	return count;
+}
+
+char* FileReader::readAllData(int blockSize, int &errorCode)
+{
+	int size = bytesAvailable();
+	if (size == 0)
+		return NULL;
+
+	char *data = new char[size];
+
+	int startOffset = _currentRead;
+
+	errorCode = 0;
+	while ((errorCode = readData(&data[_currentRead - startOffset], blockSize)) > 0 );
+
+	return data;
 }
 
 

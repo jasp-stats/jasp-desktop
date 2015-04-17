@@ -30,25 +30,28 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 	if (!dataEntry.exists())
 	{
 		if (required)
-			throw runtime_error("Entry " + entry + " cannot be found in JASP archive.");
+			throw runtime_error("Entry " + entry + " could not be found in JASP archive.");
 
 		return false;
 	}
 
 	int size = dataEntry.bytesAvailable();
-	char memblock[size];
+	if (size > 0)
+	{
+		char data[size];
+		int startOffset = dataEntry.pos();
+		int errorCode = 0;
+		while ((errorCode = dataEntry.readData(&data[dataEntry.pos() - startOffset], 8016)) > 0 ) ;
 
-	int cSize = dataEntry.readData(memblock, size);
-	if (cSize != size)
-		throw runtime_error("Error reading " + entry + " from JASP archive.");
+		if (errorCode < 0)
+			throw runtime_error("Error reading Entry " + entry + " in JASP archive.");
+
+		Json::Reader jsonReader;
+		string doc(data, size);
+		jsonReader.parse(doc, root);
+	}
 
 	dataEntry.close();
-
-	Json::Reader jsonReader;
-
-	string doc(memblock, size);
-
-	jsonReader.parse(doc, root);
 
 	return true;
 }
@@ -69,6 +72,9 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 	Json::Value &dataSetDesc = metaData["dataSet"];
 	columnCount = dataSetDesc["columnCount"].asInt();
 	rowCount = dataSetDesc["rowCount"].asInt();
+
+	if (rowCount <= 0 || columnCount <= 0)
+		throw runtime_error("Data size has been corrupted and cannot load.");
 
 	do
 	{
@@ -170,19 +176,18 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 	if (dataEntry3.exists())
 	{
 		int size1 = dataEntry3.bytesAvailable();
-		char *memblock1 = new char[size1];
-
-		int sizeToRead1 = dataEntry3.readData(memblock1, size1);
-		if (size1 != sizeToRead1)
-			throw runtime_error("Error reading results.html from JASP archive.");
+		char memblock1[size1];
+		int startOffset1 = dataEntry3.pos();
+		int errorCode = 0;
+		while ((errorCode = dataEntry3.readData(&memblock1[dataEntry3.pos() - startOffset1], 8016)) > 0 ) ;
+		if (errorCode < 0)
+			throw runtime_error("Error reading Entry " + entryName3 + " in JASP archive.");
 
 		packageData->analysesHTML = string(memblock1, size1);
 		packageData->hasAnalyses = true;
 
-		delete[] memblock1;
 		dataEntry3.close();
 	}
-
 
 	parseJsonEntry(analysesData, path, "analyses.json", false);
 
@@ -208,6 +213,9 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 		}
 		file.flush();
 		file.close();
+
+		if (bytes < 0)
+			throw runtime_error("Error reading resource in JASP archive.");
 	}
 
 	packageData->analysesData = analysesData;

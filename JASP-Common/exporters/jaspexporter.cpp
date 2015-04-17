@@ -228,6 +228,9 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 					}
 
 					archive_entry_free(entry);
+
+					if (bytes < 0)
+						throw runtime_error("Error reading files. Could not save jasp archive");
 				}
 				fileInfo.close();
 			}
