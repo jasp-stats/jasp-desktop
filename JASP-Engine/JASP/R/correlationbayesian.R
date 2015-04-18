@@ -1108,9 +1108,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, kappa=kappa)
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
+			
+			someEstimates <- .betaParameterEstimates(.posteriorMean(n, r, kappa), .posteriorVariance(n, r, kappa))
 		
-			aParameter <- .posteriorAParameter(n=n, r=r)
-			bParameter <- .posteriorBParameter(n=n, r=r)
+			aParameter <- someEstimates$alpha
+			bParameter <- someEstimates$beta
 			
 			if (any(is.na(c(aParameter, bParameter)))) {
 				
@@ -1185,7 +1187,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		return()
 	
 	correlation.plot <- list()
-	
 	if (hypothesis == "correlated") {
 		
 		oneSided <- FALSE
@@ -1195,7 +1196,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		oneSided <- "right"
 		
 	} else if (hypothesis == "correlatedNegatively") {
-		
+
 		oneSided <- "left"
 		
 	}
@@ -1361,7 +1362,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							if (col < row) {							
 								
 								if (options$plotPosteriors) {
-									.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided)
+									.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided, kappa=options$priorWidth)
 								} else {
 									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
 								}
