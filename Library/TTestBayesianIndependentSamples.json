@@ -28,7 +28,9 @@
       "format" : "",
       "name" : "priorWidth",
       "type" : "Number",
-      "value" : 0.7070
+      "value" : 0.7070,
+      "min" : 0,
+      "max" : 2
    },
    {
       "default" : false,
