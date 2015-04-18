@@ -390,86 +390,87 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 .excludePairwiseCorData <- function(v1, v2){
 	# To exclude the data pairwise
 	#
-	myScreenedData <- list(v1=v1, v2=v2)
+	screened.data <- list(v1=v1, v2=v2)
 		
-	removeIndex1 <- which(is.na(v1))
-	removeIndex2 <- which(is.na(v2))
-	removeIndex <- unique(c(removeIndex1, removeIndex2))
+	remove.index.1 <- which(is.na(v1))
+	remove.index.2 <- which(is.na(v2))
+	remove.index <- unique(c(remove.index.1, remove.index.2))
 	if (length(removeIndex) > 0){
-		myScreenedData$v1 <- v1[-(removeIndex)]
-		myScreenedData$v2 <- v2[-(removeIndex)]
+		screened.data$v1 <- v1[-(remove.index)]
+		screened.data$v2 <- v2[-(remove.index)]
 	}
 	
-	return(myScreenedData)
+	return(screened.data)
 }
 
 
-.myScaledBeta <- function(rho, alpha, beta){
+.scaledBeta <- function(rho, alpha, beta){
 	result <- 1/2*dbeta((rho+1)/2, alpha, beta)
 	return(result)
 }
 
 .priorRho <- function(rho, kappa=1) {
-	.myScaledBeta(rho, 1/kappa, 1/kappa)	
+	.scaledBeta(rho, 1/kappa, 1/kappa)	
 }
 
 .priorRhoPlus <- function(rho, kappa=1) {
-	nonNegativeIndex <- rho >=0
-	lessThanOneIndex <- rho <=1
-	valueIndex <- as.logical(nonNegativeIndex*lessThanOneIndex)
-	myResult <- rho*0
-	myResult[valueIndex] <- 2*.priorRho(rho[valueIndex], kappa)
-	return(myResult)
+	non.negative.index <- rho >=0
+	less.than.one.index <- rho <=1
+	value.index <- as.logical(non.negative.index*less.than.one.index)
+	result <- rho*0
+	result[value.index] <- 2*.priorRho(rho[value.index], kappa)
+	return(result)
 }
 
 .priorRhoMin <- function(rho, kappa=1) {
-	negativeIndex <- rho <=0
-	greaterThanMinOneIndex <- rho >= -1
-	valueIndex <- as.logical(negativeIndex*greaterThanMinOneIndex)
-	myResult <- rho*0
-	myResult[valueIndex] <- 2*.priorRho(rho[valueIndex], kappa)
-	return(myResult)
+	negative.index <- rho <=0
+	greater.than.min.one.index <- rho >= -1
+	value.index <- as.logical(negative.index*greater.than.min.one.index)
+	result <- rho*0
+	result[value.index] <- 2*.priorRho(rho[value.index], kappa)
+	return(result)
 }
 
 # 1.0. Built-up for likelihood functions
-.myAFunction <- function(n, r, rho) {
-	#hyperTerm <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), (1/2), (r*rho)^2))
-	hyperTerm <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=(1/2), z=(r*rho)^2))
-	myResult <- (1-rho^2)^((n-1)/2)*hyperTerm
-	return(myResult)
+.aFunction <- function(n, r, rho) {
+	#hyper.term <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), (1/2), (r*rho)^2))
+	hyper.term <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=(1/2), z=(r*rho)^2))
+	result <- (1-rho^2)^((n-1)/2)*hyper.term
+	return(result)
 }
 
-.myBFunction <- function(n, r, rho) {
-	#hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), (1/2), (r*rho)^2))
-	#hyperTerm2 <- Re(hypergeo::hypergeo((n/2), (n/2), (-1/2), (r*rho)^2))
-	hyperTerm1 <- Re(hypergeo::genhypergeo(U=c(n/2, n/2), L=(1/2), z=(r*rho)^2))
-	hyperTerm2 <- Re(hypergeo::genhypergeo(U=c(n/2, n/2), L=(-1/2), z=(r*rho)^2))
-	logTerm <- 2*lgamma(n/2)-2*lgamma((n+1)/2)
-	myResult <- 2^(-1)*(1-rho^2)^((n-1)/2)*exp(logTerm)*
-		((1-2*n*(r*rho)^2)/(r*rho)*hyperTerm1 -(1-(r*rho)^2)/(r*rho)*hyperTerm2)
-	return(myResult)
+.bFunction <- function(n, r, rho) {
+	#hyper.term.1 <- Re(hypergeo::hypergeo((n/2), (n/2), (1/2), (r*rho)^2))
+	#hyper.term.2 <- Re(hypergeo::hypergeo((n/2), (n/2), (-1/2), (r*rho)^2))
+	hyper.term.1 <- Re(hypergeo::genhypergeo(U=c(n/2, n/2), L=(1/2), z=(r*rho)^2))
+	hyper.term.2 <- Re(hypergeo::genhypergeo(U=c(n/2, n/2), L=(-1/2), z=(r*rho)^2))
+	log.term <- 2*lgamma(n/2)-2*lgamma((n+1)/2)
+	result <- 2^(-1)*(1-rho^2)^((n-1)/2)*exp(log.term)*
+		((1-2*n*(r*rho)^2)/(r*rho)*hyper.term.1-(1-(r*rho)^2)/(r*rho)*hyper.term.2)
+	return(result)
 }
 
-.myHFunction <- function(n, r, rho) {
-	myResult <- .myAFunction(n, r, rho) + .myBFunction(n, r, rho)
-	return(myResult)
+.hFunction <- function(n, r, rho) {
+	result <- .aFunction(n, r, rho) + .bFunction(n, r, rho)
+	return(result)
 }
 
 
 .jeffreysApproxH <- function(n, r, rho) {	
-	return(((1 - rho^(2))^(0.5*(n - 1)))/((1 - rho*r)^(n - 1 - 0.5)))
+	result <- ((1 - rho^(2))^(0.5*(n - 1)))/((1 - rho*r)^(n - 1 - 0.5))
+	return(result)
 }
 
 # 1.1 Explicit marginal likelihood functions
 .m0MarginalLikelihood <- function(s, t, n) {
-	logTerm <- 2*lgamma(0.5*(n-1))
-	result <- 1/4*n^(0.5*(1-2*n))*pi^(1-n)*(s*t)^(1-n)*exp(logTerm)
+	log.term <- 2*lgamma(0.5*(n-1))
+	result <- 1/4*n^(0.5*(1-2*n))*pi^(1-n)*(s*t)^(1-n)*exp(log.term)
 	return(result)
 }
 
 .m1MarginalLikelihoodNoRho <- function(s, t, n, r, rho) {
 	return(.m0MarginalLikelihood(s, t, n)*
-		   	(.myAFunction(n, r, rho)+.myBFunction(n, r, rho)))
+		   	(.aFunction(n, r, rho)+.bFunction(n, r, rho)))
 }
 
 #
@@ -486,17 +487,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		return(NaN)
 	}
 	# TODO: use which
-	checkR <- abs(r) >= 1 # check whether |r| >= 1
-	if (kappa >= 1 && n > 2 && checkR) {
+	check.r <- abs(r) >= 1 # check whether |r| >= 1
+	if (kappa >= 1 && n > 2 && check.r) {
 		return(Inf)
 	}
-	#logHyperTerm <- log(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
-	logHyperTerm <- log(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=((n+2/kappa)/2), z=r^2))
-	myLogResult <- log(2^(1-2/kappa))+0.5*log(pi)-lbeta(1/kappa, 1/kappa)+
-		lgamma((n+2/kappa-1)/2)-lgamma((n+2/kappa)/2)+logHyperTerm
-	realResult <- exp(Re(myLogResult))
+	#log.hyper.term <- log(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
+	log.hyper.term <- log(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=((n+2/kappa)/2), z=r^2))
+	log.result <- log(2^(1-2/kappa))+0.5*log(pi)-lbeta(1/kappa, 1/kappa)+
+		lgamma((n+2/kappa-1)/2)-lgamma((n+2/kappa)/2)+log.hyper.term
+	real.result <- exp(Re(log.result))
 	#return(realResult)
-	return(realResult)
+	return(real.result)
 }
 
 # 2.2 Two-sided secondairy Bayes factor
@@ -515,24 +516,24 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	if (n > 2 && abs(r)==1) {
 		return(Inf)
 	}
-	hyperTerm <- Re(hypergeo::genhypergeo(U=c((2*n-3)/4, (2*n-1)/4), L=(n+2/kappa)/2, z=r^2))
-	logTerm <- lgamma((n+2/kappa-1)/2)-lgamma((n+2/kappa)/2)-lbeta(1/kappa, 1/kappa)
-	myResult <- sqrt(pi)*2^(1-2/kappa)*exp(logTerm)*hyperTerm
-	return(myResult)
+	hyper.term <- Re(hypergeo::genhypergeo(U=c((2*n-3)/4, (2*n-1)/4), L=(n+2/kappa)/2, z=r^2))
+	log.term <- lgamma((n+2/kappa-1)/2)-lgamma((n+2/kappa)/2)-lbeta(1/kappa, 1/kappa)
+	result <- sqrt(pi)*2^(1-2/kappa)*exp(log.term)*hyper.term
+	return(result)
 }
 
 # 2.3 Two-sided third Bayes factor
 .bfCorNumerical <- function(n, r, kappa=1, lowerRho=-1, upperRho=1) {
 	# Numerically integrate Jeffreys approximation of the likelihood
 	integrand <- function(rho){.jeffreysApproxH(n, r, rho)*.priorRho(rho, kappa)}
-	someIntegral <- try(integrate(integrand, lowerRho, upperRho))
+	some.integral <- try(integrate(integrand, lowerRho, upperRho))
 	
-	if (is(someIntegral, "try-error")) {
+	if (is(some.integral, "try-error")) {
 		return(NA)
 	}
 	
-	if (someIntegral$message=="OK"){
-		return(someIntegral$value)
+	if (some.integral$message=="OK"){
+		return(some.integral$value)
 	} else {
 		return(NA)
 	}
@@ -586,8 +587,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	if (n > 2 && abs(r)==1) {
 		return(Inf)
 	}
-	myResult <- ((2*n-3)/pi)^(.5)*(1-r^2)^((n-4)/2)
-	return(1/myResult)
+	result <- ((2*n-3)/pi)^(.5)*(1-r^2)^((n-4)/2)
+	return(1/result)
 }
 
 # 3.0 One-sided preparation ----------------------------------------------------
@@ -600,17 +601,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# TODO: 1. check for n=1, n=2, as r is then undefined
 	# 2. check for r=1, r=-1
 	#
-	hyperTerm1 <- Re(hypergeo::genhypergeo(U=c(1, (n+2)/2, (n+2)/2),
+	hyper.term.1 <- Re(hypergeo::genhypergeo(U=c(1, (n+2)/2, (n+2)/2),
 										   L=c(1/2, (n+2/kappa+3)/2), z=r^2))
-	hyperTerm2 <- Re(hypergeo::genhypergeo(U=c(1, (n+2)/2, (n+2)/2),
+	hyper.term.2 <- Re(hypergeo::genhypergeo(U=c(1, (n+2)/2, (n+2)/2),
 										   L=c(3/2, (n+2/kappa+1)/2), z=r^2))
-	hyperTerm3 <- Re(hypergeo::genhypergeo(U=c(1, (n+2)/2, (n+2)/2),
+	hyper.term.3 <- Re(hypergeo::genhypergeo(U=c(1, (n+2)/2, (n+2)/2),
 										   L=c(3/2, (n+2/kappa+3)/2), z=r^2))
-	sumTerm <- -((n*r)^2*hyperTerm1-n^2*(n+2/kappa+1)*hyperTerm2+2*n^3*r^2*
-				 	hyperTerm3+(2*n^2-2/kappa*(1-2*n)+n-1))
-	productTerm <- (2^(1-2/kappa)*r)/((n+2/kappa-1)*(n+2/kappa+1))
-	logTerm <- 2*lgamma(n/2)-2*lgamma((n+1)/2)-lbeta(1/kappa, 1/kappa)
-	result <- productTerm*exp(logTerm)*sumTerm
+	sum.term <- -((n*r)^2*hyper.term.1-n^2*(n+2/kappa+1)*hyper.term.2+2*n^3*r^2*
+				 	hyper.term.3+(2*n^2-2/kappa*(1-2*n)+n-1))
+	product.term <- (2^(1-2/kappa)*r)/((n+2/kappa-1)*(n+2/kappa+1))
+	log.term <- 2*lgamma(n/2)-2*lgamma((n+1)/2)-lbeta(1/kappa, 1/kappa)
+	result <- product.term*exp(log.term)*sum.term
 	return(result)
 }
 
@@ -621,11 +622,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# This is the contribution of one-sided test
 	#
 	#	
-	hyperTerm <- Re(hypergeo::genhypergeo(U=c(1, (2*n-1)/4, (2*n+1)/4),
+	hyper.term <- Re(hypergeo::genhypergeo(U=c(1, (2*n-1)/4, (2*n+1)/4),
 										  L=c(3/2, (n+1+2/kappa)/2), z=r^2))
-	logTerm <- -lbeta(1/kappa, 1/kappa)
-	myResult <- 2^(1-2/kappa)*r*(2*n-3)/(n+2/kappa-1)*exp(logTerm)*hyperTerm
-	return(myResult)
+	log.term <- -lbeta(1/kappa, 1/kappa)
+	result <- 2^(1-2/kappa)*r*(2*n-3)/(n+2/kappa-1)*exp(log.term)*hyper.term
+	return(result)
 }
 
 .bfPlus0Numerical <- function(n, r, kappa=1, lowerRho=0, upperRho=1){
@@ -647,14 +648,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		return(0)
 	}
 	
-	myNumericalJeffreys <- .bfCorNumerical(n, r, kappa, lowerRho, upperRho)
+	my.numerical.Jeffreys <- .bfCorNumerical(n, r, kappa, lowerRho, upperRho)
 	# TODO: be very careful here, might integrate over non-finite function
 	# in particular with the exact h function. 
 	#
-	if (!is.na(myNumericalJeffreys) && myNumericalJeffreys >= 0){
+	if (!is.na(my.numerical.Jeffreys) && my.numerical.Jeffreys >= 0){
 		# Note: Numerical Jeffreys okay
-		return(myNumericalJeffreys)
-	} else if (is.na(myNumericalJeffreys) || myNumericalJeffreys < 0){
+		return(my.numerical.Jeffreys)
+	} else if (is.na(my.numerical.Jeffreys) || my.numerical.Jeffreys < 0){
 		# All numerical failed
 		return(NaN)
 	} 
@@ -675,167 +676,167 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	}
 	
 	bf10 <- .bf10JeffreysIntegrate(n, r, kappa)
-	mPlus <- .mPlusJeffreysIntegrate(n, r, kappa)
+	m.plus <- .mPlusJeffreysIntegrate(n, r, kappa)
 	
-	if (is.na(bf10) || is.na(mPlus)){
+	if (is.na(bf10) || is.na(m.plus)){
 		return(NA)
 	}
 	
-	myResult <- bf10+mPlus	
-	return(myResult)
+	result <- bf10+m.plus	
+	return(result)
 }
 
 ## Suit:
 .bfCorrieKernel <- function(n, r, kappa=1, method="exact"){
-	myOutput <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
+	output <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
 	
 	# Note: Data check
 	#
 	
 	if ( any(is.na(r)) ){
-		return(myOutput)
+		return(output)
 	}
 	# Note: Data: OK
 	
-	checkR <- abs(r) >= 1 # check whether |r| >= 1
+	check.r <- abs(r) >= 1 # check whether |r| >= 1
 	if (n <= 2){
-		myOutput$bf10 <- 1
-	} else if (kappa >= 1 && n > 2 && checkR) {
-		myOutput$bf10 <- Inf
+		output$bf10 <- 1
+	} else if (kappa >= 1 && n > 2 && check.r) {
+		output$bf10 <- Inf
 		if (r > 0){
-			myOutput$bfPlus0 <- Inf
-			myOutput$bfMin0 <- 0
+			output$bfPlus0 <- Inf
+			output$bfMin0 <- 0
 		} else if (r <= 0){
-			myOutput$bfPlus0 <- 0
-			myOutput$bfMin0 <- Inf
+			output$bfPlus0 <- 0
+			output$bfMin0 <- Inf
 		}
-		return(myOutput)
+		return(output)
 	}
 	
 	# Note: Different methods
 	#
 	if (method=="exact" || method==1){
-		myOutput$bf10 <- .bf10Exact(n, r, kappa)
+		output$bf10 <- .bf10Exact(n, r, kappa)
 		
 		# Note: bf10: CHECK
-		if (is.na(myOutput$bf10) || myOutput$bf10 < 0){
-			myOutput$bf10 <- NA
-			return(myOutput)
+		if (is.na(output$bf10) || output$bf10 < 0){
+			output$bf10 <- NA
+			return(output)
 		}
 		
 		# Note: bf10: EXTREME
-		if (base::is.infinite(myOutput$bf10)){
+		if (base::is.infinite(output$bf10)){
 			# Note: Check extreme
 			if (r >= 0){
-				myOutput$bfPlus0 <- Inf
-				myOutput$bfMin0 <- 0
+				output$bfPlus0 <- Inf
+				output$bfMin0 <- 0
 			} else if (r < 0){
-				myOutput$bfPlus0 <- 0
-				myOutput$bfMin0 <- Inf
+				output$bfPlus0 <- 0
+				output$bfMin0 <- Inf
 			}
-			return(myOutput)
-		} else if (!base::is.infinite(myOutput$bf10)){
+			return(output)
+		} else if (!base::is.infinite(output$bf10)){
 			# Note: bfPlus0, bfMin0: PREPARE
-			myOutput$bfPlus0 <- myOutput$bf10 + .mPlusExact(n, r, kappa)
-			myOutput$bfMin0 <- myOutput$bf10 + .mPlusExact(n, -r, kappa)
+			output$bfPlus0 <- output$bf10 + .mPlusExact(n, r, kappa)
+			output$bfMin0 <- output$bf10 + .mPlusExact(n, -r, kappa)
 		}
 	} else if (method=="jeffreysIntegrate" || method==2){
-		myOutput$bf10 <- .bf10JeffreysIntegrate(n, r, kappa)
+		output$bf10 <- .bf10JeffreysIntegrate(n, r, kappa)
 		
 		# Note: bf10: CHECK
-		if (is.na(myOutput$bf10) || myOutput$bf10 < 0){
-			myOutput$bf10 <- NA
-			return(myOutput)
+		if (is.na(output$bf10) || output$bf10 < 0){
+			output$bf10 <- NA
+			return(output)
 		}
 		
 		# Note: bf10: EXTREME
-		if (base::is.infinite(myOutput$bf10)){
+		if (base::is.infinite(output$bf10)){
 			# Note: Check extreme
 			if (r >= 0){
-				myOutput$bfPlus0 <- Inf
-				myOutput$bfMin0 <- 0
+				output$bfPlus0 <- Inf
+				output$bfMin0 <- 0
 			} else if (r < 0){
-				myOutput$bfPlus0 <- 0
-				myOutput$bfMin0 <- Inf
+				output$bfPlus0 <- 0
+				output$bfMin0 <- Inf
 			}
-			return(myOutput)
-		} else if (!base::is.infinite(myOutput$bf10)){
+			return(output)
+		} else if (!base::is.infinite(output$bf10)){
 			# Note: bfPlus0, bfMin0: PREPARE
-			myOutput$bfPlus0 <- myOutput$bf10 + .mPlusJeffreysIntegrate(n, r, kappa)
-			myOutput$bfMin0 <- myOutput$bf10 + .mPlusJeffreysIntegrate(n, -r, kappa)
+			output$bfPlus0 <- output$bf10 + .mPlusJeffreysIntegrate(n, r, kappa)
+			output$bfMin0 <- output$bf10 + .mPlusJeffreysIntegrate(n, -r, kappa)
 		}
 	} else if (method=="numerical" || method==3){
-		myOutput$bf10 <- .bf10Numerical(n, r, kappa, lowerRho=-1, upperRho=1)
+		output$bf10 <- .bf10Numerical(n, r, kappa, lowerRho=-1, upperRho=1)
 		
 		# Note: bf10: CHECK
-		if (is.na(myOutput$bf10) || myOutput$bf10 < 0){
-			myOutput$bf10 <- NA
-			return(myOutput)
+		if (is.na(output$bf10) || output$bf10 < 0){
+			output$bf10 <- NA
+			return(output)
 		}
 		
 		# Note: bf10: EXTREME
-		if (base::is.infinite(myOutput$bf10)){
+		if (base::is.infinite(output$bf10)){
 			# Note: Check extreme
 			if (r >= 0){
-				myOutput$bfPlus0 <- Inf
-				myOutput$bfMin0 <- 0
+				output$bfPlus0 <- Inf
+				output$bfMin0 <- 0
 			} else if (r < 0){
-				myOutput$bfPlus0 <- 0
-				myOutput$bfMin0 <- Inf
+				output$bfPlus0 <- 0
+				output$bfMin0 <- Inf
 			}
-			return(myOutput)
-		} else if (!base::is.infinite(myOutput$bf10)){
+			return(output)
+		} else if (!base::is.infinite(output$bf10)){
 			# Note: bfPlus0, bfMin0: PREPARE
-			myOutput$bfPlus0 <- .bfPlus0Numerical(n, r, kappa, lowerRho=0, upperRho=1)
-			myOutput$bfMin0 <- .bfPlus0Numerical(n, r, kappa, lowerRho=-1, upperRho=0)
+			output$bfPlus0 <- .bfPlus0Numerical(n, r, kappa, lowerRho=0, upperRho=1)
+			output$bfMin0 <- .bfPlus0Numerical(n, r, kappa, lowerRho=-1, upperRho=0)
 		}
 	} else if (method=="jeffreysApprox" || method==4){
-		myOutput$bf10 <- .bf10JeffreysApprox(n, r)
+		output$bf10 <- .bf10JeffreysApprox(n, r)
 		
 		# Note: bf10: CHECK
-		if (is.na(myOutput$bf10) || myOutput$bf10 < 0){
-			myOutput$bf10 <- NA
-			return(myOutput)
+		if (is.na(output$bf10) || output$bf10 < 0){
+			output$bf10 <- NA
+			return(output)
 		}
 		
 		# Note: bf10: EXTREME
-		if (base::is.infinite(myOutput$bf10)){
+		if (base::is.infinite(output$bf10)){
 			# Note: Check extreme
 			if (r >= 0){
-				myOutput$bfPlus0 <- Inf
-				myOutput$bfMin0 <- 0
+				output$bfPlus0 <- Inf
+				output$bfMin0 <- 0
 			} else if (r < 0){
-				myOutput$bfPlus0 <- 0
-				myOutput$bfMin0 <- Inf
+				output$bfPlus0 <- 0
+				output$bfMin0 <- Inf
 			}
-			return(myOutput)
+			return(output)
 		}
-		return(myOutput)
+		return(output)
 	}
 	
 	# Note: bfPlus0, bfMin0: CHECK
-	if (any(is.na(c(myOutput$bfPlus0, myOutput$bfMin0)))){
+	if (any(is.na(c(output$bfPlus0, output$bfMin0)))){
 		# Note: bfPlus0, bfMin0: NOT ok
 		# 	if one is NA, then both are NA
-		myOutput$bfPlus0 <- NA
-		myOutput$bfMin0 <- NA
-		return(myOutput)
-	} else if (any(c(myOutput$bfPlus0, myOutput$bfMin0)==0)){
+		output$bfPlus0 <- NA
+		output$bfMin0 <- NA
+		return(output)
+	} else if (any(c(output$bfPlus0, output$bfMin0)==0)){
 		# Note: bfPlus0, bfMin0: EXTREME
 		# 	if one is extreme, so is the other
-		if (myOutput$bfPlus0==0){
-			myOutput$bfPlus0 <- 0
-			myOutput$bfMin0 <- Inf
-		} else if (myOutput$bfMin0==0){
-			myOutput$bfPlus0 <- Inf
-			myOutput$bfMin0 <- 0
+		if (output$bfPlus0==0){
+			output$bfPlus0 <- 0
+			output$bfMin0 <- Inf
+		} else if (output$bfMin0==0){
+			output$bfPlus0 <- Inf
+			output$bfMin0 <- 0
 		}
-		return(myOutput)
+		return(output)
 	} 
 	
 	
 	# Note: bfPlus0, bfMin0: CHECK COHERENCE:
-	if (r > 0 && myOutput$bfPlus0 > 1 && myOutput$bfMin0 > 1 || any(c(myOutput$bfPlus0, myOutput$bfMin0)<0)){
+	if (r > 0 && output$bfPlus0 > 1 && output$bfMin0 > 1 || any(c(output$bfPlus0, output$bfMin0)<0)){
 		# Note: Data: OK, 
 		# 		bf10: OK. 
 		#		bfPlus0: OK
@@ -844,17 +845,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		# bfMin0 is bigger than one due to overflow: bfMin0 = 2*bf10 - bfPlus0. 
 		# Example: 2*1.2.... 10^ 24 - 2.... 10^24 = 1... 10^12 (due to round off)
 		#
-		myOutput$bfMin0 <- 10^(-317) 
-		myOutput$bfPlus0 <- 2*myOutput$bf10 - myOutput$bfMin0
-	} else if (r < 0 && myOutput$bfMin0 > 1 && myOutput$bfPlus0 > 1 || any(c(myOutput$bfPlus0, myOutput$bfMin0)<0)){
+		output$bfMin0 <- 10^(-317) 
+		output$bfPlus0 <- 2*output$bf10 - output$bfMin0
+	} else if (r < 0 && output$bfMin0 > 1 && output$bfPlus0 > 1 || any(c(output$bfPlus0, output$bfMin0)<0)){
 		# Note: Data: OK, 
 		# 		bf10: OK. 
 		#		bfPlus0: NOT ok
 		#		bfMin0: OK
-		myOutput$bfPlus0 <- 10^(-317) 
-		myOutput$bfMin0 <- 2*myOutput$bf10 - myOutput$bfPlus0
+		output$bfPlus0 <- 10^(-317) 
+		output$bfMin0 <- 2*output$bf10 - output$bfPlus0
 	}
-	return(myOutput)
+	return(output)
 }
 
 
@@ -867,7 +868,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 4.1 Two-sided
 .posteriorRho <- function(n, r, rho, kappa=1){
 	if (!is.na(r) && !r==0){
-		return(1/.bf10Exact(n,r)*.myHFunction(n, r, rho)*.priorRho(rho, kappa))
+		return(1/.bf10Exact(n,r)*.hFunction(n, r, rho)*.priorRho(rho, kappa))
 	} else if (!is.na(r) && r==0){
 		return(1/.bf10JeffreysIntegrate(n, r, kappa)*.jeffreysApproxH(n, r, rho)*.priorRho(rho, kappa))
 	}	
@@ -875,7 +876,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 .posteriorRhoPlus <- function(n, r, rho, kappa=1){
 	if (!is.na(r) && !r==0){
-		return(1/.bfCorrieKernel(n, r, kappa, method="exact")$bfPlus0*.myHFunction(n, r, rho)*.priorRhoPlus(rho, kappa))
+		return(1/.bfCorrieKernel(n, r, kappa, method="exact")$bfPlus0*.hFunction(n, r, rho)*.priorRhoPlus(rho, kappa))
 	} else if (!is.na(r) && r==0){
 		return(1/.bfCorrieKernel(n, r, kappa, method="jeffreysIntegrate")$bfPlus0*.jeffreysApproxH(n, r, rho)*.priorRhoPlus(rho, kappa))
 	}	
@@ -883,7 +884,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 .posteriorRhoMin <- function(n, r, rho, kappa=1){
 	if (!is.na(r) && !r==0){
-		return(1/.bfCorrieKernel(n, r, kappa, method="exact")$bfMin0*.myHFunction(n, r, rho)*.priorRhoMin(rho, kappa))
+		return(1/.bfCorrieKernel(n, r, kappa, method="exact")$bfMin0*.hFunction(n, r, rho)*.priorRhoMin(rho, kappa))
 	} else if (!is.na(r) && r==0){
 		return(1/.bfCorrieKernel(n, r, kappa, method="jeffreysIntegrate")$bfMin0*.jeffreysApproxH(n, r, rho)*.priorRhoMin(rho, kappa))
 	}	
@@ -896,24 +897,24 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# Posterior mean of the .bf10Exact
 	#	That is, (rho+1)/2, thus, on 0,1 scale to estimate a, b in a beta distribution
 	#
-	# TODO: add safeguard for large n as then hyperTerm1/hyperTerm2 is almost 1
-	# 	and also for logTerm almost being 1 (it works okay if I cut off the hyperTerm1 
-	# 	with three terms and hyperTerm2 with three terms and then divide them, though, 
+	# TODO: add safeguard for large n as then hyper.term.1/hyper.term.2 is almost 1
+	# 	and also for log.term almost being 1 (it works okay if I cut off the hyper.term.1 
+	# 	with three terms and hyper.term.2 with three terms and then divide them, though, 
 	#	this is rather bad as a formal procedure due to the fact that it violates the 
 	#	definition of products of sum sequences. Though it yields a good approximation.
 	#
 	# 	if (abs(r) < 0.5 && n <= 200){
-	# 		logTerm <- 2*(lgamma(n/2)-lgamma((n-1)/2))
-	# 		hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), ((n+2/kappa+2)/2), r^2))
-	# 		hyperTerm2 <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
+	# 		log.term <- 2*(lgamma(n/2)-lgamma((n-1)/2))
+	# 		hyper.term.1 <- Re(hypergeo::hypergeo((n/2), (n/2), ((n+2/kappa+2)/2), r^2))
+	# 		hyper.term.2 <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
 	# 		
-	# 		someFactor <- exp(logTerm)*hyperTerm1/hyperTerm2
+	# 		some.factor <- exp(log.term)*hyper.term.1/hyper.term.2
 	# 	} else {
 	# 		# TODO: a linear approximation, needs proof
-	# 		someFactor <- n/2
+	# 		some.factor <- n/2
 	# 	}
 	
-	logTerm <- 2*(lgamma(n/2)-lgamma((n-1)/2))
+	log.term <- 2*(lgamma(n/2)-lgamma((n-1)/2))
 	
 	# Note: interestingly, it breaks down from n=199 to n=200 when using hypergeo
 	# that is:
@@ -921,8 +922,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# 	.posteriorMean(200, 0.8) yields -2.600069e+26
 	# 	.posteriorMean(199, 0.8) yields 0.7948551
 	#
-	#hyperTerm1 <- Re(hypergeo::hypergeo((n/2), (n/2), ((n+2/kappa+2)/2), r^2))
-	#hyperTerm2 <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
+	#hyper.term.1 <- Re(hypergeo::hypergeo((n/2), (n/2), ((n+2/kappa+2)/2), r^2))
+	#hyper.term.2 <- Re(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
 	
 	# Note: interestingly, it breaks down from n=199 to n=200 when using the integral form f15.3.1
 	# that is:
@@ -934,8 +935,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#			value out of range in 'gammafn'
 	#
 	#
-	#hyperTerm1 <- Re(hypergeo::f15.3.1((n/2), (n/2), ((n+2/kappa+2)/2), r^2))
-	#hyperTerm2 <- Re(hypergeo::f15.3.1(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
+	#hyper.term.1 <- Re(hypergeo::f15.3.1((n/2), (n/2), ((n+2/kappa+2)/2), r^2))
+	#hyper.term.2 <- Re(hypergeo::f15.3.1(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
 	
 	# Note: interestingly, the continued fraction solution goes haywire, that is:
 	#
@@ -943,58 +944,58 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#	.posteriorMean(n=67, 0.8) yielding 0.8526101  (a peak)
 	#	.posteriorMean(n=299, 0.8) yielding -1.179415
 	#
-	#hyperTerm1 <- Re(hypergeo::hypergeo_contfrac((n/2), (n/2), ((n+2/kappa+2)/2), r^2))
-	#hyperTerm2 <- Re(hypergeo::hypergeo_contfrac(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
+	#hyper.term.1 <- Re(hypergeo::hypergeo_contfrac((n/2), (n/2), ((n+2/kappa+2)/2), r^2))
+	#hyper.term.2 <- Re(hypergeo::hypergeo_contfrac(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
 	
-	hyperTerm1 <- Re(hypergeo::genhypergeo(U=c(n/2, n/2), L=c((n+2/kappa+2)/2), z=r^2))
-	hyperTerm2 <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=c((n+2/kappa)/2), z=r^2))
+	hyper.term.1 <- Re(hypergeo::genhypergeo(U=c(n/2, n/2), L=c((n+2/kappa+2)/2), z=r^2))
+	hyper.term.2 <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=c((n+2/kappa)/2), z=r^2))
 	
-	someFactor <- exp(logTerm)*hyperTerm1/hyperTerm2
+	some.factor <- exp(log.term)*hyper.term.1/hyper.term.2
 	
-	myResult <- 2*r/(n+2/kappa)*someFactor
-	return(myResult)
+	result <- 2*r/(n+2/kappa)*some.factor
+	return(result)
 }
 
 .posteriorVariance <- function(n, r, kappa=1){
 	# Posterior mean of the .bf10Exact
 	#	That is, (rho+1)/2, thus, on 0,1 scale to estimate a, b in a beta distribution
 	#
-	# TODO: add safeguard for large n as then hyperTerm1/hyperTerm2 is almost 1
-	# 	and also for logTerm almost being 1
+	# TODO: add safeguard for large n as then hyper.term.1/hyper.term.2 is almost 1
+	# 	and also for log.term almost being 1
 	#
 	# 	.posteriorVariance(199, 0.8) yields 6808.702
 	# 	
 	#
-	hyperTerm3 <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n+1)/2),L=(n+2/kappa)/2, z=r^2))
-	hyperTerm4 <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=(n+2/kappa)/2, z=r^2))
+	hyper.term.3 <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n+1)/2),L=(n+2/kappa)/2, z=r^2))
+	hyper.term.4 <- Re(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=(n+2/kappa)/2, z=r^2))
 	
-	myResult0 <- 1/((r+2/kappa*r)^2)*(
+	result.0 <- 1/((r+2/kappa*r)^2)*(
 		(n-1)*(n+2/kappa-1)-
 			(2/kappa+1)*(n-2)*r^2+
-			(n-1)*(n+2/kappa-1)*(r^2-1)*hyperTerm3/hyperTerm4)
-	myResult <- myResult0-(.posteriorMean(n, r, kappa))^2
-	return(myResult)
+			(n-1)*(n+2/kappa-1)*(r^2-1)*hyper.term.3/hyper.term.4)
+	result <- result.0-(.posteriorMean(n, r, kappa))^2
+	return(result)
 }
 
 .betaParameterEstimates <- function(someMean, someVar){
 	# someMean \in (0, 1)
 	# TODO: think about someMean = 0
-	myA <- someMean*(someMean*(1-someMean)/someVar-1)
-	myB <- (1-someMean)*(someMean*(1-someMean)/someVar-1)
+	some.a <- someMean*(someMean*(1-someMean)/someVar-1)
+	some.b <- (1-someMean)*(someMean*(1-someMean)/someVar-1)
 	
-	result <- list(alpha=myA, beta=myB)
+	result <- list(alpha=some.a, beta=some.b)
 	return(result)
 }
 
 .posteriorBetaParameters <- function(n, r, kappa=1){
-	myMu <- try((.posteriorMean(n, r, kappa)+1)/2)
-	myVar <- try(.posteriorVariance(n, r, kappa)/2^2)
+	some.mu <- try((.posteriorMean(n, r, kappa)+1)/2)
+	some.var <- try(.posteriorVariance(n, r, kappa)/2^2)
 	
-	if (is(myMu, "try-error") || is(myVar, "try-error") || is.na(myMu) || is.na(myVar)){
+	if (is(some.mu, "try-error") || is(some.var, "try-error") || is.na(some.mu) || is.na(some.var)){
 		# TODO: Before doing this try the MH sampler
 		return(list(alpha=NA, beta=NA))
 	} else {
-		return(.betaParameterEstimates(myMu, myVar))
+		return(.betaParameterEstimates(some.mu, some.var))
 	}
 }
 # 
@@ -1003,42 +1004,42 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 	# First scale back to means on the (0, 1) domain
 # 	
 # 	
-# 	myA <- .betaAParameterFit(myMu, myVar)
+# 	myA <- .betaAParameterFit(some.mu, some.var)
 # 	return(myA)
 # }
 # 
 # .posteriorBParameter <- function(n, r, alpha=1){
 # 	# Method of moments estimate for a beta distribution
 # 	# First scale back to means on the (0, 1) domain
-# 	myMu <- (.posteriorMean(n, r, alpha)+1)/2
-# 	myVar <- .posteriorVariance(n, r, alpha)/2^2
+# 	some.mu <- (.posteriorMean(n, r, alpha)+1)/2
+# 	some.var <- .posteriorVariance(n, r, alpha)/2^2
 # 	
-# 	myB <- (1-myMu)*(myMu*(1-myMu)/myVar-1)
+# 	myB <- (1-some.mu)*(some.mu*(1-some.mu)/some.var-1)
 # 	return(myB)
 # }
 
 .rhoQuantile <- function(n, r, kappa=1, ciPercentage=.95){
 	# Fitting parameters
-	betaFit <- try(.posteriorBetaParameters(n, r, kappa))
+	beta.fit <- try(.posteriorBetaParameters(n, r, kappa))
 	
-	if (is(betaFit, "try-error") || is.na(betaFit$alpha) || is.na(betaFit$beta)) {
+	if (is(beta.fit, "try-error") || is.na(beta.fit$alpha) || is.na(beta.fit$beta)) {
 		return(c(NA, r, NA))
 	}
 	
 	# Output median
-	someMedian <- 2*qbeta(.5, betaFit$alpha, betaFit$beta)-1
+	some.median <- 2*qbeta(.5, beta.fit$alpha, beta.fit$beta)-1
 	
 	# Calculate CI
-	typeOne <- 1-ciPercentage
+	type.one <- 1-ciPercentage
 	
-	leftCI <- try(2*qbeta(typeOne/2, betaFit$alpha, betaFit$beta)-1)
-	rightCI <- try(2*qbeta((1-typeOne/2), betaFit$alpha, betaFit$beta)-1)
+	left.CI <- try(2*qbeta(type.one/2, beta.fit$alpha, beta.fit$beta)-1)
+	right.CI <- try(2*qbeta((1-type.one/2), beta.fit$alpha, beta.fit$beta)-1)
 	
-	# TODO: This actually doesn't override leftCI or rigthCI even if they are try-errors
-	if ( is(leftCI, "try-error") || is(rightCI, "try-error") || is.na(leftCI) || is.na(rightCI) ){
+	# TODO: This actually doesn't override left.CI or rigthCI even if they are try-errors
+	if ( is(left.CI, "try-error") || is(right.CI, "try-error") || is.na(left.CI) || is.na(right.CI) ){
 		return(c(NA, r, NA))
 	} else {
-		return(c(leftCI, someMedian, rightCI))
+		return(c(left.CI, some.median, right.CI))
 	}
 }
 #------------------------------------------------- Matrix Plot -------------------------------------------------#
@@ -1121,7 +1122,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				return()
 			}
 			
-			posteriorLine <- .myScaledBeta(alpha=aParameter, beta=bParameter, rho=rho)
+			posteriorLine <- .scaledBeta(alpha=aParameter, beta=bParameter, rho=rho)
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 				
