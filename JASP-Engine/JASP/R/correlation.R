@@ -643,7 +643,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 	if (v.c > 0) {
 			
-		test.names <- list(pearson="Pearson's R", spearman="Spearman's Rho", kendall="Kendall's Tau B")
+		test.names <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau B")
 		
 		column.names <- c()
 		
