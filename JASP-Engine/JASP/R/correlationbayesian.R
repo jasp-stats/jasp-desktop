@@ -395,7 +395,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	remove.index.1 <- which(is.na(v1))
 	remove.index.2 <- which(is.na(v2))
 	remove.index <- unique(c(remove.index.1, remove.index.2))
-	if (length(removeIndex) > 0){
+	if (length(remove.index) > 0){
 		screened.data$v1 <- v1[-(remove.index)]
 		screened.data$v2 <- v2[-(remove.index)]
 	}
