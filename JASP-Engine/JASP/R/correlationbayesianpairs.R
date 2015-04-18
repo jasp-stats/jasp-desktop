@@ -68,7 +68,7 @@
 	
 	if (drawCI) {
 	
-		rhoQuantiles <- .rhoQuantile(n = n, r = r)
+		rhoQuantiles <- .rhoQuantile(n = n, r = r, kappa=kappa)
 		CIlow <- rhoQuantiles[1]
 		CIhigh <- rhoQuantiles[3]
 		medianPosterior <- rhoQuantiles[2]
@@ -78,7 +78,7 @@
 	
 	}
 	
-	rho <- seq(min(xticks), max(xticks),length.out = 1000)	
+	rho <- seq(-0.99, 0.99, length.out = 1000)
 	
 	if (oneSided == FALSE) {
 	
@@ -120,7 +120,7 @@
 			stop("Posterior is too peaked")
 	}
 	
-	dmax <- max(posteriorLine)
+	dmax <- max(c(posteriorLine, priorLine))
 		
 	ylim <- vector("numeric", 2)
 	ylim[1] <- 0
@@ -192,20 +192,6 @@
 	
 	
 	if (addInformation) {
-		
-		# if (oneSided == FALSE) {
-		# 	
-		# 	BF10 <- .bf10Corrie(n = n, r = r, kappa = 1)
-		# 	
-		# } else if (oneSided == "right") {
-		# 	
-		# 	BF10 <- .bfPlus0(n = n, r = r, kappa = 1)
-		# 	
-		# } else if (oneSided == "left") {
-		# 	
-		# 	BF10 <- .bfMin0(n = n, r = r, kappa = 1)
-		# 	
-		# }
 		
 		if (BFH1H0) {
 		
@@ -296,13 +282,13 @@
 		
 		yy <- grconvertY(0.788 + offsetTopPart, "ndc", "user")
 		
-		# make sure that colored area is centered		
+		# make sure that colored area is centered
 		radius <- 0.06 * diff(range(xticks))
 		A <- radius^2 * pi
 		alpha <- 2 / (BF01 + 1) * A / radius^2
 		startpos <- pi/2 - alpha/2
 		
-		# draw probability wheel		
+		# draw probability wheel
 		plotrix::floating.pie(xx, yy,c(BF10, 1),radius= radius, col=c("darkred", "white"), lwd=2,startpos = startpos)
 		
 		yy <- grconvertY(0.865 + offsetTopPart, "ndc", "user")
@@ -326,10 +312,6 @@
 			text(xx, yy2, "data|H0", cex= cexCI)
 		}
 		
-		# add legend
-		# CIText <- paste("95% CI: [",  bquote(.(formatC(CIlow,3, format="f"))), " ; ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
-		# 
-		# medianLegendText <- paste("median =", medianText)
 	}
 	
 	if (oneSided == "right") {
@@ -358,7 +340,7 @@
 	}
 }
 
-.plotSequentialBF.correlation <- function(x= NULL, y= NULL, BF10post, callback=function(...) 0, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6,
+.plotSequentialBF.correlation <- function(x= NULL, y= NULL, BF10post, kappa=1, callback=function(...) 0, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.6,
  cexTextBF= 1.4, cexText=1.2, cexLegend= 1.2, cexEvidence= 1.6,	lwdAxis= 1.2, plotDifferentPriors= FALSE, BFH1H0= TRUE, dontPlotData= FALSE) {
 	
 	#### settings ####
@@ -442,14 +424,14 @@
 			while (any(is.na(all.bfs)) && method.number <=3){
 				
 				# Note: Try all normal methods
-				all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=1, method=method.number)
+				all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=kappa, method=method.number)
 				method.number <- method.number + 1
 			}
 			
 			if (any(is.na(all.bfs))){
 				
 				# Note: all normal methods FAILED. Use Jeffreys approximation
-				all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=1, method="jeffreysApprox")
+				all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=kappa, method="jeffreysApprox")
 			}
 			
 			
@@ -1668,14 +1650,14 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						while (any(is.na(all.bfs)) && method.number <=3){
 						
 							# Note: Try all normal methods
-							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=1, method=method.number)
+							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=options$priorWidth, method=method.number)
 							method.number <- method.number + 1
 						}
 						
 						if (any(is.na(all.bfs))){
 						
 							# Note: all normal methods FAILED. Use Jeffreys approximation
-							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=1, method="jeffreysApprox")
+							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=options$priorWidth, method="jeffreysApprox")
 						}
 						
 						some.bf10 <- all.bfs$bf10
@@ -1845,7 +1827,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						
 							image <- .beginSaveImage(530, 400)
 							
-							.plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo)
+							.plotPosterior.correlation(r=rs[i], n=ns[i], oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, addInformation=options$plotPriorAndPosteriorAdditionalInfo, kappa=options$priorWidth)
 							
 							plot[["data"]] <- .endSaveImage(image)
 						})
@@ -1917,7 +1899,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						
 							image <- .beginSaveImage(530, 400)
 							
-							.plotSequentialBF.correlation(x=v1, y=v2, oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0)
+							.plotSequentialBF.correlation(x=v1, y=v2, oneSided=oneSided, BF=BF10post[i], BFH1H0=BFH1H0, kappa=options$priorWidth)
 							
 							plot[["data"]] <- .endSaveImage(image)
 						})
