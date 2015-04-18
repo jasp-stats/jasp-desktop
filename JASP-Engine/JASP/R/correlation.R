@@ -370,22 +370,22 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				
 				l <- length(variables)
 				
-				 if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
-				 
-				 	width <- 580
-				 	height <- 580
-				 	
-				 } else if (l <= 2) {
-				 
-				 	width <- 400
-				 	height <- 400
-				 	
-				 } else {
-				 
-				 	width <- 250 * l
-				 	height <- 250 * l
-				 	
-				 }
+				if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
+				
+					width <- 580
+					height <- 580
+					
+				} else if (l <= 2) {
+				
+					width <- 400
+					height <- 400
+					
+				} else {
+				
+					width <- 250 * l
+					height <- 250 * l
+					
+				}
 				
 				correlation.plots <- list()
 				
