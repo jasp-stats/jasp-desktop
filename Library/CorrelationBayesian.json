@@ -49,7 +49,8 @@
    },
    {
       "format" : "",
-      "min" : 0.50,
+      "min" : 0.0,
+      "max" : 2.0,
       "name" : "priorWidth",
       "type" : "Number",
       "value" : 1.0

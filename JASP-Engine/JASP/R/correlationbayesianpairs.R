@@ -1,4 +1,4 @@
-.plotPosterior.correlation <- function(r, n, alpha=1, oneSided= FALSE, BF, BFH1H0, addInformation= TRUE, dontPlotData=FALSE, lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {	
+.plotPosterior.correlation <- function(r, n, kappa=1, oneSided= FALSE, BF, BFH1H0, addInformation= TRUE, dontPlotData=FALSE, lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {	
 	
 	
 	if (addInformation) {
@@ -45,15 +45,15 @@
 	# 
 	# if (oneSided == FALSE) {
 	# 	
-	# 	dmax <- optimize(f= function(x).posteriorRho(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+	# 	dmax <- optimize(f= function(x).posteriorRho(x, n=n, r=r, kappa=kappa), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
 	# 	
 	# } else if (oneSided == "right") {
 	# 	
-	# 	dmax <- optimize(f= function(x).posteriorRhoPlus(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+	# 	dmax <- optimize(f= function(x).posteriorRhoPlus(x, n=n, r=r, kappa=kappa), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
 	# 	
 	# } else if (oneSided == "left") {
 	# 	
-	# 	dmax <- optimize(f= function(x).posteriorRhoMin(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
+	# 	dmax <- optimize(f= function(x).posteriorRhoMin(x, n=n, r=r, kappa=kappa), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
 	# }
 	
 	
@@ -82,15 +82,17 @@
 	
 	if (oneSided == FALSE) {
 	
-		priorLine <- .priorRho(rho=rho, alpha=alpha)
-		posteriorLine <- .posteriorRho(rho= rho, n= n, r= r, alpha= alpha)
+		priorLine <- .priorRho(rho=rho, kappa=kappa)
+		posteriorLine <- .posteriorRho(rho= rho, n= n, r= r, kappa= kappa)
 		
-		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, alpha=alpha)
+		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, kappa=kappa)
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
-		
-			aParameter <- .posteriorAParameter(n=n, r=r)
-			bParameter <- .posteriorBParameter(n=n, r=r)
+			
+			someEstimates <- .betaParameterEstimates(.posteriorMean(n, r, kappa), .posteriorVariance(n, r, kappa))
+			
+			aParameter <- someEstimates$alpha
+			bParameter <- someEstimates$beta
 			
 			if (any(is.na(c(aParameter, bParameter))))
 				stop("Posterior is too peaked")
@@ -103,16 +105,16 @@
 	
 	} else if (oneSided == "right") {
 	
-		priorLine <- .priorRhoPlus(rho=rho, alpha=alpha)
-		posteriorLine <- .posteriorRhoPlus(rho= rho, n= n, r= r, alpha= alpha)
+		priorLine <- .priorRhoPlus(rho=rho, kappa=kappa)
+		posteriorLine <- .posteriorRhoPlus(rho= rho, n= n, r= r, kappa= kappa)
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
 			stop("Posterior is too peaked")
 		
 	} else if (oneSided == "left") {
 	
-		priorLine <- .priorRhoMin(rho=rho, alpha=alpha)
-		posteriorLine <- .posteriorRhoMin(rho= rho, n= n, r= r, alpha= alpha)
+		priorLine <- .priorRhoMin(rho=rho, kappa=kappa)
+		posteriorLine <- .posteriorRhoMin(rho= rho, n= n, r= r, kappa= kappa)
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
 			stop("Posterior is too peaked")
@@ -160,19 +162,19 @@
 	if (oneSided == "right") {
 		
 		heightPosteriorAtZero <- evalPosterior[1]
-		points(0, .priorRhoPlus(0,alpha=alpha), col="black", pch=21, bg = "grey", cex= cexPoints)		
+		points(0, .priorRhoPlus(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)		
 		points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
 		
 	} else if (oneSided == "left") {
 		
 		heightPosteriorAtZero <- evalPosterior[length(evalPosterior)]
-		points(0, .priorRhoMin(0,alpha=alpha), col="black", pch=21, bg = "grey", cex= cexPoints)		
+		points(0, .priorRhoMin(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)		
 		points(1e-15, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
 		
 	} else {
 		
-		points(0, .priorRho(0,alpha=alpha), col="black", pch=21, bg = "grey", cex= cexPoints)		
-		points(1e-15, .posteriorRho(rho=1e-8, n=n, r=r, alpha=alpha), col="black", pch=21, bg = "grey", cex= cexPoints)
+		points(0, .priorRho(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)		
+		points(1e-15, .posteriorRho(rho=1e-8, n=n, r=r, kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
 	}
 	
 	
@@ -193,15 +195,15 @@
 		
 		# if (oneSided == FALSE) {
 		# 	
-		# 	BF10 <- .bf10Corrie(n = n, r = r, alpha = 1)
+		# 	BF10 <- .bf10Corrie(n = n, r = r, kappa = 1)
 		# 	
 		# } else if (oneSided == "right") {
 		# 	
-		# 	BF10 <- .bfPlus0(n = n, r = r, alpha = 1)
+		# 	BF10 <- .bfPlus0(n = n, r = r, kappa = 1)
 		# 	
 		# } else if (oneSided == "left") {
 		# 	
-		# 	BF10 <- .bfMin0(n = n, r = r, alpha = 1)
+		# 	BF10 <- .bfMin0(n = n, r = r, kappa = 1)
 		# 	
 		# }
 		
@@ -440,14 +442,14 @@
 			while (any(is.na(all.bfs)) && method.number <=3){
 				
 				# Note: Try all normal methods
-				all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, alpha=1, method=method.number)
+				all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=1, method=method.number)
 				method.number <- method.number + 1
 			}
 			
 			if (any(is.na(all.bfs))){
 				
 				# Note: all normal methods FAILED. Use Jeffreys approximation
-				all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, alpha=1, method="jeffreysApprox")
+				all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=1, method="jeffreysApprox")
 			}
 			
 			
@@ -1666,14 +1668,14 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						while (any(is.na(all.bfs)) && method.number <=3){
 						
 							# Note: Try all normal methods
-							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, alpha=1, method=method.number)
+							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=1, method=method.number)
 							method.number <- method.number + 1
 						}
 						
 						if (any(is.na(all.bfs))){
 						
 							# Note: all normal methods FAILED. Use Jeffreys approximation
-							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, alpha=1, method="jeffreysApprox")
+							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=1, method="jeffreysApprox")
 						}
 						
 						some.bf10 <- all.bfs$bf10
