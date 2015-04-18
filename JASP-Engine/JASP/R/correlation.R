@@ -370,22 +370,22 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				
 				l <- length(variables)
 				
-				if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
-				
-					width <- 580
-					height <- 580
-					
-				} else if (l <= 2) {
-				
-					width <- 400
-					height <- 400
-					
-				} else {
-				
-					width <- 250 * l
-					height <- 250 * l
-					
-				}
+				 if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
+				 
+				 	width <- 580
+				 	height <- 580
+				 	
+				 } else if (l <= 2) {
+				 
+				 	width <- 400
+				 	height <- 400
+				 	
+				 } else {
+				 
+				 	width <- 250 * l
+				 	height <- 250 * l
+				 	
+				 }
 				
 				correlation.plots <- list()
 				
@@ -728,8 +728,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					
 				if (test == "pearson" && options$confidenceIntervals) {
 				
-					upperCIs[[length(upperCIs)+1]] <- paste("upper ", 100 * options$confidenceIntervalsInterval, "% CI", sep="")
-					lowerCIs[[length(lowerCIs)+1]] <- paste("lower ", 100 * options$confidenceIntervalsInterval, "% CI", sep="")
+					upperCIs[[length(upperCIs)+1]] <- paste("Upper ", 100 * options$confidenceIntervalsInterval, "% CI", sep="")
+					lowerCIs[[length(lowerCIs)+1]] <- paste("Lower ", 100 * options$confidenceIntervalsInterval, "% CI", sep="")
 				}
 				
 				for (j in .seqx(1, i-1)) {
@@ -741,9 +741,9 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				}
 				
 				row[[length(row)+1]] <- "\u2014" # em-dash
-				p.values[[length(p.values)+1]] <- ""
-				upperCIs[[length(upperCIs)+1]] <- ""
-				lowerCIs[[length(lowerCIs)+1]] <- ""
+				p.values[[length(p.values)+1]] <- "\u2014" 
+				upperCIs[[length(upperCIs)+1]] <- "\u2014" 
+				lowerCIs[[length(lowerCIs)+1]] <- "\u2014" 
 				
 				
 				for (j in .seqx(i+1, v.c)) {
