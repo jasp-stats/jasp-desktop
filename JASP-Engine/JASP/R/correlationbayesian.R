@@ -1101,7 +1101,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	xticks <- seq(-1.0, 1.0, 0.25)
 	xlabels <- c("-1", "-0.75", "-0.5", "-0.25", "0", "0.25", "0.5", "0.75", "1")
 		
-	rho <- seq(min(xticks), max(xticks),length.out = 1000)	
+	rho <- seq(-0.99, 0.99, length.out = 1000)
 	
 	
 	if (oneSided == FALSE) {
@@ -1155,11 +1155,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				errorMessage <- "Posterior is too peaked"
 				.displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
 				return()
-		}			
+		}
 	}
 	
 	dmax <- max(posteriorLine)
-		
+	
 	ylim <- vector("numeric", 2)
 	ylim[1] <- 0
 	ylim[2] <- stretch * dmax
@@ -1240,7 +1240,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		l <- length(variables)
 		
-		# check for numeric/integer variables & !infinity & standard deviation > 0				
+		# check for numeric/integer variables & !infinity & standard deviation > 0
 		d <- vector("character", length(.v(variables)))
 		sdCheck <- vector("numeric", length(.v(variables)))
 		infCheck <- vector("logical", length(.v(variables)))
@@ -1305,7 +1305,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		plot <- list()
 		
-		plot[["title"]] <-  "" # .unv(variables)
+		plot[["title"]] <-  ""
 		plot[["width"]]  <- width
 		plot[["height"]] <- height
 		
@@ -1368,7 +1368,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
 								}
 							}
-						}		
+						}
 					}
 				}
 				
@@ -1412,7 +1412,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			
 			correlation.plot[[1]] <- plot
 			
-		}	
+		}
 	}
 	
 	correlation.plot
