@@ -724,7 +724,7 @@ void MainWindow::dataSetLoadFailed(const QString &message)
 {
 	_alert->hide();
 
-	if (_package->dataSet != null)
+	if (_package->dataSet != NULL)
 		_loader.free(_package->dataSet);
 	_package->reset();
 
