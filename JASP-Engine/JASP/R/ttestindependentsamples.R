@@ -79,13 +79,20 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		variables = "."
 
     for (variable in variables) {
+    
+    	count <- 0
         
         factor <- options$groupingVariable
         levels <- levels(dataset[[ .v(factor) ]])
+                        
+        if (length(levels) == 0)
+        	levels = c(".", ".")
         
         for(level in levels) {
+        	
+        	count <- count + 1
                     
-            if (perform == "run" && length(options$variables) > 0) {
+            if (perform == "run" && length(options$variables) > 0 && !is.null(levels(dataset[[ .v(factor) ]]))) {
                 
                 data <- na.omit(dataset[[.v(variable)]][dataset[[.v(factor)]] == level])
                 
@@ -130,14 +137,14 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
                     }
                 
                     result <- list("dep"=variable, "lev"=level, "W" = "NaN", "p" = "NaN", ".isNewGroup" = newGroup, .footnotes=row.footnotes)
-                
+                                    
                 }
         
             } else {
         
-                if(level == levels[1]) {
+                if(count == 1) {
                     newGroup <- TRUE   
-                } else {				
+                } else {
                     newGroup <- FALSE
                 }
         
