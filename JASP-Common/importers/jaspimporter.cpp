@@ -58,7 +58,8 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 
 void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
-	DataSet *dataSet = SharedMemory::createDataSet();
+	packageData->dataSet = SharedMemory::createDataSet(); // this is required incase the loading of the data fails so that the SharedMemory::createDataSet() can be later freed.
+
 	bool success = false;
 
 	Json::Value metaData;
@@ -82,13 +83,14 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 
 			success = true;
 
+			DataSet *dataSet = packageData->dataSet;
 			dataSet->setColumnCount(columnCount);
 			if (rowCount > 0)
 				dataSet->setRowCount(rowCount);
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
-			dataSet = SharedMemory::enlargeDataSet(dataSet);
+			packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
 			success = false;
 		}
 		catch (exception e)
@@ -104,13 +106,14 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 	}
 	while ( ! success);
 
+
 	Json::Value &columnsDesc = dataSetDesc["fields"];
 	int i = 0;
 	for (Json::ValueIterator itr = columnsDesc.begin(); itr != columnsDesc.end(); itr++)
 	{
 		Json::Value columnDesc = (*itr);
 
-		Column &column = dataSet->column(i);
+		Column &column = packageData->dataSet->column(i);
 
 		column.setName(columnDesc["name"].asString());
 		column._columnType = getColumnType(columnDesc["measureType"].asString());
@@ -142,7 +145,7 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 
 	for (int c = 0; c < columnCount; c++)
 	{
-		Column &column = dataSet->column(c);
+		Column &column = packageData->dataSet->column(c);
 		Column::ColumnType columnType = column.columnType();
 		int typeSize = (columnType == Column::ColumnTypeScale) ? sizeof(double) : sizeof(int);
 		for (int r = 0; r < rowCount; r++)
@@ -220,9 +223,6 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 
 	packageData->analysesData = analysesData;
 	packageData->hasAnalyses = true;
-
-
-	packageData->dataSet = dataSet;
 }
 
 Column::ColumnType JASPImporter::getColumnType(string name)

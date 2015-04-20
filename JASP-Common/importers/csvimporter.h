@@ -1,7 +1,7 @@
 #ifndef CSVIMPORTER_H
 #define CSVIMPORTER_H
 
-#include "../dataset.h"
+#include "datasetpackage.h"
 
 #include <boost/function.hpp>
 
@@ -12,7 +12,7 @@ class CSVImporter
 {
 public:
 
-	static DataSet *loadDataSet(const std::string &locator, boost::function<void (const std::string &, int)> progressCallback);
+	static void loadDataSet(DataSetPackage *packageData, const std::string &locator, boost::function<void (const std::string &, int)> progressCallback);
 
 private:
 	static void initColumn(Column &column, const std::string &name, const std::vector<std::string> &cells);
