@@ -67,7 +67,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
             <item row="0" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="statisticsPercentileValuesQuartiles">
+             <widget class="BoundCheckBox" name="percentileValuesQuartiles">
               <property name="text">
                <string>Quartiles</string>
               </property>
@@ -81,7 +81,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="BoundTextBox" name="statisticsPercentileValuesEqualGroupsNo">
+             <widget class="BoundTextBox" name="percentileValuesEqualGroupsNo">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -109,21 +109,21 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statisticsPercentileValuesEqualGroups">
+             <widget class="BoundCheckBox" name="percentileValuesEqualGroups">
               <property name="text">
                <string>Cut points for :</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="statisticsPercentileValuesPercentiles">
+             <widget class="BoundCheckBox" name="percentileValuesPercentiles">
               <property name="text">
                <string>Percentiles :</string>
               </property>
              </widget>
             </item>
             <item row="2" column="1" colspan="2">
-             <widget class="BoundTextBox" name="statisticsPercentileValuesPercentilesPercentiles">
+             <widget class="BoundTextBox" name="percentileValuesPercentilesPercentiles">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -151,42 +151,42 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="statisticsDispersionStandardDeviation">
+             <widget class="BoundCheckBox" name="standardDeviation">
               <property name="text">
                <string>Std. deviation</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="BoundCheckBox" name="statisticsDispersionMinimum">
+             <widget class="BoundCheckBox" name="minimum">
               <property name="text">
                <string>Minimum</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statisticsDispersionVariance">
+             <widget class="BoundCheckBox" name="variance">
               <property name="text">
                <string>Variance</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="BoundCheckBox" name="statisticsDispersionMaximum">
+             <widget class="BoundCheckBox" name="maximum">
               <property name="text">
                <string>Maximum</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="statisticsDispersionRange">
+             <widget class="BoundCheckBox" name="range">
               <property name="text">
                <string>Range</string>
               </property>
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="BoundCheckBox" name="statisticsDispersionStandardErrorMean">
+             <widget class="BoundCheckBox" name="standardErrorMean">
               <property name="text">
                <string>S. E. Mean</string>
               </property>
@@ -227,28 +227,28 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="statisticsCentralTendencyMean">
+             <widget class="BoundCheckBox" name="mean">
               <property name="text">
                <string>Mean</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statisticsCentralTendencyMedian">
+             <widget class="BoundCheckBox" name="median">
               <property name="text">
                <string>Median</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="statisticsCentralTendencyMode">
+             <widget class="BoundCheckBox" name="mode">
               <property name="text">
                <string>Mode</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="statisticsCentralTendencySum">
+             <widget class="BoundCheckBox" name="sum">
               <property name="text">
                <string>Sum</string>
               </property>
@@ -264,14 +264,14 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="statisticsDistributionSkewness">
+             <widget class="BoundCheckBox" name="skewness">
               <property name="text">
                <string>Skewness</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="statisticsDistributionKurtosis">
+             <widget class="BoundCheckBox" name="kurtosis">
               <property name="text">
                <string>Kurtosis</string>
               </property>
@@ -696,7 +696,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="BoundListView" name="mainFields">
+       <widget class="BoundListView" name="variables">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -721,21 +721,21 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="BoundCheckBox" name="plots">
+       <widget class="BoundCheckBox" name="plotVariables">
         <property name="text">
          <string>Display Plots</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0" colspan="4">
-       <widget class="BoundCheckBox" name="mainDisplayFrequencyTables">
+       <widget class="BoundCheckBox" name="frequencyTables">
         <property name="text">
          <string>Display Frequency Tables (nominal and ordinal variables)</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="BoundCheckBox" name="displayCorrelationPlot">
+       <widget class="BoundCheckBox" name="plotCorrelationMatrix">
         <property name="text">
          <string>Display Correlation Plot</string>
         </property>
@@ -793,9 +793,9 @@
  <resources/>
  <connections>
   <connection>
-   <sender>statisticsPercentileValuesPercentiles</sender>
+   <sender>percentileValuesPercentiles</sender>
    <signal>clicked(bool)</signal>
-   <receiver>statisticsPercentileValuesPercentilesPercentiles</receiver>
+   <receiver>percentileValuesPercentilesPercentiles</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -809,9 +809,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>statisticsPercentileValuesEqualGroups</sender>
+   <sender>percentileValuesEqualGroups</sender>
    <signal>clicked(bool)</signal>
-   <receiver>statisticsPercentileValuesEqualGroupsNo</receiver>
+   <receiver>percentileValuesEqualGroupsNo</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

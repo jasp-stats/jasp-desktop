@@ -1,7 +1,7 @@
 
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
-	variables <- unlist(options$mainFields)
+	variables <- unlist(options$variables)
 	
 	if (is.null(dataset)) {
 	
@@ -52,7 +52,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	if (is.list(state))
 		last.frequency.tables <- state[["results"]][["tables"]]
 
-	if (options$mainDisplayFrequencyTables) {
+	if (options$frequencyTables) {
 	
 		frequency.tables <- .descriptivesFrequencyTables(dataset, options, run, last.frequency.tables)
 		
@@ -102,9 +102,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 .descriptivesDescriptivesTable <- function(dataset, options, run, last.table=NULL) {
 
-	variables <- unlist(options$mainFields)
-	equalGroupsNo <- options$statisticsPercentileValuesEqualGroupsNo 
-	percentilesPercentiles  <- options$statisticsPercentileValuesPercentilesPercentiles
+	variables <- unlist(options$variables)
+	equalGroupsNo <- options$percentileValuesEqualGroupsNo 
+	percentilesPercentiles  <- options$percentileValuesPercentilesPercentiles
 
 	stats.results <- list()
 	
@@ -118,54 +118,54 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	fields[[length(fields) + 1]] <- list(name="Missing", type="integer")
 
 
-	if (options$statisticsCentralTendencyMean)
+	if (options$mean)
 		fields[[length(fields) + 1]] <- list(name="Mean", type="number", format="sf:4")
-	if (options$statisticsDispersionStandardErrorMean)
+	if (options$standardErrorMean)
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Mean", type="number", format="sf:4")
-	if (options$statisticsCentralTendencyMedian)
+	if (options$median)
 		fields[[length(fields) + 1]] <- list(name="Median", type="number", format="sf:4")
-	if (options$statisticsCentralTendencyMode)
+	if (options$mode)
 		fields[[length(fields) + 1]] <- list(name="Mode", type="number", format="sf:4")
-	if (options$statisticsDispersionStandardDeviation)
+	if (options$standardDeviation)
 		fields[[length(fields) + 1]] <- list(name="Std. Deviation", type="number", format="sf:4")
-	if (options$statisticsDispersionVariance)
+	if (options$variance)
 		fields[[length(fields) + 1]] <- list(name="Variance", type="number", format="sf:4")
 		
-	if (options$statisticsDistributionSkewness) {
+	if (options$skewness) {
 	
 		fields[[length(fields) + 1]] <- list(name="Skewness", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Skewness", type="number", format="sf:4")
 	}
 	
-	if (options$statisticsDistributionKurtosis) {
+	if (options$kurtosis) {
 	
 		fields[[length(fields) + 1]] <- list(name="Kurtosis", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="Std. Error of Kurtosis", type="text", format="sf:4")
 	}
 	
-	if (options$statisticsDispersionRange)
+	if (options$range)
 		fields[[length(fields) + 1]] <- list(name="Range", type="number", format="sf:4")
-	if (options$statisticsDispersionMinimum)
+	if (options$minimum)
 		fields[[length(fields) + 1]] <- list(name="Minimum", type="number", format="sf:4")
-	if (options$statisticsDispersionMaximum)
+	if (options$maximum)
 		fields[[length(fields) + 1]] <- list(name="Maximum", type="number", format="sf:4")
-	if (options$statisticsCentralTendencySum)
+	if (options$sum)
 		fields[[length(fields) + 1]] <- list(name="Sum", type="number", format="sf:4")
 	
-	if (options$statisticsPercentileValuesQuartiles) {
+	if (options$percentileValuesQuartiles) {
 	
 		fields[[length(fields) + 1]] <- list(name="q1", title="25th percentile", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="q2", title="50th percentile", type="number", format="sf:4")
 		fields[[length(fields) + 1]] <- list(name="q3", title="75th percentile", type="number", format="sf:4")
 	}
 	
-	if (options$statisticsPercentileValuesEqualGroups) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
+	if (options$percentileValuesEqualGroups) {  # I've read that there are several ways how to estimate percentiles so it should be checked if it match the SPSS way
 	
 		for (i in seq(equalGroupsNo - 1))
 			fields[[length(fields) + 1]] <- list(name=paste("eg", i, sep=""), title=paste(as.integer(100 * i / equalGroupsNo), "th percentile", sep=""), type="number", format="sf:4")
 	}
 	
-	if (options$statisticsPercentileValuesPercentiles) { 
+	if (options$percentileValuesPercentiles) { 
 	
 		for (i in percentilesPercentiles) 
 			fields[[length(fields) + 1]] <- list(name=paste("pc", i, sep=""), title=paste(i, "th percentile", sep=""), type="number", format="sf:4")
@@ -211,7 +211,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 
 
-		if (options$statisticsCentralTendencyMean) {
+		if (options$mean) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -229,7 +229,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Mean"]] <- NULL
 		}
 		
-		if (options$statisticsCentralTendencyMedian) {
+		if (options$median) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -246,7 +246,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Median"]] <- NULL		
 		}
 		
-		if (options$statisticsCentralTendencyMode) {
+		if (options$mode) {
 	
 			if (base::is.factor(na.omitted) == FALSE) {
 		
@@ -274,7 +274,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Mode"]] <- NULL
 		}
 		
-		if (options$statisticsCentralTendencySum) {
+		if (options$sum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -292,7 +292,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Sum"]] <- NULL
 		}
 		
-		if (options$statisticsDispersionMaximum) {
+		if (options$maximum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -310,7 +310,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Maximum"]] <- NULL
 		}
 		
-		if (options$statisticsDispersionMinimum) {
+		if (options$minimum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -327,7 +327,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Minimum"]] <- NULL
 		}
 		
-		if (options$statisticsDispersionRange) {
+		if (options$range) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -345,7 +345,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Range"]] <- NULL
 		}
 		
-		if (options$statisticsDispersionStandardDeviation) {
+		if (options$standardDeviation) {
 		
 			if (base::is.factor(na.omitted) == FALSE){
 			
@@ -363,7 +363,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Std. Deviation"]] <- NULL
 		}
 		
-		if (options$statisticsDispersionStandardErrorMean) {
+		if (options$standardErrorMean) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -381,7 +381,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Std. Error of Mean"]] <- NULL
 		}
 		
-		if (options$statisticsDispersionVariance) {
+		if (options$variance) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -399,7 +399,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Variance"]] <- NULL
 		}
 		
-		if (options$statisticsDistributionKurtosis) {
+		if (options$kurtosis) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
@@ -422,7 +422,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Std. Error of Kurtosis"]] <- NULL
 		}
 		
-		if (options$statisticsDistributionSkewness) {
+		if (options$skewness) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -445,7 +445,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Std. Error of Skewness"]] <- NULL
 		}
 		
-		if (options$statisticsPercentileValuesQuartiles) {
+		if (options$percentileValuesQuartiles) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -473,7 +473,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		
 		equalGroupNames <- NULL
-		if (options$statisticsPercentileValuesEqualGroups)
+		if (options$percentileValuesEqualGroups)
 			equalGroupNames <- paste("eg", seq(equalGroupsNo - 1), sep="")
 
 		for (row in names(variable.results)) {
@@ -482,7 +482,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				variable.results[[row]] <- NULL
 		}
 
-		if (options$statisticsPercentileValuesEqualGroups) {
+		if (options$percentileValuesEqualGroups) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -503,7 +503,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		
 		percentileNames <- NULL
-		if (options$statisticsPercentileValuesPercentiles)
+		if (options$percentileValuesPercentiles)
 			percentileNames <- paste("pc", percentilesPercentiles, sep="")
 		
 		for (row in names(variable.results)) {
@@ -512,7 +512,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				variable.results[[row]] <- NULL
 		}
 			
-		if (options$statisticsPercentileValuesPercentiles) {
+		if (options$percentileValuesPercentiles) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 			
@@ -545,7 +545,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	frequency.tables <- list()
 		
-	for (variable in options$mainFields) {
+	for (variable in options$variables) {
 
 		column <- dataset[[ .v(variable) ]]
 	
@@ -644,9 +644,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	frequency.plots <- NULL
 
-	if (options$plots) {
+	if (options$plotVariables) {
 	
-		for (variable in options$mainFields) {
+		for (variable in options$variables) {
 
 			plot <- list()
 			plotted <- FALSE
@@ -661,14 +661,14 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				}
 			}
 			
-			if (plotted && (plot$width != options$chartWidth || plot$height != options$chartHeight))
+			if (plotted && (plot$width != options$plotWidth || plot$height != options$plotHeight))
 				plotted <- FALSE
 	
 			plot[["title"]] <- variable
 			plot[["name"]]  <- variable
-			plot[["width"]]  <- options$chartWidth
-			plot[["height"]] <- options$chartHeight
-			plot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			plot[["width"]]  <- options$plotWidth
+			plot[["height"]] <- options$plotHeight
+			plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 				
 			column <- na.omit(dataset[[ .v(variable) ]])
 
@@ -678,7 +678,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				
 			} else if (run == FALSE) {
 			
-				image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 				
 				.barplotJASP(variable=variable, dontPlotData=TRUE)
 				
@@ -686,7 +686,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 			} else if (any(is.infinite(column))) {
 						
-				image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 			
 				.barplotJASP(variable=variable, dontPlotData=TRUE)
 			
@@ -701,7 +701,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					column <- as.factor(column)
 				}
 				
-				image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 			
 				.barplotJASP(column, variable)
 				
@@ -712,7 +712,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				
 				if (any(is.infinite(column))) {
 				
-					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 			
 					.barplotJASP(variable=variable, dontPlotData=TRUE)
 			
@@ -722,7 +722,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					
 				} else {
 				
-					image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 				
 					.plotMarginal(column, variableName=variable)
 				
@@ -743,7 +743,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	matrix.plot <- NULL
 
-	if (options$displayCorrelationPlot) {
+	if (options$plotCorrelationMatrix) {
 		
 		if (run) {
 			matrix.plot <- .matrixPlot(dataset, perform="run", options)[[1]] 
@@ -950,7 +950,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 #### Matrix Plot function #####
 .matrixPlot <- function(dataset, perform, options) {
 
-	if (!options$displayCorrelationPlot)
+	if (!options$plotCorrelationMatrix)
 		return()
 	
 	
@@ -958,7 +958,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	if (perform == "init") {
 	
-		variables <- unlist(options$mainFields)
+		variables <- unlist(options$variables)
 		
 		l <- length(variables)
 		
@@ -986,10 +986,10 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	}
 	
 	
-	if (perform == "run" && length(unlist(options$mainFields)) > 0) {
+	if (perform == "run" && length(unlist(options$variables)) > 0) {
 
 	
-		variables <- unlist(options$mainFields)
+		variables <- unlist(options$variables)
 		
 		l <- length(variables)
 		

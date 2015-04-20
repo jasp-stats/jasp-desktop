@@ -12,15 +12,15 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 	ui->setupUi(this);
 
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
-	ui->listAvailableFields->setDoubleClickTarget(ui->mainFields);
+	ui->listAvailableFields->setDoubleClickTarget(ui->variables);
 
 	TableModelVariablesAssigned *model = new TableModelVariablesAssigned(this);
 	model->setSource(&_availableVariablesModel);
 
-	ui->mainFields->setModel(model);
-	ui->mainFields->setDoubleClickTarget(ui->listAvailableFields);
+	ui->variables->setModel(model);
+	ui->variables->setDoubleClickTarget(ui->listAvailableFields);
 
-	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->mainFields);
+	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 
 	ui->pageStatistics->hide();
 	ui->pageCharts->hide();

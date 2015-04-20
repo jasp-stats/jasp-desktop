@@ -1,138 +1,105 @@
 [
    {
-      "name" : "mainFields",
+      "name" : "variables",
       "type" : "Variables"
    },
    {
-      "default" : false,
-      "name" : "mainDisplayFrequencyTables",
+      "name" : "frequencyTables",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "plots",
+      "name" : "plotVariables",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "displayCorrelationPlot",
+      "name" : "plotCorrelationMatrix",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "statisticsPercentileValuesQuartiles",
+      "name" : "percentileValuesQuartiles",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "statisticsPercentileValuesEqualGroups",
+      "name" : "percentileValuesEqualGroups",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "statisticsPercentileValuesPercentiles",
+      "name" : "percentileValuesPercentiles",
       "type" : "Boolean"
    },
    {
-      "default" : 4,
-      "name" : "statisticsPercentileValuesEqualGroupsNo",
-      "type" : "Integer"
+      "name" : "percentileValuesEqualGroupsNo",
+      "type" : "Integer",
+      "default" : 4
    },
    {
-      "name" : "statisticsPercentileValuesPercentilesPercentiles",
+      "name" : "percentileValuesPercentilesPercentiles",
       "type" : "IntegerArray"
    },
    {
-      "default" : true,
-      "name" : "statisticsCentralTendencyMean",
+      "name" : "mean",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "statisticsCentralTendencyMedian",
+      "name" : "median",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "statisticsCentralTendencyMode",
+      "name" : "mode",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "statisticsCentralTendencySum",
+      "name" : "sum",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "statisticsValuesAreGroupMidpoints",
+      "name" : "valuesAreGroupMidpoints",
       "type" : "Boolean"
    },
    {
-      "default" : true,
-      "name" : "statisticsDispersionStandardDeviation",
+      "name" : "standardDeviation",
+      "type" : "Boolean",
+      "default" : true
+   },
+   {
+      "name" : "variance",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "statisticsDispersionVariance",
+      "name" : "range",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "statisticsDispersionRange",
+      "name" : "minimum",
+      "type" : "Boolean",
+      "default" : true
+   },
+   {
+      "name" : "maximum",
+      "type" : "Boolean",
+      "default" : true
+   },
+   {
+      "name" : "standardErrorMean",
       "type" : "Boolean"
    },
    {
-      "default" : true,
-      "name" : "statisticsDispersionMinimum",
+      "name" : "skewness",
       "type" : "Boolean"
    },
    {
-      "default" : true,
-      "name" : "statisticsDispersionMaximum",
+      "name" : "kurtosis",
       "type" : "Boolean"
    },
    {
-      "default" : false,
-      "name" : "statisticsDispersionStandardErrorMean",
-      "type" : "Boolean"
+      "name" : "plotWidth",
+      "type" : "Integer",
+      "default" : 480
    },
    {
-      "default" : false,
-      "name" : "statisticsDistributionSkewness",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsDistributionKurtosis",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "chartType",
-      "options" : [ "noCharts", "barCharts", "barCharts", "barCharts" ],
-      "default" : "noCharts",
-      "type" : "List"
-   },
-   {
-      "default" : false,
-      "name" : "chartShowNormalCurve",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "chartValues",
-      "options" : [ "frequencies", "percentages" ],
-      "default" : "frequencies",
-      "type" : "List"
-   },
-   {
-      "default" : 480,
-      "name" : "chartWidth",
-      "type" : "Integer"
-   },
-   {
-      "default" : 320,
-      "name" : "chartHeight",
-      "type" : "Integer"
+      "name" : "plotHeight",
+      "type" : "Integer",
+      "default" : 320
    }
 ]
 
