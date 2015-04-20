@@ -7,6 +7,7 @@
 
 #include <boost/lexical_cast.hpp>
 #include <cmath>
+#include <iostream>
 
 using namespace boost::interprocess;
 using namespace boost;
@@ -374,6 +375,11 @@ void Column::append(int rows)
 			throw;
 		}
 	}
+}
+
+void Column::setColumnType(Column::ColumnType columnType)
+{
+	_columnType = columnType;
 }
 
 void Column::setRowCount(int rowCount)

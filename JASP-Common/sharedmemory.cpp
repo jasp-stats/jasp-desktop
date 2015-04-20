@@ -4,11 +4,12 @@
 #include "processinfo.h"
 
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 using namespace boost;
 
-interprocess::managed_shared_memory *SharedMemory::_memory;
+interprocess::managed_shared_memory *SharedMemory::_memory = NULL;
 string SharedMemory::_memoryName;
 
 DataSet *SharedMemory::createDataSet()

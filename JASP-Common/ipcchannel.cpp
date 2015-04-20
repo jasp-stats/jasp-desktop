@@ -3,8 +3,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/nowide/convert.hpp>
 
-#include "utils.h"
-
 using namespace std;
 using namespace boost;
 using namespace boost::posix_time;
@@ -152,9 +150,10 @@ bool IPCChannel::tryWait(int timeout)
 
 	messageWaiting = sem_trywait(_semaphoreIn) == 0;
 
-	if (timeout > 0 && messageWaiting == false)
+	while (timeout > 0 && messageWaiting == false)
 	{
-		usleep(1000 * timeout);
+		usleep(100000);
+		timeout -= 10;
 		messageWaiting = sem_trywait(_semaphoreIn) == 0;
 	}
 

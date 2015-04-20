@@ -1,8 +1,5 @@
 #include "options.h"
 
-#include <QStringBuilder>
-#include <QDebug>
-
 #include <boost/foreach.hpp>
 
 #include "options/optionboolean.h"

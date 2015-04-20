@@ -3,6 +3,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 
 #include "sharedmemory.h"
 #include "dataset.h"

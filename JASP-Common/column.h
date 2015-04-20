@@ -123,6 +123,7 @@ public:
 	Ints AsInts;
 
 	enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
+	void setColumnType(ColumnType columnType);
 	ColumnType columnType() const;
 
 	void changeColumnType(ColumnType newColumnType);

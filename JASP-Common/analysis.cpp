@@ -1,15 +1,10 @@
 ﻿
 #include "analysis.h"
 
-#include <QDebug>
-
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 
 #include "options/options.h"
-
-#include <QStringBuilder>
-
-#include <boost/foreach.hpp>
 
 using namespace boost::uuids;
 using namespace boost;

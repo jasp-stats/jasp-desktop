@@ -10,8 +10,8 @@ public:
 	DataSet(boost::interprocess::managed_shared_memory *mem);
 	~DataSet();
 
-	int rowCount();
-	int columnCount();
+	int rowCount() const;
+	int columnCount() const;
 
 	Columns &columns();
 	Column& column(int index);
