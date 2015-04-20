@@ -220,7 +220,7 @@
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="BoundListView" name="horizontalAxis">
+                <widget class="BoundListView" name="plotHorizontalAxis">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -262,7 +262,7 @@
                <item row="0" column="1">
                 <widget class="QLabel" name="label_10">
                  <property name="text">
-                  <string>Seperate lines</string>
+                  <string>Separate lines</string>
                  </property>
                 </widget>
                </item>
@@ -280,7 +280,7 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="BoundListView" name="seperateLines">
+                <widget class="BoundListView" name="plotSeparateLines">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -320,7 +320,7 @@
                 <number>0</number>
                </property>
                <item row="1" column="1">
-                <widget class="BoundListView" name="seperatePlots">
+                <widget class="BoundListView" name="plotSeparatePlots">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -351,7 +351,7 @@
                <item row="0" column="1">
                 <widget class="QLabel" name="label_13">
                  <property name="text">
-                  <string>Seperate plots</string>
+                  <string>Separate plots</string>
                  </property>
                 </widget>
                </item>
@@ -387,7 +387,7 @@
              </spacer>
             </item>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="errorBars">
+             <widget class="BoundCheckBox" name="plotErrorBars">
               <property name="text">
                <string>Error bars</string>
               </property>
@@ -588,7 +588,7 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="BoundComboBox" name="marginalMeansCiAdjustment">
+                <widget class="BoundComboBox" name="marginalMeansCIAdjustment">
                  <item>
                   <property name="text">
                    <string>None</string>
@@ -674,14 +674,14 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="miscDescriptives">
+             <widget class="BoundCheckBox" name="descriptives">
               <property name="text">
                <string>Descriptive statistics</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="miscEffectSizeEstimates">
+             <widget class="BoundCheckBox" name="effectSizeEstimates">
               <property name="text">
                <string>Estimates of effect size:</string>
               </property>
@@ -740,14 +740,14 @@
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="miscHomogeneityTests">
+             <widget class="BoundCheckBox" name="homogeneityTests">
               <property name="text">
                <string>Homogeneity tests</string>
               </property>
              </widget>
             </item>
             <item row="4" column="0">
-             <widget class="BoundCheckBox" name="miscFactorCovariateIndependence">
+             <widget class="BoundCheckBox" name="factorCovariateIndependence">
               <property name="text">
                <string>Factor covariate independence check</string>
               </property>
@@ -1389,7 +1389,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>miscEffectSizeEstimates</sender>
+   <sender>effectSizeEstimates</sender>
    <signal>toggled(bool)</signal>
    <receiver>widgetEffectSizeTypes</receiver>
    <slot>setEnabled(bool)</slot>

@@ -184,8 +184,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	results[["profilePlot"]] <- result$result
 	status <- result$status
 	
-	if (options$horizontalAxis != "") {
-		if (options$seperatePlots != "") {
+	if (options$plotHorizontalAxis != "") {
+		if (options$plotSeparatePlots != "") {
 			results[["headerProfilePlot"]] <- "Profile Plots"
 		} else {
 			results[["headerProfilePlot"]] <- "Profile Plot"
@@ -519,7 +519,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="F", type="number", format="sf:4;dp:3"),
 		list(name="p", type="number", format="dp:3;p:.001"))
 		
-	if (options$miscEffectSizeEstimates) {
+	if (options$effectSizeEstimates) {
 
 		if(options$effectSizeEtaSquared) {
 			fields[[length(fields) + 1]] <- list(name="\u03B7\u00B2", type="number", format="dp:3")
@@ -644,7 +644,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					row <- list("Cases"="Residual", "Sum of Squares"=SS, "df"=df, "Mean Square"=MS, "F"="", "p"="", ".isNewGroup" = newGroup)
 				}
 			
-				if (options$miscEffectSizeEstimates) {
+				if (options$effectSizeEstimates) {
 					SSr <- result["Residuals","Sum Sq"]
 					MSr <- SSr/result["Residuals","Df"]
 				
@@ -970,7 +970,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaDescriptivesTable <- function(dataset, options, perform, status) {
 
-	if (options$miscDescriptives == FALSE)
+	if (options$descriptives == FALSE)
 		return(list(result=NULL, status=status))
 
 	descriptives.table <- list()
@@ -1074,7 +1074,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 .anovaLevenesTable <- function(dataset, options, perform, status) {
 
-	if (options$miscHomogeneityTests == FALSE)
+	if (options$homogeneityTests == FALSE)
 		return (list(result=NULL, status=status))
 		
 	levenes.table <- list()
@@ -1159,9 +1159,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			fields[[length(fields) + 1]] <- list(name="t", type="number", format="sf:4;dp:3")
 			fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
 
-			if(options$marginalMeansCiAdjustment == "bonferroni") {
+			if(options$marginalMeansCIAdjustment == "bonferroni") {
 				.addFootnote(footnotes, text = "Bonferroni CI adjustment", symbol = "<em>Note.</em>")
-			} else if(options$marginalMeansCiAdjustment == "sidak") {
+			} else if(options$marginalMeansCIAdjustment == "sidak") {
 				.addFootnote(footnotes, text = "Sidak CI adjustment", symbol = "<em>Note.</em>")
 			}
 		}
@@ -1190,9 +1190,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			formula <- as.formula(paste("~", terms.base64[i]))
 
-			if(options$marginalMeansCiAdjustment == "bonferroni") {
+			if(options$marginalMeansCIAdjustment == "bonferroni") {
 				adjMethod <- "bonferroni"
-			} else if(options$marginalMeansCiAdjustment == "sidak") {
+			} else if(options$marginalMeansCIAdjustment == "sidak") {
 				adjMethod <- "sidak"
 			} else {
 				adjMethod <- "none"
@@ -1288,9 +1288,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	profilePlotList <- list()
 
-	if (perform == "run" && status$ready && !status$error && options$horizontalAxis != "" && options$dependent != "") {
+	if (perform == "run" && status$ready && !status$error && options$plotHorizontalAxis != "" && options$dependent != "") {
 
-		groupVars <- c(options[["horizontalAxis"]], options[["seperateLines"]], options[["seperatePlots"]])
+		groupVars <- c(options[["plotHorizontalAxis"]], options[["plotSeparateLines"]], options[["plotSeparatePlots"]])
 		groupVars <- groupVars[groupVars != ""]
 		groupVarsV <- .v(groupVars)
 		dependentV <- .v(options$dependent)
@@ -1300,16 +1300,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 										c(N = length(xx[[col]]), "dependent" = mean(xx[[col]]), sd = sd(xx[[col]]))
 									}, dependentV)
 
-		if ( options[["horizontalAxis"]] != "" ) {
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["horizontalAxis"]]))] <- "horizontalAxis"
+		if ( options[["plotHorizontalAxis"]] != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotHorizontalAxis"]]))] <- "plotHorizontalAxis"
 		}
 
-		if ( options[["seperateLines"]] != "" ) {
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["seperateLines"]]))] <- "seperateLines"
+		if ( options[["plotSeparateLines"]] != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotSeparateLines"]]))] <- "plotSeparateLines"
 		}
 
-		if ( options[["seperatePlots"]] != "" ) {
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["seperatePlots"]]))] <- "seperatePlots"
+		if ( options[["plotSeparatePlots"]] != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotSeparatePlots"]]))] <- "plotSeparatePlots"
 		}
 
 		summaryStat$se <- summaryStat$sd / sqrt(summaryStat$N)
@@ -1329,8 +1329,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 #											max(as.numeric(x)) + (length(levels(x)) * .1))))
 		}
 
-		base_breaks_y <- function(x, errorBars){
-			if (errorBars) {
+		base_breaks_y <- function(x, plotErrorBars){
+			if (plotErrorBars) {
 				ci.pos <- c(x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
 				b <- pretty(ci.pos)
 				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
@@ -1344,8 +1344,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			}
 		}
 
-		if (options[["seperatePlots"]] != "") {
-			subsetPlots <- levels(summaryStat[,"seperatePlots"])
+		if (options[["plotSeparatePlots"]] != "") {
+			subsetPlots <- levels(summaryStat[,"plotSeparatePlots"])
 			nPlots <- length(subsetPlots)
 		} else {
 			nPlots <- 1
@@ -1355,34 +1355,34 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			profilePlot <- list()
 			profilePlot[["title"]] <- ""
-			profilePlot[["width"]] <- options$chartWidth
-			profilePlot[["height"]] <- options$chartHeight
-			profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			profilePlot[["width"]] <- options$plotWidth
+			profilePlot[["height"]] <- options$plotHeight
+			profilePlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 
-			if (options[["seperatePlots"]] != "") {
-				summaryStatSubset <- subset(summaryStat,summaryStat[,"seperatePlots"] == subsetPlots[i])
+			if (options[["plotSeparatePlots"]] != "") {
+				summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
 			} else {
 				summaryStatSubset <- summaryStat
 			}
 
-			if(options[["seperateLines"]] == "") {
+			if(options[["plotSeparateLines"]] == "") {
 
-				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=horizontalAxis, 
+				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis, 
 											y=dependent,
 											group=1)) 
 
 			} else {
 
-				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=horizontalAxis, 
+				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis, 
 											y=dependent,
-											group=seperateLines,
-											shape=seperateLines,
-#											color=seperateLines,
-											fill=seperateLines))
+											group=plotSeparateLines,
+											shape=plotSeparateLines,
+#											color=plotSeparateLines,
+											fill=plotSeparateLines))
 
 			} 
 
-			if (options[["errorBars"]]) {
+			if (options[["plotErrorBars"]]) {
 
 				pd <- ggplot2::position_dodge(.2)
 				p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, 
@@ -1401,8 +1401,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) + 
 				ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
 				ggplot2::ylab(options[["dependent"]]) +
-				ggplot2::xlab(options[["horizontalAxis"]]) +
-				ggplot2::labs(shape=options[["seperateLines"]], fill=options[["seperateLines"]]) +
+				ggplot2::xlab(options[["plotHorizontalAxis"]]) +
+				ggplot2::labs(shape=options[["plotSeparateLines"]], fill=options[["plotSeparateLines"]]) +
 				ggplot2::theme_bw() +
 				ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
 					panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
@@ -1420,14 +1420,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					axis.ticks.margin = grid::unit(1,"mm"),
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-				base_breaks_y(summaryStatSubset, options[["errorBars"]]) +
-				base_breaks_x(summaryStatSubset[,"horizontalAxis"])
+				base_breaks_y(summaryStatSubset, options[["plotErrorBars"]]) +
+				base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
 
 			if (nPlots > 1) {
-				p <- p + ggplot2::ggtitle(paste(options[["seperatePlots"]],": ",subsetPlots[i], sep = ""))
+				p <- p + ggplot2::ggtitle(paste(options[["plotSeparatePlots"]],": ",subsetPlots[i], sep = ""))
 			}
 
-			image <- .beginSaveImage(options$chartWidth, options$chartHeight)
+			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 			print(p)
 			content <- .endSaveImage(image)
 
@@ -1437,11 +1437,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		}
 
-	} else if (options$horizontalAxis != "") {
+	} else if (options$plotHorizontalAxis != "") {
 
-		if (options$seperatePlots != "") {
+		if (options$plotSeparatePlots != "") {
 
-			nPlots <- length(levels(dataset[[ .v(options$seperatePlots) ]]))
+			nPlots <- length(levels(dataset[[ .v(options$plotSeparatePlots) ]]))
 
 		} else {
 
@@ -1453,9 +1453,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			profilePlot <- list()
 			profilePlot[["title"]] <- ""
-			profilePlot[["width"]] <- options$chartWidth
-			profilePlot[["height"]] <- options$chartHeight
-			profilePlot[["custom"]] <- list(width="chartWidth", height="chartHeight")
+			profilePlot[["width"]] <- options$plotWidth
+			profilePlot[["height"]] <- options$plotHeight
+			profilePlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 			profilePlot[["data"]] <- ""
 
 			if (status$error)
