@@ -30,7 +30,6 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 	.meta <- list(
 		list(name="title", type="title"),
-		list(name="headerWithinSubjectsEffects", type="h1"),
 		list(name="withinSubjectsEffects", type="table"),
 		list(name="headerBetweenSubjectsEffects", type="h1"),
 		list(name="betweenSubjectsEffects", type="table"),
@@ -126,9 +125,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 	results[["withinSubjectsEffects"]] <- result$result
 	status <- result$status
-	
-	results[["headerWithinSubjectsEffects"]] <- "Within Subjects Effects"
-	
+		
 	
 	
 	## Create Between Subjects Effects Table
@@ -1124,7 +1121,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 			if (sum(index) == 0) {
 
-				foot.index <- .addFootnote(footnotes, text="The repeated measure only has two levels. When the repeated measure has two levels, the assumption of sphericity is always met.")
+				foot.index <- .addFootnote(footnotes, text="The repeated measure has only two levels. When the repeated measure has two levels, the assumption of sphericity is always met.")
 				row.footnotes <- list(W=list(foot.index), p=list(foot.index), GG=list(foot.index), HF=list(foot.index))
 
 				epsilonTable[i,"GG"] <- 1
