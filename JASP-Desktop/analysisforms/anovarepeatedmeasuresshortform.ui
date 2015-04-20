@@ -628,7 +628,7 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="BoundComboBox" name="marginalMeansCiAdjustment">
+                <widget class="BoundComboBox" name="marginalMeansCIAdjustment">
                  <item>
                   <property name="text">
                    <string>None</string>
@@ -766,35 +766,35 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="BoundCheckBox" name="miscSphericityTests">
+             <widget class="BoundCheckBox" name="sphericityTests">
               <property name="text">
                <string>Sphericity tests</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="miscDescriptives">
+             <widget class="BoundCheckBox" name="descriptives">
               <property name="text">
                <string>Descriptive statistics</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="miscEffectSizeEstimates">
+             <widget class="BoundCheckBox" name="effectSizeEstimates">
               <property name="text">
                <string>Estimates of effect size:</string>
               </property>
              </widget>
             </item>
             <item row="6" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="miscHomogeneityTests">
+             <widget class="BoundCheckBox" name="homogeneityTests">
               <property name="text">
                <string>Homogeneity tests</string>
               </property>
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="BoundCheckBox" name="miscSphericityCorrections">
+             <widget class="BoundCheckBox" name="sphericityCorrections">
               <property name="text">
                <string>Sphericity corrections</string>
               </property>
@@ -921,7 +921,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>miscEffectSizeEstimates</sender>
+   <sender>effectSizeEstimates</sender>
    <signal>toggled(bool)</signal>
    <receiver>widgetEffectSizeTypes</receiver>
    <slot>setEnabled(bool)</slot>
@@ -937,7 +937,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>miscSphericityCorrections</sender>
+   <sender>sphericityCorrections</sender>
    <signal>toggled(bool)</signal>
    <receiver>widgetSphericityCorrections</receiver>
    <slot>setEnabled(bool)</slot>

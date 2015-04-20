@@ -75,19 +75,19 @@ AncovaForm::AncovaForm(QWidget *parent) :
 
     _horizontalAxisTableModel = new TableModelVariablesAssigned(this);
     _horizontalAxisTableModel->setSource(_plotFactorsAvailableTableModel);
-    ui->horizontalAxis->setModel(_horizontalAxisTableModel);
+	ui->plotHorizontalAxis->setModel(_horizontalAxisTableModel);
 
     _seperateLinesTableModel = new TableModelVariablesAssigned(this);
     _seperateLinesTableModel->setSource(_plotFactorsAvailableTableModel);
-    ui->seperateLines->setModel(_seperateLinesTableModel);
+	ui->plotSeparateLines->setModel(_seperateLinesTableModel);
 
     _seperatePlotsTableModel = new TableModelVariablesAssigned(this);
     _seperatePlotsTableModel->setSource(_plotFactorsAvailableTableModel);
-    ui->seperatePlots->setModel(_seperatePlotsTableModel);
+	ui->plotSeparatePlots->setModel(_seperatePlotsTableModel);
 
-	ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plotVariables, ui->horizontalAxis);
-	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->seperateLines);
-	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->seperatePlots);
+	ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plotVariables, ui->plotHorizontalAxis);
+	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->plotSeparateLines);
+	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->plotSeparatePlots);
 
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
@@ -96,10 +96,10 @@ AncovaForm::AncovaForm(QWidget *parent) :
     ui->containerProfilePlot->hide();
 
 #ifdef QT_NO_DEBUG
-	ui->miscFactorCovariateIndependence->hide();
+	ui->factorCovariateIndependence->hide();
 	ui->randomFactorsBox->hide();
 #else
-	ui->miscFactorCovariateIndependence->setStyleSheet("background-color: pink ;");
+	ui->factorCovariateIndependence->setStyleSheet("background-color: pink ;");
 	ui->randomFactorsBox->setStyleSheet("background-color: pink ;");
 #endif
 

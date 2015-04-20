@@ -114,7 +114,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	status <- result$status
 	epsilonTable <- result$epsilonTable
 	
-	if (options$miscSphericityTests)
+	if (options$sphericityTests)
 		results[["headerSphericity"]] <- "Test of Sphericity"
 
 
@@ -146,7 +146,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	results[["levene"]] <- result$result
 	status <- result$status
 	
-	if (options$miscHomogeneityTests)
+	if (options$homogeneityTests)
 	    results[["headerLevene"]] <- "Test for Equality of Variances"
 	
 	
@@ -388,7 +388,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	fields[[length(fields) + 1]] <- list(name="F", type="number", format="sf:4;dp:3")
 	fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
 		
-	if (options$miscEffectSizeEstimates) {
+	if (options$effectSizeEstimates) {
 
 		if(options$effectSizeEtaSquared) {
 			fields[[length(fields) + 1]] <- list(name="eta", type="number", title="\u03B7\u00B2", format="dp:3")
@@ -482,7 +482,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 				row <- list("case"=terms.normal[[1]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
 
-				if (options$miscEffectSizeEstimates) {
+				if (options$effectSizeEstimates) {
 
 					SSt <- sum(resultTable[,"Sum Sq"])
 					SSr <- resultTable["Residuals","Sum Sq"]
@@ -537,7 +537,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 				row <- list("case"=terms.normal[[1]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
 
-				if (options$miscEffectSizeEstimates) {
+				if (options$effectSizeEstimates) {
 
 					modelTermsCases <- strsplit(terms.base64[[1]],":")
 
@@ -595,7 +595,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 	corrections <- NULL
 
-	if (options$miscSphericityCorrections) {
+	if (options$sphericityCorrections) {
 
 		if (options$sphericityNone) {
 			corrections <- c(corrections, "None")
@@ -614,12 +614,12 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	
 	fields[[length(fields) + 1]] <- list(name="case", type="string", title="", combine=TRUE)
 	
-	if (options$miscSphericityCorrections && !is.null(corrections))
+	if (options$sphericityCorrections && !is.null(corrections))
 		fields[[length(fields) + 1]] <- list(name="cor", type="string", title="Sphericity Correction")
 	
 	fields[[length(fields) + 1]] <- list(name="SS", type="number", format="sf:4;dp:3", title="Sum of Squares")
 	
-	if (options$miscSphericityCorrections && !is.null(corrections)) {
+	if (options$sphericityCorrections && !is.null(corrections)) {
 		fields[[length(fields) + 1]] <- list(name="df", type="number", format="sf:4;dp:3")
 	} else {
 		fields[[length(fields) + 1]] <- list(name="df", type="integer")
@@ -629,7 +629,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	fields[[length(fields) + 1]] <- list(name="F", type="number", format="sf:4;dp:3")
 	fields[[length(fields) + 1]] <- list(name="p", type="number", format="dp:3;p:.001")
 		
-	if (options$miscEffectSizeEstimates) {
+	if (options$effectSizeEstimates) {
 
 		if(options$effectSizeEtaSquared) {
 			fields[[length(fields) + 1]] <- list(name="eta", type="number", title="\u03B7\u00B2", format="dp:3")
@@ -665,7 +665,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	terms.base64 <- modelDef$terms.base64
 	termsRM.base64 <- modelDef$termsRM.base64
 
-	if (is.null(model) || (options$miscSphericityCorrections && perform == "init") || (options$miscSphericityCorrections && epsilonError)) {
+	if (is.null(model) || (options$sphericityCorrections && perform == "init") || (options$sphericityCorrections && epsilonError)) {
 
 		anova.rows <- list()
 
@@ -681,7 +681,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 						newGroup <- FALSE
 					}
 
-					if (options$miscSphericityCorrections && !is.null(corrections)) {
+					if (options$sphericityCorrections && !is.null(corrections)) {
 
 						counter <- 1
 
@@ -711,7 +711,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 					}
 				}
 
-				if (options$miscSphericityCorrections && !is.null(corrections)) {
+				if (options$sphericityCorrections && !is.null(corrections)) {
 
 					counter <- 1
 
@@ -791,7 +791,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 						counter <- counter + 1
 
-						if (!options$miscSphericityCorrections || cor == "empty") {
+						if (!options$sphericityCorrections || cor == "empty") {
 
 							if (!is.null(epsilon) && epsilon[i-1,"p"] < .05) {
 
@@ -831,7 +831,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 						}
 
 
-						if (options$miscEffectSizeEstimates) {
+						if (options$effectSizeEstimates) {
 
 							SSt <- sum(resultTable[,"Sum Sq"])
 							SSr <- resultTable["Residuals","Sum Sq"]
@@ -863,7 +863,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 					counter <- counter + 1
 
-					if (!options$miscSphericityCorrections || cor == "empty") {
+					if (!options$sphericityCorrections || cor == "empty") {
 
 						row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
 
@@ -924,7 +924,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 						counter <- counter + 1
 
-						if (!options$miscSphericityCorrections || cor == "empty") {
+						if (!options$sphericityCorrections || cor == "empty") {
 
 							if (!is.null(epsilon) && epsilon[i-1,"p"] < .05) {
 
@@ -964,7 +964,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 						}
 
 
-						if (options$miscEffectSizeEstimates) {
+						if (options$effectSizeEstimates) {
 
 							modelTermsCases <- strsplit(terms.base64[[i]],":")
 
@@ -1007,7 +1007,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 					counter <- counter + 1
 
-					if (!options$miscSphericityCorrections || cor == "empty") {
+					if (!options$sphericityCorrections || cor == "empty") {
 
 						row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
 
@@ -1158,7 +1158,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 	sphericity[["footnotes"]] <- as.list(footnotes)
 
-	if (options$miscSphericityTests == FALSE)
+	if (options$sphericityTests == FALSE)
 		return (list(result = NULL, epsilonTable = epsilonTable, status = status))
 
 	list(result = sphericity, epsilonTable = epsilonTable, status = status)
@@ -1166,7 +1166,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 .rmAnovaLevenesTable <- function(dataset, options, perform, status) {
 
-	if (options$miscHomogeneityTests == FALSE)
+	if (options$homogeneityTests == FALSE)
 		return (list(result=NULL, status=status))
 
 	levenes.table <- list()
@@ -1239,7 +1239,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 .rmAnovaDescriptivesTable <- function(dataset, options, perform, status) {
 
-	if (options$miscDescriptives == FALSE)
+	if (options$descriptives == FALSE)
 		return(list(result=NULL, status=status))
 
 	rmFactors <- c()

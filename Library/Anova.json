@@ -93,46 +93,46 @@
       "type" : "Boolean"
    },
    {
-      "name" : "marginalMeansCiAdjustment",
+      "name" : "marginalMeansCIAdjustment",
       "options" : [ "none", "bonferroni", "sidak" ],
       "default" : "none",
       "type" : "List"
    },
    {
-      "name" : "miscDescriptives",
+      "name" : "descriptives",
       "type" : "Boolean"
    },
    {
-      "name" : "miscEffectSizeEstimates",
+      "name" : "effectSizeEstimates",
       "type" : "Boolean"
    },
    {
-      "name" : "miscHomogeneityTests",
+      "name" : "homogeneityTests",
       "type" : "Boolean"
    },
    {
-      "name" : "horizontalAxis",
+      "name" : "plotHorizontalAxis",
       "type" : "Variable"
    },
    {
-      "name" : "seperateLines",
+      "name" : "plotSeparateLines",
       "type" : "Variable"
    },
    {
-      "name" : "seperatePlots",
+      "name" : "plotSeparatePlots",
       "type" : "Variable"
    },
    {
-      "name" : "errorBars",
+      "name" : "plotErrorBars",
       "type" : "Boolean"
    },
    {
-      "name" : "chartWidth",
+      "name" : "plotWidth",
       "type" : "Integer",
       "default" : 450
    },
    {
-      "name" : "chartHeight",
+      "name" : "plotHeight",
       "type" : "Integer",
       "default" : 300
    },
