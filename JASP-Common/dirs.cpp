@@ -63,7 +63,7 @@ string Dirs::appDataDir()
 #else
 
 	dir = string(getpwuid(getuid())->pw_dir);
-	dir += "/.JASP/" + AppInfo::getShortDesc(false)
+	dir += "/.JASP/" + AppInfo::getShortDesc(false);
 
 	pa = dir;
 
