@@ -224,6 +224,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::open(QString filename)
 {
+	_openedUsingArgs = true;
 	if (_resultsViewLoaded)
 		dataSetSelected(filename);
 	else
@@ -722,7 +723,15 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 void MainWindow::dataSetLoadFailed(const QString &message)
 {
 	_alert->hide();
+
+	if (_package->dataSet != NULL)
+		_loader.free(_package->dataSet);
+	_package->reset();
+
 	QMessageBox::warning(this, "", "An error was detected and the data could not be loaded.\n\n" + message);
+
+	if (_openedUsingArgs)
+		close();
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
