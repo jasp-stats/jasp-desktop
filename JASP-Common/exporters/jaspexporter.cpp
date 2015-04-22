@@ -6,23 +6,49 @@
 
 #include <sys/stat.h>
 
-//#include <fcntl.h>
-
 #include "dataset.h"
 
-//#include "libzip/config.h"
 #include "libzip/archive.h"
 #include "libzip/archive_entry.h"
 #include "../lib_json/json.h"
 #include "filereader.h"
 #include "version.h"
 #include "tempfiles.h"
-
+#include "appinfo.h"
 
 using namespace std;
 
+const Version JASPExporter::dataArchiveVersion = Version("1.00.0 Alpha 1");
+const Version JASPExporter::jaspArchiveVersion = Version("1.00.0 Alpha 1");
+
 void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
+	struct archive *a;
+
+	a = archive_write_new();
+	archive_write_set_format_zip(a);
+
+#ifdef __WIN32__
+	archive_write_open_filename_w(a, boost::nowide::widen(path.c_str()).c_str());
+#else
+	archive_write_open_filename(a, path.c_str());
+#endif
+
+	saveDataArchive(a, package, progressCallback);
+	saveJASPArchive(a, package, progressCallback);
+
+	archive_write_close(a);
+	archive_write_free(a);
+
+	progressCallback("Saving Data Set", 100);
+}
+
+void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback)
+{
+	createJARContents(a);
+
+	struct archive_entry *entry;
+
 	DataSet *dataset = package->dataSet;
 
 	unsigned long long progress;
@@ -34,22 +60,6 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 	dataSet["rowCount"] = Json::Value(dataset->rowCount());
 	dataSet["columnCount"] = Json::Value(dataset->columnCount());
 	Json::Value columnsData = Json::arrayValue;
-
-
-	//Create new zip archive////////
-	struct archive *a;
-	struct archive_entry *entry;
-
-	a = archive_write_new();
-	archive_write_set_format_zip(a);
-
-
-
-#ifdef __WIN32__
-	archive_write_open_filename_w(a, boost::nowide::widen(path.c_str()).c_str());
-#else
-	archive_write_open_filename(a, path.c_str());
-#endif
 
 	//Calculate size of data file that'll be added to the archive////////
 	int dataSize = 0;
@@ -153,7 +163,7 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 			}
 		}
 
-	progress = 50 + 49 * (i / columnCount);
+		progress = 49 + 50 * (i / columnCount);
 		if (progress != lastProgress)
 		{
 			progressCallback("Saving Data Set", progress);
@@ -162,7 +172,6 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 	}
 
 	archive_entry_free(entry);
-
 
 	if (package->hasAnalyses)
 	{
@@ -182,7 +191,14 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 			throw runtime_error("Can't save jasp archive writing ERROR");
 
 		archive_entry_free(entry);
+	}
+}
 
+void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback)
+{
+	if (package->hasAnalyses)
+	{
+		struct archive_entry *entry;
 
 		Json::Value &analysesJson = package->analysesData;
 
@@ -236,15 +252,6 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 			}
 		}
 	}
-
-	createJARContents(a);
-
-
-	archive_write_close(a);
-	archive_write_free(a);
-
-	progress = 100;
-	progressCallback("Saving Data Set", progress);
 }
 
 void JASPExporter::createJARContents(archive *a)
@@ -253,8 +260,9 @@ void JASPExporter::createJARContents(archive *a)
 
 	stringstream manifestStream;
 	manifestStream << "Manifest-Version: 1.0" << "\n";
-	manifestStream << "Created-By: " << APP_VERSION << "\n";
-	manifestStream << "JASP-Archive-Version: 1.0.0\n";
+	manifestStream << "Created-By: " << AppInfo::getShortDesc(true) << "\n";
+	manifestStream << "Data-Archive-Version: " << dataArchiveVersion.asString(false) << "\n";
+	manifestStream << "JASP-Archive-Version: " << jaspArchiveVersion.asString(false) << "\n";
 
 	manifestStream.flush();
 

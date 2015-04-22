@@ -17,53 +17,39 @@
 
 #include "filereader.h"
 #include "tempfiles.h"
+#include "exporters/jaspexporter.h"
 
 using namespace std;
 
-bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const string &entry, bool required)
-{
-	FileReader dataEntry = FileReader(path, entry);
-
-	if (!dataEntry.archiveExists())
-		throw runtime_error("The selected JASP archive '" + path + "' does not exist.");
-
-	if (!dataEntry.exists())
-	{
-		if (required)
-			throw runtime_error("Entry " + entry + " could not be found in JASP archive.");
-
-		return false;
-	}
-
-	int size = dataEntry.bytesAvailable();
-	if (size > 0)
-	{
-		char data[size];
-		int startOffset = dataEntry.pos();
-		int errorCode = 0;
-		while ((errorCode = dataEntry.readData(&data[dataEntry.pos() - startOffset], 8016)) > 0 ) ;
-
-		if (errorCode < 0)
-			throw runtime_error("Error reading Entry " + entry + " in JASP archive.");
-
-		Json::Reader jsonReader;
-		string doc(data, size);
-		jsonReader.parse(doc, root);
-	}
-
-	dataEntry.close();
-
-	return true;
-}
-
 void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
-{
+{	
+	packageData->isArchive = true;
 	packageData->dataSet = SharedMemory::createDataSet(); // this is required incase the loading of the data fails so that the SharedMemory::createDataSet() can be later freed.
 
+	readManifest(packageData, path);
+
+	if ( ! isCompatible(packageData))
+		throw runtime_error("The file version is to new. Please update to the latest version of JASP to view this file.");
+
+	loadDataArchive(packageData, path, progressCallback);
+	loadJASPArchive(packageData, path, progressCallback);
+}
+
+
+void JASPImporter::loadDataArchive(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
+{
+	if (packageData->dataArchiveVersion.major == 1)
+	{
+		if (packageData->dataArchiveVersion.minor == 0)
+			loadDataArchive_1_00(packageData, path, progressCallback);
+	}
+}
+
+void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
+{
 	bool success = false;
 
 	Json::Value metaData;
-	Json::Value analysesData;
 
 	int columnCount = 0;
 	int rowCount = 0;
@@ -191,6 +177,21 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 
 		dataEntry3.close();
 	}
+}
+
+
+void JASPImporter::loadJASPArchive(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
+{
+	if (packageData->archiveVersion.major == 1)
+	{
+		if (packageData->archiveVersion.minor == 0)
+			loadJASPArchive_1_00(packageData, path, progressCallback);
+	}
+}
+
+void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
+{
+	Json::Value analysesData;
 
 	parseJsonEntry(analysesData, path, "analyses.json", false);
 
@@ -223,6 +224,93 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 
 	packageData->analysesData = analysesData;
 	packageData->hasAnalyses = true;
+}
+
+
+void JASPImporter::readManifest(DataSetPackage *packageData, const string &path)
+{
+	bool foundVersion = false;
+	bool foundDataVersion = false;
+	string manifestName = "META-INF/MANIFEST.MF";
+	FileReader manifest = FileReader(path, manifestName);
+	int size = manifest.bytesAvailable();
+	if (size > 0)
+	{
+		char data[size];
+		int startOffset = manifest.pos();
+		int errorCode = 0;
+		while ((errorCode = manifest.readData(&data[manifest.pos() - startOffset], 8016)) > 0 ) ;
+
+		if (errorCode < 0)
+			throw runtime_error("Error reading Entry 'manifest.mf' in JASP archive.");
+
+		string doc(data, size);
+
+		stringstream st(doc);
+		string line;
+		while (std::getline(st, line))
+		{
+			if (line.find("JASP-Archive-Version: ") == 0)
+			{
+				foundVersion = true;
+				packageData->archiveVersion = Version::fromString(line.substr(22));
+			}
+			else if (line.find("Data-Archive-Version: ") == 0)
+			{
+				foundDataVersion = true;
+				packageData->dataArchiveVersion = Version::fromString(line.substr(22));
+			}
+			if (foundDataVersion && foundVersion)
+				break;
+		}
+	}
+
+	if ( ! foundDataVersion || ! foundVersion)
+		throw runtime_error("Archive missing version information.");
+
+	manifest.close();
+}
+
+bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const string &entry, bool required)
+{
+	FileReader dataEntry = FileReader(path, entry);
+
+	if (!dataEntry.archiveExists())
+		throw runtime_error("The selected JASP archive '" + path + "' does not exist.");
+
+	if (!dataEntry.exists())
+	{
+		if (required)
+			throw runtime_error("Entry " + entry + " could not be found in JASP archive.");
+
+		return false;
+	}
+
+	int size = dataEntry.bytesAvailable();
+	if (size > 0)
+	{
+		char data[size];
+		int startOffset = dataEntry.pos();
+		int errorCode = 0;
+		while ((errorCode = dataEntry.readData(&data[dataEntry.pos() - startOffset], 8016)) > 0 ) ;
+
+		if (errorCode < 0)
+			throw runtime_error("Error reading Entry " + entry + " in JASP archive.");
+
+		Json::Reader jsonReader;
+		string doc(data, size);
+		jsonReader.parse(doc, root);
+	}
+
+	dataEntry.close();
+
+	return true;
+}
+
+bool JASPImporter::isCompatible(DataSetPackage *packageData)
+{
+	return packageData->archiveVersion <= JASPExporter::jaspArchiveVersion &&
+			packageData->dataArchiveVersion <= JASPExporter::dataArchiveVersion;
 }
 
 Column::ColumnType JASPImporter::getColumnType(string name)
