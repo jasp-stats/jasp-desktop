@@ -8,6 +8,8 @@ DataSetPackage::DataSetPackage()
 void DataSetPackage::reset()
 {
 	dataSet = NULL;
+	archiveVersion = Version();
+	dataArchiveVersion = Version();
 	analysesHTML = std::string();
 	analysesData = Json::arrayValue;
 	hasAnalyses = false;

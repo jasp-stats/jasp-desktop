@@ -2,6 +2,7 @@
 #define FILEPACKAGE_H
 
 #include "dataset.h"
+#include "version.h"
 #include "lib_json/json.h"
 
 #include "boost/signals2.hpp"
@@ -14,6 +15,10 @@ public:
 	DataSet *dataSet;
 	std::string analysesHTML;
 	Json::Value analysesData;
+	Version archiveVersion;
+	Version dataArchiveVersion;
+	bool isArchive = false;
+
 	bool hasAnalyses;
 
 	void reset();

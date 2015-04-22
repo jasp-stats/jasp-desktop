@@ -15,6 +15,8 @@ using namespace std;
 
 void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator, boost::function<void(const string &, int)> progressCallback)
 {
+	packageData->isArchive = false;
+
 	CSV csv(locator);
 	csv.open();
 

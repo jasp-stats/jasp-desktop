@@ -28,7 +28,7 @@
 
 #include "processinfo.h"
 #include "utils.h"
-#include "version.h"
+#include "appinfo.h"
 
 using namespace std;
 using namespace boost;
@@ -56,7 +56,7 @@ string Dirs::appDataDir()
 	}
 
 	dir = nowide::narrow(buffer);
-	dir += "/JASP/" + string(APP_VERSION);
+	dir += "/JASP/" + AppInfo::getShortDesc(false);//string(APP_VERSION);
 
 	pa = nowide::widen(dir);
 
