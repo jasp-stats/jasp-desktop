@@ -97,6 +97,7 @@ private slots:
 	void dataSetCloseRequested();
 	void dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename);
 	void dataSetLoadFailed(const QString &message);
+	void saveFailed(const QString &message);
 	void itemSelected(const QString &item);
 	void exportSelected(const QString &filename);
 	void saveSelected(const QString &filename);

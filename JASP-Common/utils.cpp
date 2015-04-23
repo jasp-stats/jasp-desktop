@@ -142,6 +142,16 @@ bool Utils::renameOverwrite(const string &oldName, const string &newName)
 	return ec == 0;
 }
 
+bool Utils::removeFile(const string &path)
+{
+	filesystem::path p = osPath(path);
+	system::error_code ec;
+
+	boost::filesystem::remove(p, ec);
+
+	return ec == 0;
+}
+
 filesystem::path Utils::osPath(const string &path)
 {
 #ifdef __WIN32__

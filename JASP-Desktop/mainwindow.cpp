@@ -152,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(&_loader, SIGNAL(saveComplete(const QString&)), this, SLOT(saveComplete(const QString&)));
 	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
 	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(dataSetLoadFailed(QString)));
+	connect(&_loader, SIGNAL(saveFail(QString)), this, SLOT(saveFailed(QString)));
 
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
@@ -600,7 +601,6 @@ bool MainWindow::closeRequestCheck(bool &isSaving)
 	isSaving = false;
 	if (_package->isModified())
 	{
-
 		QString title = windowTitle();
 		title.chop(1);
 		QMessageBox::StandardButton reply = QMessageBox::warning(this, "Save Workspace?", QString("Save changes to workspace \"") + title +  QString("\" before closing?\n\nYour changes will be lost if you don't save them."), QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
@@ -634,6 +634,11 @@ void MainWindow::dataSetCloseRequested()
 void MainWindow::saveComplete(const QString &name)
 {
 	_alert->hide();
+
+	_package->setModified(false);
+
+	setWindowTitle(name);
+
 	if (_isClosed)
 		this->close();
 }
@@ -728,10 +733,18 @@ void MainWindow::dataSetLoadFailed(const QString &message)
 		_loader.free(_package->dataSet);
 	_package->reset();
 
-	QMessageBox::warning(this, "", "An error was detected and the data could not be loaded.\n\n" + message);
+	QMessageBox::warning(this, "", "Unable to open file.\n\n" + message);
 
 	if (_openedUsingArgs)
 		close();
+}
+
+void MainWindow::saveFailed(const QString &message)
+{
+	_alert->hide();
+	_isClosed = false;
+
+	QMessageBox::warning(this, "", "Unable to save file.\n\n" + message);
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
@@ -878,11 +891,6 @@ void MainWindow::saveSelected(const QString &filename)
 
 	_loader.save(filename, _package);
 	_alert->show();
-
-	_package->setModified(false);
-
-	QString dataSetName = QFileInfo(filename).baseName();
-	setWindowTitle(dataSetName);
 }
 
 
