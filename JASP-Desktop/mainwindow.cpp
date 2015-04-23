@@ -252,7 +252,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 		QUrl first = urls.first();
 		QFileInfo file(first.path());
 
-		if (file.exists() && file.completeSuffix() == "csv")
+		if (file.exists() && (file.completeSuffix() == "csv" || file.completeSuffix() == "jasp"))
 			event->accept();
 		else
 			event->ignore();
