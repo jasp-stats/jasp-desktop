@@ -1,51 +1,55 @@
-[
-   {
-      "name" : "dependent",
-      "type" : "Variable"
-   },
-   {
-      "name" : "fixedFactors",
-      "type" : "Variables"
-   },
-   {
-      "name" : "randomFactors",
-      "type" : "Variables"
-   },
-   {
-      "name" : "modelTerms",
-      "template" : [
-         {
-            "name" : "components",
-            "type" : "Term"
-         },
-         {
-            "name" : "isNuisance",
-            "type" : "Boolean"
-         }
-      ],
-      "type" : "Table"
-   },
-   {
-      "name" : "outputEffects",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "effectsStepwise",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "posteriorEstimates",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "posteriorDistributions",
-      "type" : "Boolean"
-   },
-   {
-      "options" : [ "BF10", "BF01", "LogBF10" ],
-	  "default" : "BF10",
-      "name" : "bayesFactorType",
-      "type" : "List"
-   }
-]
-
+{
+	"name": "AnovaBayesian",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "dependent",
+			"type": "Variable"
+		},
+		{
+			"name": "fixedFactors",
+			"type": "Variables"
+		},
+		{
+			"name": "randomFactors",
+			"type": "Variables"
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				},
+				{
+					"name": "isNuisance",
+					"type": "Boolean"
+				}
+			],
+			"type": "Table"
+		},
+		{
+			"name": "outputEffects",
+			"type": "Boolean"
+		},
+		{
+			"name": "effectsStepwise",
+			"type": "Boolean"
+		},
+		{
+			"name": "posteriorEstimates",
+			"type": "Boolean"
+		},
+		{
+			"name": "posteriorDistributions",
+			"type": "Boolean"
+		},
+		{
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"name": "bayesFactorType",
+			"type": "List"
+		}
+	]
+}

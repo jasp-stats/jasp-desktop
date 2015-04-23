@@ -1,150 +1,151 @@
 {
-	"name" : "R11tLearn",
-	"autorun" : false,
-	"options" : [
+	"name": "R11tLearn",
+	"autorun": false,
+	"version": "1.00",
+	"options": [
 		{
-			"name" : "subjectId",
-			"type" : "Variable"
+			"name": "subjectId",
+			"type": "Variable"
 		},
 		{
-			"name" : "group",
-			"type" : "Variable"
+			"name": "group",
+			"type": "Variable"
 		},
 		{
-			"name" : "trialNumber",
-			"type" : "Variable"
+			"name": "trialNumber",
+			"type": "Variable"
 		},
 		{
-			"name" : "deck",
-			"type" : "Variable"
+			"name": "deck",
+			"type": "Variable"
 		},
 		{
-			"name" : "reward",
-			"type" : "Variable"
+			"name": "reward",
+			"type": "Variable"
 		},
 		{
-			"name" : "loss",
-			"type" : "Variable"
+			"name": "loss",
+			"type": "Variable"
 		},
 		{
-			"name" : "model",
-			"type" : "List",
-			"options" : [ "pvl-delta", "pvl", "ev", "vpp" ]
+			"name": "model",
+			"type": "List",
+			"options": [ "pvl-delta", "pvl", "ev", "vpp" ]
 		},
 		{
-			"name" : "estimation",
-			"type" : "List",
-			"options" : [ "individual", "group", "groupComparison" ]
+			"name": "estimation",
+			"type": "List",
+			"options": [ "individual", "group", "groupComparison" ]
 		},
 		{
-			"name" : "outputConvergenceCheck",
-			"type" : "Boolean"
+			"name": "outputConvergenceCheck",
+			"type": "Boolean"
 		},
 		{
-			"name" : "outputIndividualEstimates",
-			"type" : "Boolean",
-			"default" : true
+			"name": "outputIndividualEstimates",
+			"type": "Boolean",
+			"default": true
 		},
 		{
-			"name" : "outputGroupEstimates",
-			"type" : "Boolean",
-			"default" : true
+			"name": "outputGroupEstimates",
+			"type": "Boolean",
+			"default": true
 		},
 		{
-			"name" : "centralTendency",
-			"type" : "List",
-			"options" : [ "means", "median", "mode" ]
+			"name": "centralTendency",
+			"type": "List",
+			"options": [ "means", "median", "mode" ]
 		},
 		{
-			"name" : "distribution",
-			"type" : "List",
-			"options" : [ "sd", "hdi", "ci" ]
+			"name": "distribution",
+			"type": "List",
+			"options": [ "sd", "hdi", "ci" ]
 		},
 		{
-			"name" : "plotIndividualLevelPosteriors",
-			"type" : "Boolean"
+			"name": "plotIndividualLevelPosteriors",
+			"type": "Boolean"
 		},
 		{
-			"name" : "plotGroupLevelPosteriors",
-			"type" : "Boolean"
+			"name": "plotGroupLevelPosteriors",
+			"type": "Boolean"
 		},
 		{
-			"name" : "plotWorstChain",
-			"type" : "Boolean"
+			"name": "plotWorstChain",
+			"type": "Boolean"
 		},
 		{
-			"name" : "AInitial",
-			"type" : "Number",
-			"value" : 0.5
+			"name": "AInitial",
+			"type": "Number",
+			"value": 0.5
 		},
 		{
-			"name" : "AUpper",
-			"type" : "Number",
-			"value" : 1
+			"name": "AUpper",
+			"type": "Number",
+			"value": 1
 		},
 		{
-			"name" : "WInitial",
-			"type" : "Number",
-			"value" : 2.5
+			"name": "WInitial",
+			"type": "Number",
+			"value": 2.5
 		},
 		{
-			"name" : "WUpper",
-			"type" : "Number",
-			"value" : 5
+			"name": "WUpper",
+			"type": "Number",
+			"value": 5
 		},
 		{
-			"name" : "aInitial",
-			"type" : "Number",
-			"value" : 0.5
+			"name": "aInitial",
+			"type": "Number",
+			"value": 0.5
 		},
 		{
-			"name" : "aUpper",
-			"type" : "Number",
-			"value" : 1
+			"name": "aUpper",
+			"type": "Number",
+			"value": 1
 		},
 		{
-			"name" : "cInitial",
-			"type" : "Number",
-			"value" : 2.5
+			"name": "cInitial",
+			"type": "Number",
+			"value": 2.5
 		},
 		{
-			"name" : "cUpper",
-			"type" : "Number",
-			"value" : 5
+			"name": "cUpper",
+			"type": "Number",
+			"value": 5
 		},
 		{
-			"name" : "samples",
-			"type" : "List",
-			"options" : [ "many", "some", "few", "custom" ]
-		},
-{
-			"name" : "customIterations",
-			"type" : "Number",
-			"value" : 10
+			"name": "samples",
+			"type": "List",
+			"options": [ "many", "some", "few", "custom" ]
 		},
 		{
-			"name" : "customBurnin",
-			"type" : "Number",
-			"value" : 5
+			"name": "customIterations",
+			"type": "Number",
+			"value": 10
 		},
 		{
-			"name" : "customChains",
-			"type" : "Number",
-			"value" : 4
+			"name": "customBurnin",
+			"type": "Number",
+			"value": 5
 		},
 		{
-			"name" : "customThinning",
-			"type" : "Number",
-			"value" : 1
+			"name": "customChains",
+			"type": "Number",
+			"value": 4
 		},
 		{
-			"name" : "specificSeed",
-			"type" : "Boolean"
+			"name": "customThinning",
+			"type": "Number",
+			"value": 1
 		},
 		{
-			"name" : "specificSeedValue",
-			"type" : "Number",
-			"value" : 4
+			"name": "specificSeed",
+			"type": "Boolean"
+		},
+		{
+			"name": "specificSeedValue",
+			"type": "Number",
+			"value": 4
 		}
 	]
 }

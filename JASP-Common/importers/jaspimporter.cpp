@@ -160,7 +160,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	dataEntry.close();
 
 
-	string entryName3 = "results.html";
+	//Take out for the time being
+	/*string entryName3 = "results.html";
 	FileReader dataEntry3 = FileReader(path, entryName3);
 	if (dataEntry3.exists())
 	{
@@ -176,7 +177,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 		packageData->hasAnalyses = true;
 
 		dataEntry3.close();
-	}
+	}*/
 }
 
 
@@ -253,12 +254,12 @@ void JASPImporter::readManifest(DataSetPackage *packageData, const string &path)
 			if (line.find("JASP-Archive-Version: ") == 0)
 			{
 				foundVersion = true;
-				packageData->archiveVersion = Version::fromString(line.substr(22));
+				packageData->archiveVersion = Version(line.substr(22));
 			}
 			else if (line.find("Data-Archive-Version: ") == 0)
 			{
 				foundDataVersion = true;
-				packageData->dataArchiveVersion = Version::fromString(line.substr(22));
+				packageData->dataArchiveVersion = Version(line.substr(22));
 			}
 			if (foundDataVersion && foundVersion)
 				break;

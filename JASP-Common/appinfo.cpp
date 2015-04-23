@@ -5,5 +5,5 @@ const std::string AppInfo::name = "JASP";
 
 std::string AppInfo::getShortDesc(bool includeMassive)
 {
-	return AppInfo::name + " " + AppInfo::version.asString(includeMassive);
+	return AppInfo::name + " " + AppInfo::version.asString(includeMassive, true);
 }

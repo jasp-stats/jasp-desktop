@@ -10,12 +10,13 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string name, Options *options, bool autorun)
+Analysis::Analysis(int id, string name, Options *options, Version version, bool autorun)
 {
 	_id = id;
 	_name = name;
 	_options = options;
 	_autorun = autorun;
+	_version = version;
 
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
@@ -75,6 +76,7 @@ Json::Value Analysis::asJSON() const
 
 	analysisAsJson["id"] = _id;
 	analysisAsJson["name"] = _name;
+	analysisAsJson["version"] = _version.asString(false, false);
 	analysisAsJson["results"] = _results;
 
 	string status;

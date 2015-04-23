@@ -173,7 +173,8 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	archive_entry_free(entry);
 
-	if (package->hasAnalyses)
+	//Take out for the time being
+	/*if (package->hasAnalyses)
 	{
 		//Create new entry for archive: HTML results
 		string html = package->analysesHTML;
@@ -191,7 +192,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 			throw runtime_error("Can't save jasp archive writing ERROR");
 
 		archive_entry_free(entry);
-	}
+	}*/
 }
 
 void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback)
@@ -261,8 +262,8 @@ void JASPExporter::createJARContents(archive *a)
 	stringstream manifestStream;
 	manifestStream << "Manifest-Version: 1.0" << "\n";
 	manifestStream << "Created-By: " << AppInfo::getShortDesc(true) << "\n";
-	manifestStream << "Data-Archive-Version: " << dataArchiveVersion.asString(false) << "\n";
-	manifestStream << "JASP-Archive-Version: " << jaspArchiveVersion.asString(false) << "\n";
+	manifestStream << "Data-Archive-Version: " << dataArchiveVersion.asString(false, false) << "\n";
+	manifestStream << "JASP-Archive-Version: " << jaspArchiveVersion.asString(false, false) << "\n";
 
 	manifestStream.flush();
 
