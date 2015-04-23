@@ -38,7 +38,7 @@
 			"type": "Variables"
 		},
 		{
-			"name": "outputEffects",
+			"name": "effects",
 			"type": "Boolean"
 		},
 		{

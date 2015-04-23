@@ -34,7 +34,7 @@
 			"type": "Table"
 		},
 		{
-			"name": "outputEffects",
+			"name": "effects",
 			"type": "Boolean"
 		},
 		{

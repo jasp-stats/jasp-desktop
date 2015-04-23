@@ -28,7 +28,7 @@
 		},
 		{
 			"default": false,
-			"name": "outputEffects",
+			"name": "effects",
 			"type": "Boolean"
 		},
 		{

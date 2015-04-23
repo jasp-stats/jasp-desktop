@@ -467,7 +467,7 @@
           </widget>
          </item>
          <item row="0" column="0" colspan="2">
-          <widget class="BoundCheckBox" name="outputEffects">
+          <widget class="BoundCheckBox" name="effects">
            <property name="text">
             <string>Effects</string>
            </property>
@@ -611,7 +611,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>outputEffects</sender>
+   <sender>effects</sender>
    <signal>toggled(bool)</signal>
    <receiver>effectsStepwise</receiver>
    <slot>setEnabled(bool)</slot>

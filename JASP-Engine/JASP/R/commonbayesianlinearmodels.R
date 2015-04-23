@@ -436,7 +436,8 @@
 }
 
 .theBayesianLinearModelsEffects <- function (model = NULL, options = list (), perform = "init", status = list ()) {
-	if (!options$outputEffects)
+
+	if ( ! options$effects)
 		return (NULL)
 
 	effectsTable <- list ()
