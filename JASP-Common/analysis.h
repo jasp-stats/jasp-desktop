@@ -9,7 +9,7 @@
 #include "options/options.h"
 
 #include "common.h"
-
+#include "version.h"
 
 
 class Analysis
@@ -18,7 +18,7 @@ public:
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error };
 
-	Analysis(int id, std::string name, Options *options, bool isAutorun = true);
+	Analysis(int id, std::string name, Options *options, Version version, bool isAutorun = true);
 	virtual ~Analysis();
 
 	Options *options() const;
@@ -59,6 +59,7 @@ protected:
 	int callback(Json::Value results);
 
 private:
+	Version _version;
 	int _id;
 	std::string _name;
 	bool _autorun;

@@ -116,7 +116,7 @@ bool Version::isRelease() const
 	return build == 255;
 }
 
-string Version::asString(bool includeMassive) const
+string Version::asString(bool includeMassive, bool includeRelease) const
 {
 	stringstream stream;
 	if (includeMassive)
@@ -125,58 +125,16 @@ string Version::asString(bool includeMassive) const
 	stream << (int)major << ".";
 	stream << std::setfill('0') << std::setw(2) << std::right;
 	stream << (int)minor << ".";
-	stream << (int)revision << " ";
+	stream << (int)revision;
 
-	if (build == 255)
-		stream << "Release";
+	if (build == 255 && includeRelease)
+		stream << " Release";
 	else if (build >= 1 && build <= 100)
-		stream << "Alpha " << (int)build;
+		stream << " Alpha " << (int)build;
 	else if (build >= 101 && build <= 245)
-		stream << "Beta " << (int)(build - 100);
+		stream << " Beta " << (int)(build - 100);
 
 	return stream.str();
-}
-
-Version Version::fromString(string versionString)
-{
-	unsigned char massive = 0;
-	unsigned char major = 0;
-	unsigned char minor = 0;
-	unsigned char revision = 0;
-	unsigned char build = 0;
-	char buildString[8];
-	unsigned char buildIndex = 0;
-
-	int v1 = sscanf(versionString.c_str(), "%hhu.%hhu.%2hhu.%hhu %7s %hhu", &massive, &major, &minor, &revision, buildString, &buildIndex);
-	bool hasMassive = v1 >= 4;
-
-	if (!hasMassive)
-	{
-		massive = 0;
-		v1 = sscanf(versionString.c_str(), "%hhu.%2hhu.%hhu %7s %hhu", &major, &minor, &revision, buildString, &buildIndex);
-	}
-
-	//if (v1 <= 0)
-		//throw
-
-	bool hasBuild = hasMassive ? v1 > 4 : v1 > 3;
-	bool hasBuildIndex = hasMassive ? v1 == 6 : v1 == 5;
-
-	if (hasBuild)
-	{
-		if (hasBuildIndex == true && strcmp(buildString, "Alpha") == 0)
-			build = buildIndex;
-		else if(hasBuildIndex == true && strcmp(buildString, "Beta") == 0)
-			build = 100 + buildIndex;
-		else if (hasBuildIndex == false && strcmp(buildString, "Release") == 0)
-			build = 255;
-		//else
-			//throw
-	}
-	else
-		build = 255;
-
-	return Version(massive, major, minor, revision, build);
 }
 
 bool Version::isEmpty() const

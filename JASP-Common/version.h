@@ -7,10 +7,8 @@ class Version
 {
 public:
 	Version(unsigned char _massive, unsigned char _major, unsigned char _minor, unsigned char _revision, unsigned char _build);
-	Version();
 	Version(std::string version);
-
-	static Version fromString(std::string versionString);
+	Version();
 
 	bool operator<(const Version&);
 	bool operator>(const Version&);
@@ -20,7 +18,7 @@ public:
 	bool operator!=(const Version&);
 
 	bool isRelease() const;
-	std::string asString(bool includeMassive) const;
+	std::string asString(bool includeMassive, bool includeRelease) const;
 	bool isEmpty() const;
 
 	unsigned char massive;

@@ -1,52 +1,56 @@
-[
-   {
-      "name" : "dependent",
-      "type" : "Variable"
-   },
-   {
-      "name" : "covariates",
-      "type" : "Variables"
-   },
-   {
-      "name" : "modelTerms",
-      "template" : [
-         {
-            "name" : "components",
-            "type" : "Term"
-         },
-         {
-            "default" : false,
-            "name" : "isNuisance",
-            "type" : "Boolean"
-         }
-      ],
-      "type" : "Table"
-   },
-   {
-      "default" : false,
-      "name" : "outputEffects",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "effectsStepwise",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "posteriorEstimates",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "posteriorDistributions",
-      "type" : "Boolean"
-   },
-   {
-      "options" : [ "BF10", "BF01", "LogBF10" ],
-	  "default" : "BF10",
-      "name" : "bayesFactorType",
-      "type" : "List"
-   }
-]
-
+{
+	"name": "RegressionLinearBayesian",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "dependent",
+			"type": "Variable"
+		},
+		{
+			"name": "covariates",
+			"type": "Variables"
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				},
+				{
+					"default": false,
+					"name": "isNuisance",
+					"type": "Boolean"
+				}
+			],
+			"type": "Table"
+		},
+		{
+			"default": false,
+			"name": "outputEffects",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "effectsStepwise",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "posteriorEstimates",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "posteriorDistributions",
+			"type": "Boolean"
+		},
+		{
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"name": "bayesFactorType",
+			"type": "List"
+		}
+	]
+}
