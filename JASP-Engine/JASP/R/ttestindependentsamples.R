@@ -36,7 +36,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="ttest", type="table")
-	meta[[3]] <- list(name="inequalityOfVariances", type="table")
+	meta[[3]] <- list(name="equalityOfVariancesTests", type="table")
 	meta[[4]] <- list(name="descriptives", type="table")
 	meta[[5]] <- list(name="normalityTests", type="table")
 	
@@ -46,7 +46,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 	results[["ttest"]] <- .ttestIndependentSamplesTTest(dataset, options, perform)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
-	results[["inequalityOfVariances"]] <- .ttestIndependentSamplesInequalityOfVariances(dataset, options, perform)
+	results[["equalityOfVariancesTests"]] <- .ttestIndependentSamplesInequalityOfVariances(dataset, options, perform)
 	results[["normalityTests"]] <- .ttestNormalityTests(dataset, options, perform)
 
 	results
@@ -481,13 +481,13 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 .ttestIndependentSamplesInequalityOfVariances <- function(dataset, options, perform) {
 
-	if (options$testUnequalVariances == FALSE)
+	if (options$equalityOfVariancesTests == FALSE)
 		return(NULL)
 		
 	levenes <- list()
 	footnotes <- .newFootnotes()
 
-	levenes[["title"]] <- "Test of Inequality of Variances (Levene's)"
+	levenes[["title"]] <- "Test of Equality of Variances (Levene's)"
 	
 	fields <- list(
 		list(name="variable", title="", type="string"),

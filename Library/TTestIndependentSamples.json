@@ -19,7 +19,7 @@
 		},
 		{
 			"default": false,
-			"name": "testUnequalVariances",
+			"name": "equalityOfVariancesTests",
 			"type": "Boolean"
 		},
 		{
