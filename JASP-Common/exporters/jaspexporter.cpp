@@ -35,14 +35,14 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 #endif
 
 	if (errorCode != ARCHIVE_OK)
-		throw runtime_error("Error opening archive for writing.");
+		throw runtime_error("File could not be opened.");
 
 	saveDataArchive(a, package, progressCallback);
 	saveJASPArchive(a, package, progressCallback);
 
 	errorCode = archive_write_close(a);
 	if (errorCode != ARCHIVE_OK)
-		throw runtime_error("Error closing archive after writing.");
+		throw runtime_error("File could not be closed.");
 
 	errorCode = archive_write_free(a);
 
@@ -254,7 +254,7 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 					archive_entry_free(entry);
 
 					if (errorCode < 0)
-						throw runtime_error("Error reading files. Could not save jasp archive");
+						throw runtime_error("Required resource files could not be accessed.");
 				}
 				fileInfo.close();
 			}

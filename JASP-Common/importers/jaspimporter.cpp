@@ -29,7 +29,7 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 	readManifest(packageData, path);
 
 	if ( ! isCompatible(packageData))
-		throw runtime_error("The file version is to new. Please update to the latest version of JASP to view this file.");
+		throw runtime_error("The file version is to new.\nPlease update to the latest version of JASP to view this file.");
 
 	loadDataArchive(packageData, path, progressCallback);
 	loadJASPArchive(packageData, path, progressCallback);
@@ -61,7 +61,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	rowCount = dataSetDesc["rowCount"].asInt();
 
 	if (rowCount <= 0 || columnCount <= 0)
-		throw runtime_error("Data size has been corrupted and cannot load.");
+		throw runtime_error("Data size has been corrupted.");
 
 	do
 	{
@@ -125,7 +125,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	string entryName = "data.bin";
 	FileReader dataEntry = FileReader(path, entryName);
 	if (!dataEntry.exists())
-		throw runtime_error("Entry " + entryName + " cannot be found in JASP archive.");
+		throw runtime_error("Entry " + entryName + " could not be found.");
 
 	char buff[sizeof(double) > sizeof(int) ? sizeof(double) : sizeof(int)];
 
@@ -139,7 +139,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 			int errorCode = 0;
 			int size = dataEntry.readData(buff, typeSize, errorCode);
 			if (errorCode != 0 || size != typeSize)
-				throw runtime_error("Error reading data.bin from JASP archive.");
+				throw runtime_error("Could not read 'data.bin' in JASP archive.");
 
 			if (columnType == Column::ColumnTypeScale)
 			{
@@ -222,11 +222,12 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const strin
 		file.close();
 
 		if (errorCode != 0)
-			throw runtime_error("Error reading resource in JASP archive.");
+			throw runtime_error("Could not read resource files.");
 	}
 
 	packageData->analysesData = analysesData;
-	packageData->hasAnalyses = true;
+	packageData->hasAnalyses = analysesData.size() > 0;
+
 }
 
 
@@ -279,12 +280,12 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 	FileReader dataEntry = FileReader(path, entry);
 
 	if (!dataEntry.archiveExists())
-		throw runtime_error("The selected JASP archive '" + path + "' does not exist.");
+		throw runtime_error("The selected JASP archive '" + path + "' could not be found.");
 
 	if (!dataEntry.exists())
 	{
 		if (required)
-			throw runtime_error("Entry " + entry + " could not be found in JASP archive.");
+			throw runtime_error("Entry '" + entry + "' could not be found in JASP archive.");
 
 		return false;
 	}
@@ -298,7 +299,7 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 		while (dataEntry.readData(&data[dataEntry.pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
 
 		if (errorCode < 0)
-			throw runtime_error("Error reading Entry " + entry + " in JASP archive.");
+			throw runtime_error("Could not read Entry '" + entry + "' in JASP archive.");
 
 		Json::Reader jsonReader;
 		string doc(data, size);

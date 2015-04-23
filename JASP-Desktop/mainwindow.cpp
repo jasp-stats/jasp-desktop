@@ -733,7 +733,7 @@ void MainWindow::dataSetLoadFailed(const QString &message)
 		_loader.free(_package->dataSet);
 	_package->reset();
 
-	QMessageBox::warning(this, "", "An error was detected and the data could not be loaded.\n\n" + message);
+	QMessageBox::warning(this, "", "Unable to open file.\n\n" + message);
 
 	if (_openedUsingArgs)
 		close();
@@ -743,7 +743,8 @@ void MainWindow::saveFailed(const QString &message)
 {
 	_alert->hide();
 	_isClosed = false;
-	QMessageBox::warning(this, "", "An error was detected and the data could not be saved.\n\n" + message);
+
+	QMessageBox::warning(this, "", "Unable to save file.\n\n" + message);
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
