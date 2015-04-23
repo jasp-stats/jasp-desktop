@@ -129,12 +129,12 @@
 			"default": "ascending"
 		},
 		{
-			"name": "plotWidths",
+			"name": "plotWidth",
 			"type": "Integer",
 			"default": 320
 		},
 		{
-			"name": "plotHeights",
+			"name": "plotHeight",
 			"type": "Integer",
 			"default": 240
 		},

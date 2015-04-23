@@ -530,7 +530,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLabel" name="counts_hideSmallCountsLessThanLabel">
+             <widget class="QLabel" name="hideSmallCountsLessThanLabel">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -804,28 +804,28 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="nominalContingencyCoefficient">
+             <widget class="BoundCheckBox" name="contingencyCoefficient">
               <property name="text">
                <string>Contingency coefficient</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="nominalPhiAndCramersV">
+             <widget class="BoundCheckBox" name="phiAndCramersV">
               <property name="text">
                <string>Phi and Cramer's V</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="nominalLambda">
+             <widget class="BoundCheckBox" name="lambda">
               <property name="text">
                <string>Lambda</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="nominalUncertaintyCoefficient">
+             <widget class="BoundCheckBox" name="uncertaintyCoefficient">
               <property name="text">
                <string>Uncertainty coefficient</string>
               </property>
@@ -841,28 +841,28 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="ordinalKendallsTauC">
+             <widget class="BoundCheckBox" name="kendallsTauC">
               <property name="text">
                <string>Kendall's tau-c</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="BoundCheckBox" name="ordinalKendallsTauB">
+             <widget class="BoundCheckBox" name="kendallsTauB">
               <property name="text">
                <string>Kendall's tau-b</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="ordinalSomersD">
+             <widget class="BoundCheckBox" name="somersD">
               <property name="text">
                <string>Somers' d</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="ordinalGamma">
+             <widget class="BoundCheckBox" name="gamma">
               <property name="text">
                <string>Gamma</string>
               </property>
@@ -894,7 +894,7 @@
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="nominalByInterval_Eta">
+             <widget class="BoundCheckBox" name="byIntervalEta">
               <property name="text">
                <string>Eta</string>
               </property>
@@ -1041,7 +1041,7 @@
   <connection>
    <sender>hideSmallCounts</sender>
    <signal>toggled(bool)</signal>
-   <receiver>counts_hideSmallCountsLessThanLabel</receiver>
+   <receiver>hideSmallCountsLessThanLabel</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

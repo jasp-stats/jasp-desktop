@@ -56,39 +56,39 @@
 			"value": 0.950
 		},
 		{
-			"name": "nominalContingencyCoefficient",
+			"name": "contingencyCoefficient",
 			"type": "Boolean"
 		},
 		{
-			"name": "nominalPhiAndCramersV",
+			"name": "phiAndCramersV",
 			"type": "Boolean"
 		},
 		{
-			"name": "nominalLambda",
+			"name": "lambda",
 			"type": "Boolean"
 		},
 		{
-			"name": "nominalUncertaintyCoefficient",
+			"name": "uncertaintyCoefficient",
 			"type": "Boolean"
 		},
 		{
-			"name": "ordinalGamma",
+			"name": "gamma",
 			"type": "Boolean"
 		},
 		{
-			"name": "ordinalSomersD",
+			"name": "somersD",
 			"type": "Boolean"
 		},
 		{
-			"name": "ordinalKendallsTauB",
+			"name": "kendallsTauB",
 			"type": "Boolean"
 		},
 		{
-			"name": "ordinalKendallsTauC",
+			"name": "kendallsTauC",
 			"type": "Boolean"
 		},
 		{
-			"name": "nominalByIntervalEta",
+			"name": "byIntervalEta",
 			"type": "Boolean"
 		},
 		{

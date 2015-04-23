@@ -1145,7 +1145,7 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 		
 		odds.ratio.plot[["width"]]  <- 530
 		odds.ratio.plot[["height"]] <- 400
-		#odds.ratio.plot[["custom"]] <- list(width="plotWidths", height="plotHeights")
+		#odds.ratio.plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 		
 		image <- .beginSaveImage(530, 400)
 		.plotPosterior.crosstabs(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)

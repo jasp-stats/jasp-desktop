@@ -389,7 +389,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 	##### Nominal Table (Symmetric Measures)
 	
-	if (options$nominalContingencyCoefficient|| options$nominalPhiAndCramersV) {
+	if (options$contingencyCoefficient|| options$phiAndCramersV) {
 		
 		nominal.table <- list()
 
@@ -397,13 +397,13 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 
 		nominal.fields <- fields
 
-		if (options$nominalContingencyCoefficient){
+		if (options$contingencyCoefficient){
 
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[ContCoef]", title="", type="string")
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[ContCoef]", title="Value", type="number", format="sf:4;dp:3")
 		}
 
-		if (options$nominalPhiAndCramersV) {
+		if (options$phiAndCramersV) {
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[PhiCoef]", title="", type="string")
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[PhiCoef]", title="Value", type="number", format="sf:4;dp:3")
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[CramerV]", title="", type="string")
@@ -417,15 +417,14 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 	##### Ordinal Table
 	
-	if (options$ordinalGamma) {
+	if (options$gamma) {
 		
 		ordinal.table <- list()
 		
 		ordinal.table[["title"]] <- "Ordinal Gamma"
 		
 		ordinal.fields <- fields
-			
-		#ordinal.fields[[length(ordinal.fields)+1]] <- list(name="type[gammaCoef]", title="", type="string")
+		
 		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="value[gammaCoef]", title="Gamma", type="number", format="sf:4;dp:3")
 		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="Sigma[gammaCoef]", title="std. error", type="number", format="dp:3")
 		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="low[gammaCoef]", title="Lower CI", type="number", format="dp:3")
@@ -438,7 +437,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 	########## Kendall Tau-B table
 	
-	if (options$ordinalKendallsTauB) {
+	if (options$kendallsTauB) {
 		
 		kendalls.table <- list()
 		
@@ -547,7 +546,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 		tables[[3]] <- odds.ratio.table
 	}
 	
-	if (options$nominalContingencyCoefficient || options$nominalPhiAndCramersV) {
+	if (options$contingencyCoefficient || options$phiAndCramersV) {
 	
 		nominal.table[["data"]] <- nominal.rows
 		nominal.table[["footnotes"]] <- as.list(nominal.footnotes)
@@ -558,7 +557,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 		tables[[4]] <- nominal.table
 	}
 	
-	if (options$ordinalGamma) {
+	if (options$gamma) {
 	
 		ordinal.table[["data"]] <- ordinal.rows
 		ordinal.table[["footnotes"]] <- as.list(ordinal.footnotes)
@@ -569,7 +568,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 		tables[[5]] <- ordinal.table
 	}
 	
-	if (options$ordinalKendallsTauB) {
+	if (options$kendallsTauB) {
 	
 		kendalls.table[["data"]] <- kendalls.rows
 		kendalls.table[["footnotes"]] <- as.list(kendalls.footnotes)
@@ -781,7 +780,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 	row.footnotes <- list ()
 
-	if (options$nominalContingencyCoefficient) {
+	if (options$contingencyCoefficient) {
 		 
 		row[["type[ContCoef]"]] <- "Contingency Coefficient" 
 		 
@@ -821,7 +820,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 		
 	}
 
-	if (options$nominalPhiAndCramersV) {
+	if (options$phiAndCramersV) {
 	
 		row[["type[PhiCoef]"]] <- "Phi-Coefficient"
 		
@@ -862,7 +861,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 		
 	 }
 	
-	 if (options$nominalPhiAndCramersV) {
+	 if (options$phiAndCramersV) {
 		
 		row[["type[CramerV]"]] <- "Cramer's V "
 		
@@ -924,7 +923,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 	
 	 
 	
-	if (options$ordinalGamma) {
+	if (options$gamma) {
 		
 		row[["type[gammaCoef]"]] <- "Gamma Coefficient"
 		
@@ -985,7 +984,7 @@ Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(..
 		}
 	}
 			
-	if (options$ordinalKendallsTauB) {
+	if (options$kendallsTauB) {
 		
 		row[["type[kTauB]"]] <- "Kendall's Tau B"
 		
