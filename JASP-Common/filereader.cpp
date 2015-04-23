@@ -163,7 +163,7 @@ bool FileReader::isSequential() const
 	return true;
 }
 
-int FileReader::readData(char *data, int maxSize)
+int FileReader::readData(char *data, int maxSize, int &errorCode)
 {
 	if (!_exists)
 		return 0;
@@ -184,7 +184,12 @@ int FileReader::readData(char *data, int maxSize)
 	}
 
 	if (count > 0)
+	{
 		_currentRead += count;
+		errorCode = 0;
+	}
+	else
+		errorCode = count;
 
 	if (_currentRead >= _size)
 		close();
@@ -203,7 +208,7 @@ char* FileReader::readAllData(int blockSize, int &errorCode)
 	int startOffset = _currentRead;
 
 	errorCode = 0;
-	while ((errorCode = readData(&data[_currentRead - startOffset], blockSize)) > 0 );
+	while (readData(&data[_currentRead - startOffset], blockSize, errorCode) > 0 && errorCode == 0);
 
 	return data;
 }

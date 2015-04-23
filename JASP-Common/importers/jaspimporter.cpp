@@ -136,8 +136,9 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 		int typeSize = (columnType == Column::ColumnTypeScale) ? sizeof(double) : sizeof(int);
 		for (int r = 0; r < rowCount; r++)
 		{
-			int size = dataEntry.readData(buff, typeSize);
-			if (size != typeSize)
+			int errorCode = 0;
+			int size = dataEntry.readData(buff, typeSize, errorCode);
+			if (errorCode != 0 || size != typeSize)
 				throw runtime_error("Error reading data.bin from JASP archive.");
 
 			if (columnType == Column::ColumnTypeScale)
@@ -213,13 +214,14 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const strin
 
 		char copyBuff[8016];
 		int bytes = 0;
-		while ((bytes = resourceEntry.readData(copyBuff, sizeof(copyBuff))) > 0 ) {
+		int errorCode = 0;
+		while ((bytes = resourceEntry.readData(copyBuff, sizeof(copyBuff), errorCode)) > 0 && errorCode == 0) {
 			file.write(copyBuff, bytes);
 		}
 		file.flush();
 		file.close();
 
-		if (bytes < 0)
+		if (errorCode != 0)
 			throw runtime_error("Error reading resource in JASP archive.");
 	}
 
@@ -240,7 +242,7 @@ void JASPImporter::readManifest(DataSetPackage *packageData, const string &path)
 		char data[size];
 		int startOffset = manifest.pos();
 		int errorCode = 0;
-		while ((errorCode = manifest.readData(&data[manifest.pos() - startOffset], 8016)) > 0 ) ;
+		while (manifest.readData(&data[manifest.pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
 
 		if (errorCode < 0)
 			throw runtime_error("Error reading Entry 'manifest.mf' in JASP archive.");
@@ -293,7 +295,7 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 		char data[size];
 		int startOffset = dataEntry.pos();
 		int errorCode = 0;
-		while ((errorCode = dataEntry.readData(&data[dataEntry.pos() - startOffset], 8016)) > 0 ) ;
+		while (dataEntry.readData(&data[dataEntry.pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
 
 		if (errorCode < 0)
 			throw runtime_error("Error reading Entry " + entry + " in JASP archive.");

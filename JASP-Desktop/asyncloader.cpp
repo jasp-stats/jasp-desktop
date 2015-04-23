@@ -69,13 +69,13 @@ void AsyncLoader::progressHandler(string status, int progress)
 
 void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
 {
+	QString tempFilename = filename + tq(".tmp");
 	try
 	{
-		QString tempFilename = filename + tq(".tmp");
-
 		JASPExporter::saveDataSet(fq(tempFilename), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
-		Utils::renameOverwrite(fq(tempFilename), fq(filename));
+		if ( ! Utils::renameOverwrite(fq(tempFilename), fq(filename)))
+			throw runtime_error("File '" + fq(tempFilename) + "' is being used by another application.");
 
 		QString name = QFileInfo(filename).baseName();
 
@@ -83,10 +83,12 @@ void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
 	}
 	catch (runtime_error e)
 	{
+		Utils::removeFile(fq(tempFilename));
 		emit saveFail(e.what());
 	}
 	catch (exception e)
 	{
+		Utils::removeFile(fq(tempFilename));
 		emit saveFail(e.what());
 	}
 }

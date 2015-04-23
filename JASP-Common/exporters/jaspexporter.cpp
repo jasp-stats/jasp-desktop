@@ -29,16 +29,22 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 	archive_write_set_format_zip(a);
 
 #ifdef __WIN32__
-	archive_write_open_filename_w(a, boost::nowide::widen(path.c_str()).c_str());
+	int errorCode = archive_write_open_filename_w(a, boost::nowide::widen(path.c_str()).c_str());
 #else
-	archive_write_open_filename(a, path.c_str());
+	int errorCode = archive_write_open_filename(a, path.c_str());
 #endif
+
+	if (errorCode != ARCHIVE_OK)
+		throw runtime_error("Error opening archive for writing.");
 
 	saveDataArchive(a, package, progressCallback);
 	saveJASPArchive(a, package, progressCallback);
 
-	archive_write_close(a);
-	archive_write_free(a);
+	errorCode = archive_write_close(a);
+	if (errorCode != ARCHIVE_OK)
+		throw runtime_error("Error closing archive after writing.");
+
+	errorCode = archive_write_free(a);
 
 	progressCallback("Saving Data Set", 100);
 }
@@ -240,13 +246,14 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 					archive_write_header(a, entry);
 
 					int bytes = 0;
-					while ((bytes = fileInfo.readData(imagebuff, sizeof(imagebuff))) > 0 ) {
+					int errorCode = 0;
+					while ((bytes = fileInfo.readData(imagebuff, sizeof(imagebuff), errorCode)) > 0 && errorCode == 0) {
 						archive_write_data(a, imagebuff, bytes);
 					}
 
 					archive_entry_free(entry);
 
-					if (bytes < 0)
+					if (errorCode < 0)
 						throw runtime_error("Error reading files. Could not save jasp archive");
 				}
 				fileInfo.close();
@@ -281,7 +288,6 @@ void JASPExporter::createJARContents(archive *a)
 	archive_write_data(a, manifest, manifestSize);
 
 	archive_entry_free(entry);
-
 }
 
 

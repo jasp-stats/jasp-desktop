@@ -20,7 +20,7 @@ public:
 	int pos() const;
 	int bytesAvailable() const;
 	bool isSequential() const;
-	int readData(char * data, int maxSize);
+	int readData(char * data, int maxSize, int &errorCode);
 	char* readAllData(int blockSize, int &errorCode);
 	void close();
 	void reset();

@@ -15,6 +15,7 @@ public:
 	static long getFileSize(const std::string &filename);
 	static void touch(const std::string &filename);
 	static bool renameOverwrite(const std::string &oldName, const std::string &newName);
+	static bool removeFile(const std::string &path);
 
 	static boost::filesystem::path osPath(const std::string &path);
 	static std::string osPath(const boost::filesystem::path &path);
