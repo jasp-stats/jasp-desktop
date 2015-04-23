@@ -267,10 +267,6 @@ vector<string> tempfiles_retrieveList(int id)
 	{
 		if (filesystem::is_regular_file(itr->status()))
 		{
-			string filename = Utils::osPath(itr->path().filename());
-			if (filename.at(0) != '_')
-				continue;
-
 			string absPath = itr->path().generic_string();
 			string relPath = absPath.substr(_tempfiles_sessionDirName.size()+1);
 
