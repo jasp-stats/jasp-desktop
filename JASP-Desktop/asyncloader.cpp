@@ -75,7 +75,7 @@ void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
 		JASPExporter::saveDataSet(fq(tempFilename), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 		if ( ! Utils::renameOverwrite(fq(tempFilename), fq(filename)))
-			throw runtime_error("File '" + fq(tempFilename) + "' is being used by another application.");
+			throw runtime_error("File '" + fq(filename) + "' is being used by another application.");
 
 		QString name = QFileInfo(filename).baseName();
 
