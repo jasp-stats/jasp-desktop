@@ -48,8 +48,8 @@ The directory structure should be as follows:
         - libgomp-1.dll
 		- libboost_system-mt.a
 		- libboost_filesystem-mt.a
-		- libarchive.a
-		- libz.a
+		- libarchive.dll.a
+		- libarchive.dll
 
  
 Mac OS X
@@ -74,6 +74,8 @@ The directory structure should be as follows:
     [+] build-JASP- ... < build directory, created by QtCreator >
 	    - libboost_system-mt.a
 	    - libboost_filesystem-mt.a
+		- libarchive.a
+		- libz.a
 
 Linux
 -----
