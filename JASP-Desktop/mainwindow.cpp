@@ -459,14 +459,7 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 
 void MainWindow::showForm(Analysis *analysis)
 {
-	if (_currentOptionsWidget != NULL)
-	{
-		disconnect(_currentOptionsWidget, SIGNAL(illegalChanged()), this, SLOT(illegalOptionStateChanged()));
-
-		_currentOptionsWidget->hide();
-		_currentOptionsWidget->unbind();
-		_currentOptionsWidget = NULL;
-	}
+	closeCurrentOptionsWidget();
 
 	_currentOptionsWidget = loadForm(analysis);
 
@@ -492,6 +485,18 @@ void MainWindow::showForm(Analysis *analysis)
 
 		QString helpPage = QString("analyses/") + tq(analysis->name()).toLower();
 		requestHelpPage(helpPage);
+	}
+}
+
+void MainWindow::closeCurrentOptionsWidget()
+{
+	if (_currentOptionsWidget != NULL)
+	{
+		disconnect(_currentOptionsWidget, SIGNAL(illegalChanged()), this, SLOT(illegalOptionStateChanged()));
+
+		_currentOptionsWidget->hide();
+		_currentOptionsWidget->unbind();
+		_currentOptionsWidget = NULL;
 	}
 }
 
@@ -619,14 +624,24 @@ bool MainWindow::closeRequestCheck(bool &isSaving)
 void MainWindow::dataSetCloseRequested()
 {
 	bool isSaving = false;
-	if (!closeRequestCheck(isSaving))
+	if (_dataSetClosing || !closeRequestCheck(isSaving))
 	{
+		if (isSaving)
+		{
+			_dataSetClosing = true;
+			return;
+		}
+
+		closeCurrentOptionsWidget();
+		hideOptionsPanel();
 		_tableModel->clearDataSet();
 		_loader.free(_package->dataSet);
 		_package->reset();
 		updateMenuEnabledDisabledStatus();
 		ui->backStage->setFileLoaded(false, NULL);
 		ui->webViewResults->reload();
+		_dataSetClosing = false;
+		setWindowTitle("JASP");
 		_inited = false;
 	}
 }
@@ -641,6 +656,8 @@ void MainWindow::saveComplete(const QString &name)
 
 	if (_isClosed)
 		this->close();
+	else if (_dataSetClosing)
+		dataSetCloseRequested();
 }
 
 void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename)
@@ -743,6 +760,7 @@ void MainWindow::saveFailed(const QString &message)
 {
 	_alert->hide();
 	_isClosed = false;
+	_dataSetClosing = false;
 
 	QMessageBox::warning(this, "", "Unable to save file.\n\n" + message);
 }

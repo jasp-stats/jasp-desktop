@@ -54,9 +54,11 @@ private:
 
 	bool _inited;
 	bool _isClosed = false;
+	bool _dataSetClosing = false;
 
 	AnalysisForm* loadForm(Analysis *analysis);
 	void showForm(Analysis *analysis);
+	void closeCurrentOptionsWidget();
 
 	QWidget *_buttonPanel;
 	QVBoxLayout *_buttonPanelLayout;
