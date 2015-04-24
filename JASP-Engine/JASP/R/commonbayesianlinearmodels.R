@@ -160,7 +160,7 @@
 		return (list (ready = FALSE, error.message = error.message))
 }
 
-.theBayesianLinearModels <- function (dataset = NULL, options = list (), perform = "init", status = list ()) {
+.theBayesianLinearModels <- function (dataset = NULL, options = list (), perform = "init", status = list (), callback) {
 	if (!status$ready && is.null (status$error.message))
 		return (list (model =  list (models = NULL, effects = NULL), status = status))
 
@@ -171,7 +171,7 @@
 	for (term in options$modelTerms) {
 		if (is.null (effects) & is.null (neverExclude)){
 			model.formula <- paste (model.formula,
-				paste (.v (term$components), collapse = ":"), sep = "")			
+				paste (.v (term$components), collapse = ":"), sep = "")
 		} else {
 			model.formula <- paste (model.formula, " + ",
 				paste (.v (term$components), collapse = ":"), sep = "")
@@ -199,7 +199,9 @@
 	}
 
 	if ( ! .shouldContinue(callback()))
-		return (NULL)
+		return (list (model =  list (models = NULL, effects = NULL),
+			status = list (ready = FALSE, error.message = NULL)))
+
 
 	null.model <- list ()
 	if (!is.null (neverExclude)) {
@@ -251,7 +253,8 @@
 		model.object <- list()
 		for (m in 1:no.models) {
 			if ( ! .shouldContinue(callback()))
-				return (NULL)
+				return (list (model =  list (models = NULL, effects = NULL),
+					status = list (ready = FALSE, error.message = NULL)))
 			model.object [[m]] <- list ("ready" = TRUE)
 			model.effects <- base::strsplit (x = as.character (model.list [[m]]) [[3]], 
 				split = "+", fixed = TRUE) [[1]]
@@ -300,8 +303,8 @@
 				}
 			}
 		}		
-		return (list (model =  list (models = model.object, effects = effects.matrix, 
-			interactions.matrix = interactions.matrix, nuisance = neverExclude, 
+		return (list (model =  list (models = model.object, effects = effects.matrix,
+			interactions.matrix = interactions.matrix, nuisance = neverExclude,
 			null.model = null.model), status = status))
 	} 
 

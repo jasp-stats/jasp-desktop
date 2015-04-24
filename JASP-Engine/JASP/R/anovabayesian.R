@@ -1,4 +1,4 @@
-AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = function (...) 0, ...) {
+AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = function(...) list(status = "ok"), ...) {
 ##PREAMBLE
 	if (is.null (base::options ()$BFMaxModels))
 		base::options (BFMaxModels = 50000)
@@ -29,7 +29,7 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
 ## MODEL
-	model.object <- .theBayesianLinearModels (dataset, options, perform, status)
+	model.object <- .theBayesianLinearModels (dataset, options, perform, status, callback)
 	model <- model.object$model
 	status <- model.object$status
 
