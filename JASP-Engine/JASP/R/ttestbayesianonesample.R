@@ -3282,7 +3282,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					if (is.na(bf.raw)) {
 					
 						status[i] <- "error"
-						plottingError[i] <- "Plotting is not possible: Bayes factor is NaN"
+						plottingError[i] <- "Plotting is not possible: Bayes factor could not be calculated"
 					} else if(bf.raw == Inf & (options$plotPriorAndPosterior | options$plotBayesFactorRobustness | options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
 					
 						status[i] <- "error"
@@ -3305,7 +3305,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					}
 					
 					
-					ttest.rows[[i]] <- result				
+					ttest.rows[[i]] <- result
 				}
 			}
 			
