@@ -88,14 +88,14 @@ int ItemModelSelectItem::selectedIndex()
 	return _selectedIndex;
 }
 
-void ItemModelSelectItem::setSelected(int index)
+void ItemModelSelectItem::setSelected(int i)
 {
 	int oldSelectedIndex = _selectedIndex;
-	_selectedIndex = index;
+	_selectedIndex = i;
 	string value = _boundTo->options().at(_selectedIndex);
 	_boundTo->setValue(value);
 
-	emit dataChanged(createIndex(oldSelectedIndex, 0), createIndex(oldSelectedIndex, 0), QVector<int>(1, Qt::CheckStateRole));
-	emit dataChanged(createIndex(_selectedIndex,   0), createIndex(_selectedIndex,   0), QVector<int>(1, Qt::CheckStateRole));
+	emit dataChanged(index(oldSelectedIndex, 0), index(oldSelectedIndex, 0), QVector<int>(1, Qt::CheckStateRole));
+	emit dataChanged(index(_selectedIndex,   0), index(_selectedIndex,   0), QVector<int>(1, Qt::CheckStateRole));
 }
 
