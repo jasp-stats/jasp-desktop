@@ -33,18 +33,23 @@ run <- function(name, options.as.json.string, perform="run") {
 	
 	} else {
 	
+		keep <- NULL
+	
 		if ("state" %in% names(results)) {
 
 			state <- results$state
-			file <- .requestStateFileNameNative()
-			base::Encoding(file) <- "UTF-8"
-			base::save(state, file=file, compress=FALSE)
+			state.file <- .requestStateFileNameNative()
+			base::Encoding(state.file) <- "UTF-8"
+			base::save(state, file=state.file)
+			
+			keep <- state.file
 		}
 		
 		if ("results" %in% names(results)) {
 		
 			results$results <- .addCitationToResults(results$results)
 			results$state   <- NULL # remove the state object
+			results$keep    <- c(results$keep, keep)  # keep the state file
 			
 		} else {
 		
