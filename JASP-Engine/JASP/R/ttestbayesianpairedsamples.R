@@ -468,7 +468,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						if (is.na(bf.raw)) {
 					
 							unplotable <- TRUE
-							unplotableMessage <- "Bayes factor is NaN"
+							unplotableMessage <- "Bayes factor could not be calculated"
 							
 						} else if (is.infinite(bf.raw)) {
 						

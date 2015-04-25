@@ -411,8 +411,8 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 						plot <- plots.ttest[[z]]
 					
-						if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {						
-													
+						if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {
+							
 							image <- .beginSaveImage(530, 400)
 							.plotSequentialBF.ttest(x= group2, y= group1, paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0, BF10post=BF10post[i],
 													plotDifferentPriors= options$plotSequentialAnalysisRobustness, subDataSet=subDataSet, level1=g1, level2=g2)
@@ -756,7 +756,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						if (is.na(bf.raw)) {
 					
 							status[rowNo] <- "error"
-							plottingError[rowNo] <- "Plotting is not possible: Bayes factor is NaN"
+							plottingError[rowNo] <- "Plotting is not possible: Bayes factor could not be calculated"
 						}					
 						
 						if(is.infinite(bf.raw)){
