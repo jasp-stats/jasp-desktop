@@ -70,6 +70,13 @@
 					"isNuisance": false
 				}
 			]
+		},
+		{
+			"name": "priorWidth",
+			"type": "Number",
+			"value": 0.5,
+			"min": 0,
+			"max": 2
 		}
 	]
 }

@@ -54,6 +54,13 @@
 			"type": "List",
 			"options": [ "BF10", "BF01", "LogBF10" ],
 			"default": "BF10"
+		},
+		{
+			"name": "priorWidth",
+			"type": "Number",
+			"value": 0.5,
+			"min": 0,
+			"max": 2
 		}
 	]
 }
