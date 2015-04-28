@@ -199,8 +199,9 @@
 	}
 
 	if ( ! .shouldContinue(callback()))
-		return (list (model =  list (models = NULL, effects = NULL),
-			status = list (ready = FALSE, error.message = NULL)))
+		return()
+		#return (list (model =  list (models = NULL, effects = NULL),
+		#	status = list (ready = FALSE, error.message = NULL)))
 
 
 	null.model <- list ()
@@ -253,8 +254,9 @@
 		model.object <- list()
 		for (m in 1:no.models) {
 			if ( ! .shouldContinue(callback()))
-				return (list (model =  list (models = NULL, effects = NULL),
-					status = list (ready = FALSE, error.message = NULL)))
+				return()
+				#return (list (model =  list (models = NULL, effects = NULL),
+				#	status = list (ready = FALSE, error.message = NULL)))
 			model.object [[m]] <- list ("ready" = TRUE)
 			model.effects <- base::strsplit (x = as.character (model.list [[m]]) [[3]], 
 				split = "+", fixed = TRUE) [[1]]

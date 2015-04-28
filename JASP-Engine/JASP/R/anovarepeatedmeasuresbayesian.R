@@ -32,6 +32,10 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 
 ## MODEL
 	model.object <- .theBayesianLinearModels (dataset, options, perform, status, callback)
+	
+	if (is.null(model.object)) # analysis cancelled by the callback
+		return()
+	
 	model <- model.object$model
 	status <- model.object$status
 
