@@ -658,6 +658,8 @@ void MainWindow::saveComplete(const QString &name)
 		this->close();
 	else if (_dataSetClosing)
 		dataSetCloseRequested();
+	else
+		ui->tabBar->setCurrentIndex(1);
 }
 
 void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename)

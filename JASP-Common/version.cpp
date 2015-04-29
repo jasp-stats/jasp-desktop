@@ -25,13 +25,13 @@ Version::Version(std::string versionString)
 	char buildString[8];
 	unsigned char buildIndex = 0;
 
-	int v1 = sscanf(versionString.c_str(), "%hhu.%hhu.%2hhu.%hhu %7s %hhu", &massive, &major, &minor, &revision, buildString, &buildIndex);
+	int v1 = sscanf(versionString.c_str(), "%hhu.%hhu.%hhu.%hhu %7s %hhu", &massive, &major, &minor, &revision, buildString, &buildIndex);
 	bool hasMassive = v1 >= 4;
 
 	if (!hasMassive)
 	{
 		massive = 0;
-		v1 = sscanf(versionString.c_str(), "%hhu.%2hhu.%hhu %7s %hhu", &major, &minor, &revision, buildString, &buildIndex);
+		v1 = sscanf(versionString.c_str(), "%hhu.%hhu.%hhu %7s %hhu", &major, &minor, &revision, buildString, &buildIndex);
 	}
 
 	bool error = v1 <= 0;
@@ -123,7 +123,7 @@ string Version::asString(bool includeMassive, bool includeRelease) const
 		stream << (int)massive << ".";
 
 	stream << (int)major << ".";
-	stream << std::setfill('0') << std::setw(2) << std::right;
+	//stream << std::setfill('0') << std::setw(2) << std::right;
 	stream << (int)minor << ".";
 	stream << (int)revision;
 
