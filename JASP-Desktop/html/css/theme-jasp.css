@@ -13,6 +13,10 @@ body:not(.windows) {
 	font-size: 12px ;
 }
 
+body.windows {
+	font-size: 85% ;
+}
+
 body.selected {
 	background-color: #E8E8E8 ;
 }
