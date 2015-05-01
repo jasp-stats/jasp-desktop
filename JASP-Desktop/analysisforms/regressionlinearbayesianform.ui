@@ -336,7 +336,7 @@
        </spacer>
       </item>
       <item row="0" column="2">
-       <widget class="QGroupBox" name="groupBox">
+       <widget class="GroupBox" name="groupBox">
         <property name="title">
          <string>Prior</string>
         </property>
