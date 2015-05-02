@@ -102,7 +102,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 		Column &column = packageData->dataSet->column(i);
 
 		column.setName(columnDesc["name"].asString());
-		column._columnType = getColumnType(columnDesc["measureType"].asString());
+		column.setColumnType(parseColumnType(columnDesc["measureType"].asString()));
 
 		Json::Value &labelsDesc = columnDesc["labels"];
 		Labels &labels = column.labels();
@@ -317,7 +317,7 @@ bool JASPImporter::isCompatible(DataSetPackage *packageData)
 			packageData->dataArchiveVersion <= JASPExporter::dataArchiveVersion;
 }
 
-Column::ColumnType JASPImporter::getColumnType(string name)
+Column::ColumnType JASPImporter::parseColumnType(string name)
 {
 	if (name == "Nominal")
 		return  Column::ColumnTypeNominal;

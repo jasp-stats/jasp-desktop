@@ -184,7 +184,7 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 			labels.add(value);
 		}
 
-		column._columnType = Column::ColumnTypeNominal;
+		column.setColumnType(Column::ColumnTypeNominal);
 
 		return;
 	}
@@ -222,7 +222,7 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 
 	if (success)
 	{
-		column._columnType = Column::ColumnTypeScale;
+		column.setColumnType(Column::ColumnTypeScale);
 		return;
 	}
 
@@ -269,7 +269,7 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 		intInputItr++;
 	}
 
-	column._columnType = Column::ColumnTypeNominalText;
+	column.setColumnType(Column::ColumnTypeNominalText);
 }
 
 
