@@ -114,9 +114,9 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 					df <- as.numeric(r$parameter)
 					p  <- as.numeric(r$p.value)
 					m  <- as.numeric(r$estimate)
-					sed <- .clean(sd(c1-c2, na.rm = TRUE)/length(na.omit(c1-c2)))
+					sed <- .clean(sd(c1-c2, na.rm = TRUE)/sqrt(length(na.omit(c1-c2))))
 					
-					es <- .clean((mean(c1)-mean(c2))/(sqrt((sd(c1)^2+sd(c2)^2)/2)))
+					es <- .clean((mean(c1)-mean(c2))/(sqrt(sd(c1)^2+sd(c2)^2-2*cov(c1, c2))))
 			        
 					ci.l <- as.numeric(r$conf.int[1])
 					ci.u <- as.numeric(r$conf.int[2])
