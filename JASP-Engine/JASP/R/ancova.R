@@ -594,7 +594,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				result <- base::tryCatch(stats::anova(model),error=function(e) e, warning=function(w) w)
 				
 				if (!is.null(result$message) && result$message == "ANOVA F-tests on an essentially perfect fit are unreliable")
-					stop(result$message)	
+					stop(result$message)
 
 				SSt <- sum(result[,"Sum Sq"], na.rm = TRUE)
 							

@@ -357,7 +357,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 		}
 	}
-
+		
 	list(model = model, epsilon = epsilon, epsilonError = epsilonError, mauchly = mauchly, status = status)
 }
 
@@ -474,45 +474,80 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 				modelTermsCase <- strsplit(terms.base64[[1]],":")[[j]]
 				index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
 
-				SS <- resultTable[index,"Sum Sq"]
-				df <- resultTable[index,"Df"]
-				MS <- resultTable[index,"Mean Sq"]
-				F <- resultTable[index,"F value"]
-				p <- resultTable[index,"Pr(>F)"]
+				if (sum(index) > 0) { 
+				
+					SS <- resultTable[index,"Sum Sq"]
+					df <- resultTable[index,"Df"]
+					MS <- resultTable[index,"Mean Sq"]
+					F <- resultTable[index,"F value"]
+					p <- resultTable[index,"Pr(>F)"]
+					
+					if (is.null(F) || is.null(p)) {
+						F <- .clean(NaN)
+						p <- .clean(NaN)
+					}
+									
+				} else {
+				
+					SS <- 0
+					df <- 0
+					MS <- .clean(NaN)
+					F <- .clean(NaN)
+					p <- .clean(NaN)
+					
+				}
 
 				row <- list("case"=terms.normal[[1]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
 
 				if (options$effectSizeEstimates) {
+				
+					if (sum(gsub(" ", "", row.names(resultTable), fixed = TRUE) == "Residuals") > 0) {
 
-					SSt <- sum(resultTable[,"Sum Sq"])
-					SSr <- resultTable["Residuals","Sum Sq"]
-					MSr <- SSr/resultTable["Residuals","Df"]
+						SSt <- sum(resultTable[,"Sum Sq"])
+						SSr <- resultTable["Residuals","Sum Sq"]
+						MSr <- SSr/resultTable["Residuals","Df"]
 
-					row[["eta"]] <- SS / SSt
-					row[["partialEta"]] <- SS / (SS + SSr)
-					omega <- (SS - (df * MSr)) / (SSt + MSr)
+						row[["eta"]] <- SS / SSt
+						row[["partialEta"]] <- SS / (SS + SSr)
+						omega <- (SS - (df * MSr)) / (SSt + MSr)
 
-					if (omega < 0) {
-						row[["omega"]] <- 0
+						if (omega < 0) {
+							row[["omega"]] <- 0
+						} else {
+							row[["omega"]] <- omega
+						}
+						
 					} else {
-						row[["omega"]] <- omega
+						
+						row[["eta"]] <- .clean(NaN)
+						row[["partialEta"]] <- .clean(NaN)
+						row[["omega"]] <- .clean(NaN)
+					
 					}
-
 				}
 
 				anova.rows[[length(anova.rows) + 1]] <- row
 
 			}
-
-			SS <- resultTable["Residuals","Sum Sq"]
-			df <- resultTable["Residuals","Df"]
-			MS <- resultTable["Residuals","Mean Sq"]
+									
+			if (sum(gsub(" ", "", row.names(resultTable), fixed = TRUE) == "Residuals") > 0) {
+			
+				SS <- resultTable["Residuals","Sum Sq"]
+				df <- resultTable["Residuals","Df"]
+				MS <- resultTable["Residuals","Mean Sq"]
+			
+			} else {
+			
+				SS <- 0
+				df <- 0
+				MS <- .clean(NaN)
+			}
 
 			row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
 
 			anova.rows[[length(anova.rows) + 1]] <- row
 
-		} else {
+		} else {	# if sum of squares is equal to type 2 or 3
 
 			result <- model
 
@@ -532,34 +567,43 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 				SS <- result[index,"SS"]
 				df <- result[index,"num Df"]
 				MS <- SS / df
-				F <- result[index,"F"]
-				p <- result[index,"Pr(>F)"]
+				F <- .clean(result[index,"F"])
+				p <- .clean(result[index,"Pr(>F)"])
 
 				row <- list("case"=terms.normal[[1]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
-
+				
 				if (options$effectSizeEstimates) {
-
+					
 					modelTermsCases <- strsplit(terms.base64[[1]],":")
 
 					indices <- c()
 					for (case in .indices(terms.base64[[1]])) {
 						indices <- c(indices, which(unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCases[[case]])))))
 					}
+					
+					if (result[index,"Error SS"] > 0) {
 
-					SSr <- result[index,"Error SS"]
-					SSt <- sum(result[indices,"SS"]) + SSr
-					MSr <- SSr/result[index,"den Df"]
+						SSr <- result[index,"Error SS"]
+						SSt <- sum(result[indices,"SS"]) + SSr
+						MSr <- SSr/result[index,"den Df"]
 
-					row[["eta"]] <- SS / SSt
-					row[["partialEta"]] <- SS / (SS + SSr)
-					omega <- (SS - (df * MSr)) / (SSt + MSr)
+						row[["eta"]] <- SS / SSt
+						row[["partialEta"]] <- SS / (SS + SSr)
+						omega <- (SS - (df * MSr)) / (SSt + MSr)
 
-					if (omega < 0) {
-						row[["omega"]] <- 0
+						if (omega < 0) {
+							row[["omega"]] <- 0
+						} else {
+							row[["omega"]] <- omega
+						}
+						
 					} else {
-						row[["omega"]] <- omega
+						
+						row[["eta"]] <- .clean(NaN)
+						row[["partialEta"]] <- .clean(NaN)
+						row[["omega"]] <- .clean(NaN)
+					
 					}
-
 				}
 
 				anova.rows[[length(anova.rows) + 1]] <- row
@@ -570,8 +614,13 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 			SS <- result[indexResidual,"Error SS"]
 			df <- result[indexResidual,"den Df"]
-			MS <- SS / df
-
+			
+			if (SS == 0 && df == 0) {
+				MS <- .clean(NaN)
+			} else {
+				MS <- SS / df
+			}
+			
 			row <- list("case"="Residual", "SS"=SS, "df"=df, "MS"=MS, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = TRUE)
 
 			anova.rows[[length(anova.rows) + 1]] <- row    
@@ -665,7 +714,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 	terms.base64 <- modelDef$terms.base64
 	termsRM.base64 <- modelDef$termsRM.base64
 
-	if (is.null(model) || (options$sphericityCorrections && perform == "init") || (options$sphericityCorrections && epsilonError)) {
+	if (is.null(model) || (options$sphericityCorrections && perform == "init") || (options$sphericityCorrections && !is.null(corrections) && !(length(corrections) == 1 && corrections == "None") && epsilonError)) {
 
 		anova.rows <- list()
 
@@ -686,19 +735,19 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 						counter <- 1
 
 						if (options$sphericityNone) {
-							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1 && length(corrections) > 1))
 							anova.rows[[length(anova.rows) + 1]] <- row
 							counter <- counter + 1
 						}
 
 						if (options$sphericityGreenhouseGeisser) {
-							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1 && length(corrections) > 1))
 							anova.rows[[length(anova.rows) + 1]] <- row
 							counter <- counter + 1
 						}
 
 						if (options$sphericityHuynhFeldt) {
-							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=".", "df"=".", "MS"=".", "F"=".", "p"=".", ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1 && length(corrections) > 1))
 							anova.rows[[length(anova.rows) + 1]] <- row
 							counter <- counter + 1
 						}
@@ -777,85 +826,132 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 					modelTermsCase <- strsplit(terms.base64[[i]],":")[[j]]
 					index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
+					
+					if (sum(index) > 0) { 
 
-					SS <- resultTable[index,"Sum Sq"]
-					df <- resultTable[index,"Df"]
-					MS <- resultTable[index,"Mean Sq"]
-					F <- resultTable[index,"F value"]
-					p <- resultTable[index,"Pr(>F)"]
-					dfR <- resultTable["Residuals","Df"]
+						SS <- resultTable[index,"Sum Sq"]
+						df <- resultTable[index,"Df"]
+						MS <- resultTable[index,"Mean Sq"]
+						F <- resultTable[index,"F value"]
+						p <- resultTable[index,"Pr(>F)"]
+						dfR <- resultTable["Residuals","Df"]
+						
+						if (is.null(F) && is.null(p)) {
+							F <- .clean(NaN)
+							p <- .clean(NaN)
+						}
+																		
+						if (is.na(dfR)) {
+							dfR <- 0
+						}
+					
+					} else {
+					
+						SS <- 0
+						df <- 0
+						MS <- .clean(NaN)
+						F <- .clean(NaN)
+						p <- .clean(NaN)
+						dfR <- 0
+						
+					}
 
 					counter <- 0
 
 					for (cor in corrections) {
 
 						counter <- counter + 1
-
+						
+						row.footnotes <- NULL
+						
+						if (!is.null(epsilon) && epsilon[i-1,"p"] < .05) {
+							
+							foot.index <- .addFootnote(footnotes, text="Mauchly's test of sphericity indicates that the assumption of sphericity is violated (p < .05).")
+							row.footnotes <- list(SS=list(foot.index), df=list(foot.index), MS=list(foot.index), F=list(foot.index), p=list(foot.index))
+							
+						}
+						
 						if (!options$sphericityCorrections || cor == "empty") {
 
-							if (!is.null(epsilon) && epsilon[i-1,"p"] < .05) {
-
-								foot.index <- .addFootnote(footnotes, text="Mauchly's test of sphericity indicates that the assumption of sphericity is violated (p < .05).")
-								row.footnotes <- list(SS=list(foot.index), df=list(foot.index), MS=list(foot.index), F=list(foot.index), p=list(foot.index))
-
-								row <- list("case"=terms.normal[[i]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup, .footnotes=row.footnotes)
-
-							} else {
-
-								row <- list("case"=terms.normal[[i]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
-
-							}
+							row <- list("case"=terms.normal[[i]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup, .footnotes=row.footnotes)
 
 						} else if (cor == "None") {
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1 && length(corrections) > 1), .footnotes=row.footnotes)
 
 						} else if (cor == "Greenhouse-Geisser") {
 
 							dfGG <- df * epsilon[i-1,"GG"]
 							MSGG <- SS / dfGG
 							dfRGG <- dfR * epsilon[i-1,"GG"]
-							pGG <-  pf(F,dfGG,dfRGG,lower.tail=FALSE)
+							
+							if (F != "NaN") {
+								pGG <-  pf(F,dfGG,dfRGG,lower.tail=FALSE)
+							} else {
+								pGG <- .clean(NaN)
+							}
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"=F, "p"=pGG, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"=F, "p"=pGG, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1 && length(corrections) > 1), .footnotes=row.footnotes)
 
 						} else if (cor == "Huynh-Feldt") {
 
 							dfHF <- df * epsilon[i-1,"HF"]
 							MSHF <- SS / dfHF
 							dfRHF <- dfR * epsilon[i-1,"HF"]
-							pHF <- pf(F,dfHF,dfRHF,lower.tail=FALSE)
+							
+							if (F != "NaN") {
+								pHF <- pf(F,dfHF,dfRHF,lower.tail=FALSE)
+							} else {
+								pHF <- .clean(NaN)
+							}
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"=F, "p"=pHF, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"=F, "p"=pHF, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1 && length(corrections) > 1), .footnotes=row.footnotes)
 
 						}
 
-
 						if (options$effectSizeEstimates) {
+						
+							if (sum(gsub(" ", "", row.names(resultTable), fixed = TRUE) == "Residuals") > 0) {
 
-							SSt <- sum(resultTable[,"Sum Sq"])
-							SSr <- resultTable["Residuals","Sum Sq"]
-							MSr <- SSr/resultTable["Residuals","Df"]
+								SSt <- sum(resultTable[,"Sum Sq"])
+								SSr <- resultTable["Residuals","Sum Sq"]
+								MSr <- SSr/resultTable["Residuals","Df"]
 
-							row[["eta"]] <- SS / SSt
-							row[["partialEta"]] <- SS / (SS + SSr)
-							omega <- (SS - (df * MSr)) / (SSt + MSr)
+								row[["eta"]] <- SS / SSt
+								row[["partialEta"]] <- SS / (SS + SSr)
+								omega <- (SS - (df * MSr)) / (SSt + MSr)
 
-							if (omega < 0) {
-								row[["omega"]] <- 0
+								if (omega < 0) {
+									row[["omega"]] <- 0
+								} else {
+									row[["omega"]] <- omega
+								}
+								
 							} else {
-								row[["omega"]] <- omega
+								
+								row[["eta"]] <- .clean(NaN)
+								row[["partialEta"]] <- .clean(NaN)
+								row[["omega"]] <- .clean(NaN)
+							
 							}
-
 						}
 
 						anova.rows[[length(anova.rows) + 1]] <- row
 					}
 				}
-
-				SS <- resultTable["Residuals","Sum Sq"]
-				df <- resultTable["Residuals","Df"]
-				MS <- resultTable["Residuals","Mean Sq"]
+												
+				if (sum(gsub(" ", "", row.names(resultTable), fixed = TRUE) == "Residuals") > 0) {
+			
+					SS <- resultTable["Residuals","Sum Sq"]
+					df <- resultTable["Residuals","Df"]
+					MS <- resultTable["Residuals","Mean Sq"]
+			
+				} else {
+			
+					SS <- 0
+					df <- 0
+					MS <- .clean(NaN)
+				}
 
 				counter <- 0
 
@@ -874,15 +970,25 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 					} else if (cor == "Greenhouse-Geisser") {
 
 						dfGG <- df * epsilon[i-1,"GG"]
-						MSGG <- SS / dfGG
+						
+						if (SS > 0) {
+							MSGG <- SS / dfGG
+						} else {
+							MSGG <- .clean(NaN)
+						}
 
 						row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 
 					} else if (cor == "Huynh-Feldt") {
 
 						dfHF <- df * epsilon[i-1,"HF"]
-						MSHF <- SS / dfHF
-
+						
+						if (SS > 0) {
+							MSHF <- SS / dfHF
+						} else {
+							MSHF <- .clean(NaN)
+						}
+						
 						row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 
 					}
@@ -892,7 +998,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 				}
 			}
 
-		} else {
+		} else {	# if sum of squares is equal to type 2 or 3
 
 			result <- model
 
@@ -914,8 +1020,8 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 					SS <- result[index,"SS"]
 					df <- result[index,"num Df"]
 					MS <- SS / df
-					F <- result[index,"F"]
-					p <- result[index,"Pr(>F)"]
+					F <- .clean(result[index,"F"])
+					p <- .clean(result[index,"Pr(>F)"])
 					dfR <- result[index,"den Df"]
 
 					counter <- 0
@@ -923,70 +1029,87 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 					for (cor in corrections) {
 
 						counter <- counter + 1
+						
+						row.footnotes <- NULL
+						
+						if (!is.null(epsilon) && epsilon[i-1,"p"] < .05) {
+							
+							foot.index <- .addFootnote(footnotes, text="Mauchly's test of sphericity indicates that the assumption of sphericity is violated (p < .05).")
+							row.footnotes <- list(SS=list(foot.index), df=list(foot.index), MS=list(foot.index), F=list(foot.index), p=list(foot.index))
+							
+						}
 
 						if (!options$sphericityCorrections || cor == "empty") {
 
-							if (!is.null(epsilon) && epsilon[i-1,"p"] < .05) {
-
-								foot.index <- .addFootnote(footnotes, text="Mauchly's test of sphericity indicates that the assumption of sphericity is violated (p < .05).")
-								row.footnotes <- list(SS=list(foot.index), df=list(foot.index), MS=list(foot.index), F=list(foot.index), p=list(foot.index))
-
-								row <- list("case"=terms.normal[[i]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup, .footnotes=row.footnotes)
-
-							} else {
-
-								row <- list("case"=terms.normal[[i]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup)
-
-							}
+							row <- list("case"=terms.normal[[i]][j], "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = newGroup, .footnotes=row.footnotes)
 
 						} else if (cor == "None") {
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
+							row <- list("case"=terms.normal[[i]][j], "cor"="None", "SS"=SS, "df"=df, "MS"=MS, "F"=F, "p"=p, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1 && length(corrections) > 1), .footnotes=row.footnotes)
 
 						} else if (cor == "Greenhouse-Geisser") {
 
 							dfGG <- df * epsilon[i-1,"GG"]
 							MSGG <- SS / dfGG
 							dfRGG <- dfR * epsilon[i-1,"GG"]
-							pGG <-  pf(F,dfGG,dfRGG,lower.tail=FALSE)
-
-							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"=F, "p"=pGG, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
+							
+							if (F != "NaN") {
+								pGG <-  pf(F,dfGG,dfRGG,lower.tail=FALSE)
+							} else {
+								pGG <- .clean(NaN)
+							}
+							
+							row <- list("case"=terms.normal[[i]][j], "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"=F, "p"=pGG, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1 && length(corrections) > 1), .footnotes=row.footnotes)
 
 						} else if (cor == "Huynh-Feldt") {
 
 							dfHF <- df * epsilon[i-1,"HF"]
 							MSHF <- SS / dfHF
 							dfRHF <- dfR * epsilon[i-1,"HF"]
-							pHF <- pf(F,dfHF,dfRHF,lower.tail=FALSE)
 
-							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"=F, "p"=pHF, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1))
+							if (F != "NaN") {
+								pHF <- pf(F,dfHF,dfRHF,lower.tail=FALSE)
+							} else {
+								pHF <- .clean(NaN)
+							}
+
+							row <- list("case"=terms.normal[[i]][j], "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"=F, "p"=pHF, ".isNewGroup" = (newGroup && counter == 1), ".isNewSubGroup" = (!newGroup && counter == 1 && length(corrections) > 1), .footnotes=row.footnotes)
 
 						}
 
 
 						if (options$effectSizeEstimates) {
-
+							
 							modelTermsCases <- strsplit(terms.base64[[i]],":")
 
 							indices <- c()
 							for (case in .indices(terms.base64[[i]])) {
 								indices <- c(indices, which(unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCases[[case]])))))
 							}
+							
+							if (result[index,"Error SS"] > 0) {
 
-							SSr <- result[index,"Error SS"]
-							SSt <- sum(result[indices,"SS"]) + SSr
-							MSr <- SSr/result[index,"den Df"]
+								SSr <- result[index,"Error SS"]
+								SSt <- sum(result[indices,"SS"]) + SSr
+								MSr <- SSr/result[index,"den Df"]
 
-							row[["eta"]] <- SS / SSt
-							row[["partialEta"]] <- SS / (SS + SSr)
-							omega <- (SS - (df * MSr)) / (SSt + MSr)
+								row[["eta"]] <- SS / SSt
+								row[["partialEta"]] <- SS / (SS + SSr)
+								omega <- (SS - (df * MSr)) / (SSt + MSr)
 
-							if (omega < 0) {
-								row[["omega"]] <- 0
+								if (omega < 0) {
+									row[["omega"]] <- 0
+								} else {
+									row[["omega"]] <- omega
+								}
+								
 							} else {
-								row[["omega"]] <- omega
+								
+								row[["eta"]] <- .clean(NaN)
+								row[["partialEta"]] <- .clean(NaN)
+								row[["omega"]] <- .clean(NaN)
+							
 							}
-
 						}
 
 						anova.rows[[length(anova.rows) + 1]] <- row
@@ -999,7 +1122,12 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 
 				SS <- result[indexResidual,"Error SS"]
 				df <- result[indexResidual,"den Df"]
-				MS <- SS / df
+			
+				if (SS == 0 && df == 0) {
+					MS <- .clean(NaN)
+				} else {
+					MS <- SS / df
+				}
 
 				counter <- 0
 
@@ -1018,14 +1146,24 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 					} else if (cor == "Greenhouse-Geisser") {
 
 						dfGG <- df * epsilon[i-1,"GG"]
-						MSGG <- SS / dfGG
+
+						if (SS > 0) {
+							MSGG <- SS / dfGG
+						} else {
+							MSGG <- .clean(NaN)
+						}
 
 						row <- list("case"="Residual", "cor"="Greenhouse-Geisser", "SS"=SS, "df"=dfGG, "MS"=MSGG, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 
 					} else if (cor == "Huynh-Feldt") {
 
 						dfHF <- df * epsilon[i-1,"HF"]
-						MSHF <- SS / dfHF
+
+						if (SS > 0) {
+							MSHF <- SS / dfHF
+						} else {
+							MSHF <- .clean(NaN)
+						}
 
 						row <- list("case"="Residual", "cor"="Huynh-Feldt", "SS"=SS, "df"=dfHF, "MS"=MSHF, "F"="", "p"="", "eta"="", "partialEta"="", "omega" = "", ".isNewSubGroup" = (counter == 1))
 
