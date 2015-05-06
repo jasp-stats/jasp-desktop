@@ -11,7 +11,7 @@ Assumptions
 - Homoscedasticity: The error variance of every explanatory variable is constant across all values of that explanatory variable.
 - Normality of errors: The errors are normally distributed with mean zero.
 
-Assignment box
+Assignment Box
 -------
 - Dependent: Dependent variable.
 - Blocks: Allows to decide in which order the explanatory variables are entered into the model (i.e., hierarchical regression analysis). A block of one or more explanatory variable(s) represents one step in the hierarchy. 
