@@ -60,6 +60,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	unsigned long long progress;
 	unsigned long long lastProgress = -1;
 
+	Json::Value labelsData = Json::objectValue;
 	Json::Value metaData = Json::objectValue;
 
 	Json::Value &dataSet = metaData["dataSet"];
@@ -73,8 +74,9 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	for (int i = 0; i < columnCount; i++)
 	{
 		Column &column = dataset->column(i);
-		Json::Value columnMetaData = Json::Value(Json::objectValue);
-		columnMetaData["name"] = Json::Value(string(column.name().c_str()));
+		string name = column.name();
+		Json::Value columnMetaData = Json::Value(Json::objectValue);	
+		columnMetaData["name"] = Json::Value(name);
 		columnMetaData["measureType"] = Json::Value(getColumnTypeName(column.columnType()));
 		if (column.columnType() != Column::ColumnTypeScale)
 		{
@@ -93,7 +95,8 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 			Labels &labels = column.labels();
 			if (labels.size() > 0)
 			{
-				Json::Value &labelsMetaData = columnMetaData["labels"];
+				Json::Value &columnLabelData = labelsData[name];
+				Json::Value &labelsMetaData = columnLabelData["labels"];
 				int labelIndex = 0;
 
 				for (Labels::const_iterator iter = labels.begin(); iter != labels.end(); iter++)
@@ -120,7 +123,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	dataSet["fields"] = columnsData;
 
 
-	//Create new entry for archive NOTE: must be done before data is added
+	//Create new entry for archive
 	string metaDataString = metaData.toStyledString();
 	int sizeOfMetaData = metaDataString.size();
 
@@ -133,6 +136,23 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	archive_write_header(a, entry);
 
 	archive_write_data(a, metaDataString.c_str(), sizeOfMetaData);
+
+	archive_entry_free(entry);
+
+
+	//Create new entry for archive
+	string labelDataString = labelsData.toStyledString();
+	int sizeOflabelData = labelDataString.size();
+
+	entry = archive_entry_new();
+	string dd9 = string("xdata.json");
+	archive_entry_set_pathname(entry, dd9.c_str());
+	archive_entry_set_size(entry, sizeOflabelData);
+	archive_entry_set_filetype(entry, AE_IFREG);
+	archive_entry_set_perm(entry, 0644); // Not sure what this does
+	archive_write_header(a, entry);
+
+	archive_write_data(a, labelDataString.c_str(), sizeOflabelData);
 
 	archive_entry_free(entry);
 
