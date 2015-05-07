@@ -177,6 +177,32 @@
 		{
 			"name": "homogeneityTests",
 			"type": "Boolean"
+		},
+		{
+			"name": "plotHorizontalAxis",
+			"type": "Variable"
+		},
+		{
+			"name": "plotSeparateLines",
+			"type": "Variable"
+		},
+		{
+			"name": "plotSeparatePlots",
+			"type": "Variable"
+		},
+		{
+			"name": "plotErrorBars",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotWidth",
+			"type": "Integer",
+			"default": 450
+		},
+		{
+			"name": "plotHeight",
+			"type": "Integer",
+			"default": 300
 		}
 	]
 }

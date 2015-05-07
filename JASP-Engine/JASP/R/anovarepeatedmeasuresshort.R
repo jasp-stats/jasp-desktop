@@ -796,7 +796,7 @@ AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", cal
 		if (status$error)
 			anova[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
 
-		if (epsilonError)
+		if (options$sphericityCorrections && !is.null(corrections) && !(length(corrections) == 1 && corrections == "None") && epsilonError)
 			anova[["error"]] <- list(errorType="badData", errorMessage="Could not estimate sphericity corrections due to problems with estimating the correction parameters.")
 
 	} else {
