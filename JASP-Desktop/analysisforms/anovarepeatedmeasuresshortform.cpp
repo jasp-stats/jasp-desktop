@@ -57,10 +57,31 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	connect(_designTableModel, SIGNAL(factorAdded(Terms)), _withinSubjectsTermsModel, SLOT(addFixedFactors(Terms)));
 	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _withinSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
+	_plotFactorsAvailableTableModel = new TableModelVariablesAvailable();
+	_plotFactorsAvailableTableModel->setInfoProvider(this);
+	ui->plotVariables->setModel(_plotFactorsAvailableTableModel);
+
+	_horizontalAxisTableModel = new TableModelVariablesAssigned(this);
+	_horizontalAxisTableModel->setSource(_plotFactorsAvailableTableModel);
+	ui->plotHorizontalAxis->setModel(_horizontalAxisTableModel);
+
+	_seperateLinesTableModel = new TableModelVariablesAssigned(this);
+	_seperateLinesTableModel->setSource(_plotFactorsAvailableTableModel);
+	ui->plotSeparateLines->setModel(_seperateLinesTableModel);
+
+	_seperatePlotsTableModel = new TableModelVariablesAssigned(this);
+	_seperatePlotsTableModel->setSource(_plotFactorsAvailableTableModel);
+	ui->plotSeparatePlots->setModel(_seperatePlotsTableModel);
+
+	ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plotVariables, ui->plotHorizontalAxis);
+	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->plotSeparateLines);
+	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->plotSeparatePlots);
+
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
+	ui->containerProfilePlot->hide();
 
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
 
@@ -113,6 +134,13 @@ void AnovaRepeatedMeasuresShortForm::factorsChanged()
 	factorsAvailable.add(_betweenSubjectsFactorsListModel->assigned());
 
 	_contrastsModel->setVariables(factorsAvailable);
+	//_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+
+	//Terms plotVariablesAssigned;
+	//plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
+	//plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
+	//plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
+	//_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
 
 	ui->postHocTestsVariables->setVariables(factorsAvailable);
 
