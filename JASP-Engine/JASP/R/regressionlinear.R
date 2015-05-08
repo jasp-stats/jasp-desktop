@@ -267,6 +267,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	################################################################################
 	#							 DESCRIPTIVES TABLE								   #
 	################################################################################
+	
 	if (options$descriptives) {
 	
 	    descriptives <- list()
@@ -322,6 +323,101 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		descriptives[["data"]] <- descriptives.results
 		
 		results[["descriptives"]] <- descriptives
+	}
+	
+	
+	################################################################################
+	#						   PART & PARTIAL CORRELATIONS   					   #
+	################################################################################
+	
+	if (options$partAndPartialCorrelations) {
+		
+		correlations <- list()
+		correlations[["title"]] <- "Part And Partial Correlations"
+		
+		# Declare table elements
+		fields <- list(
+			list(name = "Model", type = "integer"),
+			list(name = "Name", title = "  ", type = "string"),
+			list(name = "Partial", title = "Partial", type = "number", format = "dp:3"),
+			list(name = "Part", title = "Part", type="number", format = "dp:3"))
+	
+		correlations[["schema"]] <- list(fields = fields)
+		
+		correlations.rows <- list()
+		
+		
+		if (perform == "run" && length(list.of.errors) == 0) {
+		
+			if (number.of.blocks == 0) {
+			
+				correlations.rows[[length(correlations.rows)+1]] <- list(Model=".", Name=".", Partial=".", Part=".")
+				
+			} else {
+			
+				for (m in 1:length(lm.model)) {
+				
+					variables.model <- lm.model[[m]]$variables
+					
+					if (length(variables.model) > 0) {
+					
+						for (variable in variables.model) {
+						
+							if ( which(variables.model == variable) == 1) {
+							
+								partAndPartial <- .partAndPartialCorrelation(dependent.variable, variable, variables.model, dataset)
+								partial <- .clean(partAndPartial$partialCor)
+								part <- .clean(partAndPartial$partCor)
+								correlations.rows[[length(correlations.rows)+1]] <- list(Model=m, Name=variable, Partial=partial, Part=part)
+								
+							} else {
+							
+								partAndPartial <- .partAndPartialCorrelation(dependent.variable, variable, variables.model, dataset)
+								partial <- .clean(partAndPartial$partialCor)
+								part <- .clean(partAndPartial$partCor)
+								correlations.rows[[length(correlations.rows)+1]] <- list(Model=".", Name=variable, Partial=partial, Part=part)
+							}
+						}
+					}
+				}
+			}
+			
+		} else {
+		
+			if (number.of.blocks == 0) {
+			
+				correlations.rows[[length(correlations.rows)+1]] <- list(Model=".", Name=".", Partial=".", Part=".")
+				
+			} else {
+			
+				for (m in 1:length(lm.model)) {
+				
+					variables.model <- lm.model[[m]]$variables
+					
+					if (length( variables.model) > 0) {
+					
+						for (variable in variables.model) {
+						
+							if ( which(variables.model == variable) == 1) {
+							
+								correlations.rows[[length(correlations.rows)+1]] <- list(Model=m, Name=variable, Partial=".", Part=".")
+								
+							} else {
+							
+								correlations.rows[[length(correlations.rows)+1]] <- list(Model=".", Name=variable, Partial=".", Part=".")
+							}
+						}
+					}
+				}
+			}
+			
+			if (length(list.of.errors) > 0)
+				correlations[["error"]] <- list(errorType="badData")
+		
+		}
+		
+		correlations[["data"]] <- correlations.rows
+		results[["correlations"]] <- correlations
 	}
 	
 	
@@ -733,3 +829,46 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	results
 }
 
+.partAndPartialCorrelation <- function(dependent.variable, variable.of.interest, model.variables, dataset) {
+	
+	dataset <- na.omit(dataset)
+	dependent <- dataset[[ .v(dependent.variable) ]]
+	
+	# remove variable.of.interest from model.variables
+	index <- which(model.variables == variable.of.interest)
+	variables.to.control.for <- model.variables[-index]
+	
+	# if there are no variables to control for, return regular correlation
+	if (length(variables.to.control.for) == 0) {
+	
+		correlation <- cor(dependent, dataset[[ .v(variable.of.interest) ]])
+		
+		return(list(partCor=correlation, partialCor=correlation))
+	}
+	
+	# v variables
+	variables.to.control.for <- .v(variables.to.control.for)
+	dependent.variable <- .v(dependent.variable)
+	variable.of.interest <- .v(variable.of.interest)
+	
+	# create formulas
+	definition1 <- paste(variable.of.interest, "~", paste(variables.to.control.for, collapse="+"))
+	formula1 <- as.formula(definition1)
+	definition2 <- paste(dependent.variable, "~", paste(variables.to.control.for, collapse="+"))
+	formula2 <- as.formula(definition2)
+	
+	# remove variables.to.control.for from variable.of.interest
+	cleaned.variable.of.interest <- residuals( lm(formula1, data=dataset) )
+	
+	# remove variables.to.control.for from dependent.variable
+	cleaned.dependent.variable <- residuals( lm(formula2, data=dataset) )
+	
+	# part (semi-partial) correlation
+	partCor <- cor(cleaned.variable.of.interest, dependent)
+	
+	# partial correlation
+	partialCor <- cor(cleaned.variable.of.interest, cleaned.dependent.variable)
+		
+	return(list(partCor=partCor, partialCor=partialCor))
+	
+}
