@@ -368,7 +368,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								partAndPartial <- .partAndPartialCorrelation(dependent.variable, variable, variables.model, dataset)
 								partial <- .clean(partAndPartial$partialCor)
 								part <- .clean(partAndPartial$partCor)
-								correlations.rows[[length(correlations.rows)+1]] <- list(Model=m, Name=variable, Partial=partial, Part=part)
+								correlations.rows[[length(correlations.rows)+1]] <- list(Model=m, Name=variable, Partial=partial, Part=part, .isNewGroup=TRUE)
 								
 							} else {
 							
@@ -400,7 +400,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						
 							if ( which(variables.model == variable) == 1) {
 							
-								correlations.rows[[length(correlations.rows)+1]] <- list(Model=m, Name=variable, Partial=".", Part=".")
+								correlations.rows[[length(correlations.rows)+1]] <- list(Model=m, Name=variable, Partial=".", Part=".", .isNewGroup=TRUE)
 								
 							} else {
 							
@@ -721,6 +721,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v,2])
 							regression.result[[ len.reg ]]$"t-value" <- as.numeric(lm.estimates[v,3])
 							regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v,4])
+							regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 						
 							if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 								regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v,1] )
@@ -731,6 +732,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							regression.result[[ len.reg ]]$"Model" <- as.integer(m)
 							regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
 							regression.result[[ len.reg ]]$"Coefficient" <- "NA"
+							regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 						}
 						len.reg <- len.reg + 1
 					}
@@ -744,16 +746,19 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								regression.result[[ len.reg ]] <- empty.line
 								if (var == 1 && options$includeConstant == FALSE) {
 									regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+									regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 								}
 								regression.result[[ len.reg ]]$"Name" <- as.character(variables.in.model[ var])
-								regression.result[[ len.reg ]]$"Coefficient" <- "NA"								
-								len.reg <- len.reg + 1																
+								regression.result[[ len.reg ]]$"Coefficient" <- "NA"
+								
+								len.reg <- len.reg + 1
 							} else {
 								sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]])
 		
 								regression.result[[ len.reg ]] <- empty.line
 								if (var == 1 && options$includeConstant == FALSE) {
 									regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+									regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 								}
 								regression.result[[ len.reg ]]$"Name" <- as.character(variables.in.model[ var])
 								regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v+var,1])
@@ -789,6 +794,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						regression.result[[ len.reg ]] <- dotted.line
 						regression.result[[ len.reg ]]$"Model" <- as.integer(m)
 						regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
+						regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 						len.reg <- len.reg + 1
 					}
 					
@@ -801,6 +807,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							
 							if (var == 1 && options$includeConstant == FALSE) {
 								regression.result[[ len.reg ]]$"Model" <- as.integer(m)
+								regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 							}
 							regression.result[[ len.reg ]]$"Name" <- as.character(variables.in.model[ var])
 							len.reg <- len.reg + 1
@@ -814,6 +821,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				
 				if (options$includeConstant == TRUE) {
 					regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
+					regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 				}
 			}
 			if(length(list.of.errors) > 0){
