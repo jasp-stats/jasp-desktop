@@ -1,6 +1,7 @@
 RegressionLinear <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+	
 	#######################################
-	###	   VARIABLE DECLARATION	   ##
+	###	   VARIABLE DECLARATION			##
 	#######################################
 	dependent.variable <- unlist(options$dependent)
 	wls.weight <- unlist(options$wlsWeight)
@@ -12,11 +13,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 	}
 	
+	list.variables <- c(dependent.variable, independent.variables)
+	list.variables <- list.variables[list.variables != ""]
 	to.be.read.variables <- c(dependent.variable, independent.variables, wls.weight)
 	to.be.read.variables <- to.be.read.variables[ to.be.read.variables != ""]
 	
+	
 	#######################################
-	###			FETCH DATA			##
+	###			FETCH DATA				 ##
 	#######################################
 	
 	if (is.null(dataset)) {
@@ -261,7 +265,68 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	
 	################################################################################
-	#							 MODEL SUMMARY TABLE							  #
+	#							 DESCRIPTIVES TABLE								   #
+	################################################################################
+	if (options$descriptives) {
+	
+	    descriptives <- list()
+	
+		descriptives[["title"]] <- "Descriptives"
+		
+		fields <- list(
+			list(name="v",    title="",   type="string"),
+			list(name="N",    title="N",  type="integer"),
+			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
+			list(name="sd",   title="SD", type="number",   format="sf:4;dp:3"),
+			list(name="se",   title="SE", type="number",   format="sf:4;dp:3"))
+
+		descriptives[["schema"]] <- list(fields=fields)
+		descriptives.results <- list()
+		
+		if (length(list.variables) == 0) {
+		
+			descriptives.results[[length(descriptives.results)+1]] <- list(v=".", N=".", mean=".", sd= ".", se=".")
+		
+		} else {
+
+			for (variable in list.variables) {
+				
+				if (perform == "run") {
+	
+					data <- na.omit(dataset[[ .v(variable) ]])
+	
+					if (class(data) != "factor") {
+	
+						n    <- .clean(length(data))
+						mean <- .clean(mean(data))
+						stdDeviation <- .clean(sd(data))
+						stdErrorMean <- .clean(sd(data)/sqrt(length(data)))
+	
+						result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean)
+					} else {
+				
+						n <- .clean(length(data))
+						result <- list(v=variable, N=n, mean="", sd="", se="")
+					}
+				
+				} else {
+				
+					result <- list(v=variable, N=".", mean=".", sd= ".", se=".")
+				
+				}
+				
+				descriptives.results[[length(descriptives.results)+1]] <- result
+			}
+		}
+		
+		descriptives[["data"]] <- descriptives.results
+		
+		results[["descriptives"]] <- descriptives
+	}
+	
+	
+	################################################################################
+	#							 MODEL SUMMARY TABLE							   #
 	################################################################################
 	model.table <- list()
 	model.table[["title"]] <- "Model Summary"
@@ -355,7 +420,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	
 	################################################################################
-	#							  MODEL ANOVA TABLE							   #
+	#							  MODEL ANOVA TABLE								   #
 	################################################################################
 	if (options$modelFit == TRUE) {
 		
@@ -478,7 +543,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	
 	################################################################################
-	#						   MODEL COEFFICIENTS TABLE						   #
+	#						   MODEL COEFFICIENTS TABLE   						#
 	################################################################################
 	
 	
@@ -498,13 +563,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
 		
 		empty.line <- list( #for empty elements in tables when given output
-			"Model" = "",
-			"Name" = "",
-			"Coefficient" = "",
-			"Standard Error" = "",
-			"Standardized Coefficient" = "",
-			"t-value" = "",
-			"p" = "")
+			"Model" = ".",
+			"Name" = ".",
+			"Coefficient" = ".",
+			"Standard Error" = ".",
+			"Standardized Coefficient" = ".",
+			"t-value" = ".",
+			"p" = ".")
 		dotted.line <- list( #for empty tables
 			"Model" = ".",
 			"Name" = ".",
@@ -512,7 +577,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			"Standard Error" = ".",
 			"Standardized Coefficient" = ".",
 			"t-value" = ".",
-			"p" = ".")			
+			"p" = ".")
 		
 		if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
 			alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
@@ -551,7 +616,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					v <- 0
 					
 					if (options$includeConstant == TRUE) {
-						if(is.null(na.estimate.names) || na.estimate.names[1] != "(Intercept)"){							
+						if(is.null(na.estimate.names) || na.estimate.names[1] != "(Intercept)"){
 							v <- v + 1
 							regression.result[[ len.reg ]] <- empty.line
 							regression.result[[ len.reg ]]$"Model" <- as.integer(m)
