@@ -110,7 +110,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		list(name = "model summary", type = "table"),
 		list(name = "anova", type = "table"),
 		list(name = "regression", type = "table"),
-		list(name = "coefficient correlations", type = "table"))
+		list(name = "coefficient covariances", type = "table"))
 	
 	results[[".meta"]] <- .meta
 	
@@ -832,6 +832,154 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		regression[["data"]] <- regression.result
 		results[["regression"]] <- regression
 		
+	}
+	
+	
+	################################################################################
+	#					 MODEL COEFFICIENTS COVARIANCE TABLE   					   #
+	################################################################################
+	
+	covmatrix <- list()
+	covmatrix[["title"]] <- "Coefficients Covariance Matrix"
+	
+	
+	if (options$regressionCoefficientsCovarianceMatrix) {
+	
+		fields <- list(
+			list(name = "Model", type = "integer"),
+			list(name = "Name", title = "  ", type = "string"))
+		
+		
+		for (variable in independent.variables) {
+		
+			fields[[length(fields)+1]] <- list(name = variable, title = variable, type = "number", format = "dp:3")
+		}
+		
+		covmatrix[["schema"]] <- list(fields = fields)
+		
+		covmatrix.rows <- list()
+		
+		if (number.of.blocks == 0) {
+			
+			covmatrix.rows[[length(covmatrix.rows)+1]] <- list(Model=".", Name=".")
+			
+			
+		} else if (perform == "run" && length(list.of.errors) == 0) {
+			
+			for (m in 1:length(lm.model)) {
+				
+				variables.model <- lm.model[[m]]$variables
+				
+				if (length(variables.model) > 0) {
+				
+					model.fit <- lm.model[[m]]$"lm.fit"
+					model.covmatrix <- vcov(model.fit)[-1, -1] # remove intercept row and column
+					
+					if (length(variables.model) == 1) {
+					
+						# if only one variable in model, model.covmatrix is just a vector -> convert back to matrix and label row and column
+						model.covmatrix <- as.matrix(model.covmatrix)
+						colnames(model.covmatrix) <- .v(variables.model[1])
+						rownames(model.covmatrix) <- .v(variables.model[1])
+					}
+					
+					
+					rownames.covmatrix <- .unv(rownames(model.covmatrix))
+					rownames(model.covmatrix) <- rownames.covmatrix
+					colnames.covmatrix <- .unv(colnames(model.covmatrix))
+					colnames(model.covmatrix) <- colnames.covmatrix
+					
+					
+					for (row.variable in rownames.covmatrix) {
+						
+						row.index <- which(variables.model == row.variable)
+					
+						if (row.index == 1) {
+						
+							covmatrix.row <- list(Model=m, Name=row.variable, .isNewGroup=TRUE)
+							
+						} else {
+						
+							covmatrix.row <- list(Model=".", Name=row.variable)
+						}
+					
+						for (col.variable in colnames.covmatrix) {
+						
+							col.index <- which(variables.model == col.variable)
+						
+							if (row.index > col.index) {
+							
+								covmatrix.row[[col.variable]] <- ""
+							
+							} else {
+							
+								covmatrix.row[[col.variable]] <- .clean(model.covmatrix[row.variable, col.variable])
+							}
+						
+						}
+						
+						variables.not.in.model.index <- which(independent.variables != variables.model)
+						
+						if (length(variables.not.in.model.index) > 0) {
+						
+							variables.not.in.model <- independent.variables[variables.not.in.model.index]
+						
+							for (variable in variables.not.in.model) {
+							
+								covmatrix.row[[variable]] <- ""
+							}
+							
+						}
+						
+						covmatrix.rows[[length(covmatrix.rows)+1]] <- covmatrix.row
+					}
+					
+				} else {
+				
+					covmatrix.rows[[length(covmatrix.rows)+1]] <- list(Model=".", Name=".")
+				}
+			}
+			
+		} else {
+		
+			# init phase 
+			
+			for (m in 1:length(lm.model)) {
+				
+				variables.model <- lm.model[[m]]$variables
+				
+				if (length(variables.model) > 0) {
+				
+					for (row.variable in variables.model) {
+							
+						row.index <- which(variables.model == row.variable)
+						
+						if (row.index == 1) {
+						
+							covmatrix.row <- list(Model=m, Name=row.variable, .isNewGroup=TRUE)
+							
+						} else {
+						
+							covmatrix.row <- list(Model=".", Name=row.variable)
+						}
+						
+						for (col.variable in independent.variables) {
+						
+							covmatrix.row[[col.variable]] <- ""
+						}
+						
+						covmatrix.rows[[length(covmatrix.rows)+1]] <- covmatrix.row
+					}
+				}
+			}
+		}
+		
+		if (length(list.of.errors) > 0)
+			covmatrix[["error"]] <- list(errorType="badData")
+		
+		covmatrix[["data"]] <- covmatrix.rows
+		
+		results[["coefficient covariances"]] <- covmatrix
 	}
 	
 	results
