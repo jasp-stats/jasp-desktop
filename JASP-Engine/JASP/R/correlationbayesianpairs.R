@@ -69,7 +69,7 @@
 	
 	if (drawCI) {
 	
-		rhoQuantiles <- .rhoQuantile(n = n, r = r, kappa=kappa)
+		rhoQuantiles <- .rhoQuantile(n=n, r=r, kappa=kappa)
 		CIlow <- rhoQuantiles[1]
 		CIhigh <- rhoQuantiles[3]
 		medianPosterior <- rhoQuantiles[2]
@@ -84,11 +84,11 @@
 	if (oneSided == FALSE) {
 	
 		priorLine <- .priorRho(rho=rho, kappa=kappa)
-		posteriorLine <- .posteriorRho(rho= rho, n= n, r= r, kappa= kappa)
+		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, kappa=kappa)
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 			
-			someEstimates <- .betaParameterEstimates(.posteriorMean(n, r, kappa), .posteriorVariance(n, r, kappa))
+			someEstimates <- .posteriorBetaParameters(n=n, r=r, kappa=kappa)
 			
 			aParameter <- someEstimates$alpha
 			bParameter <- someEstimates$beta
@@ -105,7 +105,7 @@
 	} else if (oneSided == "right") {
 	
 		priorLine <- .priorRhoPlus(rho=rho, kappa=kappa)
-		posteriorLine <- .posteriorRhoPlus(rho= rho, n= n, r= r, kappa= kappa)
+		posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, kappa= kappa)
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
 			stop("Posterior is too peaked")
@@ -113,7 +113,7 @@
 	} else if (oneSided == "left") {
 	
 		priorLine <- .priorRhoMin(rho=rho, kappa=kappa)
-		posteriorLine <- .posteriorRhoMin(rho= rho, n= n, r= r, kappa= kappa)
+		posteriorLine <- .posteriorRhoMin(rho=rho, n=n, r=r, kappa=kappa)
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
 			stop("Posterior is too peaked")
@@ -132,13 +132,13 @@
 	ylabels <- formatC(yticks, 1, format= "f")
 	
 	
-	plot(1, 1, xlim= xlim, ylim= range(yticks), ylab= "", xlab="", type= "n", axes= FALSE)
+	plot(1, 1, xlim=xlim, ylim=range(yticks), ylab= "", xlab="", type= "n", axes= FALSE)
 	
 	lines(rho, posteriorLine, lwd= lwd)
 	lines(rho, priorLine, lwd= lwd, lty=3)
 	
-	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
-	axis(2, at= yticks, labels= ylabels, , cex.axis= cexAxis, lwd= lwdAxis)
+	axis(1, at=xticks, labels=xlabels, cex.axis=cexAxis, lwd=lwdAxis)
+	axis(2, at=yticks, labels=ylabels, , cex.axis=cexAxis, lwd=lwdAxis)
 	
 	
 	if (nchar(ylabels[length(ylabels)]) > 4) {
@@ -311,7 +311,6 @@
 			text(xx, yy, "data|H-", cex= cexCI)
 			text(xx, yy2, "data|H0", cex= cexCI)
 		}
-		
 	}
 	
 	if (oneSided == "right") {
