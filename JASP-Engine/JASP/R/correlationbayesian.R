@@ -202,11 +202,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			
 			# Note: create column for bfs
 			if (reportBayesFactors) {
-				column.name <- paste(".test[", test, "-p]", sep="")
+				column.name <- paste(".test[", test, "BF]", sep="")
 				column.names[[length(column.names)+1]] <- column.name
 				fields[[length(fields)+1]] <- list(name=column.name, title=bf.title, type="string")
 				for (variable.name in variables) {
-					column.name <- paste(variable.name, "[", test, "-p]", sep="")
+					column.name <- paste(variable.name, "[", test, "BF]", sep="")
 					column.names[[length(column.names)+1]] <- column.name
 					fields[[length(fields)+1]] <- list(name=column.name, title=variable.name, type="number", format="sf:4;dp:3")
 				}
