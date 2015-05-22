@@ -110,7 +110,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		list(name = "model summary", type = "table"),
 		list(name = "anova", type = "table"),
 		list(name = "regression", type = "table"),
-		list(name = "coefficient covariances", type = "table"))
+		list(name = "coefficient covariances", type = "table"),
+		list(name = "collinearity diagnostics", type = "table"))
 	
 	results[[".meta"]] <- .meta
 	
@@ -347,7 +348,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		correlations.rows <- list()
 		
 		
-		if (perform == "run" && length(list.of.errors) == 0) {
+		if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
 		
 			if (number.of.blocks == 0) {
 			
@@ -375,7 +376,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								partAndPartial <- .partAndPartialCorrelation(dependent.variable, variable, variables.model, dataset)
 								partial <- .clean(partAndPartial$partialCor)
 								part <- .clean(partAndPartial$partCor)
-								correlations.rows[[length(correlations.rows)+1]] <- list(Model=".", Name=variable, Partial=partial, Part=part)
+								correlations.rows[[length(correlations.rows)+1]] <- list(Model="", Name=variable, Partial=partial, Part=part)
 							}
 						}
 					}
@@ -404,7 +405,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								
 							} else {
 							
-								correlations.rows[[length(correlations.rows)+1]] <- list(Model=".", Name=variable, Partial=".", Part=".")
+								correlations.rows[[length(correlations.rows)+1]] <- list(Model="", Name=variable, Partial=".", Part=".")
 							}
 						}
 					}
@@ -558,6 +559,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			anova.result[[ len.an ]] <- dotted.line
 			anova.result[[ len.an ]]$"Model" <- as.integer(m)
 			anova.result[[ len.an ]]$"Cases" <- as.character("Regression")
+			anova.result[[ len.an ]]$".isNewGroup" <- TRUE
 			
 			len.an <- len.an + 1
 			anova.result[[ len.an ]] <- dotted.line
@@ -601,6 +603,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					anova.result[[ len.an ]]$"Mean Square" <- as.numeric(mss.model)
 					anova.result[[ len.an ]]$"F" <- as.numeric(F)
 					anova.result[[ len.an ]]$"p" <- as.numeric(p)
+					anova.result[[ len.an ]]$".isNewGroup" <- TRUE
 					
 					len.an <- len.an + 1
 					
@@ -642,6 +645,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#						   MODEL COEFFICIENTS TABLE   						#
 	################################################################################
 	
+	collinearity.diagnostics <- list()
 	
 	if (options$regressionCoefficientsEstimates == TRUE) {
 		
@@ -659,13 +663,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
 		
 		empty.line <- list( #for empty elements in tables when given output
-			"Model" = ".",
-			"Name" = ".",
-			"Coefficient" = ".",
-			"Standard Error" = ".",
-			"Standardized Coefficient" = ".",
-			"t-value" = ".",
-			"p" = ".")
+			"Model" = "",
+			"Name" = "",
+			"Coefficient" = "",
+			"Standard Error" = "",
+			"Standardized Coefficient" = "",
+			"t-value" = "",
+			"p" = "")
 		dotted.line <- list( #for empty tables
 			"Model" = ".",
 			"Name" = ".",
@@ -686,11 +690,22 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			dotted.line$"Upper Bound" = "."
 		}
 		
+		if (options$collinearityDiagnostics) {
+		
+			fields[[ length(fields) + 1 ]] <- list(name = "Tolerance", title = "Tolerance", type = "number", format = "dp:3", overTitle="Collinearity Statistics")
+			fields[[ length(fields) + 1 ]] <- list(name = "VIF", title = "VIF", type = "number", format = "dp:3")
+			empty.line$"Tolerance" = ""
+			empty.line$"VIF" = ""
+			dotted.line$"Tolerance" = "."
+			dotted.line$"VIF" = "."
+		}
+		
 		regression[["schema"]] <- list(fields = fields)
 		
 		regression.result <- list()
 		
 		if (perform == "run" && length(list.of.errors) == 0) {
+			
 			
 			for (m in 1:length(lm.model)) {
 				
@@ -727,6 +742,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v,1] )
 								regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v,2] )
 							}
+							
+							if (options$collinearityDiagnostics) {
+								
+								regression.result[[ len.reg ]]$"Tolerance" <- ""
+								regression.result[[ len.reg ]]$"VIF" <- ""
+							}
+							
 						} else {
 							regression.result[[ len.reg ]] <- empty.line
 							regression.result[[ len.reg ]]$"Model" <- as.integer(m)
@@ -739,7 +761,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					sd.dep <- sd( dataset[[ dependent.base64 ]])
 					if (length(lm.model[[ m ]]$variables) > 0) {
 						variables.in.model <- lm.model[[ m ]]$variables
-
+						
+						if (options$collinearityDiagnostics) 
+							collinearity.diagnostics[[length(collinearity.diagnostics)+1]] <- .collinearityDiagnostics(lm.model[[ m ]]$lm.fit, dataset, includeConstant=options$includeConstant)
+						
 						for (var in 1:length(variables.in.model)) {
 							if(!is.null(na.estimate.names) && .v(variables.in.model[var])%in%na.estimate.names){
 								v <- v - 1
@@ -750,6 +775,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								}
 								regression.result[[ len.reg ]]$"Name" <- as.character(variables.in.model[ var])
 								regression.result[[ len.reg ]]$"Coefficient" <- "NA"
+								
+								if (options$collinearityDiagnostics) {
+								
+									regression.result[[ len.reg ]]$"Tolerance" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$tolerance[[var]])
+									regression.result[[ len.reg ]]$"VIF" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$VIF[[var]])
+								}
 								
 								len.reg <- len.reg + 1
 							} else {
@@ -772,6 +803,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 									regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v+var,1] )
 									regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v+var,2] )
 								}
+								
+								if (options$collinearityDiagnostics) {
+								
+									regression.result[[ len.reg ]]$"Tolerance" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$tolerance[[var]])
+									regression.result[[ len.reg ]]$"VIF" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$VIF[[var]])
+								}
+								
 								len.reg <- len.reg + 1
 							}
 						}
@@ -779,7 +817,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				} else {
 					
 					len.reg <- length(regression.result) + 1
-					regression.result[[ len.reg ]] <- empty.line
+					regression.result[[ len.reg ]] <- dotted.line
 					regression.result[[ len.reg ]]$"Model" <- as.numeric(m)
 					
 				}
@@ -815,6 +853,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					}
 				}
 			} else {
+				
 				len.reg <- length(regression.result) + 1
 				regression.result[[ len.reg ]] <- dotted.line
 				regression.result[[ len.reg ]]$"Model" <- as.numeric(m)
@@ -839,12 +878,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#					 MODEL COEFFICIENTS COVARIANCE TABLE   					   #
 	################################################################################
 	
-	covmatrix <- list()
-	covmatrix[["title"]] <- "Coefficients Covariance Matrix"
-	
 	
 	if (options$regressionCoefficientsCovarianceMatrix) {
-	
+		
+		covmatrix <- list()
+		covmatrix[["title"]] <- "Coefficients Covariance Matrix"
+		
 		fields <- list(
 			list(name = "Model", type = "integer"),
 			list(name = "Name", title = "  ", type = "string"))
@@ -864,11 +903,12 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			covmatrix.rows[[length(covmatrix.rows)+1]] <- list(Model=".", Name=".")
 			
 			
-		} else if (perform == "run" && length(list.of.errors) == 0) {
+		} else if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
 			
 			for (m in 1:length(lm.model)) {
 				
 				variables.model <- lm.model[[m]]$variables
+				
 				
 				if (length(variables.model) > 0) {
 				
@@ -900,7 +940,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							
 						} else {
 						
-							covmatrix.row <- list(Model=".", Name=row.variable)
+							covmatrix.row <- list(Model="", Name=row.variable)
 						}
 					
 						for (col.variable in colnames.covmatrix) {
@@ -960,7 +1000,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							
 						} else {
 						
-							covmatrix.row <- list(Model=".", Name=row.variable)
+							covmatrix.row <- list(Model="", Name=row.variable)
 						}
 						
 						for (col.variable in independent.variables) {
@@ -980,6 +1020,162 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		covmatrix[["data"]] <- covmatrix.rows
 		
 		results[["coefficient covariances"]] <- covmatrix
+	}
+	
+	
+	################################################################################
+	#					 COLLINEARITY DIAGNOSTICS TABLE   					       #
+	################################################################################
+	
+	
+	if (options$collinearityDiagnostics) {
+		
+		diagnostics.table <- list()
+		diagnostics.table[["title"]] <- "Collinearity Diagnostics"
+		
+		fields <- list(
+			list(name = "Model", type = "integer"),
+			list(name = "Dimension", type = "integer"),
+			list(name = "Eigenvalue", type = "number", format = "dp:3"),
+			list(name = "Condition Index", type = "number", format = "dp:3")
+			)
+		
+		if (options$includeConstant && dependent.variable != "")
+			independent.variables <- c("intercept", independent.variables)
+		
+		for (variable in independent.variables) {
+		
+			fields[[length(fields)+1]] <- list(name = variable, title = variable, type = "number", format = "dp:3", overTitle="Variance Proportions")
+		}
+		
+		diagnostics.table[["schema"]] <- list(fields = fields)
+		
+		diagnostics.rows <- list()
+		
+		if (number.of.blocks == 0) {
+			
+			diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=".", Dimension=".", Eigenvalue=".", "Condition Index"=".")
+			
+			
+		} else if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
+		
+			for (m in 1:length(lm.model)) {
+			
+				if ( ! options$regressionCoefficientsEstimates)
+					collinearity.diagnostics[[length(collinearity.diagnostics)+1]] <- .collinearityDiagnostics(lm.model[[ m ]]$lm.fit, dataset, includeConstant=options$includeConstant)
+				
+				variables.model <- lm.model[[m]]$variables
+				
+				if (length(variables.model) > 0) {
+				
+					if (options$includeConstant) {
+					
+						predictors <- c("intercept", variables.model)
+					
+					} else {
+					
+						predictors <- variables.model
+					}
+					
+					for (predictor in predictors) {
+					
+						predictor.index <- which(predictors == predictor)
+						
+						if (predictor.index == 1) {
+						
+							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=m, Dimension=predictor.index, .isNewGroup=TRUE)
+						
+						} else {
+						
+							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model="", Dimension=predictor.index)
+						}
+						
+						diagnostics.rows[[length(diagnostics.rows)]]$"Eigenvalue" <- .clean(collinearity.diagnostics[[m]]$eigenvalues[predictor.index])
+						diagnostics.rows[[length(diagnostics.rows)]]$"Condition Index" <- .clean(collinearity.diagnostics[[m]]$conditionIndices[predictor.index])
+						
+						for (colPredictor in predictors) {
+						
+							colPredictor.index <- which(predictors == colPredictor)
+							diagnostics.rows[[length(diagnostics.rows)]][[colPredictor]] <- .clean(collinearity.diagnostics[[m]]$varianceProportions[predictor.index, colPredictor.index])
+						
+						}
+						
+						variables.not.in.model.index <- which(! independent.variables %in% predictors)
+						
+						if (length(variables.not.in.model.index) > 0) {
+						
+							variables.not.in.model <- independent.variables[variables.not.in.model.index]
+						
+							for (variable in variables.not.in.model) {
+							
+								diagnostics.rows[[length(diagnostics.rows)]][[variable]] <- ""
+							}
+							
+						}
+						
+					}
+				
+				} else {
+				
+					diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=".", Dimension=".", Eigenvalue=".", "Condition Index"=".")
+					
+					if (options$includeIntercept) 
+						diagnostics.rows[[length(diagnostics.rows)]]$"intercept" <- "."
+				}
+			}
+		
+		} else {
+		
+			# init phase
+		
+			for (m in 1:length(lm.model)) {
+				
+				variables.model <- lm.model[[m]]$variables
+				
+				if (length(variables.model) > 0) {
+				
+					if (options$includeConstant) {
+					
+						predictors <- c("intercept", variables.model)
+					
+					} else {
+					
+						predictors <- variables.model
+					}
+					
+					for (predictor in predictors) {
+					
+						predictor.index <- which(predictors == predictor)
+						
+						if (predictor.index == 1) {
+						
+							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=m, Dimension=predictor.index, .isNewGroup=TRUE)
+						
+						} else {
+						
+							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model="", Dimension=predictor.index)
+						}
+						
+						diagnostics.rows[[length(diagnostics.rows)]]$"Eigenvalue" <- ""
+						diagnostics.rows[[length(diagnostics.rows)]]$"Condition Index" <- ""
+						
+						for (colPredictor in predictors) {
+							
+							colPredictor.index <- which(predictors == colPredictor)
+							diagnostics.rows[[length(diagnostics.rows)]][[colPredictor]] <- ""
+						
+						}
+					}
+				}
+			}
+		}
+		
+		if (length(list.of.errors) > 0)
+			diagnostics.table[["error"]] <- list(errorType="badData")
+		
+		diagnostics.table[["data"]] <- diagnostics.rows
+		results[["collinearity diagnostics"]] <- diagnostics.table
+		
 	}
 	
 	results
@@ -1026,5 +1222,85 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	partialCor <- cor(cleaned.variable.of.interest, cleaned.dependent.variable)
 		
 	return(list(partCor=partCor, partialCor=partialCor))
+	
+}
+
+.collinearityDiagnostics <- function(lm.fit, dataset, includeConstant=TRUE) {
+	
+	### create predictor variable matrix
+	X <- lm.fit$model[ ,-1, drop=FALSE] # remove dependent variable
+	X <- X[ ,-ncol(X), drop=FALSE] # remove weights column
+	
+	if (includeConstant)
+		X <- cbind(1, X) # add intercept
+	
+	### scale predictor matrix
+	for (i in seq_len(ncol(X))) {
+		
+		X[ ,i] <- X[ ,i] / sqrt(sum(X[ ,i]^2)) # scale each column using Euclidean norm
+		
+	}
+	
+	### eigenvalues
+	eigenvalues <- svd(X)$d^2 # see Liao & Valliant (2012)
+	
+	### condition indices
+	conditionIndices <- sqrt(max(eigenvalues) / eigenvalues)
+	
+	### variance proportions ( see e.g., Liao & Valliant, 2012 )
+	svdX <- svd(X) # singular value decomposition
+	M <- svdX$v %*% solve(diag(svdX$d))
+	Q <- M*M # Hadamard (elementwise) product
+	tQ <- t(Q)
+	
+	for (i in seq_len(ncol(tQ))) {
+		
+		tQ[, i] <- tQ[ ,i] / sum(tQ[ ,i])
+		
+	}
+	
+	varianceProportions <- tQ
+	
+	### VIF (variance inflation factor)
+	predictors <- colnames(lm.fit$model[,-c(1, ncol(lm.fit$model)), drop=FALSE]) # predictors in model (remove dependent variable and weights)
+	
+	VIF <- list()
+	tolerance <- list()
+	
+	if (length(predictors) == 1) {
+	
+		VIF[[predictors]] <- 1
+		tolerance[[predictors]] <- 1
+	
+	} else if (length(predictors) > 1) {
+	
+		for (predictor in predictors) {
+			
+			# remove predictor from other predictors
+			index <- which(predictors == predictor)
+			cleanedPredictors <- predictors[-index]
+			
+			# create formula
+			definition <- paste(predictor, "~", paste(cleanedPredictors, collapse="+"))
+			formula <- as.formula(definition)
+			
+			# fit lm
+			fitVIF <- try(lm(formula, data=dataset), silent=TRUE)
+			
+			# VIF (variance inflation factor)
+			VIF[[predictor]] <- 1 / (1 - summary(fitVIF)$"r.squared")
+			
+			# tolerance
+			tolerance[[predictor]] <- 1 / VIF[[predictor]]
+		}
+	}
+	
+	output <- list(	eigenvalues=eigenvalues,
+					conditionIndices=conditionIndices,
+					varianceProportions=varianceProportions,
+					VIF=VIF,
+					tolerance=tolerance)
+	
+	return(output)
 	
 }
