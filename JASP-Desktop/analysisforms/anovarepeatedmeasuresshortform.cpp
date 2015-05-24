@@ -83,6 +83,9 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	ui->containerPostHocTests->hide();
 	ui->containerProfilePlot->hide();
 
+	ui->withinModelTerms->setFactorsLabel("Repeated Measures Factors");
+	ui->betweenModelTerms->setFactorsLabel("Between Subjects Factors");
+
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
 
 #ifdef QT_NO_DEBUG
