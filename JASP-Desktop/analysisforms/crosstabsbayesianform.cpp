@@ -46,12 +46,14 @@ CrosstabsBayesianForm::~CrosstabsBayesianForm()
 	delete ui;
 }
 
-void CrosstabsBayesianForm::independentMultinomialToggledOff()
+void CrosstabsBayesianForm::otherSamplingToggled(bool on)
 {
-	ui->hypothesis->setEnabled(false);
+	if (on)
+		ui->hypothesis->setEnabled(false);
 }
 
-void CrosstabsBayesianForm::independentMultinomialToggledOn()
+void CrosstabsBayesianForm::independentMultinomialSamplingToggled(bool on)
 {
-	ui->hypothesis->setEnabled(true);
+	if (on)
+		ui->hypothesis->setEnabled(true);
 }

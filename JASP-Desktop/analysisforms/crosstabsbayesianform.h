@@ -18,8 +18,8 @@ public:
 	~CrosstabsBayesianForm();
 
 private slots:
-	void independentMultinomialToggledOn();
-	void independentMultinomialToggledOff();
+	void independentMultinomialSamplingToggled(bool on);
+	void otherSamplingToggled(bool on);
 
 private:
 	Ui::CrosstabsBayesianForm *ui;

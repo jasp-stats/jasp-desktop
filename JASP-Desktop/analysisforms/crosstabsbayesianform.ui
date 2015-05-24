@@ -845,9 +845,9 @@
  <connections>
   <connection>
    <sender>_1Poisson</sender>
-   <signal>clicked()</signal>
+   <signal>toggled(bool)</signal>
    <receiver>CrosstabsBayesianForm</receiver>
-   <slot>independentMultinomialToggledOff()</slot>
+   <slot>otherSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>152</x>
@@ -861,9 +861,9 @@
   </connection>
   <connection>
    <sender>_2Multinomial</sender>
-   <signal>clicked()</signal>
+   <signal>toggled(bool)</signal>
    <receiver>CrosstabsBayesianForm</receiver>
-   <slot>independentMultinomialToggledOff()</slot>
+   <slot>otherSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>152</x>
@@ -877,9 +877,9 @@
   </connection>
   <connection>
    <sender>_3IndependentRowsFixed</sender>
-   <signal>clicked()</signal>
+   <signal>toggled(bool)</signal>
    <receiver>CrosstabsBayesianForm</receiver>
-   <slot>independentMultinomialToggledOn()</slot>
+   <slot>independentMultinomialSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>152</x>
@@ -893,9 +893,9 @@
   </connection>
   <connection>
    <sender>_4IndependentColumnsFixed</sender>
-   <signal>clicked()</signal>
+   <signal>toggled(bool)</signal>
    <receiver>CrosstabsBayesianForm</receiver>
-   <slot>independentMultinomialToggledOn()</slot>
+   <slot>independentMultinomialSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>152</x>
@@ -909,9 +909,9 @@
   </connection>
   <connection>
    <sender>_5Hypergeometric</sender>
-   <signal>clicked()</signal>
+   <signal>toggled(bool)</signal>
    <receiver>CrosstabsBayesianForm</receiver>
-   <slot>independentMultinomialToggledOff()</slot>
+   <slot>otherSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>152</x>
@@ -925,7 +925,7 @@
   </connection>
  </connections>
  <slots>
-  <slot>independentMultinomialToggledOff()</slot>
-  <slot>independentMultinomialToggledOn()</slot>
+  <slot>independentMultinomialSamplingToggled(bool)</slot>
+  <slot>otherSamplingToggled(bool)</slot>
  </slots>
 </ui>
