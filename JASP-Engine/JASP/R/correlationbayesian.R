@@ -1110,7 +1110,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 			
-			someEstimates <- .betaParameterEstimates(.posteriorMean(n, r, kappa), .posteriorVariance(n, r, kappa))
+			someEstimates <- .posteriorBetaParameters(n=n, r=r, kappa=kappa)
 		
 			aParameter <- someEstimates$alpha
 			bParameter <- someEstimates$beta
