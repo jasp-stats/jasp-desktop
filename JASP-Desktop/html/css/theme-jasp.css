@@ -109,7 +109,7 @@ thead tr th {
 	border-bottom: thin solid ;
 }
 
-thead tr.over-title th {
+thead tr.over-title th:empty {
 
 	border-bottom: none ;
 }

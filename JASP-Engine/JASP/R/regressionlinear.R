@@ -693,7 +693,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		if (options$collinearityDiagnostics) {
 		
 			fields[[ length(fields) + 1 ]] <- list(name = "Tolerance", title = "Tolerance", type = "number", format = "dp:3", overTitle="Collinearity Statistics")
-			fields[[ length(fields) + 1 ]] <- list(name = "VIF", title = "VIF", type = "number", format = "dp:3")
+			fields[[ length(fields) + 1 ]] <- list(name = "VIF", title = "VIF", type = "number", format = "dp:3", overTitle="Collinearity Statistics")
 			empty.line$"Tolerance" = ""
 			empty.line$"VIF" = ""
 			dotted.line$"Tolerance" = "."

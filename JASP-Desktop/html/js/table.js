@@ -715,30 +715,33 @@ $.widget("jasp.table", {
 			
 				chunks.push('<tr class="over-title">')
 				
-				var i = 0;
 				var span = 1;
 				var oldTitle = columnHeaders[0].overTitle
+				var newTitle = ""
 				
 				if ( ! oldTitle)
 					oldTitle = ""
 
 				for (var colNo = 1; colNo < columnHeaders.length; colNo++) {
-			
-					var newTitle = columnHeaders[colNo].overTitle
+
+					newTitle = columnHeaders[colNo].overTitle
 					if ( ! newTitle)
 						newTitle = ""
 					
 					if (newTitle == oldTitle) {
-					
-						span++;
+						
+						span++
 					}
 					else {
-						
+					
 						chunks.push('<th colspan="' + (2 * span) + '">' + oldTitle + '</th>')
 						oldTitle = newTitle
 						span = 1
 					}
 				}
+				
+				if (newTitle == oldTitle)
+					chunks.push('<th colspan="' + (2 * span) + '">' + newTitle + '</th>')
 			
 				chunks.push('</tr>')
 			}
