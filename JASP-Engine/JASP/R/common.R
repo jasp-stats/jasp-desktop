@@ -269,7 +269,7 @@ run <- function(name, options.as.json.string, perform="run") {
 
 		file <- .requestStateFileNameNative()
 		base::Encoding(file) <- "UTF-8"
-		base::try(base::load(file))
+		base::try(base::load(file), silent=TRUE)
 	}
 	
 	state
