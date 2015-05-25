@@ -207,12 +207,6 @@ void TableModelVariablesAssigned::setAssigned(const Terms &variables)
 		return;
 	}
 
-	if (_boundTo == NULL)
-	{
-		qDebug() << "TableModelVariablesAssigned::setAssigned() : Not bound!";
-		return;
-	}
-
 	beginResetModel();
 	_variables.set(variables);
 	endResetModel();

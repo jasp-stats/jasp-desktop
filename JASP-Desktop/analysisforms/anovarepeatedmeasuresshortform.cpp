@@ -58,7 +58,6 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _withinSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
 	_plotFactorsAvailableTableModel = new TableModelVariablesAvailable();
-	_plotFactorsAvailableTableModel->setInfoProvider(this);
 	ui->plotVariables->setModel(_plotFactorsAvailableTableModel);
 
 	_horizontalAxisTableModel = new TableModelVariablesAssigned(this);
@@ -137,13 +136,13 @@ void AnovaRepeatedMeasuresShortForm::factorsChanged()
 	factorsAvailable.add(_betweenSubjectsFactorsListModel->assigned());
 
 	_contrastsModel->setVariables(factorsAvailable);
-	//_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
+	_plotFactorsAvailableTableModel->setVariables(factorsAvailable);
 
-	//Terms plotVariablesAssigned;
-	//plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
-	//plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
-	//plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
-	//_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
+	Terms plotVariablesAssigned;
+	plotVariablesAssigned.add(_horizontalAxisTableModel->assigned());
+	plotVariablesAssigned.add(_seperateLinesTableModel->assigned());
+	plotVariablesAssigned.add(_seperatePlotsTableModel->assigned());
+	_plotFactorsAvailableTableModel->notifyAlreadyAssigned(plotVariablesAssigned);
 
 	ui->postHocTestsVariables->setVariables(factorsAvailable);
 
