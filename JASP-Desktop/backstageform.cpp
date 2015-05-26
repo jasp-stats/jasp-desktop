@@ -142,7 +142,12 @@ void BackStageForm::exportItemSelected()
 bool BackStageForm::saveAs()
 {
 	_settings.sync();
-	QString path = _settings.value("savePath", QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first()).toString() + QDir::separator() + "default.jasp";
+
+	QString name = "default.jasp";
+	if ( ! _filename.isEmpty())
+		name = QFileInfo(_filename).baseName();
+
+	QString path = _settings.value("savePath", QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first()).toString() + QDir::separator() + name + ".jasp";
 
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save workspace"), path, tr("JASP Files (*.jasp)"));
 

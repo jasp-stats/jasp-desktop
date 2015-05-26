@@ -50,11 +50,14 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	bool success = false;
 
 	Json::Value metaData;
+	Json::Value xData;
 
 	int columnCount = 0;
 	int rowCount = 0;
 
 	parseJsonEntry(metaData, path, "metadata.json", true);
+
+	parseJsonEntry(xData, path, "xdata.json", false);
 
 	Json::Value &dataSetDesc = metaData["dataSet"];
 	columnCount = dataSetDesc["columnCount"].asInt();
@@ -100,11 +103,21 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 		Json::Value columnDesc = (*itr);
 
 		Column &column = packageData->dataSet->column(i);
+		string name = columnDesc["name"].asString();
 
-		column.setName(columnDesc["name"].asString());
+		column.setName(name);
 		column.setColumnType(parseColumnType(columnDesc["measureType"].asString()));
 
 		Json::Value &labelsDesc = columnDesc["labels"];
+		if (labelsDesc.isNull() &&  ! xData.isNull())
+		{
+			Json::Value &columnlabelData = xData[name];
+			if ( ! columnlabelData.isNull())
+			{
+				labelsDesc = columnlabelData["labels"];
+			}
+		}
+
 		Labels &labels = column.labels();
 
 		for (Json::Value::iterator iter = labelsDesc.begin(); iter != labelsDesc.end(); iter++)
