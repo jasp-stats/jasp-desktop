@@ -165,26 +165,34 @@ string tempfiles_createSpecific(const string &dir, const string &filename)
 	return ss.str();
 }
 
-string tempfiles_createSpecific(const string &name, int id)
+void tempfiles_createSpecific(const string &name, int id, string &root, string &relativePath)
 {
-	stringstream ss;
+	stringstream ssAbsolute, ssRelative;
 	system::error_code error;
 
-	ss << _tempfiles_sessionDirName << "/resources";
+	root = _tempfiles_sessionDirName;
+
+	ssAbsolute << root << "/";
+
+	ssAbsolute << "resources";
+	ssRelative << "resources";
 
 	if (id >= 0)
-		ss << "/" << id;
+	{
+		ssRelative << "/" << id;
+		ssAbsolute << "/" << id;
+	}
 
-	string dir = ss.str();
+	string dir = ssAbsolute.str();
 	filesystem::path path = Utils::osPath(dir);
 
 	if (filesystem::exists(path, error) == false || error)
 		filesystem::create_directories(path, error);
 
-	ss << "/";
-	ss << name;
+	ssAbsolute << "/" << name;
+	ssRelative << "/" << name;
 
-	return ss.str();
+	relativePath = ssRelative.str();
 }
 
 void tempfiles_create(const string &extension, int id, string &root, string &relativePath)

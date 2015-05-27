@@ -38,11 +38,17 @@ run <- function(name, options.as.json.string, perform="run") {
 		if ("state" %in% names(results)) {
 
 			state <- results$state
-			state.file <- .requestStateFileNameNative()
-			base::Encoding(state.file) <- "UTF-8"
-			base::save(state, file=state.file)
 			
-			keep <- state.file
+			location <- .requestStateFileNameNative()
+
+			relativePath <- location$relativePath
+			base::Encoding(relativePath) <- "UTF-8"
+
+			fullPath <- paste(location$root, location$relativePath, sep="/")
+			base::Encoding(fullPath) <- "UTF-8"
+			base::save(state, file=fullPath)
+			
+			keep <- relativePath
 		}
 		
 		if ("results" %in% names(results)) {
@@ -253,9 +259,15 @@ run <- function(name, options.as.json.string, perform="run") {
 
 	if (base::exists(".requestStateFileNameNative")) {
 
-		file <- .requestStateFileNameNative()
-		base::Encoding(file) <- "UTF-8"
-		base::save(state, file=file, compress=FALSE)
+		location <- .requestStateFileNameNative()
+
+		relativePath <- location$relativePath
+		base::Encoding(relativePath) <- "UTF-8"
+
+		fullPath <- paste(location$root, location$relativePath, sep="/")
+		base::Encoding(fullPath) <- "UTF-8"
+		
+		base::save(state, file=fullPath, compress=FALSE)
 	}
 	
 	NULL
@@ -267,9 +279,15 @@ run <- function(name, options.as.json.string, perform="run") {
 	
 	if (base::exists(".requestStateFileNameNative")) {
 
-		file <- .requestStateFileNameNative()
-		base::Encoding(file) <- "UTF-8"
-		base::try(base::load(file), silent=TRUE)
+		location <- .requestStateFileNameNative()
+
+		relativePath <- location$relativePath
+		base::Encoding(relativePath) <- "UTF-8"
+
+		fullPath <- paste(location$root, location$relativePath, sep="/")
+		base::Encoding(fullPath) <- "UTF-8"
+
+		base::try(base::load(fullPath), silent=TRUE)
 	}
 	
 	state

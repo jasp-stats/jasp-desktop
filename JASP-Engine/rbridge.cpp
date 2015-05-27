@@ -14,7 +14,7 @@ using namespace std;
 
 RCallback rbridge_runCallback;
 boost::function<void(const std::string &, std::string &, std::string &)> rbridge_fileNameSource;
-boost::function<std::string()> rbridge_stateFileSource;
+boost::function<void(std::string &, std::string &)> rbridge_stateFileSource;
 
 Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
@@ -65,7 +65,7 @@ void rbridge_setFileNameSource(boost::function<void (const string &, string &, s
 	rbridge_fileNameSource = source;
 }
 
-void rbridge_setStateFileSource(boost::function<string ()> source)
+void rbridge_setStateFileSource(boost::function<void (string &, string &)> source)
 {
 	rbridge_stateFileSource = source;
 }
@@ -94,7 +94,17 @@ SEXP rbridge_requestStateFileNameSEXP()
 	if (rbridge_stateFileSource == NULL)
 		return R_NilValue;
 
-	return Rcpp::CharacterVector(rbridge_stateFileSource());
+	string root;
+	string relativePath;
+
+	rbridge_stateFileSource(root, relativePath);
+
+	Rcpp::List paths;
+
+	paths["root"] = root;
+	paths["relativePath"] = relativePath;
+
+	return paths;
 }
 
 string rbridge_run(const string &name, const string &options, const string &perform, int ppi, RCallback callback)
