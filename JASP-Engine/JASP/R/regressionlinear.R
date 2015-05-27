@@ -437,6 +437,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	empty.line <- list("Model" = ".", "R" = ".", "R2" = ".", "aR2" = ".", "se" = ".")
 	
+	
 	if (options$rSquaredChange == TRUE) {
 		fields[[ length(fields) + 1 ]] <- list(name = "R2c", title = "R\u00B2 Change", type = "number", format = "dp:3")
 		fields[[ length(fields) + 1 ]] <- list(name = "Fc", title = "F Change", type = "number", format = "sf:4;dp:3")
@@ -446,6 +447,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		empty.line <- list("Model" = ".", "R" = ".", "R2" = ".", "aR2" = ".", "se" = ".", "R2c" = ".", "Fc" = ".", "df1" = ".", "df2" = ".", "p" = ".")
 		r.squared.old = 0.0 #This is going to accumulate through models.
 	}
+	
+	if (options$residualsDurbinWatson) {
+	
+		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Durbin-Watson", type = "number", format = "dp:3")
+		empty.line$"Durbin-Watson" <- "."
+	}
+	
 	model.table[["schema"]] <- list(fields = fields)
 	table.rows <- list()
 	
@@ -462,6 +470,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				table.rows[[ m ]]$"R2" <- as.numeric(lm.summary$r.squared)
 				table.rows[[ m ]]$"aR2" <- as.numeric(lm.summary$adj.r.squared)
 				table.rows[[ m ]]$"se" <- as.numeric(lm.summary$sigma)
+				
+				if (options$residualsDurbinWatson) {
+					
+					if (m == length(lm.model)) {
+					
+						table.rows[[ m ]]$"Durbin-Watson" <- .clean(car::durbinWatsonTest(lm.model[[ m ]]$lm.fit)$dw)
+						
+					} else {
+					
+						table.rows[[ m ]]$"Durbin-Watson" <- ""
+					}
+				}
 				
 				if (options$rSquaredChange == TRUE) {
 					#R^2_change in Field (2013), Eqn. 8.15:
