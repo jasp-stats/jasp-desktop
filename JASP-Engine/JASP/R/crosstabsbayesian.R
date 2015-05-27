@@ -317,10 +317,12 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 		odds.ratio.table[["title"]] <- "Log Odds Ratio"
 		
 		odds.ratio.fields <- fields
+		
+		ci.label = paste(100 * options$oddsRatioCredibleIntervalInterval, "% Credible Interval", sep="")
 			
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[oddsRatio]", title="Odds ratio", type="number", format="sf:4;dp:3")
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower", overTitle=ci.label, type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper", overTitle=ci.label, type="number", format="dp:3")
 		
 		schema <- list(fields=odds.ratio.fields)
 		
@@ -367,6 +369,8 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 	medianSamples <- NULL
 	BF <- NULL
 	
+	next.is.new.group <- TRUE
+	
 	for (i in 1:length(group.matrices)) {
 	
 		group.matrix <- group.matrices[[i]]
@@ -388,6 +392,18 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 		BF <- next.rows[[1]]$`value[BF]`
 		
 		next.rows <- .crosstabsBayesianCreateOddsRatioRows(analysis$rows, group.matrix, odds.ratio.footnotes, options, perform, group, status)
+
+		if (next.is.new.group) {
+		
+			next.rows[[1]][[1]][[".isNewGroup"]] <- TRUE
+			next.is.new.group <- FALSE
+			
+		} else if ( ! is.null(group) && group[[length(group)]] == "") {
+		
+			next.rows[[1]][[1]][[".isNewGroup"]] <- TRUE
+			next.is.new.group <- TRUE
+		}
+		
 		odds.ratio.rows <- c(odds.ratio.rows, next.rows[[1]])
 		samples <- next.rows$samples
 		CI <- next.rows$CI
@@ -755,7 +771,6 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 		if (level == "") {
 
 			row[[layer]] <- "Total"
-			row[[".isNewGroup"]] <- TRUE
 						
 		} else {
 		
@@ -769,7 +784,7 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 
 		if (perform == "run" && status$error == FALSE) {
 		
-			if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
+			if ( ! identical(dim(counts.matrix), as.integer(c(2,2)))) {
 
 					row[["value[oddsRatio]"]] <- .clean(NaN)
 					row[["low[oddsRatio]"]] <- ""
@@ -778,14 +793,14 @@ CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=fun
 					sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
 					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
 			
-				} else if ( options$samplingModel== "hypergeometric") {
+				} else if ( options$samplingModel == "hypergeometric") {
 
-				row[["value[oddsRatio]"]] <- .clean(NaN)
-				row[["low[oddsRatio]"]] <- ""
-				row[["up[oddsRatio]"]] <-  ""
+					row[["value[oddsRatio]"]] <- .clean(NaN)
+					row[["low[oddsRatio]"]] <- ""
+					row[["up[oddsRatio]"]] <-  ""
 			
-				sup <- .addFootnote(footnotes, "Odd ratio for this model not yet implemented")
-				row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+					sup <- .addFootnote(footnotes, "Odd ratio for this model not yet implemented")
+					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
 			
 			} else {
 
