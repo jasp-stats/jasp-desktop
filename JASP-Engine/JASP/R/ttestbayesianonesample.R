@@ -2883,11 +2883,18 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	}
 	
+	status <- rep("ok", length(options$variables))
+	plottingError <- rep("error", length(options$variables))
+	BF10post <- numeric(length(options$variables))
+	
+	i <- 1
+	
 	for (variable in options[["variables"]])
 	{
 	
 		if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 			&& diff$bayesFactorType == FALSE && diff$testValue == FALSE && diff$missingValues == FALSE)))) {
+			
 			
 			index <- which(state$options$variables == variable)
 			
@@ -2899,8 +2906,14 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			
 				index2 <- .addFootnote(footnotes, state$errorFootnotes[index])
 				
+				errorFootnotes[i] <- state$errorFootnotes[index]
+				
 				ttest.rows[[length(ttest.rows)+1]] <- list(Variable=variable, BF=.clean(NaN), error="", .footnotes=list(BF=list(index2)))
 			}
+			
+			BF10post[i] <- state$BF10post[index]
+			status[i] <- state$status[index]
+			plottingError[i] <- state$plottingError[index]
 			
 		} else {
 			
@@ -2909,6 +2922,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		
 		
 		if (options$plotPriorAndPosterior){
+		
 		
 			if (!is.null(state) && variable %in% state$plotVariables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 				&& diff$bayesFactorType == FALSE && diff$testValue == FALSE && diff$missingValues == FALSE && diff$plotHeight == FALSE && diff$plotWidth == FALSE))) &&
@@ -3043,6 +3057,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			
 			plotVariables[[length(plotVariables)+1]] <- variable
 		}
+		
+		i <- i + 1
 	}
 	
 	ttest[["data"]] <- ttest.rows
@@ -3108,13 +3124,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	if (perform == "run") {
 		
-		BF10post <- numeric(length(options$variables))
 		
 		i <- 1
-		
-		status <- rep("ok", length(options$variables))
-	
-		plottingError <- rep("error", length(options$variables))
 		
 		for (variable in options[["variables"]])
 		{
@@ -3523,7 +3534,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	if (perform == "init") {
 		
-		return(list(results=results, status="inited"))
+		return(list(results=results, status="inited", state=state))
 		
 	} else {
 	
