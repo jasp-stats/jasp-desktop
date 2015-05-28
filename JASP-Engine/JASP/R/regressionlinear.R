@@ -1203,6 +1203,74 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	
 	################################################################################
+	#						   Casewise Diagnostics Table   					   #
+	################################################################################
+	
+	if (options$residualsCasewiseDiagnostics) {
+		
+		casewiseDiagnostics <- list()
+		casewiseDiagnostics[["title"]] <- "Casewise Diagnostics"
+		
+		# Declare table elements
+		fields <- list(
+			list(name = "caseNumber", title = "Case Number", type="number", format = "dp:0"),
+			list(name = "stdResidual", title = "Std. Residual", type = "number", format = "dp:3"),
+			list(name = "dependentVariable", title = dependent.variable, type="number", format = "dp:3"),
+			list(name = "predictedValue", title = "Predicted Value", type="number", format = "dp:3"),
+			list(name = "residual", title = "Residual", type="number", format = "dp:3")
+			)
+		
+		casewiseDiagnostics[["schema"]] <- list(fields = fields)
+		
+		casewiseDiagnostics.rows <- list()
+		
+		
+		if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
+		
+			lm.fit <- lm.model[[length(lm.model)]]$lm.fit
+			
+			if (is.null(lm.fit) || number.of.blocks == 0) {
+				
+				casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", stdResidual=".", dependentVariable=".", predictedValue=".", residual=".")
+				
+			} else if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
+			
+				casewiseAll <- FALSE
+				
+				if (options$residualsCasewiseDiagnosticsType == "allCases")
+					casewiseAll <- TRUE
+				
+				casewiseDiag <- .casewiseDiagnostics(lm.fit, casewiseAll=casewiseAll, outliersOutside=options$residualsCasewiseDiagnosticsOutliersOutside)
+				caseNumbers <- casewiseDiag$index
+				
+				if (is.na(caseNumbers)) {
+				
+					casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", stdResidual=".", dependentVariable=".", predictedValue=".", residual=".")
+				
+				} else {
+				
+					for (case in seq_along(caseNumbers)) 
+						casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=caseNumbers[case], stdResidual=casewiseDiag$stdResiduals[case], dependentVariable=casewiseDiag$dependent[case],
+																								predictedValue=casewiseDiag$predictedValues[case], residual=casewiseDiag$residuals[case])
+				}
+			}
+			
+		} else {
+		
+			# init phase
+			
+			casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", stdResidual=".", dependentVariable=".", predictedValue=".", residual=".")
+		}
+		
+		if (length(list.of.errors) > 0)
+			casewiseDiagnostics[["error"]] <- list(errorType="badData")
+		
+		casewiseDiagnostics[["data"]] <- casewiseDiagnostics.rows
+		results[["casewise diagnostics"]] <- casewiseDiagnostics
+	}
+	
+	
+	################################################################################
 	#						   Residuals Statistics Table   					   #
 	################################################################################
 	
@@ -1387,6 +1455,55 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	return(output)
 	
+}
+
+.casewiseDiagnostics <- function(lm.fit, casewiseAll=TRUE, outliersOutside=3) {
+	
+	# predicted values
+	predictedValuesAll <- predict(lm.fit)
+	
+	# residuals
+	residualsAll <- residuals(lm.fit)
+	
+	# standardized predicted values
+	stdPredictedValuesAll <- (predictedValuesAll - mean(predictedValuesAll)) / sd(predictedValuesAll)
+	
+	# standardized residuals
+	stdResidualsAll <- rstandard(lm.fit)
+	
+	stdResiduals <- NA
+	dependent <- NA
+	predictedValues <- NA
+	residuals <- NA
+	
+	if (casewiseAll) {
+		
+		index <- seq_along(predictedValuesAll)
+		
+	} else {
+		
+		index <- which(abs(stdResidualsAll) > outliersOutside)
+	}
+	
+	if (length(index) == 0) {
+		
+		index <- NA
+		
+	} else {
+		
+		stdResiduals <- stdResidualsAll[index]
+		dependent <- lm.fit$model[index, 1]
+		predictedValues <- predictedValuesAll[index]
+		residuals <- residualsAll[index]
+		
+	}
+	
+	return(list(index=unname(index),
+				stdResiduals=unname(stdResiduals),
+				dependent=dependent,
+				predictedValues=unname(predictedValues),
+				residuals=unname(residuals))
+			)
 }
 
 .residualsStatistics <- function(lm.fit) {
