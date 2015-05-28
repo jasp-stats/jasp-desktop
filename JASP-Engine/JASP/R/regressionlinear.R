@@ -111,7 +111,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		list(name = "anova", type = "table"),
 		list(name = "regression", type = "table"),
 		list(name = "coefficient covariances", type = "table"),
-		list(name = "collinearity diagnostics", type = "table"))
+		list(name = "collinearity diagnostics", type = "table"),
+		list(name = "casewise diagnostics", type = "table"),
+		list(name = "residuals statistics", type = "table")
+		)
 	
 	results[[".meta"]] <- .meta
 	
@@ -1198,6 +1201,67 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 	}
 	
+	
+	################################################################################
+	#						   Residuals Statistics Table   					   #
+	################################################################################
+	
+	if (options$residualsDurbinWatson || options$residualsCasewiseDiagnostics) {
+		
+		residualsStatistics <- list()
+		residualsStatistics[["title"]] <- "Residuals Statistics"
+		
+		# Declare table elements
+		fields <- list(
+			list(name = "Type", title = "  ", type = "string"),
+			list(name = "Minimum", title = "Minimum", type = "number", format = "dp:3"),
+			list(name = "Maximum", title = "Maximum", type="number", format = "dp:3"),
+			list(name = "Mean", title = "Mean", type="number", format = "dp:3"),
+			list(name = "SD", title = "SD", type="number", format = "dp:3"),
+			list(name = "N", title = "N", type="number", format = "dp:0")
+			)
+	
+		residualsStatistics[["schema"]] <- list(fields = fields)
+		
+		types <- c("Predicted Value", "Residual", "Std. Predicted Value", "Std. Residual")
+		
+		residualsStatistics.rows <- list()
+		
+		if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
+		
+			lm.fit <- lm.model[[length(lm.model)]]$lm.fit
+		
+			if (is.null(lm.fit) || number.of.blocks == 0) {
+			
+				for (type in types)
+					residualsStatistics.rows[[length(residualsStatistics.rows)+1]] <- list(Type=type, Minimum=".", Maximum=".", Mean=".", SD=".", N=".")
+				
+			} else if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
+				
+				resStats <- .residualsStatistics(lm.fit)
+				
+				for (type in types)
+					residualsStatistics.rows[[length(residualsStatistics.rows)+1]] <- list(Type=type, Minimum=resStats[[type]]$Minimum, Maximum=resStats[[type]]$Maximum,
+																							Mean=resStats[[type]]$Mean, SD=resStats[[type]]$SD, N=resStats[[type]]$N)
+			
+			}
+			
+		} else {
+		
+			# init phase
+			
+			for (type in types)
+					residualsStatistics.rows[[length(residualsStatistics.rows)+1]] <- list(Type=type, Minimum=".", Maximum=".", Mean=".", SD=".", N=".")
+			
+		}
+		
+		if (length(list.of.errors) > 0)
+			residualsStatistics[["error"]] <- list(errorType="badData")
+		
+		residualsStatistics[["data"]] <- residualsStatistics.rows
+		results[["residuals statistics"]] <- residualsStatistics
+	}
+	
 	results
 }
 
@@ -1323,4 +1387,66 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	return(output)
 	
+}
+
+.residualsStatistics <- function(lm.fit) {
+	
+	# predicted values
+	predictedValues <- predict(lm.fit)
+	minPredictedValues <- min(predictedValues)
+	maxPredictedValues <- max(predictedValues)
+	meanPredictedValues <- mean(predictedValues)
+	sdPredictedValues <- sd(predictedValues)
+	
+	# residuals
+	residuals <- residuals(lm.fit)
+	minResiduals <- min(residuals)
+	maxResiduals <- max(residuals)
+	meanResiduals <- mean(residuals)
+	sdResiduals <- sd(residuals)
+	
+	# N
+	N <- length(predictedValues)
+	
+	# standardized predicted values
+	stdPredictedValues <- (predictedValues - meanPredictedValues) / sdPredictedValues
+	minStdPredictedValues <- min(stdPredictedValues)
+	maxStdPredictedValues <- max(stdPredictedValues)
+	meanStdPredictedValues <- mean(stdPredictedValues)
+	sdStdPredictedValues <- sd(stdPredictedValues)
+	
+	# standardized residuals
+	stdResiduals <- rstandard(lm.fit)
+	minStdResiduals <- min(stdResiduals)
+	maxStdResiduals <- max(stdResiduals)
+	meanStdResiduals <- mean(stdResiduals)
+	sdStdResiduals <- sd(stdResiduals)
+		
+	# residuals statistics
+	return(list("Predicted Value" = list(
+					Minimum=minPredictedValues,
+					Maximum=maxPredictedValues,
+					Mean=meanPredictedValues,
+					SD=sdPredictedValues,
+					N=N),
+				"Residual" = list(
+					Minimum=minResiduals,
+					Maximum=maxResiduals,
+					Mean=meanResiduals,
+					SD=sdResiduals,
+					N=N),
+				"Std. Predicted Value" = list(
+					Minimum=minStdPredictedValues,
+					Maximum=maxStdPredictedValues,
+					Mean=meanStdPredictedValues,
+					SD=sdStdPredictedValues,
+					N=N),
+				"Std. Residual" = list(
+					Minimum=minStdResiduals,
+					Maximum=maxStdResiduals,
+					Mean=meanStdResiduals,
+					SD=sdStdResiduals,
+					N=N)
+				)
+			)
 }
