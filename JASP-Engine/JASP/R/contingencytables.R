@@ -1,6 +1,6 @@
 
 
-Crosstabs <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+ContingencyTables <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
 	layer.variables <- c()
 

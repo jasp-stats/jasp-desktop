@@ -1,5 +1,5 @@
-#ifndef ANOVAREPEATEDMEASURESSHORTFORM_H
-#define ANOVAREPEATEDMEASURESSHORTFORM_H
+#ifndef ANOVAREPEATEDMEASURESFORM_H
+#define ANOVAREPEATEDMEASURESFORM_H
 
 #include "analysisform.h"
 
@@ -10,16 +10,16 @@
 #include "widgets/tablemodelanovawithinsubjectcells.h"
 
 namespace Ui {
-class AnovaRepeatedMeasuresShortForm;
+class AnovaRepeatedMeasuresForm;
 }
 
-class AnovaRepeatedMeasuresShortForm : public AnalysisForm
+class AnovaRepeatedMeasuresForm : public AnalysisForm
 {
 	Q_OBJECT
 	
 public:
-	explicit AnovaRepeatedMeasuresShortForm(QWidget *parent = 0);
-	~AnovaRepeatedMeasuresShortForm();
+	explicit AnovaRepeatedMeasuresForm(QWidget *parent = 0);
+	~AnovaRepeatedMeasuresForm();
 
 	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 	
@@ -32,7 +32,7 @@ private slots:
 	void anovaDesignTableClicked(QModelIndex index);
 
 private:
-	Ui::AnovaRepeatedMeasuresShortForm *ui;
+	Ui::AnovaRepeatedMeasuresForm *ui;
 
 	TableModelAnovaDesign *_designTableModel;
 	TableModelAnovaWithinSubjectCells *_withinSubjectCellsListModel;
@@ -52,4 +52,4 @@ private:
 
 };
 
-#endif // ANOVAREPEATEDMEASURESSHORTFORM_H
+#endif // ANOVAREPEATEDMEASURESFORM_H

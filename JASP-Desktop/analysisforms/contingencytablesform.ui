@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CrosstabsForm</class>
- <widget class="QWidget" name="CrosstabsForm">
+ <class>ContingencyTablesForm</class>
+ <widget class="QWidget" name="ContingencyTablesForm">
   <property name="geometry">
    <rect>
     <x>0</x>

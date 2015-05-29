@@ -1,28 +1,28 @@
-#ifndef CROSSTABSBAYESIANFORM_H
-#define CROSSTABSBAYESIANFORM_H
+#ifndef CONTINGENCYTABLESBAYESIANFORM_H
+#define CONTINGENCYTABLESBAYESIANFORM_H
 
 #include <QWidget>
 #include "analysisform.h"
 #include "widgets/tablemodelvariableslevels.h"
 
 namespace Ui {
-class CrosstabsBayesianForm;
+class ContingencyTablesBayesianForm;
 }
 
-class CrosstabsBayesianForm : public AnalysisForm
+class ContingencyTablesBayesianForm : public AnalysisForm
 {
 	Q_OBJECT
 
 public:
-	explicit CrosstabsBayesianForm(QWidget *parent = 0);
-	~CrosstabsBayesianForm();
+	explicit ContingencyTablesBayesianForm(QWidget *parent = 0);
+	~ContingencyTablesBayesianForm();
 
 private slots:
 	void independentMultinomialSamplingToggled(bool on);
 	void otherSamplingToggled(bool on);
 
 private:
-	Ui::CrosstabsBayesianForm *ui;
+	Ui::ContingencyTablesBayesianForm *ui;
 
 	TableModelVariablesAssigned *_rowsModel;
 	TableModelVariablesAssigned *_columnsModel;
@@ -30,4 +30,4 @@ private:
 	TableModelVariablesLevels *_layersModel;
 };
 
-#endif // CROSSTABSBAYESIANFORM_H
+#endif // CONTINGENCYTABLESBAYESIANFORM_H

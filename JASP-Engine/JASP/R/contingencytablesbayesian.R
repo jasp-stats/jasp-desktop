@@ -1,6 +1,6 @@
 
 
-CrosstabsBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
 	layer.variables <- c()
 

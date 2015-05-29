@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CrosstabsBayesianForm</class>
- <widget class="QWidget" name="CrosstabsBayesianForm">
+ <class>ContingencyTablesBayesianForm</class>
+ <widget class="QWidget" name="ContingencyTablesBayesianForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -846,7 +846,7 @@
   <connection>
    <sender>_1Poisson</sender>
    <signal>toggled(bool)</signal>
-   <receiver>CrosstabsBayesianForm</receiver>
+   <receiver>ContingencyTablesBayesianForm</receiver>
    <slot>otherSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -862,7 +862,7 @@
   <connection>
    <sender>_2Multinomial</sender>
    <signal>toggled(bool)</signal>
-   <receiver>CrosstabsBayesianForm</receiver>
+   <receiver>ContingencyTablesBayesianForm</receiver>
    <slot>otherSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -878,7 +878,7 @@
   <connection>
    <sender>_3IndependentRowsFixed</sender>
    <signal>toggled(bool)</signal>
-   <receiver>CrosstabsBayesianForm</receiver>
+   <receiver>ContingencyTablesBayesianForm</receiver>
    <slot>independentMultinomialSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -894,7 +894,7 @@
   <connection>
    <sender>_4IndependentColumnsFixed</sender>
    <signal>toggled(bool)</signal>
-   <receiver>CrosstabsBayesianForm</receiver>
+   <receiver>ContingencyTablesBayesianForm</receiver>
    <slot>independentMultinomialSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -910,7 +910,7 @@
   <connection>
    <sender>_5Hypergeometric</sender>
    <signal>toggled(bool)</signal>
-   <receiver>CrosstabsBayesianForm</receiver>
+   <receiver>ContingencyTablesBayesianForm</receiver>
    <slot>otherSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

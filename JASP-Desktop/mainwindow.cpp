@@ -14,7 +14,6 @@
 #include "analysisforms/anovaonewayform.h"
 #include "analysisforms/anovaform.h"
 #include "analysisforms/anovarepeatedmeasuresform.h"
-#include "analysisforms/anovarepeatedmeasuresshortform.h"
 #include "analysisforms/ancovaform.h"
 #include "analysisforms/anovamultivariateform.h"
 #include "analysisforms/ancovamultivariateform.h"
@@ -29,8 +28,8 @@
 #include "analysisforms/correlationbayesianform.h"
 #include "analysisforms/correlationbayesianpairsform.h"
 #include "analysisforms/correlationpartialform.h"
-#include "analysisforms/crosstabsform.h"
-#include "analysisforms/crosstabsbayesianform.h"
+#include "analysisforms/contingencytablesform.h"
+#include "analysisforms/contingencytablesbayesianform.h"
 
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
@@ -416,8 +415,6 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new AnovaForm(contentArea);
 	else if (name == "AnovaRepeatedMeasures")
 		form = new AnovaRepeatedMeasuresForm(contentArea);
-	else if (name == "AnovaRepeatedMeasuresShort")
-		form = new AnovaRepeatedMeasuresShortForm(contentArea);
 	else if (name == "Ancova")
 		form = new AncovaForm(contentArea);
 	else if (name == "AnovaMultivariate")
@@ -436,10 +433,10 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new CorrelationBayesianPairsForm(contentArea);
 	else if (name == "CorrelationPartial")
 		form = new CorrelationPartialForm(contentArea);
-	else if (name == "Crosstabs")
-		form = new CrosstabsForm(contentArea);
-	else if (name == "CrosstabsBayesian")
-		form = new CrosstabsBayesianForm(contentArea);
+	else if (name == "ContingencyTables")
+		form = new ContingencyTablesForm(contentArea);
+	else if (name == "ContingencyTablesBayesian")
+		form = new ContingencyTablesBayesianForm(contentArea);
 	else if (name == "SEMSimple")
 		form = new SEMSimpleForm(contentArea);
 	else if (name == "AncovaBayesian")

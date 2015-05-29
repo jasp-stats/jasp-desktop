@@ -1,9 +1,9 @@
-#include "crosstabsbayesianform.h"
-#include "ui_crosstabsbayesianform.h"
+#include "contingencytablesform.h"
+#include "ui_contingencytablesform.h"
 
-CrosstabsBayesianForm::CrosstabsBayesianForm(QWidget *parent) :
-	AnalysisForm("CrosstabsBayesianForm", parent),
-	ui(new Ui::CrosstabsBayesianForm)
+ContingencyTablesForm::ContingencyTablesForm(QWidget *parent) :
+	AnalysisForm("ContingencyTables", parent),
+	ui(new Ui::ContingencyTablesForm)
 {
 	ui->setupUi(this);
 
@@ -36,24 +36,47 @@ CrosstabsBayesianForm::CrosstabsBayesianForm(QWidget *parent) :
 	ui->buttonAssignLayers->setSourceAndTarget(ui->listAvailableFields, ui->layers);
 
 	ui->panelStatistics->hide();
+	ui->panelCells->hide();
 	ui->panelOptions->hide();
 
-	ui->oddsRatioCredibleIntervalInterval->setLabel("Credible interval");
+#ifdef QT_NO_DEBUG
+	ui->lambda->hide();
+	ui->uncertaintyCoefficient->hide();
+
+	ui->somersD->hide();
+	ui->kendallsTauC->hide();
+
+	ui->byIntervalEta->hide();
+	ui->cochransAndMantel->hide();
+
+	ui->hideSmallCounts->hide();
+	ui->hideSmallCountsLessThan->hide();
+	ui->hideSmallCountsLessThanLabel->hide();
+
+	ui->groupZTest->hide();
+	ui->groupResiduals->hide();
+#else
+	ui->lambda->setStyleSheet("background-color: pink;");
+	ui->uncertaintyCoefficient->setStyleSheet("background-color: pink;");
+
+	ui->somersD->setStyleSheet("background-color: pink;");
+	ui->kendallsTauC->setStyleSheet("background-color: pink;");
+
+	ui->byIntervalEta->setStyleSheet("background-color: pink;");
+	ui->cochransAndMantel->setStyleSheet("background-color: pink;");
+
+	ui->hideSmallCounts->setStyleSheet("background-color: pink;");
+	ui->hideSmallCountsLessThan->setStyleSheet("background-color: pink;");
+	ui->hideSmallCountsLessThanLabel->setStyleSheet("background-color: pink;");
+
+	ui->groupZTest->setStyleSheet("background-color: pink;");
+	ui->groupResiduals->setStyleSheet("background-color: pink;");
+#endif
+
+	ui->oddsRatioConfidenceIntervalInterval->setLabel("Confidence interval");
 }
 
-CrosstabsBayesianForm::~CrosstabsBayesianForm()
+ContingencyTablesForm::~ContingencyTablesForm()
 {
 	delete ui;
-}
-
-void CrosstabsBayesianForm::otherSamplingToggled(bool on)
-{
-	if (on)
-		ui->hypothesis->setEnabled(false);
-}
-
-void CrosstabsBayesianForm::independentMultinomialSamplingToggled(bool on)
-{
-	if (on)
-		ui->hypothesis->setEnabled(true);
 }

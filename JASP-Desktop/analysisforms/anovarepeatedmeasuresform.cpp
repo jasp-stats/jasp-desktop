@@ -1,14 +1,14 @@
 
-#include "anovarepeatedmeasuresshortform.h"
-#include "ui_anovarepeatedmeasuresshortform.h"
+#include "anovarepeatedmeasuresform.h"
+#include "ui_anovarepeatedmeasuresform.h"
 
 #include "column.h"
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodelnuisancefactors.h"
 
-AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) :
-	AnalysisForm("AnovaRepeatedMeasuresShortForm", parent),
-	ui(new Ui::AnovaRepeatedMeasuresShortForm)
+AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
+	AnalysisForm("AnovaRepeatedMeasuresForm", parent),
+	ui(new Ui::AnovaRepeatedMeasuresForm)
 {
 	ui->setupUi(this);
 
@@ -98,12 +98,12 @@ AnovaRepeatedMeasuresShortForm::AnovaRepeatedMeasuresShortForm(QWidget *parent) 
 #endif
 }
 
-AnovaRepeatedMeasuresShortForm::~AnovaRepeatedMeasuresShortForm()
+AnovaRepeatedMeasuresForm::~AnovaRepeatedMeasuresForm()
 {
 	delete ui;
 }
 
-void AnovaRepeatedMeasuresShortForm::bindTo(Options *options, DataSet *dataSet)
+void AnovaRepeatedMeasuresForm::bindTo(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::bindTo(options, dataSet);
 
@@ -120,13 +120,13 @@ void AnovaRepeatedMeasuresShortForm::bindTo(Options *options, DataSet *dataSet)
 	_betweenSubjectsTermsModel->setVariables(_betweenSubjectsFactorsListModel->assigned());
 }
 
-void AnovaRepeatedMeasuresShortForm::factorsChanging()
+void AnovaRepeatedMeasuresForm::factorsChanging()
 {
 	if (_options != NULL)
 		_options->blockSignals(true);
 }
 
-void AnovaRepeatedMeasuresShortForm::factorsChanged()
+void AnovaRepeatedMeasuresForm::factorsChanged()
 {
 	Terms factorsAvailable;
 
@@ -150,7 +150,7 @@ void AnovaRepeatedMeasuresShortForm::factorsChanged()
 		_options->blockSignals(false);
 }
 
-void AnovaRepeatedMeasuresShortForm::termsChanged()
+void AnovaRepeatedMeasuresForm::termsChanged()
 {
 	Terms terms;
 
@@ -164,13 +164,13 @@ void AnovaRepeatedMeasuresShortForm::termsChanged()
 	ui->marginalMeansTerms->setVariables(terms);
 }
 
-void AnovaRepeatedMeasuresShortForm::withinSubjectsDesignChanged()
+void AnovaRepeatedMeasuresForm::withinSubjectsDesignChanged()
 {
 	_withinSubjectCellsListModel->setDesign(_designTableModel->design());
 	factorsChanged();
 }
 
-void AnovaRepeatedMeasuresShortForm::anovaDesignTableClicked(QModelIndex index)
+void AnovaRepeatedMeasuresForm::anovaDesignTableClicked(QModelIndex index)
 {
 	// the second column contains an X to delete the row
 

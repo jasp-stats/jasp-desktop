@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>AnovaRepeatedMeasuresShortForm</class>
- <widget class="QWidget" name="AnovaRepeatedMeasuresShortForm">
+ <class>AnovaRepeatedMeasuresForm</class>
+ <widget class="QWidget" name="AnovaRepeatedMeasuresForm">
   <property name="geometry">
    <rect>
     <x>0</x>

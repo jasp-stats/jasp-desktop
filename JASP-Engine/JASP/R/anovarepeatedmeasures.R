@@ -1,5 +1,5 @@
 
-AnovaRepeatedMeasuresShort <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
 	numeric.variables <- c(unlist(options$repeatedMeasuresCells))
 	numeric.variables <- numeric.variables[numeric.variables != ""]
