@@ -2877,7 +2877,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	if (perform == "init") {
 		
-		return(list(results=results, status="inited"))
+		return(list(results=results, status="inited", state=state))
 		
 	} else {
 	
