@@ -551,7 +551,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			
 		} else {
 		
-			results <- list(results=results, status="inited")
+			results <- list(results=results, status="inited", state=state)
 			return(results)
 		}
 		
