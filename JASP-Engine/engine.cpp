@@ -71,16 +71,23 @@ void Engine::runAnalysis()
 
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
 
+	_currentAnalysisKnowsAboutChange = false;
 	_analysisResultsString = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
+
+	if (_status == initing || _status == running)  // if status hasn't changed
+		receiveMessages();
 
 	if (_status == toInit || _status == aborted || _status == error)
 	{
 		// analysis was aborted, and we shouldn't send the results
 	}
-	else if (_status == changed && _analysisResultsString == "null")
+	else if (_status == changed && (_currentAnalysisKnowsAboutChange == false || _analysisResultsString == "null"))
 	{
-		// analysis was changed, and the analysis could not incorporate the changes
-		// so the analysis returned null, and now needs to be re-run
+		// analysis was changed, and the analysis either did not know about
+		// the change (because it did not call a callback),
+		// or it could not incorporate the changes (returned null).
+		// in both cases it needs to be re-run, and results should
+		// not be sent
 
 		_status = toInit;
 	}
@@ -272,11 +279,18 @@ string Engine::callback(const string &results)
 	}
 
 	if (_status == changed)
+	{
+		_currentAnalysisKnowsAboutChange = true; // because we're telling it now
 		return "{ \"status\" : \"changed\", \"options\" : " + _analysisOptions + " }";
+	}
 	else if (_status == stopped)
+	{
 		return "{ \"status\" : \"stopped\" }";
+	}
 	else if (_status == aborted)
+	{
 		return "{ \"status\" : \"aborted\" }";
+	}
 
 	return "{ \"status\" : \"ok\" }";
 }

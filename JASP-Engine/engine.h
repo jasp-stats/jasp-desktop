@@ -36,6 +36,8 @@ private:
 	std::string _analysisResultsString;
 	int _ppi;
 
+	bool _currentAnalysisKnowsAboutChange;
+
 	Json::Value _analysisResults;
 
 	IPCChannel *_channel;
