@@ -31,9 +31,10 @@ $(document).ready(function () {
 		if (selectedAnalysis != null)
 			selectedAnalysis.unselect()
 
+		selectedAnalysisId = id;
+
 		var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === id; });
 		if (jaspWidget !== undefined) {
-			selectedAnalysisId = id;
 			selectedAnalysis = jaspWidget;
 			selectedAnalysis.select();
 			$("body").addClass("selected")
@@ -190,13 +191,15 @@ $(document).ready(function () {
 
 			newItem.click(selectedHandler)
 
-			if (selectedAnalysis != null)
-				selectedAnalysis.unselect()
+			if (selectedAnalysisId === analysis.id) {
+				if (selectedAnalysis != null)
+					selectedAnalysis.unselect()
 
-			$("body").addClass("selected")
+				$("body").addClass("selected")
 
-			selectedAnalysis = jaspWidget;
-			jaspWidget.select();
+				selectedAnalysis = jaspWidget;
+				jaspWidget.select();
+			}
 
 			analysesViews.push(jaspWidget)
 
@@ -216,7 +219,8 @@ $(document).ready(function () {
 
 		jaspWidget.render();
 
-		window.scrollIntoView(jaspWidget.$el);
+		if (selectedAnalysisId === analysis.id)
+			window.scrollIntoView(jaspWidget.$el);
 	}
 
 	$("body").click(window.unselectByClickingBody)
