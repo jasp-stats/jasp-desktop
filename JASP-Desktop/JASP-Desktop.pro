@@ -406,7 +406,9 @@ OTHER_FILES += \
 	html/js/analysis.js \
     resources/icons/variable-nominal-text.svg \
     html/css/images/waiting.svg \
-    resources/icons/analysis-classical-sem.svg
+    resources/icons/analysis-classical-sem.svg \
+    html/js/jaspy.js \
+    html/js/backbone-min-1.1.2.js
 
 HELP_PATH = $${PWD}/../Docs/help
 LIBRARY_PATH = $${PWD}/../Library

@@ -302,6 +302,8 @@ div.status.waiting {
 	z-index: 100 ;
 }
 
+
+
 .jasp-image-holder .error-message-positioner {
 
 	position: absolute ;
@@ -345,4 +347,21 @@ td.squash-left
 	border-radius: 10px ;
 	color: #3CAAE7 ;
 
+}
+
+.jasp-hide {
+    display: none;
+}
+.jasp-control {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    cursor: pointer;
+}
+.jasp-resize {
+    background: top left no-repeat url(http://cdn1.iconfinder.com/data/icons/fugue/icon/arrow-resize-135.png);
+    right: 5px;
+    cursor: nw-resize;
 }

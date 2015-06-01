@@ -1,4 +1,50 @@
-$.widget("jasp.images", {
+JASPWidgets.images = Backbone.Collection.extend({
+
+	model: JASPWidgets.image,
+});
+
+JASPWidgets.imagesView = JASPWidgets.CollectionView.extend({
+
+	createItemView: function (item) {
+		var imageView = new JASPWidgets.imageView({ className: "jasp-images-image jasp-image", model: item });
+		this.listenTo(imageView, "ResizeableView:resizeStart", this.onResizingStart);
+		return imageView;
+	},
+
+	onResizingStart: function (w, h) {
+		for (var i = 0; i < this.views.length; i++) {
+			var imageView = this.views[i];
+			if (imageView.isMouseResizing()) {
+				this.listenTo(imageView, "ResizeableView:resized", this.onResized);
+				this.listenTo(imageView, "ResizeableView:viewResized", this.onViewResized);
+			}
+			else
+				imageView.resizeStart(w, h, true);
+		}
+	},
+
+	onViewResized: function (w, h) {
+		for (var i = 0; i < this.views.length; i++) {
+			var imageView = this.views[i];
+			if (!imageView.isMouseResizing())
+				imageView.resizeView(w, h);
+		}
+	},
+
+	onResized: function (w, h) {
+		for (var i = 0; i < this.views.length; i++) {
+			var imageView = this.views[i];
+			if (imageView.isMouseResizing()) {
+				this.stopListening(imageView);
+			}
+			else
+				imageView.resizeStop(w, h);
+		}
+	},
+});
+
+
+/*$.widget("jasp.images", {
 
     options: {
         items : [ ],
@@ -61,4 +107,4 @@ $.widget("jasp.images", {
     _destroy: function () {
         this.element.removeClass("jasp-images").text("")
     }
-})
+})*/
