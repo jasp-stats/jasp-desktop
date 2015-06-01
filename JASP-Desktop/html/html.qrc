@@ -39,5 +39,6 @@
         <file>css/images/waiting-large.png</file>
         <file>js/backbone-min-1.1.2.js</file>
         <file>js/jaspwidgets.js</file>
+        <file>css/images/arrow-resize.png</file>
     </qresource>
 </RCC>

@@ -407,8 +407,9 @@ OTHER_FILES += \
     resources/icons/variable-nominal-text.svg \
     html/css/images/waiting.svg \
     resources/icons/analysis-classical-sem.svg \
-    html/js/jaspy.js \
-    html/js/backbone-min-1.1.2.js
+    html/js/jaspwidget.js \
+    html/js/backbone-min-1.1.2.js \
+    html/css/images/arrow-resize.png
 
 HELP_PATH = $${PWD}/../Docs/help
 LIBRARY_PATH = $${PWD}/../Library
