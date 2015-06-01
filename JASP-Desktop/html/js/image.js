@@ -1,4 +1,114 @@
-$.widget("jasp.image", {
+JASPWidgets.image = JASPWidgets.Resizeable.extend({
+
+	defaults: {
+		title: "",
+		width: 480,
+		height: 320,
+		data: null,
+		status: "waiting",
+		custom: null,
+		error: null
+	}
+});
+
+JASPWidgets.imageView = JASPWidgets.ResizeableView.extend({
+
+	initialize: function () {
+		this._imageViewBase = JASPWidgets.ResizeableView.prototype;
+		this._imageViewBase.initialize.call(this);
+	},
+
+	resizeTargetElement: function () {
+		return this.$(".jasp-image-holder");
+	},
+
+	resizeDisabled: function () {
+		var custom = this.model.get("custom");
+		return custom === null;
+	},
+
+	onResized: function (w, h) {
+		this._imageViewBase.onResized.call(this);
+
+		var options = {};
+		var custom = this.model.get("custom");
+		if (custom !== null) {
+			if (_.has(custom, "width"))
+				options[custom.width] = w;
+			if (_.has(custom, "height"))
+				options[custom.height] = h;
+		}
+
+		this.model.trigger("CustomOptions:changed", options);
+	},
+
+	onResizeStart: function (w, h) {
+		this._imageViewBase.onResizeStart.call(this);
+		this.$el.addClass("jasp-image-resizable");
+	},
+
+	onResizeStop: function (w, h) {
+		this._imageViewBase.onResizeStop.call(this);
+		this.$el.removeClass("jasp-image-resizable");
+	},
+
+	render: function () {
+		var html = ''
+		var title = this.model.get("title");
+		var status = this.model.get("status");
+		var error = this.model.get("error");
+		var data = this.model.get("data");
+		var custom = this.model.get("custom");
+
+		if (title) {
+
+			html += '<h2>' + title + '</h2>'
+		}
+
+		var classes = ""
+		if (status)
+			classes += status
+
+		if (error)
+			classes += " error-state"
+
+		html += '<div class="jasp-image-holder ' + classes + '>'
+
+		html += '<div class="jasp-image-image" style="'
+
+		if (data) {
+
+			html += 'background-image : url(\'' + data + '\') ;'
+			html += 'background-size : 100% 100% ;'
+		}
+
+		html += '"></div>'
+
+		if (error && error.errorMessage) {
+
+			html += '<div  class="error-message-positioner">'
+			html += '<div  class="error-message-box ui-state-error">'
+			html += '<span class="error-message-symbol ui-icon ui-icon-alert"></span>'
+			html += '<div  class="error-message-message">' + error.errorMessage + '</div>'
+			html += '</div>'
+			html += '</div>'
+		}
+
+		html += '<div class="jasp-image-loader"></div>'
+
+		html += '</div>'
+
+		this.$el.html(html)
+
+		var self = this
+
+		this._imageViewBase.render.call(this);
+
+		return this;
+	}
+});
+
+/*$.widget("jasp.image", {
 
 	options: {
 		title: "",
@@ -110,4 +220,4 @@ $.widget("jasp.image", {
 	_destroy: function () {
 		this.element.removeClass("jasp-image").text("")
 	}
-})
+})*/
