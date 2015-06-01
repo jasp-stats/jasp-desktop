@@ -38,7 +38,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		list(name="headerLevene", type="h1"),
 		list(name="levene", type="table"),
 		list(name="headerDescriptives", type="h1"),
-		list(name="descriptives", type="table")
+		list(name="descriptives", type="table"),
+		list(name="headerProfilePlot", type="h1"),
+		list(name="profilePlot", type="images")
 	)
 	
 	results[[".meta"]] <- .meta
@@ -160,6 +162,23 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	if (!is.null(results[["descriptives"]]))
 	    results[["headerDescriptives"]] <- "Descriptives"
+	
+	
+	
+	## Create Profile Plots
+	
+	result <- .rmAnovaProfilePlot(dataset, options, perform, status)
+	
+	results[["profilePlot"]] <- result$result
+	status <- result$status
+	
+	if (options$plotHorizontalAxis != "") {
+		if (options$plotSeparatePlots != "") {
+			results[["headerProfilePlot"]] <- "Profile Plots"
+		} else {
+			results[["headerProfilePlot"]] <- "Profile Plot"
+		}
+	}
 	
 	
 	
@@ -1501,4 +1520,202 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		descriptives.table[["error"]] <- list(error="badData")
 
 	list(result=descriptives.table, status=status)
+}
+
+.rmAnovaProfilePlot <- function(dataset, options, perform, status) {
+
+	profilePlotList <- list()
+	
+	print(perform)
+	print(status)
+	print(options$plotHorizontalAxis)
+
+	if (perform == "run" && status$ready && !status$error && options$plotHorizontalAxis != "") {
+		
+		dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
+
+		groupVars <- c(options[["plotHorizontalAxis"]], options[["plotSeparateLines"]], options[["plotSeparatePlots"]])
+		groupVars <- groupVars[groupVars != ""]
+		groupVarsV <- .v(groupVars)
+
+		summaryStat <- plyr::ddply(as.data.frame(dataset), groupVarsV, .drop = FALSE,
+									.fun = function(xx, col) {
+										c(N = length(xx[[col]]), "dependent" = mean(xx[[col]]), sd = sd(xx[[col]]))
+									}, "dependent")
+
+		if ( options[["plotHorizontalAxis"]] != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotHorizontalAxis"]]))] <- "plotHorizontalAxis"
+		}
+
+		if ( options[["plotSeparateLines"]] != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotSeparateLines"]]))] <- "plotSeparateLines"
+		}
+
+		if ( options[["plotSeparatePlots"]] != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotSeparatePlots"]]))] <- "plotSeparatePlots"
+		}
+
+		summaryStat$se <- summaryStat$sd / sqrt(summaryStat$N)
+
+		if (options$errorBarType == "confidenceInterval") {
+			
+			ciMult <- qt(options$confidenceIntervalInterval/2 + .5, summaryStat$N - 1)
+			
+		} else if (options$errorBarType == "standardError") {
+		
+			ciMult <- 1
+		}
+		
+		summaryStat$ci <- summaryStat$se * ciMult
+		summaryStat$ciLower <- summaryStat[,"dependent"] - summaryStat[,"ci"]
+		summaryStat$ciUpper <- summaryStat[,"dependent"] + summaryStat[,"ci"]
+
+		base_breaks_x <- function(x){
+			b <- unique(as.numeric(x))
+			d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
+			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))#,
+#				ggplot2::scale_x_continuous(breaks=unique(as.numeric(x)),
+#									labels=levels(x), 
+#									limits=c(min(as.numeric(x)) - (length(levels(x)) * .1), 
+#											max(as.numeric(x)) + (length(levels(x)) * .1))))
+		}
+
+		base_breaks_y <- function(x, plotErrorBars){
+			if (plotErrorBars) {
+				ci.pos <- c(x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
+				b <- pretty(ci.pos)
+				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
+					 ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
+			} else {
+				b <- pretty(x[,"dependent"])
+				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
+					 ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
+			}
+		}
+
+		if (options[["plotSeparatePlots"]] != "") {
+			subsetPlots <- levels(summaryStat[,"plotSeparatePlots"])
+			nPlots <- length(subsetPlots)
+		} else {
+			nPlots <- 1
+		}
+
+		for (i in 1:nPlots) {
+
+			profilePlot <- list()
+			profilePlot[["title"]] <- ""
+			profilePlot[["width"]] <- options$plotWidth
+			profilePlot[["height"]] <- options$plotHeight
+			profilePlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+
+			if (options[["plotSeparatePlots"]] != "") {
+				summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
+			} else {
+				summaryStatSubset <- summaryStat
+			}
+
+			if(options[["plotSeparateLines"]] == "") {
+
+				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis, 
+											y=dependent,
+											group=1)) 
+
+			} else {
+
+				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis, 
+											y=dependent,
+											group=plotSeparateLines,
+											shape=plotSeparateLines,
+#											color=plotSeparateLines,
+											fill=plotSeparateLines))
+
+			} 
+
+			if (options[["plotErrorBars"]]) {
+
+				pd <- ggplot2::position_dodge(.2)
+				p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, 
+															ymax=ciUpper), 
+															colour="black", width=.2, position=pd)
+
+			} else {
+
+				pd <- ggplot2::position_dodge(0)
+
+			}
+
+			p <- p + ggplot2::geom_line(position=pd, size = .7) + 
+				ggplot2::geom_point(position=pd, size=4) +
+				ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
+				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) + 
+				ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
+				ggplot2::ylab(options[["dependent"]]) +
+				ggplot2::xlab(options[["plotHorizontalAxis"]]) +
+				ggplot2::labs(shape=options[["plotSeparateLines"]], fill=options[["plotSeparateLines"]]) +
+				ggplot2::theme_bw() +
+				ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
+					panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
+					panel.grid.major=ggplot2::element_blank(),
+					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
+					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
+					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
+					legend.key = ggplot2::element_blank(), #legend.key.width = grid::unit(10,"mm"),
+					legend.title = ggplot2::element_text(size=12),
+					legend.text = ggplot2::element_text(size = 12),
+					axis.ticks = ggplot2::element_line(size = 0.5),
+					axis.ticks.margin = grid::unit(1,"mm"),
+					axis.ticks.length = grid::unit(3, "mm"),
+					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
+				base_breaks_y(summaryStatSubset, options[["plotErrorBars"]]) +
+				base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
+
+			if (nPlots > 1) {
+				p <- p + ggplot2::ggtitle(paste(options[["plotSeparatePlots"]],": ",subsetPlots[i], sep = ""))
+			}
+
+			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+			print(p)
+			content <- .endSaveImage(image)
+
+			profilePlot[["data"]] <- content
+
+			profilePlotList[[i]] <- profilePlot
+
+		}
+
+	} else if (options$plotHorizontalAxis != "") {
+
+		if (options$plotSeparatePlots != "") {
+
+			nPlots <- length(levels(dataset[[ .v(options$plotSeparatePlots) ]]))
+
+		} else {
+
+			nPlots <- 1
+
+		}
+
+		for (i in 1:nPlots) {
+
+			profilePlot <- list()
+			profilePlot[["title"]] <- ""
+			profilePlot[["width"]] <- options$plotWidth
+			profilePlot[["height"]] <- options$plotHeight
+			profilePlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			profilePlot[["data"]] <- ""
+
+			if (status$error)
+				profilePlot[["error"]] <- list(errorType="badData")
+
+			profilePlotList[[i]] <- profilePlot
+		}
+
+	}
+
+	list(result=profilePlotList, status=status)
 }
