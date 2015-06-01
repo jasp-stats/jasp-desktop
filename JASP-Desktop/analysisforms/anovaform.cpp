@@ -83,6 +83,8 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->containerPostHocTests->hide();
     ui->containerProfilePlot->hide();
 
+	ui->confidenceIntervalInterval->setLabel("Confidence interval");
+
 #ifdef QT_NO_DEBUG
 	ui->randomFactorsBox->hide();
 #else
