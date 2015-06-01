@@ -152,6 +152,20 @@
 		{
 			"name": "effectSizeOmegaSquared",
 			"type": "Boolean"
+		},
+		{
+			"name": "errorBarType",
+			"options": [ "confidenceInterval", "standardError" ],
+			"default": "confidenceInterval",
+			"type": "List"
+		},
+		{
+			"format": "%",
+			"max": 1.0,
+			"min": 0.01,
+			"name": "confidenceIntervalInterval",
+			"type": "Number",
+			"value": 0.95
 		}
 	]
 }

@@ -1313,8 +1313,16 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		}
 
 		summaryStat$se <- summaryStat$sd / sqrt(summaryStat$N)
-
-		ciMult <- qt(.95/2 + .5, summaryStat$N - 1)
+		
+		if (options$errorBarType == "confidenceInterval") {
+			
+			ciMult <- qt(options$confidenceIntervalInterval/2 + .5, summaryStat$N - 1)
+			
+		} else if (options$errorBarType == "standardError") {
+		
+			ciMult <- 1
+		}
+				
 		summaryStat$ci <- summaryStat$se * ciMult
 		summaryStat$ciLower <- summaryStat[,"dependent"] - summaryStat[,"ci"]
 		summaryStat$ciUpper <- summaryStat[,"dependent"] + summaryStat[,"ci"]
