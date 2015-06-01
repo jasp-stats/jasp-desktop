@@ -190,15 +190,13 @@ $(document).ready(function () {
 
 			newItem.click(selectedHandler)
 
-			if (analysis.id == selectedAnalysisId) {
-				if (selectedAnalysis != null)
-					selectedAnalysis.unselect()
+			if (selectedAnalysis != null)
+				selectedAnalysis.unselect()
 
-				$("body").addClass("selected")
+			$("body").addClass("selected")
 
-				selectedAnalysis = jaspWidget;
-				jaspWidget.select();
-			}
+			selectedAnalysis = jaspWidget;
+			jaspWidget.select();
 
 			analysesViews.push(jaspWidget)
 
@@ -218,8 +216,7 @@ $(document).ready(function () {
 
 		jaspWidget.render();
 
-		if (selectedAnalysisId == analysis.id)
-			window.scrollIntoView(jaspWidget.$el);
+		window.scrollIntoView(jaspWidget.$el);
 	}
 
 	$("body").click(window.unselectByClickingBody)
