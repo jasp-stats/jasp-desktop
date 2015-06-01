@@ -32,7 +32,7 @@ $(document).ready(function () {
 			selectedAnalysis.unselect()
 
 		var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === id; });
-		if (typeof jaspWidget !== 'undefined') {
+		if (jaspWidget !== undefined) {
 			selectedAnalysisId = id;
 			selectedAnalysis = jaspWidget;
 			selectedAnalysis.select();
@@ -102,7 +102,7 @@ $(document).ready(function () {
 		})
 
 		var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === id; });
-		if (typeof jaspWidget !== 'undefined') {
+		if (jaspWidget !== undefined) {
 			jaspWidget.close();
 			analysesViews = _.without(analysesViews, jaspWidget);
 		}
@@ -183,7 +183,7 @@ $(document).ready(function () {
 		var id = "id-" + analysis.id
 
 		var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === analysis.id; });
-		if (typeof jaspWidget == 'undefined') {
+		if (jaspWidget == undefined) {
 			jaspWidget = new JASPWidgets.AnalysisView({ id: id, className: "jasp-analysis", model: new JASPWidgets.Analysis(analysis) });
 
 			var newItem = jaspWidget.$el;
