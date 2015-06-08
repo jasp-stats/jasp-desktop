@@ -6,7 +6,7 @@ run <- function(name, options.as.json.string, perform="run") {
 	
 	if (perform == "init") {
 	
-		the.callback <- function(...) 0
+		the.callback <- function(...) list(status="ok")
 		
 	} else {
 	
