@@ -13,6 +13,16 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 	if (is.null (base::options ()$BFfactorsMax))
 		base::options (BFfactorsMax = 5)
 
+	state <- .retrieveState ()
+	print(state)
+	if ( ! is.null (state)) {
+		change <- .diff (options, state$options)
+		if ( ! base::identical(change, FALSE) && (change$dependent || change$modelTerms)) {
+			state <- NULL
+		} else {
+			perform <- "run"
+		}
+	}
 ## META
 	results <- list ()
 	meta <- list ()
@@ -23,6 +33,7 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 	results [["title"]] <- "Bayesian Repeated Measures ANOVA"
 
 ## DATA
+if (is.null(state)) {
 	dataANDoptions <- .readBayesianRepeatedMeasuresDataOptions (dataset, options, perform)
 	dataset <- dataANDoptions$dataset
 	options <- dataANDoptions$options
@@ -38,6 +49,10 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 	
 	model <- model.object$model
 	status <- model.object$status
+} else {
+	model <- state$model
+	status <- state$status
+}
 
 ## Posterior Table
 	model.comparison <- .theBayesianLinearModelsComparison (model, options, perform, status, populate = FALSE)
@@ -47,8 +62,10 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 ## Effects Table
 	results [["effects"]] <- .theBayesianLinearModelsEffects (model, options, perform, status, populate = FALSE)
 
-	if (perform == "run" || !status$ready) {
-		return (list (results = results, status = "complete"))
+	new.state <- list (options = options, model = model, status = status)
+	
+	if (perform == "run" || !status$ready || ! is.null (state)) {
+		return (list (results = results, status = "complete", state = new.state))
 	} else {
 		return (list (results = results, status = "inited"))
 	}
