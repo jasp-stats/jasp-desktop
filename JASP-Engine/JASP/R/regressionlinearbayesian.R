@@ -14,7 +14,6 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 		base::options (BFfactorsMax = 5)
 
 	state <- .retrieveState ()
-	print(state)
 	if ( ! is.null (state)) {
 		change <- .diff (options, state$options)
 		if ( ! base::identical(change, FALSE) && (change$dependent || change$modelTerms)) {
