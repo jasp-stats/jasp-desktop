@@ -58,7 +58,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			results[["headerIntervalPlots"]] <-  "Interval Plot"
 		}
 		
-		results[["intervalPlots"]] <- .intervalPlot(dataset, options, perform)
+		results[["intervalPlots"]] <- .independentSamplesTTestIntervalPlot(dataset, options, perform)
 	}
 
 	results
@@ -567,7 +567,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	levenes
 }
 
-.intervalPlot <- function(dataset, options, perform) {
+.independentSamplesTTestIntervalPlot <- function(dataset, options, perform) {
 
 	intervalPlotList <- list()
 
@@ -596,20 +596,12 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			intervalPlot[["height"]] <- options$plotHeight
 			intervalPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 			
-			summaryStat <- plyr::ddply(as.data.frame(dataset), .v(options$groupingVariable), .drop = FALSE,
-										.fun = function(xx, col) {
-											c(N = length(xx[[col]]), "dependent" = mean(xx[[col]]), sd = sd(xx[[col]]))
-										}, .v(options$variables[var]))
-										
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["groupingVariable"]]))] <- "groupingVariable"
+			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[var]), groupvars = .v(options$groupingVariable), 
+						   conf.interval = options$intervalIntervalPlots, na.rm = TRUE, .drop = FALSE)
 			
-			summaryStat$se <- summaryStat$sd / sqrt(summaryStat$N)
-			ciMult <- qt(options$intervalIntervalPlots/2 + .5, summaryStat$N - 1)
-		
-			summaryStat$ci <- summaryStat$se * ciMult
-			summaryStat$ciLower <- summaryStat[,"dependent"] - summaryStat[,"ci"]
-			summaryStat$ciUpper <- summaryStat[,"dependent"] + summaryStat[,"ci"]
-									
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$variables[var]))] <- "dependent"										
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$groupingVariable))] <- "groupingVariable"
+			
 			pd <- ggplot2::position_dodge(.2)
 						
 			p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=1)) +

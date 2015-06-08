@@ -19,8 +19,8 @@
 		},
 		{
 			"format": "%",
-			"max": 1.0,
-			"min": 0.0,
+			"max": 0.999,
+			"min": 0.000,
 			"name": "confidenceIntervalInterval",
 			"type": "Number",
 			"value": 0.950
@@ -50,6 +50,28 @@
 			"options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
 			"default": "groupsNotEqual",
 			"type": "List"
+		},
+		{
+			"name": "intervalPlots",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "intervalIntervalPlots",
+			"type": "Number",
+			"value": 0.950
+		},
+		{
+			"name": "plotWidth",
+			"type": "Integer",
+			"default": 350
+		},
+		{
+			"name": "plotHeight",
+			"type": "Integer",
+			"default": 300
 		}
 	]
 }

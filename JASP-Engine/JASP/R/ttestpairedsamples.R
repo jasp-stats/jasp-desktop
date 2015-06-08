@@ -3,7 +3,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 	all.variables <- unique(unlist(options$pairs))
 	all.variables <- all.variables[all.variables != ""]
-
+	
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
@@ -32,6 +32,8 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="descriptives", type="table")
 	meta[[4]] <- list(name="normalityTests", type="table")
+	meta[[5]] <- list(name="headerIntervalPlots", type="h1")
+	meta[[6]] <- list(name="intervalPlots", type="images")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "T-Test"
@@ -370,7 +372,107 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		
 		results[["normalityTests"]] <- normalityTests
 	}
+	
+	if (options$intervalPlots) {
+		
+		if (length(options$pairs) > 1) {
+			results[["headerIntervalPlots"]] <-  "Interval Plots"
+		} else {
+			results[["headerIntervalPlots"]] <-  "Interval Plot"
+		}
+		
+		results[["intervalPlots"]] <- .pairedSamplesTTestIntervalPlot(dataset, options, perform)
+	}
 		
 	results
 }
+
+.pairedSamplesTTestIntervalPlot <- function(dataset, options, perform) {
+
+	intervalPlotList <- list()
+		
+	base_breaks_x <- function(x){
+		b <- unique(as.numeric(x))
+		d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
+		list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
+	}
+
+	base_breaks_y <- function(x){
+		ci.pos <- c(x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
+		b <- pretty(ci.pos)
+		d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+		list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
+			ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
+	}
+
+	for (i in .indices(options$pairs)) {
+
+		pair <- options$pairs[[i]]
+		
+		intervalPlot <- list()
+	
+		intervalPlot[["title"]] <- ""
+		intervalPlot[["width"]] <- options$plotWidth
+		intervalPlot[["height"]] <- options$plotHeight
+		intervalPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+
+		if (perform == "run" && pair[[1]] != "" && pair[[2]] != "") {
+	
+			c1 <- dataset[[ .v(pair[[1]]) ]]
+			c2 <- dataset[[ .v(pair[[2]]) ]]
+	
+			data <- data.frame("id" = rep(1:length(c1),2), "dependent" = c(c1, c2), 
+							   "groupingVariable" = c(rep(pair[[1]], length(c1)), rep(pair[[2]], length(c2))))
+	
+			summaryStat <- .summarySEwithin(data, measurevar = "dependent", withinvars = "groupingVariable", idvar = "id", 
+						   					conf.interval = options$intervalIntervalPlots, na.rm = TRUE, .drop = FALSE)
+	
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$variables[var]))] <- "dependent"										
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$groupingVariable))] <- "groupingVariable"
+	
+			pd <- ggplot2::position_dodge(.2)
+				
+			p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=1)) +
+				 ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
+				 ggplot2::geom_line(position=pd, size = .7) + 
+				 ggplot2::geom_point(position=pd, size=4) +
+				 ggplot2::ylab(NULL) +
+				 ggplot2::xlab(NULL) +
+				 ggplot2::theme_bw() +
+				 ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
+					panel.grid.major=ggplot2::element_blank(),
+					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
+					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
+					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
+					legend.key = ggplot2::element_blank(),
+					legend.title = ggplot2::element_text(size=12),
+					legend.text = ggplot2::element_text(size = 12),
+					axis.ticks = ggplot2::element_line(size = 0.5),
+					axis.ticks.margin = grid::unit(1,"mm"),
+					axis.ticks.length = grid::unit(3, "mm"),
+					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
+				 base_breaks_y(summaryStat) +
+				 base_breaks_x(summaryStat$groupingVariable)
+						
+			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+			print(p)
+			content <- .endSaveImage(image)
+
+			intervalPlot[["data"]] <- content
+	
+		} else {
+	
+			intervalPlot[["data"]] <- ""
+			
+		}
+		
+		intervalPlotList[[i]] <- intervalPlot
+	}
+
+	intervalPlotList
+}
+
 
