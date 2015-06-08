@@ -169,8 +169,8 @@
 		},
 		{
 			"format": "%",
-			"max": 1.0,
-			"min": 0.01,
+			"max": 0.999,
+			"min": 0.000,
 			"name": "confidenceIntervalInterval",
 			"type": "Number",
 			"value": 0.95
