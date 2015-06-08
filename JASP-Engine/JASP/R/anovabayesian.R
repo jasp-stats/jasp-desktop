@@ -13,6 +13,16 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	if (is.null (base::options ()$BFfactorsMax))
 		base::options (BFfactorsMax = 5)
 
+	state <- .retrieveState ()
+	print(state)
+	if ( ! is.null (state)) {
+		change <- .diff (options, state$options)
+		if ( ! base::identical(change, FALSE) && (change$dependent || change$modelTerms)) {
+			state <- NULL
+		} else {
+			perform <- "run"
+		}
+	}
 ## META
 	results <- list ()
 	meta <- list ()
@@ -23,30 +33,39 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	results [["title"]] <- "Bayesian ANOVA"
 
 ## DATA
-	dataset <- .readBayesianLinearModelData (dataset, options, perform)
+	if (is.null(state)) {
+		dataset <- .readBayesianLinearModelData (dataset, options, perform)
 
 ##STATUS (INITIAL)
-	status <- .setBayesianLinearModelStatus (dataset, options, perform)
+		status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
 ## MODEL
-	model.object <- .theBayesianLinearModels (dataset, options, perform, status, callback, results = results)
+		model.object <- .theBayesianLinearModels (dataset, options, perform, status, callback, results = results)
 	
-	if (is.null(model.object)) # analysis cancelled by the callback
-		return()
-		
-	model <- model.object$model
-	status <- model.object$status
+		if (is.null(model.object))
+			return()
+
+		model <- model.object$model
+		status <- model.object$status
+	} else {
+		model <- state$model
+		status <- state$status
+	}
 
 ## Posterior Table
 	model.comparison <- .theBayesianLinearModelsComparison (model, options, perform, status, populate = FALSE)
 	results [["model comparison"]] <- model.comparison$modelTable
-	model <- model.comparison$model
+	
+	if ( is.null (state))
+		model <- model.comparison$model
 
 ## Effects Table
 	results [["effects"]] <- .theBayesianLinearModelsEffects (model, options, perform, status, populate = FALSE)
 
-	if (perform == "run" || !status$ready) {
-		return (list (results = results, status = "complete"))
+	new.state <- list (options = options, model = model, status = status)
+	
+	if (perform == "run" || !status$ready || ! is.null (state)) {
+		return (list (results = results, status = "complete", state = new.state))
 	} else {
 		return (list (results = results, status = "inited"))
 	}
