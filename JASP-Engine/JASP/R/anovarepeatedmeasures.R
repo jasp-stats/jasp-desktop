@@ -167,7 +167,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	## Create Profile Plots
 	
-	result <- .rmAnovaProfilePlot(dataset, options, perform, status)
+	result <- .rmAnovaProfilePlot(dataset, options, perform, status, analysisName = "anovaRepeatedMeasures")
 	
 	results[["profilePlot"]] <- result$result
 	status <- result$status
@@ -1522,80 +1522,58 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result=descriptives.table, status=status)
 }
 
-.rmAnovaProfilePlot <- function(dataset, options, perform, status) {
+.rmAnovaProfilePlot <- function(dataset, options, perform, status, analysisName) {
 
 	profilePlotList <- list()
-	
-	print(perform)
-	print(status)
-	print(options$plotHorizontalAxis)
 
 	if (perform == "run" && status$ready && !status$error && options$plotHorizontalAxis != "") {
 		
 		dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
-
-		groupVars <- c(options[["plotHorizontalAxis"]], options[["plotSeparateLines"]], options[["plotSeparatePlots"]])
+		
+		groupVars <- c(options$plotHorizontalAxis, options$plotSeparateLines, options$plotSeparatePlots)
 		groupVars <- groupVars[groupVars != ""]
 		groupVarsV <- .v(groupVars)
-
-		summaryStat <- plyr::ddply(as.data.frame(dataset), groupVarsV, .drop = FALSE,
-									.fun = function(xx, col) {
-										c(N = length(xx[[col]]), "dependent" = mean(xx[[col]]), sd = sd(xx[[col]]))
-									}, "dependent")
-
-		if ( options[["plotHorizontalAxis"]] != "" ) {
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotHorizontalAxis"]]))] <- "plotHorizontalAxis"
-		}
-
-		if ( options[["plotSeparateLines"]] != "" ) {
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotSeparateLines"]]))] <- "plotSeparateLines"
-		}
-
-		if ( options[["plotSeparatePlots"]] != "" ) {
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotSeparatePlots"]]))] <- "plotSeparatePlots"
-		}
-
-		summaryStat$se <- summaryStat$sd / sqrt(summaryStat$N)
-
-		if (options$errorBarType == "confidenceInterval") {
-			
-			ciMult <- qt(options$confidenceIntervalInterval/2 + .5, summaryStat$N - 1)
-			
-		} else if (options$errorBarType == "standardError") {
 		
-			ciMult <- 1
-		}
+		betweenSubjectFactors <- groupVars[groupVars %in% options$betweenSubjectFactors]
+		repeatedMeasuresFactors <- groupVars[groupVars %in% sapply(options$repeatedMeasuresFactors,function(x)x$name)]
 		
-		summaryStat$ci <- summaryStat$se * ciMult
-		summaryStat$ciLower <- summaryStat[,"dependent"] - summaryStat[,"ci"]
-		summaryStat$ciUpper <- summaryStat[,"dependent"] + summaryStat[,"ci"]
+		summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar="dependent", betweenvars=.v(betweenSubjectFactors), withinvars=.v(repeatedMeasuresFactors), 
+						idvar="subject", conf.interval=options$confidenceIntervalInterval, na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType)
+
+		if ( options$plotHorizontalAxis != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotHorizontalAxis))] <- "plotHorizontalAxis"
+		}
+
+		if ( options$plotSeparateLines != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotSeparateLines))] <- "plotSeparateLines"
+		}
+
+		if ( options$plotSeparatePlots != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotSeparatePlots))] <- "plotSeparatePlots"
+		}
 
 		base_breaks_x <- function(x){
 			b <- unique(as.numeric(x))
 			d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
-			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))#,
-#				ggplot2::scale_x_continuous(breaks=unique(as.numeric(x)),
-#									labels=levels(x), 
-#									limits=c(min(as.numeric(x)) - (length(levels(x)) * .1), 
-#											max(as.numeric(x)) + (length(levels(x)) * .1))))
+			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
 		}
 
 		base_breaks_y <- function(x, plotErrorBars){
 			if (plotErrorBars) {
-				ci.pos <- c(x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
+				ci.pos <- c(x[,"dependent_norm"]-x[,"ci"],x[,"dependent_norm"]+x[,"ci"])
 				b <- pretty(ci.pos)
 				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
 				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
 					 ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
 			} else {
-				b <- pretty(x[,"dependent"])
+				b <- pretty(x[,"dependent_norm"])
 				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
 				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
 					 ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
 			}
 		}
 
-		if (options[["plotSeparatePlots"]] != "") {
+		if (options$plotSeparatePlots != "") {
 			subsetPlots <- levels(summaryStat[,"plotSeparatePlots"])
 			nPlots <- length(subsetPlots)
 		} else {
@@ -1610,30 +1588,29 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			profilePlot[["height"]] <- options$plotHeight
 			profilePlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 
-			if (options[["plotSeparatePlots"]] != "") {
+			if (options$plotSeparatePlots != "") {
 				summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
 			} else {
 				summaryStatSubset <- summaryStat
 			}
 
-			if(options[["plotSeparateLines"]] == "") {
+			if(options$plotSeparateLines == "") {
 
 				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis, 
-											y=dependent,
+											y=dependent_norm,
 											group=1)) 
 
 			} else {
 
 				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis, 
-											y=dependent,
+											y=dependent_norm,
 											group=plotSeparateLines,
 											shape=plotSeparateLines,
-#											color=plotSeparateLines,
 											fill=plotSeparateLines))
 
 			} 
 
-			if (options[["plotErrorBars"]]) {
+			if (options$plotErrorBars) {
 
 				pd <- ggplot2::position_dodge(.2)
 				p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, 
@@ -1651,9 +1628,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
 				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) + 
 				ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
-				ggplot2::ylab(options[["dependent"]]) +
-				ggplot2::xlab(options[["plotHorizontalAxis"]]) +
-				ggplot2::labs(shape=options[["plotSeparateLines"]], fill=options[["plotSeparateLines"]]) +
+				ggplot2::ylab(options$dependent_norm) +
+				ggplot2::xlab(options$plotHorizontalAxis) +
+				ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines) +
 				ggplot2::theme_bw() +
 				ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
 					panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
@@ -1671,11 +1648,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 					axis.ticks.margin = grid::unit(1,"mm"),
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-				base_breaks_y(summaryStatSubset, options[["plotErrorBars"]]) +
+				base_breaks_y(summaryStatSubset, options$plotErrorBars) +
 				base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
 
 			if (nPlots > 1) {
-				p <- p + ggplot2::ggtitle(paste(options[["plotSeparatePlots"]],": ",subsetPlots[i], sep = ""))
+				p <- p + ggplot2::ggtitle(paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = ""))
 			}
 
 			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
@@ -1718,4 +1695,125 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	}
 
 	list(result=profilePlotList, status=status)
+}
+
+.summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval") {
+	
+	# New version of length which can handle NA's: if na.rm==T, don't count them
+	length2 <- function (x, na.rm=FALSE) {
+		if (na.rm) {
+			sum(!is.na(x))
+		} else {
+			length(x)
+		}    
+	}
+	
+	# This does the summary. For each group's data frame, return a vector with
+	# N, mean, and sd
+	datac <- plyr::ddply(data, groupvars, .drop=.drop,
+						 .fun = function(xx, col) {
+						 	c(N    = length2(xx[[col]], na.rm=na.rm),
+						 	  mean = mean   (xx[[col]], na.rm=na.rm),
+						 	  sd   = sd     (xx[[col]], na.rm=na.rm)
+						 	)
+						 },
+						 measurevar
+	)
+	
+	# Rename the "mean" column    
+	datac <- plyr::rename(datac, c("mean" = measurevar))
+	
+	datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+	
+	# Confidence interval multiplier for standard error
+	# Calculate t-statistic for confidence interval: 
+	# e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
+	ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+	datac$ci <- datac$se * ciMult
+	
+	if (errorBarType == "confidenceInterval") {
+	
+		datac$ciLower <- datac[,measurevar] - datac[,"ci"]
+		datac$ciUpper <- datac[,measurevar] + datac[,"ci"]
+	
+	} else {
+	
+		datac$ciLower <- datac[,measurevar] - datac[,"se"]
+		datac$ciUpper <- datac[,measurevar] + datac[,"se"]
+	
+	}
+	
+	return(datac)
+}
+
+.normDataWithin <- function(data=NULL, idvar, measurevar, betweenvars=NULL, na.rm=FALSE, .drop=TRUE) {
+	
+	# Measure var on left, idvar + between vars on right of formula.
+	data.subjMean <- plyr::ddply(data, c(idvar, betweenvars), .drop=.drop,
+								 .fun = function(xx, col, na.rm) {
+								 	c(subjMean = mean(xx[,col], na.rm=na.rm))
+								 },
+								 measurevar,
+								 na.rm
+	)
+	
+	# Put the subject means with original data
+	data <- base::merge(data, data.subjMean)
+	
+	# Get the normalized data in a new column
+	measureNormedVar <- paste(measurevar, "_norm", sep="")
+	data[,measureNormedVar] <- data[,measurevar] - data[,"subjMean"] +
+		mean(data[,measurevar], na.rm=na.rm)
+	
+	# Remove this subject mean column
+	data$subjMean <- NULL
+	
+	return(data)
+}
+
+.summarySEwithin <- function(data=NULL, measurevar, betweenvars=NULL, withinvars=NULL, idvar=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval") {
+	
+	# Get the means from the un-normed data
+	datac <- .summarySE(data, measurevar, groupvars=c(betweenvars, withinvars), na.rm=na.rm, conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType)
+	
+	# Drop all the unused columns (these will be calculated with normed data)
+	datac$sd <- NULL
+	datac$se <- NULL
+	datac$ci <- NULL
+	datac$ciLower <- NULL
+	datac$ciUpper <- NULL
+	
+	# Norm each subject's data
+	ndata <- .normDataWithin(data, idvar, measurevar, betweenvars, na.rm, .drop=.drop)
+	
+	# This is the name of the new column
+	measurevar_n <- paste(measurevar, "_norm", sep="")
+	
+	# Collapse the normed data - now we can treat between and within vars the same
+	ndatac <- .summarySE(ndata, measurevar_n, groupvars=c(betweenvars, withinvars), na.rm=na.rm, conf.interval=conf.interval, .drop=.drop, errorBarType=errorBarType)
+	
+	# Apply correction from Morey (2008) to the standard error and confidence interval
+	# Get the product of the number of conditions of within-S variables
+	nWithinGroups    <- prod(vapply(ndatac[,withinvars, drop=FALSE], FUN=nlevels, FUN.VALUE=numeric(1)))
+	correctionFactor <- sqrt( nWithinGroups / (nWithinGroups-1) )
+	
+	# Apply the correction factor
+	ndatac$sd <- ndatac$sd * correctionFactor
+	ndatac$se <- ndatac$se * correctionFactor
+	ndatac$ci <- ndatac$ci * correctionFactor
+	
+	if (errorBarType == "confidenceInterval") {
+	
+		ndatac$ciLower <- ndatac[,measurevar_n] - ndatac[,"ci"]
+		ndatac$ciUpper <- ndatac[,measurevar_n] + ndatac[,"ci"]
+	
+	} else {
+	
+		ndatac$ciLower <- ndatac[,measurevar_n] - ndatac[,"se"]
+		ndatac$ciUpper <- ndatac[,measurevar_n] + ndatac[,"se"]
+	
+	}
+	
+	# Combine the un-normed means with the normed results
+	merge(datac, ndatac)
 }

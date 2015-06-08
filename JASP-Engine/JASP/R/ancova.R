@@ -1290,51 +1290,32 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	if (perform == "run" && status$ready && !status$error && options$plotHorizontalAxis != "" && options$dependent != "") {
 
-		groupVars <- c(options[["plotHorizontalAxis"]], options[["plotSeparateLines"]], options[["plotSeparatePlots"]])
+		groupVars <- c(options$plotHorizontalAxis, options$plotSeparateLines, options$plotSeparatePlots)
 		groupVars <- groupVars[groupVars != ""]
 		groupVarsV <- .v(groupVars)
 		dependentV <- .v(options$dependent)
-
-		summaryStat <- plyr::ddply(as.data.frame(dataset), groupVarsV, .drop = FALSE,
-									.fun = function(xx, col) {
-										c(N = length(xx[[col]]), "dependent" = mean(xx[[col]]), sd = sd(xx[[col]]))
-									}, dependentV)
-
-		if ( options[["plotHorizontalAxis"]] != "" ) {
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotHorizontalAxis"]]))] <- "plotHorizontalAxis"
-		}
-
-		if ( options[["plotSeparateLines"]] != "" ) {
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotSeparateLines"]]))] <- "plotSeparateLines"
-		}
-
-		if ( options[["plotSeparatePlots"]] != "" ) {
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options[["plotSeparatePlots"]]))] <- "plotSeparatePlots"
-		}
-
-		summaryStat$se <- summaryStat$sd / sqrt(summaryStat$N)
 		
-		if (options$errorBarType == "confidenceInterval") {
-			
-			ciMult <- qt(options$confidenceIntervalInterval/2 + .5, summaryStat$N - 1)
-			
-		} else if (options$errorBarType == "standardError") {
+		summaryStat <- .summarySE(as.data.frame(dataset), measurevar = dependentV, groupvars = groupVarsV, 
+						conf.interval = options$confidenceIntervalInterval, na.rm = TRUE, .drop = FALSE, errorBarType = options$errorBarType)
 		
-			ciMult <- 1
+		colnames(summaryStat)[which(colnames(summaryStat) == dependentV)] <- "dependent"
+		
+		if ( options$plotHorizontalAxis != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotHorizontalAxis))] <- "plotHorizontalAxis"
 		}
-				
-		summaryStat$ci <- summaryStat$se * ciMult
-		summaryStat$ciLower <- summaryStat[,"dependent"] - summaryStat[,"ci"]
-		summaryStat$ciUpper <- summaryStat[,"dependent"] + summaryStat[,"ci"]
+
+		if ( options$plotSeparateLines != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotSeparateLines))] <- "plotSeparateLines"
+		}
+
+		if ( options$plotSeparatePlots != "" ) {
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotSeparatePlots))] <- "plotSeparatePlots"
+		}
 
 		base_breaks_x <- function(x){
 			b <- unique(as.numeric(x))
 			d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
-			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))#,
-#				ggplot2::scale_x_continuous(breaks=unique(as.numeric(x)),
-#									labels=levels(x), 
-#									limits=c(min(as.numeric(x)) - (length(levels(x)) * .1), 
-#											max(as.numeric(x)) + (length(levels(x)) * .1))))
+			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
 		}
 
 		base_breaks_y <- function(x, plotErrorBars){
@@ -1351,8 +1332,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					 ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
 			}
 		}
-
-		if (options[["plotSeparatePlots"]] != "") {
+				
+		if (options$plotSeparatePlots != "") {
 			subsetPlots <- levels(summaryStat[,"plotSeparatePlots"])
 			nPlots <- length(subsetPlots)
 		} else {
@@ -1367,13 +1348,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			profilePlot[["height"]] <- options$plotHeight
 			profilePlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 
-			if (options[["plotSeparatePlots"]] != "") {
+			if (options$plotSeparatePlots != "") {
 				summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
 			} else {
 				summaryStatSubset <- summaryStat
 			}
 
-			if(options[["plotSeparateLines"]] == "") {
+			if(options$plotSeparateLines == "") {
 
 				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis, 
 											y=dependent,
@@ -1385,12 +1366,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 											y=dependent,
 											group=plotSeparateLines,
 											shape=plotSeparateLines,
-#											color=plotSeparateLines,
 											fill=plotSeparateLines))
 
 			} 
 
-			if (options[["plotErrorBars"]]) {
+			if (options$plotErrorBars) {
 
 				pd <- ggplot2::position_dodge(.2)
 				p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, 
@@ -1408,9 +1388,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
 				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) + 
 				ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
-				ggplot2::ylab(options[["dependent"]]) +
-				ggplot2::xlab(options[["plotHorizontalAxis"]]) +
-				ggplot2::labs(shape=options[["plotSeparateLines"]], fill=options[["plotSeparateLines"]]) +
+				ggplot2::ylab(options$dependent) +
+				ggplot2::xlab(options$plotHorizontalAxis) +
+				ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines) +
 				ggplot2::theme_bw() +
 				ggplot2::theme(#legend.justification=c(0,1), legend.position=c(0,1),
 					panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
@@ -1428,11 +1408,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					axis.ticks.margin = grid::unit(1,"mm"),
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-				base_breaks_y(summaryStatSubset, options[["plotErrorBars"]]) +
+				base_breaks_y(summaryStatSubset, options$plotErrorBars) +
 				base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
 
 			if (nPlots > 1) {
-				p <- p + ggplot2::ggtitle(paste(options[["plotSeparatePlots"]],": ",subsetPlots[i], sep = ""))
+				p <- p + ggplot2::ggtitle(paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = ""))
 			}
 
 			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
