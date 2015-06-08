@@ -29,7 +29,7 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
 ## MODEL
-	model.object <- .theBayesianLinearModels (dataset, options, perform, status, callback)
+	model.object <- .theBayesianLinearModels (dataset, options, perform, status, callback, results = results)
 	
 	if (is.null(model.object)) # analysis cancelled by the callback
 		return()
@@ -38,12 +38,12 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	status <- model.object$status
 
 ## Posterior Table
-	model.comparison <- .theBayesianLinearModelsComparison (model, options, perform, status)
+	model.comparison <- .theBayesianLinearModelsComparison (model, options, perform, status, populate = FALSE)
 	results [["model comparison"]] <- model.comparison$modelTable
 	model <- model.comparison$model
 
 ## Effects Table
-	results [["effects"]] <- .theBayesianLinearModelsEffects (model, options, perform, status)
+	results [["effects"]] <- .theBayesianLinearModelsEffects (model, options, perform, status, populate = FALSE)
 
 	if (perform == "run" || !status$ready) {
 		return (list (results = results, status = "complete"))
