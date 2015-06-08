@@ -57,7 +57,8 @@ if (is.null(state)) {
 ## Posterior Table
 	model.comparison <- .theBayesianLinearModelsComparison (model, options, perform, status, populate = FALSE)
 	results [["model comparison"]] <- model.comparison$modelTable
-	model <- model.comparison$model
+	if ( is.null (state))
+		model <- model.comparison$model
 
 ## Effects Table
 	results [["effects"]] <- .theBayesianLinearModelsEffects (model, options, perform, status, populate = FALSE)
