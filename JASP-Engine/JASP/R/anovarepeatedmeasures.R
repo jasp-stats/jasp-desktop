@@ -219,9 +219,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		
 			error <- TRUE
 			if(length(independentsWithLessThanTwoLevels) == 1) {
-				errorMessage <- paste("Factor: <em>", independentsWithLessThanTwoLevels, "</em>, contains less than two levels.<br><br>(Possible only after rows with missing values are excluded)", sep="")
+				errorMessage <- paste("Factor: <em>", independentsWithLessThanTwoLevels, "</em>, contains less than two levels.", sep="")
 			} else {
-				errorMessage <- paste("Factors: <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain less than two levels.<br><br>(Possible only after rows with missing values are excluded)", sep="")
+				errorMessage <- paste("Factors: <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain less than two levels.", sep="")
 			}
 		}
 		
@@ -235,9 +235,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		
 			error <- TRUE
 			if(sum(infiniteRM) == 1) {
-				errorMessage <- paste("The repeated measure: <em>", options$repeatedMeasuresCells[infiniteRM], "</em>, contains infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
+				errorMessage <- paste("The repeated measure: <em>", options$repeatedMeasuresCells[infiniteRM], "</em>, contains infinite values.", sep="")
 			} else {
-				errorMessage <- paste("The repeated measures: <em>", paste(options$repeatedMeasuresCells[infiniteRM], collapse=", "), "</em>, contain infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
+				errorMessage <- paste("The repeated measures: <em>", paste(options$repeatedMeasuresCells[infiniteRM], collapse=", "), "</em>, contain infinite values.", sep="")
 			}
 		}
 		
@@ -251,9 +251,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		
 			error <- TRUE
 			if(sum(infiniteCov) == 1) {
-				errorMessage <- paste("The covariate: <em>", options$covariates[infiniteCov], "</em>, contains infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
+				errorMessage <- paste("The covariate: <em>", options$covariates[infiniteCov], "</em>, contains infinite values.", sep="")
 			} else {
-				errorMessage <- paste("The covariates: <em>", paste(options$covariates[infiniteCov], collapse=", "), "</em>, contain infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
+				errorMessage <- paste("The covariates: <em>", paste(options$covariates[infiniteCov], collapse=", "), "</em>, contain infinite values.", sep="")
 			}
 		}
 		
@@ -354,7 +354,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 		status$error <- TRUE
 		status$errorMessage <- .extractErrorMessage(result)
-
+		
+		if (status$errorMessage == "Some parameters are not estimable, most likely due to empty cells of the design (i.e., structural missings). Check your data.") {
+		
+			status$errorMessage <- "Some parameters are not estimable, most likely due to empty cells of the design."
+			
+		}
+				
 	} else {
 
 		if (options$sumOfSquares == "type1" && class(sphericityStatistics) != "try-error") {
