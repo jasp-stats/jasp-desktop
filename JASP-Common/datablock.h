@@ -1,7 +1,7 @@
 #ifndef DATABLOCK_H
 #define DATABLOCK_H
 
-#define BLOCK_SIZE 32767
+#define BLOCK_SIZE 512
 
 class DataBlock
 {
