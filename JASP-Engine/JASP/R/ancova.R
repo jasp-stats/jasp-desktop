@@ -1320,7 +1320,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		base_breaks_y <- function(x, plotErrorBars){
 			if (plotErrorBars) {
-				ci.pos <- c(x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
+				ci.pos <- c(x[,"dependent"], x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
 				b <- pretty(ci.pos)
 				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
 				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
