@@ -104,6 +104,7 @@ public:
 	} Doubles;
 
 	Column(boost::interprocess::managed_shared_memory *mem);
+	~Column();
 
 	std::string name() const;
 	void setName(std::string name);

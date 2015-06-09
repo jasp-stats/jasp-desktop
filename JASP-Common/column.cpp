@@ -21,11 +21,12 @@ Column::Column(managed_shared_memory *mem) :
 	_mem = mem;
 	_rowCount = 0;
 	_columnType = Column::ColumnTypeNominal;
+}
 
-	ull firstId = DataBlock::capacity();
-	DataBlock *firstBlock = _mem->construct<DataBlock>(anonymous_instance)();
-
-	_blocks.insert(BlockEntry(firstId, firstBlock));
+Column::~Column()
+{
+	BOOST_FOREACH(BlockEntry &entry, _blocks)
+		_mem->destroy_ptr(&*entry.second);
 }
 
 Labels &Column::labels()
@@ -331,7 +332,20 @@ string Column::operator [](int index)
 
 void Column::append(int rows)
 {
+	if (rows == 0)
+		return;
+
 	BlockMap::reverse_iterator itr = _blocks.rbegin();
+
+	if (itr == _blocks.rend()) // no blocks
+	{
+		ull firstId = DataBlock::capacity();
+		DataBlock *firstBlock = _mem->construct<DataBlock>(anonymous_instance)();
+
+		_blocks.insert(BlockEntry(firstId, firstBlock));
+		itr = _blocks.rbegin();
+	}
+
 	BlockEntry entry = *itr;
 	DataBlock *block = entry.second.get();
 	ull id = entry.first;
