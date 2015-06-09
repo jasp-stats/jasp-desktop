@@ -422,11 +422,13 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 			c2 <- dataset[[ .v(pair[[2]]) ]]
 	
 			data <- data.frame("id" = rep(1:length(c1),2), "dependent" = c(c1, c2), 
-							   "groupingVariable" = c(rep(pair[[1]], length(c1)), rep(pair[[2]], length(c2))))
-	
+							   "groupingVariable" = c(rep(paste(pair[[1]],".1", sep=""), length(c1)), rep(paste(pair[[2]],".2", sep=""), length(c2))))
+			
+			print(data)
+			
 			summaryStat <- .summarySEwithin(data, measurevar = "dependent", withinvars = "groupingVariable", idvar = "id", 
 						   					conf.interval = options$intervalIntervalPlots, na.rm = TRUE, .drop = FALSE)
-	
+			
 			pd <- ggplot2::position_dodge(.2)
 				
 			p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=1)) +
@@ -452,7 +454,8 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
 				 base_breaks_y(summaryStat) +
-				 base_breaks_x(summaryStat$groupingVariable)
+				 base_breaks_x(summaryStat$groupingVariable) +
+				 ggplot2::scale_x_discrete(labels=c(pair[[1]], pair[[2]]))
 						
 			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 			print(p)
