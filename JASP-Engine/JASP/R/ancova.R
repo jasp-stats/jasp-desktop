@@ -339,13 +339,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		if (length(independentsWithLessThanTwoLevels) > 0) {
 		
 			error <- TRUE
-			errorMessage <- paste("Factor(s): <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain(s) less than two levels.<br><br>(Possible only after rows with missing values are excluded)", sep="")
+			errorMessage <- paste("Factor(s): <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain(s) less than two levels.", sep="")
 		}
 		
 		if (sum(is.infinite(dataset[[ .v(options$dependent) ]])) > 0) {
 		
 			error <- TRUE
-			errorMessage <- paste("The dependent variable: <em>", options$dependent, "</em>, contains infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
+			errorMessage <- paste("The dependent variable: <em>", options$dependent, "</em>, contains infinite values.", sep="")
 		}
 		
 		covariatesData <- list()
@@ -358,9 +358,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 			error <- TRUE
 			if(sum(infiniteCov) == 1) {
-				errorMessage <- paste("The covariate: <em>", options$covariates[infiniteCov], "</em>, contains infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
+				errorMessage <- paste("The covariate: <em>", options$covariates[infiniteCov], "</em>, contains infinite values.", sep="")
 			} else {
-				errorMessage <- paste("The covariates: <em>", paste(options$covariates[infiniteCov], collapse=", "), "</em>, contain infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
+				errorMessage <- paste("The covariates: <em>", paste(options$covariates[infiniteCov], collapse=", "), "</em>, contain infinite values.", sep="")
 			}
 		}
 		
@@ -373,7 +373,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		if (sum(is.infinite(dataset[[ .v(options$wlsWeights) ]])) > 0) {
 		
 			error <- TRUE
-			errorMessage <- paste("The variable: <em>", options$wlsWeights, "</em>, contains infinite values.<br><br>(Possible only after rows with infinite values are excluded)", sep="")
+			errorMessage <- paste("The variable: <em>", options$wlsWeights, "</em>, contains infinite values.", sep="")
 		}
 		
 	}
