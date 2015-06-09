@@ -468,7 +468,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		WLS <- dataset[[ .v(options$wlsWeights) ]]
 		
 	model <- aov(model.formula, dataset, weights=WLS)
-	
+		
 	modelError <- class(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))) == "try-error"
 	errorMessage <- ""
 	
@@ -478,7 +478,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	singular <- FALSE
 	if (errorMessage == "singular fit encountered")
 		singular <- TRUE
-
+	
 	list(model = model, singular = singular)
 }
 
@@ -1096,14 +1096,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		levene.formula <- as.formula(levene.def)
 
 		r <- car::leveneTest(levene.formula, dataset, center = "mean")
+				
+		error <- base::tryCatch(car::leveneTest(levene.formula, dataset, center = "mean"),error=function(e) e, warning=function(w) w)	
+				
+		if (!is.null(error$message) && error$message == "ANOVA F-tests on an essentially perfect fit are unreliable") {
 		
-#		r <- base::tryCatch(car::leveneTest(levene.formula, dataset, center = "mean"),error=function(e) e, warning=function(w) w)
-#		
-#		if (!is.null(r$message) && r$message == "Levene's test on an essentially perfect fit is unreliable")
-#			stop(r$message)
+			errorMessage <- "F-value equal to zero indicating perfect fit.<br><br>(Levene's tests on an essentially perfect fit are unreliable)"
+			levenes.table[["error"]] <- list(error="badData", errorMessage = errorMessage)
+			
+		}
 		
-		levenes.table[["data"]] <- list(list("F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3], ".isNewGroup"=TRUE))
-		
+		levenes.table[["data"]] <- list(list("F"=.clean(r[1,2]), "df1"=r[1,1], "df2"=r[2,1], "p"=.clean(r[1,3]), ".isNewGroup"=TRUE))
+				
 	} else {
 	
 		levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"=".", ".isNewGroup"=TRUE))
