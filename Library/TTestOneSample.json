@@ -52,6 +52,28 @@
 			"options": [ "excludeAnalysisByAnalysis", "excludeListwise" ],
 			"default": "excludeAnalysisByAnalysis",
 			"type": "List"
+		},
+		{
+			"name": "intervalPlots",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "intervalIntervalPlots",
+			"type": "Number",
+			"value": 0.950
+		},
+		{
+			"name": "plotWidth",
+			"type": "Integer",
+			"default": 160
+		},
+		{
+			"name": "plotHeight",
+			"type": "Integer",
+			"default": 300
 		}
 	]
 }

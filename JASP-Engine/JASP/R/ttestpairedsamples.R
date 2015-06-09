@@ -427,9 +427,6 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 			summaryStat <- .summarySEwithin(data, measurevar = "dependent", withinvars = "groupingVariable", idvar = "id", 
 						   					conf.interval = options$intervalIntervalPlots, na.rm = TRUE, .drop = FALSE)
 	
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$variables[var]))] <- "dependent"										
-			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$groupingVariable))] <- "groupingVariable"
-	
 			pd <- ggplot2::position_dodge(.2)
 				
 			p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=1)) +
