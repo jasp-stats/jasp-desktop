@@ -679,7 +679,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 			errorMessage <- .extractErrorMessage(anova.rows)
 						
-			if (errorMessage == "NA/NaN/Inf in foreign function call (arg 1)" || errorMessage == "undefined columns selected" ||
+			if (errorMessage == "U[1,1] = 0" || errorMessage == "NA/NaN/Inf in foreign function call (arg 1)" || errorMessage == "undefined columns selected" ||
 				errorMessage == "ANOVA F-tests on an essentially perfect fit are unreliable") {
 				
 				errorMessage <- "Residual sums of squares and/or residual degrees of freedom are equal to zero indicating perfect fit.<br><br>(ANOVA F-tests on an essentially perfect fit are unreliable)"
