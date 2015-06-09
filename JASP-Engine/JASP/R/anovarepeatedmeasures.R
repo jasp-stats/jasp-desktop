@@ -354,7 +354,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 		status$error <- TRUE
 		status$errorMessage <- .extractErrorMessage(result)
-
+		
+		if (status$errorMessage == "Some parameters are not estimable, most likely due to empty cells of the design (i.e., structural missings). Check your data.") {
+		
+			status$errorMessage <- "Some parameters are not estimable, most likely due to empty cells of the design."
+			
+		}
+				
 	} else {
 
 		if (options$sumOfSquares == "type1" && class(sphericityStatistics) != "try-error") {
