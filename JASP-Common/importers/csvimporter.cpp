@@ -71,12 +71,19 @@ void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
-			packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
-			success = false;
+			try {
+
+				packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
+				success = false;
+			}
+			catch (exception &e)
+			{
+				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
 		}
-		catch (exception e)
+		catch (exception &e)
 		{
-			cout << "n " << e.what();
+			cout << "n " << e.what() << "\n";
 			cout.flush();
 		}
 		catch (...)
