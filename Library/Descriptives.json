@@ -42,7 +42,8 @@
 		},
 		{
 			"name": "mean",
-			"type": "Boolean"
+			"type": "Boolean",
+			"default": true
 		},
 		{
 			"name": "median",
