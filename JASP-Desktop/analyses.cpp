@@ -16,12 +16,12 @@ Analyses::Analyses()
 {
 	_nextId = 0;
 
-	QTimer *timer = new QTimer(this);
-	timer->setInterval(5000);
-
-	QObject::connect(timer, SIGNAL(timeout()), this, SLOT(flushDefaultsToDisk()));
-
-	timer->start();
+	//QTimer *timer = new QTimer(this);
+	//timer->setInterval(5000);
+	//
+	//QObject::connect(timer, SIGNAL(timeout()), this, SLOT(flushDefaultsToDisk()));
+	//
+	//timer->start();
 }
 
 Analysis *Analyses::create(const QString &name, Json::Value *optionsData, Analysis::Status status)
@@ -129,7 +129,7 @@ void Analyses::assignDefaults(Analysis *analysis)
 	{
 		analysis->options()->set(_defaults[name].options->asJSON());
 	}
-	else
+	/*else
 	{
 		QString path = AppDirs::analysisDefaultsDir() + "/" + name + ".json";
 		QFile file(path);
@@ -163,7 +163,7 @@ void Analyses::assignDefaults(Analysis *analysis)
 			_defaults[name] = defs;
 		}
 
-	}
+	}*/
 }
 
 void Analyses::analysisResultsChangedHandler(Analysis *analysis)
