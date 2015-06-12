@@ -13,15 +13,6 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 	if (is.null (base::options ()$BFfactorsMax))
 		base::options (BFfactorsMax = 5)
 
-	state <- .retrieveState ()
-	if ( ! is.null (state)) {
-		change <- .diff (options, state$options)
-		if ( ! base::identical(change, FALSE) && (change$dependent || change$modelTerms)) {
-			state <- NULL
-		} else {
-			perform <- "run"
-		}
-	}
 ## META
 	results <- list ()
 	meta <- list ()
@@ -32,11 +23,21 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 	results [["title"]] <- "Bayesian Repeated Measures ANOVA"
 
 ## DATA
-if (is.null(state)) {
 	dataANDoptions <- .readBayesianRepeatedMeasuresDataOptions (dataset, options, perform)
 	dataset <- dataANDoptions$dataset
 	options <- dataANDoptions$options
 
+	state <- .retrieveState ()
+	if ( ! is.null (state)) {
+		change <- .diff (options, state$options)
+		if ( ! base::identical(change, FALSE) && (change$dependent || change$modelTerms)) {
+			state <- NULL
+		} else {
+			perform <- "run"
+		}
+	}
+	
+if (is.null(state)) {
 ##STATUS (INITIAL)
 	status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
