@@ -49,8 +49,8 @@
        <widget class="QWidget" name="panelOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
-          <widget class="BoundGroupBox" name="rowOrder">
-           <property name="title">
+          <widget class="BoundGroupBox" name="rowOrder" native="true">
+           <property name="title" stdset="0">
             <string>Row Order</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
@@ -72,8 +72,8 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="BoundGroupBox" name="columnOrder">
-           <property name="title">
+          <widget class="BoundGroupBox" name="columnOrder" native="true">
+           <property name="title" stdset="0">
             <string>Column Order</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
@@ -122,8 +122,8 @@
           <number>6</number>
          </property>
          <item row="0" column="0" colspan="2">
-          <widget class="BoundGroupBox" name="samplingModel">
-           <property name="title">
+          <widget class="BoundGroupBox" name="samplingModel" native="true">
+           <property name="title" stdset="0">
             <string>Sampling</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
@@ -166,11 +166,11 @@
           </widget>
          </item>
          <item row="0" column="2" colspan="2">
-          <widget class="BoundGroupBox" name="hypothesis">
+          <widget class="BoundGroupBox" name="hypothesis" native="true">
            <property name="enabled">
             <bool>false</bool>
            </property>
-           <property name="title">
+           <property name="title" stdset="0">
             <string>Hypothesis</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
@@ -215,8 +215,8 @@
           </widget>
          </item>
          <item row="1" column="0" colspan="2">
-          <widget class="BoundGroupBox" name="bayesFactorType">
-           <property name="title">
+          <widget class="BoundGroupBox" name="bayesFactorType" native="true">
+           <property name="title" stdset="0">
             <string>Bayes factor</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
@@ -825,8 +825,13 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
+   <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -835,11 +840,6 @@
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
   </customwidget>
-  <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
-  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
@@ -847,7 +847,7 @@
    <sender>_1Poisson</sender>
    <signal>toggled(bool)</signal>
    <receiver>ContingencyTablesBayesianForm</receiver>
-   <slot>otherSamplingToggled(bool)</slot>
+   <slot>independentMultinomialSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>152</x>
@@ -863,7 +863,7 @@
    <sender>_2Multinomial</sender>
    <signal>toggled(bool)</signal>
    <receiver>ContingencyTablesBayesianForm</receiver>
-   <slot>otherSamplingToggled(bool)</slot>
+   <slot>independentMultinomialSamplingToggled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>152</x>
