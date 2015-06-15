@@ -55,6 +55,12 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+
+#ifdef QT_DEBUG
+	ui->groupBox->setStyleSheet("QWidget { background-color: pink; }");
+#else
+	ui->groupBox->hide();
+#endif
 }
 
 AncovaBayesianForm::~AncovaBayesianForm()
