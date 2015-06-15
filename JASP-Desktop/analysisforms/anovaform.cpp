@@ -81,7 +81,7 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->containerFactors->hide();
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
-    ui->containerProfilePlot->hide();
+	ui->containerDescriptivesPlot->hide();
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 

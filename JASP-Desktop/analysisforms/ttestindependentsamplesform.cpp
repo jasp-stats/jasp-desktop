@@ -29,7 +29,7 @@ TTestIndependentSamplesForm::TTestIndependentSamplesForm(QWidget *parent) :
 	ui->buttonAssignGroupingVariable->setSourceAndTarget(ui->listAvailableFields, ui->groupingVariable);
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
-	ui->intervalIntervalPlots->setLabel("Confidence interval");
+	ui->descriptivesPlotsConfidenceInterval->setLabel("Confidence interval");
 }
 
 TTestIndependentSamplesForm::~TTestIndependentSamplesForm()

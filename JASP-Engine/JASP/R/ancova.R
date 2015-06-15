@@ -40,8 +40,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="descriptives", type="table"),
 		list(name="headerMarginalMeans", type="h1"),
 		list(name="marginalMeans", type="tables"),
-		list(name="headerProfilePlot", type="h1"),
-		list(name="profilePlot", type="images")
+		list(name="headerDescriptivesPlot", type="h1"),
+		list(name="descriptivesPlot", type="images")
 	)
 
 	results[[".meta"]] <- .meta
@@ -178,17 +178,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	
 	
-	## Create Profile Plots
+	## Create Descriptives Plots
 	
-	result <- .anovaProfilePlot(dataset, options, perform, status)
-	results[["profilePlot"]] <- result$result
+	result <- .anovaDescriptivesPlot(dataset, options, perform, status)
+	results[["descriptivesPlot"]] <- result$result
 	status <- result$status
 	
 	if (options$plotHorizontalAxis != "") {
 		if (options$plotSeparatePlots != "") {
-			results[["headerProfilePlot"]] <- "Profile Plots"
+			results[["headerDescriptivesPlot"]] <- "Descriptives Plots"
 		} else {
-			results[["headerProfilePlot"]] <- "Profile Plot"
+			results[["headerDescriptivesPlot"]] <- "Descriptives Plot"
 		}
 	}
 	
@@ -1288,9 +1288,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 
-.anovaProfilePlot <- function(dataset, options, perform, status) {
+.anovaDescriptivesPlot <- function(dataset, options, perform, status) {
 
-	profilePlotList <- list()
+	descriptivesPlotList <- list()
 
 	if (perform == "run" && status$ready && !status$error && options$plotHorizontalAxis != "" && options$dependent != "") {
 
@@ -1346,11 +1346,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		for (i in 1:nPlots) {
 
-			profilePlot <- list()
-			profilePlot[["title"]] <- ""
-			profilePlot[["width"]] <- options$plotWidth
-			profilePlot[["height"]] <- options$plotHeight
-			profilePlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot <- list()
+			descriptivesPlot[["title"]] <- ""
+			descriptivesPlot[["width"]] <- options$plotWidth
+			descriptivesPlot[["height"]] <- options$plotHeight
+			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 
 			if (options$plotSeparatePlots != "") {
 				summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
@@ -1423,9 +1423,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			print(p)
 			content <- .endSaveImage(image)
 
-			profilePlot[["data"]] <- content
+			descriptivesPlot[["data"]] <- content
 
-			profilePlotList[[i]] <- profilePlot
+			descriptivesPlotList[[i]] <- descriptivesPlot
 
 		}
 
@@ -1443,20 +1443,20 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 		for (i in 1:nPlots) {
 
-			profilePlot <- list()
-			profilePlot[["title"]] <- ""
-			profilePlot[["width"]] <- options$plotWidth
-			profilePlot[["height"]] <- options$plotHeight
-			profilePlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
-			profilePlot[["data"]] <- ""
+			descriptivesPlot <- list()
+			descriptivesPlot[["title"]] <- ""
+			descriptivesPlot[["width"]] <- options$plotWidth
+			descriptivesPlot[["height"]] <- options$plotHeight
+			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot[["data"]] <- ""
 
 			if (status$error)
-				profilePlot[["error"]] <- list(errorType="badData")
+				descriptivesPlot[["error"]] <- list(errorType="badData")
 
-			profilePlotList[[i]] <- profilePlot
+			descriptivesPlotList[[i]] <- descriptivesPlot
 		}
 
 	}
 
-	list(result=profilePlotList, status=status)
+	list(result=descriptivesPlotList, status=status)
 }

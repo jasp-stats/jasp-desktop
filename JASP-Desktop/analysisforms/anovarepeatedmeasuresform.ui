@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>630</width>
-    <height>2514</height>
+    <height>2553</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -865,7 +865,7 @@
     </widget>
    </item>
    <item row="5" column="0">
-    <widget class="QWidget" name="widget" native="true">
+    <widget class="QWidget" name="descriptivesPlot" native="true">
      <layout class="QGridLayout" name="gridLayout_22">
       <property name="topMargin">
        <number>1</number>
@@ -874,14 +874,14 @@
        <number>3</number>
       </property>
       <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderProfilePlot">
+       <widget class="ExpanderButton" name="expanderDescriptivesPlot">
         <property name="text">
-         <string>Profile Plots</string>
+         <string>Descriptives Plots</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QWidget" name="containerProfilePlot" native="true">
+       <widget class="QWidget" name="containerDescriptivesPlot" native="true">
         <layout class="QGridLayout" name="gridLayout_24">
          <property name="leftMargin">
           <number>0</number>

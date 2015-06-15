@@ -39,8 +39,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	meta[[3]] <- list(name="equalityOfVariancesTests", type="table")
 	meta[[4]] <- list(name="descriptives", type="table")
 	meta[[5]] <- list(name="normalityTests", type="table")
-	meta[[6]] <- list(name="headerIntervalPlots", type="h1")
-	meta[[7]] <- list(name="intervalPlots", type="images")
+	meta[[6]] <- list(name="headerDescriptivesPlots", type="h1")
+	meta[[7]] <- list(name="descriptivesPlots", type="images")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "T-Test"
@@ -50,15 +50,15 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	results[["equalityOfVariancesTests"]] <- .ttestIndependentSamplesInequalityOfVariances(dataset, options, perform)
 	results[["normalityTests"]] <- .ttestNormalityTests(dataset, options, perform)
 	
-	if (options$intervalPlots) {
+	if (options$descriptivesPlots) {
 		
 		if (length(options$variables) > 1) {
-			results[["headerIntervalPlots"]] <-  "Interval Plots"
+			results[["headerDescriptivesPlots"]] <-  "Descriptives Plots"
 		} else {
-			results[["headerIntervalPlots"]] <-  "Interval Plot"
+			results[["headerDescriptivesPlots"]] <-  "Descriptives Plot"
 		}
 		
-		results[["intervalPlots"]] <- .independentSamplesTTestIntervalPlot(dataset, options, perform)
+		results[["descriptivesPlots"]] <- .independentSamplesTTestDescriptivesPlot(dataset, options, perform)
 	}
 
 	results
@@ -567,9 +567,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	levenes
 }
 
-.independentSamplesTTestIntervalPlot <- function(dataset, options, perform) {
+.independentSamplesTTestDescriptivesPlot <- function(dataset, options, perform) {
 
-	intervalPlotList <- list()
+	descriptivesPlotList <- list()
 
 	if (perform == "run" && length(options$variables) > 0 && options$groupingVariable != "") {
 		
@@ -589,15 +589,15 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		
 		for (var in .indices(options$variables)) {
 			
-			intervalPlot <- list()
+			descriptivesPlot <- list()
 			
-			intervalPlot[["title"]] <- ""
-			intervalPlot[["width"]] <- options$plotWidth
-			intervalPlot[["height"]] <- options$plotHeight
-			intervalPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot[["title"]] <- ""
+			descriptivesPlot[["width"]] <- options$plotWidth
+			descriptivesPlot[["height"]] <- options$plotHeight
+			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 			
 			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[var]), groupvars = .v(options$groupingVariable), 
-						   conf.interval = options$intervalIntervalPlots, na.rm = TRUE, .drop = FALSE)
+						   conf.interval = options$descriptivesPlotsConfidenceInterval, na.rm = TRUE, .drop = FALSE)
 			
 			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$variables[var]))] <- "dependent"										
 			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$groupingVariable))] <- "groupingVariable"
@@ -634,9 +634,9 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			print(p)
 			content <- .endSaveImage(image)
 
-			intervalPlot[["data"]] <- content
+			descriptivesPlot[["data"]] <- content
 
-			intervalPlotList[[var]] <- intervalPlot
+			descriptivesPlotList[[var]] <- descriptivesPlot
 			
 		}
 		
@@ -644,17 +644,17 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 		for (var in .indices(options$variables)) {
 
-			intervalPlot <- list()
+			descriptivesPlot <- list()
 			
-			intervalPlot[["title"]] <- ""
-			intervalPlot[["width"]] <- options$plotWidth
-			intervalPlot[["height"]] <- options$plotHeight
-			intervalPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
-			intervalPlot[["data"]] <- ""
+			descriptivesPlot[["title"]] <- ""
+			descriptivesPlot[["width"]] <- options$plotWidth
+			descriptivesPlot[["height"]] <- options$plotHeight
+			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot[["data"]] <- ""
 
-			intervalPlotList[[var]] <- intervalPlot
+			descriptivesPlotList[[var]] <- descriptivesPlot
 		}
 	}
 
-	intervalPlotList
+	descriptivesPlotList
 }

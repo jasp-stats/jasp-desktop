@@ -93,7 +93,7 @@
     </widget>
    </item>
    <item row="5" column="0" colspan="2">
-    <widget class="QWidget" name="profilePlot" native="true">
+    <widget class="QWidget" name="descriptivesPlot" native="true">
      <layout class="QGridLayout" name="gridLayout_24">
       <property name="leftMargin">
        <number>12</number>
@@ -105,7 +105,7 @@
        <number>3</number>
       </property>
       <item row="1" column="0">
-       <widget class="QWidget" name="containerProfilePlot" native="true">
+       <widget class="QWidget" name="containerDescriptivesPlot" native="true">
         <layout class="QGridLayout" name="gridLayout_23">
          <property name="leftMargin">
           <number>0</number>
@@ -484,9 +484,9 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderProfilePlot">
+       <widget class="ExpanderButton" name="expanderDescriptivesPlot">
         <property name="text">
-         <string>Profile Plots</string>
+         <string>Descriptives Plots</string>
         </property>
        </widget>
       </item>

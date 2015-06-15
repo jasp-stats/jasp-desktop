@@ -105,7 +105,7 @@
        <number>3</number>
       </property>
       <item row="1" column="0">
-       <widget class="QWidget" name="containerProfilePlot" native="true">
+       <widget class="QWidget" name="containerDescriptivesPlot" native="true">
         <layout class="QGridLayout" name="gridLayout_23">
          <property name="leftMargin">
           <number>0</number>
@@ -463,7 +463,6 @@
                </item>
               </layout>
               <zorder>confidenceInterval</zorder>
-              <zorder>confidenceInterval</zorder>
               <zorder>standardError</zorder>
               <zorder>widget_5</zorder>
              </widget>
@@ -488,9 +487,9 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderProfilePlot">
+       <widget class="ExpanderButton" name="expanderDescriptivesPlot">
         <property name="text">
-         <string>Profile Plots</string>
+         <string>Descriptives Plots</string>
         </property>
        </widget>
       </item>
