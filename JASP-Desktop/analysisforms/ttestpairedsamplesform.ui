@@ -15,11 +15,11 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_7">
    <item row="3" column="0">
-    <widget class="BoundGroupBox" name="missingValues" native="true">
-     <property name="title" stdset="0">
+    <widget class="BoundGroupBox" name="missingValues">
+     <property name="title">
       <string>Missing Values</string>
      </property>
-     <property name="flat" stdset="0">
+     <property name="flat">
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
@@ -47,17 +47,17 @@
        <number>0</number>
       </property>
       <item row="0" column="0" rowspan="2">
-       <widget class="BoundGroupBox" name="hypothesis" native="true">
+       <widget class="BoundGroupBox" name="hypothesis">
         <property name="minimumSize">
          <size>
           <width>240</width>
           <height>0</height>
          </size>
         </property>
-        <property name="title" stdset="0">
+        <property name="title">
          <string>Hypothesis</string>
         </property>
-        <property name="flat" stdset="0">
+        <property name="flat">
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
@@ -174,7 +174,7 @@
              <number>0</number>
             </property>
             <item row="0" column="1">
-             <widget class="BoundTextBox" name="intervalIntervalPlots">
+             <widget class="BoundTextBox" name="descriptivesPlotsConfidenceInterval">
               <property name="minimumSize">
                <size>
                 <width>50</width>
@@ -235,9 +235,9 @@
           </widget>
          </item>
          <item row="6" column="0">
-          <widget class="BoundCheckBox" name="intervalPlots">
+          <widget class="BoundCheckBox" name="descriptivesPlots">
            <property name="text">
-            <string>Interval plots</string>
+            <string>Descriptives plots</string>
            </property>
           </widget>
          </item>
@@ -430,15 +430,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundPairsTable</class>

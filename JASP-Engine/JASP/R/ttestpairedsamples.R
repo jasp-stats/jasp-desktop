@@ -32,8 +32,8 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="descriptives", type="table")
 	meta[[4]] <- list(name="normalityTests", type="table")
-	meta[[5]] <- list(name="headerIntervalPlots", type="h1")
-	meta[[6]] <- list(name="intervalPlots", type="images")
+	meta[[5]] <- list(name="headerDescriptivesPlots", type="h1")
+	meta[[6]] <- list(name="descriptivesPlots", type="images")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "T-Test"
@@ -373,23 +373,23 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		results[["normalityTests"]] <- normalityTests
 	}
 	
-	if (options$intervalPlots) {
+	if (options$descriptivesPlots) {
 		
 		if (length(options$pairs) > 1) {
-			results[["headerIntervalPlots"]] <-  "Interval Plots"
+			results[["headerDescriptivesPlots"]] <-  "Descriptives Plots"
 		} else {
-			results[["headerIntervalPlots"]] <-  "Interval Plot"
+			results[["headerDescriptivesPlots"]] <-  "Descriptives Plot"
 		}
 		
-		results[["intervalPlots"]] <- .pairedSamplesTTestIntervalPlot(dataset, options, perform)
+		results[["descriptivesPlots"]] <- .pairedSamplesTTestDescriptivesPlot(dataset, options, perform)
 	}
 		
 	results
 }
 
-.pairedSamplesTTestIntervalPlot <- function(dataset, options, perform) {
+.pairedSamplesTTestDescriptivesPlot <- function(dataset, options, perform) {
 
-	intervalPlotList <- list()
+	descriptivesPlotList <- list()
 		
 	base_breaks_x <- function(x){
 		b <- unique(as.numeric(x))
@@ -409,12 +409,12 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 		pair <- options$pairs[[i]]
 		
-		intervalPlot <- list()
+		descriptivesPlot <- list()
 	
-		intervalPlot[["title"]] <- ""
-		intervalPlot[["width"]] <- options$plotWidth
-		intervalPlot[["height"]] <- options$plotHeight
-		intervalPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+		descriptivesPlot[["title"]] <- ""
+		descriptivesPlot[["width"]] <- options$plotWidth
+		descriptivesPlot[["height"]] <- options$plotHeight
+		descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 
 		if (perform == "run" && pair[[1]] != "" && pair[[2]] != "") {
 	
@@ -423,11 +423,9 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	
 			data <- data.frame("id" = rep(1:length(c1),2), "dependent" = c(c1, c2), 
 							   "groupingVariable" = c(rep(paste(pair[[1]],".1", sep=""), length(c1)), rep(paste(pair[[2]],".2", sep=""), length(c2))))
-			
-			print(data)
-			
+						
 			summaryStat <- .summarySEwithin(data, measurevar = "dependent", withinvars = "groupingVariable", idvar = "id", 
-						   					conf.interval = options$intervalIntervalPlots, na.rm = TRUE, .drop = FALSE)
+						   					conf.interval = options$descriptivesPlotsConfidenceInterval, na.rm = TRUE, .drop = FALSE)
 			
 			pd <- ggplot2::position_dodge(.2)
 				
@@ -461,18 +459,18 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 			print(p)
 			content <- .endSaveImage(image)
 
-			intervalPlot[["data"]] <- content
+			descriptivesPlot[["data"]] <- content
 	
 		} else {
 	
-			intervalPlot[["data"]] <- ""
+			descriptivesPlot[["data"]] <- ""
 			
 		}
 		
-		intervalPlotList[[i]] <- intervalPlot
+		descriptivesPlotList[[i]] <- descriptivesPlot
 	}
 
-	intervalPlotList
+	descriptivesPlotList
 }
 
 

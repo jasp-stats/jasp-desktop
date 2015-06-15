@@ -52,14 +52,14 @@
 			"type": "List"
 		},
 		{
-			"name": "intervalPlots",
+			"name": "descriptivesPlots",
 			"type": "Boolean"
 		},
 		{
 			"format": "%",
 			"max": 0.999,
 			"min": 0.000,
-			"name": "intervalIntervalPlots",
+			"name": "descriptivesPlotsConfidenceInterval",
 			"type": "Number",
 			"value": 0.950
 		},

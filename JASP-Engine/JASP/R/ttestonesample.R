@@ -43,8 +43,8 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="descriptives", type="table")
 	meta[[4]] <- list(name="normalityTests", type="table")
-	meta[[5]] <- list(name="headerIntervalPlots", type="h1")
-	meta[[6]] <- list(name="intervalPlots", type="images")
+	meta[[5]] <- list(name="headerDescriptivesPlots", type="h1")
+	meta[[6]] <- list(name="descriptivesPlots", type="images")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "T-Test"
@@ -346,24 +346,24 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 		results[["descriptives"]] <- descriptives
 	
 	
-	if (options$intervalPlots) {
+	if (options$descriptivesPlots) {
 		
 		if (length(options$variables) > 1) {
-			results[["headerIntervalPlots"]] <-  "Interval Plots"
+			results[["headerDescriptivesPlots"]] <-  "Descriptives Plots"
 		} else {
-			results[["headerIntervalPlots"]] <-  "Interval Plot"
+			results[["headerDescriptivesPlots"]] <-  "Descriptives Plot"
 		}
 		
-		results[["intervalPlots"]] <- .oneSampleTTestIntervalPlot(dataset, options, perform)
+		results[["descriptivesPlots"]] <- .oneSampleTTestDescriptivesPlot(dataset, options, perform)
 	}
 
 	
 	results
 }
 
-.oneSampleTTestIntervalPlot <- function(dataset, options, perform) {
+.oneSampleTTestDescriptivesPlot <- function(dataset, options, perform) {
 
-	intervalPlotList <- list()
+	descriptivesPlotList <- list()
 
 	base_breaks_y <- function(x, options){
 	
@@ -379,19 +379,19 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 
 		var <- options$variables[[i]]
 		
-		intervalPlot <- list()
+		descriptivesPlot <- list()
 	
-		intervalPlot[["title"]] <- ""
-		intervalPlot[["width"]] <- options$plotWidth
-		intervalPlot[["height"]] <- options$plotHeight
-		intervalPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+		descriptivesPlot[["title"]] <- ""
+		descriptivesPlot[["width"]] <- options$plotWidth
+		descriptivesPlot[["height"]] <- options$plotHeight
+		descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 
 		if (perform == "run" && var != "") {
 												
 			dataSubset <- data.frame("dependent" = dataset[[.v(var)]], "groupingVariable" = rep(var,length(dataset[[.v(var)]])))
 												
 			summaryStat <- .summarySE(dataSubset, measurevar = "dependent", groupvars = "groupingVariable",
-						   			  conf.interval = options$intervalIntervalPlots, na.rm = TRUE, .drop = FALSE)
+						   			  conf.interval = options$descriptivesPlotsConfidenceInterval, na.rm = TRUE, .drop = FALSE)
 						
 			testValue <- data.frame("testValue" = options$testValue)
 									
@@ -426,16 +426,16 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 			print(p)
 			content <- .endSaveImage(image)
 
-			intervalPlot[["data"]] <- content
+			descriptivesPlot[["data"]] <- content
 	
 		} else {
 	
-			intervalPlot[["data"]] <- ""
+			descriptivesPlot[["data"]] <- ""
 			
 		}
 		
-		intervalPlotList[[i]] <- intervalPlot
+		descriptivesPlotList[[i]] <- descriptivesPlot
 	}
 
-	intervalPlotList
+	descriptivesPlotList
 }

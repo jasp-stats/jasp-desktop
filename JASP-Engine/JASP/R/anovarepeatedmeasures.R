@@ -39,8 +39,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		list(name="levene", type="table"),
 		list(name="headerDescriptives", type="h1"),
 		list(name="descriptives", type="table"),
-		list(name="headerProfilePlot", type="h1"),
-		list(name="profilePlot", type="images")
+		list(name="headerDescriptivesPlot", type="h1"),
+		list(name="descriptivesPlot", type="images")
 	)
 	
 	results[[".meta"]] <- .meta
@@ -165,18 +165,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	
 	
-	## Create Profile Plots
+	## Create Descriptives Plots
 	
-	result <- .rmAnovaProfilePlot(dataset, options, perform, status, analysisName = "anovaRepeatedMeasures")
+	result <- .rmAnovaDescriptivesPlot(dataset, options, perform, status)
 	
-	results[["profilePlot"]] <- result$result
+	results[["descriptivesPlot"]] <- result$result
 	status <- result$status
 	
 	if (options$plotHorizontalAxis != "") {
 		if (options$plotSeparatePlots != "") {
-			results[["headerProfilePlot"]] <- "Profile Plots"
+			results[["headerDescriptivesPlot"]] <- "Descriptives Plots"
 		} else {
-			results[["headerProfilePlot"]] <- "Profile Plot"
+			results[["headerDescriptivesPlot"]] <- "Descriptives Plot"
 		}
 	}
 	
@@ -1528,9 +1528,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result=descriptives.table, status=status)
 }
 
-.rmAnovaProfilePlot <- function(dataset, options, perform, status, analysisName) {
+.rmAnovaDescriptivesPlot <- function(dataset, options, perform, status) {
 
-	profilePlotList <- list()
+	descriptivesPlotList <- list()
 	
 	if (perform == "run" && status$ready && !status$error && options$plotHorizontalAxis != "") {
 				
@@ -1588,11 +1588,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 		for (i in 1:nPlots) {
 
-			profilePlot <- list()
-			profilePlot[["title"]] <- ""
-			profilePlot[["width"]] <- options$plotWidth
-			profilePlot[["height"]] <- options$plotHeight
-			profilePlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot <- list()
+			descriptivesPlot[["title"]] <- ""
+			descriptivesPlot[["width"]] <- options$plotWidth
+			descriptivesPlot[["height"]] <- options$plotHeight
+			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 
 			if (options$plotSeparatePlots != "") {
 				summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
@@ -1665,9 +1665,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			print(p)
 			content <- .endSaveImage(image)
 
-			profilePlot[["data"]] <- content
+			descriptivesPlot[["data"]] <- content
 
-			profilePlotList[[i]] <- profilePlot
+			descriptivesPlotList[[i]] <- descriptivesPlot
 
 		}
 
@@ -1697,22 +1697,22 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		
 		for (i in 1:nPlots) {
 
-			profilePlot <- list()
-			profilePlot[["title"]] <- ""
-			profilePlot[["width"]] <- options$plotWidth
-			profilePlot[["height"]] <- options$plotHeight
-			profilePlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
-			profilePlot[["data"]] <- ""
+			descriptivesPlot <- list()
+			descriptivesPlot[["title"]] <- ""
+			descriptivesPlot[["width"]] <- options$plotWidth
+			descriptivesPlot[["height"]] <- options$plotHeight
+			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot[["data"]] <- ""
 
 			if (status$error)
-				profilePlot[["error"]] <- list(errorType="badData")
+				descriptivesPlot[["error"]] <- list(errorType="badData")
 
-			profilePlotList[[i]] <- profilePlot
+			descriptivesPlotList[[i]] <- descriptivesPlot
 		}
 
 	}
 
-	list(result=profilePlotList, status=status)
+	list(result=descriptivesPlotList, status=status)
 }
 
 .summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval") {
