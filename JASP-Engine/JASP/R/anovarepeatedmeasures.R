@@ -1672,22 +1672,22 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		}
 
 	} else if (options$plotHorizontalAxis != "") {
-
+		
 		if (options$plotSeparatePlots != "") {
 			
 			repeatedMeasuresNames <- sapply(options$repeatedMeasuresFactors, function(x) x$name)
-			repeatedMeasuresLevels <- sapply(options$repeatedMeasuresFactors, function(x) x$levels)
-			
+			repeatedMeasuresLevels <- lapply(options$repeatedMeasuresFactors, function(x) x$levels)
+						
 			if (sum(options$plotSeparatePlots == repeatedMeasuresNames) > 0) {
 				
 				index <- which(options$plotSeparatePlots == repeatedMeasuresNames)
-				nPlots <- length(repeatedMeasuresLevels[[index]])
-			
+				nPlots <- length(unlist(repeatedMeasuresLevels[[index]]))
+							
 			} else {
 			
 				nPlots <- length(levels(dataset[[ .v(options$plotSeparatePlots) ]]))
 				
-			}			
+			}		
 
 		} else {
 
