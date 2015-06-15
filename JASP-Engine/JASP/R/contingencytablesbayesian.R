@@ -741,27 +741,73 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 	if (options$samplingModel == "poisson") {
 	
-		if (options$bayesFactorType == "BF10") {
-			bfLabel <- "BF\u2081\u2080 Poisson"
-		} else if (options$bayesFactorType == "BF01") {
-			bfLabel <- "BF\u2080\u2081 Poisson"
-		} else if (options$bayesFactorType == "LogBF10") {
-			bfLabel <- " Log\u2009(\u2009BF\u2081\u2080\u2009) Poisson"		
+		if (options$hypothesis=="groupsNotEqual") {
+		
+			if (options$bayesFactorType == "BF10"){
+				bfLabel <- "BF\u2081\u2080 Poisson"
+			} else if (options$bayesFactorType == "BF01") {
+				bfLabel <- "BF\u2080\u2081 Poisson"
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) Poisson"
+			}
+				
+		} else if (options$hypothesis=="groupOneGreater") {
+			
+			if (options$bayesFactorType == "BF10"){
+				bfLabel <- "BF\u208A\u2080 Poisson"
+			} else if (options$bayesFactorType == "BF01"){
+				bfLabel <- "BF\u2080\u208A Poisson"
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) Poisson"
+			}
+						 
+		} else if(options$hypothesis =="groupTwoGreater") { 
+		
+			if (options$bayesFactorType == "BF10"){
+				bfLabel <- "BF\u208B\u2080 Poisson"
+			} else if (options$bayesFactorType == "BF01"){
+				bfLabel <- "BF\u2080\u208B Poisson"
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) Poisson"
+			}				
 		}
 		
 		sampleType <- "poisson"
 		fixedMargin <- NULL
 		
 	} else if (options$samplingModel == "jointMultinomial") {
-	
-		if (options$bayesFactorType == "BF10") {
-			bfLabel <- "BF\u2081\u2080 joint multinomial"
-		} else if (options$bayesFactorType == "BF01") {
-			bfLabel <- "BF\u2080\u2081 joint multinomial"
-		} else if (options$bayesFactorType == "LogBF10") {
-			bfLabel <- "Log\u2009(\u2009BF\u2081\u2080\u2009) joint multinomial"
-		}
+
+		if (options$hypothesis=="groupsNotEqual") {
 		
+			if (options$bayesFactorType == "BF10"){
+				bfLabel <- "BF\u2081\u2080 joint multinomial"
+			} else if (options$bayesFactorType == "BF01") {
+				bfLabel <- "BF\u2080\u2081 joint multinomial"
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) joint multinomial"
+			}
+				
+		} else if (options$hypothesis=="groupOneGreater") {
+			
+			if (options$bayesFactorType == "BF10"){
+				bfLabel <- "BF\u208A\u2080 joint multinomial"
+			} else if (options$bayesFactorType == "BF01"){
+				bfLabel <- "BF\u2080\u208A joint multinomial"
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) joint multinomial"
+			}
+						 
+		} else if(options$hypothesis =="groupTwoGreater") { 
+		
+			if (options$bayesFactorType == "BF10"){
+				bfLabel <- "BF\u208B\u2080 joint multinomial"
+			} else if (options$bayesFactorType == "BF01"){
+				bfLabel <- "BF\u2080\u208B joint multinomial"
+			} else if (options$bayesFactorType == "LogBF10") {
+				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) joint multinomial"
+			}				
+		}
+	
 		sampleType <- "jointMulti"
 		fixedMargin <- NULL
 		
@@ -872,7 +918,51 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			bf1 <- exp(as.numeric(BF@bayesFactor$bf))
 			lbf1 <- as.numeric(BF@bayesFactor$bf)
 			
-			if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
+			if (options$hypothesis=="groupOneGreater" && options$samplingModel=="poisson") {
+										
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result)
+				
+				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+				logOR<-log(odds.ratio)
+				prop.consistent <- 1-mean(logOR < 0)
+				bf1 <- bf1 * prop.consistent / 0.5
+				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+				
+			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="poisson") {
+			
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result)
+				
+				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+				logOR<-log(odds.ratio)
+				prop.consistent <- mean(logOR < 0)
+				bf1 <- bf1 * prop.consistent / 0.5
+				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+			
+			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="jointMultinomial") {
+										
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result)
+				
+				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+				logOR<-log(odds.ratio)
+				prop.consistent <- 1-mean(logOR < 0)
+				bf1 <- bf1 * prop.consistent / 0.5
+				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+				
+			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="jointMultinomial") {
+			
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				theta <- as.data.frame(ch.result)
+				
+				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+				logOR<-log(odds.ratio)
+				prop.consistent <- mean(logOR < 0)
+				bf1 <- bf1 * prop.consistent / 0.5
+				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+			
+			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
 										
 				ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result[,7:10])
@@ -961,7 +1051,39 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	} else {
 
-		 if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
+		  if (options$hypothesis=="groupOneGreater" && options$samplingModel=="poisson"){
+
+			gp1 <- rownames(counts.matrix)[1]
+			gp2 <- rownames(counts.matrix)[2]
+
+			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", "<em>", gp2, "</em>", sep="")
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+
+		} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="poisson"){
+
+			gp1 <- rownames(counts.matrix)[1]
+			gp2 <- rownames(counts.matrix)[2]
+
+			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)			
+
+		} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="jointMultinomial"){
+
+			gp1 <- rownames(counts.matrix)[1]
+			gp2 <- rownames(counts.matrix)[2]
+
+			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", "<em>", gp2, "</em>", sep="")
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+
+		} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="jointMultinomial"){
+
+			gp1 <- rownames(counts.matrix)[1]
+			gp2 <- rownames(counts.matrix)[2]
+
+			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)			
+
+		} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
 
 			gp1 <- rownames(counts.matrix)[1]
 			gp2 <- rownames(counts.matrix)[2]
@@ -1647,13 +1769,13 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 				status <- list(error=TRUE, errorMessage="The Bayes factor is undefined")
 			
-			} else if (is.infinite(1 / BF10)) {
+			#} else if (is.infinite(1 / BF10)) {
 
-				status <- list(error=TRUE, errorMessage="The Bayes factor is too small")
+			#	status <- list(error=TRUE, errorMessage="The Bayes factor is too small")
 			
-			} else if (is.infinite(BF10)) {
+			#} else if (is.infinite(BF10)) {
 		
-				status <- list(error=TRUE, errorMessage="The Bayes factor is infinite")
+			#	status <- list(error=TRUE, errorMessage="The Bayes factor is infinite")
 			}
 		}
 	}
@@ -1664,7 +1786,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 		p <- try(silent=TRUE, expr={
 			
-			if (options$samplingModel=="independentMultinomialColumnsFixed" || options$samplingModel=="independentMultinomialRowsFixed") {
+			if (options$samplingModel=="poisson"|| options$samplingModel=="jointMultinomial"|| options$samplingModel=="independentMultinomialColumnsFixed" || options$samplingModel=="independentMultinomialRowsFixed") {
 			
 				if (options$hypothesis=="groupTwoGreater") {
 				
@@ -1778,22 +1900,37 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		return(logspline::dlogspline(x, fit.posterior))
 	}
 	
-	
 	# set limits plot
 	xlim <- vector("numeric", 2)
 	
-	xlim[1] <- min(-2, quantile(samples, probs = 0.01)[[1]])
-	xlim[2] <- max(2, quantile(samples, probs = 0.99)[[1]])
-	stretch <- 1.2	
-
 	
+	if (oneSided == FALSE) {
+	
+		stretch <- 1.2
+		xlim[1] <- quantile(samples, probs = 0.002)
+		xlim[2] <- quantile(samples, probs = 0.998)
+	
+	} else if (oneSided == "right") {
+	
+		stretch <- 1
+		xlim[1] <- 0
+		xlim[2] <- max(2, quantile(samples, probs = 0.998))
+		
+	} else if (oneSided == "left") {
+	
+		stretch <- 1
+		xlim[1] <- min(-2, quantile(samples, probs = 0.002))
+		xlim[2] <- 0
+	}
+
+	xticks <- pretty(xlim)
 	ylim <- vector("numeric", 2)
 	
 	ylim[1] <- 0
-	ylim[2] <- stretch * max(dposterior(x= samples, oneSided= oneSided, samples=samples))
+	ylim[2] <- stretch * max(.dposteriorOR(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples), oneSided= oneSided))
 	
 	# calculate position of "nice" tick marks and create labels
-	xticks <- pretty(xlim)
+	#xticks <- pretty(xlim)
 	yticks <- pretty(ylim)
 	xlabels <- formatC(xticks, 1, format= "f")
 	ylabels <- formatC(yticks, 1, format= "f")
@@ -1804,17 +1941,18 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	CIhigh <- CI[2]
 	medianPosterior <- medianSamples
 	
+	z<-density(samples) 
 	
-	posteriorLine <- dposterior(x= seq(min(xticks), max(xticks),length.out = 1000), oneSided = oneSided, samples=samples)
-	
-	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
-	
-	plot(1,1, xlim= xlim, ylim= range(yticks), ylab= "", xlab="", type= "n", axes= FALSE)
-	
-	lines(seq(min(xticks), max(xticks),length.out = 1000),posteriorLine, lwd= lwd)
+	plot(0,0, xlim= range(xticks), ylim= c(0, range(yticks)[2]), ylab= "", xlab="", type= "n", axes= FALSE)
 		
+	lines(seq(min(xticks), max(xticks),length.out = 10000), .dposteriorOR(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples), oneSided=oneSided), lwd= lwd)
+	
+	if (oneSided == "right"|| oneSided == "left"){
+	lines(c(0, 0), c(0, .dposteriorOR(0, mean(samples), sd(samples), oneSided=oneSided)), lwd= lwd)
+	}
+					
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
-	axis(2, at= yticks, labels= ylabels, , cex.axis= cexAxis, lwd= lwdAxis)
+	axis(2, at= yticks, labels= ylabels, cex.axis= cexAxis, lwd= lwdAxis)
 	
 	
 	if (nchar(ylabels[length(ylabels)]) > 4) {
@@ -1840,7 +1978,8 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	yCI <- grconvertY(dmax, "user", "ndc") + 0.04
 	yCI <- grconvertY(yCI, "ndc", "user")
 	
-	arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
+	if (oneSided == FALSE)
+		arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
 	
 	medianText <- formatC(medianPosterior, digits= 3, format="f")
 	
@@ -1892,8 +2031,13 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		CIText <- paste(CInumber,  bquote(.(formatC(CIlow,3, format="f"))), ", ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
 		medianLegendText <- paste("median =", medianText)
 		
-		text(max(xticks) , yy2, medianLegendText, cex= 1.1, pos= 2)
-		text(max(xticks) , yy, CIText, cex= 1.1, pos= 2)
+		
+		
+		if (oneSided == FALSE) {
+		
+			text(max(xticks) , yy2, medianLegendText, cex= 1.1, pos= 2)
+			text(max(xticks) , yy, CIText, cex= 1.1, pos= 2)
+		}
 		
 		# probability wheel
 		if (max(nchar(BF10t), nchar(BF01t)) <= 4) {
@@ -1962,3 +2106,19 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	mostPosterior <- mean(samples > mean(range(xticks)))
 }
 
+.dposteriorOR <- function(logOR, mean, sd, oneSided) {
+	
+	if (oneSided == FALSE) {
+		
+		dnorm(logOR, mean, sd)
+		
+	} else if (oneSided == "right") {
+		
+		ifelse (logOR >= 0,  dnorm(logOR, mean, sd) / pnorm(0, mean, sd, lower.tail=FALSE), 0 )
+		
+	} else if (oneSided == "left") {
+		
+		ifelse (logOR <= 0,  dnorm(logOR, mean, sd) / pnorm(0, mean, sd, lower.tail=TRUE), 0 )		
+	}
+	
+}
