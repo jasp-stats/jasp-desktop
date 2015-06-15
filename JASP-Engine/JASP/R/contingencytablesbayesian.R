@@ -1,6 +1,6 @@
 
 
-ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
+ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) {
 
 	layer.variables <- c()
 
@@ -16,11 +16,13 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.factor=factors, columns.as.numeric=counts.var)
+			dataset <- .readDataSetToEnd(columns.as.factor=factors, columns.as.numeric=counts.var, exclude.na.listwise=counts.var)
 		} else {
 			dataset <- .readDataSetHeader(columns.as.factor=factors, columns.as.numeric=counts.var)
 		}
 	}
+	
+	old.state <- .retrieveState()
 
 	results <- list()
 	
@@ -28,16 +30,16 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 
 	meta <- list()
 	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="Contingency Tables", type="tables")
+	meta[[2]] <- list(name="tables", type="tables")
 	meta[[3]] <- list(name="plots", type="images")
 	
 	results[[".meta"]] <- meta
 	
-	results[["title"]] <- "Bayesian Contingency Tables"	
+	results[["title"]] <- "Bayesian Contingency Tables"
 	
 	### CROSS TABS
 
-	crosstabs <- list()
+	cont.tables <- list()
 	plots     <- list()
 	
 	rows    <- as.vector(options$rows,    "character")
@@ -52,8 +54,8 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 	analyses <- data.frame("columns"=columns, stringsAsFactors=FALSE)
 	analyses <- cbind(analyses, "rows"=rep(rows, each=dim(analyses)[1]), stringsAsFactors=FALSE)
 	
-	for (layer in options$layers)
-	{
+	for (layer in options$layers) {
+	
 		layer.vars <- as.vector(layer$variables, "character")
 		analyses <- cbind(analyses, rep(layer.vars, each=dim(analyses)[1]), stringsAsFactors=FALSE)
 		names(analyses)[dim(analyses)[2]] <- layer$name
@@ -61,32 +63,120 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 	
 	analyses <- .dataFrameToRowList(analyses)
 
-	for (analysis in analyses)
-	{		
-		res <- .crosstabBayesian(dataset, options, perform, analysis)
-		
-		for (table in res$tables)
-			crosstabs[[length(crosstabs)+1]] <- table
-			
-		for (plot in res$plots)
-			plots[[length(plots)+1]] <- plot
-	}
+	new.state <- list()
+	new.state$results <- list()
+	new.state$options <- options
+	
+	complete <- TRUE
 
-	results[["Contingency Tables"]] <- crosstabs
+
+	next.table.index <- 1
+	next.plot.index  <- 1
+	keep <- list()
+
+	for (i in seq_along(analyses)) {
+	
+		analysis <- analyses[[i]]
+		
+		if ("results" %in% names(old.state) && i <= length(old.state$results)) {
+			last.results <- old.state$results[[i]]
+		} else {
+			last.results <- NULL
+		}
+	
+		res <- .contTablesBayesian(dataset, options, populate=FALSE, analysis, last.results)
+		
+		for (table in res$tables) {
+
+			cont.tables[[next.table.index]] <- table
+			next.table.index <- next.table.index + 1
+		}
+		
+		for (plot in res$plots) {
+
+			plots[[next.plot.index]] <- plot
+			next.plot.index <- next.plot.index + 1
+		}
+		
+		keep <- c(keep, res$keep)
+		
+		if ("state" %in% names(res)) {
+		
+			new.state$results[[i]] <- res$state
+			
+		} else {
+		
+			new.state$results[i] <- list(NULL)
+		}
+		
+		complete <- complete && res$complete
+	}
+	
+	if (perform == "run" && complete == FALSE) {
+		
+		next.table.index <- 1
+		next.plot.index  <- 1
+
+		for (i in seq_along(analyses))
+		{
+			results[["tables"]] <- cont.tables
+			results[["plots"]] <- plots
+		
+			callback(results)
+		
+			analysis <- analyses[[i]]
+		
+			if ("results" %in% names(old.state) && i <= length(old.state$results)) {
+				last.results <- old.state$results[[i]]
+			} else {
+				last.results <- NULL
+			}
+		
+			res <- .contTablesBayesian(dataset, options, populate=TRUE, analysis, last.results)
+		
+			for (table in res$tables) {
+			
+				cont.tables[[next.table.index]] <- table
+				next.table.index <- next.table.index + 1
+			}
+			
+			for (plot in res$plots) {
+
+				plots[[next.plot.index]] <- plot
+				next.plot.index <- next.plot.index + 1
+			}
+			
+			keep <- c(keep, res$keep)
+			
+			if ("state" %in% names(res)) {
+			
+				new.state$results[[i]] <- res$state
+				
+			} else {
+			
+				new.state$results[i] <- list(NULL)
+			}
+		}
+	
+		results[["tables"]] <- cont.tables
+		
+	}
+	
+	results[["tables"]] <- cont.tables
 	results[["plots"]] <- plots
 
-	if (perform == "run" || length(options$rows) == 0 || length(options$columns) == 0) {
+	if (perform == "run") {
 	
-		list(results=results, status="complete")
+		list(results=results, status="complete", state=new.state, keep=keep)
 		
 	} else {
 	
-		list(results=results, status="inited")
+		status <- ifelse(complete, "complete", "inited")
+		list(results=results, status=status, state=new.state, keep=keep)
 	}
 }
 
-
-.crosstabBayesian <- function(dataset, options, perform, analysis) {
+.contTablesBayesian <- function(dataset, options, populate, analysis, state) {
 
 	# analysis is a list of the form :
 	# list(columns="var.name", rows="var.name", "Layer 1"="var.name", etc...)
@@ -94,85 +184,106 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 	counts.var <- options$counts
 	if (counts.var == "")
 		counts.var <- NULL
-	
-	status <- list(error=FALSE, ready=TRUE)
 
-	if (length(options$rows) == 0 || length(options$columns) == 0) {
+	if (populate) {
 	
-		status$ready <- FALSE
-		
-	} else {
-
 		all.vars <- c(unlist(analysis), counts.var)
 		dataset <- subset(dataset, select=.v(all.vars))	
 	}
 	
-	# the following creates a 'groups' list
-	# a 'group' represents a combinations of the levels from the layers
-	# if no layers are specified, groups is null
+	groups <- .contTablesCreateGroups(dataset, analysis)
 
-	if (length(analysis) >= 3)  # if layers are specified
-	{
-		lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
-		
-		if (length(lvls) < 2) {
-		
-			lvls <- ""
-			
-		} else {
-		
-			lvls <- c(lvls, "")  # blank means total
-		}
+	# create count matrices for each group
 
-		# here we create all combinations of the levels from the layers
-		# it is easiest to do this with a data frame
-		# at the end we convert this to a list of rows
+	group.matrices <- .contTablesCreateGroupMatrices(dataset, analysis$rows, analysis$columns, groups, counts.var, options$rowOrder=="descending", options$columnOrder=="descending", populate)
 
-		groups <- data.frame(lvls, stringsAsFactors=FALSE)
-		base::names(groups) <- analysis[[3]]
-		
-		if (length(analysis) >= 4) {
-		
-			for (j in 4:length(analysis))
-			{
-				lvls <- base::levels(dataset[[ .v(analysis[[j]]) ]])
-				lvls <- c(lvls, "")  # blank means total
-			
-				groups <- cbind(rep(lvls, each=dim(groups)[1]), groups, stringsAsFactors=FALSE)
-				names(groups)[1] <- analysis[[j]]
-			}
-		}
-		
-		# convert all the combinations to a list of rows
-		
-		groups <- .dataFrameToRowList(groups)
-		
-	} else {  # if layers are not specified
+	# retrieve states
+
+	counts.state <- NULL
+	if ("counts" %in% names(state))
+		counts.state <- state$counts
+
+	tests.state <- NULL
+	if ("tests" %in% names(state))
+		tests.state <- state$tests
 	
-		groups <- NULL
-	}
+	odds.ratio.state <- NULL
+	if ("odds.ratio" %in% names(state))
+		odds.ratio.state <- state$odds.ratio
 	
-	
-	
+	old.options <- NULL
+	if ("options" %in% names(state))
+		old.options <- state$options
+		
+
+	status <- list(error=FALSE)
 	tables <- list()
-
-    ### SETUP COLUMNS COMMON TO BOTH TABLES
-
-	fields <- list()
+	plots  <- list()
+	keep   <- list()
+	new.state <- list()
+	complete  <- TRUE
 	
-	if (length(analysis) >= 3) {
 	
-		for (j in length(analysis):3)
-			fields[[length(fields)+1]] <- list(name=analysis[[j]], type="string", combine=TRUE)
-	}
+	res <- .contTablesBayesianCreateCountsTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, counts.state, old.options, status)
+
+	tables[[length(tables)+1]] <- res$table
+	new.state$counts <- res$state
+	status <- res$status
+	complete <- complete && res$complete
+	
+
+	res <- .contTablesBayesianCreateTestsTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, tests.state, old.options, status)
+
+	tables[[length(tables)+1]] <- res$table
+	new.state$tests <- res$state
+	status <- res$status
+	complete <- complete && res$complete
+	
 		
-	### SETUP COUNTS TABLE SCHEMA
+	res <- .contTablesBayesianCreateOddsRatioTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, odds.ratio.state, old.options, status)
+
+	tables[[length(tables)+1]] <- res$table
+	plots <- c(plots, res$plots)
+	keep  <- res$keep
+	
+	new.state$odds.ratio <- res$state
+	complete <- complete && res$complete
+	
+	new.state$options <- options
+	
+	if (length(options$rows) == 0 || length(options$columns) == 0)
+		complete <- TRUE
+	
+	list(tables=tables, plots=plots, keep=keep, state=new.state, complete=complete)
+}
+
+.contTablesBayesianCreateCountsTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, state, state.options, status) {
+
+	if (is.null(state.options) ||
+		base::identical(state.options$rows, options$rows) == FALSE ||
+		base::identical(state.options$columns, options$columns) == FALSE ||
+		base::identical(state.options$counts, options$counts) == FALSE ||
+		base::identical(state.options$layers, options$layers) == FALSE ||
+		base::identical(state.options$columnOrder, options$columnOrder) == FALSE ||
+		base::identical(state.options$rowOrder, options$rowOrder) == FALSE) {
+			
+		state <- NULL
+	}
 
 	counts.table <- list()
 	
 	counts.table[["title"]] <- "Bayesian Contingency Tables"
 	
-	counts.fields <- fields
+	
+	### SETUP COUNTS TABLE SCHEMA
+
+	counts.fields <- list()
+	
+	if (length(analysis) >= 3) {
+	
+		for (j in length(analysis):3)
+			counts.fields[[length(counts.fields)+1]] <- list(name=analysis[[j]], type="string", combine=TRUE)
+	}
 	
 	counts.fields[[length(counts.fields)+1]] <- list(name=analysis$rows, type="string", combine=TRUE)
 
@@ -192,7 +303,7 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 			lvls <- lvls
 		}
 
-	} else if (perform == "run") {
+	} else if (populate) {
 	
 		lvls <- base::unique(dataset[[ .v(analysis$columns) ]])
 		
@@ -219,7 +330,7 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 			row.lvls <- row.lvls
 		}
 
-	} else if (perform == "run") {
+	} else if (populate) {
 	
 		row.lvls <- base::unique(dataset[[ .v(analysis$rows) ]])
 		
@@ -232,9 +343,9 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 	
 	counts.fp <- FALSE  # whether the counts are float point or not; changes formatting
 	
-	if (is.null(counts.var) == FALSE) {
+	if (options$counts != "") {
 
-		counts <- dataset[[ .v(counts.var) ]]
+		counts <- dataset[[ .v(options$counts) ]]
 		if (identical(counts, as.integer(counts)) == FALSE)  # are the counts floating point?
 			counts.fp <- TRUE
 	}
@@ -285,95 +396,26 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 
 	counts.table[["schema"]] <- schema
 	
-
-	### SETUP TESTS TABLE SCHEMA
-
-	tests.table <- list()
-	
-	tests.table[["title"]] <- "Bayesian Contingency Tables Tests"
-	
-	tests.fields <- fields 
-	
-	#if ((options$hypothesis=="groupOneGreater"|| options$hypothesis=="groupTwoGreater") && (options$samplingModel=="independentMultinomialColumnsFixed" || options$samplingModel=="independentMultinomialRowsFixed")){
-	#tests.fields[[length(tests.fields)+1]] <- list(name="Group[BF]", title="Hypothesis", type="string")
-	#}
-	
-	tests.fields[[length(tests.fields)+1]] <- list(name="type[BF]", title="", type="string")
-	tests.fields[[length(tests.fields)+1]] <- list(name="value[BF]", title="Value", type="number", format="sf:4;dp:3")
-	tests.fields[[length(tests.fields)+1]] <- list(name="type[N]", title="", type="string")
-	tests.fields[[length(tests.fields)+1]] <- list(name="value[N]", title="Value", type="integer")
-	
-	
-	schema <- list(fields=tests.fields)
-	
-	tests.table[["schema"]] <- schema
-	
-	##### Odds ratio
-	
-	if (options$oddsRatio) {
-		
-		odds.ratio.table <- list()
-		
-		odds.ratio.table[["title"]] <- "Log Odds Ratio"
-		
-		odds.ratio.fields <- fields
-		
-		ci.label = paste(100 * options$oddsRatioCredibleIntervalInterval, "% Credible Interval", sep="")
-			
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[oddsRatio]", title="Odds ratio", type="number", format="sf:4;dp:3")
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower", overTitle=ci.label, type="number", format="dp:3")
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper", overTitle=ci.label, type="number", format="dp:3")
-		
-		schema <- list(fields=odds.ratio.fields)
-		
-		odds.ratio.table[["schema"]] <- schema
-	}
-	
-	##### Odds ratio Plots
-	
-	if (is.null(counts.var) == FALSE) {
-
-		counts <- dataset[[ .v(counts.var) ]]
-		
-		if (any(counts) < 0 || any(is.infinite(counts))) {
-		
-			status$error <- TRUE
-			status$errorMessage <- "Counts may not contain negative numbers or infinite number"
-		}
-	}	
-
-	# POPULATE TABLES
-
-	# create count matrices for each group
-
-	group.matrices <- .crosstabsCreateGroupMatrices(dataset, analysis$rows, analysis$columns, groups, counts.var, options$rowOrder=="descending", options$columnOrder=="descending", perform=perform, status=status)
-	
-	if (all(dim(group.matrices[[1]]) == c(2,2))) {
-	
-		isTwoByTwo <- TRUE
-		
-	} else {
-	
-		isTwoByTwo <- FALSE
-	}
-	
-	plots <- list()
 	counts.rows <- list()
-	tests.rows <- list()
-	odds.ratio.rows <- list()	
-	tests.footnotes <- .newFootnotes()
-	odds.ratio.footnotes <- .newFootnotes()
+	new.state <- list(rows=list(), status=list(error=FALSE))
+	
+	if (is.null(state) == FALSE)
+		status <- state$status
 
-	samples <- NULL
-	CI <- NULL
-	medianSamples <- NULL
-	BF <- NULL
+	if (populate && options$counts != "") {
 	
-	next.is.new.group <- TRUE
+		counts <- dataset[[ .v(options$counts) ]]
+		
+		if (any(counts < 0) || any(is.infinite(counts))) {
 	
-	for (i in 1:length(group.matrices)) {
+			populate <- FALSE
+			status <- list(error=TRUE, errorMessage="Counts may not contain negative numbers or infinities")
+		}
+	}
 	
-		group.matrix <- group.matrices[[i]]
+	for (i in 1:length(counts.matrices)) {
+	
+		count.matrix <- counts.matrices[[i]]
 		
 		if ( ! is.null(groups)) {
 		
@@ -383,68 +425,305 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 		
 			group <- NULL
 		}
+		
+		rows.state <- NULL
+		if (is.null(state) == FALSE && i <= length(state$rows))
+			rows.state <- state$rows[[i]]
 	
-		next.rows <- .crosstabsCreateCountsRows(analysis$rows, group.matrix, options, perform, group, status)
+		next.rows <- .contTableBayesianCreateCountsRows(analysis$rows, count.matrix, options, populate, group, rows.state)
+		
 		counts.rows <- c(counts.rows, next.rows)
+		new.state$rows[[length(new.state$rows)+1]] <- next.rows
+	}
+	
+	counts.table[["data"]] <- counts.rows
+	
+	complete <- populate || is.null(state) == FALSE || length(options$rows) == 0 || length(options$columns) == 0 || status$error
+	
+	counts.table[["status"]] <- ifelse(complete, "complete", "running")
+	
+	if (status$error) {
+	
+		new.state$status <- status
+	
+		counts.table[["status"]] <- "complete"
+		counts.table[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
+	}
+	
+	if (is.null(state) && populate == FALSE) {
+	
+		# when there's no previous state, and no results were populated
+		# there are no results, and no state worth keeping
+	
+		new.state <- NULL
+	}
+	
+	list(table=counts.table, state=new.state, complete=complete, status=status)
+}
+
+.contTablesCreateGroups <- function(dataset, analysis) {
+
+	# the following creates a 'groups' list
+	# a 'group' represents a combinations of the levels from the layers
+	# if no layers are specified, groups is null
+
+	if (length(analysis) >= 3)  # if layers are specified
+	{
+		lvls <- base::levels(dataset[[ .v(analysis[[3]]) ]])
 		
-		next.rows <- .crosstabsBayesianCreateTestsRows(analysis$rows, group.matrix, tests.footnotes, options, perform, group, status)
-		tests.rows <- c(tests.rows, next.rows)
-		BF <- next.rows[[1]]$`value[BF]`
+		if (length(lvls) < 2) {
 		
-		next.rows <- .crosstabsBayesianCreateOddsRatioRows(analysis$rows, group.matrix, odds.ratio.footnotes, options, perform, group, status)
+			lvls <- ""
+			
+		} else {
+		
+			lvls <- c(lvls, "")  # blank means total
+		}
+
+		# here we create all combinations of the levels from the layers
+		# it is easiest to do this with a data frame
+		# at the end we convert this to a list of rows
+
+		groups <- data.frame(lvls, stringsAsFactors=FALSE)
+		base::names(groups) <- analysis[[3]]
+		
+		if (length(analysis) >= 4) {
+		
+			for (j in 4:length(analysis))
+			{
+				lvls <- base::levels(dataset[[ .v(analysis[[j]]) ]])
+				lvls <- c(lvls, "")  # blank means total
+			
+				groups <- cbind(rep(lvls, each=dim(groups)[1]), groups, stringsAsFactors=FALSE)
+				names(groups)[1] <- analysis[[j]]
+			}
+		}
+		
+		# convert all the combinations to a list of rows
+		
+		groups <- .dataFrameToRowList(groups)
+		
+	} else {  # if layers are not specified
+	
+		groups <- NULL
+	}
+	
+	groups
+}
+
+.contTablesBayesianCreateTestsTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, state, state.options, status) {
+
+	if (is.null(state.options) ||
+		base::identical(state.options$rows, options$rows) == FALSE ||
+		base::identical(state.options$columns, options$columns) == FALSE ||
+		base::identical(state.options$counts, options$counts) == FALSE ||
+		base::identical(state.options$layers, options$layers) == FALSE ||
+		base::identical(state.options$columnOrder, options$columnOrder) == FALSE ||
+		base::identical(state.options$rowOrder, options$rowOrder) == FALSE ||
+		base::identical(state.options$samplingModel, options$samplingModel) == FALSE ||
+		base::identical(state.options$priorConcentration, options$priorConcentration) == FALSE ||
+		base::identical(state.options$hypothesis, options$hypothesis) == FALSE) {
+		
+		state <- NULL
+	}
+	
+	if (status$error)
+		populate <- FALSE
+
+	table <- list()
+	
+	table[["title"]] <- "Bayesian Contingency Tables Tests"
+	
+
+	fields <- list()
+	
+	if (length(analysis) >= 3) {
+	
+		for (j in length(analysis):3)
+			fields[[length(fields)+1]] <- list(name=analysis[[j]], type="string", combine=TRUE)
+	}
+	
+	fields[[length(fields)+1]] <- list(name="type[BF]", title="", type="string")
+	fields[[length(fields)+1]] <- list(name="value[BF]", title="Value", type="number", format="sf:4;dp:3")
+	fields[[length(fields)+1]] <- list(name="type[N]", title="", type="string")
+	fields[[length(fields)+1]] <- list(name="value[N]", title="Value", type="integer")
+	
+	schema <- list(fields=fields)
+	
+	table[["schema"]] <- schema
+	
+
+	rows <- list()
+	new.state <- list()
+	footnotes <- .newFootnotes()
+	
+	for (i in 1:length(counts.matrices)) {
+	
+		count.matrix <- counts.matrices[[i]]
+		
+		if ( ! is.null(groups)) {
+		
+			group <- groups[[i]]
+			
+		} else {
+		
+			group <- NULL
+		}
+		
+		rows.state <- NULL
+		if (i <= length(state))
+			rows.state <- state[[i]]
+		
+		res <- .contTablesBayesianCreateTestsRows(analysis$rows, count.matrix, footnotes, options, populate, group, rows.state)
+
+		rows <- c(rows, res$rows)
+		new.state[[length(new.state)+1]] <- res$state
+	}
+	
+	complete <- populate || is.null(state) == FALSE || length(options$rows) == 0 || length(options$columns) == 0
+	
+	table[["data"]] <- rows
+	table[["footnotes"]] <- as.list(footnotes)
+	
+	if (complete)
+		table[["status"]] <- "complete"
+	
+	if (status$error) {
+		table[["status"]] <- "complete"
+		table[["error"]] <- list(errorType="badData")
+	}
+	
+	if (populate == FALSE && is.null(state))
+		new.state <- NULL
+
+	list(table=table, state=new.state, complete=complete, status=status)
+}
+
+
+.contTablesBayesianCreateOddsRatioTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, state, state.options, status) {
+
+	if (options$oddsRatio == FALSE && options$plotPosteriorOddsRatio == FALSE)
+		return(list(table=NULL, plots=NULL, state=NULL, complete=TRUE))
+
+	if (is.null(state.options) ||
+		base::identical(state.options$rows, options$rows) == FALSE ||
+		base::identical(state.options$columns, options$columns) == FALSE ||
+		base::identical(state.options$counts, options$counts) == FALSE ||
+		base::identical(state.options$layers, options$layers) == FALSE ||
+		base::identical(state.options$columnOrder, options$columnOrder) == FALSE ||
+		base::identical(state.options$rowOrder, options$rowOrder) == FALSE ||
+		base::identical(state.options$samplingModel, options$samplingModel) == FALSE ||
+		base::identical(state.options$hypothesis, options$hypothesis) == FALSE ||
+		base::identical(state.options$oddsRatioCredibleIntervalInterval, options$oddsRatioCredibleIntervalInterval) == FALSE ||
+		base::identical(state.options$plotPosteriorOddsRatioAdditionalInfo, options$plotPosteriorOddsRatioAdditionalInfo) == FALSE) {
+		
+		state <- NULL
+	}
+	
+	if (status$error)
+		populate <- FALSE
+
+	table <- list()
+	
+	table[["title"]] <- "Log Odds Ratio"
+	
+	fields <- list()
+	
+	if (length(analysis) >= 3) {
+	
+		for (j in length(analysis):3)
+			fields[[length(fields)+1]] <- list(name=analysis[[j]], type="string", combine=TRUE)
+	}
+
+	ci.label <- paste(100 * options$oddsRatioCredibleIntervalInterval, "% Credible Interval", sep="")
+		
+	fields[[length(fields)+1]] <- list(name="value[oddsRatio]", title="Odds ratio", type="number", format="sf:4;dp:3")
+	fields[[length(fields)+1]] <- list(name="low[oddsRatio]", title="Lower", overTitle=ci.label, type="number", format="dp:3")
+	fields[[length(fields)+1]] <- list(name="up[oddsRatio]",  title="Upper", overTitle=ci.label, type="number", format="dp:3")
+	
+	schema <- list(fields=fields)
+	
+	table[["schema"]] <- schema
+
+
+
+	rows  <- list()
+	plots <- list()
+	keep  <- list()
+	new.state <- list()
+	footnotes <- .newFootnotes()
+	
+	next.is.new.group <- TRUE
+	complete <- TRUE
+	
+	for (i in 1:length(counts.matrices)) {
+	
+		count.matrix <- counts.matrices[[i]]
+		
+		if ( ! is.null(groups)) {
+		
+			group <- groups[[i]]
+			
+		} else {
+		
+			group <- NULL
+		}
+		
+		rows.state <- NULL
+		if (i <= length(state))
+			rows.state <- state[[i]]
+
+		res <- .contTablesBayesianCreateOddsRatioRows(analysis$rows, count.matrix, footnotes, options, populate, group, rows.state, state.options, status)
+
+		next.rows <- res$rows
+		next.plot <- res$plot
+		complete <- complete && res$complete
 
 		if (next.is.new.group) {
 		
-			next.rows[[1]][[1]][[".isNewGroup"]] <- TRUE
+			next.rows[[1]][[".isNewGroup"]] <- TRUE
 			next.is.new.group <- FALSE
 			
 		} else if ( ! is.null(group) && group[[length(group)]] == "") {
 		
-			next.rows[[1]][[1]][[".isNewGroup"]] <- TRUE
+			next.rows[[1]][[".isNewGroup"]] <- TRUE
 			next.is.new.group <- TRUE
 		}
 		
-		odds.ratio.rows <- c(odds.ratio.rows, next.rows[[1]])
-		samples <- next.rows$samples
-		CI <- next.rows$CI
-		medianSamples <- next.rows$medianSamples
+		rows <- c(rows, next.rows)
+		plots[[length(plots)+1]] <- next.plot
 		
-		plot <- .crosstabsBayesianPlotOddsRatio(analysis$rows, group.matrix, options, perform, group, status=status, samples=samples, CI=CI, medianSamples=medianSamples, BF=BF, isTwoByTwo= isTwoByTwo)
-
-		plots <- c(plots, plot)
-	}
-
-	counts.table[["data"]] <- counts.rows
-	if (status$error)
-		counts.table[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
-
-	tables[[1]] <- counts.table
-	
-	tests.table[["data"]] <- tests.rows
-	tests.table[["footnotes"]] <- as.list(tests.footnotes)
-	if (status$error)
-		tests.table[["error"]] <- list(errorType="badData")
+		keep <- c(keep, res$keep)
 		
-	tables[[2]] <- tests.table
-	
-	if (options$oddsRatio) {
-		 
-	
-		odds.ratio.table[["data"]] <- odds.ratio.rows 
-		odds.ratio.table[["footnotes"]] <- as.list(odds.ratio.footnotes)
-	
-		if (status$error)
-			odds.ratio.table[["error"]] <- list(errorType="badData")
-			
-		tables[[3]] <- odds.ratio.table
+		new.state[[length(new.state)+1]] <- res$state
 	}
 	
-	list(tables=tables, plots=plots)
+	complete <- complete && (populate || is.null(state) == FALSE || length(options$rows) == 0 || length(options$columns) == 0)
+	
+	table[["data"]] <- rows
+	table[["footnotes"]] <- as.list(footnotes)
+	
+	if (complete)
+		table[["status"]] <- "complete"
+	
+	if (status$error) {
+	
+		table[["status"]] <- "complete"
+		table[["error"]] <- list(errorType="badData")
+	}
+	
+	if (options$oddsRatio == FALSE)
+		table <- NULL
+
+	list(table=table, plots=plots, keep=keep, state=new.state, complete=complete, status=status)
 }
 
-.crosstabsBayesianCreateTestsRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) {
+.contTablesBayesianCreateTestsRows <- function(var.name, counts.matrix, footnotes, options, populate, group, state) {
 
 	row <- list()
+	
+	new.state <- list()
+	
 	
 	for (layer in names(group)) {
 	
@@ -459,27 +738,13 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 			row[[layer]] <- level
 		}
 	}
-	
-	
-	row[["type[N]"]] <- "N"
-
-		if (perform == "run" && status$error == FALSE) {
-	
-		row[["value[N]"]] <- base::sum(counts.matrix)
-		
-	} else {
-	
-		row[["value[N]"]] <- "."
-	}
 		
 	if (options$samplingModel == "poisson") {
 	
-		if (options$bayesFactorType == "BF10"){
+		if (options$bayesFactorType == "BF10") {
 			bfLabel <- "BF\u2081\u2080 Poisson"
-			
-		} else if (options$bayesFactorType == "BF01"){
+		} else if (options$bayesFactorType == "BF01") {
 			bfLabel <- "BF\u2080\u2081 Poisson"
-		
 		} else if (options$bayesFactorType == "LogBF10") {
 			bfLabel <- " Log\u2009(\u2009BF\u2081\u2080\u2009) Poisson"		
 		}
@@ -489,12 +754,10 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 		
 	} else if (options$samplingModel == "jointMultinomial") {
 	
-		if (options$bayesFactorType == "BF10"){
+		if (options$bayesFactorType == "BF10") {
 			bfLabel <- "BF\u2081\u2080 joint multinomial"
-			
-		} else if (options$bayesFactorType == "BF01"){
+		} else if (options$bayesFactorType == "BF01") {
 			bfLabel <- "BF\u2080\u2081 joint multinomial"
-			
 		} else if (options$bayesFactorType == "LogBF10") {
 			bfLabel <- "Log\u2009(\u2009BF\u2081\u2080\u2009) joint multinomial"
 		}
@@ -508,23 +771,18 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 		
 			if (options$bayesFactorType == "BF10"){
 				bfLabel <- "BF\u2081\u2080 independent multinomial"
-			
-			} else if (options$bayesFactorType == "BF01"){
+			} else if (options$bayesFactorType == "BF01") {
 				bfLabel <- "BF\u2080\u2081 independent multinomial"
-			
 			} else if (options$bayesFactorType == "LogBF10") {
 				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
-			
 				
 		} else if (options$hypothesis=="groupOneGreater") {
 			
 			if (options$bayesFactorType == "BF10"){
 				bfLabel <- "BF\u208A\u2080 independent multinomial"
-			
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u208A independent multinomial"
-				
 			} else if (options$bayesFactorType == "LogBF10") {
 				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
@@ -533,10 +791,8 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 		
 			if (options$bayesFactorType == "BF10"){
 				bfLabel <- "BF\u208B\u2080 independent multinomial"
-			
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u208B independent multinomial"
-			
 			} else if (options$bayesFactorType == "LogBF10") {
 				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}				
@@ -551,10 +807,8 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 		
 			if (options$bayesFactorType == "BF10"){
 				bfLabel <- "BF\u2081\u2080 independent multinomial"
-			
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u2081 independent multinomial"
-			
 			} else if (options$bayesFactorType == "LogBF10") {
 				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
@@ -563,10 +817,8 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 			
 			if (options$bayesFactorType == "BF10"){
 				bfLabel <- "BF\u208A\u2080 independent multinomial"
-			
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u208A independent multinomial"
-			
 			} else if (options$bayesFactorType == "LogBF10") {
 				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
 			}
@@ -591,10 +843,8 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 
 		if (options$bayesFactorType == "BF10"){
 			bfLabel <- "BF\u2081\u2080 hypergeometric"
-			
 		} else if (options$bayesFactorType == "BF01"){
 			bfLabel <- "BF\u2080\u2081 hypergeometric"
-			
 		} else if (options$bayesFactorType == "LogBF10") {
 			bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) hypergeometric"
 		}
@@ -607,11 +857,16 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 		stop("wtf?")
 	}
 	
-	row[["type[BF]"]] <- bfLabel
-
-	if (perform == "run" && status$error == FALSE) {
+	results <- state
+	if (is.null(results))
+		results <- list(N=NULL, BF=NULL)
 	
-		BF <- try({
+	if (populate && is.null(results$N))
+		results$N = base::sum(counts.matrix)
+
+	if (populate && is.null(results$BF)) {
+	
+		results$BF <- try({
 		
 			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
 			bf1 <- exp(as.numeric(BF@bayesFactor$bf))
@@ -625,7 +880,7 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 				bf1 <- bf1 * prop.consistent / 0.5
 				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			
-			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
+			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed") {
 								
 				ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result[,7:10])
@@ -649,125 +904,532 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 				bf1 <- bf1 * prop.consistent / 0.5
 				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			}
-					
+			
+			list(BF=BF, BF10=bf1, LogBF10=lbf1)		
 		})
+		
+		new.state <- results
+		
+	} else {
+	
+		new.state <- state
+	}
+	
+	
+	row[["type[BF]"]] <- bfLabel
+	row[["type[N]"]] <- "N"	
 						
-		if (class(BF) == "try-error") {
+	if (is.null(results$BF)) {
+	
+		row[["value[BF]"]] <- "."
+		row[["value[N]"]]  <- "."
 
-			row[["value[BF]"]] <- .clean(NaN)
-			#row[["Group1[BF]"]] <- " "
-			#row[["Group2[BF]"]] <- " "
-			
-			if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$samplingModel=="hypergeometric") {
-			
-				row[["value[BF]"]] <- .clean(NaN)
-				#row[["Group1[BF]"]] <- " "
-				#row[["Group2[BF]"]] <- " "
-			
-			
-				sup <- .addFootnote(footnotes, "Hypergeometric contingency tables test restricted to  2 x 2 tables")
-				row[[".footnotes"]] <- list("value[BF]"=list(sup))	
-			
-			} else {
-			
-				error <- .extractErrorMessage(BF)
-			
-				sup   <- .addFootnote(footnotes, error)
-				row[[".footnotes"]] <- list("value[BF]"=list(sup))
-			
-			}
+	} else if (class(results$BF) == "try-error") {
+
+		row[["value[N]"]]  <- results$N
 		
-		} else if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$hypothesis=="groupOneGreater") {
-			
-			row[["value[BF]"]] <- .clean(NaN)
-			#row[["Group1[BF]"]] <- " "
-			#row[["Group2[BF]"]] <- " "
-			
-			sup <- .addFootnote(footnotes, "Proportion test restricted to 2 x 2 tables")
-			row[[".footnotes"]] <- list("value[BF]"=list(sup))
+		if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$samplingModel=="hypergeometric") {
 		
-		} else if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$hypothesis=="groupTwoGreater") {
-			
 			row[["value[BF]"]] <- .clean(NaN)
-			#row[["Group1[BF]"]] <- " "
-			#row[["Group2[BF]"]] <- " "
-			
-			sup <- .addFootnote(footnotes, "Proportion test restricted to 2 x 2 tables")
-			row[[".footnotes"]] <- list("value[BF]"=list(sup))
+		
+			sup <- .addFootnote(footnotes, "Hypergeometric contingency tables test restricted to 2 x 2 tables")
+			row[[".footnotes"]] <- list("value[BF]"=list(sup))	
 		
 		} else {
-		   # row[["Group1[BF]"]] <- rownames(counts.matrix)[1] "\u003E"
-		   # row[["Group2[BF]"]] <- rownames(counts.matrix)[2]
 		
+			error <- .extractErrorMessage(results$BF)
 		
-		
-			 if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
-				gp1 <- rownames(counts.matrix)[1]
-				gp2 <- rownames(counts.matrix)[2]
-				#row[["Group[BF]"]] <- paste(gp1, "\u2009\u003E\u2009", gp2)
-				message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", "<em>", gp2, "</em>", sep="")
-				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-
-			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
-				gp1 <- rownames(counts.matrix)[1]
-				gp2 <- rownames(counts.matrix)[2]
-				#row[["Group[BF]"]] <- paste(gp1, "\u2009\u003C\u2009", gp2)
-				message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
-				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)			
-
-			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
-				gp1 <- colnames(counts.matrix)[1]
-				gp2 <- colnames(counts.matrix)[2]
-				# row[["Group[BF]"]] <- paste(gp1, "\u2009\u003E\u2009", gp2)
-
-				message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", gp2, "</em>", sep="")
-				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+			sup   <- .addFootnote(footnotes, error)
+			row[[".footnotes"]] <- list("value[BF]"=list(sup))
+		}
 	
-			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
-				gp1 <- colnames(counts.matrix)[1]
-				gp2 <- colnames(counts.matrix)[2]
-				# row[["Group[BF]"]] <- paste(gp1, "\u2009\u003C\u2009", gp2)	
+	} else if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$hypothesis=="groupOneGreater") {
+		
+		row[["value[BF]"]] <- .clean(NaN)
+		row[["value[N]"]]  <- results$N
+		
+		sup <- .addFootnote(footnotes, "Proportion test restricted to 2 x 2 tables")
+		row[[".footnotes"]] <- list("value[BF]"=list(sup))
+	
+	} else if ( ! identical(dim(counts.matrix),as.integer(c(2,2))) && options$hypothesis=="groupTwoGreater") {
+		
+		row[["value[BF]"]] <- .clean(NaN)
+		row[["value[N]"]]  <- results$N
+		
+		sup <- .addFootnote(footnotes, "Proportion test restricted to 2 x 2 tables")
+		row[[".footnotes"]] <- list("value[BF]"=list(sup))
+	
+	} else {
 
-				message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
-				.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		 if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
+
+			gp1 <- rownames(counts.matrix)[1]
+			gp2 <- rownames(counts.matrix)[2]
+
+			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", "<em>", gp2, "</em>", sep="")
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+
+		} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
+
+			gp1 <- rownames(counts.matrix)[1]
+			gp2 <- rownames(counts.matrix)[2]
+
+			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)			
+
+		} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
+
+			gp1 <- colnames(counts.matrix)[1]
+			gp2 <- colnames(counts.matrix)[2]
+
+			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", gp2, "</em>", sep="")
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+
+		} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
+
+			gp1 <- colnames(counts.matrix)[1]
+			gp2 <- colnames(counts.matrix)[2]
+
+			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		}
+		
+		row[["value[N]"]] <- results$N
+		
+		if (options$bayesFactorType == "BF10") {
+		
+			row[["value[BF]"]] <- .clean(results$BF$BF10)
+		
+		} else if (options$bayesFactorType == "BF01") {
+		
+			row[["value[BF]"]] <- .clean(1/results$BF$BF10)
+			
+		} else if (options$bayesFactorType == "LogBF10") {
+		
+			row[["value[BF]"]] <- .clean(results$BF$LogBF10)
+		}
+	}
+
+
+	list(rows=list(row), state=new.state)
+}
+
+.contTablesCreateGroupMatrices <- function(dataset, rows, columns, groups, counts=NULL, rowOrderDescending=FALSE, columnOrderDescending=FALSE, populate) {
+
+	# this creates count matrices for each of the groups
+
+	matrices <- list()
+
+	if (is.null(groups)) {
+
+		if (populate == FALSE) {
+		
+			row.levels <- c(".", ". ")
+			col.levels <- c(".", ". ")
+			
+			if (rows != "")
+				row.levels <- base::levels(dataset[[ .v(rows) ]])
+			if (columns != "")
+				col.levels <- base::levels(dataset[[ .v(columns) ]])
+			
+			ss.matrix <- base::matrix(0, nrow=length(row.levels), ncol=length(col.levels), dimnames=list(row.levels, col.levels))
+
+		} else if (is.null(counts)) {
+
+			ss.dataset <- base::subset(dataset, select=.v(c(rows, columns)))
+			ss.table   <- base::table(ss.dataset)
+			ss.matrix  <- base::matrix(ss.table, nrow=dim(ss.table)[1], ncol=dim(ss.table)[2], dimnames=dimnames(ss.table))
+			
+		} else {
+		
+			ss.dataset <- base::subset(dataset, select=.v(c(rows, columns, counts)))
+			ss.matrix  <- base::tapply(ss.dataset[[ .v(counts) ]], list(ss.dataset[[ .v(rows) ]], ss.dataset[[ .v(columns) ]]), base::sum)
+			ss.matrix[is.na(ss.matrix)] <- 0
+		}
+		
+		if (rowOrderDescending) {
+			ss.matrix <- base::apply(ss.matrix, 2, base::rev)
+		} else {
+			ss.matrix <- ss.matrix
+		}
+		
+		if (columnOrderDescending) {
+			ss.matrix <- ss.matrix[ , ncol(ss.matrix):1]
+		} else {
+			ss.matrix <- ss.matrix
+		}
+		
+		ss.matrix[base::is.na(ss.matrix)] <- 0
+		
+		matrices[[1]] <- ss.matrix
+	
+	} else {
+		
+		for (group in groups) {
+		
+			group <- group[group != ""]
+
+			if (populate == FALSE) {
+			
+				ss.dataset <- dataset
+
+			} else if (length(group) == 0) {
+			
+				ss.dataset <- base::subset(dataset, select=.v(c(rows, columns, counts)))
+			
+			} else if (populate) {
+
+				ss.filter.string <- base::paste(.v(names(group)), "==\"", group, "\"", sep="", collapse="&")
+				ss.expression <- base::parse(text=ss.filter.string)
+				ss.dataset	  <- base::subset(dataset, select=.v(c(rows, columns, counts)), subset=eval(ss.expression))
 			}
 			
-			if (options$bayesFactorType == "BF10"){
-			
-				bf1 <- bf1
-			
-			} else if (options$bayesFactorType == "BF01"){
-			
-				bf1 <- 1/bf1
-				
-			} else if (options$bayesFactorType == "LogBF10") {
-			
-				bf1 <- lbf1
-			}			
+			if (populate == FALSE) {
 		
-			row[["value[BF]"]] <- .clean(bf1)
+				row.levels <- c(".", ". ")
+				col.levels <- c(".", ". ")
+			
+				if (rows != "")
+					row.levels <- base::levels(dataset[[ .v(rows) ]])
+				if (columns != "")
+					col.levels <- base::levels(dataset[[ .v(columns) ]])
+			
+				ss.matrix <- base::matrix(0, nrow=length(row.levels), ncol=length(col.levels), dimnames=list(row.levels, col.levels))
+
+			} else if (is.null(counts)) {
+
+				ss.table  <- base::table(ss.dataset)
+				ss.matrix <- base::matrix(ss.table, nrow=dim(ss.table)[1], ncol=dim(ss.table)[2], dimnames=dimnames(ss.table))
+			
+			} else {
+		
+				ss.matrix <- base::tapply(ss.dataset[[ .v(counts) ]], list(ss.dataset[[ .v(rows) ]], ss.dataset[[ .v(columns) ]]), base::sum)
+			}
+			
+			ss.matrix[base::is.na(ss.matrix)] <- 0
+			
+			if (rowOrderDescending) {
+				ss.matrix <- base::apply(ss.matrix, 2, base::rev)
+			} else {
+				ss.matrix <- ss.matrix
+			}
+			
+			if (columnOrderDescending) {
+				ss.matrix <- ss.matrix[ , ncol(ss.matrix):1]
+			} else {
+				ss.matrix <- ss.matrix
+			}
+
+			matrices[[length(matrices)+1]] <- ss.matrix
+		}
+	}
+	
+	matrices
+}
+
+.contTableBayesianCreateCountsRows <- function(var.name, counts.matrix, options, populate, group, last.rows) {
+
+	rows <- list()
+	row.expected <- list()
+	row.row.proportions <- list()
+	row.col.proportions <- list()
+	row.proportions <- list()
+	
+	if (populate) {
+	
+		expected.matrix <- try({
+
+			stats::chisq.test(counts.matrix, correct=FALSE)$expected
+		})
+
+		if (class(expected.matrix) == "try-error") {
+
+			expected.matrix <- counts.matrix
+			expected.matrix[,] <- "&nbsp;"
+		}
+		
+		row.proportions.matrix <- try({
+
+			base::prop.table(counts.matrix, 1)
+		})
+
+		if (class(row.proportions.matrix) == "try-error") {
+
+			row.proportions.matrix <- counts.matrix
+			row.proportions.matrix[,] <- "&nbsp;"
+		}
+		
+		col.proportions.matrix <- try({
+
+			base::prop.table(counts.matrix, 2)
+		})
+
+		if (class(col.proportions.matrix) == "try-error") {
+
+			col.proportions.matrix <- counts.matrix
+			col.proportions.matrix[,] <- "&nbsp;"
+		}
+		
+		proportions.matrix <- try({
+
+			base::prop.table(counts.matrix, margin = NULL)
+		})
+
+		if (class(proportions.matrix) == "try-error") {
+
+			proportions.matrix <- counts.matrix
+			proportions.matrix[,] <- "&nbsp;"
 		}
 		
 	} else {
 	
-		row[["value[BF]"]] <- "."
-	}	
+		expected.matrix <- counts.matrix
+		row.proportions.matrix <- counts.matrix
+		col.proportions.matrix <- counts.matrix
+		proportions.matrix <- counts.matrix
+	}
 
-	list(row)
-}
+	for (i in 1:dim(counts.matrix)[[1]]) {
+	
+		row <- list()
+		if (is.list(last.rows) && i <= length(last.rows))
+			row <- last.rows[[i]]
 
-.crosstabsBayesianCreateOddsRatioRows <- function(var.name, counts.matrix, footnotes, options, perform, group, status) { 
+		if (populate) {
 
+			counts <- as.list(counts.matrix[i,])
+			names(counts) <- base::paste(names(counts),"[counts]", sep="")
+			counts[["type[counts]"]] <- "Count"
+			counts[["total[counts]"]] <- base::sum(counts.matrix[i,])
+			
+			row[names(counts)] <- counts
+		}
+		
+		expected <- as.list(expected.matrix[i,])
+		expected.names <- paste(names(expected),"[expected]",  sep="")
+		expected.names <- c(expected.names, "type[expected]", "total[expected]")
+
+		if (options$countsExpected) {
+		
+			expected[[length(expected)+1]] <- "Expected Count"
+			
+			if (class(expected.matrix[1,1]) == "character") {
+				expected[[length(expected)+1]] <- ""
+			} else {
+				expected[[length(expected)+1]] <- base::sum(expected.matrix[i,])
+			}
+			
+			names(expected) <- paste(expected.names)
+			
+			row <- c(row, expected)
+		
+		} else {
+		
+			# remove the expected counts cells
+			row <- row[(names(row) %in% expected.names) == FALSE]
+		}
+		
+		if (options$percentagesRow) {
+		
+			row.row.proportions[["type[row.proportions]"]] <- " % within row"
+
+			row.proportions <- as.list(row.proportions.matrix[i,])
+			row.proportions <- .clean(row.proportions)
+			names(row.proportions) <- paste(names(row.proportions),"[row.proportions]",  sep="")
+			
+			if (class(row.proportions.matrix[1,1]) == "character") {
+				row.proportions[["total[row.proportions]"]] <- ""
+			} else {
+				row.proportions[["total[row.proportions]"]] <- .clean(base::sum(row.proportions.matrix[i,]))
+			}
+		
+			row.proportions <- c(row.row.proportions, row.proportions)
+			row <- c(row, row.proportions)
+		}
+		
+		if (options$percentagesColumn) {
+		
+			row.col.proportions[["type[col.proportions]"]] <- " % within column"
+
+			col.proportions <- as.list(col.proportions.matrix[i,])
+			col.proportions <- .clean(col.proportions)
+			names(col.proportions) <- paste(names(col.proportions),"[col.proportions]",  sep="")
+			
+			if (class(col.proportions.matrix[1,1]) == "character") {
+				col.proportions[["total[col.proportions]"]] <- ""
+			} else {
+				
+				row.sum <- base::margin.table(counts.matrix, 1)
+				row.prop <- as.list( base::prop.table(row.sum))
+				row.prop <- .clean(row.prop)
+				col.proportions[["total[col.proportions]"]] <- row.prop[[i]]
+			}
+		
+			col.proportions <- c(row.col.proportions, col.proportions)
+			row <- c(row, col.proportions)
+		}
+		
+		if (options$percentagesTotal) {
+		
+			row.proportions[["type[proportions]"]] <- " % of Total"
+
+			proportions <- as.list(proportions.matrix[i,])
+			proportions <- .clean(proportions)
+			names(proportions) <- paste(names(proportions),"[proportions]",  sep="")
+			
+			if (class(proportions.matrix[1,1]) == "character") {
+				proportions[["total[proportions]"]] <- ""
+			} else {
+				proportions[["total[proportions]"]] <- .clean(base::sum(proportions.matrix[i,]))
+			}
+		
+			proportions <- c(row.proportions, proportions)
+			row <- c(row, proportions)
+		}
+		
+		row[[var.name]] <- dimnames(counts.matrix)[[1]][i]
+		
+		for (layer in names(group)) {
+		
+			level <- group[[layer]]
+			
+			if (level == "") {
+
+				row[[layer]] <- "Total"
+							
+			} else {
+			
+				row[[layer]] <- level
+			}
+		}
+
+		if (i == 1 && options$countsExpected == FALSE && options$percentagesRow == FALSE && options$percentagesCol == FALSE && options$percentagesTotal == FALSE) {
+
+			row[[".isNewGroup"]] <- TRUE
+		}
+		
+		rows[[length(rows)+1]] <- row
+	}
+	
+	
 	row <- list()
-	samples <- NULL
-	CI <- NULL
-	medianSamples <- NULL
-	BF <- NULL
+	if (is.list(last.rows) && length(last.rows) > 0)
+		row <- last.rows[[length(last.rows)]]
+
+	if (populate) {
+
+		counts <- as.list(apply(counts.matrix, 2, base::sum))
+		names(counts) <- base::paste(names(counts),"[counts]", sep="")
+		counts[["type[counts]"]] <- "Count"
+		counts[["total[counts]"]] <- base::sum(counts.matrix)
+
+		row[names(counts)] <- counts
+		
+		if (options$countsExpected) {
+		
+			if (class(expected.matrix[1,1]) == "character") {
+				expected <- expected.matrix[1,]
+			} else {
+				expected <- apply(expected.matrix, 2, base::sum)
+			}
+
+			expected <- as.list(expected)
+			names(expected) <- paste(names(expected),"[expected]", sep="")
+
+			if (class(expected.matrix[1,1]) == "character") {
+				expected[["total[expected]"]] <- ""
+			} else {
+				expected[["total[expected]"]] <- base::sum(expected.matrix)
+			}
+			
+			expected <- c(row.expected, expected)
+			
+			row <- c(row,  expected)
+		}
+		
+		if (options$percentagesRow) {
+		
+			if (class(row.proportions.matrix[1,1]) == "character") {
+				row.proportions <- row.proportions.matrix[1,]
+			} else {
+				m <- base::margin.table(counts.matrix, 2)
+				rowproportion <- base::prop.table(m)
+			}
+
+			row.proportions <- as.list(rowproportion)
+			row.proportions <- .clean(row.proportions)
+			names(row.proportions) <- paste(names(row.proportions),"[row.proportions]", sep="")
+
+			if (class(row.proportions.matrix[1,1]) == "character") {
+				row.proportions[["total[row.proportions]"]] <- ""
+			} else {
+				row.proportions[["total[row.proportions]"]] <- .clean(base::sum(rowproportion))
+			}
+			
+			row.proportions <- c(row.row.proportions, row.proportions)
+			
+			row <- c(row,  row.proportions)
+		}
+		
+		if (options$percentagesColumn) {
+		
+			if (class(col.proportions.matrix[1,1]) == "character") {
+				col.proportions <- col.proportions.matrix[1,]
+			} else {
+				colproportion <- apply(col.proportions.matrix, 2, base::sum)
+			}
+
+			col.proportions <- as.list(colproportion)
+			col.proportions <- .clean(col.proportions)
+			names(col.proportions) <- paste(names(col.proportions),"[col.proportions]", sep="")
+
+			if (class(row.proportions.matrix[1,1]) == "character") {
+				col.proportions[["total[col.proportions]"]] <- ""
+			} else {
+				row.sum <- base::margin.table(counts.matrix, 1)
+				row.prop <- base::prop.table(row.sum) 
+				col.proportions[["total[col.proportions]"]] <- .clean(base::sum(row.prop))
+			}
+			
+			col.proportions <- c(row.col.proportions, col.proportions)
+			
+			row <- c(row,  col.proportions)
+		}
+		
+		
+		if (options$percentagesTotal) {
+		
+			if (class(proportions.matrix[1,1]) == "character") {
+				proportions <- proportions.matrix[1,]
+			} else {
+				proportions <- apply(proportions.matrix, 2, base::sum)
+			}
+
+			proportions <- as.list(proportions)
+			proportions <- .clean(proportions)
+			names(proportions) <- paste(names(proportions),"[proportions]", sep="")
+
+			if (class(proportions.matrix[1,1]) == "character") {
+				proportions[["total[proportions]"]] <- ""
+			} else {
+				proportions[["total[proportions]"]] <- .clean(base::sum(proportions.matrix))
+			}
+			
+			proportions <- c(row.proportions, proportions)
+			
+			row <- c(row,  proportions)
+		}
+		
+	}
+	
+	row[[var.name]] <- "Total"
+	if (options$countsExpected == FALSE && options$percentagesRow == FALSE && options$percentagesCol == FALSE && options$percentagesTotal == FALSE)
+		row[[".isNewGroup"]] <- TRUE
 	
 	for (layer in names(group)) {
 	
 		level <- group[[layer]]
-		
+
 		if (level == "") {
 
 			row[[layer]] <- "Total"
@@ -777,109 +1439,309 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 			row[[layer]] <- level
 		}
 	}
-	
-	if (options$oddsRatio) {
-	
-		row[["type[oddsRatio]"]] <- "Odds ratio"
 
-		if (perform == "run" && status$error == FALSE) {
-		
-			if ( ! identical(dim(counts.matrix), as.integer(c(2,2)))) {
+	rows[[length(rows)+1]] <- row
 
-					row[["value[oddsRatio]"]] <- .clean(NaN)
-					row[["low[oddsRatio]"]] <- ""
-					row[["up[oddsRatio]"]] <-  ""
-			
-					sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
-					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
-			
-				} else if ( options$samplingModel == "hypergeometric") {
-
-					row[["value[oddsRatio]"]] <- .clean(NaN)
-					row[["low[oddsRatio]"]] <- ""
-					row[["up[oddsRatio]"]] <-  ""
-			
-					sup <- .addFootnote(footnotes, "Odd ratio for this model not yet implemented")
-					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
-			
-			} else {
-
-				OR <- try({
-	
-					if(options$samplingModel == "poisson"){
-						sampleType <- "poisson"
-						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
-						lambda<-as.data.frame(ch.result)
-						odds.ratio<-(lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
-			
-					} else if (options$samplingModel == "jointMultinomial"){
-			
-						sampleType <- "jointMulti"
-						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
-						theta <- as.data.frame(ch.result)
-						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
-				
-					} else if (options$samplingModel == "independentMultinomialRowsFixed"){
-			
-						sampleType <- "indepMulti"
-						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
-						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
-						theta <- as.data.frame(ch.result[,7:10])
-						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
-				
-					} else if (options$samplingModel == "independentMultinomialColumnsFixed"){
-			
-						sampleType <- "indepMulti"
-						BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
-						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
-						theta <- as.data.frame(ch.result[,7:10])
-						odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])				
-					} 
-				})
-				
-				logOR<- log(odds.ratio)
-				samples <- logOR
-				z<-stats::density(logOR)
-				#x.mode <- z$x[i.mode <- which.max(z$y)]
-				
-				x.median <- stats::median(logOR)
-				medianSamples <- x.median
-				Sig <- options$oddsRatioCredibleIntervalInterval
-				alpha <- (1 - Sig)/2
-				x0 <- unname(stats::quantile(logOR, p = alpha))
-				x1 <- unname(stats::quantile(logOR, p = (1-alpha)))
-				
-				CI <- c(x0, x1)
-				
-				if (class(OR) == "try-error") {
-		
-					row[["value[oddsRatio]"]] <- .clean(NaN)
-		
-					error <- .extractErrorMessage(BF)
-		
-					sup   <- .addFootnote(footnotes, error)
-					row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
-		
-				} else  {
-		
-					row[["value[oddsRatio]"]] <- x.median
-					row[["low[oddsRatio]"]] <- x0
-					row[["up[oddsRatio]"]] <- x1
-				}
-			}
-		}
-		
-	} else {
-
-		row[["value[oddsRatio]"]] <- "."
-	}
-		
-	list(list(row), samples=samples, CI=CI, medianSamples=medianSamples)
+	rows
 }
 
-.plotPosterior.crosstabs <- function(samples, CI, medianSamples, BF, oneSided= FALSE, iterations= 10000, lwd= 2, cexPoints= 1.5,
+.contTablesBayesianCreateOddsRatioRows <- function(var.name, counts.matrix, footnotes, options, populate, group, state, state.options, status) {
+
+	row <- list()
+	
+	for (layer in names(group)) {
+	
+		level <- group[[layer]]
+		
+		if (level == "") {
+
+			row[[layer]] <- "Total"
+			
+		} else {
+		
+			row[[layer]] <- level
+		}
+	}
+	
+	row[["type[oddsRatio]"]] <- "Odds ratio"
+	
+	result <- NULL
+	complete <- TRUE
+	
+	if ( ! identical(dim(counts.matrix), as.integer(c(2,2)))) {
+
+		row[["value[oddsRatio]"]] <- .clean(NaN)
+		row[["low[oddsRatio]"]] <- ""
+		row[["up[oddsRatio]"]] <-  ""
+
+		sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
+		row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+
+	} else if ( options$samplingModel == "hypergeometric") {
+
+		row[["value[oddsRatio]"]] <- .clean(NaN)
+		row[["low[oddsRatio]"]] <- ""
+		row[["up[oddsRatio]"]] <-  ""
+
+		sup <- .addFootnote(footnotes, "Odd ratio for this model not yet implemented")
+		row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+			
+	} else if (is.null(state) && populate == FALSE) {
+	
+		row[["value[oddsRatio]"]] <- "."
+		complete <- FALSE
+	
+	} else {
+	
+		if (is.null(state) == FALSE) {
+		
+			result <- state
+			
+		} else if (populate) {
+
+			result <- try({
+
+				if (options$samplingModel == "poisson") {
+				
+					sampleType <- "poisson"
+					BF         <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
+					ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+					lambda     <- as.data.frame(ch.result)
+					odds.ratio.samples <- (lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
+	
+				} else if (options$samplingModel == "jointMultinomial") {
+	
+					sampleType <- "jointMulti"
+					BF         <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
+					ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+					theta      <- as.data.frame(ch.result)
+					odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+		
+				} else if (options$samplingModel == "independentMultinomialRowsFixed") {
+	
+					sampleType <- "indepMulti"
+					BF         <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
+					ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+					theta      <- as.data.frame(ch.result[,7:10])
+					odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+		
+				} else if (options$samplingModel == "independentMultinomialColumnsFixed") {
+	
+					sampleType <- "indepMulti"
+					BF         <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
+					ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+					theta      <- as.data.frame(ch.result[,7:10])
+					odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+					
+				} else {
+				
+					stop("wtf!")
+				}
+				
+				log.odds.ratio.samples <- log(odds.ratio.samples)
+				log.odds.ratio.median <- stats::median(log.odds.ratio.samples)
+				sig    <- options$oddsRatioCredibleIntervalInterval
+				alpha  <- (1 - sig) / 2
+				lower  <- unname(stats::quantile(log.odds.ratio.samples, p = alpha))
+				upper  <- unname(stats::quantile(log.odds.ratio.samples, p = (1-alpha)))
+				
+				list(log.odds.ratio.samples=log.odds.ratio.samples, BF=BF, median=log.odds.ratio.median, lower.ci=lower, upper.ci=upper)
+			})
+		}
+		
+		if (class(result) == "try-error") {
+
+			row[["value[oddsRatio]"]] <- .clean(NaN)
+
+			error <- .extractErrorMessage(result)
+
+			sup   <- .addFootnote(footnotes, error)
+			row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
+
+		} else  {
+
+			row[["value[oddsRatio]"]] <- result$median
+			row[["low[oddsRatio]"]]   <- result$lower
+			row[["up[oddsRatio]"]]    <- result$upper
+		}
+	
+	}
+	
+	res <- .contTablesBayesianPlotOddsRatio(var.name, counts.matrix, options, populate, group, result, state.options, status)
+
+	result$keep <- res$keep
+	complete    <- complete && res$complete
+	
+	list(rows=list(row), plot=res$plot, state=result, keep=res$keep, complete=complete)
+}
+
+
+.contTablesBayesianPlotOddsRatio <- function(var.name, counts.matrix, options, populate, group, result, state.options, status) {
+
+	if (options$plotPosteriorOddsRatio == FALSE || identical(dim(counts.matrix), as.integer(c(2,2))) == FALSE)
+		return(list(complete=TRUE))
+		
+	if (is.null(state.options) ||
+		base::identical(state.options$rows, options$rows) == FALSE ||
+		base::identical(state.options$columns, options$columns) == FALSE ||
+		base::identical(state.options$counts, options$counts) == FALSE ||
+		base::identical(state.options$layers, options$layers) == FALSE ||
+		base::identical(state.options$columnOrder, options$columnOrder) == FALSE ||
+		base::identical(state.options$rowOrder, options$rowOrder) == FALSE ||
+		base::identical(state.options$samplingModel, options$samplingModel) == FALSE ||
+		base::identical(state.options$hypothesis, options$hypothesis) == FALSE ||
+		base::identical(state.options$priorConcentration, options$priorConcentration) == FALSE) {
+		
+		result$keep <- NULL
+	}
+	
+	odds.ratio.plot  <- list()
+	keep <- NULL
+	
+    group[group == ""] <- "Total"
+    
+	
+	if (length(group) == 0) {
+	
+		odds.ratio.plot[["title"]] <- "Odds ratio"
+		
+	} else if (length(group) > 0) {
+		
+		layerLevels <- paste(names(group),"=", group)
+		layerLevels <- gsub(pattern = " = Total", layerLevels, replacement = "")
+
+		plotTitle <- paste(layerLevels, collapse="; ")
+		odds.ratio.plot[["title"]] <- plotTitle
+	}
+	
+	width  <- 530
+	height <- 400
+	
+	odds.ratio.plot[["width"]]  <- width
+	odds.ratio.plot[["height"]] <- height
+	
+	if (is.null(result) == FALSE && is.null(result$keep) == FALSE) {
+	
+		odds.ratio.plot[["data"]] <- result$keep
+		keep <- result$keep
+		
+		return(list(plot=odds.ratio.plot, keep=keep, complete=TRUE))
+	}
+	
+	if (populate) {
+	
+		if (is.null(result) || class(result) == "try-error") {
+	
+			message <- .extractErrorMessage(result)
+			status <- list(error=TRUE, errorMessage=message)
+		
+		} else if (options$samplingModel == "hypergeometric") {
+		
+			status <- list(error=TRUE, errorMessage="Odds ratio for this model not yet implemented")
+		
+		} else {
+		
+			BF10 <- BayesFactor::extractBF(result$BF)[[1]]
+		
+			if (is.na(BF10)) {
+		
+				status <- list(error=TRUE, errorMessage="The Bayes factor is undefined")
+			
+			} else if (is.infinite(1 / BF10)) {
+
+				status <- list(error=TRUE, errorMessage="The Bayes factor is too small")
+			
+			} else if (is.infinite(BF10)) {
+		
+				status <- list(error=TRUE, errorMessage="The Bayes factor is infinite")
+			}
+		}
+	}
+	
+	if (populate && status$error == FALSE) {
+	
+		image <- .beginSaveImage(width, height)
+
+		p <- try(silent=TRUE, expr={
+			
+			if (options$samplingModel=="independentMultinomialColumnsFixed" || options$samplingModel=="independentMultinomialRowsFixed") {
+			
+				if (options$hypothesis=="groupTwoGreater") {
+				
+					oneSided <- "left"
+			
+				} else if (options$hypothesis=="groupOneGreater") {
+				
+					oneSided <- "right"
+			
+				} else {
+				
+					oneSided <- FALSE
+				}
+				
+			} else {
+			
+				oneSided <- FALSE
+			}
+			
+			.plotPosterior.cont.tables(samples=result$log.odds.ratio.samples, CI=c(result$lower.ci, result$upper.ci), medianSamples=result$median, BF=BF10, selectedCI=options$oddsRatioCredibleIntervalInterval,
+					addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided=oneSided, options=options)
+		})
+		
+		plot.data <- .endSaveImage(image)
+
+		if (class(p) != "try-error") {
+
+			keep <- plot.data
+	
+		} else {
+			
+			errorMessage <- .extractErrorMessage(p)
+			
+			if (errorMessage == "not enough data") {
+			
+				errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+					
+			} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
+			
+				errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+			}
+			
+			status <- list(error=TRUE, errorMessage=errorMessage)
+		}	
+	
+	}
+
+	if (populate && status$error == FALSE) {
+	
+		odds.ratio.plot[["data"]] <- plot.data
+		odds.ratio.plot[["status"]] <- "complete"
+		
+		complete <- TRUE
+	
+	} else {
+	
+		image <- .beginSaveImage(width, height)
+		.plotPosterior.cont.tables(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
+		odds.ratio.plot[["data"]] <- .endSaveImage(image)
+
+		if (status$error) {
+		
+			message <- status$errorMessage
+			odds.ratio.plot[["error"]]  <- list(error="badData", errorMessage=paste("Plotting is not possible:", message))
+			odds.ratio.plot[["status"]] <- "complete"
+			complete <- TRUE
+			
+		} else {
+		
+			complete <- FALSE
+		}
+	}
+	
+	list(plot=odds.ratio.plot, keep=keep, complete=complete)
+}
+
+.plotPosterior.cont.tables <- function(samples, CI, medianSamples, BF, oneSided= FALSE, iterations= 10000, lwd= 2, cexPoints= 1.5,
  cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= FALSE, dontPlotData=FALSE, selectedCI= options$oddsRatioCredibleIntervalInterval, options) {
 	
 	if (addInformation) {
@@ -904,23 +1766,9 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 		return()
 	}
 
-	if (options$bayesFactorType == "BF10") {
-	
-		BF10 <- BF
-		BF01 <- 1 / BF10
-	
-	} else if (options$bayesFactorType == "BF01") {
-	
-		BF01 <- BF
-		BF10 <- 1 / BF01
-		
-	} else if (options$bayesFactorType == "LogBF10") {
-	
-		BF10 <- exp(BF)
-		BF01 <- 1 / BF10
-		
-	}
-	
+	BF10 <- BF
+	BF01 <- 1 / BF10
+
 	# fit denisty estimator
 	fit.posterior <-  logspline::logspline(samples)
 	
@@ -1075,7 +1923,7 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 		yy <- grconvertY(0.788 + offsetTopPart, "ndc", "user")
 		
 		
-		# make sure that colored area is centered		
+		# make sure that colored area is centered
 		radius <- 0.06 * diff(range(xticks))
 		A <- radius^2 * pi
 		alpha <- 2 / (BF01 + 1) * A / radius^2
@@ -1113,242 +1961,4 @@ ContingencyTablesBayesian <- function(dataset=NULL, options, perform="run", call
 	
 	mostPosterior <- mean(samples > mean(range(xticks)))
 }
-
-.crosstabsBayesianPlotOddsRatio <- function(var.name, counts.matrix, options, perform, group, status, medi, samples, CI, medianSamples, BF10, isTwoByTwo) { 
-
-
-	if (!options$plotPosteriorOddsRatio || !isTwoByTwo)
-		return()
-	
-	OddsRatioPlots <- list()
-	odds.ratio.plot <- list()
-	row <- list()
-	
-	for (layer in names(group)) {
-	
-		level <- group[[layer]]
-		
-		if (level == "") {
-
-			row[[layer]] <- "Total"
-			row[[".isNewGroup"]] <- TRUE
-						
-		} else {
-		
-			row[[layer]] <- level
-		}
-	}
-	
-    group[group==""] <- "Total"
-    #group[group==""] <- names(group)
-
-	if (options$plotPosteriorOddsRatio){
-	
-		
-		if (length(group) == 0) {
-		
-			odds.ratio.plot[["title"]] <- "Odds ratio"
-			
-		} else if (length(group) > 0) {
-			
-			layerLevels <- paste(names(group),"=", group)
-			layerLevels <- gsub(pattern = " = Total", layerLevels, replacement = "")
-			# print(paste(layerLevels, collapse="; "))
-			plotTitle <- paste(layerLevels, collapse="; ")
-			odds.ratio.plot[["title"]] <- plotTitle
-		}		
-		
-		odds.ratio.plot[["width"]]  <- 530
-		odds.ratio.plot[["height"]] <- 400
-		#odds.ratio.plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
-		
-		image <- .beginSaveImage(530, 400)
-		.plotPosterior.crosstabs(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
-		odds.ratio.plot[["data"]] <- .endSaveImage(image) 	
-		odds.ratio.plot[["status"]] <- "running"
-		
-		
-		if (status$error) {
-		
-			odds.ratio.plot[["error"]] <- list(error="badData", errorMessage=status$errorMessage)
-			odds.ratio.plot[["status"]] <- "complete"
-			OddsRatioPlots[[length(OddsRatioPlots)+1]] <- odds.ratio.plot
-			
-			return(OddsRatioPlots)
-			
-		} else if (status$ready == FALSE) {
-		
-			odds.ratio.plot[["status"]] <- "complete"
-			OddsRatioPlots[[length(OddsRatioPlots)+1]] <- odds.ratio.plot
-			
-			return(OddsRatioPlots)
-		}
-		
-		if (perform == "run" && status$error == FALSE) {
-		
-		
-			if (! identical(dim(counts.matrix),as.integer(c(2,2)))) {
-			
-			} else if ( options$samplingModel== "hypergeometric") {
-			
-				odds.ratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Odd ratio for this model not yet implemented")
-				odds.ratio.plot[["status"]] <- "complete"
-			} else {
-			
-				if(options$samplingModel== "poisson"){
-					sampleType <- "poisson"
-					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
-					lambda<-as.data.frame(ch.result)
-					odds.ratio<-(lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
-	
-				} else if (options$samplingModel== "jointMultinomial"){
-	
-					sampleType <- "jointMulti"
-					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
-					theta <- as.data.frame(ch.result)
-					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
-		
-				} else if (options$samplingModel== "independentMultinomialRowsFixed"){
-	
-					sampleType <- "indepMulti"
-					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
-					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
-					theta <- as.data.frame(ch.result[,7:10])
-					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
-		
-				} else if (options$samplingModel== "independentMultinomialColumnsFixed"){
-	
-					sampleType <- "indepMulti"
-					BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
-					ch.result <- BayesFactor::posterior(BF, iterations = 10000)
-					theta <- as.data.frame(ch.result[,7:10])
-					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
-		
-				}				
-								
-				# do this if no values are parsed to plotting function
-				if (is.null(samples) && is.null(CI) && is.null(medianSamples)) {
-				
-					# BF10 <- BayesFactor::extractBF(BF)[1, "bf"]
-					logOR <- log(odds.ratio)
-					samples <- logOR
-					medianSamples <- stats::median(logOR)					
-					CI <- options$oddsRatioCredibleIntervalInterval
-					Sig <- (1 - CI)/2
-					x0 <- unname(stats::quantile(logOR, p = Sig))
-					x1 <- unname(stats::quantile(logOR, p = (1-Sig)))
-					CI <- c(x0, x1)
-				}
-				
-				
-				#image <- .beginSaveImage(530, 400)
-				
-				# par(mar= c(5, 4.5, 8, 2) + 0.1, xpd=TRUE, cex.lab = 1.5, font.lab = 2, cex.axis = 1.3, las=1)
-				# digitsize <- 1.2
-				# y.mode <- z$y[i.mode]
-				# lim<-max(z$x)-min(z$x)
-				# fit<-logspline::logspline(logOR)
-				# ylim0 <- c(0,1.1*y.mode )
-				# xlow<-unname(stats::quantile(logOR, p =0.0001))
-				# xhigh<-unname(stats::quantile(logOR, p =0.9999))
-				# xticks <- pretty(c(xlow,xhigh), min.n= 3)
-				# 
-				# if (length(group) > 0) {
-				# 
-				# 	plot(1, type="n", ylim=ylim0, xlim=range(xticks),
-				# 		axes=F, 
-				# 		main =paste(names(group),"=", group), xlab="Log(odds ratio)", ylab="Posterior Density")
-				# 
-				# } else {
-                # 
-				# 	plot(1, type="n", ylim=ylim0, xlim=range(xticks),
-				# 		axes=F, 
-				# 		xlab="Log(odds ratio)", ylab="Posterior Density")
-				# }
-				# 		
-				# plot(function(x)logspline::dlogspline(x, fit), xlim = range(xticks), lwd=2, add=TRUE)
-				# axis(1, line=0.3, at=xticks, lab=xticks)
-				# axis(2)
-				# CI1<-CI*100
-				# CI1<-bquote(.(CI1))
-				# arrows(x0, 1.07*y.mode, x1, 1.07*y.mode, length = 0.05, angle = 90, code = 3, lwd=2)
-				# #text(-1.5, 0.8, expression(log('BFI'[10]) == 22.60),cex=digitsize)
-				# text(x.mode,y.mode+(y.mode/4), paste("Median =", round(x.median,digit=3)), cex=digitsize)
-				# text(x.mode, y.mode+(y.mode/7), paste(CI1,"%"), cex=digitsize)
-				# text(x0, y.mode, round(x0, digits = 3) , cex=digitsize)
-				# text(x1, y.mode, round(x1, digits = 3) , cex=digitsize)
-				
-				#.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval)
-				
-				
-				if (BF10 == "NaN") {
-				
-					odds.ratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is NaN")
-					
-				}
-				 else if (is.infinite(1 / BF10)) {
-				
-					odds.ratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: The Bayes factor is too small")
-					
-				} else if (is.infinite(BF10)) {
-				
-					odds.ratio.plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: BayesFactor is infinite")
-					
-				} else {
-				
-					p <- try(silent= FALSE, expr= {
-						
-							image <- .beginSaveImage(530, 400)
-							
-							if (options$samplingModel=="independentMultinomialColumnsFixed" || options$samplingModel=="independentMultinomialRowsFixed") {
-							
-								if (options$hypothesis=="groupTwoGreater") {
-									oneSided <- "left"
-							
-								} else if (options$hypothesis=="groupOneGreater") {
-									oneSided <- "right"
-							
-								} else {
-									oneSided <- FALSE
-								}
-								
-							} else {
-							
-								oneSided <- FALSE
-							}
-								
-							.plotPosterior.crosstabs(samples=samples, CI=CI, medianSamples=medianSamples, BF=BF10, selectedCI= options$oddsRatioCredibleIntervalInterval,
-									addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided= oneSided, options=options)
-						
-							odds.ratio.plot[["data"]] <- .endSaveImage(image)
-						}
-					)
-							
-					if (class(p) == "try-error") {
-						
-						errorMessage <- .extractErrorMessage(p)
-						
-						if (errorMessage == "not enough data") {
-						
-								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-						} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-						
-							errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-						}
-						
-						odds.ratio.plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-					}
-				}
-				
-				odds.ratio.plot[["status"]] <- "complete"				
-			}
-		}
-	}
-	
-	OddsRatioPlots[[length(OddsRatioPlots)+1]] <- odds.ratio.plot
-	OddsRatioPlots
-}
-	
 
