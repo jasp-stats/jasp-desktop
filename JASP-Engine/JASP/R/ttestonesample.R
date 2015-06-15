@@ -364,12 +364,6 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 .oneSampleTTestIntervalPlot <- function(dataset, options, perform) {
 
 	intervalPlotList <- list()
-		
-	base_breaks_x <- function(x){
-		b <- unique(as.numeric(x))
-		d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
-		list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
-	}
 
 	base_breaks_y <- function(x, options){
 	
@@ -426,8 +420,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 					axis.ticks.margin = grid::unit(1,"mm"),
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-				 base_breaks_y(summaryStat, options) +
-				 base_breaks_x(summaryStat$groupingVariable)
+				 base_breaks_y(summaryStat, options)
 						
 			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 			print(p)
