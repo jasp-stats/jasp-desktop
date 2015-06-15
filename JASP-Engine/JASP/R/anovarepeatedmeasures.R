@@ -1531,21 +1531,21 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 .rmAnovaProfilePlot <- function(dataset, options, perform, status, analysisName) {
 
 	profilePlotList <- list()
-
+	
 	if (perform == "run" && status$ready && !status$error && options$plotHorizontalAxis != "") {
-		
+				
 		dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
-		
+						
 		groupVars <- c(options$plotHorizontalAxis, options$plotSeparateLines, options$plotSeparatePlots)
 		groupVars <- groupVars[groupVars != ""]
 		groupVarsV <- .v(groupVars)
 		
 		betweenSubjectFactors <- groupVars[groupVars %in% options$betweenSubjectFactors]
 		repeatedMeasuresFactors <- groupVars[groupVars %in% sapply(options$repeatedMeasuresFactors,function(x)x$name)]
-		
+				
 		summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar="dependent", betweenvars=.v(betweenSubjectFactors), withinvars=.v(repeatedMeasuresFactors), 
 						idvar="subject", conf.interval=options$confidenceIntervalInterval, na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType)
-
+				
 		if ( options$plotHorizontalAxis != "" ) {
 			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotHorizontalAxis))] <- "plotHorizontalAxis"
 		}
@@ -1674,15 +1674,27 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	} else if (options$plotHorizontalAxis != "") {
 
 		if (options$plotSeparatePlots != "") {
-
-			nPlots <- length(levels(dataset[[ .v(options$plotSeparatePlots) ]]))
+			
+			repeatedMeasuresNames <- sapply(options$repeatedMeasuresFactors, function(x) x$name)
+			repeatedMeasuresLevels <- sapply(options$repeatedMeasuresFactors, function(x) x$levels)
+			
+			if (sum(options$plotSeparatePlots == repeatedMeasuresNames) > 0) {
+				
+				index <- which(options$plotSeparatePlots == repeatedMeasuresNames)
+				nPlots <- length(repeatedMeasuresLevels[[index]])
+			
+			} else {
+			
+				nPlots <- length(levels(dataset[[ .v(options$plotSeparatePlots) ]]))
+				
+			}			
 
 		} else {
 
 			nPlots <- 1
 
 		}
-
+		
 		for (i in 1:nPlots) {
 
 			profilePlot <- list()
