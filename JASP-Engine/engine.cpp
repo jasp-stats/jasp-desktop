@@ -268,6 +268,12 @@ string Engine::callback(const string &results)
 	if (_status == aborted || _status == toInit || _status == toRun)
 		return "{ \"status\" : \"aborted\" }"; // abort
 
+	if (_status == changed && _currentAnalysisKnowsAboutChange)
+	{
+		_status = running;
+		_currentAnalysisKnowsAboutChange = false;
+	}
+
 	if (results != "null")
 	{
 		_analysisResultsString = results;
