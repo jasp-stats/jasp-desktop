@@ -13,6 +13,43 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 	if (is.null (base::options ()$BFfactorsMax))
 		base::options (BFfactorsMax = 5)
 
+	.callbackBFpackage <- function(...) {
+		response <- .callbackBayesianLinearModels ()
+		if(response$status == "ok")
+			return(as.integer(0))
+		return(as.integer(1))
+	}
+
+	.callbackBayesianLinearModels <- function (results = NULL) {
+		response <- callback(results)
+		print(response)
+		if (response$status == "changed") {
+			new.options <- response$options
+		
+			bs.factors <- new.options$betweenSubjectFactors
+			rm.factors <- new.options$repeatedMeasuresFactors
+			new.options$fixedFactors <- c (rm.factors, bs.factors)
+
+			new.options$modelTerms [[length (new.options$modelTerms) + 1]] <- 
+				list (components = "subject", isNuisance = TRUE)
+			new.options$dependent <- "dependent"
+			new.options$randomFactors <- "subject"
+
+			response$options <- new.options
+
+			change <- .diff (options, response$options)
+
+			if (change$modelTerms || 
+				change$betweenSubjectFactors || 
+				change$covariates || 
+				change$repeatedMeasuresFactors ||
+				change$repeatedMeasuresCells)
+				return (response)
+			response$status <- "ok"
+		}
+		return (response)
+	}
+
 ## META
 	results <- list ()
 	meta <- list ()
@@ -30,7 +67,11 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 	state <- .retrieveState ()
 	if ( ! is.null (state)) {
 		change <- .diff (options, state$options)
-		if ( ! base::identical(change, FALSE) && (change$dependent || change$modelTerms)) {
+		if ( ! base::identical(change, FALSE) && (change$modelTerms || 
+				change$betweenSubjectFactors || 
+				change$covariates || 
+				change$repeatedMeasuresFactors ||
+				change$repeatedMeasuresCells)) {
 			state <- NULL
 		} else {
 			perform <- "run"
@@ -42,7 +83,7 @@ if (is.null(state)) {
 	status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
 ## MODEL
-	model.object <- .theBayesianLinearModels (dataset, options, perform, status, callback, results = results)
+	model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, 			.callbackBFpackage, results = results)
 	
 	if (is.null(model.object)) # analysis cancelled by the callback
 		return()
