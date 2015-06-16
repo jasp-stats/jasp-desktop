@@ -69,7 +69,7 @@ $.widget("jasp.image", {
 
 		if (this.options.data) {
 
-			html += 'background-image : url(\'' + this.options.data + '\') ;'
+			html += 'background-image : url(\'' + this.options.data + '?x=' + Math.random() + '\') ;'
 			html += 'background-size : 100% 100% ;'
 		}
 		
