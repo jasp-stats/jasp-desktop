@@ -4,13 +4,28 @@ run <- function(name, options.as.json.string, perform="run") {
 	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE, encoding="UTF-8")
 	analysis <- eval(parse(text=name))
 	
+	env <- new.env()
+	env$callback <- callback
+	env$time <- Sys.time()
+	env$i <- 1
+
 	if (perform == "init") {
 	
 		the.callback <- function(...) list(status="ok")
 		
 	} else {
 	
-		the.callback <- callback
+		the.callback <- function(...) {
+			
+			t <- Sys.time()
+			
+			cat(paste("Callback", env$i, ":", t - env$time, "\n"))
+			
+			env$time <- t
+			env$i <- env$i + 1
+			
+			return(env$callback(...))
+		}
 	}
 	
 	results <- try (silent = TRUE, expr = {
