@@ -1606,7 +1606,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		} else {
 			
 			formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+"), "-1"))
-			fits[[candidate.variables[i]]] <- try(lm(formula, data=data, weights = weights), silent=TRUE)
+			fits[[i]] <- try(lm(formula, data=data, weights = weights), silent=TRUE)
 			fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 1]^2
 			pValues[i] <- summary(fits[[i]])$coefficients[ ,"Pr(>|t|)"][length(variables.in.model) + 1]
 		}
