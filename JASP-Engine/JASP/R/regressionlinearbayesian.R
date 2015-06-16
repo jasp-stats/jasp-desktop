@@ -13,6 +13,24 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 	if (is.null (base::options ()$BFfactorsMax))
 		base::options (BFfactorsMax = 5)
 
+	.callbackBFpackage <- function(...) {
+		response <- .callbackBayesianLinearModels ()
+		if(response$status == "ok")
+			return(as.integer(0))
+		return(as.integer(1))
+	}
+
+	.callbackBayesianLinearModels <- function (results = NULL) {
+		response <- callback(results)
+		if (response$status == "changed") {
+			change <- .diff (options, response$options)
+			if (change$modelTerms || change$dependent)
+				return (response)
+			response$status <- "ok"
+		}
+		return (response)
+	}
+
 	state <- .retrieveState ()
 	if ( ! is.null (state)) {
 		change <- .diff (options, state$options)
@@ -39,7 +57,7 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 		status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
 ## MODEL
-		model.object <- .theBayesianLinearModels (dataset, options, perform, status, callback, results = results)
+		model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, 			.callbackBFpackage, results = results)
 	
 		if (is.null(model.object))
 			return()

@@ -181,7 +181,7 @@
 	return(results)
 }
 
-.theBayesianLinearModels <- function (dataset = NULL, options = list (), perform = "init", status = list (), callback, results = list()) {
+.theBayesianLinearModels <- function (dataset = NULL, options = list (), perform = "init", status = list (), .callbackBayesianLinearModels, .callbackBFpackage, results = list()) {
 	if (!status$ready && is.null (status$error.message))
 		return (list (model =  list (models = NULL, effects = NULL), status = status))
 
@@ -205,6 +205,15 @@
 	}
 	model.formula <- formula (model.formula)
 
+	#Intermediate Callback
+	response <- .callbackBayesianLinearModels ()
+	if (response$status != "ok") {
+		return ()
+	} else {
+		if ( ! is.null (response$options))
+			options <- response$options
+	}
+
 	#Make a list of models to compare
 	model.list <- try (BayesFactor::enumerateGeneralModels (model.formula, 
 		whichModels = "withmain", neverExclude = paste ("^", neverExclude, "$", sep = "")), 
@@ -219,8 +228,14 @@
 		model.list <- list (model.formula)
 	}
 
-	if ( ! .shouldContinue(callback()))
-		return()
+	#Intermediate Callback
+	response <- .callbackBayesianLinearModels ()
+	if (response$status != "ok") {
+		return ()
+	} else {
+		if ( ! is.null (response$options))
+			options <- response$options
+	}
 
 	#Run Null model
 	null.model <- list ()
@@ -238,7 +253,7 @@
 		if (perform == "run" && status$ready) {
 			bf <- try (BayesFactor::lmBF (null.formula,
 				data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-				progress = FALSE, posterior = FALSE))
+				progress = FALSE, posterior = FALSE, callback = .callbackBFpackage ()))
 			null.model$bf <- bf
 			if (class (bf) == "try-error") {
 				status$ready <- FALSE
@@ -272,8 +287,6 @@
 
 		model.object <- list()
 		for (m in 1:no.models) {
-			if ( ! .shouldContinue(callback()))
-				return()
 			model.object [[m]] <- list ("ready" = TRUE)
 			model.effects <- base::strsplit (x = as.character (model.list [[m]]) [[3]], 
 				split = "+", fixed = TRUE) [[1]]
@@ -309,29 +322,25 @@
 			model.object [[m]]$ready <- FALSE #to ensure that intermediate results can be called
 		}
 		
-		#Intermediate Callback
-		response <- callback()
-		if (response$status == "changed") {
-			changes <- .diff (options, response$options)
-			if (changes$modelTerms || changes$dependent)
-				return ()
-			options <- response$options
-		}
-		
 		#Create empty tables
 		results <- .updateResultsBayesianLinearModels (results, model.object, 
 			effects.matrix, interactions.matrix, neverExclude, null.model, options, status)
 
-		callback (results) 
-		
+		#Intermediate Callback
+		response <- .callbackBayesianLinearModels (results)
+		if (response$status != "ok") {
+			return ()
+		} else {
+			if ( ! is.null (response$options))
+				options <- response$options
+		}
+
 		#Now compute Bayes Factors for each model in the list, and populate the tables accordingly
 		for(m in 1:no.models) {
-			if ( ! .shouldContinue(callback()))
-				return()
 			if (perform == "run" && status$ready) {
 				bf <- try (BayesFactor::lmBF (model.list [[m]],
 					data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-					progress = FALSE, posterior = FALSE))
+					progress = FALSE, posterior = FALSE, callback = .callbackBFpackage ()))
 				model.object [[m]]$bf <- bf
 
 				if (class (bf) == "try-error") {
@@ -345,17 +354,18 @@
 				}
 			}
 			
-			#Intermediate Callback
-			response <- callback()
-			if (response$status == "changed") {
-				changes <- .diff (options, response$options)
-				if (changes$modelTerms || changes$dependent)
-					return ()
-				options <- response$options
-			}
+			#Create empty tables
 			results <- .updateResultsBayesianLinearModels (results, model.object, 
 				effects.matrix, interactions.matrix, neverExclude, null.model, options, status)
-			callback (results)
+
+			#Intermediate Callback
+			response <- .callbackBayesianLinearModels (results)
+			if (response$status != "ok") {
+				return ()
+			} else {
+				if ( ! is.null (response$options))
+					options <- response$options
+			}
 		}
 #		if (options$posteriorEstimates) {
 #			complexity <- rowSums (effects)
