@@ -21,7 +21,7 @@
 				},
 				{
 					"name": "method",
-					"options": [ "Enter" , "Backward" ],
+					"options": [ "Enter" , "Backward" , "Forward" ],
 					"default": "Enter",
 					"type": "List"
 				}
