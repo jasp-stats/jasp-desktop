@@ -1629,7 +1629,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 		if (minimumPvalue < options$steppingMethodCriteriaPEntry) {
 			
-			minimumPvalueVariable <- candidate.variables[which.min(pValues)]	
+			minimumPvalueVariable <- candidate.variables[which.min(pValues)]
 			variables.in.model <- c(variables.in.model, minimumPvalueVariable)
 			candidate.variables <- candidate.variables[candidate.variables != minimumPvalueVariable]
 		}
@@ -1756,7 +1756,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	new.independent.variables <- independent.variables
 	old.independent.variables <- ""
 	
-	while ( ! identical(old.independent.variables, new.independent.variables) && length(new.independent.variables > 0)) {
+	while ( ! identical(old.independent.variables, new.independent.variables) && length(new.independent.variables) > 0) {
 		
 		old.independent.variables <- .v(lm.model[[ length(lm.model) ]]$variables)
 		lm.model[[ length(lm.model) + 1 ]] <- .removeVariable(dependent.variable, old.independent.variables, data, options, weights)
@@ -1764,7 +1764,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 	}
 	
-	if (length(new.independent.variables > 0))
+	if (length(new.independent.variables) > 0)
 		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
 	
 	return(lm.model)
@@ -1777,7 +1777,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	variables.in.model <- NULL
 	lm.model <- list()
 	
-	while ( ! identical(old.candidate.variables, candidate.variables) && length(candidate.variables > 0)) {
+	while ( ! identical(old.candidate.variables, candidate.variables) && length(candidate.variables) > 0) {
 		
 		old.candidate.variables <- candidate.variables
 		out <- .includeVariable(dependent.variable, old.candidate.variables, data, options, weights, variables.in.model)
@@ -1788,7 +1788,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 	}
 	
-	if (length(candidate.variables > 0))
+	if (length(candidate.variables) > 0)
 		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
 	
 	return(lm.model)
