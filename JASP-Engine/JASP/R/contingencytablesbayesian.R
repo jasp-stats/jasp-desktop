@@ -37,10 +37,10 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	results[["title"]] <- "Bayesian Contingency Tables"
 	
-	### CROSS TABS
+	### CONTINGENCY TABLES
 
 	cont.tables <- list()
-	plots     <- list()
+	plots       <- list()
 	
 	rows    <- as.vector(options$rows,    "character")
 	columns <- as.vector(options$columns, "character")
@@ -211,6 +211,10 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	if ("odds.ratio" %in% names(state))
 		odds.ratio.state <- state$odds.ratio
 	
+	plots.state <- NULL
+	if ("plots.state" %in% names(state))
+		plots.state <- state$plots.state
+	
 	old.options <- NULL
 	if ("options" %in% names(state))
 		old.options <- state$options
@@ -235,18 +239,25 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	res <- .contTablesBayesianCreateTestsTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, tests.state, old.options, status)
 
 	tables[[length(tables)+1]] <- res$table
+	bf.results      <- res$state
 	new.state$tests <- res$state
 	status <- res$status
 	complete <- complete && res$complete
 	
 		
-	res <- .contTablesBayesianCreateOddsRatioTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, odds.ratio.state, old.options, status)
+	res <- .contTablesBayesianCreateOddsRatioTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, bf.results, odds.ratio.state, old.options, status)
 
 	tables[[length(tables)+1]] <- res$table
-	plots <- c(plots, res$plots)
-	keep  <- res$keep
-	
+	odds.ratio.results   <- res$state
 	new.state$odds.ratio <- res$state
+	complete <- complete && res$complete
+	
+	
+	res <- .contTablesBayesianCreateOddsRatioPlots(dataset, analysis, group.matrices, groups, options, populate, odds.ratio.results, bf.results, plots.state, old.options, status)
+	
+	plots <- c(plots, res$plots)
+	new.state$plots.state <- res$state
+	keep     <- res$keep
 	complete <- complete && res$complete
 	
 	new.state$options <- options
@@ -256,6 +267,238 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	list(tables=tables, plots=plots, keep=keep, state=new.state, complete=complete)
 }
+
+.contTablesBayesianCreateOddsRatioPlots <- function(dataset, analysis, counts.matrices, groups, options, populate, odds.ratio.results, bf.results, state, state.options, status) {
+
+	if (options$plotPosteriorOddsRatio == FALSE || identical(dim(counts.matrices[[1]]), as.integer(c(2,2))) == FALSE)
+		return(list(complete=TRUE))
+
+	if (is.null(state.options) ||
+		base::identical(state.options$rows, options$rows) == FALSE ||
+		base::identical(state.options$columns, options$columns) == FALSE ||
+		base::identical(state.options$counts, options$counts) == FALSE ||
+		base::identical(state.options$layers, options$layers) == FALSE ||
+		base::identical(state.options$columnOrder, options$columnOrder) == FALSE ||
+		base::identical(state.options$rowOrder, options$rowOrder) == FALSE ||
+		base::identical(state.options$samplingModel, options$samplingModel) == FALSE ||
+		base::identical(state.options$hypothesis, options$hypothesis) == FALSE ||
+		base::identical(state.options$oddsRatioCredibleIntervalInterval, options$oddsRatioCredibleIntervalInterval) == FALSE ||
+		base::identical(state.options$plotPosteriorOddsRatioAdditionalInfo, options$plotPosteriorOddsRatioAdditionalInfo) == FALSE ||
+		base::identical(state.options$priorConcentration, options$priorConcentration) == FALSE) {
+		
+		state <- NULL
+	}
+
+	plots <- list()
+	keep  <- list()
+	new.state <- list()
+	
+	complete <- TRUE
+	
+	for (i in 1:length(counts.matrices)) {
+	
+		counts.matrix <- counts.matrices[[i]]
+		
+		if ( ! is.null(groups)) {
+		
+			group <- groups[[i]]
+			
+		} else {
+		
+			group <- NULL
+		}
+		
+		plot.state <- NULL
+		if (i <= length(state))
+			plot.state <- state[[i]]
+
+		odds.ratio.result <- NULL
+		if (i <= length(odds.ratio.results))
+			odds.ratio.result <- odds.ratio.results[[i]]
+		
+		bf.result <- NULL
+		if (i <= length(bf.results))
+			bf.result <- bf.results[[i]]
+
+		res <- .contTablesBayesianCreateOddsRatioPlot(analysis$rows, counts.matrix, options, populate, group, odds.ratio.result, bf.result, plot.state, state.options, status)
+
+		complete <- complete && res$complete
+		
+		plots[[length(plots)+1]] <- res$plot
+		
+		keep <- c(keep, res$keep)
+		
+		new.state[[length(new.state)+1]] <- res$state
+	}
+	
+	complete <- complete && (populate || is.null(state) == FALSE || length(options$rows) == 0 || length(options$columns) == 0)
+
+	list(plots=plots, keep=keep, state=new.state, complete=complete)
+}
+
+.contTablesBayesianCreateOddsRatioPlot <- function(var.name, counts.matrix, options, populate, group, odds.ratio.result, bf.result, plot.state, state.options, status) {
+	
+	odds.ratio.plot  <- list()
+	image <- NULL
+	
+    group[group == ""] <- "Total"
+    
+	
+	if (length(group) == 0) {
+	
+		odds.ratio.plot[["title"]] <- "Odds ratio"
+		
+	} else if (length(group) > 0) {
+		
+		layer.levels <- paste(names(group),"=", group)
+		layer.levels <- gsub(pattern = " = Total", layer.levels, replacement = "")
+
+		plot.title <- paste(layer.levels, collapse="; ")
+		odds.ratio.plot[["title"]] <- plot.title
+	}
+	
+	
+	width  <- 530
+	height <- 400
+	
+	odds.ratio.plot[["width"]]  <- width
+	odds.ratio.plot[["height"]] <- height
+	
+
+	if (is.null(plot.state) == FALSE) {
+	
+		odds.ratio.plot[["data"]] <- plot.state$keep
+		
+		if ("status" %in% plot.state && plot.state$status$error)
+			odds.ratio.plot[["error"]] <- list(errorType="badData", errorMessage=plot.state$status$errorMessage)
+		
+		return(list(plot=odds.ratio.plot, state=plot.state, keep=plot.state$keep, complete=TRUE))
+	}
+	
+	if (populate && status$error == FALSE) {
+	
+		if (is.null(bf.result$BF) == FALSE && inherits(bf.result$BF, "try-error")) {
+	
+			message <- .extractErrorMessage(bf.result$BF)
+			status <- list(error=TRUE, errorMessage=message)
+		
+		} else if (options$samplingModel == "hypergeometric") {
+		
+			status <- list(error=TRUE, errorMessage="Odds ratio for this model not yet implemented")
+		
+		} else {
+		
+			BF10 <- bf.result$BF$BF10
+		
+			if (is.na(BF10)) {
+		
+				status <- list(error=TRUE, errorMessage="The Bayes factor is undefined")
+			
+			} else if (is.infinite(1 / BF10)) {
+
+				status <- list(error=TRUE, errorMessage="The Bayes factor is too small")
+			
+			} else if (is.infinite(BF10)) {
+		
+				status <- list(error=TRUE, errorMessage="The Bayes factor is infinite")
+			}
+		}
+	}
+	
+	if (populate && status$error == FALSE) {
+	
+		image <- .beginSaveImage(width, height)
+
+		p <- try(silent=TRUE, expr={
+			
+			if (options$samplingModel == "poisson"
+				|| options$samplingModel == "jointMultinomial"
+				|| options$samplingModel=="independentMultinomialColumnsFixed"
+				|| options$samplingModel=="independentMultinomialRowsFixed") {
+			
+				if (options$hypothesis=="groupTwoGreater") {
+				
+					oneSided <- "left"
+			
+				} else if (options$hypothesis=="groupOneGreater") {
+				
+					oneSided <- "right"
+			
+				} else {
+				
+					oneSided <- FALSE
+				}
+				
+			} else {
+			
+				oneSided <- FALSE
+			}
+			
+			.contTablesBayesianPlotPosterior(
+				samples = odds.ratio.result$log.odds.ratio.samples,
+				CI = c(odds.ratio.result$lower.ci, odds.ratio.result$upper.ci),
+				medianSamples = odds.ratio.result$median,
+				BF = bf.result$BF$BF10,
+				selectedCI = options$oddsRatioCredibleIntervalInterval,
+				addInformation = options$plotPosteriorOddsRatioAdditionalInfo, oneSided=oneSided, options=options)
+		})
+		
+		plot <- .endSaveImage(image)
+
+		if (inherits(p, "try-error")) {
+			
+			errorMessage <- .extractErrorMessage(p)
+			
+			if (errorMessage == "not enough data") {
+			
+				errorMessage <- "The Bayes factor is too small"
+					
+			} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
+			
+				errorMessage <- "The Bayes factor is too small"
+			}
+			
+			status <- list(error=TRUE, errorMessage=errorMessage)
+		}
+	
+	}
+
+	if (populate && status$error == FALSE) {
+	
+		odds.ratio.plot[["data"]] <- plot
+		odds.ratio.plot[["status"]] <- "complete"
+		
+		new.plot.state <- list(keep=plot)
+		
+		complete <- TRUE
+	
+	} else {
+	
+		image <- .beginSaveImage(width, height)
+		.contTablesBayesianPlotPosterior(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
+		plot <- .endSaveImage(image)
+		
+		odds.ratio.plot[["data"]] <- plot
+
+		if (status$error) {
+		
+			new.plot.state <- list(keep=plot, status=status)
+
+			message <- status$errorMessage
+			odds.ratio.plot[["error"]]  <- list(error="badData", errorMessage=paste("Plotting is not possible:", message))
+			odds.ratio.plot[["status"]] <- "complete"
+			complete <- TRUE
+			
+		} else {
+		
+			new.plot.state <- NULL
+			complete <- FALSE
+		}
+	}
+	
+	list(plot=odds.ratio.plot, state=new.plot.state, keep=plot, complete=complete)
+}
+
 
 .contTablesBayesianCreateCountsTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, state, state.options, status) {
 
@@ -415,7 +658,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	for (i in 1:length(counts.matrices)) {
 	
-		count.matrix <- counts.matrices[[i]]
+		counts.matrix <- counts.matrices[[i]]
 		
 		if ( ! is.null(groups)) {
 		
@@ -430,7 +673,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		if (is.null(state) == FALSE && i <= length(state$rows))
 			rows.state <- state$rows[[i]]
 	
-		next.rows <- .contTableBayesianCreateCountsRows(analysis$rows, count.matrix, options, populate, group, rows.state)
+		next.rows <- .contTableBayesianCreateCountsRows(analysis$rows, counts.matrix, options, populate, group, rows.state)
 		
 		counts.rows <- c(counts.rows, next.rows)
 		new.state$rows[[length(new.state$rows)+1]] <- next.rows
@@ -559,7 +802,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	for (i in 1:length(counts.matrices)) {
 	
-		count.matrix <- counts.matrices[[i]]
+		counts.matrix <- counts.matrices[[i]]
 		
 		if ( ! is.null(groups)) {
 		
@@ -574,7 +817,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		if (i <= length(state))
 			rows.state <- state[[i]]
 		
-		res <- .contTablesBayesianCreateTestsRows(analysis$rows, count.matrix, footnotes, options, populate, group, rows.state)
+		res <- .contTablesBayesianCreateTestsRows(analysis$rows, counts.matrix, footnotes, options, populate, group, rows.state)
 
 		rows <- c(rows, res$rows)
 		new.state[[length(new.state)+1]] <- res$state
@@ -599,11 +842,10 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	list(table=table, state=new.state, complete=complete, status=status)
 }
 
-
-.contTablesBayesianCreateOddsRatioTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, state, state.options, status) {
+.contTablesBayesianCreateOddsRatioTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, bf.results, state, state.options, status) {
 
 	if (options$oddsRatio == FALSE && options$plotPosteriorOddsRatio == FALSE)
-		return(list(table=NULL, plots=NULL, state=NULL, complete=TRUE))
+		return(list(table=NULL, state=NULL, complete=TRUE))
 
 	if (is.null(state.options) ||
 		base::identical(state.options$rows, options$rows) == FALSE ||
@@ -648,8 +890,6 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 
 	rows  <- list()
-	plots <- list()
-	keep  <- list()
 	new.state <- list()
 	footnotes <- .newFootnotes()
 	
@@ -658,7 +898,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	for (i in 1:length(counts.matrices)) {
 	
-		count.matrix <- counts.matrices[[i]]
+		counts.matrix <- counts.matrices[[i]]
 		
 		if ( ! is.null(groups)) {
 		
@@ -672,11 +912,14 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		rows.state <- NULL
 		if (i <= length(state))
 			rows.state <- state[[i]]
+		
+		bf.result <- NULL
+		if (i <= length(bf.results))
+			bf.result <- bf.results[[i]]
 
-		res <- .contTablesBayesianCreateOddsRatioRows(analysis$rows, count.matrix, footnotes, options, populate, group, rows.state, state.options, status)
+		res <- .contTablesBayesianCreateOddsRatioRows(analysis$rows, counts.matrix, footnotes, options, populate, group, bf.result, rows.state, state.options, status)
 
 		next.rows <- res$rows
-		next.plot <- res$plot
 		complete <- complete && res$complete
 
 		if (next.is.new.group) {
@@ -691,9 +934,6 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		}
 		
 		rows <- c(rows, next.rows)
-		plots[[length(plots)+1]] <- next.plot
-		
-		keep <- c(keep, res$keep)
 		
 		new.state[[length(new.state)+1]] <- res$state
 	}
@@ -715,7 +955,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	if (options$oddsRatio == FALSE)
 		table <- NULL
 
-	list(table=table, plots=plots, keep=keep, state=new.state, complete=complete, status=status)
+	list(table=table, state=new.state, complete=complete, status=status)
 }
 
 .contTablesBayesianCreateTestsRows <- function(var.name, counts.matrix, footnotes, options, populate, group, state) {
@@ -723,7 +963,6 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	row <- list()
 	
 	new.state <- list()
-	
 	
 	for (layer in names(group)) {
 	
@@ -982,7 +1221,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 				
 				ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result[,7:10])
-				prop.consistent <- mean(theta[,3] > theta[,1]) 
+				prop.consistent <- mean(theta[,3] > theta[,1])
 				bf1 <- bf1 * prop.consistent / 0.5
 				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 				
@@ -1014,7 +1253,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		row[["value[BF]"]] <- "."
 		row[["value[N]"]]  <- "."
 
-	} else if (class(results$BF) == "try-error") {
+	} else if (inherits(results$BF, "try-error")) {
 
 		row[["value[N]"]]  <- results$N
 		
@@ -1264,7 +1503,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			stats::chisq.test(counts.matrix, correct=FALSE)$expected
 		})
 
-		if (class(expected.matrix) == "try-error") {
+		if (inherits(expected.matrix, "try-error")) {
 
 			expected.matrix <- counts.matrix
 			expected.matrix[,] <- "&nbsp;"
@@ -1275,7 +1514,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			base::prop.table(counts.matrix, 1)
 		})
 
-		if (class(row.proportions.matrix) == "try-error") {
+		if (inherits(row.proportions.matrix, "try-error")) {
 
 			row.proportions.matrix <- counts.matrix
 			row.proportions.matrix[,] <- "&nbsp;"
@@ -1286,7 +1525,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			base::prop.table(counts.matrix, 2)
 		})
 
-		if (class(col.proportions.matrix) == "try-error") {
+		if (inherits(col.proportions.matrix, "try-error")) {
 
 			col.proportions.matrix <- counts.matrix
 			col.proportions.matrix[,] <- "&nbsp;"
@@ -1297,7 +1536,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			base::prop.table(counts.matrix, margin = NULL)
 		})
 
-		if (class(proportions.matrix) == "try-error") {
+		if (inherits(proportions.matrix, "try-error")) {
 
 			proportions.matrix <- counts.matrix
 			proportions.matrix[,] <- "&nbsp;"
@@ -1567,7 +1806,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	rows
 }
 
-.contTablesBayesianCreateOddsRatioRows <- function(var.name, counts.matrix, footnotes, options, populate, group, state, state.options, status) {
+.contTablesBayesianCreateOddsRatioRows <- function(var.name, counts.matrix, footnotes, options, populate, group, bf.result, state, state.options, status) {
 
 	row <- list()
 	
@@ -1618,60 +1857,61 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		if (is.null(state) == FALSE) {
 		
 			result <- state
-			
+		
 		} else if (populate) {
 
-			result <- try({
+			if (inherits(bf.result$BF, "try-error")) {
+			
+				result <- bf.result$BF
+				
+			} else {
 
-				if (options$samplingModel == "poisson") {
+				result <- try({
+			
+					BF <- bf.result$BF$BF
+
+					if (options$samplingModel == "poisson") {
 				
-					sampleType <- "poisson"
-					BF         <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-					ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
-					lambda     <- as.data.frame(ch.result)
-					odds.ratio.samples <- (lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
+						ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+						lambda     <- as.data.frame(ch.result)
+						odds.ratio.samples <- (lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
 	
-				} else if (options$samplingModel == "jointMultinomial") {
+					} else if (options$samplingModel == "jointMultinomial") {
 	
-					sampleType <- "jointMulti"
-					BF         <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration)
-					ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
-					theta      <- as.data.frame(ch.result)
-					odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+						ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+						theta      <- as.data.frame(ch.result)
+						odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
-				} else if (options$samplingModel == "independentMultinomialRowsFixed") {
+					} else if (options$samplingModel == "independentMultinomialRowsFixed") {
 	
-					sampleType <- "indepMulti"
-					BF         <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "rows")
-					ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
-					theta      <- as.data.frame(ch.result[,7:10])
-					odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+						ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+						theta      <- as.data.frame(ch.result[,7:10])
+						odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
-				} else if (options$samplingModel == "independentMultinomialColumnsFixed") {
+					} else if (options$samplingModel == "independentMultinomialColumnsFixed") {
 	
-					sampleType <- "indepMulti"
-					BF         <- BayesFactor::contingencyTableBF(counts.matrix, sampleType, priorConcentration=options$priorConcentration, fixedMargin = "cols")
-					ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
-					theta      <- as.data.frame(ch.result[,7:10])
-					odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+						ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+						theta      <- as.data.frame(ch.result[,7:10])
+						odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 					
-				} else {
+					} else {
 				
-					stop("wtf!")
-				}
+						stop("wtf!")
+					}
 				
-				log.odds.ratio.samples <- log(odds.ratio.samples)
-				log.odds.ratio.median <- stats::median(log.odds.ratio.samples)
-				sig    <- options$oddsRatioCredibleIntervalInterval
-				alpha  <- (1 - sig) / 2
-				lower  <- unname(stats::quantile(log.odds.ratio.samples, p = alpha))
-				upper  <- unname(stats::quantile(log.odds.ratio.samples, p = (1-alpha)))
+					log.odds.ratio.samples <- log(odds.ratio.samples)
+					log.odds.ratio.median <- stats::median(log.odds.ratio.samples)
+					sig    <- options$oddsRatioCredibleIntervalInterval
+					alpha  <- (1 - sig) / 2
+					lower  <- unname(stats::quantile(log.odds.ratio.samples, p = alpha))
+					upper  <- unname(stats::quantile(log.odds.ratio.samples, p = (1-alpha)))
 				
-				list(log.odds.ratio.samples=log.odds.ratio.samples, BF=BF, median=log.odds.ratio.median, lower.ci=lower, upper.ci=upper)
-			})
+					list(log.odds.ratio.samples=log.odds.ratio.samples, BF=BF, median=log.odds.ratio.median, lower.ci=lower, upper.ci=upper)
+				})
+			}
 		}
 		
-		if (class(result) == "try-error") {
+		if (inherits(result, "try-error")) {
 
 			row[["value[oddsRatio]"]] <- .clean(NaN)
 
@@ -1689,182 +1929,29 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	}
 	
-	res <- .contTablesBayesianPlotOddsRatio(var.name, counts.matrix, options, populate, group, result, state.options, status)
-
-	result$keep <- res$keep
-	complete    <- complete && res$complete
-	
-	list(rows=list(row), plot=res$plot, state=result, keep=res$keep, complete=complete)
+	list(rows=list(row), state=result, complete=complete)
 }
 
-
-.contTablesBayesianPlotOddsRatio <- function(var.name, counts.matrix, options, populate, group, result, state.options, status) {
-
-	if (options$plotPosteriorOddsRatio == FALSE || identical(dim(counts.matrix), as.integer(c(2,2))) == FALSE)
-		return(list(complete=TRUE))
-		
-	if (is.null(state.options) ||
-		base::identical(state.options$rows, options$rows) == FALSE ||
-		base::identical(state.options$columns, options$columns) == FALSE ||
-		base::identical(state.options$counts, options$counts) == FALSE ||
-		base::identical(state.options$layers, options$layers) == FALSE ||
-		base::identical(state.options$columnOrder, options$columnOrder) == FALSE ||
-		base::identical(state.options$rowOrder, options$rowOrder) == FALSE ||
-		base::identical(state.options$samplingModel, options$samplingModel) == FALSE ||
-		base::identical(state.options$hypothesis, options$hypothesis) == FALSE ||
-		base::identical(state.options$priorConcentration, options$priorConcentration) == FALSE) {
-		
-		result$keep <- NULL
-	}
-	
-	odds.ratio.plot  <- list()
-	keep <- NULL
-	
-    group[group == ""] <- "Total"
-    
-	
-	if (length(group) == 0) {
-	
-		odds.ratio.plot[["title"]] <- "Odds ratio"
-		
-	} else if (length(group) > 0) {
-		
-		layerLevels <- paste(names(group),"=", group)
-		layerLevels <- gsub(pattern = " = Total", layerLevels, replacement = "")
-
-		plotTitle <- paste(layerLevels, collapse="; ")
-		odds.ratio.plot[["title"]] <- plotTitle
-	}
-	
-	width  <- 530
-	height <- 400
-	
-	odds.ratio.plot[["width"]]  <- width
-	odds.ratio.plot[["height"]] <- height
-	
-	if (is.null(result) == FALSE && is.null(result$keep) == FALSE) {
-	
-		odds.ratio.plot[["data"]] <- result$keep
-		keep <- result$keep
-		
-		return(list(plot=odds.ratio.plot, keep=keep, complete=TRUE))
-	}
-	
-	if (populate) {
-	
-		if (is.null(result) || class(result) == "try-error") {
-	
-			message <- .extractErrorMessage(result)
-			status <- list(error=TRUE, errorMessage=message)
-		
-		} else if (options$samplingModel == "hypergeometric") {
-		
-			status <- list(error=TRUE, errorMessage="Odds ratio for this model not yet implemented")
-		
-		} else {
-		
-			BF10 <- BayesFactor::extractBF(result$BF)[[1]]
-		
-			if (is.na(BF10)) {
-		
-				status <- list(error=TRUE, errorMessage="The Bayes factor is undefined")
-			
-			#} else if (is.infinite(1 / BF10)) {
-
-			#	status <- list(error=TRUE, errorMessage="The Bayes factor is too small")
-			
-			#} else if (is.infinite(BF10)) {
-		
-			#	status <- list(error=TRUE, errorMessage="The Bayes factor is infinite")
-			}
-		}
-	}
-	
-	if (populate && status$error == FALSE) {
-	
-		image <- .beginSaveImage(width, height)
-
-		p <- try(silent=TRUE, expr={
-			
-			if (options$samplingModel=="poisson"|| options$samplingModel=="jointMultinomial"|| options$samplingModel=="independentMultinomialColumnsFixed" || options$samplingModel=="independentMultinomialRowsFixed") {
-			
-				if (options$hypothesis=="groupTwoGreater") {
-				
-					oneSided <- "left"
-			
-				} else if (options$hypothesis=="groupOneGreater") {
-				
-					oneSided <- "right"
-			
-				} else {
-				
-					oneSided <- FALSE
-				}
-				
-			} else {
-			
-				oneSided <- FALSE
-			}
-			
-			.plotPosterior.cont.tables(samples=result$log.odds.ratio.samples, CI=c(result$lower.ci, result$upper.ci), medianSamples=result$median, BF=BF10, selectedCI=options$oddsRatioCredibleIntervalInterval,
-					addInformation=options$plotPosteriorOddsRatioAdditionalInfo, oneSided=oneSided, options=options)
-		})
-		
-		plot.data <- .endSaveImage(image)
-
-		if (class(p) != "try-error") {
-
-			keep <- plot.data
-	
-		} else {
-			
-			errorMessage <- .extractErrorMessage(p)
-			
-			if (errorMessage == "not enough data") {
-			
-				errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-					
-			} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-			
-				errorMessage <- "Plotting is not possible: The Bayes factor is too small"
-			}
-			
-			status <- list(error=TRUE, errorMessage=errorMessage)
-		}	
-	
-	}
-
-	if (populate && status$error == FALSE) {
-	
-		odds.ratio.plot[["data"]] <- plot.data
-		odds.ratio.plot[["status"]] <- "complete"
-		
-		complete <- TRUE
-	
-	} else {
-	
-		image <- .beginSaveImage(width, height)
-		.plotPosterior.cont.tables(dontPlotData=TRUE,addInformation=options$plotPosteriorOddsRatioAdditionalInfo)
-		odds.ratio.plot[["data"]] <- .endSaveImage(image)
-
-		if (status$error) {
-		
-			message <- status$errorMessage
-			odds.ratio.plot[["error"]]  <- list(error="badData", errorMessage=paste("Plotting is not possible:", message))
-			odds.ratio.plot[["status"]] <- "complete"
-			complete <- TRUE
-			
-		} else {
-		
-			complete <- FALSE
-		}
-	}
-	
-	list(plot=odds.ratio.plot, keep=keep, complete=complete)
-}
-
-.plotPosterior.cont.tables <- function(samples, CI, medianSamples, BF, oneSided= FALSE, iterations= 10000, lwd= 2, cexPoints= 1.5,
- cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= FALSE, dontPlotData=FALSE, selectedCI= options$oddsRatioCredibleIntervalInterval, options) {
+.contTablesBayesianPlotPosterior <- function(
+	samples,
+	CI,
+	medianSamples,
+	BF,
+	oneSided = FALSE,
+	iterations = 10000,
+	lwd = 2,
+	cexPoints = 1.5,
+	cexAxis = 1.2,
+	cexYlab = 1.5,
+	cexXlab = 1.5,
+	cexTextBF = 1.4,
+	cexCI = 1.1,
+	cexLegend = 1.2,
+	lwdAxis = 1.2,
+	addInformation = FALSE,
+	dontPlotData =FALSE,
+	selectedCI = options$oddsRatioCredibleIntervalInterval,
+	options) {
 	
 	if (addInformation) {
 	
