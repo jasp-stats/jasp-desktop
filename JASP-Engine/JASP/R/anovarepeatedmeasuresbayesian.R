@@ -13,6 +13,8 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 	if (is.null (base::options ()$BFfactorsMax))
 		base::options (BFfactorsMax = 5)
 
+	env <- environment()
+
 	.callbackBFpackage <- function(...) {
 		response <- .callbackBayesianLinearModels ()
 		if(response$status == "ok")
@@ -21,7 +23,9 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 	}
 
 	.callbackBayesianLinearModels <- function (results = NULL) {
+
 		response <- callback(results)
+		
 		if (response$status == "changed") {
 			new.options <- response$options
 		
@@ -35,6 +39,8 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 			new.options$randomFactors <- "subject"
 
 			response$options <- new.options
+			
+			env$options <- new.options
 
 			change <- .diff (options, response$options)
 
@@ -44,8 +50,10 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 				change$repeatedMeasuresFactors ||
 				change$repeatedMeasuresCells)
 				return (response)
+				
 			response$status <- "ok"
 		}
+		
 		return (response)
 	}
 
@@ -82,7 +90,7 @@ if (is.null(state)) {
 	status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
 ## MODEL
-	model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, 			.callbackBFpackage, results = results)
+	model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results = results)
 	
 	if (is.null(model.object)) # analysis cancelled by the callback
 		return()

@@ -12,6 +12,8 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 		base::options (BFprogress = interactive())
 	if (is.null (base::options ()$BFfactorsMax))
 		base::options (BFfactorsMax = 5)
+		
+	env <- environment()
 
 	.callbackBFpackage <- function(...) {
 		response <- .callbackBayesianLinearModels ()
@@ -23,6 +25,9 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	.callbackBayesianLinearModels <- function (results = NULL) {
 		response <- callback(results)
 		if (response$status == "changed") {
+		
+			env$options <- response$options
+		
 			change <- .diff (options, response$options)
 			if (change$modelTerms || 
 				change$dependent ||
