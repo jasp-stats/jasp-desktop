@@ -22,7 +22,6 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 
 	.callbackBayesianLinearModels <- function (results = NULL) {
 		response <- callback(results)
-		print(response)
 		if (response$status == "changed") {
 			new.options <- response$options
 		
