@@ -739,12 +739,8 @@ as.list.footnotes <- function(footnotes) {
 
 .diff <- function(one, two) {
 
-	# returns FALSE if identical
 	# returns TRUE if different or not really comparable
 	# returns a list of what has changed if non-identical named lists provided
-	
-	if (identical(one, two))
-		return(FALSE)
 	
 	if (is.null(names(one)) == ( ! is.null(names(two))))  # if one list has names, and the other not
 		return(TRUE)
