@@ -253,9 +253,14 @@
 		if (perform == "run" && status$ready) {
 			bf <- try (BayesFactor::lmBF (null.formula,
 				data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-				progress = FALSE, posterior = FALSE, callback = .callbackBFpackage ()))
+				progress = FALSE, posterior = FALSE, callback = .callbackBFpackage))
+			
 			null.model$bf <- bf
-			if (class (bf) == "try-error") {
+			
+			if (inherits (bf, "try-error")) {
+				message <- .extractErrorMessage (bf)
+				if (message == "Operation cancelled by callback function.")
+					return()
 				status$ready <- FALSE
 				status$error.message <- "Bayes factor is undefined -- the null model could not be computed"
 			}
@@ -340,10 +345,13 @@
 			if (perform == "run" && status$ready) {
 				bf <- try (BayesFactor::lmBF (model.list [[m]],
 					data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-					progress = FALSE, posterior = FALSE, callback = .callbackBFpackage ()))
+					progress = FALSE, posterior = FALSE, callback = .callbackBFpackage))
 				model.object [[m]]$bf <- bf
 
-				if (class (bf) == "try-error") {
+				if (inherits (bf, "try-error")) {
+					message <- .extractErrorMessage (bf)
+					if (message == "Operation cancelled by callback function.")
+						return()
 					model.object [[m]]$error.message <- "Bayes factor could not be computed"
 				} else {
 					model.object [[m]]$ready <- TRUE
@@ -684,3 +692,4 @@
 
 	return (effectsTable)
 }
+
