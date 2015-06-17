@@ -244,9 +244,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		
 		if (perform == "run" && length(options$variables) > 0 && !is.null(grouping)) {
 		
-			if (length(options$variables) > 0 && (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis))	
-				results[["plots"]][[1]][["status"]] <- "running"
-				
 			if ( ! .shouldContinue(callback(results)))
 				return()
 				
@@ -292,8 +289,13 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 					} else {
 				
+						results[["plots"]][[z]][["status"]] <- "running"
+						
+						if ( ! .shouldContinue(callback(results)))
+							return()
+				
 						plot <- plots.ttest[[z]]
-								
+						
 						if (status[statusInd] != "error") {
 							
 							p <- try(silent= FALSE, expr= {
@@ -333,9 +335,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					z <- z + 1
 					
-					if (z <= length(plots.ttest))
-						results[["plots"]][[z]][["status"]] <- "running"
-						
 					if ( ! .shouldContinue(callback(results)))
 						return()
 				}
@@ -353,6 +352,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						plots.ttest[[z]] <- state$plotsTtest[[index]]
 						
 					} else {
+					
+						results[["plots"]][[z]][["status"]] <- "running"
+						
+						if ( ! .shouldContinue(callback(results)))
+							return()
 						
 						plot <- plots.ttest[[z]]
 					
@@ -376,9 +380,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			
 					z <- z + 1
 					
-					if (z <= length(plots.ttest))
-						results[["plots"]][[z]][["status"]] <- "running"
-						
 					if ( ! .shouldContinue(callback(results)))
 						return()
 				}
@@ -409,6 +410,11 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 					} else {
 				
+						results[["plots"]][[z]][["status"]] <- "running"
+						
+						if ( ! .shouldContinue(callback(results)))
+							return()
+						
 						plot <- plots.ttest[[z]]
 					
 						if (status[statusInd] != "error" && status[statusInd] != "sequentialNotPossible") {
@@ -433,9 +439,6 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 					
 					z <- z + 1
 					
-					if (z <= length(plots.ttest))
-						results[["plots"]][[z]][["status"]] <- "running"
-						
 					if ( ! .shouldContinue(callback(results)))
 						return()
 				}
