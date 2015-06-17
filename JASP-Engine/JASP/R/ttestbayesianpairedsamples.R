@@ -297,7 +297,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 	results[["plots"]] <- plots.ttest
 	
-	
 	pair.statuses <- list()
 	
 	i <- 1
@@ -869,14 +868,19 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	results[["ttest"]] <- ttest
 	results[["plots"]] <- plots.ttest
 	
+	keep <- NULL
+	
+	for (plot in plots.ttest)
+		keep <- c(keep, plot$data)
 	
 	if (perform == "init") {
 		
-		return(list(results=results, status="inited", state=state))
+		return(list(results=results, status="inited", state=state, keep=keep))
 		
 	} else {
 	
-		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotPairs=plotPairs, pairStatuses=pair.statuses, BF10post=BF10post, tablePairs=tablePairs, errorFootnotes=errorFootnotes)))
+		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotPairs=plotPairs,
+		pairStatuses=pair.statuses, BF10post=BF10post, tablePairs=tablePairs, errorFootnotes=errorFootnotes), keep=keep))
 	}
 }
 

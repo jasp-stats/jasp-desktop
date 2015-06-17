@@ -525,6 +525,11 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 	results[["plots"]] <- correlation.plots
 	
+	keep <- NULL
+	
+	if (length(correlation.plots) > 0)
+		keep <- correlation.plots[[1]]$data
+	
 	correlationTableOutput <- .correlationTable(dataset, perform,
 								variables=options$variables, pearson=options$pearson,
 								kendallsTauB=options$kendallsTauB, spearman=options$spearman,
@@ -546,19 +551,19 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 		if (length(options$variables) < 2) {
 		
-			results <- list(results=results, status="complete")
+			results <- list(results=results, status="complete", keep=keep)
 			return(results)
 			
 		} else {
 		
-			results <- list(results=results, status="inited", state=state)
+			results <- list(results=results, status="inited", state=state, keep=keep)
 			return(results)
 		}
 		
 	} else {
 	
 		return(list(results=results, status="complete", state=list(options=options, results=results, correlationPlots=correlation.plots, tableVariables=tableVariables, tableTests=tableTests,
-					tableRows=tableRows, tablePValues=tablePValues, tableUpperCIs=tableUpperCIs, tableLowerCIs=tableLowerCIs)))
+					tableRows=tableRows, tablePValues=tablePValues, tableUpperCIs=tableUpperCIs, tableLowerCIs=tableLowerCIs), keep=keep))
 	}
 }
 
