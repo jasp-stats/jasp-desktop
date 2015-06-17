@@ -139,19 +139,33 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 		
 		
-		if (perform == "run" && number.of.blocks == 1 && (options$blocks[[ 1 ]]$method == "Backward" || options$blocks[[ 1 ]]$method == "Forward")) {
+		if (perform == "run" && number.of.blocks == 1 && (options$blocks[[ 1 ]]$method == "Backward" || options$blocks[[ 1 ]]$method == "Forward" || options$blocks[[ 1 ]]$method == "Stepwise")) {
 			
-			variables.in.model <- unlist( options$blocks[[ 1 ]][[ "variables" ]] )
-			independent.base64 <- .v(variables.in.model)
+			if (options$steppingMethodCriteriaType == "usePValue" && options$steppingMethodCriteriaPEntry > options$steppingMethodCriteriaPRemoval) {
 			
-			if (options$blocks[[ 1 ]]$method == "Backward") {
+				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Error in Stepping Method Criteria: Entry p-value needs to be smaller than removal p-value"
 			
-				lm.model <- .backwardRegression(dependent.base64, independent.base64, dataset, options, weights)
+			} else if (options$steppingMethodCriteriaType == "useFValue" && options$steppingMethodCriteriaFEntry < options$steppingMethodCriteriaFRemoval) {
 			
-			} else if (options$blocks[[ 1 ]]$method == "Forward") {
+				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Error in Stepping Method Criteria: Entry F-value needs to be larger than removal F-value"
 			
-				lm.model <- .forwardRegression(dependent.base64, independent.base64, dataset, options, weights)
+			} else {
 			
+				variables.in.model <- unlist( options$blocks[[ 1 ]][[ "variables" ]] )
+				independent.base64 <- .v(variables.in.model)
+				
+				if (options$blocks[[ 1 ]]$method == "Backward") {
+				
+					lm.model <- .backwardRegression(dependent.base64, independent.base64, dataset, options, weights)
+				
+				} else if (options$blocks[[ 1 ]]$method == "Forward") {
+				
+					lm.model <- .forwardRegression(dependent.base64, independent.base64, dataset, options, weights)
+				
+				} else if (options$blocks[[ 1 ]]$method == "Stepwise") {
+				
+					lm.model <- .stepwiseRegression(dependent.base64, independent.base64, dataset, options, weights)
+				}
 			}
 		
 		} else if (number.of.blocks > 0) {
@@ -1637,20 +1651,35 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	if (options$includeConstant) {
 		
-		formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+")))
+		if (is.null(variables.in.model)) {
+		
+			formula1 <- as.formula(paste(dependent.variable, "~", "1"))
+			
+		} else {
+		
+			formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+")))
+		}
 		
 	} else {
 		
-		formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+"), "-1"))
+		if (is.null(variables.in.model)) {
+		
+			formula1 <- as.formula(paste(dependent.variable, "~", "1", "-1"))
+			
+		} else {
+		
+			formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+"), "-1"))
+		}
 	}
 	
 	lm.fit <- try(lm(formula1, data=data, weights = weights), silent=TRUE)
-
+	
 	return(list(lm.fit=lm.fit, variables=variables.in.model, candidate.variables=candidate.variables))
 	
 }
 
 .removeVariable <- function(dependent.variable, independent.variables, data, options, weights) {
+	
 	
 	if (options$includeConstant) {
 		
@@ -1709,11 +1738,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	if (length(new.independent.variables) > 0) {
 	
 		if (options$includeConstant) {
-		
+			
 			formula.new <- as.formula(paste(dependent.variable, "~", paste(new.independent.variables, collapse = "+")))
 			
 		} else {
-		
+			
 			formula.new <- as.formula(paste(dependent.variable, "~", paste(new.independent.variables, collapse = "+"), "-1"))
 			
 		}
@@ -1777,6 +1806,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	variables.in.model <- NULL
 	lm.model <- list()
 	
+	counter <- 0
+	
 	while ( ! identical(old.candidate.variables, candidate.variables) && length(candidate.variables) > 0) {
 		
 		old.candidate.variables <- candidate.variables
@@ -1786,9 +1817,51 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		lm.model.tmp <- list(lm.fit=out$lm.fit, variables=.unv(out$variables))
 		lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp
 		
+		counter <- counter + 1
 	}
 	
-	if (length(candidate.variables) > 0)
+	
+	if (length(candidate.variables) > 0 && counter > 1)
+		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
+	
+	return(lm.model)
+	
+}
+
+.stepwiseRegression <- function(dependent.variable, independent.variables, data, options, weights) {
+	
+	old.candidate.variables <- ""
+	candidate.variables <- independent.variables
+	new.variables.in.model <- NULL
+	lm.model <- list()
+	
+	counter <- 0
+	
+	while ( ! (identical(old.candidate.variables, candidate.variables) && identical(old.variables.in.model, new.variables.in.model)) && length(candidate.variables > 0)) {
+		
+		old.candidate.variables <- candidate.variables
+		out <- .includeVariable(dependent.variable, old.candidate.variables, data, options, weights, new.variables.in.model)
+		candidate.variables <- out$candidate.variables
+		old.variables.in.model <- out$variables
+		lm.model.tmp <- list(lm.fit=out$lm.fit, variables=.unv(out$variables))
+		lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp
+		
+		if (is.null(old.variables.in.model))
+			break
+		
+		removeStep <- .removeVariable(dependent.variable, old.variables.in.model, data, options, weights)
+		new.variables.in.model <- .v(removeStep$variables)
+		
+		if ( ! identical(new.variables.in.model, old.variables.in.model)) {
+			
+			lm.model[[ length(lm.model) + 1 ]] <- list(lm.fit=removeStep$lm.fit, variables=(removeStep$variables))
+			
+		}
+		
+		counter <- counter + 1
+	}
+	
+	if (length(candidate.variables) > 0 && counter > 1)
 		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
 	
 	return(lm.model)
