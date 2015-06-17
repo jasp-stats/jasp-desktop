@@ -20,6 +20,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	_blocksModel->setSource(&_availableVariablesModel);
 	_blocksModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	_blocksModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_blocksModel->setLimitToOneLevel(true);
 	ui->blocks->setModel(_blocksModel);
 
 	_wlsWeightsModel = new TableModelVariablesAssigned();
