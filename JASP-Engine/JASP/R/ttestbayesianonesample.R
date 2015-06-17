@@ -3532,13 +3532,19 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		}
 	}
 	
+	keep <- NULL
+	
+	for (plot in plots.ttest)
+		keep <- c(keep, plot$data)
+	
 	if (perform == "init") {
 		
-		return(list(results=results, status="inited", state=state))
+		return(list(results=results, status="inited", state=state, keep=keep))
 		
 	} else {
 	
-		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotVariables=plotVariables, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes)))
+		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes,
+		plotVariables=plotVariables, status=status, plottingError=plottingError, BF10post=BF10post, errorFootnotes=errorFootnotes), keep=keep))
 	}
 
 }
