@@ -139,11 +139,34 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 		
 		
-		if (perform == "run" && number.of.blocks == 1 && options$blocks[[ 1 ]]$method == "Backward") {
+		if (perform == "run" && number.of.blocks == 1 && (options$blocks[[ 1 ]]$method == "Backward" || options$blocks[[ 1 ]]$method == "Forward" || options$blocks[[ 1 ]]$method == "Stepwise")) {
 			
-			variables.in.model <- unlist( options$blocks[[ 1 ]][[ "variables" ]] )
-			independent.base64 <- .v(variables.in.model)
-			lm.model <- .backwardRegression(dependent.base64, independent.base64, dataset, options, weights)
+			if (options$steppingMethodCriteriaType == "usePValue" && options$steppingMethodCriteriaPEntry > options$steppingMethodCriteriaPRemoval) {
+			
+				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Error in Stepping Method Criteria: Entry p-value needs to be smaller than removal p-value"
+			
+			} else if (options$steppingMethodCriteriaType == "useFValue" && options$steppingMethodCriteriaFEntry < options$steppingMethodCriteriaFRemoval) {
+			
+				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Error in Stepping Method Criteria: Entry F-value needs to be larger than removal F-value"
+			
+			} else {
+			
+				variables.in.model <- unlist( options$blocks[[ 1 ]][[ "variables" ]] )
+				independent.base64 <- .v(variables.in.model)
+				
+				if (options$blocks[[ 1 ]]$method == "Backward") {
+				
+					lm.model <- .backwardRegression(dependent.base64, independent.base64, dataset, options, weights)
+				
+				} else if (options$blocks[[ 1 ]]$method == "Forward") {
+				
+					lm.model <- .forwardRegression(dependent.base64, independent.base64, dataset, options, weights)
+				
+				} else if (options$blocks[[ 1 ]]$method == "Stepwise") {
+				
+					lm.model <- .stepwiseRegression(dependent.base64, independent.base64, dataset, options, weights)
+				}
+			}
 		
 		} else if (number.of.blocks > 0) {
 		
@@ -191,7 +214,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						lm.fit <- try( stats::lm( model.formula, data = dataset, weights = weights ), silent = TRUE)
 						if ( class(lm.fit) == "lm") {
 							lm.model[[ b ]] <- list(lm.fit = lm.fit, variables = variables.in.model)
-						} else {							
+						} else {
 							list.of.errors[[ length(list.of.errors) + 1 ]]  <- "An unknown error occurred, please contact the author."
 							lm.model[[ b ]] <- list(lm.fit = NULL, variables = variables.in.model)
 						}
@@ -617,7 +640,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					df.residual	 <- lm.summary$fstatistic[3]
 					df.model		<- lm.summary$fstatistic[2]
 					df.total		<- df.residual + df.model
-					ss.residual	 <- mss.residual * df.residual
+					ss.residual <- mss.residual * df.residual
 					ss.model		<- mss.model * df.model
 					ss.total		<- ss.residual + ss.model
 					
@@ -1579,7 +1602,84 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 ##    stepwise procedures     ##
 ################################
 
+.includeVariable <- function(dependent.variable, candidate.variables, data, options, weights, variables.in.model=NULL) {
+	
+	fValues <- numeric(length(candidate.variables))
+	pValues <- numeric(length(candidate.variables))
+	fits <- list()
+	
+	for (i in seq_along(candidate.variables)) {
+		
+		if (options$includeConstant) {
+			
+			formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+")))
+			fits[[candidate.variables[i]]] <- try(lm(formula, data=data, weights = weights), silent=TRUE)
+			fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 2]^2
+			pValues[i] <- summary(fits[[i]])$coefficients[ ,"Pr(>|t|)"][length(variables.in.model) + 2]
+			
+		} else {
+			
+			formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+"), "-1"))
+			fits[[i]] <- try(lm(formula, data=data, weights = weights), silent=TRUE)
+			fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 1]^2
+			pValues[i] <- summary(fits[[i]])$coefficients[ ,"Pr(>|t|)"][length(variables.in.model) + 1]
+		}
+	}
+	
+	if (options$steppingMethodCriteriaType == "useFValue") {
+		
+		maximumFvalue <- max(fValues)
+		
+		if (maximumFvalue > options$steppingMethodCriteriaFEntry) {
+			
+			maximumFvalueVariable <- candidate.variables[which.max(fValues)]
+			variables.in.model <- c(variables.in.model, maximumFvalueVariable)
+			candidate.variables <- candidate.variables[candidate.variables != maximumFvalueVariable]
+		}
+		
+	} else if (options$steppingMethodCriteriaType == "usePValue") {
+		
+		minimumPvalue <- min(pValues)
+		
+		if (minimumPvalue < options$steppingMethodCriteriaPEntry) {
+			
+			minimumPvalueVariable <- candidate.variables[which.min(pValues)]
+			variables.in.model <- c(variables.in.model, minimumPvalueVariable)
+			candidate.variables <- candidate.variables[candidate.variables != minimumPvalueVariable]
+		}
+	}
+	
+	if (options$includeConstant) {
+		
+		if (is.null(variables.in.model)) {
+		
+			formula1 <- as.formula(paste(dependent.variable, "~", "1"))
+			
+		} else {
+		
+			formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+")))
+		}
+		
+	} else {
+		
+		if (is.null(variables.in.model)) {
+		
+			formula1 <- as.formula(paste(dependent.variable, "~", "1", "-1"))
+			
+		} else {
+		
+			formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+"), "-1"))
+		}
+	}
+	
+	lm.fit <- try(lm(formula1, data=data, weights = weights), silent=TRUE)
+	
+	return(list(lm.fit=lm.fit, variables=variables.in.model, candidate.variables=candidate.variables))
+	
+}
+
 .removeVariable <- function(dependent.variable, independent.variables, data, options, weights) {
+	
 	
 	if (options$includeConstant) {
 		
@@ -1587,7 +1687,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 	} else {
 		
-		formula <- as.formula(paste(dependent.variable, "~", paste(independent.variables, collapse = "+")), "-1")
+		formula <- as.formula(paste(dependent.variable, "~", paste(independent.variables, collapse = "+"), "-1"))
 	}
 	
 	fit <- try(lm(formula, data=data, weights = weights), silent=TRUE)
@@ -1609,7 +1709,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 		if (minimumFvalue < options$steppingMethodCriteriaFRemoval) {
 			
-			minimumFvalueVariable <- names(which.min(fValues))	
+			minimumFvalueVariable <- names(which.min(fValues))
 			new.independent.variables <- independent.variables[independent.variables != minimumFvalueVariable]
 			
 		} else {
@@ -1632,11 +1732,20 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			new.independent.variables <- independent.variables
 			
 		}
+		
 	}
 	
 	if (length(new.independent.variables) > 0) {
-		
-		formula.new <- as.formula(paste(dependent.variable, "~", paste(new.independent.variables, collapse = "+")))	
+	
+		if (options$includeConstant) {
+			
+			formula.new <- as.formula(paste(dependent.variable, "~", paste(new.independent.variables, collapse = "+")))
+			
+		} else {
+			
+			formula.new <- as.formula(paste(dependent.variable, "~", paste(new.independent.variables, collapse = "+"), "-1"))
+			
+		}
 		
 	} else if (options$includeConstant) {
 		
@@ -1647,21 +1756,36 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		formula.new <- NULL
 	}
 	
-	lm.fit <- try(lm(formula.new, data=data, weights = weights), silent=TRUE)
+	if (!is.null(formula.new)) {
+	
+		lm.fit <- try(lm(formula.new, data=data, weights = weights), silent=TRUE)
+	
+	} else {
+	
+		lm.fit <- NULL
+	}
 	
 	return(list(lm.fit=lm.fit, variables=.unv(new.independent.variables)))
 }
 
 .backwardRegression <- function(dependent.variable, independent.variables, data, options, weights) {
 	
-	formula1 <- as.formula(paste(dependent.variable, "~", paste(independent.variables, collapse = "+")))
+	if (options$includeConstant) {
+		
+		formula1 <- as.formula(paste(dependent.variable, "~", paste(independent.variables, collapse = "+")))
+		
+	} else {
+		
+		formula1 <- as.formula(paste(dependent.variable, "~", paste(independent.variables, collapse = "+"), "-1"))
+	}
+	
 	lm.fit1 <- try(lm(formula1, data=data, weights = weights), silent=TRUE)
 	lm.model <- list(list(lm.fit=lm.fit1, variables=.unv(independent.variables)))
 	
 	new.independent.variables <- independent.variables
 	old.independent.variables <- ""
 	
-	while ( ! identical(old.independent.variables, new.independent.variables) && length(new.independent.variables != 0)) {
+	while ( ! identical(old.independent.variables, new.independent.variables) && length(new.independent.variables) > 0) {
 		
 		old.independent.variables <- .v(lm.model[[ length(lm.model) ]]$variables)
 		lm.model[[ length(lm.model) + 1 ]] <- .removeVariable(dependent.variable, old.independent.variables, data, options, weights)
@@ -1669,8 +1793,77 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 	}
 	
-	if (length(new.independent.variables != 0))
+	if (length(new.independent.variables) > 0)
 		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
 	
 	return(lm.model)
+}
+
+.forwardRegression <- function(dependent.variable, independent.variables, data, options, weights) {
+	
+	old.candidate.variables <- ""
+	candidate.variables <- independent.variables
+	variables.in.model <- NULL
+	lm.model <- list()
+	
+	counter <- 0
+	
+	while ( ! identical(old.candidate.variables, candidate.variables) && length(candidate.variables) > 0) {
+		
+		old.candidate.variables <- candidate.variables
+		out <- .includeVariable(dependent.variable, old.candidate.variables, data, options, weights, variables.in.model)
+		candidate.variables <- out$candidate.variables
+		variables.in.model <- out$variables
+		lm.model.tmp <- list(lm.fit=out$lm.fit, variables=.unv(out$variables))
+		lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp
+		
+		counter <- counter + 1
+	}
+	
+	
+	if (length(candidate.variables) > 0 && counter > 1)
+		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
+	
+	return(lm.model)
+	
+}
+
+.stepwiseRegression <- function(dependent.variable, independent.variables, data, options, weights) {
+	
+	old.candidate.variables <- ""
+	candidate.variables <- independent.variables
+	new.variables.in.model <- NULL
+	lm.model <- list()
+	
+	counter <- 0
+	
+	while ( ! (identical(old.candidate.variables, candidate.variables) && identical(old.variables.in.model, new.variables.in.model)) && length(candidate.variables > 0)) {
+		
+		old.candidate.variables <- candidate.variables
+		out <- .includeVariable(dependent.variable, old.candidate.variables, data, options, weights, new.variables.in.model)
+		candidate.variables <- out$candidate.variables
+		old.variables.in.model <- out$variables
+		lm.model.tmp <- list(lm.fit=out$lm.fit, variables=.unv(out$variables))
+		lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp
+		
+		if (is.null(old.variables.in.model))
+			break
+		
+		removeStep <- .removeVariable(dependent.variable, old.variables.in.model, data, options, weights)
+		new.variables.in.model <- .v(removeStep$variables)
+		
+		if ( ! identical(new.variables.in.model, old.variables.in.model)) {
+			
+			lm.model[[ length(lm.model) + 1 ]] <- list(lm.fit=removeStep$lm.fit, variables=(removeStep$variables))
+			
+		}
+		
+		counter <- counter + 1
+	}
+	
+	if (length(candidate.variables) > 0 && counter > 1)
+		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
+	
+	return(lm.model)
+	
 }
