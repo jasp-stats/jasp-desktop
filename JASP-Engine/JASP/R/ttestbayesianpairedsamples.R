@@ -399,7 +399,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						# sigmaStart <- 1 / N
 						# 
 						# if (sigmaStart < .01) 
-						# 	sigmaStart <- .01					
+						# 	sigmaStart <- .01
 						
 						if (oneSided == "right") {
 							
@@ -611,8 +611,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	# PLOTS
 	
 	if (perform == "run" && length(options$pairs) > 0 && (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis)) {
-	
-		results[["plots"]][[1]][["status"]] <- "running"
 		
 		if ( ! .shouldContinue(callback(results)))
 			return()
@@ -627,9 +625,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			
 			pair <- options$pairs[[i]]
 			
-			
 			status <- pair.statuses[[i]]
-			
 			
 			p1 <- ifelse(pair[[1]] != "", pair[[1]], "...") 
 			p2 <- ifelse(pair[[2]] != "", pair[[2]], "...")
@@ -681,6 +677,12 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				} else {
 			
+					plots.ttest[[j]]$status <- "running"
+					results[["plots"]] <- plots.ttest
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+				
 					plot <- plots.ttest[[j]]
 					
 					
@@ -723,19 +725,10 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j]] <- plot
 				}
 				
+				results[["plots"]] <- plots.ttest
 				
-				if (j < n.plots) {
-				
-					plots.ttest[[j+1]]$status <- "running"
-					results[["plots"]] <- plots.ttest
-
-					if ( ! .shouldContinue(callback(results)))
+				if ( ! .shouldContinue(callback(results)))
 						return()
-					
-				} else {
-			
-					results[["plots"]] <- plots.ttest
-				}
 				
 				j <- j + 1
 			}
@@ -755,6 +748,12 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 				} else {
 				
+					plots.ttest[[j]]$status <- "running"
+					results[["plots"]] <- plots.ttest
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
 					plot <- plots.ttest[[j]]
 	
 					if (status$unplotable == FALSE) {
@@ -778,18 +777,10 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j]] <- plot
 				}
 				
-				if (j < n.plots) {
+				results[["plots"]] <- plots.ttest
 				
-					plots.ttest[[j+1]]$status <- "running"
-					results[["plots"]] <- plots.ttest
-					
-					if ( ! .shouldContinue(callback(results)))
+				if ( ! .shouldContinue(callback(results)))
 						return()
-					
-				} else {
-			
-					results[["plots"]] <- plots.ttest
-				}
 				
 				j <- j + 1
 			}
@@ -819,6 +810,12 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				} else {
 		
+					plots.ttest[[j]]$status <- "running"
+					results[["plots"]] <- plots.ttest
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
 					plot <- plots.ttest[[j]]
 	
 					if (status$unplotable == FALSE && sequentialIsViable) {
@@ -847,19 +844,11 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j]] <- plot
 				}
 				
-				if (j < n.plots) {
+				results[["plots"]] <- plots.ttest
 				
-					plots.ttest[[j+1]]$status <- "running"
-					results[["plots"]] <- plots.ttest
-					
-					if ( ! .shouldContinue(callback(results)))
+				if ( ! .shouldContinue(callback(results)))
 						return()
-					
-				} else {
-			
-					results[["plots"]] <- plots.ttest
-				}
-		
+				
 				j <- j + 1
 			}
 		}

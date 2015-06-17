@@ -3109,7 +3109,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			
 			} else {
 			
-				result <- list(v=variable, N=".", mean=".", sd= ".", se=".")			
+				result <- list(v=variable, N=".", mean=".", sd= ".", se=".")
 			
 			}
 			
@@ -3171,8 +3171,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					# sigmaStart <- 1 / N
 					# 
 					# if (sigmaStart < .01) 
-					# 	sigmaStart <- .01				
-								
+					# 	sigmaStart <- .01
+					
 					if (oneSided == "right") {
 					
 						samples <- BayesFactor::ttestBF(variableData, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
@@ -3310,7 +3310,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					if(idData > 1 & (options$plotSequentialAnalysis | options$plotSequentialAnalysisRobustness)){
 						
 						#seqFootnote <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
-						#plotSequentialStatus <- "error"	
+						#plotSequentialStatus <- "error"
 						# status[i] <- "sequentialNotPossible"
 						# plottingError[i] <- paste("Sequential Analysis not possible: The first", idData, "observations are identical")
 					}
@@ -3325,20 +3325,13 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		
 		ttest[["data"]] <- ttest.rows
 		ttest[["footnotes"]] <- as.list(footnotes)
-		ttest[["status"]] <- "complete"		
+		ttest[["status"]] <- "complete"
 		results[["ttest"]] <- ttest
 		
 		if ( ! .shouldContinue(callback()))
 			return()
 		
 		i <- 1
-		
-		if (length(options$variables) > 0 && (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis))	
-			results[["plots"]][[1]][["status"]] <- "running"
-			
-		if ( ! .shouldContinue(callback(results)))
-			return()
-			
 		
 		for (variable in options[["variables"]])
 		{	
@@ -3379,6 +3372,11 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 				} else {
 					
+					results[["plots"]][[z]][["status"]] <- "running"
+			
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
 					plot <- plots.ttest[[z]]
 					
 					if (status[i] != "error") {
@@ -3409,7 +3407,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					} else {
 					
 							plot[["error"]] <- list(error="badData", errorMessage= plottingError[i])
-					}					
+					}
 					
 					plot[["status"]] <- "complete"
 					
@@ -3420,9 +3418,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				z <- z + 1
 				
-				if (z <= length(plots.ttest))
-					results[["plots"]][[z]][["status"]] <- "running"
-					
 				if ( ! .shouldContinue(callback(results)))
 					return()
 			}
@@ -3440,6 +3435,11 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					plots.ttest[[z]] <- state$plotsTtest[[index]]
 					
 				} else {
+				
+					results[["plots"]][[z]][["status"]] <- "running"
+			
+					if ( ! .shouldContinue(callback(results)))
+						return()
 				
 					plot <- plots.ttest[[z]]
 					
@@ -3465,9 +3465,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			
 				z <- z + 1
 				
-				if (z <= length(plots.ttest))
-					results[["plots"]][[z]][["status"]] <- "running"
-					
 				if ( ! .shouldContinue(callback(results)))
 					return()
 			}
@@ -3497,7 +3494,12 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					plots.ttest[[z]] <- state$plotsTtest[[index]]
 						
 				} else {
-				
+					
+					results[["plots"]][[z]][["status"]] <- "running"
+			
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
 					plot <- plots.ttest[[z]]
 					
 					if (status[i] != "error" && status[i] != "sequentialNotPossible") {	
@@ -3520,9 +3522,6 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				results[["plots"]] <- plots.ttest
 				
 				z <- z + 1
-				
-				if (z <= length(plots.ttest))
-					results[["plots"]][[z]][["status"]] <- "running"
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
