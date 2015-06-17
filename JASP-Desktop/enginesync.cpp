@@ -218,16 +218,7 @@ void EngineSync::process()
 				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
-			else if (status == "running" && analysis->status() == Analysis::Initing)
-			{
-				analysis->setStatus(Analysis::Running);
-				analysis->setResults(results);
-			}
-			else if (analysis->status() == Analysis::Running)
-			{
-				analysis->setResults(results);
-			}
-			else if (analysis->status() == Analysis::Initing)
+			else if (status == "inited")
 			{
 				if (analysis->isAutorun())
 					analysis->setStatus(Analysis::Inited);
@@ -237,6 +228,15 @@ void EngineSync::process()
 				analysis->setResults(results);
 				_analysesInProgress[i] = NULL;
 				sendMessages();
+			}
+			else if (status == "running" && analysis->status() == Analysis::Initing)
+			{
+				analysis->setStatus(Analysis::Running);
+				analysis->setResults(results);
+			}
+			else if (analysis->status() == Analysis::Running)
+			{
+				analysis->setResults(results);
 			}
 			else
 			{
