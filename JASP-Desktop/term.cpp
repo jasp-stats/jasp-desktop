@@ -16,7 +16,11 @@ Term::Term(const std::vector<string> components)
 		if (first)
 			first = false;
 		else
-			_asString.append(" \xE2\x9C\xBB ");  // star spoked asterisk
+#ifdef __WIN32__
+			_asString.append(" * ");
+#else
+			_asString.append(" \xE2\x88\x97 ");
+#endif
 
 		_asString.append(component);
 		_components.append(tq(component));
@@ -43,7 +47,11 @@ Term::Term(const QStringList components)
 		if (first)
 			first = false;
 		else
-			_asQString += " \xE2\x9C\xBB ";
+#ifdef __WIN32__
+			_asQString.append(" * ");
+#else
+			_asQString.append(" \xE2\x88\x97 ");
+#endif
 
 		_asQString += component;
 		_components.append(component);
