@@ -1,11 +1,11 @@
 
-JASP 0.6 R Packages
+JASP 0.7 R Packages
 ===================
 
 Dependencies (C++ API)
 ----------------------
 
-* BayesFactor (0.9.11 - 95bb7acfd9512062f47f78be7400675e128b8150)
+* BayesFactor (0.9.12 - e1b9bbadd7d805817b9b4ac40082df5800366001)
 * lme4 (1.1-7)
 * Rcpp (0.11.3)
 * RInside (0.2.11)
@@ -71,6 +71,7 @@ Dependencies of dependencies (C API)
 * labeling (0.3)
 * latticeExtra (0.6-26)
 * matrixcalc (1.0-3)
+* MatrixModels (0.4-0)
 * mnormt (1.5-1)
 * modeltools (0.2-21)
 * munsell (0.4.2)
