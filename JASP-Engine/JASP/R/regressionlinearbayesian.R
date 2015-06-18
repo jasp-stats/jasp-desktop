@@ -47,7 +47,7 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 	meta [[2]] <- list (name = "model comparison", type = "table")
 	meta [[3]] <- list (name = "effects", type = "table")
 	results [[".meta"]] <- meta
-	results [["title"]] <- "Bayesian ANOVA"
+	results [["title"]] <- "Bayesian Linear Regression"
 
 ## DATA
 	if (is.null(state)) {
