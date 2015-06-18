@@ -35,6 +35,12 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 
 	ui->panelStatistics->hide();
 	ui->panelOptions->hide();
+
+#ifdef QT_NO_DEBUG
+	ui->groupBox_5->hide();
+#else
+	ui->groupBox_5->setStyleSheet("background-color: pink ;");
+#endif
 }
 
 RegressionLinearForm::~RegressionLinearForm()
