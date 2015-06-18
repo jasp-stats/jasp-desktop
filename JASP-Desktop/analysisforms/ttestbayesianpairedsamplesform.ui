@@ -102,6 +102,12 @@
          </size>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
          <item row="2" column="0">
           <widget class="GroupBox" name="groupBox">
            <property name="title">
@@ -159,27 +165,30 @@
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
             <property name="bottomMargin">
              <number>0</number>
             </property>
             <item row="2" column="0">
              <widget class="QRadioButton" name="_3oneTailedLessThan">
               <property name="text">
-               <string>Group one &lt; Group two</string>
+               <string>Measure 1 &lt; Measure 2</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
              <widget class="QRadioButton" name="_2oneTailedGreaterThan">
               <property name="text">
-               <string>Group one &gt; Group two</string>
+               <string>Measure 1 &gt; Measure 2</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
              <widget class="QRadioButton" name="_1twoTailed">
               <property name="text">
-               <string>Group one ≠ Group two</string>
+               <string>Measure 1 ≠ Measure 2</string>
               </property>
              </widget>
             </item>

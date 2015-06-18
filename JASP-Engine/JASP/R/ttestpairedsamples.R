@@ -77,12 +77,12 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	
 	if (options$hypothesis == "groupOneGreater") {
 
-		message <- paste("All tests, hypothesis is group one greater than group two", sep="")
+		message <- paste("All tests, hypothesis is measurement one greater than measurement two", sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	} else if (options$hypothesis == "groupTwoGreater") {
 
-		message <- paste("All tests, hypothesis is group one less than group two", sep="")
+		message <- paste("All tests, hypothesis is measurement one less than measurement two", sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 	}
 

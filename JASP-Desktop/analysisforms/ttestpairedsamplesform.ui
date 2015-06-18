@@ -15,11 +15,11 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_7">
    <item row="3" column="0">
-    <widget class="BoundGroupBox" name="missingValues">
-     <property name="title">
+    <widget class="BoundGroupBox" name="missingValues" native="true">
+     <property name="title" stdset="0">
       <string>Missing Values</string>
      </property>
-     <property name="flat">
+     <property name="flat" stdset="0">
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
@@ -47,38 +47,38 @@
        <number>0</number>
       </property>
       <item row="0" column="0" rowspan="2">
-       <widget class="BoundGroupBox" name="hypothesis">
+       <widget class="BoundGroupBox" name="hypothesis" native="true">
         <property name="minimumSize">
          <size>
           <width>240</width>
           <height>0</height>
          </size>
         </property>
-        <property name="title">
+        <property name="title" stdset="0">
          <string>Hypothesis</string>
         </property>
-        <property name="flat">
+        <property name="flat" stdset="0">
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="1" column="0">
           <widget class="QRadioButton" name="_2groupOneGreater">
            <property name="text">
-            <string>Group 1 &gt; Group 2</string>
+            <string>Measure 1 &gt; Measure 2</string>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
           <widget class="QRadioButton" name="_3groupTwoGreater">
            <property name="text">
-            <string>Group 1 &lt; Group 2</string>
+            <string>Measure 1 &lt; Measure 2</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
           <widget class="QRadioButton" name="_1notEqual">
            <property name="text">
-            <string>Group 1 ≠ Group 2</string>
+            <string>Measure 1 ≠ Measure 2</string>
            </property>
           </widget>
          </item>
@@ -430,15 +430,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QWidget</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>BoundPairsTable</class>

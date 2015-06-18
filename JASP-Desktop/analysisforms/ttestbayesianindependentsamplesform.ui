@@ -223,21 +223,21 @@
          <item row="2" column="0">
           <widget class="QRadioButton" name="_3oneTailedLessThan">
            <property name="text">
-            <string>Group one &lt; Group two</string>
+            <string>Group 1 &lt; Group 2</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QRadioButton" name="_2oneTailedGreaterThan">
            <property name="text">
-            <string>Group one &gt; Group two</string>
+            <string>Group 1 &gt; Group 2</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
           <widget class="QRadioButton" name="_1twoTailed">
            <property name="text">
-            <string>Group one ≠ Group two</string>
+            <string>Group 1 ≠ Group 2</string>
            </property>
           </widget>
          </item>
@@ -479,11 +479,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -504,6 +499,11 @@
    <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
