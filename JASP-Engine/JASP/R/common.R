@@ -761,7 +761,7 @@ as.list.footnotes <- function(footnotes) {
 				
 				if (identical(item1, item2) == FALSE) {
 				
-					changed[[name]] <- .diff(item1, item2)
+					changed[[name]] <- TRUE
 					
 				} else {
 				
@@ -776,9 +776,13 @@ as.list.footnotes <- function(footnotes) {
 				changed[[name]] <- TRUE
 		}
 		
-	} else {
+	} else if (base::indentical(one, two)) {
 		
-		return(TRUE)
+		return(FALSE)
+		
+	} else {
+	
+		return (TRUE)
 	}
 	
 	changed
