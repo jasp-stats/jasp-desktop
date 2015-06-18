@@ -86,6 +86,16 @@
 		error.message <- "Bayes factor is undefined -- the dependent variable contains infinity"
 
 	if (!exists ("error.message") && perform == "run") {
+		covariate.names <- NULL
+		for (covariate in options$covariates) {
+			if (any (!is.finite (dataset [[.v (covariate)]])))
+				covariate.names <- c (covariate.names, covariate)
+		}
+		if ( !is.null (covariate.names))
+			error.message <- paste ("Bayes factor is undefined -- the dependent variable(s) ", covariate.names, " contain(s) infinity", sep = "")
+	}
+
+	if (!exists ("error.message") && perform == "run") {
 		factor.names <- NULL
 		for (fact in options$fixedFactors) {
 			if (length (unique (dataset[[.v (fact)]])) < 2) {
