@@ -27,9 +27,9 @@ OS X actively discourages people from downloading software from the internet (ra
 
 Newer versions of OS X need to have their "Gatekeeper" options relaxed, before they will allow software to be used that was downloaded from the internet. More Info: [About Gatekeeper](https://support.apple.com/en-us/HT202491).
 
-You will need to change your Gatekeeper settings to "Allow applications to downloaded from anywhere".
+You will need to change your Gatekeeper settings to "Allow applications downloaded from anywhere".
 
-Having relaxed the Gatekeeper settings, the next step is to 'right click' or 'command-click' JASP in your Applications directory, and select 'Open' from the menu. This will present a window saying that JASP is from an unidentified developer; selecting "Open" will start JASP.
+Having relaxed the Gatekeeper settings, the next step is to 'right click' or 'control-click' JASP in your Applications directory, and select 'Open' from the menu. This will present a window saying that JASP is from an unidentified developer; selecting "Open" will start JASP.
 
 ![Gatekeeper "Open"](https://raw.githubusercontent.com/jasp-stats/jasp-desktop/development/Docs/user-guide/gakekeeper.png)
 
