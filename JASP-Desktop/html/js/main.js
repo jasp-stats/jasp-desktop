@@ -15,6 +15,7 @@ $(document).ready(function () {
 		$("body").addClass("windows")
 
 	var analysesViews = []
+	var menuObject = null;
 	var selectedAnalysisId = -1;
 	var selectedAnalysis = null
 
@@ -53,6 +54,18 @@ $(document).ready(function () {
 		$instructions.animate({ opacity: 0 }, 400, "easeOutCubic", function () {
 			$instructions.slideUp()
 		})
+	}
+
+	window.copyMenuClicked = function () {
+		if (this.menuObject.copyMenuClicked | this.menuObject.copyMenuClicked()) {
+			this.menuObject.toolbar.completeEvent("Copied to clipboard");
+		}
+	}
+
+	window.citeMenuClicked = function () {
+		if (this.menuObject.citeMenuClicked | this.menuObject.citeMenuClicked()) {
+			this.menuObject.toolbar.completeEvent("Citation copied to clipboard");
+		}
 	}
 
 	window.scrollIntoView = function (item) {
@@ -213,6 +226,13 @@ $(document).ready(function () {
 				jasp.analysisChangedDownstream(id, JSON.stringify(options))
 
 			});
+
+			var self = this;
+			jaspWidget.on("toolbar:showMenu", function (obj, options) {
+
+				jasp.showAnalysesMenu(JSON.stringify(options));
+				self.menuObject = obj;
+			});
 		}
 		else
 			jaspWidget.model.set(analysis);
@@ -225,7 +245,9 @@ $(document).ready(function () {
 
 	$("body").click(window.unselectByClickingBody)
 
+
 })
+
 
 var stringify = function (element, tabs) {
 
@@ -314,8 +336,37 @@ var pushToClipboard = function (element) {
 
 }
 
+var pushHTMLToClipboard = function (html) {
+	jasp.pushToClipboard("text/html", html)
+
+}
+
 var pushTextToClipboard = function (str) {
 
 	jasp.pushToClipboard("text/plain", str)
 }
 
+var pushImageToClipboard = function (base64) {
+	jasp.pushImageToClipboard(base64)
+
+}
+
+
+var savingId = 0;
+var savingImages = {};
+
+var saveImageBegin = function (path, base64, callback, context) {
+	var index = savingId;
+	savingId += 1;
+	savingImages[index] = {
+		callback: callback,
+		context: context
+	}
+	jasp.saveTempImage(index, path, base64);
+}
+
+window.imageSaved = function (args) {
+	var callbackData = savingImages[args.id];
+	callbackData.callback.call(callbackData.context, args.fullPath);
+	delete savingImages.savingId;
+}

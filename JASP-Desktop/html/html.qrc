@@ -40,5 +40,6 @@
         <file>js/backbone-min-1.1.2.js</file>
         <file>js/jaspwidgets.js</file>
         <file>css/images/arrow-resize.png</file>
+        <file>css/images/arrowsmalldownbtn.png</file>
     </qresource>
 </RCC>

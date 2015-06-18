@@ -11,25 +11,30 @@ JASPWidgets.image = JASPWidgets.Resizeable.extend({
 	}
 });
 
-JASPWidgets.imageView = JASPWidgets.ResizeableView.extend({
+JASPWidgets.imageView = JASPWidgets.View.extend({
 
 	initialize: function () {
-		this._imageViewBase = JASPWidgets.ResizeableView.prototype;
-		this._imageViewBase.initialize.call(this);
-	},
 
-	resizeTargetElement: function () {
-		return this.$(".jasp-image-holder");
-	},
+		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
+		this.toolbar.setParent(this);
 
-	resizeDisabled: function () {
-		var custom = this.model.get("custom");
-		return custom === null;
+		this.resizer = new JASPWidgets.ResizeableView({ model: this.model, className: "jasp-resize" });
+
+		this.listenTo(this.resizer, "ResizeableView:resized", this.onResized)
+		this.listenTo(this.resizer, "ResizeableView:resizeStart", this.onResizeStart)
+		this.listenTo(this.resizer, "ResizeableView:resizeStop", this.onResizeStop)
+		var self = this;
+		this.resizer.resizeTargetElement = function () {
+			var t = self.$(".jasp-image-holder");
+			return self.$(".jasp-image-holder");
+		};
+		this.resizer.resizeDisabled = function () {
+			var custom = self.model.get("custom");
+			return custom === null;
+		};
 	},
 
 	onResized: function (w, h) {
-		this._imageViewBase.onResized.call(this);
-
 		var options = {};
 		var custom = this.model.get("custom");
 		if (custom !== null) {
@@ -43,13 +48,26 @@ JASPWidgets.imageView = JASPWidgets.ResizeableView.extend({
 	},
 
 	onResizeStart: function (w, h) {
-		this._imageViewBase.onResizeStart.call(this);
 		this.$el.addClass("jasp-image-resizable");
 	},
 
 	onResizeStop: function (w, h) {
-		this._imageViewBase.onResizeStop.call(this);
 		this.$el.removeClass("jasp-image-resizable");
+	},
+
+	events: {
+			'mouseenter': '_hoveringStart',
+			'mouseleave': '_hoveringEnd',
+	},
+
+	_hoveringStart: function (e) {
+		this.toolbar.setVisibility(true);
+		this.resizer.setVisibility(true);
+	},
+
+	_hoveringEnd: function (e) {
+		this.toolbar.setVisibility(false);
+		this.resizer.setVisibility(false);
 	},
 
 	render: function () {
@@ -61,9 +79,13 @@ JASPWidgets.imageView = JASPWidgets.ResizeableView.extend({
 		var custom = this.model.get("custom");
 
 		if (title) {
-
-			html += '<h2>' + title + '</h2>'
+			this.toolbar.title = title;
+			this.toolbar.titleTag = "h2";
+			//this.$el.append('<h2>' + title + '</h2>');
 		}
+
+		this.toolbar.render();
+		this.$el.append(this.toolbar.$el);
 
 		var classes = ""
 		if (status)
@@ -98,126 +120,42 @@ JASPWidgets.imageView = JASPWidgets.ResizeableView.extend({
 
 		html += '</div>'
 
-		this.$el.html(html)
+		this.$el.append(html)
 
 		var self = this
 
-		this._imageViewBase.render.call(this);
+		this.resizer.render();
 
 		return this;
+	},
+
+	exportBegin: function () {
+		var data = this.model.get("data");
+		JASPWidgets.Encodings.base64Request(data, function (base64) {
+			saveImageBegin(data, base64, function (fullpath) {
+				var title = this.model.get("title");
+				var width = this.model.get("width");
+				var height = this.model.get("height");
+				var text = '<h2>' + title + '</h2>'
+				text += '<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />';
+				this.exportComplete(text);
+			}, this);
+		}, this);
+	},
+
+	exportComplete: function (html) {
+		pushHTMLToClipboard(html);
+	},
+
+	copyMenuClicked: function () {
+		this.exportBegin();
+		return true;
+	},
+
+	menuName: "Plot",
+
+	onClose: function () {
+		this.toolbar.close();
+		this.resizer.close();
 	}
 });
-
-/*$.widget("jasp.image", {
-
-	options: {
-		title: "",
-		width: 480,
-		height: 320,
-        data: null,
-        status : "waiting",
-        resize : [ ],
-        custom : null,
-        customchanged : [ ],
-        itemoptionschanged : [ ],
-        error : null
-	},
-	_create: function () {
-		this.element.addClass("jasp-image")
-		this.imageElement = null
-		this.refresh()
-	},
-	_setOptions: function (options) {
-
-		this._super(options)		
-		this.refresh()
-	},
-	_startResize : function(event, ui) {
-	
-		this.imageElement.addClass("jasp-image-resizable")
-	},
-	_resize : function(event, ui) {
-	
-		this._trigger("resize", event, ui)
-	},
-	_stopResize : function(event, ui) {
-
-		this.imageElement.removeClass("jasp-image-resizable")
-
-		var custom = this.options.custom
-
-		var options = { }
-		
-		if (_.has(custom, "width"))
-			options[custom.width] = ui.size.width
-		if (_.has(custom, "height"))
-			options[custom.height] = ui.size.height
-			
-		this._trigger("customchanged", null, options)
-		this._trigger("itemoptionschanged", null, options)
-		
-	},
-	refresh: function () {
-		
-		var html = ''
-		
-		if (this.options.title) {
-		
-			html += '<h2>' + this.options.title + '</h2>'
-		}
-		
-		var classes = ""
-		if (this.options.status)
-			classes += this.options.status
-			
-		if (this.options.error)
-			classes += " error-state"
-		
-		html += '<div class="jasp-image-holder ' + classes + '" style="width : ' + this.options.width + 'px ; height : ' + this.options.height + 'px ; ">'
-
-		html += '<div class="jasp-image-image" style="'
-
-		if (this.options.data) {
-
-			html += 'background-image : url(\'' + this.options.data + '\') ;'
-			html += 'background-size : 100% 100% ;'
-		}
-		
-		html += '"></div>'
-
-		if (this.options.error && this.options.error.errorMessage) {
-
-			html += '<div  class="error-message-positioner">'
-			html += '<div  class="error-message-box ui-state-error">'
-			html += '<span class="error-message-symbol ui-icon ui-icon-alert"></span>'
-			html += '<div  class="error-message-message">' + this.options.error.errorMessage + '</div>'
-			html += '</div>'
-			html += '</div>'
-		}
-		
-		html += '<div class="jasp-image-loader"></div>'
-		
-		html += '</div>'
-
-		this.element.html(html)
-		
-		var self = this
-
-		if (this.options.custom) {
-		
-			this.imageElement = this.element.find(".jasp-image-holder")
-
-			this.imageElement.resizable( {
-				minWidth : 160,
-				minHeight: 160,
-				start  : function(event, ui) { self._startResize(event, ui) },
-				stop   : function(event, ui) { self._stopResize(event, ui) },
-				resize : function(event, ui) { self._resize(event, ui) }
-			} )
-		}
-		
-	},
-	_destroy: function () {
-		this.element.removeClass("jasp-image").text("")
-	}
-})*/

@@ -155,8 +155,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
+	connect(this, SIGNAL(saveTempImage(int, QString, QByteArray)), this, SLOT(saveTempImageHandler(int, QString, QByteArray)));
 	connect(this, SIGNAL(pushToClipboard(QString, QString)), this, SLOT(pushToClipboardHandler(QString, QString)));
+	connect(this, SIGNAL(pushImageToClipboard(QByteArray)), this, SLOT(pushImageToClipboardHandler(QByteArray)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
+	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 
 	_buttonPanel = new QWidget(ui->pageOptions);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
@@ -185,6 +188,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
+
+	_analysisMenu = new QMenu(this);
 
 	updateUIFromOptions();
 
@@ -1151,17 +1156,107 @@ void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &
 		toClipboard += "	</body>\n"
 					   "</html>";
 
-		mimeData->setData("text/html", toClipboard.toUtf8());
+		mimeData->setHtml(toClipboard);
+		//mimeData->setData("text/html", toClipboard.toUtf8());
 	}
 	else
 	{
-		mimeData->setData(mimeType, data.toUtf8());
+		mimeData->setText(data);
 	}
 
 	QClipboard *clipboard = QApplication::clipboard();
 	clipboard->setMimeData(mimeData, QClipboard::Clipboard);
 
 	//qDebug() << clipboard->mimeData(QClipboard::Clipboard)->data("text/html");
+}
+
+void MainWindow::pushImageToClipboardHandler(const QByteArray &base64)
+{
+	if (_log != NULL)
+		_log->log("Copy");
+
+	QMimeData *mimeData = new QMimeData();
+
+	QByteArray byteArray = QByteArray::fromBase64(base64);
+
+	QImage pm;
+	if(pm.loadFromData(byteArray))
+	{
+#ifdef __WIN32__ //needed because jpegs/clipboard doesn't support transparency in windows
+		QImage image2(pm.size(), pm.format());
+		image2.fill(QColor(Qt::white).rgb());
+		QPainter painter(&image2);
+		painter.drawImage(0, 0, pm);
+
+		mimeData->setImageData(image2);
+#else
+		mimeData->setImageData(pm);
+#endif
+
+		QClipboard *clipboard = QApplication::clipboard();
+		clipboard->setMimeData(mimeData, QClipboard::Clipboard);
+	}
+
+
+	//qDebug() << clipboard->mimeData(QClipboard::Clipboard)->data("text/html");
+}
+
+void MainWindow::saveTempImageHandler(int id, QString path, QByteArray data)
+{
+	QByteArray byteArray = QByteArray::fromBase64(data);
+
+	QString fullpath = tq(tempfiles_sessionDirName()) + "/" + path;
+
+	//QFile file("C:/MyDir/some_name.ext");
+	//file.open(QIODevice::WriteOnly);
+	//file.write(byteArray);
+	//file.close();
+
+
+
+	QString f = "window.imageSaved({ id: " + tq(std::to_string(id)) + ", fullPath: '" + fullpath + "'});";
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(f);
+}
+
+void MainWindow::showAnalysesMenuHandler(QString options)
+{
+	Json::Value menuOptions;
+
+	Json::Reader parser;
+	parser.parse(fq(options), menuOptions);
+
+	QIcon _copyIcon = QIcon(":/icons/copy.png");
+	QIcon _citeIcon = QIcon(":/icons/cite.png");
+
+	_analysisMenu->clear();
+
+	if (menuOptions["hasCopy"].asBool())
+		_analysisMenu->addAction(_copyIcon, "Copy " + tq(menuOptions["objectName"].asString()), this, SLOT(copySelected()));
+
+	if (menuOptions["hasCite"].asBool())
+		_analysisMenu->addAction(_citeIcon, "Cite", this, SLOT(citeSelected()));
+
+	QPoint point = ui->webViewResults->mapToGlobal(QPoint(menuOptions["rX"].asInt(), menuOptions["rY"].asInt()));
+
+	_analysisMenu->move(point);
+	_analysisMenu->show();
+
+	//ui->webViewResults->page()->mainFrame()->s
+
+}
+
+void MainWindow::copySelected()
+{
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.copyMenuClicked();");
+
+}
+
+void MainWindow::citeSelected()
+{
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
+
 }
 
 void MainWindow::analysisChangedDownstreamHandler(int id, QString options)

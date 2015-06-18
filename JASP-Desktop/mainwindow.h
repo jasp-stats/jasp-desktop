@@ -38,6 +38,7 @@ private:
 	Ui::MainWindow *ui;
 
 	AnalysisForm *_currentOptionsWidget;
+	QMenu* _analysisMenu;
 	DataSetPackage *_package;
 	DataSetTableModel *_tableModel;
 	Analysis *_currentAnalysis;
@@ -84,14 +85,23 @@ signals:
 	void analysisUnselected();
 	void analysisChangedDownstream(int id, QString options);
 	void pushToClipboard(QString mimeType, QString data);
+	void pushImageToClipboard(QByteArray base64);
+	void saveTempImage(int id, QString path, QByteArray data);
+	void showAnalysesMenu(QString options);
 
 private slots:
 
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
+	void pushImageToClipboardHandler(const QByteArray &base64);
 	void pushToClipboardHandler(const QString &mimeType, const QString &data);
+	void saveTempImageHandler(int id, QString path, QByteArray data);
 	void analysisChangedDownstreamHandler(int id, QString options);
+
+	void showAnalysesMenuHandler(QString options);
+	void copySelected();
+	void citeSelected();
 
 	void tabChanged(int index);
 	void helpToggled(bool on);

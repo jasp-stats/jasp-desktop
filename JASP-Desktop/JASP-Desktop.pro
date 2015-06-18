@@ -409,7 +409,8 @@ OTHER_FILES += \
     resources/icons/analysis-classical-sem.svg \
     html/js/jaspwidget.js \
     html/js/backbone-min-1.1.2.js \
-    html/css/images/arrow-resize.png
+    html/css/images/arrow-resize.png \
+    html/css/images/arrowsmalldownbtn.png
 
 HELP_PATH = $${PWD}/../Docs/help
 LIBRARY_PATH = $${PWD}/../Library
