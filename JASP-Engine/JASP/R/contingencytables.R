@@ -1071,7 +1071,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 				
 				chi.result <- try({
 
-					chi.result <- vcd::odds.ratio(counts.matrix)
+					chi.result <- vcd::oddsratio(counts.matrix) 
 					CI <- stats::confint(chi.result, level = options$oddsRatioConfidenceIntervalInterval)
 					LogOR <- chi.result
 					log.CI.low <- CI[1]

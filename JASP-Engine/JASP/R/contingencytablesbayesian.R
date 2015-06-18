@@ -413,14 +413,14 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			
 			if (options$samplingModel == "poisson"
 				|| options$samplingModel == "jointMultinomial"
-				|| options$samplingModel=="independentMultinomialColumnsFixed"
-				|| options$samplingModel=="independentMultinomialRowsFixed") {
+				|| options$samplingModel == "independentMultinomialColumnsFixed"
+				|| options$samplingModel == "independentMultinomialRowsFixed") {
 			
-				if (options$hypothesis=="groupTwoGreater") {
+				if (options$hypothesis == "groupTwoGreater") {
 				
 					oneSided <- "left"
 			
-				} else if (options$hypothesis=="groupOneGreater") {
+				} else if (options$hypothesis == "groupOneGreater") {
 				
 					oneSided <- "right"
 			
@@ -2030,6 +2030,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	z<-density(samples) 
 	
+
 	plot(0,0, xlim= range(xticks), ylim= c(0, range(yticks)[2]), ylab= "", xlab="", type= "n", axes= FALSE)
 		
 	lines(seq(min(xticks), max(xticks),length.out = 10000), .dposteriorOR(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples), oneSided=oneSided), lwd= lwd)
@@ -2037,7 +2038,11 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	if (oneSided == "right"|| oneSided == "left"){
 	lines(c(0, 0), c(0, .dposteriorOR(0, mean(samples), sd(samples), oneSided=oneSided)), lwd= lwd)
 	}
-					
+				
+	#lines(seq(min(xticks), max(xticks),length.out = 10000),posteriorLine, lwd= lwd)
+	#lines(seq(min(xticks), max(xticks),length.out = 10000),dnorm(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)),lwd= lwd)
+	#points(z$x,z$y,type="l", col= "green")	
+
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at= yticks, labels= ylabels, cex.axis= cexAxis, lwd= lwdAxis)
 	
