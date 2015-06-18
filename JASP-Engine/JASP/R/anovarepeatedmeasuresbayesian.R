@@ -16,9 +16,12 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 	env <- environment()
 
 	.callbackBFpackage <- function(...) {
-		response <- .callbackBayesianLinearModels ()
+	
+		response <- .callbackBayesianLinearModels()
+		
 		if(response$status == "ok")
 			return(as.integer(0))
+
 		return(as.integer(1))
 	}
 
@@ -40,9 +43,9 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 
 			response$options <- new.options
 			
-			env$options <- new.options
+			change <- .diff (env$options, response$options)
 
-			change <- .diff (options, response$options)
+			env$options <- new.options
 
 			if (change$modelTerms || 
 				change$betweenSubjectFactors || 

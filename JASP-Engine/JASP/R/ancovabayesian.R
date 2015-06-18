@@ -26,9 +26,10 @@ AncovaBayesian	 <- function (dataset = NULL, options, perform = "run", callback 
 		response <- callback(results)
 		if (response$status == "changed") {
 		
+			change <- .diff (env$options, response$options)
+			
 			env$options <- response$options
-		
-			change <- .diff (options, response$options)
+			
 			if (change$modelTerms || 
 				change$dependent ||
 				change$covariates ||
