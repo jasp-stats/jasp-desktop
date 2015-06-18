@@ -87,10 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->tabBar->addTab("File");
 	ui->tabBar->addTab("Common");
 	ui->tabBar->addOptionsTab();
-
-#ifdef QT_DEBUG
 	ui->tabBar->addHelpTab();
-#endif
 
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 	connect(ui->tabBar, SIGNAL(helpToggled(bool)), this, SLOT(helpToggled(bool)));
@@ -846,7 +843,7 @@ void MainWindow::requestHelpPage(const QString &pageName)
 	}
 	else
 	{
-		content = "404\n===\n\n**" + pageName + "** could not be found";
+		content = "Coming Soon!\n========\n\nThere is currently no help available for this analysis.\n\nAdditional documentation will be available in future releases of JASP.";
 	}
 
 	content.replace("\"", "\\\"");
