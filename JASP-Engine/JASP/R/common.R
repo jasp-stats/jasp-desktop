@@ -783,28 +783,3 @@ as.list.footnotes <- function(footnotes) {
 	
 	changed
 }
-
-BFtry <- function(expression, silent=FALSE) {
-
-	result <- base::try(expression, silent=silent)
-	
-	if (inherits(result, "try-error")) {
-	
-		message <- as.character(result)
-		split <- base::strsplit(as.character(message), " : ")[[1]]
-		error <- split[[length(split)]]
-		
-		while (substr(error, 1, 1) == ' ' || substr(error, 1, 1) == '\n')  # trim front
-			error <- substring(error, 2)
-		
-		while (substring(error, nchar(error)) == ' ' || substring(error, nchar(error)) == '\n')  # trim back
-			error <- substr(error, 1, nchar(error)-1)
-		
-		if (error == "Operation cancelled by callback function.")
-			stop("Operation cancelled by callback function.")
-	}
-	
-	result
-}
-
-
