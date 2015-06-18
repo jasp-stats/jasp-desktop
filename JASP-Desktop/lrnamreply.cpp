@@ -28,7 +28,6 @@ LRNAMReply::LRNAMReply(const QString &path, QObject *parent)
 		{
 			setHeader(QNetworkRequest::ContentTypeHeader, "image/png");
 		}
-		setRawHeader(QString("Cache-Control").toLatin1(), QString("no-cache").toLatin1());
 	}
 
 	_file.setFileName(path);
