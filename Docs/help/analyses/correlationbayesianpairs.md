@@ -1,7 +1,7 @@
-Bayesian Correlation Matrix
+Bayesian Correlation Pairs
 ==========================
 
-The Bayesian Correlation Matrix allows you to test the null hypothesis that the population (Pearson product-moment correlation) equals 0.
+The Bayesian Correlation Pairs allows you to test the null hypothesis that the population (Pearson product-moment correlation) between pairs of variables equals 0.
 
 Assumptions
 -----------
@@ -21,10 +21,6 @@ Options
 - BF01: Bayes factor to quantify evidence for the null hypothesis relative to the alternative hypothesis
 - Log(BF10): Natural logarithm of BF10
 
-### Report Bayes factors: Report Bayes factor for each test
-
-### Beta* prior width: Width of the scaled beta density on the correlation under the alterative hypothesis; default is 1
-
 Output
 -------
 ### Bayesian Pearson Correlations:
@@ -35,6 +31,11 @@ Output
   - BF0+: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that the population correlation is higher than 0
   - BF0-: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that the population correlation is lower than 0
 
+### Missing Values:
+ - Exclude cases analysis by analysis: In case of multiple correlations tests within a single analysis, each test will be conducted using all cases with valid data for the variables for the particular test. 
+ Sample sizes may therefore vary across the tests.
+ - Exclude cases listwise: In case of multiple correlation tests within a single analysis, each test will be conducted using only cases with valid data for all variables. Sample size is therefore constant across the tests. 
+ 
 Example
 -------
 
@@ -61,26 +62,14 @@ not equal 0 than under null hypothesis that the population correlation equals 0,
 
 Additional Options
 -------
-- Flag supported correlations: Mark correlations in the "Bayesian Pearson Correlations" table that are supported by the Bayes factor
-
 ### Plots:
-  - Correlation Matrix: Displays a (matrix of) scatterplot(s) between the variables
-    - Densities for variables: Add a histogram and the corresponding density plot for each variable to the Correlation Matrix plot
-    - Posteriors under H1: Adds the density plot of the posterior distribution of the correlation under the alternative hypothesis to the Correlation Matrix plot
+- Prior and posterior: Displays the prior and posterior density of the correlation under the alternative hypothesis
+  - Additional info: Adds the Bayes factor; adds a pizza plot depicting the odds of the data under the null vs. alternative hypothesis; adds the median and the 95% credible interval of the posterior density of the correlation
 
 Additional Output
 -------
-### Bayesian Pearson Correlations:
-- Flag supported correlations: Correlations that are supported to the Bayes factor are marked with (see Jeffreys [1961] for evidence categories)
-  - *BF > 10 if the data are at least 10 times more likely under the chosen hypothesis (see Hypothesis above)
-  - **BF > 30 if the data are at least 30 times more likely under the chosen hypothesis (see Hypothesis above)
-  - ***BF > 100 if the data are at least 100 times more likely under the chosen hypothesis (see Hypothesis above)
-
-### Plots:
-- Correlation Matrix: Displays a (matrix of) scatterplot(s) between the variables (in the upper off-diagonal entries of the matrix). The black line represents the least-square regression line
-    - Densities for variables: Displays a histogram and the corresponding density plot for each variable in the diagonal entries of the matrix
-    - Posteriors under H1: Displays density plot(s) of the posterior of the correlation(s) [rho] under the alternative hypothesis in the lower off-diagonal entries of the
-    matrix
+- Prior and posterior: Displays the prior (dashed line) and posterior (solid line) density of the correlation under the alternative hypothesis; the gray circles represent the height of the prior and the posterior density at 0. The horizontal solid line represents the width of the 95% credible interval of the posterior
+ - Additional info: Displays the Bayes factor; displays a pizza plot depicting the odds of the data under the null vs. alternative hypothesis; displays the median and 95% credible interval of the posterior density
       
 References
 -------

@@ -1,41 +1,37 @@
 Correlation Matrix
 ==========================
 
-Correlation Matrix allows you to test the null hypothesis that the population correlation between pairs of variables equals 0.
+Correlation Matrix allows you to test the null hypothesis that the population correlation equals 0.
 
 Assumptions for null hypothesis significance testing using the Pearson product-moment correlation coefficient
 -----------
-- Numeric variables.
-- The data are a random sample from the population for each variable.
-- The pairs of variables follow a bivariate normal distribution in the population.
+- Continuous variables
+- The data are a random sample from the population
+- The pairs of variables follow a bivariate normal distribution in the population
 
 Assumptions for null hypothesis significance testing using the Spearman's rank-order correlation coefficient and the Kendall's tau B rank-order correlation coefficient
 -----------
-- Ordinal or numeric variables.
-- The data are a random sample from the population for each variable.
-- The relationship between the pairs of variables is monotonic.
+- Ordinal or continuous variables
+- The data are a random sample from the population
+- The relationship between the pairs of variables is monotonic
 
 Options
 -------
 ### Correlation Coefficients: 
-- Pearson: Pearson product-moment correlation coefficient to quantify the linear association between two variables.
-- Kendall's tau-b: Kendall's tau B rank-order correlation coefficient to quantify the monotonic association between two variables.
-- Spearman: Spearman's rank-order correlation coefficient to quantify the monotonic association between two variables.
+- Pearson: Pearson product-moment correlation coefficient to quantify the linear association between two variables
 
 ### Hypothesis:
-- Correlated: Two-sided alternative hypothesis that the population correlation does not equal 0. 
-- Correlated positively: One-sided alternative hypothesis that the population correlation is larger than 0.
-- Correlated negatively: One-sided alternative hypothesis that the population correlation is smaller than 0.
+- Correlated: Two-sided alternative hypothesis that the population correlation does not equal 0 
+- Correlated positively: One-sided alternative hypothesis that the population correlation is higher than 0
+- Correlated negatively: One-sided alternative hypothesis that the population correlation is lower than 0
 
-- Report significance: Report p-value for each significance test.
+### Report significance: Report p-value for each significance test
  
 Output
 -------
-### Correlation Table (Note that this table is called "Pearson Correlations" if only the Pearson correlation coefficient is requested):
-- Pearson's R: Pearson product-moment correlation coefficient. Alternatively:
-  - Spearman's Rho: Spearman's rank-order correlation coefficient.
-  - Kendall's tau B: Kendall's tau B rank-order correlation coefficient.
-- p-value: p-value.
+### Pearson Correlations (Note that this table is called "Correlation Table" if Spearman's rank-order correlation and/or the Kendall's tau B rank-order correlation is requested):
+- Pearson's r: Pearson product-moment correlation coefficient
+- p-value: p-value
 
 Example
 -------
@@ -44,8 +40,8 @@ Example
 - NBA Business Revenue and Team Value
 
 ### Input: 
-- The null hypotheses that the pairwise population correlations between the business revenue ("Revenue"), team value ("Value"), debt ("Debt"), and income ("Income") of teams in the National Basketball Association (NBA) equals 0 are tested
-  against the two-sided alternative hypotheses that the pairwise correlations does not equal 0.
+- The null hypotheses that the pairwise population correlations between the business revenue ("Revenue"), team value ("Value"), debt ("Debt"), and income ("Income") of teams in the National Basketball Association (NBA) equal 0 are tested
+  against the two-sided alternative hypotheses that the pairwise correlations do not equal 0.
 
 ### Output: 
 - The Pearson correlation between "Value" and "Revenue" equals -0.323; the null hypothesis that the population correlation equals 0 cannot be rejected in favor of the two-sided alternative
@@ -64,27 +60,39 @@ Example
   
 Additional Options
 -------
-- Flag significant correlations: Mark significant correlations in the "Correlation Table".
+### Correlation Coefficients: 
+- Kendall's tau-b: Kendall's tau B rank-order correlation coefficient to quantify the monotonic association between two variables
+- Spearman: Spearman's rank-order correlation coefficient to quantify the monotonic association between two variables
 
+### Flag significant correlations: Marks statistically significant correlations
+
+### Confidence Intervals: Confidence intervals for the population correlation (only available for the Pearson correlation)
+  - Interval: Coverage of the confidence interval in percentages
+  
 ### Plots
-  - Correlation Matrix: Displays a (matrix of) scatterplot(s) between the variables.
-    - Densities for variables: Add a histogram and the corresponding density plot for each variable to the Correlation Matrix.
-    - Statistics: Adds the correlation coefficient(s) and the corresponding 95% confidence interval(s) to the Correlation Matrix.
-
+  - Correlation Matrix: Displays a (matrix of) scatterplot(s) between the variables
+    - Densities for variables: Adds a histogram and the corresponding density plot for each variable to the Correlation Matrix plot
+    - Statistics: Adds the correlation coefficient(s) to the Correlation Matrix plot. If only the Pearson correlation is requested, this option also adds the x%
+      confidence interval(s) as specified in the "Confidence Intervals" option
+    
 Additional Output
 -------
 ### Correlation Table:
-- Flag significant correlations: Significant correlations are marked with:
-  - *p < .05 if the correlation is significant at alpha=.05 level.
-  - **p < .01 if the correlation is significant at alpha=.01 level.
-  - ***p < .001 if the correlation is significant at alpha=.001 level.
+- Spearman's rho: Spearman's rank-order correlation coefficient
+- Kendall's tau B: Kendall's tau B rank-order correlation coefficient
+- Significant correlations are marked with:
+  - *p < .05 if the correlation is significant at alpha=.05 level
+  - **p < .01 if the correlation is significant at alpha=.01 level
+  - ***p < .001 if the correlation is significant at alpha=.001 level
+- Upper x% CI: Upper bound of the x% confidence interval for the population correlation
+- Lower x% CI: Lower bound of the x% confidence interval for the population correlation
+
 
 ### Plots:
-  - Correlation Matrix: Displays a (matrix of) scatterplot(s) between the variables (in the off-diagonal entries of the
-    matrix). The solid black line in the scatterplot represents (TBA).
-    - Densities for variables: Displays a histogram and the corresponding density plot for each variable in the diagonal entries of the matrix.
-    - Statistics: Displays the correlation coefficient(s) and, in case only the Pearson's correlation is requested, also the corresponding 95% confidence interval(s) in the off-diagonal entries of the
-    matrix.
+- Correlation Matrix: Displays a (matrix of) scatterplot(s) between the variables (in the upper off-diagonal entries of the matrix). The black line represents the least-square regression line
+    - Densities for variables: Displays a histogram and the corresponding density plot for each variable in the diagonal entries of the matrix
+    - Statistics: Displays the correlation coefficient(s) and, in case only the Pearson's correlation is requested, also the corresponding x% confidence interval(s) in the lower off-diagonal entries of the
+    matrix
       - r: Pearson product-moment correlation coefficient
       - rho: Spearman's rank-order correlation coefficient
       - tau: Kendall's tau B rank-order correlation coefficient
