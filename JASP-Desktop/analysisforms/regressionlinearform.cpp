@@ -35,20 +35,6 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 
 	ui->panelStatistics->hide();
 	ui->panelOptions->hide();
-
-#ifdef QT_NO_DEBUG
-	ui->groupBoxResiduals->hide();
-	ui->groupBoxSteppingMethodCriteria->hide();
-	ui->includeConstant->hide();
-	ui->widgetOptions->hide();
-	ui->wlsWeightsContainer->hide(); // wls weights
-#else
-	ui->groupBoxResiduals->setStyleSheet("background-color: pink ;");
-	ui->groupBoxSteppingMethodCriteria->setStyleSheet("background-color: pink ;");
-	ui->includeConstant->setStyleSheet("background-color: pink ;");
-	ui->widgetOptions->setStyleSheet("background-color: pink ;");
-	ui->wlsWeightsContainer->setStyleSheet("background-color: pink ;");
-#endif
 }
 
 RegressionLinearForm::~RegressionLinearForm()
