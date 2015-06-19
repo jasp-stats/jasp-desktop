@@ -70,6 +70,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	results[["correlations"]] <- correlationTableOutput$correlationTable
 	
+	
 	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$credibleIntervals == FALSE && diff$credibleIntervalsInterval == FALSE
 																										&& diff$hypothesis == FALSE && diff$kendallsTauB == FALSE && diff$missingValues == FALSE && diff$pearson == FALSE && diff$plotCorrelationMatrix == FALSE
 																										&& diff$plotDensitiesForVariables == FALSE && diff$plotPosteriors == FALSE && diff$spearman == FALSE && diff$variables == FALSE && diff$priorWidth == FALSE)))) {
@@ -81,12 +82,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		results[["plots"]] <- .correlationMatrixPlotBayesian(dataset, perform, options, hypothesis=options$hypothesis)
 	}
 	
+	keep <- results[["plots"]][[1]]$data
+	
 	if (perform == "init") {
 		if (length(options$variables) < 2) {
-			results <- list(results=results, status="complete")
+			results <- list(results=results, status="complete", keep=keep)
 			return(results)
 		} else {
-			results <- list(results=results, status="inited", state=state)
+			results <- list(results=results, status="inited", state=state, keep=keep)
 			return(results)
 		}
 	} else {
@@ -107,7 +110,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							   footnotesExcludePairwise=correlationTableOutput$footnotesExcludePairwise,
 							   bfValuesExcludeListwise=correlationTableOutput$bfValuesExcludeListwise,
 							   footnotesExcludeListwise=correlationTableOutput$footnotesExcludeListwise,
-							   correlationPlots=results$plots)))
+							   correlationPlots=results$plots), keep=keep))
 	}
 }
 # "variables": data.frame thingie vfc
