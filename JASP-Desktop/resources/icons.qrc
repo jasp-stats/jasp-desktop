@@ -61,5 +61,7 @@
         <file>icons/variable-nominal-inactive.svg</file>
         <file>icons/variable-nominal-text.svg</file>
         <file>icons/analysis-classical-sem.svg</file>
+        <file>icons/copy.png</file>
+        <file>icons/cite.png</file>
     </qresource>
 </RCC>

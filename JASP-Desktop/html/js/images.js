@@ -1,64 +1,44 @@
-$.widget("jasp.images", {
+JASPWidgets.images = Backbone.Collection.extend({
 
-    options: {
-        items : [ ],
-        itemoptionschanged : [ ],
-        status : "waiting"
-    },
-    _create: function () {
+	model: JASPWidgets.image,
+});
 
-        this.element.addClass("jasp-images")
+JASPWidgets.imagesView = JASPWidgets.CollectionView.extend({
 
-        this.images = $(this.element)
+	createItemView: function (item) {
+		var imageView = new JASPWidgets.imageView({ className: "jasp-images-image jasp-image", model: item });
+		this.listenTo(imageView.resizer, "ResizeableView:resizeStart", this.onResizingStart);
+		return imageView;
+	},
 
-        this.refresh()
-    },
-    _setOptions: function (options) {
-        this._super(options)
+	onResizingStart: function (w, h) {
+		for (var i = 0; i < this.views.length; i++) {
+			var imageView = this.views[i];
+			if (imageView.resizer.isMouseResizing()) {
+				this.listenTo(imageView.resizer, "ResizeableView:resized", this.onResized);
+				this.listenTo(imageView.resizer, "ResizeableView:viewResized", this.onViewResized);
+			}
+			else
+				imageView.resizer.resizeStart(w, h, true);
+		}
+	},
 
-        this.refresh()
-    },
-    refresh: function () {
+	onViewResized: function (w, h) {
+		for (var i = 0; i < this.views.length; i++) {
+			var imageView = this.views[i];
+			if (!imageView.resizer.isMouseResizing())
+				imageView.resizer.resizeView(w, h);
+		}
+	},
 
-        this.images.empty()
-
-        if (this.options.items && $.isArray(this.options.items) && this.options.items.length > 0)
-        {
-            for (var i = 0; i < this.options.items.length; i++)
-            {
-            	var options = this.options.items[i]
-            	if ( ! options["status"])
-            		options["status"] = this.options.status
-            
-                var image = $('<div class="jasp-images-image"></div>')
-                image.image(options)
-                this.images.append(image)
-                
-                var self = this
-                var allImages = this.element.find(".jasp-image-holder");
-                
-				image.bind("imageresize", function(event, ui) {
-                
-					$(allImages)
-						.css("width", ui.size.width)
-						.css("height", ui.size.height)
-				
-				})
-                
-				image.bind("imagecustomchanged", function(event, data) {
-                
-					self._trigger("itemoptionschanged", null, data)
-				})
-				
-            }
-
-        }
-        else {
-
-        }
-
-    },
-    _destroy: function () {
-        this.element.removeClass("jasp-images").text("")
-    }
-})
+	onResized: function (w, h) {
+		for (var i = 0; i < this.views.length; i++) {
+			var imageView = this.views[i];
+			if (imageView.resizer.isMouseResizing()) {
+				this.stopListening(imageView.resizer);
+			}
+			else
+				imageView.resizer.resizeStop(w, h);
+		}
+	}
+});

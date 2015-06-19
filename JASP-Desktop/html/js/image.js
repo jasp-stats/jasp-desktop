@@ -1,113 +1,161 @@
-$.widget("jasp.image", {
+JASPWidgets.image = JASPWidgets.Resizeable.extend({
 
-	options: {
+	defaults: {
 		title: "",
 		width: 480,
 		height: 320,
-        data: null,
-        status : "waiting",
-        resize : [ ],
-        custom : null,
-        customchanged : [ ],
-        itemoptionschanged : [ ],
-        error : null
-	},
-	_create: function () {
-		this.element.addClass("jasp-image")
-		this.imageElement = null
-		this.refresh()
-	},
-	_setOptions: function (options) {
+		data: null,
+		status: "waiting",
+		custom: null,
+		error: null
+	}
+});
 
-		this._super(options)		
-		this.refresh()
-	},
-	_startResize : function(event, ui) {
-	
-		this.imageElement.addClass("jasp-image-resizable")
-	},
-	_resize : function(event, ui) {
-	
-		this._trigger("resize", event, ui)
-	},
-	_stopResize : function(event, ui) {
+JASPWidgets.imageView = JASPWidgets.View.extend({
 
-		this.imageElement.removeClass("jasp-image-resizable")
+	initialize: function () {
 
-		var custom = this.options.custom
+		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
+		this.toolbar.setParent(this);
 
-		var options = { }
-		
-		if (_.has(custom, "width"))
-			options[custom.width] = ui.size.width
-		if (_.has(custom, "height"))
-			options[custom.height] = ui.size.height
-			
-		this._trigger("customchanged", null, options)
-		this._trigger("itemoptionschanged", null, options)
-		
+		this.resizer = new JASPWidgets.ResizeableView({ model: this.model, className: "jasp-resize" });
+
+		this.listenTo(this.resizer, "ResizeableView:resized", this.onResized)
+		this.listenTo(this.resizer, "ResizeableView:resizeStart", this.onResizeStart)
+		this.listenTo(this.resizer, "ResizeableView:resizeStop", this.onResizeStop)
+		var self = this;
+		this.resizer.resizeTargetElement = function () {
+			var t = self.$(".jasp-image-holder");
+			return self.$(".jasp-image-holder");
+		};
+		this.resizer.resizeDisabled = function () {
+			var custom = self.model.get("custom");
+			return custom === null;
+		};
 	},
-	refresh: function () {
-		
-		var html = ''
-		
-		if (this.options.title) {
-		
-			html += '<h2>' + this.options.title + '</h2>'
+
+	onResized: function (w, h) {
+		var options = {};
+		var custom = this.model.get("custom");
+		if (custom !== null) {
+			if (_.has(custom, "width"))
+				options[custom.width] = w;
+			if (_.has(custom, "height"))
+				options[custom.height] = h;
 		}
-		
+
+		this.model.trigger("CustomOptions:changed", options);
+	},
+
+	onResizeStart: function (w, h) {
+		this.$el.addClass("jasp-image-resizable");
+	},
+
+	onResizeStop: function (w, h) {
+		this.$el.removeClass("jasp-image-resizable");
+	},
+
+	events: {
+			'mouseenter': '_hoveringStart',
+			'mouseleave': '_hoveringEnd',
+	},
+
+	_hoveringStart: function (e) {
+		this.toolbar.setVisibility(true);
+		this.resizer.setVisibility(true);
+	},
+
+	_hoveringEnd: function (e) {
+		this.toolbar.setVisibility(false);
+		this.resizer.setVisibility(false);
+	},
+
+	render: function () {
+		var html = ''
+		var title = this.model.get("title");
+		var status = this.model.get("status");
+		var error = this.model.get("error");
+		var data = this.model.get("data");
+		var custom = this.model.get("custom");
+
+		if (title) {
+			this.toolbar.title = title;
+			this.toolbar.titleTag = "h2";
+			//this.$el.append('<h2>' + title + '</h2>');
+		}
+
+		this.toolbar.render();
+		this.$el.append(this.toolbar.$el);
+
 		var classes = ""
-		if (this.options.status)
-			classes += this.options.status
-			
-		if (this.options.error)
+		if (status)
+			classes += status
+
+		if (error)
 			classes += " error-state"
-		
-		html += '<div class="jasp-image-holder ' + classes + '" style="width : ' + this.options.width + 'px ; height : ' + this.options.height + 'px ; ">'
+
+		html += '<div class="jasp-image-holder ' + classes + '>'
 
 		html += '<div class="jasp-image-image" style="'
 
-		if (this.options.data) {
+		if (data) {
+			html += 'background-image : url(\'' + data + '?x=' + Math.random() + '\') ;'
 
-			html += 'background-image : url(\'' + this.options.data + '?x=' + Math.random() + '\') ;'
 			html += 'background-size : 100% 100% ;'
 		}
-		
+
 		html += '"></div>'
 
-		if (this.options.error && this.options.error.errorMessage) {
+		if (error && error.errorMessage) {
 
 			html += '<div  class="error-message-positioner">'
 			html += '<div  class="error-message-box ui-state-error">'
 			html += '<span class="error-message-symbol ui-icon ui-icon-alert"></span>'
-			html += '<div  class="error-message-message">' + this.options.error.errorMessage + '</div>'
+			html += '<div  class="error-message-message">' + error.errorMessage + '</div>'
 			html += '</div>'
 			html += '</div>'
 		}
-		
+
 		html += '<div class="jasp-image-loader"></div>'
-		
+
 		html += '</div>'
 
-		this.element.html(html)
-		
+		this.$el.append(html)
+
 		var self = this
 
-		if (this.options.custom) {
-		
-			this.imageElement = this.element.find(".jasp-image-holder")
+		this.resizer.render();
 
-			this.imageElement.resizable( {
-				minWidth : 160,
-				minHeight: 160,
-				start  : function(event, ui) { self._startResize(event, ui) },
-				stop   : function(event, ui) { self._stopResize(event, ui) },
-				resize : function(event, ui) { self._resize(event, ui) }
-			} )
-		}
-		
+		return this;
 	},
-	_destroy: function () {
-		this.element.removeClass("jasp-image").text("")
+
+	exportBegin: function () {
+		var data = this.model.get("data");
+		JASPWidgets.Encodings.base64Request(data, function (base64) {
+			saveImageBegin(data, base64, function (fullpath) {
+				var title = this.model.get("title");
+				var width = this.model.get("width");
+				var height = this.model.get("height");
+				var text = '<h2>' + title + '</h2>'
+				text += '<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />';
+				this.exportComplete(text);
+			}, this);
+		}, this);
+	},
+
+	exportComplete: function (html) {
+		pushHTMLToClipboard(html);
+	},
+
+	copyMenuClicked: function () {
+		this.exportBegin();
+		return true;
+	},
+
+	menuName: "Plot",
+
+	onClose: function () {
+		this.toolbar.close();
+		this.resizer.close();
 	}
-})
+});

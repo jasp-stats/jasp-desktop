@@ -239,33 +239,14 @@ svg > text
 
 div.toolbar
 {
-	padding-left : 1em ;
 	display: inline-block ;
+	position: relative;
 }
 
-div.toolbar-button
-{
-	width: 16px ;
-	height: 16px ;
-	background-size : 100% ;
-	cursor : pointer ;
-	display: inline-block ;
-	
-	margin-left: 3px ;
-	border: 1px solid transparent ;
-}
 
 div.toolbar-button:active {
 
 	border: 1px solid silver ;
-}
-
-div.copy {
-	background : url(images/copy.png) no-repeat;
-}
-
-div.cite {
-	background : url(images/cite.svg) no-repeat;
 }
 
 div.status
@@ -301,6 +282,8 @@ div.status.waiting {
 	float: left ;
 	z-index: 100 ;
 }
+
+
 
 .jasp-image-holder .error-message-positioner {
 
@@ -345,4 +328,54 @@ td.squash-left
 	border-radius: 10px ;
 	color: #3CAAE7 ;
 
+}
+
+.jasp-hide {
+    display: none;
+	visibility: hidden ;
+}
+
+.jasp-resize {
+    background: top left no-repeat url(images/arrow-resize.png);
+    right: 5px;
+    cursor: nw-resize;
+	bottom: 16px;
+	position: absolute;
+    width: 16px;
+    height: 16px;
+}
+
+.jasp-toolbar h1, .jasp-toolbar h2, .jasp-toolbar h3, .jasp-toolbar div , .jasp-toolbar span {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+div.toolbar-button
+{
+	width: 16px ;
+	height: 16px ;
+	background-size : 100% ;
+	cursor : pointer ;
+	display : inline-block;
+	vertical-align:middle;
+	
+	margin-left: 6px ;
+	border: 1px solid transparent ;
+}
+
+.jasp-menu {
+    background: top left no-repeat url(images/arrowsmalldownbtn.png); 
+}
+
+.jasp-toolbar {
+	display: block ;
+	cursor: pointer;
+}
+
+.jasp-menu-selected {
+	background-color : #BFD9F7 ;
+}
+
+.jasp-table {
+	display: inline-block;
 }
