@@ -1181,8 +1181,8 @@ void MainWindow::pushImageToClipboardHandler(const QByteArray &base64)
 	if(pm.loadFromData(byteArray))
 	{
 #ifdef __WIN32__ //needed because jpegs/clipboard doesn't support transparency in windows
-		QImage image2(pm.size(), pm.format());
-		image2.fill(QColor(Qt::white).rgb());
+		QImage image2(pm.size(), QImage::Format_ARGB32);
+		image2.fill(Qt::white);
 		QPainter painter(&image2);
 		painter.drawImage(0, 0, pm);
 
@@ -1262,9 +1262,11 @@ void MainWindow::citeSelected()
 
 void MainWindow::scrollValueChangedHandle()
 {
-	_analysisMenu->hide();
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.menuCancelled();");
-
+	if ( ! _analysisMenu->isHidden())
+	{
+		_analysisMenu->hide();
+		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.menuCancelled();");
+	}
 }
 
 void MainWindow::analysisChangedDownstreamHandler(int id, QString options)

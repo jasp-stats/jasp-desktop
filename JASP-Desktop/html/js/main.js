@@ -59,17 +59,22 @@ $(document).ready(function () {
 	window.copyMenuClicked = function () {
 		if (this.menuObject.copyMenuClicked | this.menuObject.copyMenuClicked()) {
 			this.menuObject.toolbar.completeEvent("Copied to clipboard");
+			this.menuObject = null;
 		}
 	}
 
 	window.citeMenuClicked = function () {
 		if (this.menuObject.citeMenuClicked | this.menuObject.citeMenuClicked()) {
 			this.menuObject.toolbar.completeEvent("Citation copied to clipboard");
+			this.menuObject = null;
 		}
 	}
 
 	window.menuCancelled = function () {
-		this.menuObject.toolbar.cancelEvent();
+		if (this.menuObject !== undefined && this.menuObject !== null) {
+			this.menuObject.toolbar.cancelEvent();
+			this.menuObject = null;
+		}
 	}
 
 	window.scrollIntoView = function (item) {

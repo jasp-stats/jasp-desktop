@@ -37,12 +37,23 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	copyMenuClicked: function () {
 		
-		this.exportBegin(this.views);
+		this.exportBegin(JASPWidgets.ExportType.CopyHTML, this.views);
 
 		return true;
 	},
 
-	exportBegin: function (views) {
+	exportMenuClicked: function () {
+
+		this.exportBegin(JASPWidgets.ExportType.SaveHTML, this.views);
+
+		return true;
+	},
+
+	exportBegin: function (exportType, views) {
+
+		if (exportType === undefined)
+			exportType = JASPWidgets.ExportType.CopyHTML;
+
 		var viewList = views;
 		if (views === undefined)
 			viewList = this.views;
@@ -51,16 +62,17 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.exportCounter = viewList.length;
 
 		for (var i = 0; i < viewList.length; i++) {
-			this.exportView(viewList[i], i, this.buffer);
+			this.exportView(exportType, viewList[i], i, this.buffer);
 		}
 	},
 
-	exportView: function (view, i) {
+	exportView: function (exportType, view, i) {
 		var self = this;
 		var index = i;
-		view.exportComplete = function (html) {
-			this.exportComplete = null;
-			self.buffer[index] = html;
+		var originalExportComplete = view.exportComplete;
+		view.exportComplete = function (exType, data) {
+			this.exportComplete = originalExportComplete;
+			self.buffer[index] = data;
 			self.exportCounter -= 1;
 			if (self.exportCounter === 0) {
 				var completeText = "<h1>" + self.toolbar.title + "</h1>";
@@ -69,14 +81,14 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 					if (j !== self.buffer.length - 1)
 						completeText += "</p>&nbsp;</p>\n";
 				}
-				self.exportComplete(completeText);
+				self.exportComplete(exType, completeText);
 				self.buffer = [];
 			}
 		};
-		view.exportBegin();
+		view.exportBegin(exportType);
 	},
 
-	exportComplete: function (html) {
+	exportComplete: function (exportType, html) {
 		pushHTMLToClipboard(html);
 	},
 

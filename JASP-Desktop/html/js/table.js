@@ -1020,16 +1020,20 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		return text;
 	},
 
-	exportBegin: function () {
-		this.exportComplete(this.exportHTML());
+	exportBegin: function (exportType) {
+
+		if (exportType == undefined)
+			exportType = JASPWidgets.ExportType.CopyHTML;
+
+		this.exportComplete(exportType, this.exportHTML());
 	},
 
-	exportComplete: function (html) {
+	exportComplete: function (exportType, html) {
 		pushHTMLToClipboard(html);
 	},
 
 	copyMenuClicked: function () {
-		this.exportBegin();
+		this.exportBegin(JASPWidgets.ExportType.CopyHTML);
 		return true;
 	},
 

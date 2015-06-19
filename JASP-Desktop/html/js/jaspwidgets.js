@@ -55,7 +55,7 @@ JASPWidgets.Encodings = {
 
 	base64Request: function (path, callback, context) {
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', path, true); //eg '/my/image/name.png'
+		xhr.open('GET', path + '?x=' + Math.random(), true); //eg '/my/image/name.png'
 		xhr.responseType = 'arraybuffer';
 
 		var self = context || this;
@@ -71,7 +71,7 @@ JASPWidgets.Encodings = {
 
 	byteRequest: function (path, callback, context) {
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', path, true); //eg '/my/image/name.png'
+		xhr.open('GET', path + '?x=' + Math.random(), true); //eg '/my/image/name.png'
 		xhr.responseType = 'arraybuffer';
 
 		var self = context || this;
@@ -82,6 +82,29 @@ JASPWidgets.Encodings = {
 		xhr.send();
 	}
 }
+
+JASPWidgets.ExportType = {
+	CopyRaw: 0,
+	CopyHTML: 1,
+	SaveRaw: 2,
+	SaveHTML: 3,
+
+	isHTML: function (value) {
+		return (value & 1) === 1;
+	},
+
+	isRaw: function (value) {
+		return (value & 1) === 0;
+	},
+
+	isSave: function (value) {
+		return (value & 2) === 2;
+	},
+
+	isCopy: function (value) {
+		return (value & 2) === 0;
+	},
+};
 
 JASPWidgets.View = Backbone.View.extend({
 
@@ -301,7 +324,11 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 		this.views = [];
 	},
 
-	exportBegin: function (views) {
+	exportBegin: function (exportType, views) {
+
+		if (exportType == undefined)
+			exportType = JASPWidgets.ExportType.CopyHTML;
+
 		var viewList = views;
 		if (views === undefined)
 			viewList = this.views;
@@ -310,17 +337,18 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 		this.exportCounter = viewList.length;
 
 		for (var i = 0; i < viewList.length; i++) {
-			this.exportView(viewList[i], i, this.buffer);
+			this.exportView(exportType, viewList[i], i, this.buffer);
 		}
 	},
 
-	exportView: function (view, i)
+	exportView: function (exportType, view, i)
 	{
 		var self = this;
 		var index = i;
-		view.exportComplete = function (html) {
-			this.exportComplete = null;
-			self.buffer[index] = html;
+		var originalExportComplete = view.exportComplete;
+		view.exportComplete = function (exType, data) {
+			this.exportComplete = originalExportComplete;
+			self.buffer[index] = data;
 			self.exportCounter -= 1;
 			if (self.exportCounter === 0) {
 				var completeText = "";
@@ -329,14 +357,14 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 					if (j !== self.buffer.length - 1)
 						completeText += "</p>&nbsp;</p>\n";
 				}
-				self.exportComplete(completeText);
+				self.exportComplete(exType, completeText);
 				self.buffer = [];
 			}
 		};
-		view.exportBegin();
+		view.exportBegin(exportType);
 	},
 
-	exportComplete: function (html) {
+	exportComplete: function (exportType, html) {
 		pushHTMLToClipboard(html);
 	}
 });

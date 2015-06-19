@@ -129,26 +129,62 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		return this;
 	},
 
-	exportBegin: function () {
+	exportBegin: function (exportType) {
+
+		if (exportType == undefined)
+			exportType = JASPWidgets.ExportType.CopyHTML;
+
 		var data = this.model.get("data");
 		JASPWidgets.Encodings.base64Request(data, function (base64) {
-			saveImageBegin(data, base64, function (fullpath) {
+
+			if (JASPWidgets.ExportType.isHTML(exportType)) {
+
+				var css = this.$el.css(["float", "display"])
+				var style = "";
+				if (css["float"])
+					style += "float: " + css["float"] + "; "
+				if (css["display"])
+					style += "display: " + css["display"] + "; "
+
 				var title = this.model.get("title");
 				var width = this.model.get("width");
 				var height = this.model.get("height");
-				var text = '<h2>' + title + '</h2>'
-				text += '<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />';
-				this.exportComplete(text);
-			}, this);
+				var text = '<div style="' + style + '">';
+				text += '<h2>' + title + '</h2>'
+
+				if (JASPWidgets.ExportType.isCopy(exportType)) {
+					saveImageBegin(data, base64, function (fullpath) {
+
+						text += '<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />';
+						text += '</div>';
+
+						this.exportComplete(exportType, text);
+					}, this);
+				}
+				else if (JASPWidgets.ExportType.isSave(exportType))
+				{
+					text += '<img src="data:image/png;base64,' + base64 + '" style="width:' + width + 'px; height:' + height + 'px;" />';
+					text += '</div>';
+
+					this.exportComplete(exportType, text);
+				}
+			}
+			else if (JASPWidgets.ExportType.isRaw(exportType))
+			{
+				this.exportComplete(exportType, base64);
+			}
 		}, this);
 	},
 
-	exportComplete: function (html) {
-		pushHTMLToClipboard(html);
+	exportComplete: function (exportType, data) {
+		if (exportType == JASPWidgets.ExportType.CopyHTML)
+			pushHTMLToClipboard(data);
+		else if (exportType == JASPWidgets.ExportType.CopyRaw)
+			pushImageToClipboard(data);
 	},
 
 	copyMenuClicked: function () {
-		this.exportBegin();
+		this.exportBegin(JASPWidgets.ExportType.CopyRaw);
 		return true;
 	},
 
