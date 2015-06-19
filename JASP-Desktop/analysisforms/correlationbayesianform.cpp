@@ -23,11 +23,9 @@ CorrelationBayesianForm::CorrelationBayesianForm(QWidget *parent) :
 	ui->panelOptions->hide();
 
 #ifdef QT_NO_DEBUG
-	ui->optionsWidget->hide();
     ui->credibleIntervalsIntervalContainer->hide();
     ui->credibleIntervals->hide();
 #else
-	ui->optionsWidget->setStyleSheet("background-color: pink ;");
 	ui->credibleIntervalsIntervalContainer->setStyleSheet("background-color: pink ;");
 	ui->credibleIntervals->setStyleSheet("background-color: pink ;");
 #endif
