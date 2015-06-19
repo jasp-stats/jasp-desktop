@@ -1233,7 +1233,10 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 		_analysisMenu->addAction(_copyIcon, "Copy " + tq(menuOptions["objectName"].asString()), this, SLOT(copySelected()));
 
 	if (menuOptions["hasCite"].asBool())
+	{
+		_analysisMenu->addSeparator();
 		_analysisMenu->addAction(_citeIcon, "Cite", this, SLOT(citeSelected()));
+	}
 
 	QPoint point = ui->webViewResults->mapToGlobal(QPoint(menuOptions["rX"].asInt(), menuOptions["rY"].asInt()));
 
