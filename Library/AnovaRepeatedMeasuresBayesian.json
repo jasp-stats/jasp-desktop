@@ -1,71 +1,82 @@
-[
-   {
-      "name" : "repeatedMeasuresFactors",
-      "type" : "Table",
-      "template" : [
-         {
-            "default" : "RM Factor %1",
-            "name" : "name",
-            "type" : "String"
-         },
-         {
-            "name" : "levels",
-            "type" : "Variables",
-            "default" : [ "Level 1", "Level 2" ]
-         }
-      ],
-      "default" : [
-         {
-            "levels" : [ "Level 1", "Level 2" ],
-            "name" : "RM Factor 1"
-         }
-      ]
-   },
-   {
-      "name" : "repeatedMeasuresCells",
-      "type" : "Variables"
-   },
-   {
-      "name" : "betweenSubjectFactors",
-      "type" : "Variables"
-   },
-   {
-      "name" : "covariates",
-      "type" : "Variables"
-   },
-   {
-      "name" : "outputEffects",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "effectsStepwise",
-      "type" : "Boolean"
-   },
-   {
-      "options" : [ "BF10", "BF01", "LogBF10" ],
-	  "default" : "BF10",
-      "name" : "bayesFactorType",
-      "type" : "List"
-   },
-   {
-      "name" : "modelTerms",
-      "type" : "Table",
-      "template" : [
-         {
-            "name" : "components",
-            "type" : "Term"
-         },
-         {
-            "name" : "isNuisance",
-            "type" : "Boolean"
-         }
-      ],
-      "default" : [
-         {
-            "components" : [ "RM Factor 1" ],
-            "isNuisance" : false
-         }
-      ]
-   }
-]
-
+{
+	"name": "AnovaRepeatedMeasuresBayesian",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "repeatedMeasuresFactors",
+			"type": "Table",
+			"template": [
+				{
+					"default": "RM Factor %1",
+					"name": "name",
+					"type": "String"
+				},
+				{
+					"name": "levels",
+					"type": "Variables",
+					"default": [ "Level 1", "Level 2" ]
+				}
+			],
+			"default": [
+				{
+					"levels": [ "Level 1", "Level 2" ],
+					"name": "RM Factor 1"
+				}
+			]
+		},
+		{
+			"name": "repeatedMeasuresCells",
+			"type": "Variables"
+		},
+		{
+			"name": "betweenSubjectFactors",
+			"type": "Variables"
+		},
+		{
+			"name": "covariates",
+			"type": "Variables"
+		},
+		{
+			"name": "effects",
+			"type": "Boolean"
+		},
+		{
+			"name": "effectsStepwise",
+			"type": "Boolean"
+		},
+		{
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"name": "bayesFactorType",
+			"type": "List"
+		},
+		{
+			"name": "modelTerms",
+			"type": "Table",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				},
+				{
+					"name": "isNuisance",
+					"type": "Boolean"
+				}
+			],
+			"default": [
+				{
+					"components": [ "RM Factor 1" ],
+					"isNuisance": false
+				}
+			]
+		},
+		{
+			"name": "priorWidth",
+			"type": "Number",
+			"value": 0.5,
+			"min": 0,
+			"max": 2
+		}
+	]
+}

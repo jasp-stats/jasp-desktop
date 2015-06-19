@@ -173,3 +173,13 @@ void TableModelVariablesOptions::bindTo(Option *option)
 		endResetModel();
 	}
 }
+
+void TableModelVariablesOptions::unbind()
+{
+	beginResetModel();
+
+	_boundTo = NULL;
+	_rows.clear();
+
+	endResetModel();
+}

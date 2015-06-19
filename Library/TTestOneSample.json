@@ -1,53 +1,79 @@
-[
-   {
-      "name" : "variables",
-      "type" : "Variables"
-   },
-   {
-      "format" : "",
-      "name" : "testValue",
-      "type" : "Number",
-      "value" : 0.0
-   },
-   {
-      "name" : "hypothesis",
-      "options" : [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
-      "default" : "notEqualToTestValue",
-      "type" : "List"
-   },
-   {
-      "name" : "meanDifference",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "effectSize",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "confidenceInterval",
-      "type" : "Boolean"
-   },
-   {
-      "format" : "%",
-      "max" : 1.0,
-      "min" : 0.0,
-      "name" : "confidenceIntervalInterval",
-      "type" : "Number",
-      "value" : 0.950
-   },
-   {
-      "name" : "descriptives",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "normalityTests",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "missingValues",
-      "options" : [ "excludeAnalysisByAnalysis", "excludeListwise" ],
-      "default" : "excludeAnalysisByAnalysis",
-      "type" : "List"
-   }
-]
-
+{
+	"name": "TTestOneSample",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "variables",
+			"type": "Variables"
+		},
+		{
+			"format": "",
+			"name": "testValue",
+			"type": "Number",
+			"value": 0.0
+		},
+		{
+			"name": "hypothesis",
+			"options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
+			"default": "notEqualToTestValue",
+			"type": "List"
+		},
+		{
+			"name": "meanDifference",
+			"type": "Boolean"
+		},
+		{
+			"name": "effectSize",
+			"type": "Boolean"
+		},
+		{
+			"name": "confidenceInterval",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "confidenceIntervalInterval",
+			"type": "Number",
+			"value": 0.950
+		},
+		{
+			"name": "descriptives",
+			"type": "Boolean"
+		},
+		{
+			"name": "normalityTests",
+			"type": "Boolean"
+		},
+		{
+			"name": "missingValues",
+			"options": [ "excludeAnalysisByAnalysis", "excludeListwise" ],
+			"default": "excludeAnalysisByAnalysis",
+			"type": "List"
+		},
+		{
+			"name": "descriptivesPlots",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "descriptivesPlotsConfidenceInterval",
+			"type": "Number",
+			"value": 0.950
+		},
+		{
+			"name": "plotWidth",
+			"type": "Integer",
+			"default": 160
+		},
+		{
+			"name": "plotHeight",
+			"type": "Integer",
+			"default": 300
+		}
+	]
+}

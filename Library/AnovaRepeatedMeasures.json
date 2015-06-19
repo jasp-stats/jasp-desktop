@@ -1,0 +1,222 @@
+{
+	"name": "AnovaRepeatedMeasures",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "betweenSubjectFactors",
+			"type": "Variables"
+		},
+		{
+			"name": "repeatedMeasuresFactors",
+			"type": "Table",
+			"template": [
+				{
+					"name": "name",
+					"type": "String",
+					"default": "RM Factor %1"
+				},
+				{
+					"name": "levels",
+					"type": "Variables",
+					"default": [ "Level 1", "Level 2" ]
+				}
+			],
+			"default": [
+				{
+					"levels": [ "Level 1", "Level 2" ],
+					"name": "RM Factor 1"
+				}
+			]
+		},
+		{
+			"name": "repeatedMeasuresCells",
+			"type": "Variables"
+		},
+		{
+			"name": "withinModelTerms",
+			"type": "Table",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				}
+			],
+			"default": [
+				{
+					"components": [ "RM Factor 1" ]
+				}
+			]
+		},
+		{
+			"name": "betweenModelTerms",
+			"type": "Table",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				}
+			]
+		},
+		{
+			"name": "sumOfSquares",
+			"type": "List",
+			"options": [ "type1", "type2", "type3" ],
+			"default": "type3"
+		},
+		{
+			"name": "contrasts",
+			"type": "Table",
+			"template": [
+				{
+					"name": "variable",
+					"type": "Variable"
+				},
+				{
+					"name": "contrast",
+					"options": [
+						"none",
+						"deviation",
+						"simple",
+						"difference",
+						"helmert",
+						"repeated",
+						"polynomial"
+					],
+					"default": "none",
+					"type": "List"
+				}
+			]
+		},
+		{
+			"name": "postHocTestsVariables",
+			"type": "Variables"
+		},
+		{
+			"name": "postHocTestsBonferroni",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsHolm",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsFDR",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsHochberg",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsHommel",
+			"type": "Boolean"
+		},
+		{
+			"name": "postHocTestsBenjamini",
+			"type": "Boolean"
+		},
+		{
+			"name": "marginalMeansTerms",
+			"type": "Variables"
+		},
+		{
+			"name": "marginalMeansCompareMainEffects",
+			"type": "Boolean"
+		},
+		{
+			"name": "marginalMeansCIAdjustment",
+			"type": "List",
+			"options": [ "None", "Bonferroni", "Sidak" ],
+			"default": "None"
+		},
+		{
+			"name": "descriptives",
+			"type": "Boolean"
+		},
+		{
+			"name": "effectSizeEstimates",
+			"type": "Boolean"
+		},
+		{
+			"name": "effectSizeEtaSquared",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "effectSizePartialEtaSquared",
+			"type": "Boolean"
+		},
+		{
+			"name": "effectSizeOmegaSquared",
+			"type": "Boolean"
+		},
+		{
+			"name": "sphericityTests",
+			"type": "Boolean"
+		},
+		{
+			"name": "sphericityCorrections",
+			"type": "Boolean"
+		},
+		{
+			"name": "sphericityNone",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "sphericityGreenhouseGeisser",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "sphericityHuynhFeldt",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "homogeneityTests",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotHorizontalAxis",
+			"type": "Variable"
+		},
+		{
+			"name": "plotSeparateLines",
+			"type": "Variable"
+		},
+		{
+			"name": "plotSeparatePlots",
+			"type": "Variable"
+		},
+		{
+			"name": "plotErrorBars",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotWidth",
+			"type": "Integer",
+			"default": 450
+		},
+		{
+			"name": "plotHeight",
+			"type": "Integer",
+			"default": 300
+		},
+		{
+			"name": "errorBarType",
+			"options": [ "confidenceInterval", "standardError" ],
+			"default": "confidenceInterval",
+			"type": "List"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "confidenceIntervalInterval",
+			"type": "Number",
+			"value": 0.95
+		}
+	]
+}

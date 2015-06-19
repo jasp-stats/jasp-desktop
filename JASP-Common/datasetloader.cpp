@@ -7,20 +7,23 @@
 
 #include "importers/csvimporter.h"
 #include "importers/spssimporter.h"
+#include "importers/jaspimporter.h"
 
 using namespace boost::interprocess;
 using namespace boost;
 using namespace std;
 
 
-DataSet* DataSetLoader::loadDataSet(const string &locator, boost::function<void(const string &, int)> progress)
+void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, boost::function<void(const string &, int)> progress)
 {
 	filesystem::path path(locator);
 
 	if (path.extension().compare(string(".sav")) == 0)
-		return SPSSImporter::loadDataSet(locator, progress);
+		SPSSImporter::loadDataSet(packageData, locator, progress);
+	else if (path.extension().compare(string(".csv")) == 0)
+		CSVImporter::loadDataSet(packageData, locator, progress);
 	else
-		return CSVImporter::loadDataSet(locator, progress);
+		JASPImporter::loadDataSet(packageData, locator, progress);
 }
 
 void DataSetLoader::freeDataSet(DataSet *dataSet)

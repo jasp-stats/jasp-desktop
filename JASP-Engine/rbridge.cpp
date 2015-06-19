@@ -13,8 +13,8 @@ DataSet *rbridge_dataSet;
 using namespace std;
 
 RCallback rbridge_runCallback;
-boost::function<std::string(const std::string &)> rbridge_fileNameSource;
-boost::function<std::string()> rbridge_stateFileSource;
+boost::function<void(const std::string &, std::string &, std::string &)> rbridge_fileNameSource;
+boost::function<void(std::string &, std::string &)> rbridge_stateFileSource;
 
 Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
@@ -23,7 +23,7 @@ SEXP rbridge_callbackSEXP(SEXP results);
 SEXP rbridge_requestTempFileNameSEXP(SEXP extension);
 SEXP rbridge_requestStateFileNameSEXP();
 
-int rbridge_callback(SEXP results);
+SEXP rbridge_callback(SEXP results);
 Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns);
 Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<std::string, Column::ColumnType> &columns);
 
@@ -47,7 +47,7 @@ void rbridge_init()
 	rInside[".callbackNative"] = Rcpp::InternalFunction(&rbridge_callbackSEXP);
 	rInside[".requestTempFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestTempFileNameSEXP);
 	rInside[".requestStateFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestStateFileNameSEXP);
-	rInside[".baseCitation"] = "Love, J., Selker, R., Marsman, M., Jamil, T., Verhagen, A. J., Ly, A., Gronau, Q. F., Smira, M., Epskamp, S., Matzke, D., Wild, A., Rouder, J. N., Morey, R. D. & Wagenmakers, E.-J. (2015). JASP (Version 0.6.6)[Computer software].";
+	rInside[".baseCitation"] = "Love, J., Selker, R., Marsman, M., Jamil, T., Dropmann, D., Verhagen, A. J., Ly, A., Gronau, Q. F., Smira, M., Epskamp, S., Matzke, D., Wild, A., Rouder, J. N., Morey, R. D. & Wagenmakers, E.-J. (2015). JASP (Version 0.7)[Computer software].";
 
 	rInside["jasp.analyses"] = Rcpp::List();
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"RJSONIO\"))");
@@ -60,12 +60,12 @@ void rbridge_setDataSet(DataSet *dataSet)
 	rbridge_dataSet = dataSet;
 }
 
-void rbridge_setFileNameSource(boost::function<string (const string &)> source)
+void rbridge_setFileNameSource(boost::function<void (const string &, string &, string &)> source)
 {
 	rbridge_fileNameSource = source;
 }
 
-void rbridge_setStateFileSource(boost::function<string ()> source)
+void rbridge_setStateFileSource(boost::function<void (string &, string &)> source)
 {
 	rbridge_stateFileSource = source;
 }
@@ -76,8 +76,17 @@ SEXP rbridge_requestTempFileNameSEXP(SEXP extension)
 		return R_NilValue;
 
 	string extensionAsString = Rcpp::as<string>(extension);
+	string root;
+	string relativePath;
 
-	return Rcpp::CharacterVector(rbridge_fileNameSource(extensionAsString));
+	rbridge_fileNameSource(extensionAsString, root, relativePath);
+
+	Rcpp::List paths;
+
+	paths["root"] = root;
+	paths["relativePath"] = relativePath;
+
+	return paths;
 }
 
 SEXP rbridge_requestStateFileNameSEXP()
@@ -85,7 +94,17 @@ SEXP rbridge_requestStateFileNameSEXP()
 	if (rbridge_stateFileSource == NULL)
 		return R_NilValue;
 
-	return Rcpp::CharacterVector(rbridge_stateFileSource());
+	string root;
+	string relativePath;
+
+	rbridge_stateFileSource(root, relativePath);
+
+	Rcpp::List paths;
+
+	paths["root"] = root;
+	paths["relativePath"] = relativePath;
+
+	return paths;
 }
 
 string rbridge_run(const string &name, const string &options, const string &perform, int ppi, RCallback callback)
@@ -162,7 +181,7 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 				BOOST_FOREACH(int value, column.AsInts)
 				{
 					(void)column;
-					v[rowNo++] = column.actualFromRaw(value);
+					v[rowNo++] = value;
 				}
 
 				list[colNo++] = v;
@@ -193,13 +212,24 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 
 			if (columnType != Column::ColumnTypeScale)
 			{
+				std::map<int, int> indices;
+				int i = 1; // R starts indices from 1
+
+				const Labels &labels = column.labels();
+
+				BOOST_FOREACH(const LabelEntry &labelEntry, labels)
+				{
+					(void)labels;
+					indices[labelEntry.first] = i++;
+				}
+
 				BOOST_FOREACH(int value, column.AsInts)
 				{
 					(void)column;
 					if (value == INT_MIN)
 						v[rowNo++] = INT_MIN;
 					else
-						v[rowNo++] = value + 1;
+						v[rowNo++] = indices.at(value);
 				}
 
 				rbridge_makeFactor(v, column.labels(), ordinal);
@@ -365,8 +395,8 @@ void rbridge_makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordin
 	}
 	else
 	{
-		for (int i = 0; i < levels.size(); i++)
-			labels.push_back(levels.at(i).text());
+		BOOST_FOREACH(const LabelEntry &level, levels)
+			labels.push_back(level.second.text());
 	}
 
 	v.attr("levels") = labels;
@@ -392,17 +422,17 @@ void rbridge_makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &level
 }
 
 
-int rbridge_callback(SEXP results)
+SEXP rbridge_callback(SEXP results)
 {
 	if (rbridge_runCallback != NULL)
 	{
 		if (Rf_isNull(results))
 		{
-			return rbridge_runCallback("null");
+			return Rcpp::CharacterVector(rbridge_runCallback("null"));
 		}
 		else
 		{
-			return rbridge_runCallback(Rcpp::as<string>(results));
+			return Rcpp::CharacterVector(rbridge_runCallback(Rcpp::as<string>(results)));
 		}
 	}
 	else
@@ -454,9 +484,7 @@ std::map<string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP co
 
 SEXP rbridge_callbackSEXP(SEXP results)
 {
-	Rcpp::NumericVector control(1);
-	control[0] = rbridge_callback(results);
-	return control;
+	return rbridge_callback(results);
 }
 
 Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns)

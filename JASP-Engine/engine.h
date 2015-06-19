@@ -21,12 +21,12 @@ private:
 	bool receiveMessages(int timeout = 0);
 	void runAnalysis();
 	void sendResults();
-	int callback(const std::string &results);
+	std::string callback(const std::string &results);
 
-	std::string provideTempFileName(const std::string &extension);
-	std::string provideStateFileName();
+	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
+	void provideStateFileName(std::string &root, std::string &relativePath);
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, complete, error } Status;
+	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, aborted, stopped } Status;
 
 	Status _status;
 
@@ -35,6 +35,8 @@ private:
 	std::string _analysisOptions;
 	std::string _analysisResultsString;
 	int _ppi;
+
+	bool _currentAnalysisKnowsAboutChange;
 
 	Json::Value _analysisResults;
 

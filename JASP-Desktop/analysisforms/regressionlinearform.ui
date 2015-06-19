@@ -240,7 +240,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QWidget" name="widget_5" native="true">
+       <widget class="QWidget" name="wlsWeightsContainer" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -356,7 +356,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
             <item row="2" column="0">
-             <widget class="BoundGroupBox" name="residuals_casewiseDiagnosticsType">
+             <widget class="BoundGroupBox" name="residualsCasewiseDiagnosticsType">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -616,7 +616,7 @@
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="BoundGroupBox" name="steppingMethodCriteria_type">
+             <widget class="BoundGroupBox" name="steppingMethodCriteriaType">
               <layout class="QGridLayout" name="gridLayout_9">
                <item row="3" column="0">
                 <widget class="QWidget" name="panelFValue" native="true">
@@ -818,13 +818,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QRadioButton" name="_3replaceWithMean">
-                 <property name="text">
-                  <string>Replace with mean</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>
@@ -904,7 +897,7 @@
   <connection>
    <sender>residualsCasewiseDiagnostics</sender>
    <signal>toggled(bool)</signal>
-   <receiver>residuals_casewiseDiagnosticsType</receiver>
+   <receiver>residualsCasewiseDiagnosticsType</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

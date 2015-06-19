@@ -14,6 +14,7 @@ public:
 	explicit TableModelVariablesOptions(QObject *parent = 0);
 
 	void bindTo(Option *option) OVERRIDE;
+	void unbind() OVERRIDE;
 
 	int rowCount(const QModelIndex &) const OVERRIDE;
 	int columnCount(const QModelIndex &parent) const OVERRIDE;

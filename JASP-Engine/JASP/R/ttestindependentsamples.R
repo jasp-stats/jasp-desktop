@@ -1,3 +1,4 @@
+
 TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
 	dependents <- unlist(options$variables)
@@ -35,18 +36,30 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="ttest", type="table")
-	meta[[3]] <- list(name="inequalityOfVariances", type="table")
+	meta[[3]] <- list(name="equalityOfVariancesTests", type="table")
 	meta[[4]] <- list(name="descriptives", type="table")
 	meta[[5]] <- list(name="normalityTests", type="table")
+	meta[[6]] <- list(name="headerDescriptivesPlots", type="h1")
+	meta[[7]] <- list(name="descriptivesPlots", type="images")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "T-Test"
 	
-
 	results[["ttest"]] <- .ttestIndependentSamplesTTest(dataset, options, perform)
 	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
-	results[["inequalityOfVariances"]] <- .ttestIndependentSamplesInequalityOfVariances(dataset, options, perform)
+	results[["equalityOfVariancesTests"]] <- .ttestIndependentSamplesInequalityOfVariances(dataset, options, perform)
 	results[["normalityTests"]] <- .ttestNormalityTests(dataset, options, perform)
+	
+	if (options$descriptivesPlots) {
+		
+		if (length(options$variables) > 1) {
+			results[["headerDescriptivesPlots"]] <-  "Descriptives Plots"
+		} else {
+			results[["headerDescriptivesPlots"]] <-  "Descriptives Plot"
+		}
+		
+		results[["descriptivesPlots"]] <- .independentSamplesTTestDescriptivesPlot(dataset, options, perform)
+	}
 
 	results
 }
@@ -78,13 +91,20 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		variables = "."
 
     for (variable in variables) {
+    
+    	count <- 0
         
         factor <- options$groupingVariable
         levels <- levels(dataset[[ .v(factor) ]])
+                        
+        if (length(levels) == 0)
+        	levels = c(".", ".")
         
         for(level in levels) {
+        	
+        	count <- count + 1
                     
-            if (perform == "run" && length(options$variables) > 0) {
+            if (perform == "run" && length(options$variables) > 0 && !is.null(levels(dataset[[ .v(factor) ]]))) {
                 
                 data <- na.omit(dataset[[.v(variable)]][dataset[[.v(factor)]] == level])
                 
@@ -129,14 +149,14 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
                     }
                 
                     result <- list("dep"=variable, "lev"=level, "W" = "NaN", "p" = "NaN", ".isNewGroup" = newGroup, .footnotes=row.footnotes)
-                
+                                    
                 }
         
             } else {
         
-                if(level == levels[1]) {
+                if(count == 1) {
                     newGroup <- TRUE   
-                } else {				
+                } else {
                     newGroup <- FALSE
                 }
         
@@ -276,8 +296,8 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 		interval <- 100 * options$confidenceIntervalInterval
 		title    <- paste(interval, "% Confidence Interval", sep="")
 	
-		fields[[length(fields) + 1]] <- list(name="lowerCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
-		fields[[length(fields) + 1]] <- list(name="upperCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
+		fields[[length(fields) + 1]] <- list(name="lowerCI", type="number", format="sf:4;dp:3", title="Lower", overTitle=title)
+		fields[[length(fields) + 1]] <- list(name="upperCI", type="number", format="sf:4;dp:3", title="Upper", overTitle=title)
 		
 	}
 		
@@ -473,13 +493,13 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 
 .ttestIndependentSamplesInequalityOfVariances <- function(dataset, options, perform) {
 
-	if (options$testUnequalVariances == FALSE)
+	if (options$equalityOfVariancesTests == FALSE)
 		return(NULL)
 		
 	levenes <- list()
 	footnotes <- .newFootnotes()
 
-	levenes[["title"]] <- "Test of Inequality of Variances (Levene's)"
+	levenes[["title"]] <- "Test of Equality of Variances (Levene's)"
 	
 	fields <- list(
 		list(name="variable", title="", type="string"),
@@ -545,4 +565,96 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	levenes[["footnotes"]] <- as.list(footnotes)
 
 	levenes
+}
+
+.independentSamplesTTestDescriptivesPlot <- function(dataset, options, perform) {
+
+	descriptivesPlotList <- list()
+
+	if (perform == "run" && length(options$variables) > 0 && options$groupingVariable != "") {
+		
+		base_breaks_x <- function(x){
+			b <- unique(as.numeric(x))
+			d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
+			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
+		}
+
+		base_breaks_y <- function(x){
+			ci.pos <- c(x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
+			b <- pretty(ci.pos)
+			d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
+				ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
+		}
+		
+		for (var in .indices(options$variables)) {
+			
+			descriptivesPlot <- list()
+			
+			descriptivesPlot[["title"]] <- ""
+			descriptivesPlot[["width"]] <- options$plotWidth
+			descriptivesPlot[["height"]] <- options$plotHeight
+			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			
+			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = .v(options$variables[var]), groupvars = .v(options$groupingVariable), 
+						   conf.interval = options$descriptivesPlotsConfidenceInterval, na.rm = TRUE, .drop = FALSE)
+			
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$variables[var]))] <- "dependent"										
+			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$groupingVariable))] <- "groupingVariable"
+			
+			pd <- ggplot2::position_dodge(.2)
+						
+			p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=1)) +
+				 ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
+				 ggplot2::geom_line(position=pd, size = .7) + 
+				 ggplot2::geom_point(position=pd, size=4) +
+				 ggplot2::ylab(unlist(options$variables[var])) +
+				 ggplot2::xlab(options$groupingVariable) +
+				 ggplot2::theme_bw() +
+				 ggplot2::ggtitle(options$variables[var]) +
+				 ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
+					panel.grid.major=ggplot2::element_blank(),
+					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
+					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
+					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
+					legend.key = ggplot2::element_blank(),
+					legend.title = ggplot2::element_text(size=12),
+					legend.text = ggplot2::element_text(size = 12),
+					axis.ticks = ggplot2::element_line(size = 0.5),
+					axis.ticks.margin = grid::unit(1,"mm"),
+					axis.ticks.length = grid::unit(3, "mm"),
+					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
+				 base_breaks_y(summaryStat) +
+				 base_breaks_x(summaryStat$groupingVariable)
+								
+			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+			print(p)
+			content <- .endSaveImage(image)
+
+			descriptivesPlot[["data"]] <- content
+
+			descriptivesPlotList[[var]] <- descriptivesPlot
+			
+		}
+		
+	} else {
+
+		for (var in .indices(options$variables)) {
+
+			descriptivesPlot <- list()
+			
+			descriptivesPlot[["title"]] <- ""
+			descriptivesPlot[["width"]] <- options$plotWidth
+			descriptivesPlot[["height"]] <- options$plotHeight
+			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot[["data"]] <- ""
+
+			descriptivesPlotList[[var]] <- descriptivesPlot
+		}
+	}
+
+	descriptivesPlotList
 }

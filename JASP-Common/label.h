@@ -1,21 +1,14 @@
 #ifndef LABEL_H
 #define LABEL_H
 
-#include <boost/interprocess/managed_shared_memory.hpp>
-#include <boost/interprocess/segment_manager.hpp>
-#include <boost/container/string.hpp>
-
-class Label;
-
-typedef boost::interprocess::allocator<char, boost::interprocess::managed_shared_memory::segment_manager> CharAllocator;
-typedef boost::container::basic_string<char, std::char_traits<char>, CharAllocator> String;
-typedef boost::interprocess::allocator<String, boost::interprocess::managed_shared_memory::segment_manager> StringAllocator;
+#include <string>
 
 class Label
 {
 public:
-	Label(boost::interprocess::managed_shared_memory *mem, const std::string &label, int value);
-	Label(boost::interprocess::managed_shared_memory *mem, int value);
+	Label(const std::string &label, int value);
+	Label(int value);
+	Label();
 
 	std::string text() const;
 	bool hasIntValue() const;
@@ -24,10 +17,10 @@ public:
 
 private:
 
-	boost::interprocess::managed_shared_memory *_mem;
 	bool _hasIntValue;
 	int _intValue;
-	String _stringValue;
+	char _stringValue[128];
+	int  _stringLength;
 };
 
 #endif // LABEL_H

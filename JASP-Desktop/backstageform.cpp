@@ -24,14 +24,17 @@ BackStageForm::BackStageForm(QWidget *parent) :
 
 	ui->setupUi(this);
 
-	connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(fileItemSelected()));
+	connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(openFile()));
 	connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(closeItemSelected()));
 	connect(ui->buttonExport, SIGNAL(clicked()), this, SLOT(exportItemSelected()));
+
+	connect(ui->buttonSaveAs, SIGNAL(clicked()), this, SLOT(saveAs()));
+	connect(ui->buttonSave, SIGNAL(clicked()), this, SLOT(save()));
 
 	connect(ui->recentDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(recentSelectedHandler(QString)));
 	connect(ui->exampleDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(exampleSelectedHandler(QString)));
 
-	setFileLoaded(false);
+	setFileLoaded(false, NULL);
 
 	QTimer::singleShot(200, this, SLOT(loadExamples())); // delay loading for quick start up
 
@@ -63,21 +66,33 @@ void BackStageForm::setLog(ActivityLog *log)
 	_log = log;
 }
 
-void BackStageForm::setFileLoaded(bool loaded)
+void BackStageForm::setFileLoaded(bool loaded, QString filename)
 {
+	_loaded = loaded;
+	_filename = filename;
+
 	ui->buttonClose->setEnabled(loaded);
 	ui->buttonExport->setEnabled(loaded);
+	ui->buttonSaveAs->setEnabled(loaded);
+
+	if (filename == NULL)
+		ui->buttonSave->setEnabled(false);
+	else
+	{
+		QFileInfo fileInfo(filename);
+		ui->buttonSave->setEnabled(loaded && fileInfo.completeSuffix().compare("jasp") == 0);
+	}
 }
 
-void BackStageForm::fileItemSelected()
+void BackStageForm::openFile()
 {
 	_settings.sync();
 	QString path = _settings.value("openPath", QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first()).toString();
 
 #ifdef QT_NO_DEBUG
-	QString filename = QFileDialog::getOpenFileName(this, tr("Open CSV File"), path, tr("CSV Files (*.csv)"));
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open Data File"), path, tr("Data files (*.jasp *.csv)"));
 #else
-	QString filename = QFileDialog::getOpenFileName(this, tr("Open Data File"), path, tr("Data Files (*.csv *.sav)"));
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open Data File"), path, tr("Data files (*.jasp *.csv *.sav)"));
 #endif
 
 	if ( ! filename.isNull() && QFile::exists(filename))
@@ -123,6 +138,60 @@ void BackStageForm::exportItemSelected()
 	}
 }
 
+
+bool BackStageForm::saveAs()
+{
+	_settings.sync();
+
+	QString name = "default.jasp";
+	if ( ! _filename.isEmpty())
+		name = QFileInfo(_filename).baseName();
+
+	QString path = _settings.value("savePath", QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first()).toString() + QDir::separator() + name + ".jasp";
+
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save workspace"), path, tr("JASP Files (*.jasp)"));
+
+	if ( ! filename.isNull())
+	{
+			QFileInfo f(filename);
+			path = f.absolutePath();
+			_settings.setValue("savePath", path);
+			_settings.sync();
+
+			setFileLoaded(_loaded, filename);
+
+			addToRecentList(filename);
+
+			emit saveSelected(_filename);
+
+			if (_log != NULL)
+				_log->log("Save workspace");
+
+			return true;
+	}
+
+	return false;
+}
+
+bool BackStageForm::save()
+{
+	bool success = false;
+	if (_filename.isEmpty() || QFileInfo(_filename).completeSuffix().compare("jasp") != 0)
+		success = saveAs();
+	else
+	{
+		emit saveSelected(_filename);
+
+		if (_log != NULL)
+			_log->log("Save workspace");
+
+		success = true;
+	}
+
+	return success;
+}
+
+
 void BackStageForm::exampleSelectedHandler(QString path)
 {
 	qDebug() << QFileInfo(path).baseName();
@@ -157,6 +226,15 @@ void BackStageForm::loadRecents()
 	}
 
 	QStringList recents = v.toStringList();
+
+	for (int i = 0; i < recents.size(); i++)
+	{
+		if (!QFileInfo::exists(recents[i]))
+		{
+			recents.removeAt(i);
+			i -= 1;
+		}
+	}
 
 	while (_recents.size() > 5)
 		_recents.removeFirst();

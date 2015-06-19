@@ -63,6 +63,12 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	ui->containerModel->hide();
+
+#ifdef QT_DEBUG
+	ui->groupBox->setStyleSheet("QWidget { background-color: pink; }");
+#else
+	ui->groupBox->hide();
+#endif
 }
 
 AnovaRepeatedMeasuresBayesianForm::~AnovaRepeatedMeasuresBayesianForm()

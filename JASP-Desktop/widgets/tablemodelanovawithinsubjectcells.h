@@ -18,6 +18,7 @@ public:
 	explicit TableModelAnovaWithinSubjectCells(QObject *parent = 0);
 
 	void bindTo(Option *option) OVERRIDE;
+	void unbind() OVERRIDE;
 	void setSource(TableModelVariablesAvailable *source);
 
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;

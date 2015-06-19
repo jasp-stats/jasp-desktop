@@ -6,6 +6,11 @@ JASP aims to be a complete statistical package for both Bayesian and Frequentist
 
 [https://jasp-stats.org](https://jasp-stats.org)
 
+User Guide
+----------
+
+[JASP User Guide](Docs/user-guide/index.md)
+
 Development
 -----------
 

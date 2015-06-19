@@ -20,6 +20,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	_blocksModel->setSource(&_availableVariablesModel);
 	_blocksModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	_blocksModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_blocksModel->setLimitToOneLevel(true);
 	ui->blocks->setModel(_blocksModel);
 
 	_wlsWeightsModel = new TableModelVariablesAssigned();
@@ -36,25 +37,9 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->panelOptions->hide();
 
 #ifdef QT_NO_DEBUG
-	ui->groupBoxResiduals->hide();
-	ui->groupBoxSteppingMethodCriteria->hide();
-	ui->partAndPartialCorrelations->hide();
-	ui->collinearityDiagnostics->hide();
-	ui->includeConstant->hide();
-	ui->descriptives->hide();
-	ui->regressionCoefficientsCovarianceMatrix->hide();
-	ui->widgetOptions->hide();
-	ui->widget_5->hide(); // wls weights
+	ui->groupBox_5->hide();
 #else
-	ui->groupBoxResiduals->setStyleSheet("background-color: pink ;");
-	ui->groupBoxSteppingMethodCriteria->setStyleSheet("background-color: pink ;");
-	ui->partAndPartialCorrelations->setStyleSheet("background-color: pink ;");
-	ui->collinearityDiagnostics->setStyleSheet("background-color: pink ;");
-	ui->includeConstant->setStyleSheet("background-color: pink ;");
-	ui->descriptives->setStyleSheet("background-color: pink ;");
-	ui->regressionCoefficientsCovarianceMatrix->setStyleSheet("background-color: pink ;");
-	ui->widgetOptions->setStyleSheet("background-color: pink ;");
-	ui->widget_5->setStyleSheet("background-color: pink ;");
+	ui->groupBox_5->setStyleSheet("background-color: pink ;");
 #endif
 }
 

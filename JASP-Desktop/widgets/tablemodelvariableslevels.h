@@ -45,6 +45,8 @@ public:
 	void setVariableTypesAllowed(int variableTypesAllowed);
 	int variableTypesAllowed() const;
 
+	void setLimitToOneLevel(bool limitToOne);
+
 protected:
 
 	bool isSuggested(const Term &term) const;
@@ -98,6 +100,7 @@ private:
 	};
 
 	std::vector<Options *> _levels;
+	bool _limitToOneLevel;
 
 	OptionsTable *_boundTo;
 

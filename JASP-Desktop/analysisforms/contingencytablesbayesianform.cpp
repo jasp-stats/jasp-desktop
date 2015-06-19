@@ -1,9 +1,9 @@
-#include "crosstabsform.h"
-#include "ui_crosstabsform.h"
+#include "contingencytablesbayesianform.h"
+#include "ui_contingencytablesbayesianform.h"
 
-CrosstabsForm::CrosstabsForm(QWidget *parent) :
-	AnalysisForm("Crosstabs", parent),
-	ui(new Ui::CrosstabsForm)
+ContingencyTablesBayesianForm::ContingencyTablesBayesianForm(QWidget *parent) :
+	AnalysisForm("ContingencyTablesBayesianForm", parent),
+	ui(new Ui::ContingencyTablesBayesianForm)
 {
 	ui->setupUi(this);
 
@@ -36,46 +36,24 @@ CrosstabsForm::CrosstabsForm(QWidget *parent) :
 	ui->buttonAssignLayers->setSourceAndTarget(ui->listAvailableFields, ui->layers);
 
 	ui->panelStatistics->hide();
-	ui->panelCells->hide();
 	ui->panelOptions->hide();
 
-#ifdef QT_NO_DEBUG
-	ui->nominalLambda->hide();
-	ui->nominalUncertaintyCoefficient->hide();
-
-	ui->ordinalSomersD->hide();
-	ui->ordinalKendallsTauC->hide();
-
-	ui->groupNominalByInterval->hide();
-	ui->groupCochrans->hide();
-
-	ui->hideSmallCounts->hide();
-	ui->hideSmallCountsLessThan->hide();
-	ui->counts_hideSmallCountsLessThanLabel->hide();
-
-	ui->groupZTest->hide();
-	ui->groupResiduals->hide();
-#else
-	ui->nominalLambda->setStyleSheet("background-color: pink;");
-	ui->nominalUncertaintyCoefficient->setStyleSheet("background-color: pink;");
-
-	ui->ordinalSomersD->setStyleSheet("background-color: pink;");
-	ui->ordinalKendallsTauC->setStyleSheet("background-color: pink;");
-
-	ui->groupNominalByInterval->setStyleSheet("background-color: pink;");
-	ui->groupCochrans->setStyleSheet("background-color: pink;");
-
-	ui->hideSmallCounts->setStyleSheet("background-color: pink;");
-	ui->hideSmallCountsLessThan->setStyleSheet("background-color: pink;");
-	ui->counts_hideSmallCountsLessThanLabel->setStyleSheet("background-color: pink;");
-
-	ui->groupZTest->setStyleSheet("background-color: pink;");
-	ui->groupResiduals->setStyleSheet("background-color: pink;");
-#endif
-
+	ui->oddsRatioCredibleIntervalInterval->setLabel("Credible interval");
 }
 
-CrosstabsForm::~CrosstabsForm()
+ContingencyTablesBayesianForm::~ContingencyTablesBayesianForm()
 {
 	delete ui;
+}
+
+void ContingencyTablesBayesianForm::otherSamplingToggled(bool on)
+{
+	if (on)
+		ui->hypothesis->setEnabled(false);
+}
+
+void ContingencyTablesBayesianForm::independentMultinomialSamplingToggled(bool on)
+{
+	if (on)
+		ui->hypothesis->setEnabled(true);
 }

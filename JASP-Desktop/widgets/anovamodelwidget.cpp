@@ -99,8 +99,16 @@ void AnovaModelWidget::setAssignPiecesVisible(bool visible)
 	ui->buttonAssignMenu->setVisible(visible);
 }
 
+void AnovaModelWidget::setFactorsLabel(const QString &label)
+{
+	ui->factorsLabel->setText(label);
+}
+
 void AnovaModelWidget::variablesAvailableChanged()
 {
+	if (_tableModelAnovaModel == NULL)
+		return;
+
 	const Terms &variables = _tableModelAnovaModel->variables();
 	_tableModelVariablesAvailable->setVariables(variables);
 }

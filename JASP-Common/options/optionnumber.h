@@ -17,14 +17,12 @@ public:
 
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(const Json::Value& value) OVERRIDE;
-	virtual void setValue(const double &value) OVERRIDE;
-	virtual double value() const OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
 
-	double min();
-	double max();
+	double min() const;
+	double max() const;
 
-	std::string format();
+	std::string format() const;
 
 protected:
 	double _min;

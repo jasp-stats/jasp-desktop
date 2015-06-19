@@ -3,7 +3,7 @@
 using namespace std;
 
 Labels::Labels(boost::interprocess::managed_shared_memory *mem)
-	: _labels(mem->get_segment_manager())
+	: _labels(std::less<int>(), mem->get_segment_manager())
 {
 	_mem = mem;
 }
@@ -15,18 +15,26 @@ void Labels::clear()
 
 int Labels::add(int display)
 {
-	int pos = _labels.size();
-	_labels.push_back(Label(_mem, display));
-
-	return pos;
+	return add(display, display);
 }
 
-int Labels::add(std::string &display)
+int Labels::add(const std::string &display)
 {
-	int pos = _labels.size();
-	_labels.push_back(Label(_mem, display, _labels.size()));
+	return add(_labels.size(), display);
+}
 
-	return pos;
+int Labels::add(int raw, int display)
+{
+	_labels[raw] = Label(display);
+
+	return display;
+}
+
+int Labels::add(int raw, const std::string &display)
+{
+	_labels[raw] = Label(display, raw);
+
+	return raw;
 }
 
 const Label &Labels::at(int raw) const
@@ -53,4 +61,14 @@ Labels &Labels::operator=(const Labels &labels)
 void Labels::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 {
 	_mem = mem;
+}
+
+Labels::const_iterator Labels::begin() const
+{
+	return _labels.begin();
+}
+
+Labels::const_iterator Labels::end() const
+{
+	return _labels.end();
 }

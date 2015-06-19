@@ -107,6 +107,9 @@ $.widget("jasp.table", {
 				
 				if (combined == false && cell.isStartOfGroup)
 					formatted.isStartOfGroup = true
+				
+				if (cell.isStartOfSubGroup)
+					formatted.isStartOfSubGroup = true
 					
 				if (cell.isEndOfGroup)
 					formatted.isEndOfGroup = true
@@ -269,6 +272,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (cell.isStartOfSubGroup)
+					formatted["class"] += " new-sub-group-row"
 					
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
@@ -326,6 +332,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (cell.isStartOfSubGroup)
+					formatted["class"] += " new-sub-group-row"
 					
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
@@ -370,6 +379,9 @@ $.widget("jasp.table", {
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
 				
+				if (cell.isStartOfSubGroup)
+					formatted["class"] += " new-sub-group-row"
+				
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
 				
@@ -409,6 +421,9 @@ $.widget("jasp.table", {
 					
 				if (cell.isStartOfGroup)
 					formatted["class"] += " new-group-row"
+				
+				if (cell.isStartOfSubGroup)
+					formatted["class"] += " new-sub-group-row"
 				
 				if (cell.isEndOfGroup)
 					formatted["class"] += " last-group-row"
@@ -463,7 +478,7 @@ $.widget("jasp.table", {
 		var columnHeaders = Array(columnCount)
 		var columns = Array(columnCount)
 		
-
+		
 		for (var colNo = 0; colNo < columnCount; colNo++) {
 		
 			// populate column headers
@@ -472,6 +487,7 @@ $.widget("jasp.table", {
 			var columnName = columnDef.name
 
 			var title = columnDef.title
+			var overTitle = columnDef.overTitle
 			
 			if (typeof title == "undefined") 
 				title = columnName
@@ -482,17 +498,9 @@ $.widget("jasp.table", {
 			var columnType = columnDef.type
 			
 			var columnHeader = { content : title, header : true, type : columnType }
-
-			// At the moment this only supports combining two column headers
-			// Support for multiple can be added when necessary
-
-			if (columnDef.combineHeaders) {
 			
-				if (colNo + 1 < columnCount && columnDefs[colNo + 1].combineHeaders && columnDef.title == columnDefs[colNo + 1].title)
-					columnHeader.span = 2
-				else if (colNo - 1 >= 0 && columnDefs[colNo - 1].combineHeaders && columnDef.title == columnDefs[colNo - 1].title)
-					columnHeader.span = 0
-			}
+			if (overTitle)
+				columnHeader.overTitle = overTitle
 			
 			if (typeof columnDef[".footnotes"] != "undefined")
 				columnHeader.footnotes = this._getFootnotes(columnDef[".footnotes"])
@@ -519,6 +527,12 @@ $.widget("jasp.table", {
 				if (row[".isNewGroup"]) {
 				
 					cell.isStartOfGroup = true
+					isGrouped = true
+				}
+				
+				if (row[".isNewSubGroup"]) {
+				
+					cell.isStartOfSubGroup = true
 					isGrouped = true
 				}
 				
@@ -683,6 +697,55 @@ $.widget("jasp.table", {
 					chunks.push('<th colspan="' + 2 * columnCount + '"></th>')
 				chunks.push('</tr>')
 		}
+		
+		if (columnHeaders.length > 0) {
+		
+			var overTitles = false
+
+			for (var i = 0; i < columnHeaders.length; i++) {
+
+				if (columnHeaders[i].overTitle) {
+					
+					overTitles = true
+					break;
+				}			
+			}
+			
+			if (overTitles) {
+			
+				chunks.push('<tr class="over-title">')
+				
+				var span = 1;
+				var oldTitle = columnHeaders[0].overTitle
+				var newTitle = ""
+				
+				if ( ! oldTitle)
+					oldTitle = ""
+
+				for (var colNo = 1; colNo < columnHeaders.length; colNo++) {
+
+					newTitle = columnHeaders[colNo].overTitle
+					if ( ! newTitle)
+						newTitle = ""
+					
+					if (newTitle == oldTitle) {
+						
+						span++
+					}
+					else {
+					
+						chunks.push('<th colspan="' + (2 * span) + '">' + oldTitle + '</th>')
+						oldTitle = newTitle
+						span = 1
+					}
+				}
+				
+				if (newTitle == oldTitle)
+					chunks.push('<th colspan="' + (2 * span) + '">' + newTitle + '</th>')
+			
+				chunks.push('</tr>')
+			}
+		}
 
 				chunks.push('<tr>')
 
@@ -734,6 +797,7 @@ $.widget("jasp.table", {
 
 					var cellClass = cell.class
 					cellClass += (cell.isStartOfGroup ? " new-group-row" : "")
+					cellClass += (cell.isStartOfSubGroup ? " new-sub-group-row" : "")
 					cellClass += (cell.isEndOfGroup ? " last-group-row" : "")
 
 					cellHtml += (cell.header ? '<th' : '<td')

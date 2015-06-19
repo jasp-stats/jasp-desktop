@@ -131,6 +131,27 @@ void Utils::touch(const string &filename)
 #endif
 }
 
+bool Utils::renameOverwrite(const string &oldName, const string &newName)
+{
+	filesystem::path o = osPath(oldName);
+	filesystem::path n = osPath(newName);
+	system::error_code ec;
+
+	boost::filesystem::rename(o, n, ec);
+
+	return ec == 0;
+}
+
+bool Utils::removeFile(const string &path)
+{
+	filesystem::path p = osPath(path);
+	system::error_code ec;
+
+	boost::filesystem::remove(p, ec);
+
+	return ec == 0;
+}
+
 filesystem::path Utils::osPath(const string &path)
 {
 #ifdef __WIN32__

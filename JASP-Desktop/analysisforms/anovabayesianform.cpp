@@ -43,6 +43,12 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	connect(_randomFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_randomFactorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addRandomFactors(Terms)));
 	connect(_randomFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+
+#ifdef QT_DEBUG
+	ui->groupBox->setStyleSheet("QWidget { background-color: pink; }");
+#else
+	ui->groupBox->hide();
+#endif
 }
 
 AnovaBayesianForm::~AnovaBayesianForm()

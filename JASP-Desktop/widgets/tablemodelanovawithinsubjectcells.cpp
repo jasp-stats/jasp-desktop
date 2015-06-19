@@ -293,6 +293,15 @@ void TableModelAnovaWithinSubjectCells::bindTo(Option *option)
 	}
 }
 
+void TableModelAnovaWithinSubjectCells::unbind()
+{
+	beginResetModel();
+
+	_boundTo = NULL;
+
+	endResetModel();
+}
+
 void TableModelAnovaWithinSubjectCells::setSource(TableModelVariablesAvailable *source)
 {
 	_source = source;

@@ -4,11 +4,12 @@
 #include "processinfo.h"
 
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 using namespace boost;
 
-interprocess::managed_shared_memory *SharedMemory::_memory;
+interprocess::managed_shared_memory *SharedMemory::_memory = NULL;
 string SharedMemory::_memoryName;
 
 DataSet *SharedMemory::createDataSet()
@@ -21,7 +22,7 @@ DataSet *SharedMemory::createDataSet()
 		_memoryName = ss.str();
 
 		interprocess::shared_memory_object::remove(_memoryName.c_str());
-		_memory = new interprocess::managed_shared_memory(interprocess::create_only, _memoryName.c_str(), 6553600);
+		_memory = new interprocess::managed_shared_memory(interprocess::create_only, _memoryName.c_str(), 6 * 1024 * 1024);
 	}
 
 	return _memory->construct<DataSet>(interprocess::unique_instance)(_memory);

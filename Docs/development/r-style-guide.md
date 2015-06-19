@@ -15,6 +15,7 @@ Good Practice
 3. do not use:
     * `library()`
     * `require()`
+    * `exists()`
     * `attach()`
     * `assign()`
     * `<<-`

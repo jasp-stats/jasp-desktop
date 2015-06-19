@@ -13,60 +13,54 @@
 using namespace std;
 using namespace boost;
 
-long tempfiles_sessionId;
-string tempfiles_sessionDirName;
-string tempfiles_statusFileName;
-int tempfiles_nextFileId;
+long _tempfiles_sessionId;
+string _tempfiles_sessionDirName;
+string _tempfiles_statusFileName;
+int _tempfiles_nextFileId;
 
 void tempfiles_init(long sessionId)
 {
 	system::error_code error;
 
-	tempfiles_sessionId = sessionId;
-	tempfiles_nextFileId = 0;
+	_tempfiles_sessionId = sessionId;
+	_tempfiles_nextFileId = 0;
 
 	stringstream ss;
 	ss << Dirs::tempDir();
 	ss << "/";
 	ss << sessionId;
 
-	tempfiles_sessionDirName = ss.str();
+	_tempfiles_sessionDirName = ss.str();
 
 	ss << "/status";
 
-	tempfiles_statusFileName = ss.str();
+	_tempfiles_statusFileName = ss.str();
 
-	filesystem::path sessionPath = Utils::osPath(tempfiles_sessionDirName);
-	filesystem::path statusFilePath = Utils::osPath(tempfiles_statusFileName);
+	filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
 
-	if (filesystem::exists(sessionPath, error))
-		filesystem::remove_all(sessionPath, error);
-
-	if (error)
-		return;
-
+	filesystem::remove_all(sessionPath, error);
 	filesystem::create_directories(sessionPath, error);
 
 	nowide::fstream f;
-	f.open(tempfiles_statusFileName.c_str(), ios_base::out);
+	f.open(_tempfiles_statusFileName.c_str(), ios_base::out);
 	f.close();
 }
 
 void tempfiles_attach(long sessionId)
 {
-	tempfiles_sessionId = sessionId;
-	tempfiles_nextFileId = 0;
+	_tempfiles_sessionId = sessionId;
+	_tempfiles_nextFileId = 0;
 
 	stringstream ss;
 	ss << Dirs::tempDir();
 	ss << "/";
 	ss << sessionId;
 
-	tempfiles_sessionDirName = ss.str();
+	_tempfiles_sessionDirName = ss.str();
 
 	ss << "/status";
 
-	tempfiles_statusFileName = ss.str();
+	_tempfiles_statusFileName = ss.str();
 }
 
 
@@ -74,7 +68,7 @@ void tempfiles_deleteAll()
 {
 	system::error_code error;
 
-	filesystem::path sessionPath = Utils::osPath(tempfiles_sessionDirName);
+	filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
 
 	filesystem::remove_all(sessionPath, error);
 }
@@ -87,7 +81,7 @@ void tempfiles_deleteOrphans()
 	try {
 
 		filesystem::path tempPath = Utils::osPath(Dirs::tempDir());
-		filesystem::path sessionPath = Utils::osPath(tempfiles_sessionDirName);
+		filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
 
 		filesystem::directory_iterator itr(tempPath, error);
 
@@ -127,14 +121,6 @@ void tempfiles_deleteOrphans()
 						perror(error.message().c_str());
 				}
 			}
-#ifndef __WIN32__
-			else if (error)
-			{
-				// do nothing
-				// under windows, an error is thrown when the file doesn't exist
-				// so this is #ifdef'd out
-			}
-#endif
 			else // no status file
 			{
 				filesystem::remove_all(p, error);
@@ -156,47 +142,79 @@ void tempfiles_deleteOrphans()
 
 void tempfiles_heartbeat()
 {
-	Utils::touch(tempfiles_statusFileName);
+	Utils::touch(_tempfiles_statusFileName);
 }
 
 
-string tempfiles_createSpecific(const string &name, int id)
+string tempfiles_createSpecific(const string &dir, const string &filename)
 {
 	stringstream ss;
 	system::error_code error;
 
-	ss << tempfiles_sessionDirName;
+	ss << _tempfiles_sessionDirName << "/" << dir;
 
-	if (id >= 0)
-		ss << "/" << id;
-
-	string dir = ss.str();
-	filesystem::path path = Utils::osPath(dir);
+	string fullPath = ss.str();
+	filesystem::path path = Utils::osPath(fullPath);
 
 	if (filesystem::exists(path, error) == false || error)
 		filesystem::create_directories(path, error);
 
 	ss << "/";
-	ss << name;
+	ss << filename;
 
 	return ss.str();
 }
 
-string tempfiles_create(const string &extension, int id)
+void tempfiles_createSpecific(const string &name, int id, string &root, string &relativePath)
 {
-	stringstream ss, ssn;
+	stringstream ssAbsolute, ssRelative;
 	system::error_code error;
 
-	ss << tempfiles_sessionDirName;
+	root = _tempfiles_sessionDirName;
+
+	ssAbsolute << root << "/";
+
+	ssAbsolute << "resources";
+	ssRelative << "resources";
 
 	if (id >= 0)
-		ss << "/" << id;
+	{
+		ssRelative << "/" << id;
+		ssAbsolute << "/" << id;
+	}
 
-	string dir = ss.str();
+	string dir = ssAbsolute.str();
 	filesystem::path path = Utils::osPath(dir);
 
-	if (filesystem::exists(path, error) == false)
+	if (filesystem::exists(path, error) == false || error)
 		filesystem::create_directories(path, error);
+
+	ssAbsolute << "/" << name;
+	ssRelative << "/" << name;
+
+	relativePath = ssRelative.str();
+}
+
+void tempfiles_create(const string &extension, int id, string &root, string &relativePath)
+{
+	stringstream ssRoot, ssRelative;
+	system::error_code error;
+
+	ssRoot << _tempfiles_sessionDirName;
+
+	root = ssRoot.str();
+
+	ssRoot << "/resources";
+
+	if (id >= 0)
+		ssRoot << "/" << id;
+
+	string resources = ssRoot.str();
+
+	filesystem::path path = Utils::osPath(resources);
+
+	if (filesystem::exists(resources, error) == false)
+		filesystem::create_directories(resources, error);
 
 	string suffix;
 	if (extension != "")
@@ -204,20 +222,24 @@ string tempfiles_create(const string &extension, int id)
 
 	do
 	{
-		ssn.str("");
-		ssn << dir;
-		ssn << "/";
-		ssn << "_";
-		ssn << tempfiles_nextFileId++;
-		ssn << suffix;
+		ssRelative.str("");
+		ssRelative << "resources/";
 
-		path = Utils::osPath(ssn.str());
+		if (id >= 0)
+			ssRelative << id << "/";
+
+		ssRelative << "_";
+		ssRelative << _tempfiles_nextFileId++;
+		ssRelative << suffix;
+
+		relativePath = ssRelative.str();
+		string fullPath = root + "/" + relativePath;
+
+		path = Utils::osPath(fullPath);
 	}
 	while (filesystem::exists(path));
 
-	tempfiles_retrieveList(id);
 
-	return ssn.str();
 }
 
 
@@ -231,14 +253,15 @@ vector<string> tempfiles_retrieveList(int id)
 	if (id >= 0)
 	{
 		stringstream ss;
-		ss << tempfiles_sessionDirName;
+		ss << _tempfiles_sessionDirName;
 		ss << "/";
+		ss << "resources/";
 		ss << id;
 		dir = ss.str();
 	}
 	else
 	{
-		dir = tempfiles_sessionDirName;
+		dir = _tempfiles_sessionDirName;
 	}
 
 	filesystem::path path = Utils::osPath(dir);
@@ -252,17 +275,20 @@ vector<string> tempfiles_retrieveList(int id)
 	{
 		if (filesystem::is_regular_file(itr->status()))
 		{
-			string filename = Utils::osPath(itr->path().filename());
-			if (filename.at(0) != '_')
-				continue;
+			string absPath = itr->path().generic_string();
+			string relPath = absPath.substr(_tempfiles_sessionDirName.size()+1);
 
-			files.push_back(Utils::osPath(itr->path()));
+			files.push_back(relPath);
 		}
 	}
 
 	return files;
 }
 
+string tempfiles_sessionDirName()
+{
+	return _tempfiles_sessionDirName;
+}
 
 void tempfiles_deleteList(const vector<string> &files)
 {
@@ -271,7 +297,8 @@ void tempfiles_deleteList(const vector<string> &files)
 	BOOST_FOREACH (const string &file, files)
 	{
 		(void)files;
-		filesystem::path p = Utils::osPath(file);
+		string absPath = _tempfiles_sessionDirName + "/" + file;
+		filesystem::path p = Utils::osPath(absPath);
 		filesystem::remove(p, error);
 	}
 }

@@ -329,16 +329,6 @@
    <item row="4" column="0" colspan="3">
     <widget class="QWidget" name="optionsWidget" native="true">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="buttonOptions">
-        <property name="text">
-         <string>Options</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QWidget" name="panelOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_10">
@@ -351,12 +341,6 @@
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
-            <property name="topMargin">
-             <number>6</number>
-            </property>
-            <property name="bottomMargin">
-             <number>6</number>
-            </property>
             <item row="0" column="0">
              <widget class="QRadioButton" name="_1excludePairwise">
               <property name="text">
@@ -384,43 +368,21 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="GroupBox" name="groupBox_3">
-           <property name="title">
-            <string>Statistics</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="meansAndStdDev">
-              <property name="text">
-               <string>Means and standard deviations</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="crossProducts">
-              <property name="text">
-               <string>Cross-product deviations and covariances</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="GroupBox" name="correlationMatrixContainer">
-     <property name="title">
-      <string>Plots</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_13">
-      <item row="3" column="1">
-       <spacer name="verticalSpacer_3">
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="buttonOptions">
+        <property name="text">
+         <string>Options</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <spacer name="verticalSpacer_4">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
@@ -432,6 +394,25 @@
         </property>
        </spacer>
       </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="GroupBox" name="correlationMatrixContainer">
+     <property name="title">
+      <string>Plots</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_13">
+      <item row="1" column="0" rowspan="2">
+       <widget class="QWidget" name="widget_9" native="true">
+        <property name="maximumSize">
+         <size>
+          <width>12</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="1">
        <widget class="BoundCheckBox" name="plotDensitiesForVariables">
         <property name="enabled">
@@ -439,13 +420,6 @@
         </property>
         <property name="text">
          <string>Densities for variables</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="2">
-       <widget class="BoundCheckBox" name="plotCorrelationMatrix">
-        <property name="text">
-         <string>Correlation matrix</string>
         </property>
        </widget>
       </item>
@@ -459,13 +433,10 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" rowspan="2">
-       <widget class="QWidget" name="widget_9" native="true">
-        <property name="maximumSize">
-         <size>
-          <width>12</width>
-          <height>16777215</height>
-         </size>
+      <item row="0" column="0" colspan="2">
+       <widget class="BoundCheckBox" name="plotCorrelationMatrix">
+        <property name="text">
+         <string>Correlation matrix</string>
         </property>
        </widget>
       </item>

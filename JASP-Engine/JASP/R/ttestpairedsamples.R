@@ -3,7 +3,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 	all.variables <- unique(unlist(options$pairs))
 	all.variables <- all.variables[all.variables != ""]
-
+	
 	if (is.null(dataset))
 	{
 		if (perform == "run") {
@@ -32,6 +32,8 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="descriptives", type="table")
 	meta[[4]] <- list(name="normalityTests", type="table")
+	meta[[5]] <- list(name="headerDescriptivesPlots", type="h1")
+	meta[[6]] <- list(name="descriptivesPlots", type="images")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "T-Test"
@@ -63,8 +65,8 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		interval <- 100 * options$confidenceIntervalInterval
 		title    <- paste(interval, "% Confidence Interval", sep="")
 	
-		fields[[length(fields)+1]] <- list(name="lowerCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
-		fields[[length(fields)+1]] <- list(name="upperCI", type="number", format="sf:4;dp:3", title=title, combineHeaders=TRUE)
+		fields[[length(fields)+1]] <- list(name="lowerCI", type="number", format="sf:4;dp:3", title="Lower", overTitle=title)
+		fields[[length(fields)+1]] <- list(name="upperCI", type="number", format="sf:4;dp:3", title="Upper", overTitle=title)
 	}
 
 	ttest[["schema"]] <- list(fields=fields)
@@ -75,12 +77,12 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 	
 	if (options$hypothesis == "groupOneGreater") {
 
-		message <- paste("All tests, hypothesis is group one greater than group two", sep="")
+		message <- paste("All tests, hypothesis is measurement one greater than measurement two", sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	} else if (options$hypothesis == "groupTwoGreater") {
 
-		message <- paste("All tests, hypothesis is group one less than group two", sep="")
+		message <- paste("All tests, hypothesis is measurement one less than measurement two", sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 	}
 
@@ -114,9 +116,9 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 					df <- as.numeric(r$parameter)
 					p  <- as.numeric(r$p.value)
 					m  <- as.numeric(r$estimate)
-					sed <- .clean(sd(c1-c2, na.rm = TRUE)/length(na.omit(c1-c2)))
+					sed <- .clean(sd(c1-c2, na.rm = TRUE)/sqrt(length(na.omit(c1-c2))))
 					
-					es <- .clean((mean(c1)-mean(c2))/(sqrt((sd(c1)^2+sd(c2)^2)/2)))
+					es <- .clean((mean(c1)-mean(c2))/(sqrt(sd(c1)^2+sd(c2)^2-2*cov(c1, c2))))
 			        
 					ci.l <- as.numeric(r$conf.int[1])
 					ci.u <- as.numeric(r$conf.int[2])
@@ -209,6 +211,9 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		
 		ttest.results[[length(ttest.results)+1]] <- row
 	}
+	
+	if (length(ttest.results) == 0)
+		ttest.results[[1]] <- list()
 	
 	ttest[["data"]] <- ttest.results
 	
@@ -367,7 +372,105 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 		
 		results[["normalityTests"]] <- normalityTests
 	}
+	
+	if (options$descriptivesPlots) {
+		
+		if (length(options$pairs) > 1) {
+			results[["headerDescriptivesPlots"]] <-  "Descriptives Plots"
+		} else {
+			results[["headerDescriptivesPlots"]] <-  "Descriptives Plot"
+		}
+		
+		results[["descriptivesPlots"]] <- .pairedSamplesTTestDescriptivesPlot(dataset, options, perform)
+	}
 		
 	results
 }
+
+.pairedSamplesTTestDescriptivesPlot <- function(dataset, options, perform) {
+
+	descriptivesPlotList <- list()
+		
+	base_breaks_x <- function(x){
+		b <- unique(as.numeric(x))
+		d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
+		list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
+	}
+
+	base_breaks_y <- function(x){
+		ci.pos <- c(x[,"dependent"]-x[,"ci"],x[,"dependent"]+x[,"ci"])
+		b <- pretty(ci.pos)
+		d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
+		list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
+			ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
+	}
+
+	for (i in .indices(options$pairs)) {
+
+		pair <- options$pairs[[i]]
+		
+		descriptivesPlot <- list()
+	
+		descriptivesPlot[["title"]] <- ""
+		descriptivesPlot[["width"]] <- options$plotWidth
+		descriptivesPlot[["height"]] <- options$plotHeight
+		descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+
+		if (perform == "run" && pair[[1]] != "" && pair[[2]] != "") {
+	
+			c1 <- dataset[[ .v(pair[[1]]) ]]
+			c2 <- dataset[[ .v(pair[[2]]) ]]
+	
+			data <- data.frame("id" = rep(1:length(c1),2), "dependent" = c(c1, c2), 
+							   "groupingVariable" = c(rep(paste(pair[[1]],".1", sep=""), length(c1)), rep(paste(pair[[2]],".2", sep=""), length(c2))))
+						
+			summaryStat <- .summarySEwithin(data, measurevar = "dependent", withinvars = "groupingVariable", idvar = "id", 
+						   					conf.interval = options$descriptivesPlotsConfidenceInterval, na.rm = TRUE, .drop = FALSE)
+			
+			pd <- ggplot2::position_dodge(.2)
+				
+			p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x=groupingVariable, y=dependent, group=1)) +
+				 ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
+				 ggplot2::geom_line(position=pd, size = .7) + 
+				 ggplot2::geom_point(position=pd, size=4) +
+				 ggplot2::ylab(NULL) +
+				 ggplot2::xlab(NULL) +
+				 ggplot2::theme_bw() +
+				 ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
+					panel.grid.major=ggplot2::element_blank(),
+					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=-1),
+					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
+					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(),
+					legend.key = ggplot2::element_blank(),
+					legend.title = ggplot2::element_text(size=12),
+					legend.text = ggplot2::element_text(size = 12),
+					axis.ticks = ggplot2::element_line(size = 0.5),
+					axis.ticks.margin = grid::unit(1,"mm"),
+					axis.ticks.length = grid::unit(3, "mm"),
+					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
+				 base_breaks_y(summaryStat) +
+				 base_breaks_x(summaryStat$groupingVariable) +
+				 ggplot2::scale_x_discrete(labels=c(pair[[1]], pair[[2]]))
+						
+			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+			print(p)
+			content <- .endSaveImage(image)
+
+			descriptivesPlot[["data"]] <- content
+	
+		} else {
+	
+			descriptivesPlot[["data"]] <- ""
+			
+		}
+		
+		descriptivesPlotList[[i]] <- descriptivesPlot
+	}
+
+	descriptivesPlotList
+}
+
 

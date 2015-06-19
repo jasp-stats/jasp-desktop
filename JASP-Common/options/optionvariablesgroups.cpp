@@ -6,6 +6,7 @@
 using namespace std;
 
 OptionVariablesGroups::OptionVariablesGroups()
+	: OptionI(true)
 {
 }
 

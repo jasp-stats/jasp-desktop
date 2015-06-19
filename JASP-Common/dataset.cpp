@@ -48,12 +48,12 @@ void DataSet::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 	_columns.setSharedMemory(mem);
 }
 
-int DataSet::rowCount()
+int DataSet::rowCount() const
 {
 	return _rowCount;
 }
 
-int DataSet::columnCount()
+int DataSet::columnCount() const
 {
 	return _columnCount;
 }

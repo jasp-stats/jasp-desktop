@@ -34,7 +34,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu = new QMenu(this);
 
 	menu->addAction(QString("ANOVA"), this, SLOT(itemSelected()))->setObjectName("Anova");
-	menu->addAction(QString("Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasuresShort");
+	menu->addAction(QString("Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasures");
 	menu->addAction(QString("ANCOVA"), this, SLOT(itemSelected()))->setObjectName("Ancova");
 
 	menu->addSeparator();
@@ -65,9 +65,9 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	menu = new QMenu(this);
 
-	menu->addAction(QString("Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("Crosstabs");
+	menu->addAction(QString("Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTables");
 	menu->addSeparator();
-	menu->addAction(QString("Bayesian Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("CrosstabsBayesian");
+	menu->addAction(QString("Bayesian Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTablesBayesian");
 
 	ui->classicalCrosstabsButton->setMenu(menu);
 }

@@ -63,25 +63,27 @@ AnovaForm::AnovaForm(QWidget *parent) :
 
     _horizontalAxisTableModel = new TableModelVariablesAssigned(this);
     _horizontalAxisTableModel->setSource(_plotFactorsAvailableTableModel);
-    ui->horizontalAxis->setModel(_horizontalAxisTableModel);
+	ui->plotHorizontalAxis->setModel(_horizontalAxisTableModel);
 
     _seperateLinesTableModel = new TableModelVariablesAssigned(this);
     _seperateLinesTableModel->setSource(_plotFactorsAvailableTableModel);
-    ui->seperateLines->setModel(_seperateLinesTableModel);
+	ui->plotSeparateLines->setModel(_seperateLinesTableModel);
 
     _seperatePlotsTableModel = new TableModelVariablesAssigned(this);
     _seperatePlotsTableModel->setSource(_plotFactorsAvailableTableModel);
-    ui->seperatePlots->setModel(_seperatePlotsTableModel);
+	ui->plotSeparatePlots->setModel(_seperatePlotsTableModel);
 
-	ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plotVariables, ui->horizontalAxis);
-	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->seperateLines);
-	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->seperatePlots);
+	ui->buttonAssignHorizontalAxis->setSourceAndTarget(ui->plotVariables, ui->plotHorizontalAxis);
+	ui->buttonAssignSeperateLines->setSourceAndTarget(ui->plotVariables, ui->plotSeparateLines);
+	ui->buttonAssignSeperatePlots->setSourceAndTarget(ui->plotVariables, ui->plotSeparatePlots);
 
 	ui->containerModel->hide();
 	ui->containerFactors->hide();
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
-    ui->containerProfilePlot->hide();
+	ui->containerDescriptivesPlot->hide();
+
+	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
 #ifdef QT_NO_DEBUG
 	ui->randomFactorsBox->hide();

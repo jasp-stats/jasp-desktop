@@ -1,24 +1,24 @@
-#ifndef CROSSTABSFORM_H
-#define CROSSTABSFORM_H
+#ifndef CONTINGENCYTABLESFORM_H
+#define CONTINGENCYTABLESFORM_H
 
 #include <QWidget>
 #include "analysisform.h"
 #include "widgets/tablemodelvariableslevels.h"
 
 namespace Ui {
-class CrosstabsForm;
+class ContingencyTablesForm;
 }
 
-class CrosstabsForm : public AnalysisForm
+class ContingencyTablesForm : public AnalysisForm
 {
 	Q_OBJECT
 
 public:
-	explicit CrosstabsForm(QWidget *parent = 0);
-	~CrosstabsForm();
+	explicit ContingencyTablesForm(QWidget *parent = 0);
+	~ContingencyTablesForm();
 
 private:
-	Ui::CrosstabsForm *ui;
+	Ui::ContingencyTablesForm *ui;
 
 	TableModelVariablesAssigned *_rowsModel;
 	TableModelVariablesAssigned *_columnsModel;
@@ -26,4 +26,4 @@ private:
 	TableModelVariablesLevels *_layersModel;
 };
 
-#endif // CROSSTABSFORM_H
+#endif // CONTINGENCYTABLESFORM_H

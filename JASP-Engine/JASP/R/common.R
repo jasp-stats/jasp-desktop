@@ -4,13 +4,28 @@ run <- function(name, options.as.json.string, perform="run") {
 	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE, encoding="UTF-8")
 	analysis <- eval(parse(text=name))
 	
+	env <- new.env()
+	env$callback <- callback
+	env$time <- Sys.time()
+	env$i <- 1
+
 	if (perform == "init") {
 	
-		the.callback <- function(...) 0
+		the.callback <- function(...) list(status="ok")
 		
 	} else {
 	
-		the.callback <- callback
+		the.callback <- function(...) {
+			
+			t <- Sys.time()
+			
+			cat(paste("Callback", env$i, ":", t - env$time, "\n"))
+			
+			env$time <- t
+			env$i <- env$i + 1
+			
+			return(env$callback(...))
+		}
 	}
 	
 	results <- try (silent = TRUE, expr = {
@@ -26,21 +41,36 @@ run <- function(name, options.as.json.string, perform="run") {
 		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 		
 		errorResponse
+		
+	} else if (is.null(results)) {
+	
+		"null"
 	
 	} else {
+	
+		keep <- NULL
 	
 		if ("state" %in% names(results)) {
 
 			state <- results$state
-			file <- .requestStateFileNameNative()
-			base::Encoding(file) <- "UTF-8"
-			base::save(state, file=file, compress=FALSE)
+			
+			location <- .requestStateFileNameNative()
+
+			relativePath <- location$relativePath
+			base::Encoding(relativePath) <- "UTF-8"
+
+			fullPath <- paste(location$root, location$relativePath, sep="/")
+			base::Encoding(fullPath) <- "UTF-8"
+			base::save(state, file=fullPath)
+			
+			keep <- relativePath
 		}
 		
 		if ("results" %in% names(results)) {
 		
 			results$results <- .addCitationToResults(results$results)
 			results$state   <- NULL # remove the state object
+			results$keep    <- c(results$keep, keep)  # keep the state file
 			
 		} else {
 		
@@ -244,9 +274,15 @@ run <- function(name, options.as.json.string, perform="run") {
 
 	if (base::exists(".requestStateFileNameNative")) {
 
-		file <- .requestStateFileNameNative()
-		base::Encoding(file) <- "UTF-8"
-		base::save(state, file=file, compress=FALSE)
+		location <- .requestStateFileNameNative()
+
+		relativePath <- location$relativePath
+		base::Encoding(relativePath) <- "UTF-8"
+
+		fullPath <- paste(location$root, location$relativePath, sep="/")
+		base::Encoding(fullPath) <- "UTF-8"
+		
+		base::save(state, file=fullPath, compress=FALSE)
 	}
 	
 	NULL
@@ -258,9 +294,15 @@ run <- function(name, options.as.json.string, perform="run") {
 	
 	if (base::exists(".requestStateFileNameNative")) {
 
-		file <- .requestStateFileNameNative()
-		base::Encoding(file) <- "UTF-8"
-		base::try(base::load(file))
+		location <- .requestStateFileNameNative()
+
+		relativePath <- location$relativePath
+		base::Encoding(relativePath) <- "UTF-8"
+
+		fullPath <- paste(location$root, location$relativePath, sep="/")
+		base::Encoding(fullPath) <- "UTF-8"
+
+		base::try(base::load(fullPath), silent=TRUE)
 	}
 	
 	state
@@ -433,6 +475,11 @@ run <- function(name, options.as.json.string, perform="run") {
 	X
 }
 
+.shouldContinue <- function(value) {
+
+	base::identical(value, 0) || base::identical(value, as.integer(0)) || (is.list(value) && value$status == "ok")
+}
+
 callback <- function(results=NULL) {
 
 	ret <- 0
@@ -445,7 +492,16 @@ callback <- function(results=NULL) {
 			json.string <- RJSONIO::toJSON(results, digits=12)
 		}
 	
-		ret <- .callbackNative(json.string);
+		response <- .callbackNative(json.string)
+		
+		if (is.character(response)) {
+		
+			ret <- RJSONIO::fromJSON(base::paste("[", response, "]"), encoding="UTF-8", asText=TRUE, simplify=FALSE)[[1]]
+			
+		} else {
+		
+			ret <- response
+		}
 	}
 
 	ret
@@ -511,12 +567,18 @@ callback <- function(results=NULL) {
 		type <- "quartz"
 	
 	multip <- .ppi / 96
-	filename <- .requestTempFileNameNative("png")
-	base::Encoding(filename) <- "UTF-8"
 	
-	grDevices::png(filename=filename, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
+	location <- .requestTempFileNameNative("png")
 	
-	filename
+	relativePath <- location$relativePath
+	base::Encoding(relativePath) <- "UTF-8"
+	
+	fullPath <- paste(location$root, location$relativePath, sep="/")
+	base::Encoding(fullPath) <- "UTF-8"
+	
+	grDevices::png(filename=fullPath, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
+	
+	relativePath
 }
 
 .endSaveImage <- function(filename) {
@@ -677,15 +739,11 @@ as.list.footnotes <- function(footnotes) {
 
 .diff <- function(one, two) {
 
-	# returns TRUE if identical
-	# returns FALSE if different or not really comparable
+	# returns TRUE if different or not really comparable
 	# returns a list of what has changed if non-identical named lists provided
 	
-	if (identical(one, two))
-		return(TRUE)
-	
 	if (is.null(names(one)) == ( ! is.null(names(two))))  # if one list has names, and the other not
-		return(FALSE)
+		return(TRUE)
 	
 	changed <- list()
 	
@@ -701,20 +759,30 @@ as.list.footnotes <- function(footnotes) {
 				item1 <- one[[name]]
 				item2 <- two[[name]]
 				
-				if (identical(item1, item2) == FALSE)
-					changed[[name]] <- .diff(item1, item2)
+				if (identical(item1, item2) == FALSE) {
+				
+					changed[[name]] <- TRUE
+					
+				} else {
+				
+					changed[[name]] <- FALSE
+				}
 			}
 		}
 		
 		for (name in names2) {
 			
 			if ((name %in% names1) == FALSE)
-				changed[[name]] <- FALSE
+				changed[[name]] <- TRUE
 		}
 		
-	} else {
+	} else if (base::indentical(one, two)) {
 		
 		return(FALSE)
+		
+	} else {
+	
+		return (TRUE)
 	}
 	
 	changed

@@ -8,13 +8,9 @@ using namespace Json;
 using namespace std;
 
 OptionsTable::OptionsTable(Options *rowTemplate)
+	: OptionI(true)
 {
 	_template = rowTemplate;
-}
-
-OptionsTable::OptionsTable()
-{
-	_template = NULL;
 }
 
 void OptionsTable::init(const Json::Value &data)
@@ -59,10 +55,18 @@ void OptionsTable::set(const Json::Value &value)
 
 Option *OptionsTable::clone() const
 {
-	std::cout << "shouldn't be cloning!";
-	std::cout.flush();
+	Options *rowTemplate = static_cast<Options*>(this->rowTemplate()->clone());
 
-	return NULL;
+	OptionsTable *c = new OptionsTable(rowTemplate);
+
+	std::vector<Options *> rows;
+
+	BOOST_FOREACH(Options *row, _value)
+		rows.push_back(static_cast<Options*>(row->clone()));
+
+	c->setValue(rows);
+
+	return c;
 }
 
 void OptionsTable::setValue(const vector<Options *> &value)

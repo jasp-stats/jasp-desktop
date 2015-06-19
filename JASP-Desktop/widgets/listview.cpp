@@ -11,6 +11,8 @@ ListView::ListView(QWidget *parent) :
 	_listModel = NULL;
 
 	connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(doubleClickedHandler(QModelIndex)));
+
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 void ListView::setDoubleClickTarget(DropTarget *target)

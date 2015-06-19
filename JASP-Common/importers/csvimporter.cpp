@@ -3,6 +3,7 @@
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <iostream>
 
 #include "sharedmemory.h"
 #include "dataset.h"
@@ -12,8 +13,10 @@ using boost::lexical_cast;
 using namespace boost::interprocess;
 using namespace std;
 
-DataSet* CSVImporter::loadDataSet(const string &locator, boost::function<void(const string &, int)> progressCallback)
+void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator, boost::function<void(const string &, int)> progressCallback)
 {
+	packageData->isArchive = false;
+
 	CSV csv(locator);
 	csv.open();
 
@@ -52,7 +55,7 @@ DataSet* CSVImporter::loadDataSet(const string &locator, boost::function<void(co
 		success = csv.readLine(line);
 	}
 
-	DataSet *dataSet = SharedMemory::createDataSet();
+	packageData->dataSet = SharedMemory::createDataSet(); // this is required incase the loading of the data fails so that the SharedMemory::createDataSet() can be later freed.
 
 	do
 	{
@@ -60,6 +63,7 @@ DataSet* CSVImporter::loadDataSet(const string &locator, boost::function<void(co
 
 			success = true;
 
+			DataSet *dataSet = packageData->dataSet;
 			dataSet->setColumnCount(columnCount);
 			if (cells.size() > 0)
 				dataSet->setRowCount(cells.at(0).size());
@@ -67,12 +71,19 @@ DataSet* CSVImporter::loadDataSet(const string &locator, boost::function<void(co
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
-			dataSet = SharedMemory::enlargeDataSet(dataSet);
-			success = false;
+			try {
+
+				packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
+				success = false;
+			}
+			catch (exception &e)
+			{
+				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
 		}
-		catch (exception e)
+		catch (exception &e)
 		{
-			cout << "n " << e.what();
+			cout << "n " << e.what() << "\n";
 			cout.flush();
 		}
 		catch (...)
@@ -84,13 +95,14 @@ DataSet* CSVImporter::loadDataSet(const string &locator, boost::function<void(co
 	while ( ! success);
 
 
-	for (int colNo = 0; colNo < dataSet->columnCount(); colNo++)
+	for (int colNo = 0; colNo < packageData->dataSet->columnCount(); colNo++)
 	{
 		bool success = true;
 
 		do {
 
 			try {
+				DataSet *dataSet = packageData->dataSet;
 
 				progressCallback("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
 
@@ -110,8 +122,15 @@ DataSet* CSVImporter::loadDataSet(const string &locator, boost::function<void(co
 			}
 			catch (boost::interprocess::bad_alloc &e)
 			{
-				dataSet = SharedMemory::enlargeDataSet(dataSet);
-				success = false;
+				try {
+
+					packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
+					success = false;
+				}
+				catch (exception &e)
+				{
+					throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+				}
 			}
 			catch (exception e)
 			{
@@ -126,8 +145,6 @@ DataSet* CSVImporter::loadDataSet(const string &locator, boost::function<void(co
 
 		} while (success == false);
 	}
-
-	return dataSet;
 }
 
 
@@ -174,26 +191,14 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 	if (success && uniqueValues.size() <= 24)
 	{
 		labels.clear();
-		map<int, int> actualToRaw;
 
-		int index = 0;
 		BOOST_FOREACH(int value, uniqueValues)
 		{
 			(void)uniqueValues;
-			int raw = labels.add(value);
-			actualToRaw[value] = raw;
-			index++;
+			labels.add(value);
 		}
 
-		Column::Ints::iterator intInputItr = column.AsInts.begin();
-		for (; intInputItr != column.AsInts.end(); intInputItr++)
-		{
-			int actual = *intInputItr;
-			if (actual != INT_MIN)
-				*intInputItr = actualToRaw.at(actual);
-		}
-
-		column._columnType = Column::ColumnTypeNominal;
+		column.setColumnType(Column::ColumnTypeNominal);
 
 		return;
 	}
@@ -231,7 +236,7 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 
 	if (success)
 	{
-		column._columnType = Column::ColumnTypeScale;
+		column.setColumnType(Column::ColumnTypeScale);
 		return;
 	}
 
@@ -278,7 +283,7 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 		intInputItr++;
 	}
 
-	column._columnType = Column::ColumnTypeNominalText;
+	column.setColumnType(Column::ColumnTypeNominalText);
 }
 
 

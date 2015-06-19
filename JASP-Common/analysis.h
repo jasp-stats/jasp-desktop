@@ -6,18 +6,19 @@
 #include <map>
 #include <list>
 
-#include "dataset.h"
 #include "options/options.h"
 
-#include "rinterface.h"
-
 #include "common.h"
+#include "version.h"
+
 
 class Analysis
 {
-
 public:
-	Analysis(int id, std::string name, Options *options, bool isAutorun = true);
+
+	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error };
+
+	Analysis(int id, std::string name, Options *options, Version version, bool isAutorun = true);
 	virtual ~Analysis();
 
 	Options *options() const;
@@ -26,42 +27,39 @@ public:
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
 
 	void setResults(Json::Value results);
-	Json::Value results();
-	Json::Value asJSON();
+	const Json::Value &results() const;
+	Json::Value asJSON() const;
+
+	static Status getStatusValue(std::string name);
 
 	const std::string &name() const;
 	int id() const;
 	bool isAutorun() const;
 
-	virtual void init();
-	virtual void run();
 	virtual void abort();
 	void scheduleRun();
 
-	void setRInterface(RInterface *r);
-	void setDataSet(DataSet *dataSet);
 	void setOptions(Options* options);
 
-	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborted };
+	Status status() const;
 
-	Status status();
 	void setStatus(Status status);
+	bool visible();
+	void setVisible(bool visible);
 
 protected:
 
 	Status _status;
+	bool _visible = true;
 
 	Options* _options;
-	DataSet *_dataSet;
 
-	RInterface *_r;
 	Json::Value _results;
 
 	int callback(Json::Value results);
 
-    Options *createOptions(std::string name);
-
 private:
+	Version _version;
 	int _id;
 	std::string _name;
 	bool _autorun;

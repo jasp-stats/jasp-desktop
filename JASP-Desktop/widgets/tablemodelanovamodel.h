@@ -41,6 +41,7 @@ public:
 	const Terms &variables() const;
 
 	virtual void bindTo(Option *option) OVERRIDE;
+	virtual void unbind() OVERRIDE;
 
 	virtual void mimeDataMoved(const QModelIndexList &indexes) OVERRIDE;
 

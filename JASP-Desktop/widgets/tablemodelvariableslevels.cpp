@@ -22,6 +22,8 @@ TableModelVariablesLevels::TableModelVariablesLevels(QWidget *parent) :
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
+
+	_limitToOneLevel = false;
 }
 
 void TableModelVariablesLevels::bindTo(Option *option)
@@ -118,6 +120,11 @@ int TableModelVariablesLevels::variableTypesAllowed() const
 	return _variableTypesAllowed;
 }
 
+void TableModelVariablesLevels::setLimitToOneLevel(bool limitToOne)
+{
+	_limitToOneLevel = limitToOne;
+}
+
 bool TableModelVariablesLevels::isSuggested(const Term &term) const
 {
 	QVariant v = requestInfo(term, VariableInfo::VariableType);
@@ -207,7 +214,7 @@ QVariant TableModelVariablesLevels::data(const QModelIndex &index, int role) con
 	}
 	else if (role == Qt::ForegroundRole)
 	{
-		if (index.row() == _rows.length() - 1)
+		if (_limitToOneLevel == false && index.row() == _rows.length() - 1)
 			return QBrush(QColor(0xAA, 0xAA, 0xAA));
 	}
 	else if (role == Qt::TextAlignmentRole)
@@ -499,9 +506,12 @@ void TableModelVariablesLevels::refresh()
 			_rows.append(Row(tq(variable)));
 	}
 
-	OptionString *nameTemplate = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
-	QString name = tq(nameTemplate->value()).arg(i + 1);
-	_rows.append(Row(name, true));
+	if (_limitToOneLevel == false)
+	{
+		OptionString *nameTemplate = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
+		QString name = tq(nameTemplate->value()).arg(i + 1);
+		_rows.append(Row(name, true));
+	}
 
 	endResetModel();
 }

@@ -3,10 +3,16 @@
 
 #include "label.h"
 
-#include <boost/container/vector.hpp>
+#include <boost/container/map.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/segment_manager.hpp>
 
-typedef boost::interprocess::allocator<Label, boost::interprocess::managed_shared_memory::segment_manager> LabelAllocator;
-typedef boost::container::vector<Label, LabelAllocator> LabelVector;
+typedef std::pair<const int, Label> LabelEntry;
+typedef boost::interprocess::allocator<LabelEntry, boost::interprocess::managed_shared_memory::segment_manager> LabelEntryAllocator;
+typedef boost::container::map<int, Label, std::less<int>, LabelEntryAllocator> LabelMap;
+
+#include <boost/iterator/iterator_facade.hpp>
+#include <boost/range/const_iterator.hpp>
 
 class Labels
 {
@@ -15,7 +21,9 @@ public:
 
 	void clear();
 	int add(int display);
-	int add(std::string &display);
+	int add(const std::string &display);
+	int add(int raw, const std::string &display);
+	int add(int raw, int display);
 
 	const Label &at(int raw) const;
 	size_t size() const;
@@ -24,9 +32,24 @@ public:
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
+	typedef LabelMap::const_iterator const_iterator;
+
+	const_iterator begin() const;
+	const_iterator end() const;
+
 private:
 	boost::interprocess::managed_shared_memory *_mem;
-	LabelVector _labels;
+	LabelMap _labels;
 };
+
+namespace boost
+{
+	template <>
+	struct range_const_iterator< Labels >
+	{
+		typedef Labels::const_iterator type;
+	};
+}
+
 
 #endif // LABELS_H

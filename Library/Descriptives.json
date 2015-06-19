@@ -1,138 +1,110 @@
-[
-   {
-      "name" : "mainFields",
-      "type" : "Variables"
-   },
-   {
-      "default" : false,
-      "name" : "mainDisplayFrequencyTables",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "plots",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "displayCorrelationPlot",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsPercentileValuesQuartiles",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsPercentileValuesEqualGroups",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsPercentileValuesPercentiles",
-      "type" : "Boolean"
-   },
-   {
-      "default" : 4,
-      "name" : "statisticsPercentileValuesEqualGroupsNo",
-      "type" : "Integer"
-   },
-   {
-      "name" : "statisticsPercentileValuesPercentilesPercentiles",
-      "type" : "IntegerArray"
-   },
-   {
-      "default" : true,
-      "name" : "statisticsCentralTendencyMean",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsCentralTendencyMedian",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsCentralTendencyMode",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsCentralTendencySum",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsValuesAreGroupMidpoints",
-      "type" : "Boolean"
-   },
-   {
-      "default" : true,
-      "name" : "statisticsDispersionStandardDeviation",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsDispersionVariance",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsDispersionRange",
-      "type" : "Boolean"
-   },
-   {
-      "default" : true,
-      "name" : "statisticsDispersionMinimum",
-      "type" : "Boolean"
-   },
-   {
-      "default" : true,
-      "name" : "statisticsDispersionMaximum",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsDispersionStandardErrorMean",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsDistributionSkewness",
-      "type" : "Boolean"
-   },
-   {
-      "default" : false,
-      "name" : "statisticsDistributionKurtosis",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "chartType",
-      "options" : [ "noCharts", "barCharts", "barCharts", "barCharts" ],
-      "default" : "noCharts",
-      "type" : "List"
-   },
-   {
-      "default" : false,
-      "name" : "chartShowNormalCurve",
-      "type" : "Boolean"
-   },
-   {
-      "name" : "chartValues",
-      "options" : [ "frequencies", "percentages" ],
-      "default" : "frequencies",
-      "type" : "List"
-   },
-   {
-      "default" : 480,
-      "name" : "chartWidth",
-      "type" : "Integer"
-   },
-   {
-      "default" : 320,
-      "name" : "chartHeight",
-      "type" : "Integer"
-   }
-]
-
+{
+	"name": "Descriptives",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "variables",
+			"type": "Variables"
+		},
+		{
+			"name": "frequencyTables",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotVariables",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotCorrelationMatrix",
+			"type": "Boolean"
+		},
+		{
+			"name": "percentileValuesQuartiles",
+			"type": "Boolean"
+		},
+		{
+			"name": "percentileValuesEqualGroups",
+			"type": "Boolean"
+		},
+		{
+			"name": "percentileValuesPercentiles",
+			"type": "Boolean"
+		},
+		{
+			"name": "percentileValuesEqualGroupsNo",
+			"type": "Integer",
+			"default": 4
+		},
+		{
+			"name": "percentileValuesPercentilesPercentiles",
+			"type": "IntegerArray"
+		},
+		{
+			"name": "mean",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "median",
+			"type": "Boolean"
+		},
+		{
+			"name": "mode",
+			"type": "Boolean"
+		},
+		{
+			"name": "sum",
+			"type": "Boolean"
+		},
+		{
+			"name": "valuesAreGroupMidpoints",
+			"type": "Boolean"
+		},
+		{
+			"name": "standardDeviation",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "variance",
+			"type": "Boolean"
+		},
+		{
+			"name": "range",
+			"type": "Boolean"
+		},
+		{
+			"name": "minimum",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "maximum",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "standardErrorMean",
+			"type": "Boolean"
+		},
+		{
+			"name": "skewness",
+			"type": "Boolean"
+		},
+		{
+			"name": "kurtosis",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotWidth",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeight",
+			"type": "Integer",
+			"default": 320
+		}
+	]
+}
