@@ -392,61 +392,65 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						v1 <- dataset[[ .v(variable.name) ]]
 						v2 <- dataset[[ .v(variable.2.name) ]]
 						
-						# Note: Data: PREPARE
-						#
-						
-						some.n <- length(v1)
-						some.r <- cor(v1, v2)
-						
-						# For stateRetrieval
-						n.label <- as.character(round(some.r, 5))
-						r.label <- as.character(round(some.r, 5))
-						
-						# Try state retrieval
-						#
-						retrievedBFs <- bfValuesListExcludeListwise[[prior.label]][[n.label]][[r.label]]
-						
-						if (!is.null(retrievedBFs)){
-							# State: Retrieval
-							some.r <- some.r
-							all.bfs <- retrievedBFs
-							
-							retrievedFootnote <- footnotesListExcludeListwise[[n.label]][[r.label]]
-							
-							if (!is.null(retrievedFootnote)){
-								some.footnote <- unlist(retrievedFootnote)
-								index <- .addFootnote(footnotes, some.footnote)
-								row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
-							}
-							
-							retrievalFailure <- FALSE
-							resultProcessing <- TRUE
-							
-							# CIs check:
+						if (!is.null(v1) && !is.null(v2)){
+							# Note: Data: PREPARE
 							#
-							if (credibleIntervals){
-								calculatedCIValues <- all.bfs$ciValues
+							some.n <- length(v1)
+							some.r <- cor(v1, v2)
+							
+							# For stateRetrieval
+							n.label <- as.character(round(some.r, 5))
+							r.label <- as.character(round(some.r, 5))
+							
+							# Try state retrieval
+							#
+							retrievedBFs <- bfValuesListExcludeListwise[[prior.label]][[n.label]][[r.label]]
+							
+							if (!is.null(retrievedBFs)){
+								# State: Retrieval
+								some.r <- some.r
+								all.bfs <- retrievedBFs
 								
-								if (!(credibleIntervalsInterval %in% calculatedCIValues)){
-									# put this in for the next time
-									# Output prepare
-									new.ci.label <- as.character(round(credibleIntervalsInterval, 5))
-									calculatedCIValues <- c(calculatedCIValues, credibleIntervalsInterval)
-									ciList <- all.bfs$CIs
+								retrievedFootnote <- footnotesListExcludeListwise[[n.label]][[r.label]]
+								
+								if (!is.null(retrievedFootnote)){
+									some.footnote <- unlist(retrievedFootnote)
+									index <- .addFootnote(footnotes, some.footnote)
+									row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+								}
+								
+								retrievalFailure <- FALSE
+								resultProcessing <- TRUE
+								
+								# CIs check:
+								#
+								if (credibleIntervals){
+									calculatedCIValues <- all.bfs$ciValues
 									
-									# Calculate
-									newCIList <- .credibleIntervals(alpha=all.bfs$betaA, beta=all.bfs$betaB, credibleIntervalsInterval)[[2]]
-									
-									# Store in State
-									ciList[[new.ci.label]] <- newCIList
-									all.bfs$CIs <- ciList
-									all.bfs$ciValues <- calculatedCIValues
-									bfValuesListExcludeListwise[[prior.label]][[n.label]][[r.label]] <- all.bfs
-								}	
+									if (!(credibleIntervalsInterval %in% calculatedCIValues)){
+										# put this in for the next time
+										# Output prepare
+										new.ci.label <- as.character(round(credibleIntervalsInterval, 5))
+										calculatedCIValues <- c(calculatedCIValues, credibleIntervalsInterval)
+										ciList <- all.bfs$CIs
+										
+										# Calculate
+										newCIList <- .credibleIntervals(alpha=all.bfs$betaA, beta=all.bfs$betaB, credibleIntervalsInterval)[[2]]
+										
+										# Store in State
+										ciList[[new.ci.label]] <- newCIList
+										all.bfs$CIs <- ciList
+										all.bfs$ciValues <- calculatedCIValues
+										bfValuesListExcludeListwise[[prior.label]][[n.label]][[r.label]] <- all.bfs
+									}	
+								}
+								#
+								# Close succesfull retrieval of bf
+							} else {
+								retrievalFailure <- TRUE
 							}
-							#
-							# Close succesfull retrieval of bf
 						} else {
+							# hence, no data
 							retrievalFailure <- TRUE
 						}
 					} # Close state retrieval block ---- 
@@ -827,8 +831,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 # 2.4 The Marsman MH sampler 
 
-# TODO: RESCALE YOUR .myScaledBeta with a factor of 2!!!!!!!!
-
 .logTarget <- function(z, n, r, kappa){
 	# z is Fisher's transformation for r, but also use it for rho
 	# The Fisher z transform and the log (likelihood*prior*Jacobian) of the tranformation
@@ -840,6 +842,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# The log sampling distribution as per Fisher approximation, however, swtiched the role of r and rho 
 	# in the mean. This is reasonable as the sampling distribution of r looks a bit like that of rho (the real one)
 	# Hence, this is normal distribution
+	# A Rabbi and a Priest buy a car together and it's being stored at the Priest's house. One day the 
+	# Rabbi goes over to use the car and he sees him sprinkling water on it. The Rabbi asked, ''What are 
+	# you doing?'' The Priest responded, ''I'm blessing the car.'' So the Rabbi said ''Okay, since we're 
+	# doing that....'' and takes out a hacksaw and cuts two inches off the tail pipe.
 	-(n-3)/2*(z-atanh(r))^2
 }
 
