@@ -9,11 +9,11 @@ Assumptions
 - The difference scores are a random sample from the population
 - The difference scores are normally distributed in the population
 
-Options
+Default Options
 -------
 ### Hypothesis:
 - Measure 1 &ne; Measure 2: Two-sided alternative hypothesis that the population mean of the difference is not equal to 0
-- Measure 1 &gt Measure 2: One-sided alternative hypothesis that the population mean of the difference is larger than 0
+- Measure 1 &gt; Measure 2: One-sided alternative hypothesis that the population mean of the difference is larger than 0
 - Measure 1 &lt; Measure 2: One sided alternative hypothesis that the population mean of the difference is smaller than 0
 
 ### Missing Values:
@@ -22,7 +22,7 @@ Options
  - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all difference scores. 
  Sample size is therefore constant across the tests. 
  
-Output
+Default Output
 -------
 
 ### Paired Samples T-Test:

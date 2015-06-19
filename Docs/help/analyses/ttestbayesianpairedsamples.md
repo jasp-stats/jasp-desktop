@@ -10,11 +10,11 @@ Assumptions
 - The difference scores are a random sample from the population
 - The difference scores are normally distributed in the population
 
-Options
+Default Options
 -------
 ### Hypothesis:
 - Measure 1 &ne; Measure 2: Two-sided alternative hypothesis that the population mean of the difference is not equal to 0
-- Measure 1 &gt Measure 2: One-sided alternative hypothesis that the population mean of the difference is larger than 0
+- Measure 1 &gt; Measure 2: One-sided alternative hypothesis that the population mean of the difference is larger than 0
 - Measure 1 &lt; Measure 2: One sided alternative hypothesis that the population mean of the difference is smaller than 0
 
 ### Bayes Factor:
@@ -29,7 +29,7 @@ Options
  - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the difference score for the particular t-test. Sample sizes may therefore vary across the tests.
  - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all difference scores. Sample size is therefore constant across the tests. 
  
-Output
+Default Output
 -------
 
 ### Bayesian One Sample T-Test:
@@ -87,4 +87,3 @@ References
 - Jeffreys, H. (1961). Theory of probability (3rd ed.). Oxford, UK: Oxford University Press.
 - Morey, R.D., Rouder, J.N., Pratte, M.S., & Speckman, P.L. (2011). Using MCMC chain outputs to efficiently estimate Bayes factors. Journal of Mathematical Psychology, 55, 368-378.
 - Rouder, J.N., Speckman, P.L., Sun, D., Morey, R.D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225-237.
-- Perception and Cognition Lab (University of Missouri): Bayes factor calculators. http://pcl.missouri.edu/bayesfactor

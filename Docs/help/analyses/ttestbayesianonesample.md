@@ -10,7 +10,7 @@ Assumptions
 - The data are a random sample from the population
 - The dependent variable is normally distributed in the population
 
-Options
+Default Options
 -------
 ### Test value: 
 -Test value specified in the null hypothesis
@@ -34,7 +34,7 @@ Options
  - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the tests. 
 
  
-Output
+Default Output
 -------
 ### Bayesian One Sample T-Test:
 - BF10 (or BF01): Bayes factor. If one-sided test is requested: 
@@ -92,4 +92,3 @@ References
 - Jeffreys, H. (1961). Theory of probability (3rd ed.). Oxford, UK: Oxford University Press.
 - Morey, R.D., Rouder, J.N., Pratte, M.S., & Speckman, P.L. (2011). Using MCMC chain outputs to efficiently estimate Bayes factors. Journal of Mathematical Psychology, 55, 368-378.
 - Rouder, J.N., Speckman, P.L., Sun, D., Morey, R.D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225-237.
-- Perception and Cognition Lab (University of Missouri): Bayes factor calculators. http://pcl.missouri.edu/bayesfactor

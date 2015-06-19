@@ -10,11 +10,11 @@ Assumptions
 - The dependent variable is normally distributed in both populations
 - The population variances in the two groups are homogeneous
 
-Options
+Default Options
 -------
 ### Hypothesis:
 - Group 1 &ne; Group 2: Two-sided alternative hypothesis that the population means are equal
-- Group 1 &gt Group 2: One-sided alternative hypothesis that the population mean of Group one is larger than the population mean of Group two
+- Group 1 &gt; Group 2: One-sided alternative hypothesis that the population mean of Group one is larger than the population mean of Group two
 - Group 1 &lt; Group 2: One-sided alternative hypothesis that the population mean of Group one is smaller than the population mean of Group two 
 
 ### Bayes Factor:
@@ -30,7 +30,7 @@ Options
  Sample sizes may therefore vary across the tests.
  - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the tests. 
  
-Output
+Default Output
 -------
 
 ### Bayesian Independent Samples T-Test:
@@ -88,4 +88,3 @@ References
 - Jeffreys, H. (1961). Theory of probability (3rd ed.). Oxford, UK: Oxford University Press.
 - Morey, R.D., Rouder, J.N., Pratte, M.S., & Speckman, P.L. (2011). Using MCMC chain outputs to efficiently estimate Bayes factors. Journal of Mathematical Psychology, 55, 368-378.
 - Rouder, J.N., Speckman, P.L., Sun, D., Morey, R.D., & Iverson, G. (2009). Bayesian t-tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225-237.
-- Perception and Cognition Lab (University of Missouri): Bayes factor calculators. http://pcl.missouri.edu/bayesfactor 

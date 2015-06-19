@@ -9,7 +9,7 @@ Assumptions
 - The data are a random sample from the population
 - The pairs of variables follow a bivariate normal distribution in the population
 
-Options
+Default Options
 -------
 ### Hypothesis:
 - Correlated: Two-sided alternative hypothesis that the population correlation does not equal 0 
@@ -25,7 +25,7 @@ Options
 
 ### Beta* prior width: Width of the scaled beta density on the correlation under the alterative hypothesis; default is 1
 
-Output
+Default Output
 -------
 ### Bayesian Pearson Correlations:
 - Pearson's r: Pearson product-moment correlation coefficient

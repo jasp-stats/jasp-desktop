@@ -3,7 +3,7 @@ Descriptives
 
 Descriptives allows you to obtain basic descriptive statistics, histograms and density plots, correlation plots, and frequency tables.
 
-Options
+Default Options
 -------
 ###Statistics:
 - Central Tendency (only for continuous variables):
@@ -13,7 +13,7 @@ Options
   - Minimum: Minimum value of the data points
   - Maximum: Maximum value of the data points
   
-Output
+Default Output
 -------
 ### Descriptive Statistics:
 - Valid: Number of valid cases

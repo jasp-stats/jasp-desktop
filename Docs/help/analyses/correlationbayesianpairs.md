@@ -9,7 +9,7 @@ Assumptions
 - The data are a random sample from the population
 - The pairs of variables follow a bivariate normal distribution in the population
 
-Options
+Default Options
 -------
 ### Hypothesis:
 - Correlated: Two-sided alternative hypothesis that the population correlation does not equal 0 
@@ -21,7 +21,7 @@ Options
 - BF01: Bayes factor to quantify evidence for the null hypothesis relative to the alternative hypothesis
 - Log(BF10): Natural logarithm of BF10
 
-Output
+Default Output
 -------
 ### Bayesian Pearson Correlations:
 - Pearson's r: Pearson product-moment correlation coefficient
