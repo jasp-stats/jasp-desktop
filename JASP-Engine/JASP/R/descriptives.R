@@ -746,9 +746,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	if (options$plotCorrelationMatrix) {
 		
 		if (run) {
-			matrix.plot <- .matrixPlot(dataset, perform="run", options)[[1]] 
+			matrix.plot <- .matrixPlot(dataset, perform="run", options) 
 		} else {
-			matrix.plot <- .matrixPlot(dataset, perform="init", options)[[1]]
+			matrix.plot <- .matrixPlot(dataset, perform="init", options)
 		}	
 	}
 	
@@ -954,46 +954,64 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		return()
 	
 	
-	matrix.plot <- list()	
+	matrix.plot <- list()
 
 	if (perform == "init") {
 	
 		variables <- unlist(options$variables)
 		
-		l <- length(variables)
+		# check for numeric/integer variables 
+		d <- vector("character", length(.v(variables)))
+		sdCheck <- vector("numeric", length(.v(variables)))
+		infCheck <- vector("logical", length(.v(variables)))
 		
-
-		if (l <= 2) {
+		for (i in seq_along(.v(variables))) {
 		
-			width <- 580
-			height <- 580
-			
-		} else {
-			
-			width <- 250 * l
-			height <- 250 * l
-				
+			d[i] <- class(dataset[[.v(variables)[i]]])
 		}
 		
-				
-		plot <- list()
-			
-		plot[["title"]] <- variables 
-		plot[["width"]]  <- width
-		plot[["height"]] <- height
+		ind <- d == "numeric" | d == "integer"
+		
+		variables <- .v(variables)[ind]
+		l <- length(variables)
+		
+		if (l > 0) {
 
-		matrix.plot[[1]] <- plot
+			if (l <= 2) {
+			
+				width <- 580
+				height <- 580
+				
+			} else {
+				
+				width <- 250 * l
+				height <- 250 * l
+				
+			}
+			
+			
+			plot <- list()
+			
+			plot[["title"]] <- ""
+			plot[["width"]]  <- width
+			plot[["height"]] <- height
+			
+			matrix.plot <- plot
+		
+		} else {
+		
+			matrix.plot <- NULL
+		}
 	}
 	
 	
 	if (perform == "run" && length(unlist(options$variables)) > 0) {
 
-	
 		variables <- unlist(options$variables)
 		
 		l <- length(variables)
 		
-		# check for numeric/integer variables & !infinity & standard deviation > 0				
+		# check for numeric/integer variables & !infinity & standard deviation > 0
 		d <- vector("character", length(.v(variables)))
 		sdCheck <- vector("numeric", length(.v(variables)))
 		infCheck <- vector("logical", length(.v(variables)))
@@ -1005,39 +1023,42 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
 		}
 		
-	
 		ind1 <- d == "numeric" | d == "integer"
 		ind2 <- sdCheck > 0
 		ind <- ind1 & ind2 & infCheck == FALSE
 		
-				
 		variables <- .v(variables)[ind]
 		
 		l <- length(variables)
-			
-			
-		if (l <= 2) {
 		
-			width <- 580
-			height <- 580
+		if (l > 0) {
+			
+			if (l <= 2) {
+			
+				width <- 580
+				height <- 580
+				
+			} else {
+				
+				width <- 250 * l
+				height <- 250 * l
+				
+			}
+			
+			matrix.plot <- list()
+			
+			plot <- list()
+			
+			plot[["title"]] <- ""
+			plot[["width"]]  <- width
+			plot[["height"]] <- height
+			
+			matrix.plot <- plot
 			
 		} else {
-			
-			width <- 250 * l
-			height <- 250 * l
-				
-		}
 		
-		matrix.plot <- list()
-				
-		plot <- list()
-			
-		plot[["title"]] <- .unv(variables)
-		plot[["width"]]  <- width
-		plot[["height"]] <- height
-				
-		matrix.plot[[1]] <- plot
-
+			matrix.plot <- NULL
+		}
 		
 		if (length(variables) > 0) {
 		
@@ -1045,10 +1066,10 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 				if (l == 1) {
 				
-					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))	
+					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))
 					
 					.plotMarginalCor(dataset[[variables[1]]]) 
-					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)	
+					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
 					
 				} else if (l > 1) {
 				
@@ -1063,22 +1084,21 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 								.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
 							
 							}
-								
+							
 							if (col > row) {
 							
 								.plotScatterDescriptives(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
 							
 							}
 							
-							if (col < row) {							
+							if (col < row) {
 							
 								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-									
+								
 							}
-						}		
+						}	
 					}
 				}
-				
 				
 				if (l > 1) {
 				
@@ -1090,14 +1110,14 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 						mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
 					}
 				}
-							
+				
 			content <- .endSaveImage(image)
 					
-			plot <- matrix.plot[[1]]
+			plot <- matrix.plot
 			plot[["data"]]  <- content
-			matrix.plot[[1]] <- plot
+			matrix.plot <- plot
 			
-		}	
+		}
 	}
 	
 	matrix.plot
