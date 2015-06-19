@@ -1541,34 +1541,29 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 .credibleIntervals <- function(alpha, beta, ciValue){
 	output <- list(betaA=alpha, betaB=beta, twoSidedCI=NA, minSidedCI=NA, plusSidedCI=NA)
-	
 	typeOne <- 1-ciValue
 	excessLevel <- typeOne/2
-	
 	# Two sided:
 	if (is.na(alpha) || is.na(beta)){
 		return(output)
 	} else {
 		lowerCIZeroOne <- try(qbeta(excessLevel, alpha, beta))
+		medianCIZeroOne <- try(qbeta(1/2, alpha, beta))
 		upperCIZeroOne <- try(qbeta(1-excessLevel, alpha, beta))
-		
-		if (is(lowerCIZeroOne, "try-error") || is(upperCIZeroOne, "try-error")) {
+		if (is(lowerCIZeroOne, "try-error") || is(medianCIZeroOne, "try-error") || is(upperCIZeroOne, "try-error")) {
 			return(output)
 		} else {
 			lowerCI <- 2*lowerCIZeroOne-1
+			medianCI <- 2*medianCIZeroOne-1
 			upperCI <- 2*upperCIZeroOne-1
 		}
 	}
-		
-	output$twoSidedCI <- c(lowerCI, upperCI)
-	
+	output$twoSidedCI <- c(lowerCI, medianCI, upperCI)
 	# One sided:
 	output$minSidedCI <- .minSidedCredibleInterval(alpha, beta, ciValue)
-	
 	# The problem is symmetric
 	temp  <- .minSidedCredibleInterval(beta, alpha, ciValue)
-	output$plusSidedCI <- c(-temp[2], -temp[1])
-	
+	output$plusSidedCI <- c(-temp[3], -temp[2], -temp[1])
 	wrapOutput <- list(list())
 	ci.label <- as.character(round(ciValue, 5))
 	wrapOutput[[ci.label]] <- output
@@ -1577,29 +1572,28 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 .minSidedCredibleInterval <- function(alpha, beta, ciValue){
 	output <- NA
-	
 	typeOne <- 1-ciValue
 	excessLevel <- typeOne/2
-	
 	if (is.na(alpha) || is.na(beta)){
 		return(output)
 	} else {
 		leftArea <- pbeta(1/2, alpha, beta)
-		
 		lowerCIZeroOne <- try(qbeta(excessLevel*leftArea, alpha, beta))
+		medianCIZeroOne <- try(qbeta(leftArea/2, alpha, beta))
 		upperCIZeroOne <- try(qbeta((1-excessLevel)*leftArea, alpha, beta))
-		
-		if (is(lowerCIZeroOne, "try-error") || is(upperCIZeroOne, "try-error")) {
+		if (is(lowerCIZeroOne, "try-error") || is(medianCIZeroOne, "try-error") || is(upperCIZeroOne, "try-error")) {
 			return(output)
 		} else {
 			lowerCI <- 2*lowerCIZeroOne-1
+			medianCI <- 2*medianCIZeroOne-1
 			upperCI <- 2*upperCIZeroOne-1
 		}
 	}
-	
-	output <- c(lowerCI, upperCI)
+	output <- c(lowerCI, medianCI, upperCI)
 	return(output)
 }
+
+#}
 # 
 # 
 # .rhoQuantile <- function(n, r, kappa=1, ciPercentage=.95){
