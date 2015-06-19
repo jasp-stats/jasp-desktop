@@ -131,7 +131,8 @@ SOURCES += main.cpp\
     lrnamreply.cpp \
     lrnam.cpp \
     analysisforms/r11tlearnform.cpp \
-    ribbons/ribbonr11tlearn.cpp
+    ribbons/ribbonr11tlearn.cpp \
+    widgets/webview.cpp
 
 HEADERS  += \
 	analyses.h \
@@ -231,7 +232,8 @@ HEADERS  += \
     lrnam.h \
     widgets/groupbox.h \
     analysisforms/r11tlearnform.h \
-    ribbons/ribbonr11tlearn.h
+    ribbons/ribbonr11tlearn.h \
+    widgets/webview.h
 
 FORMS    += \
     backstageform.ui \

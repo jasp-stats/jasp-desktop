@@ -131,6 +131,7 @@ private slots:
 	void updateUIFromOptions();
 
 	void resultsPageLoaded(bool success);
+	void scrollValueChangedHandle();
 
 	void saveKeysSelected();
 	void openKeysSelected();

@@ -119,6 +119,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(tq(tempfiles_sessionDirName()), this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
 	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(resultsPageLoaded(bool)));
+	connect(ui->webViewResults, SIGNAL(scrollValueChanged()), this, SLOT(scrollValueChangedHandle()));
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
@@ -1205,14 +1206,12 @@ void MainWindow::saveTempImageHandler(int id, QString path, QByteArray data)
 {
 	QByteArray byteArray = QByteArray::fromBase64(data);
 
-	QString fullpath = tq(tempfiles_sessionDirName()) + "/" + path;
+	QString fullpath = tq(tempfiles_createSpecific_clipboard(fq(path)));
 
-	//QFile file("C:/MyDir/some_name.ext");
-	//file.open(QIODevice::WriteOnly);
-	//file.write(byteArray);
-	//file.close();
-
-
+	QFile file(fullpath);
+	file.open(QIODevice::WriteOnly);
+	file.write(byteArray);
+	file.close();
 
 	QString f = "window.imageSaved({ id: " + tq(std::to_string(id)) + ", fullPath: '" + fullpath + "'});";
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(f);
@@ -1248,6 +1247,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 void MainWindow::copySelected()
 {
 
+	tempfiles_purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.copyMenuClicked();");
 
 }
@@ -1255,7 +1255,15 @@ void MainWindow::copySelected()
 void MainWindow::citeSelected()
 {
 
+	tempfiles_purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
+
+}
+
+void MainWindow::scrollValueChangedHandle()
+{
+	_analysisMenu->hide();
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.menuCancelled();");
 
 }
 

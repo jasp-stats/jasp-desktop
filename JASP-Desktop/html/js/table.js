@@ -21,6 +21,10 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		this.toolbar.setParent(this);
 		this.toolbar.title = this.model.get("title");
 		this.toolbar.titleTag = "span";
+		var self = this;
+		this.toolbar.selectionElement = function () {
+			return self.$el.find('th, td:not(.squash-left)');
+		};
 	},
 
 	_fsd: function (value) { // first significant digit position

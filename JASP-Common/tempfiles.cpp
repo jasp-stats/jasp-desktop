@@ -16,6 +16,7 @@ using namespace boost;
 long _tempfiles_sessionId;
 string _tempfiles_sessionDirName;
 string _tempfiles_statusFileName;
+string _tempfiles_clipboard;
 int _tempfiles_nextFileId;
 
 void tempfiles_init(long sessionId)
@@ -36,6 +37,14 @@ void tempfiles_init(long sessionId)
 
 	_tempfiles_statusFileName = ss.str();
 
+	stringstream ss2;
+	ss2 << Dirs::tempDir();
+	ss2 << "/";
+	ss2 << "clipboard";
+
+	_tempfiles_clipboard = ss2.str();
+
+
 	filesystem::path sessionPath = Utils::osPath(_tempfiles_sessionDirName);
 
 	filesystem::remove_all(sessionPath, error);
@@ -44,6 +53,11 @@ void tempfiles_init(long sessionId)
 	nowide::fstream f;
 	f.open(_tempfiles_statusFileName.c_str(), ios_base::out);
 	f.close();
+
+	filesystem::path clipboardPath = Utils::osPath(_tempfiles_clipboard);
+
+	//if ( ! filesystem::exists(clipboardPath, error))
+	//	filesystem::create_directories(clipboardPath, error);
 }
 
 void tempfiles_attach(long sessionId)
@@ -141,10 +155,37 @@ void tempfiles_deleteOrphans()
 
 
 void tempfiles_heartbeat()
+
 {
 	Utils::touch(_tempfiles_statusFileName);
 }
 
+void tempfiles_purgeClipboard()
+{
+	system::error_code error;
+
+	filesystem::path clipboardPath = Utils::osPath(_tempfiles_clipboard);
+
+	filesystem::remove_all(clipboardPath, error);
+}
+
+string tempfiles_createSpecific_clipboard(const string &filename)
+{
+	stringstream ss;
+	system::error_code error;
+
+	ss << _tempfiles_clipboard << "/" << filename;
+
+	string fullPath = ss.str();
+	filesystem::path path = Utils::osPath(fullPath);
+
+	filesystem::path dirPath = path.parent_path();
+
+	if (filesystem::exists(dirPath, error) == false || error)
+		filesystem::create_directories(dirPath, error);
+
+	return fullPath;
+}
 
 string tempfiles_createSpecific(const string &dir, const string &filename)
 {

@@ -68,6 +68,10 @@ $(document).ready(function () {
 		}
 	}
 
+	window.menuCancelled = function () {
+		this.menuObject.toolbar.cancelEvent();
+	}
+
 	window.scrollIntoView = function (item) {
 
 		var itemTop = item.offset().top

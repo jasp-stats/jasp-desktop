@@ -212,21 +212,24 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.hasMenu = this.options.hasCopy || this.options.hasCite;
 	},
 
+	selectionElement: function() {
+		return this.parent.$el;
+	},
+
 	setSelected: function (value) {
 		this.selected = value;
 
+		var $selectionElement = this.selectionElement();
 		if (value) {
-			this.parent.$el.addClass("jasp-menu-selected")	
+			$selectionElement.addClass("jasp-menu-selected")
 		}
 		else {
-			this.parent.$el.removeClass("jasp-menu-selected")
+			$selectionElement.removeClass("jasp-menu-selected")
 		}
 	},
 
 	completeEvent: function (msg) {
 		this.setFixedness(0);
-
-		//var $menuBtn = this.$el.find(".jasp-menu")
 
 		var $self = this.$el.find(">:first-child");
 		$self.tooltip("option", "content", msg)
@@ -236,6 +239,10 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		window.setTimeout(function () {
 			$self.tooltip("close")
 		}, 800)
+	},
+
+	cancelEvent: function () {
+		this.setFixedness(0);
 	}
 })
 
