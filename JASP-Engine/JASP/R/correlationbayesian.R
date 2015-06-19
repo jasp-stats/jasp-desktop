@@ -32,7 +32,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# options is a list
 	#
 	if (is.null(dataset)) {
-		if (perform == "run") {
+		if (perform == "run" || options$missingValues == "excludeListwise") {
 			if (options$missingValues == "excludeListwise") {
 				dataset <- .readDataSetToEnd(columns.as.numeric=options$variables, exclude.na.listwise=options$variables)
 			} else {
@@ -338,7 +338,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					# Try to retrieve bfs, if no retrival, then either calculate or init
 					#
 					retrievalFailure <- TRUE
-					needReAnalysis <- FALSE
+					recalculateCIs <- FALSE
 					
 					if (missingValues=="excludePairwise"){
 						retrievedBFs <- bfValuesListExcludePairwise[[prior.label]][[variable.name]][[column.name]]
@@ -358,57 +358,102 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							
 							retrievalFailure <- FALSE
 							resultProcessing <- TRUE
-							# Close succesfull retrieval of bf with corresponding n,r
+							
+							# CIs check:
+							#
+							if (credibleIntervals){
+								calculatedCIValues <- all.bfs$ciValues
+								
+								if (!(credibleIntervalsInterval %in% calculatedCIValues)){
+									# put this in for the next time
+									# Output prepare
+									new.ci.label <- as.character(round(credibleIntervalsInterval, 5))
+									calculatedCIValues <- c(calculatedCIValues, credibleIntervalsInterval)
+									ciList <- all.bfs$CIs
+									
+									# Calculate
+									newCIList <- .credibleIntervals(alpha=all.bfs$betaA, beta=all.bfs$betaB, credibleIntervalsInterval)[[2]]
+									
+									# Store in State
+									ciList[[new.ci.label]] <- newCIList
+									all.bfs$CIs <- ciList
+									all.bfs$ciValues <- calculatedCIValues
+									bfValuesListExcludePairwise[[prior.label]][[variable.name]][[column.name]] <- all.bfs
+								}	
+							}
+							#
+							# Close succesfull retrieval of bf
 						} else {
 							retrievalFailure <- TRUE
 						}
 					} else if (missingValues=="excludeListwise"){
-						#dataset <- .readDataSetToEnd(columns.as.numeric=options$variables, exclude.na.listwise=options$variables)
+						# Load: data
 						#
-						## Load: data
-						#v1 <- dataset[[ .v(variable.name) ]]
-						#v2 <- dataset[[ .v(variable.2.name) ]]
+						v1 <- dataset[[ .v(variable.name) ]]
+						v2 <- dataset[[ .v(variable.2.name) ]]
+						
+						# Note: Data: PREPARE
 						#
-						## Note: Data: PREPARE
-						# needReAnalysis == TRUE  thus multiple ns, so do lookup first
+						
+						some.n <- length(v1)
+						some.r <- cor(v1, v2)
+						
+						# For stateRetrieval
+						n.label <- as.character(round(some.r, 5))
+						r.label <- as.character(round(some.r, 5))
+						
+						# Try state retrieval
 						#
-						#some.n <- length(v1)
-						#some.r <- cor(v1, v2)
-						#
-						## For stateRetrieval
-						#n.label <- as.character(round(some.r, 5))
-						#r.label <- as.character(round(some.r, 5))
-						#
-						## Try state retrieval
-						##
-						#retrievedBFs <- bfValuesListExcludeListwise[[prior.label]][[n.label]][[r.label]]
-						#
-						#if (!is.null(retrievedBFs)){
-						#	# State: Retrieval
-						#	some.r <- some.r
-						#	all.bfs <- retrievedBFs
-						#	
-						#	retrievedFootnote <- footnotesListExcludeListwise[[n.label]][[r.label]]
-						#	
-						#	if (!is.null(retrievedFootnote)){
-						#		some.footnote <- unlist(retrievedFootnote)
-						#		index <- .addFootnote(footnotes, some.footnote)
-						#		row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
-						#	}
-						#	
-						#	retrievalFailure <- FALSE
-						#	resultProcessing <- TRUE
-						#	# Close succesfull retrieval of bf with corresponding n,r
-						# retrievalFailure <- TRUE
-						retrievalFailure <- TRUE
+						retrievedBFs <- bfValuesListExcludeListwise[[prior.label]][[n.label]][[r.label]]
+						
+						if (!is.null(retrievedBFs)){
+							# State: Retrieval
+							some.r <- some.r
+							all.bfs <- retrievedBFs
+							
+							retrievedFootnote <- footnotesListExcludeListwise[[n.label]][[r.label]]
+							
+							if (!is.null(retrievedFootnote)){
+								some.footnote <- unlist(retrievedFootnote)
+								index <- .addFootnote(footnotes, some.footnote)
+								row.footnotes[[column.name]] <- c(row.footnotes[[column.name]], list(index))
+							}
+							
+							retrievalFailure <- FALSE
+							resultProcessing <- TRUE
+							
+							# CIs check:
+							#
+							if (credibleIntervals){
+								calculatedCIValues <- all.bfs$ciValues
+								
+								if (!(credibleIntervalsInterval %in% calculatedCIValues)){
+									# put this in for the next time
+									# Output prepare
+									new.ci.label <- as.character(round(credibleIntervalsInterval, 5))
+									calculatedCIValues <- c(calculatedCIValues, credibleIntervalsInterval)
+									ciList <- all.bfs$CIs
+									
+									# Calculate
+									newCIList <- .credibleIntervals(alpha=all.bfs$betaA, beta=all.bfs$betaB, credibleIntervalsInterval)[[2]]
+									
+									# Store in State
+									ciList[[new.ci.label]] <- newCIList
+									all.bfs$CIs <- ciList
+									all.bfs$ciValues <- calculatedCIValues
+									bfValuesListExcludeListwise[[prior.label]][[n.label]][[r.label]] <- all.bfs
+								}	
+							}
+							#
+							# Close succesfull retrieval of bf
+						} else {
+							retrievalFailure <- TRUE
+						}
 					} # Close state retrieval block ---- 
 					
 					# No retrieval: if perform==run, run the analysis ---
 					if (retrievalFailure) {
 						# Results cannot be retrieved from state
-						if (needReAnalysis){
-							# Instead of running it, first try looking it up. 
-						}
 						
 						if (perform == "run") {
 							# Note: Data screening 
@@ -423,7 +468,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							}
 							
 							# Note: Data: PREPARE
-							# needReAnalysis == TRUE  thus multiple ns, so do lookup first
 							#
 							some.r <- cor(v1, v2)
 							some.n <- length(v1)
@@ -493,10 +537,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								rValuesListExcludePairwise[[variable.name]][[column.name]] <- list(some.r)
 								bfValuesListExcludePairwise[[prior.label]][[variable.name]][[column.name]] <- all.bfs
 							} else if (missingValues=="excludeListwise"){
-								# TODO: these should be defined above in the retrieval block
-								n.label <- as.character(round(some.n))
-								r.label <- as.character(round(some.r))
-								
 								bfValuesListExcludeListwise[[prior.label]][[n.label]][[r.label]] <- all.bfs
 							}
 							resultProcessing <- TRUE
@@ -976,7 +1016,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# Ex.	if we retrieve bfs from methodNumber 6, we don't know anything about the posterior, so no report at all
 	#
 	tempList <- list(vector())
-	output <- list(n=n, r=r, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, CIs=tempList, ciValue=ciValue)
+	output <- list(n=n, r=r, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, CIs=tempList, ciValues=ciValue)
 	
 	# Note: Data check
 	#
@@ -1497,9 +1537,20 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	excessLevel <- typeOne/2
 	
 	# Two sided:
-	lowerCI <- 2*qbeta(excessLevel, alpha, beta)-1
-	upperCI <- 2*qbeta(1-excessLevel, alpha, beta)-1
-	
+	if (is.na(alpha) || is.na(beta)){
+		return(output)
+	} else {
+		lowerCIZeroOne <- try(qbeta(excessLevel, alpha, beta))
+		upperCIZeroOne <- try(qbeta(1-excessLevel, alpha, beta))
+		
+		if (is(lowerCIZeroOne, "try-error") || is(upperCIZeroOne, "try-error")) {
+			return(output)
+		} else {
+			lowerCI <- 2*lowerCIZeroOne-1
+			upperCI <- 2*upperCIZeroOne-1
+		}
+	}
+		
 	output$twoSidedCI <- c(lowerCI, upperCI)
 	
 	# One sided:
@@ -1516,17 +1567,29 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 .minSidedCredibleInterval <- function(alpha, beta, ciValue){
+	output <- NA
+	
 	typeOne <- 1-ciValue
 	excessLevel <- typeOne/2
 	
-	leftArea <- pbeta(1/2, alpha, beta)
-	rightArea <- 1-leftArea
+	if (is.na(alpha) || is.na(beta)){
+		return(output)
+	} else {
+		leftArea <- pbeta(1/2, alpha, beta)
+		
+		lowerCIZeroOne <- try(qbeta(excessLevel*leftArea, alpha, beta))
+		upperCIZeroOne <- try(qbeta((1-excessLevel)*leftArea, alpha, beta))
+		
+		if (is(lowerCIZeroOne, "try-error") || is(upperCIZeroOne, "try-error")) {
+			return(output)
+		} else {
+			lowerCI <- 2*lowerCIZeroOne-1
+			upperCI <- 2*upperCIZeroOne-1
+		}
+	}
 	
-	lowerCI <- 2*qbeta(excessLevel*leftArea, alpha, beta)-1
-	upperCI <- 2*qbeta((1-excessLevel)*leftArea, alpha, beta)-1
-	
-	result <- c(lowerCI, upperCI)
-	return(result)
+	output <- c(lowerCI, upperCI)
+	return(output)
 }
 # 
 # 
