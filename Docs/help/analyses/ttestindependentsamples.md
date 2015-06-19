@@ -10,11 +10,11 @@ Assumptions
 - The dependent variable is normally distributed in both populations
 - The population variances in the two groups are homogeneous
 
-Options
+Default Options
 -------
 ### Hypothesis:
 - Group 1 &ne; Group 2: Two-sided alternative hypothesis that the population means are equal
-- Group 1 &gt Group 2: One-sided alternative hypothesis that the population mean of Group 1 is larger than the population mean of Group 2
+- Group 1 &gt; Group 2: One-sided alternative hypothesis that the population mean of Group 1 is larger than the population mean of Group 2
 - Group 1 &lt; Group 2: One-sided alternative hypothesis that the population mean of Group 1 is smaller than the population mean of Group 2
 
 ### Equality of Variances:
@@ -27,7 +27,7 @@ Options
  Sample sizes may therefore vary across the tests.
  - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the tests. 
  
-Output
+Default Output
 -------
 
 ### Independent Samples T-Test:

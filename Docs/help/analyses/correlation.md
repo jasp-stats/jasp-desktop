@@ -15,7 +15,7 @@ Assumptions for null hypothesis significance testing using the Spearman's rank-o
 - The data are a random sample from the population
 - The relationship between the pairs of variables is monotonic
 
-Options
+Default Options
 -------
 ### Correlation Coefficients: 
 - Pearson: Pearson product-moment correlation coefficient to quantify the linear association between two variables
@@ -27,7 +27,7 @@ Options
 
 ### Report significance: Report p-value for each significance test
  
-Output
+Default Output
 -------
 ### Pearson Correlations (Note that this table is called "Correlation Table" if Spearman's rank-order correlation and/or the Kendall's tau B rank-order correlation is requested):
 - Pearson's r: Pearson product-moment correlation coefficient
