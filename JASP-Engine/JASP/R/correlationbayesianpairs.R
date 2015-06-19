@@ -64,20 +64,34 @@
 	
 	
 	# compute 95% credible interval & median:
-	if (oneSided != FALSE)
-		drawCI <- FALSE
 	
-	if (drawCI) {
+	someFit <- .posteriorBetaParameters(n=n, r=r, kappa=kappa)
+	betaA <- someFit$betaA
+	betaB <- someFit$betaB
+	ci <- .credibleIntervals(betaA, betaB, .95)
 	
-		rhoQuantiles <- .rhoQuantile(n=n, r=r, kappa=kappa)
-		CIlow <- rhoQuantiles[1]
-		CIhigh <- rhoQuantiles[3]
-		medianPosterior <- rhoQuantiles[2]
+	if (oneSided == FALSE) {
 	
-		if (any(is.na(rhoQuantiles)))
-			drawCI <- FALSE
+		CIlow <- ci$"0.95"$twoSidedCI[1]
+		medianPosterior <- ci$"0.95"$twoSidedCI[2]
+		CIhigh <- ci$"0.95"$twoSidedCI[3]
+	
+	} else if (oneSided == "right") {
+	
+		CIlow <- ci$"0.95"$plusSidedCI[1]
+		medianPosterior <- ci$"0.95"$plusSidedCI[2]
+		CIhigh <- ci$"0.95"$plusSidedCI[3]
+	
+	} else if (oneSided == "left") {
+	
+		CIlow <- ci$"0.95"$minSidedCI[1]
+		medianPosterior <- ci$"0.95"$minSidedCI[2]
+		CIhigh <- ci$"0.95"$minSidedCI[3]
 	
 	}
+	
+	if (any(is.na(c(CIlow, medianPosterior, CIhigh))))
+		drawCI <- FALSE
 	
 	rho <- seq(-0.99, 0.99, length.out = 1000)
 	
