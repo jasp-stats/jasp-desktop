@@ -29,8 +29,8 @@ EngineSync::EngineSync(Analyses *analyses, QObject *parent = 0)
 	_log = NULL;
 	_ppi = 96;
 
-	_analyses->analysisAdded.connect(boost::bind(&EngineSync::sendMessages, this));
-	_analyses->analysisOptionsChanged.connect(boost::bind(&EngineSync::sendMessages, this));
+	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), this, SLOT(sendMessages()));
+	connect(_analyses, SIGNAL(analysisOptionsChanged(Analysis*)), this, SLOT(sendMessages()));
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, SLOT(deleteOrphanedTempFiles()));
@@ -98,8 +98,6 @@ void EngineSync::start()
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(heartbeatTempFiles()));
 	timer->start(30000);
-
-	tempfiles_init(ProcessInfo::currentPID());
 }
 
 bool EngineSync::engineStarted()
@@ -124,16 +122,21 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	std::cout.flush();
 #endif
 
-	bool init;
+	string perform;
 
 	if (analysis->status() == Analysis::Empty)
 	{
-		init = true;
+		perform = "init";
 		analysis->setStatus(Analysis::Initing);
+	}
+	else if (analysis->status() == Analysis::Aborting)
+	{
+		perform = "abort";
+		analysis->setStatus(Analysis::Aborted);
 	}
 	else
 	{
-		init = false;
+		perform = "run";
 		analysis->setStatus(Analysis::Running);
 	}
 
@@ -142,14 +145,18 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	Json::Value json = Json::Value(Json::objectValue);
 
 	json["id"] = analysis->id();
-	json["name"] = analysis->name();
-	json["options"] = analysis->options()->asJSON();
-	json["perform"] = (init ? "init" : "run");
+	json["perform"] = perform;
 
-	Json::Value settings;
-	settings["ppi"] = _ppi;
+	if (analysis->status() != Analysis::Aborted)
+	{
+		json["name"] = analysis->name();
+		json["options"] = analysis->options()->asJSON();
 
-	json["settings"] = settings;
+		Json::Value settings;
+		settings["ppi"] = _ppi;
+
+		json["settings"] = settings;
+	}
 
 	string str = json.toStyledString();
 
@@ -211,11 +218,7 @@ void EngineSync::process()
 				_analysesInProgress[i] = NULL;
 				sendMessages();
 			}
-			else if (analysis->status() == Analysis::Running)
-			{
-				analysis->setResults(results);
-			}
-			else if (analysis->status() == Analysis::Initing)
+			else if (status == "inited")
 			{
 				if (analysis->isAutorun())
 					analysis->setStatus(Analysis::Inited);
@@ -225,6 +228,15 @@ void EngineSync::process()
 				analysis->setResults(results);
 				_analysesInProgress[i] = NULL;
 				sendMessages();
+			}
+			else if (status == "running" && analysis->status() == Analysis::Initing)
+			{
+				analysis->setStatus(Analysis::Running);
+				analysis->setResults(results);
+			}
+			else if (analysis->status() == Analysis::Running)
+			{
+				analysis->setResults(results);
 			}
 			else
 			{
@@ -242,16 +254,28 @@ void EngineSync::sendMessages()
 	std::cout.flush();
 #endif
 
-	for (int i = 0; i < _analysesInProgress.size(); i++)
+	for (int i = 0; i < _analysesInProgress.size(); i++) // this loop handles changes in running analyses
 	{
 		Analysis *analysis = _analysesInProgress[i];
-		if (analysis != NULL && analysis->status() == Analysis::Empty)
-			sendToProcess(i, analysis);
+		if (analysis != NULL)
+		{
+			if (analysis->status() == Analysis::Empty)
+			{
+				sendToProcess(i, analysis);
+			}
+			else if (analysis->status() == Analysis::Aborting)
+			{
+				sendToProcess(i, analysis);
+				_analysesInProgress[i] = NULL;
+			}
+		}
 	}
 
 	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 	{
 		Analysis *analysis = *itr;
+		if (analysis == NULL)
+			continue;
 
 		if (analysis->status() == Analysis::Empty)
 		{

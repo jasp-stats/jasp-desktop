@@ -2,12 +2,7 @@
 #define APPLICATION_H
 
 #include <QApplication>
-
-#ifdef QT_NO_DEBUG
-
-typedef QApplication Application;
-
-#else
+#include "mainwindow.h"
 
 #include "common.h"
 
@@ -18,13 +13,15 @@ public:
 	explicit Application(int &argc, char **argv);
 
 	virtual bool notify(QObject *receiver, QEvent *event) OVERRIDE;
+	virtual bool event(QEvent *event) OVERRIDE;
 
 signals:
 
 public slots:
 
-};
+private:
+	MainWindow *_mainWindow;
 
-#endif // QT_NO_DEBUG
+};
 
 #endif // APPLICATION_H

@@ -24,15 +24,11 @@ CorrelationForm::CorrelationForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->optionsWidget->hide();
-	ui->confidenceIntervalsIntervalContainer->hide();
-	ui->confidenceIntervals->hide();
 #else
 	ui->optionsWidget->setStyleSheet("background-color: pink ;");
-	ui->confidenceIntervalsIntervalContainer->setStyleSheet("background-color: pink ;");
-	ui->confidenceIntervals->setStyleSheet("background-color: pink ;");
 #endif
 
-
+	ui->confidenceIntervalsInterval->setLabel("Confidence intervals");
 }
 
 CorrelationForm::~CorrelationForm()

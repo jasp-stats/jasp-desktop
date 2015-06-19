@@ -26,6 +26,7 @@ TTestBayesianPairedSamplesForm::TTestBayesianPairedSamplesForm(QWidget *parent) 
 
 	ui->assignButton->setSourceAndTarget(ui->availableFields, ui->pairs);
 
+	ui->priorWidth->setLabel("Prior width");
 }
 
 TTestBayesianPairedSamplesForm::~TTestBayesianPairedSamplesForm()

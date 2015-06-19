@@ -23,9 +23,9 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 
 LIBS += -L.. -lJASP-Common
 
-windows:LIBS += -lboost_filesystem-mt -lboost_system-mt
-   macx:LIBS += -lboost_filesystem-mt -lboost_system-mt
-  linux:LIBS += -lboost_filesystem    -lboost_system
+windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
+   macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
+  linux:LIBS += -lboost_filesystem    -lboost_system    -larchive
 
 macx:ICON = icon.icns
 windows:RC_FILE = icon.rc
@@ -41,6 +41,7 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 SOURCES += main.cpp\
+	analyses.cpp \
 	mainwindow.cpp \
 	datasettablemodel.cpp \
     backstageform.cpp \
@@ -86,7 +87,7 @@ SOURCES += main.cpp\
 	analysisforms/correlationform.cpp \
     widgets/boundassignwidget.cpp \
     analysisforms/anovarepeatedmeasuresform.cpp \
-    analysisforms/crosstabsform.cpp \
+	analysisforms/contingencytablesform.cpp \
     analysisforms/correlationpartialform.cpp \
     ribbons/ribbonwidget.cpp \
     ribbons/ribbonsem.cpp \
@@ -113,7 +114,6 @@ SOURCES += main.cpp\
     widgets/tablemodelvariablesoptions.cpp \
     widgets/tablemodelanovamodel.cpp \
     widgets/tablemodelcontrasts.cpp \
-	analysisforms/anovarepeatedmeasuresshortform.cpp \
 	widgets/tablemodelanovadesign.cpp \
     widgets/datasetsselectwidget.cpp \
     widgets/datasetselectwidget.cpp \
@@ -122,7 +122,7 @@ SOURCES += main.cpp\
     analysisforms/ancovabayesianform.cpp \
     analysisforms/anovarepeatedmeasuresbayesianform.cpp \
     analysisforms/correlationbayesianform.cpp \
-    analysisforms/crosstabsbayesianform.cpp \
+	analysisforms/contingencytablesbayesianform.cpp \
 	analysisforms/correlationbayesianpairsform.cpp \
     application.cpp \
     analysisforms/regressionlinearbayesianform.cpp \
@@ -134,6 +134,7 @@ SOURCES += main.cpp\
     ribbons/ribbonr11tlearn.cpp
 
 HEADERS  += \
+	analyses.h \
     datasettablemodel.h \
     backstageform.h \
     enginesync.h \
@@ -184,7 +185,7 @@ HEADERS  += \
     widgets/tableviewmenueditordelegate.h \
     widgets/boundassignwidget.h \
     analysisforms/anovarepeatedmeasuresform.h \
-    analysisforms/crosstabsform.h \
+	analysisforms/contingencytablesform.h \
     analysisforms/correlationpartialform.h \
     ribbons/ribbonwidget.h \
     ribbons/ribbonsem.h \
@@ -212,7 +213,6 @@ HEADERS  += \
     widgets/tablemodelvariablesoptions.h \
     widgets/tablemodelanovamodel.h \
     widgets/tablemodelcontrasts.h \
-	analysisforms/anovarepeatedmeasuresshortform.h \
 	widgets/tablemodelanovadesign.h \
     widgets/datasetsselectwidget.h \
     widgets/datasetselectwidget.h \
@@ -221,7 +221,7 @@ HEADERS  += \
     analysisforms/ancovabayesianform.h \
 	analysisforms/anovarepeatedmeasuresbayesianform.h \
     analysisforms/correlationbayesianform.h \
-    analysisforms/crosstabsbayesianform.h \
+	analysisforms/contingencytablesbayesianform.h \
 	analysisforms/correlationbayesianpairsform.h \
     application.h \
     analysisforms/regressionlinearbayesianform.h \
@@ -253,7 +253,7 @@ FORMS    += \
     analysisforms/correlationform.ui \
     widgets/boundassignwidget.ui \
     analysisforms/anovarepeatedmeasuresform.ui \
-    analysisforms/crosstabsform.ui \
+	analysisforms/contingencytablesform.ui \
     analysisforms/correlationpartialform.ui \
     ribbons/ribbonhome.ui \
     ribbons/ribbonsem.ui \
@@ -262,13 +262,12 @@ FORMS    += \
     analysisforms/ttestbayesianindependentsamplesform.ui \
     analysisforms/ttestbayesianpairedsamplesform.ui \
     optionsform.ui \
-    analysisforms/anovarepeatedmeasuresshortform.ui \
     widgets/datasetselectwidget.ui \
     analysisforms/ancovabayesianform.ui \
     analysisforms/anovarepeatedmeasuresbayesianform.ui \
     analysisforms/correlationbayesianform.ui \
 	analysisforms/correlationbayesianpairsform.ui \
-    analysisforms/crosstabsbayesianform.ui \
+	analysisforms/contingencytablesbayesianform.ui \
     analysisforms/regressionlinearbayesianform.ui \
     analysisforms/r11tlearnform.ui \
     ribbons/ribbonr11tlearn.ui
@@ -406,7 +405,6 @@ OTHER_FILES += \
 	html/js/images.js \
 	html/js/analysis.js \
     resources/icons/variable-nominal-text.svg \
-    analysisforms/AnovaRepeatedMeasuresShortForm.qml \
     html/css/images/waiting.svg \
     resources/icons/analysis-classical-sem.svg
 

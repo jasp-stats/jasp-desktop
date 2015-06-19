@@ -82,8 +82,17 @@
 	if ((options$dependent == "") || (length (options$modelTerms) == 0))
 		error.message <- NULL
 
-	if (!exists ("error.message") && any (!is.finite (dataset [[.v (options$dependent)]])))
-		error.message <- "Bayes factor is undefined -- the dependent variable contains infinity"
+	if (!exists ("error.message") && perform == "run") {
+		variable.names <- NULL
+		for (covariate in options$covariates) {
+			if (any (!is.finite (dataset [[.v (covariate)]])))
+				variable.names <- c (variable.names, covariate)
+		}
+		if ( any (!is.finite (dataset [[.v (options$dependent)]])))
+			variable.names <- c (variable.names, options$dependent)
+		if ( !is.null (variable.names))
+			error.message <- paste ("Bayes factor is undefined -- the variable(s) ", variable.names, " contain(s) infinity", sep = "")
+	}
 
 	if (!exists ("error.message") && perform == "run") {
 		factor.names <- NULL
@@ -160,18 +169,39 @@
 		return (list (ready = FALSE, error.message = error.message))
 }
 
-.theBayesianLinearModels <- function (dataset = NULL, options = list (), perform = "init", status = list ()) {
+.updateResultsBayesianLinearModels <- function (results, model.object, effects.matrix, interactions.matrix, neverExclude, null.model, options, status) {
+	results [["model comparison"]] <- .theBayesianLinearModelsComparison (
+		list (
+			models = model.object, 
+			effects = effects.matrix,
+			interactions.matrix = interactions.matrix, 
+			nuisance = neverExclude,
+			null.model = null.model), 
+		options, perform = "run", status, populate = TRUE)$modelTable
+
+	results [["effects"]] <- .theBayesianLinearModelsEffects (
+		list (
+			models = model.object, 
+			effects = effects.matrix,
+			interactions.matrix = interactions.matrix, 
+			nuisance = neverExclude,
+			null.model = null.model), 
+		options, perform = "run", status, populate = TRUE)
+	return(results)
+}
+
+.theBayesianLinearModels <- function (dataset = NULL, options = list (), perform = "init", status = list (), .callbackBayesianLinearModels, .callbackBFpackage, results = list()) {
 	if (!status$ready && is.null (status$error.message))
 		return (list (model =  list (models = NULL, effects = NULL), status = status))
 
+	#Extract the model components and nuisance terms
 	model.formula <- paste (.v (options$dependent), " ~ ", sep = "")
 	neverExclude <- NULL
 	effects <- NULL
-
 	for (term in options$modelTerms) {
 		if (is.null (effects) & is.null (neverExclude)){
 			model.formula <- paste (model.formula,
-				paste (.v (term$components), collapse = ":"), sep = "")			
+				paste (.v (term$components), collapse = ":"), sep = "")
 		} else {
 			model.formula <- paste (model.formula, " + ",
 				paste (.v (term$components), collapse = ":"), sep = "")
@@ -184,10 +214,19 @@
 	}
 	model.formula <- formula (model.formula)
 
+	#Intermediate Callback
+	response <- .callbackBayesianLinearModels ()
+	if (response$status != "ok") {
+		return ()
+	} else {
+		if ( ! is.null (response$options))
+			options <- response$options
+	}
+
+	#Make a list of models to compare
 	model.list <- try (BayesFactor::enumerateGeneralModels (model.formula, 
 		whichModels = "withmain", neverExclude = paste ("^", neverExclude, "$", sep = "")), 
 		silent = TRUE)
-		
 	if (class (model.list) == "try-error") {
 		if (is.null (status$error.message)) {
 			status$ready <- FALSE
@@ -198,9 +237,16 @@
 		model.list <- list (model.formula)
 	}
 
-	if (callback () != 0)
-		return (NULL)
+	#Intermediate Callback
+	response <- .callbackBayesianLinearModels ()
+	if (response$status != "ok") {
+		return ()
+	} else {
+		if ( ! is.null (response$options))
+			options <- response$options
+	}
 
+	#Run Null model
 	null.model <- list ()
 	if (!is.null (neverExclude)) {
 		for (m in 1:length (model.list)){
@@ -216,18 +262,23 @@
 		if (perform == "run" && status$ready) {
 			bf <- try (BayesFactor::lmBF (null.formula,
 				data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-				progress = FALSE, posterior = FALSE))
+				progress = FALSE, posterior = FALSE, callback = .callbackBFpackage))
+			
 			null.model$bf <- bf
-			if (class (bf) == "try-error") {
+			
+			if (inherits (bf, "try-error")) {
+				message <- .extractErrorMessage (bf)
+				if (message == "Operation cancelled by callback function.")
+					return()
 				status$ready <- FALSE
 				status$error.message <- "Bayes factor is undefined -- the null model could not be computed"
 			}
 		}
 	}
 
+	#Run all other models and store the results in the model.object
 	no.effects <- length (effects)
 	no.models <- length (model.list)
-
 	if (no.models > 0 && no.effects > 0) {
 		effects.matrix <- matrix (FALSE, nrow = no.models, ncol = no.effects)
 		colnames (effects.matrix) <- effects
@@ -250,8 +301,6 @@
 
 		model.object <- list()
 		for (m in 1:no.models) {
-			if (callback () != 0)
-				return (NULL)
 			model.object [[m]] <- list ("ready" = TRUE)
 			model.effects <- base::strsplit (x = as.character (model.list [[m]]) [[3]], 
 				split = "+", fixed = TRUE) [[1]]
@@ -283,25 +332,69 @@
 			model.title <- model.title [model.title != ""]
 			model.title <- model.title [!(model.title %in% neverExclude)]
 			model.object [[m]]$title <- .unvf (paste (model.title, collapse = " + "))
+			
+			model.object [[m]]$ready <- FALSE #to ensure that intermediate results can be called
+		}
+		
+		#Create empty tables
+		results <- .updateResultsBayesianLinearModels (results, model.object, 
+			effects.matrix, interactions.matrix, neverExclude, null.model, options, status)
 
+		#Intermediate Callback
+		response <- .callbackBayesianLinearModels (results)
+		if (response$status != "ok") {
+			return ()
+		} else {
+			if ( ! is.null (response$options))
+				options <- response$options
+		}
+
+		#Now compute Bayes Factors for each model in the list, and populate the tables accordingly
+		for(m in 1:no.models) {
 			if (perform == "run" && status$ready) {
 				bf <- try (BayesFactor::lmBF (model.list [[m]],
 					data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-					progress = FALSE, posterior = FALSE))
+					progress = FALSE, posterior = FALSE, callback = .callbackBFpackage))
 				model.object [[m]]$bf <- bf
 
-				if (class (bf) == "try-error") {
-					model.object [[m]]$ready <- FALSE
+				if (inherits (bf, "try-error")) {
+					message <- .extractErrorMessage (bf)
+					if (message == "Operation cancelled by callback function.")
+						return()
 					model.object [[m]]$error.message <- "Bayes factor could not be computed"
+				} else {
+					model.object [[m]]$ready <- TRUE
 				}
 
 				if (length (neverExclude) > 0){
 					model.object [[m]]$bf <- model.object [[m]]$bf / null.model$bf
 				}
 			}
-		}		
-		return (list (model =  list (models = model.object, effects = effects.matrix, 
-			interactions.matrix = interactions.matrix, nuisance = neverExclude, 
+			
+			#Create empty tables
+			results <- .updateResultsBayesianLinearModels (results, model.object, 
+				effects.matrix, interactions.matrix, neverExclude, null.model, options, status)
+
+			#Intermediate Callback
+			response <- .callbackBayesianLinearModels (results)
+			if (response$status != "ok") {
+				return ()
+			} else {
+				if ( ! is.null (response$options))
+					options <- response$options
+			}
+		}
+#		if (options$posteriorEstimates) {
+#			complexity <- rowSums (effects)
+#			m <- which (complexity == max (complexity))
+#			chains <- posterior ( model.object [[m]]$bf, iterations = mcmc.iterations)
+#			model.object [[m]]$chains <- chains
+#			return (list (model =  list (models = model.object, effects = effects.matrix,
+#				interactions.matrix = interactions.matrix, nuisance = neverExclude,
+#				null.model = null.model), status = status, mcmc.model = m))
+#		}
+		return (list (model = list (models = model.object, effects = effects.matrix,
+			interactions.matrix = interactions.matrix, nuisance = neverExclude,
 			null.model = null.model), status = status))
 	} 
 
@@ -313,7 +406,7 @@
 		nuisance = neverExclude, null.model = NULL), status = status))
 }
 
-.theBayesianLinearModelsComparison <- function (model = NULL, options = list (), perform = "init", status = list ()) {
+.theBayesianLinearModelsComparison <- function (model = NULL, options = list (), perform = "init", status = list (), populate = TRUE) {
 	modelTable <- list ()
 	modelTable [["title"]] <- "Model Comparison"
 	modelTable [["citation"]] <-
@@ -379,38 +472,50 @@
 
 	## Populate table
 	if (perform == "run" && status$ready) {
-		if (any (is.na (bayes.factors)) || any (!is.finite (bayes.factors))) {
-			tmp <- which (!is.na (bayes.factors) & is.finite (bayes.factors))
-			posterior.probabilities <- rep (0 , no.models + 1)
-			posterior.probabilities [tmp] <- bayes.factors [tmp] / sum (bayes.factors [tmp])
-		} else {
-			posterior.probabilities <- bayes.factors / sum (bayes.factors)
-		}
-		prior.probabilities <- rep(1 / (no.models + 1), no.models + 1)
-		model$effects <- cbind (model$effects, prior.probabilities [-1], posterior.probabilities [-1])
+		if (populate == FALSE) {
+			#This is set for intermediate populating of tables
+			if (any (is.na (bayes.factors)) || any (!is.finite (bayes.factors))) {
+				tmp <- which (!is.na (bayes.factors) & is.finite (bayes.factors))
+				posterior.probabilities <- rep (0 , no.models + 1)
+				posterior.probabilities [tmp] <- bayes.factors [tmp] / sum (bayes.factors [tmp])
+			} else {
+				posterior.probabilities <- bayes.factors / sum (bayes.factors)
+			}
+			prior.probabilities <- rep(1 / (no.models + 1), no.models + 1)
+			model$effects <- cbind (model$effects, prior.probabilities [-1], posterior.probabilities [-1])
 
-		BFmodel <- (posterior.probabilities / (1 - posterior.probabilities)) / (prior.probabilities / (1 - prior.probabilities))
+			BFmodel <- (posterior.probabilities / (1 - posterior.probabilities)) / 
+				(prior.probabilities / (1 - prior.probabilities))
 
-		rows [[1]] [["P(M)"]] <- .clean (prior.probabilities [1])
-		rows [[1]] [["P(M|data)"]] <- .clean (posterior.probabilities [1])
+			rows [[1]] [["P(M)"]] <- .clean (prior.probabilities [1])
+			rows [[1]] [["P(M|data)"]] <- .clean (posterior.probabilities [1])
+		}#end populate == FALSE
+		
 		if(options$bayesFactorType == "LogBF10") {
-			rows [[1]] [["BFM"]] <- .clean (log (BFmodel [1]))
+			if (populate == FALSE)
+				rows [[1]] [["BFM"]] <- .clean (log (BFmodel [1]))
 			rows [[1]] [["BF10"]] <- 0
 		} else {
-			rows [[1]] [["BFM"]] <- .clean (BFmodel [1])
+			if (populate == FALSE)
+				rows [[1]] [["BFM"]] <- .clean (BFmodel [1])
 			rows [[1]] [["BF10"]] <- 1
 		}
 		rows [[1]] [["% error"]] <- ""
 
 		for (m in 1:no.models) {
 			if (model$models [[m]]$ready) {
-				rows [[m+1]] [["P(M)"]] <- .clean (prior.probabilities [m+1])
-				rows [[m+1]] [["P(M|data)"]] <- .clean (posterior.probabilities [m+1])
+				if (populate == FALSE) { 
+					#This is set for intermediate populating of tables
+					rows [[m+1]] [["P(M)"]] <- .clean (prior.probabilities [m+1])
+					rows [[m+1]] [["P(M|data)"]] <- .clean (posterior.probabilities [m+1])
+				}#end populate == FALSE
 				if (options$bayesFactorType == "LogBF10") {
-					rows [[m+1]] [["BFM"]] <- .clean (log (BFmodel [m+1]))
+					if (populate == FALSE)
+						rows [[m+1]] [["BFM"]] <- .clean (log (BFmodel [m+1]))
 					rows [[m+1]] [["BF10"]] <- .clean (log (bayes.factors [m + 1]))
 				} else{
-					rows [[m+1]] [["BFM"]] <- .clean (BFmodel [m+1])
+					if (populate == FALSE)
+						rows [[m+1]] [["BFM"]] <- .clean (BFmodel [m+1])
 					if (options$bayesFactorType == "BF10") {
 						rows [[m+1]] [["BF10"]] <- .clean (bayes.factors [m + 1])
 					} else {
@@ -419,9 +524,11 @@
 				}
 				rows [[m+1]] [["% error"]] <- .clean (100*numerical.error [m + 1])
 			} else {
-				index <- .addFootnote (footnotes, text = model$models [[m]]$error.message)
-				rows [[m+1]] [["BF10"]] <- .clean(NaN)
-				rows [[m+1]] [[".footnotes"]] <- list ("BFM" = list (index))
+				if (populate == FALSE) {
+					index <- .addFootnote (footnotes, text = model$models [[m]]$error.message)
+					rows [[m+1]] [["BF10"]] <- .clean(NaN)
+					rows [[m+1]] [[".footnotes"]] <- list ("BFM" = list (index))
+				}
 			}
 		}
 	}
@@ -435,8 +542,9 @@
 	return (list (modelTable = modelTable, model = model))
 }
 
-.theBayesianLinearModelsEffects <- function (model = NULL, options = list (), perform = "init", status = list ()) {
-	if (!options$outputEffects)
+.theBayesianLinearModelsEffects <- function (model = NULL, options = list (), perform = "init", status = list (), populate = TRUE) {
+
+	if ( ! options$effects)
 		return (NULL)
 
 	effectsTable <- list ()
@@ -489,7 +597,7 @@
 		return (effectsTable)
 
 	effects.matrix <- model$effects
-	if (perform == "run" && status$ready) {
+	if (perform == "run" && status$ready && !populate) {
 		prior.probabilities <- model$effects [, ncol (effects.matrix) - 1]
 		posterior.probabilities <- model$effects [, ncol (effects.matrix)]
 		effects.matrix <- matrix (model$effects [1:nrow (model$effects), 1:(ncol (model$effects) - 2)],
@@ -511,13 +619,12 @@
 
 	no.effects <- ncol (effects.matrix)
 	effectNames <- colnames (effects.matrix)
-
 	if (!is.null (no.effects) && no.effects > 0) {
 		rows <- list ()
 		for (e in 1:no.effects) {
 			row <- list ()
 			row$"Effects" <- .unvf (effectNames [e])
-			if (perform == "run" && status$ready) {
+			if (perform == "run" && status$ready && !populate) {
 				row$"P(incl)" = .clean (prior.inclusion.probabilities [e])
 				row$"P(incl|data)" = .clean (posterior.inclusion.probabilities [e])
 				if (options$bayesFactorType == "LogBF10"){
@@ -594,3 +701,4 @@
 
 	return (effectsTable)
 }
+

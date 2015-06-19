@@ -126,14 +126,14 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="BoundCheckBox" name="kendallsTauB">
            <property name="text">
             <string>Kendall's tau-b</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="1" column="0">
           <widget class="BoundCheckBox" name="spearman">
            <property name="text">
             <string>Spearman</string>

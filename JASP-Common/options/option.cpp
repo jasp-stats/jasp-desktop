@@ -2,8 +2,9 @@
 
 using namespace std;
 
-Option::Option()
+Option::Option(bool transient)
 {
+	_isTransient = transient;
 	_signalsBlocked = 0;
 	_shouldSignalOnceUnblocked = false;
 }
@@ -21,6 +22,8 @@ void Option::blockSignals(bool block)
 	else
 	{
 		_signalsBlocked--;
+		if (_signalsBlocked < 0)
+			_signalsBlocked = 0;
 
 		if (_signalsBlocked == 0 && _shouldSignalOnceUnblocked)
 		{
@@ -28,6 +31,11 @@ void Option::blockSignals(bool block)
 			_shouldSignalOnceUnblocked = false;
 		}
 	}
+}
+
+bool Option::isTransient() const
+{
+	return _isTransient;
 }
 
 void Option::notifyChanged()

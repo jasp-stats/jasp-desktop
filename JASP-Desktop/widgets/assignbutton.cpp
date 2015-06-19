@@ -31,6 +31,8 @@ bool AssignButton::isAssign()
 
 void AssignButton::setSourceAndTarget(DropTarget *source, DropTarget *target)
 {
+	this->setEnabled(false);
+
 	_source = source;
 	_target = target;
 

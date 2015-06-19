@@ -13,7 +13,7 @@ class Options;
 class Option
 {
 public:
-	Option();
+	Option(bool transient = false);
 	virtual ~Option();
 
 	virtual void init(const Json::Value &) { };
@@ -25,10 +25,14 @@ public:
 
 	void blockSignals(bool block);
 
+	bool isTransient() const;
+
 protected:
 	void notifyChanged();
+	bool _isTransient;
 
 private:
+
 	int _signalsBlocked;
 	bool _shouldSignalOnceUnblocked;
 

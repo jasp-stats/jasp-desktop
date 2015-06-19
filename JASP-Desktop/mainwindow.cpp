@@ -14,7 +14,6 @@
 #include "analysisforms/anovaonewayform.h"
 #include "analysisforms/anovaform.h"
 #include "analysisforms/anovarepeatedmeasuresform.h"
-#include "analysisforms/anovarepeatedmeasuresshortform.h"
 #include "analysisforms/ancovaform.h"
 #include "analysisforms/anovamultivariateform.h"
 #include "analysisforms/ancovamultivariateform.h"
@@ -29,8 +28,8 @@
 #include "analysisforms/correlationbayesianform.h"
 #include "analysisforms/correlationbayesianpairsform.h"
 #include "analysisforms/correlationpartialform.h"
-#include "analysisforms/crosstabsform.h"
-#include "analysisforms/crosstabsbayesianform.h"
+#include "analysisforms/contingencytablesform.h"
+#include "analysisforms/contingencytablesbayesianform.h"
 
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
@@ -38,6 +37,7 @@
 #include <QDebug>
 #include <QWebFrame>
 #include <QFile>
+#include <QFileInfo>
 #include <QToolTip>
 #include <QClipboard>
 #include <QWebElement>
@@ -45,10 +45,15 @@
 #include <QTimer>
 #include <QStringBuilder>
 #include <QWebHistory>
+#include <QDropEvent>
+#include <QFileInfo>
+#include <QShortcut>
 
 #include "analysisloader.h"
 #include "qutils.h"
 #include "appdirs.h"
+#include "tempfiles.h"
+#include "processinfo.h"
 
 #include "lrnam.h"
 #include "activitylog.h"
@@ -58,35 +63,39 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	_inited = false;
-	_dataSet = NULL;
 	_tableModel = NULL;
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
 
 	_optionsForm = NULL;
 
-    ui->setupUi(this);
+	_package = new DataSetPackage();
+
+	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged, this, _1));
+	QShortcut *saveShortcut = new QShortcut(QKeySequence("Ctrl+S"), this);
+	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
+	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
+	QObject::connect(openShortcut, SIGNAL(activated()), this, SLOT(openKeysSelected()));
+
+	ui->setupUi(this);
 
 	QList<int> sizes = QList<int>();
 	sizes.append(590);
 	ui->splitter->setSizes(sizes);
 
-    ui->tabBar->setFocusPolicy(Qt::NoFocus);
+	ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
 	ui->tabBar->addTab("Common");
 	ui->tabBar->addOptionsTab();
-
-#ifdef QT_DEBUG
 	ui->tabBar->addHelpTab();
-#endif
 
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 	connect(ui->tabBar, SIGNAL(helpToggled(bool)), this, SLOT(helpToggled(bool)));
 
 #ifdef __WIN32__
-    QFont font = ui->tabBar->font();
-    font.setPointSize(10);
-    ui->tabBar->setFont(font);
+	QFont font = ui->tabBar->font();
+	font.setPointSize(10);
+	ui->tabBar->setFont(font);
 #endif
 
 	ui->ribbonAnalysis->setEnabled(false);
@@ -101,8 +110,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->webViewHelp->setContextMenuPolicy(Qt::NoContextMenu);
 #endif
 
+	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
+
 	// the LRNAM adds mime types to local resources; important for SVGs
-	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(this));
+	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(tq(tempfiles_sessionDirName()), this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));
 	connect(ui->webViewResults, SIGNAL(loadFinished(bool)), this, SLOT(resultsPageLoaded(bool)));
 
@@ -117,7 +128,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_engineSync = new EngineSync(_analyses, this);
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
-	_analyses->analysisResultsChanged.connect(boost::bind(&MainWindow::analysisResultsChangedHandler, this, _1));
+	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
@@ -125,6 +136,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
 	connect(ui->backStage, SIGNAL(closeDataSetSelected()), this, SLOT(dataSetCloseRequested()));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
+	connect(ui->backStage, SIGNAL(saveSelected(QString)), this, SLOT(saveSelected(QString)));
 
 	_alert = new ProgressWidget(ui->tableView);
 	_alert->setAutoFillBackground(true);
@@ -132,9 +144,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	_alert->move(100, 80);
 	_alert->hide();
 
-	connect(&_loader, SIGNAL(complete(const QString&, DataSet*)), this, SLOT(dataSetLoaded(const QString&, DataSet*)));
+	connect(&_loader, SIGNAL(complete(const QString&, DataSetPackage*, const QString&)), this, SLOT(dataSetLoaded(const QString&, DataSetPackage*, const QString&)));
+	connect(&_loader, SIGNAL(saveComplete(const QString&)), this, SLOT(saveComplete(const QString&)));
 	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
 	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(dataSetLoadFailed(QString)));
+	connect(&_loader, SIGNAL(saveFail(QString)), this, SLOT(saveFailed(QString)));
 
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
@@ -201,11 +215,17 @@ MainWindow::MainWindow(QWidget *parent) :
 		_fatalError = tq(e.what());
 		QTimer::singleShot(0, this, SLOT(fatalError()));
 	}
+
+	setAcceptDrops(true);
 }
 
 void MainWindow::open(QString filename)
 {
-	dataSetSelected(filename);
+	_openedUsingArgs = true;
+	if (_resultsViewLoaded)
+		dataSetSelected(filename);
+	else
+		_openOnLoadFilename = filename;
 }
 
 MainWindow::~MainWindow()
@@ -217,6 +237,105 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 {
 	QMainWindow::resizeEvent(event);
 	adjustOptionsPanelWidth();
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+	const QMimeData *data = event->mimeData();
+
+	if (data->hasUrls())
+	{
+		QList<QUrl> urls = data->urls();
+		QUrl first = urls.first();
+		QFileInfo file(first.path());
+
+		if (file.exists() && (file.completeSuffix() == "csv" || file.completeSuffix() == "jasp"))
+			event->accept();
+		else
+			event->ignore();
+	}
+	else
+	{
+		event->ignore();
+	}
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+	const QMimeData *data = event->mimeData();
+	QUrl url = data->urls().first();
+	open(url.path());
+
+	event->accept();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	if (_isClosed)
+	{
+		// some times on osx we get two events
+		event->accept();
+		return;
+	}
+
+	bool isSaving = false;
+	bool cancel = closeRequestCheck(isSaving);
+	if (cancel)
+	{
+		event->ignore();
+	}
+	else
+	{
+		if (isSaving)
+			event->ignore(); // to circumvent a race condition between the saving thread and the closing of the main window cleaning up temp files
+		else
+			event->accept();
+
+		_isClosed = true;
+	}
+}
+
+void MainWindow::saveKeysSelected()
+{
+	if (_package->isModified())
+	{
+		ui->backStage->save();
+	}
+}
+
+void MainWindow::openKeysSelected()
+{
+	ui->backStage->openFile();
+}
+
+void MainWindow::illegalOptionStateChanged()
+{
+	if (_currentOptionsWidget == NULL)
+		return;
+
+	if (_currentOptionsWidget->hasIllegalValue())
+	{
+		ui->optionsErrorLabel->setText(_currentOptionsWidget->illegalValueMessage());
+		ui->optionsErrorPanel->show();
+	}
+	else
+	{
+		ui->optionsErrorPanel->hide();
+	}
+}
+
+void MainWindow::packageChanged(DataSetPackage *package)
+{
+	QString title = windowTitle();
+	if (package->isModified())
+	{
+		setWindowTitle(title.append("*"));
+	}
+	else
+	{
+		title.chop(1);
+		setWindowTitle(title);
+	}
 }
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
@@ -255,6 +374,9 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 	results = "window.analysisChanged(JSON.parse('" + results + "'));";
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
+
+	if (_package->isLoaded())
+		_package->setModified(true);
 }
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
@@ -290,8 +412,6 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new AnovaForm(contentArea);
 	else if (name == "AnovaRepeatedMeasures")
 		form = new AnovaRepeatedMeasuresForm(contentArea);
-	else if (name == "AnovaRepeatedMeasuresShort")
-		form = new AnovaRepeatedMeasuresShortForm(contentArea);
 	else if (name == "Ancova")
 		form = new AncovaForm(contentArea);
 	else if (name == "AnovaMultivariate")
@@ -310,10 +430,10 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new CorrelationBayesianPairsForm(contentArea);
 	else if (name == "CorrelationPartial")
 		form = new CorrelationPartialForm(contentArea);
-	else if (name == "Crosstabs")
-		form = new CrosstabsForm(contentArea);
-	else if (name == "CrosstabsBayesian")
-		form = new CrosstabsBayesianForm(contentArea);
+	else if (name == "ContingencyTables")
+		form = new ContingencyTablesForm(contentArea);
+	else if (name == "ContingencyTablesBayesian")
+		form = new ContingencyTablesBayesianForm(contentArea);
 	else if (name == "SEMSimple")
 		form = new SEMSimpleForm(contentArea);
 	else if (name == "AncovaBayesian")
@@ -333,19 +453,18 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 
 void MainWindow::showForm(Analysis *analysis)
 {
-	if (_currentOptionsWidget != NULL)
-	{
-		_currentOptionsWidget->hide();
-		_currentOptionsWidget->unbind();
-		_currentOptionsWidget = NULL;
-	}
+	closeCurrentOptionsWidget();
 
 	_currentOptionsWidget = loadForm(analysis);
 
 	if (_currentOptionsWidget != NULL)
 	{
 		Options *options = analysis->options();
-		_currentOptionsWidget->bindTo(options, _dataSet);
+		DataSet *dataSet = _package->dataSet;
+		_currentOptionsWidget->bindTo(options, dataSet);
+
+		connect(_currentOptionsWidget, SIGNAL(illegalChanged()), this, SLOT(illegalOptionStateChanged()));
+		illegalOptionStateChanged();
 
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);
@@ -360,6 +479,18 @@ void MainWindow::showForm(Analysis *analysis)
 
 		QString helpPage = QString("analyses/") + tq(analysis->name()).toLower();
 		requestHelpPage(helpPage);
+	}
+}
+
+void MainWindow::closeCurrentOptionsWidget()
+{
+	if (_currentOptionsWidget != NULL)
+	{
+		disconnect(_currentOptionsWidget, SIGNAL(illegalChanged()), this, SLOT(illegalOptionStateChanged()));
+
+		_currentOptionsWidget->hide();
+		_currentOptionsWidget->unbind();
+		_currentOptionsWidget = NULL;
 	}
 }
 
@@ -449,39 +580,88 @@ void MainWindow::helpToggled(bool on)
 
 void MainWindow::dataSetSelected(const QString &filename)
 {
-	if (_dataSet != NULL)
+	if (_package->isLoaded())
 	{
 		// begin new instance
 		QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(filename));
 	}
 	else
 	{
-		_loader.load(filename);
+		_loader.load(_package, filename);
 		_alert->show();
 	}
 
 	ui->tabBar->setCurrentIndex(1);
 }
 
-void MainWindow::dataSetCloseRequested()
+bool MainWindow::closeRequestCheck(bool &isSaving)
 {
-	_tableModel->clearDataSet();
-	_loader.free(_dataSet);
-	_dataSet = NULL;
-	updateMenuEnabledDisabledStatus();
-	ui->backStage->setFileLoaded(false);
-	ui->webViewResults->reload();
-	_inited = false;
+	bool cancel = false;
+	isSaving = false;
+	if (_package->isModified())
+	{
+		QString title = windowTitle();
+		title.chop(1);
+		QMessageBox::StandardButton reply = QMessageBox::warning(this, "Save Workspace?", QString("Save changes to workspace \"") + title +  QString("\" before closing?\n\nYour changes will be lost if you don't save them."), QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
+
+		if (reply == QMessageBox::Save)
+		{
+			isSaving = ui->backStage->save();
+			cancel = !isSaving;
+		}
+		else if (reply == QMessageBox::Cancel)
+			cancel = true;
+	}
+	return cancel;
 }
 
-void MainWindow::dataSetLoaded(const QString &dataSetName, DataSet *dataSet)
+void MainWindow::dataSetCloseRequested()
+{
+	bool isSaving = false;
+	if (_dataSetClosing || !closeRequestCheck(isSaving))
+	{
+		if (isSaving)
+		{
+			_dataSetClosing = true;
+			return;
+		}
+
+		closeCurrentOptionsWidget();
+		hideOptionsPanel();
+		_tableModel->clearDataSet();
+		_loader.free(_package->dataSet);
+		_package->reset();
+		updateMenuEnabledDisabledStatus();
+		ui->backStage->setFileLoaded(false, NULL);
+		ui->webViewResults->reload();
+		_dataSetClosing = false;
+		setWindowTitle("JASP");
+		_inited = false;
+	}
+}
+
+void MainWindow::saveComplete(const QString &name)
+{
+	_alert->hide();
+
+	_package->setModified(false);
+
+	setWindowTitle(name);
+
+	if (_isClosed)
+		this->close();
+	else if (_dataSetClosing)
+		dataSetCloseRequested();
+	else
+		ui->tabBar->setCurrentIndex(1);
+}
+
+void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename)
 {
 	setWindowTitle(dataSetName);
 
-	_dataSet = dataSet;
-	_tableModel->setDataSet(dataSet);
-	updateMenuEnabledDisabledStatus();
-	ui->backStage->setFileLoaded(true);
+	_tableModel->setDataSet(package->dataSet);
+	ui->backStage->setFileLoaded(true, filename);
 	_analyses->clear();
 
 	ui->tableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
@@ -494,20 +674,96 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSet *dataSet)
 		_inited = true;
 	}
 
+	if (package->hasAnalyses)
+	{
+		bool errorFound = false;
+
+		int corruptAnalyses = 0;
+		stringstream errorMsg;
+		stringstream corruptionStrings;
+		Json::Value analysesData = package->analysesData;
+		if (!analysesData.isArray() || analysesData.isNull())
+		{
+			errorFound = true;
+			errorMsg << "An error has been detected and analyses could not be loaded.";
+		}
+		else
+		{
+			for (Json::ValueIterator iter = analysesData.begin(); iter != analysesData.end(); iter++)
+			{
+				try
+				{
+					QString name = QString();
+					Json::Value &analysisData = *iter;
+
+					name = QString::fromStdString(analysisData["name"].asString());
+					int id = analysisData["id"].asInt();
+
+					Json::Value &optionsJson = analysisData["options"];
+					Json::Value &resultsJson = analysisData["results"];
+
+					Analysis::Status status = Analysis::getStatusValue(analysisData["status"].asString());
+
+					Analysis *analysis = _analyses->create(name, id, &optionsJson, status);
+
+					analysis->setResults(resultsJson);
+				}
+				catch (runtime_error e)
+				{
+					errorFound = true;
+					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
+				}
+				catch (exception e)
+				{
+					errorFound = true;
+					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
+				}
+			}
+		}
+
+		if (corruptAnalyses == 1)
+			errorMsg << "An error was detected in an analyses. This analyses has been removed for the following reason:\n" << corruptionStrings.str();
+		else if (corruptAnalyses > 1)
+			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
+
+		if (errorFound)
+			QMessageBox::warning(this, "", tq(errorMsg.str()));
+	}
+
+	package->setLoaded();
+	updateMenuEnabledDisabledStatus();
+
 	if (_engineSync->engineStarted() == false)
 		_engineSync->start();
-
 }
+
 
 void MainWindow::dataSetLoadFailed(const QString &message)
 {
 	_alert->hide();
-	QMessageBox::warning(this, "", "The Data set could not be loaded\n\n" + message);
+
+	if (_package->dataSet != NULL)
+		_loader.free(_package->dataSet);
+	_package->reset();
+
+	QMessageBox::warning(this, "", "Unable to open file.\n\n" + message);
+
+	if (_openedUsingArgs)
+		close();
+}
+
+void MainWindow::saveFailed(const QString &message)
+{
+	_alert->hide();
+	_isClosed = false;
+	_dataSetClosing = false;
+
+	QMessageBox::warning(this, "", "Unable to save file.\n\n" + message);
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
 {
-	bool enable = _dataSet != NULL;
+	bool enable = _package->isLoaded();
 
 	ui->ribbonAnalysis->setEnabled(enable);
 	ui->ribbonSEM->setEnabled(enable);
@@ -544,6 +800,10 @@ void MainWindow::resultsPageLoaded(bool success)
 
 		if (success)
 			_engineSync->setPPI(ppi);
+
+		if (!_openOnLoadFilename.isEmpty())
+			dataSetSelected(_openOnLoadFilename);
+		_resultsViewLoaded = true;
 	}
 }
 
@@ -583,7 +843,7 @@ void MainWindow::requestHelpPage(const QString &pageName)
 	}
 	else
 	{
-		content = "404\n===\n\n**" + pageName + "** could not be found";
+		content = "Coming Soon!\n========\n\nThere is currently no help available for this analysis.\n\nAdditional documentation will be available in future releases of JASP.";
 	}
 
 	content.replace("\"", "\\\"");
@@ -598,12 +858,9 @@ void MainWindow::requestHelpPage(const QString &pageName)
 
 void MainWindow::itemSelected(const QString &item)
 {
-	string name = item.toStdString();
-
 	try
 	{
-		_currentAnalysis = _analyses->create(name);
-
+		_currentAnalysis = _analyses->create(item);
 
 		showForm(_currentAnalysis);
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.select(" % QString::number(_currentAnalysis->id()) % ")");
@@ -621,6 +878,35 @@ void MainWindow::itemSelected(const QString &item)
 		fatalError();
 	}
 }
+
+void MainWindow::saveSelected(const QString &filename)
+{
+	if (_analyses->count() > 0)
+	{
+		QWebElement element =  ui->webViewResults->page()->mainFrame()->documentElement();
+		QString qHTML = element.toOuterXml();
+		_package->analysesHTML = fq(qHTML);
+
+		Json::Value analysesData = Json::arrayValue;
+		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
+		{
+			Analysis *analysis = *itr;
+			if (analysis != NULL && analysis->visible())
+			{
+				Json::Value analysisData = analysis->asJSON();
+				analysisData["options"] = analysis->options()->asJSON();
+				analysesData.append(analysisData);
+			}
+		}
+
+		_package->analysesData = analysesData;
+		_package->hasAnalyses = true;
+	}
+
+	_loader.save(filename, _package);
+	_alert->show();
+}
+
 
 void MainWindow::exportSelected(const QString &filename)
 {
@@ -817,13 +1103,20 @@ void MainWindow::analysisRemoved()
 {
 	if (_currentOptionsWidget != NULL)
 	{
+		_currentAnalysis->abort();
+
 		_currentOptionsWidget->hide();
 		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
 
+		_currentAnalysis->setVisible(false);
+
 		QString info("%1,%2");
 		info = info.arg(tq(_currentAnalysis->name()));
 		info = info.arg(_currentAnalysis->id());
+
+		if (_package->isLoaded())
+			_package->setModified(true);
 
 		if (_log != NULL)
 			_log->log("Analysis Removed", info);

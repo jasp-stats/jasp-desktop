@@ -13,7 +13,9 @@ windows:INCLUDEPATH += ../../boost_1_54_0
 
 INCLUDEPATH += ../../nowide
 
-windows:LIBS += -L.. -lJASP-Common -lole32 -loleaut32
+
+windows:LIBS += -lole32 -loleaut32 -larchive.dll
+
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
@@ -23,7 +25,6 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 SOURCES += \
-	analyses.cpp \
 	analysis.cpp \
 	analysisloader.cpp \
 	base64.cpp \
@@ -33,6 +34,7 @@ SOURCES += \
 	columns.cpp \
 	datablock.cpp \
 	dataset.cpp \
+	datasetpackage.cpp \
 	datasetloader.cpp \
 	dirs.cpp \
 	importers/csv.cpp \
@@ -64,10 +66,15 @@ SOURCES += \
 	processinfo.cpp \
 	sharedmemory.cpp \
 	tempfiles.cpp \
-	utils.cpp
+	utils.cpp \
+    exporters/jaspexporter.cpp \
+    importers/jaspimporter.cpp \
+    filereader.cpp \
+    version.cpp \
+    appinfo.cpp
+
 
 HEADERS += \
-	analyses.h \
 	analysis.h \
 	analysisloader.h \
 	base64.h \
@@ -78,6 +85,7 @@ HEADERS += \
 	common.h \
 	datablock.h \
 	dataset.h \
+	datasetpackage.h \
 	datasetloader.h \
 	dirs.h \
 	importers/csv.h \
@@ -111,9 +119,17 @@ HEADERS += \
 	options/optionvariables.h \
 	options/optionvariablesgroups.h \
 	processinfo.h \
-	rinterface.h \
 	sharedmemory.h \
 	tempfiles.h \
 	utils.h \
-	version.h
+	version.h \
+    exporters/jaspexporter.h \
+    libzip/archive.h \
+    libzip/archive_entry.h \
+    importers/jaspimporter.h \
+	filepackage.h \
+    filereader.h \
+    appinfo.h
+
+
 

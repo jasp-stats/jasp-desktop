@@ -24,6 +24,7 @@ public:
 	explicit TableModelAnovaDesign(QObject *parent = 0);
 
 	virtual void bindTo(Option *option) OVERRIDE;
+	virtual void unbind() OVERRIDE;
 
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const OVERRIDE;

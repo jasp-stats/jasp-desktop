@@ -8,6 +8,7 @@
 
 #include "dataset.h"
 #include "datasetloader.h"
+#include "datasetpackage.h"
 
 class AsyncLoader : public QObject
 {
@@ -16,17 +17,22 @@ class AsyncLoader : public QObject
 public:
 	explicit AsyncLoader(QObject *parent = 0);
 
-	void load(const QString &filename);
+	void load(DataSetPackage* package, const QString &filename);
+	void save(const QString &filename, DataSetPackage *package);
 	void free(DataSet *dataSet);
 
 signals:
-	void loads(const QString &filename);
+	void loads(DataSetPackage*, const QString &filename);
+	void saves(const QString &filename, DataSetPackage *dataSet);
 	void progress(const QString &status, int progress);
-	void complete(const QString &dataSetName, DataSet *dataSet);
+	void complete(const QString &dataSetName, DataSetPackage *packageData, const QString &filename);
+	void saveComplete(const QString &dataSetName);
 	void fail(const QString &reason);
+	void saveFail(const QString &reason);
 
 private slots:
-	void loadTask(const QString &filename);
+	void loadTask(DataSetPackage *package, const QString &filename);
+	void saveTask(const QString &filename, DataSetPackage *package);
 
 private:
 

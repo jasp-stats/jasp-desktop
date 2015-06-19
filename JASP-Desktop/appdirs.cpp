@@ -11,6 +11,8 @@
 #include "utils.h"
 #endif
 
+#include "dirs.h"
+
 using namespace std;
 
 const QString AppDirs::examples()
@@ -33,4 +35,13 @@ const QString AppDirs::help()
 #endif
 
 	return dir;
+}
+
+const QString AppDirs::analysisDefaultsDir()
+{
+	QString path = QString::fromStdString(Dirs::appDataDir()) + "/AnalysisDefaults";
+	QDir dir(path);
+	dir.mkpath(".");
+
+	return path;
 }

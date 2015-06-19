@@ -40,8 +40,8 @@ Engine::Engine()
 	DataSet *dataSet = DataSetLoader::getDataSet();
 	rbridge_setDataSet(dataSet);
 
-	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFileName, this, _1));
-	rbridge_setStateFileSource(boost::bind(&Engine::provideStateFileName, this));
+	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFileName, this, _1, _2, _3));
+	rbridge_setStateFileSource(boost::bind(&Engine::provideStateFileName, this, _1, _2));
 }
 
 void Engine::setSlaveNo(int no)
@@ -51,7 +51,7 @@ void Engine::setSlaveNo(int no)
 
 void Engine::runAnalysis()
 {
-	if (_status == empty)
+	if (_status == empty || _status == aborted)
 		return;
 
 	string perform;
@@ -70,13 +70,28 @@ void Engine::runAnalysis()
 	vector<string> tempFilesFromLastTime = tempfiles_retrieveList(_analysisId);
 
 	RCallback callback = boost::bind(&Engine::callback, this, _1);
+
+	_currentAnalysisKnowsAboutChange = false;
 	_analysisResultsString = rbridge_run(_analysisName, _analysisOptions, perform, _ppi, callback);
 
-	if (_status == toInit || receiveMessages())
+	if (_status == initing || _status == running)  // if status hasn't changed
+		receiveMessages();
+
+	if (_status == toInit || _status == aborted || _status == error)
 	{
-		// if a new message was received, the analysis was changed and we shouldn't send results
+		// analysis was aborted, and we shouldn't send the results
 	}
-	else if (_status == initing || _status == running)
+	else if (_status == changed && (_currentAnalysisKnowsAboutChange == false || _analysisResultsString == "null"))
+	{
+		// analysis was changed, and the analysis either did not know about
+		// the change (because it did not call a callback),
+		// or it could not incorporate the changes (returned null).
+		// in both cases it needs to be re-run, and results should
+		// not be sent
+
+		_status = toInit;
+	}
+	else
 	{
 		Json::Reader parser;
 		parser.parse(_analysisResultsString, _analysisResults, false);
@@ -145,26 +160,49 @@ bool Engine::receiveMessages(int timeout)
 		Json::Reader r;
 		r.parse(data, jsonRequest, false);
 
-		_analysisId = jsonRequest.get("id", -1).asInt();
-		_analysisName = jsonRequest.get("name", Json::nullValue).asString();
-		_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
-
+		int analysisId = jsonRequest.get("id", -1).asInt();
 		string perform = jsonRequest.get("perform", "run").asString();
 
-		if (perform == "init")
-			_status = toInit;
-		else
-			_status = toRun;
-
-		Json::Value settings = jsonRequest.get("settings", Json::nullValue);
-		if (settings.isObject())
+		if (analysisId == _analysisId && _status == running)
 		{
-			Json::Value ppi = settings.get("ppi", Json::nullValue);
-			_ppi = ppi.isInt() ? ppi.asInt() : 96;
+			// if the current running analysis has changed
+
+			if (perform == "init")
+				_status = changed;
+			else if (perform == "stop")
+				_status = stopped;
+			else
+				_status = aborted;
 		}
 		else
 		{
-			_ppi = 96;
+			// the new analysis should be init or run (existing analyses will be aborted)
+
+			_analysisId = analysisId;
+
+			if (perform == "init")
+				_status = toInit;
+			else if (perform == "run")
+				_status = toRun;
+			else
+				_status = error;
+		}
+
+		if (_status == toInit || _status == toRun || _status == changed)
+		{
+			_analysisName = jsonRequest.get("name", Json::nullValue).asString();
+			_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
+
+			Json::Value settings = jsonRequest.get("settings", Json::nullValue);
+			if (settings.isObject())
+			{
+				Json::Value ppi = settings.get("ppi", Json::nullValue);
+				_ppi = ppi.isInt() ? ppi.asInt() : 96;
+			}
+			else
+			{
+				_ppi = 96;
+			}
 		}
 
 		return true;
@@ -200,10 +238,14 @@ void Engine::sendResults()
 			status = "inited";
 			break;
 		case running:
+		case changed:
 			status = "running";
 			break;
 		case complete:
 			status = "complete";
+			break;
+		case stopped:
+			status = "stopped";
 			break;
 		default:
 			status = "error";
@@ -219,11 +261,17 @@ void Engine::sendResults()
 	_channel->send(message);
 }
 
-int Engine::callback(const string &results)
+string Engine::callback(const string &results)
 {
-	if (receiveMessages() || _status == empty)
+	receiveMessages();
+
+	if (_status == aborted || _status == toInit || _status == toRun)
+		return "{ \"status\" : \"aborted\" }"; // abort
+
+	if (_status == changed && _currentAnalysisKnowsAboutChange)
 	{
-		return 1; // abort analysis
+		_status = running;
+		_currentAnalysisKnowsAboutChange = false;
 	}
 
 	if (results != "null")
@@ -236,16 +284,30 @@ int Engine::callback(const string &results)
 		sendResults();
 	}
 
-	return 0;
+	if (_status == changed)
+	{
+		_currentAnalysisKnowsAboutChange = true; // because we're telling it now
+		return "{ \"status\" : \"changed\", \"options\" : " + _analysisOptions + " }";
+	}
+	else if (_status == stopped)
+	{
+		return "{ \"status\" : \"stopped\" }";
+	}
+	else if (_status == aborted)
+	{
+		return "{ \"status\" : \"aborted\" }";
+	}
+
+	return "{ \"status\" : \"ok\" }";
 }
 
-string Engine::provideStateFileName()
+void Engine::provideStateFileName(string &root, string &relativePath)
 {
-	return tempfiles_createSpecific("state", _analysisId);
+	return tempfiles_createSpecific("state", _analysisId, root, relativePath);
 }
 
-string Engine::provideTempFileName(const string &extension)
-{
-	return tempfiles_create(extension, _analysisId);
+void Engine::provideTempFileName(const string &extension, string &root, string &relativePath)
+{	
+	tempfiles_create(extension, _analysisId, root, relativePath);
 }
 

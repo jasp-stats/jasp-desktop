@@ -266,7 +266,19 @@ void TableModelPairsAssigned::mimeDataMoved(const QModelIndexList &indexes)
 void TableModelPairsAssigned::assignToOption()
 {
 	if (_boundTo != NULL)
-		_boundTo->setValue(Terms(_values).asVectorOfVectors());
+	{
+		vector<vector<string> > pairs;
+
+		foreach (const QStringList &qPair, _values)
+		{
+			vector<string> pair;
+			pair.push_back(qPair.first().toStdString());
+			pair.push_back(qPair.at(1).toStdString());
+			pairs.push_back(pair);
+		}
+
+		_boundTo->setValue(pairs);
+	}
 }
 
 void TableModelPairsAssigned::setVariableTypesSuggested(int variableTypesSuggested)

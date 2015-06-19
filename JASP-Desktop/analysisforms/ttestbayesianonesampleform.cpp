@@ -22,9 +22,7 @@ TTestBayesianOneSampleForm::TTestBayesianOneSampleForm(QWidget *parent) :
 
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 
-#ifdef QT_DEBUG
-#else
-#endif
+	ui->priorWidth->setLabel("Prior width");
 }
 
 TTestBayesianOneSampleForm::~TTestBayesianOneSampleForm()

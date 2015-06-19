@@ -240,6 +240,55 @@
    <item row="1" column="0" colspan="2">
     <widget class="QWidget" name="widget_12" native="true">
      <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="1">
+       <widget class="GroupBox" name="groupBox_3">
+        <property name="title">
+         <string>Output</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="1" column="0" rowspan="2">
+          <widget class="QWidget" name="widget_15" native="true">
+           <property name="maximumSize">
+            <size>
+             <width>20</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1" rowspan="2">
+          <widget class="BoundCheckBox" name="effectsStepwise">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Stepwise</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="BoundCheckBox" name="effects">
+           <property name="text">
+            <string>Effects</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="BoundGroupBox" name="bayesFactorType" native="true">
         <property name="title" stdset="0">
@@ -273,41 +322,50 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="GroupBox" name="groupBox_3">
-        <property name="title">
-         <string>Output</string>
+      <item row="0" column="3">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <layout class="QGridLayout" name="gridLayout_8">
-         <item row="1" column="0" rowspan="2">
-          <widget class="QWidget" name="widget_15" native="true">
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="2">
+       <widget class="GroupBox" name="groupBox">
+        <property name="title">
+         <string>Prior</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="1">
+          <widget class="BoundTextBox" name="priorWidth">
+           <property name="minimumSize">
+            <size>
+             <width>60</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
-             <width>20</width>
+             <width>60</width>
              <height>16777215</height>
             </size>
            </property>
           </widget>
          </item>
-         <item row="1" column="1" rowspan="2">
-          <widget class="BoundCheckBox" name="effectsStepwise">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Stepwise</string>
+            <string>Cauchy prior width</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="0" colspan="2">
-          <widget class="BoundCheckBox" name="outputEffects">
-           <property name="text">
-            <string>Effects</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <spacer name="verticalSpacer_4">
+         <item row="1" column="0">
+          <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -321,19 +379,6 @@
          </item>
         </layout>
        </widget>
-      </item>
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>
@@ -424,6 +469,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundGroupBox</class>
    <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
@@ -444,7 +494,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>outputEffects</sender>
+   <sender>effects</sender>
    <signal>toggled(bool)</signal>
    <receiver>effectsStepwise</receiver>
    <slot>setEnabled(bool)</slot>

@@ -17,8 +17,6 @@ class Column
 	friend class Columns;
 	friend class DataSetLoader;
 	friend class boost::iterator_core_access;
-	friend class SPSSImporter;
-	friend class CSVImporter;
 
 	typedef unsigned long long ull;
 	typedef boost::interprocess::allocator<boost::interprocess::offset_ptr<DataBlock>, boost::interprocess::managed_shared_memory::segment_manager> BlockAllocator;
@@ -106,6 +104,7 @@ public:
 	} Doubles;
 
 	Column(boost::interprocess::managed_shared_memory *mem);
+	~Column();
 
 	std::string name() const;
 	void setName(std::string name);
@@ -122,6 +121,7 @@ public:
 	Ints AsInts;
 
 	enum ColumnType { ColumnTypeUnknown = 0, ColumnTypeNominal = 1, ColumnTypeNominalText = 2, ColumnTypeOrdinal = 4, ColumnTypeScale = 8 };
+	void setColumnType(ColumnType columnType);
 	ColumnType columnType() const;
 
 	void changeColumnType(ColumnType newColumnType);
@@ -129,7 +129,6 @@ public:
 	int rowCount() const;
 
 	Labels& labels();
-	int actualFromRaw(int value) const;
 
 	Column &operator=(const Column &columns);
 

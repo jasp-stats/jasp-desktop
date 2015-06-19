@@ -4,11 +4,12 @@
 #include <boost/nowide/fstream.hpp>
 
 #include "dirs.h"
+#include "version.h"
 
 using namespace std;
 using namespace boost;
 
-Analysis *AnalysisLoader::load(int id, string analysisName)
+Analysis *AnalysisLoader::load(int id, string analysisName, Json::Value *data)
 {
 	Options *options = new Options();
 
@@ -21,26 +22,21 @@ Analysis *AnalysisLoader::load(int id, string analysisName)
 		Json::Reader parser;
 		parser.parse(file, analysisDesc);
 
-		bool autorun = true;
-
-		if (analysisDesc.isArray())
-		{
-			options->init(analysisDesc);
-		}
+		Json::Value optionsJson = analysisDesc.get("options", Json::nullValue);
+		if (optionsJson != Json::nullValue)
+			options->init(optionsJson);
 		else
-		{
-			Json::Value optionsJson = analysisDesc.get("options", Json::nullValue);
-			if (optionsJson != Json::nullValue)
-				options->init(optionsJson);
-			else
-				perror("malformed analysis definition");
+			perror("malformed analysis definition");
 
-			autorun = analysisDesc.get("autorun", false).asBool();
-		}
+		bool autorun = analysisDesc.get("autorun", false).asBool();
+		Version version = Version(analysisDesc.get("version", "0.00").asString());
+
+		if (data != NULL)
+			options->set(*data);
 
 		file.close();
 
-		return new Analysis(id, analysisName, options, autorun);
+		return new Analysis(id, analysisName, options, version, autorun);
 	}
 
 	throw runtime_error("Could not access analysis definition.");

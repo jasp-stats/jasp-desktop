@@ -24,11 +24,8 @@ TTestOneSampleForm::TTestOneSampleForm(QWidget *parent) :
 
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 
-#ifdef QT_NO_DEBUG
-	ui->normalityTests->hide();
-#else
-	ui->normalityTests->setStyleSheet("background-color: pink;");
-#endif
+	ui->confidenceIntervalInterval->setLabel("Confidence interval");
+	ui->descriptivesPlotsConfidenceInterval->setLabel("Confidence interval");
 }
 
 TTestOneSampleForm::~TTestOneSampleForm()

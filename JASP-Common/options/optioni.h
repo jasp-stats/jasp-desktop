@@ -10,9 +10,7 @@ class OptionI : public Option
 
 public:
 
-	OptionI() : Option()
-	{
-	}
+	OptionI(bool transient = false) : Option(transient) { }
 
 	virtual T value() const
 	{

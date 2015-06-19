@@ -10,7 +10,10 @@ class LRNAM : public QNetworkAccessManager
 	Q_OBJECT
 
 public:
-	LRNAM(QObject *parent = 0);
+	LRNAM(const QString &baseResourceDirectory, QObject *parent = 0);
+
+private:
+	QString _baseResourceDirectory;
 
 protected:
 	QNetworkReply *createRequest(Operation op, const QNetworkRequest &request, QIODevice *outgoingData) OVERRIDE;

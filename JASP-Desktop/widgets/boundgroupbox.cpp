@@ -21,6 +21,10 @@ BoundGroupBox::BoundGroupBox(QWidget *parent) :
 void BoundGroupBox::bindTo(Option *option)
 {
 	_model.bindTo(option);
+
+	int selectedIndex = _model.selectedIndex();
+	if (selectedIndex >= 0 && selectedIndex < _buttonGroup->buttons().count())
+		_buttonGroup->buttons().at(_model.selectedIndex())->setChecked(true);
 }
 
 void BoundGroupBox::childEvent(QChildEvent *child)

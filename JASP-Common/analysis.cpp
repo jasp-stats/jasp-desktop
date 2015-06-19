@@ -1,33 +1,26 @@
 ﻿
 #include "analysis.h"
 
-#include <QDebug>
-
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 
 #include "options/options.h"
-
-#include <QStringBuilder>
-
-#include <boost/foreach.hpp>
 
 using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string name, Options *options, bool autorun)
+Analysis::Analysis(int id, string name, Options *options, Version version, bool autorun)
 {
 	_id = id;
 	_name = name;
 	_options = options;
 	_autorun = autorun;
+	_version = version;
 
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
-
-	_dataSet = NULL;
-	_r = NULL;
 }
 
 Analysis::~Analysis()
@@ -35,58 +28,10 @@ Analysis::~Analysis()
 	delete _options;
 }
 
-void Analysis::init()
-{
-	_status = Initing;
-
-	Json::Value returned = _r->init(_name, options()->asJSON());
-
-	string status = returned.get("status", "").asString();
-
-	if (status != "")
-	{
-		if (status == "complete")
-			_status = Complete;
-		else
-			_status = Inited;
-
-		_results = returned.get("results", Json::nullValue);
-	}
-	else
-	{
-		_results = returned;
-		_status = Inited;
-	}
-
-	resultsChanged(this);
-}
-
-void Analysis::run()
-{
-	_status = Running;
-
-	Json::Value returned = _r->run(_name, options()->asJSON(), boost::bind(&Analysis::callback, this, _1));
-
-	// status can be changed by subsequent messages, so we have to see if the analysis has
-	// changed. if it has, then we shouldn't bother sending the results
-
-	if (_status == Running)
-	{
-		Json::Value status = returned.get("status", Json::nullValue);
-
-		if (status != Json::nullValue)
-			_results = returned.get("results", Json::nullValue);
-		else
-			_results = returned;
-
-		_status = Complete;
-		resultsChanged(this);
-	}
-}
-
 void Analysis::abort()
 {
-	_status = Aborted;
+	_status = Aborting;
+	optionsChanged(this);
 }
 
 void Analysis::scheduleRun()
@@ -104,17 +49,34 @@ void Analysis::setResults(Json::Value results)
 	resultsChanged(this);
 }
 
-Json::Value Analysis::results()
+const Json::Value &Analysis::results() const
 {
 	return _results;
 }
 
-Json::Value Analysis::asJSON()
+Analysis::Status Analysis::getStatusValue(string name)
+{
+	if (name == "empty")
+		return Analysis::Empty;
+	else if (name == "waiting")
+		return Analysis::Inited;
+	else if (name == "running")
+		return Analysis::Running;
+	else if (name == "complete")
+		return Analysis::Complete;
+	else if (name == "aborted")
+		return Analysis::Aborted;
+	else
+		return Analysis::Error;
+}
+
+Json::Value Analysis::asJSON() const
 {
 	Json::Value analysisAsJson = Json::objectValue;
 
 	analysisAsJson["id"] = _id;
 	analysisAsJson["name"] = _name;
+	analysisAsJson["version"] = _version.asString(false, false);
 	analysisAsJson["results"] = _results;
 
 	string status;
@@ -146,7 +108,17 @@ Json::Value Analysis::asJSON()
 	return analysisAsJson;
 }
 
-Analysis::Status Analysis::status()
+void Analysis::setVisible(bool visible)
+{
+	_visible = visible;
+}
+
+bool Analysis::visible()
+{
+	return _visible;
+}
+
+Analysis::Status Analysis::status() const
 {
 	return _status;
 }
@@ -180,16 +152,6 @@ void Analysis::optionsChangedHandler(Option *option)
 {
 	_status = Empty;
 	optionsChanged(this);
-}
-
-void Analysis::setRInterface(RInterface *r)
-{
-	_r = r;
-}
-
-void Analysis::setDataSet(DataSet *dataSet)
-{
-	_dataSet = dataSet;
 }
 
 int Analysis::callback(Json::Value results)
