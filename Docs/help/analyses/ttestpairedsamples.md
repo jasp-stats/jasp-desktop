@@ -30,20 +30,6 @@ Default Output
 - df: Degrees of freedom
 - p: p-value
 
-Example
--------
-
-### Data set: 
-- Moon and Aggression
-
-### Input: 
-- The null hypothesis that the average difference between the number of disruptive behaviors on full moon days ("Moon") and not full 
-moon days ("Other") equals 0 is tested against the two sided alternative hypothesis that the average difference in disruptive behaviors differs from 0.
-
-### Output: 
-- The null hypothesis that the average difference between the number of disruptive behaviors on full moon days ("Moon") and not full moon days ("Other") equals 0 is rejected in favor of 
-the two sided alternative hypothesis that the average difference in disruptive behaviors differs from 0, t(14)=6.452, p < .001.
-
 Additional Options
 -------
 ### Additional Statistics:

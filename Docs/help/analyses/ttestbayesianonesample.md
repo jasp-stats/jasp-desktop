@@ -46,19 +46,6 @@ Default Output
   smaller than the test value
 - error %: The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor
 
-Example
--------
-### Data set: 
-- Weight Gain
-
-### Input: 
-- The null hypothesis that the mean "Difference" in weight between the two time points in the population equals 16 lb is tested against the two sided alternative hypothesis that the mean "Difference" 
-does not equal 16 lb.
-
-### Output: 
-- The data are 750.5 times more likely under the alternative hypothesis that the mean "Difference" in weight between the two time points in the population does not equal 16 lb than under the 
-null hypothesis that the mean "Difference" equals 16 lb; BF10=750.5, with error % 5.119e-9.
-
 Additional Options
 -------
 ### Additional Statistics:

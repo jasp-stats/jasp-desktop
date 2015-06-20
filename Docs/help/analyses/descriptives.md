@@ -23,17 +23,6 @@ Default Output
 - Minimum: Minimum value of the data points 
 - Maximum: Maximum value of the data points 
 
-Example
--------
-### Data set: 
-- Beer Alcohol Content
-
-### Input: 
-- Obtain the basic descriptive statistics of the variables "Percent Alcohol", "Calories", "Carbohydrates", "Brand", and "Brewery"
-
-### Output: 
-- The basic descriptive statistics are displayed in the table titled "Descriptive Statistics"
-
 Additional Options
 ------------------
 ###Display Plots:

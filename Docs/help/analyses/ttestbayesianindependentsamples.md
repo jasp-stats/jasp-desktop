@@ -41,20 +41,6 @@ Default Output
   - BF0-: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that Group one < Group two
 - error %: The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor.
 
-Example
--------
-
-### Data set: 
-- Gender Differences in Talkativeness
-
-### Input: 
-- The null hypothesis that the average number of words spoken per day is the same for women and men is tested against the one-sided alternative hypothesis that the average 
-number of words spoken per day is higher for women than for men.
-
-### Output: 
-- The data are 3.855 times more likely under the null hypothesis that the average number of words spoken per day is the same for women and men than
-under the one-sided alternative hypothesis that the average number of words spoken per day is higher for women than for men, BF0- =3.855, with error %  ~ 1.979e-4.
-
 Additional Options
 -------
 ### Additional Statistics:

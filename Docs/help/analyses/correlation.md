@@ -32,31 +32,6 @@ Default Output
 ### Pearson Correlations (Note that this table is called "Correlation Table" if Spearman's rank-order correlation and/or the Kendall's tau B rank-order correlation is requested):
 - Pearson's r: Pearson product-moment correlation coefficient
 - p-value: p-value
-
-Example
--------
-
-### Data set: 
-- NBA Business Revenue and Team Value
-
-### Input: 
-- The null hypotheses that the pairwise population correlations between the business revenue ("Revenue"), team value ("Value"), debt ("Debt"), and income ("Income") of teams in the National Basketball Association (NBA) equal 0 are tested
-  against the two-sided alternative hypotheses that the pairwise correlations do not equal 0.
-
-### Output: 
-- The Pearson correlation between "Value" and "Revenue" equals -0.323; the null hypothesis that the population correlation equals 0 cannot be rejected in favor of the two-sided alternative
-  hypothesis that the population correlation does not equal 0, p = 0.082.
-- The Pearson correlation between "Value" and "Debt" equals 0.986; the null hypothesis that the population correlation equals 0 is rejected in favor of the two-sided alternative
-  hypothesis that the population correlation does not equal 0, p < .001.
-- The Pearson correlation between "Value" and "Income" equals 0.718; the null hypothesis that the population correlation equals 0 is rejected in favor of the two-sided alternative
-  hypothesis that the population correlation does not equal 0, p < .001.
-- The Pearson correlation between "Revenue" and "Debt" equals -0.339; the null hypothesis that the population correlation equals 0 cannot be rejected in favor of the two-sided alternative
-  hypothesis that the population correlation does not equal 0, p = 0.067.
-- The Pearson correlation between "Revenue" and "Income" equals -0.301; the null hypothesis that the population correlation equals 0 cannot be rejected in favor of the two-sided alternative
-  hypothesis that the population correlation does not equal 0, p = 0.106. 
-- The Pearson correlation between "Debt" and "Income" equals 0.713; the null hypothesis that the population correlation equals 0 is rejected in favor of the two-sided alternative
-  hypothesis that the population correlation does not equal 0, p < .001.
-
   
 Additional Options
 -------
