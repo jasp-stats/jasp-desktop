@@ -102,15 +102,10 @@
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 			
-			someEstimates <- .posteriorBetaParameters(n=n, r=r, kappa=kappa)
-			
-			aParameter <- someEstimates$alpha
-			bParameter <- someEstimates$beta
-			
-			if (any(is.na(c(aParameter, bParameter))))
+			if (any(is.na(c(betaA, betaB))))
 				stop("Posterior is too peaked")
 			
-			posteriorLine <- .scaledBeta(alpha=aParameter, beta=bParameter, rho=rho)
+			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho)
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
 				stop("Posterior is too peaked")
