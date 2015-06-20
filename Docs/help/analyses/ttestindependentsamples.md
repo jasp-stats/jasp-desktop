@@ -35,19 +35,6 @@ Default Output
 - df: Degrees of freedom
 - p: p-value
 
-Example
--------
-### Data set: 
-- Gender Differences in Talkativeness
-
-### Input: 
-- The null hypothesis that the average number of words spoken per day is the same for women and men is tested against the one-sided alternative hypothesis that the average 
-number of words spoken per day is higher for women than for men.
-
-### Output: 
-- The null hypothesis that the average number of words spoken per day is the same for women and men cannot be rejected against the one-sided alternative hypothesis that the average 
-number of words spoken per day is higher for women than for men, t(77)=-0.135, p=0.447 (variances assumed equal); t(64.02)=-0.132, p=0.448 (no assumption)
-
 Additional Options
 -------
 

@@ -35,16 +35,6 @@ Default Output
  - Exclude cases analysis by analysis: In case of multiple correlations tests within a single analysis, each test will be conducted using all cases with valid data for the variables for the particular test. 
  Sample sizes may therefore vary across the tests.
  - Exclude cases listwise: In case of multiple correlation tests within a single analysis, each test will be conducted using only cases with valid data for all variables. Sample size is therefore constant across the tests. 
- 
-Example
--------
-
-### Data set: 
-- NBA Business Revenue and Team Value
-
-### Input: 
-- The null hypotheses that the pairwise population correlations between the business revenue ("Revenue"), team value ("Value"), debt ("Debt"), and income ("Income") of teams in the National Basketball Association (NBA) equal 0 are tested
-  against the two-sided alternative hypotheses that the pairwise correlations do not equal 0.
 
 ### Output: 
 - The Pearson correlation between "Value" and "Revenue" equals -0.323; the data are 1.039501 times more likely under the null hypothesis that the population correlation equals 0 

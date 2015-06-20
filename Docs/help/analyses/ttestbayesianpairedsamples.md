@@ -40,20 +40,6 @@ Default Output
   - BF0-: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that the difference is smaller than 0
 - error %: The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor
 
-Example
--------
-
-### Data set: 
-- Moon and Aggression
-
-### Input: 
-- The null hypothesis that the average difference between the number of disruptive behaviors on full moon days ("Moon") and not full moon days ("Other") equals 0 is tested against the 
-two sided alternative hypothesis that the average difference in disruptive behaviors differs from 0.
-
-### Output: 
-- The data are 1521 times more likely under the two sided alternative hypothesis that the average difference between the number of disruptive behaviors on full moon days ("Moon") and not full moon days ("Other") 
-differs from 0 than under the null hypothesis that the average difference in disruptive behaviors equals 0, BF10 = 1521, with error % = 5.014e-9. 
-
 Additional Options
 -------
 ### Additional Statistics:

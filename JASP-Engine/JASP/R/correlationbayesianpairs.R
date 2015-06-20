@@ -95,6 +95,8 @@
 	
 	rho <- seq(-0.99, 0.99, length.out = 1000)
 	
+	betaApproximation <- FALSE
+	
 	if (oneSided == FALSE) {
 	
 		priorLine <- .priorRho(rho=rho, kappa=kappa)
@@ -102,15 +104,12 @@
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 			
-			someEstimates <- .posteriorBetaParameters(n=n, r=r, kappa=kappa)
+			betaApproximation <- TRUE
 			
-			aParameter <- someEstimates$alpha
-			bParameter <- someEstimates$beta
-			
-			if (any(is.na(c(aParameter, bParameter))))
+			if (any(is.na(c(betaA, betaB))))
 				stop("Posterior is too peaked")
 			
-			posteriorLine <- .scaledBeta(alpha=aParameter, beta=bParameter, rho=rho)
+			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho)
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
 				stop("Posterior is too peaked")
@@ -187,8 +186,16 @@
 		
 	} else {
 		
-		points(0, .priorRho(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)		
-		points(1e-15, .posteriorRho(rho=1e-8, n=n, r=r, kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
+		points(0, .priorRho(0,kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
+		
+		if (betaApproximation) {
+			
+			points(0, .scaledBeta(alpha=betaA, beta=betaB, rho=0), col="black", pch=21, bg = "grey", cex= cexPoints)
+		
+		} else {
+		
+			points(1e-15, .posteriorRho(rho=1e-8, n=n, r=r, kappa=kappa), col="black", pch=21, bg = "grey", cex= cexPoints)
+		}
 	}
 	
 	

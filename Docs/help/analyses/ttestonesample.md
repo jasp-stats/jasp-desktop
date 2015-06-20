@@ -31,18 +31,6 @@ Default Output
 - df: Degrees of freedom
 - p: p-value
 
-Example
--------
-
-### Data set: 
-- Weight Gain
-
-### Input: 
-- The null hypothesis that the mean "Difference" in weight between the two time points in the population equals 16 lb is tested against the two sided alternative hypothesis that the mean "Difference" does not equal 16 lb.
-
-### Output: 
-- The null hypothesis that the mean "Difference" in weight between the two time points in the population equals 16 lb is rejected in favor of the two sided alternative hypothesis that the mean "Difference" does not equal 16 lb, t(15)=-5.823, p < .001.
-
 Additional Options
 -------
 ### Additional Statistics:

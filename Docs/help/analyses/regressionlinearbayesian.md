@@ -48,18 +48,6 @@ Output
 - BFForward: Bayes factor in favor of including the covariate when using the forward stepwise procedure.
 - % errorF: Proportional error of the computation of BFForward.
 
-Example
--------
-
-### Data set: 
-- Physical Activity and BMI
-
-### Input: 
-- The regression analysis investigates whether physical activity predicts body mass index (BMI).
-
-### Output: 
-- The Bayes factor in favor of including physical activity as a predictor in the regression model as opposed to not including physical activity as a predictor is 284.3 with error % 0.002. The data are 284.3 times more likely when including physical activity as a predictor in the regression model.
-
 Additional Options
 -------
 ### Model:
