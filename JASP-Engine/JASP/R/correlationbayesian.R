@@ -1681,59 +1681,45 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	rho <- seq(-0.99, 0.99, length.out = 1000)
 	
+	someFit <- .posteriorBetaParameters(n=n, r=r, kappa=kappa)
+	betaA <- someFit$betaA
+	betaB <- someFit$betaB
+	
+	betaApproximation <- FALSE
 	
 	if (oneSided == FALSE) {
-		
+	
+		priorLine <- .priorRho(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, kappa=kappa)
 		
 		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 			
-			someEstimates <- .posteriorBetaParameters(n=n, r=r, kappa=kappa)
+			betaApproximation <- TRUE
 			
-			aParameter <- someEstimates$alpha
-			bParameter <- someEstimates$beta
+			if (any(is.na(c(betaA, betaB))))
+				stop("Posterior is too peaked")
 			
-			if (any(is.na(c(aParameter, bParameter)))) {
-				
-				errorMessage <- "Posterior is too peaked"
-				.displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
-				return()
-			}
+			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho)
 			
-			posteriorLine <- .scaledBeta(alpha=aParameter, beta=bParameter, rho=rho)
-			
-			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
-				
-				errorMessage <- "Posterior is too peaked"
-				.displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
-				return()
-			}
-			
+			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+				stop("Posterior is too peaked")
 		}
-		
+	
 	} else if (oneSided == "right") {
+	
+		priorLine <- .priorRhoPlus(rho=rho, kappa=kappa)
+		posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, kappa= kappa)
 		
-		posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, kappa=kappa)
-		
-		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
-			
-			errorMessage <- "Posterior is too peaked"
-			.displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
-			return()
-		}
-		
-		
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+			stop("Posterior is too peaked")
 		
 	} else if (oneSided == "left") {
-		
+	
+		priorLine <- .priorRhoMin(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRhoMin(rho=rho, n=n, r=r, kappa=kappa)
 		
-		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
-			
-			errorMessage <- "Posterior is too peaked"
-			.displayErrorPosterior(errorMessage=errorMessage, xticks=xticks, xlim=xlim, xlabels=xlabels)
-			return()
-		}
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+			stop("Posterior is too peaked")
 	}
 	
 	dmax <- max(posteriorLine)
