@@ -34,6 +34,12 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(assignmentsChanged()));
 	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
+
+#ifdef QT_NO_DEBUG
+	ui->groupBox->hide();
+#else
+	ui->groupBox->setStyleSheet("background-color: pink ;");
+#endif
 }
 
 RegressionLinearBayesianForm::~RegressionLinearBayesianForm()
