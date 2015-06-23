@@ -31,6 +31,8 @@ CorrelationBayesianPairsForm::CorrelationBayesianPairsForm(QWidget *parent) :
 #else
 	ui->plotSequentialAnalysisRobustness->setStyleSheet("background-color: pink;");
 #endif
+
+	ui->priorWidth->setLabel("Beta* prior width");
 }
 
 CorrelationBayesianPairsForm::~CorrelationBayesianPairsForm()
