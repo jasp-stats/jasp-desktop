@@ -439,7 +439,7 @@
 		all.bfs <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
 		method.number <- 1
 	
-		while (any(is.na(all.bfs)) && method.number <= 3){
+		while (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0))) && method.number <= 4) {
 			
 			# Note: Try all normal methods
 			all.bfs <- .bfCorrieKernel(n=n, r=r, kappa=kappaValues[i], method=method.number)
@@ -447,7 +447,7 @@
 			
 		}
 		
-		if (any(is.na(all.bfs))){
+		if (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0)))) {
 			
 			# Note: all normal methods FAILED. Use Jeffreys approximation
 			all.bfs <- .bfCorrieKernel(n=n, r=r, kappa=kappaValues[i], method="jeffreysApprox")
@@ -1291,14 +1291,15 @@
 			all.bfs <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
 			method.number <- 1
 	
-			while (any(is.na(all.bfs)) && method.number <=3){
+			while (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0))) && method.number <= 4) {
 				
 				# Note: Try all normal methods
 				all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=kappa, method=method.number)
 				method.number <- method.number + 1
+				
 			}
 			
-			if (any(is.na(all.bfs))){
+			if (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0)))) {
 				
 				# Note: all normal methods FAILED. Use Jeffreys approximation
 				all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=kappa, method="jeffreysApprox")
@@ -2550,7 +2551,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						all.bfs <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
 						method.number <- 1
 						
-						while (any(is.na(all.bfs)) && method.number <=3){
+						while (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0))) && method.number <= 4){
 						
 							# Note: Try all normal methods
 							all.bfs <- .bfCorrieKernel(n=some.n, r=some.r, kappa=options$priorWidth, method=method.number)
