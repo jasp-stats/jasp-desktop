@@ -77,6 +77,20 @@ $(document).ready(function () {
 		}
 	}
 
+	window.exportHTML = function (filename) {
+		var exportObject = {
+			views: analysesViews,
+			exportComplete: function (exportType, html) {
+
+				jasp.saveTextToFile(filename, wrapHTML(html));
+			},
+			getStyleAttr: function () {
+				return "style='display: block;'";
+			}
+		};
+		JASPWidgets.Export.begin(exportObject, JASPWidgets.Export.type.SaveHTML, true)
+	}
+
 	window.scrollIntoView = function (item) {
 
 		var itemTop = item.offset().top
@@ -257,6 +271,23 @@ $(document).ready(function () {
 
 })
 
+
+var wrapHTML = function (html) {
+	var completehtml = "<!DOCTYPE HTML>\n"
+	completehtml += "<html>\n"
+	completehtml += "	<head>\n"
+	completehtml += "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
+	completehtml += "		<title>JASP</title>"
+	completehtml += "	</head>\n"
+
+	var styles = JASPWidgets.Export.getStyles($("body"), ["font-family", "display", "font-size", ]);
+
+	completehtml += "	<body " + styles + ">\n";
+	completehtml += html;
+	completehtml += "	</body>\n"
+	completehtml += "</html>";
+	return completehtml;
+};
 
 var stringify = function (element, tabs) {
 

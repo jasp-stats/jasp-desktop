@@ -132,44 +132,43 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 	exportBegin: function (exportType) {
 
 		if (exportType == undefined)
-			exportType = JASPWidgets.ExportType.CopyHTML;
+			exportType = JASPWidgets.Export.type.CopyHTML;
 
 		var data = this.model.get("data");
 		JASPWidgets.Encodings.base64Request(data, function (base64) {
 
-			if (JASPWidgets.ExportType.isHTML(exportType)) {
+			if (JASPWidgets.Export.type.isHTML(exportType)) {
 
-				var css = this.$el.css(["float", "display"])
-				var style = "";
-				if (css["float"])
-					style += "float: " + css["float"] + "; "
-				if (css["display"])
-					style += "display: " + css["display"] + "; "
+				var style = this.getStyleAttr();
 
 				var title = this.model.get("title");
 				var width = this.model.get("width");
 				var height = this.model.get("height");
-				var text = '<div style="' + style + '">';
-				text += '<h2>' + title + '</h2>'
+				var text = '<div ' + style + '>\n';
 
-				if (JASPWidgets.ExportType.isCopy(exportType)) {
+
+				var headerStyle = JASPWidgets.Export.getHeaderStyles(this.toolbar.$title());
+				text += '<' + this.toolbar.titleTag + ' ' + headerStyle + '>' + title + '</' + this.toolbar.titleTag + '>\n'
+
+				if (JASPWidgets.Export.type.isCopy(exportType)) {
 					saveImageBegin(data, base64, function (fullpath) {
 
-						text += '<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />';
-						text += '</div>';
+						text += '<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />\n';
+						text += '</div>\n';
 
 						this.exportComplete(exportType, text);
 					}, this);
 				}
-				else if (JASPWidgets.ExportType.isSave(exportType))
+				else if (JASPWidgets.Export.type.isSave(exportType))
 				{
-					text += '<img src="data:image/png;base64,' + base64 + '" style="width:' + width + 'px; height:' + height + 'px;" />';
-					text += '</div>';
+					text += '<div style="background-image : url(data:image/png;base64,' + base64 + '); width:' + width + 'px; height:' + height + 'px;"></div>'
+					//text += '<img src="data:image/png;base64,' + base64 + '" style="width:' + width + 'px; height:' + height + 'px;" />\n';
+					text += '</div>\n';
 
 					this.exportComplete(exportType, text);
 				}
 			}
-			else if (JASPWidgets.ExportType.isRaw(exportType))
+			else if (JASPWidgets.Export.type.isRaw(exportType))
 			{
 				this.exportComplete(exportType, base64);
 			}
@@ -177,14 +176,14 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 	},
 
 	exportComplete: function (exportType, data) {
-		if (exportType == JASPWidgets.ExportType.CopyHTML)
+		if (exportType == JASPWidgets.Export.type.CopyHTML)
 			pushHTMLToClipboard(data);
-		else if (exportType == JASPWidgets.ExportType.CopyRaw)
+		else if (exportType == JASPWidgets.Export.type.CopyRaw)
 			pushImageToClipboard(data);
 	},
 
 	copyMenuClicked: function () {
-		this.exportBegin(JASPWidgets.ExportType.CopyRaw);
+		this.exportBegin(JASPWidgets.Export.type.CopyRaw);
 		return true;
 	},
 

@@ -157,9 +157,9 @@ svg > text
 	font-size: 120% ;
 }
 
-.jasp-image {
+.jasp-image, .jasp-images {
 
-	float: left ;
+	display: inline-block;
 }
 
 .jasp-image {
@@ -336,7 +336,7 @@ td.squash-left
 }
 
 .jasp-resize {
-    background: top left no-repeat url(images/arrow-resize.png);
+    background: top left no-repeat url(images/resizer.png);
     right: 5px;
     cursor: nw-resize;
 	bottom: 16px;
@@ -374,8 +374,4 @@ div.toolbar-button
 
 .jasp-menu-selected {
 	background-color : #BFD9F7 ;
-}
-
-.jasp-table {
-	display: inline-block;
 }

@@ -925,40 +925,25 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		var $elObj = $(element)
 		var tag = $elObj.prop("tagName").toLowerCase()
 
-		var css = $elObj.css(["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top"])
-
 		if (tag === "td" || tag === "th") {
 
-			if (css["border-top-width"])
-				style += "border-width : " + css["border-top-width"] + " " + css["border-right-width"] + " " + css["border-bottom-width"] + " " + css["border-left-width"] + "; "
-			if (css["border-color"])
-				style += "border-color : " + css["border-color"] + "; "
-			if (css["border-style"])
-				style += "border-style : " + css["border-style"] + "; "
-			if (css['text-align'])
-				style += "text-align : " + css['text-align'] + "; "
-			if (css['margin-bottom'])
-				style += "margin-bottom : " + css['margin-bottom'] + "; "
-			if (css['margin-top'])
-				style += "margin-top : " + css['margin-top'] + "; "
-			if (css['padding'])
-				style += "padding : " + css['padding'] + "; "
+			style = JASPWidgets.Export.getTableContentStyles($elObj);
+
 			if ($elObj.prop("rowspan") && $elObj.prop("rowspan") != 1)
 				attrs += 'rowspan="' + $elObj.prop("rowspan") + '" '
 			if ($elObj.prop("colspan") && $elObj.prop("colspan") != 1)
 				attrs += 'colspan="' + $elObj.prop("colspan") + '" '
 		}
 		else if (tag === "table") {
-			if (css['border-collapse'])
-				style += "border-collapse : " + css['border-collapse'] + "; "
-			if (css['margin-bottom'])
-				style += "margin-bottom : " + css['margin-bottom'] + "; "
-			if (css['margin-top'])
-				style += "margin-top : " + css['margin-top'] + "; "
+			style = JASPWidgets.Export.getTableStyles($elObj);
+		}
+		else if (tag === "span" || tag === "h1" || tag === "h2" || tag === "h3") {
+			style = JASPWidgets.Export.getHeaderStyles($elObj);
 		}
 
+
 		if (style)
-			attrs = 'style="' + style + '" ' + attrs
+			attrs = style + ' ' + attrs
 
 		return attrs;
 	},
@@ -1023,7 +1008,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 	exportBegin: function (exportType) {
 
 		if (exportType == undefined)
-			exportType = JASPWidgets.ExportType.CopyHTML;
+			exportType = JASPWidgets.Export.type.CopyHTML;
 
 		this.exportComplete(exportType, this.exportHTML());
 	},
@@ -1033,7 +1018,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 	},
 
 	copyMenuClicked: function () {
-		this.exportBegin(JASPWidgets.ExportType.CopyHTML);
+		this.exportBegin(JASPWidgets.Export.type.CopyHTML);
 		return true;
 	},
 

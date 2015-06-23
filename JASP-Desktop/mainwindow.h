@@ -84,6 +84,7 @@ signals:
 	void analysisSelected(int id);
 	void analysisUnselected();
 	void analysisChangedDownstream(int id, QString options);
+	void saveTextToFile(QString filename, QString text);
 	void pushToClipboard(QString mimeType, QString data);
 	void pushImageToClipboard(QByteArray base64);
 	void saveTempImage(int id, QString path, QByteArray data);
@@ -95,6 +96,7 @@ private slots:
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
 	void pushImageToClipboardHandler(const QByteArray &base64);
+	void saveTextToFileHandler(const QString &filename, const QString &data);
 	void pushToClipboardHandler(const QString &mimeType, const QString &data);
 	void saveTempImageHandler(int id, QString path, QByteArray data);
 	void analysisChangedDownstreamHandler(int id, QString options);

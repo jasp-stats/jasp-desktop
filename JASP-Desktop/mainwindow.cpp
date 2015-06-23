@@ -156,6 +156,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(saveTempImage(int, QString, QByteArray)), this, SLOT(saveTempImageHandler(int, QString, QByteArray)));
 	connect(this, SIGNAL(pushToClipboard(QString, QString)), this, SLOT(pushToClipboardHandler(QString, QString)));
 	connect(this, SIGNAL(pushImageToClipboard(QByteArray)), this, SLOT(pushImageToClipboardHandler(QByteArray)));
+	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 
@@ -913,10 +914,26 @@ void MainWindow::saveSelected(const QString &filename)
 	_alert->show();
 }
 
+void MainWindow::saveTextToFileHandler(const QString &filename, const QString &data)
+{
+	QFile file(filename);
+	file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+	QTextStream stream(&file);
+	stream.setCodec("UTF-8");
+
+	stream << data;
+	stream.flush();
+	file.close();
+}
 
 void MainWindow::exportSelected(const QString &filename)
 {
-	QWebElement element = ui->webViewResults->page()->mainFrame()->documentElement().clone();
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + filename + "');");
+
+
+
+
+	/*QWebElement element = ui->webViewResults->page()->mainFrame()->documentElement().clone();
 
 	QWebElementCollection nodes;
 
@@ -949,7 +966,7 @@ void MainWindow::exportSelected(const QString &filename)
 	stream.flush();
 	file.close();
 
-	ui->tabBar->setCurrentIndex(1);
+	ui->tabBar->setCurrentIndex(1);*/
 }
 
 void MainWindow::adjustOptionsPanelWidth()
@@ -1149,7 +1166,7 @@ void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &
 					   "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
 					   "		<title>JASP</title>"
 					   "	</head>\n"
-					   "	<body>\n";
+					   "	<body style='font-family: sans-serif; display:block;'>\n";
 		toClipboard += data;
 		toClipboard += "	</body>\n"
 					   "</html>";

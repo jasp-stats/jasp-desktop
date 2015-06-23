@@ -37,55 +37,21 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	copyMenuClicked: function () {
 		
-		this.exportBegin(JASPWidgets.ExportType.CopyHTML, this.views);
+		this.exportBegin(JASPWidgets.Export.type.CopyHTML, this.views);
 
 		return true;
 	},
 
 	exportMenuClicked: function () {
 
-		this.exportBegin(JASPWidgets.ExportType.SaveHTML, this.views);
+		this.exportBegin(JASPWidgets.Export.type.SaveHTML, this.views);
 
 		return true;
 	},
 
 	exportBegin: function (exportType, views) {
 
-		if (exportType === undefined)
-			exportType = JASPWidgets.ExportType.CopyHTML;
-
-		var viewList = views;
-		if (views === undefined)
-			viewList = this.views;
-
-		this.buffer = [];
-		this.exportCounter = viewList.length;
-
-		for (var i = 0; i < viewList.length; i++) {
-			this.exportView(exportType, viewList[i], i, this.buffer);
-		}
-	},
-
-	exportView: function (exportType, view, i) {
-		var self = this;
-		var index = i;
-		var originalExportComplete = view.exportComplete;
-		view.exportComplete = function (exType, data) {
-			this.exportComplete = originalExportComplete;
-			self.buffer[index] = data;
-			self.exportCounter -= 1;
-			if (self.exportCounter === 0) {
-				var completeText = "<h1>" + self.toolbar.title + "</h1>";
-				for (var j = 0; j < self.buffer.length; j++) {
-					completeText += self.buffer[j];
-					if (j !== self.buffer.length - 1)
-						completeText += "</p>&nbsp;</p>\n";
-				}
-				self.exportComplete(exType, completeText);
-				self.buffer = [];
-			}
-		};
-		view.exportBegin(exportType);
+		JASPWidgets.Export.begin(this, exportType, true);
 	},
 
 	exportComplete: function (exportType, html) {
@@ -102,11 +68,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.toolbar.title = result;
 			this.toolbar.render();
 			$element.append(this.toolbar.$el);
-
-			//$element.append("<div class='header-flow'><h1>" + result + "</h1></div>")
-			//var $headerFlow = $element.find(".header-flow");
-			//this.toolbar.render();
-			//$headerFlow.append(this.toolbar.$el);
 		}
 		else if (metaEntry.type == "h1") {
 

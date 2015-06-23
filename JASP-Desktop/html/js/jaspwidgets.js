@@ -83,30 +83,141 @@ JASPWidgets.Encodings = {
 	}
 }
 
-JASPWidgets.ExportType = {
-	CopyRaw: 0,
-	CopyHTML: 1,
-	SaveRaw: 2,
-	SaveHTML: 3,
+JASPWidgets.Export = {
+	type: {
+		CopyRaw: 0,
+		CopyHTML: 1,
+		SaveRaw: 2,
+		SaveHTML: 3,
 
-	isHTML: function (value) {
-		return (value & 1) === 1;
+		isHTML: function (value) {
+			return (value & 1) === 1;
+		},
+
+		isRaw: function (value) {
+			return (value & 1) === 0;
+		},
+
+		isSave: function (value) {
+			return (value & 2) === 2;
+		},
+
+		isCopy: function (value) {
+			return (value & 2) === 0;
+		}
 	},
 
-	isRaw: function (value) {
-		return (value & 1) === 0;
+	begin: function (view, exportType, useNBSP) {
+
+		if (useNBSP == undefined)
+			useNBSP = false;
+
+		if (exportType == undefined)
+			exportType = JASPWidgets.Export.type.CopyHTML;
+
+		var viewList = view.views;
+
+		if (viewList !== undefined) {
+
+			if (viewList.length === 0)
+				view.exportComplete(exportType, "");
+			else {
+				view.buffer = [];
+				view.exportCounter = viewList.length;
+
+				for (var i = 0; i < viewList.length; i++) {
+					this._exportView(exportType, viewList[i], i, view, useNBSP);
+				}
+			}
+		}
+		else {
+			view.exportBegin(exportType);
+		}
 	},
 
-	isSave: function (value) {
-		return (value & 2) === 2;
+	_exportView: function (exportType, view, i, parent, useNBSP) {
+		var self = parent;
+		var index = i;
+		var originalExportComplete = view.exportComplete;
+		view.exportComplete = function (exType, data) {
+			this.exportComplete = originalExportComplete;
+			self.buffer[index] = data;
+			self.exportCounter -= 1;
+			if (self.exportCounter === 0) {
+				var completeText = "<div " + self.getStyleAttr() + "'>\n";
+				completeText += "<div style='display:inline-block'>\n";
+				if (self.toolbar !== undefined) {
+					var headerStyle = JASPWidgets.Export.getHeaderStyles(self.toolbar.$title());
+					completeText += '<' + self.toolbar.titleTag + ' ' + headerStyle + '>' + self.toolbar.title + '</' + self.toolbar.titleTag + '>\n'
+				}
+				for (var j = 0; j < self.buffer.length; j++) {
+					if (self.buffer[j]) {
+						completeText += self.buffer[j];
+						if (useNBSP && j < self.buffer.length - 1 && (JASPWidgets.Export.isInlineStyle(this.$el) == false || (self.buffer[j+1] && JASPWidgets.Export.isInlineStyle(self.views[j + 1].$el) == false)))
+							completeText += "&nbsp;";
+					}
+				}
+				completeText += "</div>";
+				completeText += "</div>";
+				self.exportComplete(exType, completeText);
+				self.buffer = [];
+			}
+		};
+		view.exportBegin(exportType);
 	},
 
-	isCopy: function (value) {
-		return (value & 2) === 0;
+	getStyles: function (element, styleItems) {
+
+		var css = element.css(styleItems);
+		if (css === undefined)
+			return "";
+
+		var style = "";
+		for (var i = 0; i < styleItems.length; i++)
+		{
+			var styleItem = styleItems[i];
+			if (css[styleItem])
+				style += styleItem + ": " + css[styleItem] + "; "
+		}
+
+		if (style)
+			style = "style='" + style + "'";
+
+		return style;
 	},
+
+	getHeaderStyles: function (element) {
+		return JASPWidgets.Export.getStyles(element, ["padding", "text-align", "margin-bottom", "margin-top", "margin-left", "margin-right", "display", "float", "vertical-align", "font-size"]);
+	},
+
+	getTableStyles: function (element) {
+		return JASPWidgets.Export.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float"]);
+	},
+
+	getTableContentStyles: function (element) {
+		return JASPWidgets.Export.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float", "font-size", "font-weight"]);
+	},
+
+	isInlineStyle: function (element) {
+		var css = element.css("display");
+		if (css === undefined)
+			return false;
+
+		if (css["display"])
+			return css["display"] === "inline" || css["display"] === "inline-block";
+
+		return false;
+	}
+
 };
 
 JASPWidgets.View = Backbone.View.extend({
+
+	getStyleAttr: function (styleItems) {
+
+		return JASPWidgets.Export.getStyles(this.$el, ["padding", "text-align", "margin-bottom", "margin-top", "margin-left", "margin-right", "display", "float"]);
+
+	},
 
 	_isClosed: false,
 	/** Removes DOM tree elements and any listeners from or too the view object */
@@ -127,6 +238,18 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.fixed = false;
 		this.visible = false;
 		this.selected = false;
+	},
+	
+	titleHTML: function () {
+		var html = this.title;
+		if (this.titleTag !== undefined)
+			html = '<' + this.titleTag + '>' + this.title + '</' + this.titleTag + '>';
+
+		return html;
+	},
+
+	$title: function() {
+		return this.$el.find(this.titleTag);
 	},
 
 	render: function () {
@@ -325,43 +448,10 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 	},
 
 	exportBegin: function (exportType, views) {
-
-		if (exportType == undefined)
-			exportType = JASPWidgets.ExportType.CopyHTML;
-
-		var viewList = views;
-		if (views === undefined)
-			viewList = this.views;
-
-		this.buffer = [];
-		this.exportCounter = viewList.length;
-
-		for (var i = 0; i < viewList.length; i++) {
-			this.exportView(exportType, viewList[i], i, this.buffer);
-		}
-	},
-
-	exportView: function (exportType, view, i)
-	{
-		var self = this;
-		var index = i;
-		var originalExportComplete = view.exportComplete;
-		view.exportComplete = function (exType, data) {
-			this.exportComplete = originalExportComplete;
-			self.buffer[index] = data;
-			self.exportCounter -= 1;
-			if (self.exportCounter === 0) {
-				var completeText = "";
-				for (var j = 0; j < self.buffer.length; j++) {
-					completeText += self.buffer[j];
-					if (j !== self.buffer.length - 1)
-						completeText += "</p>&nbsp;</p>\n";
-				}
-				self.exportComplete(exType, completeText);
-				self.buffer = [];
-			}
-		};
-		view.exportBegin(exportType);
+		if (this.views.length > 0)
+			JASPWidgets.Export.begin(this, exportType);
+		else
+			this.exportComplete(exportType, "")
 	},
 
 	exportComplete: function (exportType, html) {
