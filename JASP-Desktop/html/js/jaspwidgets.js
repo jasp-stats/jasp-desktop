@@ -153,7 +153,7 @@ JASPWidgets.Export = {
 				for (var j = 0; j < self.buffer.length; j++) {
 					if (self.buffer[j]) {
 						completeText += self.buffer[j];
-						if (useNBSP && j < self.buffer.length - 1 && (JASPWidgets.Export.isInlineStyle(this.$el) == false || (self.buffer[j+1] && JASPWidgets.Export.isInlineStyle(self.views[j + 1].$el) == false)))
+						if (useNBSP && j < self.buffer.length && (JASPWidgets.Export.isInlineStyle(self.views[j].$el) == false))
 							completeText += "&nbsp;";
 					}
 				}
@@ -200,13 +200,8 @@ JASPWidgets.Export = {
 
 	isInlineStyle: function (element) {
 		var css = element.css("display");
-		if (css === undefined)
-			return false;
 
-		if (css["display"])
-			return css["display"] === "inline" || css["display"] === "inline-block";
-
-		return false;
+		return css === "inline" || css === "inline-block";
 	}
 
 };
