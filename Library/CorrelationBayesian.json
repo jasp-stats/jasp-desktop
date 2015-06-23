@@ -45,7 +45,7 @@
 		},
 		{
 			"format": "%",
-			"max": 1.0,
+			"max": 0.999,
 			"min": 0.0,
 			"name": "credibleIntervalsInterval",
 			"type": "Number",
