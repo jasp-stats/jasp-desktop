@@ -101,7 +101,7 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 
 		if (options$testValue != 0) {
 		
-			message <- paste("All tests, hypothesis is population mean is different to ", options$testValue, sep="")
+			message <- paste("All tests, hypothesis is population mean is different from ", options$testValue, sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		}
 	

@@ -2839,19 +2839,24 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	footnotes <- .newFootnotes()
 	
-	#if (options$hypothesis == "greaterThanTestValue") {
-	#
-	#	message <- paste("All tests, hypothesis is sample mean is greater than ", 0, sep="")
-	#	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-	#
-	#} else if (options$hypothesis == "lessThanTestValue") {
-	#
-	#	message <- paste("All tests, hypothesis is sample mean is less than ", 0, sep="")
-	#	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-	#	
-	#} else {
-	#
-	#}
+	if (options$hypothesis == "greaterThanTestValue") {
+	
+		message <- paste("All tests, hypothesis is population mean is greater than ", options$testValue, sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	
+	} else if (options$hypothesis == "lessThanTestValue") {
+	
+		message <- paste("All tests, hypothesis is population mean is less than ", options$testValue, sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		
+	} else {
+
+		if (options$testValue != 0) {
+		
+			message <- paste("All tests, hypothesis is population mean is different from ", options$testValue, sep="")
+			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		}
+	}
 	
 	if (options$hypothesis == "notEqualToTestValue") {
 		nullInterval <- NULL
