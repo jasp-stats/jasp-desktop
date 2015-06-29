@@ -131,6 +131,18 @@ void Engine::runAnalysis()
 
 void Engine::run()
 {
+	if (_slaveNo == 0)
+	{
+		_engineInfo = rbridge_check();
+
+		Json::Value v;
+		Json::Reader r;
+		r.parse(_engineInfo, v);
+
+		std::cout << v.toStyledString() << "\n";
+		std::cout.flush();
+	}
+
 	stringstream ss;
 	ss << "JASP-IPC-" << ProcessInfo::parentPID();
 	string memoryName = ss.str();
