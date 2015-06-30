@@ -91,6 +91,11 @@ run <- function(name, options.as.json.string, perform="run") {
 
 }
 
+checkPackages <- function() {
+
+	RJSONIO::toJSON(.checkPackages())
+}
+
 .addCitationToTable <- function(table) {
 
 	if ("citation" %in% names(table) ) {

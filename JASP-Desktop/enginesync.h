@@ -56,6 +56,7 @@ private:
 	void startSlaveProcess(int no);
 
 	std::string _memoryName;
+	std::string _engineInfo;
 
 private slots:
 

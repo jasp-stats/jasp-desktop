@@ -498,3 +498,13 @@ Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeri
 	map<string, Column::ColumnType> columnsRequested = rbridge_marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns);
 	return rbridge_readDataSetHeader(columnsRequested);
 }
+
+string rbridge_check()
+{
+	SEXP result = rbridge_rinside->parseEvalNT("checkPackages()");
+	if (Rf_isString(result))
+		return Rcpp::as<string>(result);
+	else
+		return "null";
+}
+
