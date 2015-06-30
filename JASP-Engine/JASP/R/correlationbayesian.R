@@ -665,6 +665,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(result)
 }
 
+
 .priorRho <- function(rho, kappa=1) {
 	.scaledBeta(rho, 1/kappa, 1/kappa)	
 }
@@ -1330,7 +1331,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 # 4.1 Two-sided
 .posteriorRho <- function(n, r, rho, kappa=1){
 	if (!is.na(r) && !r==0){
-		return(1/.bf10Exact(n,r)*.hFunction(n, r, rho)*.priorRho(rho, kappa))
+		return(1/.bf10Exact(n, r, kappa)*.hFunction(n, r, rho)*.priorRho(rho, kappa))
 	} else if (!is.na(r) && r==0){
 		return(1/.bf10JeffreysIntegrate(n, r, kappa)*.jeffreysApproxH(n, r, rho)*.priorRho(rho, kappa))
 	}	
