@@ -17,6 +17,7 @@ public:
 
 protected:
 	virtual void nextCheckState() OVERRIDE;
+	bool event(QEvent *e) OVERRIDE;
 
 signals:
     

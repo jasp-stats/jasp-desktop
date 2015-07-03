@@ -1,16 +1,10 @@
 #ifndef ASSIGNBUTTON_H
 #define ASSIGNBUTTON_H
 
-#include <QPushButton>
-
-#include "tablemodelvariablesavailable.h"
-#include "tablemodelvariablesassigned.h"
 #include "listview.h"
-#include "boundpairstable.h"
+#include "button.h"
 
-class BoundPairsTable;
-
-class AssignButton : public QPushButton
+class AssignButton : public Button
 {
 	Q_OBJECT
 public:
@@ -22,6 +16,7 @@ public:
 	void setSourceAndTarget(DropTarget *source, DropTarget *target);
 
 protected:
+
 	DropTarget *_source;
 	DropTarget *_target;
 

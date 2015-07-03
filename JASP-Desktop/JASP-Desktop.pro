@@ -131,6 +131,7 @@ SOURCES += main.cpp\
     lrnamreply.cpp \
     lrnam.cpp \
     analysisforms/r11tlearnform.cpp \
+    widgets/button.cpp \
     ribbons/ribbonr11tlearn.cpp
 
 HEADERS  += \
@@ -231,6 +232,7 @@ HEADERS  += \
     lrnam.h \
     widgets/groupbox.h \
     analysisforms/r11tlearnform.h \
+    widgets/button.h \
     ribbons/ribbonr11tlearn.h
 
 FORMS    += \

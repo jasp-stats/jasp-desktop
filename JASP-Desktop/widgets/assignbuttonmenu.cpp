@@ -2,10 +2,11 @@
 
 #include "droptarget.h"
 
+#include <QMenu>
 #include <QDebug>
 
 AssignButtonMenu::AssignButtonMenu(QWidget *parent)
-	: QPushButton(parent)
+	: Button(parent)
 {
 	_source = NULL;
 	_target = NULL;
@@ -38,7 +39,7 @@ void AssignButtonMenu::buttonClicked()
 
 	if (_source == NULL || _target == NULL)
 	{
-		qDebug() << "AssignButtonMenu::buttonClicked() : source and target not set";
+		qDebug() << "AssignButtonMenu::buttonClicked() : source or target not set";
 		return;
 	}
 }
