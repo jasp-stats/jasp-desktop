@@ -21,6 +21,7 @@ protected:
 	void focusInEvent(QFocusEvent *event) OVERRIDE;
 	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) OVERRIDE;
 	void dropEvent(QDropEvent *event) OVERRIDE;
+	bool event(QEvent *e) OVERRIDE;
 
 private slots:
 	void doubleClickedHandler(const QModelIndex index);
