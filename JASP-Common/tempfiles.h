@@ -8,6 +8,9 @@ void tempfiles_init(long sessionId);
 void tempfiles_attach(long sessionId);
 void tempfiles_heartbeat();
 
+std::string tempfiles_createSpecific_clipboard(const std::string &filename);
+void tempfiles_purgeClipboard();
+
 void tempfiles_create(const std::string &extension, int id, std::string &root, std::string &relativePath);
 void tempfiles_createSpecific(const std::string &name, int id, std::string &root, std::string &relativePath);
 std::string tempfiles_createSpecific(const std::string &dir, const std::string &filename);

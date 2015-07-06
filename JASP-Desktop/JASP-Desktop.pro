@@ -130,9 +130,10 @@ SOURCES += main.cpp\
     activitylog.cpp \
     lrnamreply.cpp \
     lrnam.cpp \
-    analysisforms/r11tlearnform.cpp \
+    widgets/webview.cpp \
     widgets/button.cpp \
-    ribbons/ribbonr11tlearn.cpp
+	analysisforms/r11tlearnform.cpp \
+	ribbons/ribbonr11tlearn.cpp
 
 HEADERS  += \
 	analyses.h \
@@ -231,9 +232,10 @@ HEADERS  += \
     lrnamreply.h \
     lrnam.h \
     widgets/groupbox.h \
-    analysisforms/r11tlearnform.h \
     widgets/button.h \
-    ribbons/ribbonr11tlearn.h
+    widgets/webview.h \
+	analysisforms/r11tlearnform.h \
+	ribbons/ribbonr11tlearn.h
 
 FORMS    += \
     backstageform.ui \
@@ -408,7 +410,11 @@ OTHER_FILES += \
 	html/js/analysis.js \
     resources/icons/variable-nominal-text.svg \
     html/css/images/waiting.svg \
-    resources/icons/analysis-classical-sem.svg
+    resources/icons/analysis-classical-sem.svg \
+    html/js/jaspwidget.js \
+    html/js/backbone-min-1.1.2.js \
+    html/css/images/resizer.png \
+    html/css/images/arrowsmalldownbtn.png
 
 HELP_PATH = $${PWD}/../Docs/help
 LIBRARY_PATH = $${PWD}/../Library
