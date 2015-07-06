@@ -82,88 +82,102 @@ JASPWidgets.Encodings = {
 		xhr.send();
 	}
 }
+JASPWidgets.ExportProperties = {
 
-JASPWidgets.Export = {
-	type: {
-		CopyRaw: 0,
-		CopyHTML: 1,
-		SaveRaw: 2,
-		SaveHTML: 3,
+	format: {
+		raw: 0,
+		html: 1,
+	},
 
-		isHTML: function (value) {
-			return (value & 1) === 1;
-		},
+	process: {
+		copy: 0,
+		save: 1,
+	},
 
-		isRaw: function (value) {
-			return (value & 1) === 0;
-		},
+	imageFormat: {
+		temporary: 0,
+		resource: 1,
+		embedded: 2,
+	}
+}
 
-		isSave: function (value) {
-			return (value & 2) === 2;
-		},
+JASPWidgets.Exporter = {
 
-		isCopy: function (value) {
-			return (value & 2) === 0;
+	params: function () {
+		return {
+			format: JASPWidgets.ExportProperties.format.raw,
+			process: JASPWidgets.ExportProperties.process.copy,
+			imageFormat: JASPWidgets.ExportProperties.imageFormat.temporary,
 		}
 	},
 
-	begin: function (view, exportType, useNBSP) {
+	begin: function (exportObj, exportParams, useNBSP) {
 
 		if (useNBSP == undefined)
 			useNBSP = false;
 
-		if (exportType == undefined)
-			exportType = JASPWidgets.Export.type.CopyHTML;
+		if (exportParams == undefined)
+			exportParams = JASPWidgets.Exporter.params();
+		else if (exportParams.error)
+			return false;
 
-		var viewList = view.views;
+		
+		if (exportObj.views) {
+			var viewList = exportObj.views;
 
-		if (viewList !== undefined) {
-
-			if (viewList.length === 0)
-				view.exportComplete(exportType, "");
+			if (viewList.length === 0) {
+				exportObj.exportComplete(exportParams, "");
+			}
 			else {
-				view.buffer = [];
-				view.exportCounter = viewList.length;
+				exportObj.buffer = [];
+				exportObj.exportCounter = viewList.length;
 
 				for (var i = 0; i < viewList.length; i++) {
-					this._exportView(exportType, viewList[i], i, view, useNBSP);
+					this._exportView(exportParams, viewList[i], i, exportObj, useNBSP);
 				}
 			}
 		}
-		else {
-			view.exportBegin(exportType);
-		}
+		else if (exportObj.exportBegin)
+			exportObj.exportBegin(exportParams);
+		else
+			return false;
+		
+
+		return true;
 	},
 
-	_exportView: function (exportType, view, i, parent, useNBSP) {
+	_exportView: function (exportParams, view, i, parent, useNBSP) {
 		var self = parent;
 		var index = i;
 		var originalExportComplete = view.exportComplete;
-		view.exportComplete = function (exType, data) {
+		view.exportComplete = function (exParams, data) {
 			this.exportComplete = originalExportComplete;
 			self.buffer[index] = data;
 			self.exportCounter -= 1;
 			if (self.exportCounter === 0) {
-				var completeText = "<div " + self.getStyleAttr() + "'>\n";
-				completeText += "<div style='display:inline-block'>\n";
-				if (self.toolbar !== undefined) {
-					var headerStyle = JASPWidgets.Export.getHeaderStyles(self.toolbar.$title());
-					completeText += '<' + self.toolbar.titleTag + ' ' + headerStyle + '>' + self.toolbar.title + '</' + self.toolbar.titleTag + '>\n'
-				}
-				for (var j = 0; j < self.buffer.length; j++) {
-					if (self.buffer[j]) {
-						completeText += self.buffer[j];
-						if (useNBSP && j < self.buffer.length && (JASPWidgets.Export.isInlineStyle(self.views[j].$el) == false))
-							completeText += "&nbsp;";
+				var completeText = "";
+				if (!exportParams.error) {
+					completeText = "<div " + self.getStyleAttr() + "'>\n";
+					completeText += "<div style='display:inline-block'>\n";
+					if (self.toolbar !== undefined) {
+						var headerStyle = JASPWidgets.Exporter.getHeaderStyles(self.toolbar.$title());
+						completeText += '<' + self.toolbar.titleTag + ' ' + headerStyle + '>' + self.toolbar.title + '</' + self.toolbar.titleTag + '>\n'
 					}
+					for (var j = 0; j < self.buffer.length; j++) {
+						if (self.buffer[j]) {
+							completeText += self.buffer[j];
+							if (useNBSP && j < self.buffer.length && (JASPWidgets.Exporter.isInlineStyle(self.views[j].$el) == false))
+								completeText += "&nbsp;";
+						}
+					}
+					completeText += "</div>";
+					completeText += "</div>";		
 				}
-				completeText += "</div>";
-				completeText += "</div>";
-				self.exportComplete(exType, completeText);
+				self.exportComplete(exportParams, completeText);
 				self.buffer = [];
 			}
 		};
-		view.exportBegin(exportType);
+		view.exportBegin(exportParams);
 	},
 
 	getStyles: function (element, styleItems) {
@@ -187,15 +201,15 @@ JASPWidgets.Export = {
 	},
 
 	getHeaderStyles: function (element) {
-		return JASPWidgets.Export.getStyles(element, ["padding", "text-align", "margin-bottom", "margin-top", "margin-left", "margin-right", "display", "float", "vertical-align", "font-size"]);
+		return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin-bottom", "margin-top", "margin-left", "margin-right", "display", "float", "vertical-align", "font-size"]);
 	},
 
 	getTableStyles: function (element) {
-		return JASPWidgets.Export.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float"]);
+		return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float"]);
 	},
 
 	getTableContentStyles: function (element) {
-		return JASPWidgets.Export.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float", "font-size", "font-weight"]);
+		return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float", "font-size", "font-weight"]);
 	},
 
 	isInlineStyle: function (element) {
@@ -210,7 +224,7 @@ JASPWidgets.View = Backbone.View.extend({
 
 	getStyleAttr: function (styleItems) {
 
-		return JASPWidgets.Export.getStyles(this.$el, ["padding", "text-align", "margin-bottom", "margin-top", "margin-left", "margin-right", "display", "float"]);
+		return JASPWidgets.Exporter.getStyles(this.$el, ["padding", "text-align", "margin-bottom", "margin-top", "margin-left", "margin-right", "display", "float"]);
 
 	},
 
@@ -347,10 +361,11 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 			hasCopy: (parent.hasCopy === undefined || parent.hasCopy()) && parent.copyMenuClicked !== undefined,
 			hasCite: (parent.hasCitation === undefined || parent.hasCitation()) && parent.citeMenuClicked !== undefined,
+			hasAnnotate: (parent.hasAnnotate === undefined || parent.hasAnnotate()) && parent.annotateMenuClicked !== undefined,
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasAnnotate;
 	},
 
 	selectionElement: function() {
@@ -442,15 +457,23 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 		this.views = [];
 	},
 
-	exportBegin: function (exportType, views) {
+	exportBegin: function (exportParams) {
+		if (exportParams == undefined)
+			exportParams = JASPWidgets.Exporter.params();
+		else if (exportParams.error)
+			return false;
+
 		if (this.views.length > 0)
-			JASPWidgets.Export.begin(this, exportType);
+			JASPWidgets.Exporter.begin(this, exportParams);
 		else
-			this.exportComplete(exportType, "")
+			this.exportComplete(exportParams, "");
+
+		return true;
 	},
 
-	exportComplete: function (exportType, html) {
-		pushHTMLToClipboard(html);
+	exportComplete: function (exportParams, html) {
+		if (!exportParams.error)
+			pushHTMLToClipboard(html);
 	}
 });
 

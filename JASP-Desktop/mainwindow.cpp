@@ -890,9 +890,8 @@ void MainWindow::saveSelected(const QString &filename)
 {
 	if (_analyses->count() > 0)
 	{
-		QWebElement element =  ui->webViewResults->page()->mainFrame()->documentElement();
-		QString qHTML = element.toOuterXml();
-		_package->analysesHTML = fq(qHTML);
+		_package->analysesHTML = "";
+		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%PREVIEW%');");
 
 		Json::Value analysesData = Json::arrayValue;
 		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
@@ -907,6 +906,8 @@ void MainWindow::saveSelected(const QString &filename)
 		}
 
 		_package->analysesData = analysesData;
+
+
 		_package->hasAnalyses = true;
 	}
 
@@ -916,14 +917,21 @@ void MainWindow::saveSelected(const QString &filename)
 
 void MainWindow::saveTextToFileHandler(const QString &filename, const QString &data)
 {
-	QFile file(filename);
-	file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-	QTextStream stream(&file);
-	stream.setCodec("UTF-8");
+	if (filename == "%PREVIEW%")
+	{
+		_package->analysesHTML = fq(data);
+	}
+	else
+	{
+		QFile file(filename);
+		file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+		QTextStream stream(&file);
+		stream.setCodec("UTF-8");
 
-	stream << data;
-	stream.flush();
-	file.close();
+		stream << data;
+		stream.flush();
+		file.close();
+	}
 }
 
 void MainWindow::exportSelected(const QString &filename)
@@ -1243,8 +1251,10 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 
 	_analysisMenu->clear();
 
+	QString objName = tq(menuOptions["objectName"].asString());
+
 	if (menuOptions["hasCopy"].asBool())
-		_analysisMenu->addAction(_copyIcon, "Copy " + tq(menuOptions["objectName"].asString()), this, SLOT(copySelected()));
+		_analysisMenu->addAction(_copyIcon, "Copy " + objName, this, SLOT(copySelected()));
 
 	if (menuOptions["hasCite"].asBool())
 	{

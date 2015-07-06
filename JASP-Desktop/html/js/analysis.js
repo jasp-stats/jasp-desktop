@@ -35,27 +35,41 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.toolbar.setVisibility(false);
 	},
 
-	copyMenuClicked: function () {
-		
-		this.exportBegin(JASPWidgets.Export.type.CopyHTML, this.views);
+	annotateMenuClicked: function () {
 
 		return true;
+	},
+
+	copyMenuClicked: function () {
+		
+		return this.exportBegin({
+			format: JASPWidgets.ExportProperties.format.html,
+			process: JASPWidgets.ExportProperties.process.copy,
+			imageFormat: JASPWidgets.ExportProperties.imageFormat.temporary
+		}, this.views);
 	},
 
 	exportMenuClicked: function () {
 
-		this.exportBegin(JASPWidgets.Export.type.SaveHTML, this.views);
-
-		return true;
+		return this.exportBegin({
+			format: JASPWidgets.ExportProperties.format.html,
+			process: JASPWidgets.ExportProperties.process.save,
+			imageFormat: JASPWidgets.ExportProperties.imageFormat.embedded
+		}, this.views);
 	},
 
-	exportBegin: function (exportType, views) {
-
-		JASPWidgets.Export.begin(this, exportType, true);
+	exportBegin: function (exportParams) {
+		if (exportParams == undefined)
+			exportParams = JASPWidgets.Exporter.params();
+		else if (exportParams.error)
+			return false;
+		
+		return JASPWidgets.Exporter.begin(this, exportParams, true);
 	},
 
-	exportComplete: function (exportType, html) {
-		pushHTMLToClipboard(html);
+	exportComplete: function (exportParams, html) {
+		if (!exportParams.error)
+			pushHTMLToClipboard(html);
 	},
 
 	menuName: "Analysis",

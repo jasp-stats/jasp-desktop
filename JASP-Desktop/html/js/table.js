@@ -927,7 +927,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 		if (tag === "td" || tag === "th") {
 
-			style = JASPWidgets.Export.getTableContentStyles($elObj);
+			style = JASPWidgets.Exporter.getTableContentStyles($elObj);
 
 			if ($elObj.prop("rowspan") && $elObj.prop("rowspan") != 1)
 				attrs += 'rowspan="' + $elObj.prop("rowspan") + '" '
@@ -935,10 +935,10 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 				attrs += 'colspan="' + $elObj.prop("colspan") + '" '
 		}
 		else if (tag === "table") {
-			style = JASPWidgets.Export.getTableStyles($elObj);
+			style = JASPWidgets.Exporter.getTableStyles($elObj);
 		}
 		else if (tag === "span" || tag === "h1" || tag === "h2" || tag === "h3") {
-			style = JASPWidgets.Export.getHeaderStyles($elObj);
+			style = JASPWidgets.Exporter.getHeaderStyles($elObj);
 		}
 
 
@@ -1005,20 +1005,29 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		return text;
 	},
 
-	exportBegin: function (exportType) {
+	exportBegin: function (exportParams) {
 
-		if (exportType == undefined)
-			exportType = JASPWidgets.Export.type.CopyHTML;
+		if (exportParams == undefined)
+			exportParams = JASPWidgets.Exporter.params();
+		else if (exportParams.error)
+			return false;
 
-		this.exportComplete(exportType, this.exportHTML());
+		this.exportComplete(exportParams, this.exportHTML());
+
+		return true;
 	},
 
-	exportComplete: function (exportType, html) {
-		pushHTMLToClipboard(html);
+	exportComplete: function (exportParams, html) {
+		if (!exportParams.error)
+			pushHTMLToClipboard(html);
 	},
 
 	copyMenuClicked: function () {
-		this.exportBegin(JASPWidgets.Export.type.CopyHTML);
+		this.exportBegin({
+			format: JASPWidgets.ExportProperties.format.html,
+			process: JASPWidgets.ExportProperties.process.copy,
+			imageFormat: JASPWidgets.ExportProperties.imageFormat.temporary,
+		});
 		return true;
 	},
 

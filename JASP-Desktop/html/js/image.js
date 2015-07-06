@@ -129,61 +129,90 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		return this;
 	},
 
-	exportBegin: function (exportType) {
+	exportBegin: function (exportParams) {
 
-		if (exportType == undefined)
-			exportType = JASPWidgets.Export.type.CopyHTML;
+		if (exportParams == undefined)
+			exportParams = JASPWidgets.Exporter.params();
+		else if (exportParams.error)
+			return false;
 
-		var data = this.model.get("data");
-		JASPWidgets.Encodings.base64Request(data, function (base64) {
+		if (exportParams.format === JASPWidgets.ExportProperties.format.raw && exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.resource) {
+			exportParams.error = true;
+		}
+		else {
 
-			if (JASPWidgets.Export.type.isHTML(exportType)) {
+			var data = this.model.get("data");
 
-				var style = this.getStyleAttr();
-
-				var title = this.model.get("title");
+			if (exportParams.format === JASPWidgets.ExportProperties.format.html && exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.resource) {
 				var width = this.model.get("width");
 				var height = this.model.get("height");
-				var text = '<div ' + style + '>\n';
+				var html = this._addHTMLWrapper('<div  style="background-image : url(\'' + data + '\'); width:' + width + 'px; height:' + height + 'px;"></div>');
 
-
-				var headerStyle = JASPWidgets.Export.getHeaderStyles(this.toolbar.$title());
-				text += '<' + this.toolbar.titleTag + ' ' + headerStyle + '>' + title + '</' + this.toolbar.titleTag + '>\n'
-
-				if (JASPWidgets.Export.type.isCopy(exportType)) {
-					saveImageBegin(data, base64, function (fullpath) {
-
-						text += '<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />\n';
-						text += '</div>\n';
-
-						this.exportComplete(exportType, text);
-					}, this);
-				}
-				else if (JASPWidgets.Export.type.isSave(exportType))
-				{
-					text += '<div style="background-image : url(data:image/png;base64,' + base64 + '); width:' + width + 'px; height:' + height + 'px;"></div>'
-					//text += '<img src="data:image/png;base64,' + base64 + '" style="width:' + width + 'px; height:' + height + 'px;" />\n';
-					text += '</div>\n';
-
-					this.exportComplete(exportType, text);
-				}
+				this.exportComplete(exportParams, html);
 			}
-			else if (JASPWidgets.Export.type.isRaw(exportType))
-			{
-				this.exportComplete(exportType, base64);
+			else {
+
+				JASPWidgets.Encodings.base64Request(data, function (base64) {
+
+					if (exportParams.format === JASPWidgets.ExportProperties.format.html) {
+
+						var width = this.model.get("width");
+						var height = this.model.get("height");
+
+						if (exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.temporary) {
+							saveImageBegin(data, base64, function (fullpath) {
+
+								var html = this._addHTMLWrapper('<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />\n');
+								this.exportComplete(exportParams, html);
+							}, this);
+						}
+						else if (exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.embedded) {
+							var html = this._addHTMLWrapper('<div style="background-image : url(data:image/png;base64,' + base64 + '); width:' + width + 'px; height:' + height + 'px;"></div>');
+							this.exportComplete(exportParams, html);
+						}
+					}
+					else if (exportParams.format === JASPWidgets.ExportProperties.format.raw) {
+						this.exportComplete(exportParams, base64);
+					}
+					else
+						exportParams.error = true;
+
+				}, this);
 			}
-		}, this);
+		}
+
+		return true;
 	},
 
-	exportComplete: function (exportType, data) {
-		if (exportType == JASPWidgets.Export.type.CopyHTML)
-			pushHTMLToClipboard(data);
-		else if (exportType == JASPWidgets.Export.type.CopyRaw)
-			pushImageToClipboard(data);
+	_addHTMLWrapper: function(innerHTML)
+	{
+		var title = this.model.get("title");
+		var style = this.getStyleAttr();
+		var text = '<div ' + style + '>\n';
+
+		var headerStyle = JASPWidgets.Exporter.getHeaderStyles(this.toolbar.$title());
+		text += '<' + this.toolbar.titleTag + ' ' + headerStyle + '>' + title + '</' + this.toolbar.titleTag + '>\n'
+		text += innerHTML;
+		text += '</div>\n';
+
+		return text;
+	},
+
+	exportComplete: function (exportParams, data) {
+		if (!exportParams.error && exportParams.process == JASPWidgets.ExportProperties.process.copy) {
+			if (exportParams.format == JASPWidgets.ExportProperties.format.html)
+				pushHTMLToClipboard(data);
+			else if (exportParams.format == JASPWidgets.ExportProperties.format.raw)
+				pushImageToClipboard(data);
+		}
 	},
 
 	copyMenuClicked: function () {
-		this.exportBegin(JASPWidgets.Export.type.CopyRaw);
+		this.exportBegin({
+			format: JASPWidgets.ExportProperties.format.raw,
+			process: JASPWidgets.ExportProperties.process.copy,
+			imageFormat: JASPWidgets.ExportProperties.imageFormat.temporary
+		});
 		return true;
 	},
 

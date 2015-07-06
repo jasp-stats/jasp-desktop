@@ -70,6 +70,13 @@ $(document).ready(function () {
 		}
 	}
 
+	window.annotateMenuClicked = function () {
+		if (this.menuObject.annotateMenuClicked | this.menuObject.annotateMenuClicked()) {
+			this.menuObject.toolbar.completeEvent("Annotate...");
+			this.menuObject = null;
+		}
+	}
+
 	window.menuCancelled = function () {
 		if (this.menuObject !== undefined && this.menuObject !== null) {
 			this.menuObject.toolbar.cancelEvent();
@@ -80,15 +87,29 @@ $(document).ready(function () {
 	window.exportHTML = function (filename) {
 		var exportObject = {
 			views: analysesViews,
-			exportComplete: function (exportType, html) {
+			exportComplete: function (exportParams, html) {
+				if (exportParams.error) {
 
-				jasp.saveTextToFile(filename, wrapHTML(html));
+				}
+
+				if (exportParams.process === JASPWidgets.ExportProperties.process.save)
+					jasp.saveTextToFile(filename, wrapHTML(html));
 			},
 			getStyleAttr: function () {
 				return "style='display: block;'";
 			}
 		};
-		JASPWidgets.Export.begin(exportObject, JASPWidgets.Export.type.SaveHTML, true)
+
+		var exportParams = {
+			format: JASPWidgets.ExportProperties.format.html,
+			process: JASPWidgets.ExportProperties.process.save,
+			imageFormat: JASPWidgets.ExportProperties.imageFormat.embedded
+		};
+		if (filename === "%PREVIEW%") {
+			exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.resource;
+		}
+
+		JASPWidgets.Exporter.begin(exportObject, exportParams, true)
 	}
 
 	window.scrollIntoView = function (item) {
@@ -280,7 +301,7 @@ var wrapHTML = function (html) {
 	completehtml += "		<title>JASP</title>"
 	completehtml += "	</head>\n"
 
-	var styles = JASPWidgets.Export.getStyles($("body"), ["font-family", "display", "font-size", ]);
+	var styles = JASPWidgets.Exporter.getStyles($("body"), ["font-family", "display", "font-size", ]);
 
 	completehtml += "	<body " + styles + ">\n";
 	completehtml += html;
