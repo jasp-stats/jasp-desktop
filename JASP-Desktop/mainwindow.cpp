@@ -54,6 +54,7 @@
 #include "appdirs.h"
 #include "tempfiles.h"
 #include "processinfo.h"
+#include "appinfo.h"
 
 #include "lrnam.h"
 #include "activitylog.h"
@@ -810,6 +811,10 @@ void MainWindow::resultsPageLoaded(bool success)
 
 		if (!_openOnLoadFilename.isEmpty())
 			dataSetSelected(_openOnLoadFilename);
+
+		QString version = tq(AppInfo::version.asString(false, true));
+		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
+
 		_resultsViewLoaded = true;
 	}
 }

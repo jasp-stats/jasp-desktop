@@ -42,6 +42,10 @@ $(document).ready(function () {
 		}
 	}
 
+	window.setAppVersion = function (version) {
+		$(".app_version").text(version);
+	}
+
 	window.showInstructions = function () {
 
 		showInstructions = true
