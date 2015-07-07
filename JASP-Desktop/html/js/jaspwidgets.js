@@ -82,22 +82,23 @@ JASPWidgets.Encodings = {
 		xhr.send();
 	}
 }
+
 JASPWidgets.ExportProperties = {
 
 	format: {
 		raw: 0,
-		html: 1,
+		html: 1
 	},
 
 	process: {
 		copy: 0,
-		save: 1,
+		save: 1
 	},
 
 	imageFormat: {
 		temporary: 0,
 		resource: 1,
-		embedded: 2,
+		embedded: 2
 	}
 }
 
@@ -160,8 +161,7 @@ JASPWidgets.Exporter = {
 					completeText = "<div " + self.getStyleAttr() + "'>\n";
 					completeText += "<div style='display:inline-block'>\n";
 					if (self.toolbar !== undefined) {
-						var headerStyle = JASPWidgets.Exporter.getHeaderStyles(self.toolbar.$title());
-						completeText += '<' + self.toolbar.titleTag + ' ' + headerStyle + '>' + self.toolbar.title + '</' + self.toolbar.titleTag + '>\n'
+						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar)
 					}
 					for (var j = 0; j < self.buffer.length; j++) {
 						if (self.buffer[j]) {
@@ -216,8 +216,17 @@ JASPWidgets.Exporter = {
 		var css = element.css("display");
 
 		return css === "inline" || css === "inline-block";
-	}
+	},
 
+	getTitleHtml: function (toolbar) {
+		var html = toolbar.title === undefined ? "" : toolbar.title;
+		if (toolbar.titleTag !== undefined) {
+			var headerStyles = " " + JASPWidgets.Exporter.getHeaderStyles(toolbar.$title());
+			html = '<' + toolbar.titleTag + headerStyles + '>' + toolbar.title + '</' + toolbar.titleTag + '>';
+		}
+
+		return '<div style="display: inline-block;">' + html + '</div>';
+	},
 };
 
 JASPWidgets.View = Backbone.View.extend({
@@ -247,14 +256,6 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.fixed = false;
 		this.visible = false;
 		this.selected = false;
-	},
-	
-	titleHTML: function () {
-		var html = this.title;
-		if (this.titleTag !== undefined)
-			html = '<' + this.titleTag + '>' + this.title + '</' + this.titleTag + '>';
-
-		return html;
 	},
 
 	$title: function() {

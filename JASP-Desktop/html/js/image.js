@@ -190,8 +190,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		var style = this.getStyleAttr();
 		var text = '<div ' + style + '>\n';
 
-		var headerStyle = JASPWidgets.Exporter.getHeaderStyles(this.toolbar.$title());
-		text += '<' + this.toolbar.titleTag + ' ' + headerStyle + '>' + title + '</' + this.toolbar.titleTag + '>\n'
+		text += JASPWidgets.Exporter.getTitleHtml(this.toolbar);
 		text += innerHTML;
 		text += '</div>\n';
 

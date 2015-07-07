@@ -27,18 +27,33 @@ Version::Version(std::string versionString)
 
 	int v1 = sscanf(versionString.c_str(), "%hhu.%hhu.%hhu.%hhu %7s %hhu", &massive, &major, &minor, &revision, buildString, &buildIndex);
 	bool hasMassive = v1 >= 4;
+	bool hasRevision = true;
 
-	if (!hasMassive)
+	if ( ! hasMassive)
 	{
 		massive = 0;
 		v1 = sscanf(versionString.c_str(), "%hhu.%hhu.%hhu %7s %hhu", &major, &minor, &revision, buildString, &buildIndex);
+		hasRevision = v1 >= 3;
+		if ( ! hasRevision)
+		{
+			revision = 0;
+			v1 = sscanf(versionString.c_str(), "%hhu.%hhu %7s %hhu", &major, &minor, buildString, &buildIndex);
+		}
 	}
+
+
+
 
 	bool error = v1 <= 0;
 	if (! error)
 	{
 		bool hasBuild = hasMassive ? v1 > 4 : v1 > 3;
 		bool hasBuildIndex = hasMassive ? v1 == 6 : v1 == 5;
+		if ( ! hasRevision)
+		{
+			hasBuild = v1 > 2;
+			hasBuildIndex = v1 == 4;
+		}
 
 		if (hasBuild)
 		{
@@ -124,8 +139,9 @@ string Version::asString(bool includeMassive, bool includeRelease) const
 
 	stream << (int)major << ".";
 	//stream << std::setfill('0') << std::setw(2) << std::right;
-	stream << (int)minor << ".";
-	stream << (int)revision;
+	stream << (int)minor;
+	if (revision != 0)
+		stream << "." << (int)revision;
 
 	if (build == 255 && includeRelease)
 		stream << " Release";
