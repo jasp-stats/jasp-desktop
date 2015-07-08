@@ -104,7 +104,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 			html += 'background-size : 100% 100% ;'
 		}
 
-		html += '"></div>'
+		html += '">'
 
 		if (error && error.errorMessage) {
 
@@ -115,6 +115,8 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 			html += '</div>'
 			html += '</div>'
 		}
+
+		html += '</div>'
 
 		html += '<div class="jasp-image-loader"></div>'
 
