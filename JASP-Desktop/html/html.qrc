@@ -41,5 +41,6 @@
         <file>js/jaspwidgets.js</file>
         <file>css/images/arrowsmalldownbtn.png</file>
         <file>css/images/resizer.png</file>
+        <file>css/images/menu-indicator.svg</file>
     </qresource>
 </RCC>

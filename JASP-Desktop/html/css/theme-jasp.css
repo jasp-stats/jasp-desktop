@@ -227,30 +227,24 @@ svg > text
 	display: inline-block ;
 }
 
-.jasp-analysis.unselected .jasp-analysis-inner:not(.jasp-menu-selected)
-{
+.jasp-analysis.unselected .jasp-analysis-inner:not(.jasp-menu-selected) {
+
 	background-color: #E8E8E8 ;
 }
 
-.jasp-analysis.selected .jasp-analysis-inner:not(.jasp-menu-selected)
-{
+.jasp-analysis.selected .jasp-analysis-inner:not(.jasp-menu-selected) {
+
 	background-color: white ;
 }
 
-div.toolbar
-{
+div.toolbar {
+
 	display: inline-block ;
 	position: relative;
 }
 
+div.status {
 
-div.toolbar-button:active {
-
-	border: 1px solid silver ;
-}
-
-div.status
-{
 	width: 16px ;
 	height: 16px ;
 	background-size : 100% ;
@@ -350,21 +344,13 @@ td.squash-left
 	vertical-align: middle;
 }
 
-div.toolbar-button
-{
-	width: 16px ;
-	height: 16px ;
-	background-size : 100% ;
-	cursor : pointer ;
-	display : inline-block;
-	vertical-align:middle;
-	
-	margin-left: 6px ;
-	border: 1px solid transparent ;
-}
-
 .jasp-menu {
-    background: top left no-repeat url(images/arrowsmalldownbtn.png); 
+
+	background: center no-repeat url(images/menu-indicator.svg);
+	background-size: 70% ;
+	width:  16px ;
+	height: 16px ;
+	margin-left: 4px ;
 }
 
 .jasp-toolbar {
