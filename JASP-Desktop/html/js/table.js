@@ -940,6 +940,18 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		else if (tag === "span" || tag === "h1" || tag === "h2" || tag === "h3") {
 			style = JASPWidgets.Exporter.getHeaderStyles($elObj);
 		}
+		else if ($elObj.is('.error-message-positioner')) {
+			style = JASPWidgets.Exporter.getErrorStyles($elObj, 'error-message-positioner');
+		}
+		else if ($elObj.is('.error-message-box')) {
+			style = JASPWidgets.Exporter.getErrorStyles($elObj, 'error-message-box');
+		}
+		else if ($elObj.is('.error-message-symbol')) {
+			style = JASPWidgets.Exporter.getErrorStyles($elObj, 'error-message-symbol');
+		}
+		else if ($elObj.is('.error-message-message')) {
+			style = JASPWidgets.Exporter.getErrorStyles($elObj, 'error-message-message');
+		}
 
 
 		if (style)
@@ -950,7 +962,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 	exportHTML: function (element, tabs) {
 		if (element == null)
-			element = this.el;
+			element = this.$el;
 
 		tabs = tabs || ""
 

@@ -104,6 +104,7 @@ private slots:
 	void showAnalysesMenuHandler(QString options);
 	void copySelected();
 	void citeSelected();
+	void menuHidding();
 
 	void tabChanged(int index);
 	void helpToggled(bool on);

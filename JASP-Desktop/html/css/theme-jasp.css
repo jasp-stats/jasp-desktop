@@ -227,12 +227,12 @@ svg > text
 	display: inline-block ;
 }
 
-.jasp-analysis.unselected .jasp-analysis-inner
+.jasp-analysis.unselected .jasp-analysis-inner:not(.jasp-menu-selected)
 {
 	background-color: #E8E8E8 ;
 }
 
-.jasp-analysis.selected .jasp-analysis-inner
+.jasp-analysis.selected .jasp-analysis-inner:not(.jasp-menu-selected)
 {
 	background-color: white ;
 }

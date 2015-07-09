@@ -82,22 +82,23 @@ JASPWidgets.Encodings = {
 		xhr.send();
 	}
 }
+
 JASPWidgets.ExportProperties = {
 
 	format: {
 		raw: 0,
-		html: 1,
+		html: 1
 	},
 
 	process: {
 		copy: 0,
-		save: 1,
+		save: 1
 	},
 
 	imageFormat: {
 		temporary: 0,
 		resource: 1,
-		embedded: 2,
+		embedded: 2
 	}
 }
 
@@ -111,7 +112,10 @@ JASPWidgets.Exporter = {
 		}
 	},
 
-	begin: function (exportObj, exportParams, useNBSP) {
+	begin: function (exportObj, exportParams, useNBSP, innerStyle) {
+
+		if (innerStyle === undefined)
+			innerStyle = "";
 
 		if (useNBSP == undefined)
 			useNBSP = false;
@@ -133,7 +137,7 @@ JASPWidgets.Exporter = {
 				exportObj.exportCounter = viewList.length;
 
 				for (var i = 0; i < viewList.length; i++) {
-					this._exportView(exportParams, viewList[i], i, exportObj, useNBSP);
+					this._exportView(exportParams, viewList[i], i, exportObj, useNBSP, innerStyle);
 				}
 			}
 		}
@@ -146,7 +150,7 @@ JASPWidgets.Exporter = {
 		return true;
 	},
 
-	_exportView: function (exportParams, view, i, parent, useNBSP) {
+	_exportView: function (exportParams, view, i, parent, useNBSP, innerStyle) {
 		var self = parent;
 		var index = i;
 		var originalExportComplete = view.exportComplete;
@@ -158,10 +162,9 @@ JASPWidgets.Exporter = {
 				var completeText = "";
 				if (!exportParams.error) {
 					completeText = "<div " + self.getStyleAttr() + "'>\n";
-					completeText += "<div style='display:inline-block'>\n";
+					completeText += "<div style='display:inline-block; " + innerStyle + "'>\n";
 					if (self.toolbar !== undefined) {
-						var headerStyle = JASPWidgets.Exporter.getHeaderStyles(self.toolbar.$title());
-						completeText += '<' + self.toolbar.titleTag + ' ' + headerStyle + '>' + self.toolbar.title + '</' + self.toolbar.titleTag + '>\n'
+						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar)
 					}
 					for (var j = 0; j < self.buffer.length; j++) {
 						if (self.buffer[j]) {
@@ -212,19 +215,55 @@ JASPWidgets.Exporter = {
 		return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float", "font-size", "font-weight"]);
 	},
 
+	getErrorStyles: function (element, component) {
+		if (component === "error-message-positioner")
+			return JASPWidgets.Exporter.getStyles(element, ["padding", "margin", "display", "float", "height", "overflow", "position", "top", "z-index"]);
+		else if (component === "error-message-box")
+			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "display", "float", "font-size", "border-radius", "min-width", "max-width", "white-space"]);
+		else if (component === "error-message-symbol ")
+			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "display", "float"]);
+		else
+			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "text-align", "display", "float", "vertical-align", "font-size"]);
+	},
+
+	exportErrorWindow: function (element, error) {
+		var text = "";
+
+		if (error && error.errorMessage) {
+
+			text += '<div ' + JASPWidgets.Exporter.getErrorStyles(element, 'error-message-positioner') + '>'
+			text += '<div ' + JASPWidgets.Exporter.getErrorStyles(element.find('.error-message-box'), 'error-message-box') + '>'
+			text += '<span ' + JASPWidgets.Exporter.getErrorStyles(element.find('.error-message-symbol'), 'error-message-symbol') + '></span>'
+			text += '<div ' + JASPWidgets.Exporter.getErrorStyles(element.find('.error-message-message'), 'error-message-message') + '>' + error.errorMessage + '</div>'
+			text += '</div>'
+			text += '</div>'
+		}
+
+		return text;
+	},
+
 	isInlineStyle: function (element) {
 		var css = element.css("display");
 
 		return css === "inline" || css === "inline-block";
-	}
+	},
 
+	getTitleHtml: function (toolbar) {
+		var html = toolbar.title === undefined ? "" : toolbar.title;
+		if (toolbar.titleTag !== undefined) {
+			var headerStyles = " " + JASPWidgets.Exporter.getHeaderStyles(toolbar.$title());
+			html = '<' + toolbar.titleTag + headerStyles + '>' + toolbar.title + '</' + toolbar.titleTag + '>';
+		}
+
+		return '<div style="display: inline-block;">' + html + '</div>';
+	},
 };
 
 JASPWidgets.View = Backbone.View.extend({
 
 	getStyleAttr: function (styleItems) {
 
-		return JASPWidgets.Exporter.getStyles(this.$el, ["padding", "text-align", "margin-bottom", "margin-top", "margin-left", "margin-right", "display", "float"]);
+		return JASPWidgets.Exporter.getStyles(this.$el, ["padding", "text-align", "margin-bottom", "margin-top", "margin-left", "margin-right", "display", "float", "position"]);
 
 	},
 
@@ -247,14 +286,6 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.fixed = false;
 		this.visible = false;
 		this.selected = false;
-	},
-	
-	titleHTML: function () {
-		var html = this.title;
-		if (this.titleTag !== undefined)
-			html = '<' + this.titleTag + '>' + this.title + '</' + this.titleTag + '>';
-
-		return html;
 	},
 
 	$title: function() {
@@ -283,12 +314,14 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 				items: "*",
 				disabled: true,
 				show: {
-					duration: 100
+					duration: 250,
+					effect: "fade",
+					delay: 250
 				},
 				close: function () {
 					window.setTimeout(function () {
 						$self.tooltip("option", "disabled", true)
-					}, 500)
+					}, 2000)
 				},
 				position: {
 					my: "left top",
@@ -301,7 +334,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	},
 
 	events: {
-		'mousedown ': '_mouseDown',
+		'mousedown': '_mouseDown',
 	},
 
 	_mouseDownGeneral: function (e) {
@@ -384,20 +417,20 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		}
 	},
 
-	completeEvent: function (msg) {
-		this.setFixedness(0);
+	displayMessage: function (msg) {
+		if (msg !== undefined) {
+			var $self = this.$el.find(">:first-child");
+			$self.tooltip("option", "content", msg)
+			$self.tooltip("option", "disabled", false)
+			$self.tooltip("open")
 
-		var $self = this.$el.find(">:first-child");
-		$self.tooltip("option", "content", msg)
-		$self.tooltip("option", "disabled", false)
-		$self.tooltip("open")
-
-		window.setTimeout(function () {
-			$self.tooltip("close")
-		}, 800)
+			window.setTimeout(function () {
+				$self.tooltip("close")
+			}, 2000)
+		}
 	},
 
-	cancelEvent: function () {
+	completeEvent: function () {
 		this.setFixedness(0);
 	}
 })

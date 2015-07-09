@@ -104,7 +104,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 			html += 'background-size : 100% 100% ;'
 		}
 
-		html += '"></div>'
+		html += '">'
 
 		if (error && error.errorMessage) {
 
@@ -115,6 +115,8 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 			html += '</div>'
 			html += '</div>'
 		}
+
+		html += '</div>'
 
 		html += '<div class="jasp-image-loader"></div>'
 
@@ -186,13 +188,14 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 	_addHTMLWrapper: function(innerHTML)
 	{
+		var error = this.model.get("error");
 		var title = this.model.get("title");
 		var style = this.getStyleAttr();
 		var text = '<div ' + style + '>\n';
 
-		var headerStyle = JASPWidgets.Exporter.getHeaderStyles(this.toolbar.$title());
-		text += '<' + this.toolbar.titleTag + ' ' + headerStyle + '>' + title + '</' + this.toolbar.titleTag + '>\n'
+		text += JASPWidgets.Exporter.getTitleHtml(this.toolbar);
 		text += innerHTML;
+		text += JASPWidgets.Exporter.exportErrorWindow(this.$el.find('.error-message-positioner'), error);
 		text += '</div>\n';
 
 		return text;
