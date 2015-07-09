@@ -188,12 +188,14 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 	_addHTMLWrapper: function(innerHTML)
 	{
+		var error = this.model.get("error");
 		var title = this.model.get("title");
 		var style = this.getStyleAttr();
 		var text = '<div ' + style + '>\n';
 
 		text += JASPWidgets.Exporter.getTitleHtml(this.toolbar);
 		text += innerHTML;
+		text += JASPWidgets.Exporter.exportErrorWindow(this.$el.find('.error-message-positioner'), error);
 		text += '</div>\n';
 
 		return text;

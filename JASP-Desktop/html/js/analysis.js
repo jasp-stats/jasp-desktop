@@ -19,6 +19,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	initialize: function () {
 
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
+		var self = this;
+		this.toolbar.selectionElement = function () {
+			return self.$el.find('.jasp-analysis-inner');
+		};
+
 		this.toolbar.setParent(this);
 	},
 

@@ -190,6 +190,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
 
 	_analysisMenu = new QMenu(this);
+	connect(_analysisMenu, SIGNAL(aboutToHide()), this, SLOT(menuHidding()));
 
 	updateUIFromOptions();
 
@@ -942,44 +943,6 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 void MainWindow::exportSelected(const QString &filename)
 {
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + filename + "');");
-
-
-
-
-	/*QWebElement element = ui->webViewResults->page()->mainFrame()->documentElement().clone();
-
-	QWebElementCollection nodes;
-
-	nodes = element.findAll("html > head > script, html > head > link, #spacer, #intro, #templates");
-	foreach (QWebElement node, nodes)
-		node.removeFromDocument();
-
-	nodes = element.findAll(".selected, .unselected");
-	foreach (QWebElement node, nodes)
-	{
-		node.removeClass("selected");
-		node.removeClass("unselected");
-	}
-
-	QWebElement head = element.findFirst("html > head");
-
-	QFile ss(":/core/css/theme-jasp.css");
-	ss.open(QIODevice::ReadOnly);
-	QByteArray bytes = ss.readAll();
-	QString css = QString::fromUtf8(bytes);
-
-	head.setInnerXml(QString("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><title>JASP Results</title><style type=\"text/css\">") + css + QString("</style>"));
-
-	QFile file(filename);
-	file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-	QTextStream stream(&file);
-	stream.setCodec("UTF-8");
-
-	stream << element.toOuterXml();
-	stream.flush();
-	file.close();
-
-	ui->tabBar->setCurrentIndex(1);*/
 }
 
 void MainWindow::adjustOptionsPanelWidth()
@@ -1292,13 +1255,15 @@ void MainWindow::citeSelected()
 
 }
 
+void MainWindow::menuHidding()
+{
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.analysisMenuHidden();");
+}
+
 void MainWindow::scrollValueChangedHandle()
 {
 	if ( ! _analysisMenu->isHidden())
-	{
 		_analysisMenu->hide();
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.menuCancelled();");
-	}
 }
 
 void MainWindow::analysisChangedDownstreamHandler(int id, QString options)

@@ -15,7 +15,7 @@ $(document).ready(function () {
 		$("body").addClass("windows")
 
 	var analysesViews = []
-	var menuObject = null;
+	//var menuObject = null;
 	var selectedAnalysisId = -1;
 	var selectedAnalysis = null
 
@@ -61,30 +61,29 @@ $(document).ready(function () {
 	}
 
 	window.copyMenuClicked = function () {
-		if (this.menuObject.copyMenuClicked | this.menuObject.copyMenuClicked()) {
-			this.menuObject.toolbar.completeEvent("Copied to clipboard");
-			this.menuObject = null;
-		}
+		if (window.menuObject.copyMenuClicked | window.menuObject.copyMenuClicked())
+			window.menuObject.toolbar.displayMessage("Copied to clipboard");
+
+		window.menuObject = null;
 	}
 
 	window.citeMenuClicked = function () {
-		if (this.menuObject.citeMenuClicked | this.menuObject.citeMenuClicked()) {
-			this.menuObject.toolbar.completeEvent("Citation copied to clipboard");
-			this.menuObject = null;
-		}
+		if (window.menuObject.citeMenuClicked | window.menuObject.citeMenuClicked())
+			window.menuObject.toolbar.displayMessage("Citation copied to clipboard");
+
+		window.menuObject = null;
 	}
 
-	window.annotateMenuClicked = function () {
-		if (this.menuObject.annotateMenuClicked | this.menuObject.annotateMenuClicked()) {
-			this.menuObject.toolbar.completeEvent("Annotate...");
-			this.menuObject = null;
-		}
+	window.commentaryMenuClicked = function (commentaryType) {
+		if (window.menuObject.commentaryMenuClicked | window.menuObject.commentaryMenuClicked(commentaryType))
+			window.menuObject.toolbar.displayMessage();
+
+		window.menuObject = null;
 	}
 
-	window.menuCancelled = function () {
-		if (this.menuObject !== undefined && this.menuObject !== null) {
-			this.menuObject.toolbar.cancelEvent();
-			this.menuObject = null;
+	window.analysisMenuHidden = function () {
+		if (window.menuObject !== undefined && window.menuObject !== null) {
+			window.menuObject.toolbar.completeEvent();
 		}
 	}
 
@@ -113,7 +112,7 @@ $(document).ready(function () {
 			exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.resource;
 		}
 
-		JASPWidgets.Exporter.begin(exportObject, exportParams, true)
+		JASPWidgets.Exporter.begin(exportObject, exportParams, true, "margin: .7em; padding: 1em;")
 	}
 
 	window.scrollIntoView = function (item) {
@@ -187,7 +186,7 @@ $(document).ready(function () {
 
 	var selectedHandler = function (event) {
 
-		if ($(event.target).is(".toolbar") || $(event.target).is(".toolbar > *"))
+		if ($(event.target).is(".jasp-toolbar") || $(event.target).is(".jasp-toolbar > *"))
 			return
 
 		var id = $(event.currentTarget).attr("id")
@@ -275,11 +274,11 @@ $(document).ready(function () {
 
 			});
 
-			var self = this;
+			// self = this;
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
-				self.menuObject = obj;
+				window.menuObject = obj;
 			});
 		}
 		else
@@ -305,7 +304,7 @@ var wrapHTML = function (html) {
 	completehtml += "		<title>JASP</title>"
 	completehtml += "	</head>\n"
 
-	var styles = JASPWidgets.Exporter.getStyles($("body"), ["font-family", "display", "font-size", ]);
+	var styles = JASPWidgets.Exporter.getStyles($("body"), ["font-family", "display", "font-size", "padding", "margin" ]);
 
 	completehtml += "	<body " + styles + ">\n";
 	completehtml += html;
