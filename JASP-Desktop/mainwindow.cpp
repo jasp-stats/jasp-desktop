@@ -1135,19 +1135,7 @@ void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &
 
 	if (mimeType == "text/html")
 	{
-		QString toClipboard;
-		toClipboard += "<!DOCTYPE HTML>\n"
-					   "<html>\n"
-					   "	<head>\n"
-					   "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
-					   "		<title>JASP</title>"
-					   "	</head>\n"
-					   "	<body style='font-family: sans-serif; display:block;'>\n";
-		toClipboard += data;
-		toClipboard += "	</body>\n"
-					   "</html>";
-
-		mimeData->setHtml(toClipboard);
+		mimeData->setHtml(data);
 		//mimeData->setData("text/html", toClipboard.toUtf8());
 	}
 	else

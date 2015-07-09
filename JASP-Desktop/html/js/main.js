@@ -43,7 +43,7 @@ $(document).ready(function () {
 	}
 
 	window.setAppVersion = function (version) {
-		$(".app_version").text(version);
+		$(".app-version").text("Version " + version);
 	}
 
 	window.showInstructions = function () {
@@ -96,18 +96,18 @@ $(document).ready(function () {
 				}
 
 				if (exportParams.process === JASPWidgets.ExportProperties.process.save)
-					jasp.saveTextToFile(filename, wrapHTML(html));
+					jasp.saveTextToFile(filename, wrapHTML(html, exportParams));
 			},
 			getStyleAttr: function () {
 				return "style='display: block;'";
 			}
 		};
 
-		var exportParams = {
-			format: JASPWidgets.ExportProperties.format.html,
-			process: JASPWidgets.ExportProperties.process.save,
-			imageFormat: JASPWidgets.ExportProperties.imageFormat.embedded
-		};
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.formattedHTML;
+		exportParams.process = JASPWidgets.ExportProperties.process.save;
+		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.embedded;
+
 		if (filename === "%PREVIEW%") {
 			exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.resource;
 		}
@@ -296,7 +296,7 @@ $(document).ready(function () {
 })
 
 
-var wrapHTML = function (html) {
+var wrapHTML = function (html, exportParams) {
 	var completehtml = "<!DOCTYPE HTML>\n"
 	completehtml += "<html>\n"
 	completehtml += "	<head>\n"
@@ -304,7 +304,11 @@ var wrapHTML = function (html) {
 	completehtml += "		<title>JASP</title>"
 	completehtml += "	</head>\n"
 
-	var styles = JASPWidgets.Exporter.getStyles($("body"), ["font-family", "display", "font-size", "padding", "margin" ]);
+	var styles = "";
+	if (exportParams.isFormatted())
+		styles = JASPWidgets.Exporter.getStyles($("body"), ["font-family", "display", "font-size", "padding", "margin"]);
+	else
+		styles = JASPWidgets.Exporter.getStyles($("body"), ["display", "padding", "margin"]);
 
 	completehtml += "	<body " + styles + ">\n";
 	completehtml += html;
@@ -400,8 +404,8 @@ var pushToClipboard = function (element) {
 
 }
 
-var pushHTMLToClipboard = function (html) {
-	jasp.pushToClipboard("text/html", html)
+var pushHTMLToClipboard = function (html, exportParams) {
+	jasp.pushToClipboard("text/html", wrapHTML(html, exportParams));
 
 }
 

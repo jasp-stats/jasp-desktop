@@ -87,7 +87,9 @@ JASPWidgets.ExportProperties = {
 
 	format: {
 		raw: 0,
-		html: 1
+		html: 1, //bit 1
+		formatted: 2, //bit 2
+		formattedHTML: 3
 	},
 
 	process: {
@@ -104,12 +106,19 @@ JASPWidgets.ExportProperties = {
 
 JASPWidgets.Exporter = {
 
-	params: function () {
-		return {
-			format: JASPWidgets.ExportProperties.format.raw,
-			process: JASPWidgets.ExportProperties.process.copy,
-			imageFormat: JASPWidgets.ExportProperties.imageFormat.temporary,
-		}
+	params: function() {
+
+			this.format = JASPWidgets.ExportProperties.format.raw,
+			this.process = JASPWidgets.ExportProperties.process.copy,
+			this.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary,
+
+			this.isFormatted = function () {
+				return (this.format & JASPWidgets.ExportProperties.format.formatted) === JASPWidgets.ExportProperties.format.formatted
+			},
+
+			this.isHTML = function () {
+				return (this.format & JASPWidgets.ExportProperties.format.html) === JASPWidgets.ExportProperties.format.html
+			}
 	},
 
 	begin: function (exportObj, exportParams, useNBSP, innerStyle) {
@@ -121,7 +130,7 @@ JASPWidgets.Exporter = {
 			useNBSP = false;
 
 		if (exportParams == undefined)
-			exportParams = JASPWidgets.Exporter.params();
+			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
 
@@ -164,7 +173,7 @@ JASPWidgets.Exporter = {
 					completeText = "<div " + self.getStyleAttr() + "'>\n";
 					completeText += "<div style='display:inline-block; " + innerStyle + "'>\n";
 					if (self.toolbar !== undefined) {
-						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar)
+						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar, exportParams)
 					}
 					for (var j = 0; j < self.buffer.length; j++) {
 						if (self.buffer[j]) {
@@ -203,27 +212,36 @@ JASPWidgets.Exporter = {
 		return style;
 	},
 
-	getHeaderStyles: function (element) {
-		return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin-bottom", "margin-top", "margin-left", "margin-right", "display", "float", "vertical-align", "font-size"]);
+	getHeaderStyles: function (element, exportParams) {
+		if (exportParams.isFormatted())
+			return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin", "display", "float", "vertical-align", "font-size", "font", "font-weight"]);
+		else
+			return "";//JASPWidgets.Exporter.getStyles(element, ["display", "float"]);
 	},
 
-	getTableStyles: function (element) {
-		return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float"]);
+	getTableStyles: function (element, exportParams) {
+		if (exportParams.isFormatted())
+			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float"]);
+		else
+			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "display", "float"]);
 	},
 
-	getTableContentStyles: function (element) {
-		return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float", "font-size", "font-weight"]);
+	getTableContentStyles: function (element, exportParams) {
+		if (exportParams.isFormatted())
+			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin", "display", "float", "font-size", "font-weight", "font"]);
+		else
+			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "display", "float"]);
 	},
 
 	getErrorStyles: function (element, component) {
 		if (component === "error-message-positioner")
 			return JASPWidgets.Exporter.getStyles(element, ["padding", "margin", "display", "float", "height", "overflow", "position", "top", "z-index"]);
 		else if (component === "error-message-box")
-			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "display", "float", "font-size", "border-radius", "min-width", "max-width", "white-space"]);
+			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "display", "float", "border-radius", "min-width", "max-width", "white-space"]);
 		else if (component === "error-message-symbol ")
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "display", "float"]);
 		else
-			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "text-align", "display", "float", "vertical-align", "font-size"]);
+			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "text-align", "display", "float", "vertical-align", "font-size", "font", "font-weight"]);
 	},
 
 	exportErrorWindow: function (element, error) {
@@ -248,10 +266,10 @@ JASPWidgets.Exporter = {
 		return css === "inline" || css === "inline-block";
 	},
 
-	getTitleHtml: function (toolbar) {
+	getTitleHtml: function (toolbar, exportParams) {
 		var html = toolbar.title === undefined ? "" : toolbar.title;
 		if (toolbar.titleTag !== undefined) {
-			var headerStyles = " " + JASPWidgets.Exporter.getHeaderStyles(toolbar.$title());
+			var headerStyles = " " + JASPWidgets.Exporter.getHeaderStyles(toolbar.$title(), exportParams);
 			html = '<' + toolbar.titleTag + headerStyles + '>' + toolbar.title + '</' + toolbar.titleTag + '>';
 		}
 
@@ -492,7 +510,7 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 
 	exportBegin: function (exportParams) {
 		if (exportParams == undefined)
-			exportParams = JASPWidgets.Exporter.params();
+			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
 
@@ -506,7 +524,7 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 
 	exportComplete: function (exportParams, html) {
 		if (!exportParams.error)
-			pushHTMLToClipboard(html);
+			pushHTMLToClipboard(html, exportParams);
 	}
 });
 

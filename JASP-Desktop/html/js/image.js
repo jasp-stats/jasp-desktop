@@ -134,7 +134,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 	exportBegin: function (exportParams) {
 
 		if (exportParams == undefined)
-			exportParams = JASPWidgets.Exporter.params();
+			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
 
@@ -145,10 +145,10 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 			var data = this.model.get("data");
 
-			if (exportParams.format === JASPWidgets.ExportProperties.format.html && exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.resource) {
+			if (exportParams.isHTML() && exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.resource) {
 				var width = this.model.get("width");
 				var height = this.model.get("height");
-				var html = this._addHTMLWrapper('<div  style="background-image : url(\'' + data + '\'); width:' + width + 'px; height:' + height + 'px;"></div>');
+				var html = this._addHTMLWrapper('<div  style="background-image : url(\'' + data + '\'); width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
 
 				this.exportComplete(exportParams, html);
 			}
@@ -156,7 +156,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 				JASPWidgets.Encodings.base64Request(data, function (base64) {
 
-					if (exportParams.format === JASPWidgets.ExportProperties.format.html) {
+					if (exportParams.isHTML()) {
 
 						var width = this.model.get("width");
 						var height = this.model.get("height");
@@ -164,12 +164,12 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 						if (exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.temporary) {
 							saveImageBegin(data, base64, function (fullpath) {
 
-								var html = this._addHTMLWrapper('<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />\n');
+								var html = this._addHTMLWrapper('<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />\n', exportParams);
 								this.exportComplete(exportParams, html);
 							}, this);
 						}
 						else if (exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.embedded) {
-							var html = this._addHTMLWrapper('<div style="background-image : url(data:image/png;base64,' + base64 + '); width:' + width + 'px; height:' + height + 'px;"></div>');
+							var html = this._addHTMLWrapper('<div style="background-image : url(data:image/png;base64,' + base64 + '); width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
 							this.exportComplete(exportParams, html);
 						}
 					}
@@ -186,14 +186,14 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		return true;
 	},
 
-	_addHTMLWrapper: function(innerHTML)
+	_addHTMLWrapper: function(innerHTML, exportParams)
 	{
 		var error = this.model.get("error");
 		var title = this.model.get("title");
 		var style = this.getStyleAttr();
 		var text = '<div ' + style + '>\n';
 
-		text += JASPWidgets.Exporter.getTitleHtml(this.toolbar);
+		text += JASPWidgets.Exporter.getTitleHtml(this.toolbar, exportParams);
 		text += innerHTML;
 		text += JASPWidgets.Exporter.exportErrorWindow(this.$el.find('.error-message-positioner'), error);
 		text += '</div>\n';
@@ -203,19 +203,21 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 	exportComplete: function (exportParams, data) {
 		if (!exportParams.error && exportParams.process == JASPWidgets.ExportProperties.process.copy) {
-			if (exportParams.format == JASPWidgets.ExportProperties.format.html)
-				pushHTMLToClipboard(data);
+			if (exportParams.isHTML())
+				pushHTMLToClipboard(data, exportParams);
 			else if (exportParams.format == JASPWidgets.ExportProperties.format.raw)
 				pushImageToClipboard(data);
 		}
 	},
 
 	copyMenuClicked: function () {
-		this.exportBegin({
-			format: JASPWidgets.ExportProperties.format.raw,
-			process: JASPWidgets.ExportProperties.process.copy,
-			imageFormat: JASPWidgets.ExportProperties.imageFormat.temporary
-		});
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.raw;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary;
+
+		this.exportBegin(exportParams);
+
 		return true;
 	},
 
