@@ -1,46 +1,11 @@
-$.widget("jasp.tables", {
+JASPWidgets.tables = Backbone.Collection.extend({
 
-    options: {
-        items : [ ],
-        status : "waiting"
-    },
-    _create: function () {
+	model: JASPWidgets.table,
+});
 
-        this.element.addClass("jasp-tables")
+JASPWidgets.tablesView = JASPWidgets.CollectionView.extend({
 
-        this.tables = $(this.element)
-
-        this.refresh()
-    },
-    _setOptions: function (options) {
-        this._super(options)
-
-        this.refresh()
-    },
-    refresh: function () {
-
-        this.tables.empty()
-
-        if (this.options.items && $.isArray(this.options.items) && this.options.items.length > 0)
-        {
-            for (var i = 0; i < this.options.items.length; i++)
-            {
-            	var options = this.options.items[i]
-            	if ( ! options["status"])
-            		options["status"] = this.options.status
-            
-                var table = $('<div class="jasp-tables-table"></div>')
-                table.table(options)
-                this.tables.append(table)
-            }
-
-        }
-        else {
-
-        }
-
-    },
-    _destroy: function () {
-        this.element.removeClass("jasp-tables").text("")
-    }
-})
+	createItemView: function (item) {
+		return new JASPWidgets.tableView({ className: "jasp-tables-table jasp-table", model: item });
+	},
+});

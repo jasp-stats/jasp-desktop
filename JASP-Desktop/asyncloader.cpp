@@ -72,6 +72,18 @@ void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
 	QString tempFilename = filename + tq(".tmp");
 	try
 	{
+		int maxSleepTime = 2000;
+		int sleepTime = 100;
+		int delay = 0;
+		while (package->analysesHTML.empty())
+		{
+			if (delay > maxSleepTime)
+				break;
+
+			sleep(sleepTime);
+			delay += sleepTime;
+		}
+
 		JASPExporter::saveDataSet(fq(tempFilename), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 		if ( ! Utils::renameOverwrite(fq(tempFilename), fq(filename)))
@@ -91,4 +103,15 @@ void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
 		Utils::removeFile(fq(tempFilename));
 		emit saveFail(e.what());
 	}
+}
+
+void AsyncLoader::sleep(int ms)
+{
+
+#ifdef __WIN32__
+	Sleep(uint(ms));
+#else
+	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+	nanosleep(&ts, NULL);
+#endif
 }
