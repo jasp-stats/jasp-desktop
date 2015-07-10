@@ -917,7 +917,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		$status.addClass(optStatus);
 	},
 
-	getExportAttributes: function (element)
+	getExportAttributes: function (element, exportParams)
 	{
 		var attrs = ""
 		var style = ""
@@ -927,7 +927,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 		if (tag === "td" || tag === "th") {
 
-			style = JASPWidgets.Exporter.getTableContentStyles($elObj);
+			style = JASPWidgets.Exporter.getTableContentStyles($elObj, exportParams);
 
 			if ($elObj.prop("rowspan") && $elObj.prop("rowspan") != 1)
 				attrs += 'rowspan="' + $elObj.prop("rowspan") + '" '
@@ -935,10 +935,10 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 				attrs += 'colspan="' + $elObj.prop("colspan") + '" '
 		}
 		else if (tag === "table") {
-			style = JASPWidgets.Exporter.getTableStyles($elObj);
+			style = JASPWidgets.Exporter.getTableStyles($elObj, exportParams);
 		}
 		else if (tag === "span" || tag === "h1" || tag === "h2" || tag === "h3") {
-			style = JASPWidgets.Exporter.getHeaderStyles($elObj);
+			style = JASPWidgets.Exporter.getHeaderStyles($elObj, exportParams);
 		}
 		else if ($elObj.is('.error-message-positioner')) {
 			style = JASPWidgets.Exporter.getErrorStyles($elObj, 'error-message-positioner');
@@ -960,7 +960,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		return attrs;
 	},
 
-	exportHTML: function (element, tabs) {
+	exportHTML: function (exportParams, element, tabs) {
 		if (element == null)
 			element = this.$el;
 
@@ -974,7 +974,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 		var tag = $elObj.prop("tagName").toLowerCase()
 
-		var attrs = this.getExportAttributes(element);
+		var attrs = this.getExportAttributes(element, exportParams);
 
 		if (attrs)
 			text = tabs + '<' + tag + ' ' + attrs + '>'
@@ -1003,7 +1003,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 					}
 				}
 				else {
-					text += "\n" + this.exportHTML(contents[i], tabs + "\t")
+					text += "\n" + this.exportHTML(exportParams, contents[i], tabs + "\t");
 				}
 			}
 
@@ -1020,26 +1020,28 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 	exportBegin: function (exportParams) {
 
 		if (exportParams == undefined)
-			exportParams = JASPWidgets.Exporter.params();
+			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
 
-		this.exportComplete(exportParams, this.exportHTML());
+		this.exportComplete(exportParams, this.exportHTML(exportParams));
 
 		return true;
 	},
 
 	exportComplete: function (exportParams, html) {
 		if (!exportParams.error)
-			pushHTMLToClipboard(html);
+			pushHTMLToClipboard(html, exportParams);
 	},
 
 	copyMenuClicked: function () {
-		this.exportBegin({
-			format: JASPWidgets.ExportProperties.format.html,
-			process: JASPWidgets.ExportProperties.process.copy,
-			imageFormat: JASPWidgets.ExportProperties.imageFormat.temporary,
-		});
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary;
+
+		this.exportBegin(exportParams);
+
 		return true;
 	},
 

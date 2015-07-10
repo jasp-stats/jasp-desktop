@@ -47,25 +47,27 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	copyMenuClicked: function () {
 		
-		return this.exportBegin({
-			format: JASPWidgets.ExportProperties.format.html,
-			process: JASPWidgets.ExportProperties.process.copy,
-			imageFormat: JASPWidgets.ExportProperties.imageFormat.temporary
-		}, this.views);
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary;
+
+		return this.exportBegin(exportParams, this.views);
 	},
 
 	exportMenuClicked: function () {
 
-		return this.exportBegin({
-			format: JASPWidgets.ExportProperties.format.html,
-			process: JASPWidgets.ExportProperties.process.save,
-			imageFormat: JASPWidgets.ExportProperties.imageFormat.embedded
-		}, this.views);
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.save;
+		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.embedded;
+
+		return this.exportBegin(exportParams, this.views);
 	},
 
 	exportBegin: function (exportParams) {
 		if (exportParams == undefined)
-			exportParams = JASPWidgets.Exporter.params();
+			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
 		
@@ -74,7 +76,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	exportComplete: function (exportParams, html) {
 		if (!exportParams.error)
-			pushHTMLToClipboard(html);
+			pushHTMLToClipboard(html, exportParams);
 	},
 
 	menuName: "Analysis",
