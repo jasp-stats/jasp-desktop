@@ -18,8 +18,8 @@
 
 using namespace std;
 
-const Version JASPExporter::dataArchiveVersion = Version("1.00.0 Alpha 1");
-const Version JASPExporter::jaspArchiveVersion = Version("1.00.0 Alpha 1");
+const Version JASPExporter::dataArchiveVersion = Version("1.0.0");
+const Version JASPExporter::jaspArchiveVersion = Version("1.0.0");
 
 void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
@@ -206,7 +206,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 		string html = package->analysesHTML;
 		int htmlSize = html.size();
 		entry = archive_entry_new();
-		string dd3 = string("preview.html");
+		string dd3 = string("index.html");
 		archive_entry_set_pathname(entry, dd3.c_str());
 		archive_entry_set_size(entry, htmlSize);
 		archive_entry_set_filetype(entry, AE_IFREG);
