@@ -69,7 +69,7 @@ $(document).ready(function () {
 
 	window.citeMenuClicked = function () {
 		if (window.menuObject.citeMenuClicked | window.menuObject.citeMenuClicked())
-			window.menuObject.toolbar.displayMessage("Citation copied to clipboard");
+			window.menuObject.toolbar.displayMessage("Citations copied to clipboard");
 
 		window.menuObject = null;
 	}
