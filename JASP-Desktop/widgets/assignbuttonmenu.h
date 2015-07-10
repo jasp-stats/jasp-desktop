@@ -1,13 +1,10 @@
 #ifndef ASSIGNBUTTONMENU_H
 #define ASSIGNBUTTONMENU_H
 
-#include <QPushButton>
-#include <QMenu>
-#include <QAbstractItemView>
+#include "button.h"
+#include "droptarget.h"
 
-#include "widgets/listview.h"
-
-class AssignButtonMenu : public QPushButton
+class AssignButtonMenu : public Button
 {
 	Q_OBJECT
 public:

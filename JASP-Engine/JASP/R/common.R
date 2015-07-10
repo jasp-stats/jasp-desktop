@@ -100,11 +100,19 @@ checkPackages <- function() {
 
 	if ("citation" %in% names(table) ) {
 
-		table$citation <- c(.baseCitation, table$citation)
+		cite <- c(.baseCitation, table$citation)
+		
+		for (i in seq_along(cite))
+			base::Encoding(cite[[i]]) <- "UTF-8"
+		
+		table$citation <- cite
 
 	} else {
 	
-		table$citation <- list(.baseCitation)
+		cite <- .baseCitation
+		base::Encoding(cite) <- "UTF-8"
+	
+		table$citation <- list(cite)
 	}
 	
 	table

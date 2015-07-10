@@ -30,8 +30,8 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 	ui->modelTerms->setModel(_anovaModel);
 	ui->modelTerms->hide();
 
-	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(assignmentsChanging()));
-	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(assignmentsChanged()));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 

@@ -3,6 +3,7 @@
 #include "draganddrop.h"
 
 #include <QDropEvent>
+#include <QScrollBar>
 
 ListView::ListView(QWidget *parent) :
 	QListView(parent)
@@ -56,6 +57,28 @@ void ListView::dropEvent(QDropEvent *event)
 		if (draggedFrom != NULL && event->source() != this)
 			draggedFrom->notifyDragWasDropped();
 	}
+}
+
+bool ListView::event(QEvent *e)
+{
+	if (e->type() == QEvent::Wheel)
+	{
+		bool ret = QListView::event(e);
+
+		QScrollBar *scrollBar = this->verticalScrollBar();
+		if (scrollBar != NULL)
+		{
+			// eat the mouse wheel event if scrolling (return true)
+			// otherwise it propogates, and scrolls the parent as well
+
+			if (scrollBar->value() < scrollBar->maximum() && scrollBar->value() > scrollBar->minimum())
+				return true;
+		}
+
+		return ret;
+	}
+
+	return QListView::event(e);
 }
 
 void ListView::doubleClickedHandler(const QModelIndex index)

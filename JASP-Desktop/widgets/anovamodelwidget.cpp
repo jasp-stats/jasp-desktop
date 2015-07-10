@@ -2,6 +2,7 @@
 #include "ui_anovamodelwidget.h"
 
 #include <boost/foreach.hpp>
+#include <QMenu>
 #include <QDebug>
 
 #include "analysisforms/analysisform.h"

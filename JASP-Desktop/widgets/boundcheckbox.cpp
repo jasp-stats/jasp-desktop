@@ -1,5 +1,6 @@
 #include "boundcheckbox.h"
 
+#include <QEvent>
 #include <QDebug>
 
 BoundCheckBox::BoundCheckBox(QWidget *parent) :
@@ -24,4 +25,12 @@ void BoundCheckBox::nextCheckState()
 
 	if (_boundTo != NULL)
 		_boundTo->setValue(isChecked());
+}
+
+bool BoundCheckBox::event(QEvent *e)
+{
+	if (e->type() == QEvent::Wheel && this->isEnabled() == false)
+		return false;
+
+	return QCheckBox::event(e);
 }

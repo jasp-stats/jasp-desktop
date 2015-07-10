@@ -3,8 +3,9 @@
 #include <QMimeData>
 #include "draganddrop.h"
 
+
 AssignButton::AssignButton(QWidget *parent) :
-	QPushButton(parent)
+	Button(parent)
 {
 	_source = NULL;
 	_target = NULL;
