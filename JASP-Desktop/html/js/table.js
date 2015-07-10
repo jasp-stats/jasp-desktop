@@ -1147,10 +1147,11 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 		var optCitation = this.model.get("citation");
 
-		var newCite = '<p>' + optCitation.join("</p><p>") + '</p>';
+		var htmlCite = '<p>' + optCitation.join("</p><p>") + '</p>';
 
-		//pushHTMLToClipboard(newCite, exportParams);
-		pushTextToClipboard(optCitation.join("\n\n"), newCite, exportParams);
+		var exportContent = new JASPWidgets.Exporter.data(optCitation.join("\n\n"), htmlCite);
+
+		pushTextToClipboard(exportContent, exportParams);
 		return true;
 	},
 
