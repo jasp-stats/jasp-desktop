@@ -1058,7 +1058,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		var text = ""
 		var $elObj = $(element)
 
-		if ($elObj.hasClass("do-not-copy"))
+		if ($elObj.hasClass("do-not-copy") || $elObj.is("td.squash-left"))
 			return text
 
 		var tag = $elObj.prop("tagName").toLowerCase()
