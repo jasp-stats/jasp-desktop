@@ -142,6 +142,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		var sf = NaN
 		var pc = false
 		var approx = false
+		var log10 = false
 
 		for (var i = 0; i < formats.length; i++) {
 
@@ -161,6 +162,9 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 			if (f.indexOf("~") != -1)
 				approx = true;
+			
+			if (f.indexOf("log10") != -1)
+				log10 = true
 		}
 
 		if (isFinite(sf)) {
@@ -177,12 +181,31 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 				if (isNaN(parseFloat(content)))  // isn't a number
 					continue
 
-				var fsd = this._fsd(content)  // position of first significant digit
+				var fsd  // position of first significant digit
+				
+				if (log10)
+					fsd = content
+				else
+					fsd = this._fsd(content)
+					
 				var lsd = fsd - sf
+				
+				if (log10) {
+				
+					if (content >= 6 || content <= -dp) {
+				
+						fsdoe = this._fsd(content)
 
-				if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
+						if (fsdoe > maxFSDOE)
+							maxFSDOE = fsdoe
+					}
+						
+				} else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
 
-					var fsdoe = this._fsdoe(content)
+					var fsdoe   // first significant digit of exponent
+					
+					fsdoe = this._fsdoe(content)
+					
 					if (fsdoe > maxFSDOE)
 						maxFSDOE = fsdoe
 				}
@@ -239,6 +262,72 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 					isNumber = true
 
+				}
+				else if (log10) {
+				
+					if (content < (Math.log(upperLimit) / Math.log(10)) && content > -dp) {
+
+						if (alignNumbers) {
+
+							formatted = { content: Math.exp(10, content).toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
+						}
+						else {
+
+							formatted = { content: Math.exp(10, content).toPrecision(sf).replace(/-/g, "&minus;"), "class": "number" }
+						}
+
+						isNumber = true
+					}
+					else {
+				
+						var paddingNeeded = Math.max(maxFSDOE - this._fsd(content), 0)
+
+						var exponent = Math.abs(Math.floor(content))
+
+						var exp = ""
+
+						while (exponent > 0) {
+
+							var digit = exponent % 10
+							exponent  = Math.floor(exponent / 10)
+							exp = "" + digit + exp
+						}
+					
+						if (exp.length === 0)
+							exp = "0"
+
+						exponent = exp
+
+						var mantissa
+						if (content > 0)
+							mantissa = Math.pow(10, content % 1)
+						else
+							mantissa = Math.pow(10, 1 + (content % 1))
+
+						if (mantissa > 9.99999999) {
+
+							mantissa = 1
+							exponent--
+						}
+
+						var sign = content >= 0 ? "+" : "-"
+					
+						mantissa = mantissa.toPrecision(sf)
+
+						var padding
+
+						if (paddingNeeded)
+							padding = '<span class="do-not-copy" style="visibility: hidden;">' + Array(paddingNeeded + 1).join("0") + '</span>'
+						else
+							padding = ''
+
+						var reassembled = mantissa + "e&thinsp;" + padding + sign + exponent
+
+						formatted = { content: reassembled, "class": "number" }
+
+						isNumber = true
+					}
+				
 				}
 				else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
 
