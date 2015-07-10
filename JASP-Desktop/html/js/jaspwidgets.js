@@ -116,9 +116,14 @@ JASPWidgets.Exporter = {
 				return (this.format & JASPWidgets.ExportProperties.format.formatted) === JASPWidgets.ExportProperties.format.formatted
 			},
 
-			this.isHTML = function () {
+			this.htmlRequested = function () {
 				return (this.format & JASPWidgets.ExportProperties.format.html) === JASPWidgets.ExportProperties.format.html
 			}
+	},
+
+	data: function (data, html) {
+		this.data = data;
+		this.html = html;
 	},
 
 	begin: function (exportObj, exportParams, useNBSP, innerStyle) {
@@ -139,7 +144,7 @@ JASPWidgets.Exporter = {
 			var viewList = exportObj.views;
 
 			if (viewList.length === 0) {
-				exportObj.exportComplete(exportParams, "");
+				exportObj.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, ""));
 			}
 			else {
 				exportObj.buffer = [];
@@ -163,9 +168,9 @@ JASPWidgets.Exporter = {
 		var self = parent;
 		var index = i;
 		var originalExportComplete = view.exportComplete;
-		view.exportComplete = function (exParams, data) {
+		view.exportComplete = function (exParams, exContent) {
 			this.exportComplete = originalExportComplete;
-			self.buffer[index] = data;
+			self.buffer[index] = exContent;
 			self.exportCounter -= 1;
 			if (self.exportCounter === 0) {
 				var completeText = "";
@@ -177,7 +182,7 @@ JASPWidgets.Exporter = {
 					}
 					for (var j = 0; j < self.buffer.length; j++) {
 						if (self.buffer[j]) {
-							completeText += self.buffer[j];
+							completeText += self.buffer[j].html;
 							if (useNBSP && j < self.buffer.length && (JASPWidgets.Exporter.isInlineStyle(self.views[j].$el) == false))
 								completeText += "&nbsp;";
 						}
@@ -185,7 +190,7 @@ JASPWidgets.Exporter = {
 					completeText += "</div>";
 					completeText += "</div>";		
 				}
-				self.exportComplete(exportParams, completeText);
+				self.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, completeText));
 				self.buffer = [];
 			}
 		};
@@ -517,14 +522,14 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 		if (this.views.length > 0)
 			JASPWidgets.Exporter.begin(this, exportParams);
 		else
-			this.exportComplete(exportParams, "");
+			this.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, ""));
 
 		return true;
 	},
 
-	exportComplete: function (exportParams, html) {
+	exportComplete: function (exportParams, exportContent) {
 		if (!exportParams.error)
-			pushHTMLToClipboard(html, exportParams);
+			pushHTMLToClipboard(exportContent, exportParams);
 	}
 });
 
