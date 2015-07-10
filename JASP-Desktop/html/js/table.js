@@ -1127,7 +1127,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		var exportParams = new JASPWidgets.Exporter.params();
 		exportParams.format = JASPWidgets.ExportProperties.format.html;
 		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
 
 		this.exportBegin(exportParams);
 
@@ -1143,7 +1143,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		var exportParams = new JASPWidgets.Exporter.params();
 		exportParams.format = JASPWidgets.ExportProperties.format.html;
 		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
 
 		var optCitation = this.model.get("citation");
 

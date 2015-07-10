@@ -138,43 +138,39 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		else if (exportParams.error)
 			return false;
 
-		if (exportParams.format === JASPWidgets.ExportProperties.format.raw && exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.resource) {
-			exportParams.error = true;
-		}
+		var width = this.model.get("width");
+		var height = this.model.get("height");
+
+		var htmlImageFormatData = { resource: this.model.get("data") };
+		if (exportParams.htmlOnly() && exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.resource)
+			this.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
 		else {
-
-			var data = this.model.get("data");
-			var width = this.model.get("width");
-			var height = this.model.get("height");
-
-			if (exportParams.htmlRequested() && exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.resource) {
-
-				var html = this._addHTMLWrapper('<div style="background-image : url(\'' + data + '\'); width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
-				this.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, html));
-			}
-			else {
-
-				JASPWidgets.Encodings.base64Request(data, function (base64) {
-
-					if ((exportParams.htmlRequested() && exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.temporary) || exportParams.format === JASPWidgets.ExportProperties.format.raw) {
-						saveImageBegin(data, base64, function (fullpath) {
-
-							var html = this._addHTMLWrapper('<img src="file:///' + fullpath + '" style="width:' + width + 'px; height:' + height + 'px;" />\n', exportParams);
-							this.exportComplete(exportParams, new JASPWidgets.Exporter.data(base64, html));
-						}, this);
-					}
-					else if (exportParams.htmlRequested() && exportParams.imageFormat === JASPWidgets.ExportProperties.imageFormat.embedded) {
-						var html = this._addHTMLWrapper('<div style="background-image : url(data:image/png;base64,' + base64 + '); width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
-						this.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, html));
-					}
-					else
-						exportParams.error = true;
-
-				}, this);
-			}
+			JASPWidgets.Encodings.base64Request(data, function (base64) {
+				htmlImageFormatData.embedded = base64;
+				if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary) {
+					saveImageBegin(data, base64, function (fullpath) {
+						htmlImageFormatData.temporary = fullpath;
+						this.exportComplete(exportParams, new JASPWidgets.Exporter.data(base64, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
+					}, this);
+				}
+				else
+					this.exportComplete(exportParams, new JASPWidgets.Exporter.data(base64, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
+			}, this);
 		}
 
 		return true;
+	},
+
+	_getHTMLImage: function (htmlImageFormatData, width, height, exportParams) {
+		var html = "";
+		if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary)
+			html = this._addHTMLWrapper('<img src="file:///' + htmlImageFormatData.temporary + '" style="width:' + width + 'px; height:' + height + 'px;" />\n', exportParams);
+		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.embedded)
+			html = this._addHTMLWrapper('<div style="background-image : url(data:image/png;base64,' + htmlImageFormatData.embedded + '); width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
+		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.resource)
+			html = this._addHTMLWrapper('<div style="background-image : url(\'' + htmlImageFormatData.resource + '\'); width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
+
+		return html;
 	},
 
 	_addHTMLWrapper: function(innerHTML, exportParams)
@@ -194,7 +190,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 	exportComplete: function (exportParams, exportContent) {
 		if (!exportParams.error && exportParams.process == JASPWidgets.ExportProperties.process.copy) {
-			if (exportParams.htmlRequested())
+			if (exportParams.htmlOnly())
 				pushHTMLToClipboard(exportContent, exportParams);
 			else if (exportParams.format == JASPWidgets.ExportProperties.format.raw)
 				pushImageToClipboard(exportContent, exportParams);
@@ -205,7 +201,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		var exportParams = new JASPWidgets.Exporter.params();
 		exportParams.format = JASPWidgets.ExportProperties.format.raw;
 		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
 
 		this.exportBegin(exportParams);
 
