@@ -50,7 +50,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		var exportParams = new JASPWidgets.Exporter.params();
 		exportParams.format = JASPWidgets.ExportProperties.format.html;
 		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
 
 		return this.exportBegin(exportParams, this.views);
 	},
@@ -60,7 +60,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		var exportParams = new JASPWidgets.Exporter.params();
 		exportParams.format = JASPWidgets.ExportProperties.format.html;
 		exportParams.process = JASPWidgets.ExportProperties.process.save;
-		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.embedded;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.embedded;
 
 		return this.exportBegin(exportParams, this.views);
 	},

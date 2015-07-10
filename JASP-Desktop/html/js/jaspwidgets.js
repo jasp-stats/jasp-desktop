@@ -97,7 +97,7 @@ JASPWidgets.ExportProperties = {
 		save: 1
 	},
 
-	imageFormat: {
+	htmlImageFormat: {
 		temporary: 0,
 		resource: 1,
 		embedded: 2
@@ -110,19 +110,23 @@ JASPWidgets.Exporter = {
 
 			this.format = JASPWidgets.ExportProperties.format.raw,
 			this.process = JASPWidgets.ExportProperties.process.copy,
-			this.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary,
+			this.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary,
 
 			this.isFormatted = function () {
 				return (this.format & JASPWidgets.ExportProperties.format.formatted) === JASPWidgets.ExportProperties.format.formatted
 			},
 
-			this.htmlRequested = function () {
+			this.htmlOnly = function () {
 				return (this.format & JASPWidgets.ExportProperties.format.html) === JASPWidgets.ExportProperties.format.html
 			}
 	},
 
-	data: function (data, html) {
-		this.data = data;
+	data: function (raw, html) {
+
+		if (raw == null)
+			raw = "";
+
+		this.raw = raw;
 		this.html = html;
 	},
 
