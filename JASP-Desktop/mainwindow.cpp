@@ -155,8 +155,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
 	connect(this, SIGNAL(saveTempImage(int, QString, QByteArray)), this, SLOT(saveTempImageHandler(int, QString, QByteArray)));
-	connect(this, SIGNAL(pushToClipboard(QString, QString)), this, SLOT(pushToClipboardHandler(QString, QString)));
-	connect(this, SIGNAL(pushImageToClipboard(QByteArray)), this, SLOT(pushImageToClipboardHandler(QByteArray)));
+	connect(this, SIGNAL(pushToClipboard(QString, QString, QString)), this, SLOT(pushToClipboardHandler(QString, QString, QString)));
+	connect(this, SIGNAL(pushImageToClipboard(QByteArray, QString)), this, SLOT(pushImageToClipboardHandler(QByteArray, QString)));
 	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
@@ -1126,22 +1126,18 @@ void MainWindow::analysisRemoved()
 	hideOptionsPanel();
 }
 
-void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data)
+void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html)
 {
 	if (_log != NULL)
 		_log->log("Copy");
 
 	QMimeData *mimeData = new QMimeData();
 
-	if (mimeType == "text/html")
-	{
-		mimeData->setHtml(data);
-		//mimeData->setData("text/html", toClipboard.toUtf8());
-	}
-	else
-	{
+	if (mimeType == "text/plain")
 		mimeData->setText(data);
-	}
+
+	if ( ! html.isEmpty())
+		mimeData->setHtml(html);
 
 	QClipboard *clipboard = QApplication::clipboard();
 	clipboard->setMimeData(mimeData, QClipboard::Clipboard);
@@ -1149,7 +1145,7 @@ void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &
 	//qDebug() << clipboard->mimeData(QClipboard::Clipboard)->data("text/html");
 }
 
-void MainWindow::pushImageToClipboardHandler(const QByteArray &base64)
+void MainWindow::pushImageToClipboardHandler(const QByteArray &base64, const QString &html)
 {
 	if (_log != NULL)
 		_log->log("Copy");
@@ -1172,6 +1168,13 @@ void MainWindow::pushImageToClipboardHandler(const QByteArray &base64)
 		mimeData->setImageData(pm);
 #endif
 
+	}
+
+	if ( ! html.isEmpty())
+		mimeData->setHtml(html);
+
+	if (mimeData->hasImage() || mimeData->hasHtml())
+	{
 		QClipboard *clipboard = QApplication::clipboard();
 		clipboard->setMimeData(mimeData, QClipboard::Clipboard);
 	}

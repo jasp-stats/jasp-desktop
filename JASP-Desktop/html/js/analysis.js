@@ -74,9 +74,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		return JASPWidgets.Exporter.begin(this, exportParams, true);
 	},
 
-	exportComplete: function (exportParams, html) {
+	exportComplete: function (exportParams, exportContent) {
 		if (!exportParams.error)
-			pushHTMLToClipboard(html, exportParams);
+			pushHTMLToClipboard(exportContent, exportParams);
 	},
 
 	menuName: "Analysis",

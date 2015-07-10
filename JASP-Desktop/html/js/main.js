@@ -90,13 +90,13 @@ $(document).ready(function () {
 	window.exportHTML = function (filename) {
 		var exportObject = {
 			views: analysesViews,
-			exportComplete: function (exportParams, html) {
+			exportComplete: function (exportParams, exportContent) {
 				if (exportParams.error) {
 
 				}
 
 				if (exportParams.process === JASPWidgets.ExportProperties.process.save)
-					jasp.saveTextToFile(filename, wrapHTML(html, exportParams));
+					jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams));
 			},
 			getStyleAttr: function () {
 				return "style='display: block;'";
@@ -400,22 +400,22 @@ var pushToClipboard = function (element) {
 
 	var $el = $(element)
 
-	jasp.pushToClipboard("text/html", stringify($el, "\t\t"))
+	jasp.pushToClipboard("text/html", "", stringify($el, "\t\t"));
 
 }
 
-var pushHTMLToClipboard = function (html, exportParams) {
-	jasp.pushToClipboard("text/html", wrapHTML(html, exportParams));
+var pushHTMLToClipboard = function (exportContent, exportParams) {
+	jasp.pushToClipboard("text/html", "", wrapHTML(exportContent.html, exportParams));
 
 }
 
-var pushTextToClipboard = function (str) {
+var pushTextToClipboard = function (exportContent, exportParams) {
 
-	jasp.pushToClipboard("text/plain", str)
+	jasp.pushToClipboard("text/plain", exportContent.data, wrapHTML(exportContent.html, exportParams))
 }
 
-var pushImageToClipboard = function (base64) {
-	jasp.pushImageToClipboard(base64)
+var pushImageToClipboard = function (exportContent, exportParams) {
+	jasp.pushImageToClipboard(exportContent.data, wrapHTML(exportContent.html, exportParams))
 
 }
 

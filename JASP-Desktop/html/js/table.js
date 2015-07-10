@@ -1058,7 +1058,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		var text = ""
 		var $elObj = $(element)
 
-		if ($elObj.hasClass("do-not-copy"))
+		if ($elObj.hasClass("do-not-copy") || $elObj.is("td.squash-left"))
 			return text
 
 		var tag = $elObj.prop("tagName").toLowerCase()
@@ -1113,14 +1113,14 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		else if (exportParams.error)
 			return false;
 
-		this.exportComplete(exportParams, this.exportHTML(exportParams));
+		this.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, this.exportHTML(exportParams)));
 
 		return true;
 	},
 
-	exportComplete: function (exportParams, html) {
+	exportComplete: function (exportParams, exportContent) {
 		if (!exportParams.error)
-			pushHTMLToClipboard(html, exportParams);
+			pushHTMLToClipboard(exportContent, exportParams);
 	},
 
 	copyMenuClicked: function () {
@@ -1140,8 +1140,17 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 	},
 
 	citeMenuClicked: function () {
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary;
+
 		var optCitation = this.model.get("citation");
-		pushTextToClipboard(optCitation.join("\n\n"));
+
+		var newCite = '<p>' + optCitation.join("</p><p>") + '</p>';
+
+		//pushHTMLToClipboard(newCite, exportParams);
+		pushTextToClipboard(optCitation.join("\n\n"), newCite, exportParams);
 		return true;
 	},
 

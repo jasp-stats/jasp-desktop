@@ -21,20 +21,26 @@ body.selected {
 	background-color: #E8E8E8 ;
 }
 
-h1 {
+h1:not(.in-toolbar), .h1-toolbar {
 	font-size: 150% ;
 	margin: .5em 0 ;
 }
 
-h2 {
+h2:not(.in-toolbar), .h2-toolbar {
 	font-size: 125% ;
 	margin: .7em 0 .2em ;
 }
 
-h3 {
+h3:not(.in-toolbar), .h3-toolbar {
 	font-size: 100% ;
 	margin: .5em 0 .2em ;
 }
+
+h1.in-toolbar, h2.in-toolbar, h3.in-toolbar {
+	margin: 0 ;
+	font-size: inherit;
+}
+
 
 table {
 	font-style: normal ;
@@ -239,7 +245,7 @@ svg > text
 
 div.toolbar {
 
-	display: inline-block ;
+	display: block ;
 	position: relative;
 }
 
