@@ -256,16 +256,19 @@ div.status {
 	background-size : 100% ;
 	display: inline-block ;
 	margin-left : 6px ;
+	visibility: hidden ;
 }
 
 div.status.running {
 
 	background : url(images/running.gif) no-repeat ;
+	visibility: visible ;
 }
 
 div.status.waiting {
 
 	background : url(images/waiting.gif) no-repeat ;
+	visibility: visible ;
 }
 
 .error-state {

@@ -5,7 +5,6 @@ JASPWidgets.image = JASPWidgets.Resizeable.extend({
 		width: 480,
 		height: 320,
 		data: null,
-		status: "waiting",
 		custom: null,
 		error: null
 	}
@@ -85,11 +84,17 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		}
 
 		this.toolbar.render();
+		this.toolbar.$el.append('<div class="status"></div>');
+
 		this.$el.append(this.toolbar.$el);
 
+		var $toolbar = this.toolbar.$el;
+		var $status = $toolbar.find("div.status");
+		$status.addClass(status);
+
 		var classes = ""
-		if (status)
-			classes += status
+		//if (status)
+		//	classes += status
 
 		if (error)
 			classes += " error-state"

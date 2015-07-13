@@ -321,7 +321,9 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 	render: function () {
 		this.$el.empty();
-		this.$el.addClass(this.titleTag + "-toolbar");
+
+		if (this.titleTag !== undefined)
+			this.$el.addClass(this.titleTag + "-toolbar");
 
 		if (this.title !== undefined) {
 			if (this.titleTag !== undefined)
