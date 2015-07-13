@@ -80,22 +80,13 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		if (title) {
 			this.toolbar.title = title;
 			this.toolbar.titleTag = "h2";
-			//this.$el.append('<h2>' + title + '</h2>');
 		}
 
 		this.toolbar.render();
-		this.toolbar.$el.append('<div class="status"></div>');
 
 		this.$el.append(this.toolbar.$el);
 
-		var $toolbar = this.toolbar.$el;
-		var $status = $toolbar.find("div.status");
-		$status.addClass(status);
-
 		var classes = ""
-		//if (status)
-		//	classes += status
-
 		if (error)
 			classes += " error-state"
 
@@ -123,11 +114,14 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 		html += '</div>'
 
-		html += '<div class="jasp-image-loader"></div>'
+		html += '<div class="image-status"></div>';
 
 		html += '</div>'
 
 		this.$el.append(html)
+
+		var $status = this.$el.find("div.image-status");
+		$status.addClass(status);
 
 		var self = this
 
