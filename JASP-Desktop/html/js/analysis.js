@@ -2,7 +2,6 @@ JASPWidgets.Analysis = Backbone.Model.extend({
 	defaults: {
 		id: -1,
 		results: {},
-		status: "waiting",
 		optionschanged: []
 	}
 });
@@ -115,7 +114,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			if (_.isArray(result)) {
 
 				item.each(function (subItem) {
-					if (!_.has(subItem, "status"))
+					var status = subItem.get("status");
+					if (status === null)
 						subItem.set("status", this.status);
 				}, result);
 				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type, collection: item });

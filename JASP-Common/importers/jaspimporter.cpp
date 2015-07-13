@@ -29,7 +29,7 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 	readManifest(packageData, path);
 
 	if ( ! isCompatible(packageData))
-		throw runtime_error("The file version is to new.\nPlease update to the latest version of JASP to view this file.");
+		throw runtime_error("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
 
 	loadDataArchive(packageData, path, progressCallback);
 	loadJASPArchive(packageData, path, progressCallback);

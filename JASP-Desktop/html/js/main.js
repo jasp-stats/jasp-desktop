@@ -186,7 +186,7 @@ $(document).ready(function () {
 
 	var selectedHandler = function (event) {
 
-		if ($(event.target).is(".jasp-toolbar") || $(event.target).is(".jasp-toolbar > *"))
+		if ($(event.target).is(".jasp-resize") || $(event.target).is(".jasp-toolbar") || $(event.target).is(".jasp-toolbar > *"))
 			return
 
 		var id = $(event.currentTarget).attr("id")
