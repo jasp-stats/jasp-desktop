@@ -176,7 +176,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 }
 
 
-.ttestIndependentSamplesDescriptives <- function(dataset, options, perform) {
+.ttestIndependentSamplesDescriptives <- function(dataset, options, perform, state=NULL, diff=NULL) {
 
 	if (options$descriptives == FALSE)
 		return(NULL)
@@ -201,11 +201,31 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	if (length(variables) == 0)
 		variables <- "."
 	
+	
 	for (variable in variables) {
 	
-		data[[length(data)+1]] <- list(variable=variable, .isNewGroup=TRUE)
-		data[[length(data)+1]] <- list(variable=variable)
+		if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$descriptives == FALSE &&
+			diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
+		
+			descriptivesVariables <- character(length(state$results$descriptives$data))
+			
+			for (i in seq_along(state$results$descriptives$data)) 
+				descriptivesVariables[i] <- state$results$descriptives$data[[i]]$variable
+			
+			indices <- which(descriptivesVariables == variable)
+			
+			data[[length(data)+1]] <- state$results$descriptives$data[[indices[1]]]
+			data[[length(data)+1]] <- state$results$descriptives$data[[indices[2]]]
+		
+		} else {
+	
+			data[[length(data)+1]] <- list(variable=variable, .isNewGroup=TRUE)
+			data[[length(data)+1]] <- list(variable=variable)
+		}
 	}
+	
+	if (!is.null(state) && all(variables %in% state$options$variables) && state$options$descriptives)
+		descriptives[["status"]] <- "complete"
 	
 	if (perform == "run" && options$groupingVariable != "") {
 	
@@ -221,36 +241,54 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			groupingData <- dataset[[ .v(options$groupingVariable) ]]
 		
 			for (variable in options[["variables"]]) {
-		
-				for (i in 1:2) {
 			
-					level <- levels[i]
-					variableData <- dataset[[ .v(variable) ]]
-				
-					groupData <- variableData[groupingData == level]
-					groupDataOm <- na.omit(groupData)
-
-					if (class(groupDataOm) != "factor") {
-
-						n <- .clean(length(groupDataOm))
-						mean <- .clean(mean(groupDataOm))
-						stdDeviation <- .clean(sd(groupDataOm))
-						stdErrorMean <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
+				if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$descriptives == FALSE &&
+					diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
+			
+					descriptivesVariables <- character(length(state$results$descriptives$data))
 					
-						result <- list(variable=variable, group=level, N=n, mean=mean, "sd"=stdDeviation,
-							"se"=stdErrorMean)						
-							
-					} else {
+					for (i in seq_along(state$results$descriptives$data)) 
+						descriptivesVariables[i] <- state$results$descriptives$data[[i]]$variable
+					
+					indices <- which(descriptivesVariables == variable)
+					
+					data[[rowNo]] <- state$results$descriptives$data[[indices[1]]]
+					data[[rowNo+1]] <- state$results$descriptives$data[[indices[2]]]
+					
+					rowNo <- rowNo + 2
+			
+				} else {
+			
+					for (i in 1:2) {
 				
-						n <- .clean(length(groupDataOm))
-						result <- list(variable=variable, group="", N=n, mean="", "sd"="", "se"="")
+						level <- levels[i]
+						variableData <- dataset[[ .v(variable) ]]
+					
+						groupData <- variableData[groupingData == level]
+						groupDataOm <- na.omit(groupData)
+	
+						if (class(groupDataOm) != "factor") {
+	
+							n <- .clean(length(groupDataOm))
+							mean <- .clean(mean(groupDataOm))
+							stdDeviation <- .clean(sd(groupDataOm))
+							stdErrorMean <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
+						
+							result <- list(variable=variable, group=level, N=n, mean=mean, "sd"=stdDeviation,
+								"se"=stdErrorMean)						
+								
+						} else {
+					
+							n <- .clean(length(groupDataOm))
+							result <- list(variable=variable, group="", N=n, mean="", "sd"="", "se"="")
+						}
+						
+						if (i == 1)
+							result[[".isNewGroup"]] <- TRUE
+					
+						data[[rowNo]] <- result
+						rowNo <- rowNo + 1
 					}
-					
-					if (i == 1)
-						result[[".isNewGroup"]] <- TRUE
-				
-					data[[rowNo]] <- result
-					rowNo <- rowNo + 1
 				}
 			}
 		}
@@ -631,7 +669,6 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 				 base_breaks_x(summaryStat$groupingVariable)
 								
 			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-			print(p)
 			content <- .endSaveImage(image)
 
 			descriptivesPlot[["data"]] <- content
