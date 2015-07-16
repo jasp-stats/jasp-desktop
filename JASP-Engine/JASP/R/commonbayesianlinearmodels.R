@@ -421,7 +421,7 @@
 	} else if (options$bayesFactorType == "BF01") {
 		bfm.title <- "BF<sub>M</sub>"
 		bf.title <- "BF<sub>01</sub>"
-	} else if (options$bayesFactorType == "LogBF10"){
+	} else if (options$bayesFactorType == "LogBF10") {
 		bfm.title <- "Log(BF<sub>M</sub>)"
 		bf.title <- "Log(BF<sub>10</sub>)"
 	}
@@ -430,12 +430,15 @@
 		list (
 			list (name = "Models", type = "string"),
 			list (name = "P(M)", type = "number", format = "sf:4;dp:3"),
-			list (name = "P(M|data)", type = "number", format = "sf:4;dp:3"),
-			list (name = "BFM", type = "number", format = "sf:4;dp:3", title = paste (bfm.title, sep = "")),
-			list (name = "BF10", type = "number", format = "sf:4;dp:3", title = paste (bf.title, sep = "")),
+			list (name = "P(M|data)", type = "number", format = "sf:4;dp:3;log10"),
+			list (name = "BFM", type = "number", format = "sf:4;dp:3;log10", title = paste (bfm.title, sep = "")),
+			list (name = "BF10", type = "number", format = "sf:4;dp:3;log10", title = paste (bf.title, sep = "")),
 			list (name = "% error", type="number", format="sf:4;dp:3")
 		)
-
+	if (options$bayesFactorType == "LogBF10") {
+		fields[[4]] <- list (name = "BFM", type = "number", format = "sf:4;dp:3", title = paste (bfm.title, sep = ""))
+		fields[[5]] <- list (name = "BF10", type = "number", format = "sf:4;dp:3", title = paste (bf.title, sep = ""))
+	}
 	modelTable [["schema"]] <- list (fields = fields)
 
 	if (!status$ready && is.null (status$error.message))
@@ -458,13 +461,13 @@
 
 	rows[[1]] <- list ("Models" = null.model)
 
-	bayes.factors [1] <- 1
-	numerical.error[1]<- 0
+	bayes.factors [1] <- 0
+	numerical.error[1] <- 0
 	if (no.models > 0) {
 		for (m in 1:no.models) {
 			rows[[m + 1]] <- list ("Models" = model$models [[m]]$title)
 			if (perform == "run" && status$ready && model$models [[m]]$ready) {
-				bayes.factors [m + 1] <- exp(model$models [[m]]$bf@bayesFactor$bf)
+				bayes.factors [m + 1] <- model$models [[m]]$bf@bayesFactor$bf
 				numerical.error [m + 1] <- model$models [[m]]$bf@bayesFactor$error
 			}
 		}
@@ -474,30 +477,34 @@
 	if (perform == "run" && status$ready) {
 		if (populate == FALSE) {
 			#This is set for intermediate populating of tables
-			if (any (is.na (bayes.factors)) || any (!is.finite (bayes.factors))) {
-				tmp <- which (!is.na (bayes.factors) & is.finite (bayes.factors))
-				posterior.probabilities <- rep (0 , no.models + 1)
-				posterior.probabilities [tmp] <- bayes.factors [tmp] / sum (bayes.factors [tmp])
-			} else {
-				posterior.probabilities <- bayes.factors / sum (bayes.factors)
-			}
-			prior.probabilities <- rep(1 / (no.models + 1), no.models + 1)
-			model$effects <- cbind (model$effects, prior.probabilities [-1], posterior.probabilities [-1])
+			ln.prob <- rep (NA, no.models + 1)
+			index <- which (!is.na (bayes.factors) & is.finite (bayes.factors))
+			maxLBF <- max (bayes.factors [index])
+			ln.prob [index] <- bayes.factors [index] - maxLBF
+			ln.prob [index] <- ln.prob [index] - log (sum (exp (ln.prob [index])))
+			ln.BF.model <- sapply (1:(no.models+1),function(m) {
+				if (m %in% index) {
+					bayes.factors [m] - maxLBF - log (sum (exp (bayes.factors[-m] - maxLBF))) + log (no.models)					
+				} else {
+					NA
+				}
+			})
+			model$effects <- cbind (model$effects, 1 / (no.models + 1), exp (ln.prob [-1]))
 
-			BFmodel <- (posterior.probabilities / (1 - posterior.probabilities)) / 
-				(prior.probabilities / (1 - prior.probabilities))
-
-			rows [[1]] [["P(M)"]] <- .clean (prior.probabilities [1])
-			rows [[1]] [["P(M|data)"]] <- .clean (posterior.probabilities [1])
+			rows [[1]] [["P(M)"]] <- .clean (1 / (no.models + 1))
+			rows [[1]] [["P(M|data)"]] <- .clean (ln.prob [1] / log (10))
 		}#end populate == FALSE
 		
-		if(options$bayesFactorType == "LogBF10") {
-			if (populate == FALSE)
-				rows [[1]] [["BFM"]] <- .clean (log (BFmodel [1]))
+		if (populate == FALSE) {
+			if (options$bayesFactorType == "LogBF10") { 
+				rows [[1]] [["BFM"]] <- .clean (ln.BF.model [1])
+			} else {
+				rows [[1]] [["BFM"]] <- .clean (ln.BF.model [1] / log (10))
+			}
+		}
+		if (options$bayesFactorType == "LogBF10") {
 			rows [[1]] [["BF10"]] <- 0
 		} else {
-			if (populate == FALSE)
-				rows [[1]] [["BFM"]] <- .clean (BFmodel [1])
 			rows [[1]] [["BF10"]] <- 1
 		}
 		rows [[1]] [["% error"]] <- ""
@@ -506,20 +513,20 @@
 			if (model$models [[m]]$ready) {
 				if (populate == FALSE) { 
 					#This is set for intermediate populating of tables
-					rows [[m+1]] [["P(M)"]] <- .clean (prior.probabilities [m+1])
-					rows [[m+1]] [["P(M|data)"]] <- .clean (posterior.probabilities [m+1])
+					rows [[m+1]] [["P(M)"]] <- .clean (1 / (no.models + 1))
+					rows [[m+1]] [["P(M|data)"]] <- .clean (ln.prob [m + 1] / log (10))
 				}#end populate == FALSE
 				if (options$bayesFactorType == "LogBF10") {
 					if (populate == FALSE)
-						rows [[m+1]] [["BFM"]] <- .clean (log (BFmodel [m+1]))
-					rows [[m+1]] [["BF10"]] <- .clean (log (bayes.factors [m + 1]))
+						rows [[m+1]] [["BFM"]] <- .clean (ln.BF.model [m + 1])
+					rows [[m+1]] [["BF10"]] <- .clean (bayes.factors [m + 1])
 				} else{
 					if (populate == FALSE)
-						rows [[m+1]] [["BFM"]] <- .clean (BFmodel [m+1])
+						rows [[m+1]] [["BFM"]] <- .clean (ln.BF.model [m + 1] / log (10))
 					if (options$bayesFactorType == "BF10") {
-						rows [[m+1]] [["BF10"]] <- .clean (bayes.factors [m + 1])
+						rows [[m+1]] [["BF10"]] <- .clean (bayes.factors [m + 1] / log (10))
 					} else {
-						rows [[m+1]] [["BF10"]] <- .clean (1 / bayes.factors [m + 1])
+						rows [[m+1]] [["BF10"]] <- .clean (- bayes.factors [m + 1] / log (10))
 					}
 				}
 				rows [[m+1]] [["% error"]] <- .clean (100*numerical.error [m + 1])
