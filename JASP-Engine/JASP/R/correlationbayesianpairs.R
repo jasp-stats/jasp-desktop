@@ -120,16 +120,41 @@
 		priorLine <- .priorRhoPlus(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, kappa= kappa)
 		
-		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
-			stop("Posterior is too peaked")
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
+		
+			betaApproximation <- TRUE
+			
+			if (any(is.na(c(betaA, betaB))))
+				stop("Posterior is too peaked")
+			
+			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=FALSE)
+			posteriorLine[rho < 0] <- 0
+			
+			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+				stop("Posterior is too peaked")
+				
+		}
+			
 		
 	} else if (oneSided == "left") {
 	
 		priorLine <- .priorRhoMin(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRhoMin(rho=rho, n=n, r=r, kappa=kappa)
 		
-		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
-			stop("Posterior is too peaked")
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
+		
+			betaApproximation <- TRUE
+			
+			if (any(is.na(c(betaA, betaB))))
+				stop("Posterior is too peaked")
+			
+			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=TRUE)
+			posteriorLine[rho > 0] <- 0
+			
+			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+				stop("Posterior is too peaked")
+				
+		}
 	}
 	
 	

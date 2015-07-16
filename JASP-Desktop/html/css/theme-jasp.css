@@ -187,30 +187,7 @@ svg > text
 	opacity: 0.33 ;
 }
 
-.jasp-image-loader {
 
-	position: absolute ;
-	top : 0 ;
-	left: 0 ;
-	width: 100% ;
-	height: 100% ;
-	background-repeat:no-repeat;
-	background-position: center center;
-	visibility: hidden ;
-	z-index: 50 ;
-}
-
-.running .jasp-image-loader {
-
-	background-image : url('images/running-large.gif') ;
-	visibility: visible ;
-}
-
-.waiting .jasp-image-loader {
-
-	background-image : url('images/waiting-large.png') ;
-	visibility: visible ;
-}
 
 .jasp-image-resizer {
 
@@ -249,6 +226,19 @@ div.toolbar {
 	position: relative;
 }
 
+div.image-status {
+
+	position: absolute ;
+	top : 0 ;
+	left: 0 ;
+	width: 100% ;
+	height: 100% ;
+	background-repeat:no-repeat;
+	background-position: center center;
+	visibility: hidden ;
+	z-index: 50 ;
+}
+
 div.status {
 
 	width: 16px ;
@@ -256,16 +246,31 @@ div.status {
 	background-size : 100% ;
 	display: inline-block ;
 	margin-left : 6px ;
+	visibility: hidden ;
 }
 
 div.status.running {
 
 	background : url(images/running.gif) no-repeat ;
+	visibility: visible ;
 }
 
 div.status.waiting {
 
 	background : url(images/waiting.gif) no-repeat ;
+	visibility: visible ;
+}
+
+div.image-status.running {
+
+	background-image : url('images/running-large.gif') ;
+	visibility: visible ;
+}
+
+div.image-status.waiting {
+
+	background-image : url('images/waiting-large.png') ;
+	visibility: visible ;
 }
 
 .error-state {

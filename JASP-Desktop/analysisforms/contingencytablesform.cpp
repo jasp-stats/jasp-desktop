@@ -55,6 +55,9 @@ ContingencyTablesForm::ContingencyTablesForm(QWidget *parent) :
 
 	ui->groupZTest->hide();
 	ui->groupResiduals->hide();
+
+	ui->groupCochrans->hide();
+	ui->groupNominalByInterval->hide();
 #else
 	ui->lambda->setStyleSheet("background-color: pink;");
 	ui->uncertaintyCoefficient->setStyleSheet("background-color: pink;");
@@ -71,6 +74,9 @@ ContingencyTablesForm::ContingencyTablesForm(QWidget *parent) :
 
 	ui->groupZTest->setStyleSheet("background-color: pink;");
 	ui->groupResiduals->setStyleSheet("background-color: pink;");
+
+	ui->groupCochrans->setStyleSheet("background-color: pink;");
+	ui->groupNominalByInterval->setStyleSheet("background-color: pink;");
 #endif
 
 	ui->oddsRatioConfidenceIntervalInterval->setLabel("Confidence interval");

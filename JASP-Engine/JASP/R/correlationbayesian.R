@@ -367,7 +367,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							if (credibleIntervals){
 								calculatedCIValues <- all.bfs$ciValues
 								
-								if (!(credibleIntervalsInterval %in% calculatedCIValues)){
+								if (!is.na(all.bfs$bf10) && !(credibleIntervalsInterval %in% calculatedCIValues)){
 									# put this in for the next time
 									# Output prepare
 									new.ci.label <- as.character(round(credibleIntervalsInterval, 5))
@@ -430,7 +430,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								if (credibleIntervals){
 									calculatedCIValues <- all.bfs$ciValues
 									
-									if (!(credibleIntervalsInterval %in% calculatedCIValues)){
+									if (!is.na(all.bfs$bf10) && !(credibleIntervalsInterval %in% calculatedCIValues)){
 										# put this in for the next time
 										# Output prepare
 										new.ci.label <- as.character(round(credibleIntervalsInterval, 5))
@@ -667,7 +667,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 
 .priorRho <- function(rho, kappa=1) {
-	.scaledBeta(rho, 1/kappa, 1/kappa)	
+	.scaledBeta(rho, 1/kappa, 1/kappa)
 }
 
 .priorRhoPlus <- function(rho, kappa=1) {
@@ -1026,8 +1026,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	# Ex.	if we retrieve bfs from methodNumber 6, we don't know anything about the posterior, so no report at all
 	#
 	tempList <- list(vector())
-	output <- list(n=n, r=r, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, CIs=tempList, ciValues=ciValue)
-	
+	output <- list(n=n, r=r, bf10=NA, bfPlus0=NA, bfMin0=NA, methodNumber=NA, betaA=NA, betaB=NA, 
+				   twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
+				   CIs=tempList, ciValues=ciValue, acceptanceRate=1)
+	# Note: If log(bf10) then use beta fit for the one sided bfs
+	# The 24 is based on n=430, r=-0.3500786
+	hyperGeoOverFlowThreshold <- 24
+
 	# Note: Data check
 	#
 	if (any(is.na(r)) ){
@@ -1102,9 +1107,52 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			output$minSidedTooPeaked <- TRUE
 			return(output)
 		} else if (!base::is.infinite(output$bf10)){
-			# Note: bfPlus0, bfMin0: PREPARE
-			output$bfPlus0 <- output$bf10 + .mPlusExact(n, r, kappa)
-			output$bfMin0 <- output$bf10 + .mPlusExact(n, -r, kappa)
+			# Calculate beta fit
+			someFit <- .posteriorBetaParameters(n, r, kappa)
+			# Store output
+			output$betaA <- someFit$betaA
+			output$betaB <- someFit$betaB
+			
+			if (log(output$bf10) > hyperGeoOverFlowThreshold){
+				# Avoid overflow in hypergeo
+				# Recalculate BF10
+				savageDickyNumerator <- .priorRho(0, kappa)
+				savageDickyDenominator <- .scaledBeta(0, someFit$betaA, someFit$betaB)
+				#
+				output$bf10 <- savageDickyNumerator/savageDickyDenominator
+				
+				if (base::is.infinite(output$bf10)){
+					# Note: Check extreme
+					if (r >= 0){
+						output$bfPlus0 <- Inf
+						output$bfMin0 <- 0
+					} else if (r < 0){
+						output$bfPlus0 <- 0
+						output$bfMin0 <- Inf
+					}
+					# Posterior is too peaked
+					output$twoSidedTooPeaked <- TRUE 
+					output$plusSidedTooPeaked <- TRUE 
+					output$minSidedTooPeaked <- TRUE
+					return(output)
+				} else if (!base::is.infinite(output$bf10)){
+					# Note: bfPlus0, bfMin0: PREPARE
+					leftProportion <- pbeta(1/2, someFit$betaA, someFit$betaB)
+					
+					if (!is.na(leftProportion) && leftProportion <1){
+						output$bfMin0 <- 2*output$bf10*leftProportion
+						output$bfPlus0 <- 2*output$bf10*(1-leftProportion)	
+					} else {
+						rightProportion <- pbeta(1/2, someFit$betaA, someFit$betaB, lower.tail=FALSE)
+						output$bfMin0 <- 2*output$bf10*(1-rightProportion)
+						output$bfPlus0 <- 2*output$bf10*rightProportion
+					}
+				}
+			} else {
+				# Note: bfPlus0, bfMin0: PREPARE
+				output$bfPlus0 <- output$bf10 + .mPlusExact(n, r, kappa)
+				output$bfMin0 <- output$bf10 + .mPlusExact(n, -r, kappa)
+			}
 		}
 	} else if (method=="jeffreysIntegrate" || method==2){
 		output$methodNumber <- 2
@@ -1138,9 +1186,52 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			
 			return(output)
 		} else if (!base::is.infinite(output$bf10)){
-			# Note: bfPlus0, bfMin0: PREPARE
-			output$bfPlus0 <- output$bf10 + .mPlusJeffreysIntegrate(n, r, kappa)
-			output$bfMin0 <- output$bf10 + .mPlusJeffreysIntegrate(n, -r, kappa)
+			# Calculate beta fit
+			someFit <- .posteriorBetaParameters(n, r, kappa)
+			# Store output
+			output$betaA <- someFit$betaA
+			output$betaB <- someFit$betaB
+			
+			if (log(output$bf10) > hyperGeoOverFlowThreshold){
+				# To avoid overflow in the hypergeometric function
+				# Recalculate BF10
+				savageDickyNumerator <- .priorRho(0, kappa)
+				savageDickyDenominator <- .scaledBeta(0, someFit$betaA, someFit$betaB)
+				#
+				output$bf10 <- savageDickyNumerator/savageDickyDenominator
+				
+				if (base::is.infinite(output$bf10)){
+					# Note: Check extreme
+					if (r >= 0){
+						output$bfPlus0 <- Inf
+						output$bfMin0 <- 0
+					} else if (r < 0){
+						output$bfPlus0 <- 0
+						output$bfMin0 <- Inf
+					}
+					# Posterior is too peaked
+					output$twoSidedTooPeaked <- TRUE 
+					output$plusSidedTooPeaked <- TRUE 
+					output$minSidedTooPeaked <- TRUE
+					return(output)
+				} else if (!base::is.infinite(output$bf10)){
+					# Note: bfPlus0, bfMin0: PREPARE
+					leftProportion <- pbeta(1/2, someFit$betaA, someFit$betaB)
+					
+					if (!is.na(leftProportion) && leftProportion <1){
+						output$bfMin0 <- 2*output$bf10*leftProportion
+						output$bfPlus0 <- 2*output$bf10*(1-leftProportion)	
+					} else {
+						rightProportion <- pbeta(1/2, someFit$betaA, someFit$betaB, lower.tail=FALSE)
+						output$bfMin0 <- 2*output$bf10*(1-rightProportion)
+						output$bfPlus0 <- 2*output$bf10*rightProportion
+					}
+				}
+			} else {
+				# Note: bfPlus0, bfMin0: PREPARE
+				output$bfPlus0 <- output$bf10 + .mPlusJeffreysIntegrate(n, r, kappa)
+				output$bfMin0 <- output$bf10 + .mPlusJeffreysIntegrate(n, -r, kappa)
+			}
 		}
 	} else if (method=="numerical" || method==3){
 		output$methodNumber <- 3
@@ -1174,9 +1265,52 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			output$minSidedTooPeaked <- TRUE
 			return(output)
 		} else if (!base::is.infinite(output$bf10)){
-			# Note: bfPlus0, bfMin0: PREPARE
-			output$bfPlus0 <- .bfPlus0Numerical(n, r, kappa, lowerRho=0, upperRho=1)
-			output$bfMin0 <- .bfPlus0Numerical(n, r, kappa, lowerRho=-1, upperRho=0)
+			# Calculate beta fit
+			someFit <- .posteriorBetaParameters(n, r, kappa)
+			# Store output
+			output$betaA <- someFit$betaA
+			output$betaB <- someFit$betaB
+			
+			if (log(output$bf10) > hyperGeoOverFlowThreshold){
+				# To avoid overflow in the numerical integration
+				# Recalculate BF10
+				savageDickyNumerator <- .priorRho(0, kappa)
+				savageDickyDenominator <- .scaledBeta(0, someFit$betaA, someFit$betaB)
+				#
+				output$bf10 <- savageDickyNumerator/savageDickyDenominator
+				
+				if (base::is.infinite(output$bf10)){
+					# Note: Check extreme
+					if (r >= 0){
+						output$bfPlus0 <- Inf
+						output$bfMin0 <- 0
+					} else if (r < 0){
+						output$bfPlus0 <- 0
+						output$bfMin0 <- Inf
+					}
+					# Posterior is too peaked
+					output$twoSidedTooPeaked <- TRUE 
+					output$plusSidedTooPeaked <- TRUE 
+					output$minSidedTooPeaked <- TRUE
+					return(output)
+				} else if (!base::is.infinite(output$bf10)){
+					# Note: bfPlus0, bfMin0: PREPARE
+					leftProportion <- pbeta(1/2, someFit$betaA, someFit$betaB)
+					
+					if (!is.na(leftProportion) && leftProportion <1){
+						output$bfMin0 <- 2*output$bf10*leftProportion
+						output$bfPlus0 <- 2*output$bf10*(1-leftProportion)	
+					} else {
+						rightProportion <- pbeta(1/2, someFit$betaA, someFit$betaB, lower.tail=FALSE)
+						output$bfMin0 <- 2*output$bf10*(1-rightProportion)
+						output$bfPlus0 <- 2*output$bf10*rightProportion
+					}
+				}
+			} else {
+				# Note: bfPlus0, bfMin0: PREPARE
+				output$bfPlus0 <- .bfPlus0Numerical(n, r, kappa, lowerRho=0, upperRho=1)
+				output$bfMin0 <- .bfPlus0Numerical(n, r, kappa, lowerRho=-1, upperRho=0)
+			}
 		}
 	} else if  (method=="metropolisHastings" || method==4){
 		# We use the Marsman Sampler (c) here based on posterior model fit. 
@@ -1186,10 +1320,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		# Calculate bf10
 		savageDickyNumerator <- .priorRho(0, kappa)
 		savageDickyDenominator <- .scaledBeta(0, marsmanResult$betaA, marsmanResult$betaB)
-		output <- list(bf10=savageDickyNumerator/savageDickyDenominator, bfPlus0=NA, bfMin0=NA, methodNumber=4, 
-					   betaA=marsmanResult$betaA, betaB=marsmanResult$betaB, 
-					   twoSidedTooPeaked=FALSE, plusSidedTooPeaked=FALSE, minSidedTooPeaked=FALSE, 
-					   acceptanceRate=marsmanResult$acceptanceRate)
+		
+		# Save output
+		output$bf10 <- savageDickyNumerator/savageDickyDenominator
+		output$betaA <- marsmanResult$betaA
+		output$betaB <- marsmanResult$betaB
+		output$acceptanceRate <- marsmanResult$acceptanceRate
 		
 		# Note: bf10: CHECK
 		if (is.na(output$bf10) || output$bf10 < 0){
@@ -1220,8 +1356,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		} else if (!base::is.infinite(output$bf10)){
 			# Note: bfPlus0, bfMin0: PREPARE
 			leftProportion <- pbeta(1/2, marsmanResult$betaA, marsmanResult$betaB)
-			output$bfMin0 <- 2*output$bf10*leftProportion
-			output$bfPlus0 <- 2*output$bf10*(1-leftProportion)	
+			
+			if (!is.na(leftProportion) && leftProportion <1){
+				output$bfMin0 <- 2*output$bf10*leftProportion
+				output$bfPlus0 <- 2*output$bf10*(1-leftProportion)	
+			} else {
+				rightProportion <- pbeta(1/2, marsmanResult$betaA, marsmanResult$betaB, lower.tail=FALSE)
+				output$bfMin0 <- 2*output$bf10*(1-rightProportion)
+				output$bfPlus0 <- 2*output$bf10*rightProportion
+			}
 		}
 	} else if (method=="jeffreysApprox" || method==5){
 		output$methodNumber <- 5
@@ -1258,17 +1401,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		return(output)
 	}
 	
-	if (output$methodNumber %in% 1:3){
-		someFit <- .posteriorBetaParameters(n=n, r=r, kappa=kappa)
-		output$betaA <- someFit$betaA
-		output$betaB <- someFit$betaB
-		
-		if (!is.na(output$betaA) && !is.na(output$betaB)){
-			output$CIs <- .credibleIntervals(output$betaA, output$betaB, ciValue)
-		}
-	} else if (output$methodNumber==4){
+	# Note: Calculate credible intervals
+	if (!is.na(output$betaA) && !is.na(output$betaB)){
 		output$CIs <- .credibleIntervals(output$betaA, output$betaB, ciValue)
 	}
+	
 	# Note: bfPlus0, bfMin0: CHECK
 	if (any(is.na(c(output$bfPlus0, output$bfMin0)))){
 		# Note: bfPlus0, bfMin0: NOT ok
@@ -1299,24 +1436,26 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	
 	# Note: bfPlus0, bfMin0: CHECK COHERENCE:
-	if (r > 0 && output$bfPlus0 > 1 && output$bfMin0 > 1 || any(c(output$bfPlus0, output$bfMin0)<0)){
-		# Note: Data: OK, 
-		# 		bf10: OK. 
-		#		bfPlus0: OK
-		#		bfMin0: NOT ok 
-		# 
-		# bfMin0 is bigger than one due to overflow: bfMin0 = 2*bf10 - bfPlus0. 
-		# Example: 2*1.2.... 10^ 24 - 2.... 10^24 = 1... 10^12 (due to round off)
-		#
-		output$bfMin0 <- 10^(-317) 
-		output$bfPlus0 <- 2*output$bf10 - output$bfMin0
-	} else if (r < 0 && output$bfMin0 > 1 && output$bfPlus0 > 1 || any(c(output$bfPlus0, output$bfMin0)<0)){
-		# Note: Data: OK, 
-		# 		bf10: OK. 
-		#		bfPlus0: NOT ok
-		#		bfMin0: OK
-		output$bfPlus0 <- 10^(-317) 
-		output$bfMin0 <- 2*output$bf10 - output$bfPlus0
+	if (output$bfPlus0 > 1 && output$bfMin0 > 1 || any(c(output$bfPlus0, output$bfMin0)<0)){
+		if (r>0){
+			# Note: Data: OK, 
+			# 		bf10: OK. 
+			#		bfPlus0: OK
+			#		bfMin0: NOT ok 
+			# 
+			# bfMin0 is bigger than one due to overflow: bfMin0 = 2*bf10 - bfPlus0. 
+			# Example: 2*1.2.... 10^ 24 - 2.... 10^24 = 1... 10^12 (due to round off)
+			#
+			output$bfMin0 <- 10^(-317) 
+			output$bfPlus0 <- 2*output$bf10 - output$bfMin0
+		} else if (r < 0) {
+			# Note: Data: OK, 
+			# 		bf10: OK. 
+			#		bfPlus0: NOT ok
+			#		bfMin0: OK
+			output$bfPlus0 <- 10^(-317) 
+			output$bfMin0 <- 2*output$bf10 - output$bfPlus0
+		}
 	}
 	return(output)
 }
@@ -1624,7 +1763,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 #------------------------------------------------- Matrix Plot -------------------------------------------------#
 
 ### empty posterior Plot with error message ###
-.displayErrorPosterior <- function(errorMessage=NULL , xticks, xlabels, xlim, cexText=1.6, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.28, lwdAxis= 1.2) {
+.displayErrorPosterior <- function(errorMessage=NULL, xticks, xlabels, xlim, cexText=1.6, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.28, lwdAxis= 1.2) {
 	
 	plot(1, 1, xlim= xlim, ylim= 0:1, ylab= "", xlab="", type= "n", axes= FALSE)
 	
@@ -1633,13 +1772,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at = c(0, .5, 1), pos= range(xticks)- 0.08*diff(range(xticks)), labels = c("", "Density", ""), lwd.ticks=0, cex.axis= 1.7, mgp= c(3, 0.7, 0), las=0)
 	
-	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.5) #2.25
+	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.5)
 	
 }
 
 #### Plotting Function for posterior ####
 .plotPosterior.BayesianCorrelationMatrix <- function(x, y, kappa=1, oneSided= FALSE, addInformation= FALSE, drawCI= FALSE, lwd= 2, cexPoints= 1.5, cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.28, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2) {
 	
+	tooPeaked <- FALSE
 	screenedData <- .excludePairwiseCorData(x, y)
 	
 	x <- screenedData$v1
@@ -1661,20 +1801,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	if (oneSided == "left") {
 		stretch <- 1.32
-	}	
-	
-	#if (oneSided == FALSE) {
-	#	
-	#	dmax <- optimize(f= function(x).posteriorRho(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
-	#	
-	#} else if (oneSided == "right") {
-	#	
-	#	dmax <- optimize(f= function(x).posteriorRhoPlus(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
-	#	
-	#} else if (oneSided == "left") {
-	#	
-	#	dmax <- optimize(f= function(x).posteriorRhoMin(x, n=n, r=r, alpha=alpha), interval= c(-1, 1), maximum = TRUE)$objective # get maximum density
-	#}	
+	}
 	
 	# calculate position of "nice" tick marks and create labels
 	xticks <- seq(-1.0, 1.0, 0.25)
@@ -1698,12 +1825,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			betaApproximation <- TRUE
 			
 			if (any(is.na(c(betaA, betaB))))
-				stop("Posterior is too peaked")
+				tooPeaked <- TRUE
 			
 			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho)
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
-				stop("Posterior is too peaked")
+				tooPeaked <- TRUE
 		}
 	
 	} else if (oneSided == "right") {
@@ -1711,16 +1838,41 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		priorLine <- .priorRhoPlus(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, kappa= kappa)
 		
-		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
-			stop("Posterior is too peaked")
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
 		
+			betaApproximation <- TRUE
+			
+			if (any(is.na(c(betaA, betaB))))
+				tooPeaked <- TRUE
+			
+			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=FALSE)
+			posteriorLine[rho < 0] <- 0
+			
+			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+				tooPeaked <- TRUE
+				
+		}
+			
 	} else if (oneSided == "left") {
 	
 		priorLine <- .priorRhoMin(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRhoMin(rho=rho, n=n, r=r, kappa=kappa)
 		
-		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
-			stop("Posterior is too peaked")
+		if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine))) {
+		
+			betaApproximation <- TRUE
+			
+			if (any(is.na(c(betaA, betaB))))
+				tooPeaked <- TRUE
+			
+			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=TRUE)
+			posteriorLine[rho > 0] <- 0
+			
+			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
+				tooPeaked <- TRUE
+				
+		}
+
 	}
 	
 	dmax <- max(posteriorLine)
@@ -1734,14 +1886,21 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	ylim <- range(yticks)
 	ylabels <- formatC(yticks, 1, format= "f")
 	
-	plot(1, 1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
+	if (tooPeaked) {
 	
-	lines(rho, posteriorLine, lwd= lwd)
+		.displayErrorPosterior(errorMessage="Posterior is too peaked", xticks=xticks, xlabels=xlabels, xlim=xlim)
 	
-	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
-	axis(2, at = c(ylim[1], mean(ylim), ylim[2]) , pos= range(xticks)- 0.08*diff(range(xticks)), labels = c("", "Density", ""), lwd.ticks=0, cex.axis= 1.7, mgp= c(3, 0.7, 0), las=0)
+	} else {
 	
-	mtext(expression(rho), side = 1, cex = cexXlab, line= 2.5) #2.25
+		plot(1, 1, xlim= xlim, ylim= ylim, ylab= "", xlab="", type= "n", axes= FALSE)
+		
+		lines(rho, posteriorLine, lwd= lwd)
+		
+		axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
+		axis(2, at = c(ylim[1], mean(ylim), ylim[2]) , pos= range(xticks)- 0.08*diff(range(xticks)), labels = c("", "Density", ""), lwd.ticks=0, cex.axis= 1.7, mgp= c(3, 0.7, 0), las=0)
+		
+		mtext(expression(rho), side = 1, cex = cexXlab, line= 2.5)
+	}
 	
 }
 
@@ -1884,7 +2043,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				
 				if (l == 1) {
 					
-					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))	
+					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
 					
 					.plotMarginalCor(dataset[[variables[1]]]) 
 					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)	
@@ -1925,7 +2084,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								}
 							}
 							
-							if (col < row) {							
+							if (col < row) {
 								
 								if (options$plotPosteriors) {
 									.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided, kappa=options$priorWidth)

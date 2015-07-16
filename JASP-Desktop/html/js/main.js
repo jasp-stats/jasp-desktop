@@ -106,10 +106,10 @@ $(document).ready(function () {
 		var exportParams = new JASPWidgets.Exporter.params();
 		exportParams.format = JASPWidgets.ExportProperties.format.formattedHTML;
 		exportParams.process = JASPWidgets.ExportProperties.process.save;
-		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.embedded;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.embedded;
 
 		if (filename === "%PREVIEW%") {
-			exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.resource;
+			exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.resource;
 		}
 
 		JASPWidgets.Exporter.begin(exportObject, exportParams, true, "margin: .7em; padding: 1em;")
@@ -186,7 +186,7 @@ $(document).ready(function () {
 
 	var selectedHandler = function (event) {
 
-		if ($(event.target).is(".jasp-toolbar") || $(event.target).is(".jasp-toolbar > *"))
+		if ($(event.target).is(".jasp-resize") || $(event.target).is(".jasp-toolbar") || $(event.target).is(".jasp-toolbar > *"))
 			return
 
 		var id = $(event.currentTarget).attr("id")
@@ -210,8 +210,6 @@ $(document).ready(function () {
 		jasp.analysisChangedDownstream(data.id, JSON.stringify(data.model))
 
 	}
-
-
 
 	window.analysisChanged = function (analysis) {
 
@@ -295,7 +293,6 @@ $(document).ready(function () {
 
 })
 
-
 var wrapHTML = function (html, exportParams) {
 	var completehtml = "<!DOCTYPE HTML>\n"
 	completehtml += "<html>\n"
@@ -317,106 +314,19 @@ var wrapHTML = function (html, exportParams) {
 	return completehtml;
 };
 
-var stringify = function (element, tabs) {
-
-	tabs = tabs || ""
-
-	var text = ""
-	var $el = $(element)
-
-	if ($el.hasClass("do-not-copy"))
-		return text
-
-	var tag = $el.prop("tagName").toLowerCase()
-
-	var attrs = ""
-	var style = ""
-
-	var css = $el.css(["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align"])
-
-	if (tag === "td" || tag === "th") {
-
-		if (css["border-top-width"])
-			style += "border-width : " + css["border-top-width"] + " " + css["border-right-width"] + " " + css["border-bottom-width"] + " " + css["border-left-width"] + "; "
-		if (css["border-color"])
-			style += "border-color : " + css["border-color"] + "; "
-		if (css["border-style"])
-			style += "border-style : " + css["border-style"] + "; "
-		if (css['text-align'])
-			style += "text-align : " + css['text-align'] + "; "
-		if (css['padding'])
-			style += "padding : " + css['padding'] + "; "
-		if ($el.prop("rowspan") && $el.prop("rowspan") != 1)
-			attrs += 'rowspan="' + $el.prop("rowspan") + '" '
-		if ($el.prop("colspan") && $el.prop("colspan") != 1)
-			attrs += 'colspan="' + $el.prop("colspan") + '" '
-	}
-
-	if (tag === "table" && css['border-collapse'])
-		style += "border-collapse : " + css['border-collapse'] + "; "
-
-	if (style)
-		text = tabs + '<' + tag + ' style="' + style + '" ' + attrs + '>'
-	else
-		text = tabs + '<' + tag + ' ' + attrs + '>'
-
-	var contents = $el.contents()
-
-	if (contents.length > 0) {
-
-		for (var i = 0; i < contents.length; i++) {
-			var node = contents[i]
-			if (node.nodeType === 3) {
-				var value = $(node).text()
-				if (value) {
-
-					value = value
-						.replace(/&/g, '&amp;')
-						.replace(/"/g, '&quot;')
-						.replace(/'/g, '&#39;')
-						.replace(/</g, '&lt;')
-						.replace(/>/g, '&gt;')
-						.replace(/\u2212/g, '-')
-
-					text += "\n" + tabs + value + "\n"
-				}
-			}
-			else {
-				text += "\n" + stringify(contents[i], tabs + "\t")
-			}
-		}
-
-		text += tabs + '</' + tag + '>\n'
-	}
-	else {
-
-		text += '</' + tag + '>\n'
-	}
-
-	return text
-}
-
-var pushToClipboard = function (element) {
-
-	var $el = $(element)
-
-	jasp.pushToClipboard("text/html", "", stringify($el, "\t\t"));
-
-}
-
 var pushHTMLToClipboard = function (exportContent, exportParams) {
-	jasp.pushToClipboard("text/html", "", wrapHTML(exportContent.html, exportParams));
 
+	jasp.pushToClipboard("text/html", "", wrapHTML(exportContent.html, exportParams));
 }
 
 var pushTextToClipboard = function (exportContent, exportParams) {
 
-	jasp.pushToClipboard("text/plain", exportContent.data, wrapHTML(exportContent.html, exportParams))
+	jasp.pushToClipboard("text/plain", exportContent.raw, wrapHTML(exportContent.html, exportParams))
 }
 
 var pushImageToClipboard = function (exportContent, exportParams) {
-	jasp.pushImageToClipboard(exportContent.data, wrapHTML(exportContent.html, exportParams))
 
+	jasp.pushImageToClipboard(exportContent.raw, wrapHTML(exportContent.html, exportParams))
 }
 
 

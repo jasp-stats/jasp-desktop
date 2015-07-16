@@ -7,7 +7,6 @@ JASPWidgets.table = Backbone.Model.extend({
 		data: [],
 		casesAcrossColumns: false,
 		formats: null,
-		status: "waiting",
 		footnotes: [],
 		citation: null,
 		error: null
@@ -996,7 +995,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 		
 		this.toolbar.render();
-		this.toolbar.$el.append('<div class="status">');
+		this.toolbar.$el.append('<div class="status"></div>');
 
 		var $container = this.$el.find("div.toolbar");
 		$container.append(this.toolbar.$el);
@@ -1127,7 +1126,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		var exportParams = new JASPWidgets.Exporter.params();
 		exportParams.format = JASPWidgets.ExportProperties.format.html;
 		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
 
 		this.exportBegin(exportParams);
 
@@ -1143,7 +1142,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		var exportParams = new JASPWidgets.Exporter.params();
 		exportParams.format = JASPWidgets.ExportProperties.format.html;
 		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.imageFormat = JASPWidgets.ExportProperties.imageFormat.temporary;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
 
 		var optCitation = this.model.get("citation");
 
