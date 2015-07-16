@@ -483,6 +483,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 
 .ttestBayesianIndependentSamplesTTest <- function(dataset, options, perform, state, diff) {
 
+
 	g1 <- NULL
 	g2 <- NULL
 
@@ -588,7 +589,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	for (variable in options[["variables"]]) {
 	
 		if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-			&& diff$bayesFactorType == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
+			&& diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
 			
 				index <- which(state$options$variables == variable)
 				
@@ -638,7 +639,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 			}
 	}
 	
-	if (!is.null(state) && all(options[["variables"]] %in% state$options$variables))
+	rowCompleted <- logical(length(ttest.rows))
+	
+	for (i in seq_along(ttest.rows))
+		rowCompleted[i] <- ifelse(length(ttest.rows[[i]]) > 1, TRUE, FALSE)
+	
+	if (!is.null(state) && all(options[["variables"]] %in% state$options$variables) && options$groupingVariable == state$options$groupingVariable && all(rowCompleted))
 		ttest[["status"]] <- "complete"
 	
 	if (perform == "run" && length(options$variables) != 0 && options$groupingVariable != "") {
@@ -691,7 +697,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 				
 				
 				if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-				&& diff$bayesFactorType == FALSE && diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
+				&& diff$groupingVariable == FALSE && diff$missingValues == FALSE)))) {
 				
 					index <- which(state$options$variables == variable)
 					
@@ -701,31 +707,31 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 						if (! (is.logical(diff) && diff == FALSE) && diff$bayesFactorType) {
 					
-						if (state$options$bayesFactorType == "BF10") {
-						
-							if (options$bayesFactorType == "BF01") {
-								ttest.rows[[rowNo]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-							} else if (options$bayesFactorType == "LogBF10") {
-								ttest.rows[[rowNo]]$BF <- log(state$results$ttest$data[[index]]$BF)
-							}
+							if (state$options$bayesFactorType == "BF10") {
 							
-						} else if (state$options$bayesFactorType == "BF01") {
-						
-							if (options$bayesFactorType == "BF10") {
-								ttest.rows[[rowNo]]$BF <- 1 / state$results$ttest$data[[index]]$BF
-							} else if (options$bayesFactorType == "LogBF10") {
-								ttest.rows[[rowNo]]$BF <- log(1 / state$results$ttest$data[[index]]$BF)
-							}
+								if (options$bayesFactorType == "BF01") {
+									ttest.rows[[rowNo]]$BF <- 1 / state$results$ttest$data[[index]]$BF
+								} else if (options$bayesFactorType == "LogBF10") {
+									ttest.rows[[rowNo]]$BF <- log(state$results$ttest$data[[index]]$BF)
+								}
+								
+							} else if (state$options$bayesFactorType == "BF01") {
 							
-						} else if (state$options$bayesFactorType == "LogBF10") {
-						
-							if (options$bayesFactorType == "BF10") {
-								ttest.rows[[rowNo]]$BF <- exp(state$results$ttest$data[[index]]$BF)
-							} else if (options$bayesFactorType == "BF01") {
-								ttest.rows[[rowNo]]$BF <- exp(1 / state$results$ttest$data[[index]]$BF)
+								if (options$bayesFactorType == "BF10") {
+									ttest.rows[[rowNo]]$BF <- 1 / state$results$ttest$data[[index]]$BF
+								} else if (options$bayesFactorType == "LogBF10") {
+									ttest.rows[[rowNo]]$BF <- log(1 / state$results$ttest$data[[index]]$BF)
+								}
+								
+							} else if (state$options$bayesFactorType == "LogBF10") {
+							
+								if (options$bayesFactorType == "BF10") {
+									ttest.rows[[rowNo]]$BF <- exp(state$results$ttest$data[[index]]$BF)
+								} else if (options$bayesFactorType == "BF01") {
+									ttest.rows[[rowNo]]$BF <- exp(1 / state$results$ttest$data[[index]]$BF)
+								}
 							}
 						}
-					}
 						
 					} else {
 					
