@@ -208,7 +208,8 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 					if (fsdoe > maxFSDOE)
 						maxFSDOE = fsdoe
 				}
-				else if (lsd < minLSD) {
+				
+				if (lsd < minLSD) {
 
 					minLSD = lsd
 				}
@@ -268,11 +269,11 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 						if (alignNumbers) {
 
-							formatted = { content: Math.exp(10, content).toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
+							formatted = { content: Math.pow(10, content).toFixed(-minLSD).replace(/-/g, "&minus;"), "class": "number" }
 						}
 						else {
 
-							formatted = { content: Math.exp(10, content).toPrecision(sf).replace(/-/g, "&minus;"), "class": "number" }
+							formatted = { content: Math.pow(10, content).toPrecision(sf).replace(/-/g, "&minus;"), "class": "number" }
 						}
 
 						isNumber = true
