@@ -294,7 +294,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 						}
 					
 						if (exp.length === 0)
-							exp = "0"
+							exp = "1"
 
 						exponent = exp
 
