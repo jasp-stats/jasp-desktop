@@ -58,6 +58,7 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	meta [[1]] <- list (name = "title", type = "title")
 	meta [[2]] <- list (name = "model comparison", type = "table")
 	meta [[3]] <- list (name = "effects", type = "table")
+	meta [[4]] <- list (name = "estimates", type = "table")
 	results [[".meta"]] <- meta
 	results [["title"]] <- "Bayesian ANOVA"
 
@@ -90,6 +91,9 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 
 ## Effects Table
 	results [["effects"]] <- .theBayesianLinearModelsEffects (model, options, perform, status, populate = FALSE)
+
+## Posterior Estimates
+	results [["estimates"]] <- .theBayesianLinearModelEstimates (model, options, perform, status)
 
 	new.state <- list (options = options, model = model, status = status)
 	
