@@ -511,7 +511,8 @@
 			ln.prob [index] <- ln.prob [index] - log (sum (exp (ln.prob [index])))
 			ln.BF.model <- sapply (1:(no.models+1),function(m) {
 				if (m %in% index) {
-					bayes.factors [m] - maxLBF - log (sum (exp (bayes.factors[-m] - maxLBF))) + log (no.models)					
+					i <- which (index == m)
+					bayes.factors [m] - maxLBF - log (sum (exp (bayes.factors[index] [-i] - maxLBF))) + log (no.models)
 				} else {
 					NA
 				}
