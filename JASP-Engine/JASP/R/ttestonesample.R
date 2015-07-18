@@ -120,14 +120,16 @@ TTestOneSample <- function(dataset=NULL, options, perform="run", callback=functi
 
 			result <- try (silent = TRUE, expr = {
 			
-				r <- t.test(dataset[[ .v(variable) ]], alternative=testType, mu=options$testValue,
+				data <- na.omit( dataset[[ .v(variable) ]] )
+
+				r <- t.test(data, alternative=testType, mu=options$testValue,
 							conf.level=options$confidenceIntervalInterval)
 			
 				t  <- as.numeric(r$statistic)
 				df <- as.numeric(r$parameter)
 				p  <- as.numeric(r$p.value)
 				m  <- as.numeric(r$estimate - r$null.value)
-				d <- .clean((mean(dataset[[ .v(variable) ]]) - options$testValue) / sd(dataset[[ .v(variable) ]]))
+				d <- .clean((mean(data) - options$testValue) / sd(data))
 				ciLow <- .clean(as.numeric(r$conf.int[1]))
 				ciUp  <- .clean(as.numeric(r$conf.int[2]))
 				
