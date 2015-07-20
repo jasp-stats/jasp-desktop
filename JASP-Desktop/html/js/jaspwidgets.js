@@ -425,10 +425,12 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasCopy: (parent.hasCopy === undefined || parent.hasCopy()) && parent.copyMenuClicked !== undefined,
 			hasCite: (parent.hasCitation === undefined || parent.hasCitation()) && parent.citeMenuClicked !== undefined,
 			hasAnnotate: (parent.hasAnnotate === undefined || parent.hasAnnotate()) && parent.annotateMenuClicked !== undefined,
+			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
+
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasAnnotate;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasAnnotate || this.options.hasRemove;
 	},
 
 	selectionElement: function() {
