@@ -81,6 +81,13 @@ $(document).ready(function () {
 		window.menuObject = null;
 	}
 
+	window.removeMenuClicked = function () {
+		if (window.menuObject.removeMenuClicked)
+			window.menuObject.removeMenuClicked();
+
+		window.menuObject = null;
+	}
+
 	window.analysisMenuHidden = function () {
 		if (window.menuObject !== undefined && window.menuObject !== null) {
 			window.menuObject.toolbar.completeEvent();
@@ -277,6 +284,10 @@ $(document).ready(function () {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
 				window.menuObject = obj;
+			});
+
+			jaspWidget.on("analysis:remove", function (id) {
+				jasp.removeAnalysisRequest(id);
 			});
 		}
 		else

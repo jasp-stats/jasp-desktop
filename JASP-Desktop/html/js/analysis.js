@@ -79,6 +79,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			pushHTMLToClipboard(exportContent, exportParams);
 	},
 
+	removeMenuClicked: function () {
+		this.trigger("analysis:remove", this.model.get('id'));
+	},
+
 	menuName: "Analysis",
 
 	renderChildren: function ($element, result, status, metaEntry) {

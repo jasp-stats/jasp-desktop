@@ -160,6 +160,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
+	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
 
 	_buttonPanel = new QWidget(ui->pageOptions);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
@@ -1098,32 +1099,40 @@ void MainWindow::analysisRunned()
 		_currentAnalysis->scheduleRun();
 }
 
-void MainWindow::analysisRemoved()
+void MainWindow::removeAnalysis(Analysis *analysis)
 {
-	if (_currentOptionsWidget != NULL)
-	{
-		_currentAnalysis->abort();
+	bool selected = false;
+	analysis->abort();
 
+	if (_currentOptionsWidget != NULL && analysis == _currentAnalysis)
+	{
+		selected = true;
 		_currentOptionsWidget->hide();
 		_currentOptionsWidget->unbind();
 		_currentOptionsWidget = NULL;
-
-		_currentAnalysis->setVisible(false);
-
-		QString info("%1,%2");
-		info = info.arg(tq(_currentAnalysis->name()));
-		info = info.arg(_currentAnalysis->id());
-
-		if (_package->isLoaded())
-			_package->setModified(true);
-
-		if (_log != NULL)
-			_log->log("Analysis Removed", info);
 	}
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(_currentAnalysis->id()) % ")");
+	analysis->setVisible(false);
 
-	hideOptionsPanel();
+	QString info("%1,%2");
+	info = info.arg(tq(analysis->name()));
+	info = info.arg(analysis->id());
+
+	if (_package->isLoaded())
+		_package->setModified(true);
+
+	if (_log != NULL)
+		_log->log("Analysis Removed", info);
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.remove(" % QString::number(analysis->id()) % ")");
+
+	if (selected)
+		hideOptionsPanel();
+}
+
+void MainWindow::analysisRemoved()
+{
+	removeAnalysis(_currentAnalysis);
 }
 
 void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html)
@@ -1179,7 +1188,6 @@ void MainWindow::pushImageToClipboardHandler(const QByteArray &base64, const QSt
 		clipboard->setMimeData(mimeData, QClipboard::Clipboard);
 	}
 
-
 	//qDebug() << clipboard->mimeData(QClipboard::Clipboard)->data("text/html");
 }
 
@@ -1221,12 +1229,31 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 		_analysisMenu->addAction(_citeIcon, "Copy Citations", this, SLOT(citeSelected()));
 	}
 
+	if (menuOptions["hasRemove"].asInt())
+	{
+		_analysisMenu->addSeparator();
+		_analysisMenu->addAction("Remove " + objName, this, SLOT(removeSelected()));
+	}
+
 	QPoint point = ui->webViewResults->mapToGlobal(QPoint(menuOptions["rX"].asInt(), menuOptions["rY"].asInt()));
 
 	_analysisMenu->move(point);
 	_analysisMenu->show();
 
 	//ui->webViewResults->page()->mainFrame()->s
+
+}
+
+void MainWindow::removeAnalysisRequestHandler(int id)
+{
+	Analysis *analysis = _analyses->get(id);
+	removeAnalysis(analysis);
+}
+
+void MainWindow::removeSelected()
+{
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.removeMenuClicked();");
 
 }
 
