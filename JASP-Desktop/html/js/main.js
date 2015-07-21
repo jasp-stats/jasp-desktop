@@ -184,7 +184,8 @@ $(document).ready(function () {
 
 	window.unselectByClickingBody = function (event) {
 
-		if (selectedAnalysisId !== -1 && $(event.target).is(".jasp-analysis *") == false) {
+		var target = event.target || event.srcElement;
+		if (selectedAnalysisId !== -1 && $(target).is(".jasp-analysis *") == false) {
 
 			window.unselect()
 			jasp.analysisUnselected()
@@ -196,7 +197,8 @@ $(document).ready(function () {
 
 	var selectedHandler = function (event) {
 
-		if ($(event.target).is(".jasp-resize") || $(event.target).is(".jasp-toolbar") || $(event.target).is(".jasp-toolbar > *"))
+		var target = event.target || event.srcElement;
+		if ($(target).is(".jasp-resize, .toolbar-clickable, .toolbar-clickable *"))
 			return
 
 		var id = $(event.currentTarget).attr("id")

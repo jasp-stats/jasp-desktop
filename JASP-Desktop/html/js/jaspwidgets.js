@@ -327,14 +327,14 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 		if (this.title !== undefined) {
 			if (this.titleTag !== undefined)
-				this.$el.append('<' + this.titleTag + ' class="in-toolbar">' + this.title + '</' + this.titleTag + '>');
+				this.$el.append('<' + this.titleTag + ' class="in-toolbar toolbar-clickable">' + this.title + '</' + this.titleTag + '>');
 			else
 				this.$el.append(this.title);
 		}
 
 		if (this.hasMenu)
 		{
-			this.$el.append('<div class="toolbar-button jasp-menu jasp-hide"/>')
+			this.$el.append('<div class="toolbar-button toolbar-clickable jasp-menu jasp-hide"/>')
 
 			//var $menuBtn = this.$el.find(".jasp-menu")
 
@@ -364,7 +364,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	},
 
 	events: {
-		'mousedown': '_mouseDown',
+		'mousedown .toolbar-clickable': '_mouseDown'
 	},
 
 	_mouseDownGeneral: function (e) {
