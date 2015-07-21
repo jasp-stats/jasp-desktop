@@ -18,6 +18,8 @@ public:
 	bool operator!=(const Version&);
 
 	bool isRelease() const;
+	bool isAlpha() const;
+	bool isBeta() const;
 	std::string asString(bool includeMassive, bool includeRelease) const;
 	bool isEmpty() const;
 

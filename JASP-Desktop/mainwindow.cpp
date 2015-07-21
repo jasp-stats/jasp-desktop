@@ -738,6 +738,9 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 
 		if (errorFound)
 			QMessageBox::warning(this, "", tq(errorMsg.str()));
+
+		if ( ! package->warningMessage.empty())
+			QMessageBox::warning(this, "", tq(package->warningMessage));
 	}
 
 	package->setLoaded();

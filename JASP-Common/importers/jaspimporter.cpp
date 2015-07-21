@@ -28,8 +28,14 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 
 	readManifest(packageData, path);
 
-	if ( ! isCompatible(packageData))
+	Compatibility compatibility = isCompatible(packageData);
+	if (compatibility == JASPImporter::NotCompatible)
 		throw runtime_error("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
+	else if (compatibility == JASPImporter::Limited)
+		packageData->warningMessage = "WARNING: This file was created by a newer version of JASP and may not have complete functionality.";
+	else if (compatibility == JASPImporter::IsAlpha || compatibility == JASPImporter::IsBeta)
+		packageData->warningMessage = "WARNING: This file was created by a pre-release version of JASP and may not have complete functionality.";
+
 
 	loadDataArchive(packageData, path, progressCallback);
 	loadJASPArchive(packageData, path, progressCallback);
@@ -324,10 +330,21 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 	return true;
 }
 
-bool JASPImporter::isCompatible(DataSetPackage *packageData)
+JASPImporter::Compatibility JASPImporter::isCompatible(DataSetPackage *packageData)
 {
-	return packageData->archiveVersion <= JASPExporter::jaspArchiveVersion &&
-			packageData->dataArchiveVersion <= JASPExporter::dataArchiveVersion;
+	if (packageData->archiveVersion.major > JASPExporter::jaspArchiveVersion.major || packageData->dataArchiveVersion.major > JASPExporter::dataArchiveVersion.major)
+		return JASPImporter::NotCompatible;
+
+	if (packageData->archiveVersion.minor > JASPExporter::jaspArchiveVersion.minor || packageData->dataArchiveVersion.minor > JASPExporter::dataArchiveVersion.minor)
+		return JASPImporter::Limited;
+
+	if ((packageData->archiveVersion.isAlpha() && packageData->archiveVersion != JASPExporter::jaspArchiveVersion) || (packageData->dataArchiveVersion.isAlpha() && packageData->dataArchiveVersion != JASPExporter::dataArchiveVersion))
+		return JASPImporter::IsAlpha;
+
+	if ((packageData->archiveVersion.isBeta() && packageData->archiveVersion != JASPExporter::jaspArchiveVersion) || (packageData->dataArchiveVersion.isBeta() && packageData->dataArchiveVersion != JASPExporter::dataArchiveVersion))
+		return JASPImporter::IsBeta;
+
+	return JASPImporter::Compatible;
 }
 
 Column::ColumnType JASPImporter::parseColumnType(string name)

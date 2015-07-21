@@ -13,6 +13,7 @@ void DataSetPackage::reset()
 	analysesHTML = std::string();
 	analysesData = Json::arrayValue;
 	hasAnalyses = false;
+	warningMessage = std::string();
 	_isLoaded = false;
 	setModified(false);
 }
