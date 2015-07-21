@@ -166,14 +166,17 @@ $(document).ready(function () {
 
 		analysis.animate({ opacity: 0 }, 400, "easeOutCubic", function () {
 
-			analysis.slideUp(400)
+			analysis.slideUp(400, function () {
+				var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === id; });
+				if (jaspWidget !== undefined) {
+					jaspWidget.close();
+					analysesViews = _.without(analysesViews, jaspWidget);
+				}
+			});
+
+
 		})
 
-		var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === id; });
-		if (jaspWidget !== undefined) {
-			jaspWidget.close();
-			analysesViews = _.without(analysesViews, jaspWidget);
-		}
 
 		if (showInstructions)
 			hideInstructions()
@@ -279,7 +282,6 @@ $(document).ready(function () {
 
 			});
 
-			// self = this;
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
