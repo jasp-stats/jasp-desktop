@@ -92,14 +92,19 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 		i <- 1
 		q <- 1
 		
-		BFtypeRequiresNewPlot <- FALSE
-		BFtypeState <- state$options$bayesFactorType
 		BFtype <- options$bayesFactorType
+		BFtypeRequiresNewPlot <- TRUE
 		
-		if ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01") {
-			BFtypeRequiresNewPlot <- TRUE
-		} else if (BFtypeState == "BF01" && (BFtype == "LogBF10" || BFtype == "BF10")) {
-			BFtypeRequiresNewPlot <- TRUE
+		if ( ! is.null(state)) {
+			
+			BFtypeRequiresNewPlot <- FALSE
+			BFtypeState <- state$options$bayesFactorType
+			
+			if ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01") {
+				BFtypeRequiresNewPlot <- TRUE
+			} else if (BFtypeState == "BF01" && (BFtype == "LogBF10" || BFtype == "BF10")) {
+				BFtypeRequiresNewPlot <- TRUE
+			}
 		}
 		
 		for (variable in options[["variables"]]){
