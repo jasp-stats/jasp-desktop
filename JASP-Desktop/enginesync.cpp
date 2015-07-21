@@ -396,6 +396,10 @@ void EngineSync::subProcessError(QProcess::ProcessError error)
 
 void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+	(void)exitStatus;
+
+	emit engineTerminated();
+
 	qDebug() << "subprocess finished" << exitCode;
 }
 
