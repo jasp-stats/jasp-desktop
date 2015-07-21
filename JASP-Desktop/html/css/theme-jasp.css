@@ -366,6 +366,9 @@ td.squash-left
 
 .jasp-toolbar {
 	display: block ;
+}
+
+.toolbar-clickable {
 	cursor: pointer;
 }
 

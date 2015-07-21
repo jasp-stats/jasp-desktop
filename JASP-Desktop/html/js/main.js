@@ -166,14 +166,17 @@ $(document).ready(function () {
 
 		analysis.animate({ opacity: 0 }, 400, "easeOutCubic", function () {
 
-			analysis.slideUp(400)
+			analysis.slideUp(400, function () {
+				var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === id; });
+				if (jaspWidget !== undefined) {
+					jaspWidget.close();
+					analysesViews = _.without(analysesViews, jaspWidget);
+				}
+			});
+
+
 		})
 
-		var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === id; });
-		if (jaspWidget !== undefined) {
-			jaspWidget.close();
-			analysesViews = _.without(analysesViews, jaspWidget);
-		}
 
 		if (showInstructions)
 			hideInstructions()
@@ -181,7 +184,8 @@ $(document).ready(function () {
 
 	window.unselectByClickingBody = function (event) {
 
-		if (selectedAnalysisId !== -1 && $(event.target).is(".jasp-analysis *") == false) {
+		var target = event.target || event.srcElement;
+		if (selectedAnalysisId !== -1 && $(target).is(".jasp-analysis *") == false) {
 
 			window.unselect()
 			jasp.analysisUnselected()
@@ -193,7 +197,8 @@ $(document).ready(function () {
 
 	var selectedHandler = function (event) {
 
-		if ($(event.target).is(".jasp-resize") || $(event.target).is(".jasp-toolbar") || $(event.target).is(".jasp-toolbar > *"))
+		var target = event.target || event.srcElement;
+		if ($(target).is(".jasp-resize, .toolbar-clickable, .toolbar-clickable *"))
 			return
 
 		var id = $(event.currentTarget).attr("id")
@@ -279,7 +284,6 @@ $(document).ready(function () {
 
 			});
 
-			// self = this;
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
