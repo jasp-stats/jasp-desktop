@@ -12,7 +12,7 @@
 class JASPImporter
 {
 public:
-	enum Compatibility { Compatible, Limited, IsAlpha, IsBeta, NotCompatible };
+	enum Compatibility { Compatible, Limited, NotCompatible };
 
 	static void loadDataSet(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback);
 
