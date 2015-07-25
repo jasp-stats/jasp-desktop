@@ -238,6 +238,13 @@
 	
 }
 
+### empty Plot with error message ###
+.displayError <- function(errorMessage=NULL, cexText=1.6, lwdAxis= 1.2) {
+	
+	plot(1, type='n', xlim=c(-1,1), ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+	text(0, .5, errorMessage, cex=cexText)
+	
+}
 
 Correlation <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
@@ -285,6 +292,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 	correlation.plots <- list()
 	
+	
 	if (perform == "init" & options$plotCorrelationMatrix) {
 	
 	
@@ -300,34 +308,36 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	
 			variables <- unlist(options$variables)
 			
-			l <- length(variables)
 			
-			l <- length(variables)
+			if (length(variables) > 1) {
+				
+				l <- length(variables)
+				
+				if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
+					
+					width <- 580
+					height <- 580
+					
+				} else if (l <= 2) {
+					
+					width <- 400
+					height <- 400
+					
+				} else {
+					
+					width <- 250 * l
+					height <- 250 * l
+					
+				}
+				
+				plot <- list()
 			
-			if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
+				plot[["title"]] <- ""
+				plot[["width"]]  <- width
+				plot[["height"]] <- height
 				
-				width <- 580
-				height <- 580
-				
-			} else if (l <= 2) {
-				
-				width <- 400
-				height <- 400
-				
-			} else {
-				
-				width <- 250 * l
-				height <- 250 * l
-				
+				correlation.plots[[1]] <- plot
 			}
-			
-			plot <- list()
-			
-			plot[["title"]] <- ""
-			plot[["width"]]  <- width
-			plot[["height"]] <- height
-			
-			correlation.plots[[1]] <- plot
 		}
 	}
 	
@@ -346,7 +356,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 		
 			variables <- unlist(options$variables)
 			
-			# check for numeric/integer variables
+			# check variables
 			d <- vector("character", length(.v(variables)))
 			sdCheck <- vector("numeric", length(.v(variables)))
 			infCheck <- vector("logical", length(.v(variables)))
@@ -354,17 +364,34 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			for (i in seq_along(.v(variables))) {
 			
 				d[i] <- class(dataset[[.v(variables)[i]]])
-				sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE)
-				infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
+				sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE) > 0
+				infCheck[i] <- all(is.finite(dataset[[.v(variables)[i]]]))
 			}
 			
+			numericCheck <- d == "numeric" | d == "integer"
+			variables <- .v(variables)
+			variable.statuses <- vector("list", length(variables))
 			
-			ind1 <- d == "numeric" | d == "integer"
-			ind2 <- sdCheck > 0
-			ind <- ind1 & ind2 & infCheck == FALSE
+			for (i in seq_along(variables)) {
 			
+				variable.statuses[[i]]$unplotable <- FALSE
+				variable.statuses[[i]]$plottingError <- NULL
+				
+				if ( ! (numericCheck[i] && sdCheck[i] && infCheck[i])) {
+					
+					variable.statuses[[i]]$unplotable <- TRUE
+					
+					if ( ! numericCheck[i]) {
+						variable.statuses[[i]]$plottingError <- "Variable is not numeric"
+					} else if ( ! infCheck[i]) {
+						variable.statuses[[i]]$plottingError <- "Variable contains infinity"
+					} else if ( ! sdCheck[i]) {
+						variable.statuses[[i]]$plottingError <- "Variable has zero variance"
+					}
+					
+				}
+			}
 			
-			variables <- .v(variables)[ind]
 			
 			if (length(variables) > 0) {
 				
@@ -400,23 +427,39 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				image <- .beginSaveImage(width, height)
 				
 				if (l == 1) {
-				
-					par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
 					
-					.plotMarginalCor(dataset[[variables[1]]]) # plot marginal (histogram with density estimator)
-					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
+					# par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
+					# 
+					# if ( ! variable.statuses[[1]]$unplotable) {
+					# 
+					# 	.plotMarginalCor(dataset[[variables[1]]]) # plot marginal (histogram with density estimator)
+					# 	mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
+					# 	
+					# } else {
+					# 
+					# 	.displayError(variable.statuses[[1]]$plottingError)
+					# }
 					
 				} else if (l == 2 && !options$plotDensities && !options$plotStatistics) {
 					
 					par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
 					
-					maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
-					distLab <- maxYlab / 1.8
+					if ( ! variable.statuses[[1]]$unplotable && ! variable.statuses[[2]]$unplotable) {
 					
-					mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
-					mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
+						maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+						distLab <- maxYlab / 1.8
+						
+						mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
+						mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
 					
-				} else if (l > 1) {
+					} else {
+					
+						errorMessages <- c(variable.statuses[[1]]$plottingError, variable.statuses[[2]]$plottingError)
+						.displayError(errorMessages[1])
+					}
+					
+				} else if (l >= 2) {
+				
 				
 					par(mfrow= c(l, l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
 				
@@ -428,12 +471,15 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 								
 								if (options$plotDensities) {
 								
-									.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+									if ( ! variable.statuses[[row]]$unplotable) {
+										.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+									} else {
+										.displayError(variable.statuses[[row]]$plottingError)
+									}
 									
 								} else {
 								
-									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
-									
+									plot(1, type= "n", axes= FALSE, ylab="", xlab="")									
 								}
 							}
 							
@@ -441,7 +487,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 							
 								if (options$plotCorrelationMatrix) {
 								
-									.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+									if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
+										.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+									} else {
+										errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
+										.displayError(errorMessages[1])
+									}
 									
 								} else {
 								
@@ -456,8 +507,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 								
 									if (options$plotStatistics) {
 									
-										.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
-										pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) # plot r= ...
+										if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
+											.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
+											pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) # plot r= ...
+										} else {
+											errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
+											.displayError(errorMessages[1])
+										}
 										
 									} else {
 									
@@ -470,8 +526,13 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 								
 									if (options$plotStatistics) {
 									
-										.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
-										pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval)
+										if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
+											.plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
+											pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval)
+										} else {
+											errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
+											.displayError(errorMessages[1])
+										}
 										
 									} else {
 									
