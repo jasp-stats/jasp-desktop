@@ -1932,30 +1932,37 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		l <- length(variables)
 		
-		if (l <= 2 && (options$plotDensities || options$plotPosteriors)) {
+		if (l > 1) {
 			
-			width <- 580
-			height <- 580
+			if (l <= 2 && (options$plotDensities || options$plotPosteriors)) {
+				
+				width <- 580
+				height <- 580
+				
+			} else if (l <= 2) {
+				
+				width <- 400
+				height <- 400
+				
+			} else {
+				
+				width <- 250 * l
+				height <- 250 * l
+				
+			}	
 			
-		} else if (l <= 2) {
+			plot <- list()
 			
-			width <- 400
-			height <- 400
+			plot[["title"]] <- ""
+			plot[["width"]]  <- width
+			plot[["height"]] <- height
 			
+			correlation.plot[[1]] <- plot
+		
 		} else {
-			
-			width <- 250 * l
-			height <- 250 * l
-			
-		}	
 		
-		plot <- list()
-		
-		plot[["title"]] <- ""
-		plot[["width"]]  <- width
-		plot[["height"]] <- height
-		
-		correlation.plot[[1]] <- plot
+			correlation.plot <- NULL
+		}
 	}
 	
 	if (perform == "run" && length(options$variables) > 0) {
@@ -1964,27 +1971,41 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		l <- length(variables)
 		
-		# check for numeric/integer variables & !infinity & standard deviation > 0
+		# check variables
 		d <- vector("character", length(.v(variables)))
 		sdCheck <- vector("numeric", length(.v(variables)))
 		infCheck <- vector("logical", length(.v(variables)))
 		
 		for (i in seq_along(.v(variables))) {
-			
+		
 			d[i] <- class(dataset[[.v(variables)[i]]])
-			sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE)
-			infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
+			sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE) > 0
+			infCheck[i] <- all(is.finite(dataset[[.v(variables)[i]]]))
 		}
 		
+		numericCheck <- d == "numeric" | d == "integer"
+		variables <- .v(variables)
+		variable.statuses <- vector("list", length(variables))
 		
-		ind1 <- d == "numeric" | d == "integer"
-		ind2 <- sdCheck > 0
-		ind <- ind1 & ind2 & infCheck == FALSE
+		for (i in seq_along(variables)) {
 		
-		
-		variables <- .v(variables)[ind]
-		
-		l <- length(variables)
+			variable.statuses[[i]]$unplotable <- FALSE
+			variable.statuses[[i]]$plottingError <- NULL
+			
+			if ( ! (numericCheck[i] && sdCheck[i] && infCheck[i])) {
+				
+				variable.statuses[[i]]$unplotable <- TRUE
+				
+				if ( ! numericCheck[i]) {
+					variable.statuses[[i]]$plottingError <- "Variable is not numeric"
+				} else if ( ! infCheck[i]) {
+					variable.statuses[[i]]$plottingError <- "Variable contains infinity"
+				} else if ( ! sdCheck[i]) {
+					variable.statuses[[i]]$plottingError <- "Variable has zero variance"
+				}
+				
+			}
+		}
 		
 		
 		if (l <= 2 && (options$plotDensities || options$plotPosteriors)) {
@@ -2003,27 +2024,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			height <- 250 * l
 			
 		}	
-		# } else if (l <= 2) {
-		# 
-		# 	width <- 400
-		# 	height <- 400
-		# 	
-		# } else if (l == 3) {
-		# 
-		# 	width <- 700
-		# 	height <- 700
-		# 	
-		# } else if (l == 4) {
-		# 
-		# 	width <- 900
-		# 	height <- 900
-		# 	
-		# } else if (l >= 5) {
-		# 
-		# 	width <- 1100
-		# 	height <- 1100
-		# 	
-		# }
 		
 		correlation.plot <- list()
 		
@@ -2043,22 +2043,30 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				
 				if (l == 1) {
 					
-					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
-					
-					.plotMarginalCor(dataset[[variables[1]]]) 
-					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)	
+					# par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
+					# 
+					# .plotMarginalCor(dataset[[variables[1]]]) 
+					# mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)	
 					
 				} else if (l == 2 && !options$plotDensities && !options$plotPosteriors) {
 					
-					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
+					par(mfrow= c(1, 1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 2.2, 2, 0))
 					
-					maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
-					distLab <- maxYlab / 1.8
+					if ( ! variable.statuses[[1]]$unplotable && ! variable.statuses[[2]]$unplotable) {
 					
-					mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
-					mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
+						maxYlab <- .plotScatter(dataset[[variables[1]]], dataset[[variables[2]]])
+						distLab <- maxYlab / 1.8
+						
+						mtext(text = .unv(variables)[1], side = 1, cex=1.5, line = 3)
+						mtext(text = .unv(variables)[2], side = 2, cex=1.5, line = distLab + 2, las=0)
 					
-				} else if (l > 1) {
+					} else {
+					
+						errorMessages <- c(variable.statuses[[1]]$plottingError, variable.statuses[[2]]$plottingError)
+						.displayError(errorMessages[1])
+					}
+					
+				} else if (l >= 2) {
 					
 					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(1, 2.2, 2, 0))
 					
@@ -2069,8 +2077,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							if (row == col) {
 								
 								if (options$plotDensities) {
-									.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+								
+									if ( ! variable.statuses[[row]]$unplotable) {
+										.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+									} else {
+										.displayError(variable.statuses[[row]]$plottingError)
+									}
+									
 								} else {
+								
 									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
 								}
 							}
@@ -2078,8 +2093,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							if (col > row) {
 								
 								if (options$plotCorrelationMatrix) {
-									.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+								
+									if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
+										.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+									} else {
+										errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
+										.displayError(errorMessages[1])
+									}
+									
 								} else {
+								
 									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
 								}
 							}
@@ -2087,8 +2110,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							if (col < row) {
 								
 								if (options$plotPosteriors) {
-									.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided, kappa=options$priorWidth)
+								
+									if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
+										.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided, kappa=options$priorWidth)
+									} else {
+										errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
+										.displayError(errorMessages[1])
+									}
+									
 								} else {
+								
 									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
 								}
 							}
