@@ -382,7 +382,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					variable.statuses[[i]]$unplotable <- TRUE
 					
 					if ( ! numericCheck[i]) {
-						variable.statuses[[i]]$plottingError <- "Variable is not numeric"
+						variable.statuses[[i]]$plottingError <- "Variable is not continuous"
 					} else if ( ! infCheck[i]) {
 						variable.statuses[[i]]$plottingError <- "Variable contains infinity"
 					} else if ( ! sdCheck[i]) {
@@ -479,7 +479,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 									
 								} else {
 								
-									plot(1, type= "n", axes= FALSE, ylab="", xlab="")									
+									plot(1, type= "n", axes= FALSE, ylab="", xlab="")
 								}
 							}
 							
