@@ -1895,6 +1895,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		plot[["height"]] <- height
 		
 		correlation.plot[[1]] <- plot
+		cexText <- 1.6
 		
 		if (length(variables) > 0) {
 			
@@ -1924,10 +1925,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					} else {
 					
 						errorMessages <- c(variable.statuses[[1]]$plottingError, variable.statuses[[2]]$plottingError)
-						.displayError(errorMessages[1])
+						errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+						.displayError(errorMessagePlot)
 					}
 					
 				} else if (l >= 2) {
+					
+					if (l == 2)
+						cexText <- 1.3
 					
 					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(1, 2.2, 2, 0))
 					
@@ -1942,7 +1947,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 									if ( ! variable.statuses[[row]]$unplotable) {
 										.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
 									} else {
-										.displayError(variable.statuses[[row]]$plottingError)
+										.displayError(variable.statuses[[row]]$plottingError, cexText=cexText)
 									}
 									
 								} else {
@@ -1959,7 +1964,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 										.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
 									} else {
 										errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-										.displayError(errorMessages[1])
+										errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+										.displayError(errorMessagePlot, cexText=cexText)
 									}
 									
 								} else {
@@ -1976,7 +1982,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 										.plotPosterior.BayesianCorrelationMatrix(dataset[[variables[col]]], dataset[[variables[row]]], oneSided=oneSided, kappa=options$priorWidth)
 									} else {
 										errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-										.displayError(errorMessages[1])
+										errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+										.displayError(errorMessagePlot, cexText=cexText)
 									}
 									
 								} else {
