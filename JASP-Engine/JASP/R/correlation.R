@@ -423,6 +423,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				plot[["height"]] <- height
 				
 				correlation.plots[[1]] <- plot
+				cexText <- 1.6
 				
 				image <- .beginSaveImage(width, height)
 				
@@ -455,11 +456,14 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					} else {
 					
 						errorMessages <- c(variable.statuses[[1]]$plottingError, variable.statuses[[2]]$plottingError)
-						.displayError(errorMessages[1])
+						errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+						.displayError(errorMessagePlot, cexText=cexText)
 					}
 					
 				} else if (l >= 2) {
 				
+				if (l == 2)
+					cexText <- 1.3
 				
 					par(mfrow= c(l, l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
 				
@@ -474,7 +478,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 									if ( ! variable.statuses[[row]]$unplotable) {
 										.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
 									} else {
-										.displayError(variable.statuses[[row]]$plottingError)
+										.displayError(variable.statuses[[row]]$plottingError, cexText=cexText)
 									}
 									
 								} else {
@@ -491,7 +495,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 										.plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
 									} else {
 										errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-										.displayError(errorMessages[1])
+										errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+										.displayError(errorMessagePlot, cexText=cexText)
 									}
 									
 								} else {
@@ -512,7 +517,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 											pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) # plot r= ...
 										} else {
 											errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-											.displayError(errorMessages[1])
+											errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+											.displayError(errorMessagePlot, cexText=cexText)
 										}
 										
 									} else {
@@ -531,7 +537,8 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 											pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval)
 										} else {
 											errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-											.displayError(errorMessages[1])
+											errorMessagePlot <- paste0("Correlation coefficient undefined:", "\n", errorMessages[1])
+											.displayError(errorMessagePlot, cexText=cexText)
 										}
 										
 									} else {
