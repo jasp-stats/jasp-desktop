@@ -32,9 +32,7 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 	if (compatibility == JASPImporter::NotCompatible)
 		throw runtime_error("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
 	else if (compatibility == JASPImporter::Limited)
-		packageData->warningMessage = "WARNING: This file was created by a newer version of JASP and may not have complete functionality.";
-	else if (compatibility == JASPImporter::IsAlpha || compatibility == JASPImporter::IsBeta)
-		packageData->warningMessage = "WARNING: This file was created by a pre-release version of JASP and may not have complete functionality.";
+		packageData->warningMessage = "This file was created by a newer version of JASP and may not have complete functionality.";
 
 
 	loadDataArchive(packageData, path, progressCallback);
@@ -337,12 +335,6 @@ JASPImporter::Compatibility JASPImporter::isCompatible(DataSetPackage *packageDa
 
 	if (packageData->archiveVersion.minor > JASPExporter::jaspArchiveVersion.minor || packageData->dataArchiveVersion.minor > JASPExporter::dataArchiveVersion.minor)
 		return JASPImporter::Limited;
-
-	if ((packageData->archiveVersion.isAlpha() && packageData->archiveVersion != JASPExporter::jaspArchiveVersion) || (packageData->dataArchiveVersion.isAlpha() && packageData->dataArchiveVersion != JASPExporter::dataArchiveVersion))
-		return JASPImporter::IsAlpha;
-
-	if ((packageData->archiveVersion.isBeta() && packageData->archiveVersion != JASPExporter::jaspArchiveVersion) || (packageData->dataArchiveVersion.isBeta() && packageData->dataArchiveVersion != JASPExporter::dataArchiveVersion))
-		return JASPImporter::IsBeta;
 
 	return JASPImporter::Compatible;
 }

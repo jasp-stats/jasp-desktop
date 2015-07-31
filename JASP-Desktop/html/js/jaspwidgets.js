@@ -560,6 +560,8 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	initialize: function () {
 		this._resizeableViewBase = JASPWidgets.View.prototype;
 
+		this.$el.addClass('jasp-hide');
+
 		$(document).mousemove(this, this._mousemove).mouseup(this, this._mouseup);
 		this.listenTo(this.model, 'change:width', this.onModelChange);
 		this.listenTo(this.model, 'change:height', this.onModelChange);
