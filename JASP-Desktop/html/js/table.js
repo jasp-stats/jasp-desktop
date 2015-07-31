@@ -253,12 +253,15 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 				}
 				else if (content == 0) {
 
-					var zero = 0
+					var number = 0
+					
+					if (log10)
+						number = 1
 
 					if (isFinite(dp))
-						formatted = { content: zero.toFixed(dp), "class": "number" }
+						formatted = { content: number.toFixed(dp), "class": "number" }
 					else
-						formatted = { content: zero.toPrecision(sf), "class": "number" }
+						formatted = { content: number.toPrecision(sf), "class": "number" }
 
 					isNumber = true
 
