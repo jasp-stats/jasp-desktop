@@ -417,45 +417,45 @@ OTHER_FILES += \
     html/css/images/arrowsmalldownbtn.png
 
 HELP_PATH = $${PWD}/../Docs/help
-LIBRARY_PATH = $${PWD}/../Library
+RESOURCES_PATH = $${PWD}/../Resources
 
 win32 {
 
         HELP_PATH_DEST = $${OUT_PWD}/../Help/
-        LIBRARY_PATH_DEST = $${OUT_PWD}/../Library
+		RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
         HELP_PATH ~= s,/,\\,g
         HELP_PATH_DEST ~= s,/,\\,g
 
-        LIBRARY_PATH ~= s,/,\\,g
-        LIBRARY_PATH_DEST ~= s,/,\\,g
+		RESOURCES_PATH ~= s,/,\\,g
+		RESOURCES_PATH_DEST ~= s,/,\\,g
 
         copydocs.commands += $$quote(cmd /c xcopy /S /I /Y $${HELP_PATH} $${HELP_PATH_DEST})
-        copylibrary.commands += $$quote(cmd /c xcopy /S /I /Y $${LIBRARY_PATH} $${LIBRARY_PATH_DEST})
+		copylibrary.commands += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
 }
 
 macx {
 
         HELP_PATH_DEST = $${OUT_PWD}/../../Resources/Help/
-        LIBRARY_PATH_DEST = $${OUT_PWD}/../../Resources/Library/
+		RESOURCES_PATH_DEST = $${OUT_PWD}/../../Resources/
 
         copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
         copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
 
-        copylibrary.commands += $(MKDIR) $$LIBRARY_PATH_DEST ;
-        copylibrary.commands += cp -R $$LIBRARY_PATH/* $$LIBRARY_PATH_DEST ;
+		copylibrary.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
+		copylibrary.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
 }
 
 linux {
 
         HELP_PATH_DEST = $${OUT_PWD}/../Help/
-        LIBRARY_PATH_DEST = $${OUT_PWD}/../Library
+		RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
         copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
         copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
 
-        copylibrary.commands += $(MKDIR) $$LIBRARY_PATH_DEST ;
-        copylibrary.commands += cp -R $$LIBRARY_PATH/* $$LIBRARY_PATH_DEST ;
+		copylibrary.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
+		copylibrary.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
 }
 
 QMAKE_EXTRA_TARGETS += copydocs copylibrary
