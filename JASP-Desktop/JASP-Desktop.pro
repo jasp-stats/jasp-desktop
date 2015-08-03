@@ -417,7 +417,7 @@ OTHER_FILES += \
     html/css/images/arrowsmalldownbtn.png
 
 HELP_PATH = $${PWD}/../Docs/help
-LIBRARY_PATH = $${PWD}/../Library
+LIBRARY_PATH = $${PWD}/../Resources/Library
 
 win32 {
 

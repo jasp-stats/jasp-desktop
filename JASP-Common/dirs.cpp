@@ -260,11 +260,11 @@ string Dirs::libraryDir()
     string dir = exeDir();
 
 #ifdef __WIN32__
-	dir += "/Library";
+	dir += "/Resources/Library";
 #elif __APPLE__
 	dir += "/../Resources/Library";
 #else
-	dir += "/Library";
+	dir += "/Resources/Library";
 #endif
 
     return dir;
