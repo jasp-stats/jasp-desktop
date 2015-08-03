@@ -2768,8 +2768,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	ttest[["title"]] <- "Bayesian One Sample T-Test"
 	
 	ttest[["citation"]] <- list(
-		"Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].",
-		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16(2), 225–237.")
+		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
 	
 	bf.type <- options$bayesFactorType
 	
