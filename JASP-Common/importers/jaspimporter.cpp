@@ -43,10 +43,9 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 void JASPImporter::loadDataArchive(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	if (packageData->dataArchiveVersion.major == 1)
-	{
-		if (packageData->dataArchiveVersion.minor == 0)
-			loadDataArchive_1_00(packageData, path, progressCallback);
-	}
+		loadDataArchive_1_00(packageData, path, progressCallback);
+	else
+		throw runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
 
 void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
@@ -202,10 +201,9 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 void JASPImporter::loadJASPArchive(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	if (packageData->archiveVersion.major == 1)
-	{
-		if (packageData->archiveVersion.minor == 0)
-			loadJASPArchive_1_00(packageData, path, progressCallback);
-	}
+		loadJASPArchive_1_00(packageData, path, progressCallback);
+	else
+		throw runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
 
 void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
