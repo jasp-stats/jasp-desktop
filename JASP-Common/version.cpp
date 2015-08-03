@@ -138,7 +138,7 @@ bool Version::isAlpha() const
 
 bool Version::isBeta() const
 {
-	return build >= 101 && build <= 245;
+	return build >= 101 && build <= 254;
 }
 
 
