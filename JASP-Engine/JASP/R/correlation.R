@@ -362,10 +362,11 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			infCheck <- vector("logical", length(.v(variables)))
 			
 			for (i in seq_along(.v(variables))) {
-			
-				d[i] <- class(dataset[[.v(variables)[i]]])
-				sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE) > 0
-				infCheck[i] <- all(is.finite(dataset[[.v(variables)[i]]]))
+				
+				variable2check <- na.omit(dataset[[.v(variables)[i]]])
+				d[i] <- class(variable2check)
+				sdCheck[i] <- sd(variable2check) > 0
+				infCheck[i] <- all(is.finite(variable2check))
 			}
 			
 			numericCheck <- d == "numeric" | d == "integer"
