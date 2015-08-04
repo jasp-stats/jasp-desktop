@@ -176,6 +176,15 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	}
 }
 
+
+.contTablesBayesianCitations <- function() {
+
+	list(
+		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+		"Jamil, T., Ly, A., Morey, R. D., Love, J., Marsman, M., & Wagenmakers, E.-J. (2015). Default Gunel and Dickey Bayes factors for contingency tables. Manuscript submitted for publication.",
+		"Gunel, E., & Dickey, J. (1974). Bayes factors for independence in contingency tables. Biometrika, 61, 545-557.")
+}
+
 .contTablesBayesian <- function(dataset, options, populate, analysis, state) {
 
 	# analysis is a list of the form :
@@ -363,6 +372,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	odds.ratio.plot[["width"]]  <- width
 	odds.ratio.plot[["height"]] <- height
+	odds.ratio.plot[["citation"]] <- .contTablesBayesianCitations()
 	
 
 	if (is.null(plot.state) == FALSE) {
@@ -827,10 +837,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	table[["data"]] <- rows
 	table[["footnotes"]] <- as.list(footnotes)
-	table[["citation"]] <- list(
-		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-		"Jamil, T., Ly, A., Morey, R. D., Love, J., Marsman, M., & Wagenmakers, E.-J. (2015). Default Gunel and Dickey Bayes factors for contingency tables. Manuscript submitted for publication.",
-		"Gunel, E., & Dickey, J. (1974). Bayes factors for independence in contingency tables. Biometrika, 61, 545-557.")
+	table[["citation"]] <- .contTablesBayesianCitations()
 	
 	if (complete)
 		table[["status"]] <- "complete"
@@ -946,6 +953,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	table[["data"]] <- rows
 	table[["footnotes"]] <- as.list(footnotes)
+	table[["citation"]] <- .contTablesBayesianCitations()
 	
 	if (complete)
 		table[["status"]] <- "complete"
