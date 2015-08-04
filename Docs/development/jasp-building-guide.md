@@ -6,9 +6,16 @@ The easiest way to build JASP is to use Qt Creator. After cloning the [jasp-desk
 
 For those unfamiliar with using Qt Creator for development, there is some excellent documentation available [here](http://doc.qt.io/qtcreator/index.html).
 
-Alternatively, those that are more comfortable using command line tools can use QMake, the manual for which is available [here](http://doc.qt.io/qt-5.4/qmake-manual.html).
+Alternatively, those that are more comfortable using command line tools can use *QMake*, the manual for which is available [here](http://doc.qt.io/qt-5.4/qmake-manual.html). *QMake* projects (like JASP) are typically built in two steps; first *QMake* is called, which generates a Makefile for *Make*, and then *Make* is called with this generated Makefile.
 
-Once the build process is configured, JASP will require several dependencies. We recommend that you begin the build process (creating the necessary output directories), wait for the build process to fail from a lack of dependencies, copy the appropriate dependencies into place, and then restart the build process.
+We recommend building JASP in a separate directory to it's source directory. This can be achieved by calling *QMake* in a separate directory to the source, for example we might create a separate directory beside the *jasp-desktop* directory (perhaps called *jasp-build*), and then from this directory call:
+
+    qmake ../jasp-desktop/JASP.pro
+    make
+
+This generates the Makefile in the *jasp-build* directory, and all resulting object files and executables will be output to this directory.
+
+JASP requires several dependencies which are documented below.
 
 JASP depends on:
 
