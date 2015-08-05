@@ -98,6 +98,12 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 
 				c1 <- dataset[[ .v(pair[[1]]) ]]
 				c2 <- dataset[[ .v(pair[[2]]) ]]
+				
+				df.na <- data.frame(c1=c1, c2=c2)
+				df.na.omit <- na.omit(df.na)
+				
+				c1 <- df.na.omit$c1
+				c2 <- df.na.omit$c2
 			
 				ci <- options$confidenceIntervalInterval
 			
@@ -116,7 +122,7 @@ TTestPairedSamples <- function(dataset=NULL, options, perform="run", callback=fu
 					df <- as.numeric(r$parameter)
 					p  <- as.numeric(r$p.value)
 					m  <- as.numeric(r$estimate)
-					sed <- .clean(sd(c1-c2, na.rm = TRUE)/sqrt(length(na.omit(c1-c2))))
+					sed <- .clean(sd(c1-c2)/sqrt(length(c1)))
 					
 					es <- .clean((mean(c1)-mean(c2))/(sqrt(sd(c1)^2+sd(c2)^2-2*cov(c1, c2))))
 			        

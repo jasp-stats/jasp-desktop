@@ -18,6 +18,7 @@ public:
 	Version archiveVersion;
 	Version dataArchiveVersion;
 	bool isArchive = false;
+	std::string warningMessage;
 
 	bool hasAnalyses;
 

@@ -60,6 +60,7 @@ private:
 	AnalysisForm* loadForm(Analysis *analysis);
 	void showForm(Analysis *analysis);
 	void closeCurrentOptionsWidget();
+	void removeAnalysis(Analysis *analysis);
 
 	QWidget *_buttonPanel;
 	QVBoxLayout *_buttonPanelLayout;
@@ -89,6 +90,7 @@ signals:
 	void pushImageToClipboard(QByteArray base64, QString html);
 	void saveTempImage(int id, QString path, QByteArray data);
 	void showAnalysesMenu(QString options);
+	void removeAnalysisRequest(int id);
 
 private slots:
 
@@ -101,7 +103,9 @@ private slots:
 	void saveTempImageHandler(int id, QString path, QByteArray data);
 	void analysisChangedDownstreamHandler(int id, QString options);
 
+	void removeAnalysisRequestHandler(int id);
 	void showAnalysesMenuHandler(QString options);
+	void removeSelected();
 	void copySelected();
 	void citeSelected();
 	void menuHidding();

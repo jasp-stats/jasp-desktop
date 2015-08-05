@@ -610,7 +610,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 	descriptivesPlotList <- list()
 
 	if (perform == "run" && length(options$variables) > 0 && options$groupingVariable != "") {
-		
+				
 		base_breaks_x <- function(x){
 			b <- unique(as.numeric(x))
 			d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
@@ -624,7 +624,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
 				ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
 		}
-		
+				
 		for (var in .indices(options$variables)) {
 			
 			descriptivesPlot <- list()
@@ -669,6 +669,7 @@ TTestIndependentSamples <- function(dataset=NULL, options, perform="run", callba
 				 base_breaks_x(summaryStat$groupingVariable)
 								
 			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+			print(p)
 			content <- .endSaveImage(image)
 
 			descriptivesPlot[["data"]] <- content

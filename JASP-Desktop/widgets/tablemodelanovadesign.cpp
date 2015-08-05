@@ -65,18 +65,18 @@ QVariant TableModelAnovaDesign::data(const QModelIndex &index, int role) const
 	{
 		if (role == Qt::DisplayRole)
 		{
-			return row.text();
+			return row.text;
 		}
 		else if (role == Qt::EditRole)
 		{
-			if (row.isHypothetical())
+			if (row.isHypothetical)
 				return "";
 			else
-				return row.text();
+				return row.text;
 		}
 		else if (role == Qt::ForegroundRole)
 		{
-			if (row.isHypothetical())
+			if (row.isHypothetical)
 				return QBrush(QColor(0xCC, 0xCC, 0xCC));
 			else
 				return QVariant();
@@ -98,7 +98,7 @@ QVariant TableModelAnovaDesign::data(const QModelIndex &index, int role) const
 	{
 		if (role == Qt::DecorationRole)
 		{
-			if (index.row() < 3 || row.isHypothetical() || row.subIndex() == 0 || row.subIndex() == 1)
+			if (index.row() < 3 || row.isHypothetical || row.subIndex == 0 || row.subIndex == 1)
 			{
 				return QVariant();
 			}
@@ -182,7 +182,7 @@ Qt::ItemFlags TableModelAnovaDesign::flags(const QModelIndex &index) const
 	{
 		Row row = _rows.at(index.row());
 
-		if (index.row() < 3 || row.isHypothetical() || row.subIndex() == 0 || row.subIndex() == 1)
+		if (index.row() < 3 || row.isHypothetical || row.subIndex == 0 || row.subIndex == 1)
 		{
 			return Qt::ItemIsEnabled;
 		}
@@ -209,7 +209,7 @@ bool TableModelAnovaDesign::removeRows(int row, int, const QModelIndex &)
 {
 	// count is ignored, because it will never be more than 1
 
-	if (row >= 3 && _rows.at(row).isHypothetical() == false)
+	if (row >= 3 && _rows.at(row).isHypothetical == false)
 		deleteRow(row);
 
 	return false; // return false, because we handle the refresh ourselves
@@ -238,9 +238,9 @@ QList<Factor> TableModelAnovaDesign::design()
 
 void TableModelAnovaDesign::changeRow(int rowNo, string value)
 {
-	const Row &row = _rows.at(rowNo);
+	Row &row = _rows[rowNo];
 
-	if (row.isHypothetical() == false && row.text() == tq(value))
+	if (row.isHypothetical == false && row.text == tq(value))
 		return;
 
 	emit designChanging();
@@ -262,10 +262,10 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 
 				Row &existing = _rows[i];
 
-				if (existing.isHeading() == false || existing.isHypothetical())
+				if (existing.isHeading() == false || existing.isHypothetical)
 					continue;
 
-				if (existing.text() == name)
+				if (existing.text == name)
 				{
 					unique = false;
 					break;
@@ -278,13 +278,34 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 				name = QString("%1 (%2)").arg(originalName).arg(n++);
 		}
 
-		if (row.isHypothetical())
+		if (row.isHypothetical)
 		{
 			Options *newRow = static_cast<Options *>(_boundTo->rowTemplate()->clone());
 			OptionString *factorName = static_cast<OptionString *>(newRow->get("name"));
 			factorName->setValue(fq(name));
 
+			OptionVariables *option = static_cast<OptionVariables *>(newRow->get("levels"));
+			vector<string> levels = option->variables();
+
+			beginInsertRows(QModelIndex(), row.index, row.index + levels.size());
+
 			_groups.push_back(newRow);
+
+			_rows.insert(rowNo, Row(name, false, row.index));
+
+			int i;
+			for (i = 0; i < levels.size(); i++)
+				_rows.insert(rowNo + i + 1, Row(tq(levels.at(i)), false, row.index, i));
+
+			endInsertRows();
+
+			string newName = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"))->value();
+			QString qNewName = tq(newName).arg(_groups.size() + 1);
+
+			row.index = i;
+			row.text = qNewName;
+
+			emit dataChanged(index(i, 0), index(i, columnCount() - 1), QVector<int>(Qt::DisplayRole));
 
 			Terms terms;
 			terms.add(Term(name));
@@ -293,7 +314,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 		}
 		else
 		{
-			OptionString *option = static_cast<OptionString *>(_groups.at(row.index())->get("name"));
+			OptionString *option = static_cast<OptionString *>(_groups.at(row.index)->get("name"));
 
 			Terms old;
 			old.add(Term(option->value()));
@@ -303,13 +324,17 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 
 			option->setValue(fq(name));
 
+			row.text = name;
+
+			emit dataChanged(index(rowNo, 0), index(rowNo, columnCount() - 1), QVector<int>(Qt::DisplayRole));
+
 			emit factorRemoved(old);
 			emit factorAdded(n3w);
 		}
 	}
-	else
+	else // if a level
 	{
-		OptionVariables *option = static_cast<OptionVariables *>(_groups.at(row.index())->get("levels"));
+		OptionVariables *option = static_cast<OptionVariables *>(_groups.at(row.index)->get("levels"));
 		vector<string> levels = option->variables();
 
 		string originalName = fq(tq(value).trimmed());
@@ -322,7 +347,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 
 			for (int i = 0; i < levels.size(); i++)
 			{
-				if (i == row.subIndex())
+				if (i == row.subIndex)
 					continue;
 
 				string &level = levels[i];
@@ -340,15 +365,21 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 				name = fq(QString("%1 (%2)").arg(tq(originalName)).arg(n++));
 		}
 
-		if (row.isHypothetical())
+		if (row.isHypothetical)
+		{
+			row.text = tq(name);
+			row.isHypothetical = false;
 			levels.push_back(name);
+		}
 		else
-			levels[row.subIndex()] = name;
+		{
+			row.text = tq(name);
+			levels[row.subIndex] = name;
+		}
 
 		option->setValue(levels);
 	}
 
-	refresh();
 	_boundTo->setValue(_groups);
 
 	emit designChanged();
@@ -358,7 +389,7 @@ void TableModelAnovaDesign::deleteRow(int rowNo)
 {
 	const Row &row = _rows.at(rowNo);
 
-	if (row.isHypothetical())
+	if (row.isHypothetical)
 	{
 		return;
 	}
@@ -371,11 +402,11 @@ void TableModelAnovaDesign::deleteRow(int rowNo)
 		{
 			std::vector<Options *>::iterator itr = _groups.begin();
 
-			for (int i = 0; i < row.index(); i++)
+			for (int i = 0; i < row.index; i++)
 				itr++;
 
 			Terms removed;
-			removed.add(Term(row.text()));
+			removed.add(Term(row.text));
 
 			emit factorRemoved(removed);
 
@@ -401,22 +432,22 @@ void TableModelAnovaDesign::deleteRow(int rowNo)
 	}
 	else
 	{
-		OptionVariables *option = static_cast<OptionVariables *>(_groups.at(row.index())->get("levels"));
+		OptionVariables *option = static_cast<OptionVariables *>(_groups.at(row.index)->get("levels"));
 		vector<string> levels = option->variables();
 
 		if (levels.size() > 2)
 		{
 			vector<string>::iterator itr = levels.begin();
 
-			for (int i = 0; i < row.subIndex(); i++)
+			for (int i = 0; i < row.subIndex; i++)
 				itr++;
 
 			levels.erase(itr);
 		}
 		else
 		{
-			string defaultName = fq(QString("Level %1").arg(row.subIndex() + 1));
-			levels[row.subIndex()] = defaultName;
+			string defaultName = fq(QString("Level %1").arg(row.subIndex + 1));
+			levels[row.subIndex] = defaultName;
 		}
 
 		option->setValue(levels);

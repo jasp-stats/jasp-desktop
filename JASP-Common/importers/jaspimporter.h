@@ -12,6 +12,8 @@
 class JASPImporter
 {
 public:
+	enum Compatibility { Compatible, Limited, NotCompatible };
+
 	static void loadDataSet(DataSetPackage *packageData, const std::string &path, boost::function<void (const std::string &, int)> progressCallback);
 
 private:
@@ -23,7 +25,7 @@ private:
 	static Column::ColumnType parseColumnType(std::string name);
 	static bool parseJsonEntry(Json::Value &root, const std::string &path, const std::string &entry, bool required);
 	static void readManifest(DataSetPackage *packageData, const std::string &path);
-	static bool isCompatible(DataSetPackage *packageData);
+	static Compatibility isCompatible(DataSetPackage *packageData);
 };
 
 #endif // JASPIMPORTER_H

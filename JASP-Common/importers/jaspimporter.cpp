@@ -28,8 +28,12 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 
 	readManifest(packageData, path);
 
-	if ( ! isCompatible(packageData))
+	Compatibility compatibility = isCompatible(packageData);
+	if (compatibility == JASPImporter::NotCompatible)
 		throw runtime_error("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
+	else if (compatibility == JASPImporter::Limited)
+		packageData->warningMessage = "This file was created by a newer version of JASP and may not have complete functionality.";
+
 
 	loadDataArchive(packageData, path, progressCallback);
 	loadJASPArchive(packageData, path, progressCallback);
@@ -39,10 +43,9 @@ void JASPImporter::loadDataSet(DataSetPackage *packageData, const string &path, 
 void JASPImporter::loadDataArchive(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	if (packageData->dataArchiveVersion.major == 1)
-	{
-		if (packageData->dataArchiveVersion.minor == 0)
-			loadDataArchive_1_00(packageData, path, progressCallback);
-	}
+		loadDataArchive_1_00(packageData, path, progressCallback);
+	else
+		throw runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
 
 void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
@@ -198,10 +201,9 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 void JASPImporter::loadJASPArchive(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	if (packageData->archiveVersion.major == 1)
-	{
-		if (packageData->archiveVersion.minor == 0)
-			loadJASPArchive_1_00(packageData, path, progressCallback);
-	}
+		loadJASPArchive_1_00(packageData, path, progressCallback);
+	else
+		throw runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
 
 void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const string &path, boost::function<void (const std::string &, int)> progressCallback)
@@ -324,10 +326,15 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 	return true;
 }
 
-bool JASPImporter::isCompatible(DataSetPackage *packageData)
+JASPImporter::Compatibility JASPImporter::isCompatible(DataSetPackage *packageData)
 {
-	return packageData->archiveVersion <= JASPExporter::jaspArchiveVersion &&
-			packageData->dataArchiveVersion <= JASPExporter::dataArchiveVersion;
+	if (packageData->archiveVersion.major > JASPExporter::jaspArchiveVersion.major || packageData->dataArchiveVersion.major > JASPExporter::dataArchiveVersion.major)
+		return JASPImporter::NotCompatible;
+
+	if (packageData->archiveVersion.minor > JASPExporter::jaspArchiveVersion.minor || packageData->dataArchiveVersion.minor > JASPExporter::dataArchiveVersion.minor)
+		return JASPImporter::Limited;
+
+	return JASPImporter::Compatible;
 }
 
 Column::ColumnType JASPImporter::parseColumnType(string name)

@@ -1,5 +1,5 @@
 {
-	"name": "RegressionLinearBayesian",
+	"name": "AnovaBayesian",
 	"autorun": true,
 	"version": "1.00",
 	"options": [
@@ -8,7 +8,11 @@
 			"type": "Variable"
 		},
 		{
-			"name": "covariates",
+			"name": "fixedFactors",
+			"type": "Variables"
+		},
+		{
+			"name": "randomFactors",
 			"type": "Variables"
 		},
 		{
@@ -19,7 +23,6 @@
 					"type": "Term"
 				},
 				{
-					"default": false,
 					"name": "isNuisance",
 					"type": "Boolean"
 				}
@@ -27,22 +30,18 @@
 			"type": "Table"
 		},
 		{
-			"default": false,
 			"name": "effects",
 			"type": "Boolean"
 		},
 		{
-			"default": false,
 			"name": "effectsStepwise",
 			"type": "Boolean"
 		},
 		{
-			"default": false,
 			"name": "posteriorEstimates",
 			"type": "Boolean"
 		},
 		{
-			"default": false,
 			"name": "posteriorDistributions",
 			"type": "Boolean"
 		},
@@ -58,6 +57,25 @@
 			"value": 0.5,
 			"min": 0,
 			"max": 2
+		},
+		{
+			"name": "posteriorEstimates",
+			"type": "Boolean"
+		},
+		{
+			"name": "posteriorEstimatesCredibleIntervalInterval",
+			"type": "Number",
+			"format": "%",
+			"value": 0.95,
+			"min": 0.5,
+			"max": 0.999
+		},
+		{
+			"name": "posteriorEstimatesMCMCIterations",
+			"type": "Number",
+			"value": 10000,
+			"min": 1,
+			"max": 1000000
 		}
 	]
 }

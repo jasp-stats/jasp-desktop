@@ -65,43 +65,21 @@ protected:
 
 		Row(QString text, bool isHypothetical, int index, int subIndex = -1)
 		{
-			_text = text;
-			_index = index;
-			_subIndex = subIndex;
-			_isHypothetical = isHypothetical;
-		}
-
-		QString text() const
-		{
-			return _text;
+			this->text = text;
+			this->index = index;
+			this->subIndex = subIndex;
+			this->isHypothetical = isHypothetical;
 		}
 
 		bool isHeading() const
 		{
-			return _subIndex == -1;
+			return subIndex == -1;
 		}
 
-		bool isHypothetical() const
-		{
-			return _isHypothetical;
-		}
-
-		int index() const
-		{
-			return _index;
-		}
-
-		int subIndex() const
-		{
-			return _subIndex;
-		}
-
-	private:
-
-		QString _text;
-		int _index;
-		int _subIndex;
-		bool _isHypothetical;
+		QString text;
+		int index;
+		int subIndex;
+		bool isHypothetical;
 
 	};
 

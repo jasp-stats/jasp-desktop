@@ -20,7 +20,7 @@ const QString AppDirs::examples()
 #ifdef __APPLE__
     static QString dir = QApplication::applicationDirPath() + "/../Resources/Data Sets";
 #else
-    static QString dir = QApplication::applicationDirPath() + QDir::separator() + "Data Sets";
+    static QString dir = QApplication::applicationDirPath() + QDir::separator() + "Resources/Data Sets";
 #endif
 
 	return dir;

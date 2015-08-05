@@ -58,8 +58,12 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 
 #ifdef QT_DEBUG
 	ui->groupBox->setStyleSheet("QWidget { background-color: pink; }");
+	ui->widgetPosteriorOptions->setStyleSheet("QWidget { background-color: pink; }");
+	ui->posteriorEstimates->setStyleSheet("QWidget { background-color: pink; }");
 #else
 	ui->groupBox->hide();
+	ui->widgetPosteriorOptions->hide();
+	ui->posteriorEstimates->hide();
 #endif
 }
 

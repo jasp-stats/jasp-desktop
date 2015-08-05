@@ -239,7 +239,7 @@ JASPWidgets.Exporter = {
 		if (exportParams.isFormatted())
 			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin", "display", "float", "font-size", "font-weight", "font"]);
 		else
-			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "display", "float"]);
+			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "display", "float", "text-align"]);
 	},
 
 	getErrorStyles: function (element, component) {
@@ -327,14 +327,14 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 		if (this.title !== undefined) {
 			if (this.titleTag !== undefined)
-				this.$el.append('<' + this.titleTag + ' class="in-toolbar">' + this.title + '</' + this.titleTag + '>');
+				this.$el.append('<' + this.titleTag + ' class="in-toolbar toolbar-clickable">' + this.title + '</' + this.titleTag + '>');
 			else
 				this.$el.append(this.title);
 		}
 
 		if (this.hasMenu)
 		{
-			this.$el.append('<div class="toolbar-button jasp-menu jasp-hide"/>')
+			this.$el.append('<div class="toolbar-button toolbar-clickable jasp-menu jasp-hide"/>')
 
 			//var $menuBtn = this.$el.find(".jasp-menu")
 
@@ -364,7 +364,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	},
 
 	events: {
-		'mousedown': '_mouseDown',
+		'mousedown .toolbar-clickable': '_mouseDown'
 	},
 
 	_mouseDownGeneral: function (e) {
@@ -425,10 +425,12 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasCopy: (parent.hasCopy === undefined || parent.hasCopy()) && parent.copyMenuClicked !== undefined,
 			hasCite: (parent.hasCitation === undefined || parent.hasCitation()) && parent.citeMenuClicked !== undefined,
 			hasAnnotate: (parent.hasAnnotate === undefined || parent.hasAnnotate()) && parent.annotateMenuClicked !== undefined,
+			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
+
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasAnnotate;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasAnnotate || this.options.hasRemove;
 	},
 
 	selectionElement: function() {
@@ -557,6 +559,8 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	/** Initialises the class by assigning listeners to the model for external size changes and for global mouse events. */
 	initialize: function () {
 		this._resizeableViewBase = JASPWidgets.View.prototype;
+
+		this.$el.addClass('jasp-hide');
 
 		$(document).mousemove(this, this._mousemove).mouseup(this, this._mouseup);
 		this.listenTo(this.model, 'change:width', this.onModelChange);

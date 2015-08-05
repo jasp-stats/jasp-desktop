@@ -131,6 +131,17 @@ bool Version::isRelease() const
 	return build == 255;
 }
 
+bool Version::isAlpha() const
+{
+	return build >= 1 && build <= 100;
+}
+
+bool Version::isBeta() const
+{
+	return build >= 101 && build <= 254;
+}
+
+
 string Version::asString(bool includeMassive, bool includeRelease) const
 {
 	stringstream stream;
@@ -143,11 +154,11 @@ string Version::asString(bool includeMassive, bool includeRelease) const
 	if (revision != 0)
 		stream << "." << (int)revision;
 
-	if (build == 255 && includeRelease)
+	if (isRelease() && includeRelease)
 		stream << " Release";
-	else if (build >= 1 && build <= 100)
+	else if (isAlpha())
 		stream << " Alpha " << (int)build;
-	else if (build >= 101 && build <= 245)
+	else if (isBeta())
 		stream << " Beta " << (int)(build - 100);
 
 	return stream.str();

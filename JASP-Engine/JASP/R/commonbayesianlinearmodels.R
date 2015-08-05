@@ -187,6 +187,18 @@
 			nuisance = neverExclude,
 			null.model = null.model), 
 		options, perform = "run", status, populate = TRUE)
+	
+	if (options$posteriorEstimates) {
+		results [["effects"]] <- .theBayesianLinearModelEstimates (
+			list (
+				models = model.object, 
+				effects = effects.matrix,
+				interactions.matrix = interactions.matrix, 
+				nuisance = neverExclude,
+				null.model = null.model), 
+			options, perform = "init", status, populate = TRUE)
+	}
+	
 	return(results)
 }
 
@@ -384,15 +396,30 @@
 					options <- response$options
 			}
 		}
-#		if (options$posteriorEstimates) {
-#			complexity <- rowSums (effects)
-#			m <- which (complexity == max (complexity))
-#			chains <- posterior ( model.object [[m]]$bf, iterations = mcmc.iterations)
-#			model.object [[m]]$chains <- chains
-#			return (list (model =  list (models = model.object, effects = effects.matrix,
-#				interactions.matrix = interactions.matrix, nuisance = neverExclude,
-#				null.model = null.model), status = status, mcmc.model = m))
-#		}
+
+		if (options$posteriorEstimates && perform == "run" && status$ready) {
+			complexity <- rowSums (effects.matrix)
+			m <- which (complexity == max (complexity))
+			chains <- try (BayesFactor::lmBF (model.list [[m]],
+					data = dataset, whichRandom = .v (unlist (options$randomFactors)),
+					progress = FALSE, posterior = TRUE, callback = .callbackBFpackage, 
+					iterations = options$posteriorEstimatesMCMCIterations))
+			
+			if (inherits (bf, "try-error")) {
+				message <- .extractErrorMessage (bf)
+				if (message == "Operation cancelled by callback function.")
+					return()
+				model.object [[m]]$error.message <- "Posterior could not be computed"
+				return (list (model =  list (models = model.object, effects = effects.matrix,
+					interactions.matrix = interactions.matrix, nuisance = neverExclude,
+					null.model = null.model), status = status))
+			} 		
+			
+			model.object [[m]]$chains <- chains
+			return (list (model =  list (models = model.object, effects = effects.matrix,
+				interactions.matrix = interactions.matrix, nuisance = neverExclude,
+				null.model = null.model), status = status))
+		}
 		return (list (model = list (models = model.object, effects = effects.matrix,
 			interactions.matrix = interactions.matrix, nuisance = neverExclude,
 			null.model = null.model), status = status))
@@ -411,7 +438,7 @@
 	modelTable [["title"]] <- "Model Comparison"
 	modelTable [["citation"]] <-
 		list (
-			"Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].",
+			"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 			"Rouder, J. N., Morey, R. D., Speckman, P. L., & Province, J. M. (2012). Default Bayes factors for ANOVA designs. Journal of Mathematical Psychology, 56, 356-374."
 		)
 
@@ -421,7 +448,7 @@
 	} else if (options$bayesFactorType == "BF01") {
 		bfm.title <- "BF<sub>M</sub>"
 		bf.title <- "BF<sub>01</sub>"
-	} else if (options$bayesFactorType == "LogBF10"){
+	} else if (options$bayesFactorType == "LogBF10") {
 		bfm.title <- "Log(BF<sub>M</sub>)"
 		bf.title <- "Log(BF<sub>10</sub>)"
 	}
@@ -430,12 +457,15 @@
 		list (
 			list (name = "Models", type = "string"),
 			list (name = "P(M)", type = "number", format = "sf:4;dp:3"),
-			list (name = "P(M|data)", type = "number", format = "sf:4;dp:3"),
-			list (name = "BFM", type = "number", format = "sf:4;dp:3", title = paste (bfm.title, sep = "")),
-			list (name = "BF10", type = "number", format = "sf:4;dp:3", title = paste (bf.title, sep = "")),
+			list (name = "P(M|data)", type = "number", format = "sf:4;dp:3;log10"),
+			list (name = "BFM", type = "number", format = "sf:4;dp:3;log10", title = paste (bfm.title, sep = "")),
+			list (name = "BF10", type = "number", format = "sf:4;dp:3;log10", title = paste (bf.title, sep = "")),
 			list (name = "% error", type="number", format="sf:4;dp:3")
 		)
-
+	if (options$bayesFactorType == "LogBF10") {
+		fields[[4]] <- list (name = "BFM", type = "number", format = "sf:4;dp:3", title = paste (bfm.title, sep = ""))
+		fields[[5]] <- list (name = "BF10", type = "number", format = "sf:4;dp:3", title = paste (bf.title, sep = ""))
+	}
 	modelTable [["schema"]] <- list (fields = fields)
 
 	if (!status$ready && is.null (status$error.message))
@@ -458,13 +488,13 @@
 
 	rows[[1]] <- list ("Models" = null.model)
 
-	bayes.factors [1] <- 1
-	numerical.error[1]<- 0
+	bayes.factors [1] <- 0
+	numerical.error[1] <- 0
 	if (no.models > 0) {
 		for (m in 1:no.models) {
 			rows[[m + 1]] <- list ("Models" = model$models [[m]]$title)
 			if (perform == "run" && status$ready && model$models [[m]]$ready) {
-				bayes.factors [m + 1] <- exp(model$models [[m]]$bf@bayesFactor$bf)
+				bayes.factors [m + 1] <- model$models [[m]]$bf@bayesFactor$bf
 				numerical.error [m + 1] <- model$models [[m]]$bf@bayesFactor$error
 			}
 		}
@@ -474,52 +504,53 @@
 	if (perform == "run" && status$ready) {
 		if (populate == FALSE) {
 			#This is set for intermediate populating of tables
-			if (any (is.na (bayes.factors)) || any (!is.finite (bayes.factors))) {
-				tmp <- which (!is.na (bayes.factors) & is.finite (bayes.factors))
-				posterior.probabilities <- rep (0 , no.models + 1)
-				posterior.probabilities [tmp] <- bayes.factors [tmp] / sum (bayes.factors [tmp])
-			} else {
-				posterior.probabilities <- bayes.factors / sum (bayes.factors)
-			}
-			prior.probabilities <- rep(1 / (no.models + 1), no.models + 1)
-			model$effects <- cbind (model$effects, prior.probabilities [-1], posterior.probabilities [-1])
+			ln.prob <- rep (NA, no.models + 1)
+			index <- which (!is.na (bayes.factors) & is.finite (bayes.factors))
+			maxLBF <- max (bayes.factors [index])
+			ln.prob [index] <- bayes.factors [index] - maxLBF
+			ln.prob [index] <- ln.prob [index] - log (sum (exp (ln.prob [index])))
+			ln.BF.model <- sapply (1:(no.models+1),function(m) {
+				if (m %in% index) {
+					i <- which (index == m)
+					bayes.factors [m] - maxLBF - log (sum (exp (bayes.factors[index] [-i] - maxLBF))) + log (no.models)
+				} else {
+					NA
+				}
+			})
+			model$effects <- cbind (model$effects, 1 / (no.models + 1), exp (ln.prob [-1]))
 
-			BFmodel <- (posterior.probabilities / (1 - posterior.probabilities)) / 
-				(prior.probabilities / (1 - prior.probabilities))
-
-			rows [[1]] [["P(M)"]] <- .clean (prior.probabilities [1])
-			rows [[1]] [["P(M|data)"]] <- .clean (posterior.probabilities [1])
+			rows [[1]] [["P(M)"]] <- .clean (1 / (no.models + 1))
+			rows [[1]] [["P(M|data)"]] <- .clean (ln.prob [1] / log (10))
 		}#end populate == FALSE
 		
-		if(options$bayesFactorType == "LogBF10") {
-			if (populate == FALSE)
-				rows [[1]] [["BFM"]] <- .clean (log (BFmodel [1]))
-			rows [[1]] [["BF10"]] <- 0
-		} else {
-			if (populate == FALSE)
-				rows [[1]] [["BFM"]] <- .clean (BFmodel [1])
-			rows [[1]] [["BF10"]] <- 1
+		if (populate == FALSE) {
+			if (options$bayesFactorType == "LogBF10") { 
+				rows [[1]] [["BFM"]] <- .clean (ln.BF.model [1])
+			} else {
+				rows [[1]] [["BFM"]] <- .clean (ln.BF.model [1] / log (10))
+			}
 		}
+		rows [[1]] [["BF10"]] <- 0
 		rows [[1]] [["% error"]] <- ""
 
 		for (m in 1:no.models) {
 			if (model$models [[m]]$ready) {
 				if (populate == FALSE) { 
 					#This is set for intermediate populating of tables
-					rows [[m+1]] [["P(M)"]] <- .clean (prior.probabilities [m+1])
-					rows [[m+1]] [["P(M|data)"]] <- .clean (posterior.probabilities [m+1])
+					rows [[m+1]] [["P(M)"]] <- .clean (1 / (no.models + 1))
+					rows [[m+1]] [["P(M|data)"]] <- .clean (ln.prob [m + 1] / log (10))
 				}#end populate == FALSE
 				if (options$bayesFactorType == "LogBF10") {
 					if (populate == FALSE)
-						rows [[m+1]] [["BFM"]] <- .clean (log (BFmodel [m+1]))
-					rows [[m+1]] [["BF10"]] <- .clean (log (bayes.factors [m + 1]))
+						rows [[m+1]] [["BFM"]] <- .clean (ln.BF.model [m + 1])
+					rows [[m+1]] [["BF10"]] <- .clean (bayes.factors [m + 1])
 				} else{
 					if (populate == FALSE)
-						rows [[m+1]] [["BFM"]] <- .clean (BFmodel [m+1])
+						rows [[m+1]] [["BFM"]] <- .clean (ln.BF.model [m + 1] / log (10))
 					if (options$bayesFactorType == "BF10") {
-						rows [[m+1]] [["BF10"]] <- .clean (bayes.factors [m + 1])
+						rows [[m+1]] [["BF10"]] <- .clean (bayes.factors [m + 1] / log (10))
 					} else {
-						rows [[m+1]] [["BF10"]] <- .clean (1 / bayes.factors [m + 1])
+						rows [[m+1]] [["BF10"]] <- .clean (- bayes.factors [m + 1] / log (10))
 					}
 				}
 				rows [[m+1]] [["% error"]] <- .clean (100*numerical.error [m + 1])
@@ -702,3 +733,149 @@
 	return (effectsTable)
 }
 
+.theBayesianLinearModelEstimates <- function (model = NULL, options = list (), perform = "init", status = list (), populate = FALSE) {
+	if (! options$posteriorEstimates)
+		return (NULL)
+
+	estimatesTable <- list ()
+	estimatesTable [["title"]] <- "Parameter Estimates"
+	estimatesTable [["citation"]] <-
+		list (
+			"Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].",
+			"Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374."
+		)
+	
+	alpha <- (1 - options$posteriorEstimatesCredibleIntervalInterval) / 2
+	fields <-
+		list (
+			list (name = "Effects", type = "string"),
+			list (name = "Posterior Median", type = "number", format = "sf:4;dp:3"),
+			list (name = "Posterior SD", type = "number", format = "sf:4;dp:3"),
+			list (name = "Lower Bound", title = paste (alpha, "%", sep=""), type = "number", format = "sf:4;dp:3"),
+			list (name = "Upper Bound", title = paste (1-alpha, "%", sep=""), type = "number", format = "sf:4;dp:3")
+		)
+	estimatesTable [["schema"]] <- list (fields = fields)
+
+	if ( !status$ready && is.null (status$error.message))
+		return (estimatesTable)
+	
+	if ( perform == "init" && ! populate)
+		return (estimatesTable)
+
+	if (! populate ) {
+		effects.matrix <- matrix (model$effects [1:nrow (model$effects), 1:(ncol (model$effects) - 2)],
+			nrow = nrow (model$effects),
+			ncol = ncol (model$effects) - 2)
+		complexity <- rowSums (effects.matrix)
+		m <- which (complexity == max (complexity))
+	} else {
+		effects.matrix <- model$effects
+		complexity <- rowSums (effects.matrix)
+		m <- which (complexity == max (complexity))
+	}
+	
+	
+	if (! populate && is.null (model$models[[m]]$error.message)) {
+		chains <- model$models[[m]]$chains
+		parameters <- colnames (chains)
+		if (length (options$randomFactors) > 0) {
+			rfnames <- .v (unlist (options$randomFactors))
+			remove <- NULL
+			for (name in rfnames) 
+				remove <- c (remove, base::grep (x = parameters, pattern = name, fixed = TRUE, ignore.case = TRUE))
+			chains <- chains [, - remove]
+			parameters <- colnames (chains)
+		}
+	
+		estimates <- matrix (0, nrow = length (parameters), ncol = 4)
+		for (e in 1:length (parameters)) {
+			estimates [e, 1] <- median (chains[, e])
+			estimates [e, 2] <- sd (chains[, e])
+			estimates [e, 3] <- quantile (chains [, e], alpha)
+			estimates [e, 4] <- quantile (chains [, e], 1-alpha)
+		}
+		
+		for (parameter in 1:length (parameters)) {
+			name <- stringr::str_trim (parameters [parameter])
+			name <- base::strsplit (name, split = "-", fixed = TRUE) [[1]]
+			if (length (name) > 1) {
+				levels <- base::strsplit (name [2], split = ".&.", fixed = TRUE) [[1]]
+				effects <- base::strsplit (name [1], split = ":", fixed = TRUE) [[1]]
+				name <- NULL
+				for (e in 1:length (effects)) {
+					if (stringr::str_trim (effects [e]) == stringr::str_trim (levels [e])) {
+						name <- c (name, .unvf (effects [e]))
+					} else {
+						name <- c (name, paste (.unvf (effects [e]), levels [e], sep = " -- "))
+					}
+				}
+				name <- paste (name, collapse = " & ")
+			} else {
+				if (base::substr (name, 1, 1) == "X") {
+					name <- .unv (name)
+				} else {
+					if (name == "sig2") {
+						name <- "\u03C3\u00B2"
+					} else if (name == "mu") {
+						name <- "Intercept"
+					} else if (name == "g") {
+						name <- "g (prior)"
+					} else if (base::substr(name,1,2) == "g_") {
+						name <- base::substr(name,3, base::nchar(name))
+						if (base::substr (name, 1, 1) == "X")
+							name <- .unvf (name)
+						name <- paste ("g (prior: ", name,")", sep = "")
+					}
+				}
+			}
+			parameters [parameter] <- name
+		}
+		no.effects <- ncol (chains)
+		rows <- list ()
+		for (e in 1:no.effects) {
+			row <- list ()
+			row$"Effects" <- parameters [e]
+			row$"Posterior Median" <- .clean ( estimates [e, 1])
+			row$"Posterior SD" <- .clean ( estimates [e, 2])
+			row$"Lower Bound" <- .clean ( estimates [e, 3])
+			row$"Upper Bound" <- .clean ( estimates [e, 4])
+			rows [[length (rows) + 1]] <- row
+		}
+		estimatesTable [["data"]] <- rows
+	} else {
+		if (! is.null (model$models[[m]]$error.message)) {
+			## Footnotes
+			footnotes <- .newFootnotes()
+			if (length (model$nuisance) > 0) {
+					footnote <- paste (model$models[[m]]$error.message, sep = "")
+					.addFootnote (footnotes, symbol = "<em>Note.</em>", text = footnote)
+			}
+			estimatesTable [["footnotes"]] <- as.list (footnotes)
+		}
+
+		if ( length (options$fixedFactors) == 0) {
+			parameters <- c(.unvf(colnames (effects.matrix)), "\u03C3\u00B2", "g (prior)")
+		} else {
+			parameters <- c("Intercept", .unvf(colnames (effects.matrix)), "\u03C3\u00B2", "g (prior)")
+		}
+		no.effects <- length (parameters)
+		rows <- list ()
+		for (e in 1:no.effects) {
+			row <- list ()
+			row$"Effects" <- parameters [e]
+			row$"Posterior Median" <- ""
+			row$"Posterior SD" <- ""
+			row$"Lower Bound" <- ""
+			row$"Upper Bound" <- ""
+			rows [[length (rows) + 1]] <- row
+		}
+		estimatesTable [["data"]] <- rows
+	}
+
+	if (!status$ready)
+		estimatesTable [["error"]] <- list (errorType = "badData")
+
+ 	estimatesTable [["title"]] <- paste ("Parameter Estimates - ", options$dependent, sep = "")
+	
+	return (estimatesTable)
+}

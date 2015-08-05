@@ -183,7 +183,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	for (variable in variables) {
 		
-		variable.results <- list(Variable=variable)		
+		variable.results <- list(Variable=variable)
 
 		for (col in last.table$data) {
 		
@@ -233,7 +233,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
-				if (perform == "run")			
+				if (perform == "run")
 					variable.results[["Median"]] <- .clean(median(na.omitted))
 				
 			} else {
@@ -243,7 +243,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 		} else {
 
-			variable.results[["Median"]] <- NULL		
+			variable.results[["Median"]] <- NULL
 		}
 		
 		if (options$mode) {
@@ -296,7 +296,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
-				if (perform == "run")			
+				if (perform == "run")
 					variable.results[["Maximum"]] <- .clean(max(na.omitted))
 				
 			} else {
@@ -331,7 +331,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 			if (base::is.factor(na.omitted) == FALSE) {
 
-				if (perform == "run")			
+				if (perform == "run")
 					variable.results[["Range"]] <- .clean(range(na.omitted)[2]-range(na.omitted)[1])
 				
 			} else {
@@ -492,7 +492,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 						variable.results[[paste("eg", i, sep="")]] <- .clean(quantile(na.omitted, c(i / equalGroupsNo), type=6, names=F))
 					
 				}
-					
+				
 			} else {
 			
 				for (i in seq(equalGroupsNo - 1))
@@ -511,7 +511,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			if (substr(row, 1, 2) == "pc" && ((row %in% percentileNames) == FALSE))
 				variable.results[[row]] <- NULL
 		}
-			
+		
 		if (options$percentileValuesPercentiles) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
@@ -522,7 +522,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 						variable.results[[paste("pc", i, sep="")]] <- .clean(quantile(na.omitted, c(i / 100), type=6, names=F))
 					
 				}
-					
+				
 			} else {
 			
 				for (i in percentilesPercentiles)
@@ -550,7 +550,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		column <- dataset[[ .v(variable) ]]
 	
 		if (base::is.factor(column) == FALSE)
-			next		
+			next
 		
 		frequency.table <- list()
 
@@ -683,9 +683,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				.barplotJASP(variable=variable, dontPlotData=TRUE)
 				
 				plot[["data"]] <- .endSaveImage(image)
-		
+			
 			} else if (any(is.infinite(column))) {
-						
+				
 				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 			
 				.barplotJASP(variable=variable, dontPlotData=TRUE)
@@ -702,12 +702,12 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				}
 				
 				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-			
+				
 				.barplotJASP(column, variable)
 				
 				plot[["data"]] <- .endSaveImage(image)
 				plot[["status"]] <- "complete"
-									
+				
 			} else if (length(column) > 0 && !is.factor(column)) {
 				
 				if (any(is.infinite(column))) {
@@ -736,7 +736,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		}
 	}
 	
-	frequency.plots	
+	frequency.plots
 }
 
 .descriptivesMatrixPlot <- function(dataset, options, run) {
@@ -749,7 +749,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			matrix.plot <- .matrixPlot(dataset, perform="run", options) 
 		} else {
 			matrix.plot <- .matrixPlot(dataset, perform="init", options)
-		}	
+		}
 	}
 	
 	matrix.plot
@@ -841,7 +841,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 			step <- 2 * step
 			i <- i + 1
-		}	
+		}
 		
 	}
 	
@@ -864,7 +864,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		} else{
 			
 			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-		}		
+		}
 	}
 	
 	distLab <- max(nchar(yLabs))/1.8
@@ -928,7 +928,6 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	bestModel <- which.min(Bic)
 	
-	
 	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
 	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
 	xticks <- pretty(c(xlow, xhigh))
@@ -953,26 +952,12 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	if (!options$plotCorrelationMatrix)
 		return()
 	
-	
 	matrix.plot <- list()
 
 	if (perform == "init") {
 	
 		variables <- unlist(options$variables)
-		
-		# check for numeric/integer variables 
-		d <- vector("character", length(.v(variables)))
-		sdCheck <- vector("numeric", length(.v(variables)))
-		infCheck <- vector("logical", length(.v(variables)))
-		
-		for (i in seq_along(.v(variables))) {
-		
-			d[i] <- class(dataset[[.v(variables)[i]]])
-		}
-		
-		ind <- d == "numeric" | d == "integer"
-		
-		variables <- .v(variables)[ind]
+		variables <- .v(variables)
 		l <- length(variables)
 		
 		if (l > 0) {
@@ -1011,25 +996,42 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		l <- length(variables)
 		
-		# check for numeric/integer variables & !infinity & standard deviation > 0
+		# check variables
 		d <- vector("character", length(.v(variables)))
 		sdCheck <- vector("numeric", length(.v(variables)))
 		infCheck <- vector("logical", length(.v(variables)))
 		
 		for (i in seq_along(.v(variables))) {
-		
-			d[i] <- class(dataset[[.v(variables)[i]]])
-			sdCheck[i] <- sd(dataset[[.v(variables)[i]]], na.rm=TRUE)
-			infCheck[i] <- any(is.infinite(dataset[[.v(variables)[i]]]) == TRUE)
+			
+			variable2check <- na.omit(dataset[[.v(variables)[i]]])
+			d[i] <- class(variable2check)
+			sdCheck[i] <- sd(variable2check) > 0
+			infCheck[i] <- all(is.finite(variable2check))
 		}
 		
-		ind1 <- d == "numeric" | d == "integer"
-		ind2 <- sdCheck > 0
-		ind <- ind1 & ind2 & infCheck == FALSE
+		numericCheck <- d == "numeric" | d == "integer"
+		variables <- .v(variables)
+		variable.statuses <- vector("list", length(variables))
 		
-		variables <- .v(variables)[ind]
+		for (i in seq_along(variables)) {
 		
-		l <- length(variables)
+			variable.statuses[[i]]$unplotable <- FALSE
+			variable.statuses[[i]]$plottingError <- NULL
+			
+			if ( ! (numericCheck[i] && sdCheck[i] && infCheck[i])) {
+				
+				variable.statuses[[i]]$unplotable <- TRUE
+				
+				if ( ! numericCheck[i]) {
+					variable.statuses[[i]]$plottingError <- "Variable is not continuous"
+				} else if ( ! infCheck[i]) {
+					variable.statuses[[i]]$plottingError <- "Variable contains infinity"
+				} else if ( ! sdCheck[i]) {
+					variable.statuses[[i]]$plottingError <- "Variable has zero variance"
+				}
+				
+			}
+		}
 		
 		if (l > 0) {
 			
@@ -1068,8 +1070,12 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				
 					par(mfrow= c(1,1), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(2, 0, 0, 0))
 					
-					.plotMarginalCor(dataset[[variables[1]]]) 
-					mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
+					if ( ! variable.statuses[[1]]$unplotable) {
+						.plotMarginalCor(dataset[[variables[1]]]) 
+						mtext(text = .unv(variables)[1], side = 1, cex=1.9, line = 3)
+					} else {
+						.displayError(variable.statuses[[1]]$plottingError)
+					}
 					
 				} else if (l > 1) {
 				
@@ -1081,14 +1087,23 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 						
 							if (row == col) {
 								
-								.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+								if ( ! variable.statuses[[row]]$unplotable) {
+										.plotMarginalCor(dataset[[variables[row]]]) # plot marginal (histogram with density estimator)
+								} else {
+									.displayError(variable.statuses[[row]]$plottingError)
+								}
 							
 							}
 							
 							if (col > row) {
 							
-								.plotScatterDescriptives(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
-							
+								if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
+									.plotScatterDescriptives(dataset[[variables[col]]], dataset[[variables[row]]]) # plot scatterplot
+								} else {
+									errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
+									.displayError(errorMessages[1])
+								}
+								
 							}
 							
 							if (col < row) {
@@ -1096,7 +1111,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 								plot(1, type= "n", axes= FALSE, ylab="", xlab="")
 								
 							}
-						}	
+						}
 					}
 				}
 				
@@ -1112,7 +1127,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				}
 				
 			content <- .endSaveImage(image)
-					
+			
 			plot <- matrix.plot
 			plot[["data"]]  <- content
 			matrix.plot <- plot
