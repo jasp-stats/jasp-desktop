@@ -748,7 +748,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 						
 					}
 					
-					BF10post[rowNo] <- state$BF10post[index]
+					BF10post[rowNo] <- ttest.rows[[rowNo]]$BF # state$BF10post[index]
 					status[rowNo] <- state$status[index]
 					plottingError[rowNo] <- state$plottingError[index]
 					
