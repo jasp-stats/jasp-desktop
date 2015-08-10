@@ -712,7 +712,7 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 					Json::Value &optionsJson = analysisData["options"];
 					Json::Value &resultsJson = analysisData["results"];
 
-					Analysis::Status status = Analysis::getStatusValue(analysisData["status"].asString());
+					Analysis::Status status = Analysis::parseStatus(analysisData["status"].asString());
 
 					Analysis *analysis = _analyses->create(name, id, &optionsJson, status);
 
@@ -907,7 +907,7 @@ void MainWindow::saveSelected(const QString &filename)
 		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 		{
 			Analysis *analysis = *itr;
-			if (analysis != NULL && analysis->visible())
+			if (analysis != NULL && analysis->isVisible())
 			{
 				Json::Value analysisData = analysis->asJSON();
 				analysisData["options"] = analysis->options()->asJSON();

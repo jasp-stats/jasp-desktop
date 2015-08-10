@@ -18,6 +18,8 @@ Analysis::Analysis(int id, string name, Options *options, Version version, bool 
 	_autorun = autorun;
 	_version = version;
 
+	_revision = 0;
+
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
@@ -54,7 +56,7 @@ const Json::Value &Analysis::results() const
 	return _results;
 }
 
-Analysis::Status Analysis::getStatusValue(string name)
+Analysis::Status Analysis::parseStatus(string name)
 {
 	if (name == "empty")
 		return Analysis::Empty;
@@ -113,7 +115,12 @@ void Analysis::setVisible(bool visible)
 	_visible = visible;
 }
 
-bool Analysis::visible()
+int Analysis::revision()
+{
+	return _revision;
+}
+
+bool Analysis::isVisible()
 {
 	return _visible;
 }
@@ -151,6 +158,7 @@ Options *Analysis::options() const
 void Analysis::optionsChangedHandler(Option *option)
 {
 	_status = Empty;
+	_revision++;
 	optionsChanged(this);
 }
 

@@ -204,6 +204,7 @@ bool Engine::receiveMessages(int timeout)
 		{
 			_analysisName = jsonRequest.get("name", Json::nullValue).asString();
 			_analysisOptions = jsonRequest.get("options", Json::nullValue).toStyledString();
+			_analysisRevision = jsonRequest.get("revision", -1).asInt();
 
 			Json::Value settings = jsonRequest.get("settings", Json::nullValue);
 			if (settings.isObject())
@@ -229,6 +230,7 @@ void Engine::sendResults()
 
 	response["id"] = _analysisId;
 	response["name"] = _analysisName;
+	response["revision"] = _analysisRevision;
 
 	Json::Value resultsStatus = Json::nullValue;
 
