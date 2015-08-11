@@ -56,7 +56,7 @@ string Dirs::appDataDir()
 	}
 
 	dir = nowide::narrow(buffer);
-	dir += "/JASP/" + AppInfo::getShortDesc(false);//string(APP_VERSION);
+	dir += "/JASP/" + AppInfo::getShortDesc();//string(APP_VERSION);
 
 	pa = nowide::widen(dir);
 
