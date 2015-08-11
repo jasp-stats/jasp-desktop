@@ -56,14 +56,14 @@ string Dirs::appDataDir()
 	}
 
 	dir = nowide::narrow(buffer);
-	dir += "/JASP/" + AppInfo::getShortDesc();//string(APP_VERSION);
+	dir += "/JASP/" + AppInfo::getShortDesc();
 
 	pa = nowide::widen(dir);
 
 #else
 
 	dir = string(getpwuid(getuid())->pw_dir);
-	dir += "/.JASP/" + AppInfo::getShortDesc(false);
+	dir += "/.JASP/" + AppInfo::getShortDesc();
 
 	pa = dir;
 
