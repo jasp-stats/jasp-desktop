@@ -288,9 +288,9 @@ void JASPExporter::createJARContents(archive *a)
 
 	stringstream manifestStream;
 	manifestStream << "Manifest-Version: 1.0" << "\n";
-	manifestStream << "Created-By: " << AppInfo::getShortDesc(true) << "\n";
-	manifestStream << "Data-Archive-Version: " << dataArchiveVersion.asString(false, false) << "\n";
-	manifestStream << "JASP-Archive-Version: " << jaspArchiveVersion.asString(false, false) << "\n";
+	manifestStream << "Created-By: " << AppInfo::getShortDesc() << "\n";
+	manifestStream << "Data-Archive-Version: " << dataArchiveVersion.asString(false) << "\n";
+	manifestStream << "JASP-Archive-Version: " << jaspArchiveVersion.asString(false) << "\n";
 
 	manifestStream.flush();
 

@@ -1,9 +1,10 @@
 #include "appinfo.h"
 
-const Version AppInfo::version = Version(0, 0, 7, 1, 255);
+
+const Version AppInfo::version = Version(0, 7, 1, 255);
 const std::string AppInfo::name = "JASP";
 
-std::string AppInfo::getShortDesc(bool includeMassive)
+std::string AppInfo::getShortDesc()
 {
-	return AppInfo::name + " " + AppInfo::version.asString(includeMassive, true);
+	return AppInfo::name + " " + AppInfo::version.asString(false);
 }

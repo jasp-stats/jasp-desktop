@@ -9,7 +9,7 @@ public:
 	static const Version version;
 	static const std::string name;
 
-	static std::string getShortDesc(bool includeMassive);
+	static std::string getShortDesc();
 };
 
 #endif // APPINFO_H
