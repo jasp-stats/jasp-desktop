@@ -91,12 +91,10 @@ signals:
 	void saveTempImage(int id, QString path, QByteArray data);
 	void showAnalysesMenu(QString options);
 	void removeAnalysisRequest(int id);
-	void updateCommentary(int id, QString key, QString text);
 
 private slots:
 
 	void analysisResultsChangedHandler(Analysis* analysis);
-	void analysisCommentaryLoadedHandler(Analysis *analysis);
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
 	void pushImageToClipboardHandler(const QByteArray &base64, const QString &html);
@@ -105,13 +103,11 @@ private slots:
 	void saveTempImageHandler(int id, QString path, QByteArray data);
 	void analysisChangedDownstreamHandler(int id, QString options);
 
-	void updateCommentaryHandler(int id, QString key, QString text);
 	void removeAnalysisRequestHandler(int id);
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
 	void copySelected();
 	void citeSelected();
-	void annotateSelected();
 	void menuHidding();
 
 	void tabChanged(int index);
@@ -121,7 +117,6 @@ private slots:
 	void dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename);
 	void dataSetLoadFailed(const QString &message);
 	void saveFailed(const QString &message);
-	void exportFailed(const QString &message);
 	void itemSelected(const QString &item);
 	void exportSelected(const QString &filename);
 	void saveSelected(const QString &filename);
