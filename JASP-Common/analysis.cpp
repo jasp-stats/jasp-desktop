@@ -78,7 +78,7 @@ Json::Value Analysis::asJSON() const
 
 	analysisAsJson["id"] = _id;
 	analysisAsJson["name"] = _name;
-	analysisAsJson["version"] = _version.asString(false, false);
+	analysisAsJson["version"] = _version.asString(false);
 	analysisAsJson["results"] = _results;
 
 	string status;
