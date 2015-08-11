@@ -143,19 +143,17 @@ string Version::asString(bool includeRelease) const
 	if (revision != 0)
 		stream << "." << (int)revision;
 
-	if ( ! includeRelease && isRelease()) {
-		if (build > 255)
-			stream << "." << (int)(build - 255);
-
-		return stream.str();
-	}
-
 	if (isRelease())
 	{
-		if (build == 255)
-			stream << " Release";
+		if (includeRelease)
+		{
+			if (build == 255)
+				stream << " Release";
+			else if (build > 255)
+				stream << " Release " << (int)(build - 255);
+		}
 		else if (build > 255)
-			stream << " Release " << (int)(build - 255 + 1);
+			stream << "." << (int)(build - 255);
 	}
 	else if (isAlpha())
 		stream << " Alpha " << (int)build;
