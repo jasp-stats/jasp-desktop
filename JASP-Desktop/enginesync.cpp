@@ -146,6 +146,7 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 
 	json["id"] = analysis->id();
 	json["perform"] = perform;
+	json["revision"] = analysis->revision();
 
 	if (analysis->status() != Analysis::Aborted)
 	{
@@ -194,8 +195,12 @@ void EngineSync::process()
 			reader.parse(data, json);
 
 			int id = json.get("id", -1).asInt();
+			int revision = json.get("revision", -1).asInt();
 			Json::Value results = json.get("results", Json::nullValue);
 			string status = json.get("status", "error").asString();
+
+			if (analysis->id() != id || analysis->revision() != revision)
+				continue;
 
 			if (status == "error")
 			{
@@ -341,9 +346,14 @@ void EngineSync::startSlaveProcess(int no)
 #elif __APPLE__
 	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources"));
 #else
-    env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R/lib") + ";" + programDir.absoluteFilePath("R/library/RInside/lib") + ";" + programDir.absoluteFilePath("R/library/Rcpp/lib"));
+	env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R/lib") + ";" + programDir.absoluteFilePath("R/library/RInside/lib") + ";" + programDir.absoluteFilePath("R/library/Rcpp/lib"));
 	env.insert("R_HOME", programDir.absoluteFilePath("R"));
 #endif
+
+	env.insert("R_ENVIRON", "");
+	env.insert("R_LIBS", "");
+	env.insert("R_LIBS_SITE", "");
+	env.insert("R_LIBS_USER", "");
 
 
 	QProcess *slave = new QProcess(this);

@@ -7,11 +7,13 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 		if (perform == "run") {
 		
-			dataset <- .readDataSetToEnd(columns=variables)
+			dataset         <- .readDataSetToEnd(columns.as.numeric=variables)
+			dataset.factors <- .readDataSetToEnd(columns=variables)
 			
 		} else {
 		
-			dataset <- .readDataSetHeader(columns=variables)
+			dataset         <- .readDataSetHeader(columns.as.numeric=variables)
+			dataset.factors <- .readDataSetHeader(columns=variables)
 		}
 	}
 	
@@ -54,7 +56,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	if (options$frequencyTables) {
 	
-		frequency.tables <- .descriptivesFrequencyTables(dataset, options, run, last.frequency.tables)
+		frequency.tables <- .descriptivesFrequencyTables(dataset.factors, options, run, last.frequency.tables)
 		
 		if (length(frequency.tables) > 0)
 			results[["frequenciesHeading"]] <- "Frequencies"
@@ -69,7 +71,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	if (is.list(state))
 		last.plots <- state$results$plots
 
-	results[["plots"]] <- .descriptivesFrequencyPlots(dataset, options, run, last.plots)
+	results[["plots"]] <- .descriptivesFrequencyPlots(dataset.factors, options, run, last.plots)
 		
 	keep <- NULL
 
@@ -176,7 +178,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	footnotes <- .newFootnotes()
 	
 	note.symbol <- "<i>Note.</i>"
-	na.for.categorical <- "Not all values are available for nominal and ordinal variables"
+	na.for.categorical <- "Not all values are available for <i>Nominal Text</i> variables"
 	
 	
 	stats.values <- list()

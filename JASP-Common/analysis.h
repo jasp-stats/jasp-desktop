@@ -30,8 +30,6 @@ public:
 	const Json::Value &results() const;
 	Json::Value asJSON() const;
 
-	static Status getStatusValue(std::string name);
-
 	const std::string &name() const;
 	int id() const;
 	bool isAutorun() const;
@@ -39,13 +37,15 @@ public:
 	virtual void abort();
 	void scheduleRun();
 
-	void setOptions(Options* options);
-
 	Status status() const;
-
 	void setStatus(Status status);
-	bool visible();
+
+	bool isVisible();
 	void setVisible(bool visible);
+
+	int revision();
+
+	static Status parseStatus(std::string name);
 
 protected:
 
@@ -59,10 +59,13 @@ protected:
 	int callback(Json::Value results);
 
 private:
-	Version _version;
-	int _id;
+
 	std::string _name;
+	int _id;
 	bool _autorun;
+	Version _version;
+
+	int _revision;
 
 	void optionsChangedHandler(Option *option);
 

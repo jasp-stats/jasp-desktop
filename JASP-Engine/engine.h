@@ -31,6 +31,7 @@ private:
 	Status _status;
 
 	int _analysisId;
+	int _analysisRevision;
 	std::string _analysisName;
 	std::string _analysisOptions;
 	std::string _analysisResultsString;

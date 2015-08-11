@@ -6,7 +6,7 @@
 class Version
 {
 public:
-	Version(unsigned char _massive, unsigned char _major, unsigned char _minor, unsigned char _revision, unsigned char _build);
+	Version(unsigned char _major, unsigned char _minor, unsigned char _revision, unsigned short _build);
 	Version(std::string version);
 	Version();
 
@@ -20,14 +20,13 @@ public:
 	bool isRelease() const;
 	bool isAlpha() const;
 	bool isBeta() const;
-	std::string asString(bool includeMassive, bool includeRelease) const;
+	std::string asString(bool includeRelease) const;
 	bool isEmpty() const;
 
-	unsigned char massive;
 	unsigned char major;
 	unsigned char minor;
 	unsigned char revision;
-	unsigned char build;
+	unsigned short build;
 };
 
 
