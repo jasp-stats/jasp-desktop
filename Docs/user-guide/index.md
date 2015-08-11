@@ -13,15 +13,15 @@ Download: https://jasp-stats.org/download
 
 ### Windows
 
-Two versions of JASP are available for Windows, one for 32-bit and one for 64-bit systems. We recommend that you use the version which corresponds your Windows version.
-
-More Info: ["Is my PC running the 32-bit or 64-bit version of Windows?"](http://windows.microsoft.com/en-US/windows7/find-out-32-or-64-bit)
-
-If you absolutely cannot figure out what version of windows you are using, the 32-bit version will work on both.
+JASP installs under Windows like any normal application.
 
 ### Mac OS X
 
-JASP works on Mac OS X, version 10.8 (Mountain Lion) and above. JASP is installed by downloading and double clicking the .dmg file, and dragging the JASP icon to the Applications folder. This places JASP in your applications folder.
+JASP works on Mac OS X, version 10.8 (Mountain Lion) and above.
+
+JASP under OS X currently depends on [XQuartz](http://xquartz.macosforge.org/landing/). This should be installed before commencing installation of JASP.
+
+JASP is installed by downloading and double clicking the .dmg file, and dragging the JASP icon to the Applications folder. This places JASP in your applications folder.
 
 OS X actively discourages people from downloading software from the internet (rather wanting to channel people through their app store), so there will likely be some additional steps to make JASP run.
 
@@ -37,11 +37,13 @@ From then on, you will be able to start JASP in the usual way.
 
 ### Linux
 
-JASP is available for Ubuntu 14.04 and 14.10 . It is possible to run JASP on other versions of Linux, but there can be issues, and the JASP team will have difficulty assisting you. We would like to support JASP on more Linux distributions, however, this represents a substantial undertaking, and the JASP team currently does not have the resources to support a wide range of distributions. In the future, we hope that members of the Linux community will be able to assist us.
+JASP is available for Ubuntu Vivid (15.04) and Ubuntu Trusty (14.04), from Jonathon's *Personal Package Archive* (PPA). Once the PPA is added to your system, you will be able to install JASP. Once installed from the PPA, JASP will be automatically kept up-to-date by Ubuntu.
 
-Under Ubuntu, it is necessary to first install *libblas* and *liblapack*. These are available in the Ubuntu Software Centre.
+The PPA and JASP can be installed with the following:
 
-JASP can then be run by unzipping the contents of the JASP zip files, and double-clicking on the resultant JASP executable.
+    sudo add-apt-repository ppa:jonathon-love/jasp
+    sudo apt-get update
+    sudo apt-get install jasp
 
 Data Sets
 ---------
