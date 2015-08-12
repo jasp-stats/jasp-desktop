@@ -469,11 +469,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 	model <- aov(model.formula, dataset, weights=WLS)
 		
-	modelError <- class(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))) == "try-error"
+	modelError <- try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))
 	errorMessage <- ""
 	
-	if (modelError) 
-		errorMessage <- .extractErrorMessage(try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE)))
+	if (class(modelError) == "try-error") 
+		errorMessage <- .extractErrorMessage(modelError)
 	
 	singular <- FALSE
 	if (errorMessage == "singular fit encountered")
@@ -631,7 +631,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				
 				F <- if (is.na(result[term,"F value"])) {""} else { result[term, "F value"] }
 				p <- if (is.na(result[term,"Pr(>F)"] )) {""} else { result[term, "Pr(>F)"] }
-				
+								
 				if(i == 1 || term == "Residuals" || (!is.null(unlist(options$covariates)) && terms.normal[i] == options$covariates[[1]] && !reorderModelTerms$interactions)) {
 					newGroup <- TRUE
 				} else {

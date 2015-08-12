@@ -22,7 +22,7 @@ Version::Version(unsigned char _major, unsigned char _minor, unsigned char _revi
 Version::Version(std::string versionString)
 {
 	char buildString[8];
-	unsigned char buildIndex = 0;
+	unsigned short buildIndex = 0;
 
 	int v0 = sscanf(versionString.c_str(), "%hhu.%hhu.%hhu.%hu", &major, &minor, &revision, &buildIndex);
 	bool error = v0 <= 0;
@@ -33,12 +33,12 @@ Version::Version(std::string versionString)
 	}
 	else if (v0 < 4 && !error)
 	{
-		int v1 = sscanf(versionString.c_str(), "%hhu.%hhu.%hhu %7s %hhu", &major, &minor, &revision, buildString, &buildIndex);
+		int v1 = sscanf(versionString.c_str(), "%hhu.%hhu.%hhu %7s %hu", &major, &minor, &revision, buildString, &buildIndex);
 		bool hasRevision = v1 >= 3;
 		if ( ! hasRevision)
 		{
 			revision = 0;
-			v1 = sscanf(versionString.c_str(), "%hhu.%hhu %7s %hhu", &major, &minor, buildString, &buildIndex);
+			v1 = sscanf(versionString.c_str(), "%hhu.%hhu %7s %hu", &major, &minor, buildString, &buildIndex);
 		}
 
 		error = v1 <= 0;
@@ -134,7 +134,7 @@ bool Version::isBeta() const
 	return build >= 101 && build <= 254;
 }
 
-string Version::asString(bool includeRelease) const
+string Version::asString() const
 {
 	stringstream stream;
 
@@ -144,17 +144,7 @@ string Version::asString(bool includeRelease) const
 		stream << "." << (int)revision;
 
 	if (isRelease())
-	{
-		if (includeRelease)
-		{
-			if (build == 255)
-				stream << " Release";
-			else if (build > 255)
-				stream << " Release " << (int)(build - 255);
-		}
-		else if (build > 255)
-			stream << "." << (int)(build - 255);
-	}
+		stream << "." << (int)(build - 255);
 	else if (isAlpha())
 		stream << " Alpha " << (int)build;
 	else if (isBeta())
