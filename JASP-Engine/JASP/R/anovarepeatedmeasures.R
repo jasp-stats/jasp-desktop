@@ -1547,18 +1547,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 						
 			summaryStat <- .summarySE(as.data.frame(dataset), measurevar = "dependent", groupvars = .v(betweenSubjectFactors), 
 							conf.interval = options$confidenceIntervalInterval, na.rm = TRUE, .drop = FALSE, errorBarType = options$errorBarType)
-			
-			colnames(summaryStat)[colnames(summaryStat) == "dependent"] <- "dependent_norm"
-									
+												
 		} else {
 		
 			summaryStat <- .summarySEwithin(as.data.frame(dataset), measurevar="dependent", betweenvars=.v(betweenSubjectFactors), withinvars=.v(repeatedMeasuresFactors), 
 							idvar="subject", conf.interval=options$confidenceIntervalInterval, na.rm=TRUE, .drop=FALSE, errorBarType=options$errorBarType)
 			
 		}
-		
-		print(summaryStat)
-						
+								
 		if ( options$plotHorizontalAxis != "" ) {
 			colnames(summaryStat)[which(colnames(summaryStat) == .v(options$plotHorizontalAxis))] <- "plotHorizontalAxis"
 		}
@@ -1585,7 +1581,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
 					 ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
 			} else {
-				b <- pretty(x[,"dependent_norm"])
+				b <- pretty(x[,"dependent"])
 				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
 				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
 					 ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
@@ -1616,13 +1612,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			if(options$plotSeparateLines == "") {
 
 				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis, 
-											y=dependent_norm,
+											y=dependent,
 											group=1)) 
 
 			} else {
 
 				p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis, 
-											y=dependent_norm,
+											y=dependent,
 											group=plotSeparateLines,
 											shape=plotSeparateLines,
 											fill=plotSeparateLines))
@@ -1647,7 +1643,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
 				ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) + 
 				ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
-				ggplot2::ylab(options$dependent_norm) +
+				ggplot2::ylab(options$dependent) +
 				ggplot2::xlab(options$plotHorizontalAxis) +
 				ggplot2::labs(shape=options$plotSeparateLines, fill=options$plotSeparateLines) +
 				ggplot2::theme_bw() +
@@ -1788,6 +1784,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 								 na.rm
 	)
 	
+	
+	
 	# Put the subject means with original data
 	data <- base::merge(data, data.subjMean)
 	
@@ -1795,7 +1793,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	measureNormedVar <- paste(measurevar, "_norm", sep="")
 	data[,measureNormedVar] <- data[,measurevar] - data[,"subjMean"] +
 		mean(data[,measurevar], na.rm=na.rm)
-	
+			
 	# Remove this subject mean column
 	data$subjMean <- NULL
 	
@@ -1835,13 +1833,13 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	if (errorBarType == "confidenceInterval") {
 	
-		ndatac$ciLower <- ndatac[,measurevar_n] - ndatac[,"ci"]
-		ndatac$ciUpper <- ndatac[,measurevar_n] + ndatac[,"ci"]
+		ndatac$ciLower <- datac[,measurevar] - ndatac[,"ci"]
+		ndatac$ciUpper <- datac[,measurevar] + ndatac[,"ci"]
 	
 	} else {
 	
-		ndatac$ciLower <- ndatac[,measurevar_n] - ndatac[,"se"]
-		ndatac$ciUpper <- ndatac[,measurevar_n] + ndatac[,"se"]
+		ndatac$ciLower <- datac[,measurevar] - ndatac[,"se"]
+		ndatac$ciUpper <- datac[,measurevar] + ndatac[,"se"]
 	
 	}
 	
