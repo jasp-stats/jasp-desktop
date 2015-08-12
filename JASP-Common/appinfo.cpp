@@ -6,5 +6,5 @@ const std::string AppInfo::name = "JASP";
 
 std::string AppInfo::getShortDesc()
 {
-	return AppInfo::name + " " + AppInfo::version.asString(false);
+	return AppInfo::name + " " + AppInfo::version.asString();
 }

@@ -20,7 +20,7 @@ public:
 	bool isRelease() const;
 	bool isAlpha() const;
 	bool isBeta() const;
-	std::string asString(bool includeRelease) const;
+	std::string asString() const;
 	bool isEmpty() const;
 
 	unsigned char major;

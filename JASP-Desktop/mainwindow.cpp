@@ -825,7 +825,7 @@ void MainWindow::resultsPageLoaded(bool success)
 		if (!_openOnLoadFilename.isEmpty())
 			dataSetSelected(_openOnLoadFilename);
 
-		QString version = tq(AppInfo::version.asString(false));
+		QString version = tq(AppInfo::version.asString());
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
 
 		_resultsViewLoaded = true;

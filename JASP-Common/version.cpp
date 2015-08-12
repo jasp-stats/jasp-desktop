@@ -134,7 +134,7 @@ bool Version::isBeta() const
 	return build >= 101 && build <= 254;
 }
 
-string Version::asString(bool includeRelease) const
+string Version::asString() const
 {
 	stringstream stream;
 
@@ -144,17 +144,7 @@ string Version::asString(bool includeRelease) const
 		stream << "." << (int)revision;
 
 	if (isRelease())
-	{
-		if (includeRelease)
-		{
-			if (build == 255)
-				stream << " Release";
-			else if (build > 255)
-				stream << " Release " << (int)(build - 255);
-		}
-		else if (build > 255)
-			stream << "." << (int)(build - 255);
-	}
+		stream << "." << (int)(build - 255);
 	else if (isAlpha())
 		stream << " Alpha " << (int)build;
 	else if (isBeta())
