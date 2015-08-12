@@ -87,7 +87,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
 	ui->tabBar->addTab("Common");
-	ui->tabBar->addOptionsTab();
+#ifndef __linux__
+	ui->tabBar->addOptionsTab(); // no SEM under linux for now
+#endif
 	ui->tabBar->addHelpTab();
 
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
@@ -541,6 +543,7 @@ void MainWindow::tabChanged(int index)
 	{
 		ui->topLevelWidgets->setCurrentIndex(0);
 	}
+#ifndef __linux__
 	else if (index == ui->tabBar->count() - 1)
 	{
 		if (_optionsForm == NULL)
@@ -552,6 +555,7 @@ void MainWindow::tabChanged(int index)
 
 		ui->topLevelWidgets->setCurrentWidget(_optionsForm);
 	}
+#endif
 	else
 	{
 		ui->topLevelWidgets->setCurrentIndex(1);
@@ -785,11 +789,15 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 
 void MainWindow::updateUIFromOptions()
 {
+#ifdef __linux__
+	ui->tabBar->removeTab("SEM");
+#else
 	QVariant sem = _settings.value("plugins/sem", false);
 	if (sem.canConvert(QVariant::Bool) && sem.toBool())
 		ui->tabBar->addTab("SEM");
 	else
 		ui->tabBar->removeTab("SEM");
+#endif
 
 	QVariant rl = _settings.value("toolboxes/r11tLearn", false);
 	if (rl.canConvert(QVariant::Bool) && rl.toBool())
