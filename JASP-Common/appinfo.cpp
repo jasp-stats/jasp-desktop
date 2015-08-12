@@ -1,7 +1,7 @@
 #include "appinfo.h"
 
 
-const Version AppInfo::version = Version(0, 7, 1, 256);
+const Version AppInfo::version = Version(0, 7, 1, 257);
 const std::string AppInfo::name = "JASP";
 
 std::string AppInfo::getShortDesc()
