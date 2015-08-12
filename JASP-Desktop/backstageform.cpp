@@ -46,6 +46,8 @@ BackStageForm::BackStageForm(QWidget *parent) :
 	ui->recentDataSetsHeading->setFont(nf);
 	ui->exampleDataSetsHeading->setFont(nf);
 #endif
+
+	ui->buttonNew->hide();
 }
 
 BackStageForm::~BackStageForm()
