@@ -350,10 +350,13 @@ void EngineSync::startSlaveProcess(int no)
 	env.insert("R_HOME", programDir.absoluteFilePath("R"));
 #endif
 
-	env.insert("R_ENVIRON", "");
-	env.insert("R_LIBS", "");
-	env.insert("R_LIBS_SITE", "");
-	env.insert("R_LIBS_USER", "");
+	env.insert("R_ENVIRON", "something-which-doesnt-exist");
+	env.insert("R_PROFILE", "something-which-doesnt-exist");
+	env.insert("R_PROFILE_USER", "something-which-doesnt-exist");
+	env.insert("R_ENVIRON_USER", "something-which-doesnt-exist");
+	env.insert("R_LIBS", "something-which-doesnt-exist");
+	env.insert("R_LIBS_SITE", "something-which-doesnt-exist");
+	env.insert("R_LIBS_USER", "something-which-doesnt-exist");
 
 
 	QProcess *slave = new QProcess(this);
