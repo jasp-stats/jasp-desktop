@@ -97,9 +97,11 @@ void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator
 
 	for (int colNo = 0; colNo < packageData->dataSet->columnCount(); colNo++)
 	{
-		bool success = true;
+		bool success;
 
 		do {
+
+			success = true;
 
 			try {
 				DataSet *dataSet = packageData->dataSet;
