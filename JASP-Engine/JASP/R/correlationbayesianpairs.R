@@ -2337,14 +2337,14 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 		currentPair <- paste(pair, collapse=" - ")
 		
-		if (options$scatterplot) {
+		if (options$plotScatter) {
 		
-			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && "scatterplot" %in% state$plotTypes) {
+			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && (is.list(diff) && (diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE)) && "plotScatter" %in% state$plotTypes) {
 				
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
 				
-				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "scatterplot")
+				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "plotScatter")
 				
 				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
 				
@@ -2364,7 +2364,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				plots.correlation[[length(plots.correlation)+1]] <- plot
 			}
 			
-			plotTypes[[length(plotTypes)+1]] <- "scatterplot"
+			plotTypes[[length(plotTypes)+1]] <- "plotScatter"
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
 		
 		}
@@ -2769,7 +2769,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	# PLOTS
 	
-	if (perform == "run" && length(options$pairs) > 0 && (options$scatterplot || options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis)) {
+	if (perform == "run" && length(options$pairs) > 0 && (options$plotScatter || options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis)) {
 	
 		if ( ! .shouldContinue(callback(results)))
 				return()
@@ -2814,14 +2814,14 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			}
 			
 			
-			if (options$scatterplot) {
+			if (options$plotScatter) {
 			
-				if (!is.null(state) && tablePairs[[i]] %in% state$plotPairs && !is.null(diff) && ((is.list(diff) && (diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && "scatterplot" %in% state$plotTypes) {
+				if (!is.null(state) && tablePairs[[i]] %in% state$plotPairs && !is.null(diff) && ((is.list(diff) && (diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && "plotScatter" %in% state$plotTypes) {
 					
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
 					
-					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "scatterplot")
+					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "plotScatter")
 					
 					plots.correlation[[j]] <- state$plotsCorrelation[[stateIndex]]
 				

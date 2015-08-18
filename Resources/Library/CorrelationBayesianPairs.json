@@ -29,6 +29,11 @@
 		},
 		{
 			"default": false,
+			"name": "plotScatter",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
 			"name": "plotPriorAndPosterior",
 			"type": "Boolean"
 		},
@@ -50,11 +55,6 @@
 		{
 			"default": false,
 			"name": "plotSequentialAnalysisRobustness",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "scatterplot",
 			"type": "Boolean"
 		},
 		{
