@@ -63,7 +63,7 @@
 			"type": "Number",
 			"value": 1.0,
 			"max": 2.0,
-			"min": 0.5
+			"min": 1.0
 		},
 		{
 			"name": "plotPosteriorOddsRatio",

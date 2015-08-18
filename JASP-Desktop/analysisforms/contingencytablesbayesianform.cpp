@@ -39,6 +39,7 @@ ContingencyTablesBayesianForm::ContingencyTablesBayesianForm(QWidget *parent) :
 	ui->panelOptions->hide();
 
 	ui->oddsRatioCredibleIntervalInterval->setLabel("Credible interval");
+	ui->priorConcentration->setLabel("Prior concentration");
 }
 
 ContingencyTablesBayesianForm::~ContingencyTablesBayesianForm()

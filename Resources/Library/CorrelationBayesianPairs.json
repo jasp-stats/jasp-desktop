@@ -29,6 +29,11 @@
 		},
 		{
 			"default": false,
+			"name": "plotScatter",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
 			"name": "plotPriorAndPosterior",
 			"type": "Boolean"
 		},
