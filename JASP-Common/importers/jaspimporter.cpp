@@ -82,8 +82,15 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
-			packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
-			success = false;
+			try {
+
+				packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
+				success = false;
+			}
+			catch (exception &e)
+			{
+				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
 		}
 		catch (exception e)
 		{
@@ -98,6 +105,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	}
 	while ( ! success);
 
+	unsigned long long progress;
+	unsigned long long lastProgress = -1;
 
 	Json::Value &columnsDesc = dataSetDesc["fields"];
 	int i = 0;
@@ -105,11 +114,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	{
 		Json::Value columnDesc = (*itr);
 
-		Column &column = packageData->dataSet->column(i);
 		string name = columnDesc["name"].asString();
-
-		column.setName(name);
-		column.setColumnType(parseColumnType(columnDesc["measureType"].asString()));
 
 		Json::Value &labelsDesc = columnDesc["labels"];
 		if (labelsDesc.isNull() &&  ! xData.isNull())
@@ -121,22 +126,60 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 			}
 		}
 
-		Labels &labels = column.labels();
+		do {
+			try {
+				Column &column = packageData->dataSet->column(i);
 
-		for (Json::Value::iterator iter = labelsDesc.begin(); iter != labelsDesc.end(); iter++)
+				column.setName(name);
+				column.setColumnType(parseColumnType(columnDesc["measureType"].asString()));
+
+				Labels &labels = column.labels();
+				labels.clear();
+				int k = 0;
+				for (Json::Value::iterator iter = labelsDesc.begin(); iter != labelsDesc.end(); iter++)
+				{
+					Json::Value keyValuePair = *iter;
+					int zero = 0;
+					int key = keyValuePair.get(zero, Json::nullValue).asInt();
+					labels.add(key, keyValuePair.get(1, Json::nullValue).asString());
+
+					k++;
+				}
+				success = true;
+			}
+			catch (boost::interprocess::bad_alloc &e)
+			{
+				try {
+
+					packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
+					success = false;
+				}
+				catch (exception &e)
+				{
+					throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+				}
+			}
+			catch (exception e)
+			{
+				cout << "n " << e.what();
+				cout.flush();
+			}
+			catch (...)
+			{
+				cout << "something else\n ";
+				cout.flush();
+			}
+		} while (success == false);
+
+		progress = 50 * i / columnCount;
+		if (progress != lastProgress)
 		{
-			Json::Value keyValuePair = *iter;
-			int zero = 0;
-			int key = keyValuePair.get(zero, Json::nullValue).asInt();
-			labels.add(key, keyValuePair.get(1, Json::nullValue).asString());
+			progressCallback("Loading Data Set", progress);
+			lastProgress = progress;
 		}
 
 		i += 1;
 	}
-
-	unsigned long long progress;
-	unsigned long long lastProgress = -1;
-
 
 	string entryName = "data.bin";
 	FileReader dataEntry = FileReader(path, entryName);
@@ -166,7 +209,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 				column.setValue(r, *(int*)buff);
 			}
 
-			progress = 100 * ((c * rowCount) + (r + 1)) / (columnCount * rowCount);
+			progress = 50 + (50 * ((c * rowCount) + (r + 1)) / (columnCount * rowCount));
 			if (progress != lastProgress)
 			{
 				progressCallback("Loading Data Set", progress);
@@ -308,7 +351,7 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 	int size = dataEntry.bytesAvailable();
 	if (size > 0)
 	{
-		char data[size];
+		char *data = new char[size];
 		int startOffset = dataEntry.pos();
 		int errorCode = 0;
 		while (dataEntry.readData(&data[dataEntry.pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
@@ -317,8 +360,9 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 			throw runtime_error("Could not read Entry '" + entry + "' in JASP archive.");
 
 		Json::Reader jsonReader;
-		string doc(data, size);
-		jsonReader.parse(doc, root);
+		jsonReader.parse(data, (char*)(data + (size * sizeof(char))), root);
+
+		delete data;
 	}
 
 	dataEntry.close();
