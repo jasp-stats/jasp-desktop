@@ -53,6 +53,11 @@
 			"type": "Boolean"
 		},
 		{
+			"default": false,
+			"name": "scatterplot",
+			"type": "Boolean"
+		},
+		{
 			"default": 320,
 			"name": "plotWidth",
 			"type": "Integer"
