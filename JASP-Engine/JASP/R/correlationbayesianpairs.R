@@ -2550,7 +2550,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						
 						errorFootnotes[i] <- state$errorFootnotes[stateIndex]
 						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(NaN), BF=.clean(NaN), .footnotes=list(BF=list(index2)))
+						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(NaN), BF=.clean(NaN), .footnotes=list(r=list(index2)))
 					}
 				
 				} else {
@@ -2582,7 +2582,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						
 						errorFootnotes[i] <- state$errorFootnotes[stateIndex]
 						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(NaN), BF=.clean(NaN), .footnotes=list(BF=list(index2)))
+						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(NaN), BF=.clean(NaN), .footnotes=list(r=list(index2)))
 					}
 					
 					pair.statuses[[i]] <- state$pairStatuses[[stateIndex]]
@@ -2743,7 +2743,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					
 					if (!is.null(index)) {
 					
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(some.r), BF=.clean(some.bf), .footnotes=list(BF=list(index)))
+						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(some.r), BF=.clean(some.bf), .footnotes=list(r=list(index)))
 					
 					} else {
 					
