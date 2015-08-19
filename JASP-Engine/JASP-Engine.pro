@@ -1,6 +1,6 @@
 
-QT       -= core
-QT       -= gui
+QT -= core
+QT -= gui
 
 windows:CONFIG += c++11
 
@@ -83,8 +83,8 @@ PRE_TARGETDEPS += RPackage
 
 SOURCES += main.cpp \
 	engine.cpp \
-    rbridge.cpp
+	rbridge.cpp
 
 HEADERS += \
 	engine.h \
-    rbridge.h
+	rbridge.h

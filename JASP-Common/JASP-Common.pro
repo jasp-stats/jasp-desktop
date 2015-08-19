@@ -1,5 +1,5 @@
 
-QT       -= gui
+QT -= gui
 
 DESTDIR = ..
 TARGET = JASP-Common
@@ -67,11 +67,11 @@ SOURCES += \
 	sharedmemory.cpp \
 	tempfiles.cpp \
 	utils.cpp \
-    exporters/jaspexporter.cpp \
-    importers/jaspimporter.cpp \
-    filereader.cpp \
-    version.cpp \
-    appinfo.cpp
+	exporters/jaspexporter.cpp \
+	importers/jaspimporter.cpp \
+	filereader.cpp \
+	version.cpp \
+	appinfo.cpp
 
 
 HEADERS += \
@@ -123,13 +123,13 @@ HEADERS += \
 	tempfiles.h \
 	utils.h \
 	version.h \
-    exporters/jaspexporter.h \
-    libzip/archive.h \
-    libzip/archive_entry.h \
-    importers/jaspimporter.h \
+	exporters/jaspexporter.h \
+	libzip/archive.h \
+	libzip/archive_entry.h \
+	importers/jaspimporter.h \
 	filepackage.h \
-    filereader.h \
-    appinfo.h
+	filereader.h \
+	appinfo.h
 
 
 
