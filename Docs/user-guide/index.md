@@ -7,19 +7,23 @@ Hi, and welcome to the JASP User Guide!
 Installation
 ------------
 
-JASP is a "normal" piece of software. You download it, install it, and it works. :)
+JASP is available for:
 
-Download: https://jasp-stats.org/download
+ - Microsoft Windows
+ - Mac OS X
+ - Linux
 
 ### Windows
 
-JASP installs under Windows like any normal application.
+JASP installs under Windows like any normal application, and can be downloaded from the JASP download page, here: https://jasp-stats.org/download
 
 ### Mac OS X
 
-JASP works on Mac OS X, version 10.8 (Mountain Lion) and above.
+JASP is available for Mac OS X, version 10.8 (Mountain Lion) and above ([Which version do I have?](http://pondini.org/OSX/OSXversion.html)).
 
-JASP under OS X currently depends on [XQuartz](http://xquartz.macosforge.org/landing/). This should be installed before commencing installation of JASP.
+JASP for OS X can be downloaded from the JASP download page, here: https://jasp-stats.org/download
+
+JASP for OS X currently depends on [XQuartz](http://xquartz.macosforge.org/landing/). This should be installed before commencing installation of JASP.
 
 JASP is installed by downloading and double clicking the .dmg file, and dragging the JASP icon to the Applications folder. This places JASP in your applications folder.
 
@@ -37,13 +41,30 @@ From then on, you will be able to start JASP in the usual way.
 
 ### Linux
 
-JASP is available for Ubuntu Vivid (15.04) and Ubuntu Trusty (14.04), from Jonathon's *Personal Package Archive* (PPA). Once the PPA is added to your system, you will be able to install JASP. Once installed from the PPA, JASP will be automatically kept up-to-date by Ubuntu.
+JASP is available for the Linux versions:
 
-The PPA and JASP can be installed with the following:
+ - Ubuntu Vivid (15.04)
+ - Ubuntu Trusty (14.04 LTS)
+ - Arch Linux
+
+#### Ubuntu
+
+JASP for Vivid and Trusty are available from Jonathon's *Personal Package Archive* (PPA). Once the PPA is added to your system, you will be able to install JASP, and JASP will be automatically kept up-to-date by Ubuntu.
+
+The PPA and JASP can be installed by issuing the following commands at the terminal:
 
     sudo add-apt-repository ppa:jonathon-love/jasp
     sudo apt-get update
     sudo apt-get install jasp
+
+#### Arch Linux
+
+JASP is made generously available for Arch Linux by Stephen Martin, and can be installed with the following commands:
+
+    git clone https://aur.archlinux.org/jasp-desktop-git.git
+    cd jasp-desktop-git
+    makepkg -si
+    
 
 Data Sets
 ---------
