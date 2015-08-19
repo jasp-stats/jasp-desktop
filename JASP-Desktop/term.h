@@ -1,7 +1,8 @@
 #ifndef TERM_H
 #define TERM_H
 
-#include "term.h"
+#include <vector>
+#include <string>
 
 #include <QString>
 #include <QStringList>
