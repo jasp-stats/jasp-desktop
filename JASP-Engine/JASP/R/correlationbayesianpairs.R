@@ -2344,7 +2344,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
 				
-				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "plotScatter")
+				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "plotScatter")[1]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
 				
@@ -2377,7 +2377,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
 				
-				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "posteriorPlotAddInfo")
+				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "posteriorPlotAddInfo")[1]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
 					
@@ -2387,7 +2387,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# if the requested plot already exists use it
 				
-				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "posteriorPlot")
+				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "posteriorPlot")[1]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
 				
@@ -2429,7 +2429,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
 				
-				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "robustnessPlot")
+				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "robustnessPlot")[1]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
 				
@@ -2461,7 +2461,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
 				
-				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "sequentialRobustnessPlot")
+				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "sequentialRobustnessPlot")[1]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
 				
@@ -2471,7 +2471,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# if the requested plot already exists use it
 				
-				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "sequentialPlot")
+				stateIndex <- which(state$plotPairs == currentPair & state$plotTypes == "sequentialPlot")[1]
 				
 				plots.correlation[[length(plots.correlation)+1]] <- state$plotsCorrelation[[stateIndex]]
 				
@@ -2527,7 +2527,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			
 			pair.statuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE, unplotableScatter=TRUE)
 			
-			result <- list(.variable1=p1, .separator="-", .variable2=p2, BF="", error="")
+			result <- list(.variable1=p1, .separator="-", r="", .variable2=p2, BF="")
 		
 		} else {
 			
@@ -2550,14 +2550,14 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						
 						errorFootnotes[i] <- state$errorFootnotes[stateIndex]
 						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index2)))
+						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(NaN), BF=.clean(NaN), .footnotes=list(r=list(index2)))
 					}
 				
 				} else {
 					
 					pair.statuses[[i]] <- list(ready=FALSE, error=FALSE, unplotable=TRUE, unplotableScatter=TRUE)
 					
-					result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=".", error=".")
+					result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=".", BF=".")
 				}
 			
 			} else {
@@ -2582,7 +2582,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 						
 						errorFootnotes[i] <- state$errorFootnotes[stateIndex]
 						
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], BF=.clean(NaN), error="", .footnotes=list(BF=list(index2)))
+						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(NaN), BF=.clean(NaN), .footnotes=list(r=list(index2)))
 					}
 					
 					pair.statuses[[i]] <- state$pairStatuses[[stateIndex]]
@@ -2743,7 +2743,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					
 					if (!is.null(index)) {
 					
-						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(some.r), BF=.clean(some.bf), .footnotes=list(BF=list(index)))
+						result <- list(.variable1=pair[[1]], .separator="-", .variable2=pair[[2]], r=.clean(some.r), BF=.clean(some.bf), .footnotes=list(r=list(index)))
 					
 					} else {
 					
@@ -2821,7 +2821,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
 					
-					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "plotScatter")
+					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "plotScatter")[1]
 					
 					plots.correlation[[j]] <- state$plotsCorrelation[[stateIndex]]
 				
@@ -2877,7 +2877,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
 					
-					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "posteriorPlotAddInfo")
+					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "posteriorPlotAddInfo")[1]
 					
 					plots.correlation[[j]] <- state$plotsCorrelation[[stateIndex]]
 						
@@ -2949,7 +2949,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
 					
-					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "robustnessPlot")
+					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "robustnessPlot")[1]
 					
 					plots.correlation[[j]] <- state$plotsCorrelation[[stateIndex]]
 						
@@ -3009,7 +3009,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
 					
-					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "sequentialRobustnessPlot")
+					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "sequentialRobustnessPlot")[1]
 					
 					plots.correlation[[j]] <- state$plotsCorrelation[[stateIndex]]
 						
@@ -3019,7 +3019,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# if the requested plot already exists use it
 					
-					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "sequentialPlot")
+					stateIndex <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "sequentialPlot")[1]
 					
 					plots.correlation[[j]] <- state$plotsCorrelation[[stateIndex]]
 					

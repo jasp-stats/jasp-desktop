@@ -1,7 +1,12 @@
 #ifndef TERMS_H
 #define TERMS_H
 
-#include <list>
+#include <vector>
+#include <string>
+
+#include <QString>
+#include <QList>
+#include <QByteArray>
 
 #include "term.h"
 

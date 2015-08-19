@@ -1,11 +1,11 @@
 
 #include "terms.h"
 
-#include <QException>
-
-#include <boost/foreach.hpp>
 #include <boost/bind.hpp>
 #include <sstream>
+
+#include <QDataStream>
+#include <QIODevice>
 
 using namespace std;
 
@@ -48,7 +48,7 @@ void Terms::set(const std::vector<Term> &terms)
 {
 	_terms.clear();
 
-	BOOST_FOREACH(const Term &term, terms)
+	foreach(const Term &term, terms)
 		add(term);
 }
 
@@ -56,7 +56,7 @@ void Terms::set(const std::vector<string> &terms)
 {
 	_terms.clear();
 
-	BOOST_FOREACH(const Term &term, terms)
+	foreach(const Term &term, terms)
 		add(term);
 }
 
@@ -64,7 +64,7 @@ void Terms::set(const std::vector<std::vector<string> > &terms)
 {
 	_terms.clear();
 
-	BOOST_FOREACH(const Term &term, terms)
+	foreach(const Term &term, terms)
 		add(term);
 }
 
@@ -72,7 +72,7 @@ void Terms::set(const QList<Term> &terms)
 {
 	_terms.clear();
 
-	BOOST_FOREACH(const Term &term, terms)
+	foreach(const Term &term, terms)
 		add(term);
 }
 
@@ -80,7 +80,7 @@ void Terms::set(const Terms &terms)
 {
 	_terms.clear();
 
-	BOOST_FOREACH(const Term &term, terms)
+	foreach(const Term &term, terms)
 		add(term);
 }
 
@@ -88,7 +88,7 @@ void Terms::set(const QList<QList<QString> > &terms)
 {
 	_terms.clear();
 
-	BOOST_FOREACH(const QList<QString> &term, terms)
+	foreach(const QList<QString> &term, terms)
 		add(Term(term));
 }
 
@@ -96,7 +96,7 @@ void Terms::set(const QList<QString> &terms)
 {
 	_terms.clear();
 
-	BOOST_FOREACH(const QString &term, terms)
+	foreach(const QString &term, terms)
 		add(Term(term));
 }
 
@@ -169,7 +169,7 @@ void Terms::insert(int index, const Terms &terms)
 
 void Terms::add(const Terms &terms)
 {
-	BOOST_FOREACH(const Term term, terms)
+	foreach(const Term term, terms)
 		add(term);
 }
 
@@ -185,7 +185,7 @@ bool Terms::contains(const Term &term) const
 
 bool Terms::contains(const string component)
 {
-	BOOST_FOREACH(const Term &term, _terms)
+	foreach(const Term &term, _terms)
 	{
 		if (term.contains(component))
 			return true;
@@ -198,7 +198,7 @@ vector<string> Terms::asVector() const
 {
 	vector<string> items;
 
-	BOOST_FOREACH(const Term &term, _terms)
+	foreach(const Term &term, _terms)
 		items.push_back(term.asString());
 
 	return items;
@@ -208,7 +208,7 @@ vector<vector<string> > Terms::asVectorOfVectors() const
 {
 	vector<vector<string> > items;
 
-	BOOST_FOREACH(const Term &term, _terms)
+	foreach(const Term &term, _terms)
 	{
 		vector<string> components = term.scomponents();
 		items.push_back(components);
@@ -225,7 +225,7 @@ QList<QString> Terms::asQList() const
 {
 	QList<QString> items;
 
-	BOOST_FOREACH(const Term &term, _terms)
+	foreach(const Term &term, _terms)
 		items.append(term.asQString());
 
 	return items;
@@ -235,7 +235,7 @@ QList<QList<QString> > Terms::asQListOfQLists() const
 {
 	QList<QList<QString> > items;
 
-	BOOST_FOREACH(const Term &term, _terms)
+	foreach(const Term &term, _terms)
 	{
 		QList<QString> components = term.components();
 		items.append(components);
@@ -396,7 +396,7 @@ int Terms::rankOf(const QString &component) const
 
 	int index = 0;
 
-	BOOST_FOREACH(const Term& compare, _parent->terms())
+	foreach(const Term& compare, _parent->terms())
 	{
 		if (compare.asQString() == component)
 			break;
@@ -442,7 +442,7 @@ bool Terms::componentLessThan(const QString &c1, const QString &c2) const
 
 void Terms::remove(const Terms &terms)
 {
-	BOOST_FOREACH(const Term &term, terms)
+	foreach(const Term &term, terms)
 	{
 		vector<Term>::iterator itr = find(_terms.begin(), _terms.end(), term);
 		if (itr != _terms.end())
@@ -511,12 +511,12 @@ bool Terms::discardWhatDoesContainTheseComponents(const Terms &terms)
 		Term &existingTerm = *titr;
 		bool shouldRemove = false;
 
-		BOOST_FOREACH(const Term &term, terms)
+		foreach(const Term &term, terms)
 		{
 			(void)term;
 			(void)terms;
 
-			BOOST_FOREACH(const string &component, term.scomponents())
+			foreach(const string &component, term.scomponents())
 			{
 				(void)term;
 
