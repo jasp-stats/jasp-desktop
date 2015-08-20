@@ -26,7 +26,7 @@ Default Output
 Additional Options
 ------------------
 ###Display Plots:
-- For continuous variables, displays a histogram and the corresponding density plot
+- For continuous variables, displays a histogram and the fit of a nonparametric density estimator 
 - For nominal and ordinal variables, displays a frequency distribution
 
 ### Display Correlation Plot:
@@ -55,7 +55,7 @@ Additional Options
 Additional Output
 ------------------
 ###Display Plots:
-- For continuous variables, displays a histogram and the corresponding density plot
+- For continuous variables, displays a histogram and the fit of a nonparametric density estimator 
 - For nominal and ordinal variables, displays a frequency distribution
 
 ### Display Correlation Plot:
