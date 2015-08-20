@@ -678,6 +678,7 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 	ui->backStage->setFileLoaded(true, filename);
 	_analyses->clear();
 
+	ui->tableView->horizontalHeader()->setResizeContentsPrecision(50);
 	ui->tableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 
 	_alert->hide();
