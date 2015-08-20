@@ -84,6 +84,9 @@ void TableView::resizeEvent(QResizeEvent *event)
 {
 	QTableView::resizeEvent(event);
 
+	if (model() == NULL)
+		return;
+
 	int columnCount = model()->columnCount();
 
 	if (columnCount > 1)

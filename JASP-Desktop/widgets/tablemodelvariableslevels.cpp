@@ -1,6 +1,8 @@
+
 #include "tablemodelvariableslevels.h"
 
 #include <QMimeData>
+#include <QDebug>
 
 #include "options/optionstring.h"
 #include "options/optionlist.h"
