@@ -16,12 +16,16 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	_dependentModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->dependent->setModel(_dependentModel);
 
-	_blocksModel = new TableModelVariablesLevels();
-	_blocksModel->setSource(&_availableVariablesModel);
-	_blocksModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	_blocksModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_blocksModel->setLimitToOneLevel(true);
-	ui->blocks->setModel(_blocksModel);
+	ui->method->addItem("Enter");
+	ui->method->addItem("Backward");
+	ui->method->addItem("Forward");
+	ui->method->addItem("Stepwise");
+
+	_covariatesModel = new TableModelVariablesAssigned();
+	_covariatesModel->setSource(&_availableVariablesModel);
+	_covariatesModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_covariatesModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	ui->covariates->setModel(_covariatesModel);
 
 	_wlsWeightsModel = new TableModelVariablesAssigned();
 	_wlsWeightsModel->setSource(&_availableVariablesModel);
@@ -30,8 +34,15 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->wlsWeights->setModel(_wlsWeightsModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
-	ui->buttonAssignBlocks->setSourceAndTarget(ui->listAvailableFields, ui->blocks);
+	ui->buttonAssignBlocks->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 	ui->buttonAssignWlsWeights->setSourceAndTarget(ui->listAvailableFields, ui->wlsWeights);
+
+	_modelModel = new TableModelAnovaModel(this);
+	ui->modelTerms->setModel(_modelModel);
+	ui->modelTerms->hide();
+
+	connect(_covariatesModel, SIGNAL(assignedTo(Terms)), _modelModel, SLOT(addCovariates(Terms)));
+	connect(_covariatesModel, SIGNAL(unassigned(Terms)), _modelModel, SLOT(removeVariables(Terms)));
 
 	ui->panelStatistics->hide();
 	ui->panelOptions->hide();
@@ -41,9 +52,16 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 #else
 	ui->groupBox_5->setStyleSheet("background-color: pink ;");
 #endif
+
 }
 
 RegressionLinearForm::~RegressionLinearForm()
 {
 	delete ui;
+}
+
+void RegressionLinearForm:: bindTo(Options *options, DataSet *dataSet)
+{
+	AnalysisForm::bindTo(options, dataSet);
+	_modelModel->setVariables(Terms(), Terms(), _covariatesModel->assigned());
 }
