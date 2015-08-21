@@ -51,9 +51,21 @@ void Analysis::setResults(Json::Value results)
 	resultsChanged(this);
 }
 
+void Analysis::setNotes(Json::Value notes, bool silient)
+{
+	_notes = notes;
+	if ( ! silient)
+		notesLoaded(this);
+}
+
 const Json::Value &Analysis::results() const
 {
 	return _results;
+}
+
+const Json::Value &Analysis::notes() const
+{
+	return _notes;
 }
 
 Analysis::Status Analysis::parseStatus(string name)

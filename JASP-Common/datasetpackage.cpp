@@ -15,6 +15,7 @@ void DataSetPackage::reset()
 	hasAnalyses = false;
 	warningMessage = std::string();
 	_isLoaded = false;
+	_analysesHTMLReady = false;
 	setModified(false);
 }
 
@@ -41,3 +42,20 @@ bool DataSetPackage::isLoaded()
 {
 	return _isLoaded;
 }
+
+bool DataSetPackage::isReady()
+{
+	return _analysesHTMLReady;
+}
+
+
+void DataSetPackage::setAnalysesHTMLReady()
+{
+	_analysesHTMLReady = true;
+}
+
+void DataSetPackage::setWaitingForReady()
+{
+	_analysesHTMLReady = false;
+}
+

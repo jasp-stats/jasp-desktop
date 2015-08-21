@@ -75,7 +75,7 @@ void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
 		int maxSleepTime = 2000;
 		int sleepTime = 100;
 		int delay = 0;
-		while (package->analysesHTML.empty())
+		while (package->isReady() == false)
 		{
 			if (delay > maxSleepTime)
 				break;

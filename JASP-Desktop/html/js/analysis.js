@@ -15,6 +15,7 @@ JASPWidgets.Analyses = Backbone.Collection.extend({
 
 JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	views: [],
+	volatileViews: [],
 
 	initialize: function () {
 
@@ -24,12 +25,47 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			return self.$el.find('.jasp-analysis-inner');
 		};
 
+		this.notes = this.model.get('notes');
+
+
+		if (this.notes == null || this.notes.first === null)
+			this.firstNote = new JASPWidgets.Note();
+		else {
+			this.firstNote = new JASPWidgets.Note(this.notes.first);
+		}
+
+		this.firstNoteBox = new JASPWidgets.NoteBox({ className: "jasp-notes jasp-first-note", model: this.firstNote })
+
+		if (this.notes == null || this.notes.last === null)
+			this.lastNote = new JASPWidgets.Note();
+		else
+			this.lastNote = new JASPWidgets.Note(this.notes.last);
+
+		this.lastNoteBox = new JASPWidgets.NoteBox({ className: "jasp-notes jasp-last-note", model: this.lastNote })
+
+		this.listenTo(this.firstNoteBox, "NoteBox:textChanged", function () {
+			this.trigger("analysis:noteChanged", this.model.get('id'), 'first');
+		});
+		this.listenTo(this.lastNoteBox, "NoteBox:textChanged", function () {
+			this.trigger("analysis:noteChanged", this.model.get('id'), 'last');
+		});
+
 		this.toolbar.setParent(this);
 	},
 
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
+	},
+
+	getAnalysisNotes: function () {
+		return {
+			id: this.model.get('id'),
+			notes: {
+				first: { text: Mrkdwn.fromHtmlText(this.firstNote.get('text')), format: 'markdown', visible: this.firstNoteBox.visible },
+				last: { text: Mrkdwn.fromHtmlText(this.lastNote.get('text')), format: 'markdown', visible: this.lastNoteBox.visible }
+			}
+		};
 	},
 
 	_hoveringStart: function (e) {
@@ -40,9 +76,35 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.toolbar.setVisibility(false);
 	},
 
-	annotateMenuClicked: function () {
+	notesMenuClicked: function (noteType, visibility) {
+
+		var noteBox = this[noteType + 'NoteBox'];
+		if (noteBox !== undefined) {
+			noteBox.$el.css("opacity", visibility ? 0 : 1);
+
+			if (visibility === true) {
+				noteBox.$el.slideDown(200, function () {
+					noteBox.setVisibility(visibility);
+					if (visibility === true)
+						noteBox.$el.animate({ "opacity": 1 }, 200, "easeOutCubic");
+				});
+			}
+			else {
+				noteBox.$el.slideUp(200, function () {
+					noteBox.setVisibility(visibility);
+				});
+			}
+
+			if (visibility === false)
+				noteBox.clear();
+		}
 
 		return true;
+	},
+
+	noteOptions: function() {
+		return [{ key: 'first', menuText: 'Before Analysis', visible: this.firstNoteBox.visible },
+			{ key: 'last', menuText: 'After Analysis', visible: this.lastNoteBox.visible }];
 	},
 
 	copyMenuClicked: function () {
@@ -52,7 +114,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		exportParams.process = JASPWidgets.ExportProperties.process.copy;
 		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
 
-		return this.exportBegin(exportParams, this.views);
+		return this.exportBegin(exportParams);
 	},
 
 	exportMenuClicked: function () {
@@ -62,7 +124,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		exportParams.process = JASPWidgets.ExportProperties.process.save;
 		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.embedded;
 
-		return this.exportBegin(exportParams, this.views);
+		return this.exportBegin(exportParams);
 	},
 
 	exportBegin: function (exportParams) {
@@ -70,11 +132,12 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
-		
+
 		return JASPWidgets.Exporter.begin(this, exportParams, true);
 	},
 
 	exportComplete: function (exportParams, exportContent) {
+
 		if (!exportParams.error)
 			pushHTMLToClipboard(exportContent, exportParams);
 	},
@@ -93,6 +156,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.toolbar.title = result;
 			this.toolbar.render();
 			$element.append(this.toolbar.$el);
+
+			this.firstNoteBox.render();
+			$element.append(this.firstNoteBox.$el);
 		}
 		else if (metaEntry.type == "h1") {
 
@@ -123,10 +189,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 					if (status === null || status === undefined)
 						subItem.set("status", this.status);
 				}, result);
-				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type, collection: item });
+				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type + " jasp-view", collection: item });
 			}
 			else
-				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type, model: item });
+				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type + " jasp-view", model: item });
 
 			this.listenTo(itemView, "toolbar:showMenu", function (obj, options) {
 
@@ -134,6 +200,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			});
 
 			this.views.push(itemView);
+			this.volatileViews.push(itemView);
 
 			itemView.render();
 			$element.append(itemView.$el);
@@ -146,6 +213,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.destroyViews();
 
 		this.toolbar.$el.detach();
+		this.firstNoteBox.$el.detach();
+		this.lastNoteBox.$el.detach();
+
+		this.views.push(this.firstNoteBox);
 
 		this.$el.empty();
 
@@ -174,25 +245,38 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		}
 
+		this.lastNoteBox.render();
+		$innerElement.append(this.lastNoteBox.$el);
+
 		this.$el.append($innerElement)
+
+		this.views.push(this.lastNoteBox);
 
 		return this;
 	},
+
 	unselect: function () {
 		this.$el.removeClass("selected");
 		//this.$el.addClass("unselected")
 	},
+
 	select: function () {
 		this.$el.addClass("selected")
 		//this.$el.removeClass("unselected");
 	},
-	destroyViews: function() {
-		for (var i = 0; i < this.views.length; i++)
-			this.views[i].close();
 
+	destroyViews: function() {
+		for (var i = 0; i < this.volatileViews.length; i++)
+			this.volatileViews[i].close();
+
+		this.volatileViews = [];
 		this.views = [];
 	},
+
 	onClose: function () {
 		this.destroyViews();
+		this.toolbar.close();
+		this.firstNoteBox.close();
+		this.lastNoteBox.close();
 	}
 });
