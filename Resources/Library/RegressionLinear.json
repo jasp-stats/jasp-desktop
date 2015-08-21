@@ -10,7 +10,7 @@
 		{
 			"name": "method",
 			"type": "List",
-			"options": [ "enter", "backward", "forward", "listwise" ]
+			"options": [ "enter", "backward", "forward", "stepwise" ]
 		},
 		{
 			"name": "covariates",
