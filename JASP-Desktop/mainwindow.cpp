@@ -63,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
 {
+
 	_inited = false;
 	_tableModel = NULL;
 	_currentOptionsWidget = NULL;
@@ -153,6 +154,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
 	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(dataSetLoadFailed(QString)));
 	connect(&_loader, SIGNAL(saveFail(QString)), this, SLOT(saveFailed(QString)));
+	connect(&_loader, SIGNAL(exportFail(QString)), this, SLOT(exportFailed(QString)));
 
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
@@ -722,6 +724,7 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 					Analysis *analysis = _analyses->create(name, id, &optionsJson, status);
 
 					analysis->setResults(resultsJson);
+
 				}
 				catch (runtime_error e)
 				{
@@ -777,6 +780,13 @@ void MainWindow::saveFailed(const QString &message)
 	_dataSetClosing = false;
 
 	QMessageBox::warning(this, "", "Unable to save file.\n\n" + message);
+}
+
+void MainWindow::exportFailed(const QString &message)
+{
+	_alert->hide();
+
+	QMessageBox::warning(this, "", "Unable to export file.\n\n" + message);
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
@@ -955,6 +965,8 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 
 void MainWindow::exportSelected(const QString &filename)
 {
+	//_loader.exportData("C:\\test.csv", _package);
+
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + filename + "');");
 }
 
