@@ -822,6 +822,13 @@
               </property>
              </widget>
             </item>
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="qqPlot">
+              <property name="text">
+               <string>Q-Q plot of residuals</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
