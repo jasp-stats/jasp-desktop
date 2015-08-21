@@ -27,12 +27,16 @@ public:
 	bool isModified();
 	void setLoaded();
 	bool isLoaded();
+	bool isReady();
+	void setWaitingForReady();
+	void setAnalysesHTMLReady();
 
 	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;
 
 private:
 	bool _isModified = false;
 	bool _isLoaded = false;
+	bool _analysesHTMLReady = false;
 };
 
 #endif // FILEPACKAGE_H

@@ -133,6 +133,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
+	connect(_analyses, SIGNAL(analysisNotesLoaded(Analysis*)), this, SLOT(analysisNotesLoadedHandler(Analysis*)));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
@@ -163,6 +164,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
+	connect(this, SIGNAL(updateNote(int, QString)), this, SLOT(updateNoteHandler(int, QString)));
+
 
 	_buttonPanel = new QWidget(ui->pageOptions);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
@@ -350,6 +353,49 @@ void MainWindow::packageChanged(DataSetPackage *package)
 	}
 }
 
+QString escapeJavascriptString(const QString &str)
+{
+	QString out;
+	QRegExp rx("(\\r|\\n|\\\\|\"|\')");
+	int pos = 0, lastPos = 0;
+
+	while ((pos = rx.indexIn(str, pos)) != -1)
+	{
+		out += str.mid(lastPos, pos - lastPos);
+
+		switch (rx.cap(1).at(0).unicode())
+		{
+		case '\r':
+			out += "\\r";
+			break;
+		case '\n':
+			out += "\\n";
+			break;
+		case '"':
+			out += "\\\"";
+			break;
+		case '\'':
+			out += "\\'";
+			break;
+		case '\\':
+			out += "\\\\";
+			break;
+		}
+		pos++;
+		lastPos = pos;
+	}
+	out += str.mid(lastPos);
+	return out;
+}
+
+void MainWindow::analysisNotesLoadedHandler(Analysis *analysis)
+{
+	QString results = tq(analysis->notes().toStyledString());
+
+	results = escapeJavascriptString(results);
+	results = "window.loadNotes(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
+}
+
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
 	static bool showInstructions = true;
@@ -379,10 +425,11 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 			_runButton->setEnabled(false);
 	}
 
-	QString results = tq(analysis->asJSON().toStyledString());
+	Json::Value analysisJson = analysis->asJSON();
+	analysisJson["notes"] = analysis->notes();
+	QString results = tq(analysisJson.toStyledString());
 
-	results = results.replace("'", "\\'");
-	results = results.replace("\n", "");
+	results = escapeJavascriptString(results);
 	results = "window.analysisChanged(JSON.parse('" + results + "'));";
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
@@ -716,11 +763,13 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 
 					Json::Value &optionsJson = analysisData["options"];
 					Json::Value &resultsJson = analysisData["results"];
+					Json::Value &notesJson = analysisData["notes"];
 
 					Analysis::Status status = Analysis::parseStatus(analysisData["status"].asString());
 
 					Analysis *analysis = _analyses->create(name, id, &optionsJson, status);
 
+					analysis->setNotes(notesJson);
 					analysis->setResults(resultsJson);
 				}
 				catch (runtime_error e)
@@ -909,7 +958,9 @@ void MainWindow::saveSelected(const QString &filename)
 {
 	if (_analyses->count() > 0)
 	{
-		_package->analysesHTML = "";
+		_package->setWaitingForReady();
+
+		getAnalysesNotes();
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%PREVIEW%');");
 
 		Json::Value analysesData = Json::arrayValue;
@@ -920,6 +971,7 @@ void MainWindow::saveSelected(const QString &filename)
 			{
 				Json::Value analysisData = analysis->asJSON();
 				analysisData["options"] = analysis->options()->asJSON();
+				analysisData["notes"] = analysis->notes();
 				analysesData.append(analysisData);
 			}
 		}
@@ -939,6 +991,7 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 	if (filename == "%PREVIEW%")
 	{
 		_package->analysesHTML = fq(data);
+		_package->setAnalysesHTMLReady();
 	}
 	else
 	{
@@ -1241,7 +1294,23 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 		_analysisMenu->addAction(_citeIcon, "Copy Citations", this, SLOT(citeSelected()));
 	}
 
-	if (menuOptions["hasRemove"].asInt())
+	if (menuOptions["hasNotes"].asBool())
+	{
+		_analysisMenu->addSeparator();
+
+		Json::Value noteOptions = menuOptions["noteOptions"];
+
+		for (Json::ValueIterator iter = noteOptions.begin(); iter != noteOptions.end(); iter++)
+		{
+			Json::Value noteOption = *iter;
+			QAction *a1 = _analysisMenu->addAction(tq("Notes " + noteOption["menuText"].asString()), this, SLOT(noteSelected(bool)));
+			a1->setCheckable(true);
+			a1->setData(tq(noteOption["key"].asString()));
+			a1->setChecked(noteOption["visible"].asBool());
+		}
+	}
+
+	if (menuOptions["hasRemove"].asBool())
 	{
 		_analysisMenu->addSeparator();
 		_analysisMenu->addAction("Remove " + objName, this, SLOT(removeSelected()));
@@ -1251,15 +1320,39 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 
 	_analysisMenu->move(point);
 	_analysisMenu->show();
-
-	//ui->webViewResults->page()->mainFrame()->s
-
 }
+
+
 
 void MainWindow::removeAnalysisRequestHandler(int id)
 {
 	Analysis *analysis = _analyses->get(id);
 	removeAnalysis(analysis);
+}
+
+void MainWindow::getAnalysesNotes()
+{
+	QVariant notesData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getAnalysesNotes();");
+
+	Json::Value notes;
+	Json::Reader parser;
+	parser.parse(fq(notesData.toString()), notes);
+
+	for (Json::Value::iterator iter = notes.begin(); iter != notes.end(); iter++)
+	{
+		Json::Value &notesObj = *iter;
+
+		Analysis *analysis = _analyses->get(notesObj["id"].asInt());
+
+		Json::Value &analysisNotes = notesObj["notes"];
+
+		analysis->setNotes(analysisNotes, true);
+	}
+}
+
+void MainWindow::updateNoteHandler(int id, QString key)
+{
+	_package->setModified(true);
 }
 
 void MainWindow::removeSelected()
@@ -1283,6 +1376,17 @@ void MainWindow::citeSelected()
 	tempfiles_purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
 
+}
+
+void MainWindow::noteSelected(bool checked)
+{
+	QAction *action = (QAction *)this->sender();
+	QString noteKey = action->data().toString();
+	QString call = QString("window.notesMenuClicked('%1', %2);").arg(noteKey).arg(checked ? "true" : "false");
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(call);
+
+	_package->setModified(true);
 }
 
 void MainWindow::menuHidding()

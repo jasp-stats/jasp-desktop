@@ -74,8 +74,8 @@ $(document).ready(function () {
 		window.menuObject = null;
 	}
 
-	window.commentaryMenuClicked = function (commentaryType) {
-		if (window.menuObject.commentaryMenuClicked | window.menuObject.commentaryMenuClicked(commentaryType))
+	window.notesMenuClicked = function (noteType, visibility) {
+		if (window.menuObject.notesMenuClicked | window.menuObject.notesMenuClicked(noteType, visibility))
 			window.menuObject.toolbar.displayMessage();
 
 		window.menuObject = null;
@@ -120,6 +120,14 @@ $(document).ready(function () {
 		}
 
 		JASPWidgets.Exporter.begin(exportObject, exportParams, true, "margin: .7em; padding: 1em;")
+	}
+
+	window.getAnalysesNotes = function () {
+		var notes = [];
+		for (var i = 0; i < analysesViews.length; i++) {
+			notes.push(analysesViews[i].getAnalysisNotes());
+		}
+		return JSON.stringify(notes)
 	}
 
 	window.scrollIntoView = function (item) {
@@ -198,7 +206,7 @@ $(document).ready(function () {
 	var selectedHandler = function (event) {
 
 		var target = event.target || event.srcElement;
-		if ($(target).is(".jasp-resize, .toolbar-clickable, .toolbar-clickable *"))
+		if ($(target).is(".jasp-resize, .jasp-notes, .jasp-notes *, .toolbar-clickable, .toolbar-clickable *"))
 			return
 
 		var id = $(event.currentTarget).attr("id")
@@ -292,6 +300,10 @@ $(document).ready(function () {
 
 			jaspWidget.on("analysis:remove", function (id) {
 				jasp.removeAnalysisRequest(id);
+			});
+
+			jaspWidget.on("analysis:noteChanged", function (id, key) {
+				jasp.updateNote(id, key);
 			});
 		}
 		else
