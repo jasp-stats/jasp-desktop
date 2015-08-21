@@ -40,6 +40,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="descriptives", type="table"),
 		list(name="headerMarginalMeans", type="h1"),
 		list(name="marginalMeans", type="tables"),
+		list(name="headerqqPlot", type="h1"),
+		list(name="qqPlot", type="image"),
 		list(name="headerDescriptivesPlot", type="h1"),
 		list(name="descriptivesPlot", type="images")
 	)
@@ -202,6 +204,19 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			results[["headerDescriptivesPlot"]] <- "Descriptives Plot"
 		}
 	}
+	
+	
+	
+	## Create QQ Plot
+	
+	result <- .qqPlot(model, options, perform, status)
+	results[["qqPlot"]] <- result$result
+	status <- result$status
+
+	if (options$qqPlot)
+		results[["headerqqPlot"]] <- "Q-Q Plot"
+	
+
 	
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
@@ -1519,4 +1534,58 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}
 
 	list(result=descriptivesPlotList, status=status)
+}
+
+.qqPlot <- function(model, options, perform, status) {
+	
+	if (!options$qqPlot)
+		return(list(result=NULL, status=status))
+	
+	qqPlot <- list()
+
+	if (perform == "run" && status$ready && !status$error && !is.null(model)) {
+
+		qqPlot$title <- ""
+		qqPlot$width <- options$plotWidth2
+		qqPlot$height <- options$plotHeight2
+		qqPlot$custom <- list(width="plotWidth2", height="plotHeight2")
+		
+		standResid <- as.data.frame(stats::qqnorm(rstandard(model), plot.it=FALSE))
+				
+		p <- ggplot2::ggplot(standResid, ggplot2::aes(x=x,y=y)) + ggplot2::geom_point(na.rm = TRUE) +
+			 ggplot2::geom_abline(slope = 1) + ggplot2::xlab("Theoretical Quantiles") + ggplot2::ylab("Standardized Residuals") +
+			 ggplot2::ggtitle("") + ggplot2::theme_bw() +
+				ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
+					panel.grid.major=ggplot2::element_blank(), axis.line = ggplot2::element_line(colour = "black", size=1.2),
+					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=1.2),
+					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
+					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					panel.border = ggplot2::element_blank(),
+					axis.line = ggplot2::element_blank(),
+					axis.ticks = ggplot2::element_line(size = 0.5),
+					axis.ticks.margin = grid::unit(1,"mm"),
+					axis.ticks.length = grid::unit(3, "mm"),
+					plot.margin = grid::unit(c(0,0,.5,.5), "cm"))
+
+		image <- .beginSaveImage(options$plotWidth2, options$plotHeight2)
+		print(p)
+		content <- .endSaveImage(image)
+
+		qqPlot$data <- content
+
+	} else {
+
+		qqPlot$title <- ""
+		qqPlot$width <- options$plotWidth2
+		qqPlot$height <- options$plotHeight2
+		qqPlot$custom <- list(width="plotWidth2", height="plotHeight2")
+		qqPlot$data <- ""
+
+		if (status$error)
+			qqPlot$error <- list(errorType="badData")
+
+	}
+
+	list(result=qqPlot, status=status)
 }

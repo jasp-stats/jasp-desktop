@@ -158,6 +158,20 @@
 			"name": "confidenceIntervalInterval",
 			"type": "Number",
 			"value": 0.95
+		},
+		{
+			"name": "qqPlot",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotWidth2",
+			"type": "Integer",
+			"default": 300
+		},
+		{
+			"name": "plotHeight2",
+			"type": "Integer",
+			"default": 300
 		}
 	]
 }

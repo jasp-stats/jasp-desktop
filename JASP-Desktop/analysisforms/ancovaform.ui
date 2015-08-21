@@ -743,20 +743,6 @@
             <string>Display</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="descriptives">
-              <property name="text">
-               <string>Descriptive statistics</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="effectSizeEstimates">
-              <property name="text">
-               <string>Estimates of effect size:</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="0">
              <widget class="QWidget" name="widgetEffectSizeTypes" native="true">
               <property name="enabled">
@@ -809,6 +795,20 @@
               </layout>
              </widget>
             </item>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="descriptives">
+              <property name="text">
+               <string>Descriptive statistics</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="effectSizeEstimates">
+              <property name="text">
+               <string>Estimates of effect size:</string>
+              </property>
+             </widget>
+            </item>
             <item row="3" column="0">
              <widget class="BoundCheckBox" name="homogeneityTests">
               <property name="text">
@@ -816,10 +816,17 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="5" column="0">
              <widget class="BoundCheckBox" name="factorCovariateIndependence">
               <property name="text">
                <string>Factor covariate independence check</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="BoundCheckBox" name="qqPlot">
+              <property name="text">
+               <string>Q-Q plot of residuals</string>
               </property>
              </widget>
             </item>
