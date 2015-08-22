@@ -54,16 +54,19 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	statePostHoc <- NULL
 	stateqqPlot <- NULL
 	stateDescriptivesPlot <- NULL
+	stateContrasts <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 	
 		diff <- .diff(options, state$options)  # compare old and new options
 
-		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['contrasts']] == FALSE)) {
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['contrasts']] == FALSE) {
 		
-			# old model can be used
+			# old model and contrasts can be used
 			
 			anovaModel <- state$model
+			stateContrasts <- state$stateContrasts
+			
 		}
 		
 		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['postHocTestsVariables']] == FALSE)) {
@@ -152,10 +155,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				
 	## Create Contrasts Tables
 	
-	result <- .anovaContrastsTable(dataset, options, perform, model, status)
+	if (is.null(stateContrasts)) {
 	
-	results[["contrasts"]] <- result$result
-	status <- result$status
+		result <- .anovaContrastsTable(dataset, options, perform, model, status, stateContrasts)
+		results[["contrasts"]] <- result$result
+		status <- result$status
+		stateContrasts <- result$stateContrasts
+	
+	} else {
+	
+		results[["contrasts"]] <- stateContrasts
+		
+	}
 	
 	if (!is.null(results[["contrasts"]]))
 	    results[["headerContrasts"]] <- "Contrasts"
@@ -261,6 +272,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["statePostHoc"]] <- statePostHoc
 	state[["stateqqPlot"]] <- stateqqPlot
 	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
+	state[["stateContrasts"]] <- stateContrasts
+		
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
 		return(list(results=results, status="inited", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
@@ -778,7 +791,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=anova, status=status)
 }
 
-.anovaContrastsTable <- function(dataset, options, perform, model, status) {
+.anovaContrastsTable <- function(dataset, options, perform, model, status, stateContrasts) {
 
 	no.contrasts <- TRUE
 
@@ -874,6 +887,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			contrast.table[["data"]] <- contrast.rows
 			
+			if (perform == "run" && status$ready && status$error == FALSE)
+				contrast.table[["status"]] <- "complete"
+			
 			if (status$error)
 				contrast.table[["error"]] <- list(errorType="badData")
 		
@@ -881,7 +897,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		}
 	}
 	
-	list(result=contrast.tables, status=status)
+	if (perform == "init" || status$error || !status$ready) {
+	
+		stateContrasts <- NULL
+		
+	} else {
+	
+		stateContrasts <- contrast.tables
+		
+	}
+	
+	list(result=contrast.tables, status=status, stateContrasts=stateContrasts)
 }
 
 .postHocContrasts <- function(variable.levels, dataset, options) {
@@ -914,9 +940,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	posthoc.tables <- list()
 	
-	if (is.null(statePostHoc)) {
+	if (is.null(statePostHoc))
 		statePostHoc <- list()
-	}
 	
 	for (posthoc.var in posthoc.variables) {
 	
