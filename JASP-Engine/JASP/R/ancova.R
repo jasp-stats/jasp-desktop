@@ -56,6 +56,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	stateDescriptivesPlot <- NULL
 	stateContrasts <- NULL
 	stateLevene <- NULL
+	stateMarginalMeans <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 	
@@ -103,6 +104,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 		}
 		
+		
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && 
+			diff[['marginalMeansTerms']] == FALSE && diff[['marginalMeansCompareMainEffects']] == FALSE && diff[['marginalMeansCIAdjustment']] == FALSE) {
+		
+			# old marginal means tables can be used
+			
+			stateMarginalMeans <- state$stateMarginalMeans
+			
+		}
 	}
 	
 	
@@ -196,10 +206,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	## Create Marginal Means Table
 	
-	result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular)
+	if (is.null(stateMarginalMeans)) {
 	
-	results[["marginalMeans"]] <- result$result
-	status <- result$status
+		result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular, stateMarginalMeans)
+		results[["marginalMeans"]] <- result$result
+		status <- result$status
+		stateMarginalMeans <- result$stateMarginalMeans
+			
+	} else {
+	
+		results[["marginalMeans"]] <- stateMarginalMeans
+		
+	}
 	
 	if(!is.null(unlist(results[["marginalMeans"]])))
 		results[["headerMarginalMeans"]] <- "Marginal Means"
@@ -290,6 +308,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
 	state[["stateContrasts"]] <- stateContrasts
 	state[["stateLevene"]] <- stateLevene
+	state[["stateMarginalMeans"]] <- stateMarginalMeans
 		
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
@@ -1280,7 +1299,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=levenes.table, status=status, stateLevene=stateLevene)
 }
 
-.anovaMarginalMeans <- function(dataset, options, perform, model, status, singular) {
+.anovaMarginalMeans <- function(dataset, options, perform, model, status, singular, stateMarginalMeans) {
 
 	if (is.null(options$marginalMeansTerms))
 		return (list(result=NULL, status=status))
@@ -1302,7 +1321,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	marginalMeans <- list()
 		
-	for(i in .indices(terms.base64)) {
+	for (i in .indices(terms.base64)) {
 
 		result <- list()
 
@@ -1401,6 +1420,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			}
 
 			result[["data"]] <- rows
+			result[["status"]] <- "complete"
 
 		} else {
 
@@ -1444,8 +1464,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		marginalMeans[[i]] <- result
 
 	}
+	
+	if (perform == "run" && status$ready && status$error == FALSE)  {
+	
+		stateMarginalMeans <- marginalMeans
+	
+	} else {
+	
+		stateMarginalMeans <- NULL
+		
+	}
 
-	list(result=marginalMeans, status=status)
+	list(result=marginalMeans, status=status, stateMarginalMeans=stateMarginalMeans)
 }
 
 
