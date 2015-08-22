@@ -55,6 +55,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	stateqqPlot <- NULL
 	stateDescriptivesPlot <- NULL
 	stateContrasts <- NULL
+	stateLevene <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 	
@@ -69,9 +70,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 		}
 		
-		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['postHocTestsVariables']] == FALSE)) {
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['postHocTestsVariables']] == FALSE) {
 		
-			# old post hov results can be used
+			# old post hoc results can be used
 			
 			statePostHoc <- state$statePostHoc
 		}
@@ -94,6 +95,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			stateDescriptivesPlot <- state$stateDescriptivesPlot
 		}
 		
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE) {
+		
+			# old levene's table can be used
+			
+			stateLevene <- state$stateLevene
+			
+		}
 		
 	}
 	
@@ -212,10 +220,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	## Create Levene's Table
 	
-	result <- .anovaLevenesTable(dataset, options, perform, status)
+	if (is.null(stateLevene)) {
 	
-	results[["levene"]] <- result$result
-	status <- result$status
+		result <- .anovaLevenesTable(dataset, options, perform, status, stateLevene)	
+		results[["levene"]] <- result$result
+		status <- result$status
+		stateLevene <- result$stateLevene
+	
+	} else {
+	
+		results[["levene"]] <- stateLevene
+	
+	}
 	
 	if (!is.null(results[["levene"]]))
 		results[["headerLevene"]] <- "Test for Equality of Variances"
@@ -273,6 +289,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateqqPlot"]] <- stateqqPlot
 	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
 	state[["stateContrasts"]] <- stateContrasts
+	state[["stateLevene"]] <- stateLevene
 		
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
@@ -1211,10 +1228,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=descriptives.table, status=status)
 }
 
-.anovaLevenesTable <- function(dataset, options, perform, status) {
+.anovaLevenesTable <- function(dataset, options, perform, status, stateLevene) {
 
 	if (options$homogeneityTests == FALSE)
-		return (list(result=NULL, status=status))
+		return (list(result=NULL, status=status, stateLevene=NULL))
 		
 	levenes.table <- list()
 	
@@ -1246,16 +1263,21 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		}
 		
 		levenes.table[["data"]] <- list(list("F"=.clean(r[1,2]), "df1"=r[1,1], "df2"=r[2,1], "p"=.clean(r[1,3]), ".isNewGroup"=TRUE))
+		levenes.table[["status"]] <- "complete"
+		
+		stateLevene <- levenes.table
 				
 	} else {
 	
 		levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"=".", ".isNewGroup"=TRUE))
+		
+		stateLevene <- NULL
 	}
 	
 	if (status$error)
 		levenes.table[["error"]] <- list(error="badData")
 	
-	list(result=levenes.table, status=status)
+	list(result=levenes.table, status=status, stateLevene=stateLevene)
 }
 
 .anovaMarginalMeans <- function(dataset, options, perform, model, status, singular) {
