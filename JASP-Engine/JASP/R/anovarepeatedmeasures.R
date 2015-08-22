@@ -51,17 +51,30 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	state <- .retrieveState()
 	anovaModel <- NULL
+	stateDescriptivesPlot <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 	
 		diff <- .diff(options, state$options)  # compare old and new options
 
-		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && diff[['repeatedMeasuresFactors']] == FALSE && diff[['sumOfSquares']] == FALSE)) {
+		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && 
+			diff[['repeatedMeasuresFactors']] == FALSE && diff[['sumOfSquares']] == FALSE) {
 		
 			# old model can be used
 			
 			anovaModel <- state$model
 		}
+		
+		if (is.list(diff) && diff[['plotHorizontalAxis']] == FALSE && diff[['plotSeparateLines']] == FALSE && diff[['plotSeparatePlots']] == FALSE &&
+			diff[['plotErrorBars']] == FALSE && !(diff[['errorBarType']] == TRUE && options$plotErrorBars == TRUE) &&
+			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
+			diff[['plotWidthDescriptivesPlot']] == FALSE && diff[['plotHeightDescriptivesPlot']] == FALSE) {
+			
+			# old post hov results can be used
+						
+			stateDescriptivesPlot <- state$stateDescriptivesPlot
+		}
+				
 	}
 	
 	
@@ -167,10 +180,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	## Create Descriptives Plots
 	
-	result <- .rmAnovaDescriptivesPlot(dataset, options, perform, status)
+	if (is.null(stateDescriptivesPlot)) {
 	
-	results[["descriptivesPlot"]] <- result$result
-	status <- result$status
+		result <- .rmAnovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot)
+		results[["descriptivesPlot"]] <- result$result
+		status <- result$status
+		stateDescriptivesPlot <- result$stateDescriptivesPlot
+	
+	} else {
+	
+		results[["descriptivesPlot"]] <- stateDescriptivesPlot
+	
+	}
 	
 	if (options$plotHorizontalAxis != "") {
 		if (options$plotSeparatePlots != "") {
@@ -186,14 +207,16 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
+	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
+	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
 
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
-		return(list(results=results, status="inited", state=state))
+		return(list(results=results, status="inited", state=state, keep=keepDescriptivesPlot))
 		
 	} else {
 	
-		return(list(results=results, status="complete", state=state))	
+		return(list(results=results, status="complete", state=state, keep=keepDescriptivesPlot))
 	}
 }
 
@@ -1528,7 +1551,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result=descriptives.table, status=status)
 }
 
-.rmAnovaDescriptivesPlot <- function(dataset, options, perform, status) {
+.rmAnovaDescriptivesPlot <- function(dataset, options, perform, status, stateDescriptivesPlot) {
 
 	descriptivesPlotList <- list()
 	
@@ -1599,9 +1622,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			descriptivesPlot <- list()
 			descriptivesPlot[["title"]] <- ""
-			descriptivesPlot[["width"]] <- options$plotWidth
-			descriptivesPlot[["height"]] <- options$plotHeight
-			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlot
+			descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlot
+			descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlot", height="plotHeightDescriptivesPlot")
 
 			if (options$plotSeparatePlots != "") {
 				summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
@@ -1670,15 +1693,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				p <- p + ggplot2::ggtitle(paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = ""))
 			}
 
-			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+			image <- .beginSaveImage(options$plotWidthDescriptivesPlot, options$plotHeightDescriptivesPlot)
 			print(p)
 			content <- .endSaveImage(image)
 
 			descriptivesPlot[["data"]] <- content
+			descriptivesPlot[["status"]] <- "complete"
 
 			descriptivesPlotList[[i]] <- descriptivesPlot
 
 		}
+		
+		stateDescriptivesPlot <- descriptivesPlotList
 
 	} else if (options$plotHorizontalAxis != "") {
 		
@@ -1708,9 +1734,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			descriptivesPlot <- list()
 			descriptivesPlot[["title"]] <- ""
-			descriptivesPlot[["width"]] <- options$plotWidth
-			descriptivesPlot[["height"]] <- options$plotHeight
-			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlot
+			descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlot
+			descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlot", height="plotHeightDescriptivesPlot")
 			descriptivesPlot[["data"]] <- ""
 
 			if (status$error)
@@ -1718,10 +1744,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			descriptivesPlotList[[i]] <- descriptivesPlot
 		}
+		
+		stateDescriptivesPlot <- NULL
 
 	}
 
-	list(result=descriptivesPlotList, status=status)
+	list(result=descriptivesPlotList, status=status, stateDescriptivesPlot=stateDescriptivesPlot)
 }
 
 .summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE, conf.interval=.95, .drop=TRUE, errorBarType="confidenceInterval") {
