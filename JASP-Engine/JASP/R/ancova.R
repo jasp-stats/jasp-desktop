@@ -32,6 +32,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="anova", type="table"),
 		list(name="headerLevene", type="h1"),
 		list(name="levene", type="table"),
+		list(name="headerqqPlot", type="h1"),
+		list(name="qqPlot", type="image"),
 		list(name="headerContrasts", type="h1"),
 		list(name="contrasts", type="tables"),
 		list(name="headerPosthoc", type="h1"),
@@ -40,8 +42,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="descriptives", type="table"),
 		list(name="headerMarginalMeans", type="h1"),
 		list(name="marginalMeans", type="tables"),
-		list(name="headerqqPlot", type="h1"),
-		list(name="qqPlot", type="image"),
 		list(name="headerDescriptivesPlot", type="h1"),
 		list(name="descriptivesPlot", type="images")
 	)
@@ -52,6 +52,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state <- .retrieveState()
 	anovaModel <- NULL
 	statePostHoc <- NULL
+	stateqqPlot <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 	
@@ -70,7 +71,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 			statePostHoc <- state$statePostHoc
 		}
+				
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['qqPlot']] == FALSE &&
+			diff[['plotWidthqqPlot']] == FALSE && diff[['plotHeightqqPlot']] == FALSE) {
 		
+			# old Q-Q plot can be used
+						
+			stateqqPlot <- state$stateqqPlot
+		}
 		
 	}
 	
@@ -208,27 +216,34 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	
 	## Create QQ Plot
+				
+	if (is.null(stateqqPlot)) {
 	
-	result <- .qqPlot(model, options, perform, status)
-	results[["qqPlot"]] <- result$result
-	status <- result$status
-
+		result <- .qqPlot(model, options, perform, status, stateqqPlot)
+		results[["qqPlot"]] <- result$result
+		status <- result$status
+		stateqqPlot <- result$stateqqPlot
+				
+	} else {
+	
+		results[["qqPlot"]] <- stateqqPlot
+	
+	}
+	
 	if (options$qqPlot)
 		results[["headerqqPlot"]] <- "Q-Q Plot"
-	
-
-	
+		
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
 	state[["statePostHoc"]] <- statePostHoc
-
+	state[["stateqqPlot"]] <- stateqqPlot
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
-		return(list(results=results, status="inited", state=state))
+		return(list(results=results, status="inited", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
 		
 	} else {
 	
-		return(list(results=results, status="complete", state=state))	
+		return(list(results=results, status="complete", state=state, keep=c(stateqqPlot$data,keepDescriptivesPlot)))	
 	}
 }
 
@@ -1536,19 +1551,19 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=descriptivesPlotList, status=status)
 }
 
-.qqPlot <- function(model, options, perform, status) {
+.qqPlot <- function(model, options, perform, status, stateqqPlot) {
 	
 	if (!options$qqPlot)
 		return(list(result=NULL, status=status))
 	
 	qqPlot <- list()
-
+		
 	if (perform == "run" && status$ready && !status$error && !is.null(model)) {
 
 		qqPlot$title <- ""
-		qqPlot$width <- options$plotWidth2
-		qqPlot$height <- options$plotHeight2
-		qqPlot$custom <- list(width="plotWidth2", height="plotHeight2")
+		qqPlot$width <- options$plotWidthqqPlot
+		qqPlot$height <- options$plotHeightqqPlot
+		qqPlot$custom <- list(width="plotWidthqqPlot", height="plotHeightqqPlot")
 		
 		standResid <- as.data.frame(stats::qqnorm(rstandard(model), plot.it=FALSE))
 				
@@ -1568,24 +1583,29 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(0,0,.5,.5), "cm"))
 
-		image <- .beginSaveImage(options$plotWidth2, options$plotHeight2)
+		image <- .beginSaveImage(options$plotWidthqqPlot, options$plotHeightqqPlot)
 		print(p)
 		content <- .endSaveImage(image)
 
 		qqPlot$data <- content
-
+		qqPlot$status <- "complete"
+		
+		stateqqPlot <- qqPlot
+				
 	} else {
 
 		qqPlot$title <- ""
-		qqPlot$width <- options$plotWidth2
-		qqPlot$height <- options$plotHeight2
-		qqPlot$custom <- list(width="plotWidth2", height="plotHeight2")
-		qqPlot$data <- ""
-
+		qqPlot$width <- options$plotWidthqqPlot
+		qqPlot$height <- options$plotHeightqqPlot
+		qqPlot$custom <- list(width="plotWidthqqPlot", height="plotHeightqqPlot")
+		qqPlot$data <- NULL
+		
+		stateqqPlot <- NULL
+				
 		if (status$error)
 			qqPlot$error <- list(errorType="badData")
 
-	}
-
-	list(result=qqPlot, status=status)
+	} 
+	
+	list(result=qqPlot, status=status, stateqqPlot=stateqqPlot)
 }
