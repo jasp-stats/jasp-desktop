@@ -52,6 +52,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	state <- .retrieveState()
 	anovaModel <- NULL
 	stateDescriptivesPlot <- NULL
+	stateLevene <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 	
@@ -75,6 +76,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			stateDescriptivesPlot <- state$stateDescriptivesPlot
 		}
 				
+		
+		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && 
+			diff[['repeatedMeasuresFactors']] == FALSE) {
+		
+			# old levene's table can be used
+			
+			stateLevene <- state$stateLevene
+		}
 	}
 	
 	
@@ -155,11 +164,19 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	
 	## Create Levene's Table
-
-	result <- .rmAnovaLevenesTable(dataset, options, perform, status)
 	
-	results[["levene"]] <- result$result
-	status <- result$status
+	if(is.null(stateLevene)) {
+	
+		result <- .rmAnovaLevenesTable(dataset, options, perform, status, stateLevene)
+		results[["levene"]] <- result$result
+		status <- result$status
+		stateLevene <- result$stateLevene
+			
+	} else {
+	
+		results[["levene"]] <- stateLevene
+		
+	}
 	
 	if (options$homogeneityTests)
 	    results[["headerLevene"]] <- "Test for Equality of Variances"
@@ -208,6 +225,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
 	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
+	state[["stateLevene"]] <- stateLevene
+	
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
 
 	if (perform == "init" && status$ready && status$error == FALSE) {
@@ -1350,7 +1369,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result = sphericity, epsilonTable = epsilonTable, status = status)
 }
 
-.rmAnovaLevenesTable <- function(dataset, options, perform, status) {
+.rmAnovaLevenesTable <- function(dataset, options, perform, status, stateLevene) {
 
 	if (options$homogeneityTests == FALSE)
 		return (list(result=NULL, status=status))
@@ -1393,6 +1412,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		}
 
 		levenes.table[["data"]] <- levenes.rows
+		levenes.table[["status"]] <- "complete"
 
 	} else {
 
@@ -1419,8 +1439,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	if (status$error)
 		levenes.table[["error"]] <- list(error="badData")
+		
+	if (perform == "run" && status$ready && status$error == FALSE) {
 	
-	list(result=levenes.table, status=status)
+		stateLevene <- levenes.table
+		
+	} else {
+	
+		stateLevene <- NULL
+	
+	}
+	
+	list(result=levenes.table, status=status, stateLevene=stateLevene)
 }
 
 .rmAnovaDescriptivesTable <- function(dataset, options, perform, status) {
