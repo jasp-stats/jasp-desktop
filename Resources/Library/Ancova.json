@@ -131,12 +131,12 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "plotWidth",
+			"name": "plotWidthDescriptivesPlot",
 			"type": "Integer",
 			"default": 450
 		},
 		{
-			"name": "plotHeight",
+			"name": "plotHeightDescriptivesPlot",
 			"type": "Integer",
 			"default": 300
 		},
@@ -172,12 +172,12 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "plotWidth2",
+			"name": "plotWidthqqPlot",
 			"type": "Integer",
 			"default": 300
 		},
 		{
-			"name": "plotHeight2",
+			"name": "plotHeightqqPlot",
 			"type": "Integer",
 			"default": 300
 		}
