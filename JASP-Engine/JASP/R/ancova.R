@@ -53,6 +53,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	anovaModel <- NULL
 	statePostHoc <- NULL
 	stateqqPlot <- NULL
+	stateDescriptivesPlot <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 	
@@ -79,6 +80,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 						
 			stateqqPlot <- state$stateqqPlot
 		}
+				
+		if (is.list(diff) && diff[['plotHorizontalAxis']] == FALSE && diff[['plotSeparateLines']] == FALSE && diff[['plotSeparatePlots']] == FALSE &&
+			diff[['plotErrorBars']] == FALSE && !(diff[['errorBarType']] == TRUE && options$plotErrorBars == TRUE) &&
+			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
+			diff[['plotWidthDescriptivesPlot']] == FALSE && diff[['plotHeightDescriptivesPlot']] == FALSE) {
+			
+			# old descriptives plots can be used
+						
+			stateDescriptivesPlot <- state$stateDescriptivesPlot
+		}
+		
 		
 	}
 	
@@ -201,9 +213,20 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	## Create Descriptives Plots
 	
-	result <- .anovaDescriptivesPlot(dataset, options, perform, status)
-	results[["descriptivesPlot"]] <- result$result
-	status <- result$status
+	if (is.null(stateDescriptivesPlot)) {
+	
+		result <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot)
+		results[["descriptivesPlot"]] <- result$result
+		status <- result$status
+		stateDescriptivesPlot <- result$stateDescriptivesPlot
+		
+	} else {
+	
+		results[["descriptivesPlot"]] <- stateDescriptivesPlot
+	
+	}
+	
+	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
 	
 	if (options$plotHorizontalAxis != "") {
 		if (options$plotSeparatePlots != "") {
@@ -237,6 +260,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["options"]] <- options
 	state[["statePostHoc"]] <- statePostHoc
 	state[["stateqqPlot"]] <- stateqqPlot
+	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
 		return(list(results=results, status="inited", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
@@ -1378,7 +1402,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 }
 
 
-.anovaDescriptivesPlot <- function(dataset, options, perform, status) {
+.anovaDescriptivesPlot <- function(dataset, options, perform, status, stateDescriptivesPlot) {
 
 	descriptivesPlotList <- list()
 
@@ -1438,9 +1462,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			descriptivesPlot <- list()
 			descriptivesPlot[["title"]] <- ""
-			descriptivesPlot[["width"]] <- options$plotWidth
-			descriptivesPlot[["height"]] <- options$plotHeight
-			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlot
+			descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlot
+			descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlot", height="plotHeightDescriptivesPlot")
 
 			if (options$plotSeparatePlots != "") {
 				summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
@@ -1509,15 +1533,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				p <- p + ggplot2::ggtitle(paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = ""))
 			}
 
-			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+			image <- .beginSaveImage(options$plotWidthDescriptivesPlot, options$plotHeightDescriptivesPlot)
 			print(p)
 			content <- .endSaveImage(image)
 
 			descriptivesPlot[["data"]] <- content
+			descriptivesPlot[["status"]] <- "complete"
 
 			descriptivesPlotList[[i]] <- descriptivesPlot
 
 		}
+		
+		stateDescriptivesPlot <- descriptivesPlotList
 
 	} else if (options$plotHorizontalAxis != "") {
 
@@ -1535,9 +1562,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			descriptivesPlot <- list()
 			descriptivesPlot[["title"]] <- ""
-			descriptivesPlot[["width"]] <- options$plotWidth
-			descriptivesPlot[["height"]] <- options$plotHeight
-			descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlot
+			descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlot
+			descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlot", height="plotHeightDescriptivesPlot")
 			descriptivesPlot[["data"]] <- ""
 
 			if (status$error)
@@ -1545,10 +1572,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 			descriptivesPlotList[[i]] <- descriptivesPlot
 		}
+		
+		stateDescriptivesPlot <- NULL
 
 	}
 
-	list(result=descriptivesPlotList, status=status)
+	list(result=descriptivesPlotList, status=status, stateDescriptivesPlot=stateDescriptivesPlot)
 }
 
 .qqPlot <- function(model, options, perform, status, stateqqPlot) {
