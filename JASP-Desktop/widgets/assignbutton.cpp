@@ -1,8 +1,10 @@
+
 #include "assignbutton.h"
 
 #include <QMimeData>
-#include "draganddrop.h"
+#include <QDebug>
 
+#include "draganddrop.h"
 
 AssignButton::AssignButton(QWidget *parent) :
 	Button(parent)

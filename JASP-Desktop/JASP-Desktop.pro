@@ -1,5 +1,5 @@
 
-QT       += core gui webkit webkitwidgets svg
+QT += core gui webkit webkitwidgets svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,8 +15,7 @@ CONFIG -= app_bundle
 
 INCLUDEPATH += ../JASP-Common/
 
-macx:INCLUDEPATH += ../../boost_1_54_0
-
+   macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
 
 PRE_TARGETDEPS += ../libJASP-Common.a
@@ -40,16 +39,16 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
-SOURCES += main.cpp\
-	analyses.cpp \
-	mainwindow.cpp \
-	datasettablemodel.cpp \
+SOURCES += main.cpp \
+    analyses.cpp \
+    mainwindow.cpp \
+    datasettablemodel.cpp \
     backstageform.cpp \
     enginesync.cpp \
     availablefields.cpp \
-	asyncloader.cpp \
-	maintableview.cpp \
-	maintablehorizontalheader.cpp \
+    asyncloader.cpp \
+    maintableview.cpp \
+    maintablehorizontalheader.cpp \
     widgets/assignbutton.cpp \
     widgets/availablefieldslistview.cpp \
     widgets/boundcheckbox.cpp \
@@ -60,18 +59,18 @@ SOURCES += main.cpp\
     widgets/toolbutton.cpp \
     widgets/boundtextbox.cpp \
     widgets/boundgroupbox.cpp \
-	widgets/progresswidget.cpp \
-	widgets/anovamodelwidget.cpp \
-	widgets/listview.cpp \
-	widgets/draganddrop.cpp \
-	widgets/assignbuttonmenu.cpp \
-	widgets/tableview.cpp \
-	widgets/boundpairstable.cpp \
-	widgets/boundcombobox.cpp \
-	widgets/boundtableview.cpp \
-	widgets/tableviewmenueditor.cpp \
-	widgets/tableviewmenueditordelegate.cpp \
-	analysisforms/analysisform.cpp \
+    widgets/progresswidget.cpp \
+    widgets/anovamodelwidget.cpp \
+    widgets/listview.cpp \
+    widgets/draganddrop.cpp \
+    widgets/assignbuttonmenu.cpp \
+    widgets/tableview.cpp \
+    widgets/boundpairstable.cpp \
+    widgets/boundcombobox.cpp \
+    widgets/boundtableview.cpp \
+    widgets/tableviewmenueditor.cpp \
+    widgets/tableviewmenueditordelegate.cpp \
+    analysisforms/analysisform.cpp \
     analysisforms/anovabayesianform.cpp \
     analysisforms/ttestpairedsamplesform.cpp \
     analysisforms/anovamultivariateform.cpp \
@@ -83,18 +82,18 @@ SOURCES += main.cpp\
     analysisforms/ttestonesampleform.cpp \
     analysisforms/ttestindependentsamplesform.cpp \
     analysisforms/ancovamultivariateform.cpp \
-	analysisforms/regressionlinearform.cpp \
-	analysisforms/correlationform.cpp \
+    analysisforms/regressionlinearform.cpp \
+    analysisforms/correlationform.cpp \
     widgets/boundassignwidget.cpp \
     analysisforms/anovarepeatedmeasuresform.cpp \
-	analysisforms/contingencytablesform.cpp \
+    analysisforms/contingencytablesform.cpp \
     analysisforms/correlationpartialform.cpp \
     ribbons/ribbonwidget.cpp \
     ribbons/ribbonsem.cpp \
     ribbons/ribbonanalysis.cpp \
     ribbons/ribbonhome.cpp \
     analysisforms/semsimpleform.cpp \
-	widgets/boundtextedit.cpp \
+    widgets/boundtextedit.cpp \
     widgets/stealthbutton.cpp \
     analysisforms/ttestbayesianindependentsamplesform.cpp \
     analysisforms/ttestbayesianpairedsamplesform.cpp \
@@ -114,7 +113,7 @@ SOURCES += main.cpp\
     widgets/tablemodelvariablesoptions.cpp \
     widgets/tablemodelanovamodel.cpp \
     widgets/tablemodelcontrasts.cpp \
-	widgets/tablemodelanovadesign.cpp \
+    widgets/tablemodelanovadesign.cpp \
     widgets/datasetsselectwidget.cpp \
     widgets/datasetselectwidget.cpp \
     appdirs.cpp \
@@ -122,8 +121,8 @@ SOURCES += main.cpp\
     analysisforms/ancovabayesianform.cpp \
     analysisforms/anovarepeatedmeasuresbayesianform.cpp \
     analysisforms/correlationbayesianform.cpp \
-	analysisforms/contingencytablesbayesianform.cpp \
-	analysisforms/correlationbayesianpairsform.cpp \
+    analysisforms/contingencytablesbayesianform.cpp \
+    analysisforms/correlationbayesianpairsform.cpp \
     application.cpp \
     analysisforms/regressionlinearbayesianform.cpp \
     qutils.cpp \
@@ -132,11 +131,11 @@ SOURCES += main.cpp\
     lrnam.cpp \
     widgets/webview.cpp \
     widgets/button.cpp \
-	analysisforms/r11tlearnform.cpp \
-	ribbons/ribbonr11tlearn.cpp
+    analysisforms/r11tlearnform.cpp \
+    ribbons/ribbonr11tlearn.cpp
 
 HEADERS  += \
-	analyses.h \
+    analyses.h \
     datasettablemodel.h \
     backstageform.h \
     enginesync.h \
@@ -187,14 +186,14 @@ HEADERS  += \
     widgets/tableviewmenueditordelegate.h \
     widgets/boundassignwidget.h \
     analysisforms/anovarepeatedmeasuresform.h \
-	analysisforms/contingencytablesform.h \
+    analysisforms/contingencytablesform.h \
     analysisforms/correlationpartialform.h \
     ribbons/ribbonwidget.h \
     ribbons/ribbonsem.h \
     ribbons/ribbonanalysis.h \
     ribbons/ribbonhome.h \
     analysisforms/semsimpleform.h \
-	widgets/boundtextedit.h \
+    widgets/boundtextedit.h \
     widgets/stealthbutton.h \
     analysisforms/ttestbayesianindependentsamplesform.h \
     analysisforms/ttestbayesianpairedsamplesform.h \
@@ -215,16 +214,16 @@ HEADERS  += \
     widgets/tablemodelvariablesoptions.h \
     widgets/tablemodelanovamodel.h \
     widgets/tablemodelcontrasts.h \
-	widgets/tablemodelanovadesign.h \
+    widgets/tablemodelanovadesign.h \
     widgets/datasetsselectwidget.h \
     widgets/datasetselectwidget.h \
     appdirs.h \
     widgets/tablemodelanovawithinsubjectcells.h \
     analysisforms/ancovabayesianform.h \
-	analysisforms/anovarepeatedmeasuresbayesianform.h \
+    analysisforms/anovarepeatedmeasuresbayesianform.h \
     analysisforms/correlationbayesianform.h \
-	analysisforms/contingencytablesbayesianform.h \
-	analysisforms/correlationbayesianpairsform.h \
+    analysisforms/contingencytablesbayesianform.h \
+    analysisforms/correlationbayesianpairsform.h \
     application.h \
     analysisforms/regressionlinearbayesianform.h \
     qutils.h \
@@ -234,8 +233,8 @@ HEADERS  += \
     widgets/groupbox.h \
     widgets/button.h \
     widgets/webview.h \
-	analysisforms/r11tlearnform.h \
-	ribbons/ribbonr11tlearn.h
+    analysisforms/r11tlearnform.h \
+    ribbons/ribbonr11tlearn.h
 
 FORMS    += \
     backstageform.ui \
@@ -257,7 +256,7 @@ FORMS    += \
     analysisforms/correlationform.ui \
     widgets/boundassignwidget.ui \
     analysisforms/anovarepeatedmeasuresform.ui \
-	analysisforms/contingencytablesform.ui \
+    analysisforms/contingencytablesform.ui \
     analysisforms/correlationpartialform.ui \
     ribbons/ribbonhome.ui \
     ribbons/ribbonsem.ui \
@@ -270,18 +269,18 @@ FORMS    += \
     analysisforms/ancovabayesianform.ui \
     analysisforms/anovarepeatedmeasuresbayesianform.ui \
     analysisforms/correlationbayesianform.ui \
-	analysisforms/correlationbayesianpairsform.ui \
-	analysisforms/contingencytablesbayesianform.ui \
+    analysisforms/correlationbayesianpairsform.ui \
+    analysisforms/contingencytablesbayesianform.ui \
     analysisforms/regressionlinearbayesianform.ui \
     analysisforms/r11tlearnform.ui \
     ribbons/ribbonr11tlearn.ui
 
 
 RESOURCES += \
-	html/html.qrc \
+    html/html.qrc \
     resources/icons.qrc \
     resources/resources.qrc \
-	resources/win/stylesheets.qrc
+    resources/win/stylesheets.qrc
 
 unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
@@ -401,13 +400,13 @@ OTHER_FILES += \
     resources/icons/analysis-classical-crosstabs.svg \
     resources/icons/analysis-bayesian-regression.svg \
     resources/icons/toolbutton-menu-indicator.svg \
-	html/js/image.js \
+    html/js/image.js \
     resources/icons/variable-scale-inactive.svg \
     resources/icons/variable-ordinal-inactive.svg \
     resources/icons/variable-nominal-inactive.svg \
-	html/css/images/logo.svg \
-	html/js/images.js \
-	html/js/analysis.js \
+    html/css/images/logo.svg \
+    html/js/images.js \
+    html/js/analysis.js \
     resources/icons/variable-nominal-text.svg \
     html/css/images/waiting.svg \
     resources/icons/analysis-classical-sem.svg \
@@ -421,42 +420,45 @@ RESOURCES_PATH = $${PWD}/../Resources
 
 win32 {
 
-        HELP_PATH_DEST = $${OUT_PWD}/../Help/
-		RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
+    HELP_PATH_DEST = $${OUT_PWD}/../Help/
+    RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
-        HELP_PATH ~= s,/,\\,g
-        HELP_PATH_DEST ~= s,/,\\,g
+    HELP_PATH ~= s,/,\\,g
+    HELP_PATH_DEST ~= s,/,\\,g
 
-		RESOURCES_PATH ~= s,/,\\,g
-		RESOURCES_PATH_DEST ~= s,/,\\,g
+    RESOURCES_PATH ~= s,/,\\,g
+    RESOURCES_PATH_DEST ~= s,/,\\,g
 
-        copydocs.commands += $$quote(cmd /c xcopy /S /I /Y $${HELP_PATH} $${HELP_PATH_DEST})
-		copylibrary.commands += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
+    copydocs.commands += $$quote(cmd /c xcopy /S /I /Y $${HELP_PATH} $${HELP_PATH_DEST})
+    copyres.commands  += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
 }
 
 macx {
 
-        HELP_PATH_DEST = $${OUT_PWD}/../../Resources/Help/
-		RESOURCES_PATH_DEST = $${OUT_PWD}/../../Resources/
+    HELP_PATH_DEST      = $${OUT_PWD}/../../Resources/Help/
+    RESOURCES_PATH_DEST = $${OUT_PWD}/../../Resources/
 
-        copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
-        copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
+    copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
+    copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
 
-		copylibrary.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
-		copylibrary.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
+    copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
+    copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
 }
 
 linux {
 
-        HELP_PATH_DEST = $${OUT_PWD}/../Help/
-		RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
+    HELP_PATH_DEST      = $${OUT_PWD}/../Help/
+    RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
-        copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
-        copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
+    copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
+    copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
 
-		copylibrary.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
-		copylibrary.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
+    copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
+    copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
 }
 
-QMAKE_EXTRA_TARGETS += copydocs copylibrary
-POST_TARGETDEPS += copydocs copylibrary
+! equals(PWD, $${OUT_PWD}) {
+
+    QMAKE_EXTRA_TARGETS += copydocs copyres
+    POST_TARGETDEPS     += copydocs copyres
+}

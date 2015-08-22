@@ -138,10 +138,13 @@ bool Utils::renameOverwrite(const string &oldName, const string &newName)
 	system::error_code ec;
 
 #ifdef __WIN32__
-	filesystem::file_status s = filesystem::status(n);
-	bool readOnly = (s.permissions() & filesystem::owner_write) == 0;
-	if (readOnly)
-		filesystem::permissions(n, filesystem::owner_write);
+	system::error_code er;
+	if (filesystem::exists(n, er)) {
+		filesystem::file_status s = filesystem::status(n);
+		bool readOnly = (s.permissions() & filesystem::owner_write) == 0;
+		if (readOnly)
+			filesystem::permissions(n, filesystem::owner_write);
+	}
 #endif
 
 	boost::filesystem::rename(o, n, ec);

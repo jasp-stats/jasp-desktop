@@ -8,29 +8,27 @@
 			"type": "Variable"
 		},
 		{
-			"name": "blocks",
-			"template": [
-				{
-					"default": "Block %1",
-					"name": "name",
-					"type": "String"
-				},
-				{
-					"name": "variables",
-					"type": "Variables"
-				},
-				{
-					"name": "method",
-					"options": [ "Enter" , "Backward" , "Forward" , "Stepwise" ],
-					"default": "Enter",
-					"type": "List"
-				}
-			],
-			"type": "Table"
+			"name": "method",
+			"type": "List",
+			"options": [ "enter", "backward", "forward", "stepwise" ]
+		},
+		{
+			"name": "covariates",
+			"type": "Variables"
 		},
 		{
 			"name": "wlsWeights",
 			"type": "Variable"
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				}
+			],
+			"type": "Table"
 		},
 		{
 			"default": true,
@@ -89,9 +87,8 @@
 		},
 		{
 			"name": "residualsCasewiseDiagnosticsType",
-			"options": [ "outliersOutside", "allCases" ],
-			"default": "outliersOutside",
-			"type": "List"
+			"type": "List",
+			"options": [ "outliersOutside", "allCases" ]
 		},
 		{
 			"default": 3,

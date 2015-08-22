@@ -22,7 +22,6 @@ JASP depends on:
  - [Qt (5+)](http://qt-project.org)
  - [R](http://cran.r-project.org)
  - [boost](http://boost.org)
- - [boost nowide](http://cppcms.com/files/nowide/html/)
  - [libarchive](http://libarchive.org/)
  - [zlib](http://zlib.net/)
  
@@ -36,7 +35,6 @@ Building JASP under windows is the most temperamental, and the versions listed h
  - [Qt 5.2.1 win64 GCC 4.8.2](https://static.jasp-stats.org/development/x64-Qt-5.2.1+QtCreator-3.0.1-(gcc-4.8.2-seh).7z)
  - [R 3.1.2 win64](https://static.jasp-stats.org/development/R%20Win64%20for%20JASP%20%282015-06-18%29.zip)
  - [boost 1.54.0](https://static.jasp-stats.org/development/boost_1_54_0.7z)
- - [boost nowide](http://cppcms.com/files/nowide/nowide.zip)
  - [boost 1.54.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional Binary Deps Win64 for JASP (2015-04-14).zip)
 
 Qt: JASP for windows is built as 64-bit and is built with Mingw-W64. The Qt project does not ship a 64-bit version of Qt based on Mingw-W64, and so we rely on a version from [here](http://sourceforge.net/projects/mingwbuilds/files/external-binary-packages/Qt-Builds/). Once downloaded and unzipped to the desired location, it is necessary to run the `QtSDK-x86_64/qtbinpatcher.exe`, so it knows about it's current location.
@@ -47,7 +45,6 @@ The directory structure should be as follows:
 
     [+] jasp-desktop  < from github >
     [+] boost_1_54_0
-    [+] nowide
     [-] build-JASP- ... < build directory, created by QtCreator >
        [+] R
         - libgcc_s_seh-1.dll
@@ -65,7 +62,6 @@ Mac OS X
 
  - [R 3.1.2](https://static.jasp-stats.org/development/R%20OSX%20for%20JASP%20%282015-06-18%29.zip)
  - [boost 1.54.0](https://static.jasp-stats.org/development/boost_1_54_0.tar.bz2)
- - [boost nowide](http://cppcms.com/files/nowide/nowide.zip)
  - [boost 1.54.0 binaries, libarchive binaries](https://static.jasp-stats.org/development/Additional Binary Deps OSX for JASP (2015-04-14).zip)
 
 XCode: Qt on OS X relies on XCode to function, you can install this through the App Store. It's easiest if you install this, run it, accept the license agreement, and then close it down before installing Qt.
@@ -76,7 +72,6 @@ The directory structure should be as follows:
 
     [+] jasp-desktop  < from github >
     [+] boost_1_54_0
-    [+] nowide
     [-] Frameworks
        [+] R.framework
     [+] build-JASP- ... < build directory, created by QtCreator >

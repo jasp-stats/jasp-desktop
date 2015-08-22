@@ -40,6 +40,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		list(name="descriptives", type="table"),
 		list(name="headerMarginalMeans", type="h1"),
 		list(name="marginalMeans", type="tables"),
+		list(name="headerqqPlot", type="h1"),
+		list(name="qqPlot", type="image"),
 		list(name="headerDescriptivesPlot", type="h1"),
 		list(name="descriptivesPlot", type="images")
 	)
@@ -49,6 +51,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	state <- .retrieveState()
 	anovaModel <- NULL
+	statePostHoc <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 	
@@ -60,6 +63,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 			anovaModel <- state$model
 		}
+		
+		if ((is.logical(diff) && diff == FALSE) || (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['postHocTestsVariables']] == FALSE)) {
+		
+			# old post hov results can be used
+			
+			statePostHoc <- state$statePostHoc
+		}
+		
+		
 	}
 	
 	
@@ -132,13 +144,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	## Create Post Hoc Tables
 	
-	result <- .anovaPostHocTable(dataset, options, perform, status)
+	result <- .anovaPostHocTable(dataset, options, perform, model, status, statePostHoc)
 	
 	results[["posthoc"]] <- result$result
 	status <- result$status
+	statePostHoc <- result$statePostHoc
 	
 	if (!is.null(unlist(results[["posthoc"]])))
-		results[["headerPosthoc"]] <- "Post-Hoc Tests"
+		results[["headerPosthoc"]] <- "Post Hoc Tests"
 	
 
 
@@ -192,8 +205,22 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		}
 	}
 	
+	
+	
+	## Create QQ Plot
+	
+	result <- .qqPlot(model, options, perform, status)
+	results[["qqPlot"]] <- result$result
+	status <- result$status
+
+	if (options$qqPlot)
+		results[["headerqqPlot"]] <- "Q-Q Plot"
+	
+
+	
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
+	state[["statePostHoc"]] <- statePostHoc
 
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
@@ -818,88 +845,181 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=contrast.tables, status=status)
 }
 
-.anovaPostHocTable <- function(dataset, options, perform, status) {
+.postHocContrasts <- function(variable.levels, dataset, options) {
+	
+	contrasts <- NULL
+	nLevels <- length(variable.levels)
+		
+	for (i in 1:nLevels) {
+	
+		for (j in .seqx(i+1, nLevels)) {
+		
+			name <- paste(variable.levels[[i]], "-", variable.levels[[j]], sep = " ")
+			contrast <- rep(0, nLevels)
+			contrast[i] <- -1
+			contrast[j] <- 1
+			
+			arg <- list(contrasts, contrast)
+			names(arg)[2] <- name
+			contrasts <- do.call(rbind, arg)
+			
+		}
+	}
+	
+	return(contrasts)	
+}
 
+.anovaPostHocTable <- function(dataset, options, perform, model, status, statePostHoc) {
+	
 	posthoc.variables <- unlist(options$postHocTestsVariables)
 	
 	posthoc.tables <- list()
+	
+	if (is.null(statePostHoc)) {
+		statePostHoc <- list()
+	}
 	
 	for (posthoc.var in posthoc.variables) {
 	
 		posthoc.table <- list()
 
-		posthoc.table[["title"]] <- paste("Post-Hoc Comparisons - ", posthoc.var, sep="")
+		posthoc.table[["title"]] <- paste("Post Hoc Comparisons - ", posthoc.var, sep="")
 		
 		fields <- list(
-			list(name="(I) response", type="string", combine=TRUE),
-			list(name="(J) response", type="string"),
+			list(name="(I)",title="", type="string", combine=TRUE),
+			list(name="(J)",title="", type="string"),
 			list(name="Mean Difference", type="number", format="sf:4;dp:3"),
-			list(name="t", type="number", format="sf:4;dp:3"),
-			list(name="df", type="number", format="dp:0"))
+			list(name="SE", type="number", format="sf:4;dp:3"),
+			list(name="t", type="number", format="sf:4;dp:3"))
 		
-		if (options$postHocTestsHolm)
-			fields[[length(fields) + 1]] <- list(name="p holm", type="number", format="dp:3;p:.001")
+		if (options$postHocTestsTukey)
+			fields[[length(fields) + 1]] <- list(name="tukey", title="p<sub>tukey</sub>", type="number", format="dp:3;p:.001")
+		
+		if (options$postHocTestsScheffe)
+			fields[[length(fields) + 1]] <- list(name="scheffe", title="p<sub>scheffe</sub>", type="number", format="dp:3;p:.001")
 		
 		if (options$postHocTestsBonferroni)
-			fields[[length(fields) + 1]] <- list(name="p bonferroni", type="number", format="dp:3;p:.001")
+			fields[[length(fields) + 1]] <- list(name="bonferroni", title="p<sub>bonf</sub>", type="number", format="dp:3;p:.001")
 		
-		if (options$postHocTestsHochberg)
-			fields[[length(fields) + 1]] <- list(name="p hochberg", type="number", format="dp:3;p:.001")
-		
-		if (options$postHocTestsHommel)
-			fields[[length(fields) + 1]] <- list(name="p hommel", type="number", format="dp:3;p:.001")
-		
-		if (options$postHocTestsBenjamini)
-			fields[[length(fields) + 1]] <- list(name="p benjamini", type="number", format="dp:3;p:.001")
-		
-		if (options$postHocTestsFDR)
-			fields[[length(fields) + 1]] <- list(name="p FDR", type="number", format="dp:3;p:.001")
+		if (options$postHocTestsHolm)
+			fields[[length(fields) + 1]] <- list(name="holm",title="p<sub>holm</sub>", type="number", format="dp:3;p:.001")
 		
 		posthoc.table[["schema"]] <- list(fields=fields)
 
-		rows <- list()
-		
-		if (perform == "run" && status$ready && status$error == FALSE)
-			data.split <- split(dataset[[ .v(options$dependent) ]], dataset[[ .v(posthoc.var) ]])
-			
+		rows <- list()	
 			
 		variable.levels <- levels(dataset[[ .v(posthoc.var) ]])
 		nLevels <- length(variable.levels)
 		
-		ps <- c()
+		if (perform == "run" && status$ready && status$error == FALSE && is.null(statePostHoc[[posthoc.var]])) {
 		
+			statePostHoc[[posthoc.var]] <- list()
+			
+			# Results using the Tukey method
+				
+			method <- list("Tukey")
+			names(method) <- .v(posthoc.var)
+			statePostHoc[[posthoc.var]]$resultTukey <- summary(multcomp::glht(model,do.call(multcomp::mcp, method)))
+		
+			# Results using the Scheffe method
+		
+			tTukey <- statePostHoc[[posthoc.var]]$resultTukey$test$tstat
+			modelRank <- model$rank
+			dfResidual <- model$df.residual
+			statePostHoc[[posthoc.var]]$resultScheffe <- 1-pf(tTukey**2/(modelRank-1),modelRank-1,dfResidual)
+		
+			# Results using the Bonferroni method
+		
+			contrastMatrix <- list(.postHocContrasts(variable.levels, dataset, options))
+			names(contrastMatrix) <- .v(posthoc.var)
+			r <- multcomp::glht(model,do.call(multcomp::mcp, method))
+		
+			statePostHoc[[posthoc.var]]$resultBonf <- summary(r,test=multcomp::adjusted("bonferroni"))
+		
+			# Results using the Holm method
+		
+			statePostHoc[[posthoc.var]]$resultHolm <- summary(r,test=multcomp::adjusted("holm"))
+					
+			statePostHoc[[posthoc.var]]$comparisonsTukSchef <- strsplit(names(statePostHoc[[posthoc.var]]$resultTukey$test$coefficients)," - ")
+			statePostHoc[[posthoc.var]]$comparisonsBonfHolm <- strsplit(names(statePostHoc[[posthoc.var]]$resultBonf$test$coefficients)," - ")
+							   
+		}
+						
 		for (i in 1:length(variable.levels)) {
 			
 			for (j in .seqx(i+1, length(variable.levels))) {
 				
-				row <- list("(I) response"=variable.levels[[i]], "(J) response"=variable.levels[[j]])
+				row <- list("(I)"=variable.levels[[i]], "(J)"=variable.levels[[j]])
 				
-				if (perform == "run" && status$ready && status$error == FALSE) {
-
-					r <- try(t.test(data.split[[i]], data.split[[j]]))
-					
-					if (class(r) == "try-error" || is.na(r$p.value)) {
+				pTukey <- ""
+				pScheffe <- ""
+				pBonf <- ""
+				pHolm <- ""
+				
+				if (!is.null(statePostHoc[[posthoc.var]])) {
+															
+					if (length(class(statePostHoc[[posthoc.var]]$resultTukey)) == 1 && class(statePostHoc[[posthoc.var]]$resultTukey) == "try-error") {
 					
 						md <- ""
-						t  <- ""
-						df <- ""
+						SE  <- ""
+						t <- ""
 						p  <- 1
 						
 						posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text="Some comparisons could not be performed. Possibly too few samples."))
 						
 					} else {
-					
-						md <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
-						t  <- as.numeric(r$statistic)
-						df <- as.numeric(r$parameter)
-						p <- as.numeric(r$p.value)
+						
+						for (c in 1:length(statePostHoc[[posthoc.var]]$comparisonsTukSchef)) {
+							if (all(statePostHoc[[posthoc.var]]$comparisonsTukSchef[[c]] %in% c(variable.levels[[i]], variable.levels[[j]]))) {
+								index1 <- c
+								
+								reverse <- TRUE
+								if (statePostHoc[[posthoc.var]]$comparisonsTukSchef[[c]][1] == variable.levels[[i]])
+									reverse <- FALSE
+							}		
+							
+							if (all(statePostHoc[[posthoc.var]]$comparisonsBonfHolm[[c]] %in% c(variable.levels[[i]], variable.levels[[j]]))) {
+								index2 <- c
+							}		
+						}
+												
+						if (reverse) {
+							md <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$coefficients[index1]))
+						} else {
+							md <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$coefficients[index1]))
+						}
+						
+						SE  <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$sigma[index1]))
+						
+						if (reverse) {
+							t <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$tstat[index1]))
+						} else {
+							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$tstat[index1]))
+						}
+						
+						if (options$postHocTestsTukey) 
+							pTukey <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$test$pvalues[index1]))
+							
+						if (options$postHocTestsScheffe)
+							pScheffe <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultScheffe[index1]))
+							
+						if (options$postHocTestsBonferroni)
+							pBonf <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$test$pvalues[index2]))
+						
+						if (options$postHocTestsHolm)
+							pHolm <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultHolm$test$pvalues[index2]))
 					}
 					
 					row[["Mean Difference"]] <- md
-					row[["t"]]  <- t
-					row[["df"]] <- df
+					row[["SE"]]  <- SE
+					row[["t"]] <- t
+					row[["tukey"]] <- pTukey
+					row[["scheffe"]] <- pScheffe
+					row[["bonferroni"]] <- pBonf
+					row[["holm"]] <- pHolm
 					
-					ps <- c(ps, p)
+					posthoc.table[["status"]] <- "complete"
+					
 				}
 				
 				if(length(rows) == 0)  {
@@ -912,51 +1032,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			}
 		}
 		
-		if (perform == "run" && status$ready && status$error == FALSE) {
-		
-			if (options$postHocTestsHolm) {
-		
-				ps.adjusted <- p.adjust(ps, method="holm")
-				for (i in 1:length(rows))
-					rows[[i]][["p holm"]] <- ps.adjusted[[i]]
-			}
-
-			if (options$postHocTestsBonferroni) {
-		
-				ps.adjusted <- p.adjust(ps, method="bonferroni")
-				for (i in 1:length(rows))
-					rows[[i]][["p bonferroni"]] <- ps.adjusted[[i]]
-			}
-		
-			if (options$postHocTestsHochberg) {
-		
-				ps.adjusted <- p.adjust(ps, method="hochberg")
-				for (i in 1:length(rows))
-					rows[[i]][["p hochberg"]] <- ps.adjusted[[i]]
-			}
-		
-			if (options$postHocTestsHommel) {
-		
-				ps.adjusted <- p.adjust(ps, method="hommel")
-				for (i in 1:length(rows))
-					rows[[i]][["p hommel"]] <- ps.adjusted[[i]]
-			}		
-		
-			if (options$postHocTestsBenjamini) {
-		
-				ps.adjusted <- p.adjust(ps, method="BY")
-				for (i in 1:length(rows))
-					rows[[i]][["p benjamini"]] <- ps.adjusted[[i]]
-			}
-		
-			if (options$postHocTestsFDR) {
-		
-				ps.adjusted <- p.adjust(ps, method="fdr")
-				for (i in 1:length(rows))
-					rows[[i]][["p FDR"]] <- ps.adjusted[[i]]
-			}
-		}
-		
 		posthoc.table[["data"]] <- rows
 		
 		if (status$error)
@@ -965,7 +1040,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		posthoc.tables[[length(posthoc.tables)+1]] <- posthoc.table
 	}
 	
-	list(result=posthoc.tables, status=status)
+	list(result=posthoc.tables, status=status, statePostHoc=statePostHoc)
 }
 
 .anovaDescriptivesTable <- function(dataset, options, perform, status) {
@@ -1459,4 +1534,58 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	}
 
 	list(result=descriptivesPlotList, status=status)
+}
+
+.qqPlot <- function(model, options, perform, status) {
+	
+	if (!options$qqPlot)
+		return(list(result=NULL, status=status))
+	
+	qqPlot <- list()
+
+	if (perform == "run" && status$ready && !status$error && !is.null(model)) {
+
+		qqPlot$title <- ""
+		qqPlot$width <- options$plotWidth2
+		qqPlot$height <- options$plotHeight2
+		qqPlot$custom <- list(width="plotWidth2", height="plotHeight2")
+		
+		standResid <- as.data.frame(stats::qqnorm(rstandard(model), plot.it=FALSE))
+				
+		p <- ggplot2::ggplot(standResid, ggplot2::aes(x=x,y=y)) + ggplot2::geom_point(na.rm = TRUE) +
+			 ggplot2::geom_abline(slope = 1) + ggplot2::xlab("Theoretical Quantiles") + ggplot2::ylab("Standardized Residuals") +
+			 ggplot2::ggtitle("") + ggplot2::theme_bw() +
+				ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
+					panel.grid.major=ggplot2::element_blank(), axis.line = ggplot2::element_line(colour = "black", size=1.2),
+					axis.title.x = ggplot2::element_text(size=18,vjust=-.2), axis.title.y = ggplot2::element_text(size=18,vjust=1.2),
+					axis.text.x = ggplot2::element_text(size=15), axis.text.y = ggplot2::element_text(size=15),
+					panel.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					plot.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
+					panel.border = ggplot2::element_blank(),
+					axis.line = ggplot2::element_blank(),
+					axis.ticks = ggplot2::element_line(size = 0.5),
+					axis.ticks.margin = grid::unit(1,"mm"),
+					axis.ticks.length = grid::unit(3, "mm"),
+					plot.margin = grid::unit(c(0,0,.5,.5), "cm"))
+
+		image <- .beginSaveImage(options$plotWidth2, options$plotHeight2)
+		print(p)
+		content <- .endSaveImage(image)
+
+		qqPlot$data <- content
+
+	} else {
+
+		qqPlot$title <- ""
+		qqPlot$width <- options$plotWidth2
+		qqPlot$height <- options$plotHeight2
+		qqPlot$custom <- list(width="plotWidth2", height="plotHeight2")
+		qqPlot$data <- ""
+
+		if (status$error)
+			qqPlot$error <- list(errorType="badData")
+
+	}
+
+	list(result=qqPlot, status=status)
 }

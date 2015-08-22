@@ -1,17 +1,18 @@
+
 #include "analysisform.h"
-
-#include "boost/foreach.hpp"
-
-#include "bound.h"
 
 #include <QLabel>
 #include <QTimer>
 #include <QResizeEvent>
-#include "widgets/boundlistview.h"
-#include "widgets/boundpairstable.h"
-#include "qutils.h"
+#include <QDebug>
 
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
+
+#include "bound.h"
+#include "qutils.h"
+#include "widgets/boundlistview.h"
+#include "widgets/boundpairstable.h"
 
 using namespace std;
 
