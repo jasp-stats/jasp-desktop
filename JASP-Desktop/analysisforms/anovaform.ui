@@ -69,7 +69,7 @@
          <item>
           <widget class="QLabel" name="label_15">
            <property name="text">
-            <string>Factors:</string>
+            <string>Factors</string>
            </property>
           </widget>
          </item>
@@ -379,7 +379,7 @@
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="plotErrorBars">
               <property name="text">
-               <string>Error bars displaying:</string>
+               <string>Error bars displaying</string>
               </property>
              </widget>
             </item>
@@ -818,7 +818,7 @@
             <item row="1" column="0">
              <widget class="BoundCheckBox" name="effectSizeEstimates">
               <property name="text">
-               <string>Estimates of effect size:</string>
+               <string>Estimates of effect size</string>
               </property>
              </widget>
             </item>
