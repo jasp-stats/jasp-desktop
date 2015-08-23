@@ -52,6 +52,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	state <- .retrieveState()
 	anovaModel <- NULL
 	stateDescriptivesPlot <- NULL
+	stateDescriptivesTable <- NULL
 	stateLevene <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
@@ -76,6 +77,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			stateDescriptivesPlot <- state$stateDescriptivesPlot
 		}
 				
+		if (is.list(diff) && diff[['betweenSubjectFactors']] == FALSE && diff[['repeatedMeasuresFactors']] == FALSE  && diff[['repeatedMeasuresCells']] == FALSE &&
+			diff[['descriptives']] == FALSE) {
+		
+			# old descriptives table can be used
+			
+			stateDescriptivesTable <- state$stateDescriptivesTable
+			
+		}
 		
 		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && 
 			diff[['repeatedMeasuresFactors']] == FALSE) {
@@ -185,10 +194,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	## Create Descriptives Table
 	
-	result <- .rmAnovaDescriptivesTable(dataset, options, perform, status)
+	if(is.null(stateDescriptivesTable)) {
 	
-	results[["descriptives"]] <- result$result
-	status <- result$status
+		result <- .rmAnovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable)
+		results[["descriptives"]] <- result$result
+		status <- result$status
+		stateDescriptivesTable <- result$stateDescriptivesTable
+		
+	} else {
+	
+		results[["descriptives"]] <- stateDescriptivesTable
+		
+	}
 	
 	if (!is.null(results[["descriptives"]]))
 	    results[["headerDescriptives"]] <- "Descriptives"
@@ -225,6 +242,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
 	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
+	state[["stateDescriptivesTable"]] <- stateDescriptivesTable
 	state[["stateLevene"]] <- stateLevene
 	
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
@@ -1453,7 +1471,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result=levenes.table, status=status, stateLevene=stateLevene)
 }
 
-.rmAnovaDescriptivesTable <- function(dataset, options, perform, status) {
+.rmAnovaDescriptivesTable <- function(dataset, options, perform, status, stateDescriptivesTable) {
 
 	if (options$descriptives == FALSE)
 		return(list(result=NULL, status=status))
@@ -1573,12 +1591,25 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		}
 
 		descriptives.table[["data"]] <- rows
+		
+		if (perform == "run" && status$ready && status$error == FALSE)
+			descriptives.table[["status"]] <- "complete" 
 	}
 
 	if (status$error)
 		descriptives.table[["error"]] <- list(error="badData")
+		
+	if (perform == "run" && status$ready && status$error == FALSE) {
+	
+		stateDescriptivesTable <- descriptives.table
+		
+	} else {
+	
+		stateDescriptivesTable <- NULL
+	
+	}
 
-	list(result=descriptives.table, status=status)
+	list(result=descriptives.table, status=status, stateDescriptivesTable=stateDescriptivesTable)
 }
 
 .rmAnovaDescriptivesPlot <- function(dataset, options, perform, status, stateDescriptivesPlot) {
