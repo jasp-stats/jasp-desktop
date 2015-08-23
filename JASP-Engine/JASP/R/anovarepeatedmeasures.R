@@ -70,7 +70,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		if (is.list(diff) && diff[['plotHorizontalAxis']] == FALSE && diff[['plotSeparateLines']] == FALSE && diff[['plotSeparatePlots']] == FALSE &&
 			diff[['plotErrorBars']] == FALSE && !(diff[['errorBarType']] == TRUE && options$plotErrorBars == TRUE) &&
 			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
-			diff[['plotWidthDescriptivesPlot']] == FALSE && diff[['plotHeightDescriptivesPlot']] == FALSE) {
+			diff[['plotWidthDescriptivesPlotLegend']] == FALSE && diff[['plotWidthDescriptivesPlotLegend']] == FALSE &&
+			diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE && diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE) {
 			
 			# old post hov results can be used
 						
@@ -1683,10 +1684,21 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			descriptivesPlot <- list()
 			descriptivesPlot[["title"]] <- ""
-			descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlot
-			descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlot
-			descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlot", height="plotHeightDescriptivesPlot")
-
+			
+			if (options$plotSeparateLines != "") {
+			
+				descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlotLegend
+				descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlotLegend
+				descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotLegend", height="plotHeightDescriptivesPlotLegend")
+			
+			} else {
+			
+				descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlotNoLegend
+				descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlotNoLegend
+				descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotNoLegend", height="plotHeightDescriptivesPlotNoLegend")
+			
+			}
+			
 			if (options$plotSeparatePlots != "") {
 				summaryStatSubset <- subset(summaryStat,summaryStat[,"plotSeparatePlots"] == subsetPlots[i])
 			} else {
@@ -1754,7 +1766,16 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				p <- p + ggplot2::ggtitle(paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = ""))
 			}
 
-			image <- .beginSaveImage(options$plotWidthDescriptivesPlot, options$plotHeightDescriptivesPlot)
+			if (options$plotSeparateLines != "") {
+			
+				image <- .beginSaveImage(options$plotWidthDescriptivesPlotLegend, options$plotHeightDescriptivesPlotLegend)
+			
+			} else {
+			
+				image <- .beginSaveImage(options$plotWidthDescriptivesPlotNoLegend, options$plotHeightDescriptivesPlotNoLegend)
+			
+			}
+			
 			print(p)
 			content <- .endSaveImage(image)
 
@@ -1795,9 +1816,21 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			descriptivesPlot <- list()
 			descriptivesPlot[["title"]] <- ""
-			descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlot
-			descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlot
-			descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlot", height="plotHeightDescriptivesPlot")
+			
+			if (options$plotSeparateLines != "") {
+			
+				descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlotLegend
+				descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlotLegend
+				descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotLegend", height="plotHeightDescriptivesPlotLegend")
+			
+			} else {
+			
+				descriptivesPlot[["width"]] <- options$plotWidthDescriptivesPlotNoLegend
+				descriptivesPlot[["height"]] <- options$plotHeightDescriptivesPlotNoLegend
+				descriptivesPlot[["custom"]] <- list(width="plotWidthDescriptivesPlotNoLegend", height="plotHeightDescriptivesPlotNoLegend")
+			
+			}
+			
 			descriptivesPlot[["data"]] <- ""
 
 			if (status$error)
