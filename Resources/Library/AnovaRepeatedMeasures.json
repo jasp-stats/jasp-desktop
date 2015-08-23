@@ -195,12 +195,22 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "plotWidthDescriptivesPlot",
+			"name": "plotWidthDescriptivesPlotLegend",
 			"type": "Integer",
 			"default": 450
 		},
 		{
-			"name": "plotHeightDescriptivesPlot",
+			"name": "plotHeightDescriptivesPlotLegend",
+			"type": "Integer",
+			"default": 300
+		},
+		{
+			"name": "plotWidthDescriptivesPlotNoLegend",
+			"type": "Integer",
+			"default": 350
+		},
+		{
+			"name": "plotHeightDescriptivesPlotNoLegend",
 			"type": "Integer",
 			"default": 300
 		},
