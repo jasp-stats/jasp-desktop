@@ -2743,9 +2743,9 @@
 	
 }
 
-base_breaks_y2 <- function(x, testValue){
+.base_breaks_y2 <- function(x, testValue){
 	
-	values <- c(testValue, x$ciLower,x$ciUpper)
+	values <- c(testValue, x$ciLower, x$ciUpper)
 	ci.pos <- c(min(values), max(values))
 	b <- pretty(ci.pos)
 	d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
@@ -2790,7 +2790,7 @@ base_breaks_y2 <- function(x, testValue){
 						axis.ticks.margin = grid::unit(1,"mm"),
 						axis.ticks.length = grid::unit(3, "mm"),
 						plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-		base_breaks_y2(summaryStat, testValueOpt)
+		.base_breaks_y2(summaryStat, testValueOpt)
 	
 	print(p)
 	

@@ -63,6 +63,7 @@
 			"type": "Boolean"
 		},
 		{
+			"default": false,
 			"name": "descriptivesPlots",
 			"type": "Boolean"
 		},
