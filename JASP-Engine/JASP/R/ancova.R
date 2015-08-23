@@ -57,6 +57,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	stateContrasts <- NULL
 	stateLevene <- NULL
 	stateMarginalMeans <- NULL
+	stateDescriptivesTable <- NULL
 
 	if ( ! is.null(state)) {  # is there state?
 	
@@ -104,6 +105,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 		}
 		
+		if (is.list(diff) && diff[['fixedFactors']] == FALSE && diff[['dependent']] == FALSE && diff[['descriptives']] == FALSE) {
+		
+			# old descriptives table can be used
+			
+			stateDescriptivesTable <- state$stateDescriptivesTable
+			
+		}
 		
 		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && 
 			diff[['marginalMeansTerms']] == FALSE && diff[['marginalMeansCompareMainEffects']] == FALSE && diff[['marginalMeansCIAdjustment']] == FALSE) {
@@ -226,10 +234,20 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	## Create Descriptives Table
 	
-	result <- .anovaDescriptivesTable(dataset, options, perform, status)
+	print(stateDescriptivesTable)
 	
-	results[["descriptives"]] <- result$result
-	status <- result$status
+	if(is.null(stateDescriptivesTable)) {
+	
+		result <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable)
+		results[["descriptives"]] <- result$result
+		status <- result$status
+		stateDescriptivesTable <- result$stateDescriptivesTable
+		
+	} else {
+	
+		results[["descriptives"]] <- stateDescriptivesTable
+	
+	}
 	
 	if (!is.null(results[["descriptives"]]))
 		results[["headerDescriptives"]] <- "Descriptives"
@@ -271,7 +289,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	}
 	
-	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
+	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x) x$data)
 	
 	if (options$plotHorizontalAxis != "") {
 		if (options$plotSeparatePlots != "") {
@@ -308,15 +326,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
 	state[["stateContrasts"]] <- stateContrasts
 	state[["stateLevene"]] <- stateLevene
+	state[["stateDescriptivesTable"]] <- stateDescriptivesTable
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
-		
+	
+			
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
 		return(list(results=results, status="inited", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))
 		
 	} else {
 	
-		return(list(results=results, status="complete", state=state, keep=c(stateqqPlot$data,keepDescriptivesPlot)))	
+		return(list(results=results, status="complete", state=state, keep=c(stateqqPlot$data, keepDescriptivesPlot)))	
 	}
 }
 
@@ -1143,7 +1163,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=posthoc.tables, status=status, statePostHoc=statePostHoc)
 }
 
-.anovaDescriptivesTable <- function(dataset, options, perform, status) {
+.anovaDescriptivesTable <- function(dataset, options, perform, status, stateDescriptivesTable) {
 
 	if (options$descriptives == FALSE)
 		return(list(result=NULL, status=status))
@@ -1239,12 +1259,25 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 		descriptives.table[["data"]] <- rows
 		
+		if (perform == "run" && status$ready && status$error == FALSE)
+			descriptives.table[["status"]] <- "complete"
+		
 	} 
 	
 	if (status$error)
 		descriptives.table[["error"]] <- list(error="badData")
+		
+	if (perform == "run" && status$ready && status$error == FALSE) {
 	
-	list(result=descriptives.table, status=status)
+		stateDescriptivesTable <- descriptives.table
+		
+	} else {
+	
+		stateDescriptivesTable <- NULL
+	
+	}
+	
+	list(result=descriptives.table, status=status, stateDescriptivesTable=stateDescriptivesTable)
 }
 
 .anovaLevenesTable <- function(dataset, options, perform, status, stateLevene) {
