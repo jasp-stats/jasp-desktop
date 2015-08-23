@@ -80,7 +80,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		}
 				
 		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['qqPlot']] == FALSE &&
-			diff[['plotWidthqqPlot']] == FALSE && diff[['plotHeightqqPlot']] == FALSE) {
+			diff[['plotWidthQQPlot']] == FALSE && diff[['plotHeightQQPlot']] == FALSE) {
 		
 			# old Q-Q plot can be used
 						
@@ -1700,9 +1700,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if (perform == "run" && status$ready && !status$error && !is.null(model)) {
 
 		qqPlot$title <- ""
-		qqPlot$width <- options$plotWidthqqPlot
-		qqPlot$height <- options$plotHeightqqPlot
-		qqPlot$custom <- list(width="plotWidthqqPlot", height="plotHeightqqPlot")
+		qqPlot$width <- options$plotWidthQQPlot
+		qqPlot$height <- options$plotHeightQQPlot
+		qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
 		
 		standResid <- as.data.frame(stats::qqnorm(rstandard(model), plot.it=FALSE))
 				
@@ -1722,7 +1722,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(0,0,.5,.5), "cm"))
 
-		image <- .beginSaveImage(options$plotWidthqqPlot, options$plotHeightqqPlot)
+		image <- .beginSaveImage(options$plotWidthQQPlot, options$plotHeightQQPlot)
 		print(p)
 		content <- .endSaveImage(image)
 
@@ -1734,9 +1734,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	} else {
 
 		qqPlot$title <- ""
-		qqPlot$width <- options$plotWidthqqPlot
-		qqPlot$height <- options$plotHeightqqPlot
-		qqPlot$custom <- list(width="plotWidthqqPlot", height="plotHeightqqPlot")
+		qqPlot$width <- options$plotWidthQQPlot
+		qqPlot$height <- options$plotHeightQQPlot
+		qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
 		qqPlot$data <- NULL
 		
 		stateqqPlot <- NULL

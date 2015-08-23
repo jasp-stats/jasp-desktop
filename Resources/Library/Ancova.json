@@ -172,12 +172,12 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "plotWidthqqPlot",
+			"name": "plotWidthQQPlot",
 			"type": "Integer",
 			"default": 300
 		},
 		{
-			"name": "plotHeightqqPlot",
+			"name": "plotHeightQQPlot",
 			"type": "Integer",
 			"default": 300
 		}
