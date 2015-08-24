@@ -310,16 +310,6 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
-             <widget class="QWidget" name="widget_5" native="true">
-              <property name="maximumSize">
-               <size>
-                <width>16</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
             <item row="6" column="3">
              <widget class="BoundTextBox" name="descriptivesPlotsCredibleInterval"/>
             </item>
@@ -330,10 +320,33 @@
               </property>
              </widget>
             </item>
+            <item row="4" column="0">
+             <widget class="QWidget" name="widget_5" native="true">
+              <property name="maximumSize">
+               <size>
+                <width>16</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
             <item row="6" column="2">
              <widget class="QLabel" name="label_2">
               <property name="text">
                <string>Credible interval</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="minimumSize">
+               <size>
+                <width>10</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
               </property>
              </widget>
             </item>
