@@ -132,7 +132,9 @@ SOURCES += main.cpp \
     widgets/webview.cpp \
     widgets/button.cpp \
     analysisforms/r11tlearnform.cpp \
-    ribbons/ribbonr11tlearn.cpp
+    ribbons/ribbonr11tlearn.cpp \
+    analysisforms/regressionloglinearform.cpp \
+    analysisforms/regressionloglinearbayesianform.cpp
 
 HEADERS  += \
     analyses.h \
@@ -234,9 +236,11 @@ HEADERS  += \
     widgets/button.h \
     widgets/webview.h \
     analysisforms/r11tlearnform.h \
-    ribbons/ribbonr11tlearn.h
+    ribbons/ribbonr11tlearn.h \
+    analysisforms/regressionloglinearform.h \
+    analysisforms/regressionloglinearbayesianform.h
 
-FORMS    += \
+FORMS += \
     backstageform.ui \
     analysisforms/anovabayesianform.ui \
     analysisforms/ttestpairedsamplesform.ui \
@@ -273,16 +277,17 @@ FORMS    += \
     analysisforms/contingencytablesbayesianform.ui \
     analysisforms/regressionlinearbayesianform.ui \
     analysisforms/r11tlearnform.ui \
-    ribbons/ribbonr11tlearn.ui
+    ribbons/ribbonr11tlearn.ui \
+    analysisforms/regressionloglinearform.ui \
+    analysisforms/regressionloglinearbayesianform.ui
 
 
 RESOURCES += \
     html/html.qrc \
     resources/icons.qrc \
-    resources/resources.qrc \
-    resources/win/stylesheets.qrc
+    resources/resources.qrc
 
-unix:OTHER_FILES += icon.icns
+   unix:OTHER_FILES += icon.icns
 windows:OTHER_FILES += icon.rc
 
 OTHER_FILES += \
