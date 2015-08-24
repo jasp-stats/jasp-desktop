@@ -876,7 +876,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							
 							} else {
 								
-								bf.raw <- .oneSidedTtestBFRichard(x=group2, y=group1, r=r.size, oneSided="right")
+								bf.raw <- .oneSidedTtestBFRichardAdaptive(x=group2, y=group1, r=r.size, oneSided="right")
 								
 								# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
 								# 
@@ -907,7 +907,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 								
 							} else {
 								
-								bf.raw <- .oneSidedTtestBFRichard(x=group2, y=group1, r=r.size, oneSided="left")
+								bf.raw <- .oneSidedTtestBFRichardAdaptive(x=group2, y=group1, r=r.size, oneSided="left")
 								# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
 								# 
 								# if (class(parameters) == "try-error") {
