@@ -48,6 +48,29 @@
 	}
 }
 
+.oneSidedTtestBFRichardAdaptive <- function(x=NULL, y=NULL, paired=FALSE, oneSided="right", r= sqrt(2)/2, nTests=5, nIterations=2000, criterion=.02, nMaxIterations=2050000) {
+	
+	variability <- criterion + 1
+	
+	while (variability > criterion && nIterations < nMaxIterations) {
+		
+		BF <- numeric(nTests)
+		
+		for (i in seq_len(nTests)) {
+			
+			BF[i] <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, r=r, oneSided = oneSided, iterations = nIterations)
+			
+		}
+		
+		variability <- sd(abs(log(BF))) / mean(abs(log(BF)))
+		nIterations <- 2 * nIterations
+		
+	}
+	
+	return(mean(BF))
+	
+}
+
 .likelihoodShiftedT <- function(par, data) {
 	
 	- sum(log( dt((data - par[1]) / par[2], par[3]) / par[2]))
@@ -199,7 +222,7 @@
 	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
 	
 	if (class(parameters) == "try-error") {
-	
+		
 		parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
 	}
 	
@@ -212,7 +235,7 @@
 		BF01 <- 1 / BF10
 		
 	} else {
-	
+		
 		BF01 <- BF
 		BF10 <- 1 / BF01
 	}
@@ -303,7 +326,7 @@
 		medianPosterior <- median(delta)
 		
 		if (any(is.na(c(CIlow, CIhigh, medianPosterior)))) {
-		
+			
 			CIlow <- .qShiftedT(0.025, parameters, oneSided=FALSE)
 			CIhigh <- .qShiftedT(0.975, parameters, oneSided=FALSE)
 			medianPosterior <- .qShiftedT(0.5, parameters, oneSided=FALSE)
@@ -373,7 +396,7 @@
 	if (oneSided == FALSE) {
 		
 		heightPosteriorAtZero <- .dposteriorShiftedT(0, parameters=parameters, oneSided=oneSided)
-	
+		
 	} else if (oneSided == "right") {
 		
 		posteriorLineLargerZero <- posteriorLine[posteriorLine > 0]
@@ -695,12 +718,12 @@
 		while ((i <= length(x) | j <= length(y)) & k <= length(BF10)) {
 			
 			if (oneSided == FALSE) {
-			
+				
 				BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale=r, nullInterval = nullInterval)
 				BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
-			
+				
 			} else {
-			
+				
 				BF10[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r=r, oneSided=oneSided)
 			}
 			
@@ -810,7 +833,7 @@
 			while ((i <= length(x) | j <= length(y)) & k <= length(BF10w)) {
 				
 				if (oneSided == FALSE) {
-				
+					
 					BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale= "wide", nullInterval = nullInterval)
 					BF10w[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
 				
@@ -852,7 +875,7 @@
 		BF10w <- vector("numeric", nrow(subDataSet))
 		BF10u <- vector("numeric", nrow(subDataSet))
 		
-		for (i in seq_len(nrow(subDataSet))) {	
+		for (i in seq_len(nrow(subDataSet))) {
 			
 			if (subDataSet[i, 2] == level1) {
 				
@@ -3297,7 +3320,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 							
 						} else {
 							
-							bf.raw <- .oneSidedTtestBFRichard(variableData, oneSided="right", r=options$priorWidth)
+							bf.raw <- .oneSidedTtestBFRichardAdaptive(variableData, oneSided="right", r=options$priorWidth)
 							
 						}
 						
@@ -3321,7 +3344,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 							
 						} else {
 							
-							bf.raw <- .oneSidedTtestBFRichard(variableData, oneSided="left", r=options$priorWidth)
+							bf.raw <- .oneSidedTtestBFRichardAdaptive(variableData, oneSided="left", r=options$priorWidth)
 							
 						}
 					}

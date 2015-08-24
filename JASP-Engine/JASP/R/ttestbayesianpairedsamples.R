@@ -452,7 +452,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 							
 							} else {
 								
-								bf.raw <- .oneSidedTtestBFRichard(c1, c2, paired=TRUE, oneSided="right", r=options$priorWidth)
+								bf.raw <- .oneSidedTtestBFRichardAdaptive(c1, c2, paired=TRUE, oneSided="right", r=options$priorWidth)
 								
 								# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
 								# 
@@ -484,7 +484,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 								
 							} else {
 								
-								bf.raw <- .oneSidedTtestBFRichard(c1, c2, paired=TRUE, oneSided="left", r=options$priorWidth)
+								bf.raw <- .oneSidedTtestBFRichardAdaptive(c1, c2, paired=TRUE, oneSided="left", r=options$priorWidth)
 								
 								# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
 								# 
