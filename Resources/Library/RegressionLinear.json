@@ -135,6 +135,21 @@
 			"options": [ "excludeCasesListwise", "excludeCasesPairwise", "replaceWithMeans" ],
 			"default": "excludeCasesListwise",
 			"type": "List"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsDependent",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsCovariates",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsPredicted",
+			"type": "Boolean"
 		}
 	]
 }

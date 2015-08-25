@@ -136,7 +136,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		list(name = "coefficient covariances", type = "table"),
 		list(name = "collinearity diagnostics", type = "table"),
 		list(name = "casewise diagnostics", type = "table"),
-		list(name = "residuals statistics", type = "table")
+		list(name = "residuals statistics", type = "table"),
+		list(name="plots", type="images")
 		)
 	
 	results[[".meta"]] <- .meta
@@ -1668,6 +1669,277 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		results[["residuals statistics"]] <- residualsStatistics
 	}
 	
+	
+	#######################################
+	###	 	   RESIDUAL PLOTS   		###
+	#######################################
+	
+	if (length(options$modelTerms) > 0 && dependent.variable != "") {
+		
+		
+		plots.regression <- list()
+		lm.model <- lm.model[[length(lm.model)]]
+		
+		if (options$plotResidualsDependent) {
+			
+			plot <- list()
+			
+			plot[["title"]] <- paste0("Residuals vs. ", dependent.variable)
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["status"]] <- "waiting"
+			
+			image <- .beginSaveImage(530, 400)
+			.plotResiduals(xlab=dependent.variable, ylab="Residuals", dontPlotData=TRUE)
+			plot[["data"]] <- .endSaveImage(image)
+			
+			plots.regression[[length(plots.regression)+1]] <- plot
+			
+			results[["plots"]] <- plots.regression
+			
+			if ( ! .shouldContinue(callback(results)))
+			return()
+			
+		}
+		
+		
+		
+		if (options$plotResidualsCovariates) {
+			
+			variables.in.model <- variables.in.model.copy
+			
+			for (var in seq_along(variables.in.model)) {
+				
+				if (grepl(":", variables.in.model[var])) {
+					
+					vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+					name <- paste0(vars, collapse=" * ")
+					nameTitle <- paste0(vars, collapse="\u2009\u273b\u2009")
+					
+				} else {
+					
+					name <- variables.in.model[var]
+					nameTitle <- name
+				}
+				
+				plot <- list()
+				
+				plot[["title"]] <- paste0("Residuals vs. ", nameTitle)
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				plot[["status"]] <- "waiting"
+				
+				image <- .beginSaveImage(530, 400)
+				.plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
+				plot[["data"]] <- .endSaveImage(image)
+				
+				plots.regression[[length(plots.regression)+1]] <- plot
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+				return()
+				
+			}
+		}
+		
+		
+		
+		if (options$plotResidualsPredicted) {
+			
+			plot <- list()
+			
+			plot[["title"]] <- paste0("Residuals vs. Predicted")
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["status"]] <- "waiting"
+			
+			image <- .beginSaveImage(530, 400)
+			.plotResiduals(xlab="Predicted Values", ylab="Residuals", dontPlotData=TRUE)
+			plot[["data"]] <- .endSaveImage(image)
+			
+			plots.regression[[length(plots.regression)+1]] <- plot
+			
+			results[["plots"]] <- plots.regression
+			
+			if ( ! .shouldContinue(callback(results)))
+				return()
+		}
+		
+		
+		if (perform == "run") {
+			
+			j <- 1
+			
+			if (options$plotResidualsDependent) {
+				
+				
+				plots.regression[[j]]$status <- "running"
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+				plot <- plots.regression[[j]]
+				
+				if (length(list.of.errors) > 0) {
+					
+					plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
+					
+				} else {
+					
+					dependent <- lm.model$lm.fit$model[ , 1]
+					res <- residuals(lm.model$lm.fit)
+					
+					p <- try(silent=FALSE, expr= {
+						
+						image <- .beginSaveImage(530, 400)
+						.plotResiduals(xVar=dependent, res=res, xlab=dependent.variable, ylab="Residuals")
+						plot[["data"]] <- .endSaveImage(image)
+					})
+					
+					if (class(p) == "try-error") {
+						
+						errorMessage <- .extractErrorMessage(p)
+						plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+					}
+				}
+				
+				plot[["status"]] <- "complete"
+				plots.regression[[j]] <- plot
+				
+				j <- j + 1
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+			}
+			
+			if (options$plotResidualsCovariates) {
+				
+				
+				for (var in seq_along(variables.in.model)) {
+					
+					
+					if (grepl(":", variables.in.model[var])) {
+						
+						# if interaction term
+						
+						vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+						name <- paste0(vars, collapse=" * ")
+						
+						int.var <- rep(1, nrow(dataset))
+						
+						for (i in seq_along(vars))
+							int.var <- int.var * dataset[[ .v(vars[i]) ]]
+						
+						xVar <- int.var
+						
+					} else {
+						
+						xVar <- dataset[[ .v(variables.in.model[var]) ]]
+						name <- variables.in.model[var]
+					}
+					
+					plots.regression[[j]]$status <- "running"
+					
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
+					plot <- plots.regression[[j]]
+					
+					if (length(list.of.errors) > 0) {
+						
+						plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
+						
+					} else {
+						
+						res <- residuals(lm.model$lm.fit)
+						
+						p <- try(silent=FALSE, expr= {
+							
+							image <- .beginSaveImage(530, 400)
+							.plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
+							plot[["data"]] <- .endSaveImage(image)
+						})
+						
+						if (class(p) == "try-error") {
+						
+							errorMessage <- .extractErrorMessage(p)
+							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+						}
+					}
+					
+					plot[["status"]] <- "complete"
+					plots.regression[[j]] <- plot
+					
+					j <- j + 1
+					
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
+				}
+			}
+			
+			
+			if (options$plotResidualsPredicted) {
+				
+				
+				plots.regression[[j]]$status <- "running"
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+				plot <- plots.regression[[j]]
+				
+				if (length(list.of.errors) > 0) {
+					
+					plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
+					
+				} else {
+					
+					pred <- predict(lm.model$lm.fit)
+					res <- residuals(lm.model$lm.fit)
+					
+					p <- try(silent=FALSE, expr= {
+						
+						image <- .beginSaveImage(530, 400)
+						.plotResiduals(xVar=pred, res=res, xlab="Predicted Values", ylab="Residuals")
+						plot[["data"]] <- .endSaveImage(image)
+					})
+					
+					if (class(p) == "try-error") {
+						
+						errorMessage <- .extractErrorMessage(p)
+						plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+					}
+				}
+				
+				plot[["status"]] <- "complete"
+				plots.regression[[j]] <- plot
+				
+				j <- j + 1
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+			}
+			
+		}
+	}
+	
+	
 	results
 }
 
@@ -2275,4 +2547,78 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	}
 	
 	return(vVars)
+}
+
+
+.plotResiduals <- function(xVar=NULL, res=NULL, xlab, ylab="Residuals", dontPlotData=FALSE, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
+	
+	op <- par(mar= c(5.6, 7, 4, 7) + 0.1, las=1, xpd=TRUE)
+	
+	if (dontPlotData) {
+		
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis=cexXAxis, lwd=lwdAxis)
+		axis(2, at=0:1, labels=FALSE, cex.axis=cexYAxis, lwd=lwdAxis)
+		axis(4, at=0:1, labels=FALSE, cex.axis=cexYAxis, lwd=lwdAxis)
+		mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
+		mtext(text = ylab, side = 2, cex=1.5, line = 3.25, las=0)
+		xx <- grconvertX(0.92, "ndc", "user")
+		text(xx, .5, "Standardized Residuals", srt= -90, cex= 1.6)
+		
+		return()
+		
+	}
+	
+	d <- data.frame(xx= xVar, yy= res)
+	d <- na.omit(d)
+	xVar <- d$xx
+	res <- d$yy
+	
+	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
+	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+	xticks <- pretty(c(xlow, xhigh))
+	ylow <- min((min(res) - 0.1* min(res)), min(pretty(res)))
+	yhigh <- max((max(res) + 0.1* max(res)), max(pretty(res)))
+	
+	yticks <- pretty(c(ylow, yhigh, 0))
+	
+	yLabs <- vector("character", length(yticks))
+	
+	for (i in seq_along(yticks)) {
+		
+		if (yticks[i] < 10^6) {
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+			
+		} else {
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+		}
+	}
+	
+	plot(1, type="n", ylab="", xlab="", axes=FALSE, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
+	lines(range(xticks), rep(0, 2), lwd=lwd, col="darkred")
+	
+	points(xVar, res, col="black", pch=21, bg = "grey", cex= cexPoints)
+	
+	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis, lwd=lwdAxis)
+	axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis, lwd=lwdAxis)
+	
+	maxYlab <- max(nchar(yLabs))
+	distLab <- maxYlab / 1.8
+	mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
+	mtext(text = ylab, side = 2, cex=1.5, line = distLab + 2.1, las=0)
+	
+	stAxisTmp <- pretty( yticks / sd(res) )
+	stAxisOriginalScaleTmp <- stAxisTmp * sd(res)
+	stAxisOriginalScale <- stAxisOriginalScaleTmp[stAxisOriginalScaleTmp < max(yticks) & stAxisOriginalScaleTmp > min(yticks)]
+	stAxis <- stAxisOriginalScale / sd(res)
+	
+	axis(side = 4, at= stAxisOriginalScale, labels=stAxis, cex.axis= cexYAxis, lwd=lwdAxis)
+	xx <- grconvertX(0.92, "ndc", "user")
+	text(xx, mean(range(yticks)), "Standardized Residuals", srt= -90, cex= 1.6)
+	
+	par(op)
+	
 }
