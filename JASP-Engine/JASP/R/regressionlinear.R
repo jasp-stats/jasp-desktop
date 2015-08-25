@@ -1684,7 +1684,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			
 			plot <- list()
 			
-			plot[["title"]] <- paste0("Residuals vs. ", dependent.variable)
+			plot[["title"]] <- paste0("Residuals vs. Dependent")
 			plot[["width"]]  <- 530
 			plot[["height"]] <- 400
 			plot[["status"]] <- "waiting"
