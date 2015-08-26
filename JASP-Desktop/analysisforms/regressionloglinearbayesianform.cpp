@@ -1,5 +1,5 @@
 #include "regressionloglinearbayesianform.h"
-#include "ui_regressionloglinearbayesianForm.h"
+#include "ui_regressionloglinearbayesianform.h"
 
 RegressionLogLinearBayesianForm::RegressionLogLinearBayesianForm(QWidget *parent) :
 	AnalysisForm("RegressionLogLinearBayesianForm", parent),
