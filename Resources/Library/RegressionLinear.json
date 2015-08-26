@@ -150,6 +150,26 @@
 			"default": false,
 			"name": "plotResidualsPredicted",
 			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsHistogram",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsHistogramStandardized",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotWidth",
+			"type": "Integer",
+			"default": 480
+		},
+		{
+			"name": "plotHeight",
+			"type": "Integer",
+			"default": 320
 		}
 	]
 }

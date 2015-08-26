@@ -1766,6 +1766,38 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				return()
 		}
 		
+		if (options$plotResidualsHistogram) {
+			
+			plot <- list()
+			
+			if (options$plotResidualsHistogramStandardized) {
+			
+				plot[["title"]] <- "Standardized Residuals Histogram"
+				resName <- "Standardized Residuals"
+				
+			} else {
+			
+				plot[["title"]] <- "Residuals Histogram"
+				resName <- "Residuals"
+			}
+			
+			plot[["width"]]  <- options$plotWidth
+			plot[["height"]] <- options$plotHeight
+			plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			plot[["status"]] <- "waiting"
+			
+			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+			.plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
+			plot[["data"]] <- .endSaveImage(image)
+			
+			plots.regression[[length(plots.regression)+1]] <- plot
+			
+			results[["plots"]] <- plots.regression
+			
+			if ( ! .shouldContinue(callback(results)))
+				return()
+		}
+		
 		
 		if (perform == "run") {
 			
@@ -1936,9 +1968,60 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				
 			}
 			
+			if (options$plotResidualsHistogram) {
+				
+				
+				plots.regression[[j]]$status <- "running"
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+				plot <- plots.regression[[j]]
+				
+				if (length(list.of.errors) > 0) {
+					
+					plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
+					
+				} else {
+					
+					res <- residuals(lm.model$lm.fit)
+					resName <- "Residuals"
+					
+					if (options$plotResidualsHistogramStandardized) {
+					
+						res <- res / sd(res)
+						resName <- "Standardized Residuals"
+					}
+					
+					p <- try(silent=FALSE, expr= {
+						
+						image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+						.plotResidualsHistogram(res=res, resName=resName)
+						plot[["data"]] <- .endSaveImage(image)
+					})
+					
+					if (class(p) == "try-error") {
+						
+						errorMessage <- .extractErrorMessage(p)
+						plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+					}
+				}
+				
+				plot[["status"]] <- "complete"
+				plots.regression[[j]] <- plot
+				
+				j <- j + 1
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+			}
 		}
 	}
-	
 	
 	results
 }
@@ -2618,6 +2701,43 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	axis(side = 4, at= stAxisOriginalScale, labels=stAxis, cex.axis= cexYAxis, lwd=lwdAxis)
 	xx <- grconvertX(0.92, "ndc", "user")
 	text(xx, mean(range(yticks)), "Standardized Residuals", srt= -90, cex= 1.6)
+	
+	par(op)
+	
+}
+
+.plotResidualsHistogram <- function(res=NULL, resName="Residuals", dontPlotData=FALSE, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
+	
+	op <- par(mar= c(5, 4.5, 4, 2) + 0.1)
+	
+	if (dontPlotData) {
+		
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		ax1 <- axis(1, line = 0.3, at=0:1, labels=FALSE, cex.axis = 1.2)
+		axis(2, at = c(0, .5, 1) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), cex.axis= 1.5, mgp= c(3, 0.7, 0), las=0)
+		mtext(text = resName, side = 1, cex=1.5, line = 3)
+		
+		return()
+	}
+	
+	density <- density(res)
+	
+	h <- hist(res, plot = FALSE)
+	jitVar <- jitter(res)
+	yhigh <- max(max(h$density), max(density$y))
+	ylow <- 0
+	xticks <- pretty(c(res, h$breaks), min.n= 3)
+	
+	plot(1, xlim= range(xticks), ylim= c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+	h <- hist(res, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(res)/5))
+	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
+	mtext(text = resName, side = 1, cex=1.5, line = 3)
+	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), cex.axis= 1.5, mgp= c(3, 0.7, 0), las=0)
+	
+	if(rugs)
+		rug(jitVar)
+	
+	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
 	
 	par(op)
 	
