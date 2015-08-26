@@ -33,6 +33,47 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		};
 	},
 
+	setNoteBox: function (key, noteBox) {
+		this.noteBox = noteBox;
+		this.noteBoxKey = key;
+	},
+
+	hasNotes: function () {
+		return this.$el.hasClass('jasp-images-image') === false;
+	},
+
+	notesMenuClicked: function (noteType, visibility) {
+
+		var noteBox = this.noteBox;
+		noteBox.$el.css("opacity", visibility ? 0 : 1);
+
+		if (visibility === true) {
+			noteBox.$el.slideDown(200, function () {
+				noteBox.setVisibility(visibility);
+				if (visibility === true)
+					noteBox.$el.animate({ "opacity": 1 }, 200, "easeOutCubic");
+			});
+		}
+		else {
+			noteBox.$el.slideUp(200, function () {
+				noteBox.setVisibility(visibility);
+			});
+		}
+
+		if (visibility === false)
+			noteBox.clear();
+
+		return true;
+	},
+
+	noteOptions: function () {
+		var options = { key: this.noteBoxKey, menuText: 'Add Note', visible: this.noteBox.visible };
+		if (this.noteBox.visible)
+			options.menuText = 'Remove Note';
+
+		return [options];
+	},
+
 	onResized: function (w, h) {
 		var options = {};
 		var custom = this.model.get("custom");
@@ -120,6 +161,11 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 		this.$el.append(html)
 
+		if (this.noteBox !== undefined) {
+			this.noteBox.render();
+			this.$el.append(this.noteBox.$el);
+		}
+
 		var $status = this.$el.find("div.image-status");
 		$status.addClass(status);
 
@@ -130,32 +176,50 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		return this;
 	},
 
-	exportBegin: function (exportParams) {
+	exportBegin: function (exportParams, completedCallback) {
 
 		if (exportParams == undefined)
 			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
 
-		var width = this.model.get("width");
-		var height = this.model.get("height");
+		var callback = this.exportComplete;
+		if (completedCallback !== undefined)
+			callback = completedCallback;
 
-		var htmlImageFormatData = { resource: this.model.get("data") };
-		if (exportParams.htmlOnly() && exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.resource)
-			this.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
-		else {
-			var data = this.model.get("data");
-			JASPWidgets.Encodings.base64Request(data, function (base64) {
-				htmlImageFormatData.embedded = base64;
-				if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary) {
-					saveImageBegin(data, base64, function (fullpath) {
-						htmlImageFormatData.temporary = fullpath;
-						this.exportComplete(exportParams, new JASPWidgets.Exporter.data(base64, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
-					}, this);
+		if (exportParams.includeNotes && this.noteBox !== undefined) {
+			var exportObject = {
+				views: [this, this.noteBox],
+				getStyleAttr: function () {
+					return "style='display: block;'";
 				}
-				else
-					this.exportComplete(exportParams, new JASPWidgets.Exporter.data(base64, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
-			}, this);
+			};
+			var newParams = exportParams.clone();
+			newParams.includeNotes = false;
+
+			JASPWidgets.Exporter.begin(exportObject, newParams, callback, true);
+		}
+		else {
+			var width = this.model.get("width");
+			var height = this.model.get("height");
+
+			var htmlImageFormatData = { resource: this.model.get("data") };
+			if (exportParams.htmlOnly() && exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.resource)
+				callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
+			else {
+				var data = this.model.get("data");
+				JASPWidgets.Encodings.base64Request(data, function (base64) {
+					htmlImageFormatData.embedded = base64;
+					if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary) {
+						saveImageBegin(data, base64, function (fullpath) {
+							htmlImageFormatData.temporary = fullpath;
+							callback.call(this, exportParams, new JASPWidgets.Exporter.data(base64, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
+						}, this);
+					}
+					else
+						callback.call(this, exportParams, new JASPWidgets.Exporter.data(base64, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
+				}, this);
+			}
 		}
 
 		return true;
@@ -202,6 +266,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		exportParams.format = JASPWidgets.ExportProperties.format.raw;
 		exportParams.process = JASPWidgets.ExportProperties.process.copy;
 		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes = false;
 
 		this.exportBegin(exportParams);
 
@@ -213,5 +278,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 	onClose: function () {
 		this.toolbar.close();
 		this.resizer.close();
+		if (this.noteBox !== undefined)
+			this.noteBox.$el.detach();
 	}
 });

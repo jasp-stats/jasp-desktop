@@ -106,19 +106,29 @@ JASPWidgets.ExportProperties = {
 
 JASPWidgets.Exporter = {
 
-	params: function() {
+	params: function () {
 
-			this.format = JASPWidgets.ExportProperties.format.raw,
-			this.process = JASPWidgets.ExportProperties.process.copy,
-			this.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary,
+		this.format = JASPWidgets.ExportProperties.format.raw,
+		this.process = JASPWidgets.ExportProperties.process.copy,
+		this.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary,
+		this.includeNotes = false;
 
-			this.isFormatted = function () {
-				return (this.format & JASPWidgets.ExportProperties.format.formatted) === JASPWidgets.ExportProperties.format.formatted
-			},
+		this.isFormatted = function () {
+			return (this.format & JASPWidgets.ExportProperties.format.formatted) === JASPWidgets.ExportProperties.format.formatted
+		};
 
-			this.htmlOnly = function () {
-				return (this.format & JASPWidgets.ExportProperties.format.html) === JASPWidgets.ExportProperties.format.html
-			}
+		this.htmlOnly = function () {
+			return (this.format & JASPWidgets.ExportProperties.format.html) === JASPWidgets.ExportProperties.format.html
+		};
+
+		this.clone = function () {
+			var cloneParams = new JASPWidgets.Exporter.params();
+			cloneParams.format = this.format;
+			cloneParams.process = this.process;
+			cloneParams.htmlImageFormat = this.htmlImageFormat;
+			cloneParams.includeNotes = this.includeNotes;
+			return cloneParams;
+		};
 	},
 
 	data: function (raw, html) {
@@ -130,7 +140,7 @@ JASPWidgets.Exporter = {
 		this.html = html;
 	},
 
-	begin: function (exportObj, exportParams, useNBSP, innerStyle) {
+	begin: function (exportObj, exportParams, completedCallback, useNBSP, innerStyle) {
 
 		if (innerStyle === undefined)
 			innerStyle = "";
@@ -142,25 +152,24 @@ JASPWidgets.Exporter = {
 			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
-
 		
 		if (exportObj.views) {
 			var viewList = exportObj.views;
 
 			if (viewList.length === 0) {
-				exportObj.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, ""));
+				completedCallback.call(exportObj, exportParams, new JASPWidgets.Exporter.data(null, ""));
 			}
 			else {
 				exportObj.buffer = [];
 				exportObj.exportCounter = viewList.length;
 
 				for (var i = 0; i < viewList.length; i++) {
-					this._exportView(exportParams, viewList[i], i, exportObj, useNBSP, innerStyle);
+					this._exportView(exportParams, viewList[i], i, exportObj, useNBSP, innerStyle, completedCallback);
 				}
 			}
 		}
 		else if (exportObj.exportBegin)
-			exportObj.exportBegin(exportParams);
+			exportObj.exportBegin(exportParams, completedCallback);
 		else
 			return false;
 		
@@ -168,12 +177,11 @@ JASPWidgets.Exporter = {
 		return true;
 	},
 
-	_exportView: function (exportParams, view, i, parent, useNBSP, innerStyle) {
+	_exportView: function (exportParams, view, i, parent, useNBSP, innerStyle, completedCallback) {
 		var self = parent;
 		var index = i;
-		var originalExportComplete = view.exportComplete;
-		view.exportComplete = function (exParams, exContent) {
-			this.exportComplete = originalExportComplete;
+		var callback = completedCallback;
+		var cc = function (exParams, exContent) {
 			self.buffer[index] = exContent;
 			self.exportCounter -= 1;
 			if (self.exportCounter === 0) {
@@ -192,13 +200,13 @@ JASPWidgets.Exporter = {
 						}
 					}
 					completeText += "</div>";
-					completeText += "</div>";		
+					completeText += "</div>";
 				}
-				self.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, completeText));
+				callback.call(self, exportParams, new JASPWidgets.Exporter.data(null, completeText));
 				self.buffer = [];
 			}
-		};
-		view.exportBegin(exportParams);
+		}
+		view.exportBegin(exportParams, cc);
 	},
 
 	getStyles: function (element, styleItems) {
@@ -223,34 +231,41 @@ JASPWidgets.Exporter = {
 
 	getHeaderStyles: function (element, exportParams) {
 		if (exportParams.isFormatted())
-			return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin", "display", "float", "vertical-align", "font-size", "font", "font-weight"]);
+			return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin", "display", "float", "vertical-align", "font-size", "font", "font-weight", "color"]);
 		else
 			return "";//JASPWidgets.Exporter.getStyles(element, ["display", "float"]);
 	},
 
 	getTableStyles: function (element, exportParams) {
 		if (exportParams.isFormatted())
-			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float"]);
+			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float", "color"]);
 		else
 			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "display", "float"]);
 	},
 
 	getTableContentStyles: function (element, exportParams) {
 		if (exportParams.isFormatted())
-			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin", "display", "float", "font-size", "font-weight", "font"]);
+			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin", "display", "float", "font-size", "font-weight", "font", "color"]);
 		else
 			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "display", "float", "text-align"]);
 	},
 
 	getErrorStyles: function (element, component) {
 		if (component === "error-message-positioner")
-			return JASPWidgets.Exporter.getStyles(element, ["padding", "margin", "display", "float", "height", "overflow", "position", "top", "z-index"]);
+			return JASPWidgets.Exporter.getStyles(element, ["padding", "margin", "display", "float", "color", "height", "overflow", "position", "top", "z-index"]);
 		else if (component === "error-message-box")
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "display", "float", "border-radius", "min-width", "max-width", "white-space"]);
 		else if (component === "error-message-symbol ")
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "display", "float"]);
 		else
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "text-align", "display", "float", "vertical-align", "font-size", "font", "font-weight"]);
+	},
+
+	getNoteStyles: function (element, exportParams) {
+		if (exportParams.isFormatted())
+			return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width", "display", "font-size", "font-weight", "font", "color"]);
+		else
+			return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width"]);
 	},
 
 	exportErrorWindow: function (element, error) {
@@ -288,6 +303,8 @@ JASPWidgets.Exporter = {
 
 JASPWidgets.View = Backbone.View.extend({
 
+	inCollection: false,
+
 	getStyleAttr: function (styleItems) {
 
 		return JASPWidgets.Exporter.getStyles(this.$el, ["padding", "text-align", "margin-bottom", "margin-top", "margin-left", "margin-right", "display", "float", "position"]);
@@ -306,6 +323,298 @@ JASPWidgets.View = Backbone.View.extend({
 		}
 	},
 })
+
+JASPWidgets.Note = Backbone.Model.extend({
+	defaults: {
+		text: '',
+		format: 'markdown'
+	},
+
+	toHtml: function () {
+		if (this.get('format') === 'markdown') {
+			this.set('format', 'html');
+			var text = this.get('text');
+			if (text !== '')
+				this.set('text', Mrkdwn.toHtml(text));
+		}
+	},
+
+
+});
+
+JASPWidgets.NoteBox = JASPWidgets.View.extend({
+
+	//#7C95CB
+	//#F2F7FD
+
+	initialize: function () {
+		this.editting = false;
+		this.ghostText = 'Write notes here...',
+		this.visible = this.model.get('visible') !== null ? this.model.get('visible') : (this.model.get('text') !== '');
+		this.internalChange = false;
+
+		if (this.model.get('format') !== 'html')
+			this.model.toHtml();
+
+		this.listenTo(this.model, 'change:text', this.textChanged)
+	},
+
+	clear: function () {
+		if (this.isTextboxEmpty() === false)
+			this.$textbox.html('');
+
+		this.model.set('format', 'html');
+		this.model.set('text', '');
+	},
+
+	isTextboxEmpty: function() {
+		return this.$textbox.text().length == 0 || this.$textbox.text() === this.ghostText;
+	},
+
+	textChanged: function () {
+		if (this._textedChanging === true)
+			return;
+
+		this._textedChanging = true;
+		if (this.model.get('format') !== 'html')
+			this.model.toHtml();
+		this.updateView();
+		if (this._inited)
+			this.trigger("NoteBox:textChanged");
+		this._textedChanging = false;
+	},
+
+	updateView: function () {
+		if (!this.internalChange && this.model.get('format') === 'html') {
+			if (this.$textbox !== undefined) {
+				var editting = this.model.get('editting');
+				var html = this.model.get("text");
+
+				if (!this.editting && this.isTextboxEmpty() && html.length === 0) {
+					this.$textbox.html('<p>' + this.ghostText + '</p>');
+					this.$textbox.addClass('jasp-ghost-text');
+				}
+				else {
+					var focus = false;
+					if (this.$textbox.text().length == 0 || this.$textbox.text() === this.ghostText)
+						focus = true;
+
+					if (html !== this.$textbox.html()) {
+						this.$textbox.html(html);
+						this.model.set('text', this.$textbox.html());
+					}
+
+					this.$textbox.removeClass('jasp-ghost-text');
+
+					if (focus) {
+						this.$textbox.focus();
+					}
+
+				}
+			}
+		}
+	},
+
+	render: function () {
+		if (this._inited) {
+			this.$textbox.off();
+			delete this.$textbox;
+		}
+
+		this.$el.empty();
+
+		this.setVisibility(this.visible)
+
+		this.$el.append('<div class="jasp-editable" data-button-class="jasp-comment" contenteditable="true"></div>');
+
+		this.$textbox = this.$el.find('.jasp-editable');
+		this.$textbox.attr('contenteditable', true);
+
+		this.updateView();
+		this._checkTags();
+
+		var self = this;
+		//focusin focusout
+		this.$textbox.on("input", function (event) {
+			self._checkTags();
+			if (this.innerHTML != self.model.get("text")) {
+				var html = '';
+				var ghostText = self.ghostText;
+				if (self.$textbox.text() && self.$textbox.text() !== ghostText)
+					html = this.innerHTML;
+				self.onNoteChanged(html);
+			}
+		});
+
+		this.$textbox.on("click", null, this, this._click);
+		this.$textbox.on("focusout", null, this, this._looseFocus);
+		this.$textbox.on("mouseup", null, this, this._mouseup);
+		this.$textbox.on("keydown", null, this, this._keydown);
+
+		this._inited = true;
+
+		return this;
+	},
+
+	onNoteChanged: function (html) {
+		this.internalChange = true;
+		this.model.set("text", html);
+		this.internalChange = false;
+	},
+
+	setVisibility: function (value) {
+		this.visible = value;
+
+		if (value) 
+			this.$el.removeClass('jasp-hide');
+		else 
+			this.$el.addClass('jasp-hide');
+	},
+
+	knownTags: ['p', 'br', 'ol', 'ul', 'li', 'b', 'i', 's', 'u', 'sup', 'sub', 'code', 'strong', 'em', 'blockquote', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+
+	_checkTags: function () {
+
+		var r = this.$textbox.find('*')
+		r.contents().filter(function () { return this.nodeType != 1 && this.nodeType != 3; }).remove(); //removes all non text and non elements
+		r.each(function () { //removes all attributes
+			var attributes = $.map(this.attributes, function (item) {
+				return item.name;
+			});
+
+			var img = $(this);
+			$.each(attributes, function (i, item) {
+				img.removeAttr(item);
+			});
+		});
+
+		/*this.$textbox.find('ol, ul').contents().filter(function () { return this.nodeType !== 1 }).remove(); //removes all non list item nodes from lists*/
+		this.$textbox.find(':not(p, br, ol, ul, li, b, i, s, u, sup, sub, code, strong, em, blockquote, hr, h1, h2, h3, h4, h5, h6, div, pre:has(code))').contents().unwrap();		//flattens the contents of unknown tags eg span, font etc
+		this.$textbox.find(':not(p, br, ol, ul, li, b, i, s, u, sup, sub, code, strong, em, blockquote, hr, h1, h2, h3, h4, h5, h6, div, pre:has(code))').remove();		//removes all unknown tags that had no content to flatten eg <o-l></o-l> from office
+
+		var t = this.$textbox.find('div:not(code div)').contents().unwrap().wrap('<p/>'); //changes all div tags to p tags
+		if (t.length > 0) {
+			var selection = window.getSelection();
+			selection.collapse(t[t.length - 1], 0);
+		}
+
+		var b = this.$textbox.contents().filter(function () { return this.nodeType == 3; }).wrap('<p/>'); //wraps all top level free text in a p tag
+		if (b.length > 0) {
+			var selection = window.getSelection();
+			var node = b[b.length - 1];
+			selection.collapse(node, node.nodeValue.length);
+		}
+
+		this.$textbox.find('p').filter(function () {
+			return $(this).text() === '' && $(this).height() === 0;
+		}).remove(); //remove non displaying paragraphs
+
+		this.$textbox.find('p p').contents().unwrap(); //unwraps any embedded p tags
+
+		var v = this.$textbox.find('p:has(ol),p:has(ul),p:has(blockquote)').contents().unwrap(); // unwrap any p tags around lists
+		if (v.length > 0) {
+			var selection = window.getSelection();
+			selection.collapse(v[v.length - 1], 0);
+		}
+
+		var g = this.$textbox.children().length; // if the textbox is empty put in a <p><br></p>
+		if (g === 0) {
+			var selection = window.getSelection();
+			var node = $(document.createElement('p'));
+			var lineBreak = $(document.createElement('br'));
+			node.prepend(lineBreak);
+			this.$textbox.prepend(node);
+			selection.collapse(lineBreak[0], 0);
+		}
+	},
+
+	_keydown: function (e) {
+		var self = e.data;
+		if (e.which == 9) {
+			e.preventDefault();
+		}
+	},
+
+	_click: function (e) {
+
+		var self = e.data;
+		
+		self._setEdittable(e.pageX, e.pageY);
+
+		return true;
+	},
+
+	_mouseup: function(e) {
+		var self = e.data;
+
+		self._setEdittable(e.pageX, e.pageY);
+
+		return true;
+	},
+
+	_setEdittable: function (pageX, pageY) {
+
+		etch.config.selector = '.jasp-editable'
+
+		_.extend(etch.config.buttonClasses, {
+			'default': ['bold', 'italic', 'underline'],
+			'jasp-comment': ['bold', 'italic', 'superscript', 'subscript', 'unordered-list', 'ordered-list', 'clear-formatting']
+		});
+
+		this.editting = true;
+		this.updateView();
+		this.$editor = etch.startEditting(this.$textbox, pageX, pageY);
+		this.$el.addClass('jasp-text-editting');
+
+		this._checkTags();
+	},
+
+	_looseFocus: function (e) {
+		var self = e.data;
+		var relatedtarget = e.relatedTarget;
+		if (relatedtarget === null || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size()) {
+			self.editting = false;
+			self.updateView();
+			if (self.$editor !== undefined) {
+				etch.closeEditor(self.$editor, self.$textbox);
+				self.$el.removeClass('jasp-text-editting');
+				delete self.$editor;
+			}
+		}
+
+		return true;
+	},
+
+	exportBegin: function (exportParams, completedCallback) {
+		if (exportParams == undefined)
+			exportParams = new JASPWidgets.Exporter.params();
+		else if (exportParams.error)
+			return false;
+
+		var callback = this.exportComplete;
+		if (completedCallback !== undefined)
+			callback = completedCallback;
+
+		var html = '';
+		if (this.isTextboxEmpty() === false)
+			html = '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '">' + this.$textbox.html() + '<div>';
+
+		
+
+		callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, html));
+	},
+
+	exportComplete: function (exportParams, exportContent) {
+		if (!exportParams.error)
+			pushHTMLToClipboard(exportContent, exportParams);
+	},
+
+	onClosed: function() {
+		if (this.$textbox !== undefined)
+			this.$textbox.off();
+	}
+})
+
 
 JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	initialize: function () {
@@ -403,6 +712,9 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.options.x = e.screenX;
 		this.options.y = e.screenY;
 
+		if (this.options.hasNotes)
+			this.options['noteOptions'] = this.parent.noteOptions();
+
 		this.parent.trigger('toolbar:showMenu', this.parent, this.options);
 
 		return true;
@@ -424,13 +736,13 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 			hasCopy: (parent.hasCopy === undefined || parent.hasCopy()) && parent.copyMenuClicked !== undefined,
 			hasCite: (parent.hasCitation === undefined || parent.hasCitation()) && parent.citeMenuClicked !== undefined,
-			hasAnnotate: (parent.hasAnnotate === undefined || parent.hasAnnotate()) && parent.annotateMenuClicked !== undefined,
+			hasNotes: (parent.hasNotes === undefined || parent.hasNotes()) && parent.notesMenuClicked !== undefined,
 			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
 
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasAnnotate || this.options.hasRemove;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasNotes || this.options.hasRemove;
 	},
 
 	selectionElement: function() {
@@ -478,6 +790,7 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 
 		this.collection.each(function (item) {
 			var itemView = this.createItemView(item);
+			itemView.inCollection = true;
 			this.listenTo(itemView, "all", this.eventEcho)
 			this.views.push(itemView);
 		}, this);
@@ -522,16 +835,22 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 		this.views = [];
 	},
 
-	exportBegin: function (exportParams) {
+	exportUseNBSP: false,
+
+	exportBegin: function (exportParams, completedCallback) {
 		if (exportParams == undefined)
 			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
 
+		var callback = this.exportComplete;
+		if (completedCallback !== undefined)
+			callback = completedCallback;
+
 		if (this.views.length > 0)
-			JASPWidgets.Exporter.begin(this, exportParams);
+			JASPWidgets.Exporter.begin(this, exportParams, callback, this.exportUseNBSP);
 		else
-			this.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, ""));
+			callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, ""));
 
 		return true;
 	},
@@ -590,6 +909,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	*/
 	render: function () {
 		this.resizeTargetElement().append(this.$el)
+
 		this._refreshView();
 		return this;
 	},

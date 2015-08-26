@@ -1,5 +1,5 @@
 
-* {
+.jasp-no-select {
 	-webkit-user-select: none;
 }
 
@@ -14,7 +14,7 @@ body:not(.windows) {
 }
 
 body.windows {
-	font-size: 85% ;
+	font-size: 110% ;
 }
 
 body.selected {
@@ -163,7 +163,7 @@ svg > text
 	font-size: 120% ;
 }
 
-.jasp-image, .jasp-images {
+.jasp-images-image/*, .jasp-images*/ {
 
 	display: inline-block;
 }
@@ -187,7 +187,12 @@ svg > text
 	opacity: 0.33 ;
 }
 
-
+.etch-editor-panel {
+	position:fixed;
+    top:0;
+    width:100%;
+    z-index:100;
+}
 
 .jasp-image-resizer {
 
@@ -374,4 +379,50 @@ td.squash-left
 
 .jasp-menu-selected {
 	background-color : #BFD9F7 ;
+}
+
+.jasp-editable {
+	padding-top: .5em ;
+	padding-bottom: .5em ;
+	background-color : inherit ;
+	word-wrap: break-word;
+}
+
+.jasp-editable, .jasp-editable * {
+	cursor: text;
+}
+
+
+.jasp-notes {
+	/*background-color : #BECAE5; */
+	border-top: 1px solid rgb(205, 205, 205);
+	border-bottom: 1px solid #BECAE5 ;
+	color: rgb(0, 122, 204) ;
+	/*border-radius : 3px ;*/
+	margin-bottom: 3em ;
+	margin-top: 0 ;
+	max-width: 70em;
+	min-width: 40em;
+	/*padding-left: .5em;*/
+	/*padding-right: .5em;*/
+}
+
+.jasp-text-editting {
+	background-color : Window;
+}
+
+[contenteditable]:focus 
+{ 
+	outline: 0px solid transparent; 
+
+}
+
+
+.jasp-ghost-text {
+	font-weight: bold ;
+	color: GrayText;
+}
+
+pre {
+	display: inline;
 }
