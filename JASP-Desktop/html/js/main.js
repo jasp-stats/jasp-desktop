@@ -132,7 +132,7 @@ $(document).ready(function () {
 		return JSON.stringify(notes)
 	}
 
-	window.scrollIntoView = function (item) {
+	window.scrollIntoView = function (item, complete) {
 
 		var itemTop = item.offset().top
 		var itemBottom = itemTop + item.height() + parseInt(item.css('marginBottom')) + parseInt(item.css('marginTop'))
@@ -142,15 +142,19 @@ $(document).ready(function () {
 		if (item.height() < window.innerHeight) {
 
 			if (itemTop < windowTop)
-				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing' });
+				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing', complete: complete });
 			else if (itemBottom > windowBottom)
-				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing' });
+				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing', complete: complete });
+			else
+				complete();
 		}
 		else {
 			if (itemTop > windowTop)
-				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing' });
+				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing', complete: complete });
 			else if (itemBottom < windowBottom)
-				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing' });
+				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing', complete: complete });
+			else
+				complete();
 		}
 
 	}
@@ -195,7 +199,8 @@ $(document).ready(function () {
 	window.unselectByClickingBody = function (event) {
 
 		var target = event.target || event.srcElement;
-		if (selectedAnalysisId !== -1 && $(target).is(".jasp-analysis *") == false) {
+
+		if (selectedAnalysisId !== -1 && $(target).is(".jasp-analysis *, .etch-editor-panel, .etch-editor-panel *") == false) {
 
 			window.unselect()
 			jasp.analysisUnselected()
@@ -358,6 +363,10 @@ var pushImageToClipboard = function (exportContent, exportParams) {
 	jasp.pushImageToClipboard(exportContent.raw, wrapHTML(exportContent.html, exportParams))
 }
 
+var simulateClick = function (x, y) {
+
+	jasp.simulatedMouseClick(x, y);
+}
 
 var savingId = 0;
 var savingImages = {};

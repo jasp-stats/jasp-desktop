@@ -42,9 +42,14 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 		if (visibility === true) {
 			noteBox.$el.slideDown(200, function () {
-				noteBox.setVisibility(visibility);
-				if (visibility === true)
-					noteBox.$el.animate({ "opacity": 1 }, 200, "easeOutCubic");
+				noteBox.setGhostTextVisible(false);
+				noteBox.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
+					window.scrollIntoView(noteBox.$textbox, function () {
+						var pos = noteBox.simulatedClickPosition();
+						simulateClick(pos.x, pos.y);
+						noteBox.setGhostTextVisible(true);
+					});
+				});
 			});
 		}
 		else {

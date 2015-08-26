@@ -420,7 +420,7 @@ td.squash-left
 
 .jasp-ghost-text {
 	font-weight: bold ;
-	color: GrayText;
+	color: rgb(214, 214, 214);
 }
 
 pre {

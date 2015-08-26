@@ -349,7 +349,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 	initialize: function () {
 		this.editting = false;
-		this.ghostText = 'Write notes here...',
+		this.ghostTextVisible = true;
+		this.ghostText = 'Click here to add text...',
 		this.visible = this.model.get('visible') !== null ? this.model.get('visible') : (this.model.get('text') !== '');
 		this.internalChange = false;
 
@@ -367,8 +368,20 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.model.set('text', '');
 	},
 
+	setGhostTextVisible: function(visible) {
+		this.ghostTextVisible = visible;
+		this.updateView();
+	},
+
 	isTextboxEmpty: function() {
 		return this.$textbox.text().length == 0 || this.$textbox.text() === this.ghostText;
+	},
+
+	simulatedClickPosition: function () {
+		var offset = this.$textbox.offset();
+		var posY = offset.top + 5 - $(window).scrollTop() + 3;
+		var posX = offset.left + 5 - $(window).scrollLeft();
+		return { x: posX, y: posY };
 	},
 
 	textChanged: function () {
@@ -391,7 +404,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				var html = this.model.get("text");
 
 				if (!this.editting && this.isTextboxEmpty() && html.length === 0) {
-					this.$textbox.html('<p>' + this.ghostText + '</p>');
+					if (this.ghostTextVisible)
+						this.$textbox.html('<p>' + this.ghostText + '</p>');
+					else
+						this.$textbox.html('<p><br></p>');
 					this.$textbox.addClass('jasp-ghost-text');
 				}
 				else {

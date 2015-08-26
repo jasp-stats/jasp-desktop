@@ -185,8 +185,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			if (visibility === true) {
 				noteBox.$el.slideDown(200, function () {
 					noteBox.setVisibility(visibility);
+					noteBox.setGhostTextVisible(false);
 					noteBox.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
-							noteBox.$textbox.focus();
+						window.scrollIntoView(noteBox.$textbox, function () {
+							var pos = noteBox.simulatedClickPosition();
+							simulateClick(pos.x, pos.y);
+							noteBox.setGhostTextVisible(true);
+						});
 					});
 				});
 			}
@@ -196,8 +201,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				});
 			}
 
-			if (visibility === false)
-				noteBox.clear();
+			//if (visibility === false)
+			//	noteBox.clear();
 		}
 
 		return true;

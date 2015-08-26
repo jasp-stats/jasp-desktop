@@ -165,6 +165,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
 	connect(this, SIGNAL(updateNote(int, QString)), this, SLOT(updateNoteHandler(int, QString)));
+	connect(this, SIGNAL(simulatedMouseClick(int, int)), this, SLOT(simulatedMouseClickHandler(int, int)));
 
 
 	_buttonPanel = new QWidget(ui->pageOptions);
@@ -1349,6 +1350,22 @@ void MainWindow::getAnalysesNotes()
 
 		analysis->setNotes(analysisNotes, true);
 	}
+}
+
+void MainWindow::simulatedMouseClickHandler(int x, int y) {
+	QMouseEvent * clickEvent1 = new QMouseEvent ((QEvent::MouseButtonPress), QPoint(x, y),
+		Qt::LeftButton,
+		Qt::LeftButton,
+		Qt::NoModifier   );
+
+	qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent1);
+
+	QMouseEvent * clickEvent2 = new QMouseEvent ((QEvent::MouseButtonRelease), QPoint(x, y),
+		Qt::LeftButton,
+		Qt::LeftButton,
+		Qt::NoModifier   );
+
+	qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent2);
 }
 
 void MainWindow::updateNoteHandler(int id, QString key)
