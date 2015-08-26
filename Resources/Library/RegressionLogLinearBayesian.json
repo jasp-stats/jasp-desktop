@@ -1,0 +1,35 @@
+{
+	"name": "RegressionLogLinearBayesian",
+	"autorun": true,
+	"version": "1.0.0",
+	"options": [
+		{
+			"name": "counts",
+			"type": "Variable"
+		},
+		{
+			"name": "factors",
+			"type": "Variables"
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				}
+			],
+			"type": "Table"
+		},
+		{
+			"name": "bayesFactorType",
+			"type": "List",
+			"options": [ "BF10", "BF01", "LogBF10" ]
+		},
+		{
+			"name": "priorType",
+			"type": "List",
+			"options": [ "UIP", "SBH" ]
+		}
+	]
+}

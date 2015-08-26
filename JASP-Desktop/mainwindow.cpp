@@ -24,6 +24,8 @@
 
 #include "analysisforms/regressionlinearform.h"
 #include "analysisforms/regressionlinearbayesianform.h"
+#include "analysisforms/regressionloglinearform.h"
+#include "analysisforms/regressionloglinearbayesianform.h"
 #include "analysisforms/correlationform.h"
 #include "analysisforms/correlationbayesianform.h"
 #include "analysisforms/correlationbayesianpairsform.h"
@@ -434,6 +436,10 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		form = new RegressionLinearForm(contentArea);
 	else if (name == "RegressionLinearBayesian")
 		form = new RegressionLinearBayesianForm(contentArea);
+	else if (name == "RegressionLogLinear")
+		form = new RegressionLogLinearForm(contentArea);
+	else if (name == "RegressionLogLinearBayesian")
+		form = new RegressionLogLinearBayesianForm(contentArea);
 	else if (name == "Correlation")
 		form = new CorrelationForm(contentArea);
 	else if (name == "CorrelationBayesian")

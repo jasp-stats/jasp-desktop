@@ -1,0 +1,30 @@
+{
+	"name": "RegressionLogLinear",
+	"autorun": true,
+	"version": "1.0.0",
+	"options": [
+		{
+			"name": "counts",
+			"type": "Variable"
+		},
+		{
+			"name": "factors",
+			"type": "Variables"
+		},
+		{
+			"name": "modelTerms",
+			"type": "Table",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				}
+			]
+		},
+		{
+			"name": "regressionCoefficientsEstimates",
+			"type": "Boolean",
+			"default": true
+		}
+	]
+}
