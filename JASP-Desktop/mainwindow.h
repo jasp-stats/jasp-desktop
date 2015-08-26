@@ -81,6 +81,10 @@ private:
 	ActivityLog *_log;
 	QString _fatalError;
 
+	QString escapeJavascriptString(const QString &str);
+	void getAnalysesNotes();
+	Json::Value getResultsMeta();
+
 signals:
 	void analysisSelected(int id);
 	void analysisUnselected();
@@ -91,10 +95,14 @@ signals:
 	void saveTempImage(int id, QString path, QByteArray data);
 	void showAnalysesMenu(QString options);
 	void removeAnalysisRequest(int id);
+	void updateNote(int id, QString key);
+	void updateAnalysesNotes(QString notes);
+	void simulatedMouseClick(int x, int y, int count);
 
 private slots:
 
 	void analysisResultsChangedHandler(Analysis* analysis);
+	void analysisNotesLoadedHandler(Analysis *analysis);
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
 	void pushImageToClipboardHandler(const QByteArray &base64, const QString &html);
@@ -103,11 +111,15 @@ private slots:
 	void saveTempImageHandler(int id, QString path, QByteArray data);
 	void analysisChangedDownstreamHandler(int id, QString options);
 
+	void simulatedMouseClickHandler(int x, int y, int count);
+	void updateNoteHandler(int id, QString key);
 	void removeAnalysisRequestHandler(int id);
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
+	void editTitleSelected();
 	void copySelected();
 	void citeSelected();
+	void noteSelected();
 	void menuHidding();
 
 	void tabChanged(int index);

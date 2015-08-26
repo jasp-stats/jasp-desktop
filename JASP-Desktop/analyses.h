@@ -34,6 +34,7 @@ signals:
 	void analysisInitialised(Analysis *source);
 	void analysisOptionsChanged(Analysis *source);
 	void analysisResultsChanged(Analysis *source);
+	void analysisNotesLoaded(Analysis *source);
 	void analysisAdded(Analysis *source);
 
 private slots:
@@ -51,6 +52,7 @@ private:
 
 	void analysisOptionsChangedHandler(Analysis *analysis);
 	void analysisResultsChangedHandler(Analysis *analysis);
+	void analysisNotesLoadedHandler(Analysis *analysis);
 
 	QList<Analysis*> _analyses;
 

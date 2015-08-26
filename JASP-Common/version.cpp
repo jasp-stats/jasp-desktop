@@ -143,8 +143,10 @@ string Version::asString() const
 	if (revision != 0)
 		stream << "." << (int)revision;
 
-	if (isRelease())
-		stream << "." << (int)(build - 255);
+	if (isRelease()) {
+		if (build > 255)
+			stream << "." << (int)(build - 255);
+	}
 	else if (isAlpha())
 		stream << " Alpha " << (int)build;
 	else if (isBeta())

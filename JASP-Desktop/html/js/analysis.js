@@ -15,14 +15,25 @@ JASPWidgets.Analyses = Backbone.Collection.extend({
 
 JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	views: [],
+	volatileViews: [],
 
 	initialize: function () {
 
+		this.viewNotes = { list: [] };
+
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
-		var self = this;
-		this.toolbar.selectionElement = function () {
-			return self.$el.find('.jasp-analysis-inner');
-		};
+		//var self = this;
+		//this.toolbar.selectionElement = function () {
+		//	return self.$el.find('.jasp-analysis-inner');
+		//};
+
+		this.notes = this.model.get('notes');
+
+		var path = ['first'];
+		var firstNoteBox = this.createNoteBox(path, this.getNoteFromPath(path, true), true);
+		
+		path = ['last'];
+		var lastNoteBox = this.createNoteBox(path, this.getNoteFromPath(path, true), true);
 
 		this.toolbar.setParent(this);
 	},
@@ -30,6 +41,133 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
+	},
+	
+	detachNotes: function() {
+		for (var i = 0; i < this.viewNotes.list.length; i++)
+			this.viewNotes.list[i].widget.detach();
+	},
+
+	createNoteBox: function (path, note, isRootNote) {
+
+		if (note === null || note === undefined)
+			note = new JASPWidgets.Note();
+
+		if (isRootNote === undefined)
+			isRootNote = false;
+
+		var key = path.join('-');
+		var widget = new JASPWidgets.NoteBox({ className: "jasp-notes jasp-" + key + "-note", model: note });
+		this.viewNotes[key + 'NoteBox'] = widget;
+		this.viewNotes.list.push({ path: path, key: key, widget: widget, note: note, isRootNote: isRootNote });
+
+		this.listenTo(widget, "NoteBox:textChanged", function () {
+			this.trigger("analysis:noteChanged", this.model.get('id'), key);
+		});
+
+		return widget;
+	},
+
+	getNextObject: function(obj, name) {
+		if (Array.isArray(obj)) {
+			var next = _.find(obj, function (cv) { return cv.name === name; });
+			if (next === null)
+				name = undefined;
+		}
+		else
+			return obj[name];
+	},
+
+	getAnalysisNotes: function () {
+		var notes = {
+			id: this.model.get('id'),
+			notes: {}
+		};
+
+		var results = this.model.get("results");
+		for (var i = 0; i < this.viewNotes.list.length; i++) {
+			var noteBoxData = this.viewNotes.list[i];
+			var obj = notes.notes;
+			if (noteBoxData.isRootNote === false) {
+				
+				if (notes.notes.others === undefined)
+					notes.notes.others = {};
+
+				obj = notes.notes.others;
+			}
+
+			var resultObj = results;
+			for (j = 0; j < noteBoxData.path.length; j++) {
+				var levelName = noteBoxData.path[j];
+
+				if (j < noteBoxData.path.length - 1) {
+					resultObj = this.getNextObject(resultObj, levelName)
+					if (resultObj === undefined)
+						break;
+				}
+
+				if (j === noteBoxData.path.length - 1)
+					obj[levelName] = { text: Mrkdwn.fromHtmlText(noteBoxData.note.get('text')), format: 'markdown', visible: noteBoxData.widget.visible };
+				else {
+					var nextLevel = obj[levelName];
+					if (nextLevel === undefined) {
+						nextLevel = {};
+						obj[levelName] = nextLevel
+					}
+					obj = nextLevel;
+				}
+			}
+		}
+
+		return notes;
+	},
+
+	getNoteFromPath: function (path, isRootNote) {
+
+		if (this.notes === null)
+			return null;
+
+		var obj = this.notes;
+		if (isRootNote === false)
+			obj = this.notes.others;
+
+		if (obj === undefined)
+			return null;
+
+		for (var i = 0; i < path.length; i++) {
+			if (i === path.length - 1) {
+				return new JASPWidgets.Note(obj[path[i]]);
+			}
+
+			obj = obj[path[i]];
+			if (obj === undefined)
+				return null;
+		}
+	},
+
+	passNoteObjToView: function (path, itemView) {
+
+		if (itemView.views !== undefined) {
+			for (var i = 0; i < itemView.views.length; i++) {
+				var subView = itemView.views[i]
+				var name = subView.model.get('name');
+				if (name !== null)
+					this.passNoteObjToView(path.concat([name]), subView);
+				else 
+					throw "there must be a name parameter."
+			}
+		}
+
+		if (itemView.hasNotes === undefined || itemView.hasNotes() === false)
+			return;
+
+		var key = path.join('-');
+
+		var noteBox = this.viewNotes[key + 'NoteBox'];
+		if (noteBox === undefined || noteBox === null) 
+			noteBox = this.createNoteBox(path, this.getNoteFromPath(path, false), false)
+
+		itemView.setNoteBox(key, noteBox);
 	},
 
 	_hoveringStart: function (e) {
@@ -40,9 +178,22 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.toolbar.setVisibility(false);
 	},
 
-	annotateMenuClicked: function () {
+	notesMenuClicked: function (noteType, visibility) {
 
-		return true;
+		var noteBox = this.viewNotes[noteType + 'NoteBox'];
+		if (noteBox !== undefined) {
+			noteBox.setVisibilityAnimate(visibility);
+			return true;
+		}
+		return false;
+	},
+
+	noteOptions: function () {
+		var firstOpt = { key: 'first', menuText: 'Add Note Before', visible: this.viewNotes.firstNoteBox.visible };
+
+		var lastOpt = { key: 'last', menuText: 'Add Note After', visible: this.viewNotes.lastNoteBox.visible };
+
+		return [firstOpt, lastOpt];
 	},
 
 	copyMenuClicked: function () {
@@ -51,8 +202,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		exportParams.format = JASPWidgets.ExportProperties.format.html;
 		exportParams.process = JASPWidgets.ExportProperties.process.copy;
 		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes = true;
 
-		return this.exportBegin(exportParams, this.views);
+		return this.exportBegin(exportParams);
 	},
 
 	exportMenuClicked: function () {
@@ -61,20 +213,26 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		exportParams.format = JASPWidgets.ExportProperties.format.html;
 		exportParams.process = JASPWidgets.ExportProperties.process.save;
 		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.embedded;
+		exportParams.includeNotes = true;
 
-		return this.exportBegin(exportParams, this.views);
+		return this.exportBegin(exportParams);
 	},
 
-	exportBegin: function (exportParams) {
+	exportBegin: function (exportParams, completedCallback) {
 		if (exportParams == undefined)
 			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
-		
-		return JASPWidgets.Exporter.begin(this, exportParams, true);
+
+		var callback = this.exportComplete;
+		if (completedCallback !== undefined)
+			callback = completedCallback;
+
+		return JASPWidgets.Exporter.begin(this, exportParams, callback, true);
 	},
 
 	exportComplete: function (exportParams, exportContent) {
+
 		if (!exportParams.error)
 			pushHTMLToClipboard(exportContent, exportParams);
 	},
@@ -89,18 +247,21 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		if (metaEntry.type == "title") {
 
-			this.toolbar.titleTag = "h1";
+			this.toolbar.titleTag = "h2";
 			this.toolbar.title = result;
 			this.toolbar.render();
 			$element.append(this.toolbar.$el);
+
+			this.viewNotes.firstNoteBox.render();
+			$element.append(this.viewNotes.firstNoteBox.$el);
 		}
 		else if (metaEntry.type == "h1") {
 
-			$element.append("<h2>" + result + "</h2>")
+			$element.append("<h3>" + result + "</h3>")
 		}
 		else if (metaEntry.type == "h2") {
 
-			$element.append("<h3>" + result + "</h3>")
+			$element.append("<h4>" + result + "</h4>")
 		}
 		else {
 
@@ -123,10 +284,12 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 					if (status === null || status === undefined)
 						subItem.set("status", this.status);
 				}, result);
-				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type, collection: item });
+				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type + " jasp-view", collection: item });
 			}
 			else
-				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type, model: item });
+				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type + " jasp-view", model: item });
+
+			this.passNoteObjToView([metaEntry.name], itemView);
 
 			this.listenTo(itemView, "toolbar:showMenu", function (obj, options) {
 
@@ -134,6 +297,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			});
 
 			this.views.push(itemView);
+			this.volatileViews.push(itemView);
 
 			itemView.render();
 			$element.append(itemView.$el);
@@ -143,13 +307,16 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	render: function () {
 
+		this.toolbar.$el.detach();
+		this.detachNotes();
+
 		this.destroyViews();
 
-		this.toolbar.$el.detach();
+		this.views.push(this.viewNotes.firstNoteBox);
 
 		this.$el.empty();
 
-		var $innerElement = $('<div class="jasp-analysis-inner"></div>')
+		var $innerElement = this.$el;//$('<div class="jasp-analysis-inner"></div>')
 
 		var results = this.model.get("results");
 		if (results.error) {
@@ -174,25 +341,37 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		}
 
-		this.$el.append($innerElement)
+		this.viewNotes.lastNoteBox.render();
+		$innerElement.append(this.viewNotes.lastNoteBox.$el);
+
+		//this.$el.append($innerElement)
+
+		this.views.push(this.viewNotes.lastNoteBox);
 
 		return this;
 	},
+
 	unselect: function () {
 		this.$el.removeClass("selected");
-		//this.$el.addClass("unselected")
 	},
+
 	select: function () {
 		this.$el.addClass("selected")
-		//this.$el.removeClass("unselected");
 	},
-	destroyViews: function() {
-		for (var i = 0; i < this.views.length; i++)
-			this.views[i].close();
 
+	destroyViews: function() {
+		for (var i = 0; i < this.volatileViews.length; i++)
+			this.volatileViews[i].close();
+
+		this.volatileViews = [];
 		this.views = [];
 	},
+
 	onClose: function () {
 		this.destroyViews();
+		this.toolbar.close();
+
+		for (var i = 0; i < this.viewNotes.list.length; i++)
+			this.viewNotes.list[i].widget.close();
 	}
 });

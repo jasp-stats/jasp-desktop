@@ -42,5 +42,11 @@
         <file>css/images/arrowsmalldownbtn.png</file>
         <file>css/images/resizer.png</file>
         <file>css/images/menu-indicator.svg</file>
+        <file>js/etch.js</file>
+        <file>css/etch.css</file>
+        <file>css/images/editor_icons.png</file>
+        <file>js/mrkdwn.js</file>
+        <file>js/analyses.js</file>
+        <file>css/images/closer.png</file>
     </qresource>
 </RCC>

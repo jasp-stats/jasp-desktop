@@ -25,9 +25,12 @@ public:
 
 	boost::signals2::signal<void (Analysis *source)> optionsChanged;
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
+	boost::signals2::signal<void (Analysis *source)> notesLoaded;
 
 	void setResults(Json::Value results);
+	void setNotes(Json::Value notes, bool silient = false);
 	const Json::Value &results() const;
+	const Json::Value &notes() const;
 	Json::Value asJSON() const;
 
 	const std::string &name() const;
@@ -55,6 +58,7 @@ protected:
 	Options* _options;
 
 	Json::Value _results;
+	Json::Value _notes;
 
 	int callback(Json::Value results);
 

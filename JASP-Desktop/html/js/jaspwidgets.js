@@ -106,19 +106,29 @@ JASPWidgets.ExportProperties = {
 
 JASPWidgets.Exporter = {
 
-	params: function() {
+	params: function () {
 
-			this.format = JASPWidgets.ExportProperties.format.raw,
-			this.process = JASPWidgets.ExportProperties.process.copy,
-			this.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary,
+		this.format = JASPWidgets.ExportProperties.format.raw,
+		this.process = JASPWidgets.ExportProperties.process.copy,
+		this.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary,
+		this.includeNotes = false;
 
-			this.isFormatted = function () {
-				return (this.format & JASPWidgets.ExportProperties.format.formatted) === JASPWidgets.ExportProperties.format.formatted
-			},
+		this.isFormatted = function () {
+			return (this.format & JASPWidgets.ExportProperties.format.formatted) === JASPWidgets.ExportProperties.format.formatted
+		};
 
-			this.htmlOnly = function () {
-				return (this.format & JASPWidgets.ExportProperties.format.html) === JASPWidgets.ExportProperties.format.html
-			}
+		this.htmlOnly = function () {
+			return (this.format & JASPWidgets.ExportProperties.format.html) === JASPWidgets.ExportProperties.format.html
+		};
+
+		this.clone = function () {
+			var cloneParams = new JASPWidgets.Exporter.params();
+			cloneParams.format = this.format;
+			cloneParams.process = this.process;
+			cloneParams.htmlImageFormat = this.htmlImageFormat;
+			cloneParams.includeNotes = this.includeNotes;
+			return cloneParams;
+		};
 	},
 
 	data: function (raw, html) {
@@ -130,7 +140,7 @@ JASPWidgets.Exporter = {
 		this.html = html;
 	},
 
-	begin: function (exportObj, exportParams, useNBSP, innerStyle) {
+	begin: function (exportObj, exportParams, completedCallback, useNBSP, innerStyle) {
 
 		if (innerStyle === undefined)
 			innerStyle = "";
@@ -142,25 +152,24 @@ JASPWidgets.Exporter = {
 			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
-
 		
 		if (exportObj.views) {
 			var viewList = exportObj.views;
 
 			if (viewList.length === 0) {
-				exportObj.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, ""));
+				completedCallback.call(exportObj, exportParams, new JASPWidgets.Exporter.data(null, ""));
 			}
 			else {
 				exportObj.buffer = [];
 				exportObj.exportCounter = viewList.length;
 
 				for (var i = 0; i < viewList.length; i++) {
-					this._exportView(exportParams, viewList[i], i, exportObj, useNBSP, innerStyle);
+					this._exportView(exportParams, viewList[i], i, exportObj, useNBSP, innerStyle, completedCallback);
 				}
 			}
 		}
 		else if (exportObj.exportBegin)
-			exportObj.exportBegin(exportParams);
+			exportObj.exportBegin(exportParams, completedCallback);
 		else
 			return false;
 		
@@ -168,12 +177,11 @@ JASPWidgets.Exporter = {
 		return true;
 	},
 
-	_exportView: function (exportParams, view, i, parent, useNBSP, innerStyle) {
+	_exportView: function (exportParams, view, i, parent, useNBSP, innerStyle, completedCallback) {
 		var self = parent;
 		var index = i;
-		var originalExportComplete = view.exportComplete;
-		view.exportComplete = function (exParams, exContent) {
-			this.exportComplete = originalExportComplete;
+		var callback = completedCallback;
+		var cc = function (exParams, exContent) {
 			self.buffer[index] = exContent;
 			self.exportCounter -= 1;
 			if (self.exportCounter === 0) {
@@ -184,21 +192,26 @@ JASPWidgets.Exporter = {
 					if (self.toolbar !== undefined) {
 						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar, exportParams)
 					}
+					var firstItem = true;
 					for (var j = 0; j < self.buffer.length; j++) {
 						if (self.buffer[j]) {
-							completeText += self.buffer[j].html;
-							if (useNBSP && j < self.buffer.length && (JASPWidgets.Exporter.isInlineStyle(self.views[j].$el) == false))
-								completeText += "&nbsp;";
+							var bufferHtml = self.buffer[j].html;
+							if (bufferHtml !== '') {
+								if (useNBSP && firstItem === false && (JASPWidgets.Exporter.isInlineStyle(self.views[j - 1].$el) == false))
+									completeText += "&nbsp;";
+								completeText += self.buffer[j].html;
+								firstItem = false;
+							}
 						}
 					}
 					completeText += "</div>";
-					completeText += "</div>";		
+					completeText += "</div>";
 				}
-				self.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, completeText));
+				callback.call(self, exportParams, new JASPWidgets.Exporter.data(null, completeText));
 				self.buffer = [];
 			}
-		};
-		view.exportBegin(exportParams);
+		}
+		view.exportBegin(exportParams, cc);
 	},
 
 	getStyles: function (element, styleItems) {
@@ -221,36 +234,50 @@ JASPWidgets.Exporter = {
 		return style;
 	},
 
+	getSpacingStyles: function (element, exportParams) {
+		if (exportParams.isFormatted())
+			return JASPWidgets.Exporter.getStyles(element, ["padding", "margin", "display", "float"]);
+		else
+			return "";//JASPWidgets.Exporter.getStyles(element, ["display", "float"]);
+	},
+
 	getHeaderStyles: function (element, exportParams) {
 		if (exportParams.isFormatted())
-			return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin", "display", "float", "vertical-align", "font-size", "font", "font-weight"]);
+			return JASPWidgets.Exporter.getStyles(element, ["padding", "text-align", "margin", "display", "float", "vertical-align", "font-size", "font", "font-weight", "color"]);
 		else
 			return "";//JASPWidgets.Exporter.getStyles(element, ["display", "float"]);
 	},
 
 	getTableStyles: function (element, exportParams) {
 		if (exportParams.isFormatted())
-			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float"]);
+			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin-bottom", "margin-top", "display", "float", "color"]);
 		else
 			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "display", "float"]);
 	},
 
 	getTableContentStyles: function (element, exportParams) {
 		if (exportParams.isFormatted())
-			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin", "display", "float", "font-size", "font-weight", "font"]);
+			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin", "display", "float", "font-size", "font-weight", "font", "color"]);
 		else
 			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "display", "float", "text-align"]);
 	},
 
 	getErrorStyles: function (element, component) {
 		if (component === "error-message-positioner")
-			return JASPWidgets.Exporter.getStyles(element, ["padding", "margin", "display", "float", "height", "overflow", "position", "top", "z-index"]);
+			return JASPWidgets.Exporter.getStyles(element, ["padding", "margin", "display", "float", "color", "height", "overflow", "position", "top", "z-index"]);
 		else if (component === "error-message-box")
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "display", "float", "border-radius", "min-width", "max-width", "white-space"]);
 		else if (component === "error-message-symbol ")
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "display", "float"]);
 		else
 			return JASPWidgets.Exporter.getStyles(element, ["margin", "border", "background-color", "color", "padding", "text-align", "display", "float", "vertical-align", "font-size", "font", "font-weight"]);
+	},
+
+	getNoteStyles: function (element, exportParams) {
+		if (exportParams.isFormatted())
+			return JASPWidgets.Exporter.getStyles(element, ["margin", "padding", "max-width", "min-width", "display", "font-size", "font-weight", "font", "color", "border-top-style", "border-top-width", "border-top-color", "border-bottom-style", "border-bottom-width", "border-bottom-color"]);
+		else
+			return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width"]);
 	},
 
 	exportErrorWindow: function (element, error) {
@@ -282,11 +309,14 @@ JASPWidgets.Exporter = {
 			html = '<' + toolbar.titleTag + headerStyles + '>' + toolbar.title + '</' + toolbar.titleTag + '>';
 		}
 
-		return '<div style="display: inline-block;">' + html + '</div>';
+		var topLevelStyles = " " + JASPWidgets.Exporter.getSpacingStyles(toolbar.$el, exportParams);
+		return '<div ' + topLevelStyles + '>' + html + '</div>';
 	},
 };
 
 JASPWidgets.View = Backbone.View.extend({
+
+	inCollection: false,
 
 	getStyleAttr: function (styleItems) {
 
@@ -298,14 +328,410 @@ JASPWidgets.View = Backbone.View.extend({
 	/** Removes DOM tree elements and any listeners from or too the view object */
 	close: function () {
 		if (!this._isClosed) {
+			if (this.onClose)
+				this.onClose();
+
 			this.remove();
 			this.off();
 			this._isClosed = true;
-			if (this.onClose)
-				this.onClose();
 		}
 	},
 })
+
+JASPWidgets.Note = Backbone.Model.extend({
+	defaults: {
+		text: '<p><br></p>',
+		format: 'markdown'
+	},
+
+	toHtml: function () {
+		if (this.get('format') === 'markdown') {
+			this.set('format', 'html');
+			var text = this.get('text');
+			if (text === null || text === '')
+				this.set('text', '<p><br></p>');
+			else if (text !== '')
+				this.set('text', Mrkdwn.toHtml(text));
+		}
+	}
+});
+
+JASPWidgets.NoteBox = JASPWidgets.View.extend({
+
+	//#7C95CB
+	//#F2F7FD
+
+	initialize: function () {
+
+		if (JASPWidgets.NoteBox.activeNoteBox === undefined)
+			JASPWidgets.NoteBox.activeNoteBox = null;
+
+		this.editing = false;
+		this.ghostTextVisible = true;
+		this.visible = this.model.get('visible') !== null ? this.model.get('visible') : (this.model.get('text') !== '');
+		this.internalChange = false;
+
+		if (this.model.get('format') !== 'html')
+			this.model.toHtml();
+
+		this.listenTo(this.model, 'change:text', this.textChanged)
+
+		this.closeButton = new JASPWidgets.ActionView({ className: "jasp-closer" });
+		var self = this;
+		this.closeButton.actionTargetElement = function () {
+			return self.$el;
+		};
+		this.closeButton.setAction(function () {
+			self.setVisibilityAnimate(false);
+		});
+	},
+
+	events: {
+		'mouseenter': '_hoveringStart',
+		'mouseleave': '_hoveringEnd',
+	},
+
+	detach: function() {
+		this.$el.detach();
+		this.closeButton.$el.detach();
+	},
+
+	_hoveringStart: function (e) {
+		this.closeButton.setVisibility(true);
+	},
+
+	_hoveringEnd: function (e) {
+		this.closeButton.setVisibility(false);
+	},
+
+	clear: function () {
+		if (this.isTextboxEmpty() === false)
+			this.$textbox.html('<p><br></p>');
+
+		this.model.set('format', 'html');
+		this.model.set('text', '<p><br></p>');
+	},
+
+	setGhostTextVisible: function(visible) {
+		this.ghostTextVisible = visible;
+		this.updateView();
+	},
+
+	isTextboxEmpty: function () {
+		var text = this.$textbox.text();
+		return text.length === 0;
+	},
+
+	simulatedClickPosition: function () {
+		var offset = this.$textbox.offset();
+		if (this.editing === false)
+			offset = this.$ghostText.offset();
+
+		var posY = offset.top + 5 - $(window).scrollTop() + 3;
+		var posX = offset.left + 5 - $(window).scrollLeft();
+		return { x: posX, y: posY };
+	},
+
+	textChanged: function () {
+		if (this._textedChanging === true)
+			return;
+
+		this._textedChanging = true;
+		if (this.model.get('format') !== 'html')
+			this.model.toHtml();
+		this.updateView();
+		if (this._inited)
+			this.trigger("NoteBox:textChanged");
+		this._textedChanging = false;
+	},
+
+	updateView: function () {
+		if (!this.internalChange && this.model.get('format') === 'html') {
+			if (this.$textbox !== undefined) {
+				if (this.setGhostTextVisible && !this.editing && this.isTextboxEmpty()) {
+					this.$ghostText.removeClass('jasp-hide');
+					this.$textbox.addClass('jasp-hide');
+				}
+				else {
+					this.$ghostText.addClass('jasp-hide');
+					this.$textbox.removeClass('jasp-hide');
+					if (this.editing && this.$textbox !== $(document.activeElement))
+						this.$textbox.focus();
+				}
+			}
+		}
+	},
+
+	render: function () {
+		if (this._inited) {
+			this.$textbox.off();
+			delete this.$textbox;
+		}
+
+		this.$el.empty();
+
+		this.setVisibility(this.visible)
+
+		var html = this.model.get("text");
+
+		this.$el.append('<div class="jasp-editable jasp-hide" data-button-class="jasp-comment">' + html + '</div>');
+		this.$el.append('<div class="jasp-ghost-text"><p>Click here to add text...</p></div>');
+
+		this.$textbox = this.$el.find('.jasp-editable');
+		this.$ghostText = this.$el.find('.jasp-ghost-text');
+
+		this.updateView();
+		this._checkTags();
+
+		var self = this;
+		//focusin focusout
+		this.$textbox.on("input", function (event) {
+			self._checkTags();
+			if (this.innerHTML != self.model.get("text")) {
+				var html = '';
+				if (self.$textbox.text())
+					html = this.innerHTML;
+				self.onNoteChanged(html);
+			}
+		});
+
+		this.$ghostText.on("mousedown", null, this, this._mousedown);
+		this.$textbox.on("focusout", null, this, this._looseFocus);
+		this.$textbox.on("mousedown", null, this, this._mousedown);
+		this.$textbox.on("keydown", null, this, this._keydown);
+
+		this.closeButton.render();
+
+		this._inited = true;
+
+		return this;
+	},
+
+	onNoteChanged: function (html) {
+		this.internalChange = true;
+		this.model.set("text", html);
+		this.internalChange = false;
+	},
+
+	setVisibility: function(value)
+	{
+		this.visible = value;
+
+		if (value)
+			this.$el.removeClass('jasp-hide');
+		else
+			this.$el.addClass('jasp-hide');
+	},
+
+	setVisibilityAnimate: function (value) {
+
+		var self = this;
+		self.$el.css("opacity", value ? 0 : 1);
+
+		if (value === true) {
+			self.$el.slideDown(200, function () {
+				self.setVisibility(value);
+				self.setGhostTextVisible(false);
+				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
+					window.scrollIntoView(self.$textbox, function () {
+						var pos = self.simulatedClickPosition();
+						window.simulateClick(pos.x, pos.y, 1);
+						self.setGhostTextVisible(true);
+					});
+				});
+			});
+		}
+		else {
+			self.$el.slideUp(200, function () {
+				self.setVisibility(value);
+			});
+		}
+	},
+
+	knownTags: ['p', 'br', 'ol', 'ul', 'li', 'b', 'i', 's', 'u', 'sup', 'sub', 'code', 'strong', 'em', 'blockquote', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+
+	_checkTags: function () {
+
+		var r = this.$textbox.find('*')
+		r.contents().filter(function () { return this.nodeType != 1 && this.nodeType != 3; }).remove(); //removes all non text and non elements
+		r.each(function () { //removes all attributes
+			var attributes = $.map(this.attributes, function (item) {
+				return item.name;
+			});
+
+			var img = $(this);
+			$.each(attributes, function (i, item) {
+				img.removeAttr(item);
+			});
+		});
+
+		/*this.$textbox.find('ol, ul').contents().filter(function () { return this.nodeType !== 1 }).remove(); //removes all non list item nodes from lists*/
+		this.$textbox.find(':not(p, br, ol, ul, li, b, i, s, u, sup, sub, code, strong, em, blockquote, hr, h1, h2, h3, h4, h5, h6, div, pre:has(code))').contents().unwrap();		//flattens the contents of unknown tags eg span, font etc
+		this.$textbox.find(':not(p, br, ol, ul, li, b, i, s, u, sup, sub, code, strong, em, blockquote, hr, h1, h2, h3, h4, h5, h6, div, pre:has(code))').remove();		//removes all unknown tags that had no content to flatten eg <o-l></o-l> from office
+
+		var t = this.$textbox.find('div:not(code div)').contents().unwrap().wrap('<p/>'); //changes all div tags to p tags
+		if (t.length > 0) {
+			var selection = window.getSelection();
+			selection.collapse(t[t.length - 1], 0);
+		}
+
+		var b = this.$textbox.contents().filter(function () { return this.nodeType == 3; }).wrap('<p/>'); //wraps all top level free text in a p tag
+		if (b.length > 0) {
+			var selection = window.getSelection();
+			var node = b[b.length - 1];
+			selection.collapse(node, node.nodeValue.length);
+		}
+
+		this.$textbox.find('p').filter(function () {
+			return $(this).text() === '' && $(this).height() === 0;
+		}).remove(); //remove non displaying paragraphs
+
+		this.$textbox.find('p p').contents().unwrap(); //unwraps any embedded p tags
+
+		var v = this.$textbox.find('p:has(ol),p:has(ul),p:has(blockquote)').contents().unwrap(); // unwrap any p tags around lists
+		if (v.length > 0) {
+			var selection = window.getSelection();
+			selection.collapse(v[v.length - 1], 0);
+		}
+
+		var g = this.$textbox.children().length; // if the textbox is empty put in a <p><br></p>
+		if (g === 0) {
+			var selection = window.getSelection();
+			var node = $(document.createElement('p'));
+			//node.html("&#8203;");
+			var lineBreak = $(document.createElement('br'));
+			node.prepend(lineBreak);
+			this.$textbox.prepend(node);
+			//selection.collapse(node[0], 0);
+			selection.collapse(lineBreak[0], 0);
+		}
+	},
+
+	_keydown: function (e) {
+		var self = e.data;
+		if (e.which == 9) {
+			e.preventDefault();
+		}
+		else if (e.which === 13 && e.ctrlKey) {
+			e.preventDefault();
+			self.$textbox.blur();
+			self._endEditing(); // this is called because the blur doesn't always invoke a focus loss event
+		}
+		else if (e.which === 27) {
+			e.preventDefault();
+			self.$textbox.blur();
+			self._endEditing(); // this is called because the blur doesn't always invoke a focus loss event
+		}
+	},
+
+	_mousedown: function (e) {
+		var self = e.data;
+
+		self._setEdittable(e.pageX, e.pageY);
+
+		return true;
+	},
+
+	_setEdittable: function (pageX, pageY) {
+
+		if (this.editing === true)
+			return;
+
+		this.editingSetup = true;
+
+		JASPWidgets.NoteBox.activeNoteBox = this;
+
+		etch.config.selector = '.jasp-editable'
+
+		_.extend(etch.config.buttonClasses, {
+			'default': ['bold', 'italic', 'underline'],
+			'jasp-comment': ['bold', 'italic', 'superscript', 'subscript', 'unordered-list', 'ordered-list', 'clear-formatting']
+		});
+
+		this.editing = true;
+		
+		this.$editor = etch.startEditing(this.$textbox, pageX, pageY);
+
+		this.$textbox.attr('contenteditable', true);
+		this.$textbox.focus();
+		this.updateView();
+		
+		this.$el.addClass('jasp-text-editing');
+
+		this._checkTags();
+
+		var self = this;
+
+		window.setTimeout(function () { self.editingSetup = false; }, 0); //needsd to wait for all ui events to finish before ending
+	},
+
+	_endEditing: function () {
+		if (this.editing === false || this.editingSetup === true)
+			return;
+		
+		this.editing = false;
+
+		if (JASPWidgets.NoteBox.activeNoteBox === this)
+			JASPWidgets.NoteBox.activeNoteBox = null;
+
+		this.$el.removeClass('jasp-text-editing');
+		
+		this.updateView();
+		this.$textbox.attr('contenteditable', false);
+		if (this.$editor !== undefined) {
+			etch.closeEditor(this.$editor, this.$textbox);
+			delete this.$editor;	
+		}
+	},
+
+	_looseFocus: function (e) {
+		//Needed to catch the blur event caused while setting up the editing box. This also infers that the the click event was not propagated and needs to be called.
+		var self = e.data;
+		if (self.editingSetup === true) {
+			self.$textbox.click();
+			self.$textbox.focus();
+			return false;
+		}
+
+		var relatedtarget = e.relatedTarget;
+		if (relatedtarget === null || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size())
+			self._endEditing();
+
+		return true;
+	},
+
+	exportBegin: function (exportParams, completedCallback) {
+		if (exportParams == undefined)
+			exportParams = new JASPWidgets.Exporter.params();
+		else if (exportParams.error)
+			return false;
+
+		var callback = this.exportComplete;
+		if (completedCallback !== undefined)
+			callback = completedCallback;
+
+		var html = '';
+		if (this.isTextboxEmpty() === false)
+			html = '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '">' + this.$textbox.html() + '</div>';
+
+		
+
+		callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, html));
+	},
+
+	exportComplete: function (exportParams, exportContent) {
+		if (!exportParams.error)
+			pushHTMLToClipboard(exportContent, exportParams);
+	},
+
+	onClosed: function() {
+		if (this.$textbox !== undefined)
+			this.$textbox.off();
+
+		this.closeButton.close();
+	}
+})
+
 
 JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	initialize: function () {
@@ -313,6 +739,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.fixed = false;
 		this.visible = false;
 		this.selected = false;
+		this.editing = false;
 	},
 
 	$title: function() {
@@ -364,7 +791,62 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	},
 
 	events: {
-		'mousedown .toolbar-clickable': '_mouseDown'
+		'mousedown .toolbar-clickable': '_mouseDown',
+		'focusout': '_looseFocus',
+		'keydown .in-toolbar': '_keydown',
+
+	},
+
+	startEdit: function () {
+		this.editing = true;
+		var element = this.$title();
+		element.addClass("toolbar-editing");
+		element[0].setAttribute("contenteditable", true);
+		var offset = element.offset();
+		var posY = offset.top + 5 - $(window).scrollTop() + 3;
+		var posX = offset.left + 5 - $(window).scrollLeft();
+		window.simulateClick(posX, posY, 3);
+	},
+
+	endEdit: function (saveTitle) {
+		if (this._editEnding)
+			return;
+
+		this._editEnding = true;
+		var element = this.$title();
+		element.removeClass("toolbar-editing");
+		element[0].setAttribute("contenteditable", false);
+		this.editing = false;
+		var selection = window.getSelection();
+		selection.removeAllRanges();
+
+		if (saveTitle)
+			this.title = element.text();
+		else
+			element.html(this.title);
+
+		this._editEnding = false;
+	},
+
+	_looseFocus: function () {
+		this.endEdit(true);
+	},
+
+	_keydown: function (e) {
+		if (!this.editing)
+			return;
+
+		if (e.which == 9) {
+			e.preventDefault();
+		}
+		else if (e.which == 13) {
+			e.preventDefault();
+			this.endEdit(true);
+		}
+		else if (e.which == 27) {
+			e.preventDefault();
+			this.endEdit(false);
+		}
 	},
 
 	_mouseDownGeneral: function (e) {
@@ -388,6 +870,10 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	},
 
 	_mouseDown: function (e) {
+		
+		if (this.editing)
+			return true;
+
 		this.setFixedness(2);
 
 		var $titleLabel = this.$el.find('>:first-child');
@@ -402,6 +888,9 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 		this.options.x = e.screenX;
 		this.options.y = e.screenY;
+
+		if (this.options.hasNotes)
+			this.options['noteOptions'] = this.parent.noteOptions();
 
 		this.parent.trigger('toolbar:showMenu', this.parent, this.options);
 
@@ -424,13 +913,14 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 			hasCopy: (parent.hasCopy === undefined || parent.hasCopy()) && parent.copyMenuClicked !== undefined,
 			hasCite: (parent.hasCitation === undefined || parent.hasCitation()) && parent.citeMenuClicked !== undefined,
-			hasAnnotate: (parent.hasAnnotate === undefined || parent.hasAnnotate()) && parent.annotateMenuClicked !== undefined,
+			hasNotes: (parent.hasNotes === undefined || parent.hasNotes()) && parent.notesMenuClicked !== undefined,
+			hasEditTitle: (parent.hasEditTitle === undefined || parent.hasEditTitle()) && parent.editTitleClicked !== undefined,
 			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
 
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasAnnotate || this.options.hasRemove;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasNotes || this.options.hasRemove || this.options.hasEditTitle;
 	},
 
 	selectionElement: function() {
@@ -478,6 +968,7 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 
 		this.collection.each(function (item) {
 			var itemView = this.createItemView(item);
+			itemView.inCollection = true;
 			this.listenTo(itemView, "all", this.eventEcho)
 			this.views.push(itemView);
 		}, this);
@@ -522,16 +1013,22 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 		this.views = [];
 	},
 
-	exportBegin: function (exportParams) {
+	exportUseNBSP: false,
+
+	exportBegin: function (exportParams, completedCallback) {
 		if (exportParams == undefined)
 			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
 
+		var callback = this.exportComplete;
+		if (completedCallback !== undefined)
+			callback = completedCallback;
+
 		if (this.views.length > 0)
-			JASPWidgets.Exporter.begin(this, exportParams);
+			JASPWidgets.Exporter.begin(this, exportParams, callback, this.exportUseNBSP);
 		else
-			this.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, ""));
+			callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, ""));
 
 		return true;
 	},
@@ -539,6 +1036,48 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 	exportComplete: function (exportParams, exportContent) {
 		if (!exportParams.error)
 			pushHTMLToClipboard(exportContent, exportParams);
+	}
+});
+
+JASPWidgets.ActionView = JASPWidgets.View.extend({
+	initialize: function () {
+		this.$el.addClass('jasp-hide');
+
+		//$(document).mousemove(this, this._mousemove).mouseup(this, this._mouseup);
+	},
+
+	actionDisabled: function () {
+		return false;
+	},
+
+	actionTargetElement: function () {
+		return null;
+	},
+
+	setAction: function(action) {
+		this.actionCallback = action;
+	},
+
+	render: function () {
+		this.actionTargetElement().append(this.$el)
+
+		return this;
+	},
+
+	events: {
+		'click': '_clickHandler'
+	},
+
+	_clickHandler: function (e) {
+		if (!this.actionDisabled())
+			this.actionCallback.call(this);
+	},
+
+	setVisibility: function (value) {
+		if (value && !this.actionDisabled())
+			this.$el.removeClass('jasp-hide');
+		else
+			this.$el.addClass('jasp-hide');
 	}
 });
 
@@ -550,6 +1089,7 @@ JASPWidgets.Resizeable = Backbone.Model.extend({
 		this.set({ width: w, height: h });
 	}
 });
+
 
 JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 
@@ -590,6 +1130,7 @@ JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 	*/
 	render: function () {
 		this.resizeTargetElement().append(this.$el)
+
 		this._refreshView();
 		return this;
 	},

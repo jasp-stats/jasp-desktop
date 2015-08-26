@@ -47,6 +47,7 @@ Analysis *Analyses::create(const QString &name, int id, Json::Value *options, An
 
 	analysis->optionsChanged.connect(boost::bind(&Analyses::analysisOptionsChangedHandler, this, _1));
 	analysis->resultsChanged.connect(boost::bind(&Analyses::analysisResultsChangedHandler, this, _1));
+	analysis->notesLoaded.connect(boost::bind(&Analyses::analysisNotesLoadedHandler, this, _1));
 
 	analysisAdded(analysis);
 
@@ -164,6 +165,11 @@ void Analyses::assignDefaults(Analysis *analysis)
 		}
 
 	}*/
+}
+
+void Analyses::analysisNotesLoadedHandler(Analysis *analysis)
+{
+	analysisNotesLoaded(analysis);
 }
 
 void Analyses::analysisResultsChangedHandler(Analysis *analysis)

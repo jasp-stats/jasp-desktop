@@ -1,5 +1,5 @@
 
-* {
+.jasp-no-select {
 	-webkit-user-select: none;
 }
 
@@ -21,24 +21,20 @@ body.selected {
 	background-color: #E8E8E8 ;
 }
 
-h1:not(.in-toolbar), .h1-toolbar {
+h1 {
+	font-size: 175% ;
+}
+
+h2 {
 	font-size: 150% ;
-	margin: .5em 0 ;
 }
 
-h2:not(.in-toolbar), .h2-toolbar {
+h3 {
 	font-size: 125% ;
-	margin: .7em 0 .2em ;
 }
 
-h3:not(.in-toolbar), .h3-toolbar {
+h4 {
 	font-size: 100% ;
-	margin: .5em 0 .2em ;
-}
-
-h1.in-toolbar, h2.in-toolbar, h3.in-toolbar {
-	margin: 0 ;
-	font-size: inherit;
 }
 
 
@@ -163,7 +159,7 @@ svg > text
 	font-size: 120% ;
 }
 
-.jasp-image, .jasp-images {
+.jasp-images-image/*, .jasp-images*/ {
 
 	display: inline-block;
 }
@@ -187,7 +183,12 @@ svg > text
 	opacity: 0.33 ;
 }
 
-
+.etch-editor-panel {
+	position:fixed;
+    top:0;
+    width:100%;
+    z-index:100;
+}
 
 .jasp-image-resizer {
 
@@ -203,19 +204,31 @@ svg > text
 	border-radius : 2px ;
 }
 
-#instructions, .jasp-analysis-inner {
+.jasp_top_level {
+
+	margin-left: 1.7em ;
+	margin-right: 1.7em ;
+}
+
+.jasp-analysis {
+
+	margin: 0 .7em .7em .7em ;
+	padding: 0 1em 1em 1em ;
+}
+
+#instructions {
 
 	margin: .7em ;
 	padding: 1em ;
-	display: inline-block ;
+	/*display: inline-block ;*/
 }
 
-.jasp-analysis.unselected .jasp-analysis-inner:not(.jasp-menu-selected) {
+.jasp-analysis.unselected:not(.jasp-menu-selected) {
 
 	background-color: #E8E8E8 ;
 }
 
-.jasp-analysis.selected .jasp-analysis-inner:not(.jasp-menu-selected) {
+.jasp-analysis.selected:not(.jasp-menu-selected) {
 
 	background-color: white ;
 }
@@ -350,7 +363,16 @@ td.squash-left
     height: 16px;
 }
 
-.jasp-toolbar h1, .jasp-toolbar h2, .jasp-toolbar h3, .jasp-toolbar div , .jasp-toolbar span {
+.jasp-closer {
+    background: top left no-repeat url(images/closer.png);
+    right: 2px;
+	top: 2px;
+	position: absolute;
+    width: 16px;
+    height: 16px;
+}
+
+.jasp-toolbar h1, .jasp-toolbar h2, .jasp-toolbar h3, .jasp-toolbar h4, .jasp-toolbar div , .jasp-toolbar span {
 	display: inline-block;
 	vertical-align: middle;
 }
@@ -372,6 +394,58 @@ td.squash-left
 	cursor: pointer;
 }
 
+.toolbar-editing {
+	cursor: text;
+	border-top: 1px solid rgb(205, 205, 205);
+	border-bottom: 1px solid rgb(205, 205, 205) ;
+}
+
 .jasp-menu-selected {
 	background-color : #BFD9F7 ;
+}
+
+.jasp-editable {
+	padding-top: .5em ;
+	padding-bottom: .5em ;
+	background-color : inherit ;
+	word-wrap: break-word;
+}
+
+.jasp-editable, .jasp-editable * {
+	cursor: text;
+}
+
+
+.jasp-notes {
+	border-top: 1px solid rgb(205, 205, 205);
+	border-bottom: 1px solid rgb(205, 205, 205) ;
+	color: rgb(0, 122, 204) ;
+	margin-bottom: 3em ;
+	margin-top: 0 ;
+	max-width: 70em;
+	min-width: 40em;
+	position: relative ;
+}
+
+[contenteditable]:focus 
+{ 
+	outline: 0px solid transparent; 
+
+}
+
+
+.jasp-ghost-text {
+	font-weight: bold ;
+	color: rgb(214, 214, 214);
+	cursor: text;
+	padding-top: .5em ;
+	padding-bottom: .5em ;
+}
+
+pre {
+	display: inline;
+}
+
+.in-toolbar, .jasp-editable {
+	min-width: 1em;
 }

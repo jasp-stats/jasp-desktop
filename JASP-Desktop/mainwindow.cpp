@@ -136,6 +136,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
+	connect(_analyses, SIGNAL(analysisNotesLoaded(Analysis*)), this, SLOT(analysisNotesLoadedHandler(Analysis*)));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
@@ -167,6 +168,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
+	connect(this, SIGNAL(updateNote(int, QString)), this, SLOT(updateNoteHandler(int, QString)));
+	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
+
 
 	_buttonPanel = new QWidget(ui->pageOptions);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
@@ -354,6 +358,49 @@ void MainWindow::packageChanged(DataSetPackage *package)
 	}
 }
 
+QString MainWindow::escapeJavascriptString(const QString &str)
+{
+	QString out;
+	QRegExp rx("(\\r|\\n|\\\\|\"|\')");
+	int pos = 0, lastPos = 0;
+
+	while ((pos = rx.indexIn(str, pos)) != -1)
+	{
+		out += str.mid(lastPos, pos - lastPos);
+
+		switch (rx.cap(1).at(0).unicode())
+		{
+		case '\r':
+			out += "\\r";
+			break;
+		case '\n':
+			out += "\\n";
+			break;
+		case '"':
+			out += "\\\"";
+			break;
+		case '\'':
+			out += "\\'";
+			break;
+		case '\\':
+			out += "\\\\";
+			break;
+		}
+		pos++;
+		lastPos = pos;
+	}
+	out += str.mid(lastPos);
+	return out;
+}
+
+void MainWindow::analysisNotesLoadedHandler(Analysis *analysis)
+{
+	QString results = tq(analysis->notes().toStyledString());
+
+	results = escapeJavascriptString(results);
+	results = "window.loadNotes(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
+}
+
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
 	static bool showInstructions = true;
@@ -383,10 +430,11 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 			_runButton->setEnabled(false);
 	}
 
-	QString results = tq(analysis->asJSON().toStyledString());
+	Json::Value analysisJson = analysis->asJSON();
+	analysisJson["notes"] = analysis->notes();
+	QString results = tq(analysisJson.toStyledString());
 
-	results = results.replace("'", "\\'");
-	results = results.replace("\n", "");
+	results = escapeJavascriptString(results);
 	results = "window.analysisChanged(JSON.parse('" + results + "'));";
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
@@ -697,22 +745,37 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 		_inited = true;
 	}
 
+	bool errorFound = false;
+	stringstream errorMsg;
+
 	if (package->hasAnalyses)
 	{
-		bool errorFound = false;
-
 		int corruptAnalyses = 0;
-		stringstream errorMsg;
+
 		stringstream corruptionStrings;
 		Json::Value analysesData = package->analysesData;
-		if (!analysesData.isArray() || analysesData.isNull())
+		if (analysesData.isNull())
 		{
 			errorFound = true;
 			errorMsg << "An error has been detected and analyses could not be loaded.";
 		}
 		else
 		{
-			for (Json::ValueIterator iter = analysesData.begin(); iter != analysesData.end(); iter++)
+
+			Json::Value analysesDataList = analysesData;
+			if (!analysesData.isArray()) {
+				analysesDataList = analysesData.get("analyses", Json::arrayValue);
+				Json::Value meta = analysesData.get("meta", Json::nullValue);
+				if ( ! meta.isNull())
+				{
+					QString results = tq(analysesData["meta"].toStyledString());
+					results = escapeJavascriptString(results);
+					results = "window.setResultsMeta(JSON.parse('" + results + "'));";
+					ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
+				}
+			}
+
+			for (Json::ValueIterator iter = analysesDataList.begin(); iter != analysesDataList.end(); iter++)
 			{
 				try
 				{
@@ -724,11 +787,13 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 
 					Json::Value &optionsJson = analysisData["options"];
 					Json::Value &resultsJson = analysisData["results"];
+					Json::Value &notesJson = analysisData["notes"];
 
 					Analysis::Status status = Analysis::parseStatus(analysisData["status"].asString());
 
 					Analysis *analysis = _analyses->create(name, id, &optionsJson, status);
 
+					analysis->setNotes(notesJson);
 					analysis->setResults(resultsJson);
 
 				}
@@ -749,13 +814,12 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 			errorMsg << "An error was detected in an analyses. This analyses has been removed for the following reason:\n" << corruptionStrings.str();
 		else if (corruptAnalyses > 1)
 			errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
-
-		if (errorFound)
-			QMessageBox::warning(this, "", tq(errorMsg.str()));
 	}
 
 	if ( ! package->warningMessage.empty())
 		QMessageBox::warning(this, "", tq(package->warningMessage));
+	else if (errorFound)
+		QMessageBox::warning(this, "", tq(errorMsg.str()));
 
 	package->setLoaded();
 	updateMenuEnabledDisabledStatus();
@@ -925,10 +989,13 @@ void MainWindow::saveSelected(const QString &filename)
 {
 	if (_analyses->count() > 0)
 	{
-		_package->analysesHTML = "";
+		_package->setWaitingForReady();
+
+		getAnalysesNotes();
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%PREVIEW%');");
 
-		Json::Value analysesData = Json::arrayValue;
+
+		Json::Value analysesDataList = Json::arrayValue;
 		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 		{
 			Analysis *analysis = *itr;
@@ -936,9 +1003,15 @@ void MainWindow::saveSelected(const QString &filename)
 			{
 				Json::Value analysisData = analysis->asJSON();
 				analysisData["options"] = analysis->options()->asJSON();
-				analysesData.append(analysisData);
+				analysisData["notes"] = analysis->notes();
+				analysesDataList.append(analysisData);
 			}
 		}
+
+		Json::Value analysesData = Json::objectValue;
+		analysesData["analyses"] = analysesDataList;
+
+		analysesData["meta"] = getResultsMeta();
 
 		_package->analysesData = analysesData;
 
@@ -955,6 +1028,7 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 	if (filename == "%PREVIEW%")
 	{
 		_package->analysesHTML = fq(data);
+		_package->setAnalysesHTMLReady();
 	}
 	else
 	{
@@ -1250,6 +1324,12 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 
 	QString objName = tq(menuOptions["objectName"].asString());
 
+	if (menuOptions["hasEditTitle"].asBool())
+	{
+		_analysisMenu->addAction("Edit Title", this, SLOT(editTitleSelected()));
+		_analysisMenu->addSeparator();
+	}
+
 	if (menuOptions["hasCopy"].asBool())
 		_analysisMenu->addAction(_copyIcon, "Copy " + objName, this, SLOT(copySelected()));
 
@@ -1259,7 +1339,27 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 		_analysisMenu->addAction(_citeIcon, "Copy Citations", this, SLOT(citeSelected()));
 	}
 
-	if (menuOptions["hasRemove"].asInt())
+	if (menuOptions["hasNotes"].asBool())
+	{
+		_analysisMenu->addSeparator();
+
+		Json::Value noteOptions = menuOptions["noteOptions"];
+
+		for (Json::ValueIterator iter = noteOptions.begin(); iter != noteOptions.end(); iter++)
+		{
+			Json::Value noteOption = *iter;
+			QAction *a1 = _analysisMenu->addAction(tq(noteOption["menuText"].asString()), this, SLOT(noteSelected()));
+
+			a1->setDisabled(noteOption["visible"].asBool());
+
+
+			QString call = QString("window.notesMenuClicked('%1', %2);").arg(tq(noteOption["key"].asString())).arg(noteOption["visible"].asBool() ? "false" : "true");
+
+			a1->setData(call);
+		}
+	}
+
+	if (menuOptions["hasRemove"].asBool())
 	{
 		_analysisMenu->addSeparator();
 		_analysisMenu->addAction("Remove " + objName, this, SLOT(removeSelected()));
@@ -1269,10 +1369,9 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 
 	_analysisMenu->move(point);
 	_analysisMenu->show();
-
-	//ui->webViewResults->page()->mainFrame()->s
-
 }
+
+
 
 void MainWindow::removeAnalysisRequestHandler(int id)
 {
@@ -1280,10 +1379,87 @@ void MainWindow::removeAnalysisRequestHandler(int id)
 	removeAnalysis(analysis);
 }
 
+Json::Value MainWindow::getResultsMeta()
+{
+	QVariant notesData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getResultsMeta();");
+
+	Json::Value notes;
+	Json::Reader parser;
+	parser.parse(fq(notesData.toString()), notes);
+
+	return notes;
+}
+
+void MainWindow::getAnalysesNotes()
+{
+	QVariant notesData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getAnalysesNotes();");
+
+	Json::Value notes;
+	Json::Reader parser;
+	parser.parse(fq(notesData.toString()), notes);
+
+	for (Json::Value::iterator iter = notes.begin(); iter != notes.end(); iter++)
+	{
+		Json::Value &notesObj = *iter;
+
+		Analysis *analysis = _analyses->get(notesObj["id"].asInt());
+
+		Json::Value &analysisNotes = notesObj["notes"];
+
+		analysis->setNotes(analysisNotes, true);
+	}
+}
+
+void MainWindow::simulatedMouseClickHandler(int x, int y, int count) {
+
+	int diff = count;
+	while (diff >= 2)
+	{
+		QMouseEvent * clickEvent = new QMouseEvent ((QEvent::MouseButtonDblClick), QPoint(x, y),
+			Qt::LeftButton,
+			Qt::LeftButton,
+			Qt::NoModifier   );
+
+		qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent);
+
+		diff -= 2;
+	}
+
+	if (diff != 0)
+	{
+		QMouseEvent * clickEvent1 = new QMouseEvent ((QEvent::MouseButtonPress), QPoint(x, y),
+			Qt::LeftButton,
+			Qt::LeftButton,
+			Qt::NoModifier   );
+
+		qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent1);
+
+		QMouseEvent * clickEvent2 = new QMouseEvent ((QEvent::MouseButtonRelease), QPoint(x, y),
+			Qt::LeftButton,
+			Qt::LeftButton,
+			Qt::NoModifier   );
+
+		qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent2);
+	}
+}
+
+void MainWindow::updateNoteHandler(int id, QString key)
+{
+	_package->setModified(true);
+}
+
 void MainWindow::removeSelected()
 {
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.removeMenuClicked();");
+
+}
+
+void MainWindow::editTitleSelected()
+{
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.editTitleMenuClicked();");
+	_package->setModified(true);
 
 }
 
@@ -1301,6 +1477,16 @@ void MainWindow::citeSelected()
 	tempfiles_purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
 
+}
+
+void MainWindow::noteSelected()
+{
+	QAction *action = (QAction *)this->sender();
+	QString call = action->data().toString();
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(call);
+
+	_package->setModified(true);
 }
 
 void MainWindow::menuHidding()
