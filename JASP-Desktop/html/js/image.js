@@ -49,6 +49,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 		if (visibility === true) {
 			noteBox.$el.slideDown(200, function () {
+				noteBox.setVisibility(visibility);
 				noteBox.setGhostTextVisible(false);
 				noteBox.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
 					window.scrollIntoView(noteBox.$textbox, function () {
