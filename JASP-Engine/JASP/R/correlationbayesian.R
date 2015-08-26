@@ -45,8 +45,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	results <- list()
 	meta <- list()
 	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="correlations", type="table")	
-	meta[[3]] <- list(name="plots", type="images")
+	meta[[2]] <- list(name="correlations", type="table")
+	meta[[3]] <- list(name="plots", type="image")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Correlation Matrix"
@@ -82,7 +82,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		results[["plots"]] <- .correlationMatrixPlotBayesian(dataset, perform, options, hypothesis=options$hypothesis)
 	}
 	
-	keep <- results[["plots"]][[1]]$data
+	keep <- results[["plots"]]$data
 	
 	if (perform == "init") {
 		if (length(options$variables) < 2) {
@@ -1957,7 +1957,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			plot[["width"]]  <- width
 			plot[["height"]] <- height
 			
-			correlation.plot[[1]] <- plot
+			correlation.plot <- plot
 		
 		} else {
 		
@@ -2034,7 +2034,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		plot[["width"]]  <- width
 		plot[["height"]] <- height
 		
-		correlation.plot[[1]] <- plot
+		correlation.plot <- plot
 		cexText <- 1.6
 		
 		if (length(variables) > 0) {
@@ -2163,7 +2163,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				
 				content <- .endSaveImage(image)
 				
-				plot <- correlation.plot[[1]]
+				plot <- correlation.plot
 				plot[["data"]]  <- content
 			})
 			
@@ -2173,7 +2173,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 			}
 			
-			correlation.plot[[1]] <- plot
+			correlation.plot <- plot
 			
 		}
 	}
