@@ -1781,13 +1781,33 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				resName <- "Residuals"
 			}
 			
-			plot[["width"]]  <- options$plotWidth
-			plot[["height"]] <- options$plotHeight
-			plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
 			plot[["status"]] <- "waiting"
 			
-			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+			image <- .beginSaveImage(530, 400)
 			.plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
+			plot[["data"]] <- .endSaveImage(image)
+			
+			plots.regression[[length(plots.regression)+1]] <- plot
+			
+			results[["plots"]] <- plots.regression
+			
+			if ( ! .shouldContinue(callback(results)))
+				return()
+		}
+		
+		if (options$plotResidualsQQ) {
+			
+			plot <- list()
+			
+			plot[["title"]] <- "Q-Q Plot Standardized Residuals"
+			plot[["width"]]  <- 530
+			plot[["height"]] <- 400
+			plot[["status"]] <- "waiting"
+			
+			image <- .beginSaveImage(530, 400)
+			.plotQQresidualsRegression(dontPlotData=TRUE)
 			plot[["data"]] <- .endSaveImage(image)
 			
 			plots.regression[[length(plots.regression)+1]] <- plot
@@ -1997,7 +2017,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					
 					p <- try(silent=FALSE, expr= {
 						
-						image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+						image <- .beginSaveImage(530, 400)
 						.plotResidualsHistogram(res=res, resName=resName)
 						plot[["data"]] <- .endSaveImage(image)
 					})
@@ -2020,6 +2040,54 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					return()
 				
 			}
+			
+			if (options$plotResidualsQQ) {
+				
+				
+				plots.regression[[j]]$status <- "running"
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+				plot <- plots.regression[[j]]
+				
+				if (length(list.of.errors) > 0) {
+					
+					plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
+					
+				} else {
+					
+					res <- residuals(lm.model$lm.fit)
+					resSt <- res / sd(res)
+					
+					p <- try(silent=FALSE, expr= {
+						
+						image <- .beginSaveImage(530, 400)
+						.plotQQresidualsRegression(res=resSt)
+						plot[["data"]] <- .endSaveImage(image)
+					})
+					
+					if (class(p) == "try-error") {
+						
+						errorMessage <- .extractErrorMessage(p)
+						plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+					}
+				}
+				
+				plot[["status"]] <- "complete"
+				plots.regression[[j]] <- plot
+				
+				j <- j + 1
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+			}
+			
 		}
 	}
 	
@@ -2708,7 +2776,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 
 .plotResidualsHistogram <- function(res=NULL, resName="Residuals", dontPlotData=FALSE, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
 	
-	op <- par(mar= c(5, 4.5, 4, 2) + 0.1)
+	op <- par(mar= c(5.6, 7, 4, 4) + 0.1)
 	
 	if (dontPlotData) {
 		
@@ -2738,6 +2806,66 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		rug(jitVar)
 	
 	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+	
+	par(op)
+	
+}
+
+
+.plotQQresidualsRegression <- function(res=NULL, xlab="Theoretical Quantiles", ylab= "Standardized Residuals", dontPlotData=FALSE, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
+	
+	op <- par(mar= c(5.6, 7, 4, 4) + 0.1, las=1, xpd=FALSE)
+	
+	if (dontPlotData) {
+		
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis=cexXAxis, lwd=lwdAxis, xlab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis=cexYAxis, lwd=lwdAxis, ylab="")
+		mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
+		mtext(text = ylab, side = 2, cex=1.5, line = 3.25, las=0)
+		
+		return()
+	}
+	
+	d <- data.frame(qqnorm(res, plot.it=FALSE))
+	d <- na.omit(d)
+	xVar <- d$x
+	yVar <- d$y
+	
+	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
+	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+	xticks <- pretty(c(xlow, xhigh))
+	ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)))
+	yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)))
+	
+	yticks <- pretty(c(ylow, yhigh))
+	
+	yLabs <- vector("character", length(yticks))
+	
+	for (i in seq_along(yticks)) {
+		
+		if (yticks[i] < 10^6) {
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+			
+		} else {
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+		}
+	}
+	
+	plot(1, type="n", ylab="", xlab="", axes=FALSE, ylim= range(yticks), xlim= range(xticks))
+	plotrix::ablineclip(a=0, b=1, x1=min(xticks), x2=max(xticks), y1=min(yticks), y2=max(yticks), lwd=lwd, col="darkred")
+	points(xVar, yVar, pch=21, bg = "grey", cex= cexPoints)
+	
+	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis, lwd=lwdAxis)
+	axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis, lwd=lwdAxis, las=1)
+	
+	maxYlab <- max(nchar(yLabs))
+	distLab <- maxYlab / 1.8
+	mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
+	mtext(text = ylab, side = 2, cex=1.5, line = distLab + 2.1, las=0)
 	
 	par(op)
 	

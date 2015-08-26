@@ -917,31 +917,16 @@
             <string>Residual plots</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_28">
-            <item row="3" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotResidualsHistogram">
-              <property name="text">
-               <string>Residuals histogram</string>
+            <item row="5" column="1" colspan="2">
+             <widget class="BoundCheckBox" name="plotResidualsHistogramStandardized">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
               </property>
-             </widget>
-            </item>
-            <item row="2" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotResidualsPredicted">
               <property name="text">
-               <string>Residuals vs. predicted</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotResidualsCovariates">
-              <property name="text">
-               <string>Residuals vs. covariates</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotResidualsDependent">
-              <property name="text">
-               <string>Residuals vs. dependent</string>
+               <string>Standardized residuals</string>
               </property>
              </widget>
             </item>
@@ -958,16 +943,38 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="plotResidualsHistogramStandardized">
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>16777215</height>
-               </size>
-              </property>
+            <item row="3" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsHistogram">
               <property name="text">
-               <string>Standardized residuals</string>
+               <string>Residuals histogram</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsCovariates">
+              <property name="text">
+               <string>Residuals vs. covariates</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsPredicted">
+              <property name="text">
+               <string>Residuals vs. predicted</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsDependent">
+              <property name="text">
+               <string>Residuals vs. dependent</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsQQ">
+              <property name="text">
+               <string>Q-Q plot standardized residuals</string>
               </property>
              </widget>
             </item>

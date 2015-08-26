@@ -162,14 +162,9 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "plotWidth",
-			"type": "Integer",
-			"default": 480
-		},
-		{
-			"name": "plotHeight",
-			"type": "Integer",
-			"default": 320
+			"default": false,
+			"name": "plotResidualsQQ",
+			"type": "Boolean"
 		}
 	]
 }
