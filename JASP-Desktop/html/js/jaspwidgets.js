@@ -192,13 +192,15 @@ JASPWidgets.Exporter = {
 					if (self.toolbar !== undefined) {
 						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar, exportParams)
 					}
+					var firstItem = true;
 					for (var j = 0; j < self.buffer.length; j++) {
 						if (self.buffer[j]) {
 							var bufferHtml = self.buffer[j].html;
 							if (bufferHtml !== '') {
-								completeText += self.buffer[j].html;
-								if (useNBSP && j < self.buffer.length - 1 && (JASPWidgets.Exporter.isInlineStyle(self.views[j].$el) == false))
+								if (useNBSP && firstItem === false && (JASPWidgets.Exporter.isInlineStyle(self.views[j - 1].$el) == false))
 									completeText += "&nbsp;";
+								completeText += self.buffer[j].html;
+								firstItem = false;
 							}
 						}
 					}
