@@ -22,10 +22,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.viewNotes = { list: [] };
 
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
-		var self = this;
-		this.toolbar.selectionElement = function () {
-			return self.$el.find('.jasp-analysis-inner');
-		};
+		//var self = this;
+		//this.toolbar.selectionElement = function () {
+		//	return self.$el.find('.jasp-analysis-inner');
+		//};
 
 		this.notes = this.model.get('notes');
 
@@ -341,7 +341,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.$el.empty();
 
-		var $innerElement = $('<div class="jasp-analysis-inner"></div>')
+		var $innerElement = this.$el;//$('<div class="jasp-analysis-inner"></div>')
 
 		var results = this.model.get("results");
 		if (results.error) {
@@ -369,7 +369,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.viewNotes.lastNoteBox.render();
 		$innerElement.append(this.viewNotes.lastNoteBox.$el);
 
-		this.$el.append($innerElement)
+		//this.$el.append($innerElement)
 
 		this.views.push(this.viewNotes.lastNoteBox);
 

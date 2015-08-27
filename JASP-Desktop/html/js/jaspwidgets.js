@@ -194,9 +194,12 @@ JASPWidgets.Exporter = {
 					}
 					for (var j = 0; j < self.buffer.length; j++) {
 						if (self.buffer[j]) {
-							completeText += self.buffer[j].html;
-							if (useNBSP && j < self.buffer.length && (JASPWidgets.Exporter.isInlineStyle(self.views[j].$el) == false))
-								completeText += "&nbsp;";
+							var bufferHtml = self.buffer[j].html;
+							if (bufferHtml !== '') {
+								completeText += self.buffer[j].html;
+								if (useNBSP && j < self.buffer.length - 1 && (JASPWidgets.Exporter.isInlineStyle(self.views[j].$el) == false))
+									completeText += "&nbsp;";
+							}
 						}
 					}
 					completeText += "</div>";
@@ -227,6 +230,13 @@ JASPWidgets.Exporter = {
 			style = "style='" + style + "'";
 
 		return style;
+	},
+
+	getSpacingStyles: function (element, exportParams) {
+		if (exportParams.isFormatted())
+			return JASPWidgets.Exporter.getStyles(element, ["padding", "margin", "display", "float"]);
+		else
+			return "";//JASPWidgets.Exporter.getStyles(element, ["display", "float"]);
 	},
 
 	getHeaderStyles: function (element, exportParams) {
@@ -263,7 +273,7 @@ JASPWidgets.Exporter = {
 
 	getNoteStyles: function (element, exportParams) {
 		if (exportParams.isFormatted())
-			return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width", "display", "font-size", "font-weight", "font", "color"]);
+			return JASPWidgets.Exporter.getStyles(element, ["margin", "padding", "max-width", "min-width", "display", "font-size", "font-weight", "font", "color", "border-top-style", "border-top-width", "border-top-color", "border-bottom-style", "border-bottom-width", "border-bottom-color"]);
 		else
 			return JASPWidgets.Exporter.getStyles(element, ["max-width", "min-width"]);
 	},
@@ -297,7 +307,8 @@ JASPWidgets.Exporter = {
 			html = '<' + toolbar.titleTag + headerStyles + '>' + toolbar.title + '</' + toolbar.titleTag + '>';
 		}
 
-		return '<div style="display: inline-block;">' + html + '</div>';
+		var topLevelStyles = " " + JASPWidgets.Exporter.getSpacingStyles(toolbar.$el, exportParams);
+		return '<div ' + topLevelStyles + '>' + html + '</div>';
 	},
 };
 
@@ -613,7 +624,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		var html = '';
 		if (this.isTextboxEmpty() === false)
-			html = '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '">' + this.$textbox.html() + '<div>';
+			html = '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '">' + this.$textbox.html() + '</div>';
 
 		
 
@@ -753,12 +764,13 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasCopy: (parent.hasCopy === undefined || parent.hasCopy()) && parent.copyMenuClicked !== undefined,
 			hasCite: (parent.hasCitation === undefined || parent.hasCitation()) && parent.citeMenuClicked !== undefined,
 			hasNotes: (parent.hasNotes === undefined || parent.hasNotes()) && parent.notesMenuClicked !== undefined,
+			hasEditTitle: (parent.hasEditTitle === undefined || parent.hasEditTitle()) && parent.editTitleClicked !== undefined,
 			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
 
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasNotes || this.options.hasRemove;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasNotes || this.options.hasRemove || this.options.hasEditTitle;
 	},
 
 	selectionElement: function() {

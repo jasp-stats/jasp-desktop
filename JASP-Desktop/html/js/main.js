@@ -14,8 +14,6 @@ $(document).ready(function () {
 	if (ua.indexOf("windows") !== -1)
 		$("body").addClass("windows")
 
-	var analysesViews = []
-	//var menuObject = null;
 	var selectedAnalysisId = -1;
 	var selectedAnalysis = null
 
@@ -27,6 +25,8 @@ $(document).ready(function () {
 	var $instructions = $("#instructions")
 	var showInstructions = false;
 
+	var analyses = null;
+
 	window.select = function (id) {
 
 		if (selectedAnalysis != null)
@@ -34,7 +34,7 @@ $(document).ready(function () {
 
 		selectedAnalysisId = id;
 
-		var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === id; });
+		var jaspWidget = analyses.getAnalysis(id);
 		if (jaspWidget !== undefined) {
 			selectedAnalysis = jaspWidget;
 			selectedAnalysis.select();
@@ -95,12 +95,6 @@ $(document).ready(function () {
 	}
 
 	window.exportHTML = function (filename) {
-		var exportObject = {
-			views: analysesViews,
-			getStyleAttr: function () {
-				return "style='display: block;'";
-			}
-		};
 
 		var exportParams = new JASPWidgets.Exporter.params();
 		exportParams.format = JASPWidgets.ExportProperties.format.formattedHTML;
@@ -112,23 +106,27 @@ $(document).ready(function () {
 			exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.resource;
 		}
 
-
-
-		JASPWidgets.Exporter.begin(exportObject, exportParams, function (exportParams, exportContent) {
+		analyses.exportBegin(exportParams, function (exportParams, exportContent) {
 			if (exportParams.error) {
 
 			}
 
 			if (exportParams.process === JASPWidgets.ExportProperties.process.save)
 				jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams));
-		}, true, "margin: .7em; padding: 1em;")
+		})
+
+		/*JASPWidgets.Exporter.begin(analyses, exportParams, function (exportParams, exportContent) {
+			if (exportParams.error) {
+
+			}
+
+			if (exportParams.process === JASPWidgets.ExportProperties.process.save)
+				jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams));
+		}, true, "margin: .7em; padding: 1em;")*/
 	}
 
 	window.getAnalysesNotes = function () {
-		var notes = [];
-		for (var i = 0; i < analysesViews.length; i++) {
-			notes.push(analysesViews[i].getAnalysisNotes());
-		}
+		var notes = analyses.getAnalysesNotes();
 		return JSON.stringify(notes)
 	}
 
@@ -145,23 +143,23 @@ $(document).ready(function () {
 				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing', complete: complete });
 			else if (itemBottom > windowBottom)
 				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing', complete: complete });
-			else
-				complete();
+			else if (complete !== undefined)
+				complete.call(item);
 		}
 		else {
 			if (itemTop > windowTop)
 				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing', complete: complete });
 			else if (itemBottom < windowBottom)
 				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing', complete: complete });
-			else
-				complete();
+			else if (complete !== undefined)
+				complete.call(item);
 		}
 
 	}
 
 	window.unselect = function () {
 
-		_.invoke(analysesViews, "unselect");
+		analyses.unselectAllAnalyses();
 
 		$("body").removeClass("selected")
 
@@ -176,21 +174,7 @@ $(document).ready(function () {
 
 		window.unselect()
 
-		var analysis = $('#id-' + id)
-
-		analysis.animate({ opacity: 0 }, 400, "easeOutCubic", function () {
-
-			analysis.slideUp(400, function () {
-				var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === id; });
-				if (jaspWidget !== undefined) {
-					jaspWidget.close();
-					analysesViews = _.without(analysesViews, jaspWidget);
-				}
-			});
-
-
-		})
-
+		analyses.removeAnalysisId(id);
 
 		if (showInstructions)
 			hideInstructions()
@@ -268,7 +252,25 @@ $(document).ready(function () {
 
 		var id = "id-" + analysis.id
 
-		var jaspWidget = _.find(analysesViews, function (cv) { return cv.model.get("id") === analysis.id; });
+		var spacer = $("#spacer")
+
+		if (analyses === null) {
+			analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
+
+			analyses.on("toolbar:showMenu", function (obj, options) {
+
+				jasp.showAnalysesMenu(JSON.stringify(options));
+				window.menuObject = obj;
+			});
+
+			analyses.render();
+
+			analyses.$el.css("opacity", 0)
+			spacer.before(analyses.$el);
+			analyses.$el.animate({ "opacity": 1 }, 400, "easeOutCubic")
+		}
+
+		var jaspWidget = analyses.getAnalysis(analysis.id);
 		if (jaspWidget == undefined) {
 			jaspWidget = new JASPWidgets.AnalysisView({ id: id, className: "jasp-analysis", model: new JASPWidgets.Analysis(analysis) });
 
@@ -286,12 +288,7 @@ $(document).ready(function () {
 				jaspWidget.select();
 			}
 
-			analysesViews.push(jaspWidget)
-
-			var spacer = $("#spacer")
-			newItem.css("opacity", 0)
-			spacer.before(newItem)
-			newItem.animate({ "opacity": 1 }, 400, "easeOutCubic")
+			analyses.addAnalysis(jaspWidget);
 
 			jaspWidget.on("optionschanged", function (id, options) {
 

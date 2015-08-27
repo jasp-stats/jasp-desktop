@@ -14,32 +14,44 @@ body:not(.windows) {
 }
 
 body.windows {
-	font-size: 110% ;
+	font-size: 85% ;
 }
 
 body.selected {
 	background-color: #E8E8E8 ;
 }
 
-h1:not(.in-toolbar), .h1-toolbar {
+h1/*:not(.in-toolbar), .h1-toolbar*/ {
 	font-size: 150% ;
+	/*margin: .5em 0 ;*/
+}
+
+h2/*:not(.in-toolbar), .h2-toolbar*/ {
+	font-size: 125% ;
+	/*margin: .7em 0 .2em ;*/
+}
+
+h3/*:not(.in-toolbar), .h3-toolbar*/ {
+	font-size: 100% ;
+	/*margin: .5em 0 .2em ;*/
+}
+
+/*.h1-toolbar {
 	margin: .5em 0 ;
 }
 
-h2:not(.in-toolbar), .h2-toolbar {
-	font-size: 125% ;
+.h2-toolbar {
 	margin: .7em 0 .2em ;
 }
 
-h3:not(.in-toolbar), .h3-toolbar {
-	font-size: 100% ;
+.h3-toolbar {
 	margin: .5em 0 .2em ;
-}
+}*/
 
-h1.in-toolbar, h2.in-toolbar, h3.in-toolbar {
+/*h1.in-toolbar, h2.in-toolbar, h3.in-toolbar {
 	margin: 0 ;
 	font-size: inherit;
-}
+}*/
 
 
 table {
@@ -208,19 +220,39 @@ svg > text
 	border-radius : 2px ;
 }
 
-#instructions, .jasp-analysis-inner {
+/*.jasp-title-toolbar {
+
+	margin-top: .7em ;
+	padding-top: 1em ;
+}*/
+
+.jasp_top_level {
+
+	margin-left: 1.7em ;
+	margin-right: 1.7em ;
+	/*padding-left: 1em ;
+	padding-right: 1em ;*/
+}
+
+.jasp-analysis {
+
+	margin: 0 .7em .7em .7em ;
+	padding: 0 1em 1em 1em ;
+}
+
+#instructions {
 
 	margin: .7em ;
 	padding: 1em ;
-	display: inline-block ;
+	/*display: inline-block ;*/
 }
 
-.jasp-analysis.unselected .jasp-analysis-inner:not(.jasp-menu-selected) {
+.jasp-analysis.unselected:not(.jasp-menu-selected) {
 
 	background-color: #E8E8E8 ;
 }
 
-.jasp-analysis.selected .jasp-analysis-inner:not(.jasp-menu-selected) {
+.jasp-analysis.selected:not(.jasp-menu-selected) {
 
 	background-color: white ;
 }

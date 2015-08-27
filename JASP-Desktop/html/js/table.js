@@ -59,8 +59,8 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 			});
 		}
 
-		if (visibility === false)
-			noteBox.clear();
+		//if (visibility === false)
+		//	noteBox.clear();
 
 		return true;
 	},
