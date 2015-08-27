@@ -246,7 +246,12 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 		archive_entry_free(entry);
 
 		char imagebuff[8192];
-		for (Json::Value::iterator iter = analysesJson.begin(); iter != analysesJson.end(); iter++)
+
+		Json::Value analysesDataList = analysesJson;
+		if (!analysesDataList.isArray())
+			analysesDataList = analysesJson["analyses"];
+
+		for (Json::Value::iterator iter = analysesDataList.begin(); iter != analysesDataList.end(); iter++)
 		{
 			Json::Value &analysisJson = *iter;
 			vector<string> paths = tempfiles_retrieveList(analysisJson["id"].asInt());

@@ -11,13 +11,13 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 
 		this.toolbar.title = 'Results';
 		this.toolbar.titleTag = "h1";
-		//var self = this;
-		//this.toolbar.selectionElement = function () {
-		//	return $('.jasp-analysis, .jasp-report-title');
-		//};
 
 		this.note = new JASPWidgets.Note();
 		this.noteBox = new JASPWidgets.NoteBox({ className: "jasp-notes jasp-main-note jasp_top_level", model: this.note });
+
+		this.listenTo(this.noteBox, "NoteBox:textChanged", function () {
+			this.trigger("meta:noteChanged", 'first');
+		});
 
 		this.views.push(this.noteBox);
 	},
@@ -125,6 +125,31 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 			notes.push(analysesViews[i].getAnalysisNotes());
 		}
 		return notes;
+	},
+
+	getResultsMeta: function () {
+		return {
+			title: this.toolbar.title,
+			notes: {
+				first: {
+					text: Mrkdwn.fromHtmlText(this.note.get('text')),
+					format: 'markdown',
+					visible: this.noteBox.visible
+				}
+			}
+		};
+	},
+
+	setResultsMeta: function (resultsNotes) {
+
+		var notes = resultsNotes['notes'];
+		var title = resultsNotes['title'];
+		var first = notes['first'];
+
+		this.note.set(first);
+		this.noteBox.setVisibility(first['visible']);
+		this.toolbar.title = title;
+		this.toolbar.render();
 	},
 
 	unselectAllAnalyses: function() {

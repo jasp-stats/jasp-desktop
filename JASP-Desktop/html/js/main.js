@@ -25,7 +25,7 @@ $(document).ready(function () {
 	var $instructions = $("#instructions")
 	var showInstructions = false;
 
-	var analyses = null;
+	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
 	window.select = function (id) {
 
@@ -114,20 +114,23 @@ $(document).ready(function () {
 			if (exportParams.process === JASPWidgets.ExportProperties.process.save)
 				jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams));
 		})
-
-		/*JASPWidgets.Exporter.begin(analyses, exportParams, function (exportParams, exportContent) {
-			if (exportParams.error) {
-
-			}
-
-			if (exportParams.process === JASPWidgets.ExportProperties.process.save)
-				jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams));
-		}, true, "margin: .7em; padding: 1em;")*/
 	}
 
 	window.getAnalysesNotes = function () {
 		var notes = analyses.getAnalysesNotes();
 		return JSON.stringify(notes)
+	}
+
+	window.getResultsMeta = function () {
+
+		var meta = analyses.getResultsMeta();
+
+		return JSON.stringify(meta)
+	}
+
+	window.setResultsMeta = function (resultsMeta) {
+
+		analyses.setResultsMeta(resultsMeta);
 	}
 
 	window.scrollIntoView = function (item, complete) {
@@ -254,13 +257,18 @@ $(document).ready(function () {
 
 		var spacer = $("#spacer")
 
-		if (analyses === null) {
-			analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
+		if (analyses.initialised === undefined) {
+
+			analyses.initialised = true;
 
 			analyses.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
 				window.menuObject = obj;
+			});
+
+			analyses.on("meta:noteChanged", function (key) {
+				jasp.updateNote(-1, key);
 			});
 
 			analyses.render();

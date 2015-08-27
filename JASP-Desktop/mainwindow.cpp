@@ -745,14 +745,28 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 		stringstream errorMsg;
 		stringstream corruptionStrings;
 		Json::Value analysesData = package->analysesData;
-		if (!analysesData.isArray() || analysesData.isNull())
+		if (analysesData.isNull())
 		{
 			errorFound = true;
 			errorMsg << "An error has been detected and analyses could not be loaded.";
 		}
 		else
 		{
-			for (Json::ValueIterator iter = analysesData.begin(); iter != analysesData.end(); iter++)
+
+			Json::Value analysesDataList = analysesData;
+			if (!analysesData.isArray()) {
+				analysesDataList = analysesData.get("analyses", Json::arrayValue);
+				Json::Value meta = analysesData.get("meta", Json::nullValue);
+				if ( ! meta.isNull())
+				{
+					QString results = tq(analysesData["meta"].toStyledString());
+					results = escapeJavascriptString(results);
+					results = "window.setResultsMeta(JSON.parse('" + results + "'));";
+					ui->webViewResults->page()->mainFrame()->evaluateJavaScript(results);
+				}
+			}
+
+			for (Json::ValueIterator iter = analysesDataList.begin(); iter != analysesDataList.end(); iter++)
 			{
 				try
 				{
@@ -964,7 +978,8 @@ void MainWindow::saveSelected(const QString &filename)
 		getAnalysesNotes();
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%PREVIEW%');");
 
-		Json::Value analysesData = Json::arrayValue;
+
+		Json::Value analysesDataList = Json::arrayValue;
 		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 		{
 			Analysis *analysis = *itr;
@@ -973,9 +988,14 @@ void MainWindow::saveSelected(const QString &filename)
 				Json::Value analysisData = analysis->asJSON();
 				analysisData["options"] = analysis->options()->asJSON();
 				analysisData["notes"] = analysis->notes();
-				analysesData.append(analysisData);
+				analysesDataList.append(analysisData);
 			}
 		}
+
+		Json::Value analysesData = Json::objectValue;
+		analysesData["analyses"] = analysesDataList;
+
+		analysesData["meta"] = getResultsMeta();
 
 		_package->analysesData = analysesData;
 
@@ -1330,6 +1350,17 @@ void MainWindow::removeAnalysisRequestHandler(int id)
 {
 	Analysis *analysis = _analyses->get(id);
 	removeAnalysis(analysis);
+}
+
+Json::Value MainWindow::getResultsMeta()
+{
+	QVariant notesData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getResultsMeta();");
+
+	Json::Value notes;
+	Json::Reader parser;
+	parser.parse(fq(notesData.toString()), notes);
+
+	return notes;
 }
 
 void MainWindow::getAnalysesNotes()
