@@ -81,6 +81,10 @@ private:
 	ActivityLog *_log;
 	QString _fatalError;
 
+	QString escapeJavascriptString(const QString &str);
+	void getAnalysesNotes();
+	Json::Value getResultsMeta();
+
 signals:
 	void analysisSelected(int id);
 	void analysisUnselected();
@@ -109,8 +113,6 @@ private slots:
 
 	void simulatedMouseClickHandler(int x, int y);
 	void updateNoteHandler(int id, QString key);
-	void getAnalysesNotes();
-	Json::Value getResultsMeta();
 	void removeAnalysisRequestHandler(int id);
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();

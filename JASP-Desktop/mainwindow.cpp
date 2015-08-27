@@ -354,7 +354,7 @@ void MainWindow::packageChanged(DataSetPackage *package)
 	}
 }
 
-QString escapeJavascriptString(const QString &str)
+QString MainWindow::escapeJavascriptString(const QString &str)
 {
 	QString out;
 	QRegExp rx("(\\r|\\n|\\\\|\"|\')");
