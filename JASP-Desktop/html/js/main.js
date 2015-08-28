@@ -67,6 +67,13 @@ $(document).ready(function () {
 		window.menuObject = null;
 	}
 
+	window.editTitleMenuClicked = function () {
+		if (window.menuObject.editTitleClicked)
+			window.menuObject.editTitleClicked()
+
+		window.menuObject = null;
+	}
+
 	window.citeMenuClicked = function () {
 		if (window.menuObject.citeMenuClicked | window.menuObject.citeMenuClicked())
 			window.menuObject.toolbar.displayMessage("Citations copied to clipboard");
@@ -368,9 +375,9 @@ var pushImageToClipboard = function (exportContent, exportParams) {
 	jasp.pushImageToClipboard(exportContent.raw, wrapHTML(exportContent.html, exportParams))
 }
 
-var simulateClick = function (x, y) {
+var simulateClick = function (x, y, count) {
 
-	jasp.simulatedMouseClick(x, y);
+	jasp.simulatedMouseClick(x, y, count);
 }
 
 var savingId = 0;

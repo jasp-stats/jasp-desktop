@@ -362,7 +362,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	//#F2F7FD
 
 	initialize: function () {
-		this.editting = false;
+		this.editing = false;
 		this.ghostTextVisible = true;
 		this.ghostText = 'Click here to add text...',
 		this.visible = this.model.get('visible') !== null ? this.model.get('visible') : (this.model.get('text') !== '');
@@ -441,10 +441,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	updateView: function () {
 		if (!this.internalChange && this.model.get('format') === 'html') {
 			if (this.$textbox !== undefined) {
-				var editting = this.model.get('editting');
+				var editing = this.model.get('editing');
 				var html = this.model.get("text");
 
-				if (!this.editting && this.isTextboxEmpty() && html.length === 0) {
+				if (!this.editing && this.isTextboxEmpty() && html.length === 0) {
 					if (this.ghostTextVisible)
 						this.$textbox.html('<p>' + this.ghostText + '</p>');
 					else
@@ -543,7 +543,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
 					window.scrollIntoView(self.$textbox, function () {
 						var pos = self.simulatedClickPosition();
-						window.simulateClick(pos.x, pos.y);
+						window.simulateClick(pos.x, pos.y, 1);
 						self.setGhostTextVisible(true);
 					});
 				});
@@ -646,10 +646,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			'jasp-comment': ['bold', 'italic', 'superscript', 'subscript', 'unordered-list', 'ordered-list', 'clear-formatting']
 		});
 
-		this.editting = true;
+		this.editing = true;
 		this.updateView();
-		this.$editor = etch.startEditting(this.$textbox, pageX, pageY);
-		this.$el.addClass('jasp-text-editting');
+		this.$editor = etch.startEditing(this.$textbox, pageX, pageY);
+		this.$el.addClass('jasp-text-editing');
 
 		this._checkTags();
 	},
@@ -658,11 +658,11 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		var self = e.data;
 		var relatedtarget = e.relatedTarget;
 		if (relatedtarget === null || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size()) {
-			self.editting = false;
+			self.editing = false;
 			self.updateView();
 			if (self.$editor !== undefined) {
 				etch.closeEditor(self.$editor, self.$textbox);
-				self.$el.removeClass('jasp-text-editting');
+				self.$el.removeClass('jasp-text-editing');
 				delete self.$editor;
 			}
 		}
@@ -709,6 +709,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.fixed = false;
 		this.visible = false;
 		this.selected = false;
+		this.editing = false;
 	},
 
 	$title: function() {
@@ -760,7 +761,63 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	},
 
 	events: {
-		'mousedown .toolbar-clickable': '_mouseDown'
+		'mousedown .toolbar-clickable': '_mouseDown',
+		'focusout': '_looseFocus',
+		'keydown .in-toolbar': '_keydown',
+
+	},
+
+	startEdit: function () {
+		this.editing = true;
+		var element = this.$title();
+		element[0].setAttribute("contenteditable", true);
+		var offset = element.offset();
+		var posY = offset.top + 5 - $(window).scrollTop() + 3;
+		var posX = offset.left + 5 - $(window).scrollLeft();
+		window.simulateClick(posX, posY, 3);
+
+		//var selection = window.getSelection();
+		//selection.selectAllChildren(element[0]);
+	},
+
+	endEdit: function (saveTitle) {
+		if (this._editEnding)
+			return;
+
+		this._editEnding = true;
+		var element = this.$title();
+		element[0].setAttribute("contenteditable", false);
+		this.editing = false;
+		var selection = window.getSelection();
+		selection.removeAllRanges();
+
+		if (saveTitle)
+			this.title = element.text();
+		else
+			element.html(this.title);
+
+		this._editEnding = false;
+	},
+
+	_looseFocus: function () {
+		this.endEdit(true);
+	},
+
+	_keydown: function (e) {
+		if (!this.editing)
+			return;
+
+		if (e.which == 9) {
+			e.preventDefault();
+		}
+		else if (e.which == 13) {
+			e.preventDefault();
+			this.endEdit(true);
+		}
+		else if (e.which == 27) {
+			e.preventDefault();
+			this.endEdit(false);
+		}
 	},
 
 	_mouseDownGeneral: function (e) {
@@ -784,6 +841,10 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	},
 
 	_mouseDown: function (e) {
+		
+		if (this.editing)
+			return true;
+
 		this.setFixedness(2);
 
 		var $titleLabel = this.$el.find('>:first-child');

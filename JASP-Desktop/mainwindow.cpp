@@ -165,7 +165,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
 	connect(this, SIGNAL(updateNote(int, QString)), this, SLOT(updateNoteHandler(int, QString)));
-	connect(this, SIGNAL(simulatedMouseClick(int, int)), this, SLOT(simulatedMouseClickHandler(int, int)));
+	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 
 
 	_buttonPanel = new QWidget(ui->pageOptions);
@@ -1306,6 +1306,12 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 
 	QString objName = tq(menuOptions["objectName"].asString());
 
+	if (menuOptions["hasEditTitle"].asBool())
+	{
+		_analysisMenu->addAction(_citeIcon, "Edit Title", this, SLOT(editTitleSelected()));
+		_analysisMenu->addSeparator();
+	}
+
 	if (menuOptions["hasCopy"].asBool())
 		_analysisMenu->addAction(_copyIcon, "Copy " + objName, this, SLOT(copySelected()));
 
@@ -1383,20 +1389,37 @@ void MainWindow::getAnalysesNotes()
 	}
 }
 
-void MainWindow::simulatedMouseClickHandler(int x, int y) {
-	QMouseEvent * clickEvent1 = new QMouseEvent ((QEvent::MouseButtonPress), QPoint(x, y),
-		Qt::LeftButton,
-		Qt::LeftButton,
-		Qt::NoModifier   );
+void MainWindow::simulatedMouseClickHandler(int x, int y, int count) {
 
-	qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent1);
+	int diff = count;
+	while (diff >= 2)
+	{
+		QMouseEvent * clickEvent = new QMouseEvent ((QEvent::MouseButtonDblClick), QPoint(x, y),
+			Qt::LeftButton,
+			Qt::LeftButton,
+			Qt::NoModifier   );
 
-	QMouseEvent * clickEvent2 = new QMouseEvent ((QEvent::MouseButtonRelease), QPoint(x, y),
-		Qt::LeftButton,
-		Qt::LeftButton,
-		Qt::NoModifier   );
+		qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent);
 
-	qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent2);
+		diff -= 2;
+	}
+
+	if (diff != 0)
+	{
+		QMouseEvent * clickEvent1 = new QMouseEvent ((QEvent::MouseButtonPress), QPoint(x, y),
+			Qt::LeftButton,
+			Qt::LeftButton,
+			Qt::NoModifier   );
+
+		qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent1);
+
+		QMouseEvent * clickEvent2 = new QMouseEvent ((QEvent::MouseButtonRelease), QPoint(x, y),
+			Qt::LeftButton,
+			Qt::LeftButton,
+			Qt::NoModifier   );
+
+		qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent2);
+	}
 }
 
 void MainWindow::updateNoteHandler(int id, QString key)
@@ -1408,6 +1431,14 @@ void MainWindow::removeSelected()
 {
 
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.removeMenuClicked();");
+
+}
+
+void MainWindow::editTitleSelected()
+{
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.editTitleMenuClicked();");
+	_package->setModified(true);
 
 }
 

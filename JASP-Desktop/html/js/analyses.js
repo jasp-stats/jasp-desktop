@@ -9,7 +9,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar jasp-title-toolbar jasp_top_level" })
 		this.toolbar.setParent(this);
 
-		this.toolbar.title = 'Results';
+		this.toolbar.title = 'Untitled Results';
 		this.toolbar.titleTag = "h1";
 
 		this.note = new JASPWidgets.Note();
@@ -52,7 +52,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 	},
 
 	editTitleClicked: function () {
-
+		this.toolbar.startEdit();
 	},
 
 	events: {
