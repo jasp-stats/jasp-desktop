@@ -44,30 +44,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 	notesMenuClicked: function (noteType, visibility) {
 
-		var noteBox = this.noteBox;
-		noteBox.$el.css("opacity", visibility ? 0 : 1);
-
-		if (visibility === true) {
-			noteBox.$el.slideDown(200, function () {
-				noteBox.setVisibility(visibility);
-				noteBox.setGhostTextVisible(false);
-				noteBox.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
-					window.scrollIntoView(noteBox.$textbox, function () {
-						var pos = noteBox.simulatedClickPosition();
-						simulateClick(pos.x, pos.y);
-						noteBox.setGhostTextVisible(true);
-					});
-				});
-			});
-		}
-		else {
-			noteBox.$el.slideUp(200, function () {
-				noteBox.setVisibility(visibility);
-			});
-		}
-
-		//if (visibility === false)
-		//	noteBox.clear();
+		this.noteBox.setVisibilityAnimate(visibility);
 
 		return true;
 	},

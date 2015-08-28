@@ -491,13 +491,39 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.internalChange = false;
 	},
 
-	setVisibility: function (value) {
+	setVisibility: function(value)
+	{
 		this.visible = value;
 
-		if (value) 
+		if (value)
 			this.$el.removeClass('jasp-hide');
-		else 
+		else
 			this.$el.addClass('jasp-hide');
+	},
+
+	setVisibilityAnimate: function (value) {
+
+		var self = this;
+		self.$el.css("opacity", value ? 0 : 1);
+
+		if (value === true) {
+			self.$el.slideDown(200, function () {
+				self.setVisibility(value);
+				self.setGhostTextVisible(false);
+				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
+					window.scrollIntoView(self.$textbox, function () {
+						var pos = self.simulatedClickPosition();
+						window.simulateClick(pos.x, pos.y);
+						self.setGhostTextVisible(true);
+					});
+				});
+			});
+		}
+		else {
+			self.$el.slideUp(200, function () {
+				self.setVisibility(value);
+			});
+		}
 	},
 
 	knownTags: ['p', 'br', 'ol', 'ul', 'li', 'b', 'i', 's', 'u', 'sup', 'sub', 'code', 'strong', 'em', 'blockquote', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
