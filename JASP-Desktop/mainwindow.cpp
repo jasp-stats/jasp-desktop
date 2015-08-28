@@ -1308,7 +1308,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 
 	if (menuOptions["hasEditTitle"].asBool())
 	{
-		_analysisMenu->addAction(_citeIcon, "Edit Title", this, SLOT(editTitleSelected()));
+		_analysisMenu->addAction("Edit Title", this, SLOT(editTitleSelected()));
 		_analysisMenu->addSeparator();
 	}
 

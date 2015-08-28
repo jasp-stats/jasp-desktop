@@ -770,6 +770,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	startEdit: function () {
 		this.editing = true;
 		var element = this.$title();
+		element.addClass("toolbar-editing");
 		element[0].setAttribute("contenteditable", true);
 		var offset = element.offset();
 		var posY = offset.top + 5 - $(window).scrollTop() + 3;
@@ -786,6 +787,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 		this._editEnding = true;
 		var element = this.$title();
+		element.removeClass("toolbar-editing");
 		element[0].setAttribute("contenteditable", false);
 		this.editing = false;
 		var selection = window.getSelection();
