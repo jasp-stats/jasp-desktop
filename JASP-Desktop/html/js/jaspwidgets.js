@@ -328,11 +328,12 @@ JASPWidgets.View = Backbone.View.extend({
 	/** Removes DOM tree elements and any listeners from or too the view object */
 	close: function () {
 		if (!this._isClosed) {
+			if (this.onClose)
+				this.onClose();
+
 			this.remove();
 			this.off();
 			this._isClosed = true;
-			if (this.onClose)
-				this.onClose();
 		}
 	},
 })
@@ -371,6 +372,33 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			this.model.toHtml();
 
 		this.listenTo(this.model, 'change:text', this.textChanged)
+
+		this.closeButton = new JASPWidgets.ActionView({ className: "jasp-closer" });
+		var self = this;
+		this.closeButton.actionTargetElement = function () {
+			return self.$el;
+		};
+		this.closeButton.setAction(function () {
+			self.setVisibilityAnimate(false);
+		});
+	},
+
+	events: {
+		'mouseenter': '_hoveringStart',
+		'mouseleave': '_hoveringEnd',
+	},
+
+	detach: function() {
+		this.$el.detach();
+		this.closeButton.$el.detach();
+	},
+
+	_hoveringStart: function (e) {
+		this.closeButton.setVisibility(true);
+	},
+
+	_hoveringEnd: function (e) {
+		this.closeButton.setVisibility(false);
 	},
 
 	clear: function () {
@@ -479,6 +507,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$textbox.on("focusout", null, this, this._looseFocus);
 		this.$textbox.on("mouseup", null, this, this._mouseup);
 		this.$textbox.on("keydown", null, this, this._keydown);
+
+		this.closeButton.render();
 
 		this._inited = true;
 
@@ -667,6 +697,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	onClosed: function() {
 		if (this.$textbox !== undefined)
 			this.$textbox.off();
+
+		this.closeButton.close();
 	}
 })
 
@@ -917,6 +949,48 @@ JASPWidgets.CollectionView = JASPWidgets.View.extend({
 	}
 });
 
+JASPWidgets.ActionView = JASPWidgets.View.extend({
+	initialize: function () {
+		this.$el.addClass('jasp-hide');
+
+		//$(document).mousemove(this, this._mousemove).mouseup(this, this._mouseup);
+	},
+
+	actionDisabled: function () {
+		return false;
+	},
+
+	actionTargetElement: function () {
+		return null;
+	},
+
+	setAction: function(action) {
+		this.actionCallback = action;
+	},
+
+	render: function () {
+		this.actionTargetElement().append(this.$el)
+
+		return this;
+	},
+
+	events: {
+		'click': '_clickHandler'
+	},
+
+	_clickHandler: function (e) {
+		if (!this.actionDisabled())
+			this.actionCallback.call(this);
+	},
+
+	setVisibility: function (value) {
+		if (value && !this.actionDisabled())
+			this.$el.removeClass('jasp-hide');
+		else
+			this.$el.addClass('jasp-hide');
+	}
+});
+
 JASPWidgets.Resizeable = Backbone.Model.extend({
 
 	defaults: { width: 150, height: 150 },
@@ -925,6 +999,7 @@ JASPWidgets.Resizeable = Backbone.Model.extend({
 		this.set({ width: w, height: h });
 	}
 });
+
 
 JASPWidgets.ResizeableView = JASPWidgets.View.extend({
 

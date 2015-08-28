@@ -1225,6 +1225,6 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 	onClose: function () {
 		this.toolbar.close();
 		if (this.noteBox !== undefined)
-			this.noteBox.$el.detach();
+			this.noteBox.detach();
 	}
 });

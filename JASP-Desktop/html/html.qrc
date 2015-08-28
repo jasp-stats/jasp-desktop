@@ -47,5 +47,6 @@
         <file>css/images/editor_icons.png</file>
         <file>js/mrkdwn.js</file>
         <file>js/analyses.js</file>
+        <file>css/images/closer.png</file>
     </qresource>
 </RCC>

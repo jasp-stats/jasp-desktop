@@ -262,6 +262,6 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		this.toolbar.close();
 		this.resizer.close();
 		if (this.noteBox !== undefined)
-			this.noteBox.$el.detach();
+			this.noteBox.detach();
 	}
 });

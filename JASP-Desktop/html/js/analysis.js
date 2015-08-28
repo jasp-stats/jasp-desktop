@@ -43,6 +43,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		'mouseleave': '_hoveringEnd',
 	},
 	
+	detachNotes: function() {
+		for (var i = 0; i < this.viewNotes.list.length; i++)
+			this.viewNotes.list[i].widget.detach();
+	},
+
 	createNoteBox: function (path, note, isRootNote) {
 
 		if (note === null || note === undefined)
@@ -309,11 +314,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	render: function () {
 
-		this.destroyViews();
-
 		this.toolbar.$el.detach();
-		this.viewNotes.firstNoteBox.$el.detach();
-		this.viewNotes.lastNoteBox.$el.detach();
+		this.detachNotes();
+
+		this.destroyViews();
 
 		this.views.push(this.viewNotes.firstNoteBox);
 

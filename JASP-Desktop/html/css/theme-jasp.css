@@ -363,6 +363,15 @@ td.squash-left
     height: 16px;
 }
 
+.jasp-closer {
+    background: top left no-repeat url(images/closer.png);
+    right: 2px;
+	top: 2px;
+	position: absolute;
+    width: 16px;
+    height: 16px;
+}
+
 .jasp-toolbar h1, .jasp-toolbar h2, .jasp-toolbar h3, .jasp-toolbar h4, .jasp-toolbar div , .jasp-toolbar span {
 	display: inline-block;
 	vertical-align: middle;
@@ -411,6 +420,7 @@ td.squash-left
 	margin-top: 0 ;
 	max-width: 70em;
 	min-width: 40em;
+	position: relative ;
 	/*padding-left: .5em;*/
 	/*padding-right: .5em;*/
 }
