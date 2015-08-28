@@ -249,7 +249,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		if (metaEntry.type == "title") {
 
-			this.toolbar.titleTag = "h1";
+			this.toolbar.titleTag = "h2";
 			this.toolbar.title = result;
 			this.toolbar.render();
 			$element.append(this.toolbar.$el);
@@ -259,11 +259,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		}
 		else if (metaEntry.type == "h1") {
 
-			$element.append("<h2>" + result + "</h2>")
+			$element.append("<h3>" + result + "</h3>")
 		}
 		else if (metaEntry.type == "h2") {
 
-			$element.append("<h3>" + result + "</h3>")
+			$element.append("<h4>" + result + "</h4>")
 		}
 		else {
 

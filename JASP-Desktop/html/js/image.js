@@ -103,7 +103,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 		if (title) {
 			this.toolbar.title = title;
-			this.toolbar.titleTag = "h2";
+			this.toolbar.titleTag = "h3";
 		}
 
 		this.toolbar.render();
