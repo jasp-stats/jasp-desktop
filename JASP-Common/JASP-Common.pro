@@ -68,7 +68,8 @@ SOURCES += \
     sharedmemory.cpp \
     tempfiles.cpp \
     utils.cpp \
-    version.cpp
+    version.cpp \
+    exporters/csvexporter.cpp
 
 
 HEADERS += \
@@ -138,5 +139,7 @@ HEADERS += \
     sharedmemory.h \
     tempfiles.h \
     utils.h \
-    version.h
+    version.h \
+    exporters/csvexporter.h
+
 
