@@ -7,7 +7,6 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	_availableVariablesModel.setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->listAvailableFields->setModel(&this->_availableVariablesModel);
 
 	_dependentModel = new TableModelVariablesAssigned();
@@ -27,6 +26,11 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	_covariatesModel->setVariableTypesSuggested(Column::ColumnTypeScale);
 	ui->covariates->setModel(_covariatesModel);
 
+	_factorsModel = new TableModelVariablesAssigned();
+	_factorsModel->setSource(&_availableVariablesModel);
+	_factorsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	ui->factors->setModel(_factorsModel);
+
 	_wlsWeightsModel = new TableModelVariablesAssigned();
 	_wlsWeightsModel->setSource(&_availableVariablesModel);
 	_wlsWeightsModel->setVariableTypesSuggested(Column::ColumnTypeScale);
@@ -34,7 +38,8 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->wlsWeights->setModel(_wlsWeightsModel);
 
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
-	ui->buttonAssignBlocks->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
+	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
+	ui->buttonAssignFactors->setSourceAndTarget(ui->listAvailableFields, ui->factors);
 	ui->buttonAssignWlsWeights->setSourceAndTarget(ui->listAvailableFields, ui->wlsWeights);
 
 	_modelModel = new TableModelAnovaModel(this);

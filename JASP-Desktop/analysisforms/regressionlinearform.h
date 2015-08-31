@@ -26,6 +26,7 @@ private:
 
 	TableModelVariablesAssigned *_dependentModel;
 	TableModelVariablesAssigned  *_covariatesModel;
+	TableModelVariablesAssigned  *_factorsModel;
 	TableModelVariablesAssigned *_wlsWeightsModel;
 
 	TableModelAnovaModel *_modelModel;

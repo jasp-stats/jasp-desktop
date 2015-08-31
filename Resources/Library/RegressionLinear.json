@@ -17,6 +17,10 @@
 			"type": "Variables"
 		},
 		{
+			"name": "factors",
+			"type": "Variables"
+		},
+		{
 			"name": "wlsWeights",
 			"type": "Variable"
 		},
