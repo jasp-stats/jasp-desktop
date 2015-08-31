@@ -44,8 +44,8 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
 	_anovaModel = new TableModelAnovaModel(this);
+	_anovaModel->setPiecesCanBeAssigned(false);
 	ui->modelTerms->setModel(_anovaModel);
-	ui->modelTerms->setAssignPiecesVisible(false);
 
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));

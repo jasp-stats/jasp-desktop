@@ -27,7 +27,6 @@ public:
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void setModel(TableModelAnovaModel *model);
 
-	void setAssignPiecesVisible(bool visible);
 	void setFactorsLabel(const QString &label);
 	
 private slots:

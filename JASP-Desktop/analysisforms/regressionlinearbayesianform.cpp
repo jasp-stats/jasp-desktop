@@ -27,6 +27,7 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
 	_anovaModel = new TableModelAnovaModel(this);
+	_anovaModel->setPiecesCanBeAssigned(false);
 	ui->modelTerms->setModel(_anovaModel);
 	ui->modelTerms->hide();
 

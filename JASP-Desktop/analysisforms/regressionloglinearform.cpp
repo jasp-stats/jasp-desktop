@@ -24,6 +24,7 @@ RegressionLogLinearForm::RegressionLogLinearForm(QWidget *parent) :
 	ui->buttonAssignFactors->setSourceAndTarget(ui->listAvailableFields, ui->factors);
 
 	_model = new TableModelAnovaModel(this);
+	_model->setPiecesCanBeAssigned(false);
 	ui->modelTerms->setModel(_model);
 	ui->modelTerms->hide();
 

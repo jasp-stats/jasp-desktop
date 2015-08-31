@@ -569,3 +569,13 @@ void TableModelAnovaModel::updateNuisances(bool checked)
 
 	emit dataChanged(this->index(0,1), this->index(_rows.size() - 1, 1));
 }
+bool TableModelAnovaModel::piecesCanBeAssigned() const
+{
+	return _piecesCanBeAssigned;
+}
+
+void TableModelAnovaModel::setPiecesCanBeAssigned(bool piecesCanBeAssigned)
+{
+	_piecesCanBeAssigned = piecesCanBeAssigned;
+}
+

@@ -38,6 +38,7 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->buttonAssignWlsWeights->setSourceAndTarget(ui->listAvailableFields, ui->wlsWeights);
 
 	_modelModel = new TableModelAnovaModel(this);
+	_modelModel->setPiecesCanBeAssigned(false);
 	ui->modelTerms->setModel(_modelModel);
 	ui->modelTerms->hide();
 

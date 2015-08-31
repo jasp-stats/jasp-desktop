@@ -89,15 +89,11 @@ void AnovaModelWidget::setModel(TableModelAnovaModel *model)
 	if (_boundTo != NULL)
 		_tableModelAnovaModel->bindTo(_boundTo);
 
+	ui->buttonAssignMenu->setVisible(_tableModelAnovaModel->piecesCanBeAssigned());
 	ui->listModelTerms->setModel(model);
 
 	variablesAvailableChanged();
 	connect(_tableModelAnovaModel, SIGNAL(variablesAvailableChanged()), this, SLOT(variablesAvailableChanged()));
-}
-
-void AnovaModelWidget::setAssignPiecesVisible(bool visible)
-{
-	ui->buttonAssignMenu->setVisible(visible);
 }
 
 void AnovaModelWidget::setFactorsLabel(const QString &label)
