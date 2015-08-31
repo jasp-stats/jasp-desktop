@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>593</width>
-    <height>1215</height>
+    <width>606</width>
+    <height>1252</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -834,16 +834,6 @@
            </layout>
           </widget>
          </item>
-         <item row="0" column="1" rowspan="3">
-          <widget class="QWidget" name="widget_18" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>1</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
           <widget class="QWidget" name="widget_19" native="true">
            <layout class="QGridLayout" name="gridLayout_14">
@@ -861,7 +851,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="GroupBox" name="groupBox_5">
+          <widget class="BoundGroupBox" name="missingValues">
            <property name="title">
             <string>Missing Values</string>
            </property>
@@ -869,36 +859,123 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2excludeCasesPairwise">
+              <property name="text">
+               <string>Exclude cases pairwise</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="0">
-             <widget class="BoundGroupBox" name="missingValues">
-              <layout class="QGridLayout" name="gridLayout_12">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="_1excludeCasesListwise">
-                 <property name="text">
-                  <string>Exclude cases listwise</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="_2excludeCasesPairwise">
-                 <property name="text">
-                  <string>Exclude cases pairwise</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+             <widget class="QRadioButton" name="_1excludeCasesListwise">
+              <property name="text">
+               <string>Exclude cases listwise</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="1" rowspan="3">
+          <widget class="QWidget" name="widget_18" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>1</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <widget class="QWidget" name="widget_8" native="true">
+     <layout class="QGridLayout" name="gridLayout_29">
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="pushButton_3">
+        <property name="text">
+         <string>Assumption Checks</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QWidget" name="panelAssumptionChecks" native="true">
+        <layout class="QGridLayout" name="gridLayout_27">
+         <item row="0" column="0">
+          <widget class="GroupBox" name="groupBox_3">
+           <property name="title">
+            <string>Residual plots</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_28">
+            <item row="5" column="1" colspan="2">
+             <widget class="BoundCheckBox" name="plotResidualsHistogramStandardized">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Standardized residuals</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_8">
+              <property name="maximumSize">
+               <size>
+                <width>15</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsHistogram">
+              <property name="text">
+               <string>Residuals histogram</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsCovariates">
+              <property name="text">
+               <string>Residuals vs. covariates</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsPredicted">
+              <property name="text">
+               <string>Residuals vs. predicted</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsDependent">
+              <property name="text">
+               <string>Residuals vs. dependent</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="plotResidualsQQ">
+              <property name="text">
+               <string>Q-Q plot standardized residuals</string>
+              </property>
              </widget>
             </item>
            </layout>
