@@ -450,3 +450,7 @@ td.squash-left
 pre {
 	display: inline;
 }
+
+.in-toolbar {
+	min-width: 1em;
+}

@@ -250,7 +250,7 @@
 
     // This function is to be used as callback to whatever event
     // you use to initialize editing 
-    startEditting: function ($editable, pageX, pageY) {
+    startEditing: function ($editable, pageX, pageY) {
       //e.stopPropagation();
 
     	etch.owner = $editable;
