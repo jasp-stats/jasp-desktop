@@ -37,8 +37,8 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
 	_anovaModel = new TableModelAnovaModel(this);
+	_anovaModel->setPiecesCanBeAssigned(false);
 	ui->modelTerms->setModel(_anovaModel);
-	ui->modelTerms->setAssignPiecesVisible(false);
 	ui->modelTerms->hide();
 
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));

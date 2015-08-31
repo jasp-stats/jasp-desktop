@@ -15,6 +15,10 @@ RegressionLogLinearForm::RegressionLogLinearForm(QWidget *parent) :
 	_countsModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->counts->setModel(_countsModel);
 
+	ui->method->addItem("Enter");
+	ui->method->addItem("Backward");
+	ui->method->addItem("Forward");
+
 	_factorsModel = new TableModelVariablesAssigned();
 	_factorsModel->setSource(&_availableVariablesModel);
 	_factorsModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
@@ -24,6 +28,7 @@ RegressionLogLinearForm::RegressionLogLinearForm(QWidget *parent) :
 	ui->buttonAssignFactors->setSourceAndTarget(ui->listAvailableFields, ui->factors);
 
 	_model = new TableModelAnovaModel(this);
+	_model->setPiecesCanBeAssigned(false);
 	ui->modelTerms->setModel(_model);
 	ui->modelTerms->hide();
 

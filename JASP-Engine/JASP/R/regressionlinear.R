@@ -136,7 +136,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		list(name = "coefficient covariances", type = "table"),
 		list(name = "collinearity diagnostics", type = "table"),
 		list(name = "casewise diagnostics", type = "table"),
-		list(name = "residuals statistics", type = "table")
+		list(name = "residuals statistics", type = "table"),
+		list(name="plots", type="images")
 		)
 	
 	results[[".meta"]] <- .meta
@@ -146,6 +147,16 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	#######################################
 	###	 	   LINEAR REGRESSION		###
 	#######################################
+	
+	state <- .retrieveState()
+	
+	diff <- NULL
+	
+	if (!is.null(state)) {
+	
+		diff <- .diff(options, state$options)
+	
+	}
 	
 	# Fit Linear Model
 	lm.model <- list()
@@ -181,7 +192,38 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 	}
 	
+	# Check whether all main effects and lower interaction terms are included in case of interactions
 	
+	if (length(options$modelTerms) > 0) {
+		
+		max.no.components <- max(sapply (options$modelTerms, function(term){length (term$components)}))
+		
+		if (max.no.components > 1) {
+		
+			for (term in options$modelTerms) {
+			
+				components <- term$components
+				
+				if (length (components) > 1) {
+					
+					no.children <- 2^length (components) - 1
+					inclusion <- sapply (options$modelTerms, function (terms) {
+							term.components <- terms$components
+							if (sum (term.components %in% components) == length (term.components)) {
+								return (TRUE)
+							}
+							return (FALSE)
+						})
+						
+					if (sum (inclusion) != no.children) {
+						
+						error.message <- "Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included"
+						list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
+					}
+				}
+			}
+		}
+	}
 	
 	if (dependent.variable != "") {
 		
@@ -1668,7 +1710,612 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		results[["residuals statistics"]] <- residualsStatistics
 	}
 	
-	results
+	
+	#######################################
+	###	 	   RESIDUAL PLOTS   		###
+	#######################################
+	
+	plots.regression <- list()
+	plotTypes <- list()
+	
+	if (length(options$modelTerms) > 0 && dependent.variable != "") {
+		
+		lm.model <- lm.model[[length(lm.model)]]
+		
+		if (options$plotResidualsDependent) {
+		
+			if (!is.null(state) && paste0("plotResidualsDependent", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
+			diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
+			&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
+				
+				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				# then, if the requested plot already exists, use it
+				
+				stateIndex <- which(state$plotTypes == paste0("plotResidualsDependent", dependent.variable))[1]
+				
+				plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
+				results[["plots"]] <- plots.regression
+				
+			} else {
+				
+				plot <- list()
+				
+				plot[["title"]] <- paste0("Residuals vs. Dependent")
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				plot[["status"]] <- "waiting"
+				
+				image <- .beginSaveImage(530, 400)
+				.plotResiduals(xlab=dependent.variable, ylab="Residuals", dontPlotData=TRUE)
+				plot[["data"]] <- .endSaveImage(image)
+				
+				plots.regression[[length(plots.regression)+1]] <- plot
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+				return()
+				
+			}
+			
+			plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsDependent", dependent.variable)
+			
+		}
+		
+		
+		
+		if (options$plotResidualsCovariates) {
+			
+			variables.in.model <- variables.in.model.copy
+			
+			for (var in seq_along(variables.in.model)) {
+				
+				if (grepl(":", variables.in.model[var])) {
+					
+					vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+					name <- paste0(vars, collapse=" * ")
+					nameTitle <- paste0(vars, collapse="\u2009\u273b\u2009")
+					
+				} else {
+					
+					name <- variables.in.model[var]
+					nameTitle <- name
+				}
+				
+				if (!is.null(state) && paste0("plotResidualsCovariates", variables.in.model[var]) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
+					diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
+					&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
+					
+					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+					# then, if the requested plot already exists, use it
+					
+					stateIndex <- which(state$plotTypes == paste0("plotResidualsCovariates", variables.in.model[var]))[1]
+					
+					plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
+					results[["plots"]] <- plots.regression
+				
+				} else {
+					
+					plot <- list()
+					
+					plot[["title"]] <- paste0("Residuals vs. ", nameTitle)
+					plot[["width"]]  <- 530
+					plot[["height"]] <- 400
+					plot[["status"]] <- "waiting"
+					
+					image <- .beginSaveImage(530, 400)
+					.plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
+					plot[["data"]] <- .endSaveImage(image)
+					
+					plots.regression[[length(plots.regression)+1]] <- plot
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+					return()
+					
+				}
+				
+				plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsCovariates", variables.in.model[var])
+				
+			}
+		}
+		
+		
+		
+		if (options$plotResidualsPredicted) {
+			
+			
+			if (!is.null(state) && paste0("plotResidualsPredicted", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
+				diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
+				&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
+				
+				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				# then, if the requested plot already exists, use it
+				
+				stateIndex <- which(state$plotTypes == paste0("plotResidualsPredicted", dependent.variable))[1]
+				
+				plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
+				results[["plots"]] <- plots.regression
+				
+			} else {
+				
+				plot <- list()
+				
+				plot[["title"]] <- paste0("Residuals vs. Predicted")
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				plot[["status"]] <- "waiting"
+				
+				image <- .beginSaveImage(530, 400)
+				.plotResiduals(xlab="Predicted Values", ylab="Residuals", dontPlotData=TRUE)
+				plot[["data"]] <- .endSaveImage(image)
+				
+				plots.regression[[length(plots.regression)+1]] <- plot
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+			}
+			
+			plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsPredicted", dependent.variable)
+		}
+		
+		if (options$plotResidualsHistogram) {
+			
+			
+			if (!is.null(state) && paste0("plotResidualsHistogram", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$plotResidualsHistogramStandardized == FALSE
+				&& diff$modelTerms == FALSE && diff$dependent == FALSE && diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE &&
+				diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE && diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE &&
+				diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
+				
+				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				# then, if the requested plot already exists, use it
+				
+				stateIndex <- which(state$plotTypes == paste0("plotResidualsHistogram", dependent.variable))[1]
+				
+				plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
+				results[["plots"]] <- plots.regression
+				
+			} else {
+				
+				plot <- list()
+				
+				if (options$plotResidualsHistogramStandardized) {
+					
+					plot[["title"]] <- "Standardized Residuals Histogram"
+					resName <- "Standardized Residuals"
+					
+				} else {
+					
+					plot[["title"]] <- "Residuals Histogram"
+					resName <- "Residuals"
+				}
+				
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				plot[["status"]] <- "waiting"
+				
+				image <- .beginSaveImage(530, 400)
+				.plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
+				plot[["data"]] <- .endSaveImage(image)
+				
+				plots.regression[[length(plots.regression)+1]] <- plot
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+			}
+			
+			plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsHistogram", dependent.variable)
+		}
+		
+		if (options$plotResidualsQQ) {
+			
+			
+			if (!is.null(state) && paste0("plotResidualsQQ", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
+				diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
+				&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
+				
+				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				# then, if the requested plot already exists, use it
+				
+				stateIndex <- which(state$plotTypes == paste0("plotResidualsQQ", dependent.variable))[1]
+				
+				plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
+				results[["plots"]] <- plots.regression
+				
+			} else {
+				
+				plot <- list()
+				
+				plot[["title"]] <- "Q-Q Plot Standardized Residuals"
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				plot[["status"]] <- "waiting"
+				
+				image <- .beginSaveImage(530, 400)
+				.plotQQresidualsRegression(dontPlotData=TRUE)
+				plot[["data"]] <- .endSaveImage(image)
+				
+				plots.regression[[length(plots.regression)+1]] <- plot
+				
+				results[["plots"]] <- plots.regression
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+					
+			}
+			
+			plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsQQ", dependent.variable)
+			
+		}
+		
+		
+		if (perform == "run") {
+			
+			j <- 1
+			
+			if (options$plotResidualsDependent) {
+				
+				if (!is.null(state) && paste0("plotResidualsDependent", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
+					diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
+					&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
+					
+					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+					# then, if the requested plot already exists, use it
+					
+					stateIndex <- which(state$plotTypes == paste0("plotResidualsDependent", dependent.variable))[1]
+					
+					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
+					results[["plots"]] <- plots.regression
+					
+				} else {
+					
+					
+					plots.regression[[j]]$status <- "running"
+					
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
+					plot <- plots.regression[[j]]
+					
+					if (length(list.of.errors) > 0) {
+						
+						plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
+						
+					} else {
+						
+						dependent <- lm.model$lm.fit$model[ , 1]
+						res <- residuals(lm.model$lm.fit)
+						
+						p <- try(silent=FALSE, expr= {
+							
+							image <- .beginSaveImage(530, 400)
+							.plotResiduals(xVar=dependent, res=res, xlab=dependent.variable, ylab="Residuals")
+							plot[["data"]] <- .endSaveImage(image)
+						})
+						
+						if (class(p) == "try-error") {
+							
+							errorMessage <- .extractErrorMessage(p)
+							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+						}
+					}
+					
+					plot[["status"]] <- "complete"
+					plots.regression[[j]] <- plot
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+				}
+				
+				j <- j + 1
+				
+			}
+			
+			if (options$plotResidualsCovariates) {
+				
+				
+				for (var in seq_along(variables.in.model)) {
+					
+					
+					if (!is.null(state) && paste0("plotResidualsCovariates", variables.in.model[var]) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE 
+						&& diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && 
+						diff$steppingMethodCriteriaPEntry == FALSE && diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE &&
+						diff$missingValues == FALSE))) {
+						
+						# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+						# then, if the requested plot already exists, use it
+						
+						stateIndex <- which(state$plotTypes == paste0("plotResidualsCovariates", variables.in.model[var]))[1]
+						
+						plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
+						results[["plots"]] <- plots.regression
+						
+					} else {
+						
+						if (grepl(":", variables.in.model[var])) {
+							
+							# if interaction term
+							
+							vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+							name <- paste0(vars, collapse=" * ")
+							
+							int.var <- rep(1, nrow(dataset))
+							
+							for (i in seq_along(vars))
+								int.var <- int.var * dataset[[ .v(vars[i]) ]]
+							
+							xVar <- int.var
+							
+						} else {
+							
+							xVar <- dataset[[ .v(variables.in.model[var]) ]]
+							name <- variables.in.model[var]
+						}
+						
+						plots.regression[[j]]$status <- "running"
+						
+						results[["plots"]] <- plots.regression
+						
+						if ( ! .shouldContinue(callback(results)))
+							return()
+						
+						plot <- plots.regression[[j]]
+						
+						if (length(list.of.errors) > 0) {
+							
+							plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
+							
+						} else {
+							
+							res <- residuals(lm.model$lm.fit)
+							
+							p <- try(silent=FALSE, expr= {
+								
+								image <- .beginSaveImage(530, 400)
+								.plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
+								plot[["data"]] <- .endSaveImage(image)
+							})
+							
+							if (class(p) == "try-error") {
+							
+								errorMessage <- .extractErrorMessage(p)
+								plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+							}
+						}
+						
+						plot[["status"]] <- "complete"
+						plots.regression[[j]] <- plot
+						results[["plots"]] <- plots.regression
+						
+						if ( ! .shouldContinue(callback(results)))
+							return()
+						
+					}
+					
+					j <- j + 1
+					
+				}
+			}
+			
+			
+			if (options$plotResidualsPredicted) {
+				
+				
+				if (!is.null(state) && paste0("plotResidualsPredicted", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
+					diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
+					&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
+					
+					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+					# then, if the requested plot already exists, use it
+					
+					stateIndex <- which(state$plotTypes == paste0("plotResidualsPredicted", dependent.variable))[1]
+					
+					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
+					results[["plots"]] <- plots.regression
+				
+				} else {
+					
+					plots.regression[[j]]$status <- "running"
+					
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
+					plot <- plots.regression[[j]]
+					
+					if (length(list.of.errors) > 0) {
+						
+						plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
+						
+					} else {
+						
+						pred <- predict(lm.model$lm.fit)
+						res <- residuals(lm.model$lm.fit)
+						
+						p <- try(silent=FALSE, expr= {
+							
+							image <- .beginSaveImage(530, 400)
+							.plotResiduals(xVar=pred, res=res, xlab="Predicted Values", ylab="Residuals")
+							plot[["data"]] <- .endSaveImage(image)
+						})
+						
+						if (class(p) == "try-error") {
+							
+							errorMessage <- .extractErrorMessage(p)
+							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+						}
+					}
+					
+					plot[["status"]] <- "complete"
+					plots.regression[[j]] <- plot
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
+				}
+				
+				j <- j + 1
+				
+			}
+			
+			if (options$plotResidualsHistogram) {
+				
+				
+				if (!is.null(state) && paste0("plotResidualsHistogram", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$plotResidualsHistogramStandardized == FALSE &&
+					diff$modelTerms == FALSE && diff$dependent == FALSE && diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE &&
+					diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE && diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE &&
+					diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
+					
+					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+					# then, if the requested plot already exists, use it
+					
+					stateIndex <- which(state$plotTypes == paste0("plotResidualsHistogram", dependent.variable))[1]
+					
+					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
+					results[["plots"]] <- plots.regression
+					
+				} else {
+					
+					plots.regression[[j]]$status <- "running"
+					
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
+					plot <- plots.regression[[j]]
+					
+					if (length(list.of.errors) > 0) {
+						
+						plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
+						
+					} else {
+						
+						res <- residuals(lm.model$lm.fit)
+						resName <- "Residuals"
+						
+						if (options$plotResidualsHistogramStandardized) {
+							
+							res <- res / sd(res)
+							resName <- "Standardized Residuals"
+						}
+						
+						p <- try(silent=FALSE, expr= {
+							
+							image <- .beginSaveImage(530, 400)
+							.plotResidualsHistogram(res=res, resName=resName)
+							plot[["data"]] <- .endSaveImage(image)
+						})
+						
+						if (class(p) == "try-error") {
+							
+							errorMessage <- .extractErrorMessage(p)
+							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+						}
+					}
+					
+					plot[["status"]] <- "complete"
+					plots.regression[[j]] <- plot
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
+				}
+				
+				j <- j + 1
+				
+			}
+			
+			if (options$plotResidualsQQ) {
+				
+				
+				if (!is.null(state) && paste0("plotResidualsQQ", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
+					diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
+					&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
+					
+					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+					# then, if the requested plot already exists, use it
+					
+					stateIndex <- which(state$plotTypes == paste0("plotResidualsQQ", dependent.variable))[1]
+					
+					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
+					results[["plots"]] <- plots.regression
+					
+				} else {
+					
+					plots.regression[[j]]$status <- "running"
+					
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
+					plot <- plots.regression[[j]]
+					
+					if (length(list.of.errors) > 0) {
+						
+						plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
+						
+					} else {
+						
+						res <- residuals(lm.model$lm.fit)
+						resSt <- res / sd(res)
+						
+						p <- try(silent=FALSE, expr= {
+							
+							image <- .beginSaveImage(530, 400)
+							.plotQQresidualsRegression(res=resSt)
+							plot[["data"]] <- .endSaveImage(image)
+						})
+						
+						if (class(p) == "try-error") {
+							
+							errorMessage <- .extractErrorMessage(p)
+							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+						}
+					}
+					
+					plot[["status"]] <- "complete"
+					plots.regression[[j]] <- plot
+					results[["plots"]] <- plots.regression
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
+				}
+				
+				j <- j + 1
+				
+			}
+			
+		}
+	}
+	
+	keep <- NULL
+	
+	for (plot in plots.regression)
+		keep <- c(keep, plot$data)
+	
+	if (perform == "init") {
+		
+		return(list(results=results, status="inited", state=state, keep=keep))
+		
+	} else {
+	
+		return(list(results=results, status="complete", state=list(options=options, results=results, plotsRegression=plots.regression, plotTypes=plotTypes), keep=keep))
+	}
+	
 }
 
 .partAndPartialCorrelation <- function(dependent.variable, variable.of.interest, model.variables, dataset) {
@@ -2275,4 +2922,175 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	}
 	
 	return(vVars)
+}
+
+
+.plotResiduals <- function(xVar=NULL, res=NULL, xlab, ylab="Residuals", dontPlotData=FALSE, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
+	
+	op <- par(mar= c(5.6, 7, 4, 7) + 0.1, las=1, xpd=TRUE)
+	
+	if (dontPlotData) {
+		
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis=cexXAxis, lwd=lwdAxis)
+		axis(2, at=0:1, labels=FALSE, cex.axis=cexYAxis, lwd=lwdAxis)
+		axis(4, at=0:1, labels=FALSE, cex.axis=cexYAxis, lwd=lwdAxis)
+		mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
+		mtext(text = ylab, side = 2, cex=1.5, line = 3.25, las=0)
+		xx <- grconvertX(0.92, "ndc", "user")
+		text(xx, .5, "Standardized Residuals", srt= -90, cex= 1.6)
+		
+		return()
+		
+	}
+	
+	d <- data.frame(xx= xVar, yy= res)
+	d <- na.omit(d)
+	xVar <- d$xx
+	res <- d$yy
+	
+	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
+	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+	xticks <- pretty(c(xlow, xhigh))
+	ylow <- min((min(res) - 0.1* min(res)), min(pretty(res)))
+	yhigh <- max((max(res) + 0.1* max(res)), max(pretty(res)))
+	
+	yticks <- pretty(c(ylow, yhigh, 0))
+	
+	yLabs <- vector("character", length(yticks))
+	
+	for (i in seq_along(yticks)) {
+		
+		if (yticks[i] < 10^6) {
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+			
+		} else {
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+		}
+	}
+	
+	plot(1, type="n", ylab="", xlab="", axes=FALSE, ylim= range(yticks), xlim= range(xticks), cex= cexPoints)
+	lines(range(xticks), rep(0, 2), lwd=lwd, col="darkred")
+	
+	points(xVar, res, col="black", pch=21, bg = "grey", cex= cexPoints)
+	
+	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis, lwd=lwdAxis)
+	axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis, lwd=lwdAxis)
+	
+	maxYlab <- max(nchar(yLabs))
+	distLab <- maxYlab / 1.8
+	mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
+	mtext(text = ylab, side = 2, cex=1.5, line = distLab + 2.1, las=0)
+	
+	stAxisTmp <- pretty( yticks / sd(res) )
+	stAxisOriginalScaleTmp <- stAxisTmp * sd(res)
+	stAxisOriginalScale <- stAxisOriginalScaleTmp[stAxisOriginalScaleTmp < max(yticks) & stAxisOriginalScaleTmp > min(yticks)]
+	stAxis <- stAxisOriginalScale / sd(res)
+	
+	axis(side = 4, at= stAxisOriginalScale, labels=stAxis, cex.axis= cexYAxis, lwd=lwdAxis)
+	xx <- grconvertX(0.92, "ndc", "user")
+	text(xx, mean(range(yticks)), "Standardized Residuals", srt= -90, cex= 1.6)
+	
+	par(op)
+	
+}
+
+.plotResidualsHistogram <- function(res=NULL, resName="Residuals", dontPlotData=FALSE, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
+	
+	op <- par(mar= c(5.6, 7, 4, 4) + 0.1)
+	
+	if (dontPlotData) {
+		
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		ax1 <- axis(1, line = 0.3, at=0:1, labels=FALSE, cex.axis = 1.2)
+		axis(2, at = c(0, .5, 1) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), cex.axis= 1.5, mgp= c(3, 0.7, 0), las=0)
+		mtext(text = resName, side = 1, cex=1.5, line = 3)
+		
+		return()
+	}
+	
+	density <- density(res)
+	
+	h <- hist(res, plot = FALSE)
+	jitVar <- jitter(res)
+	yhigh <- max(max(h$density), max(density$y))
+	ylow <- 0
+	xticks <- pretty(c(res, h$breaks), min.n= 3)
+	
+	plot(1, xlim= range(xticks), ylim= c(ylow, yhigh), type="n", axes=FALSE, ylab="", xlab="")
+	h <- hist(res, freq=F, main = "", ylim= c(ylow, yhigh), xlab = "", ylab = " ", axes = F, col = "grey", add= TRUE, nbreaks= round(length(res)/5))
+	ax1 <- axis(1, line = 0.3, at= xticks, lab= xticks, cex.axis = 1.2)
+	mtext(text = resName, side = 1, cex=1.5, line = 3)
+	ax2 <- axis(2, at = c(0, max(max(h$density), max(density$y))/2, max(max(h$density), max(density$y))) , labels = c("", "Density", ""), lwd.ticks=0, pos= range(ax1)- 0.05*diff(range(ax1)), cex.axis= 1.5, mgp= c(3, 0.7, 0), las=0)
+	
+	if(rugs)
+		rug(jitVar)
+	
+	lines(density$x[density$x>= min(ax1) & density$x <= max(ax1)], density$y[density$x>= min(ax1) & density$x <= max(ax1)], lwd= lwd)
+	
+	par(op)
+	
+}
+
+
+.plotQQresidualsRegression <- function(res=NULL, xlab="Theoretical Quantiles", ylab= "Standardized Residuals", dontPlotData=FALSE, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
+	
+	op <- par(mar= c(5.6, 7, 4, 4) + 0.1, las=1, xpd=FALSE)
+	
+	if (dontPlotData) {
+		
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis=cexXAxis, lwd=lwdAxis, xlab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis=cexYAxis, lwd=lwdAxis, ylab="")
+		mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
+		mtext(text = ylab, side = 2, cex=1.5, line = 3.25, las=0)
+		
+		return()
+	}
+	
+	d <- data.frame(qqnorm(res, plot.it=FALSE))
+	d <- na.omit(d)
+	xVar <- d$x
+	yVar <- d$y
+	
+	xlow <- min((min(xVar) - 0.1* min(xVar)), min(pretty(xVar)))
+	xhigh <- max((max(xVar) + 0.1* max(xVar)), max(pretty(xVar)))
+	xticks <- pretty(c(xlow, xhigh))
+	ylow <- min((min(yVar) - 0.1* min(yVar)), min(pretty(yVar)))
+	yhigh <- max((max(yVar) + 0.1* max(yVar)), max(pretty(yVar)))
+	
+	yticks <- pretty(c(ylow, yhigh))
+	
+	yLabs <- vector("character", length(yticks))
+	
+	for (i in seq_along(yticks)) {
+		
+		if (yticks[i] < 10^6) {
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+			
+		} else {
+			
+			yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+		}
+	}
+	
+	plot(1, type="n", ylab="", xlab="", axes=FALSE, ylim= range(yticks), xlim= range(xticks))
+	plotrix::ablineclip(a=0, b=1, x1=min(xticks), x2=max(xticks), y1=min(yticks), y2=max(yticks), lwd=lwd, col="darkred")
+	points(xVar, yVar, pch=21, bg = "grey", cex= cexPoints)
+	
+	axis(1, line= 0.4, labels= xticks, at= xticks, cex.axis= cexXAxis, lwd=lwdAxis)
+	axis(2, line= 0.2, labels= yLabs, at= yticks, cex.axis= cexYAxis, lwd=lwdAxis, las=1)
+	
+	maxYlab <- max(nchar(yLabs))
+	distLab <- maxYlab / 1.8
+	mtext(text = xlab, side = 1, cex=1.5, line = 2.9)
+	mtext(text = ylab, side = 2, cex=1.5, line = distLab + 2.1, las=0)
+	
+	par(op)
+	
 }

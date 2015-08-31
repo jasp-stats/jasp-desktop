@@ -17,6 +17,10 @@
 			"type": "Variables"
 		},
 		{
+			"name": "factors",
+			"type": "Variables"
+		},
+		{
 			"name": "wlsWeights",
 			"type": "Variable"
 		},
@@ -135,6 +139,36 @@
 			"options": [ "excludeCasesListwise", "excludeCasesPairwise", "replaceWithMeans" ],
 			"default": "excludeCasesListwise",
 			"type": "List"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsDependent",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsCovariates",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsPredicted",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsHistogram",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsHistogramStandardized",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotResidualsQQ",
+			"type": "Boolean"
 		}
 	]
 }

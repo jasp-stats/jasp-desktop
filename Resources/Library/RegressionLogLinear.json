@@ -8,6 +8,11 @@
 			"type": "Variable"
 		},
 		{
+			"name": "method",
+			"type": "List",
+			"options": [ "enter", "backward", "forward" ]
+		},
+		{
 			"name": "factors",
 			"type": "Variables"
 		},

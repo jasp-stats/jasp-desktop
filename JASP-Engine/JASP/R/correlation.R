@@ -273,7 +273,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	meta <- list(
 		list(name="title", type="title"),
 		list(name="correlations", type="table"),
-		list(name="plots", type="images"))
+		list(name="plots", type="image"))
 	
 	results[[".meta"]] <- meta
 	
@@ -285,24 +285,23 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	diff <- NULL
 	
 	if (!is.null(state)) {
-	
+		
 		diff <- .diff(options, state$options)
 	
 	}
 	
-	correlation.plots <- list()
-	
+	correlation.plots <- NULL
 	
 	if (perform == "init" & options$plotCorrelationMatrix) {
-	
-	
+		
+		
 		if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$confidenceIntervals == FALSE && diff$confidenceIntervalsInterval == FALSE
 			&& diff$hypothesis == FALSE && diff$kendallsTauB == FALSE && diff$missingValues == FALSE && diff$pearson == FALSE && diff$plotCorrelationMatrix == FALSE
 			&& diff$plotDensities == FALSE && diff$plotStatistics == FALSE && diff$spearman == FALSE && diff$variables == FALSE)))) {
 			
 			# if only "Report significance", "Flag significant correlations", "Means and Standard Deviations" or "Cross-product deviations and covariances" have changed, the previous plot can be used
 			
-			correlation.plots[[1]] <- state$correlationPlots[[1]]
+			correlation.plots <- state$correlationPlots
 			
 		} else {
 	
@@ -336,7 +335,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				plot[["width"]]  <- width
 				plot[["height"]] <- height
 				
-				correlation.plots[[1]] <- plot
+				correlation.plots <- plot
 			}
 		}
 	}
@@ -350,7 +349,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 			
 			# if only "Report significance", "Flag significant correlations", "Means and Standard Deviations" or "Cross-product deviations and covariances" have changed, the previous plot can be used
 			
-			correlation.plots[[1]] <- state$correlationPlots[[1]]
+			correlation.plots <- state$correlationPlots
 			
 		} else {
 		
@@ -415,7 +414,6 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 					
 				}
 				
-				correlation.plots <- list()
 				
 				plot <- list()
 				
@@ -423,7 +421,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				plot[["width"]]  <- width
 				plot[["height"]] <- height
 				
-				correlation.plots[[1]] <- plot
+				correlation.plots <- plot
 				cexText <- 1.6
 				
 				image <- .beginSaveImage(width, height)
@@ -583,11 +581,11 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 				
 				content <- .endSaveImage(image)
 				
-				plot <- correlation.plots[[1]]
+				plot <- correlation.plots
 				
 				plot[["data"]]  <- content
 				
-				correlation.plots[[1]] <- plot
+				correlation.plots <- plot
 			}
 		}
 	}
@@ -597,7 +595,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 	keep <- NULL
 	
 	if (length(correlation.plots) > 0)
-		keep <- correlation.plots[[1]]$data
+		keep <- correlation.plots$data
 	
 	correlationTableOutput <- .correlationTable(dataset, perform,
 								variables=options$variables, pearson=options$pearson,

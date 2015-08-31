@@ -47,6 +47,9 @@ public:
 
 	const Terms &terms() const;
 
+	bool piecesCanBeAssigned() const;
+	void setPiecesCanBeAssigned(bool piecesCanBeAssigned);
+
 public slots:
 
 	void setVariables(const Terms &fixedFactors, const Terms &randomFactors = Terms(), const Terms &covariates = Terms());
@@ -73,6 +76,8 @@ protected:
 	OptionsTable *_boundTo;
 
 	std::vector<Options *> _rows;
+
+	bool _piecesCanBeAssigned;
 
 	Terms _variables;
 
