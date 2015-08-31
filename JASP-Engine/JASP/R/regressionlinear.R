@@ -192,7 +192,38 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 	}
 	
+	# Check whether all main effects and lower interaction terms are included in case of interactions
 	
+	if (length(options$modelTerms) > 0) {
+		
+		max.no.components <- max(sapply (options$modelTerms, function(term){length (term$components)}))
+		
+		if (max.no.components > 1) {
+		
+			for (term in options$modelTerms) {
+			
+				components <- term$components
+				
+				if (length (components) > 1) {
+					
+					no.children <- 2^length (components) - 1
+					inclusion <- sapply (options$modelTerms, function (terms) {
+							term.components <- terms$components
+							if (sum (term.components %in% components) == length (term.components)) {
+								return (TRUE)
+							}
+							return (FALSE)
+						})
+						
+					if (sum (inclusion) != no.children) {
+						
+						error.message <- "Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included"
+						list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
+					}
+				}
+			}
+		}
+	}
 	
 	if (dependent.variable != "") {
 		
