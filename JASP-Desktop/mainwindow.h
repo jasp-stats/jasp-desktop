@@ -14,6 +14,7 @@
 #include "asyncloader.h"
 #include "optionsform.h"
 #include "activitylog.h"
+#include "fileevent.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,7 +26,7 @@ class MainWindow : public QMainWindow
 
 public:
 	explicit MainWindow(QWidget *parent = 0);
-	void open(QString filename);
+	void open(QString filepath);
 	~MainWindow();
 
 protected:
@@ -51,11 +52,10 @@ private:
 	bool closeRequestCheck(bool &isSaving);
 
 	AsyncLoader _loader;
-	ProgressWidget *_alert;
+	ProgressWidget *_progressIndicator;
 
 	bool _inited;
-	bool _isClosed = false;
-	bool _dataSetClosing = false;
+	bool _applicationExiting = false;
 
 	AnalysisForm* loadForm(Analysis *analysis);
 	void showForm(Analysis *analysis);
@@ -112,16 +112,11 @@ private slots:
 
 	void tabChanged(int index);
 	void helpToggled(bool on);
-	void dataSetSelected(const QString &filename);
-	void dataSetCloseRequested();
-	void dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename);
-	void dataSetLoadFailed(const QString &message);
-	void saveFailed(const QString &message);
-	void exportFailed(const QString &message);
+	void dataSetIORequest(FileEvent *event);
+	void dataSetIOCompleted(FileEvent *event);
+	void populateUIfromDataSet();
 	void itemSelected(const QString &item);
 	void exportSelected(const QString &filename);
-	void saveSelected(const QString &filename);
-	void saveComplete(const QString &name);
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);

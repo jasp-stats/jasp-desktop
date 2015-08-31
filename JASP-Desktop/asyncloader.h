@@ -9,6 +9,7 @@
 #include "dataset.h"
 #include "datasetloader.h"
 #include "datasetpackage.h"
+#include "fileevent.h"
 
 class AsyncLoader : public QObject
 {
@@ -17,27 +18,17 @@ class AsyncLoader : public QObject
 public:
 	explicit AsyncLoader(QObject *parent = 0);
 
-	void load(DataSetPackage* package, const QString &filename);
-	void save(const QString &filename, DataSetPackage *package);
-	void exportData(const QString &filename, DataSetPackage *package);
+	void io(FileEvent *event, DataSetPackage *package);
 	void free(DataSet *dataSet);
 
 signals:
-	void loads(DataSetPackage*, const QString &filename);
-	void saves(const QString &filename, DataSetPackage *dataSet);
-	void exports(const QString &filename, DataSetPackage *dataSet);
+	void beginLoad(FileEvent*, DataSetPackage*);
+	void beginSave(FileEvent*, DataSetPackage*);
 	void progress(const QString &status, int progress);
-	void complete(const QString &dataSetName, DataSetPackage *packageData, const QString &filename);
-	void saveComplete(const QString &dataSetName);
-	void exportComplete(const QString &dataSetName);
-	void fail(const QString &reason);
-	void saveFail(const QString &reason);
-	void exportFail(const QString &reason);
 
 private slots:
-	void loadTask(DataSetPackage *package, const QString &filename);
-	void saveTask(const QString &filename, DataSetPackage *package);
-	void exportTask(const QString &filename, DataSetPackage *package);
+	void loadTask(FileEvent *event, DataSetPackage *package);
+	void saveTask(FileEvent *event, DataSetPackage *package);
 
 private:
 

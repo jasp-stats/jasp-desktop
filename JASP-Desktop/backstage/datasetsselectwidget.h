@@ -3,8 +3,13 @@
 
 #include <QWidget>
 #include <QGridLayout>
+#include <QButtonGroup>
+#include <QAbstractButton>
+#include <QPaintEvent>
 
-class DataSetsSelectWidget : public QWidget
+#include "common.h"
+
+class DataSetsSelectWidget : public QAbstractButton
 {
 	Q_OBJECT
 public:
@@ -17,12 +22,16 @@ public:
 
 signals:
 
-	void dataSetSelected(const QString &path);
+	void dataSetOpened(const QString &path);
+
+protected:
+	virtual void paintEvent(QPaintEvent *event) OVERRIDE;
 
 private slots:
-	void dataSetSelectedHandler(const QString &path);
+	void dataSetOpenedHandler(const QString &path);
 
 private:
+	QButtonGroup *_buttons;
 	QGridLayout *_layout;
 	QList<QWidget*> _children;
 

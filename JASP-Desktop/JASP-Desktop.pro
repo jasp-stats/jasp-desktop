@@ -114,8 +114,6 @@ SOURCES += main.cpp \
     widgets/tablemodelanovamodel.cpp \
     widgets/tablemodelcontrasts.cpp \
     widgets/tablemodelanovadesign.cpp \
-    widgets/datasetsselectwidget.cpp \
-    widgets/datasetselectwidget.cpp \
     appdirs.cpp \
     widgets/tablemodelanovawithinsubjectcells.cpp \
     analysisforms/ancovabayesianform.cpp \
@@ -133,8 +131,26 @@ SOURCES += main.cpp \
     widgets/button.cpp \
     analysisforms/r11tlearnform.cpp \
     ribbons/ribbonr11tlearn.cpp \
+    backstage/breadcrumbs.cpp \
+    backstage/verticaltabbar.cpp \
+    backstage/verticaltabwidget.cpp \
+    backstagewidget.cpp \
+    backstage/fsentrywidget.cpp \
+    backstage/fsbrowser.cpp \
+    backstage/verticalscrollarea.cpp \
+    backstage/elidelabel.cpp \
+    backstage/backstageosf.cpp \
+    backstage/backstagecomputer.cpp \
+    backstage/backstagepage.cpp \
+    backstage/opensavewidget.cpp \
     analysisforms/regressionloglinearform.cpp \
-    analysisforms/regressionloglinearbayesianform.cpp
+    analysisforms/regressionloglinearbayesianform.cpp \
+    backstage/fsbmexamples.cpp \
+    backstage/fsbmodel.cpp \
+    backstage/fsbmcomputer.cpp \
+    backstage/fsbmrecent.cpp \
+    backstage/fsbmrecentfolders.cpp \
+    fileevent.cpp
 
 HEADERS  += \
     analyses.h \
@@ -217,8 +233,6 @@ HEADERS  += \
     widgets/tablemodelanovamodel.h \
     widgets/tablemodelcontrasts.h \
     widgets/tablemodelanovadesign.h \
-    widgets/datasetsselectwidget.h \
-    widgets/datasetselectwidget.h \
     appdirs.h \
     widgets/tablemodelanovawithinsubjectcells.h \
     analysisforms/ancovabayesianform.h \
@@ -237,8 +251,27 @@ HEADERS  += \
     widgets/webview.h \
     analysisforms/r11tlearnform.h \
     ribbons/ribbonr11tlearn.h \
+    backstage/breadcrumbs.h \
+    backstage/verticaltabbar.h \
+    backstage/verticaltabwidget.h \
+    backstagewidget.h \
+    backstage/fsentrywidget.h \
+    backstage/fsbrowser.h \
+    backstage/fsentry.h \
+    backstage/verticalscrollarea.h \
+    backstage/elidelabel.h \
+    backstage/backstageosf.h \
+    backstage/backstagecomputer.h \
+    backstage/backstagepage.h \
+    backstage/opensavewidget.h \
     analysisforms/regressionloglinearform.h \
-    analysisforms/regressionloglinearbayesianform.h
+    analysisforms/regressionloglinearbayesianform.h \
+    backstage/fsbmexamples.h \
+    backstage/fsbmodel.h \
+    backstage/fsbmcomputer.h \
+    backstage/fsbmrecent.h \
+    backstage/fsbmrecentfolders.h \
+    fileevent.h
 
 FORMS += \
     backstageform.ui \
@@ -269,7 +302,6 @@ FORMS += \
     analysisforms/ttestbayesianindependentsamplesform.ui \
     analysisforms/ttestbayesianpairedsamplesform.ui \
     optionsform.ui \
-    widgets/datasetselectwidget.ui \
     analysisforms/ancovabayesianform.ui \
     analysisforms/anovarepeatedmeasuresbayesianform.ui \
     analysisforms/correlationbayesianform.ui \
@@ -278,11 +310,13 @@ FORMS += \
     analysisforms/regressionlinearbayesianform.ui \
     analysisforms/r11tlearnform.ui \
     ribbons/ribbonr11tlearn.ui \
+    backstage/backstagecomputer.ui \
     analysisforms/regressionloglinearform.ui \
     analysisforms/regressionloglinearbayesianform.ui
 
 
 RESOURCES += \
+    backstage/backstage.qrc \
     html/html.qrc \
     resources/icons.qrc \
     resources/resources.qrc
@@ -467,3 +501,8 @@ linux {
     QMAKE_EXTRA_TARGETS += copydocs copyres
     POST_TARGETDEPS     += copydocs copyres
 }
+
+DISTFILES += \
+    backstage/firsttabsstylesheet.qss \
+    backstage/secondtabsstylesheet.qss \
+    resources/icons/file-jasp.svg

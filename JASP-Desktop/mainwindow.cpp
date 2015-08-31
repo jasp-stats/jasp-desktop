@@ -65,8 +65,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
 {
-
-	_inited = false;
 	_tableModel = NULL;
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
@@ -140,23 +138,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
-	connect(ui->backStage, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelected(QString)));
-	connect(ui->backStage, SIGNAL(closeDataSetSelected()), this, SLOT(dataSetCloseRequested()));
+	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
-	connect(ui->backStage, SIGNAL(saveSelected(QString)), this, SLOT(saveSelected(QString)));
 
-	_alert = new ProgressWidget(ui->tableView);
-	_alert->setAutoFillBackground(true);
-	_alert->resize(400, 100);
-	_alert->move(100, 80);
-	_alert->hide();
+	_progressIndicator = new ProgressWidget(ui->tableView);
+	_progressIndicator->setAutoFillBackground(true);
+	_progressIndicator->resize(400, 100);
+	_progressIndicator->move(100, 80);
+	_progressIndicator->hide();
 
-	connect(&_loader, SIGNAL(complete(const QString&, DataSetPackage*, const QString&)), this, SLOT(dataSetLoaded(const QString&, DataSetPackage*, const QString&)));
-	connect(&_loader, SIGNAL(saveComplete(const QString&)), this, SLOT(saveComplete(const QString&)));
-	connect(&_loader, SIGNAL(progress(QString,int)), _alert, SLOT(setStatus(QString,int)));
-	connect(&_loader, SIGNAL(fail(QString)), this, SLOT(dataSetLoadFailed(QString)));
-	connect(&_loader, SIGNAL(saveFail(QString)), this, SLOT(saveFailed(QString)));
-	connect(&_loader, SIGNAL(exportFail(QString)), this, SLOT(exportFailed(QString)));
+	connect(&_loader, SIGNAL(progress(QString,int)), _progressIndicator, SLOT(setStatus(QString,int)));
 
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
@@ -235,13 +226,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	setAcceptDrops(true);
 }
 
-void MainWindow::open(QString filename)
+void MainWindow::open(QString filepath)
 {
 	_openedUsingArgs = true;
 	if (_resultsViewLoaded)
-		dataSetSelected(filename);
+		ui->backStage->open(filepath);
 	else
-		_openOnLoadFilename = filename;
+		_openOnLoadFilename = filepath;
 }
 
 MainWindow::~MainWindow()
@@ -287,27 +278,22 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	if (_isClosed)
+	if (_applicationExiting)
 	{
-		// some times on osx we get two events
+		// sometimes on osx we get two events
 		event->accept();
-		return;
 	}
 
-	bool isSaving = false;
-	bool cancel = closeRequestCheck(isSaving);
-	if (cancel)
+	_applicationExiting = true;
+
+	if (_package->isModified())
 	{
+		ui->backStage->close();
 		event->ignore();
 	}
 	else
 	{
-		if (isSaving)
-			event->ignore(); // to circumvent a race condition between the saving thread and the closing of the main window cleaning up temp files
-		else
-			event->accept();
-
-		_isClosed = true;
+		event->accept();
 	}
 }
 
@@ -321,7 +307,7 @@ void MainWindow::saveKeysSelected()
 
 void MainWindow::openKeysSelected()
 {
-	ui->backStage->openFile();
+	ui->backStage->open();
 }
 
 void MainWindow::illegalOptionStateChanged()
@@ -600,112 +586,173 @@ void MainWindow::helpToggled(bool on)
 	}
 }
 
-void MainWindow::dataSetSelected(const QString &filename)
+void MainWindow::dataSetIORequest(FileEvent *event)
 {
-	if (_package->isLoaded())
+	if (event->operation() == FileEvent::FileOpen)
 	{
-		// begin new instance
-		QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(filename));
-	}
-	else
-	{
-		_loader.load(_package, filename);
-		_alert->show();
-	}
-
-	ui->tabBar->setCurrentIndex(1);
-}
-
-bool MainWindow::closeRequestCheck(bool &isSaving)
-{
-	bool cancel = false;
-	isSaving = false;
-	if (_package->isModified())
-	{
-		QString title = windowTitle();
-		title.chop(1);
-		QMessageBox::StandardButton reply = QMessageBox::warning(this, "Save Workspace?", QString("Save changes to workspace \"") + title +  QString("\" before closing?\n\nYour changes will be lost if you don't save them."), QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
-
-		if (reply == QMessageBox::Save)
+		if (_package->isLoaded())
 		{
-			isSaving = ui->backStage->save();
-			cancel = !isSaving;
+			// begin new instance
+			QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
 		}
-		else if (reply == QMessageBox::Cancel)
-			cancel = true;
-	}
-	return cancel;
-}
-
-void MainWindow::dataSetCloseRequested()
-{
-	bool isSaving = false;
-	if (_dataSetClosing || !closeRequestCheck(isSaving))
-	{
-		if (isSaving)
+		else
 		{
-			_dataSetClosing = true;
-			return;
+			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+
+			_loader.io(event, _package);
+			_progressIndicator->show();
 		}
 
-		closeCurrentOptionsWidget();
-		hideOptionsPanel();
-		_tableModel->clearDataSet();
-		_loader.free(_package->dataSet);
-		_package->reset();
-		updateMenuEnabledDisabledStatus();
-		ui->backStage->setFileLoaded(false, NULL);
-		ui->webViewResults->reload();
-		_dataSetClosing = false;
-		setWindowTitle("JASP");
-		_inited = false;
-	}
-}
-
-void MainWindow::saveComplete(const QString &name)
-{
-	_alert->hide();
-
-	_package->setModified(false);
-
-	setWindowTitle(name);
-
-	if (_isClosed)
-		this->close();
-	else if (_dataSetClosing)
-		dataSetCloseRequested();
-	else
 		ui->tabBar->setCurrentIndex(1);
+	}
+	else if (event->operation() == FileEvent::FileSave)
+	{
+		if (_analyses->count() > 0)
+		{
+			_package->analysesHTML = "";
+			ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%PREVIEW%');");
+
+			Json::Value analysesData = Json::arrayValue;
+			for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
+			{
+				Analysis *analysis = *itr;
+				if (analysis != NULL && analysis->isVisible())
+				{
+					Json::Value analysisData = analysis->asJSON();
+					analysisData["options"] = analysis->options()->asJSON();
+					analysesData.append(analysisData);
+				}
+			}
+
+			_package->analysesData = analysesData;
+			_package->hasAnalyses = true;
+		}
+
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+
+		_loader.io(event, _package);
+		_progressIndicator->show();
+	}
+	else if (event->operation() == FileEvent::FileClose)
+	{
+		if (_package->isModified())
+		{
+			QString title = windowTitle();
+			title.chop(1);
+			QMessageBox::StandardButton reply = QMessageBox::warning(this, "Save Workspace?", QString("Save changes to workspace \"") + title +  QString("\" before closing?\n\nYour changes will be lost if you don't save them."), QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
+
+			if (reply == QMessageBox::Save)
+			{
+				FileEvent *saveEvent = ui->backStage->save();
+				event->chain(saveEvent);
+				connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+			}
+			else if (reply == QMessageBox::Cancel)
+			{
+				event->setComplete(false);
+				dataSetIOCompleted(event);
+			}
+			else if (reply == QMessageBox::Discard)
+			{
+				event->setComplete(true);
+				dataSetIOCompleted(event);
+			}
+		}
+		else
+		{
+			event->setComplete();
+			dataSetIOCompleted(event);
+		}
+	}
 }
 
-void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename)
+void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
-	setWindowTitle(dataSetName);
+	_progressIndicator->hide();
 
-	_tableModel->setDataSet(package->dataSet);
-	ui->backStage->setFileLoaded(true, filename);
+	if (event->operation() == FileEvent::FileOpen)
+	{
+		if (event->successful())
+		{
+			populateUIfromDataSet();
+		}
+		else
+		{
+			if (_package->dataSet != NULL)
+				_loader.free(_package->dataSet);
+			_package->reset();
+
+			QMessageBox::warning(this, "", "Unable to open file.\n\n" + event->message());
+
+			if (_openedUsingArgs)
+				close();
+		}
+	}
+	else if (event->operation() == FileEvent::FileSave)
+	{
+		if (event->successful())
+		{
+			QString name =  QFileInfo(event->path()).baseName();
+
+			_package->setModified(false);
+			setWindowTitle(name);
+			ui->tabBar->setCurrentIndex(1);
+		}
+		else
+		{
+			QMessageBox::warning(this, "", "Unable to save file.\n\n" + event->message());
+		}
+	}
+	else if (event->operation() == FileEvent::FileClose)
+	{
+		if (event->successful())
+		{
+			closeCurrentOptionsWidget();
+			hideOptionsPanel();
+			_tableModel->clearDataSet();
+			_loader.free(_package->dataSet);
+			_package->reset();
+			updateMenuEnabledDisabledStatus();
+			ui->webViewResults->reload();
+			setWindowTitle("JASP");
+
+			if (_applicationExiting)
+				QApplication::exit();
+		}
+		else
+		{
+			_applicationExiting = false;
+		}
+	}
+}
+
+void MainWindow::populateUIfromDataSet()
+{
+	_tableModel->setDataSet(_package->dataSet);
 	_analyses->clear();
 
 	ui->tableView->horizontalHeader()->setResizeContentsPrecision(50);
 	ui->tableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 
-	_alert->hide();
+	_progressIndicator->hide();
 
-	if (_inited == false)
+	static bool inited = false;
+
+	if (inited == false)
 	{
 		ui->webViewResults->page()->mainFrame()->addToJavaScriptWindowObject("jasp", this);
-		_inited = true;
+		inited = true;
 	}
 
-	if (package->hasAnalyses)
+	if (_package->hasAnalyses)
 	{
 		bool errorFound = false;
 
 		int corruptAnalyses = 0;
 		stringstream errorMsg;
 		stringstream corruptionStrings;
-		Json::Value analysesData = package->analysesData;
-		if (!analysesData.isArray() || analysesData.isNull())
+		Json::Value analysesData = _package->analysesData;
+		if (analysesData.isArray() == false || analysesData.isNull())
 		{
 			errorFound = true;
 			errorMsg << "An error has been detected and analyses could not be loaded.";
@@ -754,45 +801,14 @@ void MainWindow::dataSetLoaded(const QString &dataSetName, DataSetPackage *packa
 			QMessageBox::warning(this, "", tq(errorMsg.str()));
 	}
 
-	if ( ! package->warningMessage.empty())
-		QMessageBox::warning(this, "", tq(package->warningMessage));
+	if (_package->warningMessage != "")
+		QMessageBox::warning(this, "", tq(_package->warningMessage));
 
-	package->setLoaded();
+	_package->setLoaded();
 	updateMenuEnabledDisabledStatus();
 
 	if (_engineSync->engineStarted() == false)
 		_engineSync->start();
-}
-
-
-void MainWindow::dataSetLoadFailed(const QString &message)
-{
-	_alert->hide();
-
-	if (_package->dataSet != NULL)
-		_loader.free(_package->dataSet);
-	_package->reset();
-
-	QMessageBox::warning(this, "", "Unable to open file.\n\n" + message);
-
-	if (_openedUsingArgs)
-		close();
-}
-
-void MainWindow::saveFailed(const QString &message)
-{
-	_alert->hide();
-	_isClosed = false;
-	_dataSetClosing = false;
-
-	QMessageBox::warning(this, "", "Unable to save file.\n\n" + message);
-}
-
-void MainWindow::exportFailed(const QString &message)
-{
-	_alert->hide();
-
-	QMessageBox::warning(this, "", "Unable to export file.\n\n" + message);
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
@@ -839,8 +855,8 @@ void MainWindow::resultsPageLoaded(bool success)
 		if (success)
 			_engineSync->setPPI(ppi);
 
-		if (!_openOnLoadFilename.isEmpty())
-			dataSetSelected(_openOnLoadFilename);
+		if (_openOnLoadFilename != "")
+			ui->backStage->open(_openOnLoadFilename);
 
 		QString version = tq(AppInfo::version.asString());
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
@@ -919,35 +935,6 @@ void MainWindow::itemSelected(const QString &item)
 		_fatalError = tq(e.what());
 		fatalError();
 	}
-}
-
-void MainWindow::saveSelected(const QString &filename)
-{
-	if (_analyses->count() > 0)
-	{
-		_package->analysesHTML = "";
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%PREVIEW%');");
-
-		Json::Value analysesData = Json::arrayValue;
-		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
-		{
-			Analysis *analysis = *itr;
-			if (analysis != NULL && analysis->isVisible())
-			{
-				Json::Value analysisData = analysis->asJSON();
-				analysisData["options"] = analysis->options()->asJSON();
-				analysesData.append(analysisData);
-			}
-		}
-
-		_package->analysesData = analysesData;
-
-
-		_package->hasAnalyses = true;
-	}
-
-	_loader.save(filename, _package);
-	_alert->show();
 }
 
 void MainWindow::saveTextToFileHandler(const QString &filename, const QString &data)

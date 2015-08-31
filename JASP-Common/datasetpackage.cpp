@@ -27,7 +27,7 @@ void DataSetPackage::setModified(bool value)
 	}
 }
 
-bool DataSetPackage::isModified()
+bool DataSetPackage::isModified() const
 {
 	return _isModified;
 }
@@ -37,7 +37,7 @@ void DataSetPackage::setLoaded()
 	_isLoaded = true;
 }
 
-bool DataSetPackage::isLoaded()
+bool DataSetPackage::isLoaded() const
 {
 	return _isLoaded;
 }

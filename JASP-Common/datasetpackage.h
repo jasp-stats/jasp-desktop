@@ -12,7 +12,7 @@ class DataSetPackage
 public:
 	DataSetPackage();
 
-	DataSet *dataSet;
+	DataSet *dataSet = NULL;
 	std::string analysesHTML;
 	Json::Value analysesData;
 	Version archiveVersion;
@@ -24,9 +24,9 @@ public:
 
 	void reset();
 	void setModified(bool value);
-	bool isModified();
+	bool isModified() const;
 	void setLoaded();
-	bool isLoaded();
+	bool isLoaded() const;
 
 	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;
 

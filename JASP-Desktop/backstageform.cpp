@@ -24,15 +24,15 @@ BackStageForm::BackStageForm(QWidget *parent) :
 
 	ui->setupUi(this);
 
-	connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(openFile()));
-	connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(closeItemSelected()));
-	connect(ui->buttonExport, SIGNAL(clicked()), this, SLOT(exportItemSelected()));
+	//connect(ui->buttonOpen, SIGNAL(clicked()), this, SLOT(openFile()));
+	//connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(closeItemSelected()));
+	//connect(ui->buttonExport, SIGNAL(clicked()), this, SLOT(exportItemSelected()));
 
-	connect(ui->buttonSaveAs, SIGNAL(clicked()), this, SLOT(saveAs()));
-	connect(ui->buttonSave, SIGNAL(clicked()), this, SLOT(save()));
+	//connect(ui->buttonSaveAs, SIGNAL(clicked()), this, SLOT(saveAs()));
+	//connect(ui->buttonSave, SIGNAL(clicked()), this, SLOT(save()));
 
-	connect(ui->recentDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(recentSelectedHandler(QString)));
-	connect(ui->exampleDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(exampleSelectedHandler(QString)));
+	//connect(ui->recentDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(recentSelectedHandler(QString)));
+	//connect(ui->exampleDataSets, SIGNAL(dataSetSelected(QString)), this, SLOT(exampleSelectedHandler(QString)));
 
 	setFileLoaded(false, NULL);
 
@@ -47,7 +47,65 @@ BackStageForm::BackStageForm(QWidget *parent) :
 	ui->exampleDataSetsHeading->setFont(nf);
 #endif
 
-	ui->buttonNew->hide();
+	//ui->buttonNew->hide();
+
+	/*ui->fileMenu->setTabStyleSheet("\
+		QPushButton \
+		{ \
+			background-color: transparent ; \
+			border : 1px solid transparent; \
+			padding: 12px ; \
+			text-align: left ; \
+		} \
+		 \
+		QPushButton::hover \
+		{ \
+			background-color: rgb(227, 225, 226) ; \
+			border : 1px solid rgb(207, 205, 206) ; \
+		} \
+		 \
+		QPushButton::checked \
+		{ \
+			background-color: rgb(220, 218, 219) ; \
+			border: 1px solid #B0B0B0 ; \
+		}");*/
+
+
+	//ui->fileMenu->addTab("New", QIcon(":/icons/document-new.png"));
+	ui->fileMenu->addTab("Open", QIcon(":/icons/document-open.png"));
+	ui->fileMenu->addTab("Save As", QIcon(":/icons/document-save-as.png"));
+	ui->fileMenu->addTab("Save", QIcon(":/icons/document-save.png"));
+	ui->fileMenu->addTab("Export");
+	ui->fileMenu->addTab("Close", QIcon(":/icons/dialog-close.png"));
+
+
+	/*ui->openMenu->setTabStyleSheet("\
+		QPushButton \
+		{ \
+			background-color: transparent ; \
+			border : 1px solid transparent; \
+			padding: 12px ; \
+			text-align: left ; \
+			height: 32px ; \
+			font-size: 16px ; \
+		} \
+		 \
+		QPushButton::hover \
+		{ \
+			background-color: rgb(227, 225, 226) ; \
+			border : 1px solid rgb(207, 205, 206) ; \
+		} \
+		 \
+		QPushButton::checked \
+		{ \
+			background-color: rgb(220, 218, 219) ; \
+			border: 1px solid #B0B0B0 ; \
+		}");*/
+
+	ui->openMenu->addTab("Recent");
+	ui->openMenu->addTab("Computer");
+	ui->openMenu->addTab("OSF", QIcon(":/icons/logo-osf.png"));
+	ui->openMenu->addTab("Examples");
 }
 
 BackStageForm::~BackStageForm()
@@ -73,17 +131,17 @@ void BackStageForm::setFileLoaded(bool loaded, QString filename)
 	_loaded = loaded;
 	_filename = filename;
 
-	ui->buttonClose->setEnabled(loaded);
-	ui->buttonExport->setEnabled(loaded);
-	ui->buttonSaveAs->setEnabled(loaded);
+	//ui->buttonClose->setEnabled(loaded);
+	//ui->buttonExport->setEnabled(loaded);
+	//ui->buttonSaveAs->setEnabled(loaded);
 
-	if (filename == NULL)
-		ui->buttonSave->setEnabled(false);
-	else
-	{
-		QFileInfo fileInfo(filename);
-		ui->buttonSave->setEnabled(loaded && fileInfo.completeSuffix().compare("jasp") == 0);
-	}
+	//if (filename == NULL)
+	//	ui->buttonSave->setEnabled(false);
+	//else
+	//{
+	//	QFileInfo fileInfo(filename);
+	//	ui->buttonSave->setEnabled(loaded && fileInfo.completeSuffix().compare("jasp") == 0);
+	//}
 }
 
 void BackStageForm::openFile()
@@ -244,7 +302,7 @@ void BackStageForm::loadRecents()
 	if (recents != _recents)
 	{
 		_recents = recents;
-		ui->recentDataSets->setDataSets(_recents);
+		//ui->recentDataSets->setDataSets(_recents);
 	}
 }
 
@@ -285,7 +343,7 @@ void BackStageForm::loadExamples()
 		QString name = example["name"].toString();
 		QString description = example["description"].toString();
 
-		ui->exampleDataSets->addDataSetOption(path, name, description);
+		//ui->exampleDataSets->addDataSetOption(path, name, description);
 	}
 
 }
@@ -300,7 +358,7 @@ void BackStageForm::addToRecentList(QString path)
 		_recents.removeLast();
 	_settings.setValue("recentItems", _recents);
 
-	ui->recentDataSets->setDataSets(_recents);
+	//ui->recentDataSets->setDataSets(_recents);
 
 	_settings.sync();
 }

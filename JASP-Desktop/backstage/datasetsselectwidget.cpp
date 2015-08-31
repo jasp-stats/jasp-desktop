@@ -1,14 +1,15 @@
 
 #include "datasetsselectwidget.h"
 
-#include "datasetselectwidget.h"
+#include "fsentrywidget.h"
 
 #include <QDir>
 
 DataSetsSelectWidget::DataSetsSelectWidget(QWidget *parent) :
-	QWidget(parent)
+	QAbstractButton(parent)
 {
 	_layout = new QGridLayout(this);
+	_buttons = new QButtonGroup(this);
 }
 
 void DataSetsSelectWidget::addDataSetOption(QString path)
@@ -38,13 +39,14 @@ void DataSetsSelectWidget::addDataSetOption(QString path, QString dataSetName, Q
 	for (int i = 0; i < _children.size(); i++)
 		_layout->removeWidget(_children.at(i));
 
-	DataSetSelectWidget *select = new DataSetSelectWidget(this);
-	select->setDataSetName(dataSetName);
-	select->setDataSetDescription(dataSetDescription);
-	select->setDataSetPath(path);
+	FSEntryWidget *select = new FSEntryWidget(FSEntry(), this);
+	select->setCheckable(true);
+
+	_buttons->addButton(select);
+
 	_children.append(select);
 
-	connect(select, SIGNAL(dataSetSelected(QString)), this, SLOT(dataSetSelectedHandler(QString)));
+	connect(select, SIGNAL(dataSetOpened(QString)), this, SLOT(dataSetOpenedHandler(QString)));
 
 	for (int i = 0; i < _children.size(); i++)
 		_layout->addWidget(_children.at(i), i, 0);
@@ -68,7 +70,12 @@ void DataSetsSelectWidget::clearDataSets()
 	}
 }
 
-void DataSetsSelectWidget::dataSetSelectedHandler(const QString &path)
+void DataSetsSelectWidget::paintEvent(QPaintEvent *event)
 {
-	emit dataSetSelected(path);
+
+}
+
+void DataSetsSelectWidget::dataSetOpenedHandler(const QString &path)
+{
+	emit dataSetOpened(path);
 }
