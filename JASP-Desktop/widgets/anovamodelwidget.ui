@@ -93,7 +93,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="factorsLabel">
            <property name="text">
-            <string>Factors</string>
+            <string>Components</string>
            </property>
           </widget>
          </item>
