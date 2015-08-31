@@ -348,7 +348,9 @@ JASPWidgets.Note = Backbone.Model.extend({
 		if (this.get('format') === 'markdown') {
 			this.set('format', 'html');
 			var text = this.get('text');
-			if (text !== '')
+			if (text === null)
+				this.set('text', '');
+			else if (text !== '')
 				this.set('text', Mrkdwn.toHtml(text));
 		}
 	},
