@@ -37,6 +37,7 @@ private:
 	TableModelAnovaDesign *_designTableModel;
 	TableModelAnovaWithinSubjectCells *_withinSubjectCellsListModel;
 	TableModelVariablesAssigned *_betweenSubjectsFactorsListModel;
+	TableModelVariablesAssigned *_covariatesListModel;
 	TableModelVariablesAssigned *_wlsWeightsListModel;
 
 	TableModelAnovaModel *_withinSubjectsTermsModel;

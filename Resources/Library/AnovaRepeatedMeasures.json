@@ -4,10 +4,6 @@
 	"version": "1.00",
 	"options": [
 		{
-			"name": "betweenSubjectFactors",
-			"type": "Variables"
-		},
-		{
 			"name": "repeatedMeasuresFactors",
 			"type": "Table",
 			"template": [
@@ -31,6 +27,14 @@
 		},
 		{
 			"name": "repeatedMeasuresCells",
+			"type": "Variables"
+		},
+		{
+			"name": "betweenSubjectFactors",
+			"type": "Variables"
+		},
+		{
+			"name": "covariates",
 			"type": "Variables"
 		},
 		{
