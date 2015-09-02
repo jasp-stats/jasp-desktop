@@ -7,14 +7,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	dependent.variable <- unlist(options$dependent)
 	wls.weight <- unlist(options$wlsWeight)
 	independent.variables <- NULL
+	to.be.read.variables.factors <- NULL
 	if (length(options$covariates) > 0){
 		independent.variables <- unlist(options$covariates)
 	}
 	
 	list.variables <- c(dependent.variable, independent.variables)
 	list.variables <- list.variables[list.variables != ""]
-	to.be.read.variables <- c(dependent.variable, independent.variables, wls.weight)
-	to.be.read.variables <- to.be.read.variables[ to.be.read.variables != ""]
+	to.be.read.variables.numeric <- c(dependent.variable, independent.variables, wls.weight)
+	to.be.read.variables.numeric <- to.be.read.variables.numeric [ to.be.read.variables.numeric  != ""]
+	
+	if (length(options$factors) > 0)
+		to.be.read.variables.factors <- unlist(options$factors)
 	
 	
 	#######################################
@@ -23,9 +27,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	if (is.null(dataset)) {
 		if (perform == "run") {
-			dataset <- .readDataSetToEnd(columns.as.numeric = to.be.read.variables, exclude.na.listwise=to.be.read.variables)
+			dataset <- .readDataSetToEnd(	columns.as.factor = to.be.read.variables.factors, columns.as.numeric = to.be.read.variables.numeric,
+											exclude.na.listwise=c(to.be.read.variables.numeric, to.be.read.variables.factors)	)
 		} else {
-			dataset <- .readDataSetHeader(columns.as.numeric = to.be.read.variables)
+			dataset <- .readDataSetHeader(columns.as.factor = to.be.read.variables.factors, columns.as.numeric = to.be.read.variables.numeric)
 		}
 	}
 	
@@ -192,23 +197,26 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 	}
 	
-	# Check whether all main effects and lower interaction terms are included in case of interactions
 	
 	if (length(options$modelTerms) > 0) {
 		
 		max.no.components <- max(sapply (options$modelTerms, function(term){length (term$components)}))
 		
 		if (max.no.components > 1) {
-		
-			for (term in options$modelTerms) {
 			
+			# In case of interactions, check whether all main effects and lower-order interaction terms are in the model
+			
+			for (term in options$modelTerms) {
+				
 				components <- term$components
 				
 				if (length (components) > 1) {
 					
 					no.children <- 2^length (components) - 1
 					inclusion <- sapply (options$modelTerms, function (terms) {
+							
 							term.components <- terms$components
+							
 							if (sum (term.components %in% components) == length (term.components)) {
 								return (TRUE)
 							}
@@ -238,6 +246,18 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 		
 		if (perform == "run" && (options$method == "backward" || options$method == "forward" || options$method == "stepwise")) {
+			
+			if (length(options$modelTerm) > 0) {
+				
+				interactionIndicator <- logical(length(options$modelTerms))
+				
+				for (i in seq_along(options$modelTerms))
+					interactionIndicator[i] <- length(options$modelTerms[[i]]$components) > 1
+				
+				if (any(interactionIndicator))
+					list.of.errors[[ length(list.of.errors) + 1 ]] <- "Stepwise procedures are not supported for models containing interaction terms"
+			
+			}
 			
 			if (options$steppingMethodCriteriaType == "usePValue" && options$steppingMethodCriteriaPEntry > options$steppingMethodCriteriaPRemoval) {
 				

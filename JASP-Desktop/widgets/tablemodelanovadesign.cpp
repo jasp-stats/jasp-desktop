@@ -287,7 +287,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 			OptionVariables *option = static_cast<OptionVariables *>(newRow->get("levels"));
 			vector<string> levels = option->variables();
 
-			beginInsertRows(QModelIndex(), row.index, row.index + levels.size());
+			beginInsertRows(QModelIndex(), row.index, row.index + levels.size() + 1);
 
 			_groups.push_back(newRow);
 
@@ -296,6 +296,8 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 			int i;
 			for (i = 0; i < levels.size(); i++)
 				_rows.insert(rowNo + i + 1, Row(tq(levels.at(i)), false, row.index, i));
+
+			_rows.insert(rowNo + i + 1, Row(QString("Level %1").arg(i+1), true, row.index, i));
 
 			endInsertRows();
 
@@ -370,6 +372,10 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 			row.text = tq(name);
 			row.isHypothetical = false;
 			levels.push_back(name);
+
+			beginInsertRows(QModelIndex(), rowNo+1, rowNo+1);
+			_rows.insert(rowNo+1, Row(QString("Level %1").arg(row.subIndex+2), true, row.index, row.subIndex+1));
+			endInsertRows();
 		}
 		else
 		{

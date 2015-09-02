@@ -33,8 +33,15 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	_betweenSubjectsFactorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->betweenSubjectFactors->setModel(_betweenSubjectsFactorsListModel);
 
-	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->repeatedMeasuresCells);
-	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->betweenSubjectFactors);
+	_covariatesListModel = new TableModelVariablesAssigned(this);
+	_covariatesListModel->setSource(&_availableVariablesModel);
+	_covariatesListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_covariatesListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	ui->covariates->setModel(_covariatesListModel);
+
+	ui->buttonAssignRMCells->setSourceAndTarget(ui->listAvailableFields, ui->repeatedMeasuresCells);
+	ui->buttonAssignBSFactors->setSourceAndTarget(ui->listAvailableFields, ui->betweenSubjectFactors);
+	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
 	_withinSubjectsTermsModel = new TableModelAnovaModel(this);
 	ui->withinModelTerms->setModel(_withinSubjectsTermsModel);
@@ -47,15 +54,20 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	_contrastsModel = new TableModelVariablesOptions();
     ui->contrasts->setModel(_contrastsModel);
 
+	connect(_designTableModel, SIGNAL(designChanging()), this, SLOT(factorsChanging()));
+	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
+	connect(_designTableModel, SIGNAL(factorAdded(Terms)), _withinSubjectsTermsModel, SLOT(addFixedFactors(Terms)));
+	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _withinSubjectsTermsModel, SLOT(removeVariables(Terms)));
+
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(assignedTo(Terms)), _betweenSubjectsTermsModel, SLOT(addFixedFactors(Terms)));
 	connect(_betweenSubjectsFactorsListModel, SIGNAL(unassigned(Terms)), _betweenSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
-	connect(_designTableModel, SIGNAL(designChanging()), this, SLOT(factorsChanging()));
-	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
-	connect(_designTableModel, SIGNAL(factorAdded(Terms)), _withinSubjectsTermsModel, SLOT(addFixedFactors(Terms)));
-	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _withinSubjectsTermsModel, SLOT(removeVariables(Terms)));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _betweenSubjectsTermsModel, SLOT(addCovariates(Terms)));
+	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _betweenSubjectsTermsModel, SLOT(removeVariables(Terms)));
 
 	_plotFactorsAvailableTableModel = new TableModelVariablesAvailable();
 	ui->plotVariables->setModel(_plotFactorsAvailableTableModel);
@@ -82,8 +94,8 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
 
-	ui->withinModelTerms->setFactorsLabel("Repeated Measures Factors");
-	ui->betweenModelTerms->setFactorsLabel("Between Subjects Factors");
+	ui->withinModelTerms->setFactorsLabel("Repeated Measures Components");
+	ui->betweenModelTerms->setFactorsLabel("Between Subjects Components");
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
@@ -93,10 +105,20 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	ui->groupContrasts->hide();
 	ui->groupPostHoc->hide();
 	ui->groupCompareMainEffects->hide();
+
+	ui->buttonAssignCovariates->hide();
+	ui->covariates->hide();
+	ui->spacerCovariates->hide();
+	ui->labelCovariates->hide();
 #else
 	ui->groupContrasts->setStyleSheet("background-color: pink ;");
 	ui->groupPostHoc->setStyleSheet("background-color: pink ;");
 	ui->groupCompareMainEffects->setStyleSheet("background-color: pink ;");
+
+	ui->buttonAssignCovariates->setStyleSheet("background-color: pink ;");
+	ui->covariates->setStyleSheet("background-color: pink ;");
+	ui->spacerCovariates->setStyleSheet("background-color: pink ;");
+	ui->labelCovariates->setStyleSheet("background-color: pink ;");
 #endif
 }
 
