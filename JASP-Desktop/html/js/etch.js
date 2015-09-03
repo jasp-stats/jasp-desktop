@@ -33,8 +33,44 @@
       this.model.bind('change:buttons', this.changeButtons);
       this.model.bind('change:editable', this.changeEditable);
 
+      $(document).on("selectionchange", null, this, this.checkButtonStates);
+
+
       // Init Routines:
       this.changeEditable();
+    },
+
+    checkButtonStates: function(e) {
+    	var self = e.data;
+    	if (self._selectionIs('bold'))
+    		self.$(".etch-bold").addClass("etch-pressed");
+    	else
+    		self.$(".etch-bold").removeClass("etch-pressed");
+
+    	if (self._selectionIs('italic'))
+    		self.$(".etch-italic").addClass("etch-pressed");
+    	else
+    		self.$(".etch-italic").removeClass("etch-pressed");
+
+    	if (self._selectionIs('underline'))
+    		self.$(".etch-underline").addClass("etch-pressed");
+    	else
+    		self.$(".etch-underline").removeClass("etch-pressed");
+
+    	if (self._selectionIs('underline'))
+    		self.$(".etch-underline").addClass("etch-pressed");
+    	else
+    		self.$(".etch-underline").removeClass("etch-pressed");
+
+    	if (self._selectionIs('superscript'))
+    		self.$(".etch-superscript").addClass("etch-pressed");
+    	else
+    		self.$(".etch-superscript").removeClass("etch-pressed");
+    	
+    	if (self._selectionIs('subscript'))
+    		self.$(".etch-subscript").addClass("etch-pressed");
+    	else
+    		self.$(".etch-subscript").removeClass("etch-pressed");
     },
 
     events: {
@@ -95,6 +131,14 @@
       e.preventDefault();
       document.execCommand('removeFormat', false, null);
     },
+
+    _selectionIs: function(type) {
+		var isType = false;
+		if (document.queryCommandState) {
+			isType = document.queryCommandState(type);
+		}
+		return isType;
+	},
         
     toggleBold: function(e) {
       e.preventDefault();
