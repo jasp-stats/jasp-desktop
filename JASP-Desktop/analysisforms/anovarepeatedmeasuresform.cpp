@@ -106,19 +106,11 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	ui->groupPostHoc->hide();
 	ui->groupCompareMainEffects->hide();
 
-	ui->buttonAssignCovariates->hide();
-	ui->covariates->hide();
-	ui->spacerCovariates->hide();
-	ui->labelCovariates->hide();
 #else
 	ui->groupContrasts->setStyleSheet("background-color: pink ;");
 	ui->groupPostHoc->setStyleSheet("background-color: pink ;");
 	ui->groupCompareMainEffects->setStyleSheet("background-color: pink ;");
 
-	ui->buttonAssignCovariates->setStyleSheet("background-color: pink ;");
-	ui->covariates->setStyleSheet("background-color: pink ;");
-	ui->spacerCovariates->setStyleSheet("background-color: pink ;");
-	ui->labelCovariates->setStyleSheet("background-color: pink ;");
 #endif
 }
 

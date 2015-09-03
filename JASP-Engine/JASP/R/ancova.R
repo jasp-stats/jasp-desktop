@@ -475,7 +475,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		if (length(independentsWithLessThanTwoLevels) > 0) {
 		
 			error <- TRUE
-			errorMessage <- paste("Factor(s): <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain(s) less than two levels.", sep="")
+			errorMessage <- paste("Factor(s): <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain(s) fewer than two levels.", sep="")
 		}
 		
 		if (sum(is.infinite(dataset[[ .v(options$dependent) ]])) > 0) {
