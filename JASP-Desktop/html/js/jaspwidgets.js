@@ -647,7 +647,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		_.extend(etch.config.buttonClasses, {
 			'default': ['bold', 'italic', 'underline'],
-			'jasp-comment': ['bold', 'italic', 'superscript', 'subscript', 'unordered-list', 'ordered-list', 'clear-formatting']
+			'jasp-comment': ['bold', 'italic', 'superscript', 'subscript', 'unordered-list', 'ordered-list']
 		});
 
 		this.editing = true;
