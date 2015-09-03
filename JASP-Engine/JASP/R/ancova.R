@@ -1651,7 +1651,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					axis.ticks.margin = grid::unit(1,"mm"),
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-				base_breaks_y(summaryStatSubset, options$plotErrorBars) +
+				base_breaks_y(summaryStat, options$plotErrorBars) +
 				base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
 
 			if (nPlots > 1) {
