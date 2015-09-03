@@ -352,7 +352,7 @@ void EngineSync::startSlaveProcess(int no)
 
 #undef ARCH_SUBPATH
 
-	env.insert("R_LIBS", programDir.absolutePath() + ":" + rHome.absoluteFilePath("library"));
+	env.insert("R_LIBS", programDir.absolutePath() + ";" + rHome.absoluteFilePath("library"));
 
 	env.insert("R_ENVIRON", "something-which-doesnt-exist");
 	env.insert("R_PROFILE", "something-which-doesnt-exist");
