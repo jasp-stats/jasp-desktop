@@ -881,6 +881,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			contrastType <- paste(contrastType, collapse="")
 			
 			contrast.table[["title"]] <- paste(contrastType, " Contrast", " - ",  variable, sep="")
+			contrast.table[["name"]] <- paste(contrastType, "Contrast_",  variable, sep="")
 			
 			contrast.table[["schema"]] <- list(fields = list(
 				list(name="Comparison", type="string"),
@@ -1005,6 +1006,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		posthoc.table <- list()
 
 		posthoc.table[["title"]] <- paste("Post Hoc Comparisons - ", posthoc.var, sep="")
+		posthoc.table[["name"]] <- paste("postHoc_", posthoc.var, sep="")
 		
 		fields <- list(
 			list(name="(I)",title="", type="string", combine=TRUE),
@@ -1360,6 +1362,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		result <- list()
 
 		result[["title"]] <- paste("Marginal Means - ",terms.normal[i], sep="")
+		result[["name"]] <- paste("marginalMeans_",gsub("\u273B","*",gsub(" ", "", terms.normal[i], fixed=TRUE), fixed=TRUE), sep="")
 
 		fields <- list()
 
