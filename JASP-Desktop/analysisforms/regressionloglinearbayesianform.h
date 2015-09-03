@@ -28,7 +28,7 @@ private:
 	Ui::RegressionLogLinearBayesianForm *ui;
 
 	TableModelVariablesAssigned *_dependentListModel;
-	TableModelVariablesAssigned *_covariatesListModel;
+	TableModelVariablesAssigned *_factorsListModel;
 
 	TableModelAnovaModel *_model;
 

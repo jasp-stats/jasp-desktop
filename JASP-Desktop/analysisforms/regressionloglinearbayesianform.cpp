@@ -16,11 +16,10 @@ RegressionLogLinearBayesianForm::RegressionLogLinearBayesianForm(QWidget *parent
 	_dependentListModel->setSource(&_availableVariablesModel);
 	ui->counts->setModel(_dependentListModel);
 
-	_covariatesListModel = new TableModelVariablesAssigned(this);
-	_covariatesListModel->setSource(&_availableVariablesModel);
-	_covariatesListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_covariatesListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->factors->setModel(_covariatesListModel);
+	_factorsListModel = new TableModelVariablesAssigned(this);
+	_factorsListModel->setSource(&_availableVariablesModel);
+	_factorsListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	ui->factors->setModel(_factorsListModel);
 
 	ui->buttonAssignCounts->setSourceAndTarget(ui->listAvailableFields, ui->counts);
 	ui->buttonAssignFactors->setSourceAndTarget(ui->listAvailableFields, ui->factors);
@@ -30,10 +29,10 @@ RegressionLogLinearBayesianForm::RegressionLogLinearBayesianForm(QWidget *parent
 	ui->modelTerms->setModel(_model);
 	ui->modelTerms->hide();
 
-	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _model, SLOT(addCovariates(Terms)));
-	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _model, SLOT(removeVariables(Terms)));
+	connect(_factorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
+	connect(_factorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
+	connect(_factorsListModel, SIGNAL(assignedTo(Terms)), _model, SLOT(addCovariates(Terms)));
+	connect(_factorsListModel, SIGNAL(unassigned(Terms)), _model, SLOT(removeVariables(Terms)));
 }
 
 RegressionLogLinearBayesianForm::~RegressionLogLinearBayesianForm()
@@ -47,7 +46,7 @@ void RegressionLogLinearBayesianForm:: bindTo(Options *options, DataSet *dataSet
 
 	factorsChanging();
 
-	_model->setVariables(Terms(), Terms(), _covariatesListModel->assigned());
+	_model->setVariables(Terms(), Terms(), _factorsListModel->assigned());
 
 	factorsChanged();
 }
