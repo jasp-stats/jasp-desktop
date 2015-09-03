@@ -353,11 +353,16 @@ td.squash-left
 	visibility: hidden ;
 }
 
+.jasp-image-holder {
+
+	position: relative ;
+}
+
 .jasp-resize {
     background: top left no-repeat url(images/resizer.png);
-    right: 5px;
+    right: 2px;
     cursor: nw-resize;
-	bottom: 16px;
+	bottom: 2px;
 	position: absolute;
     width: 16px;
     height: 16px;

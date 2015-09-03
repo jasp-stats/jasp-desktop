@@ -69,11 +69,11 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 	},
 
 	onResizeStart: function (w, h) {
-		this.$el.addClass("jasp-image-resizable");
+		this.$(".jasp-image-holder").addClass("jasp-image-resizable");
 	},
 
 	onResizeStop: function (w, h) {
-		this.$el.removeClass("jasp-image-resizable");
+		this.$(".jasp-image-holder").removeClass("jasp-image-resizable");
 	},
 
 	events: {
@@ -139,20 +139,19 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		html += '<div class="image-status"></div>';
 
 		html += '</div>'
+		html += '</div>'
 
 		this.$el.append(html)
+
+		var $status = this.$el.find("div.image-status");
+		$status.addClass(status);
+
+		this.resizer.render();
 
 		if (this.noteBox !== undefined) {
 			this.noteBox.render();
 			this.$el.append(this.noteBox.$el);
 		}
-
-		var $status = this.$el.find("div.image-status");
-		$status.addClass(status);
-
-		var self = this
-
-		this.resizer.render();
 
 		return this;
 	},
