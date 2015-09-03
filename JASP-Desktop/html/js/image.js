@@ -218,9 +218,9 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary)
 			html = this._addHTMLWrapper('<img src="file:///' + htmlImageFormatData.temporary + '" style="width:' + width + 'px; height:' + height + 'px;" />\n', exportParams);
 		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.embedded)
-			html = this._addHTMLWrapper('<div style="background-image : url(data:image/png;base64,' + htmlImageFormatData.embedded + '); width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
+			html = this._addHTMLWrapper('<div style="background-image : url(data:image/png;base64,' + htmlImageFormatData.embedded + '); background-size:' + width + 'px ' + height + 'px; width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
 		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.resource)
-			html = this._addHTMLWrapper('<div style="background-image : url(\'' + htmlImageFormatData.resource + '\'); width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
+			html = this._addHTMLWrapper('<div style="background-image : url(\'' + htmlImageFormatData.resource + '\'); background-size:' + width + 'px ' + height + 'px; width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
 
 		return html;
 	},
