@@ -71,6 +71,18 @@
     		self.$(".etch-subscript").addClass("etch-pressed");
     	else
     		self.$(".etch-subscript").removeClass("etch-pressed");
+
+    	if (self._selectionIs('insertUnorderedList'))
+    		self.$(".etch-unordered-list").addClass("etch-pressed");
+    	else
+    		self.$(".etch-unordered-list").removeClass("etch-pressed");
+
+    	if (self._selectionIs('insertOrderedList'))
+    		self.$(".etch-ordered-list").addClass("etch-pressed");
+    	else
+    		self.$(".etch-ordered-list").removeClass("etch-pressed");
+    	
+    	
     },
 
     events: {

@@ -135,6 +135,10 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		_.invoke(this.analyses, "unselect");
 	},
 
+	exportWrapper: function(html) {
+		return '<div style="display:inline-block">' + html + '</div>';
+	},
+
 	exportBegin: function (exportParams, completedCallback) {
 
 		if (exportParams == undefined)

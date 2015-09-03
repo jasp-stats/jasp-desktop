@@ -207,6 +207,9 @@ JASPWidgets.Exporter = {
 					completeText += "</div>";
 					completeText += "</div>";
 				}
+				if (parent.exportWrapper)
+					completeText = parent.exportWrapper(completeText);
+
 				callback.call(self, exportParams, new JASPWidgets.Exporter.data(null, completeText));
 				self.buffer = [];
 			}
@@ -713,7 +716,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			callback = completedCallback;
 
 		var html = '';
-		if (this.isTextboxEmpty() === false)
+		if (this.isTextboxEmpty() === false && this.visible === true)
 			html = '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '">' + this.$textbox.html() + '</div>';
 
 		
