@@ -83,15 +83,31 @@ The directory structure should be as follows:
 Linux
 -----
 
-Qt: Whatever comes with your distro.
+Jonathon maintains a number of packages for JASP and it's development under linux in his PPA [here](https://launchpad.net/~jonathon-love/+archive/ubuntu/jasp)
 
-R: We provide a specially crafted R.framework for Ubuntu 15.04 [here](https://static.jasp-stats.org/development/R%20U1504%20for%20JASP%20%282015-06-18%29.zip)
+To build JASP under Ubuntu, debian, and derivatives, you will need:
 
-boost: Whatever comes with your distro.
+ - qt5-default
+ - qt5-qmake
+ - libqt5widgets5
+ - libqt5webkit5-dev
+ - libqt5svg5-dev
+ - libboost-dev
+ - libboost-filesystem-dev
+ - libboost-system-dev
+ - r-base-core
+ - r-cran-rcpp
+ - r-cran-rinside *
+ - libarchive-dev
 
-The directory structure should be as follows:
+In order to run, you will need:
 
-    [+] jasp-desktop  < from github >
-    [+] build-JASP- ... < build directory, created by QtCreator >
-       [+] R
+ - r-cran-bayesfactor *
+ - r-cran-lme4
+ - r-cran-afex *
+ - r-cran-car *
+ - r-cran-effects *
+ - r-cran-logspline *
+ - r-cran-hypergeo *
 
+Those marked with asterisks are available from Jonathon's PPA.
