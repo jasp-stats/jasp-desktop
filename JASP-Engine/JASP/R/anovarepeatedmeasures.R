@@ -1,7 +1,7 @@
 
 AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
-	numeric.variables <- c(unlist(options$repeatedMeasuresCells))
+	numeric.variables <- c(unlist(options$repeatedMeasuresCells), unlist(options$covariates))
 	numeric.variables <- numeric.variables[numeric.variables != ""]
 	factor.variables <- c(unlist(options$betweenSubjectFactors))
 	factor.variables <- factor.variables[factor.variables != ""]
@@ -388,7 +388,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	modelDef <- .rmModelFormula(options)
 	model.formula <- as.formula(modelDef$model.def)
 	
-	dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
+	print(c(options$betweenSubjectFactors, options$covariates))
+		
+	dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, c(options$betweenSubjectFactors, options$covariates))
+	
+	print(head(dataset))
 	
 	options(contrasts=c("contr.sum","contr.poly"))
 	
@@ -405,7 +409,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 		result <- try(afex::aov.car(model.formula, data=dataset, type= 3, return = "univariate"), silent = TRUE)
 	}
-	
+		
 	model <- NULL
 	epsilon <- NULL
 	mauchly <- NULL
