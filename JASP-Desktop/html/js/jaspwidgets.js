@@ -474,6 +474,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		var html = this.model.get("text");
 
+		this.closeButton.render();
+
 		this.$el.append('<div class="jasp-editable jasp-hide" data-button-class="jasp-comment">' + html + '</div>');
 		this.$el.append('<div class="jasp-ghost-text"><p>Click here to add text...</p></div>');
 
@@ -499,8 +501,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$textbox.on("focusout", null, this, this._looseFocus);
 		this.$textbox.on("mousedown", null, this, this._mousedown);
 		this.$textbox.on("keydown", null, this, this._keydown);
-
-		this.closeButton.render();
 
 		this._inited = true;
 
