@@ -69,25 +69,33 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 	},
 
 	onResizeStart: function (w, h) {
-		this.$el.addClass("jasp-image-resizable");
+		this.$(".jasp-image-holder").addClass("jasp-image-resizable");
 	},
 
 	onResizeStop: function (w, h) {
-		this.$el.removeClass("jasp-image-resizable");
+		this.$(".jasp-image-holder").removeClass("jasp-image-resizable");
 	},
 
 	events: {
-			'mouseenter': '_hoveringStart',
-			'mouseleave': '_hoveringEnd',
+		'mouseenter .jasp-image-holder': '_hoveringStartImage',
+		'mouseleave .jasp-image-holder': '_hoveringEndImage',
+		'mouseenter': '_hoveringStart',
+		'mouseleave': '_hoveringEnd',
 	},
 
 	_hoveringStart: function (e) {
 		this.toolbar.setVisibility(true);
-		this.resizer.setVisibility(true);
 	},
 
 	_hoveringEnd: function (e) {
 		this.toolbar.setVisibility(false);
+	},
+
+	_hoveringStartImage: function (e) {
+		this.resizer.setVisibility(true);
+	},
+
+	_hoveringEndImage: function (e) {
 		this.resizer.setVisibility(false);
 	},
 
@@ -139,20 +147,19 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		html += '<div class="image-status"></div>';
 
 		html += '</div>'
+		html += '</div>'
 
 		this.$el.append(html)
+
+		var $status = this.$el.find("div.image-status");
+		$status.addClass(status);
+
+		this.resizer.render();
 
 		if (this.noteBox !== undefined) {
 			this.noteBox.render();
 			this.$el.append(this.noteBox.$el);
 		}
-
-		var $status = this.$el.find("div.image-status");
-		$status.addClass(status);
-
-		var self = this
-
-		this.resizer.render();
 
 		return this;
 	},
