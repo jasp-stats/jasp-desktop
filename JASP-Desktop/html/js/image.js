@@ -77,17 +77,25 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 	},
 
 	events: {
-			'mouseenter': '_hoveringStart',
-			'mouseleave': '_hoveringEnd',
+		'mouseenter .jasp-image-holder': '_hoveringStartImage',
+		'mouseleave .jasp-image-holder': '_hoveringEndImage',
+		'mouseenter': '_hoveringStart',
+		'mouseleave': '_hoveringEnd',
 	},
 
 	_hoveringStart: function (e) {
 		this.toolbar.setVisibility(true);
-		this.resizer.setVisibility(true);
 	},
 
 	_hoveringEnd: function (e) {
 		this.toolbar.setVisibility(false);
+	},
+
+	_hoveringStartImage: function (e) {
+		this.resizer.setVisibility(true);
+	},
+
+	_hoveringEndImage: function (e) {
 		this.resizer.setVisibility(false);
 	},
 
