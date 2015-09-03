@@ -170,6 +170,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
 	connect(this, SIGNAL(updateNote(int, QString)), this, SLOT(updateNoteHandler(int, QString)));
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
+	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 
 
 	_buttonPanel = new QWidget(ui->pageOptions);
@@ -1408,6 +1409,11 @@ void MainWindow::getAnalysesNotes()
 
 		analysis->setNotes(analysisNotes, true);
 	}
+}
+
+void MainWindow::resultsDocumentChangedHandler()
+{
+	_package->setModified(true);
 }
 
 void MainWindow::simulatedMouseClickHandler(int x, int y, int count) {
