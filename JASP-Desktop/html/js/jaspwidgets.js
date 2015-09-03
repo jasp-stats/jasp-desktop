@@ -383,6 +383,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		};
 		this.closeButton.setAction(function () {
 			self.setVisibilityAnimate(false);
+			if (window.resultsDocumentChanged)
+				window.resultsDocumentChanged();
 		});
 	},
 

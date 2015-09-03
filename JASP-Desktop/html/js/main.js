@@ -416,3 +416,7 @@ window.imageSaved = function (args) {
 	callbackData.callback.call(callbackData.context, args.fullPath);
 	delete savingImages.savingId;
 }
+
+window.resultsDocumentChanged = function () {
+	jasp.resultsDocumentChanged();
+}

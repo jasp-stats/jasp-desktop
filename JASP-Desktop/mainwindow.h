@@ -98,6 +98,7 @@ signals:
 	void updateNote(int id, QString key);
 	void updateAnalysesNotes(QString notes);
 	void simulatedMouseClick(int x, int y, int count);
+	void resultsDocumentChanged();
 
 private slots:
 
@@ -111,6 +112,7 @@ private slots:
 	void saveTempImageHandler(int id, QString path, QByteArray data);
 	void analysisChangedDownstreamHandler(int id, QString options);
 
+	void resultsDocumentChangedHandler();
 	void simulatedMouseClickHandler(int x, int y, int count);
 	void updateNoteHandler(int id, QString key);
 	void removeAnalysisRequestHandler(int id);
