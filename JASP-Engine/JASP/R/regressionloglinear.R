@@ -203,55 +203,47 @@ print(loglm.fit)
 			"Standard Error" = ".",
 			"z-value" = ".",
 			"z" = ".")
-	
-	
+			
+		
+		lookup.table <- .regressionLogLinearBuildLookup(dataset, options$factors)
+		lookup.table[["(Intercept)"]] <- "(Intercept)"
+
+
+
 		logregression[["schema"]] <- list(fields = fields)
 		
 		logregression.result <- list()
 		
-		if (perform == "run" ) {		
+		if (perform == "run" ) {
 			
 			if ( class(loglm.model$loglm.fit) == "glm") {
 					
-				#na.estimate.names <- NULL
-					
-				loglm.summary = summary(loglm.model$loglm.fit)
+				loglm.summary   <- summary(loglm.model$loglm.fit)
 				loglm.estimates <- loglm.summary$coefficients
-print(loglm.estimates)		
 				
 				len.logreg <- length(logregression.result) + 1
-				v <- 0
-					
-				#sd.dep <- sd( dataset[[ dependent.base64 ]] )
-				
-					
 					
 				if (length(loglm.model$variables) > 0) {
 					
 					variables.in.model <- loglm.model$variables
-						
-					l <- dim(loglm.estimates)[1]
- print(l)
- #print("we are so far")
 					 
-					for (var in 1:l) {
+					coefficients <- dimnames(loglm.estimates)[[1]]
+
+					for (i in seq_along(coefficients)) {
 					
-					  
-						 logregression.result[[ len.logreg ]] <- empty.line
+						logregression.result[[ len.logreg ]] <- empty.line
+
+						coefficient <- coefficients[i]
 						
-							name<-dimnames(loglm.estimates)[[1]]	
-							#name1<-unlist(nam)
-							print(str(name))
-							#name <- nam[var]
-								
-								
-							logregression.result[[ len.logreg ]]$"Name" <- name[var]
-							logregression.result[[ len.logreg ]]$"Coefficient" <- as.numeric(unname(loglm.estimates[var,1]))
-							logregression.result[[ len.logreg ]]$"Standard Error" <- as.numeric(loglm.estimates[var,2])			
-							logregression.result[[ len.logreg ]]$"z-value" <- as.numeric(loglm.estimates[var,3])
-							logregression.result[[ len.logreg ]]$"z" <- as.numeric(loglm.estimates[var,4])
+						actualName <- paste(lookup.table[[ coefficient ]], collapse=" = ")
 							
-							len.logreg <- len.logreg + 1
+						logregression.result[[ len.logreg ]]$"Name" <- actualName
+						logregression.result[[ len.logreg ]]$"Coefficient" <- as.numeric(unname(loglm.estimates[i,1]))
+						logregression.result[[ len.logreg ]]$"Standard Error" <- as.numeric(loglm.estimates[i,2])			
+						logregression.result[[ len.logreg ]]$"z-value" <- as.numeric(loglm.estimates[i,3])
+						logregression.result[[ len.logreg ]]$"z" <- as.numeric(loglm.estimates[i,4])
+						
+						len.logreg <- len.logreg + 1
 					}
 							
 				}
@@ -547,4 +539,24 @@ print(loglm.estimates)
 		list(results=results, status="complete")
 	}
 }
+
+.regressionLogLinearBuildLookup <- function(dataset, factors) {
+
+	table <- list()
+
+	for (v in factors) {
+	
+		levels <- base::levels(dataset[[ .v(v) ]])
+
+		for (l in levels) {
+		
+			mangled.name <- paste(.v(v), l, sep="")
+			actual       <- c(v, l)
+			table[[mangled.name]] <- actual
+		}
+	}
+	
+	table
+}
+
 
