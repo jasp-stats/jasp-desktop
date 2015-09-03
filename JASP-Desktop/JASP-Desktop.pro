@@ -425,26 +425,17 @@ RESOURCES_PATH = $${PWD}/../Resources
 
 win32 {
 
-    HELP_PATH_DEST = $${OUT_PWD}/../Help/
     RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
-
-    HELP_PATH ~= s,/,\\,g
-    HELP_PATH_DEST ~= s,/,\\,g
 
     RESOURCES_PATH ~= s,/,\\,g
     RESOURCES_PATH_DEST ~= s,/,\\,g
 
-    copydocs.commands += $$quote(cmd /c xcopy /S /I /Y $${HELP_PATH} $${HELP_PATH_DEST})
     copyres.commands  += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
 }
 
 macx {
 
-    HELP_PATH_DEST      = $${OUT_PWD}/../../Resources/Help/
     RESOURCES_PATH_DEST = $${OUT_PWD}/../../Resources/
-
-    copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
-    copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
 
     copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
     copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
@@ -452,11 +443,7 @@ macx {
 
 linux {
 
-    HELP_PATH_DEST      = $${OUT_PWD}/../Help/
     RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
-
-    copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
-    copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
 
     copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
     copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
@@ -464,6 +451,6 @@ linux {
 
 ! equals(PWD, $${OUT_PWD}) {
 
-    QMAKE_EXTRA_TARGETS += copydocs copyres
-    POST_TARGETDEPS     += copydocs copyres
+    QMAKE_EXTRA_TARGETS += copyres
+    POST_TARGETDEPS     += copyres
 }

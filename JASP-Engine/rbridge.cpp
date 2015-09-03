@@ -51,7 +51,7 @@ void rbridge_init()
 
 	rInside["jasp.analyses"] = Rcpp::List();
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"RJSONIO\"))");
-	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
+	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASPR\"))");
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 }
 

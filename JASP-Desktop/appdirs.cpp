@@ -31,7 +31,7 @@ const QString AppDirs::help()
 #ifdef __APPLE__
 	static QString dir = QApplication::applicationDirPath() + "/../Resources/Help";
 #else
-	static QString dir = QApplication::applicationDirPath() + QDir::separator() + "Help";
+	static QString dir = QApplication::applicationDirPath() + QDir::separator() + "Resources/Help";
 #endif
 
 	return dir;

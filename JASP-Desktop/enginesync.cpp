@@ -327,6 +327,7 @@ void EngineSync::startSlaveProcess(int no)
 	QStringList args;
 	args << QString::number(no);
 
+
 #ifdef __WIN32__
 
 #if defined(ARCH_32)
@@ -343,12 +344,16 @@ void EngineSync::startSlaveProcess(int no)
 
 #undef ARCH_SUBPATH
 
+	env.insert("R_ENVIRON", "something-which-doesnt-exist");
+	env.insert("R_PROFILE", "something-which-doesnt-exist");
+	env.insert("R_PROFILE_USER", "something-which-doesnt-exist");
+	env.insert("R_ENVIRON_USER", "something-which-doesnt-exist");
+	env.insert("R_LIBS", "something-which-doesnt-exist");
+	env.insert("R_LIBS_SITE", "something-which-doesnt-exist");
+	env.insert("R_LIBS_USER", "something-which-doesnt-exist");
+
 #elif __APPLE__
 	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources"));
-#else
-	env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R/lib") + ";" + programDir.absoluteFilePath("R/library/RInside/lib") + ";" + programDir.absoluteFilePath("R/library/Rcpp/lib"));
-	env.insert("R_HOME", programDir.absoluteFilePath("R"));
-#endif
 
 	env.insert("R_ENVIRON", "something-which-doesnt-exist");
 	env.insert("R_PROFILE", "something-which-doesnt-exist");
@@ -358,6 +363,15 @@ void EngineSync::startSlaveProcess(int no)
 	env.insert("R_LIBS_SITE", "something-which-doesnt-exist");
 	env.insert("R_LIBS_USER", "something-which-doesnt-exist");
 
+#else  // linux
+
+	QDir rHome("/usr/lib/R");
+
+	env.insert("LD_LIBRARY_PATH", rHome.absoluteFilePath("lib") + ";" + rHome.absoluteFilePath("library/RInside/lib") + ";" + rHome.absoluteFilePath("library/Rcpp/lib") + ";" + rHome.absoluteFilePath("site-library/RInside/lib") + ";" + rHome.absoluteFilePath("site-library/Rcpp/lib"));
+	env.insert("R_HOME", rHome.absolutePath());
+	env.insert("R_LIBS", programDir.absolutePath() + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
+
+#endif
 
 	QProcess *slave = new QProcess(this);
 	slave->setProcessEnvironment(env);

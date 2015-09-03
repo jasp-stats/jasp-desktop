@@ -31,7 +31,7 @@ macx {
 
 linux {
 
-    R_HOME = $$OUT_PWD/../R
+    R_HOME = /usr/lib/R
     R_EXE  = $$R_HOME/bin/R
 }
 
@@ -57,18 +57,26 @@ QMAKE_CXXFLAGS += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-c++11-long-long
 QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
-QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
+win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 INCLUDEPATH += \
     $$R_HOME/include \
     $$R_HOME/library/RInside/include \
     $$R_HOME/library/Rcpp/include
 
-unix:LIBS += \
+linux:INCLUDEPATH += \
+    /usr/share/R/include \
+    $$R_HOME/site-library/RInside/include \
+    $$R_HOME/site-library/Rcpp/include
+
+macx:LIBS += \
     -L$$R_HOME/library/RInside/lib -lRInside \
     -L$$R_HOME/lib -lR
 
 linux:LIBS += \
+    -L$$R_HOME/library/RInside/lib \
+    -L$$R_HOME/site-library/RInside/lib -lRInside \
+    -L$$R_HOME/lib -lR \
     -lrt
 
 win32:LIBS += \
@@ -77,7 +85,8 @@ win32:LIBS += \
 
 win32:LIBS += -lole32 -loleaut32
 
-RPackage.commands = $$R_EXE CMD INSTALL --library=$$R_HOME/library $$PWD/JASP
+RPackage.commands = $$R_EXE CMD INSTALL --library=$$OUT_PWD/.. $$PWD/JASP
+
 QMAKE_EXTRA_TARGETS += RPackage
 PRE_TARGETDEPS += RPackage
 
