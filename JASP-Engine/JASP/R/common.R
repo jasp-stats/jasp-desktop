@@ -1,7 +1,7 @@
 
 run <- function(name, options.as.json.string, perform="run") {
 
-	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE, encoding="UTF-8")
+	options <- rjson::fromJSON(options.as.json.string)
 	analysis <- eval(parse(text=name))
 	
 	env <- new.env()
@@ -77,7 +77,7 @@ run <- function(name, options.as.json.string, perform="run") {
 			results <- .addCitationToResults(results)
 		}
 		
-		json <- try({ RJSONIO::toJSON(results, digits=12) })
+		json <- try({ rjson::toJSON(results) })
 		
 		if (class(json) == "try-error") {
 		
@@ -93,7 +93,7 @@ run <- function(name, options.as.json.string, perform="run") {
 
 checkPackages <- function() {
 
-	RJSONIO::toJSON(.checkPackages())
+	rjson::toJSON(.checkPackages())
 }
 
 .addCitationToTable <- function(table) {
@@ -502,14 +502,14 @@ callback <- function(results=NULL) {
 		if (is.null(results)) {
 			json.string <- "null"
 		} else {
-			json.string <- RJSONIO::toJSON(results, digits=12)
+			json.string <- rjson::toJSON(results)
 		}
 	
 		response <- .callbackNative(json.string)
 		
 		if (is.character(response)) {
 		
-			ret <- RJSONIO::fromJSON(base::paste("[", response, "]"), encoding="UTF-8", asText=TRUE, simplify=FALSE)[[1]]
+			ret <- rjson::fromJSON(base::paste("[", response, "]"))[[1]]
 			
 		} else {
 		
@@ -522,7 +522,7 @@ callback <- function(results=NULL) {
 
 .cat <- function(object) {
 	
-	cat(RJSONIO::toJSON(object))
+	cat(rjson::toJSON(object))
 }
 
 .dataFrameToRowList <- function(df, discard.column.names=FALSE) {
