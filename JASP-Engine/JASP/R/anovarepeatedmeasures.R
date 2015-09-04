@@ -387,27 +387,23 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	modelDef <- .rmModelFormula(options)
 	model.formula <- as.formula(modelDef$model.def)
-	
-	print(c(options$betweenSubjectFactors, options$covariates))
-		
+			
 	dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, c(options$betweenSubjectFactors, options$covariates))
-	
-	print(head(dataset))
 	
 	options(contrasts=c("contr.sum","contr.poly"))
 	
 	if (options$sumOfSquares == "type1") {
 	
 		result <- try(stats::aov(model.formula, data=dataset), silent = TRUE)
-		sphericityStatistics <- try(afex::aov.car(model.formula, data=dataset, type= 3, return = "univariate"), silent = TRUE)
+		sphericityStatistics <- try(summary(afex::aov_car(model.formula, data=dataset, type= 3, factorize = FALSE)), silent = TRUE)
 	
 	} else if (options$sumOfSquares == "type2") {
 	
-		result <- try(afex::aov.car(model.formula, data=dataset, type= 2, return = "univariate"), silent = TRUE)
+		result <- try(afex::aov_car(model.formula, data=dataset, type= 2, factorize = FALSE), silent = TRUE)
 		
 	} else {
 	
-		result <- try(afex::aov.car(model.formula, data=dataset, type= 3, return = "univariate"), silent = TRUE)
+		result <- try(afex::aov_car(model.formula, data=dataset, type= 3, factorize = FALSE), silent = TRUE)
 	}
 		
 	model <- NULL
@@ -431,8 +427,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		if (options$sumOfSquares == "type1" && class(sphericityStatistics) != "try-error") {
 
 			model <- summary(result)
-			epsilon <- sphericityStatistics$sphericity.correction
-			mauchly <- sphericityStatistics$mauchly
+			epsilon <- sphericityStatistics$pval.adjustments
+			mauchly <- sphericityStatistics$sphericity.tests
 
 		} else if (options$sumOfSquares == "type1" && class(sphericityStatistics) == "try-error") {
 
@@ -440,11 +436,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			epsilonError <- TRUE
 
 		} else {
-
-			model <- result$anova
-			epsilon <- result$sphericity.correction
-			mauchly <- result$mauchly
-
+						
+			summaryResult <- summary(result)
+			model <- summaryResult$univariate.tests
+			epsilon <- summaryResult$pval.adjustments
+			mauchly <- summaryResult$sphericity.tests
+			
 		}
 	}
 		
@@ -1329,8 +1326,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		epsilonTable <- as.data.frame(matrix(0, length(termsRM.base64), 3))
 		colnames(epsilonTable) <- c("GG", "HF", "p")
 		rownames(epsilonTable) <- termsRM.base64 
-
-		if (is.null(epsilon)) {
+				
+		if (is.null(rownames(mauchly))) {
 			modelTermsResults <- list()
 		} else {
 			modelTermsResults <- strsplit(rownames(epsilon), ":")
@@ -1346,7 +1343,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			modelTermsCase <- unlist(strsplit(termsRM.base64[[i]],":"))
 			index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
-
+						
 			if (sum(index) == 0) {
 
 				foot.index <- .addFootnote(footnotes, text="The repeated measure has only two levels. When the repeated measure has two levels, the assumption of sphericity is always met.")
