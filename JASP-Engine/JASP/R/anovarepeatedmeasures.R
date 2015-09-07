@@ -88,7 +88,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		}
 		
 		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && 
-			diff[['repeatedMeasuresFactors']] == FALSE) {
+			diff[['repeatedMeasuresFactors']] == FALSE && diff[['homogeneityTests']] == FALSE) {
 		
 			# old levene's table can be used
 			
