@@ -33,13 +33,13 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		};
 	},
 
-	setNoteBox: function (key, noteBox) {
+	setNoteBox: function (key, localKey, noteBox) {
 		this.noteBox = noteBox;
 		this.noteBoxKey = key;
 	},
 
 	hasNotes: function () {
-		return this.$el.hasClass('jasp-images-image') === false;
+		return this.$el.hasClass('jasp-collection-image') === false;
 	},
 
 	notesMenuClicked: function (noteType, visibility) {
@@ -175,7 +175,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		if (completedCallback !== undefined)
 			callback = completedCallback;
 
-		if (exportParams.includeNotes && this.noteBox !== undefined) {
+		if (exportParams.includeNotes && this.noteBox !== undefined && this.noteBox.visible && this.noteBox.isTextboxEmpty() === false) {
 			var exportObject = {
 				views: [this, this.noteBox],
 				getStyleAttr: function () {

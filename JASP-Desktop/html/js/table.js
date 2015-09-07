@@ -26,13 +26,13 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		};
 	},
 
-	setNoteBox: function (key, noteBox) {
+	setNoteBox: function (key, localKey, noteBox) {
 		this.noteBox = noteBox;
 		this.noteBoxKey = key;
 	},
 
 	hasNotes: function () {
-		return true;
+		return this.model.get('name') !== null;
 	},
 
 	notesMenuClicked: function (noteType, visibility) {
@@ -1148,7 +1148,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		if (completedCallback !== undefined)
 			callback = completedCallback;
 
-		if (exportParams.includeNotes && this.noteBox !== undefined) {
+		if (exportParams.includeNotes && this.noteBox !== undefined && this.noteBox.visible && this.noteBox.isTextboxEmpty() === false) {
 			var exportObject = {
 				views: [this, this.noteBox],
 				getStyleAttr: function () {
