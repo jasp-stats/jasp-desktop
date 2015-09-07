@@ -33,6 +33,9 @@ RegressionLogLinearBayesianForm::RegressionLogLinearBayesianForm(QWidget *parent
 	connect(_factorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
 	connect(_factorsListModel, SIGNAL(assignedTo(Terms)), _model, SLOT(addCovariates(Terms)));
 	connect(_factorsListModel, SIGNAL(unassigned(Terms)), _model, SLOT(removeVariables(Terms)));
+
+	ui->posteriorProbabilityCutOff->setLabel("Posterior prob. cut-off");
+	ui->maxModels->setLabel("Display best N models");
 }
 
 RegressionLogLinearBayesianForm::~RegressionLogLinearBayesianForm()

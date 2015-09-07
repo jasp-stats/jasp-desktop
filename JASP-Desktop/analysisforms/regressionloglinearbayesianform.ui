@@ -244,11 +244,11 @@
     <widget class="QWidget" name="widget_12" native="true">
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
-       <widget class="BoundGroupBox" name="bayesFactorType">
-        <property name="title">
+       <widget class="BoundGroupBox" name="bayesFactorType" native="true">
+        <property name="title" stdset="0">
          <string>Bayes Factor</string>
         </property>
-        <property name="flat">
+        <property name="flat" stdset="0">
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_13">
@@ -277,8 +277,8 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="BoundGroupBox" name="priorType">
-        <property name="title">
+       <widget class="BoundGroupBox" name="priorType" native="true">
+        <property name="title" stdset="0">
          <string>Prior</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
@@ -312,7 +312,7 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="2">
+      <item row="0" column="3">
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -324,6 +324,69 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="0" column="2">
+       <widget class="GroupBox" name="groupBox">
+        <property name="title">
+         <string>Model cut-offs</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="3" column="0" colspan="2">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Posterior prob.</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Display best</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3" colspan="2">
+          <widget class="BoundTextBox" name="posteriorProbabilityCutOff">
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3" colspan="2">
+          <widget class="BoundTextBox" name="maxModels">
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="5">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>model(s)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -403,15 +466,26 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
+   <extends>QWidget</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
    <class>AnovaModelWidget</class>
