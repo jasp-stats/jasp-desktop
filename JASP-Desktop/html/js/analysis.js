@@ -13,6 +13,43 @@ JASPWidgets.Analyses = Backbone.Collection.extend({
 });
 
 
+JASPWidgets.NoteDetails = function (noteKey, path) {
+	this.path = path === undefined ? [] : path;
+	this.isRoot = this.path.length === 0;
+	this.noteKey = noteKey;
+	this.level = this.path.length;
+
+	this.GetFullKey = function () {
+		if (this.fullKey === undefined) {
+			if (this.path.length === 0)
+				this.fullKey = this.noteKey;
+			else {
+				this.fullKey = this.path.join('-');
+				if (this.noteKey !== '')
+					this.fullKey = this.fullKey + '-' + this.noteKey;
+			}
+		}
+
+		return this.fullKey;
+	};
+
+	this.GetFullKeyArray = function () {
+
+		if (this.fullKeyArray === undefined) {
+			this.fullKeyArray = [];
+
+			for (var i = 0; i < this.path.length; i++) {
+				this.fullKeyArray.push(this.path[i]);
+			}
+
+			if (this.noteKey !== '')
+				this.fullKeyArray.push(this.noteKey);
+		}
+
+		return this.fullKeyArray;
+	};
+}
+
 JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	views: [],
 	volatileViews: [],
@@ -22,20 +59,21 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.viewNotes = { list: [] };
 
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
-		//var self = this;
-		//this.toolbar.selectionElement = function () {
-		//	return self.$el.find('.jasp-analysis-inner');
-		//};
 
 		this.notes = this.model.get('notes');
 
-		var path = ['first'];
-		var firstNoteBox = this.createNoteBox(path, this.getNoteFromPath(path, true), true);
+		var firstNoteDetails = new JASPWidgets.NoteDetails('first');
+		var firstNoteBox = this.getNoteBox(firstNoteDetails);
 		
-		path = ['last'];
-		var lastNoteBox = this.createNoteBox(path, this.getNoteFromPath(path, true), true);
+		var lastNoteDetails = new JASPWidgets.NoteDetails('last');
+		var lastNoteBox = this.getNoteBox(lastNoteDetails);
 
 		this.toolbar.setParent(this);
+
+		this.model.on("CustomOptions:changed", function (options) {
+
+			this.trigger("optionschanged", this.model.get("id"), options)
+		}, this);
 	},
 
 	events: {
@@ -48,22 +86,54 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.viewNotes.list[i].widget.detach();
 	},
 
-	createNoteBox: function (path, note, isRootNote) {
+	getNoteData: function (noteDetails) {
 
-		if (note === null || note === undefined)
-			note = new JASPWidgets.Note();
+		var noteData = null;
+		var obj = this.notes;
+		if (obj !== null) {
 
-		if (isRootNote === undefined)
-			isRootNote = false;
+			var noteData = null;
+			var keyPath = noteDetails.GetFullKeyArray();
+			for (var i = 0; i < keyPath.length; i++) {
+				if (i < noteDetails.level) {
+					obj = obj.others;
+					if (obj === undefined)
+						break;
+				}
 
-		var key = path.join('-');
-		var widget = new JASPWidgets.NoteBox({ className: "jasp-notes jasp-" + key + "-note", model: note });
-		this.viewNotes[key + 'NoteBox'] = widget;
-		this.viewNotes.list.push({ path: path, key: key, widget: widget, note: note, isRootNote: isRootNote });
+				if (i === keyPath.length - 1) {
+					noteData = new JASPWidgets.Note(obj[keyPath[i]]);
+				}
+				else {
+					obj = obj[keyPath[i]];
+					if (obj === undefined)
+						break;	
+				}
+			}
+		}
 
-		this.listenTo(widget, "NoteBox:textChanged", function () {
-			this.trigger("analysis:noteChanged", this.model.get('id'), key);
-		});
+		if (noteData === null)
+			noteData = new JASPWidgets.Note();
+
+		return noteData;
+	},
+
+	getNoteBox: function (noteDetails) {
+
+		var noteData = this.getNoteData(noteDetails);
+
+		var key = noteDetails.GetFullKey();
+
+		var widget = this.viewNotes[key + 'NoteBox'];
+		if (widget === undefined || widget === null) {
+			widget = new JASPWidgets.NoteBox({ className: "jasp-notes jasp-" + key + "-note", model: noteData });
+			this.viewNotes[key + 'NoteBox'] = widget;
+			this.viewNotes.list.push({ noteDetails: noteDetails, widget: widget, note: noteData });
+
+			this.listenTo(widget, "NoteBox:textChanged", function () {
+				this.trigger("analysis:noteChanged", this.model.get('id'), key);
+			});
+		}
 
 		return widget;
 	},
@@ -87,63 +157,48 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		var results = this.model.get("results");
 		for (var i = 0; i < this.viewNotes.list.length; i++) {
 			var noteBoxData = this.viewNotes.list[i];
+			var noteDetails = noteBoxData.noteDetails;
 			var obj = notes.notes;
-			if (noteBoxData.isRootNote === false) {
-				
-				if (notes.notes.others === undefined)
-					notes.notes.others = {};
-
-				obj = notes.notes.others;
-			}
 
 			var resultObj = results;
-			for (j = 0; j < noteBoxData.path.length; j++) {
-				var levelName = noteBoxData.path[j];
+			var fullKeyPath = noteDetails.GetFullKeyArray();
+			for (j = 0; j < fullKeyPath.length; j++) {
 
-				if (j < noteBoxData.path.length - 1) {
+				if (j < noteDetails.level) {
+
+					if (obj.others === undefined)
+						obj.others = {};
+
+					obj = obj.others;
+				}
+
+				var levelName = fullKeyPath[j];
+
+				if (j < fullKeyPath.length - 1) {
 					resultObj = this.getNextObject(resultObj, levelName)
 					if (resultObj === undefined)
 						break;
 				}
 
-				if (j === noteBoxData.path.length - 1)
-					obj[levelName] = { text: Mrkdwn.fromHtmlText(noteBoxData.note.get('text')), format: 'markdown', visible: noteBoxData.widget.visible };
-				else {
-					var nextLevel = obj[levelName];
-					if (nextLevel === undefined) {
-						nextLevel = {};
-						obj[levelName] = nextLevel
-					}
-					obj = nextLevel;
+				var nextLevel = obj[levelName];
+				if (nextLevel === undefined) {
+					nextLevel = {};
+					obj[levelName] = nextLevel
 				}
+
+				if (j === fullKeyPath.length - 1) {
+					nextLevel.text = Mrkdwn.fromHtmlText(noteBoxData.note.get('text'));
+					nextLevel.format = 'markdown';
+					nextLevel.visible = noteBoxData.widget.visible;
+				}
+				else 
+					obj = nextLevel;
 			}
 		}
 
 		return notes;
 	},
 
-	getNoteFromPath: function (path, isRootNote) {
-
-		if (this.notes === null)
-			return null;
-
-		var obj = this.notes;
-		if (isRootNote === false)
-			obj = this.notes.others;
-
-		if (obj === undefined)
-			return null;
-
-		for (var i = 0; i < path.length; i++) {
-			if (i === path.length - 1) {
-				return new JASPWidgets.Note(obj[path[i]]);
-			}
-
-			obj = obj[path[i]];
-			if (obj === undefined)
-				return null;
-		}
-	},
 
 	passNoteObjToView: function (path, itemView) {
 
@@ -163,11 +218,15 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		var key = path.join('-');
 
-		var noteBox = this.viewNotes[key + 'NoteBox'];
-		if (noteBox === undefined || noteBox === null) 
-			noteBox = this.createNoteBox(path, this.getNoteFromPath(path, false), false)
+		var noteKeys = [''];
+		if (itemView.avaliableNoteKeys)
+			noteKeys = itemView.avaliableNoteKeys();
 
-		itemView.setNoteBox(key, noteBox);
+		for (var i = 0; i < noteKeys.length; i++) {
+			var noteDetails = new JASPWidgets.NoteDetails(noteKeys[i], path)
+			var noteBox = this.getNoteBox(noteDetails)
+			itemView.setNoteBox(noteDetails.GetFullKey(), noteDetails.noteKey, noteBox);
+		}
 	},
 
 	_hoveringStart: function (e) {
@@ -254,47 +313,35 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 			this.viewNotes.firstNoteBox.render();
 			$element.append(this.viewNotes.firstNoteBox.$el);
+			this.labelRequest = null;
 		}
-		else if (metaEntry.type == "h1") {
-
-			$element.append("<h3>" + result + "</h3>")
-		}
-		else if (metaEntry.type == "h2") {
-
-			$element.append("<h4>" + result + "</h4>")
-		}
+		else if (metaEntry.type == "h1")
+			this.labelRequest = { title: result, titleFormat: 'h3' };
+		else if (metaEntry.type == "h2")
+			this.labelRequest = { title: result, titleFormat: 'h4' };
 		else {
 
-			if (!_.has(result, "status"))
-				result.status = status;
-
-			var item = new JASPWidgets[metaEntry.type](result);
-
-			item.on("CustomOptions:changed", function (options) {
-
-				this.trigger("optionschanged", this.model.get("id"), options)
-
-			}, this);
-
-			var itemView;
+			//backwards compatibility//////////////////
 			if (_.isArray(result)) {
 
-				item.each(function (subItem) {
-					var status = subItem.get("status");
-					if (status === null || status === undefined)
-						subItem.set("status", this.status);
-				}, result);
-				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type + " jasp-view", collection: item });
+				result = { collection: result };
+				if (this.labelRequest) {
+					result.title = this.labelRequest.title;
+					result.titleFormat = this.labelRequest.titleFormat;
+				}
+				if (metaEntry.type === 'tables')
+					metaEntry.meta = 'table';
+				else if (metaEntry.type === 'images')
+					metaEntry.meta = 'image';
+
+				metaEntry.type = 'collection'
 			}
-			else
-				itemView = new JASPWidgets[metaEntry.type + "View"]({ className: "jasp-" + metaEntry.type + " jasp-view", model: item });
+			this.labelRequest = null;
+			///////////////////////////////////////////
+
+			var itemView = JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status }, false);
 
 			this.passNoteObjToView([metaEntry.name], itemView);
-
-			this.listenTo(itemView, "toolbar:showMenu", function (obj, options) {
-
-				this.trigger("toolbar:showMenu", obj, options);
-			});
 
 			this.views.push(itemView);
 			this.volatileViews.push(itemView);
@@ -316,7 +363,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.$el.empty();
 
-		var $innerElement = this.$el;//$('<div class="jasp-analysis-inner"></div>')
+		var $innerElement = this.$el;
 
 		var results = this.model.get("results");
 		if (results.error) {
@@ -343,8 +390,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.viewNotes.lastNoteBox.render();
 		$innerElement.append(this.viewNotes.lastNoteBox.$el);
-
-		//this.$el.append($innerElement)
 
 		this.views.push(this.viewNotes.lastNoteBox);
 

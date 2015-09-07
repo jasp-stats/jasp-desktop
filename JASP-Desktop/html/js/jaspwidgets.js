@@ -197,8 +197,17 @@ JASPWidgets.Exporter = {
 						if (self.buffer[j]) {
 							var bufferHtml = self.buffer[j].html;
 							if (bufferHtml !== '') {
-								if (useNBSP && firstItem === false && (JASPWidgets.Exporter.isInlineStyle(self.views[j - 1].$el) == false))
+								var includeSpacer = false;
+								if (firstItem === false && (JASPWidgets.Exporter.isInlineStyle(self.views[j - 1].$el) == false)) {
+									if ((this.hasExportNSBFOverride && this.hasExportNSBFOverride()) || this.useExportNSBF)
+										includeSpacer = this.useExportNSBF();
+									else
+										includeSpacer = useNBSP;
+								}
+
+								if (includeSpacer)
 									completeText += "&nbsp;";
+
 								completeText += self.buffer[j].html;
 								firstItem = false;
 							}
@@ -729,6 +738,11 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			pushHTMLToClipboard(exportContent, exportParams);
 	},
 
+	useExportNSBF: function()
+	{
+		return false;
+	},
+
 	onClosed: function() {
 		if (this.$textbox !== undefined)
 			this.$textbox.off();
@@ -801,6 +815,16 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		'keydown .in-toolbar': '_keydown',
 
 	},
+
+	/*testCode: function() {
+		$("#editor").live('input paste', function (e) {
+			if (e.target.id == 'editor') {
+				$('<textarea></textarea>').attr('id', 'paste').appendTo('#editMode');
+				$("#paste").focus();
+				setTimeout($(this).paste, 250);
+			}
+		});
+	},*/
 
 	startEdit: function () {
 		this.editing = true;
@@ -961,88 +985,6 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.setFixedness(0);
 	}
 })
-
-JASPWidgets.CollectionView = JASPWidgets.View.extend({
-
-	/** Initialises the base class property and creates the views from the model collection. */
-	initialize: function () {
-		this._collectionViewBase = JASPWidgets.View.prototype;
-		this._collectionViewBase.initialize.call(this);
-
-		this.views = [];
-
-		this.collection.each(function (item) {
-			var itemView = this.createItemView(item);
-			itemView.inCollection = true;
-			this.listenTo(itemView, "all", this.eventEcho)
-			this.views.push(itemView);
-		}, this);
-	},
-
-	eventEcho: function (eventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
-		this.trigger(eventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-	},
-
-	/**
-	* Returns a view object from the passed model object.
-	* @param {Backbone.Model} item - The model used to create the view object.
-	* @return {JASPWidgets.View} The newly created view.
-	*/
-	createItemView: function(item) {
-		throw "The function 'createItemView' must be overridden.";
-	},
-
-	/**
-	* Renders an item view.
-	* @param {Backbone.View} itemView - The view to be rendered.
-	*/
-	onItemRender: function (itemView)
-	{
-		itemView.render();
-	},
-
-	/** Renders the collection view. */
-	render: function () {
-		for (var i = 0; i < this.views.length; i++) {
-			var itemView = this.views[i];
-			this.onItemRender(itemView);
-			this.$el.append(itemView.$el);
-		}
-	},
-
-	/** Cleans up views when collection is closed. */
-	onClose: function () {
-		for (var i = 0; i < this.views.length; i++) {
-			this.views[i].close();
-		}
-		this.views = [];
-	},
-
-	exportUseNBSP: false,
-
-	exportBegin: function (exportParams, completedCallback) {
-		if (exportParams == undefined)
-			exportParams = new JASPWidgets.Exporter.params();
-		else if (exportParams.error)
-			return false;
-
-		var callback = this.exportComplete;
-		if (completedCallback !== undefined)
-			callback = completedCallback;
-
-		if (this.views.length > 0)
-			JASPWidgets.Exporter.begin(this, exportParams, callback, this.exportUseNBSP);
-		else
-			callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, ""));
-
-		return true;
-	},
-
-	exportComplete: function (exportParams, exportContent) {
-		if (!exportParams.error)
-			pushHTMLToClipboard(exportContent, exportParams);
-	}
-});
 
 JASPWidgets.ActionView = JASPWidgets.View.extend({
 	initialize: function () {
