@@ -392,10 +392,7 @@
          <enum>QAbstractItemView::ScrollPerPixel</enum>
         </property>
         <attribute name="horizontalHeaderVisible">
-         <bool>false</bool>
-        </attribute>
-        <attribute name="horizontalHeaderDefaultSectionSize">
-         <number>130</number>
+         <bool>true</bool>
         </attribute>
         <attribute name="horizontalHeaderHighlightSections">
          <bool>false</bool>
