@@ -636,6 +636,18 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			self.$textbox.blur();
 			self._endEditing(); // this is called because the blur doesn't always invoke a focus loss event
 		}
+		else if (e.which === 66 && e.ctrlKey) { //ctrl+b
+			document.execCommand('bold', false, null);
+		}
+		else if (e.which === 73 && e.ctrlKey) { //ctrl+i
+			document.execCommand('italic', false, null);
+		}
+		else if (e.which === 187 && e.ctrlKey) { //ctrl+=
+			if (e.shiftKey)
+				document.execCommand('superscript', false, null); //ctrl+shift+=
+			else
+				document.execCommand('subscript', false, null); //ctrl+=
+		}
 	},
 
 	_mousedown: function (e) {
