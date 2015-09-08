@@ -26,7 +26,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	 }else{
 	 	dataset <- dataset
 	 	}
-	print(dataset) 	
+	#print(dataset) 	
 	results <- list()
 	
 	meta <- list()
@@ -34,8 +34,8 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	.meta <-  list(
 		list(name = "title", type = "title"),
 		list(name = "table", type = "table"),
-		list(name = "Bayesianlogregression", type = "table")
-		#list(name = "logregressionanova", type = "table")
+		list(name = "Bayesianlogregression", type = "table"),
+		list(name = "Bayesianposterior", type = "table")
 		)
 	
 	results[[".meta"]] <- .meta
@@ -87,7 +87,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		
 	}
 	
-	#if (dependent.variable == options$counts) {
+	
 	
 		
 		
@@ -114,7 +114,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 				
 		}
 			
-print(model.definition)
+#print(model.definition)
 			
 			
 		if (perform == "run" && !is.null(model.definition) ) {
@@ -127,7 +127,7 @@ print(model.formula )
 	 	names(dataset)[names(dataset)== "freq"]<- dependent.base64
 	 }
 			
-			logBlm.fit <- try( conting::bcct( model.formula, data = dataset, n.sample=1000), silent = TRUE)
+			logBlm.fit <- try( conting::bcct( model.formula, data = dataset, prior = options$priorType, n.sample=1000), silent = TRUE)
 #print(logBlm.fit)
 				
 				if ( class(logBlm.fit) == "bcct") {
@@ -151,25 +151,25 @@ print(model.formula )
 			
 		
 	
-	#print(length(loglm.model))
+	print(length(logBlm.model))
 	#print(loglm.model)
 	################################################################################
 	#						   MODEL COEFFICIENTS TABLE   						#
 	################################################################################
 	
-	#if (options$regressionCoefficientsEstimates == TRUE) {
+
 		
 		Bayesianlogregression <- list()
-		Bayesianlogregression[["title"]] <- "Coefficients"
-		
+		Bayesianlogregression[["title"]] <- "Posterior Summary Statistics"
+		ci.label <- paste(95, "% Highest posterior density Intervals", sep="")
 		# Declare table elements
 		fields <- list(
 			list(name = "Model", type = "integer"),
 			list(name = "Name", title = "  ", type = "string"),
 			list(name = "post_prob", title = "Posterior probability", type = "number", format = "dp:3"),
-			list(name = "post_mean", title = "Posterior mean", type="number", format = "dp:3"),
-			list(name = "lower_lim", type="number", format = "sf:4;dp:3"),
-			list(name = "upper_lim", type = "number", format = "dp:3;p:.001"))
+			list(name = "post_mean", title = "Posterior mean",type="number", format = "dp:3"),
+			list(name = "lower_lim",title = "Lower", overTitle=ci.label,type="number", format = "sf:4;dp:3"),
+			list(name = "upper_lim", title = "Upper",overTitle=ci.label,type = "number", format = "dp:3;p:.001"))
 		
 		empty.line <- list( #for empty elements in tables when given output
 			"Model" = "",
@@ -187,7 +187,7 @@ print(model.formula )
 			"lower_lim" = ".",
 			"upper_lim" = ".")
 	
-print("we are so far")	
+#print("we are so far")	
 		Bayesianlogregression[["schema"]] <- list(fields = fields)
 		
 		Bayesianlogregression.result <- list()
@@ -199,7 +199,7 @@ print("we are so far")
 				#na.estimate.names <- NULL
 					
 				logBlm.summary = summary(logBlm.model$logBlm.fit)
-				logBlm.estimates <- logBlm.summary$int_stats
+				logBlm.estimates<- logBlm.summary$int_stats
 
 print(logBlm.estimates)		
 				
@@ -320,52 +320,216 @@ print(logBlm.estimates)
 	Bayesianlogregression[["data"]] <- Bayesianlogregression.result
 	results[["Bayesianlogregression"]] <- Bayesianlogregression
 		
-	#}
+
+	
+################################################################
+################################################################################
+	#						 Posterior model probabilities  						#
+	################################################################################
+	
+	
+		
+		Bayesianposterior <- list()
+		Bayesianposterior[["title"]] <- "Model Comparison"
+		
+		
+		if (options$bayesFactorType == "BF10") {
+				bfTitle <- "BF<sub>10</sub>"
+			} else if (options$bayesFactorType == "BF01") {
+				bfTitle <- "BF<sub>01</sub>"
+			} else {
+				bfTitle <- "Log(BF<sub>10</sub>)"
+			}
+	
+		# Declare table elements
+		
+		
+		fields <- list(
+			list(name="model", type="string", title="Models"),
+			list(name="PM", type="number", format="dp:3", title="P(M)"),
+			list(name="PMdata", type="number", format="dp:3", title="P(M|data)"),
+			list(name="BF", type="number", format="sf:4;dp:3", title=bfTitle))
+			
+			
+			
+		
+		empty.line <- list( #for empty elements in tables when given output
+			"Model" = "",
+			"PM" = "",
+			"PMdata" = "",
+			"BF" = "")
+			
+		dotted.line <- list( #for empty tables
+			"Model" = ".",
+			"PM" = ".",
+			"PMdata" = ".",
+			"BF" = ".")
+			
+	
+#print("we are so far")	
+		Bayesianposterior[["schema"]] <- list(fields = fields)
+		
+		Bayesianposterior.result <- list()
+		
+		if (perform == "run" ) {		
+			
+			if ( class(logBlm.model$logBlm.fit) == "bcct") {
+					
+				#na.estimate.names <- NULL
+					
+				#logBlm.summary = summary(logBlm.model$logBlm.fit)
+				logBlm.posterior <- conting::mod_probs(logBlm.fit,scale=0.001)
+				#logBlm.estimates <- logBlm.summary$int_stats
+
+print(logBlm.posterior)		
+				
+				len.Blogreg <- length(Bayesianposterior.result) + 1
+				v <- 0
+					
+				#sd.dep <- sd( dataset[[ dependent.base64 ]] )
+				
+					
+					
+				if (length(logBlm.model$variables) > 0) {
+					
+					variables.in.model <- logBlm.model$variables
+						
+					l <- logBlm.posterior$totmodsvisit
+					max.prob <- base::max(logBlm.posterior$table$prob)
+					BFactor <- logBlm.posterior$table$prob / max.prob
+  print(variables.in.model)
+  print(length(options$factors))
+  print("we are so far")
+ print(BFactor)
+ print(l)
+ 				if (options$bayesFactorType == "BF10") {
+		
+					BFactor <- .clean(BFactor)
+		
+				} else if (options$bayesFactorType == "BF01") {
+		
+					BFactor <- .clean(1/BFactor)
+			
+				} else {
+		
+					BFactor <- .clean(log(BFactor))
+				}
+				
+				#nfactors.in.model <- length(variables.in.model)
+				#n.factors<-length(options$factors)
+				#term.in.model <- nfactors.in.model - n.factors +1
+				#prior.model.prob <- 1 / term.in.model
+				
+					 
+					for (var in 1:l) {
+					
+					  
+						 Bayesianposterior.result[[ len.Blogreg ]] <- empty.line
+						
+							name<-logBlm.posterior$table$model_formula
+							#name1<-unlist(nam)
+							print(str(name))
+							#name <- nam[var]
+							
+								
+								
+							Bayesianposterior.result[[ len.Blogreg ]]$"model" <- name[var]
+							Bayesianposterior.result[[ len.Blogreg ]]$"PM" <- as.numeric(1)
+							Bayesianposterior.result[[ len.Blogreg ]]$"PMdata" <- as.numeric(logBlm.posterior$table$prob[var])			
+							Bayesianposterior.result[[ len.Blogreg ]]$"BF" <- as.numeric(BFactor[var] )
+							#Bayesianposterior.result[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.posterior$upper[var])
+							
+							len.Blogreg <- len.Blogreg + 1
+					}
+							
+				}
+					
+	###############					
+			
+			} else {
+			
+				len.Blogreg <- length(Bayesianposterior.result) + 1
+				Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
+				#posterior.result[[ len.logreg ]]$"Model" <- as.integer(m)
+			
+				if (length(logBlm.model$variables) > 0) {
+				
+					variables.in.model <- logBlm.model$variables
+				
+					len.Blogreg <- len.Blogreg + 1
+				
+					for (var in 1:length(variables.in.model)) {
+					
+						Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
+					
+						if (base::grepl(":", variables.in.model[var])) {
+						
+							# if interaction term
+						
+							vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+							name <- paste0(vars, collapse="\u2009\u273b\u2009")
+						
+						} else {
+						
+							name <- as.character(variables.in.model[ var])
+						}
+					
+						Bayesianposterior.result[[ len.Blogreg ]]$"Name" <- name
+						len.Blogreg <- len.Blogreg + 1
+					}
+				}
+			}
+			
+		} else {
+				
+			len.Blogreg <- length(Bayesianposterior.result) + 1
+
+			if (length(logBlm.model$variables) > 0) {
+	
+				variables.in.model <- logBlm.model$variables
+	
+				for (var in 1:length(variables.in.model)) {
+		
+					Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
+					Bayesianposterior.result[[ len.Blogreg ]]$"Model" <- ""
+		
+					if (var == 1) {
+						#posterior.result[[ len.logreg ]]$"Model" <- as.integer(m)
+						Bayesianposterior.result[[ len.Blogreg ]][[".isNewGroup"]] <- TRUE
+					}
+		
+					if (base::grepl(":", variables.in.model[var])) {
+			
+						# if interaction term
+			
+						vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+						name <- paste0(vars, collapse="\u2009\u273b\u2009")
+			
+					} else {
+			
+						name <- as.character(variables.in.model[ var])
+					}
+		
+					Bayesianposterior.result[[ len.Blogreg ]]$"Name" <- name
+					Blen.logreg <- len.Blogreg + 1
+				}
+			}
+
+		len.Blogreg <- length(Bayesianposterior.result) + 1
+		Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
+		Bayesianposterior.result[[ len.Blogreg ]]$"Model" <- 1
+
+		}
+
+	Bayesianposterior[["data"]] <- Bayesianposterior.result
+	results[["Bayesianposterior"]] <- Bayesianposterior
+		
+	
 	
 ################################################################
 
 
-
-	llTable <- list()
 	
-	llTable[["title"]] <- "Bayesian Log Linear Regression"
-
-	fields <- list()
-	
-	fields[[length(fields)+1]] <- list(name="model", type="string", title="Models")
-	fields[[length(fields)+1]] <- list(name="PM", type="number", format="dp:3", title="P(M)")
-	fields[[length(fields)+1]] <- list(name="PMdata", type="number", format="dp:3", title="P(M|data)")
-	
-	if (options$bayesFactorType == "BF10") {
-		bfTitle <- "BF<sub>10</sub>"
-	} else if (options$bayesFactorType == "BF01") {
-		bfTitle <- "BF<sub>01</sub>"
-	} else {
-		bfTitle <- "Log(BF<sub>10</sub>)"
-	}
-	
-	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3;log10", title=bfTitle)
-	
-	llTable[["schema"]] <- list(fields=fields)
-	
-	llTableData <- list()
-	
-	llTableData[[1]] <- list(model="Gregory") 
-	llTableData[[2]] <- list(model="Bronson")
-	llTableData[[3]] <- list(model="Lachlan")
-
-	if (perform == "run") {
-	
-		llTableData[[1]] <- list(model="Gregory", PM=1, PMdata=1, BF=1) 
-		llTableData[[2]] <- list(model="Bronson", PM=1, PMdata=1, BF=2)
-		llTableData[[3]] <- list(model="Lachlan", PM=1, PMdata=1, BF=3)
-	}
-
-	llTable[["data"]] <- llTableData
-
-	
-
-	results[["table"]] <- llTable
 	
 	if (perform == "init") {
 
