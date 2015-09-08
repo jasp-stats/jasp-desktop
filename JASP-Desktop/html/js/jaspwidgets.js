@@ -375,6 +375,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 	initialize: function () {
 
+		this.ghostTextDefault = 'Click here to add text...';
+
 		if (JASPWidgets.NoteBox.activeNoteBox === undefined)
 			JASPWidgets.NoteBox.activeNoteBox = null;
 
@@ -438,7 +440,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 	simulatedClickPosition: function () {
 		var offset = this.$textbox.offset();
-		if (this.editing === false)
+		if (this.$ghostText.hasClass('jasp-hide') === false)
 			offset = this.$ghostText.offset();
 
 		var posY = offset.top + 5 - $(window).scrollTop() + 3;
@@ -490,8 +492,12 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		this.closeButton.render();
 
+		var ghost_text = this.ghostTextDefault;
+		if (this.ghostText)
+			ghost_text = this.ghostText;
+
 		this.$el.append('<div class="jasp-editable jasp-hide" data-button-class="jasp-comment">' + html + '</div>');
-		this.$el.append('<div class="jasp-ghost-text"><p>Click here to add text...</p></div>');
+		this.$el.append('<div class="jasp-ghost-text"><p>' + ghost_text + '</p></div>');
 
 		this.$textbox = this.$el.find('.jasp-editable');
 		this.$ghostText = this.$el.find('.jasp-ghost-text');
@@ -537,21 +543,25 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			this.$el.addClass('jasp-hide');
 	},
 
-	setVisibilityAnimate: function (value) {
+	setVisibilityAnimate: function (value, scroll) {
 
 		var self = this;
+		var scrollIntoView = scroll === undefined ? true : scroll;
 		self.$el.css("opacity", value ? 0 : 1);
 
 		if (value === true) {
 			self.$el.slideDown(200, function () {
 				self.setVisibility(value);
-				self.setGhostTextVisible(false);
+				if (scrollIntoView)
+					self.setGhostTextVisible(false);
 				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
-					window.scrollIntoView(self.$textbox, function () {
-						var pos = self.simulatedClickPosition();
-						window.simulateClick(pos.x, pos.y, 1);
-						self.setGhostTextVisible(true);
-					});
+					if (scrollIntoView) {
+						window.scrollIntoView(self.$el, function () {
+							var pos = self.simulatedClickPosition();
+							window.simulateClick(pos.x, pos.y, 1);
+							self.setGhostTextVisible(true);
+						});
+					}
 				});
 			});
 		}
@@ -720,7 +730,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		}
 
 		var relatedtarget = e.relatedTarget;
-		if (relatedtarget === null || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size())
+		if (relatedtarget === null || relatedtarget === undefined || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size())
 			self._endEditing();
 
 		return true;

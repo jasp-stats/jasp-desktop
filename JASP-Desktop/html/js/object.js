@@ -132,6 +132,7 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 
 		for (var i = 0; i < this.views.length; i++) {
 			var itemView = this.views[i];
+			itemView.render();
 			this.$el.append(itemView.$el);
 		}
 

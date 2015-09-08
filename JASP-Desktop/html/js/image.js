@@ -142,10 +142,10 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 			html += '</div>'
 		}
 
+		html += '<div class="image-status"></div>';
 		html += '</div>'
 
-		html += '<div class="image-status"></div>';
-
+		
 		html += '</div>'
 		html += '</div>'
 

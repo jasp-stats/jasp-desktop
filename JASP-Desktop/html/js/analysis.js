@@ -68,12 +68,19 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		var lastNoteDetails = new JASPWidgets.NoteDetails('last');
 		var lastNoteBox = this.getNoteBox(lastNoteDetails);
 
+		this._setTitle(this.model.get('title'));
+
 		this.toolbar.setParent(this);
 
 		this.model.on("CustomOptions:changed", function (options) {
 
 			this.trigger("optionschanged", this.model.get("id"), options)
 		}, this);
+	},
+
+	_setTitle: function (title) {
+		this._title = title;
+		this.viewNotes.lastNoteBox.ghostText = this._title + ' Conclusion - ' + this.viewNotes.lastNoteBox.ghostTextDefault;
 	},
 
 	events: {
@@ -158,6 +165,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		for (var i = 0; i < this.viewNotes.list.length; i++) {
 			var noteBoxData = this.viewNotes.list[i];
 			var noteDetails = noteBoxData.noteDetails;
+
+			if (noteBoxData.widget.visible === false)
+				continue;
+
 			var obj = notes.notes;
 
 			var resultObj = results;
@@ -239,20 +250,25 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	notesMenuClicked: function (noteType, visibility) {
 
-		var noteBox = this.viewNotes[noteType + 'NoteBox'];
-		if (noteBox !== undefined) {
-			noteBox.setVisibilityAnimate(visibility);
-			return true;
+		var scrollIntoView = true;
+		for (var i = 0; i < this.viewNotes.list.length; i++) {
+			var noteBoxData = this.viewNotes.list[i];
+			if (noteBoxData.noteDetails.level === 0) {
+				var noteBox = noteBoxData.widget;
+				if (noteBox.visible !== visibility) {
+					noteBox.setVisibilityAnimate(visibility, scrollIntoView);
+					scrollIntoView = false;
+				}
+			}
 		}
-		return false;
+
+		return true;
 	},
 
 	noteOptions: function () {
-		var firstOpt = { key: 'first', menuText: 'Add Note Before', visible: this.viewNotes.firstNoteBox.visible };
+		var firstOpt = { key: 'all', menuText: 'Add Notes', visible: this.viewNotes.firstNoteBox.visible && this.viewNotes.lastNoteBox.visible };
 
-		var lastOpt = { key: 'last', menuText: 'Add Note After', visible: this.viewNotes.lastNoteBox.visible };
-
-		return [firstOpt, lastOpt];
+		return [firstOpt];
 	},
 
 	copyMenuClicked: function () {
@@ -306,8 +322,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		if (metaEntry.type == "title") {
 
+			this._setTitle(result);
+
 			this.toolbar.titleTag = "h2";
-			this.toolbar.title = result;
+			this.toolbar.title = this._title;
 			this.toolbar.render();
 			$element.append(this.toolbar.$el);
 
