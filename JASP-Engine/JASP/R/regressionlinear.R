@@ -142,7 +142,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		list(name = "collinearity diagnostics", type = "table"),
 		list(name = "casewise diagnostics", type = "table"),
 		list(name = "residuals statistics", type = "table"),
-		list(name="plots", type="images")
+		list(name="plotResVsDep", type="image"),
+		list(name="plotsResVsCov", type="images"),
+		list(name="plotResVsPred", type="image"),
+		list(name="plotResHist", type="image"),
+		list(name="plotResQQ", type="image")
 		)
 	
 	results[[".meta"]] <- .meta
@@ -1737,6 +1741,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	plots.regression <- list()
 	plotTypes <- list()
+	plotsResVsCov <- list()
 	
 	if (length(options$modelTerms) > 0 && dependent.variable != "") {
 		
@@ -1754,7 +1759,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				stateIndex <- which(state$plotTypes == paste0("plotResidualsDependent", dependent.variable))[1]
 				
 				plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-				results[["plots"]] <- plots.regression
+				results[["plotResVsDep"]] <- state$plotsRegression[[stateIndex]]
 				
 			} else {
 				
@@ -1770,7 +1775,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				plot[["data"]] <- .endSaveImage(image)
 				
 				plots.regression[[length(plots.regression)+1]] <- plot
-				results[["plots"]] <- plots.regression
+				results[["plotResVsDep"]] <- plots.regression[[length(plots.regression)]]
 				
 				if ( ! .shouldContinue(callback(results)))
 				return()
@@ -1811,7 +1816,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					stateIndex <- which(state$plotTypes == paste0("plotResidualsCovariates", variables.in.model[var]))[1]
 					
 					plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-					results[["plots"]] <- plots.regression
+					plotsResVsCov[[length(plotsResVsCov)+1]] <- state$plotsRegression[[stateIndex]]
+					results[["plotsResVsCov"]] <- plotsResVsCov
 				
 				} else {
 					
@@ -1827,7 +1833,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					plot[["data"]] <- .endSaveImage(image)
 					
 					plots.regression[[length(plots.regression)+1]] <- plot
-					results[["plots"]] <- plots.regression
+					plotsResVsCov[[length(plotsResVsCov)+1]] <- plot
+					results[["plotsResVsCov"]] <- plotsResVsCov
 					
 					if ( ! .shouldContinue(callback(results)))
 					return()
@@ -1854,7 +1861,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				stateIndex <- which(state$plotTypes == paste0("plotResidualsPredicted", dependent.variable))[1]
 				
 				plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-				results[["plots"]] <- plots.regression
+				results[["plotResVsPred"]] <- state$plotsRegression[[stateIndex]]
 				
 			} else {
 				
@@ -1871,7 +1878,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				
 				plots.regression[[length(plots.regression)+1]] <- plot
 				
-				results[["plots"]] <- plots.regression
+				results[["plotResVsPred"]] <- plots.regression[[length(plots.regression)]]
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -1895,7 +1902,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				stateIndex <- which(state$plotTypes == paste0("plotResidualsHistogram", dependent.variable))[1]
 				
 				plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-				results[["plots"]] <- plots.regression
+				results[["plotResHist"]] <- state$plotsRegression[[stateIndex]]
 				
 			} else {
 				
@@ -1922,7 +1929,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				
 				plots.regression[[length(plots.regression)+1]] <- plot
 				
-				results[["plots"]] <- plots.regression
+				results[["plotResHist"]] <- plots.regression[[length(plots.regression)]]
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -1945,7 +1952,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				stateIndex <- which(state$plotTypes == paste0("plotResidualsQQ", dependent.variable))[1]
 				
 				plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-				results[["plots"]] <- plots.regression
+				results[["plotResQQ"]] <- state$plotsRegression[[stateIndex]]
 				
 			} else {
 				
@@ -1962,7 +1969,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				
 				plots.regression[[length(plots.regression)+1]] <- plot
 				
-				results[["plots"]] <- plots.regression
+				results[["plotResQQ"]] <- plots.regression[[length(plots.regression)]]
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -1990,7 +1997,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					stateIndex <- which(state$plotTypes == paste0("plotResidualsDependent", dependent.variable))[1]
 					
 					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-					results[["plots"]] <- plots.regression
+					results[["plotResVsDep"]] <- state$plotsRegression[[stateIndex]]
 					
 				} else {
 					
@@ -2029,7 +2036,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					
 					plot[["status"]] <- "complete"
 					plots.regression[[j]] <- plot
-					results[["plots"]] <- plots.regression
+					results[["plotResVsDep"]] <- plots.regression[[j]]
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -2056,7 +2063,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						stateIndex <- which(state$plotTypes == paste0("plotResidualsCovariates", variables.in.model[var]))[1]
 						
 						plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-						results[["plots"]] <- plots.regression
+						plotsResVsCov[[j]] <- state$plotsRegression[[stateIndex]]
+						results[["plotsResVsCov"]] <- plotsResVsCov
 						
 					} else {
 						
@@ -2081,8 +2089,9 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						}
 						
 						plots.regression[[j]]$status <- "running"
+						plotsResVsCov[[j]] <- plots.regression[[j]]
 						
-						results[["plots"]] <- plots.regression
+						results[["plotsResVsCov"]] <- plotsResVsCov
 						
 						if ( ! .shouldContinue(callback(results)))
 							return()
@@ -2113,7 +2122,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 						
 						plot[["status"]] <- "complete"
 						plots.regression[[j]] <- plot
-						results[["plots"]] <- plots.regression
+						plotsResVsCov[[j]] <- plot
+						results[["plotsResVsCov"]] <- plotsResVsCov
 						
 						if ( ! .shouldContinue(callback(results)))
 							return()
@@ -2139,13 +2149,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					stateIndex <- which(state$plotTypes == paste0("plotResidualsPredicted", dependent.variable))[1]
 					
 					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-					results[["plots"]] <- plots.regression
+					results[["plotResVsPred"]] <- state$plotsRegression[[stateIndex]]
 				
 				} else {
 					
 					plots.regression[[j]]$status <- "running"
 					
-					results[["plots"]] <- plots.regression
+					results[["plotResVsPred"]] <- plots.regression[[j]]
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -2177,7 +2187,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					
 					plot[["status"]] <- "complete"
 					plots.regression[[j]] <- plot
-					results[["plots"]] <- plots.regression
+					results[["plotResVsPred"]] <- plots.regression[[j]]
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -2202,13 +2212,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					stateIndex <- which(state$plotTypes == paste0("plotResidualsHistogram", dependent.variable))[1]
 					
 					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-					results[["plots"]] <- plots.regression
+					results[["plotResHist"]] <- state$plotsRegression[[stateIndex]]
 					
 				} else {
 					
 					plots.regression[[j]]$status <- "running"
 					
-					results[["plots"]] <- plots.regression
+					results[["plotResHist"]] <- plots.regression[[j]]
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -2246,7 +2256,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					
 					plot[["status"]] <- "complete"
 					plots.regression[[j]] <- plot
-					results[["plots"]] <- plots.regression
+					results[["plotResHist"]] <- plots.regression[[j]]
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -2270,13 +2280,13 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					stateIndex <- which(state$plotTypes == paste0("plotResidualsQQ", dependent.variable))[1]
 					
 					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-					results[["plots"]] <- plots.regression
+					results[["plotResQQ"]] <- state$plotsRegression[[stateIndex]]
 					
 				} else {
 					
 					plots.regression[[j]]$status <- "running"
 					
-					results[["plots"]] <- plots.regression
+					results[["plotResQQ"]] <- plots.regression[[j]]
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -2308,7 +2318,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					
 					plot[["status"]] <- "complete"
 					plots.regression[[j]] <- plot
-					results[["plots"]] <- plots.regression
+					results[["plotResQQ"]] <- plots.regression[[j]]
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
