@@ -192,6 +192,9 @@ print(model.formula )
 		
 		Bayesianlogregression.result <- list()
 		
+		lookup.table <- .regressionLogLinearBayesianBuildLookup(dataset, options$factors)
+		lookup.table[["(Intercept)"]] <- "(Intercept)"
+		
 		if (perform == "run" ) {		
 			
 			if ( class(logBlm.model$logBlm.fit) == "bcct") {
@@ -208,34 +211,30 @@ print(logBlm.estimates)
 					
 				#sd.dep <- sd( dataset[[ dependent.base64 ]] )
 				
-					
+				
+				term.names <- logBlm.estimates$term
+				
 					
 				if (length(logBlm.model$variables) > 0) {
 					
 					variables.in.model <- logBlm.model$variables
 						
-					l <- length(logBlm.estimates$term)
- print(l)
  #print("we are so far")
-					 
-					for (var in 1:l) {
+
+					for (i in seq_along(logBlm.estimates$term)) {
 					
-					  
-						 Bayesianlogregression.result[[ len.Blogreg ]] <- empty.line
+						Bayesianlogregression.result[[ len.Blogreg ]] <- empty.line
 						
-							name<-logBlm.estimates$term	
-							#name1<-unlist(nam)
-							print(str(name))
-							#name <- nam[var]
+						name <- term.names[i]							
+						actual.name <- paste(lookup.table[[ name ]], collapse=" = ")									
 								
-								
-							Bayesianlogregression.result[[ len.Blogreg ]]$"Name" <- name[var]
-							Bayesianlogregression.result[[ len.Blogreg ]]$"post_prob" <- as.numeric(logBlm.estimates$prob[var])
-							Bayesianlogregression.result[[ len.Blogreg ]]$"post_mean" <- as.numeric(logBlm.estimates$post_mean[var])			
-							Bayesianlogregression.result[[ len.Blogreg ]]$"lower_lim" <- as.numeric(logBlm.estimates$lower[var])
-							Bayesianlogregression.result[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.estimates$upper[var])
-							
-							len.Blogreg <- len.Blogreg + 1
+						Bayesianlogregression.result[[ len.Blogreg ]]$"Name" <- actual.name
+						Bayesianlogregression.result[[ len.Blogreg ]]$"post_prob" <- as.numeric(logBlm.estimates$prob[i])
+						Bayesianlogregression.result[[ len.Blogreg ]]$"post_mean" <- as.numeric(logBlm.estimates$post_mean[i])			
+						Bayesianlogregression.result[[ len.Blogreg ]]$"lower_lim" <- as.numeric(logBlm.estimates$lower[i])
+						Bayesianlogregression.result[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.estimates$upper[i])
+						
+						len.Blogreg <- len.Blogreg + 1
 					}
 							
 				}
@@ -394,52 +393,49 @@ print(logBlm.posterior)
 					
 					variables.in.model <- logBlm.model$variables
 						
-					l <- logBlm.posterior$totmodsvisit
 					max.prob <- base::max(logBlm.posterior$table$prob)
 					BFactor <- logBlm.posterior$table$prob / max.prob
   print(variables.in.model)
   print(length(options$factors))
   print("we are so far")
  print(BFactor)
- print(l)
- 				if (options$bayesFactorType == "BF10") {
+					if (options$bayesFactorType == "BF10") {
 		
-					BFactor <- .clean(BFactor)
+						BFactor <- .clean(BFactor)
 		
-				} else if (options$bayesFactorType == "BF01") {
+					} else if (options$bayesFactorType == "BF01") {
 		
-					BFactor <- .clean(1/BFactor)
+						BFactor <- .clean(1/BFactor)
 			
-				} else {
+					} else {
 		
-					BFactor <- .clean(log(BFactor))
-				}
+						BFactor <- .clean(log(BFactor))
+					}
 				
-				#nfactors.in.model <- length(variables.in.model)
-				#n.factors<-length(options$factors)
-				#term.in.model <- nfactors.in.model - n.factors +1
-				#prior.model.prob <- 1 / term.in.model
+					#nfactors.in.model <- length(variables.in.model)
+					#n.factors<-length(options$factors)
+					#term.in.model <- nfactors.in.model - n.factors +1
+					#prior.model.prob <- 1 / term.in.model
 				
 					 
-					for (var in 1:l) {
+					model.names <- logBlm.posterior$table$model_formula
+
+					for (i in 1:logBlm.posterior$totmodsvisit) {
 					
 					  
-						 Bayesianposterior.result[[ len.Blogreg ]] <- empty.line
+						Bayesianposterior.result[[ len.Blogreg ]] <- empty.line
 						
-							name<-logBlm.posterior$table$model_formula
-							#name1<-unlist(nam)
-							print(str(name))
-							#name <- nam[var]
+						model.name <- as.character(model.names[[i]])
+						model.name <- substring(model.name, 2)  # trim leading ~
+						model.name <- .unvf(model.name)
 							
-								
-								
-							Bayesianposterior.result[[ len.Blogreg ]]$"model" <- name[var]
-							Bayesianposterior.result[[ len.Blogreg ]]$"PM" <- as.numeric(1)
-							Bayesianposterior.result[[ len.Blogreg ]]$"PMdata" <- as.numeric(logBlm.posterior$table$prob[var])			
-							Bayesianposterior.result[[ len.Blogreg ]]$"BF" <- as.numeric(BFactor[var] )
-							#Bayesianposterior.result[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.posterior$upper[var])
-							
-							len.Blogreg <- len.Blogreg + 1
+						Bayesianposterior.result[[ len.Blogreg ]]$"model" <- model.name
+						Bayesianposterior.result[[ len.Blogreg ]]$"PM" <- as.numeric(1)
+						Bayesianposterior.result[[ len.Blogreg ]]$"PMdata" <- as.numeric(logBlm.posterior$table$prob[i])			
+						Bayesianposterior.result[[ len.Blogreg ]]$"BF" <- as.numeric(BFactor[i] )
+						#Bayesianposterior.result[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.posterior$upper[i])
+						
+						len.Blogreg <- len.Blogreg + 1
 					}
 							
 				}
@@ -539,5 +535,25 @@ print(logBlm.posterior)
 	
 		list(results=results, status="complete")
 	}
+}
+
+.regressionLogLinearBayesianBuildLookup <- function(dataset, factors) {
+
+	table <- list()
+
+	for (v in factors) {
+	
+		levels <- base::levels(dataset[[ .v(v) ]])
+
+		for (i in seq_along(levels)) {
+		
+			l <- levels[i]
+			mangled.name <- paste(.v(v), i, sep="")
+			actual       <- c(v, l)
+			table[[mangled.name]] <- actual
+		}
+	}
+	
+	table
 }
 
