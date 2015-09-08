@@ -375,6 +375,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 	initialize: function () {
 
+		this.ghostTextDefault = 'Click here to add text...';
+
 		if (JASPWidgets.NoteBox.activeNoteBox === undefined)
 			JASPWidgets.NoteBox.activeNoteBox = null;
 
@@ -490,8 +492,12 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		this.closeButton.render();
 
+		var ghost_text = this.ghostTextDefault;
+		if (this.ghostText)
+			ghost_text = this.ghostText;
+
 		this.$el.append('<div class="jasp-editable jasp-hide" data-button-class="jasp-comment">' + html + '</div>');
-		this.$el.append('<div class="jasp-ghost-text"><p>Click here to add text...</p></div>');
+		this.$el.append('<div class="jasp-ghost-text"><p>' + ghost_text + '</p></div>');
 
 		this.$textbox = this.$el.find('.jasp-editable');
 		this.$ghostText = this.$el.find('.jasp-ghost-text');
