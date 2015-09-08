@@ -438,7 +438,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 	simulatedClickPosition: function () {
 		var offset = this.$textbox.offset();
-		if (this.editing === false)
+		if (this.$ghostText.hasClass('jasp-hide') === false)
 			offset = this.$ghostText.offset();
 
 		var posY = offset.top + 5 - $(window).scrollTop() + 3;
