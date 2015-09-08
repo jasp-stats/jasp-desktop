@@ -537,21 +537,25 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			this.$el.addClass('jasp-hide');
 	},
 
-	setVisibilityAnimate: function (value) {
+	setVisibilityAnimate: function (value, scroll) {
 
 		var self = this;
+		var scrollIntoView = scroll === undefined ? true : scroll;
 		self.$el.css("opacity", value ? 0 : 1);
 
 		if (value === true) {
 			self.$el.slideDown(200, function () {
 				self.setVisibility(value);
-				self.setGhostTextVisible(false);
+				if (scrollIntoView)
+					self.setGhostTextVisible(false);
 				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
-					window.scrollIntoView(self.$el, function () {
-						var pos = self.simulatedClickPosition();
-						window.simulateClick(pos.x, pos.y, 1);
-						self.setGhostTextVisible(true);
-					});
+					if (scrollIntoView) {
+						window.scrollIntoView(self.$el, function () {
+							var pos = self.simulatedClickPosition();
+							window.simulateClick(pos.x, pos.y, 1);
+							self.setGhostTextVisible(true);
+						});
+					}
 				});
 			});
 		}
