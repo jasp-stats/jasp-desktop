@@ -68,9 +68,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		var lastNoteDetails = new JASPWidgets.NoteDetails('last');
 		var lastNoteBox = this.getNoteBox(lastNoteDetails);
 
-		this._setTitle(this.model.get('title'));
-
 		this.toolbar.setParent(this);
+
+		this._setTitle(this.model.get('title'), 'h2');
 
 		this.model.on("CustomOptions:changed", function (options) {
 
@@ -78,9 +78,12 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		}, this);
 	},
 
-	_setTitle: function (title) {
-		this._title = title;
-		this.viewNotes.lastNoteBox.ghostText = this._title + ' Conclusion - ' + this.viewNotes.lastNoteBox.ghostTextDefault;
+	_setTitle: function (title, format) {
+
+		this.viewNotes.lastNoteBox.ghostText = title + ' Conclusion - ' + this.viewNotes.lastNoteBox.ghostTextDefault;
+
+		this.toolbar.title = title;
+		this.toolbar.titleTag = format;
 	},
 
 	events: {
@@ -320,17 +323,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	renderChildren: function ($element, result, status, metaEntry) {
 
+//backwards compatibility//////////////////
 		if (metaEntry.type == "title") {
-
-			this._setTitle(result);
-
-			this.toolbar.titleTag = "h2";
-			this.toolbar.title = this._title;
-			this.toolbar.render();
-			$element.append(this.toolbar.$el);
-
-			this.viewNotes.firstNoteBox.render();
-			$element.append(this.viewNotes.firstNoteBox.$el);
+			this.titleRequest = { title: result, titleFormat: 'h2' };
 			this.labelRequest = null;
 		}
 		else if (metaEntry.type == "h1")
@@ -338,8 +333,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		else if (metaEntry.type == "h2")
 			this.labelRequest = { title: result, titleFormat: 'h4' };
 		else {
-
-			//backwards compatibility//////////////////
+		
 			if (_.isArray(result)) {
 
 				result = { collection: result };
@@ -355,7 +349,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				metaEntry.type = 'collection'
 			}
 			this.labelRequest = null;
-			///////////////////////////////////////////
+///////////////////////////////////////////
 
 			var itemView = JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status }, false);
 
@@ -406,8 +400,17 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		}
 
+		if (this.titleRequest)
+			this._setTitle(this.titleRequest.title, this.titleRequest.titleFormat);
+
 		this.viewNotes.lastNoteBox.render();
 		$innerElement.append(this.viewNotes.lastNoteBox.$el);
+
+		this.viewNotes.firstNoteBox.render();
+		$innerElement.prepend(this.viewNotes.firstNoteBox.$el);
+
+		this.toolbar.render();
+		$innerElement.prepend(this.toolbar.$el);
 
 		this.views.push(this.viewNotes.lastNoteBox);
 
