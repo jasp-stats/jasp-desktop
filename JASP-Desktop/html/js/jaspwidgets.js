@@ -547,7 +547,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				self.setVisibility(value);
 				self.setGhostTextVisible(false);
 				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
-					window.scrollIntoView(self.$textbox, function () {
+					window.scrollIntoView(self.$el, function () {
 						var pos = self.simulatedClickPosition();
 						window.simulateClick(pos.x, pos.y, 1);
 						self.setGhostTextVisible(true);
@@ -720,7 +720,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		}
 
 		var relatedtarget = e.relatedTarget;
-		if (relatedtarget === null || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size())
+		if (relatedtarget === null || relatedtarget === undefined || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size())
 			self._endEditing();
 
 		return true;
