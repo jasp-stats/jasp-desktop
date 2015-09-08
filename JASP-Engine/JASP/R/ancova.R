@@ -467,15 +467,21 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 		for (component in components) {
 		
-			column <- dataset[[ .v(component) ]]
-			if (length(unique(column)) < 2)
+			nLevels <- length(levels(dataset[[ .v(component) ]]))
+			
+			if (nLevels < 2)
 				independentsWithLessThanTwoLevels <- c(independentsWithLessThanTwoLevels, component)
 		}
 		
 		if (length(independentsWithLessThanTwoLevels) > 0) {
 		
 			error <- TRUE
-			errorMessage <- paste("Factor(s): <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain(s) fewer than two levels.", sep="")
+			
+			if(length(independentsWithLessThanTwoLevels) == 1) {
+				errorMessage <- paste("Factor: <em>", independentsWithLessThanTwoLevels, "</em>, contains fewer than two levels.", sep="")
+			} else {
+				errorMessage <- paste("Factors: <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain fewer than two levels.", sep="")
+			}
 		}
 		
 		if (sum(is.infinite(dataset[[ .v(options$dependent) ]])) > 0) {
@@ -1055,7 +1061,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 			contrastMatrix <- list(.postHocContrasts(variable.levels, dataset, options))
 			names(contrastMatrix) <- .v(posthoc.var)
-			r <- multcomp::glht(model,do.call(multcomp::mcp, method))
+			r <- multcomp::glht(model,do.call(multcomp::mcp, contrastMatrix))
 		
 			statePostHoc[[posthoc.var]]$resultBonf <- summary(r,test=multcomp::adjusted("bonferroni"))
 		
