@@ -46,6 +46,10 @@ $(document).ready(function () {
 		$(".app-version").text("Version " + version);
 	}
 
+	window.setTextHeight = function (height) {
+		return $('body').css('font-size', height + 'px');
+	}
+
 	window.showInstructions = function () {
 
 		showInstructions = true
