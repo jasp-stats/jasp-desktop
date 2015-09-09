@@ -47,7 +47,14 @@ $(document).ready(function () {
 	}
 
 	window.setTextHeight = function (height) {
-		return $('body').css('font-size', height + 'px');
+		var h = height;
+		setTimeout(function () {
+			var h1 = parseInt($('#intro p').css('font-size'));
+			var h2 = $('#intro .app-version').height() - 4;
+			var ratio = h1 / h2;
+			alert(ratio);
+			$('body').css('font-size', (h * ratio) + 'px')
+		});
 	}
 
 	window.showInstructions = function () {
