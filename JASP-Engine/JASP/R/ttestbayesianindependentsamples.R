@@ -33,7 +33,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="descriptives", type="table")
-	meta[[4]] <- list(name="plots", type="images")
+	meta[[4]] <- list(name="plots", type="collection", meta="image")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian T-Test"
