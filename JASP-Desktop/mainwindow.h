@@ -37,6 +37,7 @@ protected:
 private:
 	Ui::MainWindow *ui;
 
+	QFontMetrics * _fontSize;
 	AnalysisForm *_currentOptionsWidget;
 	QMenu* _analysisMenu;
 	DataSetPackage *_package;
