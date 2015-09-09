@@ -39,7 +39,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	meta[[2]] <- list(name="ttest", type="table")
 	meta[[3]] <- list(name="inequalityOfVariances", type="table")
 	meta[[4]] <- list(name="descriptives", type="table")
-	meta[[5]] <- list(name="plots", type="images")
+	meta[[5]] <- list(name="plots", type="collection", meta="image")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian T-Test"
