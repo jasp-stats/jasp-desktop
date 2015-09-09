@@ -367,6 +367,9 @@ var wrapHTML = function (html, exportParams) {
 	completehtml += "	<head>\n"
 	completehtml += "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
 	completehtml += "		<title>JASP</title>"
+	completehtml += "		<style>"
+	completehtml += "			p {margin-top:1em; margin-bottom:1em;}"
+	completehtml += "		</style>"
 	completehtml += "	</head>\n"
 
 	var styles = "";
