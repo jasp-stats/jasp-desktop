@@ -32,7 +32,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	meta[[2]] <- list(name="stats", type="table")
 	meta[[3]] <- list(name="frequenciesHeading", type="h1")
 	meta[[4]] <- list(name="tables", type="tables")
-	meta[[5]] <- list(name="plots", type="images")
+	meta[[5]] <- list(name="plots", type="collection", meta="image")
 	meta[[6]] <- list(name="matrixPlot", type="image")
 	
 	results[[".meta"]] <- meta
