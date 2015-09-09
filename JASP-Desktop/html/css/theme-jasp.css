@@ -17,6 +17,11 @@ body.windows {
 	font-size: 85% ;
 }*/
 
+p {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
 body.selected {
 	background-color: #E8E8E8 ;
 }
