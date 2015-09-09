@@ -143,7 +143,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		list(name = "casewise diagnostics", type = "table"),
 		list(name = "residuals statistics", type = "table"),
 		list(name="plotResVsDep", type="image"),
-		list(name="plotsResVsCov", type="images"),
+		list(name="plotsResVsCov", type="collection", meta="image"),
 		list(name="plotResVsPred", type="image"),
 		list(name="plotResHist", type="image"),
 		list(name="plotResQQ", type="image")
