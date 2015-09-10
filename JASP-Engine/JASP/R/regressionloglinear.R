@@ -37,13 +37,6 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	results <- list()
 	
 	meta <- list()
-	
-	#meta <- list()
-	
-	#meta[[1]] <- list(name="title", type="title")
-	#meta[[2]] <- list(name="table", type="table")
-	#meta[[3]] <- list(name="regression", type="table")
-	
 	.meta <-  list(
 		list(name = "title", type = "title"),
 		list(name = "table", type = "table"),
@@ -111,63 +104,47 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	 if (length(options$modelTerms) > 0) {
 			
 		if (length(variables.in.model) > 0 ) {
-		
-			#dependent.base64 <- .unv(dependent.base64)
-			#independent.base64 <- .unv(independent.base64)
-			
-			
 			
 			model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"))
 			
-
-					
 		}  else {
 				
 			model.definition <- NULL #this model has no parameters
 				
 		}
 			
-print(model.definition)
-			
-			
+#print(model.definition)
+						
 		if (perform == "run" && !is.null(model.definition) ) {
 				
 			model.formula <- as.formula(model.definition)
-print(model.formula )
-#print(head(dataset))
 			
 			if (options$counts == ""){ 
-	 	names(dataset)[names(dataset)== "freq"]<- dependent.base64
-	 }
+	 			names(dataset)[names(dataset)== "freq"]<- dependent.base64
+			}
 			
 			loglm.fit <- try( stats::glm( model.formula, family = poisson(), data = dataset), silent = TRUE)
-print(loglm.fit)
+#print(loglm.fit)
 				
-				if ( class(loglm.fit) == "glm") {
+			if ( class(loglm.fit) == "glm") {
 					
-					loglm.model <- list(loglm.fit = loglm.fit, variables = variables.in.model)
+				loglm.model <- list(loglm.fit = loglm.fit, variables = variables.in.model)
 					
-				} else {
-					
-					#list.of.errors[[ length(list.of.errors) + 1 ]]  <- "An unknown error occurred, please contact the author."
-					loglm.model <- list(loglm.fit = NULL, variables = variables.in.model)
-				}
-				
 			} else {
-				
+					
+				#list.of.errors[[ length(list.of.errors) + 1 ]]  <- "An unknown error occurred, please contact the author."
 				loglm.model <- list(loglm.fit = NULL, variables = variables.in.model)
 			}
+				
+		} else {
+				
+			loglm.model <- list(loglm.fit = NULL, variables = variables.in.model)
+		}
 		
-		} else {		
-			loglm.model <- empty.model
-			}
-			
-		
-		
-	
-		
-		
-	
+	} else {		
+		loglm.model <- empty.model
+	}
+
 	#print(length(loglm.model))
 	#print(loglm.model)
 	################################################################################
@@ -181,7 +158,7 @@ print(loglm.fit)
 		
 		# Declare table elements
 		fields <- list(
-			list(name = "Model", type = "integer"),
+		#	list(name = "Model", type = "integer"),
 			list(name = "Name", title = "  ", type = "string"),
 			list(name = "Coefficient", title = "Estimate", type = "number", format = "dp:3"),
 			list(name = "Standard Error", type="number", format = "dp:3"),
@@ -189,7 +166,7 @@ print(loglm.fit)
 			list(name = "z", type = "number", format = "dp:3;p:.001"))
 		
 		empty.line <- list( #for empty elements in tables when given output
-			"Model" = "",
+		#	"Model" = "",
 			"Name" = "",
 			"Coefficient" = "",
 			"Standard Error" = "",
@@ -197,7 +174,7 @@ print(loglm.fit)
 			"z" = "")
 			
 		dotted.line <- list( #for empty tables
-			"Model" = ".",
+		#	"Model" = ".",
 			"Name" = ".",
 			"Coefficient" = ".",
 			"Standard Error" = ".",
@@ -222,22 +199,31 @@ print(loglm.fit)
 				loglm.estimates <- loglm.summary$coefficients
 				
 				len.logreg <- length(logregression.result) + 1
+				
+				
 					
 				if (length(loglm.model$variables) > 0) {
 					
 					variables.in.model <- loglm.model$variables
-					 
 					coefficients <- dimnames(loglm.estimates)[[1]]
-
-					for (i in seq_along(coefficients)) {
+					coef <-base::strsplit (coefficients, split = ":", fixed = TRUE) 
+					
+					for (i in seq_along(coef)) {
 					
 						logregression.result[[ len.logreg ]] <- empty.line
 
-						coefficient <- coefficients[i]
+						coefficient <- coef[[i]]
 						
-						actualName <- paste(lookup.table[[ coefficient ]], collapse=" = ")
+						#actualName <- paste(lookup.table[[ coefficient ]], collapse=" = ")
+						#coef<-base::strsplit (coefficients, split = ":", fixed = TRUE)
+						 actualName<-list()
+						for (j in seq_along(coefficient)){
+						  actualName[[j]] <- paste(lookup.table[[ coefficient[j] ]], collapse=" = ")
+						  }
+						var<-paste0(actualName, collapse="*")
+						#print(var)
 							
-						logregression.result[[ len.logreg ]]$"Name" <- actualName
+						logregression.result[[ len.logreg ]]$"Name" <- var
 						logregression.result[[ len.logreg ]]$"Coefficient" <- as.numeric(unname(loglm.estimates[i,1]))
 						logregression.result[[ len.logreg ]]$"Standard Error" <- as.numeric(loglm.estimates[i,2])			
 						logregression.result[[ len.logreg ]]$"z-value" <- as.numeric(loglm.estimates[i,3])
@@ -332,23 +318,23 @@ print(loglm.fit)
 	
 ################################################################
 
-	if (options$method == "forward") {	
+	if (options$method == "enter") {	
 		logregressionanova <- list()
 		logregressionanova[["title"]] <- "Anova"
 		
 		# Declare table elements
 		fields <- list(
-			list(name = "Model", type = "integer"),
-			list(name = "Name", title = "  ", type = "string"),
-			list(name = "Df", title = "Df", type = "number", format = "dp:3"),
-			list(name = "Deviance", type="number", format = "dp:3"),
-			list(name = "Resid. Df", type="number", format = "sf:4;dp:3"),
+			list(name = "Model", title = "  ",type = "string"),
+			#list(name = "Name", title = "  ", type = "string"),
+			list(name = "Df", title = "Df", type="integer"),
+			list(name = "Deviance",title = "Deviance", type="number", format = "sf:4;dp:3"),
+			list(name = "Resid. Df", type="integer"),
 			list(name = "Resid. Dev", type="number", format = "sf:4;dp:3"),
-			list(name = "prob Chi", type = "number", format = "dp:3;p:.001"))
+			list(name = "Prob Chi", type = "number", format = "dp:3;p:.001"))
 		
 		empty.line <- list( #for empty elements in tables when given output
 			"Model" = "",
-			"Name" = "",
+			#"Name" = "",
 			"Df" = "",
 			"Deviance" = "",
 			"Resid. Df" = "",
@@ -357,7 +343,7 @@ print(loglm.fit)
 			
 		dotted.line <- list( #for empty tables
 			"Model" = ".",
-			"Name" = ".",
+			#"Name" = ".",
 			"Df" = ".",
 			"Deviance" = ".",
 			"Resid. Df" = ".",
@@ -372,49 +358,42 @@ print(loglm.fit)
 		if (perform == "run" ) {		
 			
 			if ( class(loglm.model$loglm.fit) == "glm") {
-					
-				#na.estimate.names <- NULL
-					
+			
 				loglm.anova = anova(loglm.model$loglm.fit, test="Chisq")
-				loglm.estimates <- loglm.anova
-print(loglm.estimates)		
-				
+				loglm.estimates <- loglm.anova				
 				len.logreg <- length(logregressionanova.result) + 1
-				v <- 0
-					
-				#sd.dep <- sd( dataset[[ dependent.base64 ]] )
 				
-					
-					
+				v <- 0					
+				null.model <- "Null model"
 				if (length(loglm.model$variables) > 0) {
 					
 					variables.in.model <- loglm.model$variables
 						
 					l <- dim(loglm.estimates)[1]
- print(l)
  #print("we are so far")
+					 name <- dimnames(loglm.estimates)[[1]]
 					 
 					for (var in 1:l) {
-					
-					  
-						 logregressionanova.result[[ len.logreg ]] <- empty.line
+									  
+						logregressionanova.result[[ len.logreg ]] <- empty.line
+						model.name <- .unvf(name)
 						
-							name<-dimnames(loglm.estimates)[[1]]	
-							#name1<-unlist(nam)
-							print(str(name))
-							#name <- nam[var]
-							
-								
-							logregressionanova.result[[ len.logreg ]]$"Model" <- as.integer(var)	
-							logregressionanova.result[[ len.logreg ]]$"Name" <- as.character(name[var])
-							
+						if(var==1){
+							logregressionanova.result[[ len.logreg ]]$"Model" <- "NULL"
+							logregressionanova.result[[ len.logreg ]]$"Df" <- " "
+							logregressionanova.result[[ len.logreg ]]$"Deviance" <- " "
+							logregressionanova.result[[ len.logreg ]]$"Prob Chi" <- " "
+						
+						}else{							
+							logregressionanova.result[[ len.logreg ]]$"Model" <- model.name[var]
 							logregressionanova.result[[ len.logreg ]]$"Df" <- as.integer(loglm.estimates$Df[var])
-							logregressionanova.result[[ len.logreg ]]$"Deviance" <- as.numeric(loglm.estimates$Deviance[var])			
-							logregressionanova.result[[ len.logreg ]]$"Resid. Df" <- as.integer(loglm.estimates$"Resid. Df"[var])
-							logregressionanova.result[[ len.logreg ]]$"Resid. Dev" <- as.numeric(loglm.estimates$"Resid. Dev"[var])
-							logregressionanova.result[[ len.logreg ]]$"prob Chi" <- as.numeric(loglm.estimates$"Pr(>Chi)"[var])
-							
-							len.logreg <- len.logreg + 1
+							logregressionanova.result[[ len.logreg ]]$"Deviance" <- as.numeric(loglm.estimates$Deviance[var])	
+							logregressionanova.result[[ len.logreg ]]$"Prob Chi" <- as.numeric(loglm.estimates$"Pr(>Chi)"[var])
+						}			
+						logregressionanova.result[[ len.logreg ]]$"Resid. Df" <- as.integer(loglm.estimates$"Resid. Df"[var])
+						logregressionanova.result[[ len.logreg ]]$"Resid. Dev" <- as.numeric(loglm.estimates$"Resid. Dev"[var])
+					
+						len.logreg <- len.logreg + 1
 					}
 							
 				}
