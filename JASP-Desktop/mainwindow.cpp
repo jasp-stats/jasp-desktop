@@ -903,24 +903,16 @@ void MainWindow::resultsPageLoaded(bool success)
 
 		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
 
-#ifdef __WIN32__
-
-		QDesktopWidget* desktop = QApplication::desktop();
-		QWidget* window = desktop->screen();
-		const int horizontalDpi = window->logicalDpiY();
-
-		qreal zoom = ((qreal)(horizontalDpi) / (qreal)ppiv.toInt());
-
-		int webKitFont = (int)(12 * zoom);
-#else
-		int webKitFont = 12;
-#endif
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setTextHeight(" + QString::number(webKitFont) + ")");
-
-		//ui->webViewResults->setZoomFactor(zoom);
-
+		bool success;
 		int ppi = ppiv.toInt(&success);
 
+#ifdef __WIN32__
+		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
+		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
+		ui->webViewResults->setTextSizeMultiplier(zoom);
+#endif
+
+		if (success)
 			_engineSync->setPPI(ppi);
 
 		if (!_openOnLoadFilename.isEmpty())

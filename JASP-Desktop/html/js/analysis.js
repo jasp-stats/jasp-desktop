@@ -352,14 +352,15 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 ///////////////////////////////////////////
 
 			var itemView = JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status }, false);
+			if (itemView !== null) {
+				this.passNoteObjToView([metaEntry.name], itemView);
 
-			this.passNoteObjToView([metaEntry.name], itemView);
+				this.views.push(itemView);
+				this.volatileViews.push(itemView);
 
-			this.views.push(itemView);
-			this.volatileViews.push(itemView);
-
-			itemView.render();
-			$element.append(itemView.$el);
+				itemView.render();
+				$element.append(itemView.$el);
+			}
 		}
 
 	},
