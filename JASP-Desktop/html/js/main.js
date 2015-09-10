@@ -24,6 +24,8 @@ $(document).ready(function () {
 
 	var $instructions = $("#instructions")
 	var showInstructions = false;
+	
+
 
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
@@ -46,8 +48,9 @@ $(document).ready(function () {
 		$(".app-version").text("Version " + version);
 	}
 
-	window.setTextHeight = function (height) {
-		return $('body').css('font-size', height + 'px');
+	window.setTextHeight = function (family, height) {
+		$('body').css('font-family', family)
+		$('body').css('font-size', height + 'px')
 	}
 
 	window.showInstructions = function () {
@@ -367,6 +370,9 @@ var wrapHTML = function (html, exportParams) {
 	completehtml += "	<head>\n"
 	completehtml += "		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />\n"
 	completehtml += "		<title>JASP</title>"
+	completehtml += "		<style>"
+	completehtml += "			p {margin-top:1em; margin-bottom:1em;}"
+	completehtml += "		</style>"
 	completehtml += "	</head>\n"
 
 	var styles = "";

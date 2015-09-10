@@ -906,18 +906,18 @@ void MainWindow::resultsPageLoaded(bool success)
 
 		QDesktopWidget* desktop = QApplication::desktop();
 		QWidget* window = desktop->screen();
-		const int horizontalDpi = window->logicalDpiX();
+		const int horizontalDpi = window->logicalDpiY();
 
 		qreal zoom = ((qreal)(horizontalDpi) / (qreal)ppiv.toInt());
 
-		int webKitFont = (int)(_fontSize->height() / zoom / zoom);
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setTextHeight(" + QString::number(webKitFont) + ")");
+		QFontMetricsF mx(ui->tableView->font());
+		QString family = ui->tableView->font().family();
 
-		ui->webViewResults->setZoomFactor(zoom);
+		int webKitFont = (int)(mx.height() / zoom);
+		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setTextHeight('" + family + "', " + QString::number(webKitFont) + ")");
 
 
-
-		int ppi = horizontalDpi; //qRound(ppiv.toInt(&success) * zoom);
+		int ppi = ppiv.toInt(&success);
 
 			_engineSync->setPPI(ppi);
 
