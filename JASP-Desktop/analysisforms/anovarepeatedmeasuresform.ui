@@ -540,61 +540,34 @@
          <item row="1" column="0">
           <widget class="GroupBox" name="groupBox">
            <property name="title">
-            <string/>
+            <string>Correction</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
-            <item row="5" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsFDR">
-              <property name="text">
-               <string>FDR</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsHommel">
-              <property name="text">
-               <string>Hommel</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsBenjamini">
-              <property name="text">
-               <string>Benjamini</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
+            <item row="2" column="0">
              <widget class="BoundCheckBox" name="postHocTestsBonferroni">
               <property name="text">
                <string>Bonferroni</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsHochberg">
+            <item row="3" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsHolm">
               <property name="text">
-               <string>Hochberg</string>
+               <string>Holm</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsHolm">
+             <widget class="BoundCheckBox" name="postHocTestsScheffe">
               <property name="text">
-               <string>Holm</string>
+               <string>Scheffe</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsTukey">
+              <property name="text">
+               <string>Tukey</string>
               </property>
              </widget>
             </item>

@@ -37,6 +37,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		list(name="sphericity", type="table"),
 		list(name="headerLevene", type="h1"),
 		list(name="levene", type="table"),
+		list(name="headerPosthoc", type="h1"),
+		list(name="posthoc", type="tables"),
 		list(name="headerDescriptives", type="h1"),
 		list(name="descriptives", type="table"),
 		list(name="headerDescriptivesPlot", type="h1"),
@@ -54,7 +56,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	stateDescriptivesPlot <- NULL
 	stateDescriptivesTable <- NULL
 	stateLevene <- NULL
-
+	statePostHoc <- NULL
+	
 	if ( ! is.null(state)) {  # is there state?
 	
 		diff <- .diff(options, state$options)  # compare old and new options
@@ -65,6 +68,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			# old model can be used
 			
 			anovaModel <- state$model
+			statePostHoc <- state$statePostHoc
 		}
 		
 		if (is.list(diff) && diff[['plotHorizontalAxis']] == FALSE && diff[['plotSeparateLines']] == FALSE && diff[['plotSeparatePlots']] == FALSE &&
@@ -112,6 +116,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	model <- NULL
 	epsilon <- NULL
 	mauchly <- NULL
+	resultPostHoc <- NULL
 	epsilonError <- FALSE
 	
 	if (is.null(anovaModel)) { # if not retrieved from state
@@ -124,8 +129,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			epsilon <- anovaModel$epsilon
 			epsilonError <- anovaModel$epsilonError
 			mauchly <- anovaModel$mauchly
+			resultPostHoc <- anovaModel$resultPostHoc
 			status <- anovaModel$status
-
+			
+			statePostHoc <- .statePostHoc(dataset, options, resultPostHoc)
+						
 		}
 		
 	} else {
@@ -193,6 +201,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	
 	
+	## Create Post Hoc Tables
+	
+	result <- .rmAnovaPostHocTable(dataset, options, perform, model, status, statePostHoc)
+		
+	results[["posthoc"]] <- result$result
+	status <- result$status
+	
+	if (!is.null(unlist(results[["posthoc"]])))
+		results[["headerPosthoc"]] <- "Post Hoc Tests"
+	
+	
+	
 	## Create Descriptives Table
 	
 	if(is.null(stateDescriptivesTable)) {
@@ -240,14 +260,19 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	## Save State
 	
+	anovaModel$resultPostHoc <- NULL
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
 	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
 	state[["stateDescriptivesTable"]] <- stateDescriptivesTable
 	state[["stateLevene"]] <- stateLevene
+	state[["statePostHoc"]] <- statePostHoc
 	
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
-
+	
+#	print("bruce")
+#	print(object.size(state))
+	
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
 		return(list(results=results, status="inited", state=state, keep=keepDescriptivesPlot))
@@ -270,9 +295,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		independentsWithLessThanTwoLevels <- c()
 		
 		for (component in components) {
-		
-			column <- dataset[[ .v(component) ]]
-			if (length(unique(column)) < 2)
+			
+			nLevels <- length(levels(dataset[[ .v(component) ]]))
+			
+			if (nLevels < 2)
 				independentsWithLessThanTwoLevels <- c(independentsWithLessThanTwoLevels, component)
 		}
 		
@@ -280,9 +306,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		
 			error <- TRUE
 			if(length(independentsWithLessThanTwoLevels) == 1) {
-				errorMessage <- paste("Factor: <em>", independentsWithLessThanTwoLevels, "</em>, contains less than two levels.", sep="")
+				errorMessage <- paste("Factor: <em>", independentsWithLessThanTwoLevels, "</em>, contains fewer than two levels.", sep="")
 			} else {
-				errorMessage <- paste("Factors: <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain less than two levels.", sep="")
+				errorMessage <- paste("Factors: <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain fewer than two levels.", sep="")
 			}
 		}
 		
@@ -395,7 +421,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	if (options$sumOfSquares == "type1") {
 	
 		result <- try(stats::aov(model.formula, data=dataset), silent = TRUE)
-		sphericityStatistics <- try(summary(afex::aov_car(model.formula, data=dataset, type= 3, factorize = FALSE)), silent = TRUE)
+		sphericityStatistics <- try(afex::aov_car(model.formula, data=dataset, type= 3, factorize = FALSE), silent = TRUE)
 	
 	} else if (options$sumOfSquares == "type2") {
 	
@@ -409,6 +435,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	model <- NULL
 	epsilon <- NULL
 	mauchly <- NULL
+	resultPostHoc <- NULL
 	epsilonError <- FALSE
 	
 	if (length(class(result)) == 1 && class(result) == "try-error") {
@@ -427,25 +454,27 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		if (options$sumOfSquares == "type1" && class(sphericityStatistics) != "try-error") {
 
 			model <- summary(result)
-			epsilon <- sphericityStatistics$pval.adjustments
-			mauchly <- sphericityStatistics$sphericity.tests
-
+			epsilon <- summary(sphericityStatistics)$pval.adjustments
+			mauchly <- summary(sphericityStatistics)$sphericity.tests
+			resultPostHoc <- sphericityStatistics
+			
 		} else if (options$sumOfSquares == "type1" && class(sphericityStatistics) == "try-error") {
 
 			model <- summary(result)
 			epsilonError <- TRUE
-
+			
 		} else {
 						
 			summaryResult <- summary(result)
 			model <- summaryResult$univariate.tests
 			epsilon <- summaryResult$pval.adjustments
 			mauchly <- summaryResult$sphericity.tests
+			resultPostHoc <- result
 			
-		}
+		}	
 	}
 		
-	list(model = model, epsilon = epsilon, epsilonError = epsilonError, mauchly = mauchly, status = status)
+	list(model = model, epsilon = epsilon, epsilonError = epsilonError, mauchly = mauchly, resultPostHoc = resultPostHoc, status = status)
 }
 
 .identicalTerms <- function(x,y) {
@@ -714,7 +743,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 		}
 
-		anova[["data"]] <- anova.rows  
+		anova[["data"]] <- anova.rows
+		anova[["status"]] <- "complete"  
 
 	}
 
@@ -1263,6 +1293,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		}
 
 		anova[["data"]] <- anova.rows  
+		anova[["status"]] <- "complete"
 
 	}
 
@@ -1471,6 +1502,203 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	}
 	
 	list(result=levenes.table, status=status, stateLevene=stateLevene)
+}
+
+.statePostHoc <- function (dataset, options, resultPostHoc) {
+
+		statePostHoc <- list()
+		
+		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
+		
+		datasetLong <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
+								
+		for (posthoc.var in variables) {
+			
+			variable.levels <- levels(datasetLong[[ .v(posthoc.var) ]])
+									
+			formula <- as.formula(paste("~", .v(posthoc.var)))
+			referenceGrid <- lsmeans::lsmeans(resultPostHoc, formula)
+									
+			contrastMatrix <- .postHocContrasts(variable.levels, datasetLong, options)
+			contrastMatrix <- split(contrastMatrix, unlist(lapply(strsplit(rownames(contrastMatrix), " - "), function(x) paste(.v(x), collapse = " "))))
+												
+			r <- lsmeans::contrast(referenceGrid, contrastMatrix)
+																		
+			# Results using the Bonferroni method
+			
+			resultBonf <- summary(lsmeans::as.glht(r), test = multcomp::adjusted("bonferroni"))$test
+			resultBonf[["pfunction"]] <- NULL
+			resultBonf[["qfunction"]] <- NULL
+						
+			# Results using the Holm method			
+			
+			resultHolm <- summary(lsmeans::as.glht(r), test = multcomp::adjusted("holm"))$test$pvalues
+			
+			# Results using the Tukey method			
+			
+			resultTukey <- summary(lsmeans::as.glht(r), test = multcomp::adjusted("holm"))$test$pvalues
+			
+			# Results using the Scheffe method			
+			
+			resultScheffe <- summary(lsmeans::as.glht(r), test = multcomp::adjusted("holm"))$test$pvalues
+									
+			comparisonsTukSchef <- strsplit(names(resultBonf$coefficients), ".", fixed=TRUE)
+			comparisonsBonfHolm <- strsplit(names(resultBonf$coefficients), ".", fixed=TRUE)
+			
+			statePostHoc[[posthoc.var]] <- list(resultBonf = resultBonf, resultHolm = resultHolm, resultTukey = resultTukey, resultScheffe = resultScheffe,
+											   	comparisonsTukSchef = comparisonsTukSchef, comparisonsBonfHolm = comparisonsBonfHolm)
+			
+		}
+		
+		return(statePostHoc)	
+}
+
+.rmAnovaPostHocTable <- function(dataset, options, perform, model, status, statePostHoc) {
+	
+	posthoc.variables <- unlist(options$postHocTestsVariables)
+	
+	posthoc.tables <- list()
+	
+	for (posthoc.var in posthoc.variables) {
+	
+		posthoc.table <- list()
+
+		posthoc.table[["title"]] <- paste("Post Hoc Comparisons - ", posthoc.var, sep="")
+		posthoc.table[["name"]] <- paste("postHoc_", posthoc.var, sep="")
+		
+		fields <- list(
+			list(name="(I)", title="", type="string", combine=TRUE),
+			list(name="(J)", title="", type="string"),
+			list(name="Mean Difference", type="number", format="sf:4;dp:3"),
+			list(name="SE", type="number", format="sf:4;dp:3"),
+			list(name="t", type="number", format="sf:4;dp:3"))
+		
+		if (options$postHocTestsTukey)
+			fields[[length(fields) + 1]] <- list(name="tukey", title="p<sub>tukey</sub>", type="number", format="dp:3;p:.001")
+		
+		if (options$postHocTestsScheffe)
+			fields[[length(fields) + 1]] <- list(name="scheffe", title="p<sub>scheffe</sub>", type="number", format="dp:3;p:.001")
+		
+		if (options$postHocTestsBonferroni)
+			fields[[length(fields) + 1]] <- list(name="bonferroni", title="p<sub>bonf</sub>", type="number", format="dp:3;p:.001")
+		
+		if (options$postHocTestsHolm)
+			fields[[length(fields) + 1]] <- list(name="holm",title="p<sub>holm</sub>", type="number", format="dp:3;p:.001")
+		
+		posthoc.table[["schema"]] <- list(fields=fields)
+
+		rows <- list()
+		
+		if (posthoc.var %in% options$betweenSubjectFactors) {
+				
+			variable.levels <- levels(dataset[[ .v(posthoc.var) ]])
+			
+		} else {
+		
+			variable.levels <- options$repeatedMeasuresFactors[[which(lapply(options$repeatedMeasuresFactors, function(x) x$name) == posthoc.var)]]$levels
+		
+		}
+		
+		nLevels <- length(variable.levels)
+						
+		for (i in 1:length(variable.levels)) {
+			
+			for (j in .seqx(i+1, length(variable.levels))) {
+				
+				row <- list("(I)"=variable.levels[[i]], "(J)"=variable.levels[[j]])
+				
+				pTukey <- ""
+				pScheffe <- ""
+				pBonf <- ""
+				pHolm <- ""
+				
+				if (!is.null(statePostHoc)) {
+																							
+					if (length(class(statePostHoc[[posthoc.var]]$resultBonf)) == 1 && class(statePostHoc[[posthoc.var]]$resultBonf) == "try-error") {
+					
+						md <- ""
+						SE  <- ""
+						t <- ""
+						p  <- 1
+						
+						posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text="Some comparisons could not be performed. Possibly too few samples."))
+						
+					} else {
+												
+						for (c in 1:length(statePostHoc[[posthoc.var]]$comparisonsTukSchef)) {
+								
+							if (all(statePostHoc[[posthoc.var]]$comparisonsTukSchef[[c]] %in% c(.v(variable.levels[[i]]), .v(variable.levels[[j]])))) {
+								index1 <- c
+								
+								reverse <- TRUE
+								if (statePostHoc[[posthoc.var]]$comparisonsTukSchef[[c]][1] == .v(variable.levels[[i]]))
+									reverse <- FALSE
+							}		
+							
+							if (all(statePostHoc[[posthoc.var]]$comparisonsBonfHolm[[c]] %in% c(.v(variable.levels[[i]]), .v(variable.levels[[j]])))) {
+								index2 <- c
+							}		
+						}
+												
+						if (reverse) {
+							md <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$coefficients[index1]))
+						} else {
+							md <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$coefficients[index1]))
+						}
+						
+						SE  <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$sigma[index1]))
+						
+						if (reverse) {
+							t <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$tstat[index1]))
+						} else {
+							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$tstat[index1]))
+						}
+						
+						if (options$postHocTestsTukey) 
+							pTukey <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultHolm[index1]))
+							
+						if (options$postHocTestsScheffe)
+							pScheffe <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultHolm[index1]))
+							
+						if (options$postHocTestsBonferroni)
+							pBonf <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$pvalues[index2]))
+						
+						if (options$postHocTestsHolm)
+							pHolm <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultHolm[index2]))
+					}
+					
+					row[["Mean Difference"]] <- md
+					row[["SE"]]  <- SE
+					row[["t"]] <- t
+					row[["tukey"]] <- pTukey
+					row[["scheffe"]] <- pScheffe
+					row[["bonferroni"]] <- pBonf
+					row[["holm"]] <- pHolm
+					
+					posthoc.table[["status"]] <- "complete"
+					
+				}
+				
+				if(length(rows) == 0)  {
+					row[[".isNewGroup"]] <- TRUE
+				} else {
+					row[[".isNewGroup"]] <- FALSE
+				}
+				
+				rows[[length(rows)+1]] <- row
+			}
+		}
+		
+		posthoc.table[["data"]] <- rows
+		posthoc.table[["status"]] <- "complete"
+		
+		if (status$error)
+			posthoc.table[["error"]] <- list(errorType="badData")
+		
+		posthoc.tables[[length(posthoc.tables)+1]] <- posthoc.table
+	}
+	
+	list(result=posthoc.tables, status=status)
 }
 
 .rmAnovaDescriptivesTable <- function(dataset, options, perform, status, stateDescriptivesTable) {

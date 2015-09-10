@@ -98,26 +98,19 @@
 		},
 		{
 			"name": "postHocTestsBonferroni",
-			"type": "Boolean"
+			"type": "Boolean",
+			"default": true
 		},
 		{
 			"name": "postHocTestsHolm",
 			"type": "Boolean"
 		},
 		{
-			"name": "postHocTestsFDR",
+			"name": "postHocTestsTukey",
 			"type": "Boolean"
 		},
 		{
-			"name": "postHocTestsHochberg",
-			"type": "Boolean"
-		},
-		{
-			"name": "postHocTestsHommel",
-			"type": "Boolean"
-		},
-		{
-			"name": "postHocTestsBenjamini",
+			"name": "postHocTestsScheffe",
 			"type": "Boolean"
 		},
 		{
