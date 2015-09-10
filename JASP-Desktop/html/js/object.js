@@ -106,14 +106,15 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 	},
 
 	setObjectConstructor: function (constructor, data) {
-		var meta = data;
+		var meta = data.meta;
 		var status = this.model.get("status");
 		for (var i = 0; i < meta.length; i++) {
 
 			var modelData = this.model.get(meta[i].name);
 			if (modelData) {
-				var itemView = constructor.call(this, modelData, constructor, { meta: meta[i].meta, status: status }, false);
+				var itemView = constructor.call(this, modelData, { meta: meta[i], status: status }, false);
 				this.localViews.push(itemView);
+				this.views.push(itemView);
 			}
 		}
 	},
