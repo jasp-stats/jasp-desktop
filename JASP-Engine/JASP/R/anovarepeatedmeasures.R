@@ -131,9 +131,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			mauchly <- anovaModel$mauchly
 			resultPostHoc <- anovaModel$resultPostHoc
 			status <- anovaModel$status
-			
-			statePostHoc <- .statePostHoc(dataset, options, resultPostHoc)
 						
+			if (is.null(resultPostHoc) || (length(class(resultPostHoc)) == 1 && class(resultPostHoc) == "try-error")) {
+				statePostHoc <- NULL	
+			} else {
+				statePostHoc <- .statePostHoc(dataset, options, resultPostHoc)
+			}		
 		}
 		
 	} else {
@@ -270,8 +273,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
 	
-#	print("bruce")
-#	print(object.size(state))
+	
 	
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
@@ -1303,7 +1305,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 }
 
 .sphericityTest <- function(dataset, options, perform, epsilon, epsilonError, mauchly, status) {
-
+		
 	sphericity <- list()
 
 	sphericity[["title"]] <- "Test of Sphericity"
@@ -1374,7 +1376,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			modelTermsCase <- unlist(strsplit(termsRM.base64[[i]],":"))
 			index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
-						
+									
 			if (sum(index) == 0) {
 
 				foot.index <- .addFootnote(footnotes, text="The repeated measure has only two levels. When the repeated measure has two levels, the assumption of sphericity is always met.")
@@ -1413,7 +1415,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	}
 
 	sphericity[["footnotes"]] <- as.list(footnotes)
-
+		
 	if (options$sphericityTests == FALSE)
 		return (list(result = NULL, epsilonTable = epsilonTable, status = status))
 
