@@ -241,7 +241,7 @@ JASPWidgets.Exporter = {
 		}
 
 		if (style)
-			style = "style='" + style + "'";
+			style = 'style="' + style + '"';
 
 		return style;
 	},

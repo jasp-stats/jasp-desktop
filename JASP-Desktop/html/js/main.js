@@ -372,14 +372,12 @@ var wrapHTML = function (html, exportParams) {
 	completehtml += "		<title>JASP</title>"
 	completehtml += "		<style>"
 	completehtml += "			p {margin-top:1em; margin-bottom:1em;}"
+	if (exportParams.isFormatted())
+		completehtml += "			body {font-family: sans-serif;}"
 	completehtml += "		</style>"
 	completehtml += "	</head>\n"
 
-	var styles = "";
-	if (exportParams.isFormatted())
-		styles = JASPWidgets.Exporter.getStyles($("body"), ["font-family", "display", "font-size", "padding", "margin"]);
-	else
-		styles = JASPWidgets.Exporter.getStyles($("body"), ["display", "padding", "margin"]);
+	var styles = JASPWidgets.Exporter.getStyles($("body"), ["display", "padding", "margin"]);
 
 	completehtml += "	<body " + styles + ">\n";
 	completehtml += html;
