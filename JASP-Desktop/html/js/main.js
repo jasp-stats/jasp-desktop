@@ -24,6 +24,8 @@ $(document).ready(function () {
 
 	var $instructions = $("#instructions")
 	var showInstructions = false;
+	
+
 
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
