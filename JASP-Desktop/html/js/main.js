@@ -48,15 +48,9 @@ $(document).ready(function () {
 		$(".app-version").text("Version " + version);
 	}
 
-	window.setTextHeight = function (height) {
-		var h = height;
-		setTimeout(function () {
-			var h1 = parseInt($('#intro p').css('font-size'));
-			var h2 = $('#intro .app-version').height() - 4;
-			var ratio = h1 / h2;
-			alert(ratio);
-			$('body').css('font-size', (h * ratio) + 'px')
-		});
+	window.setTextHeight = function (family, height) {
+		$('body').css('font-family', family)
+		$('body').css('font-size', height + 'px')
 	}
 
 	window.showInstructions = function () {
