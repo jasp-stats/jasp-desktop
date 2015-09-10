@@ -173,7 +173,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 
-
 	_fontSize = new QFontMetrics(ui->tableView->font());
 
 	_buttonPanel = new QWidget(ui->pageOptions);
@@ -904,18 +903,21 @@ void MainWindow::resultsPageLoaded(bool success)
 
 		QVariant ppiv = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getPPI()");
 
+#ifdef __WIN32__
+
 		QDesktopWidget* desktop = QApplication::desktop();
 		QWidget* window = desktop->screen();
 		const int horizontalDpi = window->logicalDpiY();
 
 		qreal zoom = ((qreal)(horizontalDpi) / (qreal)ppiv.toInt());
 
-		QFontMetricsF mx(ui->tableView->font());
-		QString family = ui->tableView->font().family();
+		int webKitFont = (int)(12 * zoom);
+#else
+		int webKitFont = 12;
+#endif
+		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setTextHeight(" + QString::number(webKitFont) + ")");
 
-		int webKitFont = (int)(mx.height() / zoom);
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setTextHeight('" + family + "', " + QString::number(webKitFont) + ")");
-
+		//ui->webViewResults->setZoomFactor(zoom);
 
 		int ppi = ppiv.toInt(&success);
 

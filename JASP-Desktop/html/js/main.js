@@ -48,8 +48,7 @@ $(document).ready(function () {
 		$(".app-version").text("Version " + version);
 	}
 
-	window.setTextHeight = function (family, height) {
-		$('body').css('font-family', family)
+	window.setTextHeight = function (height) {
 		$('body').css('font-size', height + 'px')
 	}
 
