@@ -70,7 +70,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.toolbar.setParent(this);
 
-		this._setTitle(this.model.get('title'), 'h2');
+		
 
 		this.model.on("CustomOptions:changed", function (options) {
 
@@ -402,6 +402,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		if (this.titleRequest)
 			this._setTitle(this.titleRequest.title, this.titleRequest.titleFormat);
+		else
+			this._setTitle(results.title, 'h2');
 
 		this.viewNotes.lastNoteBox.render();
 		$innerElement.append(this.viewNotes.lastNoteBox.$el);
