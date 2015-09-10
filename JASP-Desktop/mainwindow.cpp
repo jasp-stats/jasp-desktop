@@ -910,10 +910,11 @@ void MainWindow::resultsPageLoaded(bool success)
 
 		qreal zoom = ((qreal)(horizontalDpi) / (qreal)ppiv.toInt());
 
-		QFontMetrics mx(ui->tableView->font());
+		QFontMetricsF mx(ui->tableView->font());
+		QString family = ui->tableView->font().family();
 
 		int webKitFont = (int)(mx.height() / zoom);
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setTextHeight(" + QString::number(webKitFont) + ")");
+		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.setTextHeight('" + family + "', " + QString::number(webKitFont) + ")");
 
 
 		int ppi = ppiv.toInt(&success);
