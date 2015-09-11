@@ -522,6 +522,29 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$textbox.on("mousedown", null, this, this._mousedown);
 		this.$textbox.on("keydown", null, this, this._keydown);
 
+		this.$textbox.on("copy", function (event) {
+
+			var html;
+			var text;
+			var sel = window.getSelection();
+			if (sel.rangeCount) {
+				var container = document.createElement("div");
+				for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+					container.appendChild(sel.getRangeAt(i).cloneContents());
+				}
+				html = container.innerHTML;
+				text = Mrkdwn.fromDOMElement($(container));
+			}
+
+			if (text)
+				event.originalEvent.clipboardData.setData('text/plain', text);
+			if (html)
+				event.originalEvent.clipboardData.setData('text/html', html);
+			
+
+			event.preventDefault();
+		});
+
 		this._inited = true;
 
 		return this;
