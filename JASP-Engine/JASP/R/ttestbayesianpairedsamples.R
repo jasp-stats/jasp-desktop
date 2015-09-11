@@ -169,8 +169,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$descriptivesPlots) {
 			
 			plotGroups[[i]] <- list()
-			plotGroups[[i]][["title"]] <- paste(pair, collapse=" - ")
-			plotGroups[[i]][["name"]] <- paste(pair, collapse=" - ")
+			plotGroups[[i]][["title"]] <- currentPair
+			plotGroups[[i]][["name"]] <- currentPair
 		}
 		
 		if (options$plotPriorAndPosterior) {
