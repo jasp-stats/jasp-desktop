@@ -102,6 +102,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 	render: function () {
 		var html = ''
 		var title = this.model.get("title");
+		var titleFormat = this.model.get("titleFormat");
 		var status = this.model.get("status");
 		var error = this.model.get("error");
 		var data = this.model.get("data");
@@ -109,7 +110,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 
 		if (title) {
 			this.toolbar.title = title;
-			this.toolbar.titleTag = "h3";
+			this.toolbar.titleTag = titleFormat;
 		}
 
 		this.toolbar.render();

@@ -137,8 +137,6 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 		var titleFormat = this.model.get("titleFormat")
 		if (title) {
 			this.toolbar.title = title;
-			if (titleFormat)
-				titleFormat = "h3";
 			this.toolbar.titleTag = titleFormat;
 		}
 

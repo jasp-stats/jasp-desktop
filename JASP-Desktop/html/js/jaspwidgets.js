@@ -709,6 +709,11 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		this.editing = true;
 		
+		//Only for linux that doesn't have relatedTarget for focusOut event
+		if (this.$editor !== undefined)
+			this.$editor.off("mousedown", this.editorClicked);
+		///////////////////////////////
+
 		this.$editor = etch.startEditing(this.$textbox, pageX, pageY);
 
 		//Only for linux that doesn't have relatedTarget for focusOut event
