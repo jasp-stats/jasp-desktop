@@ -23,6 +23,10 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 
 	var item;
 	if (results.collection) {
+
+		if (results.collection.length === 0)
+			return null;
+
 		_.each(results.collection, function (subItem) {
 			var status = subItem.status;
 			if (status === null || status === undefined)
@@ -52,8 +56,13 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 		});
 	}
 
-	if (itemView.setObjectConstructor)
+	if (itemView.setObjectConstructor) {
 		itemView.setObjectConstructor(JASPWidgets.objectConstructor, { meta: metaData.meta, status: results.status, namespace: newNamespace, childOfCollection: results.collection !== undefined });
+		if (itemView.hasViews() === false) {
+			itemView.close();
+			return null;
+		}
+	}
 
 	return itemView;
 };
@@ -113,10 +122,16 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 			var modelData = this.model.get(meta[i].name);
 			if (modelData) {
 				var itemView = constructor.call(this, modelData, { meta: meta[i], status: status }, false);
-				this.localViews.push(itemView);
-				this.views.push(itemView);
+				if (itemView !== null) {
+					this.localViews.push(itemView);
+					this.views.push(itemView);
+				}
 			}
 		}
+	},
+
+	hasViews: function() {
+		return this.localViews.length > 0;
 	},
 
 	menuName: "Object",
@@ -148,5 +163,42 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		this.views = [];
 
 		this.toolbar.close();
+	},
+
+	copyMenuClicked: function () {
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes = true;
+
+		this.exportBegin(exportParams);
+
+		return true;
+	},
+
+	exportUseNBSPDefault: true,
+
+	exportBegin: function (exportParams, completedCallback) {
+		if (exportParams == undefined)
+			exportParams = new JASPWidgets.Exporter.params();
+		else if (exportParams.error)
+			return false;
+
+		var callback = this.exportComplete;
+		if (completedCallback !== undefined)
+			callback = completedCallback;
+
+		if (this.views.length > 0)
+			JASPWidgets.Exporter.begin(this, exportParams, callback, this.exportUseNBSPDefault);
+		else
+			callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, ""));
+
+		return true;
+	},
+
+	exportComplete: function (exportParams, exportContent) {
+		if (!exportParams.error)
+			pushHTMLToClipboard(exportContent, exportParams);
 	}
 });

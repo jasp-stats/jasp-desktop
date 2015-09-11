@@ -67,16 +67,21 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 
 		_.each(this.collection, function (itemResults) {
 			var itemView = constructor.call(this, itemResults, data, true);
+			if (itemView !== null) {
+				itemView.inCollection = true;
 
-			itemView.inCollection = true;
+				if (itemView.resizer)
+					this.listenTo(itemView.resizer, "ResizeableView:resizeStart", this.onResizingStart);
 
-			if (itemView.resizer)
-				this.listenTo(itemView.resizer, "ResizeableView:resizeStart", this.onResizingStart);
-
-			this.listenTo(itemView, "all", this.eventEcho)
-			this.views.push(itemView);
-			this.localViews.push(itemView);
+				this.listenTo(itemView, "all", this.eventEcho)
+				this.views.push(itemView);
+				this.localViews.push(itemView);
+			}
 		}, this);
+	},
+
+	hasViews: function () {
+		return this.localViews.length > 0;
 	},
 
 	onResizingStart: function (w, h) {

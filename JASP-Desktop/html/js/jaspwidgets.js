@@ -522,6 +522,29 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$textbox.on("mousedown", null, this, this._mousedown);
 		this.$textbox.on("keydown", null, this, this._keydown);
 
+		this.$textbox.on("copy", function (event) {
+
+			var html;
+			var text;
+			var sel = window.getSelection();
+			if (sel.rangeCount) {
+				var container = document.createElement("div");
+				for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+					container.appendChild(sel.getRangeAt(i).cloneContents());
+				}
+				html = container.innerHTML;
+				text = Mrkdwn.fromDOMElement($(container));
+			}
+
+			if (text)
+				event.originalEvent.clipboardData.setData('text/plain', text);
+			if (html)
+				event.originalEvent.clipboardData.setData('text/html', html);
+			
+
+			event.preventDefault();
+		});
+
 		this._inited = true;
 
 		return this;
@@ -688,6 +711,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		
 		this.$editor = etch.startEditing(this.$textbox, pageX, pageY);
 
+		//Only for linux that doesn't have relatedTarget for focusOut event
+		this.$editor.on("mousedown", null, this, this.editorClicked);
+		///////////////////////////////
+
 		this.$textbox.attr('contenteditable', true);
 		this.$textbox.focus();
 		this.updateView();
@@ -699,6 +726,12 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		var self = this;
 
 		window.setTimeout(function () { self.editingSetup = false; }, 0); //needsd to wait for all ui events to finish before ending
+	},
+
+	editorClicked: function (event) {
+		var self = event.data;
+
+		self.editorClicked = true;
 	},
 
 	_endEditing: function () {
@@ -715,6 +748,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.updateView();
 		this.$textbox.attr('contenteditable', false);
 		if (this.$editor !== undefined) {
+			this.$editor.off("mousedown", this.editorClicked);
 			etch.closeEditor(this.$editor, this.$textbox);
 			delete this.$editor;	
 		}
@@ -730,8 +764,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		}
 
 		var relatedtarget = e.relatedTarget;
-		if (relatedtarget === null || relatedtarget === undefined || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size())
+		if (relatedtarget === null || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size() || (relatedtarget === undefined && !self.editorClicked))
 			self._endEditing();
+
+		self.editorClicked = false;
 
 		return true;
 	},
