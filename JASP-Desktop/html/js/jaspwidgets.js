@@ -711,6 +711,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		
 		this.$editor = etch.startEditing(this.$textbox, pageX, pageY);
 
+		//Only for linux that doesn't have relatedTarget for focusOut event
+		this.$editor.on("mousedown", null, this, this.editorClicked);
+		///////////////////////////////
+
 		this.$textbox.attr('contenteditable', true);
 		this.$textbox.focus();
 		this.updateView();
@@ -722,6 +726,12 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		var self = this;
 
 		window.setTimeout(function () { self.editingSetup = false; }, 0); //needsd to wait for all ui events to finish before ending
+	},
+
+	editorClicked: function (event) {
+		var self = event.data;
+
+		self.editorClicked = true;
 	},
 
 	_endEditing: function () {
@@ -738,6 +748,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.updateView();
 		this.$textbox.attr('contenteditable', false);
 		if (this.$editor !== undefined) {
+			this.$editor.off("mousedown", this.editorClicked);
 			etch.closeEditor(this.$editor, this.$textbox);
 			delete this.$editor;	
 		}
@@ -753,8 +764,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		}
 
 		var relatedtarget = e.relatedTarget;
-		if (relatedtarget === null || relatedtarget === undefined || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size())
+		if (relatedtarget === null || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size() || (relatedtarget === undefined && !self.editorClicked))
 			self._endEditing();
+
+		self.editorClicked = false;
 
 		return true;
 	},
