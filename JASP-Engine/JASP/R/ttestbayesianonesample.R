@@ -33,15 +33,22 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	results <- list()
 	
 	meta <- list()
-	
-	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="ttest", type="table")
-	meta[[3]] <- list(name="descriptives", type="table")
-	meta[[4]] <- list(name="plots", type="collection", meta="image")
-	
+
+	meta[[1]] <- list(name="ttest", type="table")
+	meta[[2]] <- list(name="descriptives", type="table")
+	meta[[3]] <- list(name="plots", type="collection", meta=list(	name="plotGroups", type="object",
+																	meta=list(
+																				list(name="PriorPosteriorPlot", type="image"),
+																				list(name="BFrobustnessPlot", type="image"),
+																				list(name="BFsequentialPlot", type="image"),
+																				list(name="DescriptivesPlot", type="image")
+																				)
+																)
+					)
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian T-Test"
+
 	
 	ttest <- list()
 	
@@ -151,6 +158,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 		oneSided <- "left"
 	}
 	
+	plotGroups <- list()
 	
 	ttest.rows <- list()
 	plots.ttest <- list()
@@ -176,6 +184,13 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	for (variable in options[["variables"]])
 	{
+		
+		if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$descriptivesPlots) {
+			
+			plotGroups[[i]] <- list()
+			plotGroups[[i]][["title"]] <- variable
+			plotGroups[[i]][["name"]] <- variable
+		}
 		
 		if (!is.null(state) && variable %in% state$options$variables && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 			&& diff$bayesFactorType == FALSE && diff$testValue == FALSE && diff$missingValues == FALSE)))) {
@@ -235,7 +250,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				plot <- list()
 				
-				plot[["title"]] <- variable
+				plot[["title"]] <- "Prior and posterior"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -246,6 +261,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
+			
+			plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[length(plots.ttest)]]
+			
 			
 			if (options$plotPriorAndPosteriorAdditionalInfo) {
 				
@@ -275,7 +293,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				plot <- list()
 				
-				plot[["title"]] <- variable
+				plot[["title"]] <- "Bayes factor robustness check"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -286,6 +304,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
+			
+			plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[length(plots.ttest)]]
 			
 			plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
 			plotVariables[[length(plotVariables)+1]] <- variable
@@ -319,7 +339,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				plot <- list()
 				
-				plot[["title"]] <- variable
+				plot[["title"]] <- "Sequential analysis"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -341,9 +361,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			}
 			
 			plotVariables[[length(plotVariables)+1]] <- variable
+			plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[length(plots.ttest)]]
 		}
 		
-		i <- i + 1
 		
 		if (options$descriptivesPlots) {
 		
@@ -361,7 +381,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				descriptivesPlot <- list()
 				
-				descriptivesPlot[["title"]] <- variable
+				descriptivesPlot[["title"]] <- "Descriptives plot"
 				descriptivesPlot[["width"]] <- options$plotWidth
 				descriptivesPlot[["height"]] <- options$plotHeight
 				descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
@@ -373,14 +393,19 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			
 			plotTypes[[length(plotTypes)+1]] <- "descriptivesPlot"
 			plotVariables[[length(plotVariables)+1]] <- variable
+			plotGroups[[i]][["DescriptivesPlot"]] <- plots.ttest[[length(plots.ttest)]]
 			
 		}
+		
+		i <- i + 1
 	}
 	
 	ttest[["data"]] <- ttest.rows
 	ttest[["footnotes"]] <- as.list(footnotes)
 	results[["ttest"]] <- ttest
-	results[["plots"]] <- plots.ttest
+	
+	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$descriptivesPlots)
+		results[["plots"]] <- list(title="Plots", collection=plotGroups)
 	
 	if (options$descriptives) {
 		
@@ -665,7 +690,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 				} else {
 					
-					results[["plots"]][[z]][["status"]] <- "running"
+					results[["plots"]][["collection"]][[i]][["PriorPosteriorPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -707,7 +732,8 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					plots.ttest[[z]] <- plot
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[z]]
+				results[["plots"]][["collection"]] <- plotGroups
 				
 				z <- z + 1
 				
@@ -729,7 +755,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 				} else {
 					
-					results[["plots"]][[z]][["status"]] <- "running"
+					results[["plots"]][["collection"]][[i]][["BFrobustnessPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -739,7 +765,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					if (status[i] != "error") {
 						
 						image <- .beginSaveImage(530, 400)
-						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, BF10post=BF10post[i], rscale = options$priorWidth, BFH1H0= BFH1H0)					
+						.plotBF.robustnessCheck.ttest (x= variableData, oneSided= oneSided, BF10post=BF10post[i], rscale = options$priorWidth, BFH1H0= BFH1H0)
 						content <- .endSaveImage(image)
 						plot[["data"]]  <- content
 						
@@ -754,7 +780,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					plots.ttest[[z]] <- plot
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[z]]
+				
+				results[["plots"]][["collection"]] <- plotGroups
 				
 				z <- z + 1
 				
@@ -788,7 +816,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 				} else {
 					
-					results[["plots"]][[z]][["status"]] <- "running"
+					results[["plots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -812,7 +840,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					plots.ttest[[z]] <- plot
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[z]]
+				
+				results[["plots"]][["collection"]] <- plotGroups
 				
 				z <- z + 1
 				
@@ -835,7 +865,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					
 				} else {
 					
-					results[["plots"]][[z]][["status"]] <- "running"
+					results[["plots"]][["collection"]][[i]][["DescriptivesPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -863,7 +893,9 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 					plots.ttest[[z]] <- plot
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["DescriptivesPlot"]] <- plots.ttest[[z]]
+				
+				results[["plots"]][["collection"]] <- plotGroups
 				
 				z <- z + 1
 				
