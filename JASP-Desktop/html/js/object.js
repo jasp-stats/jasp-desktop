@@ -10,16 +10,20 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	var status = params.status;
 	var name = metaData.name;
 	var childOfCollection = params.childOfCollection;
+	var embeddedLevel = params.embeddedLevel;
 	var namespace = params.namespace;
 	var type = metaData;
 	if (metaData.type)
 		type = metaData.type;
 
+	if (!_.has(results, "titleFormat"))
+		results.titleFormat = 'h' + (embeddedLevel + 2);
+
+	if (childOfCollection === false && !_.has(results, "name")) //this doesn't work for collection items as there will be no name in the meta
+		results.name = name;
+
 	if (!_.has(results, "status"))
 		results.status = status;
-
-	if (childOfCollection === false && !_.has(results, "name")) //this doesn't work for collection items as there will be 
-		results.name = name;
 
 	var item;
 	if (results.collection) {
@@ -41,8 +45,12 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 		includeNamespace = " jasp-" + newNamespace + " ";
 	}
 
+	var indentClass = '';
+	if (embeddedLevel > 1)
+		indentClass = ' jasp-indent';
+
 	var itemModel = new JASPWidgets[type](results);
-	var itemView = new JASPWidgets[type + "View"]({ className: includeNamespace + "jasp-" + type + " jasp-view", model: itemModel });
+	var itemView = new JASPWidgets[type + "View"]({ className: includeNamespace + "jasp-" + type + " jasp-view" + indentClass, model: itemModel });
 
 	itemModel.on("CustomOptions:changed", function (options) {
 
@@ -57,7 +65,7 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	}
 
 	if (itemView.setObjectConstructor) {
-		itemView.setObjectConstructor(JASPWidgets.objectConstructor, { meta: metaData.meta, status: results.status, namespace: newNamespace, childOfCollection: results.collection !== undefined });
+		itemView.setObjectConstructor(JASPWidgets.objectConstructor, { meta: metaData.meta, status: results.status, namespace: newNamespace, childOfCollection: results.collection !== undefined, embeddedLevel: embeddedLevel + 1 });
 		if (itemView.hasViews() === false) {
 			itemView.close();
 			return null;
@@ -121,7 +129,7 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 
 			var modelData = this.model.get(meta[i].name);
 			if (modelData) {
-				var itemView = constructor.call(this, modelData, { meta: meta[i], status: status }, false);
+				var itemView = constructor.call(this, modelData, { meta: meta[i], status: status, namespace: data.namespace, childOfCollection: false, embeddedLevel: data.embeddedLevel }, false);
 				if (itemView !== null) {
 					this.localViews.push(itemView);
 					this.views.push(itemView);
@@ -140,8 +148,9 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		var $innerElement = this.$el;
 
 		var title = this.model.get("title");
+		var titleFormat = this.model.get("titleFormat")
 
-		this.toolbar.titleTag = "h3";
+		this.toolbar.titleTag = titleFormat;
 		this.toolbar.title = title;
 		this.toolbar.render();
 		$innerElement.append(this.toolbar.$el);

@@ -351,7 +351,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.labelRequest = null;
 ///////////////////////////////////////////
 
-			var itemView = JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status }, false);
+			var itemView = JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status, childOfCollection: false, embeddedLevel: 1 }, false);
 			if (itemView !== null) {
 				this.passNoteObjToView([metaEntry.name], itemView);
 
