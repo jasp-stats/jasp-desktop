@@ -35,11 +35,18 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 	meta <- list()
 	
-	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="ttest", type="table")
-	meta[[3]] <- list(name="inequalityOfVariances", type="table")
-	meta[[4]] <- list(name="descriptives", type="table")
-	meta[[5]] <- list(name="plots", type="collection", meta="image")
+	meta[[1]] <- list(name="ttest", type="table")
+	meta[[2]] <- list(name="inequalityOfVariances", type="table")
+	meta[[3]] <- list(name="descriptives", type="table")
+	meta[[4]] <- list(name="plots", type="collection", meta=list(	name="plotGroups", type="object",
+																	meta=list(
+																				list(name="PriorPosteriorPlot", type="image"),
+																				list(name="BFrobustnessPlot", type="image"),
+																				list(name="BFsequentialPlot", type="image"),
+																				list(name="DescriptivesPlot", type="image")
+																				)
+																)
+					)
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian T-Test"
@@ -132,6 +139,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	ttest[["schema"]] <- list(fields=fields)
 	
 	ttest.rows <- list()
+	plotGroups <- list()
 	plots.ttest <- list()
 	plotTypes <- list()
 	plotPairs <- list()
@@ -151,11 +159,19 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 	footnotes <- .newFootnotes()
 	
+	i <- 1
 	
 	for (pair in options$pairs)
 	{
 		
 		currentPair <- paste(pair, collapse=" - ")
+		
+		if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$descriptivesPlots) {
+			
+			plotGroups[[i]] <- list()
+			plotGroups[[i]][["title"]] <- currentPair
+			plotGroups[[i]][["name"]] <- currentPair
+		}
 		
 		if (options$plotPriorAndPosterior) {
 			
@@ -184,7 +200,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				plot <- list()
 				
-				plot[["title"]] <- paste(pair, collapse=" - ")
+				plot[["title"]] <- "Prior and posterior"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -195,6 +211,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
+			
+			plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[length(plots.ttest)]]
 			
 			if (options$plotPriorAndPosteriorAdditionalInfo) {
 				
@@ -226,7 +244,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				plot <- list()
 				
-				plot[["title"]] <- paste(pair, collapse=" - ")
+				plot[["title"]] <- "Bayes factor robustness check"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -238,6 +256,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
 			
+			plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[length(plots.ttest)]]
 			plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
 		}
@@ -269,7 +288,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				plot <- list()
 				
-				plot[["title"]] <- paste(pair, collapse=" - ")
+				plot[["title"]] <- "Sequential analysis"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -291,6 +310,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			}
 			
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
+			plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[length(plots.ttest)]]
 		}
 		
 		if (options$descriptivesPlots) {
@@ -310,7 +330,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				descriptivesPlot <- list()
 				
-				descriptivesPlot[["title"]] <- paste(pair, collapse=" - ")
+				descriptivesPlot[["title"]] <- "Descriptives plot"
 				descriptivesPlot[["width"]] <- options$plotWidth
 				descriptivesPlot[["height"]] <- options$plotHeight
 				descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
@@ -322,13 +342,17 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			
 			plotTypes[[length(plotTypes)+1]] <- "descriptivesPlot"
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
+			plotGroups[[i]][["DescriptivesPlot"]] <- plots.ttest[[length(plots.ttest)]]
 			
 		}
+		
+		i <- i + 1
 		
 	}
 	
 	
-	results[["plots"]] <- plots.ttest
+	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$descriptivesPlots)
+		results[["plots"]] <- list(title="Plots", collection=plotGroups)
 	
 	pair.statuses <- list()
 	
@@ -710,8 +734,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				} else {
 					
-					plots.ttest[[j]]$status <- "running"
-					results[["plots"]] <- plots.ttest
+					results[["plots"]][["collection"]][[i]][["PriorPosteriorPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -758,7 +781,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j]] <- plot
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[j]]
+				results[["plots"]][["collection"]] <- plotGroups
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -781,8 +805,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				} else {
 					
-					plots.ttest[[j]]$status <- "running"
-					results[["plots"]] <- plots.ttest
+					results[["plots"]][["collection"]][[i]][["BFrobustnessPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -810,7 +833,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j]] <- plot
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[j]]
+				results[["plots"]][["collection"]] <- plotGroups
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -843,8 +867,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				} else {
 					
-					plots.ttest[[j]]$status <- "running"
-					results[["plots"]] <- plots.ttest
+					results[["plots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -877,7 +900,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j]] <- plot
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[j]]
+				results[["plots"]][["collection"]] <- plotGroups
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -900,8 +924,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				} else {
 					
-					plots.ttest[[j]]$status <- "running"
-					results[["plots"]] <- plots.ttest
+					results[["plots"]][["collection"]][[i]][["DescriptivesPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -930,7 +953,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["DescriptivesPlot"]] <- plots.ttest[[j]]
+				results[["plots"]][["collection"]] <- plotGroups
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -942,7 +966,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	}
 	
 	results[["ttest"]] <- ttest
-	results[["plots"]] <- plots.ttest
 	
 	keep <- NULL
 	
