@@ -39,9 +39,16 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	meta <- list()
 	
-	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="correlation", type="table")
-	meta[[3]] <- list(name="plots", type="collection", meta="image")
+	meta[[1]] <- list(name="correlation", type="table")
+	meta[[2]] <- list(name="plots", type="collection", meta=list(	name="plotGroups", type="object",
+																	meta=list(	list(name="ScatterPlot", type="image"),
+																				list(name="PriorPosteriorPlot", type="image"),
+																				list(name="BFrobustnessPlot", type="image"),
+																				list(name="BFsequentialPlot", type="image")
+																				)
+																)
+					)
+	
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Correlation Pairs"
@@ -135,6 +142,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	footnotes <- .newFootnotes()
 	
+	plotGroups <- list()
 	plots.correlation <- list()
 	
 	plotTypes <- list()
@@ -152,10 +160,18 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	
 	}
 	
+	i <- 1
 	
 	for (pair in options$pairs)	{
 	
 		currentPair <- paste(pair, collapse=" - ")
+		
+		if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$plotScatter) {
+			
+			plotGroups[[i]] <- list()
+			plotGroups[[i]][["title"]] <- currentPair
+			plotGroups[[i]][["name"]] <- currentPair
+		}
 		
 		if (options$plotScatter) {
 		
@@ -172,7 +188,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		
 				plot <- list()
 				
-				plot[["title"]] <- paste(pair, collapse=" - ")
+				plot[["title"]] <- "Scatterplot"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -186,6 +202,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			
 			plotTypes[[length(plotTypes)+1]] <- "plotScatter"
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
+			plotGroups[[i]][["ScatterPlot"]] <- plots.correlation[[length(plots.correlation)]]
 		
 		}
 	
@@ -215,7 +232,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				plot <- list()
 				
-				plot[["title"]] <- paste(pair, collapse=" - ")
+				plot[["title"]] <- "Prior and posterior"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -237,6 +254,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			}
 			
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
+			plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.correlation[[length(plots.correlation)]]
 			
 		}
 		
@@ -257,7 +275,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			
 				plot <- list()
 				
-				plot[["title"]] <- paste(pair, collapse=" - ")
+				plot[["title"]] <- "Bayes factor robustness check"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -271,6 +289,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			
 			plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
+			plotGroups[[i]][["BFrobustnessPlot"]] <- plots.correlation[[length(plots.correlation)]]
 		}
 		
 		if (options$plotSequentialAnalysis){
@@ -299,7 +318,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				plot <- list()
 				
-				plot[["title"]] <- paste(pair, collapse=" - ")
+				plot[["title"]] <- "Sequential analysis"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -321,11 +340,15 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			}
 			
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
+			plotGroups[[i]][["BFsequentialPlot"]] <- plots.correlation[[length(plots.correlation)]]
 			
 		}
+		
+		i <- i + 1
 	}
 	
-	results[["plots"]] <- plots.correlation
+	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis || options$plotScatter)
+		results[["plots"]] <- list(title="Plots", collection=plotGroups)
 	
 	rs <- numeric()
 	ns <- numeric()
@@ -647,9 +670,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				} else {
 				
-					plots.correlation[[j]]$status <- "running"
-					
-					results[["plots"]] <- plots.correlation
+					results[["plots"]][["collection"]][[i]][["ScatterPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -680,9 +701,11 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					plots.correlation[[j]] <- plot
 				}
 				
-				j <- j + 1
 				
-				results[["plots"]] <- plots.correlation
+				plotGroups[[i]][["ScatterPlot"]] <- plots.correlation[[j]]
+				results[["plots"]][["collection"]] <- plotGroups
+				
+				j <- j + 1
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -712,10 +735,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					plots.correlation[[j]] <- state$plotsCorrelation[[stateIndex]]
 					
 				} else {
-			
-					plots.correlation[[j]]$status <- "running"
 					
-					results[["plots"]] <- plots.correlation
+					results[["plots"]][["collection"]][[i]][["PriorPosteriorPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 					 		return()
@@ -752,9 +773,10 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					
 				}
 				
-				j <- j + 1
+				plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.correlation[[j]]
+				results[["plots"]][["collection"]] <- plotGroups
 				
-				results[["plots"]] <- plots.correlation
+				j <- j + 1
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -774,10 +796,8 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					plots.correlation[[j]] <- state$plotsCorrelation[[stateIndex]]
 						
 				} else {
-				
-					plots.correlation[[j]]$status <- "running"
 					
-					results[["plots"]] <- plots.correlation
+					results[["plots"]][["collection"]][[i]][["BFrobustnessPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 					 		return()
@@ -812,10 +832,11 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					plots.correlation[[j]] <- plot
 				}
 				
+				plotGroups[[i]][["BFrobustnessPlot"]] <- plots.correlation[[j]]
+				results[["plots"]][["collection"]] <- plotGroups
+				
 				j <- j + 1
 				
-				results[["plots"]] <- plots.correlation
-					
 				if ( ! .shouldContinue(callback(results)))
 					return()
 			}
@@ -845,9 +866,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					
 				} else {
 					
-					plots.correlation[[j]]$status <- "running"
-					
-					results[["plots"]] <- plots.correlation
+					results[["plots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 					 		return()
@@ -883,13 +902,16 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 					plots.correlation[[j]] <- plot
 				}
 				
+				plotGroups[[i]][["BFsequentialPlot"]] <- plots.correlation[[j]]
+				results[["plots"]][["collection"]] <- plotGroups
+				
 				j <- j + 1
 				
-				results[["plots"]] <- plots.correlation
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
 			}
+			
 		}
 	}
 	

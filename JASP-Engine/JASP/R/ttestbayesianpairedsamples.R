@@ -356,8 +356,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 	pair.statuses <- list()
 	
-	i <- 1
-	
 	BF10post <- numeric(length(options$pairs))
 	
 	
@@ -593,7 +591,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		}
 		
 		ttest.rows[[length(ttest.rows)+1]] <- result
-		i <- i + 1
+		
 	}
 	
 	if (length(ttest.rows) == 0)
@@ -676,7 +674,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		n.plots <- length(options$pairs) * n.plots.per.variable
 		
 		j <- 1
-		i <- 1
 		
 		for (i in .indices(options$pairs)) {
 			
