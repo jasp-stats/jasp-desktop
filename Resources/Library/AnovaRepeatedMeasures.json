@@ -98,8 +98,7 @@
 		},
 		{
 			"name": "postHocTestsBonferroni",
-			"type": "Boolean",
-			"default": true
+			"type": "Boolean"
 		},
 		{
 			"name": "postHocTestsHolm",
@@ -107,7 +106,8 @@
 		},
 		{
 			"name": "postHocTestsTukey",
-			"type": "Boolean"
+			"type": "Boolean",
+			"default": true
 		},
 		{
 			"name": "postHocTestsScheffe",

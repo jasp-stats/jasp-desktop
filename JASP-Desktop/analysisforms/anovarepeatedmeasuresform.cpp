@@ -104,14 +104,10 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 #ifdef QT_NO_DEBUG
 	ui->groupContrasts->hide();
 	ui->groupCompareMainEffects->hide();
-	ui->postHocTestsTukey->hide();
-	ui->postHocTestsScheffe->hide();
 
 #else
 	ui->groupContrasts->setStyleSheet("background-color: pink ;");
 	ui->groupCompareMainEffects->setStyleSheet("background-color: pink ;");
-	ui->postHocTestsTukey->setStyleSheet("background-color: pink ;");
-	ui->postHocTestsScheffe->setStyleSheet("background-color: pink ;");
 
 #endif
 }
