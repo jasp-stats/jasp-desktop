@@ -221,7 +221,7 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.embedded)
 			html = this._addHTMLWrapper('<div style="background-image : url(data:image/png;base64,' + htmlImageFormatData.embedded + '); background-size:' + width + 'px ' + height + 'px; width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
 		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.resource)
-			html = this._addHTMLWrapper('<div style="background-image : url(\'' + htmlImageFormatData.resource + '\'); background-size:' + width + 'px ' + height + 'px; width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
+			html = this._addHTMLWrapper('<img src="' + htmlImageFormatData.resource + '" style="width:' + width + 'px; height:' + height + 'px;" />\n', exportParams);
 
 		return html;
 	},

@@ -18,7 +18,7 @@
 
 using namespace std;
 
-const Version JASPExporter::dataArchiveVersion = Version("1.0.1");
+const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
 const Version JASPExporter::jaspArchiveVersion = Version("2.0.0");
 
 void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
