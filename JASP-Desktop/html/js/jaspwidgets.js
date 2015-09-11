@@ -187,8 +187,8 @@ JASPWidgets.Exporter = {
 			if (self.exportCounter === 0) {
 				var completeText = "";
 				if (!exportParams.error) {
-					completeText = "<div " + self.getStyleAttr() + "'>\n";
-					completeText += "<div style='display:inline-block; " + innerStyle + "'>\n";
+					completeText = "<div " + self.getStyleAttr() + ">\n";
+					completeText += '<div style="display:inline-block; ' + innerStyle + '">\n';
 					if (self.toolbar !== undefined) {
 						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar, exportParams)
 					}
