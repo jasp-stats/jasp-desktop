@@ -29,21 +29,17 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	## META definitions
 
 	.meta <- list(
-		list(name="title", type="title"),
 		list(name="withinSubjectsEffects", type="table"),
-		list(name="headerBetweenSubjectsEffects", type="h1"),
-		list(name="betweenSubjectsEffects", type="table"),
+		list(name="betweenSubjectsEffectsObj", type="object", meta=list(list(name="betweenSubjectsEffects", type="table"))),
 		list(name="headerSphericity", type="h1"),
 		list(name="sphericity", type="table"),
 		list(name="headerLevene", type="h1"),
 		list(name="levene", type="table"),
-		list(name="headerPosthoc", type="h1"),
-		list(name="posthoc", type="tables"),
-		list(name="headerDescriptives", type="h1"),
-		list(name="descriptives", type="table"),
-		list(name="headerDescriptivesPlot", type="h1"),
-		list(name="descriptivesPlot", type="images")
+		list(name="posthoc", type="collection", meta="table"),
+		list(name="descriptivesObj", type="object", meta=list(list(name="descriptives", type="table"))),
+		list(name="descriptivesPlot", type="collection", meta="image")
 	)
+	
 	
 	results[[".meta"]] <- .meta
 
@@ -177,11 +173,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	result <- .rmAnovaBetweenSubjectsTable(dataset, options, perform, model, status)
 	
-	results[["betweenSubjectsEffects"]] <- result$result
+	results[["betweenSubjectsEffectsObj"]] <- list(title="Between Subjects Effects", betweenSubjectsEffects=result$result)
 	status <- result$status
-	
-	results[["headerBetweenSubjectsEffects"]] <- "Between Subjects Effects"
-	
+		
 	
 	
 	## Create Levene's Table
@@ -207,12 +201,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	## Create Post Hoc Tables
 	
 	result <- .rmAnovaPostHocTable(dataset, options, perform, model, status, statePostHoc)
-		
-	results[["posthoc"]] <- result$result
-	status <- result$status
 	
-	if (!is.null(unlist(results[["posthoc"]])))
-		results[["headerPosthoc"]] <- "Post Hoc Tests"
+	results[["posthoc"]] <- list(collection=result$result, title = "Post Hoc Tests")
+	status <- result$status
 	
 	
 	
@@ -221,27 +212,30 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	if(is.null(stateDescriptivesTable)) {
 	
 		result <- .rmAnovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable)
-		results[["descriptives"]] <- result$result
+		results[["descriptivesObj"]] <- list(title="Descriptives", descriptives=result$result)
 		status <- result$status
 		stateDescriptivesTable <- result$stateDescriptivesTable
 		
 	} else {
 	
-		results[["descriptives"]] <- stateDescriptivesTable
+		results[["descriptivesObj"]] <- list(title="Descriptives", descriptives=stateDescriptivesTable)
 		
 	}
-	
-	if (!is.null(results[["descriptives"]]))
-	    results[["headerDescriptives"]] <- "Descriptives"
 	
 	
 	
 	## Create Descriptives Plots
 	
+	if (options$plotSeparatePlots != "") {
+		titleDescriptivesPlot <- "Descriptives Plots"
+	} else {
+		titleDescriptivesPlot <- "Descriptives Plot"
+	}
+	
 	if (is.null(stateDescriptivesPlot)) {
 	
 		result <- .rmAnovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot)
-		results[["descriptivesPlot"]] <- result$result
+		results[["descriptivesPlot"]] <- list(collection=result$result, title = titleDescriptivesPlot)
 		status <- result$status
 		stateDescriptivesPlot <- result$stateDescriptivesPlot
 	
@@ -249,14 +243,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 		results[["descriptivesPlot"]] <- stateDescriptivesPlot
 	
-	}
-	
-	if (options$plotHorizontalAxis != "") {
-		if (options$plotSeparatePlots != "") {
-			results[["headerDescriptivesPlot"]] <- "Descriptives Plots"
-		} else {
-			results[["headerDescriptivesPlot"]] <- "Descriptives Plot"
-		}
 	}
 	
 	
@@ -418,6 +404,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			
 	dataset <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, c(options$betweenSubjectFactors, options$covariates))
 	
+	variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
+	
+	for (i in variables) {
+				
+		dataset[[.v(i)]] <- .v(dataset[[.v(i)]])
+	
+	}
+		
 	options(contrasts=c("contr.sum","contr.poly"))
 	
 	if (options$sumOfSquares == "type1") {
@@ -1520,35 +1514,32 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 									
 			formula <- as.formula(paste("~", .v(posthoc.var)))
 			referenceGrid <- lsmeans::lsmeans(resultPostHoc, formula)
-									
-			contrastMatrix <- .postHocContrasts(variable.levels, datasetLong, options)
-			contrastMatrix <- split(contrastMatrix, unlist(lapply(strsplit(rownames(contrastMatrix), " - "), function(x) paste(.v(x), collapse = " "))))
-												
-			r <- lsmeans::contrast(referenceGrid, contrastMatrix)
-																		
-			# Results using the Bonferroni method
-			
-			resultBonf <- summary(lsmeans::as.glht(r), test = multcomp::adjusted("bonferroni"))$test
-			resultBonf[["pfunction"]] <- NULL
-			resultBonf[["qfunction"]] <- NULL
-						
-			# Results using the Holm method			
-			
-			resultHolm <- summary(lsmeans::as.glht(r), test = multcomp::adjusted("holm"))$test$pvalues
+				
+#			contrastMatrix <- .postHocContrasts(variable.levels, datasetLong, options)
+#			contrastMatrix <- split(contrastMatrix, unlist(lapply(strsplit(rownames(contrastMatrix), " - "), function(x) paste(.v(x), collapse = " "))))
+#												
+#			r <- lsmeans::contrast(referenceGrid, contrastMatrix)
 			
 			# Results using the Tukey method			
 			
-			resultTukey <- summary(lsmeans::as.glht(r), test = multcomp::adjusted("holm"))$test$pvalues
+			resultTukey <- summary(pairs(referenceGrid, adjust="tukey"))
 			
 			# Results using the Scheffe method			
 			
-			resultScheffe <- summary(lsmeans::as.glht(r), test = multcomp::adjusted("holm"))$test$pvalues
+			resultScheffe <- summary(pairs(referenceGrid, adjust="scheffe"))
+																				
+			# Results using the Bonferroni method
+			
+			resultBonf <- summary(pairs(referenceGrid, adjust="bonferroni"))
+						
+			# Results using the Holm method			
+			
+			resultHolm <- summary(pairs(referenceGrid, adjust="holm"))
 									
-			comparisonsTukSchef <- strsplit(names(resultBonf$coefficients), ".", fixed=TRUE)
-			comparisonsBonfHolm <- strsplit(names(resultBonf$coefficients), ".", fixed=TRUE)
+			comparisons <- strsplit(as.character(resultBonf$contrast), " - ")
 			
 			statePostHoc[[posthoc.var]] <- list(resultBonf = resultBonf, resultHolm = resultHolm, resultTukey = resultTukey, resultScheffe = resultScheffe,
-											   	comparisonsTukSchef = comparisonsTukSchef, comparisonsBonfHolm = comparisonsBonfHolm)
+											   	comparisons = comparisons)
 			
 		}
 		
@@ -1600,9 +1591,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			variable.levels <- options$repeatedMeasuresFactors[[which(lapply(options$repeatedMeasuresFactors, function(x) x$name) == posthoc.var)]]$levels
 		
 		}
-		
-		nLevels <- length(variable.levels)
-						
+								
 		for (i in 1:length(variable.levels)) {
 			
 			for (j in .seqx(i+1, length(variable.levels))) {
@@ -1627,46 +1616,42 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 						
 					} else {
 												
-						for (c in 1:length(statePostHoc[[posthoc.var]]$comparisonsTukSchef)) {
-								
-							if (all(statePostHoc[[posthoc.var]]$comparisonsTukSchef[[c]] %in% c(.v(variable.levels[[i]]), .v(variable.levels[[j]])))) {
-								index1 <- c
+						for (c in 1:length(statePostHoc[[posthoc.var]]$comparisons)) {
+														
+							if (all(statePostHoc[[posthoc.var]]$comparisons[[c]] %in% c(.v(variable.levels[[i]]), .v(variable.levels[[j]])))) {
+								index <- c
 								
 								reverse <- TRUE
-								if (statePostHoc[[posthoc.var]]$comparisonsTukSchef[[c]][1] == .v(variable.levels[[i]]))
+								if (statePostHoc[[posthoc.var]]$comparisons[[c]][1] == .v(variable.levels[[i]]))
 									reverse <- FALSE
-							}		
-							
-							if (all(statePostHoc[[posthoc.var]]$comparisonsBonfHolm[[c]] %in% c(.v(variable.levels[[i]]), .v(variable.levels[[j]])))) {
-								index2 <- c
-							}		
+							}				
 						}
 												
 						if (reverse) {
-							md <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$coefficients[index1]))
+							md <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$estimate[index]))
 						} else {
-							md <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$coefficients[index1]))
+							md <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$estimate[index]))
 						}
 						
-						SE  <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$sigma[index1]))
+						SE  <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$SE[index]))
 						
 						if (reverse) {
-							t <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$tstat[index1]))
+							t <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$t.ratio[index]))
 						} else {
-							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$tstat[index1]))
+							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$t.ratio[index]))
 						}
 						
 						if (options$postHocTestsTukey) 
-							pTukey <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultHolm[index1]))
+							pTukey <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$p.value[index]))
 							
 						if (options$postHocTestsScheffe)
-							pScheffe <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultHolm[index1]))
+							pScheffe <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultScheffe$p.value[index]))
 							
 						if (options$postHocTestsBonferroni)
-							pBonf <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$pvalues[index2]))
+							pBonf <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$p.value[index]))
 						
 						if (options$postHocTestsHolm)
-							pHolm <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultHolm[index2]))
+							pHolm <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultHolm$p.value[index]))
 					}
 					
 					row[["Mean Difference"]] <- md
