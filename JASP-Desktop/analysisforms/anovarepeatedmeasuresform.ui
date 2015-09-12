@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>652</width>
-    <height>3403</height>
+    <height>3324</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_7">
+  <layout class="QGridLayout" name="gridLayout_10">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -26,7 +26,7 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="spacing">
+   <property name="verticalSpacing">
     <number>0</number>
    </property>
    <item row="0" column="0">
@@ -439,6 +439,134 @@
     </widget>
    </item>
    <item row="2" column="0">
+    <widget class="QWidget" name="groupAssumptions" native="true">
+     <layout class="QGridLayout" name="gridLayout_25">
+      <property name="topMargin">
+       <number>1</number>
+      </property>
+      <property name="bottomMargin">
+       <number>1</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderAssumptions">
+        <property name="text">
+         <string>Assumption Checks</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QWidget" name="containerAssumptions" native="true">
+        <layout class="QGridLayout" name="gridLayout_7">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="GroupBox" name="containerDisplay_2">
+           <property name="title">
+            <string/>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_31">
+            <property name="leftMargin">
+             <number>12</number>
+            </property>
+            <property name="topMargin">
+             <number>3</number>
+            </property>
+            <property name="bottomMargin">
+             <number>12</number>
+            </property>
+            <item row="2" column="1" colspan="2">
+             <widget class="QWidget" name="widgetSphericityCorrections" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_33">
+               <property name="leftMargin">
+                <number>24</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="1">
+                <widget class="BoundCheckBox" name="sphericityGreenhouseGeisser">
+                 <property name="text">
+                  <string>Greenhouse-Geisser</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="BoundCheckBox" name="sphericityHuynhFeldt">
+                 <property name="text">
+                  <string>Huynh-Feldt</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <spacer name="horizontalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>309</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="0" column="0">
+                <widget class="BoundCheckBox" name="sphericityNone">
+                 <property name="text">
+                  <string>None</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="BoundCheckBox" name="sphericityTests">
+              <property name="text">
+               <string>Sphericity tests</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1" colspan="2">
+             <widget class="BoundCheckBox" name="homogeneityTests">
+              <property name="text">
+               <string>Homogeneity tests</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="BoundCheckBox" name="sphericityCorrections">
+              <property name="text">
+               <string>Sphericity corrections</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0">
     <widget class="QWidget" name="groupContrasts" native="true">
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <property name="topMargin">
@@ -495,7 +623,7 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="4" column="0">
     <widget class="QWidget" name="groupPostHoc" native="true">
      <layout class="QGridLayout" name="gridLayout_20">
       <property name="topMargin">
@@ -524,7 +652,7 @@
           <number>0</number>
          </property>
          <property name="bottomMargin">
-          <number>36</number>
+          <number>12</number>
          </property>
          <item row="0" column="0">
           <widget class="BoundAssignWidget" name="postHocTestsVariables" native="true">
@@ -580,7 +708,7 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="5" column="0">
     <widget class="QWidget" name="groupOptions" native="true">
      <layout class="QGridLayout" name="gridLayout_12">
       <property name="topMargin">
@@ -773,10 +901,10 @@
               </layout>
              </widget>
             </item>
-            <item row="3" column="1">
-             <widget class="BoundCheckBox" name="sphericityTests">
+            <item row="1" column="1" colspan="2">
+             <widget class="BoundCheckBox" name="effectSizeEstimates">
               <property name="text">
-               <string>Sphericity tests</string>
+               <string>Estimates of effect size</string>
               </property>
              </widget>
             </item>
@@ -785,79 +913,6 @@
               <property name="text">
                <string>Descriptive statistics</string>
               </property>
-             </widget>
-            </item>
-            <item row="1" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="effectSizeEstimates">
-              <property name="text">
-               <string>Estimates of effect size</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="homogeneityTests">
-              <property name="text">
-               <string>Homogeneity tests</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="BoundCheckBox" name="sphericityCorrections">
-              <property name="text">
-               <string>Sphericity corrections</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1" colspan="2">
-             <widget class="QWidget" name="widgetSphericityCorrections" native="true">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_10">
-               <property name="leftMargin">
-                <number>24</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="1">
-                <widget class="BoundCheckBox" name="sphericityGreenhouseGeisser">
-                 <property name="text">
-                  <string>Greenhouse-Geisser</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="BoundCheckBox" name="sphericityHuynhFeldt">
-                 <property name="text">
-                  <string>Huynh-Feldt</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="3">
-                <spacer name="horizontalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>309</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="0" column="0">
-                <widget class="BoundCheckBox" name="sphericityNone">
-                 <property name="text">
-                  <string>None</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </widget>
             </item>
            </layout>
@@ -876,7 +931,7 @@
      </layout>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="6" column="0">
     <widget class="QWidget" name="descriptivesPlot" native="true">
      <layout class="QGridLayout" name="gridLayout_22">
       <property name="topMargin">
@@ -885,13 +940,6 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderDescriptivesPlot">
-        <property name="text">
-         <string>Descriptives Plots</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QWidget" name="containerDescriptivesPlot" native="true">
         <layout class="QGridLayout" name="gridLayout_24">
@@ -1162,7 +1210,7 @@
              <number>0</number>
             </property>
             <item row="1" column="0">
-             <widget class="BoundGroupBox" name="errorBarType">
+             <widget class="BoundGroupBox" name="errorBarType" native="true">
               <layout class="QGridLayout" name="gridLayout_27">
                <property name="topMargin">
                 <number>0</number>
@@ -1271,6 +1319,13 @@
         </layout>
        </widget>
       </item>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderDescriptivesPlot">
+        <property name="text">
+         <string>Descriptives Plots</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -1293,6 +1348,22 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundTextBox</class>
+   <extends>QLineEdit</extends>
+   <header>widgets/boundtextbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundGroupBox</class>
+   <extends>QWidget</extends>
+   <header>widgets/boundgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
@@ -1302,11 +1373,6 @@
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>GroupBox</class>
@@ -1330,17 +1396,6 @@
    <extends>QComboBox</extends>
    <header>widgets/boundcombobox.h</header>
   </customwidget>
-  <customwidget>
-   <class>BoundGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/boundgroupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundTextBox</class>
-   <extends>QLineEdit</extends>
-   <header>widgets/boundtextbox.h</header>
-  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
@@ -1361,22 +1416,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>sphericityCorrections</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widgetSphericityCorrections</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>178</x>
-     <y>2247</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>327</x>
-     <y>2278</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>marginalMeansCompareMainEffects</sender>
    <signal>toggled(bool)</signal>
    <receiver>widgetCIAdjustmentTypes</receiver>
@@ -1389,6 +1428,22 @@
     <hint type="destinationlabel">
      <x>182</x>
      <y>2059</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sphericityCorrections</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetSphericityCorrections</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>189</x>
+     <y>1249</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>1279</y>
     </hint>
    </hints>
   </connection>
