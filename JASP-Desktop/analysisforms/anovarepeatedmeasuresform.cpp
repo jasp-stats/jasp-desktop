@@ -93,6 +93,7 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
+	ui->containerAssumptions->hide();
 
 	ui->withinModelTerms->setFactorsLabel("Repeated Measures Components");
 	ui->betweenModelTerms->setFactorsLabel("Between Subjects Components");

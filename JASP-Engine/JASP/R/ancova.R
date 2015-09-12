@@ -234,9 +234,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	
 	## Create Descriptives Table
-	
-	print(stateDescriptivesTable)
-	
+		
 	if(is.null(stateDescriptivesTable)) {
 	
 		result <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable)

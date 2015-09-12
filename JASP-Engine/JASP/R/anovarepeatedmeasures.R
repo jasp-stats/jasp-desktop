@@ -30,11 +30,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	.meta <- list(
 		list(name="withinSubjectsEffects", type="table"),
-		list(name="betweenSubjectsEffectsObj", type="object", meta=list(list(name="betweenSubjectsEffects", type="table"))),
-		list(name="headerSphericity", type="h1"),
-		list(name="sphericity", type="table"),
-		list(name="headerLevene", type="h1"),
-		list(name="levene", type="table"),
+		list(name="betweenSubjectsEffects", type="table"),
+		list(name="assumptionsObj", type="object", meta=list(list(name="sphericity", type="table"), list(name="levene", type="table"))),
 		list(name="posthoc", type="collection", meta="table"),
 		list(name="descriptivesObj", type="object", meta=list(list(name="descriptives", type="table"))),
 		list(name="descriptivesPlot", type="collection", meta="image")
@@ -151,12 +148,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	result <- .sphericityTest(dataset, options, perform, epsilon, epsilonError, mauchly, status) 
 
-	results[["sphericity"]] <- result$result
+	resultSphericity <- result$result
 	status <- result$status
 	epsilonTable <- result$epsilonTable
-	
-	if (options$sphericityTests)
-		results[["headerSphericity"]] <- "Test of Sphericity"
 
 
 
@@ -173,7 +167,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	result <- .rmAnovaBetweenSubjectsTable(dataset, options, perform, model, status)
 	
-	results[["betweenSubjectsEffectsObj"]] <- list(title="Between Subjects Effects", betweenSubjectsEffects=result$result)
+	results[["betweenSubjectsEffects"]] <- result$result
 	status <- result$status
 		
 	
@@ -183,18 +177,21 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	if(is.null(stateLevene)) {
 	
 		result <- .rmAnovaLevenesTable(dataset, options, perform, status, stateLevene)
-		results[["levene"]] <- result$result
+		resultLevene <- result$result
 		status <- result$status
 		stateLevene <- result$stateLevene
 			
 	} else {
 	
-		results[["levene"]] <- stateLevene
+		resultLevene <- stateLevene
 		
 	}
 	
-	if (options$homogeneityTests)
-	    results[["headerLevene"]] <- "Test for Equality of Variances"
+	
+	
+	## Create Assumption Check Object
+	
+	results[["assumptionsObj"]] <- list(title="Assumption Checks", sphericity=resultSphericity, levene=resultLevene)
 	
 	
 	
@@ -241,7 +238,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	} else {
 	
-		results[["descriptivesPlot"]] <- stateDescriptivesPlot
+		results[["descriptivesPlot"]] <- list(collection=stateDescriptivesPlot, title = titleDescriptivesPlot)
 	
 	}
 	
@@ -469,7 +466,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			
 		}	
 	}
-		
+			
 	list(model = model, epsilon = epsilon, epsilonError = epsilonError, mauchly = mauchly, resultPostHoc = resultPostHoc, status = status)
 }
 
@@ -489,7 +486,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	anova <- list()
 
-	anova[["title"]] <- "Between Subjects ANOVA"
+	anova[["title"]] <- "Between Subjects Effects"
 
 	fields <- list()
 
@@ -753,7 +750,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	anova <- list()
 
-	anova[["title"]] <- "Within Subjects ANOVA"
+	anova[["title"]] <- "Within Subjects Effects"
 
 	corrections <- NULL
 
