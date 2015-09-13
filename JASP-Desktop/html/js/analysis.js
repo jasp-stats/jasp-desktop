@@ -148,14 +148,16 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		return widget;
 	},
 
-	getNextObject: function(obj, name) {
-		if (Array.isArray(obj)) {
-			var next = _.find(obj, function (cv) { return cv.name === name; });
+	getNextView: function (view, name) {
+
+		var next;
+		if (view.views) {
+			next = _.find(view.views, function (cv) { return cv.model.get('name') === name; });
 			if (next === null)
-				name = undefined;
+				next = undefined;
 		}
-		else
-			return obj[name];
+
+		return next;
 	},
 
 	getAnalysisNotes: function () {
@@ -174,7 +176,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 			var obj = notes.notes;
 
-			var resultObj = results;
+			var view = this;
 			var fullKeyPath = noteDetails.GetFullKeyArray();
 			for (j = 0; j < fullKeyPath.length; j++) {
 
@@ -189,8 +191,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				var levelName = fullKeyPath[j];
 
 				if (j < fullKeyPath.length - 1) {
-					resultObj = this.getNextObject(resultObj, levelName)
-					if (resultObj === undefined)
+					view = this.getNextView(view, levelName)
+					if (view === undefined)
 						break;
 				}
 
