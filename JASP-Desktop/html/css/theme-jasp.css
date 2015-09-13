@@ -21,33 +21,33 @@ body.selected {
 	background-color: #E8E8E8 ;
 }
 
-h1 {
+h1, .h1-toolbar .jasp-menu {
 	font-size: 175% ;
 }
 
-h2 {
+h2, .h2-toolbar .jasp-menu {
 	font-size: 150% ;
 }
 
-h3 {
+h3, .h3-toolbar .jasp-menu {
 	font-size: 125% ;
 	margin-top: 1.3em;
 	margin-bottom: .6em;
 }
 
-h4 {
+h4, .h4-toolbar .jasp-menu {
 	font-size: 115% ;
 	margin-top: .8em;
 	margin-bottom: .6em;
 }
 
-h5 {
+h5, .h5-toolbar .jasp-menu {
 	font-size: 105% ;
 	margin-top: .8em;
 	margin-bottom: .6em;
 }
 
-h6 {
+h6, .h6-toolbar .jasp-menu {
 	font-size: 100% ;
 	margin-top: .7em;
 	margin-bottom: .2em;
