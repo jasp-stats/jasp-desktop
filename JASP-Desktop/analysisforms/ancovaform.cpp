@@ -94,6 +94,7 @@ AncovaForm::AncovaForm(QWidget *parent) :
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
+	ui->containerAssumptions->hide();
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
