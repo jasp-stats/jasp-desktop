@@ -28,22 +28,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	# META definitions
 
 	.meta <- list(
-	    list(name="title", type="title"),
 		list(name="anova", type="table"),
-		list(name="headerLevene", type="h1"),
-		list(name="levene", type="table"),
-		list(name="headerqqPlot", type="h1"),
-		list(name="qqPlot", type="image"),
-		list(name="headerContrasts", type="h1"),
-		list(name="contrasts", type="tables"),
-		list(name="headerPosthoc", type="h1"),
-		list(name="posthoc", type="tables"),
-		list(name="headerDescriptives", type="h1"),
-		list(name="descriptives", type="table"),
-		list(name="headerMarginalMeans", type="h1"),
-		list(name="marginalMeans", type="tables"),
-		list(name="headerDescriptivesPlot", type="h1"),
-		list(name="descriptivesPlot", type="images")
+		list(name="assumptionsObj", type="object", meta=list(list(name="levene", type="table"), list(name="qqPlot", type="image"))),
+		list(name="contrasts", type="collection", meta="table"),
+		list(name="posthoc", type="collection", meta="table"),
+		list(name="descriptivesObj", type="object", meta=list(list(name="descriptives", type="table"))),
+		list(name="marginalMeans", type="collection", meta="table"),
+		list(name="descriptivesPlot", type="collection", meta="image")
 	)
 
 	results[[".meta"]] <- .meta
@@ -177,125 +168,22 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	results[["anova"]] <- result$result
 	status <- result$status
+	
 		
-		
-				
-	## Create Contrasts Tables
 	
-	if (is.null(stateContrasts)) {
-	
-		result <- .anovaContrastsTable(dataset, options, perform, model, status, stateContrasts)
-		results[["contrasts"]] <- result$result
-		status <- result$status
-		stateContrasts <- result$stateContrasts
-	
-	} else {
-	
-		results[["contrasts"]] <- stateContrasts
-		
-	}
-	
-	if (!is.null(results[["contrasts"]]))
-	    results[["headerContrasts"]] <- "Contrasts"
-	
-
-	
-	## Create Post Hoc Tables
-	
-	result <- .anovaPostHocTable(dataset, options, perform, model, status, statePostHoc)
-	
-	results[["posthoc"]] <- result$result
-	status <- result$status
-	statePostHoc <- result$statePostHoc
-	
-	if (!is.null(unlist(results[["posthoc"]])))
-		results[["headerPosthoc"]] <- "Post Hoc Tests"
-	
-
-
-	## Create Marginal Means Table
-	
-	if (is.null(stateMarginalMeans)) {
-	
-		result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular, stateMarginalMeans)
-		results[["marginalMeans"]] <- result$result
-		status <- result$status
-		stateMarginalMeans <- result$stateMarginalMeans
-			
-	} else {
-	
-		results[["marginalMeans"]] <- stateMarginalMeans
-		
-	}
-	
-	if(!is.null(unlist(results[["marginalMeans"]])))
-		results[["headerMarginalMeans"]] <- "Marginal Means"
-	
-	
-	
-	## Create Descriptives Table
-		
-	if(is.null(stateDescriptivesTable)) {
-	
-		result <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable)
-		results[["descriptives"]] <- result$result
-		status <- result$status
-		stateDescriptivesTable <- result$stateDescriptivesTable
-		
-	} else {
-	
-		results[["descriptives"]] <- stateDescriptivesTable
-	
-	}
-	
-	if (!is.null(results[["descriptives"]]))
-		results[["headerDescriptives"]] <- "Descriptives"
-	
-
-
 	## Create Levene's Table
 	
 	if (is.null(stateLevene)) {
 	
 		result <- .anovaLevenesTable(dataset, options, perform, status, stateLevene)	
-		results[["levene"]] <- result$result
+		resultLevene <- result$result
 		status <- result$status
 		stateLevene <- result$stateLevene
 	
 	} else {
 	
-		results[["levene"]] <- stateLevene
+		resultLevene <- stateLevene
 	
-	}
-	
-	if (!is.null(results[["levene"]]))
-		results[["headerLevene"]] <- "Test for Equality of Variances"
-	
-	
-	
-	## Create Descriptives Plots
-	
-	if (is.null(stateDescriptivesPlot)) {
-	
-		result <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot)
-		results[["descriptivesPlot"]] <- result$result
-		status <- result$status
-		stateDescriptivesPlot <- result$stateDescriptivesPlot
-		
-	} else {
-	
-		results[["descriptivesPlot"]] <- stateDescriptivesPlot
-	
-	}
-	
-	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x) x$data)
-	
-	if (options$plotHorizontalAxis != "") {
-		if (options$plotSeparatePlots != "") {
-			results[["headerDescriptivesPlot"]] <- "Descriptives Plots"
-		} else {
-			results[["headerDescriptivesPlot"]] <- "Descriptives Plot"
-		}
 	}
 	
 	
@@ -305,18 +193,110 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if (is.null(stateqqPlot)) {
 	
 		result <- .qqPlot(model, options, perform, status, stateqqPlot)
-		results[["qqPlot"]] <- result$result
+		resultQQplot <- result$result
 		status <- result$status
 		stateqqPlot <- result$stateqqPlot
 				
 	} else {
 	
-		results[["qqPlot"]] <- stateqqPlot
+		resultQQplot <- stateqqPlot
 	
 	}
 	
-	if (options$qqPlot)
-		results[["headerqqPlot"]] <- "Q-Q Plot"
+	
+	
+	## Create Assumption Check Object
+	
+	results[["assumptionsObj"]] <- list(title="Assumption Checks", levene=resultLevene, qqPlot=resultQQplot)
+	
+		
+				
+	## Create Contrasts Tables
+	
+	if (is.null(stateContrasts)) {
+	
+		result <- .anovaContrastsTable(dataset, options, perform, model, status, stateContrasts)
+		results[["contrasts"]] <- list(collection=result$result, title = "Contrasts")
+		status <- result$status
+		stateContrasts <- result$stateContrasts
+	
+	} else {
+	
+		results[["contrasts"]] <- list(collection=stateContrasts, title = "Contrasts")
+		
+	}
+	
+
+	
+	## Create Post Hoc Tables
+	
+	result <- .anovaPostHocTable(dataset, options, perform, model, status, statePostHoc)
+	
+	results[["posthoc"]] <- list(collection=result$result, title = "Post Hoc Tests")
+	status <- result$status
+	statePostHoc <- result$statePostHoc
+	
+
+
+	## Create Marginal Means Table
+	
+	if (is.null(stateMarginalMeans)) {
+	
+		result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular, stateMarginalMeans)
+		results[["marginalMeans"]] <- list(collection=result$result, title = "Marginal Means")
+		status <- result$status
+		stateMarginalMeans <- result$stateMarginalMeans
+			
+	} else {
+		
+		results[["marginalMeans"]] <- list(collection=stateMarginalMeans, title = "Marginal Means")
+		
+	}
+	
+	
+	
+	## Create Descriptives Table
+		
+	if(is.null(stateDescriptivesTable)) {
+	
+		result <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable)
+		results[["descriptivesObj"]] <- list(title="Descriptives", descriptives=result$result)
+		status <- result$status
+		stateDescriptivesTable <- result$stateDescriptivesTable
+		
+	} else {
+	
+		results[["descriptivesObj"]] <- list(title="Descriptives", descriptives=stateDescriptivesTable)
+	
+	}
+	
+	
+	
+	## Create Descriptives Plots
+	
+	if (options$plotSeparatePlots != "") {
+		titleDescriptivesPlot <- "Descriptives Plots"
+	} else {
+		titleDescriptivesPlot <- "Descriptives Plot"
+	}
+	
+	if (is.null(stateDescriptivesPlot)) {
+	
+		result <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot)
+		results[["descriptivesPlot"]] <- list(collection=result$result, title = titleDescriptivesPlot)
+		status <- result$status
+		stateDescriptivesPlot <- result$stateDescriptivesPlot
+		
+	} else {
+		
+		results[["descriptivesPlot"]] <- list(collection=stateDescriptivesPlot, title = titleDescriptivesPlot)
+	
+	}
+	
+	
+	
+	
+	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x) x$data)	
 		
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
@@ -1739,7 +1719,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 	if (perform == "run" && status$ready && !status$error && !is.null(model)) {
 
-		qqPlot$title <- ""
+		qqPlot$title <- "Q-Q Plot"
 		qqPlot$width <- options$plotWidthQQPlot
 		qqPlot$height <- options$plotHeightQQPlot
 		qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
@@ -1773,7 +1753,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				
 	} else {
 
-		qqPlot$title <- ""
+		qqPlot$title <- "Q-Q Plot"
 		qqPlot$width <- options$plotWidthQQPlot
 		qqPlot$height <- options$plotHeightQQPlot
 		qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")

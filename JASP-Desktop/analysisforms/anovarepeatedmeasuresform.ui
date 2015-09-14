@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>652</width>
-    <height>3324</height>
+    <height>3293</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -632,13 +632,6 @@
       <property name="bottomMargin">
        <number>1</number>
       </property>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderPosthoc">
-        <property name="text">
-         <string>Post Hoc Tests</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QWidget" name="containerPostHocTests" native="true">
         <layout class="QGridLayout" name="gridLayout_19">
@@ -705,233 +698,17 @@
         </layout>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QWidget" name="groupOptions" native="true">
-     <layout class="QGridLayout" name="gridLayout_12">
-      <property name="topMargin">
-       <number>1</number>
-      </property>
-      <property name="bottomMargin">
-       <number>1</number>
-      </property>
-      <item row="3" column="0">
-       <widget class="QWidget" name="containerOptions" native="true">
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
-          <widget class="QWidget" name="groupCompareMainEffects" native="true">
-           <layout class="QGridLayout" name="gridLayout_11">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="topMargin">
-             <number>0</number>
-            </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <item row="2" column="0">
-             <widget class="QWidget" name="widgetCIAdjustmentTypes" native="true">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>24</width>
-                <height>0</height>
-               </size>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_23">
-               <property name="leftMargin">
-                <number>24</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_16">
-                 <property name="text">
-                  <string>Confidence interval adjustment</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="BoundComboBox" name="marginalMeansCIAdjustment">
-                 <item>
-                  <property name="text">
-                   <string>None</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Bonferroni</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Sidak</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="4">
-             <widget class="QWidget" name="marginalMeansContainer" native="true">
-              <layout class="QGridLayout" name="gridLayout_13">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_10">
-                 <property name="text">
-                  <string>Marginal means</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="BoundAssignWidget" name="marginalMeansTerms" native="true">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>160</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <spacer name="horizontalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="marginalMeansCompareMainEffects">
-              <property name="text">
-               <string>Compare main effects</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="GroupBox" name="containerDisplay">
-           <property name="title">
-            <string>Display</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="2" column="1" colspan="2">
-             <widget class="QWidget" name="widgetEffectSizeTypes" native="true">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_4">
-               <property name="leftMargin">
-                <number>24</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="BoundCheckBox" name="effectSizeEtaSquared">
-                 <property name="text">
-                  <string>η²</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="BoundCheckBox" name="effectSizePartialEtaSquared">
-                 <property name="text">
-                  <string>partial η²</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="BoundCheckBox" name="effectSizeOmegaSquared">
-                 <property name="text">
-                  <string>ω²</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="3">
-                <spacer name="horizontalSpacer_8">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>403</width>
-                   <height>17</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="effectSizeEstimates">
-              <property name="text">
-               <string>Estimates of effect size</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="descriptives">
-              <property name="text">
-               <string>Descriptive statistics</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderOptions">
+       <widget class="ExpanderButton" name="expanderPosthoc">
         <property name="text">
-         <string>Options</string>
+         <string>Post Hoc Tests</string>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="6" column="0">
+   <item row="5" column="0">
     <widget class="QWidget" name="descriptivesPlot" native="true">
      <layout class="QGridLayout" name="gridLayout_22">
       <property name="topMargin">
@@ -1323,6 +1100,229 @@
        <widget class="ExpanderButton" name="expanderDescriptivesPlot">
         <property name="text">
          <string>Descriptives Plots</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QWidget" name="groupOptions" native="true">
+     <layout class="QGridLayout" name="gridLayout_12">
+      <property name="topMargin">
+       <number>1</number>
+      </property>
+      <property name="bottomMargin">
+       <number>1</number>
+      </property>
+      <item row="3" column="0">
+       <widget class="QWidget" name="containerOptions" native="true">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QWidget" name="groupCompareMainEffects" native="true">
+           <layout class="QGridLayout" name="gridLayout_11">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <item row="2" column="0">
+             <widget class="QWidget" name="widgetCIAdjustmentTypes" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>24</width>
+                <height>0</height>
+               </size>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_23">
+               <property name="leftMargin">
+                <number>24</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_16">
+                 <property name="text">
+                  <string>Confidence interval adjustment</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="BoundComboBox" name="marginalMeansCIAdjustment">
+                 <item>
+                  <property name="text">
+                   <string>None</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Bonferroni</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Sidak</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="4">
+             <widget class="QWidget" name="marginalMeansContainer" native="true">
+              <layout class="QGridLayout" name="gridLayout_13">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>Marginal means</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="BoundAssignWidget" name="marginalMeansTerms" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>160</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <spacer name="horizontalSpacer_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <widget class="BoundCheckBox" name="marginalMeansCompareMainEffects">
+              <property name="text">
+               <string>Compare main effects</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="GroupBox" name="containerDisplay">
+           <property name="title">
+            <string>Display</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="2" column="1" colspan="2">
+             <widget class="QWidget" name="widgetEffectSizeTypes" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_4">
+               <property name="leftMargin">
+                <number>24</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="BoundCheckBox" name="effectSizeEtaSquared">
+                 <property name="text">
+                  <string>η²</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="BoundCheckBox" name="effectSizePartialEtaSquared">
+                 <property name="text">
+                  <string>partial η²</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="BoundCheckBox" name="effectSizeOmegaSquared">
+                 <property name="text">
+                  <string>ω²</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <spacer name="horizontalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>403</width>
+                   <height>17</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1" colspan="2">
+             <widget class="BoundCheckBox" name="effectSizeEstimates">
+              <property name="text">
+               <string>Estimates of effect size</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" colspan="2">
+             <widget class="BoundCheckBox" name="descriptives">
+              <property name="text">
+               <string>Descriptive statistics</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderOptions">
+        <property name="text">
+         <string>Additional Options</string>
         </property>
        </widget>
       </item>
