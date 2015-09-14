@@ -569,7 +569,7 @@
 
 	if (!status$ready)
 		modelTable [["error"]] <- list (errorType = "badData", errorMessage = status$error.message)
-
+	
 	return (list (modelTable = modelTable, model = model))
 }
 
@@ -643,6 +643,8 @@
 		dim (posterior.probabilities) <- c (1, no.models)
 		prior.inclusion.probabilities <- prior.probabilities %*% effects.matrix
 		posterior.inclusion.probabilities <- posterior.probabilities %*% effects.matrix
+		posterior.inclusion.probabilities[posterior.inclusion.probabilities > 1] <- 1
+		posterior.inclusion.probabilities[posterior.inclusion.probabilities < 0] <- 0
 		bayes.factor.inclusion <- (posterior.inclusion.probabilities / (1 - posterior.inclusion.probabilities)) /
 			(prior.inclusion.probabilities / (1 - prior.inclusion.probabilities))
 		model.complexity <- rowSums (effects.matrix)
