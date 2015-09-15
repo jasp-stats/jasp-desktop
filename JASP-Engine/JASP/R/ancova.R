@@ -340,7 +340,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		for (i in 1:(n.levels - 1))
 			cases[[i]] <- paste(levels[i+1], " - ", levels[1], sep="")
 
-	} else if (contrast.type == "helmert") {
+	} else if (contrast.type == "Helmert") {
 		
 		for (i in 1:(n.levels - 1))
 			cases[[i]] <- paste(levels[i], " - ", paste(levels[-(1:i)], collapse=", "), sep="")
@@ -397,7 +397,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		coding <- matrix(rep(1 / n.levels, prod(dim(treatment))), ncol=n.levels - 1)
 		contr <- (treatment-coding)*n.levels
 
-	} else if (contrast.type == "helmert") {
+	} else if (contrast.type == "Helmert") {
 		
 		contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
 		
