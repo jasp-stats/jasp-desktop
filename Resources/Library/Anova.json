@@ -49,7 +49,7 @@
 						"deviation",
 						"simple",
 						"difference",
-						"helmert",
+						"Helmert",
 						"repeated",
 						"polynomial"
 					],
