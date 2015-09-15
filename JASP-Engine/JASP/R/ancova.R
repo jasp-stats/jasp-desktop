@@ -440,9 +440,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	if (ready && perform == "run") {
 	
-		components <- unique(unlist(options$modelTerms))
+		components <- unique(unlist(options$fixedFactors))
 		independentsWithLessThanTwoLevels <- c()
-		
+				
 		for (component in components) {
 		
 			nLevels <- length(levels(dataset[[ .v(component) ]]))
