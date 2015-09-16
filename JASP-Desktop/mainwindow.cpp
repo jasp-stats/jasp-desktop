@@ -175,20 +175,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 
-#ifdef __WIN32__
-		QApplication::setFont(ui->tableView->font());
 
-		QFontMetrics fm(ui->panelMid->font());
-		int optionsWidth = 63 * fm.width("X");
-		ui->panelMid->setMinimumWidth(optionsWidth);
-		ui->pageOptions->setMaximumWidth(optionsWidth);
-
-		sizes = ui->splitter->sizes();
-		sizes[0] = optionsWidth;
-		ui->splitter->setSizes(sizes);
-
-		this->resize(this->width() + (optionsWidth - initalTableWidth), this->height());
-#endif
 
 
 	_buttonPanel = new QWidget(ui->pageOptions);
@@ -258,7 +245,20 @@ MainWindow::MainWindow(QWidget *parent) :
 	setAcceptDrops(true);
 
 #ifdef __WIN32__
-	QApplication::setFont(ui->tableView->font());
+		QApplication::setFont(ui->tableView->font());
+
+		QFontMetrics fm(ui->panelMid->font());
+		int optionsWidth = 63 * fm.width("X");
+		ui->panelMid->setMinimumWidth(optionsWidth);
+		ui->pageOptions->setMaximumWidth(optionsWidth);
+
+		sizes = ui->splitter->sizes();
+		sizes[0] = optionsWidth;
+		ui->splitter->setSizes(sizes);
+
+		this->resize(this->width() + (optionsWidth - initalTableWidth), this->height());
+
+		_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
 #endif
 }
 

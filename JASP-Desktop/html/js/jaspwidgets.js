@@ -888,16 +888,6 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 	},
 
-	/*testCode: function() {
-		$("#editor").live('input paste', function (e) {
-			if (e.target.id == 'editor') {
-				$('<textarea></textarea>').attr('id', 'paste').appendTo('#editMode');
-				$("#paste").focus();
-				setTimeout($(this).paste, 250);
-			}
-		});
-	},*/
-
 	startEdit: function () {
 		this.editing = true;
 		var element = this.$title();
