@@ -84,8 +84,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->setupUi(this);
 
+	int initalTableWidth = 590;
+
 	QList<int> sizes = QList<int>();
-	sizes.append(590);
+	sizes.append(initalTableWidth);
 	ui->splitter->setSizes(sizes);
 
 	ui->tabBar->setFocusPolicy(Qt::NoFocus);
@@ -99,11 +101,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 	connect(ui->tabBar, SIGNAL(helpToggled(bool)), this, SLOT(helpToggled(bool)));
 
-#ifdef __WIN32__
-	QFont font = ui->tabBar->font();
-	font.setPointSize(10);
-	ui->tabBar->setFont(font);
-#endif
+//#ifdef __WIN32__
+//	QFont font = ui->tabBar->font();
+//	font.setPointSize(10);
+//	ui->tabBar->setFont(font);
+//#endif
 
 	ui->ribbonAnalysis->setEnabled(false);
 	ui->ribbonSEM->setEnabled(false);
@@ -177,8 +179,15 @@ MainWindow::MainWindow(QWidget *parent) :
 		QApplication::setFont(ui->tableView->font());
 
 		QFontMetrics fm(ui->panelMid->font());
-		ui->panelMid->setMinimumWidth(63 * fm.width("X"));
-		ui->pageOptions->setMaximumWidth(63 * fm.width("X"));
+		int optionsWidth = 63 * fm.width("X");
+		ui->panelMid->setMinimumWidth(optionsWidth);
+		ui->pageOptions->setMaximumWidth(optionsWidth);
+
+		sizes = ui->splitter->sizes();
+		sizes[0] = optionsWidth;
+		ui->splitter->setSizes(sizes);
+
+		this->resize(this->width() + (optionsWidth - initalTableWidth), this->height());
 #endif
 
 
@@ -927,6 +936,8 @@ void MainWindow::resultsPageLoaded(bool success)
 		ui->webViewHelp->setZoomFactor(zoom);
 		ppi = verticalDpi;
 		_webViewZoom = zoom;
+
+		this->resize(this->width() + (ui->webViewResults->width() * (zoom - 1)), this->height() + (ui->webViewResults->height() * (zoom - 1)));
 #endif
 
 		_engineSync->setPPI(ppi);
