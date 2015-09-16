@@ -12,6 +12,11 @@
 			"type": "Variable"
 		},
 		{
+			"name": "testType",
+			"options": [ "standard", "wilcoxon", "both" ],
+			"type": "List"
+		},
+		{
 			"name": "equalityOfVariances",
 			"options": [ "assumeEqual", "noAssumption", "reportBoth" ],
 			"default": "assumeEqual",
