@@ -405,13 +405,11 @@ QPushButton:checked {
 
 QPushButton#help {
 	margin-right: 5px ;
-	height: 11px ;
-	margin-bottom: 2px ;
 	border-bottom: 1px solid transparent;
 }
 
 QPushButton#help:checked {
-	border-bottom: 1px solid #919191;
+	/*border-bottom: 1px solid #919191;*/
 }
 
 QPushButton#first {

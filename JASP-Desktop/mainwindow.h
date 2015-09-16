@@ -37,12 +37,13 @@ protected:
 private:
 	Ui::MainWindow *ui;
 
-	QFontMetrics * _fontSize;
 	AnalysisForm *_currentOptionsWidget;
 	QMenu* _analysisMenu;
 	DataSetPackage *_package;
 	DataSetTableModel *_tableModel;
 	Analysis *_currentAnalysis;
+
+	double _webViewZoom;
 
 	Analyses *_analyses;
 	EngineSync* _engineSync;

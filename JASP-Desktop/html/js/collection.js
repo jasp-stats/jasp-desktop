@@ -61,7 +61,7 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 	},
 
 
-	setObjectConstructor: function (constructor, data) {
+	constructChildren: function (constructor, data) {
 
 		this.collection = this.model.get('collection');
 

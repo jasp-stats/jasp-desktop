@@ -64,8 +64,8 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 		});
 	}
 
-	if (itemView.setObjectConstructor) {
-		itemView.setObjectConstructor(JASPWidgets.objectConstructor, { meta: metaData.meta, status: results.status, namespace: newNamespace, childOfCollection: results.collection !== undefined, embeddedLevel: embeddedLevel + 1 });
+	if (itemView.constructChildren) {
+		itemView.constructChildren(JASPWidgets.objectConstructor, { meta: metaData.meta, status: results.status, namespace: newNamespace, childOfCollection: results.collection !== undefined, embeddedLevel: embeddedLevel + 1 });
 		if (itemView.hasViews() === false) {
 			itemView.close();
 			return null;
@@ -94,7 +94,10 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 	setNoteBox: function (key, localKey, noteBox) {
 		this.noteBox = noteBox;
 		this.noteBoxKey = key;
-		this.views.unshift(noteBox);
+		if (this.notePositionBottom)
+			this.views.push(noteBox);
+		else
+			this.views.unshift(noteBox);
 	},
 
 	notesMenuClicked: function (noteType, visibility) {
@@ -122,7 +125,7 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		this.toolbar.setVisibility(false);
 	},
 
-	setObjectConstructor: function (constructor, data) {
+	constructChildren: function (constructor, data) {
 		var meta = data.meta;
 		var status = this.model.get("status");
 		for (var i = 0; i < meta.length; i++) {
@@ -144,22 +147,32 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 
 	menuName: "Object",
 
+	attachToolbar: function($toolbar) {
+		this.$el.prepend(this.toolbar.$el);
+	},
+
 	render: function () {
 		var $innerElement = this.$el;
 
 		var title = this.model.get("title");
 		var titleFormat = this.model.get("titleFormat")
+		if (this.titleFormatOverride)
+			titleFormat = this.titleFormatOverride;
 
 		this.toolbar.titleTag = titleFormat;
 		this.toolbar.title = title;
 		this.toolbar.render();
-		$innerElement.append(this.toolbar.$el);
 
 		for (var i = 0; i < this.views.length; i++) {
 			var itemView = this.views[i];
 			itemView.render();
 			this.$el.append(itemView.$el);
 		}
+
+		this.attachToolbar(this.toolbar.$el);
+
+		if (this.onRender)
+			this.onRender();
 
 		return this;
 	},
@@ -187,6 +200,8 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 	},
 
 	exportUseNBSPDefault: true,
+
+	disableTitleExport: false,
 
 	exportBegin: function (exportParams, completedCallback) {
 		if (exportParams == undefined)
