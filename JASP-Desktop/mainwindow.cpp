@@ -173,7 +173,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 
-	_fontSize = new QFontMetrics(ui->tableView->font());
+#ifdef __WIN32__
+		QApplication::setFont(ui->tableView->font());
+
+		QFontMetrics fm(ui->panelMid->font());
+		ui->panelMid->setMinimumWidth(63 * fm.width("X"));
+		ui->pageOptions->setMaximumWidth(63 * fm.width("X"));
+#endif
+
 
 	_buttonPanel = new QWidget(ui->pageOptions);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
@@ -240,6 +247,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	}
 
 	setAcceptDrops(true);
+
+#ifdef __WIN32__
+	QApplication::setFont(ui->tableView->font());
+#endif
 }
 
 void MainWindow::open(QString filename)
@@ -905,15 +916,20 @@ void MainWindow::resultsPageLoaded(bool success)
 
 		bool success;
 		int ppi = ppiv.toInt(&success);
+		if (success == false)
+			ppi = 96;
 
+		_webViewZoom = 1;
 #ifdef __WIN32__
 		const int verticalDpi = QApplication::desktop()->screen()->logicalDpiY();
 		qreal zoom = ((qreal)(verticalDpi) / (qreal)ppi);
-		ui->webViewResults->setTextSizeMultiplier(zoom);
+		ui->webViewResults->setZoomFactor(zoom);
+		ui->webViewHelp->setZoomFactor(zoom);
+		ppi = verticalDpi;
+		_webViewZoom = zoom;
 #endif
 
-		if (success)
-			_engineSync->setPPI(ppi);
+		_engineSync->setPPI(ppi);
 
 		if (!_openOnLoadFilename.isEmpty())
 			dataSetSelected(_openOnLoadFilename);
@@ -1374,7 +1390,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 		_analysisMenu->addAction("Remove " + objName, this, SLOT(removeSelected()));
 	}
 
-	QPoint point = ui->webViewResults->mapToGlobal(QPoint(menuOptions["rX"].asInt(), menuOptions["rY"].asInt()));
+	QPoint point = ui->webViewResults->mapToGlobal(QPoint(round(menuOptions["rX"].asInt() * _webViewZoom), round(menuOptions["rY"].asInt() * _webViewZoom)));
 
 	_analysisMenu->move(point);
 	_analysisMenu->show();

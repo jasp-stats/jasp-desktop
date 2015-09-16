@@ -13,40 +13,83 @@ JASPWidgets.table = Backbone.Model.extend({
 	}
 });
 
-JASPWidgets.tableView = JASPWidgets.View.extend({
+JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
-	initialize: function () {
-		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
-		this.toolbar.setParent(this);
-		this.toolbar.title = this.model.get("title");
-		this.toolbar.titleTag = "span";
-		var self = this;
-		this.toolbar.selectionElement = function () {
-			return self.$el.find('th, td:not(.squash-left)');
-		};
+	attachToolbar: function ($toolbar) {
+		$toolbar.append('<div class="status"></div>');
+
+		var $container = this.$el.find("div.toolbar");
+		$container.append($toolbar);
+
+		var optStatus = this.model.get("status");
+		var $status = $toolbar.find("div.status");
+		$status.addClass(optStatus);
 	},
 
-	setNoteBox: function (key, localKey, noteBox) {
-		this.noteBox = noteBox;
-		this.noteBoxKey = key;
-	},
+	copyMenuClicked: function () {
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes = false;
 
-	hasNotes: function () {
-		return this.model.get('name') !== null;
-	},
-
-	notesMenuClicked: function (noteType, visibility) {
-
-		this.noteBox.setVisibilityAnimate(visibility);
+		this.exportBegin(exportParams);
 
 		return true;
 	},
 
-	noteOptions: function () {
-		var options = { key: this.noteBoxKey, menuText: 'Add Note', visible: this.noteBox.visible };
-
-		return [options];
+	hasCitation: function () {
+		var optCitation = this.model.get("citation");
+		return optCitation !== null
 	},
+
+	citeMenuClicked: function () {
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.html;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes = false;
+
+		var optCitation = this.model.get("citation");
+
+		var htmlCite = '<p>' + optCitation.join("</p><p>") + '</p>';
+
+		var exportContent = new JASPWidgets.Exporter.data(optCitation.join("\n\n"), htmlCite);
+
+		pushTextToClipboard(exportContent, exportParams);
+		return true;
+	},
+
+	menuName: "Table",
+
+	events: {
+		'mouseenter': '_hoveringStart',
+		'mouseleave': '_hoveringEnd',
+	},
+
+	notePositionBottom: true,
+
+	_hoveringStart: function (e) {
+		this.toolbar.setVisibility(true);
+	},
+
+	_hoveringEnd: function (e) {
+		this.toolbar.setVisibility(false);
+	},
+
+	constructChildren: function (constructor, data) {
+
+		var tablePrimative = new JASPWidgets.tablePrimative({ model: this.model, className: "jasp-table-primative" });
+		this.localViews.push(tablePrimative);
+		this.views.push(tablePrimative);
+	},
+
+	titleFormatOverride: 'span',
+
+	disableTitleExport: true,
+});
+
+JASPWidgets.tablePrimative = JASPWidgets.View.extend({
 
 	_fsd: function (value) { // first significant digit position
 
@@ -183,7 +226,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 			if (f.indexOf("~") != -1)
 				approx = true;
-			
+
 			if (f.indexOf("log10") != -1)
 				log10 = true
 		}
@@ -203,34 +246,34 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 					continue
 
 				var fsd  // position of first significant digit
-				
+
 				if (log10)
 					fsd = content
 				else
 					fsd = this._fsd(content)
-					
+
 				var lsd = fsd - sf
-				
+
 				if (log10) {
-				
+
 					if (content >= 6 || content <= -dp) {
-				
+
 						fsdoe = this._fsd(content)
 
 						if (fsdoe > maxFSDOE)
 							maxFSDOE = fsdoe
 					}
-						
+
 				} else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
 
 					var fsdoe   // first significant digit of exponent
-					
+
 					fsdoe = this._fsdoe(content)
-					
+
 					if (fsdoe > maxFSDOE)
 						maxFSDOE = fsdoe
 				}
-				
+
 				if (lsd < minLSD) {
 
 					minLSD = lsd
@@ -276,7 +319,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 				else if (content == 0) {
 
 					var number = 0
-					
+
 					if (log10)
 						number = 1
 
@@ -289,7 +332,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 				}
 				else if (log10) {
-				
+
 					if (content < (Math.log(upperLimit) / Math.log(10)) && content > -dp) {
 
 						if (alignNumbers) {
@@ -304,7 +347,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 						isNumber = true
 					}
 					else {
-				
+
 						var paddingNeeded = Math.max(maxFSDOE - this._fsd(content), 0)
 
 						var exponent = Math.abs(Math.floor(content))
@@ -314,10 +357,10 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 						while (exponent > 0) {
 
 							var digit = exponent % 10
-							exponent  = Math.floor(exponent / 10)
+							exponent = Math.floor(exponent / 10)
 							exp = "" + digit + exp
 						}
-					
+
 						if (exp.length === 0)
 							exp = "1"
 
@@ -336,7 +379,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 						}
 
 						var sign = content >= 0 ? "+" : "-"
-					
+
 						mantissa = mantissa.toPrecision(sf)
 
 						var padding
@@ -352,7 +395,7 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 						isNumber = true
 					}
-				
+
 				}
 				else if (Math.abs(content) >= upperLimit || Math.abs(content) <= Math.pow(10, -dp)) {
 
@@ -1016,29 +1059,10 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 
 		var html = chunks.join("");
 
-
 		this.$el.append(html);
-
-		if (this.noteBox !== undefined) {
-			this.noteBox.render();
-			this.noteBox.$el.addClass('do-not-copy')
-			this.$el.append(this.noteBox.$el);
-		}
-
-		
-		this.toolbar.render();
-		this.toolbar.$el.append('<div class="status"></div>');
-
-		var $container = this.$el.find("div.toolbar");
-		$container.append(this.toolbar.$el);
-
-		var $toolbar = this.$el.find(".jasp-toolbar");
-		var $status = $toolbar.find("div.status");
-		$status.addClass(optStatus);
 	},
 
-	getExportAttributes: function (element, exportParams)
-	{
+	getExportAttributes: function (element, exportParams) {
 		var attrs = ""
 		var style = ""
 
@@ -1170,59 +1194,4 @@ JASPWidgets.tableView = JASPWidgets.View.extend({
 		if (!exportParams.error)
 			pushHTMLToClipboard(exportContent, exportParams);
 	},
-
-	copyMenuClicked: function () {
-		var exportParams = new JASPWidgets.Exporter.params();
-		exportParams.format = JASPWidgets.ExportProperties.format.html;
-		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
-		exportParams.includeNotes = false;
-
-		this.exportBegin(exportParams);
-
-		return true;
-	},
-
-	hasCitation: function () {
-		var optCitation = this.model.get("citation");
-		return optCitation !== null
-	},
-
-	citeMenuClicked: function () {
-		var exportParams = new JASPWidgets.Exporter.params();
-		exportParams.format = JASPWidgets.ExportProperties.format.html;
-		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
-		exportParams.includeNotes = false;
-
-		var optCitation = this.model.get("citation");
-
-		var htmlCite = '<p>' + optCitation.join("</p><p>") + '</p>';
-
-		var exportContent = new JASPWidgets.Exporter.data(optCitation.join("\n\n"), htmlCite);
-
-		pushTextToClipboard(exportContent, exportParams);
-		return true;
-	},
-
-	menuName: "Table",
-
-	events: {
-		'mouseenter': '_hoveringStart',
-		'mouseleave': '_hoveringEnd',
-	},
-
-	_hoveringStart: function (e) {
-		this.toolbar.setVisibility(true);
-	},
-
-	_hoveringEnd: function (e) {
-		this.toolbar.setVisibility(false);
-	},
-
-	onClose: function () {
-		this.toolbar.close();
-		if (this.noteBox !== undefined)
-			this.noteBox.detach();
-	}
 });

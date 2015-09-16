@@ -154,18 +154,21 @@ JASPWidgets.Exporter = {
 			return false;
 		
 		if (exportObj.views) {
-			var viewList = exportObj.views;
-
-			if (viewList.length === 0) {
-				completedCallback.call(exportObj, exportParams, new JASPWidgets.Exporter.data(null, ""));
+			var viewList = [];
+			for (var i = 0; i < exportObj.views.length; i++) {
+				var view = exportObj.views[i];
+				if (exportParams.includeNotes || view.$el.hasClass('jasp-notes') === false)
+					viewList.push(view);
 			}
+
+			if (viewList.length === 0)
+				completedCallback.call(exportObj, exportParams, new JASPWidgets.Exporter.data(null, ""));
 			else {
 				exportObj.buffer = [];
 				exportObj.exportCounter = viewList.length;
 
-				for (var i = 0; i < viewList.length; i++) {
+				for (var i = 0; i < viewList.length; i++)
 					this._exportView(exportParams, viewList[i], i, exportObj, useNBSP, innerStyle, completedCallback);
-				}
 			}
 		}
 		else if (exportObj.exportBegin)
@@ -181,28 +184,35 @@ JASPWidgets.Exporter = {
 		var self = parent;
 		var index = i;
 		var callback = completedCallback;
+		var trackerView = view;
 		var cc = function (exParams, exContent) {
 			self.buffer[index] = exContent;
 			self.exportCounter -= 1;
 			if (self.exportCounter === 0) {
 				var completeText = "";
+				var raw = null;
 				if (!exportParams.error) {
 					completeText = "<div " + self.getStyleAttr() + ">\n";
 					completeText += '<div style="display:inline-block; ' + innerStyle + '">\n';
-					if (self.toolbar !== undefined) {
+					if (!self.disableTitleExport && self.toolbar !== undefined) {
 						completeText += JASPWidgets.Exporter.getTitleHtml(self.toolbar, exportParams)
 					}
-					var firstItem = true;
+					var firstItem = true;	
 					for (var j = 0; j < self.buffer.length; j++) {
 						if (self.buffer[j]) {
+							if (self.buffer[j].raw !== null && self.buffer[j].raw !== '')
+								raw = self.buffer[j].raw;
+
 							var bufferHtml = self.buffer[j].html;
 							if (bufferHtml !== '') {
 								var includeSpacer = false;
-								if (firstItem === false && (JASPWidgets.Exporter.isInlineStyle(self.views[j - 1].$el) == false)) {
-									if ((this.hasExportNSBFOverride && this.hasExportNSBFOverride()) || this.useExportNSBF)
-										includeSpacer = this.useExportNSBF();
-									else
-										includeSpacer = useNBSP;
+								if (exParams.format !== JASPWidgets.ExportProperties.format.formattedHTML) {
+									if (firstItem === false && (JASPWidgets.Exporter.isInlineStyle(self.views[j - 1].$el) == false)) {
+										if ((this.hasExportNSBFOverride && this.hasExportNSBFOverride()) || this.useExportNSBF)
+											includeSpacer = this.useExportNSBF();
+										else
+											includeSpacer = useNBSP;
+									}
 								}
 
 								if (includeSpacer)
@@ -219,7 +229,7 @@ JASPWidgets.Exporter = {
 				if (parent.exportWrapper)
 					completeText = parent.exportWrapper(completeText);
 
-				callback.call(self, exportParams, new JASPWidgets.Exporter.data(null, completeText));
+				callback.call(self, exportParams, new JASPWidgets.Exporter.data(raw, completeText));
 				self.buffer = [];
 			}
 		}
@@ -789,8 +799,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		var html = '';
 		if (this.isTextboxEmpty() === false && this.visible === true)
-			html = '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '">' + this.$textbox.html() + '</div>';
-
+			html += '<div ' + JASPWidgets.Exporter.getNoteStyles(this.$el, exportParams) + '">' + this.$textbox.html() + '</div>';
 		
 
 		callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, html));
