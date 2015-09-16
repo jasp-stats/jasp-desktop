@@ -39,6 +39,11 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 
 	constructChildren: function (constructor, data) {
 
+		var self = this;
+		this.toolbar.selectionElement = function () {
+			return self.$el.find('.jasp-image-holder');
+		};
+
 		var imagePrimative = new JASPWidgets.imagePrimative({ model: this.model, className: "jasp-image-holder" });
 		this.resizer = imagePrimative.resizer;
 		this.localViews.push(imagePrimative);

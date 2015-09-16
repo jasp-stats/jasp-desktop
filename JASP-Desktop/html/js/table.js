@@ -79,6 +79,11 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
 	constructChildren: function (constructor, data) {
 
+		var self = this;
+		this.toolbar.selectionElement = function () {
+			return self.$el.find('th, td:not(.squash-left)');
+		};
+
 		var tablePrimative = new JASPWidgets.tablePrimative({ model: this.model, className: "jasp-table-primative" });
 		this.localViews.push(tablePrimative);
 		this.views.push(tablePrimative);
