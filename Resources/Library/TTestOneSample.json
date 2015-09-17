@@ -14,6 +14,15 @@
 			"value": 0.0
 		},
 		{
+			"name": "students",
+			"type": "Boolean",
+			"default" : true
+		},
+		{
+			"name": "mannWhitneyU",
+			"type": "Boolean"
+		},
+		{
 			"name": "hypothesis",
 			"options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
 			"default": "notEqualToTestValue",

@@ -8,9 +8,17 @@
 			"type": "VariablesGroups"
 		},
 		{
-			"name": "testType",
-			"options": [ "standard", "wilcoxon", "both" ],
-			"type": "List"
+			"name": "students",
+			"type": "Boolean",
+			"default" : true
+		},
+		{
+			"name": "welchs",
+			"type": "Boolean"
+		},
+		{
+			"name": "wilcoxonSignedRank",
+			"type": "Boolean"
 		},
 		{
 			"name": "meanDifference",
