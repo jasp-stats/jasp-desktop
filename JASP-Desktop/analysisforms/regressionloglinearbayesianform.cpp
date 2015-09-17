@@ -36,6 +36,8 @@ RegressionLogLinearBayesianForm::RegressionLogLinearBayesianForm(QWidget *parent
 
 	ui->posteriorProbabilityCutOff->setLabel("Posterior prob. cut-off");
 	ui->maxModels->setLabel("Display best N models");
+
+	ui->advancedWidget->hide();
 }
 
 RegressionLogLinearBayesianForm::~RegressionLogLinearBayesianForm()

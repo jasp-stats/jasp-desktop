@@ -43,6 +43,17 @@
 			"value": 0.1,
 			"max": 0.5,
 			"min": 0.0
+		},
+		{
+			"name": "sampleMode",
+			"type": "List",
+			"options": [ "auto", "fixed" ]
+		},
+		{
+			"name": "fixedSamplesNumber",
+			"type": "Integer",
+			"default": 10000,
+			"min": 0
 		}
 	]
 }
