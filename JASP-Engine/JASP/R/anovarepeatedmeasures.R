@@ -32,6 +32,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		list(name="withinSubjectsEffects", type="table"),
 		list(name="betweenSubjectsEffects", type="table"),
 		list(name="assumptionsObj", type="object", meta=list(list(name="sphericity", type="table"), list(name="levene", type="table"))),
+		list(name="contrasts", type="collection", meta="table"),
 		list(name="posthoc", type="collection", meta="table"),
 		list(name="descriptivesObj", type="object", meta=list(list(name="descriptives", type="table"))),
 		list(name="descriptivesPlot", type="collection", meta="image")
@@ -50,6 +51,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	stateDescriptivesTable <- NULL
 	stateLevene <- NULL
 	statePostHoc <- NULL
+	stateContrasts <- NULL
 	
 	if ( ! is.null(state)) {  # is there state?
 	
@@ -62,6 +64,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			
 			anovaModel <- state$model
 			statePostHoc <- state$statePostHoc
+			stateContrasts <- state$stateContrasts
 		}
 		
 		if (is.list(diff) && diff[['plotHorizontalAxis']] == FALSE && diff[['plotSeparateLines']] == FALSE && diff[['plotSeparatePlots']] == FALSE &&
@@ -109,7 +112,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	model <- NULL
 	epsilon <- NULL
 	mauchly <- NULL
-	resultPostHoc <- NULL
+	fullModel <- NULL
 	epsilonError <- FALSE
 	
 	if (is.null(anovaModel)) { # if not retrieved from state
@@ -122,13 +125,16 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			epsilon <- anovaModel$epsilon
 			epsilonError <- anovaModel$epsilonError
 			mauchly <- anovaModel$mauchly
-			resultPostHoc <- anovaModel$resultPostHoc
+			fullModel <- anovaModel$fullModel
 			status <- anovaModel$status
 						
-			if (is.null(resultPostHoc) || (length(class(resultPostHoc)) == 1 && class(resultPostHoc) == "try-error")) {
+			if (is.null(fullModel) || (length(class(fullModel)) == 1 && class(fullModel) == "try-error")) {
+				referenceGrid <- NULL
 				statePostHoc <- NULL	
 			} else {
-				statePostHoc <- .statePostHoc(dataset, options, resultPostHoc)
+				referenceGrid <- .referenceGrid(dataset, options, fullModel)
+				statePostHoc <- .resultsPostHoc(referenceGrid, options)
+				stateContrasts <- .resultsContrasts(dataset, options, referenceGrid)
 			}		
 		}
 		
@@ -195,9 +201,18 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	
 	
+	## Create Contrast Tables
+	
+	result <- .rmAnovaContrastTable(options, perform, status, stateContrasts)
+	
+	results[["contrasts"]] <- list(collection=result$result, title = "Contrasts")
+	status <- result$status
+	
+	
+	
 	## Create Post Hoc Tables
 	
-	result <- .rmAnovaPostHocTable(dataset, options, perform, model, status, statePostHoc)
+	result <- .rmAnovaPostHocTable(dataset, options, perform, status, statePostHoc)
 	
 	results[["posthoc"]] <- list(collection=result$result, title = "Post Hoc Tests")
 	status <- result$status
@@ -246,13 +261,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	## Save State
 	
-	anovaModel$resultPostHoc <- NULL
+	anovaModel$fullModel <- NULL
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
 	state[["stateDescriptivesPlot"]] <- stateDescriptivesPlot
 	state[["stateDescriptivesTable"]] <- stateDescriptivesTable
 	state[["stateLevene"]] <- stateLevene
 	state[["statePostHoc"]] <- statePostHoc
+	state[["stateContrasts"]] <- stateContrasts
 	
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
 	
@@ -428,7 +444,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	model <- NULL
 	epsilon <- NULL
 	mauchly <- NULL
-	resultPostHoc <- NULL
+	fullModel <- NULL
 	epsilonError <- FALSE
 	
 	if (length(class(result)) == 1 && class(result) == "try-error") {
@@ -449,7 +465,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			model <- summary(result)
 			epsilon <- summary(sphericityStatistics)$pval.adjustments
 			mauchly <- summary(sphericityStatistics)$sphericity.tests
-			resultPostHoc <- sphericityStatistics
+			fullModel <- sphericityStatistics
 			
 		} else if (options$sumOfSquares == "type1" && class(sphericityStatistics) == "try-error") {
 
@@ -462,12 +478,99 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			model <- summaryResult$univariate.tests
 			epsilon <- summaryResult$pval.adjustments
 			mauchly <- summaryResult$sphericity.tests
-			resultPostHoc <- result
+			fullModel <- result
 			
 		}	
 	}
 			
-	list(model = model, epsilon = epsilon, epsilonError = epsilonError, mauchly = mauchly, resultPostHoc = resultPostHoc, status = status)
+	list(model = model, epsilon = epsilon, epsilonError = epsilonError, mauchly = mauchly, fullModel = fullModel, status = status)
+}
+
+.referenceGrid <- function (dataset, options, fullModel) {
+
+		referenceGridList <- list()
+		
+		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
+		
+		datasetLong <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
+								
+		for (var in variables) {
+												
+			formula <- as.formula(paste("~", .v(var)))
+			referenceGrid <- lsmeans::lsmeans(fullModel, formula)
+			
+			referenceGridList[[var]] <- referenceGrid
+			
+		}
+		
+		return(referenceGridList)
+}
+
+.resultsPostHoc <- function (referenceGrid, options) {
+
+		resultsPostHoc <- list()
+		
+		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
+										
+		for (var in variables) {
+			
+			# Results using the Tukey method			
+			
+			resultTukey <- summary(pairs(referenceGrid[[var]], adjust="tukey"))
+			
+			# Results using the Scheffe method			
+			
+			resultScheffe <- summary(pairs(referenceGrid[[var]], adjust="scheffe"))
+																				
+			# Results using the Bonferroni method
+			
+			resultBonf <- summary(pairs(referenceGrid[[var]], adjust="bonferroni"))
+						
+			# Results using the Holm method			
+			
+			resultHolm <- summary(pairs(referenceGrid[[var]], adjust="holm"))
+									
+			comparisons <- strsplit(as.character(resultBonf$contrast), " - ")
+			
+			resultsPostHoc[[var]] <- list(resultBonf = resultBonf, resultHolm = resultHolm, resultTukey = resultTukey, resultScheffe = resultScheffe,
+										  comparisons = comparisons)
+			
+		}
+		
+		return(resultsPostHoc)	
+}
+
+.resultsContrasts <- function (dataset, options, referenceGrid) {
+	
+		resultsContrasts <- list()
+						
+		datasetLong <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
+		
+		contrastTypes <- c("none", "deviation", "simple", "Helmert", "repeated", "difference", "polynomial")
+										
+		for (contrast in options$contrasts) {
+			
+			resultsContrasts[[contrast$variable]] <- list()
+			
+			column <- datasetLong[[.v(contrast$variable)]]
+			
+			for(contrastType in contrastTypes) {
+						
+				contrastMatrix <- .anovaCreateContrast(column, contrastType)
+				c <- lapply(as.data.frame(contrastMatrix), as.vector)
+				names(c) <- .v(.anovaContrastCases(column, contrastType))
+			
+				if (contrastType == "none") {
+					r <- NULL
+				} else {
+					r <- lsmeans::contrast(referenceGrid[[contrast$variable]], c)
+				}
+				
+				resultsContrasts[[contrast$variable]][[contrastType]] <- summary(r)
+			}
+		}
+						
+		return(resultsContrasts)	
 }
 
 .identicalTerms <- function(x,y) {
@@ -1497,53 +1600,72 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result=levenes.table, status=status, stateLevene=stateLevene)
 }
 
-.statePostHoc <- function (dataset, options, resultPostHoc) {
-
-		statePostHoc <- list()
+.rmAnovaContrastTable <- function(options, perform, status, stateContrasts) {
 		
-		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
+	contrastTables <- list()
+	
+	for (contrast in options$contrasts) {
 		
-		datasetLong <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
-								
-		for (posthoc.var in variables) {
+		if (contrast$contrast != "none") {
 			
-			variable.levels <- levels(datasetLong[[ .v(posthoc.var) ]])
-									
-			formula <- as.formula(paste("~", .v(posthoc.var)))
-			referenceGrid <- lsmeans::lsmeans(resultPostHoc, formula)
+			contrastTable <- list()
+			
+			contrastType <- unlist(strsplit(contrast$contrast,""))
+			contrastType[1] <- toupper(contrastType[1])
+			contrastType <- paste(contrastType, collapse="")
+			
+			contrastTable[["title"]] <- paste(contrastType, " Contrast", " - ",  contrast$variable, sep="")
+			contrastTable[["name"]] <- paste(contrastType, "Contrast_",  contrast$variable, sep="")
+			
+			fields <- list(
+				list(name="Comparison", type="string"),
+				list(name="Estimate", type="number", format="sf:4;dp:3"),
+				list(name="SE", type="number", format="sf:4;dp:3"),
+				list(name="t", type="number", format="sf:4;dp:3"),
+				list(name="p", type="number", format="dp:3;p:.001"))
 				
-#			contrastMatrix <- .postHocContrasts(variable.levels, datasetLong, options)
-#			contrastMatrix <- split(contrastMatrix, unlist(lapply(strsplit(rownames(contrastMatrix), " - "), function(x) paste(.v(x), collapse = " "))))
-#												
-#			r <- lsmeans::contrast(referenceGrid, contrastMatrix)
+			contrastTable[["schema"]] <- list(fields=fields)
 			
-			# Results using the Tukey method			
+			rows <- list()
 			
-			resultTukey <- summary(pairs(referenceGrid, adjust="tukey"))
+			if (!is.null(stateContrasts)) {
 			
-			# Results using the Scheffe method			
+				result <- stateContrasts[[contrast$variable]][[contrast$contrast]]
+				
+				for (i in 1:length(result$estimate)) {
+				
+					row <- list()
+					
+					row[["Comparison"]] <- .unv(result$contrast[i])
+					row[["Estimate"]] <- .clean(as.numeric(result$estimate[i]))
+					row[["SE"]] <- .clean(as.numeric(result$SE[i]))
+					row[["t"]] <- .clean(as.numeric(result$t.ratio[i]))
+					row[["p"]] <- .clean(as.numeric(result$p.value[i]))
+					
+					if(length(rows) == 0)  {
+						row[[".isNewGroup"]] <- TRUE
+					} else {
+						row[[".isNewGroup"]] <- FALSE
+					}
+				
+					rows[[length(rows)+1]] <- row				
+				}
+			}
 			
-			resultScheffe <- summary(pairs(referenceGrid, adjust="scheffe"))
-																				
-			# Results using the Bonferroni method
+			contrastTable[["data"]] <- rows
+			contrastTable[["status"]] <- "complete"
 			
-			resultBonf <- summary(pairs(referenceGrid, adjust="bonferroni"))
-						
-			# Results using the Holm method			
+			if (status$error)
+				contrastTable[["error"]] <- list(errorType="badData")
 			
-			resultHolm <- summary(pairs(referenceGrid, adjust="holm"))
-									
-			comparisons <- strsplit(as.character(resultBonf$contrast), " - ")
-			
-			statePostHoc[[posthoc.var]] <- list(resultBonf = resultBonf, resultHolm = resultHolm, resultTukey = resultTukey, resultScheffe = resultScheffe,
-											   	comparisons = comparisons)
-			
+			contrastTables[[length(contrastTables)+1]] <- contrastTable
 		}
-		
-		return(statePostHoc)	
+	}
+	
+	list(result=contrastTables, status=status)
 }
 
-.rmAnovaPostHocTable <- function(dataset, options, perform, model, status, statePostHoc) {
+.rmAnovaPostHocTable <- function(dataset, options, perform, status, statePostHoc) {
 	
 	posthoc.variables <- unlist(options$postHocTestsVariables)
 	
