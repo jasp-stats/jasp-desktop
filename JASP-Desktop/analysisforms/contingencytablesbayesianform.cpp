@@ -39,7 +39,18 @@ ContingencyTablesBayesianForm::ContingencyTablesBayesianForm(QWidget *parent) :
 	ui->panelOptions->hide();
 
 	ui->oddsRatioCredibleIntervalInterval->setLabel("Credible interval");
+	ui->effectSizeCredibleIntervalInterval->setLabel("Credible interval");
 	ui->priorConcentration->setLabel("Prior concentration");
+
+#ifdef QT_NO_DEBUG
+	ui->effectSize->hide();
+	ui->effectSizeCredibleIntervalContainer->hide();
+	ui->plotPosteriorEffectSize->hide();
+#else
+	ui->effectSize->setStyleSheet("background-color: pink ;");
+	ui->effectSizeCredibleIntervalContainer->setStyleSheet("background-color: pink ;");
+	ui->plotPosteriorEffectSize->setStyleSheet("background-color: pink ;");
+#endif
 }
 
 ContingencyTablesBayesianForm::~ContingencyTablesBayesianForm()

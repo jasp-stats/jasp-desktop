@@ -38,7 +38,19 @@
 			"name": "oddsRatioCredibleIntervalInterval",
 			"type": "Number",
 			"format": "%",
-			"max": 1.0,
+			"max": 0.999,
+			"min": 0.0,
+			"value": 0.950
+		},
+		{
+			"name": "effectSize",
+			"type": "Boolean"
+		},
+		{
+			"name": "effectSizeCredibleIntervalInterval",
+			"type": "Number",
+			"format": "%",
+			"max": 0.999,
 			"min": 0.0,
 			"value": 0.950
 		},
@@ -71,6 +83,10 @@
 		},
 		{
 			"name": "plotPosteriorOddsRatioAdditionalInfo",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotPosteriorEffectSize",
 			"type": "Boolean"
 		},
 		{
