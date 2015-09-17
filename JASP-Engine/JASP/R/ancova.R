@@ -417,7 +417,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			contr[(i+1):n.levels,i] <- -i/n.levels
 		}
 		
-	} else if (contrast.type=="difference") {
+	} else if (contrast.type == "difference") {
 		
 		contr <- contr.helmert(levels)
 

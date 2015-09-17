@@ -103,11 +103,9 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
 
 #ifdef QT_NO_DEBUG
-	ui->groupContrasts->hide();
 	ui->groupCompareMainEffects->hide();
 
 #else
-	ui->groupContrasts->setStyleSheet("background-color: pink ;");
 	ui->groupCompareMainEffects->setStyleSheet("background-color: pink ;");
 
 #endif
