@@ -50,7 +50,7 @@ void rbridge_init()
 	rInside[".baseCitation"] = "Love, J., Selker, R., Marsman, M., Jamil, T., Dropmann, D., Verhagen, A. J., Ly, A., Gronau, Q. F., Smira, M., Epskamp, S., Matzke, D., Wild, A., Knight, P., Rouder, J. N., Morey, R. D., & Wagenmakers, E.-J. (2015). JASP (Version 0.7.1)[Computer software].";
 
 	rInside["jasp.analyses"] = Rcpp::List();
-	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASPR\"))");
+	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 }
 

@@ -328,12 +328,24 @@ void EngineSync::startSlaveProcess(int no)
 	args << QString::number(no);
 
 #ifdef __WIN32__
-	QDir rHome = programDir.absoluteFilePath("R");
+	QString rHomePath = programDir.absoluteFilePath("R");
 #elif __APPLE__
-	QDir rHome = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources");
+	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources");
 #else
-	QDir rHome("/usr/lib/R");
+
+#ifndef R_HOME
+	QString rHomePath("/usr/lib/R");
+#else
+	QString rHomePath;
+	if (QDir::isRelativePath(R_HOME))
+		rHomePath = programDir.absoluteFilePath(R_HOME);
+	else
+		rHomePath = R_HOME;
 #endif
+
+#endif
+
+	QDir rHome(rHomePath);
 
 
 #ifdef __WIN32__
@@ -352,7 +364,7 @@ void EngineSync::startSlaveProcess(int no)
 
 #undef ARCH_SUBPATH
 
-	env.insert("R_LIBS", programDir.absolutePath() + ";" + rHome.absoluteFilePath("library"));
+	env.insert("R_LIBS", programDir.absoluteFilePath("R-library") + ";" + rHome.absoluteFilePath("library"));
 
 	env.insert("R_ENVIRON", "something-which-doesnt-exist");
 	env.insert("R_PROFILE", "something-which-doesnt-exist");
@@ -364,7 +376,7 @@ void EngineSync::startSlaveProcess(int no)
 #elif __APPLE__
 
 	env.insert("R_HOME", rHome.absolutePath());
-	env.insert("R_LIBS", programDir.absolutePath() + ":" + rHome.absoluteFilePath("library"));
+	env.insert("R_LIBS", programDir.absoluteFilePath("R-library") + ":" + rHome.absoluteFilePath("library"));
 
 	env.insert("R_ENVIRON", "something-which-doesnt-exist");
 	env.insert("R_PROFILE", "something-which-doesnt-exist");
@@ -377,7 +389,7 @@ void EngineSync::startSlaveProcess(int no)
 
 	env.insert("LD_LIBRARY_PATH", rHome.absoluteFilePath("lib") + ";" + rHome.absoluteFilePath("library/RInside/lib") + ";" + rHome.absoluteFilePath("library/Rcpp/lib") + ";" + rHome.absoluteFilePath("site-library/RInside/lib") + ";" + rHome.absoluteFilePath("site-library/Rcpp/lib"));
 	env.insert("R_HOME", rHome.absolutePath());
-	env.insert("R_LIBS", programDir.absolutePath() + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
+	env.insert("R_LIBS", programDir.absoluteFilePath("R-library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
 
 #endif
 

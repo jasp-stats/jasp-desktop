@@ -39,6 +39,12 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
+linux {
+    _R_HOME = $$(R_HOME)
+    isEmpty(_R_HOME):_R_HOME = /usr/lib/R
+    QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
+}
+
 SOURCES += main.cpp \
     analyses.cpp \
     mainwindow.cpp \
