@@ -236,20 +236,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	setAcceptDrops(true);
 
 #ifdef __WIN32__
+
 		QApplication::setFont(ui->tableView->font());
 
-		QFontMetrics fm(ui->panelMid->font());
-		int optionsWidth = 63 * fm.width("X");
-		ui->panelMid->setMinimumWidth(optionsWidth);
-		ui->pageOptions->setMaximumWidth(optionsWidth);
-
-		sizes = ui->splitter->sizes();
-		sizes[0] = optionsWidth;
-		ui->splitter->setSizes(sizes);
-
-		this->resize(this->width() + (optionsWidth - initalTableWidth), this->height());
-
-		_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
 #endif
 }
 
@@ -536,6 +525,18 @@ void MainWindow::showForm(Analysis *analysis)
 
 	if (_currentOptionsWidget != NULL)
 	{
+
+		int extraRequiredWidth = 0;
+	#ifdef __WIN32__
+		extraRequiredWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+	#endif
+		int requiredSize = _currentOptionsWidget->sizeHint().width() + extraRequiredWidth;
+		if (requiredSize > ui->panelMid->minimumWidth()) {
+
+			ui->panelMid->setMinimumWidth(requiredSize);
+			_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
+		}
+
 		Options *options = analysis->options();
 		DataSet *dataSet = _package->dataSet;
 		_currentOptionsWidget->bindTo(options, dataSet);
