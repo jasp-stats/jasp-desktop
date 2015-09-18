@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/backstage">
+        <file>secondtabsstylesheet.qss</file>
+        <file>firsttabsstylesheet.qss</file>
+    </qresource>
+</RCC>

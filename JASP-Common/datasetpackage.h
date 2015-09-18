@@ -12,7 +12,7 @@ class DataSetPackage
 public:
 	DataSetPackage();
 
-	DataSet *dataSet;
+	DataSet *dataSet = NULL;
 	std::string analysesHTML;
 	Json::Value analysesData;
 	Version archiveVersion;
@@ -24,10 +24,10 @@ public:
 
 	void reset();
 	void setModified(bool value);
-	bool isModified();
+	bool isModified() const;
 	void setLoaded();
-	bool isLoaded();
-	bool isReady();
+	bool isLoaded() const;
+	bool isReady() const;
 	void setWaitingForReady();
 	void setAnalysesHTMLReady();
 

@@ -1,0 +1,30 @@
+
+QWidget
+{
+        background-color: #f4f6f7;
+}
+
+QWidget
+{
+        border-right: 1px solid #A3A4A5 ;
+}
+
+QPushButton
+{
+	background-color: transparent ;
+	border : 1px solid transparent;
+        padding: 8px ;
+        text-align: left ;
+}
+
+QPushButton::hover
+{
+        background-color: rgb(227, 225, 226) ;
+        border : 1px solid rgb(207, 205, 206) ;
+}
+
+QPushButton::checked
+{
+        background-color: rgb(220, 218, 219) ;
+        border: 1px solid #B0B0B0 ;
+}

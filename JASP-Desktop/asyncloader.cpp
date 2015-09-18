@@ -20,29 +20,28 @@ AsyncLoader::AsyncLoader(QObject *parent) :
 {
 	this->moveToThread(&_thread);
 
-	connect(this, SIGNAL(loads(DataSetPackage*, QString)), this, SLOT(loadTask(DataSetPackage*, QString)));
-	connect(this, SIGNAL(saves(QString, DataSetPackage*)), this, SLOT(saveTask(QString, DataSetPackage*)));
-	connect(this, SIGNAL(exports(QString, DataSetPackage*)), this, SLOT(exportTask(QString, DataSetPackage*)));
+	connect(this, SIGNAL(beginLoad(FileEvent*, DataSetPackage*)), this, SLOT(loadTask(FileEvent*, DataSetPackage*)));
+	connect(this, SIGNAL(beginSave(FileEvent*, DataSetPackage*)), this, SLOT(saveTask(FileEvent*, DataSetPackage*)));
 
 	_thread.start();
 }
 
-void AsyncLoader::load(DataSetPackage *package, const QString &filename)
+void AsyncLoader::io(FileEvent *event, DataSetPackage *package)
 {
-	emit progress("Loading Data Set", 0);
-	emit loads(package, filename);
-}
-
-void AsyncLoader::save(const QString &filename, DataSetPackage *package)
-{
-	emit progress("Saving Data Set", 0);
-	emit saves(filename, package);
-}
-
-void AsyncLoader::exportData(const QString &filename, DataSetPackage *package)
-{
-	emit progress("Exporting Data Set", 0);
-	emit exports(filename, package);
+	if (event->operation() == FileEvent::FileOpen)
+	{
+		emit progress("Loading Data Set", 0);
+		emit beginLoad(event, package);
+	}
+	else if (event->operation() == FileEvent::FileSave)
+	{
+		emit progress("Saving Data Set", 0);
+		emit beginSave(event, package);
+	}
+	else if (event->operation() == FileEvent::FileClose)
+	{
+		event->setComplete();
+	}
 }
 
 void AsyncLoader::free(DataSet *dataSet)
@@ -50,52 +49,29 @@ void AsyncLoader::free(DataSet *dataSet)
 	_loader.freeDataSet(dataSet);
 }
 
-void AsyncLoader::loadTask(DataSetPackage *package, const QString &filename)
+void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
 {
 	try
 	{		
-		_loader.loadPackage(package, fq(filename), boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		_loader.loadPackage(package, fq(event->path()), boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
-		QString name = QFileInfo(filename).baseName();
-
-		emit complete(name, package, filename);
+		event->setComplete();
 	}
 	catch (runtime_error e)
 	{
-		emit fail(e.what());
+		event->setComplete(false, e.what());
 	}
 	catch (exception e)
 	{
-		emit fail(e.what());
+		event->setComplete(false, e.what());
 	}
 }
 
-void AsyncLoader::progressHandler(string status, int progress)
+void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 {
-	emit this->progress(QString::fromUtf8(status.c_str(), status.length()), progress);
-}
+	QString path = event->path();
+	QString tempPath = path + QString(".tmp");
 
-void AsyncLoader::exportTask(const QString &filename, DataSetPackage *package)
-{
-	try
-	{
-		CSVExporter::saveDataSet(fq(filename), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-		QString name = QFileInfo(filename).baseName();
-		emit exportComplete(name);
-	}
-	catch (runtime_error e)
-	{
-		emit exportFail(e.what());
-	}
-	catch (exception e)
-	{
-		emit exportFail(e.what());
-	}
-}
-
-void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
-{
-	QString tempFilename = filename + tq(".tmp");
 	try
 	{
 		int maxSleepTime = 2000;
@@ -110,26 +86,31 @@ void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
 			delay += sleepTime;
 		}
 
-		JASPExporter::saveDataSet(fq(tempFilename), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		JASPExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
-		if ( ! Utils::renameOverwrite(fq(tempFilename), fq(filename)))
-			throw runtime_error("File '" + fq(filename) + "' is being used by another application.");
+		if ( ! Utils::renameOverwrite(fq(tempPath), fq(path)))
+			throw runtime_error("File '" + fq(path) + "' is being used by another application.");
 
-		QString name = QFileInfo(filename).baseName();
-
-		emit saveComplete(name);
+		event->setComplete();
 	}
 	catch (runtime_error e)
 	{
-		Utils::removeFile(fq(tempFilename));
-		emit saveFail(e.what());
+		Utils::removeFile(fq(tempPath));
+		event->setComplete(false, e.what());
 	}
 	catch (exception e)
 	{
-		Utils::removeFile(fq(tempFilename));
-		emit saveFail(e.what());
+		Utils::removeFile(fq(tempPath));
+		event->setComplete(false, e.what());
 	}
 }
+
+void AsyncLoader::progressHandler(string status, int progress)
+{
+	emit this->progress(QString::fromUtf8(status.c_str(), status.length()), progress);
+}
+
+
 
 void AsyncLoader::sleep(int ms)
 {
