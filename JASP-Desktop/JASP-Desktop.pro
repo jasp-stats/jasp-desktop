@@ -49,7 +49,6 @@ SOURCES += main.cpp \
     analyses.cpp \
     mainwindow.cpp \
     datasettablemodel.cpp \
-    backstageform.cpp \
     enginesync.cpp \
     availablefields.cpp \
     asyncloader.cpp \
@@ -161,7 +160,6 @@ SOURCES += main.cpp \
 HEADERS  += \
     analyses.h \
     datasettablemodel.h \
-    backstageform.h \
     enginesync.h \
     availablefields.h \
     analysisforms/analysisform.h \
@@ -280,7 +278,6 @@ HEADERS  += \
     fileevent.h
 
 FORMS += \
-    backstageform.ui \
     analysisforms/anovabayesianform.ui \
     analysisforms/ttestpairedsamplesform.ui \
     analysisforms/anovamultivariateform.ui \
