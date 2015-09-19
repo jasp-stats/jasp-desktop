@@ -52,6 +52,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	stateLevene <- NULL
 	statePostHoc <- NULL
 	stateContrasts <- NULL
+	stateSphericity <- NULL
 	
 	if ( ! is.null(state)) {  # is there state?
 	
@@ -65,6 +66,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			anovaModel <- state$model
 			statePostHoc <- state$statePostHoc
 			stateContrasts <- state$stateContrasts
+			stateSphericity <- state$stateSphericity
 		}
 		
 		if (is.list(diff) && diff[['plotHorizontalAxis']] == FALSE && diff[['plotSeparateLines']] == FALSE && diff[['plotSeparatePlots']] == FALSE &&
@@ -110,10 +112,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	## Perform ANOVA
 
 	model <- NULL
-	epsilon <- NULL
-	mauchly <- NULL
-	fullModel <- NULL
-	epsilonError <- FALSE
 	
 	if (is.null(anovaModel)) { # if not retrieved from state
 	
@@ -123,46 +121,39 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 			model <- anovaModel$model
 			epsilon <- anovaModel$epsilon
-			epsilonError <- anovaModel$epsilonError
 			mauchly <- anovaModel$mauchly
 			fullModel <- anovaModel$fullModel
 			status <- anovaModel$status
 						
 			if (is.null(fullModel) || (length(class(fullModel)) == 1 && class(fullModel) == "try-error")) {
+			
 				referenceGrid <- NULL
-				statePostHoc <- NULL	
+				statePostHoc <- NULL
+				stateContrasts <- NULL
+				stateSphericity <- NULL
+				
 			} else {
-				referenceGrid <- .referenceGrid(dataset, options, fullModel)
+			
+				referenceGrid <- .referenceGrid(options, fullModel)
 				statePostHoc <- .resultsPostHoc(referenceGrid, options)
 				stateContrasts <- .resultsContrasts(dataset, options, referenceGrid)
+				stateSphericity <- .resultsSphericity(options, epsilon, mauchly)
+				
 			}		
 		}
 		
 	} else {
 	
 		model <- anovaModel$model
-		epsilon <- anovaModel$epsilon
-		epsilonError <- anovaModel$epsilonError
-		mauchly <- anovaModel$mauchly
 		status <- anovaModel$status
 
 	}
 
 
 
-	## Create Sphericity Assumption Table
-
-	result <- .sphericityTest(dataset, options, perform, epsilon, epsilonError, mauchly, status) 
-
-	resultSphericity <- result$result
-	status <- result$status
-	epsilonTable <- result$epsilonTable
-
-
-
 	## Create Within Subjects Effects Table
 
-	result <- .rmAnovaWithinSubjectsTable(dataset, options, perform, model, epsilonTable, epsilonError, status)
+	result <- .rmAnovaWithinSubjectsTable(dataset, options, perform, model, stateSphericity, status)
 	
 	results[["withinSubjectsEffects"]] <- result$result
 	status <- result$status
@@ -175,12 +166,29 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	results[["betweenSubjectsEffects"]] <- result$result
 	status <- result$status
+	
+	
+	
+	## Create Sphericity Assumption Table
+	
+	if (options$sphericityTests) {
 		
+		result <- .sphericityTest(options, stateSphericity, perform, status) 
+
+		resultSphericity <- result$result
+		status <- result$status		
+	
+	} else {
+	
+		resultSphericity <- NULL
+	
+	}
+	
 	
 	
 	## Create Levene's Table
 	
-	if(is.null(stateLevene)) {
+	if (is.null(stateLevene)) {
 	
 		result <- .rmAnovaLevenesTable(dataset, options, perform, status, stateLevene)
 		resultLevene <- result$result
@@ -221,7 +229,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	## Create Descriptives Table
 	
-	if(is.null(stateDescriptivesTable)) {
+	if (is.null(stateDescriptivesTable)) {
 	
 		result <- .rmAnovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable)
 		results[["descriptivesObj"]] <- list(title="Descriptives", descriptives=result$result)
@@ -269,6 +277,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	state[["stateLevene"]] <- stateLevene
 	state[["statePostHoc"]] <- statePostHoc
 	state[["stateContrasts"]] <- stateContrasts
+	state[["stateSphericity"]] <- stateSphericity
 	
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x)x$data)
 	
@@ -419,18 +428,15 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	
 	variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
 	
-	for (i in variables) {
-				
+	for (i in variables)		
 		dataset[[.v(i)]] <- .v(dataset[[.v(i)]])
-	
-	}
 		
 	options(contrasts=c("contr.sum","contr.poly"))
 	
 	if (options$sumOfSquares == "type1") {
 	
 		result <- try(stats::aov(model.formula, data=dataset), silent = TRUE)
-		sphericityStatistics <- try(afex::aov_car(model.formula, data=dataset, type= 3, factorize = FALSE), silent = TRUE)
+		fullModel <- try(afex::aov_car(model.formula, data=dataset, type= 3, factorize = FALSE), silent = TRUE)
 	
 	} else if (options$sumOfSquares == "type2") {
 	
@@ -444,8 +450,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	model <- NULL
 	epsilon <- NULL
 	mauchly <- NULL
-	fullModel <- NULL
-	epsilonError <- FALSE
 	
 	if (length(class(result)) == 1 && class(result) == "try-error") {
 
@@ -460,17 +464,15 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				
 	} else {
 
-		if (options$sumOfSquares == "type1" && class(sphericityStatistics) != "try-error") {
+		if (options$sumOfSquares == "type1" && class(fullModel) != "try-error") {
 
 			model <- summary(result)
-			epsilon <- summary(sphericityStatistics)$pval.adjustments
-			mauchly <- summary(sphericityStatistics)$sphericity.tests
-			fullModel <- sphericityStatistics
-			
-		} else if (options$sumOfSquares == "type1" && class(sphericityStatistics) == "try-error") {
+			epsilon <- summary(fullModel)$pval.adjustments
+			mauchly <- summary(fullModel)$sphericity.tests
+						
+		} else if (options$sumOfSquares == "type1" && class(fullModel) == "try-error") {
 
 			model <- summary(result)
-			epsilonError <- TRUE
 			
 		} else {
 						
@@ -483,17 +485,66 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		}	
 	}
 			
-	list(model = model, epsilon = epsilon, epsilonError = epsilonError, mauchly = mauchly, fullModel = fullModel, status = status)
+	list(model = model, epsilon = epsilon, mauchly = mauchly, fullModel = fullModel, status = status)
 }
 
-.referenceGrid <- function (dataset, options, fullModel) {
+.resultsSphericity <- function(options, epsilon, mauchly) {
+					
+	modelDef <- .rmModelFormula(options)
+	termsRM.base64 <- modelDef$termsRM.base64
+	termsRM.normal <- modelDef$termsRM.normal
+
+	epsilonTable <- NULL
+
+	epsilonTable <- as.data.frame(matrix(0, length(termsRM.base64), 6))
+	colnames(epsilonTable) <- c("W", "p", "GG", "HF", "twoLevels", "termsNormal")
+	rownames(epsilonTable) <- termsRM.base64
+			
+	if (is.null(rownames(mauchly))) {
+		modelTermsResults <- list()
+	} else {
+		modelTermsResults <- strsplit(rownames(epsilon), ":")
+	}
+			
+	for (i in .indices(termsRM.base64)) {
+
+		modelTermsCase <- unlist(strsplit(termsRM.base64[[i]],":"))
+		index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
+		epsilonTable[i,"termsNormal"] <- termsRM.normal[[i]]
+										
+		if (sum(index) == 0) {
+			
+			epsilonTable[i,"W"] <- 1
+			epsilonTable[i,"p"] <- NaN
+			epsilonTable[i,"GG"] <- 1
+			epsilonTable[i,"HF"] <- 1
+			epsilonTable[i,"twoLevels"] <- TRUE
+
+		} else {
+
+			HF <- epsilon[index, "HF eps"]
+
+			if (HF > 1)
+				HF <- 1
+			
+			epsilonTable[i,"W"] <- mauchly[index,"Test statistic"]
+			epsilonTable[i,"p"] <- mauchly[index,"p-value"]
+			epsilonTable[i,"GG"] <- epsilon[index, "GG eps"]
+			epsilonTable[i,"HF"] <- HF
+			epsilonTable[i,"twoLevels"] <- FALSE
+
+		}
+	}
+		
+	return(epsilonTable)
+}
+
+.referenceGrid <- function (options, fullModel) {
 
 		referenceGridList <- list()
 		
 		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
-		
-		datasetLong <- .shortToLong(dataset, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, options$betweenSubjectFactors)
-								
+										
 		for (var in variables) {
 												
 			formula <- as.formula(paste("~", .v(var)))
@@ -849,8 +900,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result = anova, status = status)
 }
 
-.rmAnovaWithinSubjectsTable <- function(dataset, options, perform, model, epsilon, epsilonError, status) {
-
+.rmAnovaWithinSubjectsTable <- function(dataset, options, perform, model, stateSphericity, status) {
+	
 	anova <- list()
 
 	anova[["title"]] <- "Within Subjects Effects"
@@ -921,14 +972,17 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		.addFootnote(footnotes, text = "Type III Sum of Squares", symbol = "<em>Note.</em>")
 
 	}
-
+	
 	modelDef <- .rmModelFormula(options)
 	terms.normal <- modelDef$terms.normal 
 	terms.base64 <- modelDef$terms.base64
 	termsRM.base64 <- modelDef$termsRM.base64
+	
+#	(options$sphericityCorrections && !is.null(corrections) && !(length(corrections) == 1 && corrections == "None"))
+#	(options$sphericityCorrections && perform == "init")
 
-	if (is.null(model) || (options$sphericityCorrections && perform == "init") || (options$sphericityCorrections && !is.null(corrections) && !(length(corrections) == 1 && corrections == "None") && epsilonError)) {
-
+	if (is.null(model)) {
+						
 		anova.rows <- list()
 
 		if (length(terms.base64) > 1) {
@@ -1009,11 +1063,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		if (status$error)
 			anova[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
 
-		if (options$sphericityCorrections && !is.null(corrections) && !(length(corrections) == 1 && corrections == "None") && epsilonError)
-			anova[["error"]] <- list(errorType="badData", errorMessage="Could not estimate sphericity corrections due to problems with estimating the correction parameters.")
+#		if (options$sphericityCorrections && !is.null(corrections) && !(length(corrections) == 1 && corrections == "None"))
+#			anova[["error"]] <- list(errorType="badData", errorMessage="Could not estimate sphericity corrections due to problems with estimating the correction parameters.")
 
 	} else {
-
+	
 		anova.rows <- list()
 
 		if (is.null(corrections))
@@ -1077,7 +1131,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 						
 						row.footnotes <- NULL
 						
-						if (!is.null(epsilon) && epsilon[i-1,"p"] < .05) {
+						if (!is.null(stateSphericity) && !is.na(stateSphericity[i-1,"p"]) && stateSphericity[i-1,"p"] < .05) {
 							
 							foot.index <- .addFootnote(footnotes, text="Mauchly's test of sphericity indicates that the assumption of sphericity is violated (p < .05).")
 							row.footnotes <- list(SS=list(foot.index), df=list(foot.index), MS=list(foot.index), F=list(foot.index), p=list(foot.index))
@@ -1094,9 +1148,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 						} else if (cor == "Greenhouse-Geisser") {
 
-							dfGG <- df * epsilon[i-1,"GG"]
+							dfGG <- df * stateSphericity[i-1,"GG"]
 							MSGG <- SS / dfGG
-							dfRGG <- dfR * epsilon[i-1,"GG"]
+							dfRGG <- dfR * stateSphericity[i-1,"GG"]
 							
 							if (F != "NaN") {
 								pGG <-  pf(F,dfGG,dfRGG,lower.tail=FALSE)
@@ -1108,9 +1162,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 						} else if (cor == "Huynh-Feldt") {
 
-							dfHF <- df * epsilon[i-1,"HF"]
+							dfHF <- df * stateSphericity[i-1,"HF"]
 							MSHF <- SS / dfHF
-							dfRHF <- dfR * epsilon[i-1,"HF"]
+							dfRHF <- dfR * stateSphericity[i-1,"HF"]
 							
 							if (F != "NaN") {
 								pHF <- pf(F,dfHF,dfRHF,lower.tail=FALSE)
@@ -1182,7 +1236,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 					} else if (cor == "Greenhouse-Geisser") {
 
-						dfGG <- df * epsilon[i-1,"GG"]
+						dfGG <- df * stateSphericity[i-1,"GG"]
 						
 						if (SS > 0) {
 							MSGG <- SS / dfGG
@@ -1194,7 +1248,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 					} else if (cor == "Huynh-Feldt") {
 
-						dfHF <- df * epsilon[i-1,"HF"]
+						dfHF <- df * stateSphericity[i-1,"HF"]
 						
 						if (SS > 0) {
 							MSHF <- SS / dfHF
@@ -1245,7 +1299,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 						
 						row.footnotes <- NULL
 						
-						if (!is.null(epsilon) && epsilon[i-1,"p"] < .05) {
+						if (!is.null(stateSphericity) && !is.na(stateSphericity[i-1,"p"]) && stateSphericity[i-1,"p"] < .05) {
 							
 							foot.index <- .addFootnote(footnotes, text="Mauchly's test of sphericity indicates that the assumption of sphericity is violated (p < .05).")
 							row.footnotes <- list(SS=list(foot.index), df=list(foot.index), MS=list(foot.index), F=list(foot.index), p=list(foot.index))
@@ -1262,9 +1316,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 						} else if (cor == "Greenhouse-Geisser") {
 
-							dfGG <- df * epsilon[i-1,"GG"]
+							dfGG <- df * stateSphericity[i-1,"GG"]
 							MSGG <- SS / dfGG
-							dfRGG <- dfR * epsilon[i-1,"GG"]
+							dfRGG <- dfR * stateSphericity[i-1,"GG"]
 							
 							if (F != "NaN") {
 								pGG <-  pf(F,dfGG,dfRGG,lower.tail=FALSE)
@@ -1276,9 +1330,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 						} else if (cor == "Huynh-Feldt") {
 
-							dfHF <- df * epsilon[i-1,"HF"]
+							dfHF <- df * stateSphericity[i-1,"HF"]
 							MSHF <- SS / dfHF
-							dfRHF <- dfR * epsilon[i-1,"HF"]
+							dfRHF <- dfR * stateSphericity[i-1,"HF"]
 
 							if (F != "NaN") {
 								pHF <- pf(F,dfHF,dfRHF,lower.tail=FALSE)
@@ -1358,7 +1412,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 					} else if (cor == "Greenhouse-Geisser") {
 
-						dfGG <- df * epsilon[i-1,"GG"]
+						dfGG <- df * stateSphericity[i-1,"GG"]
 
 						if (SS > 0) {
 							MSGG <- SS / dfGG
@@ -1370,7 +1424,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 					} else if (cor == "Huynh-Feldt") {
 
-						dfHF <- df * epsilon[i-1,"HF"]
+						dfHF <- df * stateSphericity[i-1,"HF"]
 
 						if (SS > 0) {
 							MSHF <- SS / dfHF
@@ -1398,7 +1452,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result = anova, status = status)
 }
 
-.sphericityTest <- function(dataset, options, perform, epsilon, epsilonError, mauchly, status) {
+.sphericityTest <- function(options, stateSphericity, perform, status) {
 		
 	sphericity <- list()
 
@@ -1418,12 +1472,10 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	modelDef <- .rmModelFormula(options)
 	termsRM.base64 <- modelDef$termsRM.base64
 	termsRM.normal <- modelDef$termsRM.normal
-
-	epsilonTable <- NULL
-
-	if (perform == "init" || status$ready == FALSE || status$error || epsilonError) {
-
-		sphericity.rows <- list()
+	
+	sphericity.rows <- list()
+	
+	if (is.null(stateSphericity)) {
 
 		for(i in .indices(termsRM.base64)) {
 
@@ -1443,77 +1495,45 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		if (status$error)
 			sphericity[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
 
-		if (epsilonError)
-			sphericity[["error"]] <- list(errorType="badData", errorMessage="Could not estimate sphericity parameters due to singularity problems.")
+#		if (is.null(stateSphericity))
+#			sphericity[["error"]] <- list(errorType="badData", errorMessage="Could not estimate sphericity parameters due to singularity problems.")
 
 	} else {
 
-		sphericity.rows <- list()
-
-		epsilonTable <- as.data.frame(matrix(0, length(termsRM.base64), 3))
-		colnames(epsilonTable) <- c("GG", "HF", "p")
-		rownames(epsilonTable) <- termsRM.base64 
-				
-		if (is.null(rownames(mauchly))) {
-			modelTermsResults <- list()
-		} else {
-			modelTermsResults <- strsplit(rownames(epsilon), ":")
-		}
-
-		for (i in .indices(termsRM.base64)) {
+		for (i in .indices(stateSphericity$termsNormal)) {
 
 			if (i == 1) {
 				newGroup <- TRUE
 			} else {
 				newGroup <- FALSE
 			}
-
-			modelTermsCase <- unlist(strsplit(termsRM.base64[[i]],":"))
-			index <- unlist(lapply(modelTermsResults, function(x) .identicalTerms(x,modelTermsCase)))
-									
-			if (sum(index) == 0) {
-
+			
+			if (stateSphericity$twoLevels[i]) {
+			
 				foot.index <- .addFootnote(footnotes, text="The repeated measure has only two levels. When the repeated measure has two levels, the assumption of sphericity is always met.")
 				row.footnotes <- list(W=list(foot.index), p=list(foot.index), GG=list(foot.index), HF=list(foot.index))
-
-				epsilonTable[i,"GG"] <- 1
-				epsilonTable[i,"HF"] <- 1
-				epsilonTable[i,"p"] <- 1
-
-				row <- list("case"=termsRM.normal[[i]], "W"=1, "p"=.clean(NaN), "GG"=1, "HF"=1, ".isNewGroup" = newGroup, .footnotes=row.footnotes)
-
+			
 			} else {
-
-				W <- mauchly[index,"Test statistic"]
-				p <- mauchly[index,"p-value"]
-				GG <- epsilon[index, "GG eps"]
-				HF <- epsilon[index, "HF eps"]
-
-				if (HF > 1)
-					HF <- 1
-
-				epsilonTable[i,"GG"] <- GG
-				epsilonTable[i,"HF"] <- HF
-				epsilonTable[i,"p"] <- p
-
-				row <- list("case"=termsRM.normal[[i]], "W"=W, "p"=p, "GG"=GG, "HF"=HF, ".isNewGroup" = newGroup)
-
+			
+				row.footnotes <- NULL
 			}
+			
+			
+			row <- list("case"=stateSphericity$termsNormal[i], "W"=stateSphericity$W[i], "p"=.clean(stateSphericity$p[i]), "GG"=stateSphericity$GG[i], 
+						"HF"=stateSphericity$HF[i], ".isNewGroup" = newGroup, .footnotes=row.footnotes)	
 
 			sphericity.rows[[length(sphericity.rows) + 1]] <- row
 
 		}
 
 		sphericity[["data"]] <- sphericity.rows
+		sphericity[["status"]] <- "complete"
 
 	}
 
 	sphericity[["footnotes"]] <- as.list(footnotes)
-		
-	if (options$sphericityTests == FALSE)
-		return (list(result = NULL, epsilonTable = epsilonTable, status = status))
 
-	list(result = sphericity, epsilonTable = epsilonTable, status = status)
+	list(result = sphericity, status = status)
 }
 
 .rmAnovaLevenesTable <- function(dataset, options, perform, status, stateLevene) {
