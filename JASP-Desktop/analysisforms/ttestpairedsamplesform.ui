@@ -29,11 +29,8 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <property name="topMargin">
-    <number>13</number>
-   </property>
    <item>
-    <widget class="QWidget" name="horizontalWidget" native="true">
+    <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -159,22 +156,6 @@
          <size>
           <width>210</width>
           <height>200</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>120</width>
-          <height>0</height>
          </size>
         </property>
        </widget>

@@ -188,14 +188,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanelLayout->addWidget(_menuButton);
 	_buttonPanelLayout->addStretch();
 
-	int scrollbarWidth = 0;
-#ifdef __WIN32__
-	scrollbarWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
-#else
-	scrollbarWidth = 9;
-#endif
-	int buttonPanelPadding = ((142 - _okButton->sizeHint().width()) / 2) + scrollbarWidth; // the 142 comes from the 120 space allocated for the button panel + 9 for internal spacing + 13 for right margin on every options panel
-	_buttonPanelLayout->setContentsMargins(0, 13, buttonPanelPadding, 0);
+
+	_scrollbarWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+	_buttonWidth = _okButton->sizeHint().width();
+	_defaultMarginSize = _buttonPanel->layout()->contentsMargins().right();
+
+	_buttonPanelLayout->setContentsMargins(0, _defaultMarginSize, _defaultMarginSize + _scrollbarWidth, 0);
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
 	_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
@@ -534,18 +532,23 @@ void MainWindow::showForm(Analysis *analysis)
 	if (_currentOptionsWidget != NULL)
 	{
 
-		int extraRequiredWidth = 0;
-	#ifdef __WIN32__
-		extraRequiredWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
-	#endif
+		QObjectList siblings = _currentOptionsWidget->children();
+		for (QObjectList::Iterator itr = siblings.begin(); itr != siblings.end(); itr++) {
+			QWidget* w = dynamic_cast<QWidget*>(*itr);
+			if (w != NULL && w != this && w->objectName() == "topWidget") {
+				w->setContentsMargins(0, 0, _buttonPanel->sizeHint().width() - _scrollbarWidth, 0);
+				break;
+			}
+		}
+
 		int requiredSize = _currentOptionsWidget->sizeHint().width();
 		int currentOptionSpace = ui->panelMid->minimumWidth();
-		if (requiredSize > currentOptionSpace - extraRequiredWidth) {
-			ui->panelMid->setMinimumWidth(requiredSize + extraRequiredWidth);
+		if (requiredSize > currentOptionSpace - _scrollbarWidth) {
+			ui->panelMid->setMinimumWidth(requiredSize + _scrollbarWidth);
 			_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
 		}
-		else if (requiredSize < currentOptionSpace - extraRequiredWidth)
-			_currentOptionsWidget->setMinimumWidth(currentOptionSpace - extraRequiredWidth);
+		else if (requiredSize < currentOptionSpace - _scrollbarWidth)
+			_currentOptionsWidget->setMinimumWidth(currentOptionSpace - _scrollbarWidth);
 
 		Options *options = analysis->options();
 		DataSet *dataSet = _package->dataSet;

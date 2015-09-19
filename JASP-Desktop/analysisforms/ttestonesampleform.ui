@@ -20,15 +20,6 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_9">
-   <property name="leftMargin">
-    <number>13</number>
-   </property>
-   <property name="topMargin">
-    <number>13</number>
-   </property>
-   <property name="rightMargin">
-    <number>13</number>
-   </property>
    <property name="bottomMargin">
     <number>0</number>
    </property>
@@ -36,7 +27,7 @@
     <number>3</number>
    </property>
    <item row="0" column="0" colspan="2">
-    <widget class="QWidget" name="widget" native="true">
+    <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -182,36 +173,6 @@
         <property name="selectionMode">
          <enum>QAbstractItemView::ExtendedSelection</enum>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget_6" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>120</width>
-          <height>0</height>
-         </size>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-        </layout>
        </widget>
       </item>
      </layout>
@@ -805,7 +766,7 @@
     </spacer>
    </item>
   </layout>
-  <zorder>widget</zorder>
+  <zorder>topWidget</zorder>
   <zorder>widget_3</zorder>
   <zorder>verticalSpacer_5</zorder>
  </widget>
