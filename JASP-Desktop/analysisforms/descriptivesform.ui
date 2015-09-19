@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>623</width>
+    <width>643</width>
     <height>1211</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -182,7 +182,7 @@
        <widget class="QWidget" name="widget_6" native="true">
         <property name="minimumSize">
          <size>
-          <width>100</width>
+          <width>120</width>
           <height>0</height>
          </size>
         </property>

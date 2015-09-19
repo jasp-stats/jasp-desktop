@@ -167,12 +167,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 
 
-
-
 	_buttonPanel = new QWidget(ui->pageOptions);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
 	_buttonPanelLayout->setSpacing(6);
-	_buttonPanelLayout->setContentsMargins(0, 12, 24, 0);
+
+	//_buttonPanelLayout->setContentsMargins(0, 13, 24, 0);
 	_buttonPanel->setLayout(_buttonPanelLayout);
 
 	_okButton = new QPushButton(QString("OK"), _buttonPanel);
@@ -188,6 +187,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanelLayout->addWidget(_runButton);
 	_buttonPanelLayout->addWidget(_menuButton);
 	_buttonPanelLayout->addStretch();
+
+	int scrollbarWidth = 0;
+#ifdef __WIN32__
+	scrollbarWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+#else
+	scrollbarWidth = 9;
+#endif
+	int buttonPanelPadding = ((142 - _okButton->sizeHint().width()) / 2) + extraButtonPanelPadding; // the 142 comes from the 120 space allocated for the button panel + 9 for internal spacing + 13 for right margin on every options panel
+	_buttonPanelLayout->setContentsMargins(0, 13, buttonPanelPadding, 0);
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
 	_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
@@ -530,12 +538,14 @@ void MainWindow::showForm(Analysis *analysis)
 	#ifdef __WIN32__
 		extraRequiredWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
 	#endif
-		int requiredSize = _currentOptionsWidget->sizeHint().width() + extraRequiredWidth;
-		if (requiredSize > ui->panelMid->minimumWidth()) {
-
-			ui->panelMid->setMinimumWidth(requiredSize);
+		int requiredSize = _currentOptionsWidget->sizeHint().width();
+		int currentOptionSpace = ui->panelMid->minimumWidth();
+		if (requiredSize > currentOptionSpace - extraRequiredWidth) {
+			ui->panelMid->setMinimumWidth(requiredSize + extraRequiredWidth);
 			_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
 		}
+		else if (requiredSize < currentOptionSpace - extraRequiredWidth)
+			_currentOptionsWidget->setMinimumWidth(currentOptionSpace - extraRequiredWidth);
 
 		Options *options = analysis->options();
 		DataSet *dataSet = _package->dataSet;
@@ -545,7 +555,8 @@ void MainWindow::showForm(Analysis *analysis)
 		illegalOptionStateChanged();
 
 		_currentOptionsWidget->show();
-		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);
+		//ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignRight | Qt::AlignTop);
+		ui->optPositioner->addWidget(_currentOptionsWidget, 0, Qt::AlignRight | Qt::AlignTop);
 
 		if (ui->panelMid->isVisible() == false)
 			showOptionsPanel();
@@ -1084,6 +1095,8 @@ void MainWindow::adjustOptionsPanelWidth()
 	{
 		hideTableView();
 	}
+
+	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width(), 0);
 }
 
 void MainWindow::splitterMovedHandler(int, int)
