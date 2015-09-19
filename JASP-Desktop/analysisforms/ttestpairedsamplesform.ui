@@ -203,7 +203,7 @@
       <item row="0" column="2" rowspan="2">
        <widget class="GroupBox" name="groupBox_7">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -415,7 +415,7 @@
       <item row="3" column="0" colspan="2">
        <widget class="GroupBox" name="testType">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -459,7 +459,7 @@
       <item row="0" column="0" colspan="2">
        <widget class="GroupBox" name="tests">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -529,7 +529,7 @@
       <item row="1" column="0" rowspan="2" colspan="2">
        <widget class="BoundGroupBox" name="hypothesis" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -621,7 +621,7 @@
       <item row="2" column="2" rowspan="2">
        <widget class="BoundGroupBox" name="missingValues" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
