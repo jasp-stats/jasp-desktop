@@ -324,7 +324,7 @@ checkPackages <- function() {
 .shortToLong <- function(dataset, rm.factors, rm.vars, bt.vars) {
 
 	f  <- rm.factors[[length(rm.factors)]]
-	df <- data.frame(as.factor(unlist(f$levels)))
+	df <- data.frame(factor(unlist(f$levels), unlist(f$levels)))
 	
 	names(df) <- .v(f$name)
 	
@@ -350,8 +350,7 @@ checkPackages <- function() {
 		row.count <- dim(df)[1]
 
 		cells <- rep(unlist(f$levels), each=row.count / length(f$levels))
-		cells <- as.factor(cells)
-		
+		cells <- factor(cells, unlist(f$levels))
 		
 		df <- cbind(cells, df)
 		names(df)[[1]] <- .v(f$name)
