@@ -194,7 +194,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #else
 	scrollbarWidth = 9;
 #endif
-	int buttonPanelPadding = ((142 - _okButton->sizeHint().width()) / 2) + extraButtonPanelPadding; // the 142 comes from the 120 space allocated for the button panel + 9 for internal spacing + 13 for right margin on every options panel
+	int buttonPanelPadding = ((142 - _okButton->sizeHint().width()) / 2) + scrollbarWidth; // the 142 comes from the 120 space allocated for the button panel + 9 for internal spacing + 13 for right margin on every options panel
 	_buttonPanelLayout->setContentsMargins(0, 13, buttonPanelPadding, 0);
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
