@@ -1,478 +1,478 @@
 TTestOneSample <- function(dataset = NULL, options, perform = "run",
-                           callback = function(...) 0,  ...) {
-    
-    variables <- unlist(options$variables)
-    init <- .initialize_ttest(dataset, options, perform)
-    results <- init[["results"]]
-    
-    ## if the dataset is not null, let's change it a bit
-    if (!is.null(dataset)) {
-        
-        if (options$missingValues == "excludeListwise") {
-            exclude <- variables
-        } else {
-            exclude <- NULL
-        }
-        dataset <- .vdf(dataset, column.as.numeric = variables, exclude.na.listwise = exclude)
-        
-    } else {
-        dataset <- init[["dataset"]]
-    }
-    
-    ## call the specific one-sample T-Test functions
-    results[["ttest"]] <- .ttestOneSample(dataset, options, perform)
-    results[["descriptives"]] <- .ttestOneSamplesDescriptives(dataset, options, perform)
-    results[["normalityTests"]] <- .ttestOneSampleNormalityTest(dataset, options,  perform)
-    
-    ## if the user wants descriptive plots, s/he shall get them!
-    if (options$descriptivesPlots) {
-        results[["descriptivesPlots"]] <- .ttestOneSamplesDescriptivesPlot(dataset, options, perform)
-    }
-    
-    ## return the results object
-    results
+						   callback = function(...) 0,  ...) {
+	
+	variables <- unlist(options$variables)
+	init <- .initializeTTest(dataset, options, perform)
+	results <- init[["results"]]
+	
+	## if the dataset is not null, let's change it a bit
+	if (!is.null(dataset)) {
+		
+		if (options$missingValues == "excludeListwise") {
+			exclude <- variables
+		} else {
+			exclude <- NULL
+		}
+		dataset <- .vdf(dataset, column.as.numeric = variables, exclude.na.listwise = exclude)
+		
+	} else {
+		dataset <- init[["dataset"]]
+	}
+	
+	## call the specific one-sample T-Test functions
+	results[["ttest"]] <- .ttestOneSample(dataset, options, perform)
+	results[["descriptives"]] <- .ttestOneSamplesDescriptives(dataset, options, perform)
+	results[["normalityTests"]] <- .ttestOneSampleNormalityTest(dataset, options,  perform)
+	
+	## if the user wants descriptive plots, s/he shall get them!
+	if (options$descriptivesPlots) {
+		results[["descriptivesPlots"]] <- .ttestOneSamplesDescriptivesPlot(dataset, options, perform)
+	}
+	
+	## return the results object
+	results
 }
 
 
 .ttestOneSample <- function(dataset, options, perform) {
-    
-    ttest <- list()
-    
-    ## does the user want mean differences, effect sizes and confidence intervals?
-    wants_effect <- options$effectSize
-    wants_difference <- options$meanDifference
-    wants_confidence <- options$confidenceInterval # pah! can't get that classically :P
-    
-    wants_students <- options$students
-    wants_wilcox <- options$mannWhitneyU
+	
+	ttest <- list()
+	
+	## does the user want mean differences, effect sizes and confidence intervals?
+	wantsEffect <- options$effectSize
+	wantsDifference <- options$meanDifference
+	wantsConfidence <- options$confidenceInterval # pah! can't get that classically :P
+	
+	wantsStudents <- options$students
+	wantsWilcox <- options$mannWhitneyU
 
-    ## if none is specified, give her a Student's t-test (TODO: Welch's is better as default?)
-    if (!any(wants_students, wants_wilcox)) {
-        wants_students <- TRUE
-    }
-    
-    all_tests <- c(wants_students, wants_wilcox)
-    only_test <- sum(all_tests) == 1
-    
-    fields <- list(list(name = "v", type = "string", title = ""),
-                   list(name = "df", type = "integer"),
-                   list(name = "p", type = "number", format = "dp:3;p:.001"))
-    
-    ## get the right title and test statistic for the table
-    if (wants_wilcox && only_test) {
-        title <- "Mann-Whitney U Test"
-        testStat <- "V"
-        
-        ## additionally, Wilcoxon's test doesn't have degrees of freedoms
-        fields <- fields[-2]
-    } else if (wants_students && only_test) {
-        title <- "Student's T-Test"
-        testStat <- "t"
-    } else {
-        title <- "One Sample T-Test"
-        testStat <- "statistic"
-    }
-    
-    ttest[["title"]] <- title
-    
-    ## if only conducting Student's, the table should have "t" as column name
-    ## for the test statistic when doing only Wilcoxon's, the name should be
-    ## "V"; when doing both, it should be "statistic"
-    fields <- append(fields, list(list(name = testStat,
-                                  type = "number", format = "sf:4;dp:3")), 1)
-    
-    ## if the user wants all tests, add a column called "Test"
-    if (sum(all_tests) == 2) {
-        fields <- append(fields, list(list(name = "test",
-                                      type = "string", title = "Test")), 1)
-    }
-    
-    if (wants_difference) {
-        fields[[length(fields) + 1]] <- list(name = "m", title = "Mean Difference",
-                                             type = "number", format = "sf:4;dp:3")
-    }
-    
-    if (wants_effect) {
-        fields[[length(fields) + 1]] <- list(name = "d", title = "Cohen's d",
-                                             type = "number",  format = "sf:4;dp:3")
-    }
-    
-    if (wants_confidence) {
-        interval <- 100 * options$confidenceIntervalInterval
-        title <- paste0(interval, "% Confidence Interval")
-        
-        fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
-                                             format = "sf:4;dp:3", title = "Lower",
-                                             overTitle = title)
-        fields[[length(fields) + 1]] <- list(name = "upperCI", type = "number",
-                                             format = "sf:4;dp:3", title = "Upper",
-                                             overTitle = title)
-    }
-    
-    footnotes <- .newFootnotes()
-    ttest[["schema"]] <- list(fields = fields)
-    
-    ###########################
-    ### check the directionality
-    if (options$hypothesis == "greaterThanTestValue") {
-        
-        direction <- "greater"
-        note <- "All tests, hypothesis is population mean is greater than "
-        message <- paste0(note, options$testValue)
-        .addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-        
-    } else if (options$hypothesis == "lessThanTestValue") {
-        
-        direction <- "less"
-        note <- "All tests, hypothesis is population mean is less than "
-        message <- paste0(note, options$testValue)
-        .addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-        
-    } else {
-        
-        if (options$testValue != 0) {
-            
-            note <- "All tests, hypothesis is population mean is different from "
-            message <- paste0(note, options$testValue)
-            .addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-            
-        }
-        direction <- "two.sided"
-    }
-    
-    
-    variables <- options$variables
-    if (length(variables) == 0)  variables = "."
-    
-    rowNo <- 1
-    ttest.rows <- list() # for each variable and each test, save stuff in there
-    which_tests <- list("1" = wants_students, "2" = wants_wilcox)
-    
-    for (variable in variables) {
-        
-        for (test in seq_len(length(which_tests))) {
-            
-            current_test <- which_tests[[test]]
-            
-            ## don't run a test the user doesn't want
-            if (!current_test) {
-                next
-            }
-            
-            if (perform == "run" && length(options$variables) > 0) {
-            
-                row <- try(silent = TRUE, expr = {
-                    
-                    ci <- options$confidenceIntervalInterval
-                    dat <- na.omit(dataset[[ .v(variable) ]])
-                    
-                    if (test == 2) {
-                        r <- stats::wilcox.test(dat, alternative = direction,
-                                                mu = options$testValue,
-                                                conf.level = ci, conf.int = TRUE)
-                    } else {
-                        r <- stats::t.test(dat, alternative = direction,
-                                           mu = options$testValue, conf.level = ci)
-                    }
-                    
-                    ## same for all tests
-                    p <- as.numeric(r$p.value)
-                    stat <- as.numeric(r$statistic)
-                    m <- as.numeric(r$estimate - r$null.value)
-                    ciLow <- .clean(as.numeric(r$conf.int[1]))
-                    ciUp <- .clean(as.numeric(r$conf.int[2]))
-                    d <- .clean((mean(dat) - options$testValue) / sd(dat))
-                    
-                    ## only for Student's t-test
-                    df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-                    
-                    if (is.na(t)) {
-                        stop("data are essentially constant")
-                    }
-                    
-                    res <- list(v = variable, df = df, p = p,
-                                m = m, d = d, lowerCI = ciLow, upperCI = ciUp)
-                    res[[testStat]] <- stat
-                    res
-                })
-            
-                ## if there has been an error, find out which and log as a footnote
-                if (class(row) == "try-error") {
-                    
-                    errorMessage <- .extractErrorMessage(row)
-                    
-                    if (errorMessage == "missing value where TRUE/FALSE needed") {
-                      
-                        err <- "t-statistic is undefined - the sample contains infinity"
-                      
-                    } else if (errorMessage == "data are essentially constant") {
-                      
-                        err <- paste0("t-statistic is undefined - the sample ",
-                                      "contains all the same value (zero variance)")
-                      
-                    } else if (errorMessage == "not enough 'x' observations") {
-                      
-                        err <- "t-statistic is undefined - sample contains only one value"
-                    }
-                
-                    index <- .addFootnote(footnotes, err)
-                    row.footnotes <- list(t = list(index))
-                    
-                    row <- list(v = variable, df = "", p = "", m = "",
-                                lowerCI = "", upperCI = "",
-                                .footnotes = row.footnotes)
-                    row[[testStat]] <- .clean(NaN)
-                }
-                
-            ## if we are not yet ready to perform, just create an empty table
-            } else {
-                row <- list(v = variable, df = ".", p = ".",
-                            m = ".",  d = ".", lowerCI = ".", upperCI = ".")
-                row[[testStat]] <- "."
-            }
-            
-            ## if we have both tests, we do not want to have two variables
-            ## and we want another column with the test type
-            has_both <- rowNo %% 2 == 0 && sum(all_tests) == 2
-            if (has_both) {
-                row[["v"]] <- ""
-                row[["test"]] <- "Mann-Whitney"
-                ttest.rows[[rowNo - 1]][["test"]] <- "Student's"
-            }
-            
-            ttest.rows[[rowNo]] <- row
-            rowNo <- rowNo + 1
-        }
-    }
-    
-    ttest[["data"]] <- ttest.rows
-    ttest[["footnotes"]] <- as.list(footnotes)
-    ttest
+	## if none is specified, give her a Student's t-test (TODO: Welch's is better as default?)
+	if (!any(wantsStudents, wantsWilcox)) {
+		wantsStudents <- TRUE
+	}
+	
+	allTests <- c(wantsStudents, wantsWilcox)
+	onlyTest <- sum(allTests) == 1
+	
+	fields <- list(list(name = "v", type = "string", title = ""),
+				   list(name = "df", type = "integer"),
+				   list(name = "p", type = "number", format = "dp:3;p:.001"))
+	
+	## get the right title and test statistic for the table
+	if (wantsWilcox && onlyTest) {
+		title <- "Mann-Whitney U Test"
+		testStat <- "V"
+		
+		## additionally, Wilcoxon's test doesn't have degrees of freedoms
+		fields <- fields[-2]
+	} else if (wantsStudents && onlyTest) {
+		title <- "Student's T-Test"
+		testStat <- "t"
+	} else {
+		title <- "One Sample T-Test"
+		testStat <- "statistic"
+	}
+	
+	ttest[["title"]] <- title
+	
+	## if only conducting Student's, the table should have "t" as column name
+	## for the test statistic when doing only Wilcoxon's, the name should be
+	## "V"; when doing both, it should be "statistic"
+	fields <- append(fields, list(list(name = testStat,
+								  type = "number", format = "sf:4;dp:3")), 1)
+	
+	## if the user wants all tests, add a column called "Test"
+	if (sum(allTests) == 2) {
+		fields <- append(fields, list(list(name = "test",
+									  type = "string", title = "Test")), 1)
+	}
+	
+	if (wantsDifference) {
+		fields[[length(fields) + 1]] <- list(name = "m", title = "Mean Difference",
+											 type = "number", format = "sf:4;dp:3")
+	}
+	
+	if (wantsEffect) {
+		fields[[length(fields) + 1]] <- list(name = "d", title = "Cohen's d",
+											 type = "number",  format = "sf:4;dp:3")
+	}
+	
+	if (wantsConfidence) {
+		interval <- 100 * options$confidenceIntervalInterval
+		title <- paste0(interval, "% Confidence Interval")
+		
+		fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
+											 format = "sf:4;dp:3", title = "Lower",
+											 overTitle = title)
+		fields[[length(fields) + 1]] <- list(name = "upperCI", type = "number",
+											 format = "sf:4;dp:3", title = "Upper",
+											 overTitle = title)
+	}
+	
+	footnotes <- .newFootnotes()
+	ttest[["schema"]] <- list(fields = fields)
+	
+	###########################
+	### check the directionality
+	if (options$hypothesis == "greaterThanTestValue") {
+		
+		direction <- "greater"
+		note <- "All tests, hypothesis is population mean is greater than "
+		message <- paste0(note, options$testValue)
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
+		
+	} else if (options$hypothesis == "lessThanTestValue") {
+		
+		direction <- "less"
+		note <- "All tests, hypothesis is population mean is less than "
+		message <- paste0(note, options$testValue)
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
+		
+	} else {
+		
+		if (options$testValue != 0) {
+			
+			note <- "All tests, hypothesis is population mean is different from "
+			message <- paste0(note, options$testValue)
+			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
+			
+		}
+		direction <- "two.sided"
+	}
+	
+	
+	variables <- options$variables
+	if (length(variables) == 0)  variables = "."
+	
+	rowNo <- 1
+	ttest.rows <- list() # for each variable and each test, save stuff in there
+	whichTests <- list("1" = wantsStudents, "2" = wantsWilcox)
+	
+	for (variable in variables) {
+		
+		for (test in seq_len(length(whichTests))) {
+			
+			currentTest <- whichTests[[test]]
+			
+			## don't run a test the user doesn't want
+			if (!currentTest) {
+				next
+			}
+			
+			if (perform == "run" && length(options$variables) > 0) {
+			
+				row <- try(silent = TRUE, expr = {
+					
+					ci <- options$confidenceIntervalInterval
+					dat <- na.omit(dataset[[ .v(variable) ]])
+					
+					if (test == 2) {
+						r <- stats::wilcox.test(dat, alternative = direction,
+												mu = options$testValue,
+												conf.level = ci, conf.int = TRUE)
+					} else {
+						r <- stats::t.test(dat, alternative = direction,
+										   mu = options$testValue, conf.level = ci)
+					}
+					
+					## same for all tests
+					p <- as.numeric(r$p.value)
+					stat <- as.numeric(r$statistic)
+					m <- as.numeric(r$estimate - r$null.value)
+					ciLow <- .clean(as.numeric(r$conf.int[1]))
+					ciUp <- .clean(as.numeric(r$conf.int[2]))
+					d <- .clean((mean(dat) - options$testValue) / sd(dat))
+					
+					## only for Student's t-test
+					df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
+					
+					if (is.na(t)) {
+						stop("data are essentially constant")
+					}
+					
+					res <- list(v = variable, df = df, p = p,
+								m = m, d = d, lowerCI = ciLow, upperCI = ciUp)
+					res[[testStat]] <- stat
+					res
+				})
+			
+				## if there has been an error, find out which and log as a footnote
+				if (class(row) == "try-error") {
+					
+					errorMessage <- .extractErrorMessage(row)
+					
+					if (errorMessage == "missing value where TRUE/FALSE needed") {
+					  
+						err <- "t-statistic is undefined - the sample contains infinity"
+					  
+					} else if (errorMessage == "data are essentially constant") {
+					  
+						err <- paste0("t-statistic is undefined - the sample ",
+									  "contains all the same value (zero variance)")
+					  
+					} else if (errorMessage == "not enough 'x' observations") {
+					  
+						err <- "t-statistic is undefined - sample contains only one value"
+					}
+				
+					index <- .addFootnote(footnotes, err)
+					row.footnotes <- list(t = list(index))
+					
+					row <- list(v = variable, df = "", p = "", m = "",
+								lowerCI = "", upperCI = "",
+								.footnotes = row.footnotes)
+					row[[testStat]] <- .clean(NaN)
+				}
+				
+			## if we are not yet ready to perform, just create an empty table
+			} else {
+				row <- list(v = variable, df = ".", p = ".",
+							m = ".",  d = ".", lowerCI = ".", upperCI = ".")
+				row[[testStat]] <- "."
+			}
+			
+			## if we have both tests, we do not want to have two variables
+			## and we want another column with the test type
+			hasBoth <- rowNo %% 2 == 0 && sum(allTests) == 2
+			if (hasBoth) {
+				row[["v"]] <- ""
+				row[["test"]] <- "Mann-Whitney"
+				ttest.rows[[rowNo - 1]][["test"]] <- "Student's"
+			}
+			
+			ttest.rows[[rowNo]] <- row
+			rowNo <- rowNo + 1
+		}
+	}
+	
+	ttest[["data"]] <- ttest.rows
+	ttest[["footnotes"]] <- as.list(footnotes)
+	ttest
 }
-    
+	
 
 .ttestOneSamplesDescriptives <- function(dataset, options, perform) {
-    if (!options$descriptives) return(NULL)
-    
-    descriptives <- list()
-    descriptives[["title"]] <- "Descriptives"
-    descriptives[["cases"]] <- I(options$variables)
-        
-    fields <- list(
-        list(name = "v", title = "", type = "string"),
-        list(name = "N", title = "N", type = "number", format = "sf:4;dp:3"),
-        list(name = "mean", title = "Mean", type = "number", format = "sf:4;dp:3"),
-        list(name = "sd", title = "SD", type = "number", format = "sf:4;dp:3"),
-        list(name = "se", title = "SE", type = "number", format = "sf:4;dp:3")
-    )
-        
-    descriptives[["schema"]] <- list(fields = fields)
-    descriptives.results <- list()
-    
-    variables <- options$variables
-    if (length(variables) == 0) variables = "."
-    
-    for (variable in variables) {
-        
-        if (perform == "run" && length(options$variables) > 0) {
-            
-            data <- na.omit(dataset[[.v(variable)]])
-            
-            if (class(data) != "factor") {
-              
-                n <- .clean(length(data))
-                mean <- .clean(mean(data))
-                stdDeviation <- .clean(sd(data))
-                stdErrorMean <- .clean(sd(data) / sqrt(length(data)))
-                newGroup <- length(descriptives.results) == 0
-                
-                result <- list(v = variable, N = n, mean = mean,
-                               sd = stdDeviation, se = stdErrorMean,
-                               .isNewGroup = newGroup)
-            } else {
-              
-                newGroup <- length(descriptives.results) == 0
-                n <- .clean(length(data))
-                result <- list(v = variable, N = n, mean = "",
-                               sd = "", se = "", .isNewGroup = newGroup)
-            }
-        } else {
-            
-            newGroup <- length(descriptives.results) == 0
-            result <- list(v = variable, N = ".", mean = ".",
-                           sd = ".", se = ".", .isNewGroup = newGroup)
-        }
-        descriptives.results[[length(descriptives.results) + 1]] <- result
-    }
-    
-    descriptives[["data"]] <- descriptives.results
-    descriptives
+	if (!options$descriptives) return(NULL)
+	
+	descriptives <- list()
+	descriptives[["title"]] <- "Descriptives"
+	descriptives[["cases"]] <- I(options$variables)
+		
+	fields <- list(
+		list(name = "v", title = "", type = "string"),
+		list(name = "N", title = "N", type = "number", format = "sf:4;dp:3"),
+		list(name = "mean", title = "Mean", type = "number", format = "sf:4;dp:3"),
+		list(name = "sd", title = "SD", type = "number", format = "sf:4;dp:3"),
+		list(name = "se", title = "SE", type = "number", format = "sf:4;dp:3")
+	)
+		
+	descriptives[["schema"]] <- list(fields = fields)
+	descriptives.results <- list()
+	
+	variables <- options$variables
+	if (length(variables) == 0) variables = "."
+	
+	for (variable in variables) {
+		
+		if (perform == "run" && length(options$variables) > 0) {
+			
+			data <- na.omit(dataset[[.v(variable)]])
+			
+			if (class(data) != "factor") {
+			  
+				n <- .clean(length(data))
+				mean <- .clean(mean(data))
+				stdDeviation <- .clean(sd(data))
+				stdErrorMean <- .clean(sd(data) / sqrt(length(data)))
+				newGroup <- length(descriptives.results) == 0
+				
+				result <- list(v = variable, N = n, mean = mean,
+							   sd = stdDeviation, se = stdErrorMean,
+							   .isNewGroup = newGroup)
+			} else {
+			  
+				newGroup <- length(descriptives.results) == 0
+				n <- .clean(length(data))
+				result <- list(v = variable, N = n, mean = "",
+							   sd = "", se = "", .isNewGroup = newGroup)
+			}
+		} else {
+			
+			newGroup <- length(descriptives.results) == 0
+			result <- list(v = variable, N = ".", mean = ".",
+						   sd = ".", se = ".", .isNewGroup = newGroup)
+		}
+		descriptives.results[[length(descriptives.results) + 1]] <- result
+	}
+	
+	descriptives[["data"]] <- descriptives.results
+	descriptives
 }
 
-    
+	
 .ttestOneSampleNormalityTest <- function(dataset, options, perform) {
-    if (!options$normalityTests) return(NULL)
-        
-    normalityTests <- list("title" = "Test of Normality (Shapiro-Wilk)")
-    normalityTests[["cases"]] <- I(options$variables)
-    
-    fields <- list(
-        list(name = "v", title = "", type = "string"),
-        list(name = "W", title = "W", type = "number", format = "sf:4;dp:3"),
-        list(name = "p", title = "p", type = "number", format = "dp:3;p:.001")
-    )
-    
-    normalityTests[["schema"]] <- list(fields = fields)
-    
-    footnotes <- .newFootnotes()
-    .addFootnote(footnotes, symbol = "<em>Note.</em>",
-                 text = "Significant results indicate a deviation from normality")
-    
-    normalityTests.results <- list()
-    
-    variables <- options$variables
-    if (length(variables) == 0) variables = "."
-    
-    for (variable in variables) {
-        
-        if (perform == "run" && length(options$variables) > 0) {
-            
-            data <- na.omit(dataset[[.v(variable)]])
-            
-            row.footnotes <- NULL
-            error <- FALSE
-            
-            if (length(data) < 3) {
-              
-                err <- "Too few datapoints (N < 3) to compute statistic reliably"
-                foot.index <- .addFootnote(footnotes, err)
-                row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-                error <- TRUE
-              
-            } else if (length(data) > 5000) {
-              
-                err <- "Too many datapoints (N > 5000) to compute statistic reliably"
-                foot.index <- .addFootnote(footnotes, err)
-                row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-                error <- TRUE
-            }
-            
-            if (!error) {
-              
-              r <- stats::shapiro.test(data)
-              W <- .clean(as.numeric(r$statistic))
-              p <- .clean(r$p.value)
-              
-              if (length(normalityTests.results) == 0) {
-                newGroup <- TRUE
-              } else {
-                newGroup <- FALSE
-              }
-              
-              result <- list(v = variable, W = W, p = p, .isNewGroup = newGroup)
-              
-            } else {
-              
-              if (length(normalityTests.results) == 0) {
-                newGroup <- TRUE
-              } else {
-                newGroup <- FALSE
-              }
-              
-              result <- list(v = variable, W = "NaN", p = "NaN",
-                             .isNewGroup = newGroup, .footnotes = row.footnotes)
-            }
-            
-        } else {
-            
-            if (length(normalityTests.results) == 0) {
-              newGroup <- TRUE
-            } else {
-              newGroup <- FALSE
-            }
-            
-            result <- list(v = variable, W = ".", p = ".", .isNewGroup = newGroup)
-            
-        }
-        
-        normalityTests.results[[length(normalityTests.results) + 1]] <- result
-    }
-    
-    normalityTests[["data"]] <- normalityTests.results
-    normalityTests[["footnotes"]] <- as.list(footnotes)
-    normalityTests
+	if (!options$normalityTests) return(NULL)
+		
+	normalityTests <- list("title" = "Test of Normality (Shapiro-Wilk)")
+	normalityTests[["cases"]] <- I(options$variables)
+	
+	fields <- list(
+		list(name = "v", title = "", type = "string"),
+		list(name = "W", title = "W", type = "number", format = "sf:4;dp:3"),
+		list(name = "p", title = "p", type = "number", format = "dp:3;p:.001")
+	)
+	
+	normalityTests[["schema"]] <- list(fields = fields)
+	
+	footnotes <- .newFootnotes()
+	.addFootnote(footnotes, symbol = "<em>Note.</em>",
+				 text = "Significant results indicate a deviation from normality")
+	
+	normalityTests.results <- list()
+	
+	variables <- options$variables
+	if (length(variables) == 0) variables = "."
+	
+	for (variable in variables) {
+		
+		if (perform == "run" && length(options$variables) > 0) {
+			
+			data <- na.omit(dataset[[.v(variable)]])
+			
+			row.footnotes <- NULL
+			error <- FALSE
+			
+			if (length(data) < 3) {
+			  
+				err <- "Too few datapoints (N < 3) to compute statistic reliably"
+				foot.index <- .addFootnote(footnotes, err)
+				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
+				error <- TRUE
+			  
+			} else if (length(data) > 5000) {
+			  
+				err <- "Too many datapoints (N > 5000) to compute statistic reliably"
+				foot.index <- .addFootnote(footnotes, err)
+				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
+				error <- TRUE
+			}
+			
+			if (!error) {
+			  
+			  r <- stats::shapiro.test(data)
+			  W <- .clean(as.numeric(r$statistic))
+			  p <- .clean(r$p.value)
+			  
+			  if (length(normalityTests.results) == 0) {
+				newGroup <- TRUE
+			  } else {
+				newGroup <- FALSE
+			  }
+			  
+			  result <- list(v = variable, W = W, p = p, .isNewGroup = newGroup)
+			  
+			} else {
+			  
+			  if (length(normalityTests.results) == 0) {
+				newGroup <- TRUE
+			  } else {
+				newGroup <- FALSE
+			  }
+			  
+			  result <- list(v = variable, W = "NaN", p = "NaN",
+							 .isNewGroup = newGroup, .footnotes = row.footnotes)
+			}
+			
+		} else {
+			
+			if (length(normalityTests.results) == 0) {
+			  newGroup <- TRUE
+			} else {
+			  newGroup <- FALSE
+			}
+			
+			result <- list(v = variable, W = ".", p = ".", .isNewGroup = newGroup)
+			
+		}
+		
+		normalityTests.results[[length(normalityTests.results) + 1]] <- result
+	}
+	
+	normalityTests[["data"]] <- normalityTests.results
+	normalityTests[["footnotes"]] <- as.list(footnotes)
+	normalityTests
 }
-    
+	
 
 .ttestOneSamplesDescriptivesPlot <- function(dataset, options, perform) {
-    
-    descriptivesPlotList <- list()
-    base_breaks_y <- function(x, options) {
-        
-        values <- c(options$testValue, x[, "dependent"] - x[, "ci"],
-                    x[, "dependent"] + x[, "ci"])
-        ci.pos <- c(min(values), max(values))
-        b <- pretty(ci.pos)
-        d <- data.frame(x = -Inf, xend = -Inf, y = min(b), yend = max(b))
-        list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend, 
-            yend = yend), inherit.aes = FALSE, size = 1),
-            ggplot2::scale_y_continuous(breaks = c(min(b),  options$testValue, max(b))))
-    }
-    
-    for (i in .indices(options$variables)) {
-        
-        var <- options$variables[[i]]
-        
-        descriptivesPlot <- list("title" = "")
-        descriptivesPlot[["width"]] <- options$plotWidth
-        descriptivesPlot[["height"]] <- options$plotHeight
-        descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
-        
-        if (perform == "run" && var != "") {
-            
-            dataSubset <- data.frame(dependent = dataset[[.v(var)]],
-                          groupingVariable = rep(var, length(dataset[[.v(var)]])))
-            
-            ci <- options$descriptivesPlotsConfidenceInterval
-            summaryStat <- .summarySE(dataSubset, measurevar = "dependent",
-                                      groupvars = "groupingVariable",
-                                      conf.interval = ci, na.rm = TRUE, .drop = FALSE)
-            
-            testValue <- data.frame(testValue = options$testValue)
-            pd <- ggplot2::position_dodge(0.2)
-            
-            p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable, 
-                y = dependent, group = 1)) + ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower, 
-                ymax = ciUpper), colour = "black", width = 0.2, position = pd) + 
-                ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd, 
-                size = 4) + ggplot2::geom_hline(data = testValue, ggplot2::aes(yintercept = testValue), 
-                linetype = "dashed") + ggplot2::ylab(NULL) + ggplot2::xlab(NULL) + 
-                ggplot2::theme_bw() + ggplot2::theme(panel.grid.minor = ggplot2::element_blank(), 
-                plot.title = ggplot2::element_text(size = 18), panel.grid.major = ggplot2::element_blank(), 
-                axis.title.x = ggplot2::element_text(size = 18, vjust = -0.2), axis.title.y = ggplot2::element_text(size = 18, 
-                  vjust = -1), axis.text.x = ggplot2::element_text(size = 15), axis.text.y = ggplot2::element_text(size = 15), 
-                panel.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
-                plot.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
-                legend.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
-                panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(), 
-                legend.key = ggplot2::element_blank(), legend.title = ggplot2::element_text(size = 12), 
-                legend.text = ggplot2::element_text(size = 12), axis.ticks = ggplot2::element_line(size = 0.5), 
-                axis.ticks.margin = grid::unit(1, "mm"), axis.ticks.length = grid::unit(3, 
-                  "mm"), plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) + base_breaks_y(summaryStat, 
-                options)
-            
-            image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-            print(p)
-            content <- .endSaveImage(image)
-            
-            descriptivesPlot[["data"]] <- content
-            
-        } else {
-            
-            descriptivesPlot[["data"]] <- ""
-        }
-        
-        descriptivesPlotList[[i]] <- descriptivesPlot
-    }
-    descriptivesPlotList
+	
+	descriptivesPlotList <- list()
+	base_breaks_y <- function(x, options) {
+		
+		values <- c(options$testValue, x[, "dependent"] - x[, "ci"],
+					x[, "dependent"] + x[, "ci"])
+		ci.pos <- c(min(values), max(values))
+		b <- pretty(ci.pos)
+		d <- data.frame(x = -Inf, xend = -Inf, y = min(b), yend = max(b))
+		list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend, 
+			yend = yend), inherit.aes = FALSE, size = 1),
+			ggplot2::scale_y_continuous(breaks = c(min(b),  options$testValue, max(b))))
+	}
+	
+	for (i in .indices(options$variables)) {
+		
+		var <- options$variables[[i]]
+		
+		descriptivesPlot <- list("title" = "")
+		descriptivesPlot[["width"]] <- options$plotWidth
+		descriptivesPlot[["height"]] <- options$plotHeight
+		descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
+		
+		if (perform == "run" && var != "") {
+			
+			dataSubset <- data.frame(dependent = dataset[[.v(var)]],
+						  groupingVariable = rep(var, length(dataset[[.v(var)]])))
+			
+			ci <- options$descriptivesPlotsConfidenceInterval
+			summaryStat <- .summarySE(dataSubset, measurevar = "dependent",
+									  groupvars = "groupingVariable",
+									  conf.interval = ci, na.rm = TRUE, .drop = FALSE)
+			
+			testValue <- data.frame(testValue = options$testValue)
+			pd <- ggplot2::position_dodge(0.2)
+			
+			p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable, 
+				y = dependent, group = 1)) + ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower, 
+				ymax = ciUpper), colour = "black", width = 0.2, position = pd) + 
+				ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd, 
+				size = 4) + ggplot2::geom_hline(data = testValue, ggplot2::aes(yintercept = testValue), 
+				linetype = "dashed") + ggplot2::ylab(NULL) + ggplot2::xlab(NULL) + 
+				ggplot2::theme_bw() + ggplot2::theme(panel.grid.minor = ggplot2::element_blank(), 
+				plot.title = ggplot2::element_text(size = 18), panel.grid.major = ggplot2::element_blank(), 
+				axis.title.x = ggplot2::element_text(size = 18, vjust = -0.2), axis.title.y = ggplot2::element_text(size = 18, 
+				  vjust = -1), axis.text.x = ggplot2::element_text(size = 15), axis.text.y = ggplot2::element_text(size = 15), 
+				panel.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
+				plot.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
+				legend.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
+				panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(), 
+				legend.key = ggplot2::element_blank(), legend.title = ggplot2::element_text(size = 12), 
+				legend.text = ggplot2::element_text(size = 12), axis.ticks = ggplot2::element_line(size = 0.5), 
+				axis.ticks.margin = grid::unit(1, "mm"), axis.ticks.length = grid::unit(3, 
+				  "mm"), plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) + base_breaks_y(summaryStat, 
+				options)
+			
+			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+			print(p)
+			content <- .endSaveImage(image)
+			
+			descriptivesPlot[["data"]] <- content
+			
+		} else {
+			
+			descriptivesPlot[["data"]] <- ""
+		}
+		
+		descriptivesPlotList[[i]] <- descriptivesPlot
+	}
+	descriptivesPlotList
 } 
