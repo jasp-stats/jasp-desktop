@@ -73,7 +73,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			diff[['plotErrorBars']] == FALSE && !(diff[['errorBarType']] == TRUE && options$plotErrorBars == TRUE) &&
 			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
 			diff[['plotWidthDescriptivesPlotLegend']] == FALSE && diff[['plotWidthDescriptivesPlotLegend']] == FALSE &&
-			diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE && diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE) {
+			diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE && diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE &&
+			diff[['repeatedMeasuresFactors']]) {
 			
 			# old post hov results can be used
 						
