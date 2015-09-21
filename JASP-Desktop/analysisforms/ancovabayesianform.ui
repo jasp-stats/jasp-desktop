@@ -39,7 +39,7 @@
        <number>0</number>
       </property>
       <property name="verticalSpacing">
-       <number>3</number>
+       <number>0</number>
       </property>
       <item row="2" column="2">
        <widget class="QLabel" name="label_2">
@@ -222,7 +222,7 @@
       <item row="1" column="2">
        <widget class="BoundListView" name="dependent">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -260,7 +260,7 @@
       <item row="3" column="2" rowspan="2">
        <widget class="BoundListView" name="fixedFactors">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>1</verstretch>
          </sizepolicy>
@@ -285,7 +285,7 @@
       <item row="6" column="2" rowspan="2">
        <widget class="BoundListView" name="randomFactors">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -310,7 +310,7 @@
       <item row="9" column="2" rowspan="2">
        <widget class="BoundListView" name="covariates">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -335,7 +335,7 @@
       <item row="0" column="0" rowspan="11">
        <widget class="AvailableFieldsListView" name="listAvailableFields">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -379,17 +379,17 @@
        <number>0</number>
       </property>
       <item row="0" column="0">
-       <widget class="BoundGroupBox" name="bayesFactorType" native="true">
+       <widget class="BoundGroupBox" name="bayesFactorType">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="title" stdset="0">
+        <property name="title">
          <string>Bayes Factor</string>
         </property>
-        <property name="flat" stdset="0">
+        <property name="flat">
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_13">
@@ -797,11 +797,6 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -814,7 +809,7 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -828,6 +823,11 @@
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

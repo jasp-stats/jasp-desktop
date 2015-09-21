@@ -42,7 +42,7 @@
        <number>0</number>
       </property>
       <property name="verticalSpacing">
-       <number>3</number>
+       <number>0</number>
       </property>
       <item row="2" column="2">
        <widget class="QLabel" name="label_2">
@@ -413,7 +413,6 @@
              <height>200</height>
             </size>
            </property>
-           <zorder>topWidget</zorder>
           </widget>
          </item>
          <item row="1" column="0">
@@ -1126,7 +1125,7 @@
              </spacer>
             </item>
             <item row="1" column="0">
-             <widget class="BoundGroupBox" name="errorBarType" native="true">
+             <widget class="BoundGroupBox" name="errorBarType">
               <layout class="QGridLayout" name="gridLayout_27">
                <property name="topMargin">
                 <number>0</number>
@@ -1527,11 +1526,6 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1544,7 +1538,7 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -1560,6 +1554,16 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundTableView</class>
    <extends>QTableView</extends>
    <header>widgets/boundtableview.h</header>
@@ -1569,11 +1573,6 @@
    <extends>QWidget</extends>
    <header>widgets/boundassignwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -42,7 +42,7 @@
        <number>0</number>
       </property>
       <property name="verticalSpacing">
-       <number>3</number>
+       <number>0</number>
       </property>
       <item row="3" column="2">
        <widget class="QLabel" name="label_3">
@@ -358,8 +358,8 @@
           <number>6</number>
          </property>
          <item row="0" column="2" colspan="2">
-          <widget class="BoundGroupBox" name="groupBox" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="groupBox">
+           <property name="title">
             <string>Additional Statistics</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
@@ -571,8 +571,8 @@
           </widget>
          </item>
          <item row="0" column="0" colspan="2">
-          <widget class="BoundGroupBox" name="samplingModel" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="samplingModel">
+           <property name="title">
             <string>Sampling</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
@@ -615,11 +615,11 @@
           </widget>
          </item>
          <item row="1" column="0" colspan="2">
-          <widget class="BoundGroupBox" name="hypothesis" native="true">
+          <widget class="BoundGroupBox" name="hypothesis">
            <property name="enabled">
             <bool>false</bool>
            </property>
-           <property name="title" stdset="0">
+           <property name="title">
             <string>Hypothesis</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
@@ -651,8 +651,8 @@
           </widget>
          </item>
          <item row="2" column="0" rowspan="2" colspan="2">
-          <widget class="BoundGroupBox" name="bayesFactorType" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="bayesFactorType">
+           <property name="title">
             <string>Bayes factor</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
@@ -747,8 +747,8 @@
        <widget class="QWidget" name="panelOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
-          <widget class="BoundGroupBox" name="rowOrder" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="rowOrder">
+           <property name="title">
             <string>Row Order</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
@@ -770,8 +770,8 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="BoundGroupBox" name="columnOrder" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="columnOrder">
+           <property name="title">
             <string>Column Order</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
@@ -830,11 +830,6 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -847,7 +842,7 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -855,6 +850,11 @@
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
