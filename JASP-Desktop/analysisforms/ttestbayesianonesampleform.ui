@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>598</width>
+    <width>606</width>
     <height>739</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -17,7 +23,7 @@
    <item>
     <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -122,20 +128,20 @@
       <item row="0" column="2">
        <widget class="BoundListView" name="variables">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>210</width>
+          <width>0</width>
           <height>200</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>210</width>
+          <width>16777215</width>
           <height>200</height>
          </size>
         </property>
@@ -147,20 +153,20 @@
       <item row="0" column="0">
        <widget class="AvailableFieldsListView" name="listAvailableFields">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>210</width>
+          <width>0</width>
           <height>200</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>210</width>
+          <width>16777215</width>
           <height>200</height>
          </size>
         </property>
@@ -202,6 +208,18 @@
          </size>
         </property>
         <layout class="QGridLayout" name="gridLayout_12">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="1" column="1">
           <widget class="QWidget" name="widget_5" native="true">
            <property name="minimumSize">
@@ -472,6 +490,18 @@
       <item row="0" column="1">
        <widget class="QWidget" name="widget_3" native="true">
         <layout class="QGridLayout" name="gridLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="GroupBox" name="additionalStatisticsGroup">
            <property name="title">
