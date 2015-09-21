@@ -30,12 +30,6 @@ TTestIndependentSamplesForm::TTestIndependentSamplesForm(QWidget *parent) :
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 	ui->descriptivesPlotsConfidenceInterval->setLabel("Confidence interval");
-
-#ifdef QT_NO_DEBUG
-	ui->tests->hide();
-#else
-	ui->tests->setStyleSheet("background-color: pink ;");
-#endif
 }
 
 TTestIndependentSamplesForm::~TTestIndependentSamplesForm()
