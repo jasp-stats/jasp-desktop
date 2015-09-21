@@ -26,7 +26,7 @@
    <item>
     <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -47,7 +47,7 @@
       <item>
        <widget class="AvailableFieldsListView" name="listAvailableFields">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -60,7 +60,7 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>210</width>
+          <width>16777215</width>
           <height>200</height>
          </size>
         </property>
@@ -150,7 +150,7 @@
       <item>
        <widget class="BoundListView" name="variables">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -163,7 +163,7 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>210</width>
+          <width>16777215</width>
           <height>200</height>
          </size>
         </property>
