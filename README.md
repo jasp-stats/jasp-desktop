@@ -20,8 +20,6 @@ Development
 
 [The JASP Error List](Docs/development/jasp-error-list.md)
 
-[The JASPPreview R package guide](Docs/development/jasppreview-guide.md)
-
 [The JASP Guide to Writing Analyses for Humans](Docs/development/jasp-human-guide.md)
 
 [The JASP R style guide](Docs/development/r-style-guide.md)
