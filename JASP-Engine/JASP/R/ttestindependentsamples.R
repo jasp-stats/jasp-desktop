@@ -44,12 +44,6 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				   list(name = "test", type = "string", title = "Test"),
 				   list(name = "df", type = "number", format = "sf:4;dp:3"),
 				   list(name = "p", type = "number", format = "dp:3;p:.001"))
-
-
-	## if none is specified, give her a Student's t-test (TODO: Welch's is better as default?)
-	if (!any(wantsWelchs, wantsStudents, wantsWilcox)) {
-		wantsStudents <- TRUE
-	}
 	
 	allTests <- c(wantsStudents, wantsWelchs, wantsWilcox)
 	onlyTest <- sum(allTests) == 1
@@ -120,7 +114,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	variables <- options$variables
 	if (length(variables) == 0) variables <- "."
 
-	## add a row for each variable
+	## add a row for each variable, even before we are conducting tests
 	for (variable in variables) {
 		ttest.rows[[length(ttest.rows) + 1]] <- list(v = variable)
 	}
@@ -141,14 +135,14 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			
 			direction <- "greater"
 			message <- paste0("All tests, hypothesis is group <em>", levels[1],
-							  "</em> greater than group <em>", levels[2], "</em>")
+							  "</em> greater than group <em>", levels[2], "</em>.")
 			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 			
 		} else if (options$hypothesis == "groupTwoGreater") {
 			
 			direction <- "less"
 			message <- paste0("All tests, hypothesis is group <em>", levels[1],
-							  "</em> less than group <em>", levels[2], "</em>")
+							  "</em> less than group <em>", levels[2], "</em>.")
 			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 			
 		} else {
@@ -531,7 +525,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	
 	footnotes <- .newFootnotes()
 	.addFootnote(footnotes, symbol = "<em>Note.</em>",
-				 text = "Significant results indicate a deviation from normality")
+				 text = "Significant results suggest a deviation from normality.")
 	
 	## for a independent t-test, we need to check both group vectors for normality
 	normalityTests.results <- list()
@@ -560,13 +554,13 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				error <- FALSE
 				
 				if (length(data) < 3) {
-					err <- "Too few datapoints (N < 3) to compute statistic reliably"
+					err <- "Too few observations (N < 3) to compute statistic reliably."
 					foot.index <- .addFootnote(footnotes, err)
 					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 					error <- TRUE
 				  
 				} else if (length(data) > 5000) {
-					err <- "Too many datapoints (N > 5000) to compute statistic reliably"
+					err <- "Too many observations (N > 5000) to compute statistic reliably."
 					foot.index <- .addFootnote(footnotes, err)
 					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 					error <- TRUE

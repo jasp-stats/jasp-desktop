@@ -46,11 +46,6 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	wantsStudents <- options$students
 	wantsWilcox <- options$mannWhitneyU
 
-	## if none is specified, give her a Student's t-test (TODO: Welch's is better as default?)
-	if (!any(wantsStudents, wantsWilcox)) {
-		wantsStudents <- TRUE
-	}
-	
 	allTests <- c(wantsStudents, wantsWilcox)
 	onlyTest <- sum(allTests) == 1
 	
@@ -118,14 +113,14 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 		
 		direction <- "greater"
 		note <- "All tests, hypothesis is population mean is greater than "
-		message <- paste0(note, options$testValue)
+		message <- paste0(note, options$testValue, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 		
 	} else if (options$hypothesis == "lessThanTestValue") {
 		
 		direction <- "less"
 		note <- "All tests, hypothesis is population mean is less than "
-		message <- paste0(note, options$testValue)
+		message <- paste0(note, options$testValue, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 		
 	} else {
@@ -133,7 +128,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 		if (options$testValue != 0) {
 			
 			note <- "All tests, hypothesis is population mean is different from "
-			message <- paste0(note, options$testValue)
+			message <- paste0(note, options$testValue, ".")
 			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 			
 		}
@@ -147,6 +142,11 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	rowNo <- 1
 	ttest.rows <- list() # for each variable and each test, save stuff in there
 	whichTests <- list("1" = wantsStudents, "2" = wantsWilcox)
+
+	## add a row for each variable, even before we are conducting tests
+	for (variable in variables) {
+		ttest.rows[[length(ttest.rows) + 1]] <- list(v = variable)
+	}
 	
 	for (variable in variables) {
 		
@@ -160,7 +160,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 			}
 			
 			if (perform == "run" && length(options$variables) > 0) {
-			
+
 				row <- try(silent = TRUE, expr = {
 					
 					ci <- options$confidenceIntervalInterval
@@ -230,7 +230,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 							m = ".",  d = ".", lowerCI = ".", upperCI = ".")
 				row[[testStat]] <- "."
 			}
-			
+
 			## if we have both tests, we do not want to have two variables
 			## and we want another column with the test type
 			hasBoth <- rowNo %% 2 == 0 && sum(allTests) == 2
@@ -326,7 +326,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	
 	footnotes <- .newFootnotes()
 	.addFootnote(footnotes, symbol = "<em>Note.</em>",
-				 text = "Significant results indicate a deviation from normality")
+				 text = "Significant results suggest a deviation from normality.")
 	
 	normalityTests.results <- list()
 	
@@ -344,14 +344,14 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 			
 			if (length(data) < 3) {
 			  
-				err <- "Too few datapoints (N < 3) to compute statistic reliably"
+				err <- "Too few observations (N < 3) to compute statistic reliably."
 				foot.index <- .addFootnote(footnotes, err)
 				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 				error <- TRUE
 			  
 			} else if (length(data) > 5000) {
 			  
-				err <- "Too many datapoints (N > 5000) to compute statistic reliably"
+				err <- "Too many observations (N > 5000) to compute statistic reliably."
 				foot.index <- .addFootnote(footnotes, err)
 				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 				error <- TRUE

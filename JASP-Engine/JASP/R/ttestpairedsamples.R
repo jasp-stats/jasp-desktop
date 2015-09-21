@@ -33,11 +33,6 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	wantsStudents <- options$students
 	wantsWilcox <- options$wilcoxonSignedRank
 	
-	## if no checkbox is checked, present a Student's t-test
-	if (!wantsStudents && !wantsWilcox) {
-		wantsStudents <- TRUE
-	}
-	
 	allTests <- c(wantsStudents, wantsWilcox)
 	onlyTest <- sum(allTests) == 1
 	
@@ -108,13 +103,13 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	if (options$hypothesis == "groupOneGreater") {
 		
 		direction <- "greater"
-		message <- "All tests, hypothesis is measurement one greater than measurement two"
+		message <- "All tests, hypothesis is measurement one greater than measurement two."
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 		
 	} else if (options$hypothesis == "groupTwoGreater") {
 		
 		direction <- "less"
-		message <- "All tests, hypothesis is measurement one less than measurement two"
+		message <- "All tests, hypothesis is measurement one less than measurement two."
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 	} else {
 		
@@ -124,6 +119,13 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	rowNo <- 1
 	ttest.rows <- list() # for each pair and each test, save stuff in there
 	whichTests <- list("1" = wantsStudents, "2" = wantsWilcox)
+
+	## add a row for each variable, even before we are conducting tests
+    for (pair in options$pairs) {
+        ttest.rows[[length(ttest.rows) + 1]] <- list(v1 = pair[[1]],
+                                                     sep = '-',
+                                                     v2 = pair[[2]])
+    }
 	
 	## for each pair, run the checked tests and update the table
 	for (pair in options$pairs) {
@@ -349,7 +351,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	footnotes <- .newFootnotes()
 	normalityTests.results <- list()
 	.addFootnote(footnotes, symbol = "<em>Note.</em>",
-				 text = "Significant results suggest a deviation from normality")
+				 text = "Significant results suggest a deviation from normality.")
 	
 	
 	pairs <- options$pairs
@@ -373,14 +375,14 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			
 			if (length(data) < 3) {
 			  
-				err <- "Too few datapoints (N < 3) to compute statistic reliably"
+				err <- "Too few observations (N < 3) to compute statistic reliably."
 				foot.index <- .addFootnote(footnotes, err)
 				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 				error <- TRUE
 			  
 			} else if (length(data) > 5000) {
 			  
-				err <- "Too many datapoints (N > 5000) to compute statistic reliably"
+				err <- "Too many observations (N > 5000) to compute statistic reliably."
 				foot.index <- .addFootnote(footnotes, err)
 				row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 				error <- TRUE
