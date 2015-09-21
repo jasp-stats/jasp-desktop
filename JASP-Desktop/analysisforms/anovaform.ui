@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1117</width>
+    <width>608</width>
     <height>2700</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -452,6 +458,12 @@
       </property>
       <item row="0" column="0">
        <widget class="ExpanderButton" name="expanderModel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Model</string>
         </property>
@@ -559,6 +571,12 @@
       </property>
       <item row="0" column="0">
        <widget class="ExpanderButton" name="expanderAssumptions">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Assumption Checks</string>
         </property>
@@ -634,6 +652,12 @@
       </property>
       <item>
        <widget class="ExpanderButton" name="expanderContrasts">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Contrasts</string>
         </property>
@@ -763,6 +787,12 @@
       </item>
       <item row="0" column="0">
        <widget class="ExpanderButton" name="expanderPosthoc">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Post Hoc Tests</string>
         </property>
@@ -824,6 +854,12 @@
             </property>
             <item row="0" column="0">
              <widget class="QLabel" name="label_7">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
                <string>Factors</string>
               </property>
@@ -941,11 +977,24 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QWidget" name="widget_18" native="true"/>
-               </item>
               </layout>
              </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>0</height>
+               </size>
+              </property>
+             </spacer>
             </item>
             <item>
              <widget class="QWidget" name="widget_20" native="true">
@@ -971,9 +1020,6 @@
                <property name="verticalSpacing">
                 <number>0</number>
                </property>
-               <item row="0" column="0">
-                <widget class="QWidget" name="widget_21" native="true"/>
-               </item>
                <item row="1" column="1">
                 <widget class="BoundListView" name="plotSeparateLines">
                  <property name="sizePolicy">
@@ -1030,6 +1076,22 @@
                </item>
               </layout>
              </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>0</height>
+               </size>
+              </property>
+             </spacer>
             </item>
             <item>
              <widget class="QWidget" name="widget_22" native="true">
@@ -1108,9 +1170,6 @@
                   <string>Separate plots</string>
                  </property>
                 </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QWidget" name="widget_23" native="true"/>
                </item>
               </layout>
              </widget>
@@ -1248,6 +1307,12 @@
       </item>
       <item row="0" column="0">
        <widget class="ExpanderButton" name="expanderDescriptivesPlot">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Descriptives Plots</string>
         </property>
@@ -1492,6 +1557,12 @@
       </item>
       <item row="1" column="0">
        <widget class="ExpanderButton" name="expanderOptions">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Additional Options</string>
         </property>
@@ -1499,6 +1570,19 @@
       </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
   <zorder>widget_14</zorder>
@@ -1508,6 +1592,7 @@
   <zorder>topWidget</zorder>
   <zorder>groupAssumptions</zorder>
   <zorder>profilePlot</zorder>
+  <zorder>verticalSpacer_3</zorder>
  </widget>
  <customwidgets>
   <customwidget>
