@@ -87,9 +87,14 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
 #ifdef QT_NO_DEBUG
-	ui->randomFactorsBox->hide();
+	ui->randomFactors->hide();
+	ui->label_3->hide();
+	ui->buttonAssignRandom->hide();
+	ui->verticalSpacer_5->hide();
 #else
-	ui->randomFactorsBox->setStyleSheet("background-color: pink ;");
+	ui->randomFactors->setStyleSheet("background-color: pink ;");
+	ui->label_3->setStyleSheet("background-color: pink ;");
+	ui->buttonAssignRandom->setStyleSheet("background-color: pink ;");
 #endif
 
 }
