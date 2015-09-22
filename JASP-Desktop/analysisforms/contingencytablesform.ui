@@ -370,6 +370,12 @@
       <item row="2" column="0" rowspan="2" colspan="3">
        <widget class="QWidget" name="panelStatistics" native="true">
         <layout class="QGridLayout" name="gridLayout_12">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
          <property name="bottomMargin">
           <number>0</number>
          </property>
@@ -659,6 +665,12 @@
          </sizepolicy>
         </property>
         <layout class="QGridLayout" name="gridLayout_17">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
          <property name="bottomMargin">
           <number>0</number>
          </property>
@@ -878,9 +890,15 @@
       <item row="1" column="0" colspan="2">
        <widget class="QWidget" name="panelOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_21">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
-          <widget class="BoundGroupBox" name="rowOrder" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="rowOrder">
+           <property name="title">
             <string>Row Order</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_24">
@@ -902,8 +920,8 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="BoundGroupBox" name="columnOrder" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="columnOrder">
+           <property name="title">
             <string>Column Order</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_25">
@@ -969,11 +987,6 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -986,7 +999,7 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -994,6 +1007,11 @@
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

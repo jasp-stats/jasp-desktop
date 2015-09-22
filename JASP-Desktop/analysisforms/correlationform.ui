@@ -331,11 +331,11 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="BoundGroupBox" name="hypothesis" native="true">
-        <property name="title" stdset="0">
+       <widget class="BoundGroupBox" name="hypothesis">
+        <property name="title">
          <string>Hypothesis</string>
         </property>
-        <property name="flat" stdset="0">
+        <property name="flat">
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
@@ -403,12 +403,24 @@
          </sizepolicy>
         </property>
         <layout class="QGridLayout" name="gridLayout_10">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="1" column="0">
-          <widget class="BoundGroupBox" name="missingValues" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="missingValues">
+           <property name="title">
             <string>Missing values</string>
            </property>
-           <property name="flat" stdset="0">
+           <property name="flat">
             <bool>true</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
@@ -496,11 +508,6 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -513,7 +520,7 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -521,6 +528,11 @@
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

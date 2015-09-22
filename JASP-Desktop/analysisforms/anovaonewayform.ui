@@ -412,7 +412,7 @@
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="BoundGroupBox" name="missingValues" native="true">
+             <widget class="BoundGroupBox" name="missingValues">
               <layout class="QGridLayout" name="gridLayout_6">
                <property name="topMargin">
                 <number>0</number>
@@ -444,6 +444,9 @@
           <widget class="QWidget" name="widget_3" native="true">
            <layout class="QGridLayout" name="gridLayout_2">
             <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
              <number>0</number>
             </property>
             <property name="bottomMargin">
@@ -531,7 +534,7 @@
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="BoundGroupBox" name="equalityOfVariances" native="true">
+                <widget class="BoundGroupBox" name="equalityOfVariances">
                  <layout class="QGridLayout" name="gridLayout_5">
                   <property name="topMargin">
                    <number>0</number>
@@ -630,18 +633,13 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -649,6 +647,11 @@
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTableView</class>

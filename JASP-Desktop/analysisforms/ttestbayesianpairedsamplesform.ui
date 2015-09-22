@@ -184,9 +184,6 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <property name="spacing">
-       <number>0</number>
-      </property>
       <item row="0" column="0">
        <widget class="QWidget" name="widget_2" native="true">
         <property name="maximumSize">
@@ -263,11 +260,11 @@
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="BoundGroupBox" name="hypothesis" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="hypothesis">
+           <property name="title">
             <string>Hypothesis</string>
            </property>
-           <property name="flat" stdset="0">
+           <property name="flat">
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
@@ -346,11 +343,11 @@
           </spacer>
          </item>
          <item row="1" column="0">
-          <widget class="BoundGroupBox" name="bayesFactorType" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="bayesFactorType">
+           <property name="title">
             <string>Bayes Factor</string>
            </property>
-           <property name="flat" stdset="0">
+           <property name="flat">
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
@@ -614,11 +611,11 @@
           </widget>
          </item>
          <item row="2" column="0" colspan="2">
-          <widget class="BoundGroupBox" name="missingValues" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="missingValues">
+           <property name="title">
             <string>Missing Values</string>
            </property>
-           <property name="flat" stdset="0">
+           <property name="flat">
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
@@ -687,11 +684,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -704,9 +696,14 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundPairsTable</class>

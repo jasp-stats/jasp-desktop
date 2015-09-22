@@ -455,8 +455,14 @@
       <item row="1" column="0">
        <widget class="QWidget" name="panelStatistics" native="true">
         <layout class="QGridLayout" name="gridLayout_11">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
          <property name="bottomMargin">
-          <number>3</number>
+          <number>0</number>
          </property>
          <item row="1" column="0" colspan="2">
           <widget class="GroupBox" name="groupBoxResiduals">
@@ -715,8 +721,11 @@
       <item row="1" column="0">
        <widget class="QWidget" name="panelOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_15">
-         <property name="bottomMargin">
-          <number>3</number>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
          </property>
          <item row="0" column="0">
           <widget class="GroupBox" name="groupBoxSteppingMethodCriteria">
@@ -898,7 +907,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
             <property name="bottomMargin">
-             <number>0</number>
+             <number>13</number>
             </property>
             <item row="1" column="0">
              <widget class="QRadioButton" name="_2excludeCasesPairwise">
@@ -963,7 +972,19 @@
       </item>
       <item row="1" column="0">
        <widget class="QWidget" name="panelAssumptionChecks" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <layout class="QGridLayout" name="gridLayout_27">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="GroupBox" name="groupBox_3">
            <property name="title">

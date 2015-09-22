@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>AnovaRepeatedMeasuresForm</class>
  <widget class="QWidget" name="AnovaRepeatedMeasuresForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>737</width>
+    <height>2847</height>
+   </rect>
+  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
     <horstretch>0</horstretch>
@@ -150,7 +158,7 @@
          <enum>QAbstractItemView::ScrollPerPixel</enum>
         </property>
         <attribute name="horizontalHeaderVisible">
-         <bool>true</bool>
+         <bool>false</bool>
         </attribute>
         <attribute name="horizontalHeaderHighlightSections">
          <bool>false</bool>
@@ -413,7 +421,6 @@
              <height>200</height>
             </size>
            </property>
-           <zorder>topWidget</zorder>
           </widget>
          </item>
          <item row="1" column="0">
@@ -1185,7 +1192,7 @@
              <number>0</number>
             </property>
             <item row="1" column="0">
-             <widget class="BoundGroupBox" name="errorBarType" native="true">
+             <widget class="BoundGroupBox" name="errorBarType">
               <layout class="QGridLayout" name="gridLayout_27">
                <property name="topMargin">
                 <number>0</number>
@@ -1328,6 +1335,12 @@
       <item row="3" column="0">
        <widget class="QWidget" name="containerOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="QWidget" name="groupCompareMainEffects" native="true">
            <layout class="QGridLayout" name="gridLayout_11">
@@ -1577,11 +1590,6 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1594,7 +1602,7 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -1610,6 +1618,16 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundTableView</class>
    <extends>QTableView</extends>
    <header>widgets/boundtableview.h</header>
@@ -1619,11 +1637,6 @@
    <extends>QWidget</extends>
    <header>widgets/boundassignwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

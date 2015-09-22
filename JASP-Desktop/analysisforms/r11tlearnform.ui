@@ -750,6 +750,15 @@
          </sizepolicy>
         </property>
         <layout class="QGridLayout" name="gridLayout_15">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="GroupBox" name="groupBox_5">
            <property name="title">
@@ -924,6 +933,15 @@
          </sizepolicy>
         </property>
         <layout class="QGridLayout" name="gridLayout_18">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="BoundGroupBox" name="samples">
            <property name="title">
