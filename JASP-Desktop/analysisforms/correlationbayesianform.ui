@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>550</width>
+    <width>606</width>
     <height>876</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -304,8 +310,8 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="BoundGroupBox" name="hypothesis" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="hypothesis">
+           <property name="title">
             <string>Hypothesis</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
@@ -334,8 +340,8 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="BoundGroupBox" name="bayesFactorType" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="bayesFactorType">
+           <property name="title">
             <string>Bayes Factor</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
@@ -476,7 +482,7 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
@@ -501,17 +507,17 @@
        </widget>
       </item>
       <item>
-       <widget class="BoundGroupBox" name="missingValues" native="true">
+       <widget class="BoundGroupBox" name="missingValues">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="title" stdset="0">
+        <property name="title">
          <string>Missing values</string>
         </property>
-        <property name="flat" stdset="0">
+        <property name="flat">
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_9">
@@ -567,11 +573,6 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -584,7 +585,7 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -592,6 +593,11 @@
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

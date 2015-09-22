@@ -26,9 +26,6 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>3</number>
-   </property>
    <item>
     <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
@@ -450,7 +447,7 @@
        </widget>
       </item>
       <item row="1" column="0" rowspan="2" colspan="2">
-       <widget class="BoundGroupBox" name="hypothesis" native="true">
+       <widget class="BoundGroupBox" name="hypothesis">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -463,10 +460,10 @@
           <height>0</height>
          </size>
         </property>
-        <property name="title" stdset="0">
+        <property name="title">
          <string>Hypothesis</string>
         </property>
-        <property name="flat" stdset="0">
+        <property name="flat">
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
@@ -529,17 +526,17 @@
        </widget>
       </item>
       <item row="2" column="2" rowspan="2">
-       <widget class="BoundGroupBox" name="missingValues" native="true">
+       <widget class="BoundGroupBox" name="missingValues">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="title" stdset="0">
+        <property name="title">
          <string>Missing Values</string>
         </property>
-        <property name="flat" stdset="0">
+        <property name="flat">
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
@@ -675,11 +672,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -692,9 +684,14 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundPairsTable</class>

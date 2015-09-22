@@ -20,9 +20,6 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
    <item>
     <widget class="QWidget" name="topWidget" native="true">
      <layout class="QGridLayout" name="gridLayout_3">

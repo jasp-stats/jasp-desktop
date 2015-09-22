@@ -6,18 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>562</width>
-    <height>1365</height>
+    <width>606</width>
+    <height>1461</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_25">
-   <property name="verticalSpacing">
-    <number>0</number>
-   </property>
-   <item row="0" column="0">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
     <widget class="QWidget" name="widget_3" native="true">
      <layout class="QGridLayout" name="gridLayout_7">
       <property name="leftMargin">
@@ -492,7 +495,7 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
+   <item>
     <widget class="QWidget" name="widget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -510,12 +513,9 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <property name="horizontalSpacing">
-       <number>9</number>
-      </property>
       <item row="1" column="1" rowspan="2">
-       <widget class="BoundGroupBox" name="centralTendency" native="true">
-        <property name="title" stdset="0">
+       <widget class="BoundGroupBox" name="centralTendency">
+        <property name="title">
          <string>Central Tendency</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_23">
@@ -544,8 +544,8 @@
        </widget>
       </item>
       <item row="1" column="0" rowspan="3">
-       <widget class="BoundGroupBox" name="estimation" native="true">
-        <property name="title" stdset="0">
+       <widget class="BoundGroupBox" name="estimation">
+        <property name="title">
          <string>Estimation</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_10">
@@ -587,8 +587,8 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="BoundGroupBox" name="model" native="true">
-        <property name="title" stdset="0">
+       <widget class="BoundGroupBox" name="model">
+        <property name="title">
          <string>Model</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_9">
@@ -684,8 +684,8 @@
        </widget>
       </item>
       <item row="1" column="2" rowspan="2" colspan="3">
-       <widget class="BoundGroupBox" name="distribution" native="true">
-        <property name="title" stdset="0">
+       <widget class="BoundGroupBox" name="distribution">
+        <property name="title">
          <string>Dispersion</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_22">
@@ -716,7 +716,7 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0" colspan="2">
+   <item>
     <widget class="QWidget" name="widget_10" native="true">
      <layout class="QGridLayout" name="gridLayout_14">
       <property name="leftMargin">
@@ -887,20 +887,7 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="0">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="3" column="0" colspan="2">
+   <item>
     <widget class="QWidget" name="widget_5" native="true">
      <layout class="QGridLayout" name="gridLayout_12">
       <property name="leftMargin">
@@ -938,8 +925,8 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_18">
          <item row="0" column="0">
-          <widget class="BoundGroupBox" name="samples" native="true">
-           <property name="title" stdset="0">
+          <widget class="BoundGroupBox" name="samples">
+           <property name="title">
             <string>Samples</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_19">
@@ -1133,6 +1120,19 @@
      </layout>
     </widget>
    </item>
+   <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -1152,11 +1152,6 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1169,7 +1164,7 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -1177,6 +1172,11 @@
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
