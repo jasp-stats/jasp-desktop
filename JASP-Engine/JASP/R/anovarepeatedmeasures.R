@@ -59,7 +59,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		diff <- .diff(options, state$options)  # compare old and new options
 
 		if (is.list(diff) && diff[['withinModelTerms']] == FALSE && diff[['betweenModelTerms']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE && 
-			diff[['repeatedMeasuresFactors']] == FALSE && diff[['sumOfSquares']] == FALSE) {
+			diff[['repeatedMeasuresFactors']] == FALSE && diff[['sumOfSquares']] == FALSE && diff[['covariates']] == FALSE && diff[['betweenSubjectFactors']] == FALSE) {
 		
 			# old model can be used
 			
@@ -74,9 +74,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
 			diff[['plotWidthDescriptivesPlotLegend']] == FALSE && diff[['plotWidthDescriptivesPlotLegend']] == FALSE &&
 			diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE && diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE &&
-			diff[['repeatedMeasuresFactors']]) {
+			diff[['repeatedMeasuresFactors']] == FALSE) {
 			
-			# old post hov results can be used
+			# old descriptives plots can be used
 						
 			stateDescriptivesPlot <- state$stateDescriptivesPlot
 		}
