@@ -36,7 +36,7 @@
        <number>0</number>
       </property>
       <property name="verticalSpacing">
-       <number>0</number>
+       <number>3</number>
       </property>
       <item row="0" column="2">
        <widget class="QLabel" name="label">
@@ -56,13 +56,13 @@
         <property name="minimumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">
@@ -126,13 +126,13 @@
         <property name="minimumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">

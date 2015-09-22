@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
-    <height>2466</height>
+    <width>710</width>
+    <height>2464</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -42,7 +42,7 @@
        <number>0</number>
       </property>
       <property name="verticalSpacing">
-       <number>0</number>
+       <number>3</number>
       </property>
       <item row="2" column="2">
        <widget class="QLabel" name="label_2">
@@ -68,13 +68,13 @@
         <property name="minimumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">
@@ -93,13 +93,13 @@
         <property name="minimumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">
@@ -169,13 +169,13 @@
         <property name="minimumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">
@@ -194,13 +194,13 @@
         <property name="minimumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">
@@ -846,13 +846,13 @@
                  <property name="minimumSize">
                   <size>
                    <width>50</width>
-                   <height>35</height>
+                   <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
                    <width>50</width>
-                   <height>35</height>
+                   <height>16777215</height>
                   </size>
                  </property>
                  <property name="text">
@@ -959,13 +959,13 @@
                  <property name="minimumSize">
                   <size>
                    <width>50</width>
-                   <height>35</height>
+                   <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
                    <width>50</width>
-                   <height>35</height>
+                   <height>16777215</height>
                   </size>
                  </property>
                  <property name="text">
@@ -1056,13 +1056,13 @@
                  <property name="minimumSize">
                   <size>
                    <width>50</width>
-                   <height>35</height>
+                   <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
                    <width>50</width>
-                   <height>35</height>
+                   <height>16777215</height>
                   </size>
                  </property>
                  <property name="text">

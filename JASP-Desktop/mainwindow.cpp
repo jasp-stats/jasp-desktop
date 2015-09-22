@@ -236,10 +236,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	setAcceptDrops(true);
 
 #ifdef __WIN32__
-
 		QApplication::setFont(ui->tableView->font());
-
 #endif
+
+		setupOptionPanelSize();
 }
 
 void MainWindow::open(QString filepath)
@@ -443,8 +443,11 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {
-	string name = analysis->name();
+	return loadForm(analysis->name());
+}
 
+AnalysisForm* MainWindow::loadForm(const string name)
+{
 	if (_analysisForms.find(name) != _analysisForms.end())
 		return _analysisForms[name];
 
@@ -515,6 +518,15 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 		_analysisForms[name] = form;
 
 	return form;
+}
+
+void MainWindow::setupOptionPanelSize()
+{
+	/*AnalysisForm* form = loadForm("Descriptives");
+
+	int requiredSize = form->sizeHint().width();
+	ui->panelMid->setMinimumWidth(requiredSize + _scrollbarWidth);
+	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);*/
 }
 
 void MainWindow::showForm(Analysis *analysis)

@@ -45,7 +45,7 @@
        <number>0</number>
       </property>
       <property name="verticalSpacing">
-       <number>0</number>
+       <number>3</number>
       </property>
       <item row="2" column="2">
        <widget class="QLabel" name="label_4">
@@ -71,13 +71,13 @@
         <property name="minimumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">
@@ -96,13 +96,13 @@
         <property name="minimumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>50</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="text">
@@ -318,11 +318,11 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="BoundGroupBox" name="bayesFactorType" native="true">
-        <property name="title" stdset="0">
+       <widget class="BoundGroupBox" name="bayesFactorType">
+        <property name="title">
          <string>Bayes Factor</string>
         </property>
-        <property name="flat" stdset="0">
+        <property name="flat">
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_13">
@@ -450,11 +450,6 @@
    <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -467,7 +462,7 @@
   </customwidget>
   <customwidget>
    <class>BoundGroupBox</class>
-   <extends>QWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
   </customwidget>
@@ -481,6 +476,11 @@
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
