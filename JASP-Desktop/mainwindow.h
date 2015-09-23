@@ -44,6 +44,8 @@ private:
 	DataSetTableModel *_tableModel;
 	Analysis *_currentAnalysis;
 
+	int _scrollbarWidth = 0;
+
 	double _webViewZoom;
 
 	Analyses *_analyses;

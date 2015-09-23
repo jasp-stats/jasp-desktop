@@ -178,13 +178,13 @@ QTableView::item::last
               </property>
               <property name="minimumSize">
                <size>
-                <width>590</width>
+                <width>0</width>
                 <height>0</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>590</width>
+                <width>16777215</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -214,9 +214,15 @@ QTableView::item::last
                </item>
                <item row="1" column="1">
                 <widget class="QWidget" name="pageOptions" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="maximumSize">
                   <size>
-                   <width>590</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -258,9 +264,15 @@ QTableView::item::last
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>562</width>
-                       <height>542</height>
+                       <width>262</width>
+                       <height>540</height>
                       </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
                      </property>
                      <layout class="QGridLayout" name="optionsContentAreaLayout">
                       <property name="leftMargin">
@@ -275,8 +287,22 @@ QTableView::item::last
                       <property name="bottomMargin">
                        <number>0</number>
                       </property>
-                      <item row="0" column="0" rowspan="2" colspan="2">
-                       <widget class="QWidget" name="widget" native="true"/>
+                      <item row="0" column="0">
+                       <layout class="QHBoxLayout" name="optPositioner">
+                        <item>
+                         <spacer name="horizontalSpacer">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
                       </item>
                      </layout>
                     </widget>
