@@ -18,6 +18,7 @@ public:
 
 	void setDoubleClickTarget(DropTarget *target);
 	virtual void notifyDragWasDropped() OVERRIDE;
+	virtual QSize sizeHint() const OVERRIDE;
 
 protected:
 	void focusInEvent(QFocusEvent *event) OVERRIDE;

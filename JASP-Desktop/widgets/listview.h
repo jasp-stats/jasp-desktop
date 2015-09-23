@@ -16,7 +16,8 @@ public:
 	void setDoubleClickTarget(DropTarget *target);
 	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
 	virtual void notifyDragWasDropped() OVERRIDE;
-	
+	virtual QSize sizeHint() const OVERRIDE;
+
 protected:
 	void focusInEvent(QFocusEvent *event) OVERRIDE;
 	void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) OVERRIDE;

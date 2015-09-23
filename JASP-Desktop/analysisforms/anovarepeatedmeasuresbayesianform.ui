@@ -575,6 +575,12 @@
       </property>
       <item row="1" column="0">
        <widget class="QWidget" name="containerModel" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <layout class="QGridLayout" name="gridLayout_6">
          <property name="leftMargin">
           <number>0</number>
@@ -586,7 +592,7 @@
           <number>0</number>
          </property>
          <property name="bottomMargin">
-          <number>36</number>
+          <number>0</number>
          </property>
          <item row="0" column="0">
           <widget class="AnovaModelWidget" name="modelTerms" native="true">

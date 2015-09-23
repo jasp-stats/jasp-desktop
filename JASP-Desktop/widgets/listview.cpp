@@ -88,3 +88,14 @@ void ListView::doubleClickedHandler(const QModelIndex index)
 	if (_defaultDropTarget != NULL)
 		DragAndDrop::perform(this, _defaultDropTarget);
 }
+
+QSize ListView::sizeHint() const {
+	static int width = -1;
+
+	if (width == -1)
+		width = this->fontMetrics().width("XXXXXXXXXXXXXXXXXXXX");
+
+	QSize sizeHint = QListView::sizeHint();
+	sizeHint.setWidth(width);
+	return sizeHint;
+}

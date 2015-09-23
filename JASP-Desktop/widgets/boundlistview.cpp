@@ -112,4 +112,3 @@ void BoundListView::repositionKey()
 {
 	_variableTypeKey->move(this->width() - _variableTypeKey->width(), this->height() - _variableTypeKey->height());
 }
-

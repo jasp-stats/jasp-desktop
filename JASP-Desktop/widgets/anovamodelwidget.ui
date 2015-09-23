@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>375</height>
+    <width>538</width>
+    <height>284</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -103,9 +109,6 @@
       <item row="0" column="1" rowspan="2">
        <widget class="QWidget" name="widget_14" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
-         <property name="leftMargin">
-          <number>12</number>
-         </property>
          <property name="topMargin">
           <number>0</number>
          </property>
@@ -120,6 +123,18 @@
          </property>
          <item row="1" column="1">
           <widget class="AssignButton" name="buttonAssignCross">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>50</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>50</width>
@@ -146,6 +161,18 @@
          </item>
          <item row="2" column="1">
           <widget class="AssignButtonMenu" name="buttonAssignMenu">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>50</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>50</width>
