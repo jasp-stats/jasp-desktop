@@ -268,12 +268,6 @@
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
             <item row="0" column="0">
              <widget class="QRadioButton" name="_1twoTailed">
               <property name="sizePolicy">
@@ -619,9 +613,6 @@
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
             <item row="0" column="0">
              <widget class="QRadioButton" name="_1excludeAnalysisByAnalysis">
               <property name="sizePolicy">

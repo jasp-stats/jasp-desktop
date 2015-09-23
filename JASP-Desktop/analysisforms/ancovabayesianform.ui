@@ -390,6 +390,9 @@
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_13">
+         <property name="leftMargin">
+          <number>13</number>
+         </property>
          <item row="0" column="0">
           <widget class="QRadioButton" name="_1">
            <property name="sizePolicy">
