@@ -20,6 +20,9 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
@@ -36,9 +39,6 @@
        <number>0</number>
       </property>
       <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
        <number>0</number>
       </property>
       <property name="verticalSpacing">
@@ -366,7 +366,7 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <item row="0" column="0">
        <widget class="ExpanderButton" name="expanderModel">
@@ -473,13 +473,13 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>2</number>
+       <number>3</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <item row="0" column="0">
        <widget class="ExpanderButton" name="expanderAssumptions">
@@ -554,13 +554,13 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>2</number>
+       <number>3</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <item>
        <widget class="ExpanderButton" name="expanderContrasts">
@@ -623,13 +623,13 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>2</number>
+       <number>3</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <item row="1" column="0">
        <widget class="QWidget" name="containerPostHocTests" native="true">
@@ -720,7 +720,7 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>2</number>
+       <number>3</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
@@ -1252,13 +1252,13 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>2</number>
+       <number>3</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <item row="4" column="0">
        <widget class="QWidget" name="containerOptions" native="true">

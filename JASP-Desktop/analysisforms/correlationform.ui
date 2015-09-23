@@ -20,6 +20,9 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
@@ -42,9 +45,6 @@
        <number>0</number>
       </property>
       <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
        <number>0</number>
       </property>
       <property name="verticalSpacing">
@@ -376,7 +376,7 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
+       <number>3</number>
       </property>
       <item row="0" column="0">
        <widget class="ExpanderButton" name="buttonOptions">
