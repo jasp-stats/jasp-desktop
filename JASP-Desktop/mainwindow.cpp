@@ -539,24 +539,24 @@ void MainWindow::showForm(Analysis *analysis)
 	{
 
 //sizing of options widget and panel to fit buttons and conform to largest size for consistency
-		QWidget *widest;
-		int ww = 0;
+		//QWidget *widest;
+		//int ww = 0;
 
 		QObjectList siblings = _currentOptionsWidget->children();
 		for (QObjectList::Iterator itr = siblings.begin(); itr != siblings.end(); itr++) {
 			QWidget* w = dynamic_cast<QWidget*>(*itr);
 			if (w != NULL && w->objectName() == "topWidget") {
 				w->setContentsMargins(0, 0, _buttonPanel->width(), 0);
-				//break;
+				break;
 			}
 
-			if (w != NULL && w->sizeHint().width() > ww) {
-				widest = w;
-				ww = w->sizeHint().width();
-			}
+			//if (w != NULL && w->sizeHint().width() > ww) {
+			//	widest = w;
+			//	ww = w->sizeHint().width();
+			//}
 		}
 
-		QString dd = widest->objectName();
+		//QString dd = widest->objectName();
 
 		int requiredSize = _currentOptionsWidget->sizeHint().width();
 		int currentOptionSpace = ui->panelMid->minimumWidth() - _scrollbarWidth;
@@ -1194,6 +1194,8 @@ void MainWindow::showOptionsPanel()
 
 		ui->splitter->setSizes(sizes);
 	}
+
+	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 }
 
 void MainWindow::showTableView()
