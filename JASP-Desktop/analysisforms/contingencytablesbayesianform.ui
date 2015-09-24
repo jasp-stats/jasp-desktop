@@ -336,6 +336,9 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
+      <property name="verticalSpacing">
+       <number>0</number>
+      </property>
       <item row="1" column="0" colspan="2">
        <widget class="ExpanderButton" name="pushButton">
         <property name="sizePolicy">
