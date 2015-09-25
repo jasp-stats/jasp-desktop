@@ -202,8 +202,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	updateUIFromOptions();
 
-	ui->panelMid->hide();
-
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 
 	QUrl userGuide = QUrl::fromLocalFile(AppDirs::help() + "/index.html");
@@ -240,6 +238,8 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
 		setupOptionPanelSize();
+
+		ui->panelMid->hide();
 }
 
 void MainWindow::open(QString filepath)
@@ -522,11 +522,13 @@ AnalysisForm* MainWindow::loadForm(const string name)
 
 void MainWindow::setupOptionPanelSize()
 {
-	/*AnalysisForm* form = loadForm("Descriptives");
+	//AnalysisForm* form = loadForm("Descriptives");
 
-	int requiredSize = form->sizeHint().width();
-	ui->panelMid->setMinimumWidth(requiredSize + _scrollbarWidth);
-	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);*/
+	//int width = form->sizeHint().width() + _scrollbarWidth;// form->fontMetrics().width("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+	//QList<int> sizes = ui->splitter->sizes();
+	//sizes[0] = width;
+	//ui->splitter->setSizes(sizes);
 }
 
 void MainWindow::showForm(Analysis *analysis)
@@ -555,7 +557,7 @@ void MainWindow::showForm(Analysis *analysis)
 			ui->panelMid->setMinimumWidth(requiredSize + _scrollbarWidth);
 			_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 		}
-		_currentOptionsWidget->setMinimumWidth(currentOptionSpace);
+		//_currentOptionsWidget->setMinimumWidth(ui->panelMid->minimumWidth() - _scrollbarWidth);
 //#########################
 
 		Options *options = analysis->options();
