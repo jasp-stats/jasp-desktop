@@ -331,10 +331,12 @@ void EngineSync::startSlaveProcess(int no)
 	QString rHomePath = programDir.absoluteFilePath("R");
 #elif __APPLE__
 	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources");
-#else
+#else //linux
 
 #ifndef R_HOME
-	QString rHomePath("/usr/lib/R");
+	QString rHomePath = programDir.absoluteFilePath("R/lib/libR.so");
+	if (QFileInfo(rHomePath).exists() == false)
+		rHomePath = "/usr/lib/R";
 #else
 	QString rHomePath;
 	if (QDir::isRelativePath(R_HOME))
@@ -364,7 +366,7 @@ void EngineSync::startSlaveProcess(int no)
 
 #undef ARCH_SUBPATH
 
-	env.insert("R_LIBS", programDir.absoluteFilePath("R-library") + ";" + rHome.absoluteFilePath("library"));
+	env.insert("R_LIBS", rHome.absoluteFilePath("library"));
 
 	env.insert("R_ENVIRON", "something-which-doesnt-exist");
 	env.insert("R_PROFILE", "something-which-doesnt-exist");
@@ -376,7 +378,7 @@ void EngineSync::startSlaveProcess(int no)
 #elif __APPLE__
 
 	env.insert("R_HOME", rHome.absolutePath());
-	env.insert("R_LIBS", programDir.absoluteFilePath("R-library") + ":" + rHome.absoluteFilePath("library"));
+	env.insert("R_LIBS", rHome.absoluteFilePath("library"));
 
 	env.insert("R_ENVIRON", "something-which-doesnt-exist");
 	env.insert("R_PROFILE", "something-which-doesnt-exist");
@@ -389,7 +391,7 @@ void EngineSync::startSlaveProcess(int no)
 
 	env.insert("LD_LIBRARY_PATH", rHome.absoluteFilePath("lib") + ";" + rHome.absoluteFilePath("library/RInside/lib") + ";" + rHome.absoluteFilePath("library/Rcpp/lib") + ";" + rHome.absoluteFilePath("site-library/RInside/lib") + ";" + rHome.absoluteFilePath("site-library/Rcpp/lib"));
 	env.insert("R_HOME", rHome.absolutePath());
-	env.insert("R_LIBS", programDir.absoluteFilePath("R-library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
+	env.insert("R_LIBS", programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
 
 #endif
 

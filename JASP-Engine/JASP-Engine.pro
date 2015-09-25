@@ -90,9 +90,9 @@ win32:LIBS += \
 
 win32:LIBS += -lole32 -loleaut32
 
-mkpath($$OUT_PWD/../R-library)
+mkpath($$OUT_PWD/../R/library)
 
-InstallJASPRPackage.commands += \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R-library $$PWD/JASP
+InstallJASPRPackage.commands += \"$$R_EXE\" CMD INSTALL --library=$$OUT_PWD/../R/library $$PWD/JASP
 
 QMAKE_EXTRA_TARGETS += InstallJASPRPackage
 PRE_TARGETDEPS      += InstallJASPRPackage
