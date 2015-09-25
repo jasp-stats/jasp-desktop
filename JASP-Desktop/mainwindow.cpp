@@ -453,7 +453,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 
 	AnalysisForm *form = NULL;
 
-	QWidget *contentArea = ui->optionArea;
+	QWidget *contentArea = ui->optionsContentArea;
 
 	if (name == "Descriptives")
 		form = new DescriptivesForm(contentArea);
@@ -566,7 +566,7 @@ void MainWindow::showForm(Analysis *analysis)
 		illegalOptionStateChanged();
 
 		_currentOptionsWidget->show();
-		ui->optionAreaLayout->addWidget(_currentOptionsWidget,0, 0, Qt::AlignRight | Qt::AlignTop);
+		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget,0, 0, Qt::AlignRight | Qt::AlignTop);
 
 		if (ui->panelMid->isVisible() == false)
 			showOptionsPanel();
