@@ -19,11 +19,11 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="verticalSpacing">
     <number>0</number>
    </property>
-   <item>
+   <item row="0" column="0">
     <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -426,7 +426,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="1" column="0">
     <widget class="QWidget" name="widget_10" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -542,7 +542,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="2" column="0">
     <widget class="QWidget" name="groupAssumptions" native="true">
      <layout class="QGridLayout" name="gridLayout_25">
       <property name="leftMargin">
@@ -630,7 +630,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="3" column="0">
     <widget class="QWidget" name="widget_14" native="true">
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <property name="leftMargin">
@@ -699,7 +699,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="4" column="0">
     <widget class="QWidget" name="widget_13" native="true">
      <layout class="QGridLayout" name="gridLayout_20">
       <property name="leftMargin">
@@ -796,7 +796,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="5" column="0">
     <widget class="QWidget" name="descriptivesPlot" native="true">
      <layout class="QGridLayout" name="gridLayout_24">
       <property name="leftMargin">
@@ -1390,7 +1390,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="6" column="0">
     <widget class="QWidget" name="groupOptions" native="true">
      <layout class="QGridLayout" name="gridLayout_12">
       <property name="leftMargin">
@@ -1637,7 +1637,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="7" column="0">
     <spacer name="verticalSpacer_3">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

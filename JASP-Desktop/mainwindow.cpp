@@ -453,7 +453,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 
 	AnalysisForm *form = NULL;
 
-	QWidget *contentArea = ui->optionsArea;
+	QWidget *contentArea = ui->optionArea;
 
 	if (name == "Descriptives")
 		form = new DescriptivesForm(contentArea);
@@ -552,7 +552,7 @@ void MainWindow::showForm(Analysis *analysis)
 		int requiredSize = _currentOptionsWidget->sizeHint().width();
 		int currentOptionSpace = ui->panelMid->minimumWidth() - _scrollbarWidth;
 		if (requiredSize > currentOptionSpace) {
-			ui->panelMid->setMinimumWidth(requiredSize + _scrollbarWidth + 3);
+			ui->panelMid->setMinimumWidth(requiredSize + _scrollbarWidth);
 			_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 		}
 		_currentOptionsWidget->setMinimumWidth(currentOptionSpace);
@@ -566,7 +566,7 @@ void MainWindow::showForm(Analysis *analysis)
 		illegalOptionStateChanged();
 
 		_currentOptionsWidget->show();
-		ui->optPositioner->addWidget(_currentOptionsWidget, 0, Qt::AlignRight | Qt::AlignTop);
+		ui->optionAreaLayout->addWidget(_currentOptionsWidget,0, 0, Qt::AlignRight | Qt::AlignTop);
 
 		if (ui->panelMid->isVisible() == false)
 			showOptionsPanel();

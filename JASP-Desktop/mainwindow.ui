@@ -287,9 +287,12 @@ QTableView::item::last
                       <property name="bottomMargin">
                        <number>0</number>
                       </property>
+                      <property name="horizontalSpacing">
+                       <number>0</number>
+                      </property>
                       <item row="0" column="0">
-                       <widget class="QWidget" name="optionsArea" native="true">
-                        <layout class="QHBoxLayout" name="optPositioner">
+                       <widget class="QWidget" name="optionArea" native="true">
+                        <layout class="QGridLayout" name="optionAreaLayout">
                          <property name="leftMargin">
                           <number>0</number>
                          </property>
@@ -300,6 +303,9 @@ QTableView::item::last
                           <number>0</number>
                          </property>
                          <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="spacing">
                           <number>0</number>
                          </property>
                         </layout>

@@ -19,11 +19,11 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
+  <layout class="QGridLayout" name="gridLayout_2">
+   <property name="verticalSpacing">
     <number>0</number>
    </property>
-   <item>
+   <item row="0" column="0">
     <widget class="QWidget" name="topWidget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -374,7 +374,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="1" column="0">
     <widget class="QWidget" name="modelContainer" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -424,7 +424,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="2" column="0">
     <widget class="QWidget" name="widget_7" native="true">
      <layout class="QGridLayout" name="gridLayout_16">
       <property name="leftMargin">
@@ -690,7 +690,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="3" column="0">
     <widget class="QWidget" name="widgetOptions" native="true">
      <layout class="QGridLayout" name="gridLayout_17">
       <property name="leftMargin">
@@ -942,7 +942,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="4" column="0">
     <widget class="QWidget" name="widget_8" native="true">
      <layout class="QGridLayout" name="gridLayout_29">
       <property name="leftMargin">
@@ -1061,7 +1061,7 @@
      </layout>
     </widget>
    </item>
-   <item>
+   <item row="5" column="0">
     <spacer name="verticalSpacer_2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
