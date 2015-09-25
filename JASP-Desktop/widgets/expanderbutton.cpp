@@ -15,6 +15,8 @@ ExpanderButton::ExpanderButton(QWidget *parent) :
 	setCheckable(true);
 	setIcon(_contractedIcon);
 
+	setFocusPolicy(Qt::NoFocus);
+
 #ifdef __APPLE__
 	setStyleSheet(QString("QPushButton { text-align: left ; }"));
 #else
