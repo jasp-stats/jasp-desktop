@@ -288,7 +288,7 @@ QTableView::item::last
                        <number>0</number>
                       </property>
                       <item row="0" column="0">
-                       <widget class="QWidget" name="" native="true">
+                       <widget class="QWidget" name="optionsArea" native="true">
                         <layout class="QHBoxLayout" name="optPositioner">
                          <property name="leftMargin">
                           <number>0</number>
