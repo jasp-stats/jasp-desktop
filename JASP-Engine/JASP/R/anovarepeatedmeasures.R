@@ -451,9 +451,11 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	model <- NULL
 	epsilon <- NULL
 	mauchly <- NULL
-	
+		
 	if (length(class(result)) == 1 && class(result) == "try-error") {
-
+		
+		fullModel <- result
+		
 		status$error <- TRUE
 		status$errorMessage <- .extractErrorMessage(result)
 		
@@ -476,7 +478,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			model <- summary(result)
 			
 		} else {
-						
+										
 			summaryResult <- summary(result)
 			model <- summaryResult$univariate.tests
 			epsilon <- summaryResult$pval.adjustments
@@ -2016,7 +2018,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 		base_breaks_y <- function(x, plotErrorBars){
 			if (plotErrorBars) {
-				ci.pos <- c(x[,"ciLower"],x[,"ciUpper"])
+				ci.pos <- c(x[,"dependent"], x[,"ciLower"],x[,"ciUpper"])
 				b <- pretty(ci.pos)
 				d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
 				list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),

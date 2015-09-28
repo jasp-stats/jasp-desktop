@@ -89,7 +89,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			stateDescriptivesPlot <- state$stateDescriptivesPlot
 		}
 		
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE) {
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['homogeneityTests']] == FALSE) {
 		
 			# old levene's table can be used
 			
