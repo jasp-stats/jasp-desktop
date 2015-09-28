@@ -168,7 +168,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_scrollbarWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
 
-	_buttonPanel = new QWidget(ui->pageOptions);
+	_buttonPanel = new QWidget(ui->panelMid);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
 	_buttonPanelLayout->setSpacing(6);
 	_buttonPanelLayout->setContentsMargins(0, _buttonPanelLayout->contentsMargins().top(), _buttonPanelLayout->contentsMargins().right(), 0);

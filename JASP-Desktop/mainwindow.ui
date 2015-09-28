@@ -171,7 +171,7 @@ QTableView::item::last
              </widget>
              <widget class="QWidget" name="panelMid" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -209,13 +209,32 @@ QTableView::item::last
                <property name="spacing">
                 <number>0</number>
                </property>
-               <item row="1" column="0">
-                <widget class="QWidget" name="widget_2" native="true"/>
+               <item row="0" column="0" colspan="2">
+                <widget class="QWidget" name="optionsErrorPanel" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>24</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color : #FF5555 ;</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_7">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="optionsErrorLabel">
+                    <property name="text">
+                     <string>Confidence Interval must be between 80 and 99</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
                </item>
                <item row="1" column="1">
                 <widget class="QWidget" name="pageOptions" native="true">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -306,26 +325,14 @@ QTableView::item::last
                  </layout>
                 </widget>
                </item>
-               <item row="0" column="0" colspan="2">
-                <widget class="QWidget" name="optionsErrorPanel" native="true">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>24</height>
-                  </size>
+               <item row="1" column="0">
+                <widget class="QWidget" name="widget_2" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color : #FF5555 ;</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_7">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="optionsErrorLabel">
-                    <property name="text">
-                     <string>Confidence Interval must be between 80 and 99</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
                 </widget>
                </item>
               </layout>
