@@ -323,7 +323,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	menuName: "Analysis",
 
-	renderChildren: function ($element, result, status, metaEntry) {
+	createChild: function (result, status, metaEntry) {
+
+		var itemView = null;
 
 //backwards compatibility//////////////////
 		if (metaEntry.type == "title") {
@@ -353,18 +355,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.labelRequest = null;
 ///////////////////////////////////////////
 
-			var itemView = JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status, childOfCollection: false, embeddedLevel: 1 }, false);
-			if (itemView !== null) {
-				this.passNoteObjToView([metaEntry.name], itemView);
-
-				this.views.push(itemView);
-				this.volatileViews.push(itemView);
-
-				itemView.render();
-				$element.append(itemView.$el);
-			}
+			itemView = JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status, childOfCollection: false, embeddedLevel: 1 }, false);
 		}
 
+		return itemView;
 	},
 
 	render: function () {
@@ -372,13 +366,16 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.toolbar.$el.detach();
 		this.detachNotes();
 
+		var $innerElement = this.$el;
+
+		var $tempClone = $innerElement.clone();
+		this.$el.before($tempClone).detach(); 
+
 		this.destroyViews();
 
 		this.views.push(this.viewNotes.firstNoteBox);
 
-		this.$el.empty();
-
-		var $innerElement = this.$el;
+		$innerElement.empty();
 
 		var results = this.model.get("results");
 		if (results.error) {
@@ -397,8 +394,19 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 			for (var i = 0; i < meta.length; i++) {
 
-				if (_.has(results, meta[i].name))
-					this.renderChildren($innerElement, results[meta[i].name], this.model.get("status"), meta[i])
+				var name = meta[i].name;
+				if (_.has(results, name)) {
+					var itemView = this.createChild(results[name], this.model.get("status"), meta[i])
+					if (itemView !== null) {
+						this.passNoteObjToView([name], itemView);
+
+						this.views.push(itemView);
+						this.volatileViews.push(itemView);
+
+						itemView.render();
+						$innerElement.append(itemView.$el);
+					}
+				}
 			}
 
 		}
@@ -418,6 +426,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		$innerElement.prepend(this.toolbar.$el);
 
 		this.views.push(this.viewNotes.lastNoteBox);
+
+		$tempClone.replaceWith($innerElement);
+		$tempClone.empty();
 
 		return this;
 	},
