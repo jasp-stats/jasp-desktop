@@ -378,7 +378,7 @@ void EngineSync::startSlaveProcess(int no)
 #elif __APPLE__
 
 	env.insert("R_HOME", rHome.absolutePath());
-	env.insert("R_LIBS", rHome.absoluteFilePath("library"));
+	env.insert("R_LIBS", rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
 
 	env.insert("R_ENVIRON", "something-which-doesnt-exist");
 	env.insert("R_PROFILE", "something-which-doesnt-exist");
