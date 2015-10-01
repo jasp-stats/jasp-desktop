@@ -740,7 +740,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							if (options$bayesFactorType == "BF10") {
 								ttest.rows[[length(ttest.rows)]]$BF <- exp(state$results$ttest$data[[index]]$BF)
 							} else if (options$bayesFactorType == "BF01") {
-								ttest.rows[[length(ttest.rows)]]$BF <- exp(1 / state$results$ttest$data[[index]]$BF)
+								ttest.rows[[length(ttest.rows)]]$BF <- 1 / exp(state$results$ttest$data[[index]]$BF)
 							}
 						}
 					}
@@ -848,7 +848,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 								if (options$bayesFactorType == "BF10") {
 									ttest.rows[[rowNo]]$BF <- exp(state$results$ttest$data[[index]]$BF)
 								} else if (options$bayesFactorType == "BF01") {
-									ttest.rows[[rowNo]]$BF <- exp(1 / state$results$ttest$data[[index]]$BF)
+									ttest.rows[[rowNo]]$BF <- 1 / exp(state$results$ttest$data[[index]]$BF)
 								}
 							}
 						}
