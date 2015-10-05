@@ -392,7 +392,11 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		this.editing = false;
 		this.ghostTextVisible = true;
-		this.visible = this.model.get('visible') !== null ? this.model.get('visible') : (this.model.get('text') !== '');
+
+		this.visible = this.model.get('visible');
+		if (this.visible === undefined || this.visible === null)
+			this.visible = false;
+
 		this.internalChange = false;
 
 		if (this.model.get('format') !== 'html')
