@@ -38,6 +38,9 @@ var Mrkdwn = {
 			}
 		}
 
+		if (markdown === null)
+			markdown = '';
+
 		return markdown;
 	},
 
@@ -663,7 +666,7 @@ var Mrkdwn = {
 		var parsed = '<blockquote>';
 		if (obj.inner !== undefined)
 			parsed += this._processIndentedMrkdownNode(obj.inner, data, true);
-			//parsed += this['_processMrkdownObj_' + obj.inner.id](obj.inner, data);
+		//parsed += this['_processMrkdownObj_' + obj.inner.id](obj.inner, data);
 
 		if (levelData.currentObjIndex + 1 < levelData.objects.length) {
 			var next = levelData.objects[levelData.currentObjIndex + 1];
@@ -674,7 +677,7 @@ var Mrkdwn = {
 					parsed += this._processMrkdownObj_quote(next, data);
 				else if (next.inner !== undefined)
 					parsed += this._processIndentedMrkdownNode(next.inner, data, true);
-					//parsed += this['_processMrkdownObj_' + next.inner.id](next.inner, data);
+				//parsed += this['_processMrkdownObj_' + next.inner.id](next.inner, data);
 
 				if (levelData.currentObjIndex + 1 >= levelData.objects.length)
 					break;
@@ -1082,6 +1085,43 @@ var Mrkdwn = {
 				levelData.substitutionMethod = true;
 			}
 		}
+		else if (cmd === '<') {
+			var i = 0;
+			var endIndex = -1;
+			for (i = levelData.nextIndex + 2; i < levelData.nextIndex + 20; i++) {
+				if (i >= text.length)
+					break;
+
+				var terminator = text[i]
+				if (terminator === '<')
+					break;
+				else if (terminator === '>') {
+					endIndex = i;
+					break;
+				}
+			}
+
+			ignored = endIndex === -1;
+
+			if (!ignored) {
+				var tag = text.substring(levelData.nextIndex + 1, endIndex);
+				if (tag[0] === '/')
+					tag = tag.substring(1);
+				else if (tag[tag.length - 1] === '/')
+					tag = tag.substring(0, tag.length - 1);
+
+				if (this._checkHTMLWhitelist(tag) === false) {
+					levelData.typeName = 'blackListedHTMLTag';
+					levelData.typeChar = tag;
+					levelData.typeIgnoreChar = [];
+					levelData.typeCount = 1;
+					levelData.substitutionMethod = true;
+					levelData.skipTo = endIndex + 1;
+				}
+				else
+					ignored = true;
+			}
+		}
 		else {
 			ignored = true;
 			levelData.typeName = '';
@@ -1094,6 +1134,10 @@ var Mrkdwn = {
 		levelData.isEscaped = isEscaped;
 
 		return !ignored;
+	},
+
+	_checkHTMLWhitelist: function (tag) {
+		return tag === 'em' || tag === 'strong' || tag === 'b' || tag === 'i' || tag === 'sup' || tag === 'sub' || tag === 'p' || tag === 'ol' || tag === 'ul' || tag === 'li';
 	},
 
 	_checkForMarkdownWordModifiers: function (text, data) {
@@ -1123,7 +1167,10 @@ var Mrkdwn = {
 							textStart = levelData.nextIndex;
 						textLength += levelData.typeCount;
 					}
-					levelData.nextIndex += levelData.typeCount;
+					if (levelData.skipTo !== undefined)
+						levelData.nextIndex = levelData.skipTo;
+					else
+						levelData.nextIndex += levelData.typeCount;
 				}
 				else {
 					this._addIgnoreList(data, levelData.typeIgnoreChar);
@@ -1150,6 +1197,10 @@ var Mrkdwn = {
 		copyText();
 
 		return parsed
+	},
+
+	_processMrkdownSub_blackListedHTMLTag_1: function (text, data) {
+		return '';
 	},
 
 	_processMrkdownSub_dash_2: function(text, data) {

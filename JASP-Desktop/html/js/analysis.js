@@ -203,7 +203,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				}
 
 				if (j === fullKeyPath.length - 1) {
-					nextLevel.text = Mrkdwn.fromHtmlText(noteBoxData.note.get('text'));
+					if (noteBoxData.widget.isTextboxEmpty())
+						nextLevel.text = '';
+					else
+						nextLevel.text = Mrkdwn.fromHtmlText(noteBoxData.note.get('text'));
 					nextLevel.format = 'markdown';
 					nextLevel.visible = noteBoxData.widget.visible;
 				}
