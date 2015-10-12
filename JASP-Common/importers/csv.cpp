@@ -1,6 +1,8 @@
 
 #include "csv.h"
 
+#include <boost/algorithm/string.hpp>
+
 #include <iostream>
 #include <cstring>
 #include <stdexcept>
@@ -8,6 +10,7 @@
 #include "utils.h"
 
 using namespace std;
+using boost::algorithm::trim;
 
 CSV::CSV(const string &path)
 {
@@ -346,12 +349,16 @@ bool CSV::readLine(vector<string> &items)
 		else if (ch == _delim)
 		{
 			string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
+			trim(token);
+
 			items.push_back(token);
 			_utf8BufferStartPos = i + 1;
 		}
 		else if (ch == '\r')
 		{
 			string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
+			trim(token);
+
 			items.push_back(token);
 
 			if (i + 1 < _utf8BufferEndPos && _utf8Buffer[i + 1] == '\n')
@@ -364,6 +371,8 @@ bool CSV::readLine(vector<string> &items)
 		else if (ch == '\n')
 		{
 			string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
+			trim(token);
+
 			items.push_back(token);
 
 			_utf8BufferStartPos = i + 1;
@@ -381,6 +390,8 @@ bool CSV::readLine(vector<string> &items)
 			else // eof
 			{
 				string token(&_utf8Buffer[_utf8BufferStartPos], _utf8BufferEndPos - _utf8BufferStartPos);
+				trim(token);
+
 				items.push_back(token);
 				_eof = true;
 				break;
