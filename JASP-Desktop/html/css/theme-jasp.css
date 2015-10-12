@@ -73,6 +73,12 @@ h6, .h6-toolbar .jasp-menu {
 	padding-left: 0.6em ;
 }
 
+.jasp-collapsed {
+	max-width: 70em;
+	min-width: 40em;
+	background-color: rgba(224, 224, 224, 0.5) ;
+	border: 1px solid rgba(105, 105, 105, 1) ;
+}
 
 table {
 	font-style: normal ;
@@ -424,6 +430,14 @@ td.squash-left
 .jasp-menu {
 
 	background: center no-repeat url(images/menu-indicator.svg);
+	background-size: 70% ;
+	width:  16px ;
+	height: 16px ;
+	margin-left: 4px ;
+}
+
+.jasp-collapsed .jasp-menu {
+	background: center no-repeat url(images/expand.png);
 	background-size: 70% ;
 	width:  16px ;
 	height: 16px ;

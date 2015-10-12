@@ -87,8 +87,12 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		this.views = [];
 		this.localViews = [];
 
+		this.$el.addClass('jasp-collapsible');
+
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
 		this.toolbar.setParent(this);
+
+		this.listenTo(this.model, 'change:collapsed', this.onCollapsedChange);
 	},
 
 	events: {
@@ -112,6 +116,12 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 
 	setUserData: function (details, data) {
 		this.userDataDetails = details;
+		this.settingUserData = true;
+		if (data !== null) {
+			if (data.collapsed !== undefined)
+				this.model.set("collapsed", data.collapsed);
+		}
+		this.settingUserData = false;
 	},
 
 	getLocalUserData: function () {
@@ -120,6 +130,10 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 
 		var userData = {};
 
+		if (this.$el.hasClass('jasp-collapsed')) {
+			userData.collapsed = true;
+			hasData = true;
+		}
 
 		if (this.noteBox.visible) {
 
@@ -210,8 +224,16 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		this.toolbar.title = title;
 		this.toolbar.render();
 
+		var collapsed = this.model.get("collapsed");
+
 		var styleAttr = '';
+		styleAttr = collapsed ? ' style="display: none;"' : '';
+
+		if (collapsed)
+			this.$el.addClass('jasp-collapsed');
+
 		this.$body = $('<div class="object-body"' + styleAttr + '></div>');
+
 		for (var i = 0; i < this.views.length; i++) {
 			var itemView = this.views[i];
 			itemView.render();
@@ -248,6 +270,49 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		this.exportBegin(exportParams);
 
 		return true;
+	},
+
+	colapseOptions: function () {
+		var collapsed = this.model.get('collapsed');
+
+		var text = collapsed ? 'Expand' : 'Colapse';
+
+		return { menuText: text };
+	},
+
+	setColapsedState: function(colapsed) {
+		var self = this;
+		if (colapsed) {		
+			window.slideAlpha(this.$el, 300, ['border-color', 'background-color'], [1, 0.5], 10, true, function () {
+				self.$el.addClass('jasp-collapsed');
+			});
+			this.$body.slideUp(300);
+		}
+		else {
+			window.slideAlpha(self.$el, 600, ['border-color', 'background-color'], [0, 0], 20, true, function () {
+				self.$el.removeClass('jasp-collapsed');
+			});
+			this.$body.slideDown(300);
+		}
+		this.model.set('collapsed', colapsed);
+	},
+
+	isCollapsed: function() {
+		var collapsed = this.model.get('collapsed')
+		if (collapsed)
+			return true;
+
+		return false;
+	},
+
+	colapseMenuClicked: function () {
+		var collapsed = this.model.get('collapsed');
+		this.setColapsedState(!collapsed);
+	},
+
+	onCollapsedChange: function() {
+		if (!this.settingUserData)
+			this.$el.trigger("changed:userData", [this.userDataDetails, [{ key: 'collapsed', value: this.isCollapsed() }]]);
 	},
 
 	indentChildren: true,

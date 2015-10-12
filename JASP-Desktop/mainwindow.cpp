@@ -1347,6 +1347,13 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 
 	QString objName = tq(menuOptions["objectName"].asString());
 
+	if (menuOptions["hasColapse"].asBool())
+	{
+		Json::Value colapseOptions = menuOptions["colapseOptions"];
+		_analysisMenu->addAction(tq(colapseOptions["menuText"].asString()), this, SLOT(colapseSelected()));
+		_analysisMenu->addSeparator();
+	}
+
 	if (menuOptions["hasEditTitle"].asBool())
 	{
 		_analysisMenu->addAction("Edit Title", this, SLOT(editTitleSelected()));
@@ -1381,6 +1388,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 			a1->setData(call);
 		}
 	}
+
 
 	if (menuOptions["hasRemove"].asBool())
 	{
@@ -1474,6 +1482,14 @@ void MainWindow::simulatedMouseClickHandler(int x, int y, int count) {
 void MainWindow::updateUserDataHandler(int id, QString key)
 {
 	_package->setModified(true);
+}
+
+
+void MainWindow::colapseSelected()
+{
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.colapseMenuClicked();");
+
 }
 
 void MainWindow::removeSelected()

@@ -120,6 +120,7 @@ private slots:
 	void removeAnalysisRequestHandler(int id);
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
+	void colapseSelected();
 	void editTitleSelected();
 	void copySelected();
 	void citeSelected();

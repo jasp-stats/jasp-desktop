@@ -73,6 +73,13 @@ $(document).ready(function () {
 		window.menuObject = null;
 	}
 
+	window.colapseMenuClicked = function () {
+		if (window.menuObject.colapseMenuClicked)
+			window.menuObject.colapseMenuClicked();
+
+		window.menuObject = null;
+	}
+
 	window.editTitleMenuClicked = function () {
 		if (window.menuObject.editTitleClicked)
 			window.menuObject.editTitleClicked()
@@ -172,6 +179,108 @@ $(document).ready(function () {
 		}
 
 	}
+
+	window.slideAlpha = function (item, time, cssProperties, targetAlphas, divisions, clearStyleOnZero, completeCallback) {
+
+		var params = {
+			item: item,
+			cssProperties: cssProperties,
+			cssValues: item.css(cssProperties),
+			colors: [],
+			alphas: [],
+			rates: [],
+			targetAlphas: targetAlphas,
+			baseTime: 0,
+			waitTime: time / divisions,
+			clearStyleOnZero: clearStyleOnZero,
+			callback: completeCallback,
+			divisions: divisions,
+			count: 0
+		}
+
+		var propertiesLeft = 0;
+
+		for (var i = 0; i < cssProperties.length; i++) {
+
+			var cssValue = params.cssValues[cssProperties[i]];
+
+			var alpha = 1;
+			var pre = cssValue.substring(0, 4);
+			if (pre === 'rgba') {
+				var color = cssValue.substring(5, cssValue.length - 1);
+				var lastComma = color.lastIndexOf(",");
+				alpha = parseFloat(color.substring(lastComma + 1, color.length));
+				params.colors.push(color.substring(0, lastComma));
+			}
+			else if (pre === 'rgb(')
+				params.colors.push(cssValue.substring(4, cssValue.length - 1));
+			else {
+				cssValue = parseInt(cssValue);
+				alpha = (cssValue >> 24) & 255;
+				params.colors.push((cssValue & 255) + ', ' + ((cssValue >> 8) & 255) + ', ' + ((cssValue >> 16) & 255));
+			}
+
+			var diff = targetAlphas[i] - alpha;
+			if (diff !== 0) {
+				params.rates.push(diff / divisions);
+				propertiesLeft += 1;
+			}
+			else
+				params.rates.push(0);
+
+			params.alphas.push(alpha);
+		}
+
+		if (propertiesLeft > 0) {
+			var totalWaitTime = params.waitTime;
+			for (var f = 0; f < divisions; f++) {
+				setTimeout(window.nudgeAlpha, totalWaitTime - params.baseTime, params);
+				totalWaitTime += params.waitTime;
+			}
+		}
+	}
+
+	window.nudgeAlpha = function (params) {
+
+		params.count += 1;
+
+		var changes = false;
+		for (var i = 0; i < params.cssProperties.length; i++) {
+			var rate = params.rates[i];
+			if (rate === 0)
+				continue;
+
+			var color = params.colors[i];
+			var alpha = params.alphas[i] + rate;
+			var targetAlpha = params.targetAlphas[i];
+
+			alpha = Math.round(alpha * 1000) / 1000;
+
+			if ((alpha >= targetAlpha && rate > 0) || (alpha <= targetAlpha && rate < 0))
+				alpha = targetAlpha;
+
+			if (params.clearStyleOnZero && (params.count === params.divisions || alpha === targetAlpha))
+				params.cssValues[params.cssProperties[i]] = "";
+			else
+				params.cssValues[params.cssProperties[i]] = 'rgba(' + color + ', ' + alpha + ')';
+
+			if (params.count < params.divisions && alpha !== targetAlpha) 
+				params.alphas[i] = alpha;
+			else
+				params.rates[i] = 0;
+
+			changes = true;
+		}
+
+		if (changes)
+			params.item.css(params.cssValues);
+
+		params.baseTime += params.waitTime;
+
+		if (params.count === params.divisions)
+			params.callback();			
+	}
+
 
 	window.unselect = function () {
 
