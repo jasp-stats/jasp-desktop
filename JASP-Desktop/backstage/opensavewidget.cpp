@@ -18,10 +18,9 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	setLayout(layout);
 
 	_tabWidget = new VerticalTabWidget(this);
+	_tabWidget->setMaximumWidth(600);
 
 	QWidget *webWidget = new QWidget(this);
-	webWidget->setMinimumWidth(400);
-	webWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 	/*QGridLayout *webWidgetLayout = new QGridLayout(webWidget);
 	webWidgetLayout->setMargin(36);
 
