@@ -35,6 +35,8 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 
 	menuName: "Plot",
 
+	indentChildren: false,
+
 	notePositionBottom: true,
 
 	constructChildren: function (constructor, data) {
@@ -44,7 +46,7 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 			return self.$el.find('.jasp-image-holder');
 		};
 
-		var imagePrimative = new JASPWidgets.imagePrimative({ model: this.model, className: "jasp-image-holder" });
+		var imagePrimative = new JASPWidgets.imagePrimative({ model: this.model, className: "jasp-image-holder  jasp-display-primative" });
 		this.resizer = imagePrimative.resizer;
 		this.localViews.push(imagePrimative);
 		this.views.push(imagePrimative);

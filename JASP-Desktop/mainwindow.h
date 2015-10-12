@@ -84,7 +84,7 @@ private:
 	QString _fatalError;
 
 	QString escapeJavascriptString(const QString &str);
-	void getAnalysesNotes();
+	void getAnalysesUserData();
 	Json::Value getResultsMeta();
 
 signals:
@@ -97,15 +97,15 @@ signals:
 	void saveTempImage(int id, QString path, QByteArray data);
 	void showAnalysesMenu(QString options);
 	void removeAnalysisRequest(int id);
-	void updateNote(int id, QString key);
-	void updateAnalysesNotes(QString notes);
+	void updateUserData(int id, QString key);
+	void updateAnalysesUserData(QString userData);
 	void simulatedMouseClick(int x, int y, int count);
 	void resultsDocumentChanged();
 
 private slots:
 
 	void analysisResultsChangedHandler(Analysis* analysis);
-	void analysisNotesLoadedHandler(Analysis *analysis);
+	void analysisUserDataLoadedHandler(Analysis *analysis);
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
 	void pushImageToClipboardHandler(const QByteArray &base64, const QString &html);
@@ -116,7 +116,7 @@ private slots:
 
 	void resultsDocumentChangedHandler();
 	void simulatedMouseClickHandler(int x, int y, int count);
-	void updateNoteHandler(int id, QString key);
+	void updateUserDataHandler(int id, QString key);
 	void removeAnalysisRequestHandler(int id);
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();

@@ -16,7 +16,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		this.noteBox = new JASPWidgets.NoteBox({ className: "jasp-notes jasp-main-note jasp_top_level", model: this.note });
 
 		this.listenTo(this.noteBox, "NoteBox:textChanged", function () {
-			this.trigger("meta:noteChanged", 'first');
+			this.trigger("analyses:userDataChanged", 'first');
 		});
 
 		this.views.push(this.noteBox);
@@ -98,10 +98,10 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		return _.find(this.analyses, function (cv) { return cv.model.get("id") === id; });
 	},
 
-	getAnalysesNotes: function() {
+	getAllUserData: function () {
 		var notes = [];
 		for (var i = 0; i < this.analyses.length; i++) {
-			notes.push(this.analyses[i].getAnalysisNotes());
+			notes.push(this.analyses[i].getAllUserData());
 		}
 		return notes;
 	},

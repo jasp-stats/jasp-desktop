@@ -31,26 +31,46 @@ h2, .h2-toolbar .jasp-menu {
 
 h3, .h3-toolbar .jasp-menu {
 	font-size: 125% ;
-	margin-top: 1.3em;
-	margin-bottom: .6em;
+	margin-top: .5em;
+	margin-bottom: .5em;
 }
 
 h4, .h4-toolbar .jasp-menu {
 	font-size: 115% ;
-	margin-top: .8em;
-	margin-bottom: .6em;
+	margin-top: .5em;
+	margin-bottom: .5em;
 }
 
 h5, .h5-toolbar .jasp-menu {
 	font-size: 105% ;
-	margin-top: .8em;
-	margin-bottom: .6em;
+	margin-top: .5em;
+	margin-bottom: .5em;
 }
 
 h6, .h6-toolbar .jasp-menu {
 	font-size: 100% ;
-	margin-top: .7em;
-	margin-bottom: .2em;
+	margin-top: .5em;
+	margin-bottom: .5em;
+}
+
+.jasp-display-item {
+	background-color: rgba(224, 224, 224, 0) ;
+	border: 1px solid rgba(105, 105, 105, 0) ;
+	border-radius : 6px ;
+	margin-top: 0.6em ;
+	margin-bottom: 0.6em ;
+	/*margin-left: 0.6em ;*/
+	padding-left: 0.6em ;
+	margin-right: 0.6em ;
+	padding-right: 0.6em ;
+}
+
+.jasp-display-item-flat {
+	padding-left: 0;
+}
+
+.jasp-table-primitive {
+	padding-left: 0.6em ;
 }
 
 
@@ -182,9 +202,9 @@ svg > text
 
 .jasp-image {
 
-	border: 2px solid transparent ;
+	/*border: 2px solid transparent ;
 	border-radius : 2px ;
-	padding: 0px ;
+	padding: 0px ;*/
 	position: relative ;
 }
 
@@ -443,12 +463,13 @@ td.squash-left
 .jasp-notes {
 	border-top: 1px solid rgb(205, 205, 205);
 	border-bottom: 1px solid rgb(205, 205, 205) ;
+	border-radius : 0 ;
 	color: rgb(0, 122, 204) ;
-	margin-bottom: 3em ;
-	margin-top: 0 ;
 	max-width: 70em;
 	min-width: 40em;
 	position: relative ;
+	margin-top: 0.6em ;
+	margin-bottom: 0.6em ;
 }
 
 [contenteditable]:focus 
@@ -474,7 +495,8 @@ pre {
 	min-width: 1em;
 }
 
-.jasp-indent {
-	margin-left: .7em ;
-	padding-left: 1em ;
-}
+/*.jasp-indent {
+	margin-left: .5em ;
+	padding-left: 0.8em ;
+}*/
+

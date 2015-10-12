@@ -129,9 +129,9 @@ $(document).ready(function () {
 		})
 	}
 
-	window.getAnalysesNotes = function () {
-		var notes = analyses.getAnalysesNotes();
-		return JSON.stringify(notes)
+	window.getAllUserData = function () {
+		var userData = analyses.getAllUserData();
+		return JSON.stringify(userData)
 	}
 
 	window.getResultsMeta = function () {
@@ -298,8 +298,8 @@ $(document).ready(function () {
 				window.menuObject = obj;
 			});
 
-			analyses.on("meta:noteChanged", function (key) {
-				jasp.updateNote(-1, key);
+			analyses.on("analyses:userDataChanged", function (key) {
+				jasp.updateUserData(-1, key);
 			});
 
 			analyses.render();
@@ -345,8 +345,8 @@ $(document).ready(function () {
 				jasp.removeAnalysisRequest(id);
 			});
 
-			jaspWidget.on("analysis:noteChanged", function (id, key) {
-				jasp.updateNote(id, key);
+			jaspWidget.on("analysis:userDataChanged", function (id, key) {
+				jasp.updateUserData(id, key);
 			});
 		}
 		else
