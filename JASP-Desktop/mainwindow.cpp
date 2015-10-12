@@ -815,14 +815,6 @@ void MainWindow::populateUIfromDataSet()
 
 	_progressIndicator->hide();
 
-	static bool inited = false;
-
-	if (inited == false)
-	{
-		ui->webViewResults->page()->mainFrame()->addToJavaScriptWindowObject("jasp", this);
-		inited = true;
-	}
-
 	bool errorFound = false;
 	stringstream errorMsg;
 
@@ -940,6 +932,7 @@ void MainWindow::resultsPageLoaded(bool success)
 {
 	// clear history, to prevent backspace from going 'back'
 	ui->webViewResults->history()->clear();
+	ui->webViewResults->page()->mainFrame()->addToJavaScriptWindowObject("jasp", this);
 
 	if (success)
 	{
@@ -968,7 +961,10 @@ void MainWindow::resultsPageLoaded(bool success)
 		_engineSync->setPPI(ppi);
 
 		if (_openOnLoadFilename != "")
+		{
 			ui->backStage->open(_openOnLoadFilename);
+			_openOnLoadFilename = "";
+		}
 
 		_resultsViewLoaded = true;
 	}
