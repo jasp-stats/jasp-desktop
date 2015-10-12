@@ -46,12 +46,15 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 		includeNamespace = "jasp-" + newNamespace + " ";
 	}
 
-	var indentClass = '';
+	var otherClasses = '';
 	if (indent)
-		indentClass = ' jasp-indent';
+		otherClasses += ' jasp-indent';
+
+	if (childOfCollection)
+		otherClasses += ' jasp-collection-item jasp-collection-' + type;
 
 	var itemModel = new JASPWidgets[type](results);
-	var itemView = new JASPWidgets[type + "View"]({ className: "jasp-display-item " + includeNamespace + "jasp-" + type + " jasp-view" + indentClass, model: itemModel });
+	var itemView = new JASPWidgets[type + "View"]({ className: "jasp-display-item " + includeNamespace + "jasp-" + type + " jasp-view" + otherClasses, model: itemModel });
 
 	itemModel.on("CustomOptions:changed", function (options) {
 
@@ -148,9 +151,13 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 	},
 
 	noteOptions: function () {
-		var options = { key: this.noteBoxKey, menuText: 'Add Note', visible: this.noteBox.visible };
+		if (this.noteBox) {
+			var options = { key: this.noteBoxKey, menuText: 'Add Note', visible: this.noteBox.visible };
 
-		return [options];
+			return [options];
+		}
+
+		return null;
 	},
 
 	hasNotes: function () {

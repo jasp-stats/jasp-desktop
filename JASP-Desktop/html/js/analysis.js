@@ -92,17 +92,21 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.trigger("optionschanged", this.model.get("id"), options)
 		}, this);
 
-		var self = this;
-		this.$el.on("changed:userData", function (event, details, dataValues) {
-			
-			if (dataValues !== undefined) {
-				for (var i = 0; i < dataValues.length; i++) {
-					var pair = dataValues[i];
-					self.setData(details, pair.key, pair.value, self.userdata);
-				}
+		this.$el.on("changed:userData", this, this.onUserDataChanged);
+	},
+
+	onUserDataChanged: function (event, details, dataValues) {
+		var self = event.data;
+		if (self === null)
+			return;
+
+		if (dataValues !== undefined) {
+			for (var i = 0; i < dataValues.length; i++) {
+				var pair = dataValues[i];
+				self.setData(details, pair.key, pair.value, self.userdata);
 			}
-			self.trigger("analysis:userDataChanged", self.model.get('id'));
-		});
+		}
+		self.trigger("analysis:userDataChanged", self.model.get('id'));
 	},
 
 	_setTitle: function (title, format) {
