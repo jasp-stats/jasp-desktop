@@ -137,7 +137,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
-	connect(_analyses, SIGNAL(analysisNotesLoaded(Analysis*)), this, SLOT(analysisNotesLoadedHandler(Analysis*)));
+	connect(_analyses, SIGNAL(analysisUserDataLoaded(Analysis*)), this, SLOT(analysisUserDataLoadedHandler(Analysis*)));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
@@ -162,7 +162,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
-	connect(this, SIGNAL(updateNote(int, QString)), this, SLOT(updateNoteHandler(int, QString)));
+	connect(this, SIGNAL(updateUserData(int, QString)), this, SLOT(updateUserDataHandler(int, QString)));
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 
@@ -402,12 +402,12 @@ QString MainWindow::escapeJavascriptString(const QString &str)
 	return out;
 }
 
-void MainWindow::analysisNotesLoadedHandler(Analysis *analysis)
+void MainWindow::analysisUserDataLoadedHandler(Analysis *analysis)
 {
-	QString results = tq(analysis->notes().toStyledString());
+	QString results = tq(analysis->userData().toStyledString());
 
 	results = escapeJavascriptString(results);
-	results = "window.loadNotes(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
+	results = "window.loadUserData(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
 }
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
@@ -440,7 +440,7 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 	}
 
 	Json::Value analysisJson = analysis->asJSON();
-	analysisJson["notes"] = analysis->notes();
+	analysisJson["userdata"] = analysis->userData();
 	QString results = tq(analysisJson.toStyledString());
 
 	results = escapeJavascriptString(results);
@@ -682,7 +682,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		{
 			_package->setWaitingForReady();
 
-			getAnalysesNotes();
+			getAnalysesUserData();
 			ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%PREVIEW%');");
 
 			Json::Value analysesDataList = Json::arrayValue;
@@ -693,7 +693,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 				{
 					Json::Value analysisData = analysis->asJSON();
 					analysisData["options"] = analysis->options()->asJSON();
-					analysisData["notes"] = analysis->notes();
+					analysisData["userdata"] = analysis->userData();
 					analysesDataList.append(analysisData);
 				}
 			}
@@ -866,13 +866,13 @@ void MainWindow::populateUIfromDataSet()
 
 					Json::Value &optionsJson = analysisData["options"];
 					Json::Value &resultsJson = analysisData["results"];
-					Json::Value &notesJson = analysisData["notes"];
+					Json::Value &userDataJson = analysisData["userdata"];
 
 					Analysis::Status status = Analysis::parseStatus(analysisData["status"].asString());
 
 					Analysis *analysis = _analyses->create(name, id, &optionsJson, status);
 
-					analysis->setNotes(notesJson);
+					analysis->setUserData(userDataJson);
 					analysis->setResults(resultsJson);
 
 				}
@@ -1404,32 +1404,32 @@ void MainWindow::removeAnalysisRequestHandler(int id)
 
 Json::Value MainWindow::getResultsMeta()
 {
-	QVariant notesData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getResultsMeta();");
+	QVariant metaData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getResultsMeta();");
 
-	Json::Value notes;
+	Json::Value meta;
 	Json::Reader parser;
-	parser.parse(fq(notesData.toString()), notes);
+	parser.parse(fq(metaData.toString()), meta);
 
-	return notes;
+	return meta;
 }
 
-void MainWindow::getAnalysesNotes()
+void MainWindow::getAnalysesUserData()
 {
-	QVariant notesData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getAnalysesNotes();");
+	QVariant userData = ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.getAllUserData();");
 
-	Json::Value notes;
+	Json::Value data;
 	Json::Reader parser;
-	parser.parse(fq(notesData.toString()), notes);
+	parser.parse(fq(userData.toString()), data);
 
-	for (Json::Value::iterator iter = notes.begin(); iter != notes.end(); iter++)
+	for (Json::Value::iterator iter = data.begin(); iter != data.end(); iter++)
 	{
-		Json::Value &notesObj = *iter;
+		Json::Value &userDataObj = *iter;
 
-		Analysis *analysis = _analyses->get(notesObj["id"].asInt());
+		Analysis *analysis = _analyses->get(userDataObj["id"].asInt());
 
-		Json::Value &analysisNotes = notesObj["notes"];
+		Json::Value &analysisUserData = userDataObj["userdata"];
 
-		analysis->setNotes(analysisNotes, true);
+		analysis->setUserData(analysisUserData, true);
 	}
 }
 
@@ -1443,7 +1443,7 @@ void MainWindow::simulatedMouseClickHandler(int x, int y, int count) {
 	int diff = count;
 	while (diff >= 2)
 	{
-		QMouseEvent * clickEvent = new QMouseEvent ((QEvent::MouseButtonDblClick), QPoint(x, y),
+		QMouseEvent * clickEvent = new QMouseEvent ((QEvent::MouseButtonDblClick), QPoint(x * _webViewZoom, y * _webViewZoom),
 			Qt::LeftButton,
 			Qt::LeftButton,
 			Qt::NoModifier   );
@@ -1455,14 +1455,14 @@ void MainWindow::simulatedMouseClickHandler(int x, int y, int count) {
 
 	if (diff != 0)
 	{
-		QMouseEvent * clickEvent1 = new QMouseEvent ((QEvent::MouseButtonPress), QPoint(x, y),
+		QMouseEvent * clickEvent1 = new QMouseEvent ((QEvent::MouseButtonPress), QPoint(x * _webViewZoom, y * _webViewZoom),
 			Qt::LeftButton,
 			Qt::LeftButton,
 			Qt::NoModifier   );
 
 		qApp->postEvent((QObject*)ui->webViewResults,(QEvent *)clickEvent1);
 
-		QMouseEvent * clickEvent2 = new QMouseEvent ((QEvent::MouseButtonRelease), QPoint(x, y),
+		QMouseEvent * clickEvent2 = new QMouseEvent ((QEvent::MouseButtonRelease), QPoint(x * _webViewZoom, y * _webViewZoom),
 			Qt::LeftButton,
 			Qt::LeftButton,
 			Qt::NoModifier   );
@@ -1471,7 +1471,7 @@ void MainWindow::simulatedMouseClickHandler(int x, int y, int count) {
 	}
 }
 
-void MainWindow::updateNoteHandler(int id, QString key)
+void MainWindow::updateUserDataHandler(int id, QString key)
 {
 	_package->setModified(true);
 }

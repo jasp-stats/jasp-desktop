@@ -10,6 +10,7 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	var status = params.status;
 	var name = metaData.name;
 	var childOfCollection = params.childOfCollection;
+	var indent = params.indent;
 	var embeddedLevel = params.embeddedLevel;
 	var namespace = params.namespace;
 	var type = metaData;
@@ -42,15 +43,15 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	var includeNamespace = "";
 	if (namespace !== undefined) {
 		newNamespace =  namespace + '-' + type;
-		includeNamespace = " jasp-" + newNamespace + " ";
+		includeNamespace = "jasp-" + newNamespace + " ";
 	}
 
 	var indentClass = '';
-	if (embeddedLevel > 1)
+	if (indent)
 		indentClass = ' jasp-indent';
 
 	var itemModel = new JASPWidgets[type](results);
-	var itemView = new JASPWidgets[type + "View"]({ className: includeNamespace + "jasp-" + type + " jasp-view" + indentClass, model: itemModel });
+	var itemView = new JASPWidgets[type + "View"]({ className: "jasp-display-item " + includeNamespace + "jasp-" + type + " jasp-view" + indentClass, model: itemModel });
 
 	itemModel.on("CustomOptions:changed", function (options) {
 
@@ -65,7 +66,8 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	}
 
 	if (itemView.constructChildren) {
-		itemView.constructChildren(JASPWidgets.objectConstructor, { meta: metaData.meta, status: results.status, namespace: newNamespace, childOfCollection: results.collection !== undefined, embeddedLevel: embeddedLevel + 1 });
+		var indentChildren = itemView.indentChildren === undefined ? false : itemView.indentChildren;
+		itemView.constructChildren(JASPWidgets.objectConstructor, { meta: metaData.meta, status: results.status, namespace: newNamespace, childOfCollection: results.collection !== undefined, embeddedLevel: embeddedLevel + 1, indent: indentChildren });
 		if (itemView.hasViews() === false) {
 			itemView.close();
 			return null;
@@ -93,11 +95,49 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 	
 	setNoteBox: function (key, localKey, noteBox) {
 		this.noteBox = noteBox;
+
+		if (this.indentChildren)
+			noteBox.$el.addClass('jasp-indent');
+		
 		this.noteBoxKey = key;
+		this.noteBoxLocalKey = localKey;
 		if (this.notePositionBottom)
 			this.views.push(noteBox);
 		else
 			this.views.unshift(noteBox);
+	},
+
+	setUserData: function (details, data) {
+		this.userDataDetails = details;
+	},
+
+	getLocalUserData: function () {
+
+		var hasData = false;
+
+		var userData = {};
+
+
+		if (this.noteBox.visible) {
+
+			var noteData = {};
+			
+			if (this.noteBox.isTextboxEmpty())
+				noteData.text = '';
+			else
+				noteData.text = Mrkdwn.fromHtmlText(this.noteBox.model.get('text'));
+			noteData.format = 'markdown';
+			noteData.visible = this.noteBox.visible;
+
+			userData[this.noteBoxLocalKey] = noteData;
+
+			hasData = true;
+		}
+
+		if (hasData)
+			return userData;
+		else
+			return null;
 	},
 
 	notesMenuClicked: function (noteType, visibility) {
@@ -132,7 +172,7 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 
 			var modelData = this.model.get(meta[i].name);
 			if (modelData) {
-				var itemView = constructor.call(this, modelData, { meta: meta[i], status: status, namespace: data.namespace, childOfCollection: false, embeddedLevel: data.embeddedLevel }, false);
+				var itemView = constructor.call(this, modelData, { meta: meta[i], status: status, namespace: data.namespace, childOfCollection: false, embeddedLevel: data.embeddedLevel, indent: data.indent }, false);
 				if (itemView !== null) {
 					this.localViews.push(itemView);
 					this.views.push(itemView);
@@ -163,11 +203,15 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		this.toolbar.title = title;
 		this.toolbar.render();
 
+		var styleAttr = '';
+		this.$body = $('<div class="object-body"' + styleAttr + '></div>');
 		for (var i = 0; i < this.views.length; i++) {
 			var itemView = this.views[i];
 			itemView.render();
-			this.$el.append(itemView.$el);
+			this.$body.append(itemView.$el);
 		}
+
+		this.$el.append(this.$body);
 
 		this.attachToolbar(this.toolbar.$el);
 
@@ -198,6 +242,8 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 
 		return true;
 	},
+
+	indentChildren: true,
 
 	exportUseNBSPDefault: true,
 

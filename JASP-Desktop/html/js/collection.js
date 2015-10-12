@@ -22,9 +22,46 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 
 	setNoteBox: function (key, localKey, noteBox) {
 		this.noteBox = noteBox;
+		if (this.indentChildren)
+			noteBox.$el.addClass('jasp-indent');
 		this.noteBoxKey = key;
+		this.noteBoxLocalKey = localKey;
 		this.views.unshift(noteBox);
 	},
+
+	setUserData: function (details, data) {
+		this.userDataDetails = details;
+	},
+
+	getLocalUserData: function () {
+
+		var hasData = false;
+
+		var userData = {};
+
+		if (this.noteBox.visible) {
+
+			var noteData = {};
+
+			if (this.noteBox.isTextboxEmpty())
+				noteData.text = '';
+			else
+				noteData.text = Mrkdwn.fromHtmlText(this.noteBox.model.get('text'));
+			noteData.format = 'markdown';
+			noteData.visible = this.noteBox.visible;
+
+			userData[this.noteBoxLocalKey] = noteData;
+
+			hasData = true;
+		}
+
+		if (hasData)
+			return userData;
+		else
+			return null;
+	},
+
+	indentChildren: true,
 
 	notesMenuClicked: function (noteType, visibility) {
 
@@ -143,13 +180,15 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 		this.toolbar.render();
 		this.$el.append(this.toolbar.$el);
 
+		var styleAttr = '';
+		this.$body = $('<div class="object-body"' + styleAttr + '></div>');
 		for (var i = 0; i < this.views.length; i++) {
 			var itemView = this.views[i];
 			this.onItemRender(itemView);
-			this.$el.append(itemView.$el);
+			this.$body.append(itemView.$el);
 		}
 
-
+		this.$el.append(this.$body);
 	},
 
 	/** Cleans up views when collection is closed. */

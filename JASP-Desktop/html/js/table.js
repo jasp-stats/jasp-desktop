@@ -16,6 +16,8 @@ JASPWidgets.table = Backbone.Model.extend({
 JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
 	attachToolbar: function ($toolbar) {
+		this.$el.addClass('jasp-display-item-flat');
+
 		$toolbar.append('<div class="status"></div>');
 
 		var $container = this.$el.find("div.toolbar");
@@ -60,6 +62,8 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		return true;
 	},
 
+	indentChildren: false,
+
 	menuName: "Table",
 
 	events: {
@@ -84,7 +88,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 			return self.$el.find('th, td:not(.squash-left)');
 		};
 
-		var tablePrimative = new JASPWidgets.tablePrimative({ model: this.model, className: "jasp-table-primative" });
+		var tablePrimative = new JASPWidgets.tablePrimative({ model: this.model, className: "jasp-table-primative jasp-display-primative" });
 		this.localViews.push(tablePrimative);
 		this.views.push(tablePrimative);
 	},

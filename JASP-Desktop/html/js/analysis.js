@@ -13,20 +13,20 @@ JASPWidgets.Analyses = Backbone.Collection.extend({
 });
 
 
-JASPWidgets.NoteDetails = function (noteKey, path) {
+JASPWidgets.DataDetails = function (dataKey, path) {
 	this.path = path === undefined ? [] : path;
 	this.isRoot = this.path.length === 0;
-	this.noteKey = noteKey;
+	this.dataKey = dataKey;
 	this.level = this.path.length;
 
 	this.GetFullKey = function () {
 		if (this.fullKey === undefined) {
 			if (this.path.length === 0)
-				this.fullKey = this.noteKey;
+				this.fullKey = this.dataKey;
 			else {
 				this.fullKey = this.path.join('-');
-				if (this.noteKey !== '')
-					this.fullKey = this.fullKey + '-' + this.noteKey;
+				if (this.dataKey !== '')
+					this.fullKey = this.fullKey + '-' + this.dataKey;
 			}
 		}
 
@@ -42,11 +42,26 @@ JASPWidgets.NoteDetails = function (noteKey, path) {
 				this.fullKeyArray.push(this.path[i]);
 			}
 
-			if (this.noteKey !== '')
-				this.fullKeyArray.push(this.noteKey);
+			if (this.dataKey !== '')
+				this.fullKeyArray.push(this.dataKey);
 		}
 
 		return this.fullKeyArray;
+	};
+
+	this.GetExtended = function (dataKey) {
+
+		var extendedDetails = new JASPWidgets.DataDetails(dataKey, this.path)
+
+		var fullKey = this.GetFullKey();
+		if (fullKey === '') 
+			fullKey = dataKey;
+		else
+			fullKey = fullKey + '-' + dataKey;
+
+		extendedDetails.fullKey = fullKey;
+
+		return extendedDetails;
 	};
 }
 
@@ -60,27 +75,39 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
 
-		this.notes = this.model.get('notes');
+		this.userdata = this.model.get('userdata');
+		if (this.userdata === undefined)
+			this.userdata = null;
 
-		var firstNoteDetails = new JASPWidgets.NoteDetails('first');
+		var firstNoteDetails = new JASPWidgets.DataDetails('firstNote');
 		var firstNoteBox = this.getNoteBox(firstNoteDetails);
 		
-		var lastNoteDetails = new JASPWidgets.NoteDetails('last');
+		var lastNoteDetails = new JASPWidgets.DataDetails('lastNote');
 		var lastNoteBox = this.getNoteBox(lastNoteDetails);
 
-		this.toolbar.setParent(this);
-
-		
+		this.toolbar.setParent(this);	
 
 		this.model.on("CustomOptions:changed", function (options) {
 
 			this.trigger("optionschanged", this.model.get("id"), options)
 		}, this);
+
+		var self = this;
+		this.$el.on("changed:userData", function (event, details, dataValues) {
+			
+			if (dataValues !== undefined) {
+				for (var i = 0; i < dataValues.length; i++) {
+					var pair = dataValues[i];
+					self.setData(details, pair.key, pair.value, self.userdata);
+				}
+			}
+			self.trigger("analysis:userDataChanged", self.model.get('id'));
+		});
 	},
 
 	_setTitle: function (title, format) {
 
-		this.viewNotes.lastNoteBox.ghostText = title + ' Conclusion - ' + this.viewNotes.lastNoteBox.ghostTextDefault;
+		this.viewNotes.lastNoteNoteBox.ghostText = title + ' Conclusion - ' + this.viewNotes.lastNoteNoteBox.ghostTextDefault;
 
 		this.toolbar.title = title;
 		this.toolbar.titleTag = format;
@@ -96,52 +123,85 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.viewNotes.list[i].widget.detach();
 	},
 
-	getNoteData: function (noteDetails) {
+	setData: function (dataDetails, key, value, rootDataNode) {
+		if (rootDataNode === null)
+			return;
 
-		var noteData = null;
-		var obj = this.notes;
-		if (obj !== null) {
+		var dataObject = this.getData(dataDetails, rootDataNode);
+		if (dataObject === null) {
 
-			var noteData = null;
-			var keyPath = noteDetails.GetFullKeyArray();
+			var keyPath = dataDetails.GetFullKeyArray();
+			dataObject = rootDataNode;
 			for (var i = 0; i < keyPath.length; i++) {
-				if (i < noteDetails.level) {
-					obj = obj.others;
-					if (obj === undefined)
+				if (i < dataDetails.level) {
+
+					if (dataObject.children === undefined)
+						dataObject.children = {};
+					dataObject = dataObject.children;
+				}
+
+				var name = keyPath[i];
+
+				var node = dataObject[name];
+				if (node === undefined)
+					dataObject[name] = {};
+
+				dataObject = dataObject[name];
+			}
+		}
+
+		dataObject[key] = value;
+	},
+
+	getData: function (dataDetails, rootDataNode) {
+
+		var data = null;
+		if (rootDataNode !== null) {
+
+			var keyPath = dataDetails.GetFullKeyArray();
+			for (var i = 0; i < keyPath.length; i++) {
+				if (i < dataDetails.level) {
+					rootDataNode = rootDataNode.children;
+					if (rootDataNode === undefined)
 						break;
 				}
 
 				if (i === keyPath.length - 1) {
-					noteData = new JASPWidgets.Note(obj[keyPath[i]]);
+					data = rootDataNode[keyPath[i]];
 				}
 				else {
-					obj = obj[keyPath[i]];
-					if (obj === undefined)
+					rootDataNode = rootDataNode[keyPath[i]];
+					if (rootDataNode === undefined)
 						break;	
 				}
 			}
 		}
 
-		if (noteData === null)
-			noteData = new JASPWidgets.Note();
+		if (data === undefined)
+			return null;
 
-		return noteData;
+		return data;
 	},
 
 	getNoteBox: function (noteDetails) {
 
-		var noteData = this.getNoteData(noteDetails);
+		var noteData = this.getData(noteDetails, this.userdata);
+
+		if (noteData === null)
+			noteData = new JASPWidgets.Note();
+
+		noteData = new JASPWidgets.Note(noteData);
 
 		var key = noteDetails.GetFullKey();
 
 		var widget = this.viewNotes[key + 'NoteBox'];
 		if (widget === undefined || widget === null) {
-			widget = new JASPWidgets.NoteBox({ className: "jasp-notes jasp-" + key + "-note", model: noteData });
+			widget = new JASPWidgets.NoteBox({ className: "jasp-display-primative jasp-notes jasp-" + key + "-note", model: noteData });
 			this.viewNotes[key + 'NoteBox'] = widget;
 			this.viewNotes.list.push({ noteDetails: noteDetails, widget: widget, note: noteData });
 
 			this.listenTo(widget, "NoteBox:textChanged", function () {
-				this.trigger("analysis:noteChanged", this.model.get('id'), key);
+				this.trigger("analysis:userDataChanged", this.model.get('id'), key);
 			});
 		}
 
@@ -160,91 +220,125 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		return next;
 	},
 
-	getAnalysisNotes: function () {
-		var notes = {
-			id: this.model.get('id'),
-			notes: {}
-		};
+	getAllUserData: function () {
 
-		var results = this.model.get("results");
-		for (var i = 0; i < this.viewNotes.list.length; i++) {
-			var noteBoxData = this.viewNotes.list[i];
-			var noteDetails = noteBoxData.noteDetails;
+		var getUserData = function (item) {
 
-			if (noteBoxData.widget.visible === false)
-				continue;
+			var hasData = true;
 
-			var obj = notes.notes;
+			var userData = null;
 
-			var view = this;
-			var fullKeyPath = noteDetails.GetFullKeyArray();
-			for (j = 0; j < fullKeyPath.length; j++) {
+			if (item.getLocalUserData)
+				userData = item.getLocalUserData();
 
-				if (j < noteDetails.level) {
-
-					if (obj.others === undefined)
-						obj.others = {};
-
-					obj = obj.others;
-				}
-
-				var levelName = fullKeyPath[j];
-
-				if (j < fullKeyPath.length - 1) {
-					view = this.getNextView(view, levelName)
-					if (view === undefined)
-						break;
-				}
-
-				var nextLevel = obj[levelName];
-				if (nextLevel === undefined) {
-					nextLevel = {};
-					obj[levelName] = nextLevel
-				}
-
-				if (j === fullKeyPath.length - 1) {
-					if (noteBoxData.widget.isTextboxEmpty())
-						nextLevel.text = '';
-					else
-						nextLevel.text = Mrkdwn.fromHtmlText(noteBoxData.note.get('text'));
-					nextLevel.format = 'markdown';
-					nextLevel.visible = noteBoxData.widget.visible;
-				}
-				else 
-					obj = nextLevel;
+			if (userData === null) {
+				userData = {};
+				hasData = false;
 			}
+
+			if (item.views) {
+				for (var i = 0; i < item.views.length; i++) {
+					var child = item.views[i];
+					var childData = getUserData(child);
+					if (childData !== null) {
+						var name = child.model.get('name');
+
+						if (userData.children === undefined)
+							userData.children = {};
+
+						userData.children[name] = childData;
+						hasData = true;
+					}
+				}
+			}
+
+			if (hasData)
+				return userData;
+
+			return null
 		}
 
-		return notes;
+		var data = {
+			id: this.model.get('id'),
+			userdata: getUserData(this)
+		};
+
+		return data;
 	},
 
+	getLocalUserData: function () {
 
-	passNoteObjToView: function (path, itemView) {
+		var hasData = false;
+
+		var userData = {};
+
+		if (this.viewNotes.firstNoteNoteBox.visible) {
+
+			var firstNoteData = {};
+
+			if (this.viewNotes.firstNoteNoteBox.isTextboxEmpty())
+				firstNoteData.text = '';
+			else
+				firstNoteData.text = Mrkdwn.fromHtmlText(this.viewNotes.firstNoteNoteBox.model.get('text'));
+			firstNoteData.format = 'markdown';
+			firstNoteData.visible = this.viewNotes.firstNoteNoteBox.visible;
+
+			userData.firstNote = firstNoteData;
+
+			hasData = true;
+		}
+
+		if (this.viewNotes.lastNoteNoteBox.visible) {
+
+			var lastNoteData = {};
+
+			if (this.viewNotes.lastNoteNoteBox.isTextboxEmpty())
+				lastNoteData.text = '';
+			else
+				lastNoteData.text = Mrkdwn.fromHtmlText(this.viewNotes.lastNoteNoteBox.model.get('text'));
+			lastNoteData.format = 'markdown';
+			lastNoteData.visible = this.viewNotes.lastNoteNoteBox.visible;
+
+			userData.lastNote = lastNoteData;
+
+			hasData = true;
+		}
+
+		if (hasData)
+			return userData;
+		else
+			return null;
+	},
+
+	passUserDataToView: function (path, itemView) {
 
 		if (itemView.views !== undefined) {
 			for (var i = 0; i < itemView.views.length; i++) {
 				var subView = itemView.views[i]
 				var name = subView.model.get('name');
 				if (name !== null)
-					this.passNoteObjToView(path.concat([name]), subView);
+					this.passUserDataToView(path.concat([name]), subView);
 				else 
 					throw "there must be a name parameter."
 			}
 		}
 
+		var dataDetails = new JASPWidgets.DataDetails("", path);
+		if (itemView.setUserData)
+			itemView.setUserData(dataDetails, this.getData(dataDetails, this.userdata));
+
 		if (itemView.hasNotes === undefined || itemView.hasNotes() === false)
 			return;
 
-		var key = path.join('-');
-
-		var noteKeys = [''];
+		var noteKeys = ['note'];
 		if (itemView.avaliableNoteKeys)
 			noteKeys = itemView.avaliableNoteKeys();
 
 		for (var i = 0; i < noteKeys.length; i++) {
-			var noteDetails = new JASPWidgets.NoteDetails(noteKeys[i], path)
+			var noteKey = noteKeys[i];
+			var noteDetails = dataDetails.GetExtended(noteKey)
 			var noteBox = this.getNoteBox(noteDetails)
-			itemView.setNoteBox(noteDetails.GetFullKey(), noteDetails.noteKey, noteBox);
+			itemView.setNoteBox(noteDetails.GetFullKey(), noteKey, noteBox);
 		}
 	},
 
@@ -274,7 +368,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	},
 
 	noteOptions: function () {
-		var firstOpt = { key: 'all', menuText: 'Add Notes', visible: this.viewNotes.firstNoteBox.visible && this.viewNotes.lastNoteBox.visible };
+		var firstOpt = { key: 'all', menuText: 'Add Notes', visible: this.viewNotes.firstNoteNoteBox.visible && this.viewNotes.lastNoteNoteBox.visible };
 
 		return [firstOpt];
 	},
@@ -358,7 +452,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.labelRequest = null;
 ///////////////////////////////////////////
 
-			itemView = JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status, childOfCollection: false, embeddedLevel: 1 }, false);
+			itemView = JASPWidgets.objectConstructor.call(this, result, { meta: metaEntry, status: status, childOfCollection: false, embeddedLevel: 1, indent: false }, false);
 		}
 
 		return itemView;
@@ -376,7 +470,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.destroyViews();
 
-		this.views.push(this.viewNotes.firstNoteBox);
+		this.views.push(this.viewNotes.firstNoteNoteBox);
 
 		$innerElement.empty();
 
@@ -401,7 +495,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				if (_.has(results, name)) {
 					var itemView = this.createChild(results[name], this.model.get("status"), meta[i])
 					if (itemView !== null) {
-						this.passNoteObjToView([name], itemView);
+						this.passUserDataToView([name], itemView);
 
 						this.views.push(itemView);
 						this.volatileViews.push(itemView);
@@ -419,16 +513,16 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		else
 			this._setTitle(results.title, 'h2');
 
-		this.viewNotes.lastNoteBox.render();
-		$innerElement.append(this.viewNotes.lastNoteBox.$el);
+		this.viewNotes.lastNoteNoteBox.render();
+		$innerElement.append(this.viewNotes.lastNoteNoteBox.$el);
 
-		this.viewNotes.firstNoteBox.render();
-		$innerElement.prepend(this.viewNotes.firstNoteBox.$el);
+		this.viewNotes.firstNoteNoteBox.render();
+		$innerElement.prepend(this.viewNotes.firstNoteNoteBox.$el);
 
 		this.toolbar.render();
 		$innerElement.prepend(this.toolbar.$el);
 
-		this.views.push(this.viewNotes.lastNoteBox);
+		this.views.push(this.viewNotes.lastNoteNoteBox);
 
 		$tempClone.replaceWith($innerElement);
 		$tempClone.empty();
