@@ -123,7 +123,6 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 	case 1:  // Save
-		_openAndSaveWidget->setSaveMode(FileEvent::FileSave);
 		if (_dataSetHasPathAndIsntReadOnly)
 		{
 			_openAndSaveWidget->save();
@@ -131,6 +130,7 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 		else
 		{
 			_tabBar->setCurrentIndex(2);
+			_openAndSaveWidget->setSaveMode(FileEvent::FileSave);
 			_tabPages->setCurrentWidget(_openAndSaveWidget);
 		}
 		cancel = true;
