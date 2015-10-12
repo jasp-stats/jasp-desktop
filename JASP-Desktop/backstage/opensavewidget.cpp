@@ -20,7 +20,7 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_tabWidget = new VerticalTabWidget(this);
 
 	QWidget *webWidget = new QWidget(this);
-	//webWidget->setMinimumWidth(400);
+	webWidget->setMinimumWidth(400);
 	webWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 	/*QGridLayout *webWidgetLayout = new QGridLayout(webWidget);
 	webWidgetLayout->setMargin(36);
@@ -153,8 +153,11 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->successful())
 		{
-			_fsmRecent->addRecent(event->path());
-			_bsComputer->addRecent(event->path());
+			if (event->isReadOnly() == false)
+			{
+				_fsmRecent->addRecent(event->path());
+				_bsComputer->addRecent(event->path());
+			}
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());
