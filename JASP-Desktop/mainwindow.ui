@@ -284,10 +284,13 @@ QTableView::item::last
                     <property name="widgetResizable">
                      <bool>true</bool>
                     </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+                    </property>
                     <widget class="QWidget" name="optionsContentArea">
                      <property name="geometry">
                       <rect>
-                       <x>0</x>
+                       <x>2</x>
                        <y>0</y>
                        <width>262</width>
                        <height>540</height>
@@ -487,12 +490,6 @@ QPushButton#first:checked {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BackStageWidget</class>
-   <extends>QWidget</extends>
-   <header>backstagewidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>MainTableView</class>
    <extends>QTableView</extends>
    <header>maintableview.h</header>
@@ -528,6 +525,12 @@ QPushButton#first:checked {
    <class>WebView</class>
    <extends>QWidget</extends>
    <header>widgets/webview.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BackStageWidget</class>
+   <extends>QWidget</extends>
+   <header>backstagewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
