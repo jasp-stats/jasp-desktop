@@ -981,8 +981,8 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		if (this.editing)
 			return true;
 
-		if (this.parent.isCollapsed && this.parent.isCollapsed() && this.parent.setColapsedState) {
-			this.parent.setColapsedState(false);
+		if (this.parent.isCollapsed && this.parent.isCollapsed() && this.parent.setCollapsedState) {
+			this.parent.setCollapsedState(false);
 			return true;
 		}
 
@@ -1004,8 +1004,8 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		if (this.options.hasNotes)
 			this.options['noteOptions'] = this.parent.noteOptions();
 
-		if (this.options.hasColapse)
-			this.options['colapseOptions'] = this.parent.colapseOptions();
+		if (this.options.hasCollapse)
+			this.options['collapseOptions'] = this.parent.collapseOptions();
 
 		this.parent.trigger('toolbar:showMenu', this.parent, this.options);
 
@@ -1031,12 +1031,12 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasNotes: (parent.hasNotes === undefined || parent.hasNotes()) && parent.notesMenuClicked !== undefined,
 			hasEditTitle: (parent.hasEditTitle === undefined || parent.hasEditTitle()) && parent.editTitleClicked !== undefined,
 			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
-			hasColapse: (parent.hasColapse === undefined || parent.hasColapse()) && parent.colapseMenuClicked !== undefined,
+			hasCollapse: (parent.hasCollapse === undefined || parent.hasCollapse()) && parent.collapseMenuClicked !== undefined,
 
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasNotes || this.options.hasRemove || this.options.hasEditTitle || this.options.hasColapse;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasNotes || this.options.hasRemove || this.options.hasEditTitle || this.options.hasCollapse;
 	},
 
 	selectionElement: function() {

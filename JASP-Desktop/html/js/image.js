@@ -37,6 +37,10 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		return this.$el.hasClass('jasp-collection-item') === false;
 	},
 
+	hasCollapse: function () {
+		return this.$el.hasClass('jasp-collection-item') === false;
+	},
+
 	menuName: "Plot",
 
 	indentChildren: false,

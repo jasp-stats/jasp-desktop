@@ -1342,15 +1342,18 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 
 	QIcon _copyIcon = QIcon(":/icons/copy.png");
 	QIcon _citeIcon = QIcon(":/icons/cite.png");
+	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
+	QIcon _expandIcon = QIcon(":/icons/expand.png");
 
 	_analysisMenu->clear();
 
 	QString objName = tq(menuOptions["objectName"].asString());
 
-	if (menuOptions["hasColapse"].asBool())
+	if (menuOptions["hasCollapse"].asBool())
 	{
-		Json::Value colapseOptions = menuOptions["colapseOptions"];
-		_analysisMenu->addAction(tq(colapseOptions["menuText"].asString()), this, SLOT(colapseSelected()));
+		Json::Value collapseOptions = menuOptions["collapseOptions"];
+		QIcon icon = collapseOptions["collapsed"].asBool() ? _expandIcon : _collapseIcon;
+		_analysisMenu->addAction(icon, tq(collapseOptions["menuText"].asString()), this, SLOT(collapseSelected()));
 		_analysisMenu->addSeparator();
 	}
 
@@ -1361,7 +1364,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	}
 
 	if (menuOptions["hasCopy"].asBool())
-		_analysisMenu->addAction(_copyIcon, "Copy " + objName, this, SLOT(copySelected()));
+		_analysisMenu->addAction(_copyIcon, "Copy", this, SLOT(copySelected()));
 
 	if (menuOptions["hasCite"].asBool())
 	{
@@ -1485,10 +1488,10 @@ void MainWindow::updateUserDataHandler(int id, QString key)
 }
 
 
-void MainWindow::colapseSelected()
+void MainWindow::collapseSelected()
 {
 
-	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.colapseMenuClicked();");
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.collapseMenuClicked();");
 
 }
 

@@ -73,9 +73,9 @@ $(document).ready(function () {
 		window.menuObject = null;
 	}
 
-	window.colapseMenuClicked = function () {
-		if (window.menuObject.colapseMenuClicked)
-			window.menuObject.colapseMenuClicked();
+	window.collapseMenuClicked = function () {
+		if (window.menuObject.collapseMenuClicked)
+			window.menuObject.collapseMenuClicked();
 
 		window.menuObject = null;
 	}

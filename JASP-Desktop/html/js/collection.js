@@ -18,6 +18,8 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 
 		this.views = [];
 		this.localViews = [];
+
+		this.listenTo(this.model, 'change:collapsed', this.onCollapsedChange);
 	},
 
 	setNoteBox: function (key, localKey, noteBox) {
@@ -31,10 +33,12 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 
 	setUserData: function (details, data) {
 		this.userDataDetails = details;
+		this.settingUserData = true;
 		if (data !== null) {
 			if (data.collapsed !== undefined)
 				this.model.set("collapsed", data.collapsed);
 		}
+		this.settingUserData = false;
 	},
 
 	getLocalUserData: function () {
@@ -89,17 +93,17 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 	},
 
 
-	colapseOptions: function () {
+	collapseOptions: function () {
 		var collapsed = this.model.get('collapsed');
 
-		var text = collapsed ? 'Expand' : 'Colapse';
+		var text = collapsed ? 'Expand' : 'Collapse';
 
-		return { menuText: text };
+		return { menuText: text, collapsed: collapsed };
 	},
 
-	setColapsedState: function (colapsed) {
+	setCollapsedState: function (collapsed) {
 		var self = this;
-		if (colapsed) {
+		if (collapsed) {
 			window.slideAlpha(this.$el, 300, ['border-color', 'background-color'], [1, 0.5], 10, true, function () {
 				self.$el.addClass('jasp-collapsed');
 			});
@@ -111,7 +115,7 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 			});
 			this.$body.slideDown(300);
 		}
-		this.model.set('collapsed', colapsed);
+		this.model.set('collapsed', collapsed);
 	},
 
 	isCollapsed: function () {
@@ -122,9 +126,9 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 		return false;
 	},
 
-	colapseMenuClicked: function () {
+	collapseMenuClicked: function () {
 		var collapsed = this.model.get('collapsed');
-		this.setColapsedState(!collapsed);
+		this.setCollapsedState(!collapsed);
 	},
 
 	onCollapsedChange: function () {

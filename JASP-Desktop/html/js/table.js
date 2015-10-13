@@ -81,7 +81,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		this.toolbar.setVisibility(false);
 	},
 
-	hasColapse: function () {
+	hasCollapse: function () {
 		return false;
 	},
 

@@ -76,8 +76,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
 
 		this.userdata = this.model.get('userdata');
-		if (this.userdata === undefined)
-			this.userdata = null;
+		if (this.userdata === undefined || this.userdata === null)
+			this.userdata = {};
 
 		var firstNoteDetails = new JASPWidgets.DataDetails('firstNote');
 		var firstNoteBox = this.getNoteBox(firstNoteDetails);
