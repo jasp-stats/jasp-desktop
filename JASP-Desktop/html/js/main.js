@@ -536,3 +536,7 @@ window.imageSaved = function (args) {
 window.resultsDocumentChanged = function () {
 	jasp.resultsDocumentChanged();
 }
+
+window.displayWarningMessage = function (msg) {
+	jasp.displayMessageFromResults(msg);
+}

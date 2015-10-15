@@ -26,6 +26,9 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	if (!_.has(results, "status"))
 		results.status = status;
 
+	/*if (!_.has(results, "title"))
+		window.displayWarningMessage("This analysis contains an object with no title.")*/
+
 	var item;
 	if (results.collection) {
 

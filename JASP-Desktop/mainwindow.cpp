@@ -156,6 +156,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
 	connect(this, SIGNAL(saveTempImage(int, QString, QByteArray)), this, SLOT(saveTempImageHandler(int, QString, QByteArray)));
+	connect(this, SIGNAL(displayMessageFromResults(QString)),  this, SLOT(displayMessageFromResultsHandler(QString)));
 	connect(this, SIGNAL(pushToClipboard(QString, QString, QString)), this, SLOT(pushToClipboardHandler(QString, QString, QString)));
 	connect(this, SIGNAL(pushImageToClipboard(QByteArray, QString)), this, SLOT(pushImageToClipboardHandler(QByteArray, QString)));
 	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
@@ -1331,6 +1332,11 @@ void MainWindow::saveTempImageHandler(int id, QString path, QByteArray data)
 
 	QString eval = QString("window.imageSaved({ id: %1, fullPath: '%2'});").arg(id).arg(fullpath);
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
+}
+
+void MainWindow::displayMessageFromResultsHandler(QString msg)
+{
+	QMessageBox::warning(this, "Results Warning", msg);
 }
 
 void MainWindow::showAnalysesMenuHandler(QString options)

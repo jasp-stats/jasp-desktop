@@ -95,6 +95,7 @@ signals:
 	void pushToClipboard(QString mimeType, QString data, QString html);
 	void pushImageToClipboard(QByteArray base64, QString html);
 	void saveTempImage(int id, QString path, QByteArray data);
+	void displayMessageFromResults(QString path);
 	void showAnalysesMenu(QString options);
 	void removeAnalysisRequest(int id);
 	void updateUserData(int id, QString key);
@@ -112,6 +113,7 @@ private slots:
 	void saveTextToFileHandler(const QString &filename, const QString &data);
 	void pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html);
 	void saveTempImageHandler(int id, QString path, QByteArray data);
+	void displayMessageFromResultsHandler(QString msg);
 	void analysisChangedDownstreamHandler(int id, QString options);
 
 	void resultsDocumentChangedHandler();
