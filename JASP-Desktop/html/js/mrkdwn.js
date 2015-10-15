@@ -1493,6 +1493,26 @@ var Mrkdwn = {
 		return { append: false, lines: [ node.outerHTML ] };
 	},
 
+	_processHtml_sup: function (node, data) {
+
+		var lines = this._pushToNextLevel(node, data, null, this._getInnerText);
+		lines = ['<sup>' + lines.join("\n") + '</sup>'];
+		return { append: true, lines: lines }
+	},
+
+	_processHtml_sub: function (node, data) {
+
+		var lines = this._pushToNextLevel(node, data, null, this._getInnerText);
+		lines = ['<sub>' + lines.join("\n") + '</sub>'];
+		return { append: true, lines: lines }
+	},
+
+	_processHtml_underline: function (node, data) {
+
+		var lines = this._pushToNextLevel(node, data, null, this._getInnerText);
+		lines = ['<underline>' + lines.join("\n") + '</underline>'];
+		return { append: true, lines: lines }
+	},
 
 	_processHtml_strong: function (node, data) {
 		var lines = this._pushToNextLevel(node, data, null, this._getInnerText);

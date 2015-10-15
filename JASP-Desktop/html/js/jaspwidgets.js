@@ -457,8 +457,11 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		if (this.$ghostText.hasClass('jasp-hide') === false)
 			offset = this.$ghostText.offset();
 
-		var posY = offset.top + 5 - $(window).scrollTop() + 3;
-		var posX = offset.left + 5 - $(window).scrollLeft();
+		var y = 5
+		var x = 5
+
+		var posY = offset.top + y - $(window).scrollTop() + 3;
+		var posX = offset.left + x - $(window).scrollLeft();
 		return { x: posX, y: posY };
 	},
 
@@ -978,6 +981,11 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		if (this.editing)
 			return true;
 
+		if (this.parent.isCollapsed && this.parent.isCollapsed() && this.parent.setCollapsedState) {
+			this.parent.setCollapsedState(false);
+			return true;
+		}
+
 		this.setFixedness(2);
 
 		var $titleLabel = this.$el.find('>:first-child');
@@ -995,6 +1003,9 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 
 		if (this.options.hasNotes)
 			this.options['noteOptions'] = this.parent.noteOptions();
+
+		if (this.options.hasCollapse)
+			this.options['collapseOptions'] = this.parent.collapseOptions();
 
 		this.parent.trigger('toolbar:showMenu', this.parent, this.options);
 
@@ -1020,11 +1031,12 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasNotes: (parent.hasNotes === undefined || parent.hasNotes()) && parent.notesMenuClicked !== undefined,
 			hasEditTitle: (parent.hasEditTitle === undefined || parent.hasEditTitle()) && parent.editTitleClicked !== undefined,
 			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
+			hasCollapse: (parent.hasCollapse === undefined || parent.hasCollapse()) && parent.collapseMenuClicked !== undefined,
 
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasNotes || this.options.hasRemove || this.options.hasEditTitle;
+		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasNotes || this.options.hasRemove || this.options.hasEditTitle || this.options.hasCollapse;
 	},
 
 	selectionElement: function() {

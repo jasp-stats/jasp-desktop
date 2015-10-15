@@ -156,6 +156,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(analysisSelected(int)), this, SLOT(analysisSelectedHandler(int)));
 	connect(this, SIGNAL(analysisUnselected()), this, SLOT(analysisUnselectedHandler()));
 	connect(this, SIGNAL(saveTempImage(int, QString, QByteArray)), this, SLOT(saveTempImageHandler(int, QString, QByteArray)));
+	connect(this, SIGNAL(displayMessageFromResults(QString)),  this, SLOT(displayMessageFromResultsHandler(QString)));
 	connect(this, SIGNAL(pushToClipboard(QString, QString, QString)), this, SLOT(pushToClipboardHandler(QString, QString, QString)));
 	connect(this, SIGNAL(pushImageToClipboard(QByteArray, QString)), this, SLOT(pushImageToClipboardHandler(QByteArray, QString)));
 	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
@@ -1329,6 +1330,11 @@ void MainWindow::saveTempImageHandler(int id, QString path, QByteArray data)
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript(eval);
 }
 
+void MainWindow::displayMessageFromResultsHandler(QString msg)
+{
+	QMessageBox::warning(this, "Results Warning", msg);
+}
+
 void MainWindow::showAnalysesMenuHandler(QString options)
 {
 	Json::Value menuOptions;
@@ -1338,10 +1344,20 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 
 	QIcon _copyIcon = QIcon(":/icons/copy.png");
 	QIcon _citeIcon = QIcon(":/icons/cite.png");
+	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
+	QIcon _expandIcon = QIcon(":/icons/expand.png");
 
 	_analysisMenu->clear();
 
 	QString objName = tq(menuOptions["objectName"].asString());
+
+	if (menuOptions["hasCollapse"].asBool())
+	{
+		Json::Value collapseOptions = menuOptions["collapseOptions"];
+		QIcon icon = collapseOptions["collapsed"].asBool() ? _expandIcon : _collapseIcon;
+		_analysisMenu->addAction(icon, tq(collapseOptions["menuText"].asString()), this, SLOT(collapseSelected()));
+		_analysisMenu->addSeparator();
+	}
 
 	if (menuOptions["hasEditTitle"].asBool())
 	{
@@ -1350,7 +1366,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	}
 
 	if (menuOptions["hasCopy"].asBool())
-		_analysisMenu->addAction(_copyIcon, "Copy " + objName, this, SLOT(copySelected()));
+		_analysisMenu->addAction(_copyIcon, "Copy", this, SLOT(copySelected()));
 
 	if (menuOptions["hasCite"].asBool())
 	{
@@ -1377,6 +1393,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 			a1->setData(call);
 		}
 	}
+
 
 	if (menuOptions["hasRemove"].asBool())
 	{
@@ -1470,6 +1487,14 @@ void MainWindow::simulatedMouseClickHandler(int x, int y, int count) {
 void MainWindow::updateUserDataHandler(int id, QString key)
 {
 	_package->setModified(true);
+}
+
+
+void MainWindow::collapseSelected()
+{
+
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.collapseMenuClicked();");
+
 }
 
 void MainWindow::removeSelected()

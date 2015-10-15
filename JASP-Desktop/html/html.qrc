@@ -48,5 +48,7 @@
         <file>css/images/closer.png</file>
         <file>js/object.js</file>
         <file>js/collection.js</file>
+        <file>css/images/expand.png</file>
+        <file>css/images/collapse.png</file>
     </qresource>
 </RCC>
