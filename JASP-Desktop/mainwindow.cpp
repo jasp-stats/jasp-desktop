@@ -166,7 +166,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 
+#ifdef __APPLE__
+	_scrollbarWidth = 3;
+#else
 	_scrollbarWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+#endif
 
 	_buttonPanel = new QWidget(ui->panelMid);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
@@ -557,7 +561,7 @@ void MainWindow::showForm(Analysis *analysis)
 			ui->panelMid->setMinimumWidth(requiredSize + _scrollbarWidth);
 			_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 		}
-		//_currentOptionsWidget->setMinimumWidth(ui->panelMid->minimumWidth() - _scrollbarWidth);
+		_currentOptionsWidget->setMinimumWidth(ui->panelMid->minimumWidth() - _scrollbarWidth);
 //#########################
 
 		Options *options = analysis->options();
