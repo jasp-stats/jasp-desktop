@@ -2041,7 +2041,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		for (i in 1:nPlots) {
 
 			descriptivesPlot <- list()
-			descriptivesPlot[["title"]] <- ""
 			
 			if (options$plotSeparateLines != "") {
 			
@@ -2121,7 +2120,9 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 				base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
 
 			if (nPlots > 1) {
-				p <- p + ggplot2::ggtitle(paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = ""))
+				descriptivesPlot[["title"]] <- paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = "")
+			} else {
+				descriptivesPlot[["title"]] <- ""
 			}
 
 			if (options$plotSeparateLines != "") {
