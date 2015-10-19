@@ -125,7 +125,10 @@
               <property name="styleSheet">
                <string notr="true">QTableCornerButton::section, QHeaderView::section {
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 rgb(240, 240, 240), stop:0.701 rgb(227, 225, 226));
-	padding: 0.3em ;
+	padding-top: 0.1em ;
+	padding-bottom: 0.1em ;
+	padding-left: 0.3em ;
+	padding-right: 0.3em ;
 	border-right: 1px solid #929292 ;
 	border-bottom: 1px solid #929292 ;
 	border-left: none ;
