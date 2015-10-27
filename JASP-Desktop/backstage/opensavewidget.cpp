@@ -151,9 +151,11 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 	if (event->operation() == FileEvent::FileSave || event->operation() == FileEvent::FileOpen)
 	{
 		if (event->successful())
-		{
-			if (event->isReadOnly() == false)
+		{	
+			if (_fsmExamples->contains(event->path()) == false)
 			{
+				//  don't add examples to the recent list
+
 				_fsmRecent->addRecent(event->path());
 				_bsComputer->addRecent(event->path());
 			}

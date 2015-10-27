@@ -30,6 +30,17 @@ const QString &FSBModel::rootPath() const
 	return _rootPath;
 }
 
+bool FSBModel::contains(const QString &path) const
+{
+	foreach (const FSEntry &entry, _entries)
+	{
+		if (entry.path == path)
+			return true;
+	}
+
+	return false;
+}
+
 FSEntry FSBModel::createEntry(const QString &path, FSEntry::EntryType type)
 {
 	FSEntry entry;
@@ -63,3 +74,4 @@ FSEntry FSBModel::createEntry(const QString &path, const QString &name, const QS
 
 	return entry;
 }
+

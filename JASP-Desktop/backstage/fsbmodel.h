@@ -24,6 +24,8 @@ public:
 	const QString &path() const;
 	const QString &rootPath() const;
 
+	bool contains(const QString &path) const;
+
 public slots:
 	void setPath(QString path);
 
