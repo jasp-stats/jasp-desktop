@@ -307,7 +307,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 		
 		if (perform == "run") {
 			
-			dat <- dataset[[ .v(var) ]]
+			dat <- na.omit(dataset[[ .v(var) ]])
 			n <- .clean(as.numeric(length(dat)))
 			m <- .clean(as.numeric(mean(dat, na.rm = TRUE)))
 			std <- .clean(as.numeric(sd(dat, na.rm = TRUE)))
