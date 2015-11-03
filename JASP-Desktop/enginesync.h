@@ -19,6 +19,13 @@
 #include "ipcchannel.h"
 #include "activitylog.h"
 
+/* EngineSync is responsible for launching the background
+ * processes, scheduling analyses, and for sending and
+ * receiving communications with the running analyses.
+ * It keeps track of which analyses are executing on
+ * which background process.
+ */
+
 class EngineSync : public QObject
 {
 	Q_OBJECT

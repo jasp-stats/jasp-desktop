@@ -17,6 +17,14 @@
 
 #include "../JASP-Common/dataset.h"
 
+/* The R Bridge provides functions to the R analyses;
+ * i.e. functions to read the data set from shared memory
+ * Similarly, it provides functions to C++ code for
+ * launching analyses written in R.
+ * In this way, it functions as the bridge between the C++
+ * application, and the R analyses
+ */
+
 	typedef boost::function<std::string (const std::string &)> RCallback;
 
 	void rbridge_init();

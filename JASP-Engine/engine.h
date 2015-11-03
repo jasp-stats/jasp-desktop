@@ -6,6 +6,18 @@
 #include "../JASP-Common/ipcchannel.h"
 #include "../JASP-Common/processinfo.h"
 
+/* The Engine represents the background processes.
+ * It's job is pretty straight forward; it reads analysis
+ * requests from shared memory (a semaphore is set when there
+ * is a new message), and runs the analysis.
+ * If an analysis is running when a new request is received,
+ * and it is the same analysis (analysisId's match), then the
+ * analysis is notified of the change (probably to one of its
+ * options).
+ * If the analysisId's don't match, then the old analysis is
+ * aborted, and the new one is set running.
+ */
+
 class Engine
 {
 public:
