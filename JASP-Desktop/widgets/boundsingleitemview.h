@@ -1,8 +1,6 @@
 #ifndef BOUNDSINGLEITEMVIEW_H
 #define BOUNDSINGLEITEMVIEW_H
 
-#include <QtDesigner/QtDesigner>
-
 #include "boundlistview.h"
 
 

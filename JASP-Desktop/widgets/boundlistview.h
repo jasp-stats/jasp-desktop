@@ -1,7 +1,6 @@
 #ifndef BOUNDLISTVIEW_H
 #define BOUNDLISTVIEW_H
 
- #include <QtDesigner/QtDesigner>
 
 #include "bound.h"
 
