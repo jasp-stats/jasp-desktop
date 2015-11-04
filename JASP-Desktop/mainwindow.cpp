@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->setupUi(this);
 
-	int initalTableWidth = 590;
+	int initalTableWidth = 500;
 
 	QList<int> sizes = QList<int>();
 	sizes.append(initalTableWidth);
