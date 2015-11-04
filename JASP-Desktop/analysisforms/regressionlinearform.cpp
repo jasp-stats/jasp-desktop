@@ -63,10 +63,15 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
     ui->missingValues->hide();
-	ui->factorsContainer->hide();
+	ui->factors->hide();
+	ui->buttonAssignFactors->hide();
+	ui->label_13->hide();
+	ui->verticalSpacer->hide();
 #else
     ui->missingValues->setStyleSheet("background-color: pink ;");
-	ui->factorsContainer->setStyleSheet("background-color: pink ;");
+	ui->factors->setStyleSheet("background-color: pink ;");
+	ui->buttonAssignFactors->setStyleSheet("background-color: pink ;");
+	ui->label_13->setStyleSheet("background-color: pink ;");
 #endif
 
 }

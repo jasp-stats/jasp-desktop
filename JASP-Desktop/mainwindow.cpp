@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->setupUi(this);
 
-	int initalTableWidth = 590;
+	int initalTableWidth = 500;
 
 	QList<int> sizes = QList<int>();
 	sizes.append(initalTableWidth);
@@ -167,13 +167,17 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(simulatedMouseClick(int, int, int)), this, SLOT(simulatedMouseClickHandler(int, int, int)));
 	connect(this, SIGNAL(resultsDocumentChanged()), this, SLOT(resultsDocumentChangedHandler()));
 
+#ifdef __APPLE__
+	_scrollbarWidth = 3;
+#else
+	_scrollbarWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+#endif
 
-
-
-	_buttonPanel = new QWidget(ui->pageOptions);
+	_buttonPanel = new QWidget(ui->panelMid);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
 	_buttonPanelLayout->setSpacing(6);
-	_buttonPanelLayout->setContentsMargins(0, 12, 24, 0);
+	_buttonPanelLayout->setContentsMargins(0, _buttonPanelLayout->contentsMargins().top(), _buttonPanelLayout->contentsMargins().right(), 0);
+
 	_buttonPanel->setLayout(_buttonPanelLayout);
 
 	_okButton = new QPushButton(QString("OK"), _buttonPanel);
@@ -191,7 +195,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanelLayout->addStretch();
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
-	_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
+	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
 	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
@@ -202,8 +206,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_analysisMenu, SIGNAL(aboutToHide()), this, SLOT(menuHidding()));
 
 	updateUIFromOptions();
-
-	ui->panelMid->hide();
 
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 
@@ -238,20 +240,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #ifdef __WIN32__
 		QApplication::setFont(ui->tableView->font());
-
-		QFontMetrics fm(ui->panelMid->font());
-		int optionsWidth = 63 * fm.width("X");
-		ui->panelMid->setMinimumWidth(optionsWidth);
-		ui->pageOptions->setMaximumWidth(optionsWidth);
-
-		sizes = ui->splitter->sizes();
-		sizes[0] = optionsWidth;
-		ui->splitter->setSizes(sizes);
-
-		this->resize(this->width() + (optionsWidth - initalTableWidth), this->height());
-
-		_buttonPanel->move(ui->panelMid->minimumWidth() - _buttonPanel->width(), 0);
 #endif
+
+		setupOptionPanelSize();
+
+		ui->panelMid->hide();
 }
 
 void MainWindow::open(QString filepath)
@@ -455,8 +448,11 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 {
-	string name = analysis->name();
+	return loadForm(analysis->name());
+}
 
+AnalysisForm* MainWindow::loadForm(const string name)
+{
 	if (_analysisForms.find(name) != _analysisForms.end())
 		return _analysisForms[name];
 
@@ -529,6 +525,17 @@ AnalysisForm* MainWindow::loadForm(Analysis *analysis)
 	return form;
 }
 
+void MainWindow::setupOptionPanelSize()
+{
+	//AnalysisForm* form = loadForm("Descriptives");
+
+	//int width = form->sizeHint().width() + _scrollbarWidth;// form->fontMetrics().width("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+	//QList<int> sizes = ui->splitter->sizes();
+	//sizes[0] = width;
+	//ui->splitter->setSizes(sizes);
+}
+
 void MainWindow::showForm(Analysis *analysis)
 {
 	closeCurrentOptionsWidget();
@@ -537,6 +544,27 @@ void MainWindow::showForm(Analysis *analysis)
 
 	if (_currentOptionsWidget != NULL)
 	{
+
+//sizing of options widget and panel to fit buttons and conform to largest size for consistency
+
+		QObjectList siblings = _currentOptionsWidget->children();
+		for (QObjectList::Iterator itr = siblings.begin(); itr != siblings.end(); itr++) {
+			QWidget* w = dynamic_cast<QWidget*>(*itr);
+			if (w != NULL && w->objectName() == "topWidget") {
+				w->setContentsMargins(0, 0, _buttonPanel->width(), 0);
+				break;
+			}
+		}
+
+		int requiredSize = _currentOptionsWidget->sizeHint().width();
+		int currentOptionSpace = ui->panelMid->minimumWidth() - _scrollbarWidth;
+		if (requiredSize > currentOptionSpace) {
+			ui->panelMid->setMinimumWidth(requiredSize + _scrollbarWidth);
+			_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
+		}
+		_currentOptionsWidget->setMinimumWidth(ui->panelMid->minimumWidth() - _scrollbarWidth);
+//#########################
+
 		Options *options = analysis->options();
 		DataSet *dataSet = _package->dataSet;
 		_currentOptionsWidget->bindTo(options, dataSet);
@@ -545,7 +573,7 @@ void MainWindow::showForm(Analysis *analysis)
 		illegalOptionStateChanged();
 
 		_currentOptionsWidget->show();
-		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget, 0, 0, Qt::AlignLeft | Qt::AlignTop);
+		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget,0, 0, Qt::AlignRight | Qt::AlignTop);
 
 		if (ui->panelMid->isVisible() == false)
 			showOptionsPanel();
@@ -1080,6 +1108,8 @@ void MainWindow::adjustOptionsPanelWidth()
 	{
 		hideTableView();
 	}
+
+	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 }
 
 void MainWindow::splitterMovedHandler(int, int)
@@ -1158,6 +1188,8 @@ void MainWindow::showOptionsPanel()
 
 		ui->splitter->setSizes(sizes);
 	}
+
+	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 }
 
 void MainWindow::showTableView()

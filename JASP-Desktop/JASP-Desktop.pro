@@ -155,7 +155,8 @@ SOURCES += main.cpp \
     backstage/fsbmcomputer.cpp \
     backstage/fsbmrecent.cpp \
     backstage/fsbmrecentfolders.cpp \
-    fileevent.cpp
+    fileevent.cpp \
+    widgets/boundsingleitemview.cpp
 
 HEADERS  += \
     analyses.h \
@@ -275,7 +276,8 @@ HEADERS  += \
     backstage/fsbmcomputer.h \
     backstage/fsbmrecent.h \
     backstage/fsbmrecentfolders.h \
-    fileevent.h
+    fileevent.h \
+    widgets/boundsingleitemview.h
 
 FORMS += \
     analysisforms/anovabayesianform.ui \

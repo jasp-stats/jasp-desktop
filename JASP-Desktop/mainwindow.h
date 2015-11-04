@@ -44,6 +44,8 @@ private:
 	DataSetTableModel *_tableModel;
 	Analysis *_currentAnalysis;
 
+	int _scrollbarWidth = 0;
+
 	double _webViewZoom;
 
 	Analyses *_analyses;
@@ -60,9 +62,12 @@ private:
 	bool _applicationExiting = false;
 
 	AnalysisForm* loadForm(Analysis *analysis);
+	AnalysisForm* loadForm(const std::string name);
 	void showForm(Analysis *analysis);
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
+
+	void setupOptionPanelSize();
 
 	QWidget *_buttonPanel;
 	QVBoxLayout *_buttonPanelLayout;

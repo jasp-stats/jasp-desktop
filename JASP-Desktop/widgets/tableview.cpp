@@ -128,3 +128,14 @@ void TableView::doubleClickedHandler(const QModelIndex index)
 	if (_defaultDropTarget != NULL)
 		DragAndDrop::perform(this, _defaultDropTarget);
 }
+
+QSize TableView::sizeHint() const {
+	static int width = -1;
+
+	if (width == -1)
+		width = this->fontMetrics().width("XXXXXXXXXXXXXXXXXXXX");
+
+	QSize sizeHint = QTableView::sizeHint();
+	sizeHint.setWidth(width);
+	return sizeHint;
+}

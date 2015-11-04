@@ -38,3 +38,35 @@ void ExpanderButton::nextCheckState()
 			w->setVisible(_expanded);
 	}
 }
+
+QSize ExpanderButton::sizeHint() const {
+	 QSize sizeHint = QPushButton::sizeHint();
+
+	 int width = sizeHint.width();
+	QObjectList siblings = this->parentWidget()->children();
+	for (QObjectList::Iterator itr = siblings.begin(); itr != siblings.end(); itr++) {
+		QWidget* w = dynamic_cast<QWidget*>(*itr);
+		if (w != NULL && w != this && w->sizeHint().width() > width)
+			width = w->sizeHint().width();
+	}
+
+	sizeHint.setWidth(width);
+
+	return sizeHint;
+}
+
+QSize ExpanderButton::minimumSizeHint() const {
+	 QSize sizeHint = QPushButton::minimumSizeHint();
+
+	 int width = sizeHint.width();
+	QObjectList siblings = this->parentWidget()->children();
+	for (QObjectList::Iterator itr = siblings.begin(); itr != siblings.end(); itr++) {
+		QWidget* w = dynamic_cast<QWidget*>(*itr);
+		if (w != NULL && w != this && w->minimumSizeHint().width() > width)
+			width = w->minimumSizeHint().width();
+	}
+
+	sizeHint.setWidth(width);
+
+	return sizeHint;
+}

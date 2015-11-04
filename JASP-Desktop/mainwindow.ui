@@ -125,7 +125,10 @@
               <property name="styleSheet">
                <string notr="true">QTableCornerButton::section, QHeaderView::section {
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 rgb(240, 240, 240), stop:0.701 rgb(227, 225, 226));
-	padding: 0.3em ;
+	padding-top: 0.1em ;
+	padding-bottom: 0.1em ;
+	padding-left: 0.3em ;
+	padding-right: 0.3em ;
 	border-right: 1px solid #929292 ;
 	border-bottom: 1px solid #929292 ;
 	border-left: none ;
@@ -171,20 +174,20 @@ QTableView::item::last
              </widget>
              <widget class="QWidget" name="panelMid" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
               <property name="minimumSize">
                <size>
-                <width>590</width>
+                <width>0</width>
                 <height>0</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>590</width>
+                <width>16777215</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -209,14 +212,39 @@ QTableView::item::last
                <property name="spacing">
                 <number>0</number>
                </property>
-               <item row="1" column="0">
-                <widget class="QWidget" name="widget_2" native="true"/>
+               <item row="0" column="0" colspan="2">
+                <widget class="QWidget" name="optionsErrorPanel" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>24</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">background-color : #FF5555 ;</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_7">
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="optionsErrorLabel">
+                    <property name="text">
+                     <string>Confidence Interval must be between 80 and 99</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
                </item>
                <item row="1" column="1">
                 <widget class="QWidget" name="pageOptions" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="maximumSize">
                   <size>
-                   <width>590</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -235,6 +263,12 @@ QTableView::item::last
                   </property>
                   <item row="0" column="0">
                    <widget class="QScrollArea" name="scrollArea">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true">QWidget#scrollArea {
 	border-top: 1px solid #929292 ;
@@ -265,6 +299,12 @@ QTableView::item::last
                        <height>540</height>
                       </rect>
                      </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <layout class="QGridLayout" name="optionsContentAreaLayout">
                       <property name="leftMargin">
                        <number>0</number>
@@ -278,8 +318,11 @@ QTableView::item::last
                       <property name="bottomMargin">
                        <number>0</number>
                       </property>
-                      <item row="0" column="0" rowspan="2" colspan="2">
-                       <widget class="QWidget" name="widget" native="true"/>
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
+                      <item row="0" column="0">
+                       <widget class="QWidget" name="optionArea" native="true"/>
                       </item>
                      </layout>
                     </widget>
@@ -288,26 +331,14 @@ QTableView::item::last
                  </layout>
                 </widget>
                </item>
-               <item row="0" column="0" colspan="2">
-                <widget class="QWidget" name="optionsErrorPanel" native="true">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>24</height>
-                  </size>
+               <item row="1" column="0">
+                <widget class="QWidget" name="widget_2" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
-                 <property name="styleSheet">
-                  <string notr="true">background-color : #FF5555 ;</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_7">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="optionsErrorLabel">
-                    <property name="text">
-                     <string>Confidence Interval must be between 80 and 99</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
                 </widget>
                </item>
               </layout>
@@ -462,12 +493,6 @@ QPushButton#first:checked {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BackStageWidget</class>
-   <extends>QWidget</extends>
-   <header>backstagewidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>MainTableView</class>
    <extends>QTableView</extends>
    <header>maintableview.h</header>
@@ -503,6 +528,12 @@ QPushButton#first:checked {
    <class>WebView</class>
    <extends>QWidget</extends>
    <header>widgets/webview.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BackStageWidget</class>
+   <extends>QWidget</extends>
+   <header>backstagewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

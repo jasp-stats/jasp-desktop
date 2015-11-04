@@ -100,10 +100,16 @@ AncovaForm::AncovaForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->factorCovariateIndependence->hide();
-	ui->randomFactorsBox->hide();
+	ui->randomFactors->hide();
+	ui->buttonAssignRandom->hide();
+	ui->label_3->hide();
+	ui->verticalSpacer_2->hide();
 #else
+
 	ui->factorCovariateIndependence->setStyleSheet("background-color: pink ;");
-	ui->randomFactorsBox->setStyleSheet("background-color: pink ;");
+	ui->randomFactors->setStyleSheet("background-color: pink ;");
+	ui->buttonAssignRandom->setStyleSheet("background-color: pink ;");
+	ui->label_3->setStyleSheet("background-color: pink ;");
 #endif
 
 }

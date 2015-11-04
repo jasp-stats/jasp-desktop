@@ -20,7 +20,7 @@ CorrelationBayesianForm::CorrelationBayesianForm(QWidget *parent) :
 
 	ui->assignButton->setSourceAndTarget(ui->availableVariables, ui->variables);
 
-	ui->panelOptions->hide();
+	ui->missingValues->hide();
 
 #ifdef QT_NO_DEBUG
 	ui->spearman->hide();

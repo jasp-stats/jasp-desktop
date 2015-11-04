@@ -1,6 +1,7 @@
 #ifndef BOUNDLISTVIEW_H
 #define BOUNDLISTVIEW_H
 
+
 #include "bound.h"
 
 #include <QStringListModel>
