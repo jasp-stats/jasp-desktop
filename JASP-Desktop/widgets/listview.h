@@ -10,6 +10,7 @@
 class ListView : public QListView, public DropTarget
 {
 	Q_OBJECT
+
 public:
 	explicit ListView(QWidget *parent = 0);
 
@@ -17,6 +18,8 @@ public:
 	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
 	virtual void notifyDragWasDropped() OVERRIDE;
 	virtual QSize sizeHint() const OVERRIDE;
+	virtual QSize minimumSizeHint() const OVERRIDE;
+	virtual int itemCount() const;
 
 protected:
 	void focusInEvent(QFocusEvent *event) OVERRIDE;
@@ -30,6 +33,7 @@ private slots:
 private:
 	DropTarget *_defaultDropTarget;
 	TableModel *_listModel;
+
 	
 };
 

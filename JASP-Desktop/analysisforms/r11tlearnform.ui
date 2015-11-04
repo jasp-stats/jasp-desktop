@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>1461</height>
+    <height>1468</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -95,7 +95,7 @@
           </widget>
          </item>
          <item row="7" column="2">
-          <widget class="BoundListView" name="deck">
+          <widget class="boundSingleItemView" name="deck">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -105,13 +105,13 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>35</height>
+             <height>0</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>35</height>
+             <height>16777215</height>
             </size>
            </property>
            <property name="selectionMode">
@@ -152,7 +152,7 @@
           </widget>
          </item>
          <item row="9" column="2">
-          <widget class="BoundListView" name="reward">
+          <widget class="boundSingleItemView" name="reward">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -162,13 +162,13 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>35</height>
+             <height>0</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>35</height>
+             <height>16777215</height>
             </size>
            </property>
            <property name="selectionMode">
@@ -209,7 +209,7 @@
           </widget>
          </item>
          <item row="11" column="2">
-          <widget class="BoundListView" name="loss">
+          <widget class="boundSingleItemView" name="loss">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -219,13 +219,13 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>35</height>
+             <height>0</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>35</height>
+             <height>16777215</height>
             </size>
            </property>
            <property name="selectionMode">
@@ -234,7 +234,7 @@
           </widget>
          </item>
          <item row="5" column="2">
-          <widget class="BoundListView" name="trialNumber">
+          <widget class="boundSingleItemView" name="trialNumber">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -244,13 +244,13 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>35</height>
+             <height>0</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>35</height>
+             <height>16777215</height>
             </size>
            </property>
            <property name="selectionMode">
@@ -284,7 +284,7 @@
           </widget>
          </item>
          <item row="3" column="2">
-          <widget class="BoundListView" name="group">
+          <widget class="boundSingleItemView" name="group">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -294,13 +294,13 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>35</height>
+             <height>0</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>35</height>
+             <height>16777215</height>
             </size>
            </property>
            <property name="selectionMode">
@@ -358,7 +358,7 @@
           <widget class="QWidget" name="widget_7" native="true"/>
          </item>
          <item row="1" column="2">
-          <widget class="BoundListView" name="subjectId">
+          <widget class="boundSingleItemView" name="subjectId">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -368,13 +368,13 @@
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>35</height>
+             <height>0</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>35</height>
+             <height>16777215</height>
             </size>
            </property>
            <property name="selectionMode">
@@ -1165,11 +1165,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1195,6 +1190,11 @@
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

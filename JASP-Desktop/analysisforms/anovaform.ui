@@ -134,7 +134,7 @@
        </widget>
       </item>
       <item row="9" column="2">
-       <widget class="BoundListView" name="wlsWeights">
+       <widget class="boundSingleItemView" name="wlsWeights">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -144,13 +144,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>35</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="selectionMode">
@@ -209,7 +209,7 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="BoundListView" name="dependent">
+       <widget class="boundSingleItemView" name="dependent">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -219,13 +219,13 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>35</height>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="selectionMode">
@@ -1585,6 +1585,11 @@
    <extends>QWidget</extends>
    <header>widgets/boundassignwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

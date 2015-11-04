@@ -11,6 +11,9 @@ ListView::ListView(QWidget *parent) :
 	_defaultDropTarget = NULL;
 	_listModel = NULL;
 
+	this->setLayoutMode(QListView::Batched);
+	this->setBatchSize(25);
+
 	connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(doubleClickedHandler(QModelIndex)));
 
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -89,13 +92,34 @@ void ListView::doubleClickedHandler(const QModelIndex index)
 		DragAndDrop::perform(this, _defaultDropTarget);
 }
 
-QSize ListView::sizeHint() const {
+QSize ListView::sizeHint() const
+{
 	static int width = -1;
 
 	if (width == -1)
 		width = this->fontMetrics().width("XXXXXXXXXXXXXXXXXXXX");
 
+
 	QSize sizeHint = QListView::sizeHint();
 	sizeHint.setWidth(width);
+
 	return sizeHint;
+}
+
+QSize ListView::minimumSizeHint() const
+{
+	static int width = -1;
+
+	if (width == -1)
+		width = this->fontMetrics().width("XXXXXXXXXXXXXXXXXXXX");
+
+	QSize sizeHint = QListView::minimumSizeHint();
+	sizeHint.setWidth(width);
+
+	return sizeHint;
+}
+
+int ListView::itemCount() const
+{
+	return -1;
 }

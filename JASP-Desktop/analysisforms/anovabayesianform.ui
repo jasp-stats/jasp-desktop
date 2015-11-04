@@ -70,7 +70,7 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="BoundListView" name="dependent">
+       <widget class="boundSingleItemView" name="dependent">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -79,14 +79,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>210</width>
-          <height>35</height>
+          <width>0</width>
+          <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>35</height>
+          <height>16777215</height>
          </size>
         </property>
         <property name="selectionMode">
@@ -111,7 +111,7 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>210</width>
+          <width>0</width>
           <height>80</height>
          </size>
         </property>
@@ -226,7 +226,7 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>210</width>
+          <width>0</width>
           <height>80</height>
          </size>
         </property>
@@ -544,6 +544,11 @@
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
