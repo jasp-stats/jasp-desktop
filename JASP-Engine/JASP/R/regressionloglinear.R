@@ -21,19 +21,10 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 
 	if (options$counts == ""){ 
 	 	dataset <- plyr::count(dataset)
-	 }else{
+	 } else {
 	 	dataset <- dataset
-	 	}
-	
-	#print(options$counts)
-	
-	#print(unlist( options$factors))
-	
-	#colname <-c(options$counts, unlist( options$factors))
-	
-	#colnames(dataset)<- colname
+	 }
 
-     print(dataset)
 	results <- list()
 	
 	meta <- list()
@@ -145,8 +136,6 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		loglm.model <- empty.model
 	}
 
-	#print(length(loglm.model))
-	#print(loglm.model)
 	################################################################################
 	#						   MODEL COEFFICIENTS TABLE   						#
 	################################################################################
@@ -155,37 +144,39 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		
 		logregression <- list()
 		logregression[["title"]] <- "Coefficients"
+		#ci.label <- paste(100*options$ConfidenceIntervalInterval, "% Confidence intervals", sep="")
+		ci.label <- paste(95, "% Confidence intervals", sep="")
 		
 		# Declare table elements
 		fields <- list(
-		#	list(name = "Model", type = "integer"),
 			list(name = "Name", title = "  ", type = "string"),
 			list(name = "Coefficient", title = "Estimate", type = "number", format = "dp:3"),
 			list(name = "Standard Error", type="number", format = "dp:3"),
+			list(name = "Lower",overTitle=ci.label, type="number", format = "dp:3"),
+			list(name = "Upper",overTitle=ci.label,type="number", format = "dp:3"),
 			list(name = "z-value", type="number", format = "sf:4;dp:3"),
 			list(name = "z", type = "number", format = "dp:3;p:.001"))
-		
-		empty.line <- list( #for empty elements in tables when given output
-		#	"Model" = "",
+					
+		empty.line <- list(                      #for empty elements in tables when given output
 			"Name" = "",
 			"Coefficient" = "",
 			"Standard Error" = "",
+			"Lower" = "",
+			"Upper" = "",
 			"z-value" = "",
 			"z" = "")
 			
-		dotted.line <- list( #for empty tables
-		#	"Model" = ".",
+		dotted.line <- list(                     #for empty tables
 			"Name" = ".",
 			"Coefficient" = ".",
 			"Standard Error" = ".",
+			"Lower" = ".",
+			"Upper" = ".",
 			"z-value" = ".",
-			"z" = ".")
-			
+			"z" = ".")			
 		
 		lookup.table <- .regressionLogLinearBuildLookup(dataset, options$factors)
 		lookup.table[["(Intercept)"]] <- "(Intercept)"
-
-
 
 		logregression[["schema"]] <- list(fields = fields)
 		
@@ -197,11 +188,20 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 					
 				loglm.summary   <- summary(loglm.model$loglm.fit)
 				loglm.estimates <- loglm.summary$coefficients
+				print(str(loglm.estimates))
+				loglm.coeff <- loglm.estimates[,"Estimate"]
+				loglm.estimates.SE <- loglm.estimates[,"Std. Error"]
+				
+				sig <- 0.95
+				#sig    <- options$CIIntervalInterval
+				alpha  <- (1 - sig) / 2
+				lower  <- loglm.coeff+ stats::qnorm(alpha)*loglm.estimates.SE
+				upper  <- loglm.coeff+ stats::qnorm(1-alpha)*loglm.estimates.SE
+				
+				print(cbind(lower,upper))
 				
 				len.logreg <- length(logregression.result) + 1
-				
-				
-					
+									
 				if (length(loglm.model$variables) > 0) {
 					
 					variables.in.model <- loglm.model$variables
@@ -213,28 +213,27 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 						logregression.result[[ len.logreg ]] <- empty.line
 
 						coefficient <- coef[[i]]
-						
-						#actualName <- paste(lookup.table[[ coefficient ]], collapse=" = ")
-						#coef<-base::strsplit (coefficients, split = ":", fixed = TRUE)
-						 actualName<-list()
+				
+						actualName<-list()
 						for (j in seq_along(coefficient)){
 						  actualName[[j]] <- paste(lookup.table[[ coefficient[j] ]], collapse=" = ")
-						  }
+						}
 						var<-paste0(actualName, collapse="*")
 						#print(var)
 							
 						logregression.result[[ len.logreg ]]$"Name" <- var
 						logregression.result[[ len.logreg ]]$"Coefficient" <- as.numeric(unname(loglm.estimates[i,1]))
-						logregression.result[[ len.logreg ]]$"Standard Error" <- as.numeric(loglm.estimates[i,2])			
+						logregression.result[[ len.logreg ]]$"Standard Error" <- as.numeric(loglm.estimates[i,2])
+						
+						logregression.result[[ len.logreg ]]$"Lower" <- as.numeric(lower[i])
+						logregression.result[[ len.logreg ]]$"Upper" <- as.numeric(upper[i])
+									
 						logregression.result[[ len.logreg ]]$"z-value" <- as.numeric(loglm.estimates[i,3])
 						logregression.result[[ len.logreg ]]$"z" <- as.numeric(loglm.estimates[i,4])
 						
 						len.logreg <- len.logreg + 1
 					}
-							
-				}
-					
-	###############					
+				}									
 			
 			} else {
 			
@@ -308,24 +307,21 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		len.logreg <- length(logregression.result) + 1
 		logregression.result[[ len.logreg ]] <- dotted.line
 		logregression.result[[ len.logreg ]]$"Model" <- 1
-
 		}
 
 	logregression[["data"]] <- logregression.result
-	results[["logregression"]] <- logregression
-		
+	results[["logregression"]] <- logregression		
 	}
 	
 ################################################################
 
 	if (options$method == "enter") {	
 		logregressionanova <- list()
-		logregressionanova[["title"]] <- "Anova"
+		logregressionanova[["title"]] <- "ANOVA"
 		
 		# Declare table elements
 		fields <- list(
-			list(name = "Model", title = "  ",type = "string"),
-			#list(name = "Name", title = "  ", type = "string"),
+			list(name = "Name", title = "  ", type = "string"),
 			list(name = "Df", title = "Df", type="integer"),
 			list(name = "Deviance",title = "Deviance", type="number", format = "sf:4;dp:3"),
 			list(name = "Resid. Df", type="integer"),
@@ -333,8 +329,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			list(name = "Prob Chi", type = "number", format = "dp:3;p:.001"))
 		
 		empty.line <- list( #for empty elements in tables when given output
-			"Model" = "",
-			#"Name" = "",
+			"Name" = "",
 			"Df" = "",
 			"Deviance" = "",
 			"Resid. Df" = "",
@@ -342,8 +337,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			"prob Chi"="")
 			
 		dotted.line <- list( #for empty tables
-			"Model" = ".",
-			#"Name" = ".",
+			"Name" = ".",
 			"Df" = ".",
 			"Deviance" = ".",
 			"Resid. Df" = ".",
@@ -367,11 +361,9 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 				null.model <- "Null model"
 				if (length(loglm.model$variables) > 0) {
 					
-					variables.in.model <- loglm.model$variables
-						
+					variables.in.model <- loglm.model$variables						
 					l <- dim(loglm.estimates)[1]
- #print("we are so far")
-					 name <- dimnames(loglm.estimates)[[1]]
+					name <- dimnames(loglm.estimates)[[1]]
 					 
 					for (var in 1:l) {
 									  
@@ -379,13 +371,13 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 						model.name <- .unvf(name)
 						
 						if(var==1){
-							logregressionanova.result[[ len.logreg ]]$"Model" <- "NULL"
+							logregressionanova.result[[ len.logreg ]]$"Name" <- "NULL"
 							logregressionanova.result[[ len.logreg ]]$"Df" <- " "
 							logregressionanova.result[[ len.logreg ]]$"Deviance" <- " "
 							logregressionanova.result[[ len.logreg ]]$"Prob Chi" <- " "
 						
 						}else{							
-							logregressionanova.result[[ len.logreg ]]$"Model" <- model.name[var]
+							logregressionanova.result[[ len.logreg ]]$"Name" <- model.name[var]
 							logregressionanova.result[[ len.logreg ]]$"Df" <- as.integer(loglm.estimates$Df[var])
 							logregressionanova.result[[ len.logreg ]]$"Deviance" <- as.numeric(loglm.estimates$Deviance[var])	
 							logregressionanova.result[[ len.logreg ]]$"Prob Chi" <- as.numeric(loglm.estimates$"Pr(>Chi)"[var])
@@ -404,7 +396,6 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			
 				len.logreg <- length(logregressionanova.result) + 1
 				logregressionanova.result[[ len.logreg ]] <- dotted.line
-				#logregressionanova.result[[ len.logreg ]]$"Model" <- as.integer(m)
 			
 				if (length(loglm.model$variables) > 0) {
 				
@@ -418,8 +409,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 					
 						if (base::grepl(":", variables.in.model[var])) {
 						
-							# if interaction term
-						
+							# if interaction term						
 							vars <- unlist(strsplit(variables.in.model[var], split = ":"))
 							name <- paste0(vars, collapse="\u2009\u273b\u2009")
 						
@@ -480,34 +470,6 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	
 }		
 #######################################################################	
-	llTable <- list()
-	
-	llTable[["title"]] <- "Log Linear Regression"
-
-	fields <- list(
-		list(name="x", type="string", title=""),
-		list(name="y", type="number", format="sf:4;dp:3"),
-		list(name="z", type="number", format="sf:4;dp:3"),
-		list(name="p", type="number", format="dp:3;p:.001"))
-	
-	llTable[["schema"]] <- list(fields=fields)
-	
-
-	llTableData <- list()
-	
-	llTableData[[1]] <- list(x="Jonathon")
-
-	if (perform == "run") {
-	
-		llTableData[[1]] <- list(x="Jonathon", y=123.456, z=456.789, p=0)
-		
-	}
-	
-	llTable[["data"]] <- llTableData
-	
-	
-	results[["title"]] <- "Log Linear Regression"
-	results[["table"]] <- llTable
 	
 	if (perform == "init") {
 

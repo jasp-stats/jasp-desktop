@@ -219,10 +219,18 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	odds.ratio.state <- NULL
 	if ("odds.ratio" %in% names(state))
 		odds.ratio.state <- state$odds.ratio
+		
+	effect.size.state <- NULL
+	if ("effect.size" %in% names(state))
+		effect.size.state <- state$effect.size	
 	
 	plots.state <- NULL
 	if ("plots.state" %in% names(state))
 		plots.state <- state$plots.state
+		
+	plots0.state <- NULL
+	if ("plots0.state" %in% names(state))
+		plots0.state <- state$plots0.state	
 	
 	old.options <- NULL
 	if ("options" %in% names(state))
@@ -261,6 +269,13 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	new.state$odds.ratio <- res$state
 	complete <- complete && res$complete
 	
+	res <- .contTablesBayesianCreateEffectSizeTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, bf.results, effect.size.state, old.options, status)
+
+	tables[[length(tables)+1]] <- res$table
+	effect.size.results   <- res$state
+	new.state$effect.size <- res$state
+	complete <- complete && res$complete
+	
 	
 	res <- .contTablesBayesianCreateOddsRatioPlots(dataset, analysis, group.matrices, groups, options, populate, odds.ratio.results, bf.results, plots.state, old.options, status)
 	
@@ -269,6 +284,13 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	keep     <- res$keep
 	complete <- complete && res$complete
 	
+	res <- .contTablesBayesianCreateEffectSizePlots(dataset, analysis, group.matrices, groups, options, populate, effect.size.results, bf.results, plots0.state, old.options, status)
+	
+	plots <- c(plots, res$plots)
+	new.state$plots0.state <- res$state
+	keep     <- res$keep
+	complete <- complete && res$complete
+		
 	new.state$options <- options
 	
 	if (length(options$rows) == 0 || length(options$columns) == 0)
@@ -377,10 +399,17 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 	if (is.null(plot.state) == FALSE) {
 	
+		print("we are so for here")
+		print("plot.state")
+		print(plot.state)
+	
 		odds.ratio.plot[["data"]] <- plot.state$keep
 		
-		if ("status" %in% plot.state && plot.state$status$error)
-			odds.ratio.plot[["error"]] <- list(errorType="badData", errorMessage=plot.state$status$errorMessage)
+		if ("status" %in% names(plot.state) && plot.state$status$error) {
+			odds.ratio.plot[["error"]] <- list(errorType="badData", errorMessage=paste0("Plotting is not possible: " , plot.state$status$errorMessage))
+			
+			print("inside if statement")
+			}
 		
 		return(list(plot=odds.ratio.plot, state=plot.state, keep=plot.state$keep, complete=TRUE))
 	}
@@ -495,7 +524,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			new.plot.state <- list(keep=plot, status=status)
 
 			message <- status$errorMessage
-			odds.ratio.plot[["error"]]  <- list(error="badData", errorMessage=paste("Plotting is not possible:", message))
+			odds.ratio.plot[["error"]]  <- list(error = "badData", errorMessage=paste("Plotting is not possible:", message))
 			odds.ratio.plot[["status"]] <- "complete"
 			complete <- TRUE
 			
@@ -509,6 +538,198 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	list(plot=odds.ratio.plot, state=new.plot.state, keep=plot, complete=complete)
 }
 
+.contTablesBayesianCreateEffectSizePlots <- function(dataset, analysis, counts.matrices, groups, options, populate, effect.size.results, bf.results, state, state.options, status) {
+
+	if (options$plotPosteriorEffectSize == FALSE )
+		return(list(complete=TRUE))
+
+	if (is.null(state.options) ||
+		base::identical(state.options$rows, options$rows) == FALSE ||
+		base::identical(state.options$columns, options$columns) == FALSE ||
+		base::identical(state.options$counts, options$counts) == FALSE ||
+		base::identical(state.options$layers, options$layers) == FALSE ||
+		base::identical(state.options$columnOrder, options$columnOrder) == FALSE ||
+		base::identical(state.options$rowOrder, options$rowOrder) == FALSE ||
+		base::identical(state.options$samplingModel, options$samplingModel) == FALSE ||
+		base::identical(state.options$hypothesis, options$hypothesis) == FALSE ||
+		base::identical(state.options$effectSizeCredibleIntervalInterval, options$effectSizeCredibleIntervalInterval) == FALSE ||
+		base::identical(state.options$priorConcentration, options$priorConcentration) == FALSE) {
+		
+		state <- NULL
+	}
+
+	plots <- list()
+	keep  <- list()
+	new.state <- list()
+	
+	complete <- TRUE
+	
+	for (i in 1:length(counts.matrices)) {
+	
+		counts.matrix <- counts.matrices[[i]]
+		
+		if ( ! is.null(groups)) {
+		
+			group <- groups[[i]]
+			
+		} else {
+		
+			group <- NULL
+		}
+		
+		plot0.state <- NULL
+		if (i <= length(state))
+			plot0.state <- state[[i]]
+
+		effect.size.result <- NULL
+		if (i <= length(effect.size.results))
+			effect.size.result <- effect.size.results[[i]]
+		
+		bf.result <- NULL
+		if (i <= length(bf.results))
+			bf.result <- bf.results[[i]]
+
+		res <- .contTablesBayesianCreateEffectSizePlot(analysis$rows, counts.matrix, options, populate, group, effect.size.result, bf.result, plot0.state, state.options, status)
+
+		complete <- complete && res$complete
+		
+		plots[[length(plots)+1]] <- res$plot
+		
+		keep <- c(keep, res$keep)
+		
+		new.state[[length(new.state)+1]] <- res$state
+	}
+	
+	complete <- complete && (populate || is.null(state) == FALSE || length(options$rows) == 0 || length(options$columns) == 0)
+
+	list(plots=plots, keep=keep, state=new.state, complete=complete)
+}
+
+.contTablesBayesianCreateEffectSizePlot <- function(var.name, counts.matrix, options, populate, group, effect.size.result, bf.result, plot0.state, state.options, status) {
+	
+	effect.size.plot  <- list()
+	image <- NULL
+	
+    group[group == ""] <- "Total"
+    
+	
+	if (length(group) == 0) {
+	
+		effect.size.plot[["title"]] <- "Effect Size"
+		
+	} else if (length(group) > 0) {
+		
+		layer.levels <- paste(names(group),"=", group)
+		layer.levels <- gsub(pattern = " = Total", layer.levels, replacement = "")
+
+		plot.title <- paste(layer.levels, collapse="; ")
+		effect.size.plot[["title"]] <- plot.title
+	}
+		
+	width  <- 530
+	height <- 400
+	
+	effect.size.plot[["width"]]  <- width
+	effect.size.plot[["height"]] <- height
+	effect.size.plot[["citation"]] <- .contTablesBayesianCitations()
+	
+	if (is.null(plot0.state) == FALSE) {
+	
+		effect.size.plot[["data"]] <- plot0.state$keep	
+		
+		if ("status" %in% names(plot0.state) && plot0.state$status$error)
+			effect.size.plot[["error"]] <- list(errorType="badData", errorMessage=paste0("No samples are available: ",plot0.state$status$errorMessage))
+		
+		return(list(plot=effect.size.plot, state=plot0.state, keep=plot0.state$keep, complete=TRUE))
+	}
+	
+	if (populate && status$error == FALSE) {
+	
+		if (is.null(bf.result$BF) == FALSE && inherits(bf.result$BF, "try-error")) {
+	
+			message <- .extractErrorMessage(bf.result$BF)
+			status <- list(error=TRUE, errorMessage=message)
+		
+		} else if (options$samplingModel == "hypergeometric") {
+		
+			status <- list(error=TRUE, errorMessage="Effect size for this model not yet implemented")
+		
+		} 
+	}
+	
+	if (populate && status$error == FALSE) {
+	
+		image <- .beginSaveImage(width, height)
+
+		p <- try(silent=TRUE, expr={
+						
+				#oneSided <- FALSE
+						
+				.contTablesBayesianPlotPosteriorES(
+				samples = effect.size.result$effect.size.samples,
+				CI = c(effect.size.result$lower.ci, effect.size.result$upper.ci),
+				medianSamples = effect.size.result$median,
+				BF = bf.result$BF$BF10,
+				selectedCI = options$effectSizeCredibleIntervalInterval
+				#addInformation = options$plotPosteriorOddsRatioAdditionalInfo, oneSided=oneSided, options=options
+				)
+		})
+		
+		plot <- .endSaveImage(image)
+
+		if (inherits(p, "try-error")) {
+			
+			errorMessage <- .extractErrorMessage(p)
+			
+	#		if (errorMessage == "not enough data") {
+			
+	#			errorMessage <- "The Bayes factor is too small"
+					
+	#		} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
+			
+	#			errorMessage <- "The Bayes factor is too small"
+	#		}
+			
+			status <- list(error=TRUE, errorMessage=errorMessage)
+		}
+	
+	}
+
+	if (populate && status$error == FALSE) {
+	
+		effect.size.plot[["data"]] <- plot
+		effect.size.plot[["status"]] <- "complete"
+		
+		new.plot.state <- list(keep=plot)
+		
+		complete <- TRUE
+	
+	} else {
+	
+		image <- .beginSaveImage(width, height)
+		.contTablesBayesianPlotPosteriorES(dontPlotData=TRUE)
+		plot <- .endSaveImage(image)
+		
+		effect.size.plot[["data"]] <- plot
+
+		if (status$error) {
+		
+			new.plot.state <- list(keep=plot, status=status)
+
+			message <- status$errorMessage
+			effect.size.plot[["error"]]  <- list(error="badData", errorMessage=paste("Plotting is not possible:", message))
+			effect.size.plot[["status"]] <- "complete"
+			complete <- TRUE
+			
+		} else {
+		
+			new.plot.state <- NULL
+			complete <- FALSE
+		}
+	}
+	
+	list(plot=effect.size.plot, state=new.plot.state, keep=plot, complete=complete)
+}
 
 .contTablesBayesianCreateCountsTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, state, state.options, status) {
 
@@ -898,8 +1119,6 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	table[["schema"]] <- schema
 
-
-
 	rows  <- list()
 	new.state <- list()
 	footnotes <- .newFootnotes()
@@ -965,6 +1184,122 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	}
 	
 	if (options$oddsRatio == FALSE)
+		table <- NULL
+
+	list(table=table, state=new.state, complete=complete, status=status)
+}
+
+
+.contTablesBayesianCreateEffectSizeTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, bf.results, state, state.options, status) {
+
+	if (options$effectSize == FALSE)
+		return(list(table=NULL, state=NULL, complete=TRUE))
+
+	if (is.null(state.options) ||
+		base::identical(state.options$rows, options$rows) == FALSE ||
+		base::identical(state.options$columns, options$columns) == FALSE ||
+		base::identical(state.options$counts, options$counts) == FALSE ||
+		base::identical(state.options$layers, options$layers) == FALSE ||
+		base::identical(state.options$columnOrder, options$columnOrder) == FALSE ||
+		base::identical(state.options$rowOrder, options$rowOrder) == FALSE ||
+		base::identical(state.options$samplingModel, options$samplingModel) == FALSE ||
+		base::identical(state.options$hypothesis, options$hypothesis) == FALSE) {
+		
+		state <- NULL
+	}
+		
+	if (status$error)
+		populate <- FALSE
+
+	table <- list()
+	
+	table[["title"]] <- "Effect Size"
+	
+	fields <- list()
+	
+	if (length(analysis) >= 3) {
+	
+		for (j in length(analysis):3)
+			fields[[length(fields)+1]] <- list(name=analysis[[j]], type="string", combine=TRUE)
+	}
+
+	ci.label <- paste(100 * options$effectSizeCredibleIntervalInterval, "% Credible Interval", sep="")
+		
+	fields[[length(fields)+1]] <- list(name="value[EffectSize]", title="Effect size", type="number", format="sf:4;dp:3")
+	fields[[length(fields)+1]] <- list(name="low[EffectSize]", title="Lower", overTitle=ci.label, type="number", format="dp:3")
+	fields[[length(fields)+1]] <- list(name="up[EffectSize]",  title="Upper", overTitle=ci.label, type="number", format="dp:3")
+	
+	schema <- list(fields=fields)
+	
+	table[["schema"]] <- schema
+
+
+
+	rows  <- list()
+	new.state <- list()
+	footnotes <- .newFootnotes()
+	
+	next.is.new.group <- TRUE
+	complete <- TRUE
+	
+	for (i in 1:length(counts.matrices)) {
+	
+		counts.matrix <- counts.matrices[[i]]
+		
+		if ( ! is.null(groups)) {
+		
+			group <- groups[[i]]
+			
+		} else {
+		
+			group <- NULL
+		}
+		
+		rows.state <- NULL
+		if (i <= length(state))
+			rows.state <- state[[i]]
+		
+		bf.result <- NULL
+		if (i <= length(bf.results))
+			bf.result <- bf.results[[i]]
+
+		res <- .contTablesBayesianCreateEffectSizeRows(analysis$rows, counts.matrix, footnotes, options, populate, group, bf.result, rows.state, state.options, status)
+
+		next.rows <- res$rows
+		complete <- complete && res$complete
+
+		if (next.is.new.group) {
+		
+			next.rows[[1]][[".isNewGroup"]] <- TRUE
+			next.is.new.group <- FALSE
+			
+		} else if ( ! is.null(group) && group[[length(group)]] == "") {
+		
+			next.rows[[1]][[".isNewGroup"]] <- TRUE
+			next.is.new.group <- TRUE
+		}
+		
+		rows <- c(rows, next.rows)
+		
+		new.state[[length(new.state)+1]] <- res$state
+	}
+	
+	complete <- complete && (populate || is.null(state) == FALSE || length(options$rows) == 0 || length(options$columns) == 0)
+	
+	table[["data"]] <- rows
+	table[["footnotes"]] <- as.list(footnotes)
+	table[["citation"]] <- .contTablesBayesianCitations()
+	
+	if (complete)
+		table[["status"]] <- "complete"
+	
+	if (status$error) {
+	
+		table[["status"]] <- "complete"
+		table[["error"]] <- list(errorType="badData")
+	}
+	
+	if (options$effectSize == FALSE)
 		table <- NULL
 
 	list(table=table, state=new.state, complete=complete, status=status)
@@ -1045,7 +1380,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u208A joint multinomial"
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) joint multinomial"
+				bfLabel <-	"Log\u2009(\u2009BF\u208A\u2080\u2009) joint multinomial"
 			}
 						 
 		} else if(options$hypothesis =="groupTwoGreater") { 
@@ -1055,7 +1390,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u208B joint multinomial"
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) joint multinomial"
+				bfLabel <-"Log\u2009(\u2009BF\u208B\u2080\u2009) joint multinomial"
 			}				
 		}
 	
@@ -1081,7 +1416,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u208A independent multinomial"
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-	"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
+				bfLabel <-	"Log\u2009(\u2009BF\u208A\u2080\u2009) independent multinomial"
 			}
 						 
 		} else if(options$hypothesis =="groupTwoGreater") { 
@@ -1091,7 +1426,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u208B independent multinomial"
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
+				bfLabel <-"Log\u2009(\u2009BF\u208B\u2080\u2009) independent multinomial"
 			}				
 		}
 				
@@ -1117,7 +1452,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			} else if (options$bayesFactorType == "BF01"){
 				bfLabel <- "BF\u2080\u208A independent multinomial"
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
+				bfLabel <-"Log\u2009(\u2009BF\u208A\u2080\u2009) independent multinomial"
 			}
 							 
 		} else if (options$hypothesis=="groupTwoGreater"){
@@ -1129,7 +1464,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 				bfLabel <- "BF\u2080\u208B independent multinomial"
 				
 			} else if (options$bayesFactorType == "LogBF10") {
-				bfLabel <-"Log\u2009(\u2009BF\u2081\u2080\u2009) independent multinomial"
+				bfLabel <-"Log\u2009(\u2009BF\u208B\u2080\u2009) independent multinomial"
 			}				
 		}
 			
@@ -1255,8 +1590,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 		new.state <- state
 	}
-	
-	
+		
 	row[["type[BF]"]] <- bfLabel
 	row[["type[N]"]] <- "N"	
 						
@@ -1302,7 +1636,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	} else {
 
-		  if (options$hypothesis=="groupOneGreater" && options$samplingModel=="poisson"){
+		if (options$hypothesis=="groupOneGreater" && options$samplingModel=="poisson"){
 
 			gp1 <- rownames(counts.matrix)[1]
 			gp2 <- rownames(counts.matrix)[2]
@@ -1926,9 +2260,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		if (inherits(result, "try-error")) {
 
 			row[["value[oddsRatio]"]] <- .clean(NaN)
-
 			error <- .extractErrorMessage(result)
-
 			sup   <- .addFootnote(footnotes, error)
 			row[[".footnotes"]] <- list("value[oddsRatio]"=list(sup))
 
@@ -1943,6 +2275,147 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	list(rows=list(row), state=result, complete=complete)
 }
+
+.contTablesBayesianCreateEffectSizeRows <- function(var.name, counts.matrix, footnotes, options, populate, group, bf.result, state, state.options, status) {
+
+	row <- list()
+	
+	for (layer in names(group)) {
+	
+		level <- group[[layer]]
+		
+		if (level == "") {
+
+			row[[layer]] <- "Total"
+			
+		} else {
+		
+			row[[layer]] <- level
+		}
+	}
+	
+	row[["type[EffectSize]"]] <- "Effect size"
+	
+	result <- NULL
+	complete <- TRUE
+	
+	if ( options$samplingModel == "hypergeometric") {
+
+		row[["value[EffectSize]"]] <- .clean(NaN)
+		row[["low[EffectSize]"]] <- ""
+		row[["up[EffectSize]"]] <-  ""
+
+		sup <- .addFootnote(footnotes, "Effect size for this model not yet implemented")
+		row[[".footnotes"]] <- list("value[EffectSize]"=list(sup))
+			
+	} else if (is.null(state) && populate == FALSE) {
+	
+		row[["value[EffectSize]"]] <- "."
+		complete <- FALSE
+	
+	} else {
+	
+		if (is.null(state) == FALSE) {
+		
+			result <- state
+		
+		} else if (populate) {
+
+			if (inherits(bf.result$BF, "try-error")) {
+			
+				result <- bf.result$BF
+				
+			} else {
+
+				result <- try({
+			
+					BF <- bf.result$BF$BF
+					d <- dim(counts.matrix)
+					I <- d[1]
+					J <- d[2]
+					k <- min(I,J)
+					N <- sum(counts.matrix)
+					yr <- rowSums(counts.matrix)
+					yc <- colSums(counts.matrix)
+
+					if (options$samplingModel == "poisson") {
+				
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						lambda <- as.data.frame(ch.result)
+						theta0 <- apply(lambda,1,function(x) matrix(x,I))
+						sumlambda <- apply(lambda, 1, sum)
+						chi2 <- apply(theta0,2,function(data) chisq.test(matrix(data,I))$statistic)
+						Phi.Poisson <- sqrt(chi2/(sumlambda*(k-1)))
+						Cramer <- Phi.Poisson
+	
+					} else if (options$samplingModel == "jointMultinomial") {
+	
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						theta  <- as.data.frame(ch.result)
+						
+						theta0 <- apply(theta, 1, function(x) matrix(x,I))
+						chi2 <- apply(theta0 * N, 2, function(data) chisq.test(matrix(data,I))$statistic)
+						Phi.jointMulti <- sqrt(chi2/(N*(k-1)))
+						Cramer <- Phi.jointMulti
+		
+					} else if (options$samplingModel == "independentMultinomialRowsFixed") {
+	
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						index <- grep(pattern="omega", x=colnames(ch.result))
+						theta <- as.data.frame(ch.result[,index])
+						theta0 <- apply(theta, 1, function(x) matrix(x,I))
+						chi2 <- apply(theta0 * yr, 2, function(data) chisq.test(matrix(data,I))$statistic)
+						Phi.indepMulti <- sqrt(chi2/(N*(k-1)))
+						Cramer <- Phi.indepMulti
+		
+					} else if (options$samplingModel == "independentMultinomialColumnsFixed") {
+	
+						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						index <- grep(pattern="omega", x=colnames(ch.result))
+						theta <- as.data.frame(ch.result[,index])
+						theta0 <- apply(theta, 1, function(x) matrix(x,J,byrow=TRUE))
+						chi2 <- apply(theta0 * yc, 2, function(data) chisq.test(matrix(data,J))$statistic)
+						Phi.indepMulti <- sqrt(chi2/(N*(k-1)))
+						Cramer <- Phi.indepMulti
+					
+					} else {
+				
+						stop("wtf!")
+					}
+				
+					effect.size.samples <-Cramer
+					effect.size.median <- stats::median(effect.size.samples)
+					sig <- options$effectSizeCredibleIntervalInterval
+					alpha <- (1 - sig) / 2
+					lower <- unname(stats::quantile(Cramer, p = alpha))
+					upper <- unname(stats::quantile(Cramer, p = (1-alpha)))
+				
+					list(effect.size.samples=effect.size.samples, BF=BF, median=effect.size.median, lower.ci=lower, upper.ci=upper)
+				})
+			}
+		}
+		
+		if (inherits(result, "try-error")) {
+
+			row[["value[EffectSize]"]] <- .clean(NaN)
+
+			error <- .extractErrorMessage(result)
+
+			sup   <- .addFootnote(footnotes, error)
+			row[[".footnotes"]] <- list("value[EffectSize]"=list(sup))
+
+		} else  {
+
+			row[["value[EffectSize]"]] <- result$median
+			row[["low[EffectSize]"]]   <- result$lower
+			row[["up[EffectSize]"]]    <- result$upper
+		}
+	
+	}
+	
+	list(rows=list(row), state=result, complete=complete)
+}
+
 
 .contTablesBayesianPlotPosterior <- function(
 	samples,
@@ -1987,6 +2460,8 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		return()
 	}
 
+	print(BF)
+	print("we are so far here")
 	BF10 <- BF
 	BF01 <- 1 / BF10
 
@@ -2046,10 +2521,6 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	plot(0,0, xlim= range(xticks), ylim= c(0, range(yticks)[2]), ylab= "", xlab="", type= "n", axes= FALSE)
 		
 	lines(seq(min(xticks), max(xticks),length.out = 10000), .dposteriorOR(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples), oneSided=oneSided), lwd= lwd)
-	
-	if (oneSided == "right"|| oneSided == "left"){
-	lines(c(0, 0), c(0, .dposteriorOR(0, mean(samples), sd(samples), oneSided=oneSided)), lwd= lwd)
-	}
 				
 	#lines(seq(min(xticks), max(xticks),length.out = 10000),posteriorLine, lwd= lwd)
 	#lines(seq(min(xticks), max(xticks),length.out = 10000),dnorm(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)),lwd= lwd)
@@ -2128,15 +2599,12 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 		yy <- grconvertY(0.756 + offsetTopPart, "ndc", "user")
 		yy2 <- grconvertY(0.812 + offsetTopPart, "ndc", "user")
-		
-		
+				
 		CIwidth <- selectedCI * 100
 		CInumber <- paste(CIwidth, "% CI: [", sep="")
 		CIText <- paste(CInumber,  bquote(.(formatC(CIlow,3, format="f"))), ", ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
 		medianLegendText <- paste("median =", medianText)
-		
-		
-		
+				
 		if (oneSided == FALSE) {
 		
 			text(max(xticks) , yy2, medianLegendText, cex= 1.1, pos= 2)
@@ -2224,5 +2692,140 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 		ifelse (logOR <= 0,  dnorm(logOR, mean, sd) / pnorm(0, mean, sd, lower.tail=TRUE), 0 )		
 	}
-	
 }
+
+##############################################
+.contTablesBayesianPlotPosteriorES <- function(
+	samples,
+	CI,
+	medianSamples,
+	BF,
+	oneSided = FALSE,
+	iterations = 10000,
+	lwd = 2,
+	cexPoints = 1.5,
+	cexAxis = 1.2,
+	cexYlab = 1.5,
+	cexXlab = 1.5,
+	cexTextBF = 1.4,
+	cexCI = 1.1,
+	cexLegend = 1.2,
+	lwdAxis = 1.2,
+	addInformation = FALSE,
+	dontPlotData =FALSE,
+	selectedCI = options$effectSizeCredibleIntervalInterval,
+	options) {
+	
+	if (addInformation) {
+	
+		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
+		
+	} else {
+	
+		par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
+	}
+	
+	if (dontPlotData) {
+	
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
+		
+		axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
+		
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
+		mtext("Effect size", side = 1, cex = cexXlab, line= 2.5)
+	
+		return()
+	}
+
+	# fit denisty estimator
+	fit.posterior <-  logspline::logspline(samples)
+	
+	# density function posterior
+	dposterior0 <- function(x, samples= samples){
+	
+		return(logspline::dlogspline(x, fit.posterior))
+	}
+	
+	# set limits plot
+	xlim <- vector("numeric", 2)
+	
+	
+	if (oneSided == FALSE) {	
+		stretch <- 1.2
+		xlim[1] <- quantile(samples, probs = 0.002)
+		xlim[2] <- quantile(samples, probs = 0.998)	
+	} 
+
+	xticks <- pretty(xlim)
+	ylim <- vector("numeric", 2)
+
+	ylim[1] <- 0
+
+	ylim[2] <- stretch * max(.dposteriorES(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)))
+	
+	# calculate position of "nice" tick marks and create labels
+	#xticks <- pretty(xlim)
+	yticks <- pretty(ylim)
+	xlabels <- formatC(xticks, 1, format= "f")
+	ylabels <- formatC(yticks, 1, format= "f")
+	
+	# compute 95% credible interval & median:	
+	CIlow <- CI[1]
+	CIhigh <- CI[2]
+	medianPosterior <- medianSamples
+	
+	z<-density(samples) 
+	
+	plot(0,0, xlim= range(xticks), ylim= c(0, range(yticks)[2]), ylab= "", xlab="", type= "n", axes= FALSE)
+		
+	lines(seq(min(xticks), max(xticks),length.out = 10000), .dposteriorES(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)), lwd= lwd)
+
+	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
+	axis(2, at= yticks, labels= ylabels, cex.axis= cexAxis, lwd= lwdAxis)
+		
+	if (nchar(ylabels[length(ylabels)]) > 4) {
+		
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 4)
+	} else if (nchar(ylabels[length(ylabels)]) == 4) {
+		
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
+	} else if (nchar(ylabels[length(ylabels)]) < 4) {
+		
+		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
+	}
+	
+	mtext("Effect Size", side = 1, cex = cexXlab, line= 2.5)	
+		
+	# credible interval
+	dmax <- optimize(function(x)dposterior0(x, samples=samples), interval= range(xticks), maximum = TRUE)$objective # get maximum density
+	
+	# enable plotting in margin
+	par(xpd=TRUE)
+	
+	yCI <- grconvertY(dmax, "user", "ndc") + 0.04
+	yCI <- grconvertY(yCI, "ndc", "user")
+	
+#	if (oneSided == FALSE)
+		arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
+	
+	medianText <- formatC(medianPosterior, digits= 3, format="f")
+	
+		CIwidth <- selectedCI * 100
+		CInumber <- paste(CIwidth, "% CI: [", sep="")
+		CIText <- paste(CInumber,  bquote(.(formatC(CIlow,3, format="f"))), ", ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
+		medianLegendText <- paste("median =", medianText)
+	
+		# add legend		
+		CIText <- paste("95% CI: [",  bquote(.(formatC(CIlow,3, format="f"))), " ; ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
+		
+		medianLegendText <- paste("median =", medianText)
+
+	
+	mostPosterior <- mean(samples > mean(range(xticks)))
+}
+
+.dposteriorES <- function(ES, mean, sd) {	
+		
+		dnorm(ES, mean, sd)
+	}
