@@ -47,7 +47,7 @@
 		{
 			"name": "sampleMode",
 			"type": "List",
-			"options": [ "auto", "fixed" ]
+			"options": [ "auto", "manual" ]
 		},
 		{
 			"name": "fixedSamplesNumber",

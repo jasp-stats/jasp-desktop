@@ -299,7 +299,7 @@
             <item row="1" column="0">
              <widget class="QRadioButton" name="_2fixed">
               <property name="text">
-               <string>Fixed</string>
+               <string>Manual</string>
               </property>
              </widget>
             </item>
