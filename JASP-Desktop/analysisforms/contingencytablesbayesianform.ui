@@ -382,7 +382,7 @@
             <item row="2" column="0" colspan="2">
              <widget class="BoundCheckBox" name="oddsRatio">
               <property name="text">
-               <string>Log( odds ratio ) (2x2 only)</string>
+               <string>Log odds ratio (2x2 only)</string>
               </property>
              </widget>
             </item>
@@ -434,7 +434,7 @@
             <item row="4" column="0">
              <widget class="BoundCheckBox" name="effectSize">
               <property name="text">
-               <string>Effect-size</string>
+               <string>Cramer's V</string>
               </property>
              </widget>
             </item>
@@ -572,14 +572,14 @@
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="plotPosteriorOddsRatio">
               <property name="text">
-               <string>Posterior odds ratio (2x2 only)</string>
+               <string>Log odds ratio (2x2 only)</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
              <widget class="BoundCheckBox" name="plotPosteriorEffectSize">
               <property name="text">
-               <string>Posterior effect-size</string>
+               <string>Cramer's V</string>
               </property>
              </widget>
             </item>
@@ -848,14 +848,14 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
