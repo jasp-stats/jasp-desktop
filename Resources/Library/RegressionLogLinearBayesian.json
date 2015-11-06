@@ -54,6 +54,24 @@
 			"type": "Integer",
 			"default": 10000,
 			"min": 0
+		},
+		{
+			"name": "regressionCoefficientsEstimates",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "regressionCoefficientsCredibleIntervals",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.5,
+			"name": "regressionCoefficientsCredibleIntervalsInterval",
+			"type": "Number",
+			"value": 0.950
 		}
 	]
 }
