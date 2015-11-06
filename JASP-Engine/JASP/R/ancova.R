@@ -25,20 +25,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	results <- list()
 
 
-	# META definitions
 
-	.meta <- list(
-		list(name="anova", type="table"),
-		list(name="assumptionsObj", type="object", meta=list(list(name="levene", type="table"), list(name="qqPlot", type="image"))),
-		list(name="contrasts", type="collection", meta="table"),
-		list(name="posthoc", type="collection", meta="table"),
-		list(name="descriptivesObj", type="object", meta=list(list(name="descriptives", type="table"))),
-		list(name="marginalMeans", type="collection", meta="table"),
-		list(name="descriptivesPlot", type="collection", meta="image")
-	)
-
-	results[[".meta"]] <- .meta
-
+	## Retrieve State
 	
 	state <- .retrieveState()
 	anovaModel <- NULL
@@ -260,13 +248,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if(is.null(stateDescriptivesTable)) {
 	
 		result <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable)
-		results[["descriptivesObj"]] <- list(title="Descriptives", descriptives=result$result)
+		descriptivesTable <- result$result
 		status <- result$status
 		stateDescriptivesTable <- result$stateDescriptivesTable
 		
 	} else {
 	
-		results[["descriptivesObj"]] <- list(title="Descriptives", descriptives=stateDescriptivesTable)
+		descriptivesTable <- stateDescriptivesTable
 	
 	}
 	
@@ -274,26 +262,52 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	## Create Descriptives Plots
 	
-	if (options$plotSeparatePlots != "") {
-		titleDescriptivesPlot <- "Descriptives Plots"
-	} else {
-		titleDescriptivesPlot <- "Descriptives Plot"
-	}
+	titleDescriptivesPlot <- "Descriptives Plots"
 	
 	if (is.null(stateDescriptivesPlot)) {
 	
 		result <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot)
-		results[["descriptivesPlot"]] <- list(collection=result$result, title = titleDescriptivesPlot)
+		descriptivesPlot <- result$result
 		status <- result$status
 		stateDescriptivesPlot <- result$stateDescriptivesPlot
 		
 	} else {
 		
-		results[["descriptivesPlot"]] <- list(collection=stateDescriptivesPlot, title = titleDescriptivesPlot)
+		descriptivesPlot <- stateDescriptivesPlot
 	
 	}
 	
+	if (length(descriptivesPlot) == 1) {
+		
+		results[["descriptivesObj"]] <- list(title="Descriptives", descriptivesTable=descriptivesTable, descriptivesPlot=descriptivesPlot[[1]])
 	
+	} else {
+	
+		results[["descriptivesObj"]] <- list(title="Descriptives", descriptivesTable=descriptivesTable, descriptivesPlot=list(collection=descriptivesPlot, title = titleDescriptivesPlot))
+	}	
+	
+	
+	# META definitions
+
+	.meta <- list(
+		list(name="anova", type="table"),
+		list(name="assumptionsObj", type="object", meta=list(list(name="levene", type="table"), list(name="qqPlot", type="image"))),
+		list(name="contrasts", type="collection", meta="table"),
+		list(name="posthoc", type="collection", meta="table"),
+		list(name="marginalMeans", type="collection", meta="table")
+	)
+
+	if (length(descriptivesPlot) == 1) {
+		
+		.meta[[length(.meta) + 1]] <- list(name="descriptivesObj", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name="descriptivesPlot", type="image")))
+	
+	} else {
+		
+		.meta[[length(.meta) + 1]] <- list(name="descriptivesObj", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name="descriptivesPlot", type="collection", meta="image")))	
+	
+	}
+	
+	results[[".meta"]] <- .meta	
 	
 	
 	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x) x$data)	
@@ -1640,7 +1654,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			if (nPlots > 1) {
 				descriptivesPlot[["title"]] <- paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = "")
 			} else {
-				descriptivesPlot[["title"]] <- ""
+				descriptivesPlot[["title"]] <- "Descriptives Plot"
 			}
 			
 			if (options$plotSeparateLines != "") {
@@ -1680,7 +1694,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		for (i in 1:nPlots) {
 
 			descriptivesPlot <- list()
-			descriptivesPlot[["title"]] <- ""
+			
+			if (nPlots == 1) {
+				descriptivesPlot[["title"]] <- "Descriptives Plot"
+			} else {
+				descriptivesPlot[["title"]] <- ""
+			}
 			
 			if (options$plotSeparateLines != "") {
 			
