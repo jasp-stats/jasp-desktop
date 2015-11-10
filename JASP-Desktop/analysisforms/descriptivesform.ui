@@ -187,7 +187,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Display Plots</string>
+         <string>Display plots</string>
         </property>
        </widget>
       </item>
@@ -200,7 +200,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Display Frequency Tables (nominal and ordinal variables)</string>
+         <string>Display frequency tables (nominal and ordinal variables)</string>
         </property>
        </widget>
       </item>
@@ -213,7 +213,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Display Correlation Plot</string>
+         <string>Display correlation plot</string>
         </property>
        </widget>
       </item>
@@ -353,7 +353,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>S. E. Mean</string>
+               <string>S. E. mean</string>
               </property>
              </widget>
             </item>
@@ -803,7 +803,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Pie Charts</string>
+               <string>Pie charts</string>
               </property>
              </widget>
             </item>
@@ -816,7 +816,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Bar Charts</string>
+               <string>Bar charts</string>
               </property>
              </widget>
             </item>
