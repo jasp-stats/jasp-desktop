@@ -372,7 +372,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			 state$options$descriptives &&
 			 all(variables %in% state$options$variables))
 
-	if (done) descriptives[["status"]] <- complete
+	if (done) descriptives[["status"]] <- "complete"
 	
 	groups <- options$groupingVariable
 
