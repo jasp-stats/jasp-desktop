@@ -2,7 +2,7 @@
 #' from the individual t-tests into a common interface to reduce clutter
 #'
 #' returns the result object and the dataset
-.initializeTTest <- function(dataset, options, perform, type = 'not-paired') {
+.initializeTTest <- function(dataset, options, perform, type = 'independent-samples') {
 	
 	groups <- options$groupingVariable
 	depvars <- unlist(options$variables)
@@ -44,14 +44,23 @@
 	meta <- list()
 	meta[[1]] <- list(name = "title", type = "title")
 	meta[[2]] <- list(name = "ttest", type = "table")
-	meta[[3]] <- list(name = "descriptives", type = "table")
-	meta[[4]] <- list(name = "normalityTests", type = "table")
-	meta[[5]] <- list(name = "headerDescriptivesPlots", type = "h1")
-	meta[[6]] <- list(name = "descriptivesPlots", type = "images")
+	
+	if (type == "independent-samples") {
+	
+		meta[[3]] <- list(name="assumptionChecks", type="object", meta=list(list(name="shapiroWilk", type="table"), list(name="levene", type="table")))
+		
+	} else {
+	
+		meta[[3]] <- list(name="assumptionChecks", type="object", meta=list(list(name="shapiroWilk", type="table")))
+	}
 	
 	if (options$descriptivesPlots) {
-		results[["headerDescriptivePlots"]] <- ifelse(length(depvars) > 1,
-											   "Descriptive Plots", "Descriptives Plot")
+	
+		meta[[4]] <- list(name="descriptives", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name = "descriptivesPlots", type = "collection", meta="image")))
+	
+	} else {
+	
+		meta[[4]] <- list(name="descriptives", type="object", meta=list(list(name="descriptivesTable", type="table")))
 	}
 	
 	results[[".meta"]] <- meta

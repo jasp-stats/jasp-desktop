@@ -2,23 +2,28 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 									callback = function(...) 0, ...) {
 	
 	## call the common initialization function
-	init <- .initializeTTest(dataset, options, perform)
+	init <- .initializeTTest(dataset, options, perform, type = "independent-samples")
 	
 	results <- init[["results"]]
 	dataset <- init[["dataset"]]
 	
-	## this is specific for the independent t-test
-	results[[".meta"]][[7]] <- list(name = "equalityOfVariancesTests", type = "table")
-	
 	## call the specific independent T-Test functions
 	results[["ttest"]] <- .ttestIndependentSamplesTTest(dataset, options, perform)
-	results[["descriptives"]] <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
-	results[["equalityOfVariancesTests"]] <- .ttestIndependentSamplesInequalityOfVariances(dataset, options, perform)
-	results[["normalityTests"]] <- .ttestIndependentSamplesNormalityTest(dataset, options, perform)
+	descriptivesTable <- .ttestIndependentSamplesDescriptives(dataset, options, perform)
+	levene <- .ttestIndependentSamplesInequalityOfVariances(dataset, options, perform)
+	shapiroWilk <- .ttestIndependentSamplesNormalityTest(dataset, options, perform)
+	results[["assumptionChecks"]] <- list(shapiroWilk = shapiroWilk, levene = levene, title = "Assumption Checks")
 	
 	## if the user wants descriptive plots, s/he shall get them!
 	if (options$descriptivesPlots) {
-		results[["descriptivesPlots"]] <- .independentSamplesTTestDescriptivesPlot(dataset, options, perform)
+		
+		plotTitle <- ifelse(length(options$variables) > 1, "Descriptives Plots", "Descriptives Plot")
+		descriptivesPlots <- .independentSamplesTTestDescriptivesPlot(dataset, options, perform)
+		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives", descriptivesPlots = list(collection = descriptivesPlots, title = plotTitle))
+	
+	} else {
+	
+		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
 	}
 	
 	## return the results object
@@ -48,21 +53,33 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	allTests <- c(wantsStudents, wantsWelchs, wantsWilcox)
 	onlyTest <- sum(allTests) == 1
 	
-	## get the right title of the table
+	title <- "Independent Samples T-Test"
+	footnotes <- .newFootnotes()
+	
+	## get the right statistics for the table and, if only one test type, add footnote
+	
 	if (wantsWilcox && onlyTest) {
-		title <- "Mann-Whitney U Test"
 		
+		testname <- "Mann-Whitney U Test"
+		testTypeFootnote <- paste0(testname, ".")
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "W"
 		## additionally, Wilcoxon's test doesn't have degrees of freedoms
 		fields <- fields[-3]
 	} else if (wantsWelchs && onlyTest) {
-		title <- "Welch's T-Test"
+		
+		testname <- "Welch's T-Test"
+		testTypeFootnote <- paste0(testname, ".")
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "t"
 	} else if (wantsStudents && onlyTest) {
-		title <- "Student's T-Test"
+		
+		testname <- "Student's T-Test"
+		testTypeFootnote <- paste0(testname, ".")
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "t"
 	} else {
-		title <- "Independent Sample T-Test"
+		
 		testStat <- "statistic"
 	}
 	
@@ -110,7 +127,6 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 			  && options$groupingVariable != "")
 	
 	ttest.rows <- list()
-	footnotes <- .newFootnotes()
 	variables <- options$variables
 	if (length(variables) == 0) variables <- "."
 
@@ -236,7 +252,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 					res[[testStat]] <- stat
 					res
 				 })
-
+				
 				## if there has been an error in computing the test, log it as footnote
 				if (class(row) == "try-error") {
 					errorMessage <- .extractErrorMessage(row)
@@ -630,7 +646,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 		}
 		
 		for (var in .indices(variables)) {
-			descriptivesPlot <- list("title" = "")
+			descriptivesPlot <- list("title" = variables[var])
 			descriptivesPlot[["width"]] <- options$plotWidth
 			descriptivesPlot[["height"]] <- options$plotHeight
 			descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
@@ -649,7 +665,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				ymax = ciUpper), colour = "black", width = 0.2, position = pd) + 
 				ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd, 
 				size = 4) + ggplot2::ylab(unlist(options$variables[var])) + ggplot2::xlab(options$groupingVariable) + 
-				ggplot2::theme_bw() + ggplot2::ggtitle(options$variables[var]) + 
+				ggplot2::theme_bw() + 
 				ggplot2::theme(panel.grid.minor = ggplot2::element_blank(), plot.title = ggplot2::element_text(size = 18), 
 				  panel.grid.major = ggplot2::element_blank(), axis.title.x = ggplot2::element_text(size = 18, 
 					vjust = -0.2), axis.title.y = ggplot2::element_text(size = 18, 
@@ -676,7 +692,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	} else {
 		
 		for (var in .indices(variables)) {
-			descriptivesPlot <- list("title" = "")
+			descriptivesPlot <- list("title" = variables[var])
 			descriptivesPlot[["width"]] <- options$plotWidth
 			descriptivesPlot[["height"]] <- options$plotHeight
 			descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
