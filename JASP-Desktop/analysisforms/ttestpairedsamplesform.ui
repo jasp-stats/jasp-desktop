@@ -390,7 +390,7 @@
          </sizepolicy>
         </property>
         <property name="title">
-         <string>Additional Tests</string>
+         <string>Assumption Checks</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
          <item row="0" column="0">

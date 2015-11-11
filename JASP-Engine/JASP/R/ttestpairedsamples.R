@@ -9,12 +9,20 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	
 	## call the specific paired T-Test functions
 	results[["ttest"]] <- .ttestPairedSamples(dataset, options, perform)
-	results[["descriptives"]] <- .ttestPairedSamplesDescriptives(dataset, options, perform)
-	results[["normalityTests"]] <- .ttestPairedNormalityTest(dataset, options, perform)
+	descriptivesTable <- .ttestPairedSamplesDescriptives(dataset, options, perform)
+	shapiroWilk <- .ttestPairedNormalityTest(dataset, options, perform)
+	results[["assumptionChecks"]] <- list(shapiroWilk = shapiroWilk, title = "Assumption Checks")
 	
 	## if the user wants descriptive plots, s/he shall get them!
 	if (options$descriptivesPlots) {
-		results[["descriptivesPlots"]] <- .pairedSamplesTTestDescriptivesPlot(dataset, options, perform)
+		
+		plotTitle <- ifelse(length(options$pairs) > 1, "Descriptives Plots", "Descriptives Plot")
+		descriptivesPlots <- .pairedSamplesTTestDescriptivesPlot(dataset, options, perform)
+		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives", descriptivesPlots = list(collection = descriptivesPlots, title = plotTitle))
+		
+	} else {
+	
+		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
 	}
 	
 	## return the results object
@@ -43,18 +51,26 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 				   list(name = "df",  type = "integer"),
 				   list(name = "p", type = "number", format = "dp:3;p:.001"))
 	
-	## get the right title and test statistic for the table
+	footnotes <- .newFootnotes()
+	title <- "Paired Samples T-Test"
+	
+	## get the right statistics for the table and, if only one test type, add footnote
 	if (wantsWilcox && onlyTest) {
-		title <- "Wilcoxon Signed-Rank Test"
-		testStat <- "W"
 		
+		testname <- "Wilcoxon Signed-Rank Test"
+		testTypeFootnote <- paste0(testname, ".")
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
+		testStat <- "W"
 		## additionally, Wilcoxon's test doesn't have degrees of freedoms
 		fields <- fields[-4]
 	} else if (wantsStudents && onlyTest) {
-		title <- "Student's T-Test"
+		
+		testname <- "Student's T-Test"
+		testTypeFootnote <- paste0(testname, ".")
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
+		
 		testStat <- "t"
 	} else {
-		title <- "Paired Samples T-Test"
 		testStat <- "statistic"
 	}
 	
@@ -95,7 +111,6 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 											 overTitle = title)
 	}
 	
-	footnotes <- .newFootnotes()
 	ttest[["schema"]] <- list(fields = fields)
 	
 	#########################
@@ -441,7 +456,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 	for (i in .indices(options$pairs)) {
 		
 		pair <- options$pairs[[i]]
-		descriptivesPlot <- list(title = "")
+		descriptivesPlot <- list(title = paste(pair, collapse=" - "))
 		descriptivesPlot[["width"]] <- options$plotWidth
 		descriptivesPlot[["height"]] <- options$plotHeight
 		descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
@@ -467,20 +482,19 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 				ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd, 
 				size = 4) + ggplot2::ylab(NULL) + ggplot2::xlab(NULL) + ggplot2::theme_bw() + 
 				ggplot2::theme(panel.grid.minor = ggplot2::element_blank(), plot.title = ggplot2::element_text(size = 18), 
-				  panel.grid.major = ggplot2::element_blank(), axis.title.x = ggplot2::element_text(size = 18, 
-					vjust = -0.2), axis.title.y = ggplot2::element_text(size = 18, 
-					vjust = -1), axis.text.x = ggplot2::element_text(size = 15), 
-				  axis.text.y = ggplot2::element_text(size = 15), panel.background = ggplot2::element_rect(fill = "transparent", 
-					colour = NA), plot.background = ggplot2::element_rect(fill = "transparent", 
-					colour = NA), legend.background = ggplot2::element_rect(fill = "transparent", 
-					colour = NA), panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(), 
-				  legend.key = ggplot2::element_blank(), legend.title = ggplot2::element_text(size = 12), 
-				  legend.text = ggplot2::element_text(size = 12), axis.ticks = ggplot2::element_line(size = 0.5), 
-				  axis.ticks.margin = grid::unit(1, "mm"), axis.ticks.length = grid::unit(3, 
-					"mm"), plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) + 
-				base_breaks_y(summaryStat) + base_breaks_x(summaryStat$groupingVariable) + 
-				ggplot2::scale_x_discrete(labels = c(pair[[1]], pair[[2]]))
-			
+				panel.grid.major = ggplot2::element_blank(), axis.title.x = ggplot2::element_text(size = 18, 
+				vjust = -0.2), axis.title.y = ggplot2::element_text(size = 18, vjust = -1),
+				axis.text.x = ggplot2::element_text(size = 15), axis.text.y = ggplot2::element_text(size = 15),
+				panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+				plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+				legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+				panel.border = ggplot2::element_blank(), axis.line = ggplot2::element_blank(), 
+				legend.key = ggplot2::element_blank(), legend.title = ggplot2::element_text(size = 12), 
+				legend.text = ggplot2::element_text(size = 12), axis.ticks = ggplot2::element_line(size = 0.5), 
+				axis.ticks.margin = grid::unit(1, "mm"), axis.ticks.length = grid::unit(3, "mm"),
+				plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) + base_breaks_y(summaryStat) +
+				base_breaks_x(summaryStat$groupingVariable) + ggplot2::scale_x_discrete(labels = c(pair[[1]], pair[[2]]))
+				
 			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 			print(p)
 			content <- .endSaveImage(image)

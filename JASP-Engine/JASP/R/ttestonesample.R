@@ -21,12 +21,20 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	
 	## call the specific one-sample T-Test functions
 	results[["ttest"]] <- .ttestOneSample(dataset, options, perform)
-	results[["descriptives"]] <- .ttestOneSamplesDescriptives(dataset, options, perform)
-	results[["normalityTests"]] <- .ttestOneSampleNormalityTest(dataset, options,  perform)
+	descriptivesTable <- .ttestOneSamplesDescriptives(dataset, options, perform)
+	shapiroWilk <- .ttestOneSampleNormalityTest(dataset, options,  perform)
+	results[["assumptionChecks"]] <- list(shapiroWilk = shapiroWilk, title = "Assumption Checks")
 	
 	## if the user wants descriptive plots, s/he shall get them!
 	if (options$descriptivesPlots) {
-		results[["descriptivesPlots"]] <- .ttestOneSamplesDescriptivesPlot(dataset, options, perform)
+		
+		plotTitle <- ifelse(length(options$variables) > 1, "Descriptives Plots", "Descriptives Plot")
+		descriptivesPlots <- .ttestOneSamplesDescriptivesPlot(dataset, options, perform)
+		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives", descriptivesPlots = list(collection = descriptivesPlots, title = plotTitle))
+		
+	} else {
+	
+		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
 	}
 	
 	## return the results object
@@ -53,18 +61,28 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 				   list(name = "df", type = "integer"),
 				   list(name = "p", type = "number", format = "dp:3;p:.001"))
 	
+	footnotes <- .newFootnotes()
+	title <- "One Sample T-Test"
+	
 	## get the right title and test statistic for the table
+	
 	if (wantsWilcox && onlyTest) {
-		title <- "Mann-Whitney U Test"
+		#title <- "Mann-Whitney U Test"
+		testname <- "Mann-Whitney U Test"
+		testTypeFootnote <- paste0(testname, ".")
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "V"
 		
 		## additionally, Wilcoxon's test doesn't have degrees of freedoms
 		fields <- fields[-2]
 	} else if (wantsStudents && onlyTest) {
-		title <- "Student's T-Test"
+		#title <- "Student's T-Test"
+		testname <- "Student's T-Test"
+		testTypeFootnote <- paste0(testname, ".")
+		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = testTypeFootnote)
 		testStat <- "t"
 	} else {
-		title <- "One Sample T-Test"
+		# title <- "One Sample T-Test"
 		testStat <- "statistic"
 	}
 	
@@ -104,7 +122,6 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 											 overTitle = title)
 	}
 	
-	footnotes <- .newFootnotes()
 	ttest[["schema"]] <- list(fields = fields)
 	
 	###########################
@@ -423,7 +440,7 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 		
 		var <- options$variables[[i]]
 		
-		descriptivesPlot <- list("title" = "")
+		descriptivesPlot <- list("title" = var)
 		descriptivesPlot[["width"]] <- options$plotWidth
 		descriptivesPlot[["height"]] <- options$plotHeight
 		descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
@@ -449,8 +466,8 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 				linetype = "dashed") + ggplot2::ylab(NULL) + ggplot2::xlab(NULL) + 
 				ggplot2::theme_bw() + ggplot2::theme(panel.grid.minor = ggplot2::element_blank(), 
 				plot.title = ggplot2::element_text(size = 18), panel.grid.major = ggplot2::element_blank(), 
-				axis.title.x = ggplot2::element_text(size = 18, vjust = -0.2), axis.title.y = ggplot2::element_text(size = 18, 
-				  vjust = -1), axis.text.x = ggplot2::element_text(size = 15), axis.text.y = ggplot2::element_text(size = 15), 
+				axis.title.x = ggplot2::element_blank(), axis.title.y = ggplot2::element_text(size = 18, 
+				  vjust = -1), axis.text.x = ggplot2::element_blank(), axis.text.y = ggplot2::element_text(size = 15), 
 				panel.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
 				plot.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
 				legend.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
@@ -458,8 +475,8 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 				legend.key = ggplot2::element_blank(), legend.title = ggplot2::element_text(size = 12), 
 				legend.text = ggplot2::element_text(size = 12), axis.ticks = ggplot2::element_line(size = 0.5), 
 				axis.ticks.margin = grid::unit(1, "mm"), axis.ticks.length = grid::unit(3, 
-				  "mm"), plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) + base_breaks_y(summaryStat, 
-				options)
+				"mm"), axis.ticks.x = ggplot2::element_blank(), plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) + 
+				base_breaks_y(summaryStat, options)
 			
 			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
 			print(p)

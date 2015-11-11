@@ -296,7 +296,7 @@
          </sizepolicy>
         </property>
         <property name="title">
-         <string>Additional tests</string>
+         <string>Assumption Checks</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_9">
          <item row="1" column="0">
@@ -423,7 +423,7 @@
          </sizepolicy>
         </property>
         <property name="title">
-         <string>Missing values</string>
+         <string>Missing Values</string>
         </property>
         <property name="flat">
          <bool>false</bool>
