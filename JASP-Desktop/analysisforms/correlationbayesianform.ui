@@ -494,7 +494,7 @@
          </sizepolicy>
         </property>
         <property name="title">
-         <string>Missing values</string>
+         <string>Missing Values</string>
         </property>
         <property name="flat">
          <bool>true</bool>
