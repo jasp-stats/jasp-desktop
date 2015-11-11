@@ -46,7 +46,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	meta <- list()
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="correlations", type="table")
-	meta[[3]] <- list(name="plots", type="image")
+	meta[[3]] <- list(name="plot", type="image")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Correlation Matrix"
@@ -75,14 +75,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 																										&& diff$hypothesis == FALSE && diff$kendallsTauB == FALSE && diff$missingValues == FALSE && diff$pearson == FALSE && diff$plotCorrelationMatrix == FALSE
 																										&& diff$plotDensitiesForVariables == FALSE && diff$plotPosteriors == FALSE && diff$spearman == FALSE && diff$variables == FALSE && diff$priorWidth == FALSE)))) {
 		
-		results[["plots"]] <- state$correlationPlots
+		results[["plot"]] <- state$correlationPlot
 		
 	} else {
 		
-		results[["plots"]] <- .correlationMatrixPlotBayesian(dataset, perform, options, hypothesis=options$hypothesis)
+		results[["plot"]] <- .correlationMatrixPlotBayesian(dataset, perform, options, hypothesis=options$hypothesis)
 	}
 	
-	keep <- results[["plots"]]$data
+	keep <- results[["plot"]]$data
 	
 	if (perform == "init") {
 		if (length(options$variables) < 2) {
@@ -110,7 +110,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							   footnotesExcludePairwise=correlationTableOutput$footnotesExcludePairwise,
 							   bfValuesExcludeListwise=correlationTableOutput$bfValuesExcludeListwise,
 							   footnotesExcludeListwise=correlationTableOutput$footnotesExcludeListwise,
-							   correlationPlots=results$plots), keep=keep))
+							   correlationPlot=results$plot), keep=keep))
 	}
 }
 # "variables": data.frame thingie vfc
@@ -1953,7 +1953,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			
 			plot <- list()
 			
-			plot[["title"]] <- ""
+			plot[["title"]] <- "Correlation Plot"
 			plot[["width"]]  <- width
 			plot[["height"]] <- height
 			
@@ -2030,7 +2030,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		plot <- list()
 		
-		plot[["title"]] <-  ""
+		plot[["title"]] <-  "Correlation Plot"
 		plot[["width"]]  <- width
 		plot[["height"]] <- height
 		
