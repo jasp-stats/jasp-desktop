@@ -35,16 +35,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	meta <- list()
 
 	meta[[1]] <- list(name="ttest", type="table")
-	
-	if (options$descriptivesPlots) {
-	
-		meta[[2]] <- list(name="descriptives", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name = "descriptivesPlots", type = "collection", meta="image")))
-	
-	} else {
-	
-		meta[[2]] <- list(name="descriptives", type="object", meta=list(list(name="descriptivesTable", type="table")))
-	}
-	
+	meta[[2]] <- list(name="descriptives", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name = "descriptivesPlots", type = "collection", meta="image")))
 	meta[[3]] <- list(name="inferentialPlots", type="collection", meta=list(	name="plotGroups", type="object",
 																	meta=list(
 																				list(name="PriorPosteriorPlot", type="image"),
