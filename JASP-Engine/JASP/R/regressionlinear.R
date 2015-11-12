@@ -80,7 +80,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 		if (n.valid.cases == 0) {
 		
-			list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model is undefined -- there are no observations for the dependent variable (possibly only after rows with missing values are excluded)"
+			list.of.errors[[ length(list.of.errors) + 1 ]] <- "Least squares regression model is undefined -- there are no observations for the dependent variable (possibly only after rows with missing values are 
+			excluded)"
 		}
 		
 		#check for variance in variables.
@@ -97,12 +98,14 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				
 				if (length(indicator) == 1){
 				
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable(s)", independent.variables[indicator-1] ," contain(s) all the same value (the variance is zero)",sep="")
+					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable(s)", independent.variables[indicator-1] ," contain(s) all the 
+						same value (the variance is zero)",sep="")
 					
 				} else {
 				
 					var.names <- paste(independent.variables[indicator-1], collapse = ", ",sep="")
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable(s)", var.names, " contain(s) all the same value (their variance is zero)", sep="")
+					list.of.errors[[ length(list.of.errors) + 1 ]] <- paste("Least squares regression model is undefined -- the independent variable(s)", var.names, " contain(s) all the same value (their variance 
+						is zero)", sep="")
 				}
 			}
 		}
@@ -133,11 +136,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	.meta <-  list(
 		list(name = "title", type = "title"),
-		list(name = "descriptives", type = "table"),
-		list(name = "correlations", type = "table"),
 		list(name = "model summary", type = "table"),
 		list(name = "anova", type = "table"),
 		list(name = "regression", type = "table"),
+		list(name = "descriptives", type = "table"),
+		list(name = "correlations", type = "table"),
 		list(name = "coefficient covariances", type = "table"),
 		list(name = "collinearity diagnostics", type = "table"),
 		list(name = "casewise diagnostics", type = "table"),
@@ -1654,8 +1657,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				} else {
 					
 					for (case in seq_along(caseNumbers)) 
-						casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=caseNumbers[case], stdResidual=casewiseDiag$stdResiduals[case], dependentVariable=casewiseDiag$dependent[case],
-																								predictedValue=casewiseDiag$predictedValues[case], residual=casewiseDiag$residuals[case])
+						casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=caseNumbers[case], stdResidual=casewiseDiag$stdResiduals[case],
+							dependentVariable=casewiseDiag$dependent[case], predictedValue=casewiseDiag$predictedValues[case], residual=casewiseDiag$residuals[case])
 				}
 			}
 			
@@ -1748,8 +1751,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	if (options$plotResidualsDependent) {
 	
 		if (!is.null(state) && paste0("plotResidualsDependent", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
-		diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
-		&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
+			diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
+			&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
 			
 			# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 			# then, if the requested plot already exists, use it
@@ -1794,6 +1797,8 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	if (options$plotResidualsCovariates && length(options$modelTerms) > 0 && dependent.variable != "") {
 		
+		results[["plotsResVsCov"]] <- list(title="Residuals vs. Covariates")
+		
 		variables.in.model <- variables.in.model.copy
 		
 		for (var in seq_along(variables.in.model)) {
@@ -1821,9 +1826,10 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				
 				plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
 				plotsResVsCov[[length(plotsResVsCov)+1]] <- state$plotsRegression[[stateIndex]]
-				results[["plotsResVsCov"]] <- plotsResVsCov
+				results[["plotsResVsCov"]]$collection <- plotsResVsCov
 			
 			} else {
+				
 				
 				plot <- list()
 				
@@ -1838,7 +1844,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				
 				plots.regression[[length(plots.regression)+1]] <- plot
 				plotsResVsCov[[length(plotsResVsCov)+1]] <- plot
-				results[["plotsResVsCov"]] <- plotsResVsCov
+				results[["plotsResVsCov"]]$collection <- plotsResVsCov
 				
 				if ( ! .shouldContinue(callback(results)))
 				return()
@@ -1851,9 +1857,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	}
 	
 	
-	
 	if (options$plotResidualsPredicted) {
-		
 		
 		if (!is.null(state) && paste0("plotResidualsPredicted", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
 			diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
@@ -1893,7 +1897,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	}
 	
 	if (options$plotResidualsHistogram) {
-		
 		
 		if (!is.null(state) && paste0("plotResidualsHistogram", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$plotResidualsHistogramStandardized == FALSE
 			&& diff$modelTerms == FALSE && diff$dependent == FALSE && diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE &&
@@ -1945,7 +1948,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 	
 	if (options$plotResidualsQQ) {
 		
-		
 		if (!is.null(state) && paste0("plotResidualsQQ", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
 			diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
 			&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
@@ -1977,7 +1979,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			
 			if ( ! .shouldContinue(callback(results)))
 				return()
-				
+			
 		}
 		
 		plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsQQ", dependent.variable)
@@ -1990,7 +1992,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		j <- 1
 		
 		if (options$plotResidualsDependent) {
-			
 			
 			if (!is.null(state) && paste0("plotResidualsDependent", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
 				diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
@@ -2005,7 +2006,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 				results[["plotResVsDep"]] <- state$plotsRegression[[stateIndex]]
 				
 			} else {
-				
 				
 				plots.regression[[j]]$status <- "running"
 				
@@ -2061,7 +2061,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 		if (options$plotResidualsCovariates && length(options$modelTerms) > 0 && dependent.variable != "") {
 			
-			
 			for (var in seq_along(variables.in.model)) {
 				
 				
@@ -2077,7 +2076,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					
 					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
 					plotsResVsCov[[j]] <- state$plotsRegression[[stateIndex]]
-					results[["plotsResVsCov"]] <- plotsResVsCov
+					results[["plotsResVsCov"]]$collection <- plotsResVsCov
 					
 				} else {
 					
@@ -2104,7 +2103,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					plots.regression[[j]]$status <- "running"
 					plotsResVsCov[[j]] <- plots.regression[[j]]
 					
-					results[["plotsResVsCov"]] <- plotsResVsCov
+					results[["plotsResVsCov"]]$collection <- plotsResVsCov
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -2136,7 +2135,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					plot[["status"]] <- "complete"
 					plots.regression[[j]] <- plot
 					plotsResVsCov[[j]] <- plot
-					results[["plotsResVsCov"]] <- plotsResVsCov
+					results[["plotsResVsCov"]]$collection <- plotsResVsCov
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -2150,7 +2149,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		
 		
 		if (options$plotResidualsPredicted) {
-			
 			
 			if (!is.null(state) && paste0("plotResidualsPredicted", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
 				diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
@@ -2222,7 +2220,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 		
 		if (options$plotResidualsHistogram) {
-			
 			
 			if (!is.null(state) && paste0("plotResidualsHistogram", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$plotResidualsHistogramStandardized == FALSE &&
 				diff$modelTerms == FALSE && diff$dependent == FALSE && diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE &&
@@ -2300,7 +2297,6 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 		}
 		
 		if (options$plotResidualsQQ) {
-			
 			
 			if (!is.null(state) && paste0("plotResidualsQQ", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
 				diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
