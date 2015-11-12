@@ -232,7 +232,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				plot <- list()
 				
-				plot[["title"]] <- "Prior and posterior"
+				plot[["title"]] <- "Prior and Posterior"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -275,7 +275,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			
 				plot <- list()
 				
-				plot[["title"]] <- "Bayes factor robustness check"
+				plot[["title"]] <- "Bayes Factor Robustness Check"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -318,7 +318,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 				
 				plot <- list()
 				
-				plot[["title"]] <- "Sequential analysis"
+				plot[["title"]] <- "Sequential Analysis"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
