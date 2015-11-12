@@ -623,7 +623,7 @@
             <item row="3" column="0" colspan="3">
              <widget class="BoundCheckBox" name="regressionCoefficientsCovarianceMatrix">
               <property name="text">
-               <string>Covariance Matrix</string>
+               <string>Covariance matrix</string>
               </property>
              </widget>
             </item>
@@ -988,7 +988,7 @@
          <item row="0" column="0">
           <widget class="GroupBox" name="groupBox_3">
            <property name="title">
-            <string>Residual plots</string>
+            <string>Residual Plots</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_28">
             <item row="5" column="1" colspan="2">
