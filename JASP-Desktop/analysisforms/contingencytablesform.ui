@@ -398,7 +398,7 @@
             <item row="1" column="0">
              <widget class="BoundCheckBox" name="chiSquaredContinuityCorrection">
               <property name="text">
-               <string>χ² Continuity correction</string>
+               <string>χ² continuity correction</string>
               </property>
              </widget>
             </item>
@@ -442,7 +442,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Confidence Interval</string>
+                  <string>Confidence interval</string>
                  </property>
                 </widget>
                </item>
@@ -690,7 +690,7 @@
             <item row="2" column="0">
              <widget class="BoundCheckBox" name="residualsAdjustedStandardized">
               <property name="text">
-               <string>Adjusted Standardized</string>
+               <string>Adjusted standardized</string>
               </property>
              </widget>
             </item>

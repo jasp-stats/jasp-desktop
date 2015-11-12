@@ -407,7 +407,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Credible Interval</string>
+                  <string>Credible interval</string>
                  </property>
                 </widget>
                </item>
@@ -459,7 +459,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>Credible Interval</string>
+                  <string>Credible interval</string>
                  </property>
                 </widget>
                </item>
@@ -666,7 +666,7 @@
          <item row="2" column="0" rowspan="2" colspan="2">
           <widget class="BoundGroupBox" name="bayesFactorType">
            <property name="title">
-            <string>Bayes factor</string>
+            <string>Bayes Factor</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_5">
             <item row="1" column="0">
@@ -848,14 +848,14 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
