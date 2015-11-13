@@ -27,9 +27,16 @@
 			"options": [ "BF10", "BF01", "LogBF10" ]
 		},
 		{
-			"name": "priorType",
-			"type": "List",
-			"options": [ "UIP", "SBH" ]
+			"name": "priorScale",
+			"type": "Number",
+			"value" : 0.001,
+			"min" : 0
+		},
+		{
+			"name": "priorShape",
+			"type": "Number",
+			"value" : 0.001,
+			"min" : 0
 		},
 		{
 			"name": "maxModels",
