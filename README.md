@@ -18,6 +18,8 @@ Development
 
 [The JASP Guide for Implementing Analyses in R](Docs/development/r-analyses-guide.md)
 
+[Guide to Adding Analyses](Docs/development/jasp-adding-analyses.md)
+
 [The JASP Error List](Docs/development/jasp-error-list.md)
 
 [The JASP Guide to Writing Analyses for Humans](Docs/development/jasp-human-guide.md)
