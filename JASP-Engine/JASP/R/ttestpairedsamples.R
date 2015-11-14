@@ -467,13 +467,13 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 			c2 <- dataset[[ .v(pair[[2]]) ]]
 			
 			data <- data.frame(id = rep(1:length(c1), 2), dependent = c(c1, c2), 
-				groupingVariable = c(rep(paste(pair[[1]], ".1", sep = ""), length(c1)), 
-				  rep(paste(pair[[2]], ".2", sep = ""), length(c2))))
+				groupingVariable = c(rep(paste("1.", pair[[1]], sep = ""), length(c1)), 
+				  rep(paste("2.", pair[[2]], sep = ""), length(c2))))
 			
 			summaryStat <- .summarySEwithin(data, measurevar = "dependent", withinvars = "groupingVariable", 
 				idvar = "id", conf.interval = options$descriptivesPlotsConfidenceInterval, 
 				na.rm = TRUE, .drop = FALSE)
-			
+							
 			pd <- ggplot2::position_dodge(0.2)
 			
 			p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable, 
