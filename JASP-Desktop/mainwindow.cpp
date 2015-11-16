@@ -84,6 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
 {
+	_log = NULL;
 	_tableModel = NULL;
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
@@ -232,37 +233,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
 	ui->panelHelp->hide();
 
-	try {
-
-		_log = new ActivityLog();
-		_log->log("Application Start");
-
-		ui->backStage->setLog(_log);
-		_engineSync->setLog(_log);
-
-		_log->flushLogToServer();
-
-		QTimer *timer = new QTimer(this);
-		timer->setInterval(30000);
-		connect(timer, SIGNAL(timeout()), _log, SLOT(flushLogToServer()));
-		timer->start();
-	}
-	catch (std::runtime_error &e)
-	{
-		_log = NULL;
-		_fatalError = tq(e.what());
-		QTimer::singleShot(0, this, SLOT(fatalError()));
-	}
-
 	setAcceptDrops(true);
 
 #ifdef __WIN32__
-		QApplication::setFont(ui->tableView->font());
+	QApplication::setFont(ui->tableView->font());
 #endif
 
-		setupOptionPanelSize();
+	setupOptionPanelSize();
 
-		ui->panelMid->hide();
+	ui->panelMid->hide();
 }
 
 void MainWindow::open(QString filepath)
