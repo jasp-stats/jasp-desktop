@@ -20,6 +20,8 @@ Development
 
 [Guide to Adding Analyses](Docs/development/jasp-adding-analyses.md)
 
+[JASP Licensing](Docs/development/jasp-licensing.md)
+
 [The JASP Error List](Docs/development/jasp-error-list.md)
 
 [The JASP Guide to Writing Analyses for Humans](Docs/development/jasp-human-guide.md)
