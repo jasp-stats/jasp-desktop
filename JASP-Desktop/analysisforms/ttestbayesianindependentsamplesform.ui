@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>829</height>
+    <height>862</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -77,7 +77,7 @@
        </widget>
       </item>
       <item row="7" column="2">
-       <widget class="BoundListView" name="groupingVariable">
+       <widget class="boundSingleItemView" name="groupingVariable">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -761,7 +761,45 @@
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
+  </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>plotPriorAndPosterior</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotPriorAndPosteriorAdditionalInfo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>318</x>
+     <y>588</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>611</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotSequentialAnalysis</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotSequentialAnalysisRobustness</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>657</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>337</x>
+     <y>680</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
