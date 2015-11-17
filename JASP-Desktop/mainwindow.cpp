@@ -51,6 +51,8 @@
 #include "analysisforms/contingencytablesform.h"
 #include "analysisforms/contingencytablesbayesianform.h"
 
+#include "analysisforms/binomialtestform.h"
+
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
 
@@ -513,6 +515,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new AnovaRepeatedMeasuresBayesianForm(contentArea);
 	else if (name == "R11tLearn")
 		form = new R11tLearnForm(contentArea);
+	else if (name == "BinomialTest")
+		form = new BinomialTestForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 

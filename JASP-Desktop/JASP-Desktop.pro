@@ -156,7 +156,8 @@ SOURCES += main.cpp \
     backstage/fsbmrecent.cpp \
     backstage/fsbmrecentfolders.cpp \
     fileevent.cpp \
-    widgets/boundsingleitemview.cpp
+    widgets/boundsingleitemview.cpp \
+    analysisforms/binomialtestform.cpp
 
 HEADERS  += \
     analyses.h \
@@ -277,7 +278,8 @@ HEADERS  += \
     backstage/fsbmrecent.h \
     backstage/fsbmrecentfolders.h \
     fileevent.h \
-    widgets/boundsingleitemview.h
+    widgets/boundsingleitemview.h \
+    analysisforms/binomialtestform.h
 
 FORMS += \
     analysisforms/anovabayesianform.ui \
@@ -317,7 +319,8 @@ FORMS += \
     ribbons/ribbonr11tlearn.ui \
     backstage/backstagecomputer.ui \
     analysisforms/regressionloglinearform.ui \
-    analysisforms/regressionloglinearbayesianform.ui
+    analysisforms/regressionloglinearbayesianform.ui \
+    analysisforms/binomialtestform.ui
 
 
 RESOURCES += \
