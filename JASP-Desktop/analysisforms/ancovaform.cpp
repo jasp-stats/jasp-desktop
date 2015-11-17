@@ -121,9 +121,7 @@ AncovaForm::AncovaForm(QWidget *parent) :
 	ui->randomFactors->hide();
 	ui->buttonAssignRandom->hide();
 	ui->label_3->hide();
-	ui->verticalSpacer_2->hide();
 #else
-
 	ui->factorCovariateIndependence->setStyleSheet("background-color: pink ;");
 	ui->randomFactors->setStyleSheet("background-color: pink ;");
 	ui->buttonAssignRandom->setStyleSheet("background-color: pink ;");

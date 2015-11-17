@@ -108,7 +108,6 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->randomFactors->hide();
 	ui->label_3->hide();
 	ui->buttonAssignRandom->hide();
-	ui->verticalSpacer_5->hide();
 #else
 	ui->randomFactors->setStyleSheet("background-color: pink ;");
 	ui->label_3->setStyleSheet("background-color: pink ;");
