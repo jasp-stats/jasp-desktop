@@ -598,22 +598,26 @@
          <property name="bottomMargin">
           <number>3</number>
          </property>
-         <item row="0" column="1" rowspan="2">
-          <widget class="QWidget" name="widget_20" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>1</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
+         <item row="0" column="0" rowspan="2">
           <widget class="GroupBox" name="groupBox_2">
            <property name="title">
             <string>Regression Coefficients</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
+            <item row="1" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="regressionCoefficientsCredibleIntervals">
+              <property name="text">
+               <string>Credible intervals</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="2">
+             <widget class="BoundCheckBox" name="regressionCoefficientsEstimates">
+              <property name="text">
+               <string>Estimates</string>
+              </property>
+             </widget>
+            </item>
             <item row="2" column="0">
              <widget class="QWidget" name="panelCredibleInterval" native="true">
               <property name="enabled">
@@ -632,13 +636,6 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string>Interval</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="1">
                 <widget class="BoundTextBox" name="regressionCoefficientsCredibleIntervalsInterval">
                  <property name="maximumSize">
@@ -656,38 +653,172 @@
                  </property>
                 </widget>
                </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>Interval</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <spacer name="verticalSpacer_6">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
               </layout>
              </widget>
             </item>
-            <item row="1" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="regressionCoefficientsCredibleIntervals">
-              <property name="text">
-               <string>Credible intervals</string>
-              </property>
+            <item row="0" column="3" rowspan="3">
+             <widget class="QWidget" name="widget" native="true">
+              <layout class="QGridLayout" name="gridLayout_10">
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="3">
+                <widget class="QWidget" name="widget_3" native="true"/>
+               </item>
+               <item row="0" column="0">
+                <widget class="BoundCheckBox" name="regressionCoefficientsSubmodel">
+                 <property name="text">
+                  <string>Submodel</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="BoundTextBox" name="regressionCoefficientsSubmodelNo">
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>1</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="0" colspan="3">
+                <widget class="QWidget" name="widget_2" native="true">
+                 <layout class="QVBoxLayout" name="verticalLayout">
+                  <property name="leftMargin">
+                   <number>24</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="BoundCheckBox" name="regressionCoefficientsSubmodelEstimates">
+                    <property name="text">
+                     <string>Estimates</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="BoundCheckBox" name="regressionCoefficientsSubmodelCredibleIntervals">
+                    <property name="text">
+                     <string>Credible intervals</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QWidget" name="panelSubmodelCredibleInterval" native="true">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_19">
+                     <property name="leftMargin">
+                      <number>20</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_11">
+                       <property name="text">
+                        <string>Interval</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="BoundTextBox" name="regressionCoefficientsSubmodelCredibleIntervalsInterval">
+                       <property name="maximumSize">
+                        <size>
+                         <width>60</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="2">
+                      <widget class="QLabel" name="label_12">
+                       <property name="text">
+                        <string>%</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
              </widget>
-            </item>
-            <item row="0" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="regressionCoefficientsEstimates">
-              <property name="text">
-               <string>Estimates</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>
+         </item>
+         <item row="1" column="1">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -783,6 +914,22 @@
     <hint type="destinationlabel">
      <x>109</x>
      <y>768</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>regressionCoefficientsSubmodelCredibleIntervals</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>panelSubmodelCredibleInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>339</x>
+     <y>910</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>335</x>
+     <y>937</y>
     </hint>
    </hints>
   </connection>

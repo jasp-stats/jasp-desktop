@@ -79,6 +79,35 @@
 			"name": "regressionCoefficientsCredibleIntervalsInterval",
 			"type": "Number",
 			"value": 0.950
+		},
+		{
+			"name": "regressionCoefficientsSubmodel",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "regressionCoefficientsSubmodelNo",
+			"type": "Integer",
+			"default": 1,
+			"min" : 1
+		},
+		{
+			"name": "regressionCoefficientsSubmodelEstimates",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "regressionCoefficientsSubmodelCredibleIntervals",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.5,
+			"name": "regressionCoefficientsSubmodelCredibleIntervalsInterval",
+			"type": "Number",
+			"value": 0.950
 		}
 	]
 }
