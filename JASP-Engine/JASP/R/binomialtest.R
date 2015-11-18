@@ -48,45 +48,51 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 	table[["title"]] <- "Binomial Test"
 
 	schema <- list(fields=list(
-		list(name="Col", type="string"),
+		list(name="case", title="", type="string"),
+		list(name="level", type="string"),
+		list(name="proportion", type="number", format="sf:4;dp:3"),
 		list(name="N", type="integer"),
-		list(name="Success", type="integer"),
 		list(name="p", type="number", format="dp:3;p:.001")
 		))
 
 	table[["schema"]] <- schema
 
 	data <- list()
-
+	
 	if (perform == "run") {
 
-	for (var in variables) {
+		for (var in variables) {
 
-		d <- dataset[[.v(var)]]
+			d <- dataset[[.v(var)]]
+			
+			level <- levels(d)[1]
+			succ <- sum(d == level)
+			n <- length(d)
+			prop <- succ/n
 
-		succ <- sum(d == 1)
-		n <- length(d)
-		print("D")
-		print(d)
-		print("N")
-		print(n)
+			if (options$hypothesis == "notEqualToTestValue") {
+				hyp <- "two.sided"
+			} else if (options$hypothesis == "greaterThanTestValue") {
+				hyp <- "greater"
+			} else {
+				hyp <- "less"
+			}
 
-		if (options$hypothesis == "notEqualToTestValue") {
-			hyp <- "two.sided"
-		} else if (options$hypothesis == "greaterThanTestValue") {
-			hyp <- "greater"
-		} else {
-			hyp <- "less"
+			r <- stats::binom.test(succ, n, p = options$testValue, alternative = hyp)
+			data[[length(data) + 1]] <- list(case=var, level=level, proportion=prop, N=n, p=r$p.value)
+
 		}
-
-		r <- stats::binom.test(succ, n, p = options$testValue, alternative = hyp)
-		data[[length(data) + 1]] <- list(Col=var,N=n,Success=succ,p=r$p.value)
-
-	}
-
+		
+	} else {
+	
+		for (var in variables)
+			data[[length(data) + 1]] <- list(case=var, level=".", proportion=".", N=".", p=".")
+		
 	}
 
 	table[["data"]] <- data
+	
+	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste("proportions tested against value:", options$testValue)))
 
 	results[["binomial"]] <- table
 
