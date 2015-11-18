@@ -47,8 +47,8 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	.meta <-  list(
 		list(name = "title", type = "title"),
 		list(name = "table", type = "table"),
-		list(name = "logregression", type = "table"),
-		list(name = "logregressionanova", type = "table")
+		list(name = "logregressionanova", type = "table"),
+		list(name = "logregression", type = "table")
 		)
 	
 	results[[".meta"]] <- .meta
@@ -160,18 +160,29 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		
 		logregression <- list()
 		logregression[["title"]] <- "Coefficients"
-		#ci.label <- paste(100*options$ConfidenceIntervalInterval, "% Confidence intervals", sep="")
-		ci.label <- paste(95, "% Confidence intervals", sep="")
+		
+		if (options$regressionCoefficientsConfidenceIntervals == TRUE){
+			ci.label <- paste(100*options$regressionCoefficientsConfidenceIntervalsInterval, "% Confidence intervals", sep="")
+		}
+		#ci.label <- paste(95, "% Confidence intervals", sep="")
 		
 		# Declare table elements
 		fields <- list(
 			list(name = "Name", title = "  ", type = "string"),
 			list(name = "Coefficient", title = "Estimate", type = "number", format = "dp:3"),
-			list(name = "Standard Error", type="number", format = "dp:3"),
-			list(name = "Lower",overTitle=ci.label, type="number", format = "dp:3"),
-			list(name = "Upper",overTitle=ci.label,type="number", format = "dp:3"),
+			list(name = "Standard Error", type="number", format = "dp:3"))
+			
+			if (options$regressionCoefficientsConfidenceIntervals == TRUE){
+				fields <- c(fields,list(
+					list(name = "Lower",overTitle=ci.label, type="number", format = "dp:3"),
+					list(name = "Upper",overTitle=ci.label,type="number", format = "dp:3")))	
+			}
+			
+			fields <- c(fields,list(
+			
 			list(name = "z-value", type="number", format = "sf:4;dp:3"),
-			list(name = "z", type = "number", format = "dp:3;p:.001"))
+			list(name = "z", type = "number", format = "dp:3;p:.001")))
+
 					
 		empty.line <- list(                      #for empty elements in tables when given output
 			"Name" = "",
@@ -207,9 +218,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 				print(str(loglm.estimates))
 				loglm.coeff <- loglm.estimates[,"Estimate"]
 				loglm.estimates.SE <- loglm.estimates[,"Std. Error"]
-				
-				sig <- 0.95
-				#sig    <- options$CIIntervalInterval
+				sig    <- options$regressionCoefficientsConfidenceIntervalsInterval
 				alpha  <- (1 - sig) / 2
 				lower  <- loglm.coeff+ stats::qnorm(alpha)*loglm.estimates.SE
 				upper  <- loglm.coeff+ stats::qnorm(1-alpha)*loglm.estimates.SE
@@ -241,8 +250,10 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 						logregression.result[[ len.logreg ]]$"Coefficient" <- as.numeric(unname(loglm.estimates[i,1]))
 						logregression.result[[ len.logreg ]]$"Standard Error" <- as.numeric(loglm.estimates[i,2])
 						
-						logregression.result[[ len.logreg ]]$"Lower" <- as.numeric(lower[i])
-						logregression.result[[ len.logreg ]]$"Upper" <- as.numeric(upper[i])
+						if (options$regressionCoefficientsConfidenceIntervals == TRUE){
+							logregression.result[[ len.logreg ]]$"Lower" <- as.numeric(lower[i])
+							logregression.result[[ len.logreg ]]$"Upper" <- as.numeric(upper[i])
+						}
 									
 						logregression.result[[ len.logreg ]]$"z-value" <- as.numeric(loglm.estimates[i,3])
 						logregression.result[[ len.logreg ]]$"z" <- as.numeric(loglm.estimates[i,4])
@@ -331,7 +342,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	
 ################################################################
 
-	if (options$method == "enter") {	
+	
 		logregressionanova <- list()
 		logregressionanova[["title"]] <- "ANOVA"
 		
@@ -484,7 +495,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	logregressionanova[["data"]] <- logregressionanova.result
 	results[["logregressionanova"]] <- logregressionanova
 	
-}		
+		
 #######################################################################	
 	
 	if (perform == "init") {
