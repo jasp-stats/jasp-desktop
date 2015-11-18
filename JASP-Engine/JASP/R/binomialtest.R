@@ -48,10 +48,11 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 	table[["title"]] <- "Binomial Test"
 
 	schema <- list(fields=list(
-		list(name="case", title="", type="string"),
+		list(name="case", title="", type="string", combine=TRUE),
 		list(name="level", type="string"),
+		list(name="counts", type="integer"),
+		list(name="total", type="integer"),
 		list(name="proportion", type="number", format="sf:4;dp:3"),
-		list(name="N", type="integer"),
 		list(name="p", type="number", format="dp:3;p:.001")
 		))
 
@@ -65,28 +66,40 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 			d <- dataset[[.v(var)]]
 			
-			level <- levels(d)[1]
-			succ <- sum(d == level)
+			levels <- levels(d)
 			n <- length(d)
-			prop <- succ/n
+			
+			for (lev in levels) {
+				
+				counts <- sum(d == lev)
+				prop <- counts/n
 
-			if (options$hypothesis == "notEqualToTestValue") {
-				hyp <- "two.sided"
-			} else if (options$hypothesis == "greaterThanTestValue") {
-				hyp <- "greater"
-			} else {
-				hyp <- "less"
+				if (options$hypothesis == "notEqualToTestValue") {
+					hyp <- "two.sided"
+				} else if (options$hypothesis == "greaterThanTestValue") {
+					hyp <- "greater"
+				} else {
+					hyp <- "less"
+				}
+
+				r <- stats::binom.test(counts, n, p = options$testValue, alternative = hyp)
+				
+				row <- list(case=var, level=lev, counts = counts, total=n, proportion=prop, p=r$p.value)
+				
+				if (lev == levels[1]) {
+					row[[".isNewGroup"]] <- TRUE
+				} else {
+					row[[".isNewGroup"]] <- FALSE
+				}
+				
+				data[[length(data) + 1]] <- row
 			}
-
-			r <- stats::binom.test(succ, n, p = options$testValue, alternative = hyp)
-			data[[length(data) + 1]] <- list(case=var, level=level, proportion=prop, N=n, p=r$p.value)
-
 		}
 		
 	} else {
 	
 		for (var in variables)
-			data[[length(data) + 1]] <- list(case=var, level=".", proportion=".", N=".", p=".")
+			data[[length(data) + 1]] <- list(case=var, level=".", counts=".", total=".",  proportion=".", p=".")
 		
 	}
 
