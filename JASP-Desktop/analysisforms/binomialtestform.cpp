@@ -30,11 +30,13 @@ BinomialTestForm::BinomialTestForm(QWidget *parent) :
 
 	TableModelVariablesAssigned *model = new TableModelVariablesAssigned(this);
 	model->setSource(&_availableVariablesModel);
-
+	model->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->variables->setModel(model);
 	ui->variables->setDoubleClickTarget(ui->listAvailableVariables);
 
 	ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
+
+	ui->testValue->setLabel("Test value");
 }
 
 BinomialTestForm::~BinomialTestForm()
