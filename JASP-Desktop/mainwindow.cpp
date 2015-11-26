@@ -53,6 +53,7 @@
 
 #include "analysisforms/binomialtestform.h"
 #include "analysisforms/bayesianbinomialtestform.h"
+#include "analysisforms/bffromtform.h"
 
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
@@ -514,6 +515,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BinomialTestForm(contentArea);
 	else if (name == "BayesianBinomialTest")
 		form = new BayesianBinomialTestForm(contentArea);
+	else if (name == "BFFromT")
+		form = new BFFromTForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 

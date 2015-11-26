@@ -103,6 +103,15 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BayesianBinomialTest");
 #endif
 	ui->frequenciesButton->setMenu(menu);
+
+#ifndef QT_DEBUG
+	ui->otherPanel->hide();
+#else
+	menu = new QMenu(this);
+	menu->addAction(QString("BF From t"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
+
+	ui->BFFromT->setMenu(menu);
+#endif
 }
 
 RibbonAnalysis::~RibbonAnalysis()
