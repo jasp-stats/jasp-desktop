@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>731</height>
+    <height>800</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -293,34 +293,7 @@
          <string>Output</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_8">
-         <item row="1" column="0" rowspan="2">
-          <widget class="QWidget" name="widget_12" native="true">
-           <property name="maximumSize">
-            <size>
-             <width>20</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" rowspan="2">
-          <widget class="BoundCheckBox" name="effectsStepwise">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Stepwise</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="2">
-          <widget class="BoundCheckBox" name="effects">
-           <property name="text">
-            <string>Effects</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
+         <item row="1" column="1">
           <spacer name="verticalSpacer_3">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -332,6 +305,13 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="BoundCheckBox" name="effects">
+           <property name="text">
+            <string>Effects</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -530,6 +510,16 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
+  </customwidget>
+  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
@@ -540,34 +530,7 @@
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
   </customwidget>
-  <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
-  </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>effects</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>effectsStepwise</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>205</x>
-     <y>345</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>216</x>
-     <y>368</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
