@@ -91,7 +91,9 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 #endif
 	menu->addSeparator();
 	menu->addAction(QString("Bayesian Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTablesBayesian");
-
+#ifdef QT_DEBUG
+	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BayesianBinomialTest");
+#endif
 	ui->classicalCrosstabsButton->setMenu(menu);
 }
 
