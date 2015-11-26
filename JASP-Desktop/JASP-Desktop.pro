@@ -157,7 +157,8 @@ SOURCES += main.cpp \
     backstage/fsbmrecentfolders.cpp \
     fileevent.cpp \
     widgets/boundsingleitemview.cpp \
-    analysisforms/binomialtestform.cpp
+    analysisforms/binomialtestform.cpp \
+    analysisforms/bayesianbinomialtestform.cpp
 
 HEADERS  += \
     analyses.h \
@@ -279,7 +280,8 @@ HEADERS  += \
     backstage/fsbmrecentfolders.h \
     fileevent.h \
     widgets/boundsingleitemview.h \
-    analysisforms/binomialtestform.h
+    analysisforms/binomialtestform.h \
+    analysisforms/bayesianbinomialtestform.h
 
 FORMS += \
     analysisforms/anovabayesianform.ui \
@@ -320,7 +322,8 @@ FORMS += \
     backstage/backstagecomputer.ui \
     analysisforms/regressionloglinearform.ui \
     analysisforms/regressionloglinearbayesianform.ui \
-    analysisforms/binomialtestform.ui
+    analysisforms/binomialtestform.ui \
+    analysisforms/bayesianbinomialtestform.ui
 
 
 RESOURCES += \
