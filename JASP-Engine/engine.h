@@ -52,6 +52,7 @@ private:
 	void sendResults();
 	std::string callback(const std::string &results);
 
+	DataSet *provideDataSet();
 	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
 	void provideStateFileName(std::string &root, std::string &relativePath);
 

@@ -28,7 +28,15 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->bayesianPanel->hide();
+	addRibbonButton(ui->Descriptives);
+	addRibbonButton(ui->ttestButton);
+	addRibbonButton(ui->anovaButton);
+	addRibbonButton(ui->frequenciesButton);
+	addRibbonButton(ui->regressionButton);
+	addRibbonButton(ui->BFFromT);
+
+	ui->BFFromT->setDataSetNotNeeded();
+
 
 	connect(ui->Descriptives, SIGNAL(clicked()), this, SLOT(itemSelected()));
 
@@ -45,7 +53,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian Paired Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianPairedSamples");
 	menu->addAction(QString("Bayesian One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianOneSample");
 
-	ui->classicalTTestButton->setMenu(menu);
+	ui->ttestButton->setMenu(menu);
 
 
 	menu = new QMenu(this);
@@ -60,7 +68,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasuresBayesian");
 	menu->addAction(QString("Bayesian ANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaBayesian");
 
-	ui->classicalAnovaButton->setMenu(menu);
+	ui->anovaButton->setMenu(menu);
 
 
 	menu = new QMenu(this);
@@ -80,7 +88,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian Log Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinearBayesian");
 #endif
 
-	ui->classicalRegressionButton->setMenu(menu);
+	ui->regressionButton->setMenu(menu);
 
 
 	menu = new QMenu(this);
@@ -94,7 +102,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 #ifdef QT_DEBUG
 	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BayesianBinomialTest");
 #endif
-	ui->classicalCrosstabsButton->setMenu(menu);
+	ui->frequenciesButton->setMenu(menu);
 }
 
 RibbonAnalysis::~RibbonAnalysis()

@@ -54,9 +54,7 @@ Engine::Engine()
 	rbridge_init();
 	tempfiles_attach(ProcessInfo::parentPID());
 
-	DataSet *dataSet = DataSetLoader::getDataSet();
-	rbridge_setDataSet(dataSet);
-
+	rbridge_setDataSetSource(boost::bind(&Engine::provideDataSet, this));
 	rbridge_setFileNameSource(boost::bind(&Engine::provideTempFileName, this, _1, _2, _3));
 	rbridge_setStateFileSource(boost::bind(&Engine::provideStateFileName, this, _1, _2));
 }
@@ -330,6 +328,11 @@ string Engine::callback(const string &results)
 	}
 
 	return "{ \"status\" : \"ok\" }";
+}
+
+DataSet *Engine::provideDataSet()
+{
+	return DataSetLoader::getDataSet();
 }
 
 void Engine::provideStateFileName(string &root, string &relativePath)

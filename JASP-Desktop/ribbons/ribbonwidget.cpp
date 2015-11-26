@@ -27,6 +27,11 @@ RibbonWidget::RibbonWidget(QWidget *parent) :
 {
 }
 
+void RibbonWidget::addRibbonButton(RibbonButton *button)
+{
+	_buttons.append(button);
+}
+
 void RibbonWidget::itemSelected()
 {
 	QObject *source = this->sender();
@@ -35,12 +40,15 @@ void RibbonWidget::itemSelected()
 	emit itemSelected(name);
 }
 
-void RibbonWidget::menuHiding()
+void RibbonWidget::setDataSetLoaded(bool loaded)
 {
-	QMenu *menu = qobject_cast<QMenu *>(this->sender());
-	RibbonButton *button = qobject_cast<RibbonButton *>(menu->parent());
-
-	qDebug() << button;
+	foreach (RibbonButton *button, _buttons)
+	{
+		if (loaded)
+			button->setEnabled(true);
+		else if (button->isDataSetNeeded())
+			button->setEnabled(false);
+	}
 }
 
 

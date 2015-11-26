@@ -55,8 +55,11 @@ void AnalysisForm::bindTo(Options *options, DataSet *dataSet)
 
 	vector<string> columnNames;
 
-	BOOST_FOREACH(Column &column, dataSet->columns())
-		columnNames.push_back(column.name());
+	if (_dataSet != NULL)
+	{
+		BOOST_FOREACH(Column &column, dataSet->columns())
+			columnNames.push_back(column.name());
+	}
 
 	_availableVariablesModel.setInfoProvider(this);
 	_availableVariablesModel.setVariables(columnNames);

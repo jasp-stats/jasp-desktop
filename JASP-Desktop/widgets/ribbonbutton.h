@@ -30,6 +30,8 @@ class RibbonButton : public QToolButton
     Q_OBJECT
 public:
 	explicit RibbonButton(QWidget *parent = 0);
+	void setDataSetNotNeeded();
+	bool isDataSetNeeded() const;
 
 public slots:
 	void notifyMouseOut();
@@ -40,6 +42,8 @@ protected:
 	virtual void mousePressEvent(QMouseEvent *event) OVERRIDE;
 
 private:
+
+	bool _dataSetNeeded;
 
 	bool _mouseOver;
 

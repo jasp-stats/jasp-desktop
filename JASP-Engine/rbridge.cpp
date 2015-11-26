@@ -31,6 +31,7 @@ using namespace std;
 RCallback rbridge_runCallback;
 boost::function<void(const std::string &, std::string &, std::string &)> rbridge_fileNameSource;
 boost::function<void(std::string &, std::string &)> rbridge_stateFileSource;
+boost::function<DataSet *()> rbridge_dataSetSource;
 
 Rcpp::DataFrame rbridge_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
@@ -70,9 +71,9 @@ void rbridge_init()
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"methods\"))");
 }
 
-void rbridge_setDataSet(DataSet *dataSet)
+void rbridge_setDataSetSource(boost::function<DataSet* ()> source)
 {
-	rbridge_dataSet = dataSet;
+	rbridge_dataSetSource = source;
 }
 
 void rbridge_setFileNameSource(boost::function<void (const string &, string &, string &)> source)
@@ -144,10 +145,7 @@ string rbridge_run(const string &name, const string &options, const string &perf
 Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnType> &columns)
 {
 	if (rbridge_dataSet == NULL)
-	{
-		std::cout << "rbridge dataset not set!\n";
-		std::cout.flush();
-	}
+		rbridge_dataSet = rbridge_dataSetSource();
 
 	Rcpp::List list(columns.size());
 	Rcpp::CharacterVector columnNames;
@@ -336,10 +334,7 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 Rcpp::DataFrame rbridge_readDataSetHeader(const std::map<string, Column::ColumnType> &columns)
 {
 	if (rbridge_dataSet == NULL)
-	{
-		std::cout << "rbridge dataset not set!\n";
-		std::cout.flush();
-	}
+		rbridge_dataSet = rbridge_dataSetSource();
 
 	Rcpp::List list(columns.size());
 	Rcpp::CharacterVector columnNames;
@@ -522,4 +517,3 @@ string rbridge_check()
 	else
 		return "null";
 }
-

@@ -121,15 +121,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
 	connect(ui->tabBar, SIGNAL(helpToggled(bool)), this, SLOT(helpToggled(bool)));
 
-//#ifdef __WIN32__
-//	QFont font = ui->tabBar->font();
-//	font.setPointSize(10);
-//	ui->tabBar->setFont(font);
-//#endif
-
-	ui->ribbonAnalysis->setEnabled(false);
-	ui->ribbonSEM->setEnabled(false);
-	ui->ribbonR11tLearn->setEnabled(false);
+	ui->ribbonAnalysis->setDataSetLoaded(false);
+	ui->ribbonSEM->setDataSetLoaded(false);
+	ui->ribbonR11tLearn->setDataSetLoaded(false);
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -927,18 +921,15 @@ void MainWindow::populateUIfromDataSet()
 
 	_package->setLoaded();
 	updateMenuEnabledDisabledStatus();
-
-	if (_engineSync->engineStarted() == false)
-		_engineSync->start();
 }
 
 void MainWindow::updateMenuEnabledDisabledStatus()
 {
-	bool enable = _package->isLoaded();
+	bool loaded = _package->isLoaded();
 
-	ui->ribbonAnalysis->setEnabled(enable);
-	ui->ribbonSEM->setEnabled(enable);
-	ui->ribbonR11tLearn->setEnabled(enable);
+	ui->ribbonAnalysis->setDataSetLoaded(loaded);
+	ui->ribbonSEM->setDataSetLoaded(loaded);
+	ui->ribbonR11tLearn->setDataSetLoaded(loaded);
 }
 
 void MainWindow::updateUIFromOptions()
@@ -1001,6 +992,9 @@ void MainWindow::resultsPageLoaded(bool success)
 
 		_resultsViewLoaded = true;
 	}
+
+	if (_engineSync->engineStarted() == false)
+		_engineSync->start();
 }
 
 void MainWindow::fatalError()

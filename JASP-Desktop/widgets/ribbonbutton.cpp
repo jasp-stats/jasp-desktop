@@ -32,6 +32,7 @@ RibbonButton::RibbonButton(QWidget *parent) :
 
 	_mouseOver = false;
 	_connectedToMenu = false;
+	_dataSetNeeded = true;
 
 	_mouseOutSS = "QToolButton {"
 			"	border: 1px solid transparent ;"
@@ -66,6 +67,16 @@ RibbonButton::RibbonButton(QWidget *parent) :
 
 	setStyleSheet(_mouseOutSS);
 
+}
+
+void RibbonButton::setDataSetNotNeeded()
+{
+	_dataSetNeeded = false;
+}
+
+bool RibbonButton::isDataSetNeeded() const
+{
+	return _dataSetNeeded;
 }
 
 void RibbonButton::notifyMouseOut()

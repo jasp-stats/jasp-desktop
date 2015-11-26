@@ -27,13 +27,20 @@ class RibbonWidget : public QWidget
 	Q_OBJECT
 public:
 	explicit RibbonWidget(QWidget *parent = 0);
+	void addRibbonButton(RibbonButton *button);
 
 signals:
 	void itemSelected(QString itemName);
 
+public slots:
+	void setDataSetLoaded(bool loaded);
+
 protected slots:
 	void itemSelected();
-	void menuHiding();
+
+private:
+
+	QList<RibbonButton*> _buttons;
 
 };
 
