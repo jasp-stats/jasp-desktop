@@ -113,6 +113,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
+#ifdef QT_DEBUG
+	ui->tabBar->addTab("Variables"); // variables view
+#endif
 	ui->tabBar->addTab("Common");
 #ifndef __linux__
 	ui->tabBar->addOptionsTab(); // no SEM under linux for now
@@ -144,7 +147,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
+
+#ifdef QT_DEBUG  // variables view
+	ui->tabBar->setCurrentIndex(2);
+#else
 	ui->tabBar->setCurrentIndex(1);
+#endif
 
 	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
 	ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
@@ -638,6 +646,12 @@ void MainWindow::tabChanged(int index)
 	{
 		ui->topLevelWidgets->setCurrentIndex(0);
 	}
+#ifdef QT_DEBUG  // if variables tab enabled
+	else if (index == 1)
+	{
+		ui->topLevelWidgets->setCurrentIndex(1);
+	}
+#endif
 #ifndef __linux__
 	else if (index == ui->tabBar->count() - 1)
 	{
@@ -653,8 +667,13 @@ void MainWindow::tabChanged(int index)
 #endif
 	else
 	{
-		ui->topLevelWidgets->setCurrentIndex(1);
-		ui->ribbon->setCurrentIndex(index - 1);
+#ifdef QT_DEBUG  // if variables tab enabled
+		ui->topLevelWidgets->setCurrentIndex(2);
+		ui->ribbon->setCurrentIndex(index - 2);
+#else
+		ui->topLevelWidgets->setCurrentIndex(2);
+		ui->ribbon->setCurrentIndex(index - 2);
+#endif
 	}
 }
 
@@ -704,7 +723,11 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			_progressIndicator->show();
 		}
 
+#ifdef QT_DEBUG // variables view
+		ui->tabBar->setCurrentIndex(2);
+#else
 		ui->tabBar->setCurrentIndex(1);
+#endif
 	}
 	else if (event->operation() == FileEvent::FileSave)
 	{		
@@ -805,7 +828,12 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			_package->setModified(false);
 			setWindowTitle(name);
+
+#ifdef QT_DEBUG // variables view
+			ui->tabBar->setCurrentIndex(2);
+#else
 			ui->tabBar->setCurrentIndex(1);
+#endif
 		}
 		else
 		{

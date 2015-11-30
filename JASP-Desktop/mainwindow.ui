@@ -47,6 +47,15 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_8"/>
       </widget>
+      <widget class="VariablesWidget" name="variablesPage">
+       <property name="minimumSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+       <layout class="QGridLayout" name="variablesPageLayout"/>
+      </widget>
       <widget class="QWidget" name="mainPage">
        <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
         <property name="spacing">
@@ -293,10 +302,10 @@ QTableView::item::last
                     <widget class="QWidget" name="optionsContentArea">
                      <property name="geometry">
                       <rect>
-                       <x>2</x>
+                       <x>18</x>
                        <y>0</y>
-                       <width>552</width>
-                       <height>540</height>
+                       <width>82</width>
+                       <height>28</height>
                       </rect>
                      </property>
                      <property name="sizePolicy">
@@ -534,6 +543,12 @@ QPushButton#first:checked {
    <class>BackStageWidget</class>
    <extends>QWidget</extends>
    <header>backstagewidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VariablesWidget</class>
+   <extends>QWidget</extends>
+   <header>variableswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -159,7 +159,8 @@ SOURCES += main.cpp \
     widgets/boundsingleitemview.cpp \
     analysisforms/binomialtestform.cpp \
     analysisforms/bayesianbinomialtestform.cpp \
-    analysisforms/bffromtform.cpp
+    analysisforms/bffromtform.cpp \
+    variableswidget.cpp
 
 HEADERS  += \
     analyses.h \
@@ -283,7 +284,8 @@ HEADERS  += \
     widgets/boundsingleitemview.h \
     analysisforms/binomialtestform.h \
     analysisforms/bayesianbinomialtestform.h \
-    analysisforms/bffromtform.h
+    analysisforms/bffromtform.h \
+    variableswidget.h
 
 FORMS += \
     analysisforms/anovabayesianform.ui \
@@ -326,7 +328,8 @@ FORMS += \
     analysisforms/regressionloglinearbayesianform.ui \
     analysisforms/binomialtestform.ui \
     analysisforms/bayesianbinomialtestform.ui \
-    analysisforms/bffromtform.ui
+    analysisforms/bffromtform.ui \
+    variableswidget.ui
 
 
 RESOURCES += \
