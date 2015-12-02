@@ -98,3 +98,7 @@ void FileEvent::chainedComplete(FileEvent *event)
 	setComplete(event->successful(), event->message());
 }
 
+bool FileEvent::IsOnlineNode() const
+{
+	return _path.startsWith("http");
+}

@@ -34,6 +34,8 @@ public:
 	void setPath(const QString &path);
 	void setReadOnly();
 
+	bool IsOnlineNode() const;
+
 	FileMode operation() const;
 	const QString &path() const;
 	bool isReadOnly() const;

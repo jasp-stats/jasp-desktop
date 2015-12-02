@@ -72,10 +72,20 @@ void FSBMRecent::populate(const QStringList &paths)
 
 		FSEntry entry = createEntry(path, entryType);
 
+		if (isUrl(path))
+		{
+			QString name = entry.name.right(entry.name.length() - entry.name.lastIndexOf("#") - 1);
+			entry.name = name;
+		}
+
 		_entries.append(entry);
 	}
 
 	emit entriesChanged();
+}
+
+bool FSBMRecent::isUrl(const QString &path) const {
+	return path.startsWith("http");
 }
 
 QStringList FSBMRecent::load()
@@ -96,6 +106,11 @@ QStringList FSBMRecent::load()
 
 	for (int i = 0; i < recents.size(); i++)
 	{
+		QString path = recents[i];
+
+		if (isUrl(path))
+			continue;
+
 		if ( ! QFileInfo::exists(recents[i]))
 		{
 			recents.removeAt(i);

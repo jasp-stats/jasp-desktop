@@ -29,6 +29,8 @@
 #include "datasetpackage.h"
 #include "fileevent.h"
 
+#include "onlinedatamanager.h"
+
 class AsyncLoader : public QObject
 {
 	Q_OBJECT
@@ -38,15 +40,20 @@ public:
 
 	void io(FileEvent *event, DataSetPackage *package);
 	void free(DataSet *dataSet);
+	void setOnlineDataManager(OnlineDataManager *odm);
 
 signals:
 	void beginLoad(FileEvent*, DataSetPackage*);
 	void beginSave(FileEvent*, DataSetPackage*);
 	void progress(const QString &status, int progress);
+	void beginFileUpload(QString nodePath, QString sourcePath);
 
 private slots:
 	void loadTask(FileEvent *event, DataSetPackage *package);
 	void saveTask(FileEvent *event, DataSetPackage *package);
+	void loadPackage(QString id);
+	void uploadFileFinished(QString id);
+	void errorFlagged(QString msg, QString id);
 
 private:
 
@@ -54,6 +61,11 @@ private:
 	void progressHandler(std::string status, int progress);
 	QThread _thread;
 	DataSetLoader _loader;
+
+	FileEvent *_currentEvent;
+	DataSetPackage *_currentPackage;
+
+	OnlineDataManager *_odm = NULL;
 	
 };
 

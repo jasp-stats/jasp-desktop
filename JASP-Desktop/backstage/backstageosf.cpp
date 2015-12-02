@@ -18,10 +18,9 @@
 
 #include "backstageosf.h"
 
-#include <QGridLayout>
 #include <QLabel>
 
-#include "fsbmcomputer.h"
+#include "fsbmosf.h"
 
 BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 {
@@ -30,9 +29,13 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	layout->setContentsMargins(0, 0, 0, 0);
 	setLayout(layout);
 
-	QLabel *label = new QLabel("Computer", this);
+	QLabel *label = new QLabel("Open Science Framework", this);
 	label->setContentsMargins(12, 12, 0, 1);
 	layout->addWidget(label);
+
+	QLabel *name = new QLabel("User: Damian Dropmann", this);
+	name->setContentsMargins(12, 12, 0, 1);
+	layout->addWidget(name);
 
 	_breadCrumbs = new BreadCrumbs(this);
 	layout->addWidget(_breadCrumbs);
@@ -45,15 +48,15 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	line->setStyleSheet("QWidget { background-color: #A3A4A5 ; }");
 	layout->addWidget(line);
 
-	FSBMComputer *model = new FSBMComputer();
-	model->refresh();
+	_model = new FSBMOSF();
+	_model->refresh();
 
 	_fsBrowser = new FSBrowser(this);
 	_fsBrowser->setViewType(FSBrowser::ListView);
-	_fsBrowser->setFSModel(model);
+	_fsBrowser->setFSModel(_model);
 	layout->addWidget(_fsBrowser);
 
-	_breadCrumbs->setModel(model);
+	_breadCrumbs->setModel(_model);
 
 	connect(_fsBrowser, SIGNAL(entryOpened(QString)), this, SLOT(notifyDataSetOpened(QString)));
 
@@ -81,8 +84,38 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	layout->addWidget(line, 0, 1, 6, 1);
 }
 
-void BackstageOSF::notifyDataSetOpened(QString path)
+void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 {
-	emit dataSetOpened(path);
+	_model->setOnlineDataManager(odm);
+	_model->refresh();
 }
 
+void BackstageOSF::notifyDataSetOpened(QString path)
+{
+	FSBMOSF::OnlineNodeData nodeData = _model->getNodeData(path);
+	openFile(nodeData.nodePath, nodeData.name);
+}
+
+
+FileEvent *BackstageOSF::openFile(const QString &nodePath, const QString &filename)
+{
+
+	FileEvent *event = new FileEvent(this);
+	event->setOperation(FileEvent::FileOpen);
+
+	if (filename != "")
+	{
+		event->setPath(nodePath + "#" + filename);
+
+		if ( ! filename.endsWith(".jasp", Qt::CaseInsensitive))
+			event->setReadOnly();
+
+		emit dataSetIORequest(event);
+	}
+	else
+	{
+		event->setComplete(false);
+	}
+
+	return event;
+}
