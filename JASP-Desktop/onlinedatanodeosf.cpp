@@ -7,6 +7,8 @@
 #include <QNetworkReply>
 #include <QByteArray>
 
+#include <stdexcept>
+
 using namespace std;
 
 OnlineDataNodeOSF::OnlineDataNodeOSF(QNetworkAccessManager *manager, QString id, QObject *parent):
