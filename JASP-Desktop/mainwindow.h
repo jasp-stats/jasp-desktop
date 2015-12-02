@@ -66,6 +66,8 @@ private:
 
 	double _webViewZoom;
 
+	OnlineDataManager *_odm;
+
 	Analyses *_analyses;
 	EngineSync* _engineSync;
 

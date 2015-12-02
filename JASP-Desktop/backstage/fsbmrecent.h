@@ -40,6 +40,7 @@ protected:
 private:
 	QStringList load();
 	void populate(const QStringList &paths);
+	bool isUrl(const QString &path) const;
 
 	QSettings _settings;
 

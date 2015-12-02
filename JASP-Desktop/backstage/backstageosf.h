@@ -21,9 +21,9 @@
 
 #include "backstagepage.h"
 
-#include <QPushButton>
 
-#include "fsbmcomputer.h"
+
+#include "fsbmosf.h"
 #include "fsbrowser.h"
 #include "breadcrumbs.h"
 
@@ -33,15 +33,18 @@ class BackstageOSF : public BackstagePage
 public:
 	explicit BackstageOSF(QWidget *parent = 0);
 
+	void setOnlineDataManager(OnlineDataManager *odm);
+
 signals:
 	void dataSetOpened(QString path);
 
 private slots:
 	void notifyDataSetOpened(QString path);
+	FileEvent *openFile(const QString &nodePath, const QString &filename);
 
 private:
 	BreadCrumbs *_breadCrumbs;
-	FSBMComputer *_model;
+	FSBMOSF *_model;
 	FSBrowser *_fsBrowser;
 	QPushButton *_browseButton;
 };

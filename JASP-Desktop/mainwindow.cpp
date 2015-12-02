@@ -139,6 +139,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
+
+	_odm = new OnlineDataManager(this);
+	_odm->setAuthentication(OnlineDataManager::OSF, "username", "password");
+	_loader.setOnlineDataManager(_odm);
+	ui->backStage->setOnlineDataManager(_odm);
+
 	// the LRNAM adds mime types to local resources; important for SVGs
 	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(tq(tempfiles_sessionDirName()), this));
 	ui->webViewResults->setUrl(QUrl(QString("qrc:///core/index.html")));

@@ -41,6 +41,7 @@ public:
 
 	VerticalTabWidget *tabWidget();
 	void setSaveMode(FileEvent::FileMode mode);
+	void setOnlineDataManager(OnlineDataManager *odm);
 
 	FileEvent* open();
 	FileEvent* open(const QString &path);

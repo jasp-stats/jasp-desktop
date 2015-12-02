@@ -72,6 +72,11 @@ BackStageWidget::BackStageWidget(QWidget *parent) : QWidget(parent)
 	connect(_tabBar, SIGNAL(currentChanging(int,bool&)), this, SLOT(tabPageChanging(int,bool&)));
 }
 
+void BackStageWidget::setOnlineDataManager(OnlineDataManager *odm)
+{
+	_openAndSaveWidget->setOnlineDataManager(odm);
+}
+
 void BackStageWidget::setLog(ActivityLog *log)
 {
 

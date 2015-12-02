@@ -30,12 +30,13 @@
 
 #include "qutils.h"
 #include "utils.h"
+#include "onlinedatamanager.h"
 
 using namespace std;
 
 AsyncLoader::AsyncLoader(QObject *parent) :
 	QObject(parent)
-{
+{ 
 	this->moveToThread(&_thread);
 
 	connect(this, SIGNAL(beginLoad(FileEvent*, DataSetPackage*)), this, SLOT(loadTask(FileEvent*, DataSetPackage*)));
@@ -69,25 +70,24 @@ void AsyncLoader::free(DataSet *dataSet)
 
 void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
 {
-	try
-	{		
-		_loader.loadPackage(package, fq(event->path()), boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+	_currentEvent = event;
+	_currentPackage = package;
 
-		event->setComplete();
-	}
-	catch (runtime_error e)
-	{
-		event->setComplete(false, e.what());
-	}
-	catch (exception e)
-	{
-		event->setComplete(false, e.what());
-	}
+	if (event->IsOnlineNode())
+		QMetaObject::invokeMethod(_odm, "beginDownloadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"));
+	else
+		this->loadPackage("asyncloader");
 }
 
 void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 {
+
+	_currentEvent = event;
+
 	QString path = event->path();
+	if (event->IsOnlineNode())
+		path = _odm->getLocalPath(path);
+
 	QString tempPath = path + QString(".tmp");
 
 	try
@@ -109,7 +109,10 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 		if ( ! Utils::renameOverwrite(fq(tempPath), fq(path)))
 			throw runtime_error("File '" + fq(path) + "' is being used by another application.");
 
-		event->setComplete();
+		if (event->IsOnlineNode())
+			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"));
+		else
+			event->setComplete();
 	}
 	catch (runtime_error e)
 	{
@@ -139,4 +142,60 @@ void AsyncLoader::sleep(int ms)
 	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
 	nanosleep(&ts, NULL);
 #endif
+}
+
+void AsyncLoader::setOnlineDataManager(OnlineDataManager *odm)
+{
+	if (_odm != NULL)
+	{
+		disconnect(_odm, SIGNAL(uploadFileFinished(QString)), this, SLOT(uploadFileFinished(QString)));
+		disconnect(_odm, SIGNAL(downloadFileFinished(QString)), this, SLOT(loadPackage(QString)));
+		disconnect(_odm, SIGNAL(error(QString, QString)), this, SLOT(errorFlagged(QString, QString)));
+	}
+
+	_odm = odm;
+
+	if (_odm != NULL)
+	{
+		connect(_odm, SIGNAL(uploadFileFinished(QString)), this, SLOT(uploadFileFinished(QString)));
+		connect(_odm, SIGNAL(downloadFileFinished(QString)), this, SLOT(loadPackage(QString)));
+		connect(_odm, SIGNAL(error(QString, QString)), this, SLOT(errorFlagged(QString, QString)));
+	}
+}
+
+void AsyncLoader::errorFlagged(QString msg, QString id)
+{
+	if (id != "asyncloader")
+		return;
+
+	_currentEvent->setComplete(false, msg);
+}
+
+void AsyncLoader::loadPackage(QString id)
+{
+	if (id != "asyncloader")
+		return;
+
+	try
+	{
+		string path = fq(_currentEvent->path());
+		if (_currentEvent->IsOnlineNode())
+			path = fq(_odm->getLocalPath(_currentEvent->path()));
+
+		_loader.loadPackage(_currentPackage, path, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		_currentEvent->setComplete();
+	}
+	catch (runtime_error e)
+	{
+		_currentEvent->setComplete(false, e.what());
+	}
+	catch (exception e)
+	{
+		_currentEvent->setComplete(false, e.what());
+	}
+}
+
+void AsyncLoader::uploadFileFinished(QString id)
+{
+	_currentEvent->setComplete();
 }

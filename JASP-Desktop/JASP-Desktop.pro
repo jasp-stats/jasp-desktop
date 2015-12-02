@@ -162,7 +162,13 @@ SOURCES += main.cpp \
     analysisforms/bffromtform.cpp \
     variableswidget.cpp \
     variablespage/levelstablemodel.cpp \
-    variablespage/variablestablemodel.cpp
+    variablespage/variablestablemodel.cpp \
+    backstage/fsbmosf.cpp \
+    osfnam.cpp \
+    onlinedatamanager.cpp \
+    onlinedataconnection.cpp \
+    onlinedatanodeosf.cpp \
+    onlinedatanode.cpp
 
 HEADERS  += \
     analyses.h \
@@ -289,7 +295,13 @@ HEADERS  += \
     analysisforms/bffromtform.h \
     variableswidget.h \
     variablespage/levelstablemodel.h \
-    variablespage/variablestablemodel.h
+    variablespage/variablestablemodel.h \
+    backstage/fsbmosf.h \
+    osfnam.h \
+    onlinedatamanager.h \
+    onlinedataconnection.h \
+    onlinedatanodeosf.h \
+    onlinedatanode.h
 
 FORMS += \
     analysisforms/anovabayesianform.ui \

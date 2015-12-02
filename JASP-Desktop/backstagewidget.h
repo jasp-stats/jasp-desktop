@@ -34,6 +34,7 @@ class BackStageWidget : public QWidget
 	Q_OBJECT
 public:
 	explicit BackStageWidget(QWidget *parent = NULL);
+	void setOnlineDataManager(OnlineDataManager *odm);
 
 	void setLog(ActivityLog *log);
 	FileEvent *open();

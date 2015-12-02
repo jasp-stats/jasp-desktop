@@ -92,6 +92,11 @@ VerticalTabWidget *OpenSaveWidget::tabWidget()
 	return _tabWidget;
 }
 
+void OpenSaveWidget::setOnlineDataManager(OnlineDataManager *odm)
+{
+	_bsOSF->setOnlineDataManager(odm);
+}
+
 void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
 {
 	_mode = mode;
