@@ -102,6 +102,7 @@ void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
 	_mode = mode;
 
 	_bsComputer->setMode(_mode);
+	_bsOSF->setMode(_mode);
 
 	if (_mode == FileEvent::FileOpen)
 	{

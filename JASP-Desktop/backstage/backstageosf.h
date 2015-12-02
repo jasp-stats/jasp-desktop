@@ -19,9 +19,9 @@
 #ifndef BACKSTAGEOSF_H
 #define BACKSTAGEOSF_H
 
+#include <QLineEdit>
+
 #include "backstagepage.h"
-
-
 
 #include "fsbmosf.h"
 #include "fsbrowser.h"
@@ -36,11 +36,15 @@ public:
 
 	void setOnlineDataManager(OnlineDataManager *odm);
 
+	void setMode(FileEvent::FileMode mode) OVERRIDE;
+
 signals:
 	void dataSetOpened(QString path);
 
 private slots:
+	void notifyDataSetSelected(QString path);
 	void notifyDataSetOpened(QString path);
+
 	void openFile(const QString &nodePath, const QString &filename);
 	void userDetailsReceived();
 
@@ -53,9 +57,10 @@ private:
 	BreadCrumbs *_breadCrumbs;
 	FSBMOSF *_model;
 	FSBrowser *_fsBrowser;
-	QPushButton *_browseButton;
-
 	QLabel *_nameLabel;
+	QWidget *_fileNameContainer;
+	QLineEdit *_fileNameTextBox;
+	QPushButton *_saveButton;
 };
 
 #endif // BACKSTAGEOSF_H

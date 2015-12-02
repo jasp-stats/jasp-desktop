@@ -43,7 +43,7 @@ FSEntryWidget::FSEntryWidget(const FSEntry &entry, QWidget *parent) :
 	QAbstractButton(parent)
 {
 	_compact = false;
-	_clickMeans = ClickIsOpen;
+	_clickMeans = ClickIsSelect;
 	_entry = entry;
 
 	setCheckable(true);

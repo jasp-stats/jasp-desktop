@@ -96,8 +96,16 @@ void FSBrowser::refresh()
 		_buttonGroup->addButton(button, id++);
 		_scrollPaneLayout->addWidget(button);
 
+		connect(button, SIGNAL(selected()), this, SLOT(entrySelectedHandler()));
 		connect(button, SIGNAL(opened()), this, SLOT(entryOpenedHandler()));
 	}
+}
+
+void FSBrowser::entrySelectedHandler()
+{
+	FSEntryWidget *entry = qobject_cast<FSEntryWidget*>(this->sender());
+	if (entry->entryType() != FSEntry::Folder)
+		emit entrySelected(entry->path());
 }
 
 void FSBrowser::entryOpenedHandler()

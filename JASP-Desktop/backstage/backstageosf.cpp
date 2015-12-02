@@ -19,6 +19,7 @@
 #include "backstageosf.h"
 
 #include <QLabel>
+#include <QFileInfo>
 
 #include "fsbmosf.h"
 
@@ -40,6 +41,25 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	_breadCrumbs = new BreadCrumbs(this);
 	layout->addWidget(_breadCrumbs);
 
+	_fileNameContainer = new QWidget(this);
+	_fileNameContainer->hide();
+	_fileNameContainer->setObjectName("browseContainer");
+	layout->addWidget(_fileNameContainer);
+
+	QHBoxLayout *saveLayout = new QHBoxLayout(_fileNameContainer);
+	_fileNameContainer->setLayout(saveLayout);
+
+	_fileNameTextBox = new QLineEdit(_fileNameContainer);
+	QSizePolicy policy = _fileNameTextBox->sizePolicy();
+	policy.setHorizontalStretch(1);
+	_fileNameTextBox->setSizePolicy(policy);
+
+	saveLayout->addWidget(_fileNameTextBox);
+
+	_saveButton = new QPushButton(_fileNameContainer);
+	_saveButton->setText("Save");
+	saveLayout->addWidget(_saveButton, 0, Qt::AlignRight);
+
 	QWidget *line;
 
 	line = new QWidget(this);
@@ -59,23 +79,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	_breadCrumbs->setModel(_model);
 
 	connect(_fsBrowser, SIGNAL(entryOpened(QString)), this, SLOT(notifyDataSetOpened(QString)));
-
-	line = new QWidget(this);
-	line->setFixedHeight(1);
-	line->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	line->setStyleSheet("QWidget { background-color: #A3A4A5 ; }");
-	layout->addWidget(line);
-
-	QWidget *browseContainer = new QWidget(this);
-	browseContainer->setObjectName("browseContainer");
-	layout->addWidget(browseContainer);
-
-	QHBoxLayout *browseLayout = new QHBoxLayout(browseContainer);
-	browseContainer->setLayout(browseLayout);
-
-	_browseButton = new QPushButton(browseContainer);
-	_browseButton->setText("Browse");
-	browseLayout->addWidget(_browseButton, 0, Qt::AlignRight);
+	connect(_fsBrowser, SIGNAL(entrySelected(QString)), this, SLOT(notifyDataSetSelected(QString)));
 
 	line = new QWidget(this);
 	line->setFixedWidth(1);
@@ -109,10 +113,21 @@ void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 	_model->setOnlineDataManager(_odm);
 }
 
+void BackstageOSF::setMode(FileEvent::FileMode mode)
+{
+	BackstagePage::setMode(mode);
+	_fileNameContainer->setVisible(mode == FileEvent::FileSave);
+}
+
 void BackstageOSF::notifyDataSetOpened(QString path)
 {
 	FSBMOSF::OnlineNodeData nodeData = _model->getNodeData(path);
 	openFile(nodeData.nodePath, nodeData.name);
+}
+
+void BackstageOSF::notifyDataSetSelected(QString path)
+{
+	_fileNameTextBox->setText(QFileInfo(path).baseName());
 }
 
 

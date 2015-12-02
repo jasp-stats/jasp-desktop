@@ -43,12 +43,14 @@ public:
 signals:
 
 	void entryOpened(QString path);
+	void entrySelected(QString path);
 
 public slots:
 
 private slots:
 
 	void refresh();
+	void entrySelectedHandler();
 	void entryOpenedHandler();
 
 private:
