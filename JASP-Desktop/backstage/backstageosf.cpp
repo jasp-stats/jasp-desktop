@@ -31,11 +31,11 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 
 	QLabel *label = new QLabel("Open Science Framework", this);
 	label->setContentsMargins(12, 12, 0, 1);
-	layout->addWidget(label);
+	layout->addWidget(label, 0, 0, 1, 1);
 
-	QLabel *name = new QLabel("User: Damian Dropmann", this);
-	name->setContentsMargins(12, 12, 0, 1);
-	layout->addWidget(name);
+	_nameLabel = new QLabel(this);
+	_nameLabel->setContentsMargins(12, 12, 0, 1);
+	layout->addWidget(_nameLabel, 1, 0, 1, 1);
 
 	_breadCrumbs = new BreadCrumbs(this);
 	layout->addWidget(_breadCrumbs);
@@ -84,10 +84,29 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	layout->addWidget(line, 0, 1, 6, 1);
 }
 
+void BackstageOSF::updateUserDetails()
+{
+	OnlineUserNode *userNode = _odm->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
+
+	userNode->getNodeInfo();
+
+	connect(userNode, SIGNAL(finished()), this, SLOT(userDetailsReceived()));
+}
+
+void BackstageOSF::userDetailsReceived()
+{
+	OnlineUserNode *userNode = qobject_cast<OnlineUserNode*>(sender());
+
+	_nameLabel->setText(userNode->getFullname());
+
+	userNode->deleteLater();
+}
+
 void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 {
-	_model->setOnlineDataManager(odm);
-	_model->refresh();
+	_odm = odm;
+	updateUserDetails();
+	_model->setOnlineDataManager(_odm);
 }
 
 void BackstageOSF::notifyDataSetOpened(QString path)
@@ -97,25 +116,23 @@ void BackstageOSF::notifyDataSetOpened(QString path)
 }
 
 
-FileEvent *BackstageOSF::openFile(const QString &nodePath, const QString &filename)
+void BackstageOSF::openFile(const QString &nodePath, const QString &filename)
 {
-
-	FileEvent *event = new FileEvent(this);
-	event->setOperation(FileEvent::FileOpen);
-
-	if (filename != "")
+	if (_mode == FileEvent::FileOpen)
 	{
-		event->setPath(nodePath + "#" + filename);
+		FileEvent *event = new FileEvent(this);
+		event->setOperation(FileEvent::FileOpen);
 
-		if ( ! filename.endsWith(".jasp", Qt::CaseInsensitive))
-			event->setReadOnly();
+		if (filename != "")
+		{
+			event->setPath(nodePath + "#" + filename);
+
+			if ( ! filename.endsWith(".jasp", Qt::CaseInsensitive))
+				event->setReadOnly();
+		}
+		else
+			event->setComplete(false, "Failed to open file from OSF");
 
 		emit dataSetIORequest(event);
 	}
-	else
-	{
-		event->setComplete(false);
-	}
-
-	return event;
 }

@@ -5,6 +5,7 @@
 
 #include "onlinedataconnection.h"
 #include "onlinedatanode.h"
+#include "onlineusernode.h"
 
 class OnlineDataManager : public QObject
 {
@@ -29,12 +30,13 @@ public:
 	OnlineDataConnection* uploadFileAsync(QString nodePath, QString id);
 	OnlineDataConnection* downloadFileAsync(QString nodePath, QString id);
 
+	OnlineUserNode* getOnlineUserData(QString nodePath, QString id);
+
 	QString getLocalPath(QString nodePath) const;
 
 public slots:
 	void beginUploadFile(QString nodePath, QString id);
 	void beginDownloadFile(QString nodePath, QString id);
-
 
 signals:
 	void downloadFileFinished(QString id);

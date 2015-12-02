@@ -29,7 +29,6 @@ void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
 {
 	_manager = odm->getNetworkAccessManager(OnlineDataManager::OSF);
 
-	getUserDetails();
 	refresh();
 }
 
@@ -45,42 +44,6 @@ void FSBMOSF::refresh()
 		if (nodeData.isFolder)
 			loadFilesAndFolders(QUrl(nodeData.contentsPath));
 	}
-}
-
-void FSBMOSF::getUserDetails()
-{
-	QUrl url("https://staging2-api.osf.io/v2/users/me/");
-	QNetworkRequest request(url);
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
-	request.setRawHeader("Accept", "application/vnd.api+json");
-
-	QNetworkReply* reply = _manager->get(request);
-
-	connect(reply, SIGNAL(finished()), this, SLOT(gotUserDetails()));
-}
-
-void FSBMOSF::gotUserDetails()
-{
-	QNetworkReply *reply = (QNetworkReply*)this->sender();
-
-	if (reply->error() != QNetworkReply::NoError)
-		return;
-
-	QByteArray data = reply->readAll();
-	QString dataString = (QString) data;
-
-	QJsonParseError error;
-	QJsonDocument doc = QJsonDocument::fromJson(dataString.toUtf8(), &error);
-
-	QJsonObject json = doc.object();
-
-	QJsonObject dataObj = json.value("data").toObject();
-	_userId = dataObj.value("id").toString();
-
-	QJsonObject attributes = dataObj.value("attributes").toObject();
-	_fullname = attributes.value("full_name").toString();
-
-	reply->deleteLater();
 }
 
 void FSBMOSF::loadProjects() {

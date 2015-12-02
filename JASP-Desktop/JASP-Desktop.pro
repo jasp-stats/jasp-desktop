@@ -168,7 +168,10 @@ SOURCES += main.cpp \
     onlinedatamanager.cpp \
     onlinedataconnection.cpp \
     onlinedatanodeosf.cpp \
-    onlinedatanode.cpp
+    onlinedatanode.cpp \
+    onlineusernode.cpp \
+    onlinenode.cpp \
+    onlineusernodeosf.cpp
 
 HEADERS  += \
     analyses.h \
@@ -301,7 +304,10 @@ HEADERS  += \
     onlinedatamanager.h \
     onlinedataconnection.h \
     onlinedatanodeosf.h \
-    onlinedatanode.h
+    onlinedatanode.h \
+    onlineusernode.h \
+    onlinenode.h \
+    onlineusernodeosf.h
 
 FORMS += \
     analysisforms/anovabayesianform.ui \

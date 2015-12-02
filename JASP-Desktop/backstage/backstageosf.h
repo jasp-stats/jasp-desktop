@@ -26,6 +26,7 @@
 #include "fsbmosf.h"
 #include "fsbrowser.h"
 #include "breadcrumbs.h"
+#include <QLabel>
 
 class BackstageOSF : public BackstagePage
 {
@@ -40,13 +41,21 @@ signals:
 
 private slots:
 	void notifyDataSetOpened(QString path);
-	FileEvent *openFile(const QString &nodePath, const QString &filename);
+	void openFile(const QString &nodePath, const QString &filename);
+	void userDetailsReceived();
 
 private:
+
+	void updateUserDetails();
+
+	OnlineDataManager *_odm;
+
 	BreadCrumbs *_breadCrumbs;
 	FSBMOSF *_model;
 	FSBrowser *_fsBrowser;
 	QPushButton *_browseButton;
+
+	QLabel *_nameLabel;
 };
 
 #endif // BACKSTAGEOSF_H
