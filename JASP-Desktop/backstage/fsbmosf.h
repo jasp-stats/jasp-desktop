@@ -30,8 +30,10 @@ public:
 	OnlineNodeData getNodeData(QString key);
 	void setOnlineDataManager(OnlineDataManager *odm);
 
+signals:
+	void userDataChanged();
+
 private slots:
-	void gotUserDetails();
 	void gotProjects();
 	void gotFilesAndFolders();
 
@@ -47,9 +49,6 @@ private:
 
 	void loadProjects();
 	void loadFilesAndFolders(QUrl url);
-	void getUserDetails();
-
-
 
 };
 

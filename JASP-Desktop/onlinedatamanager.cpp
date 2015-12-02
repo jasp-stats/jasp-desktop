@@ -6,6 +6,7 @@
 #include "qutils.h"
 #include "onlinedataconnection.h"
 #include "onlinedatanodeosf.h"
+#include "onlineusernodeosf.h"
 
 OnlineDataManager::OnlineDataManager(QObject *parent):
 	QObject(parent)
@@ -144,6 +145,22 @@ void OnlineDataManager::downloadFileFinished()
 	connection->deleteLater();
 }
 
+
+OnlineUserNode *OnlineDataManager::getOnlineUserData(QString nodePath, QString id)
+{
+	OnlineDataManager::Provider provider = determineProvider(nodePath);
+
+	QNetworkAccessManager *manager = getNetworkAccessManager(provider);
+
+	if (provider == OnlineDataManager::OSF) {
+
+		OnlineUserNodeOSF *nodeData = new OnlineUserNodeOSF(manager, id, this);
+		nodeData->setPath(nodePath);
+		return nodeData;
+	}
+
+	return NULL;
+}
 
 OnlineDataManager::Provider OnlineDataManager::determineProvider(QString nodePath) {
 
