@@ -3,6 +3,11 @@
 
 #include <QWidget>
 
+#include "dataset.h"
+
+#include "variablespage/variablestablemodel.h"
+#include "variablespage/levelstablemodel.h"
+
 namespace Ui {
 class VariablesWidget;
 }
@@ -15,8 +20,20 @@ public:
 	explicit VariablesWidget(QWidget *parent = 0);
 	~VariablesWidget();
 
+	void setDataSet(DataSet *dataSet);
+	void clearDataSet();
+
+private slots:
+	void selectedVariableChanged(QModelIndex selection, QModelIndex old);
+	void moveUpClicked();
+	void moveDownClicked();
+
 private:
 	Ui::VariablesWidget *ui;
+
+	DataSet *_dataSet;
+	VariablesTableModel *_variablesTableModel;
+	LevelsTableModel *_levelsTableModel;
 };
 
 #endif // VARIABLESWIDGET_H

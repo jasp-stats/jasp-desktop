@@ -160,7 +160,9 @@ SOURCES += main.cpp \
     analysisforms/binomialtestform.cpp \
     analysisforms/bayesianbinomialtestform.cpp \
     analysisforms/bffromtform.cpp \
-    variableswidget.cpp
+    variableswidget.cpp \
+    variablespage/levelstablemodel.cpp \
+    variablespage/variablestablemodel.cpp
 
 HEADERS  += \
     analyses.h \
@@ -285,7 +287,9 @@ HEADERS  += \
     analysisforms/binomialtestform.h \
     analysisforms/bayesianbinomialtestform.h \
     analysisforms/bffromtform.h \
-    variableswidget.h
+    variableswidget.h \
+    variablespage/levelstablemodel.h \
+    variablespage/variablestablemodel.h
 
 FORMS += \
     analysisforms/anovabayesianform.ui \

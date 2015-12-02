@@ -847,6 +847,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			closeCurrentOptionsWidget();
 			hideOptionsPanel();
 			_tableModel->clearDataSet();
+			ui->variablesPage->clearDataSet();
 			_loader.free(_package->dataSet);
 			_package->reset();
 			updateMenuEnabledDisabledStatus();
@@ -866,6 +867,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 void MainWindow::populateUIfromDataSet()
 {
 	_tableModel->setDataSet(_package->dataSet);
+	ui->variablesPage->setDataSet(_package->dataSet);
+
 	_analyses->clear();
 
 	ui->tableView->horizontalHeader()->setResizeContentsPrecision(50);
