@@ -17,11 +17,9 @@
 
 RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) {
 	
-	#all.variables <- options$factors
 	counts.var <- options$counts
 	if (counts.var == "")
 		counts.var <- NULL
-	#	all.variables <- c(all.variables, options$counts)
 
 	if (is.null(dataset)) {
 	
@@ -34,11 +32,39 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			dataset <- .readDataSetHeader(columns.as.factor=options$factors, columns.as.numeric=counts.var)
 		}
 	}
-
+	
+	list.of.errors <- list()
+	error.message <- NULL
+		
+	if (options$counts != "" && perform == "run") {
+		variable.names <- NULL
+		for (counts in options$counts) {
+			if(any(is.na(dataset [[.v (options$counts)]])))
+				variable.names <- c (variable.names, options$counts)
+			}
+	
+		if ( !is.null (variable.names))
+			error.message <- paste ("Poisson glm is undefined -- the count variable ", variable.names, " contain(s) empty cell or NaN. ", sep = "")
+		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
+	
+		if (length(list.of.errors)==0 ){
+			variable.names <- NULL
+			for (counts in options$counts) {
+				if (any (!is.finite (dataset [[.v (options$counts)]])) || any  (dataset [[.v (options$counts)]] < 0 ))
+					variable.names <- c (variable.names, options$counts)
+			}
+	
+			if ( !is.null (variable.names))
+				error.message <- paste ("Poisson glm is undefined -- the count variable ", variable.names, " contain(s) infinity and/or negative numbers. ", sep = "")
+				list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
+			}
+		}
+	
 	if (options$counts == ""){ 
 	 	dataset <- plyr::count(dataset)
 	 } else {
 	 	dataset <- dataset
+
 	 }
 
 	results <- list()
@@ -60,6 +86,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	###	 	   LOGLINEAR REGRESSION		###
 	#######################################
 	# Fit Loglinear Model
+	
 	loglm.model <- list()
 	empty.model <- list(loglm.fit = NULL, variables = NULL)
 	
@@ -68,7 +95,6 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	 }else{
 	 	dependent.variable <- unlist(options$counts)
 	 	}
-	#dependent.variable <- unlist(options$counts)
 
 	if (length(options$modelTerms) > 0) {
 		
@@ -96,15 +122,10 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		
 		independent.base64 <- variables.in.model.base64
 		variables.in.model <- variables.in.model[ variables.in.model != ""]
-		variables.in.model.copy <- variables.in.model
-		
+		variables.in.model.copy <- variables.in.model		
 	}
-	
-	#if (dependent.variable == options$counts) {
-	
 		
-		
-		dependent.base64 <- .v(dependent.variable)
+	dependent.base64 <- .v(dependent.variable)
 	
 		print (dependent.base64)
 		
@@ -116,13 +137,10 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			
 		}  else {
 				
-			model.definition <- NULL #this model has no parameters
-				
+			model.definition <- NULL #this model has no parameters				
 		}
-			
-#print(model.definition)
 						
-		if (perform == "run" && !is.null(model.definition) ) {
+		if (perform == "run" && !is.null(model.definition)&& length(list.of.errors) == 0 ) {
 				
 			model.formula <- as.formula(model.definition)
 			
@@ -131,15 +149,15 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			}
 			
 			loglm.fit <- try( stats::glm( model.formula, family = poisson(), data = dataset), silent = TRUE)
-#print(loglm.fit)
 				
 			if ( class(loglm.fit) == "glm") {
 					
 				loglm.model <- list(loglm.fit = loglm.fit, variables = variables.in.model)
 					
 			} else {
-					
-				#list.of.errors[[ length(list.of.errors) + 1 ]]  <- "An unknown error occurred, please contact the author."
+				if (inherits(loglm.fit, "try-error")) {
+				error <- .extractErrorMessage (loglm.fit)}				
+				list.of.errors[[ length(list.of.errors) + 1 ]]  <- error
 				loglm.model <- list(loglm.fit = NULL, variables = variables.in.model)
 			}
 				
@@ -209,7 +227,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		
 		logregression.result <- list()
 		
-		if (perform == "run" ) {
+		if (perform == "run" && length(list.of.errors) == 0) {
 			
 			if ( class(loglm.model$loglm.fit) == "glm") {
 					
@@ -331,15 +349,30 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 				}
 			}
 
-		len.logreg <- length(logregression.result) + 1
-		logregression.result[[ len.logreg ]] <- dotted.line
-		logregression.result[[ len.logreg ]]$"Model" <- 1
+
+			len.logreg <- length(logregression.result) + 1
+			logregression.result[[ len.logreg ]] <- dotted.line
+			logregression.result[[ len.logreg ]]$"Model" <- 1
+
 		}
+		
+		if (length(list.of.errors) > 1){
+			loglm.fit <- try( stats::glm( model.formula, family = poisson(), data = dataset), silent = TRUE)
+	
+			if (inherits(loglm.fit, "try-error")) {
+				error <- .extractErrorMessage (loglm.fit)}
+				logregression[["error"]] <- list(errorType="badData",errorMessage = error)
+	
+		} else if (length(list.of.errors) == 1){
+		
+		logregression[["error"]] <- list(errorType = "badData", errorMessage = list.of.errors[[ 1 ]])
+	}
 
 	logregression[["data"]] <- logregression.result
+
 	results[["logregression"]] <- logregression		
 	}
-	
+
 ################################################################
 
 	
@@ -376,7 +409,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		
 		logregressionanova.result <- list()
 		
-		if (perform == "run" ) {		
+		if (perform == "run" && length(list.of.errors) == 0 ) {		
 			
 			if ( class(loglm.model$loglm.fit) == "glm") {
 			
@@ -403,8 +436,10 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 							logregressionanova.result[[ len.logreg ]]$"Deviance" <- " "
 							logregressionanova.result[[ len.logreg ]]$"Prob Chi" <- " "
 						
+
 						}else{							
 							logregressionanova.result[[ len.logreg ]]$"Name" <- model.name[var]
+
 							logregressionanova.result[[ len.logreg ]]$"Df" <- as.integer(loglm.estimates$Df[var])
 							logregressionanova.result[[ len.logreg ]]$"Deviance" <- as.numeric(loglm.estimates$Deviance[var])	
 							logregressionanova.result[[ len.logreg ]]$"Prob Chi" <- as.numeric(loglm.estimates$"Pr(>Chi)"[var])
@@ -415,9 +450,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 						len.logreg <- len.logreg + 1
 					}
 							
-				}
-					
-	###############					
+				}									
 			
 			} else {
 			
@@ -486,18 +519,20 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 				}
 			}
 
-		len.logreg <- length(logregressionanova.result) + 1
-		logregressionanova.result[[ len.logreg ]] <- dotted.line
-		logregressionanova.result[[ len.logreg ]]$"Model" <- 1
-
+			len.logreg <- length(logregressionanova.result) + 1
+			logregressionanova.result[[ len.logreg ]] <- dotted.line
+			logregressionanova.result[[ len.logreg ]]$"Model" <- 1
 		}
-
-	logregressionanova[["data"]] <- logregressionanova.result
-	results[["logregressionanova"]] <- logregressionanova
 	
+
 		
 #######################################################################	
+
 	
+	logregressionanova[["data"]] <- logregressionanova.result
+	results[["logregressionanova"]] <- logregressionanova	
+			
+
 	if (perform == "init") {
 
 		list(results=results, status="inited")
@@ -507,6 +542,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		list(results=results, status="complete")
 	}
 }
+
 
 .regressionLogLinearBuildLookup <- function(dataset, factors) {
 
