@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BayesianBinomialTest <- function(dataset = NULL, options, perform = "run",
+BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 						   callback = function(...) 0,  ...) {
 
 	variables <- unlist(options$variables)

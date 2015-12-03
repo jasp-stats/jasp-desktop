@@ -16,25 +16,25 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BAYESIANBINOMIALTESTFORM_H
-#define BAYESIANBINOMIALTESTFORM_H
+#ifndef BINOMIALTESTBAYESIANFORM_H
+#define BINOMIALTESTBAYESIANFORM_H
 
 #include "analysisform.h"
 
 namespace Ui {
-class BayesianBinomialTestForm;
+class BinomialTestBayesianForm;
 }
 
-class BayesianBinomialTestForm : public AnalysisForm
+class BinomialTestBayesianForm : public AnalysisForm
 {
 	Q_OBJECT
 
 public:
-	explicit BayesianBinomialTestForm(QWidget *parent = 0);
-	~BayesianBinomialTestForm();
+	explicit BinomialTestBayesianForm(QWidget *parent = 0);
+	~BinomialTestBayesianForm();
 
 private:
-	Ui::BayesianBinomialTestForm *ui;
+	Ui::BinomialTestBayesianForm *ui;
 };
 
-#endif // BAYESIANBINOMIALTESTFORM_H
+#endif // BINOMIALTESTBAYESIANFORM_H
