@@ -24,7 +24,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 		if (perform == "run") {
 
-			dataset <- .readDataSetToEnd(columns.as.numeric=NULL, columns.as.factor=variables, exclude.na.listwise=c(variables))
+			dataset <- .readDataSetToEnd(columns.as.numeric=NULL, columns.as.factor=variables, exclude.na.listwise=NULL)
 
 		} else {
 
@@ -60,15 +60,16 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 	data <- list()
 	
-	if (perform == "run") {
+	if (perform == "run" && !is.null(variables)) {
 
 		for (var in variables) {
 
 			d <- dataset[[.v(var)]]
+			d <- d[!is.na(d)]
 			
 			levels <- levels(d)
 			n <- length(d)
-			
+						
 			for (lev in levels) {
 				
 				counts <- sum(d == lev)
@@ -84,7 +85,15 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 				r <- stats::binom.test(counts, n, p = options$testValue, alternative = hyp)
 				
-				row <- list(case=var, level=lev, counts = counts, total=n, proportion=prop, p=r$p.value)
+				p <- r$p.value
+				
+				if (p == FALSE) {
+					p <- 0
+				} else if (p == TRUE) {
+					p <- 1
+				}
+								
+				row <- list(case=var, level=lev, counts=.clean(counts), total=.clean(n), proportion=.clean(prop), p=.clean(p))
 				
 				if (lev == levels[1]) {
 					row[[".isNewGroup"]] <- TRUE
@@ -97,6 +106,9 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 		}
 		
 	} else {
+		
+		if (is.null(variables))
+			variables <- ""
 	
 		for (var in variables)
 			data[[length(data) + 1]] <- list(case=var, level=".", counts=".", total=".",  proportion=".", p=".")

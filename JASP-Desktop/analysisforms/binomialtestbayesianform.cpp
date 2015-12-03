@@ -16,12 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "bayesianbinomialtestform.h"
-#include "ui_bayesianbinomialtestform.h"
+#include "binomialtestbayesianform.h"
+#include "ui_binomialtestbayesianform.h"
 
-BayesianBinomialTestForm::BayesianBinomialTestForm(QWidget *parent) :
+BinomialTestBayesianForm::BinomialTestBayesianForm(QWidget *parent) :
 	AnalysisForm("BayesianBinomialTestForm", parent),
-	ui(new Ui::BayesianBinomialTestForm)
+	ui(new Ui::BinomialTestBayesianForm)
 {
 	ui->setupUi(this);
 
@@ -37,7 +37,7 @@ BayesianBinomialTestForm::BayesianBinomialTestForm(QWidget *parent) :
 	ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
 }
 
-BayesianBinomialTestForm::~BayesianBinomialTestForm()
+BinomialTestBayesianForm::~BinomialTestBayesianForm()
 {
 	delete ui;
 }
