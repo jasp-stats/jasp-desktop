@@ -235,17 +235,17 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	if ("odds.ratio" %in% names(state))
 		odds.ratio.state <- state$odds.ratio
 		
-	effect.size.state <- NULL
-	if ("effect.size" %in% names(state))
-		effect.size.state <- state$effect.size	
+	CramersV.state <- NULL
+	if ("CramersV" %in% names(state))
+		CramersV.state <- state$CramersV	
 	
 	plots.state <- NULL
 	if ("plots.state" %in% names(state))
 		plots.state <- state$plots.state
 		
-	plots0.state <- NULL
-	if ("plots0.state" %in% names(state))
-		plots0.state <- state$plots0.state	
+	plotsCV.state <- NULL
+	if ("plotsCV.state" %in% names(state))
+		plotsCV.state <- state$plotsCV.state	
 	
 	old.options <- NULL
 	if ("options" %in% names(state))
@@ -284,11 +284,11 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	new.state$odds.ratio <- res$state
 	complete <- complete && res$complete
 	
-	res <- .contTablesBayesianCreateEffectSizeTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, bf.results, effect.size.state, old.options, status)
+	res <- .contTablesBayesianCreateCramerVTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, bf.results, CramersV.state, old.options, status)
 
 	tables[[length(tables)+1]] <- res$table
-	effect.size.results   <- res$state
-	new.state$effect.size <- res$state
+	CramersV.results   <- res$state
+	new.state$CramersV <- res$state
 	complete <- complete && res$complete
 	
 	
@@ -299,10 +299,10 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	keep     <- res$keep
 	complete <- complete && res$complete
 	
-	res <- .contTablesBayesianCreateEffectSizePlots(dataset, analysis, group.matrices, groups, options, populate, effect.size.results, bf.results, plots0.state, old.options, status)
+	res <- .contTablesBayesianCreateCramerVPlots(dataset, analysis, group.matrices, groups, options, populate, CramersV.results, bf.results, plotsCV.state, old.options, status)
 	
 	plots <- c(plots, res$plots)
-	new.state$plots0.state <- res$state
+	new.state$plotsCV.state <- res$state
 	keep     <- res$keep
 	complete <- complete && res$complete
 		
@@ -553,7 +553,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	list(plot=odds.ratio.plot, state=new.plot.state, keep=plot, complete=complete)
 }
 
-.contTablesBayesianCreateEffectSizePlots <- function(dataset, analysis, counts.matrices, groups, options, populate, effect.size.results, bf.results, state, state.options, status) {
+.contTablesBayesianCreateCramerVPlots <- function(dataset, analysis, counts.matrices, groups, options, populate, CramersV.results, bf.results, state, state.options, status) {
 
 	if (options$plotPosteriorEffectSize == FALSE )
 		return(list(complete=TRUE))
@@ -592,19 +592,19 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			group <- NULL
 		}
 		
-		plot0.state <- NULL
+		plotCV.state <- NULL
 		if (i <= length(state))
-			plot0.state <- state[[i]]
+			plotCV.state <- state[[i]]
 
-		effect.size.result <- NULL
-		if (i <= length(effect.size.results))
-			effect.size.result <- effect.size.results[[i]]
+		CramersV.result <- NULL
+		if (i <= length(CramersV.results))
+			CramersV.result <- CramersV.results[[i]]
 		
 		bf.result <- NULL
 		if (i <= length(bf.results))
 			bf.result <- bf.results[[i]]
 
-		res <- .contTablesBayesianCreateEffectSizePlot(analysis$rows, counts.matrix, options, populate, group, effect.size.result, bf.result, plot0.state, state.options, status)
+		res <- .contTablesBayesianCreateCramerVPlot(analysis$rows, counts.matrix, options, populate, group, CramersV.result, bf.result, plotCV.state, state.options, status)
 
 		complete <- complete && res$complete
 		
@@ -620,9 +620,9 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	list(plots=plots, keep=keep, state=new.state, complete=complete)
 }
 
-.contTablesBayesianCreateEffectSizePlot <- function(var.name, counts.matrix, options, populate, group, effect.size.result, bf.result, plot0.state, state.options, status) {
+.contTablesBayesianCreateCramerVPlot <- function(var.name, counts.matrix, options, populate, group, CramersV.result, bf.result, plotCV.state, state.options, status) {
 	
-	effect.size.plot  <- list()
+	CramersV.plot  <- list()
 	image <- NULL
 	
     group[group == ""] <- "Total"
@@ -630,7 +630,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	if (length(group) == 0) {
 	
-		effect.size.plot[["title"]] <- "Effect Size"
+		CramersV.plot[["title"]] <- "Cramer's V"
 		
 	} else if (length(group) > 0) {
 		
@@ -638,24 +638,24 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		layer.levels <- gsub(pattern = " = Total", layer.levels, replacement = "")
 
 		plot.title <- paste(layer.levels, collapse="; ")
-		effect.size.plot[["title"]] <- plot.title
+		CramersV.plot[["title"]] <- plot.title
 	}
 		
 	width  <- 530
 	height <- 400
 	
-	effect.size.plot[["width"]]  <- width
-	effect.size.plot[["height"]] <- height
-	effect.size.plot[["citation"]] <- .contTablesBayesianCitations()
+	CramersV.plot[["width"]]  <- width
+	CramersV.plot[["height"]] <- height
+	CramersV.plot[["citation"]] <- .contTablesBayesianCitations()
 	
-	if (is.null(plot0.state) == FALSE) {
+	if (is.null(plotCV.state) == FALSE) {
 	
-		effect.size.plot[["data"]] <- plot0.state$keep	
+		CramersV.plot[["data"]] <- plotCV.state$keep	
 		
-		if ("status" %in% names(plot0.state) && plot0.state$status$error)
-			effect.size.plot[["error"]] <- list(errorType="badData", errorMessage=paste0("No samples are available: ",plot0.state$status$errorMessage))
+		if ("status" %in% names(plotCV.state) && plotCV.state$status$error)
+			CramersV.plot[["error"]] <- list(errorType="badData", errorMessage=paste0("No samples are available: ",plotCV.state$status$errorMessage))
 		
-		return(list(plot=effect.size.plot, state=plot0.state, keep=plot0.state$keep, complete=TRUE))
+		return(list(plot=CramersV.plot, state=plotCV.state, keep=plotCV.state$keep, complete=TRUE))
 	}
 	
 	if (populate && status$error == FALSE) {
@@ -679,14 +679,14 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		p <- try(silent=TRUE, expr={
 						
 				#oneSided <- FALSE
-						
-				.contTablesBayesianPlotPosteriorES(
-				samples = effect.size.result$effect.size.samples,
-				CI = c(effect.size.result$lower.ci, effect.size.result$upper.ci),
-				medianSamples = effect.size.result$median,
+				#(CramersV.samples=CramersV.samples, BF=BF, CVmedian=CramersV.median, CV.lower.ci=lower, CV.upper.ci=upper)		
+				.contTablesBayesianPlotPosteriorCV(
+				samples = CramersV.result$CramersV.samples,
+				CI = c(CramersV.result$CV.lower.ci, CramersV.result$CV.upper.ci),
+				medianSamples = CramersV.result$CVmedian,
 				BF = bf.result$BF$BF10,
-				selectedCI = options$effectSizeCredibleIntervalInterval
-				#addInformation = options$plotPosteriorOddsRatioAdditionalInfo, oneSided=oneSided, options=options
+				selectedCI = options$effectSizeCredibleIntervalInterval,
+				options=options
 				)
 		})
 		
@@ -712,8 +712,8 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 	if (populate && status$error == FALSE) {
 	
-		effect.size.plot[["data"]] <- plot
-		effect.size.plot[["status"]] <- "complete"
+		CramersV.plot[["data"]] <- plot
+		CramersV.plot[["status"]] <- "complete"
 		
 		new.plot.state <- list(keep=plot)
 		
@@ -722,18 +722,18 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	} else {
 	
 		image <- .beginSaveImage(width, height)
-		.contTablesBayesianPlotPosteriorES(dontPlotData=TRUE)
+		.contTablesBayesianPlotPosteriorCV(dontPlotData=TRUE)
 		plot <- .endSaveImage(image)
 		
-		effect.size.plot[["data"]] <- plot
+		CramersV.plot[["data"]] <- plot
 
 		if (status$error) {
 		
 			new.plot.state <- list(keep=plot, status=status)
 
 			message <- status$errorMessage
-			effect.size.plot[["error"]]  <- list(error="badData", errorMessage=paste("Plotting is not possible:", message))
-			effect.size.plot[["status"]] <- "complete"
+			CramersV.plot[["error"]]  <- list(error="badData", errorMessage=paste("Plotting is not possible:", message))
+			CramersV.plot[["status"]] <- "complete"
 			complete <- TRUE
 			
 		} else {
@@ -743,7 +743,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		}
 	}
 	
-	list(plot=effect.size.plot, state=new.plot.state, keep=plot, complete=complete)
+	list(plot=CramersV.plot, state=new.plot.state, keep=plot, complete=complete)
 }
 
 .contTablesBayesianCreateCountsTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, state, state.options, status) {
@@ -1205,7 +1205,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 }
 
 
-.contTablesBayesianCreateEffectSizeTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, bf.results, state, state.options, status) {
+.contTablesBayesianCreateCramerVTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, bf.results, state, state.options, status) {
 
 	if (options$effectSize == FALSE)
 		return(list(table=NULL, state=NULL, complete=TRUE))
@@ -1228,7 +1228,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 	table <- list()
 	
-	table[["title"]] <- "Effect Size"
+	table[["title"]] <- "Cramer's V"
 	
 	fields <- list()
 	
@@ -1240,9 +1240,9 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 	ci.label <- paste(100 * options$effectSizeCredibleIntervalInterval, "% Credible Interval", sep="")
 		
-	fields[[length(fields)+1]] <- list(name="value[EffectSize]", title="Effect size", type="number", format="sf:4;dp:3")
-	fields[[length(fields)+1]] <- list(name="low[EffectSize]", title="Lower", overTitle=ci.label, type="number", format="dp:3")
-	fields[[length(fields)+1]] <- list(name="up[EffectSize]",  title="Upper", overTitle=ci.label, type="number", format="dp:3")
+	fields[[length(fields)+1]] <- list(name="value[CramerV]", title="Cramer's V", type="number", format="sf:4;dp:3")
+	fields[[length(fields)+1]] <- list(name="low[CramerV]", title="Lower", overTitle=ci.label, type="number", format="dp:3")
+	fields[[length(fields)+1]] <- list(name="up[CramerV]",  title="Upper", overTitle=ci.label, type="number", format="dp:3")
 	
 	schema <- list(fields=fields)
 	
@@ -1278,7 +1278,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		if (i <= length(bf.results))
 			bf.result <- bf.results[[i]]
 
-		res <- .contTablesBayesianCreateEffectSizeRows(analysis$rows, counts.matrix, footnotes, options, populate, group, bf.result, rows.state, state.options, status)
+		res <- .contTablesBayesianCreateCramerVRows(analysis$rows, counts.matrix, footnotes, options, populate, group, bf.result, rows.state, state.options, status)
 
 		next.rows <- res$rows
 		complete <- complete && res$complete
@@ -1518,10 +1518,11 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
 			bf1 <- exp(as.numeric(BF@bayesFactor$bf))
 			lbf1 <- as.numeric(BF@bayesFactor$bf)
+			ch.result = BayesFactor::posterior(BF, iterations = 10000)
 			
 			if (options$hypothesis=="groupOneGreater" && options$samplingModel=="poisson") {
 										
-				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result)
 				
 				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
@@ -1532,7 +1533,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 				
 			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="poisson") {
 			
-				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result)
 				
 				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
@@ -1543,7 +1544,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			
 			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="jointMultinomial") {
 										
-				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result)
 				
 				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
@@ -1554,7 +1555,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 				
 			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="jointMultinomial") {
 			
-				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result)
 				
 				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
@@ -1565,7 +1566,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			
 			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
 										
-				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result[,7:10])
 				prop.consistent <- mean(theta[,1] > theta[,3])  #sum(p1.sim > p2.sim)/N.sim
 				bf1 <- bf1 * prop.consistent / 0.5
@@ -1573,7 +1574,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			
 			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed") {
 								
-				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result[,7:10])
 				prop.consistent <- mean(theta[,1] > theta[,2]) 
 				bf1 <- bf1 * prop.consistent / 0.5
@@ -1581,7 +1582,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			
 			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
 				
-				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result[,7:10])
 				prop.consistent <- mean(theta[,3] > theta[,1])
 				bf1 <- bf1 * prop.consistent / 0.5
@@ -1589,14 +1590,14 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 				
 			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
 								
-				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
 				theta <- as.data.frame(ch.result[,7:10])
 				prop.consistent <- mean(theta[,2] > theta[,1])
 				bf1 <- bf1 * prop.consistent / 0.5
 				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			}
 			
-			list(BF=BF, BF10=bf1, LogBF10=lbf1)		
+			list(BF=BF, BF10=bf1, LogBF10=lbf1, post.samples=ch.result)		
 		})
 		
 		new.state <- results
@@ -2230,28 +2231,29 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 				result <- try({
 			
 					BF <- bf.result$BF$BF
+					ch.result<-bf.result$BF$post.samples
 
 					if (options$samplingModel == "poisson") {
 				
-						ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+						#ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
 						lambda     <- as.data.frame(ch.result)
 						odds.ratio.samples <- (lambda[,1]*lambda[,4])/(lambda[,2]*lambda[,3])
 	
 					} else if (options$samplingModel == "jointMultinomial") {
 	
-						ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+						#ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
 						theta      <- as.data.frame(ch.result)
 						odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
 					} else if (options$samplingModel == "independentMultinomialRowsFixed") {
 	
-						ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+						#ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
 						theta      <- as.data.frame(ch.result[,7:10])
 						odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 		
 					} else if (options$samplingModel == "independentMultinomialColumnsFixed") {
 	
-						ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
+						#ch.result  <- BayesFactor::posterior(BF, iterations = 10000)
 						theta      <- as.data.frame(ch.result[,7:10])
 						odds.ratio.samples <- (theta[,1]*theta[,4])/(theta[,2]*theta[,3])
 					
@@ -2291,7 +2293,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	list(rows=list(row), state=result, complete=complete)
 }
 
-.contTablesBayesianCreateEffectSizeRows <- function(var.name, counts.matrix, footnotes, options, populate, group, bf.result, state, state.options, status) {
+.contTablesBayesianCreateCramerVRows <- function(var.name, counts.matrix, footnotes, options, populate, group, bf.result, state, state.options, status) {
 
 	row <- list()
 	
@@ -2309,23 +2311,23 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		}
 	}
 	
-	row[["type[EffectSize]"]] <- "Effect size"
+	row[["type[CramerV]"]] <- "Cramer's V"
 	
 	result <- NULL
 	complete <- TRUE
 	
 	if ( options$samplingModel == "hypergeometric") {
 
-		row[["value[EffectSize]"]] <- .clean(NaN)
-		row[["low[EffectSize]"]] <- ""
-		row[["up[EffectSize]"]] <-  ""
+		row[["value[CramerV]"]] <- .clean(NaN)
+		row[["low[CramerV]"]] <- ""
+		row[["up[CramerV]"]] <-  ""
 
-		sup <- .addFootnote(footnotes, "Effect size for this model not yet implemented")
-		row[[".footnotes"]] <- list("value[EffectSize]"=list(sup))
+		sup <- .addFootnote(footnotes, "Cramer's V for this model not yet implemented")
+		row[[".footnotes"]] <- list("value[CramerV]"=list(sup))
 			
 	} else if (is.null(state) && populate == FALSE) {
 	
-		row[["value[EffectSize]"]] <- "."
+		row[["value[CramerV]"]] <- "."
 		complete <- FALSE
 	
 	} else {
@@ -2345,6 +2347,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 				result <- try({
 			
 					BF <- bf.result$BF$BF
+					ch.result<-bf.result$BF$post.samples
 					d <- dim(counts.matrix)
 					I <- d[1]
 					J <- d[2]
@@ -2355,7 +2358,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 					if (options$samplingModel == "poisson") {
 				
-						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						#ch.result <- BayesFactor::posterior(BF, iterations = 10000)
 						lambda <- as.data.frame(ch.result)
 						theta0 <- apply(lambda,1,function(x) matrix(x,I))
 						sumlambda <- apply(lambda, 1, sum)
@@ -2365,7 +2368,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 					} else if (options$samplingModel == "jointMultinomial") {
 	
-						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						#ch.result <- BayesFactor::posterior(BF, iterations = 10000)
 						theta  <- as.data.frame(ch.result)
 						
 						theta0 <- apply(theta, 1, function(x) matrix(x,I))
@@ -2375,7 +2378,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 					} else if (options$samplingModel == "independentMultinomialRowsFixed") {
 	
-						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						#ch.result <- BayesFactor::posterior(BF, iterations = 10000)
 						index <- grep(pattern="omega", x=colnames(ch.result))
 						theta <- as.data.frame(ch.result[,index])
 						theta0 <- apply(theta, 1, function(x) matrix(x,I))
@@ -2385,7 +2388,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 					} else if (options$samplingModel == "independentMultinomialColumnsFixed") {
 	
-						ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+						#ch.result <- BayesFactor::posterior(BF, iterations = 10000)
 						index <- grep(pattern="omega", x=colnames(ch.result))
 						theta <- as.data.frame(ch.result[,index])
 						theta0 <- apply(theta, 1, function(x) matrix(x,J,byrow=TRUE))
@@ -2398,32 +2401,32 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 						stop("wtf!")
 					}
 				
-					effect.size.samples <-Cramer
-					effect.size.median <- stats::median(effect.size.samples)
+					CramersV.samples <-Cramer
+					CramersV.median <- stats::median(CramersV.samples)
 					sig <- options$effectSizeCredibleIntervalInterval
 					alpha <- (1 - sig) / 2
 					lower <- unname(stats::quantile(Cramer, p = alpha))
 					upper <- unname(stats::quantile(Cramer, p = (1-alpha)))
 				
-					list(effect.size.samples=effect.size.samples, BF=BF, median=effect.size.median, lower.ci=lower, upper.ci=upper)
+					list(CramersV.samples=CramersV.samples, BF=BF, CVmedian=CramersV.median, CV.lower.ci=lower, CV.upper.ci=upper)
 				})
 			}
 		}
 		
 		if (inherits(result, "try-error")) {
 
-			row[["value[EffectSize]"]] <- .clean(NaN)
+			row[["value[CramerV]"]] <- .clean(NaN)
 
 			error <- .extractErrorMessage(result)
 
 			sup   <- .addFootnote(footnotes, error)
-			row[[".footnotes"]] <- list("value[EffectSize]"=list(sup))
+			row[[".footnotes"]] <- list("value[CramerV]"=list(sup))
 
 		} else  {
 
-			row[["value[EffectSize]"]] <- result$median
-			row[["low[EffectSize]"]]   <- result$lower
-			row[["up[EffectSize]"]]    <- result$upper
+			row[["value[CramerV]"]] <- result$CVmedian
+			row[["low[CramerV]"]]   <- result$CV.lower
+			row[["up[CramerV]"]]    <- result$CV.upper
 		}
 	
 	}
@@ -2556,7 +2559,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
 	}
 	
-	mtext("Log(odds ratio)", side = 1, cex = cexXlab, line= 2.5)	
+	mtext("Log odds ratio", side = 1, cex = cexXlab, line= 2.5)	
 	
 	
 	# credible interval
@@ -2618,7 +2621,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		CIwidth <- selectedCI * 100
 		CInumber <- paste(CIwidth, "% CI: [", sep="")
 		CIText <- paste(CInumber,  bquote(.(formatC(CIlow,3, format="f"))), ", ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
-		medianLegendText <- paste("median =", medianText)
+		medianLegendText <- paste("median Log OR =", medianText)
 				
 		if (oneSided == FALSE) {
 		
@@ -2710,12 +2713,12 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 }
 
 ##############################################
-.contTablesBayesianPlotPosteriorES <- function(
+.contTablesBayesianPlotPosteriorCV <- function(
 	samples,
 	CI,
 	medianSamples,
 	BF,
-	oneSided = FALSE,
+	
 	iterations = 10000,
 	lwd = 2,
 	cexPoints = 1.5,
@@ -2726,19 +2729,13 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	cexCI = 1.1,
 	cexLegend = 1.2,
 	lwdAxis = 1.2,
-	addInformation = FALSE,
 	dontPlotData =FALSE,
 	selectedCI = options$effectSizeCredibleIntervalInterval,
 	options) {
 	
-	if (addInformation) {
-	
-		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
-		
-	} else {
 	
 		par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
-	}
+	
 	
 	if (dontPlotData) {
 	
@@ -2748,7 +2745,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
 		
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
-		mtext("Effect size", side = 1, cex = cexXlab, line= 2.5)
+		mtext("Cramer's V", side = 1, cex = cexXlab, line= 2.5)
 	
 		return()
 	}
@@ -2765,19 +2762,17 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	# set limits plot
 	xlim <- vector("numeric", 2)
 	
-	
-	if (oneSided == FALSE) {	
-		stretch <- 1.2
+	stretch <- 1.2
 		xlim[1] <- quantile(samples, probs = 0.002)
-		xlim[2] <- quantile(samples, probs = 0.998)	
-	} 
+		xlim[2] <- quantile(samples, probs = 0.998)
+	
 
 	xticks <- pretty(xlim)
 	ylim <- vector("numeric", 2)
 
 	ylim[1] <- 0
 
-	ylim[2] <- stretch * max(.dposteriorES(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)))
+	ylim[2] <- stretch * max(.dposteriorCV(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)))
 	
 	# calculate position of "nice" tick marks and create labels
 	#xticks <- pretty(xlim)
@@ -2794,7 +2789,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	plot(0,0, xlim= range(xticks), ylim= c(0, range(yticks)[2]), ylab= "", xlab="", type= "n", axes= FALSE)
 		
-	lines(seq(min(xticks), max(xticks),length.out = 10000), .dposteriorES(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)), lwd= lwd)
+	lines(seq(min(xticks), max(xticks),length.out = 10000), .dposteriorCV(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)), lwd= lwd)
 
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at= yticks, labels= ylabels, cex.axis= cexAxis, lwd= lwdAxis)
@@ -2810,7 +2805,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
 	}
 	
-	mtext("Effect Size", side = 1, cex = cexXlab, line= 2.5)	
+	mtext("Cramer's V", side = 1, cex = cexXlab, line= 2.5)	
 		
 	# credible interval
 	dmax <- optimize(function(x)dposterior0(x, samples=samples), interval= range(xticks), maximum = TRUE)$objective # get maximum density
@@ -2821,7 +2816,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	yCI <- grconvertY(dmax, "user", "ndc") + 0.04
 	yCI <- grconvertY(yCI, "ndc", "user")
 	
-#	if (oneSided == FALSE)
+
 		arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
 	
 	medianText <- formatC(medianPosterior, digits= 3, format="f")
@@ -2840,7 +2835,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	mostPosterior <- mean(samples > mean(range(xticks)))
 }
 
-.dposteriorES <- function(ES, mean, sd) {	
+.dposteriorCV <- function(CV, mean, sd) {	
 		
-		dnorm(ES, mean, sd)
+		dnorm(CV, mean, sd)
 	}
