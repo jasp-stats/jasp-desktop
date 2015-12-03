@@ -100,7 +100,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addSeparator();
 	menu->addAction(QString("Bayesian Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTablesBayesian");
 #ifdef QT_DEBUG
-	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BayesianBinomialTest");
+	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BinomialTestBayesian");
 #endif
 	ui->frequenciesButton->setMenu(menu);
 

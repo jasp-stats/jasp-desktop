@@ -158,7 +158,7 @@ SOURCES += main.cpp \
     fileevent.cpp \
     widgets/boundsingleitemview.cpp \
     analysisforms/binomialtestform.cpp \
-    analysisforms/bayesianbinomialtestform.cpp \
+	analysisforms/binomialtestbayesianform.cpp \
     analysisforms/bffromtform.cpp \
     variableswidget.cpp
 
@@ -283,7 +283,7 @@ HEADERS  += \
     fileevent.h \
     widgets/boundsingleitemview.h \
     analysisforms/binomialtestform.h \
-    analysisforms/bayesianbinomialtestform.h \
+	analysisforms/binomialtestbayesianform.h \
     analysisforms/bffromtform.h \
     variableswidget.h
 
@@ -327,7 +327,7 @@ FORMS += \
     analysisforms/regressionloglinearform.ui \
     analysisforms/regressionloglinearbayesianform.ui \
     analysisforms/binomialtestform.ui \
-    analysisforms/bayesianbinomialtestform.ui \
+	analysisforms/binomialtestbayesianform.ui \
     analysisforms/bffromtform.ui \
     variableswidget.ui
 
