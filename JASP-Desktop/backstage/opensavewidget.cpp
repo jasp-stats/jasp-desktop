@@ -94,7 +94,9 @@ VerticalTabWidget *OpenSaveWidget::tabWidget()
 
 void OpenSaveWidget::setOnlineDataManager(OnlineDataManager *odm)
 {
+#ifdef QT_DEBUG
 	_bsOSF->setOnlineDataManager(odm);
+#endif
 }
 
 void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
@@ -102,7 +104,9 @@ void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
 	_mode = mode;
 
 	_bsComputer->setMode(_mode);
+#ifdef QT_DEBUG
 	_bsOSF->setMode(_mode);
+#endif
 
 	if (_mode == FileEvent::FileOpen)
 	{
