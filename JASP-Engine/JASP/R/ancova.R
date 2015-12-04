@@ -1,3 +1,19 @@
+#
+# Copyright (C) 2013-2015 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
@@ -25,29 +41,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	results <- list()
 
 
-	# META definitions
 
-	.meta <- list(
-	    list(name="title", type="title"),
-		list(name="anova", type="table"),
-		list(name="headerLevene", type="h1"),
-		list(name="levene", type="table"),
-		list(name="headerqqPlot", type="h1"),
-		list(name="qqPlot", type="image"),
-		list(name="headerContrasts", type="h1"),
-		list(name="contrasts", type="tables"),
-		list(name="headerPosthoc", type="h1"),
-		list(name="posthoc", type="tables"),
-		list(name="headerDescriptives", type="h1"),
-		list(name="descriptives", type="table"),
-		list(name="headerMarginalMeans", type="h1"),
-		list(name="marginalMeans", type="tables"),
-		list(name="headerDescriptivesPlot", type="h1"),
-		list(name="descriptivesPlot", type="images")
-	)
-
-	results[[".meta"]] <- .meta
-
+	## Retrieve State
 	
 	state <- .retrieveState()
 	anovaModel <- NULL
@@ -98,7 +93,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			stateDescriptivesPlot <- state$stateDescriptivesPlot
 		}
 		
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE) {
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['homogeneityTests']] == FALSE) {
 		
 			# old levene's table can be used
 			
@@ -177,127 +172,22 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	results[["anova"]] <- result$result
 	status <- result$status
+	
 		
-		
-				
-	## Create Contrasts Tables
 	
-	if (is.null(stateContrasts)) {
-	
-		result <- .anovaContrastsTable(dataset, options, perform, model, status, stateContrasts)
-		results[["contrasts"]] <- result$result
-		status <- result$status
-		stateContrasts <- result$stateContrasts
-	
-	} else {
-	
-		results[["contrasts"]] <- stateContrasts
-		
-	}
-	
-	if (!is.null(results[["contrasts"]]))
-	    results[["headerContrasts"]] <- "Contrasts"
-	
-
-	
-	## Create Post Hoc Tables
-	
-	result <- .anovaPostHocTable(dataset, options, perform, model, status, statePostHoc)
-	
-	results[["posthoc"]] <- result$result
-	status <- result$status
-	statePostHoc <- result$statePostHoc
-	
-	if (!is.null(unlist(results[["posthoc"]])))
-		results[["headerPosthoc"]] <- "Post Hoc Tests"
-	
-
-
-	## Create Marginal Means Table
-	
-	if (is.null(stateMarginalMeans)) {
-	
-		result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular, stateMarginalMeans)
-		results[["marginalMeans"]] <- result$result
-		status <- result$status
-		stateMarginalMeans <- result$stateMarginalMeans
-			
-	} else {
-	
-		results[["marginalMeans"]] <- stateMarginalMeans
-		
-	}
-	
-	if(!is.null(unlist(results[["marginalMeans"]])))
-		results[["headerMarginalMeans"]] <- "Marginal Means"
-	
-	
-	
-	## Create Descriptives Table
-	
-	print(stateDescriptivesTable)
-	
-	if(is.null(stateDescriptivesTable)) {
-	
-		result <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable)
-		results[["descriptives"]] <- result$result
-		status <- result$status
-		stateDescriptivesTable <- result$stateDescriptivesTable
-		
-	} else {
-	
-		results[["descriptives"]] <- stateDescriptivesTable
-	
-	}
-	
-	if (!is.null(results[["descriptives"]]))
-		results[["headerDescriptives"]] <- "Descriptives"
-	
-
-
 	## Create Levene's Table
 	
 	if (is.null(stateLevene)) {
 	
 		result <- .anovaLevenesTable(dataset, options, perform, status, stateLevene)	
-		results[["levene"]] <- result$result
+		resultLevene <- result$result
 		status <- result$status
 		stateLevene <- result$stateLevene
 	
 	} else {
 	
-		results[["levene"]] <- stateLevene
+		resultLevene <- stateLevene
 	
-	}
-	
-	if (!is.null(results[["levene"]]))
-		results[["headerLevene"]] <- "Test for Equality of Variances"
-	
-	
-	
-	## Create Descriptives Plots
-	
-	if (is.null(stateDescriptivesPlot)) {
-	
-		result <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot)
-		results[["descriptivesPlot"]] <- result$result
-		status <- result$status
-		stateDescriptivesPlot <- result$stateDescriptivesPlot
-		
-	} else {
-	
-		results[["descriptivesPlot"]] <- stateDescriptivesPlot
-	
-	}
-	
-	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x) x$data)
-	
-	if (options$plotHorizontalAxis != "") {
-		if (options$plotSeparatePlots != "") {
-			results[["headerDescriptivesPlot"]] <- "Descriptives Plots"
-		} else {
-			results[["headerDescriptivesPlot"]] <- "Descriptives Plot"
-		}
 	}
 	
 	
@@ -307,18 +197,136 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if (is.null(stateqqPlot)) {
 	
 		result <- .qqPlot(model, options, perform, status, stateqqPlot)
-		results[["qqPlot"]] <- result$result
+		resultQQplot <- result$result
 		status <- result$status
 		stateqqPlot <- result$stateqqPlot
 				
 	} else {
 	
-		results[["qqPlot"]] <- stateqqPlot
+		resultQQplot <- stateqqPlot
 	
 	}
 	
-	if (options$qqPlot)
-		results[["headerqqPlot"]] <- "Q-Q Plot"
+	
+	
+	## Create Assumption Check Object
+	
+	results[["assumptionsObj"]] <- list(title="Assumption Checks", levene=resultLevene, qqPlot=resultQQplot)
+	
+		
+				
+	## Create Contrasts Tables
+	
+	if (is.null(stateContrasts)) {
+	
+		result <- .anovaContrastsTable(dataset, options, perform, model, status, stateContrasts)
+		results[["contrasts"]] <- list(collection=result$result, title = "Contrasts")
+		status <- result$status
+		stateContrasts <- result$stateContrasts
+	
+	} else {
+	
+		results[["contrasts"]] <- list(collection=stateContrasts, title = "Contrasts")
+		
+	}
+	
+
+	
+	## Create Post Hoc Tables
+	
+	result <- .anovaPostHocTable(dataset, options, perform, model, status, statePostHoc)
+	
+	results[["posthoc"]] <- list(collection=result$result, title = "Post Hoc Tests")
+	status <- result$status
+	statePostHoc <- result$statePostHoc
+	
+
+
+	## Create Marginal Means Table
+	
+	if (is.null(stateMarginalMeans)) {
+	
+		result <- .anovaMarginalMeans(dataset, options, perform, model, status, singular, stateMarginalMeans)
+		results[["marginalMeans"]] <- list(collection=result$result, title = "Marginal Means")
+		status <- result$status
+		stateMarginalMeans <- result$stateMarginalMeans
+			
+	} else {
+		
+		results[["marginalMeans"]] <- list(collection=stateMarginalMeans, title = "Marginal Means")
+		
+	}
+	
+	
+	
+	## Create Descriptives Table
+		
+	if(is.null(stateDescriptivesTable)) {
+	
+		result <- .anovaDescriptivesTable(dataset, options, perform, status, stateDescriptivesTable)
+		descriptivesTable <- result$result
+		status <- result$status
+		stateDescriptivesTable <- result$stateDescriptivesTable
+		
+	} else {
+	
+		descriptivesTable <- stateDescriptivesTable
+	
+	}
+	
+	
+	
+	## Create Descriptives Plots
+	
+	titleDescriptivesPlot <- "Descriptives Plots"
+	
+	if (is.null(stateDescriptivesPlot)) {
+	
+		result <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot)
+		descriptivesPlot <- result$result
+		status <- result$status
+		stateDescriptivesPlot <- result$stateDescriptivesPlot
+		
+	} else {
+		
+		descriptivesPlot <- stateDescriptivesPlot
+	
+	}
+	
+	if (length(descriptivesPlot) == 1) {
+		
+		results[["descriptivesObj"]] <- list(title="Descriptives", descriptivesTable=descriptivesTable, descriptivesPlot=descriptivesPlot[[1]])
+	
+	} else {
+	
+		results[["descriptivesObj"]] <- list(title="Descriptives", descriptivesTable=descriptivesTable, descriptivesPlot=list(collection=descriptivesPlot, title = titleDescriptivesPlot))
+	}	
+	
+	
+	# META definitions
+
+	.meta <- list(
+		list(name="anova", type="table"),
+		list(name="assumptionsObj", type="object", meta=list(list(name="levene", type="table"), list(name="qqPlot", type="image"))),
+		list(name="contrasts", type="collection", meta="table"),
+		list(name="posthoc", type="collection", meta="table"),
+		list(name="marginalMeans", type="collection", meta="table")
+	)
+
+	if (length(descriptivesPlot) == 1) {
+		
+		.meta[[length(.meta) + 1]] <- list(name="descriptivesObj", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name="descriptivesPlot", type="image")))
+	
+	} else {
+		
+		.meta[[length(.meta) + 1]] <- list(name="descriptivesObj", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name="descriptivesPlot", type="collection", meta="image")))	
+	
+	}
+	
+	results[[".meta"]] <- .meta	
+	
+	
+	keepDescriptivesPlot <- lapply(stateDescriptivesPlot, function(x) x$data)	
 		
 	state[["model"]] <- anovaModel
 	state[["options"]] <- options
@@ -362,7 +370,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		for (i in 1:(n.levels - 1))
 			cases[[i]] <- paste(levels[i+1], " - ", levels[1], sep="")
 
-	} else if (contrast.type == "helmert") {
+	} else if (contrast.type == "Helmert") {
 		
 		for (i in 1:(n.levels - 1))
 			cases[[i]] <- paste(levels[i], " - ", paste(levels[-(1:i)], collapse=", "), sep="")
@@ -419,7 +427,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		coding <- matrix(rep(1 / n.levels, prod(dim(treatment))), ncol=n.levels - 1)
 		contr <- (treatment-coding)*n.levels
 
-	} else if (contrast.type == "helmert") {
+	} else if (contrast.type == "Helmert") {
 		
 		contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
 		
@@ -439,7 +447,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			contr[(i+1):n.levels,i] <- -i/n.levels
 		}
 		
-	} else if (contrast.type=="difference") {
+	} else if (contrast.type == "difference") {
 		
 		contr <- contr.helmert(levels)
 
@@ -462,20 +470,26 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	if (ready && perform == "run") {
 	
-		components <- unique(unlist(options$modelTerms))
+		components <- unique(unlist(options$fixedFactors))
 		independentsWithLessThanTwoLevels <- c()
-		
+				
 		for (component in components) {
 		
-			column <- dataset[[ .v(component) ]]
-			if (length(unique(column)) < 2)
+			nLevels <- length(levels(dataset[[ .v(component) ]]))
+			
+			if (nLevels < 2)
 				independentsWithLessThanTwoLevels <- c(independentsWithLessThanTwoLevels, component)
 		}
 		
 		if (length(independentsWithLessThanTwoLevels) > 0) {
 		
 			error <- TRUE
-			errorMessage <- paste("Factor(s): <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain(s) less than two levels.", sep="")
+			
+			if(length(independentsWithLessThanTwoLevels) == 1) {
+				errorMessage <- paste("Factor: <em>", independentsWithLessThanTwoLevels, "</em>, contains fewer than two levels.", sep="")
+			} else {
+				errorMessage <- paste("Factors: <em>", paste(independentsWithLessThanTwoLevels, collapse=",", sep=""), "</em>, contain fewer than two levels.", sep="")
+			}
 		}
 		
 		if (sum(is.infinite(dataset[[ .v(options$dependent) ]])) > 0) {
@@ -881,6 +895,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			contrastType <- paste(contrastType, collapse="")
 			
 			contrast.table[["title"]] <- paste(contrastType, " Contrast", " - ",  variable, sep="")
+			contrast.table[["name"]] <- paste(contrastType, "Contrast_",  variable, sep="")
 			
 			contrast.table[["schema"]] <- list(fields = list(
 				list(name="Comparison", type="string"),
@@ -1005,6 +1020,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		posthoc.table <- list()
 
 		posthoc.table[["title"]] <- paste("Post Hoc Comparisons - ", posthoc.var, sep="")
+		posthoc.table[["name"]] <- paste("postHoc_", posthoc.var, sep="")
 		
 		fields <- list(
 			list(name="(I)",title="", type="string", combine=TRUE),
@@ -1053,7 +1069,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 			contrastMatrix <- list(.postHocContrasts(variable.levels, dataset, options))
 			names(contrastMatrix) <- .v(posthoc.var)
-			r <- multcomp::glht(model,do.call(multcomp::mcp, method))
+			r <- multcomp::glht(model,do.call(multcomp::mcp, contrastMatrix))
 		
 			statePostHoc[[posthoc.var]]$resultBonf <- summary(r,test=multcomp::adjusted("bonferroni"))
 		
@@ -1360,6 +1376,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		result <- list()
 
 		result[["title"]] <- paste("Marginal Means - ",terms.normal[i], sep="")
+		result[["name"]] <- paste("marginalMeans_",gsub("\u273B","*",gsub(" ", "", terms.normal[i], fixed=TRUE), fixed=TRUE), sep="")
 
 		fields <- list()
 
@@ -1572,7 +1589,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		for (i in 1:nPlots) {
 
 			descriptivesPlot <- list()
-			descriptivesPlot[["title"]] <- ""
 			
 			if (options$plotSeparateLines != "") {
 			
@@ -1648,11 +1664,13 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					axis.ticks.margin = grid::unit(1,"mm"),
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(.5,0,.5,.5), "cm")) +
-				base_breaks_y(summaryStatSubset, options$plotErrorBars) +
+				base_breaks_y(summaryStat, options$plotErrorBars) +
 				base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
 
 			if (nPlots > 1) {
-				p <- p + ggplot2::ggtitle(paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = ""))
+				descriptivesPlot[["title"]] <- paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = "")
+			} else {
+				descriptivesPlot[["title"]] <- "Descriptives Plot"
 			}
 			
 			if (options$plotSeparateLines != "") {
@@ -1692,7 +1710,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		for (i in 1:nPlots) {
 
 			descriptivesPlot <- list()
-			descriptivesPlot[["title"]] <- ""
+			
+			if (nPlots == 1) {
+				descriptivesPlot[["title"]] <- "Descriptives Plot"
+			} else {
+				descriptivesPlot[["title"]] <- ""
+			}
 			
 			if (options$plotSeparateLines != "") {
 			
@@ -1732,7 +1755,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		
 	if (perform == "run" && status$ready && !status$error && !is.null(model)) {
 
-		qqPlot$title <- ""
+		qqPlot$title <- "Q-Q Plot"
 		qqPlot$width <- options$plotWidthQQPlot
 		qqPlot$height <- options$plotHeightQQPlot
 		qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")
@@ -1766,7 +1789,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				
 	} else {
 
-		qqPlot$title <- ""
+		qqPlot$title <- "Q-Q Plot"
 		qqPlot$width <- options$plotWidthQQPlot
 		qqPlot$height <- options$plotHeightQQPlot
 		qqPlot$custom <- list(width="plotWidthQQPlot", height="plotHeightQQPlot")

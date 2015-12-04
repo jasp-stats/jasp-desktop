@@ -1,44 +1,190 @@
+#
+# Copyright (C) 2013-2015 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 RegressionLogLinearBayesian <- function(dataset, options, perform="run", callback, ...) {
-	
-	all.variables <- options$factors
-	if (options$counts != "")
-		all.variables <- c(all.variables, options$counts)
+
+	counts.var <- options$counts
+	if (counts.var == "")
+		counts.var <- NULL
 
 	if (is.null(dataset)) {
 	
 		if (perform == "run") {
 		
-			dataset <- .readDataSetToEnd(columns.as.factor=all.variables)
+			dataset <- .readDataSetToEnd(columns.as.factor=options$factors, columns.as.numeric=counts.var)
 		
 		} else {
 		
-			dataset <- .readDataSetHeader(columns.as.factor=all.variables)
+			dataset <- .readDataSetHeader(columns.as.factor=options$factors, columns.as.numeric=counts.var)
 		}
-	}
-
+	}	 
+	 
+	list.of.errors <- list()
+	error.message <- NULL
+		
+	if (options$counts != "" && perform == "run") {
+		variable.names <- NULL
+		for (counts in options$counts) {
+			if(any(is.na(dataset [[.v (options$counts)]])))
+				variable.names <- c (variable.names, options$counts)
+			}
+	
+		if ( !is.null (variable.names))
+			error.message <- paste ("Bayes factor is undefined -- the count variable ", variable.names, " contain(s) empty cell or NaN. ", sep = "")
+		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
+	
+		if (length(list.of.errors)==0 ){
+			variable.names <- NULL
+			for (counts in options$counts) {
+				if (any (!is.finite (dataset [[.v (options$counts)]])) || any  (dataset [[.v (options$counts)]] < 0 ))
+					variable.names <- c (variable.names, options$counts)
+			}
+	
+			if ( !is.null (variable.names))
+				error.message <- paste ("Bayes factor is undefined -- the count variable ", variable.names, " contain(s) infinity and/or negative numbers.", sep = "")
+				list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
+			}
+		}
+		
+	if (options$counts == ""){ 
+	 	dataset <- plyr::count(dataset)
+	} else {
+	 	dataset <- dataset
+	}	 
+	 
+	#print(dataset) 	
 	results <- list()
-	
 	meta <- list()
-	
-	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="table", type="table")
+	.meta <-  list(
+		list(name = "title", type = "title"),
+		list(name = "table", type = "table"),
 
+		list(name = "Bayesianposterior", type = "table"),
+		list(name = "Bayesianlogregression", type = "table"),
+		list(name = "BayesianSublogregression", type = "table"))
+		
+
+	results[[".meta"]] <- .meta
 	
-	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Log Linear Regression"
+
+    #######################################
+	###	 	 BAYESIAN LOGLINEAR REGRESSION		###
+	#######################################
+	# Fit Loglinear Model
+	#footnotes <- .newFootnotes()
+	logBlm.model <- list()
+	empty.model <- list(logBlm.fit = NULL, variables = NULL)
+	
+	 if (options$counts == ""){ 
+	 	dependent.variable <- "freq"
+	 }else{
+	 	dependent.variable <- unlist(options$counts)
+	 	}
 	
 
-	llTable <- list()
-	
-	llTable[["title"]] <- "Bayesian Log Linear Regression"
+	if (length(options$modelTerms) > 0) {
+		
+		variables.in.model <- NULL
+		variables.in.model.base64 <- NULL
+		
+		for (i in seq_along(options$modelTerms)) {
+			
+			components <- options$modelTerms[[i]]$components
+			
+			if (length(components) == 1) {
+				
+				variables.in.model <- c(variables.in.model, components[[1]])
+				variables.in.model.base64 <- c(variables.in.model.base64, .v(components[[1]]))
+				
+			} else {
+				
+				components.unlisted <- unlist(components)
+				term.base64 <- paste0(.v(components.unlisted), collapse=":")
+				term <- paste0(components.unlisted, collapse=":")
+				variables.in.model <- c(variables.in.model, term)
+				variables.in.model.base64 <- c(variables.in.model.base64, term.base64)
+			}
+		}
+		
+		independent.base64 <- variables.in.model.base64
+		variables.in.model <- variables.in.model[ variables.in.model != ""]
+		variables.in.model.copy <- variables.in.model
+	}
+		
+	dependent.base64 <- .v(dependent.variable)
+		
+	if (length(options$modelTerms) > 0) {
+			
+		if (length(variables.in.model) > 0 ) {
+		
+			model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"))
+			
+		} else {
+				
+			model.definition <- NULL #this model has no parameters				
+		}
+			
+		if (perform == "run" && !is.null(model.definition) && length(list.of.errors) == 0 ) {
+				
+			model.formula <- as.formula(model.definition)
 
-	fields <- list()
+			if (options$counts == ""){ 
+	 			names(dataset)[names(dataset)== "freq"]<- dependent.base64
+	 		}	 		
+			
+			logBlm.fit <- try( conting::bcct( model.formula, data = dataset, prior = "SBH", n.sample=2000, a=options$priorScale, b=options$priorShape), silent = TRUE)
+			
+				no.burnin = 2000 * 0.2
+				if (options$sampleMode == "manual"){
+				
+					logBlm.fit <- try(conting::bcctu(object = logBlm.fit, n.sample = options$fixedSamplesNumber), silent = TRUE)				
+					n.sample = options$fixedSamplesNumber
+					no.burnin = (2000 + n.sample)* 0.2
+				}
+				
+			if ( class(logBlm.fit) == "bcct") {
+					
+				logBlm.model <- list(logBlm.fit = logBlm.fit, variables = variables.in.model)
+			
+			} else if (inherits(logBlm.fit, "try-error")) {
+				error <- .extractErrorMessage (logBlm.fit)
+				list.of.errors[[ length(list.of.errors) + 1 ]]  <- error
+				logBlm.model <- list(logBlm.fit = NULL, variables = variables.in.model)
+			}
+				
+		} else {
+				
+			logBlm.model <- list(logBlm.fit = NULL, variables = variables.in.model)
+		}
+		
+	} else {
+			
+		logBlm.model <- empty.model
+	}
+			
+################################################################################
+	#						 Posterior model probabilities  				#
+################################################################################
+		
+	Bayesianposterior <- list()
 	
-	fields[[length(fields)+1]] <- list(name="model", type="string", title="Models")
-	fields[[length(fields)+1]] <- list(name="PM", type="number", format="dp:3", title="P(M)")
-	fields[[length(fields)+1]] <- list(name="PMdata", type="number", format="dp:3", title="P(M|data)")
-	
+	Bayesianposterior[["title"]] <- "Model Comparison"
+		
 	if (options$bayesFactorType == "BF10") {
 		bfTitle <- "BF<sub>10</sub>"
 	} else if (options$bayesFactorType == "BF01") {
@@ -46,30 +192,531 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	} else {
 		bfTitle <- "Log(BF<sub>10</sub>)"
 	}
-	
-	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3;log10", title=bfTitle)
-	
-	llTable[["schema"]] <- list(fields=fields)
-	
-	llTableData <- list()
-	
-	llTableData[[1]] <- list(model="Gregory") 
-	llTableData[[2]] <- list(model="Bronson")
-	llTableData[[3]] <- list(model="Lachlan")
 
-	if (perform == "run") {
+		# Declare table elements		
+	fields <- list(
+		list(name = "Number", type = "integer",title=" "),
+		list(name="model", type="string", title="Models"),
+		list(name="PMdata", type="number", format="dp:3", title="P(M|data)"),
+		list(name="BF", type="number", format="sf:4;dp:3", title=bfTitle))
+		
+	empty.line <- list( #for empty elements in tables when given output
+		"Number" = "",
+		"Model" = "",
+		"PMdata" = "",
+		"BF" = "")
+		
+	dotted.line <- list( #for empty tables
+		"Number" = ".",
+		"Model" = ".",
+		"PMdata" = ".",
+		"BF" = ".")
+
+	Bayesianposterior[["schema"]] <- list(fields = fields)
 	
-		llTableData[[1]] <- list(model="Gregory", PM=1, PMdata=1, BF=1) 
-		llTableData[[2]] <- list(model="Bronson", PM=1, PMdata=1, BF=2)
-		llTableData[[3]] <- list(model="Lachlan", PM=1, PMdata=1, BF=3)
+	Bayesianposterior.result <- list()
+	footnotes <- .newFootnotes()
+		
+	if (perform == "run" ) {		
+			
+		if ( class(logBlm.model$logBlm.fit) == "bcct") {
+		
+			logBlm.posterior <- conting::mod_probs(logBlm.fit, n.burnin =no.burnin, scale=0.001, best = options$maxModels)
+				
+			len.Blogreg <- length(Bayesianposterior.result) + 1
+			v <- 0
+				
+			if (length(logBlm.model$variables) > 0) {
+					
+				variables.in.model <- logBlm.model$variables
+						
+				max.prob <- base::max(logBlm.posterior$table$prob)
+				BFactor <- logBlm.posterior$table$prob / max.prob
+ 
+				if (options$bayesFactorType == "BF10") {
+	
+					BFactor <- .clean(BFactor)
+	
+				} else if (options$bayesFactorType == "BF01") {
+	
+					BFactor <- .clean(1/BFactor)
+		
+				} else {
+	
+					BFactor <- .clean(log(BFactor))
+				}
+	 
+				model.names <- logBlm.posterior$table$model_formula
+				totalmodels <- options$maxModels
+				t.mods.visit <- logBlm.posterior$totmodsvisit
+				
+				message <- paste ("Total number of models visited =", t.mods.visit, sep=" ")
+				.addFootnote (footnotes, symbol = "<em>Note.</em>", text = message)									
+				
+				
+				if(totalmodels > t.mods.visit){
+					totalmodels <- t.mods.visit
+				} else {
+					totalmodels <- totalmodels
+				}
+				
+				for (i in 1:totalmodels) {
+								  
+					Bayesianposterior.result[[ len.Blogreg ]] <- empty.line
+					
+					model.name <- as.character(model.names[[i]])
+					model.name <- substring(model.name, 2)  # trim leading ~
+					model.name <- .unvf(model.name)						
+					
+					Bayesianposterior.result[[ len.Blogreg ]]$"Number" <-as.integer(i)
+					Bayesianposterior.result[[ len.Blogreg ]]$"model" <- model.name
+					Bayesianposterior.result[[ len.Blogreg ]]$"PMdata" <- as.numeric(logBlm.posterior$table$prob[i])			
+					Bayesianposterior.result[[ len.Blogreg ]]$"BF" <- as.numeric(BFactor[i])
+					Bayesianposterior.result[[ len.Blogreg ]]$ "footnotes" <- as.list (footnotes)					
+					
+					len.Blogreg <- len.Blogreg + 1
+				}
+			}				
+			
+		} else {
+			
+			len.Blogreg <- length(Bayesianposterior.result) + 1
+			Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
+			
+			if (length(logBlm.model$variables) > 0) {
+				
+				variables.in.model <- logBlm.model$variables
+			
+				len.Blogreg <- len.Blogreg + 1
+				
+				for (var in 1:length(variables.in.model)) {
+				
+					Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
+				
+					if (base::grepl(":", variables.in.model[var])) {
+					
+						# if interaction term					
+						vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+						name <- paste0(vars, collapse="\u2009\u273b\u2009")
+					
+					} else {
+					
+						name <- as.character(variables.in.model[ var])
+					}
+				
+					Bayesianposterior.result[[ len.Blogreg ]]$"Name" <- name
+					len.Blogreg <- len.Blogreg + 1
+				}
+			}
+		}
+			
+	} else {
+				
+		len.Blogreg <- length(Bayesianposterior.result) + 1
+
+		if (length(logBlm.model$variables) > 0) {
+	
+			variables.in.model <- logBlm.model$variables
+	
+			for (var in 1:length(variables.in.model)) {
+		
+				Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
+				Bayesianposterior.result[[ len.Blogreg ]]$"Model" <- ""
+		
+				if (var == 1) {
+				
+					Bayesianposterior.result[[ len.Blogreg ]][[".isNewGroup"]] <- TRUE
+				}
+		
+				if (base::grepl(":", variables.in.model[var])) {
+			
+					vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+					name <- paste0(vars, collapse="\u2009\u273b\u2009")
+			
+				} else {
+			
+					name <- as.character(variables.in.model[ var])
+				}
+		
+				Bayesianposterior.result[[ len.Blogreg ]]$"Name" <- name
+				Blen.logreg <- len.Blogreg + 1
+			}
+		}
+
+		len.Blogreg <- length(Bayesianposterior.result) + 1
+		Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
+		Bayesianposterior.result[[ len.Blogreg ]]$"Model" <- 1
 	}
+	
+	if (length(list.of.errors) > 1){
 
-	llTable[["data"]] <- llTableData
+		logBlm.fit <- try( conting::bcct( model.formula, data = dataset, prior = options$priorType, n.sample=1000), silent = TRUE)
+
+		
+		if (inherits(logBlm.fit, "try-error")) {
+			error <- .extractErrorMessage (logBlm.fit)
+		}
+		Bayesianposterior[["error"]] <- list(errorType="badData",errorMessage = error)
+		
+	} else if (length(list.of.errors) == 1){
+			
+		Bayesianposterior[["error"]] <- list(errorType = "badData", errorMessage = list.of.errors[[ 1 ]])
+	}
+		
+    Bayesianposterior[["footnotes"]] <- as.list (footnotes)
+	Bayesianposterior[["data"]] <- Bayesianposterior.result
+	results[["Bayesianposterior"]] <- Bayesianposterior
 
 	
-
-	results[["table"]] <- llTable
 	
+	################################################################################
+	#						   MODEL COEFFICIENTS TABLE   						#
+	################################################################################		
+	if (options$regressionCoefficientsEstimates  == TRUE){
+		Bayesianlogregression <- list()
+		Bayesianlogregression[["title"]] <- "Posterior Summary Statistics"
+		#ci.label <- paste(100*options$regressionCoefficientsCredibleIntervalsInterval, "% Highest posterior density intervals", sep="")
+		ci.label <- paste(100*options$regressionCoefficientsCredibleIntervalsInterval, "% HPD intervals", sep="")
+		# Declare table elements
+		fields <- list(
+			list(name = "Name", title = "Model terms", type = "string"),
+			list(name = "post_prob", title="P(incl|data)", type = "number", format = "dp:3"),
+			list(name = "post_mean", title = "Mean",type="number", format = "dp:3"),
+			list(name = "post_var", title = "Variance",type="number", format = "dp:3"))
+		if (options$regressionCoefficientsCredibleIntervals == TRUE){
+			fields <- c(fields,list(
+				list(name = "lower_lim", title = "Lower", overTitle=ci.label, type="number", format = "sf:4;dp:3"),
+				list(name = "upper_lim", title = "Upper", overTitle=ci.label, type = "number", format = "sf:4;dp:3")))
+		}
+
+		empty.line <- list(                     #for empty elements in tables when given output
+			"Name" = "",
+			"post_prob" = "",
+			"post_mean" = "",
+			"post_var" = "",
+			"lower_lim" = "",
+			"upper_lim" = "")
+	
+		dotted.line <- list(                     #for empty tables
+			"Name" = ".",
+			"post_prob" = ".",
+			"post_mean" = ".",
+			"post_var" = ".",
+			"lower_lim" = ".",
+			"upper_lim" = ".")
+
+		Bayesianlogregression[["schema"]] <- list(fields = fields)
+		
+		Bayesianlogregression.result <- list()
+		
+		lookup.table <- .regressionLogLinearBayesianBuildLookup(dataset, options$factors)
+		lookup.table[["(Intercept)"]] <- "(Intercept)"
+			
+		if (perform == "run" && length(list.of.errors) == 0 ) {
+		
+		
+			if (inherits(logBlm.fit, "try-error")) {
+				error <- .extractErrorMessage (logBlm.fit)
+				Bayesianlogregression[["error"]] <- list(errorType= "badData",errorMessage = error)
+		
+		
+			} else if ( class(logBlm.model$logBlm.fit) == "bcct") {
+			
+				
+				logBlm.summary = summary(logBlm.fit, n.burnin=no.burnin, cutoff = options$posteriorProbabilityCutOff, prob.level = options$regressionCoefficientsCredibleIntervalsInterval)
+				logBlm.estimates<- logBlm.summary$int_stats
+		
+				len.Blogreg <- length(Bayesianlogregression.result) + 1		
+				term.names <- logBlm.estimates$term			
+				
+				if (length(logBlm.model$variables) > 0) {
+				
+					variables.in.model <- logBlm.model$variables
+					terms<- as.character(logBlm.estimates$term)
+					coef<-base::strsplit (terms, split = ":", fixed = TRUE)				
+					
+					for (var in seq_along(coef)) {
+					
+						Bayesianlogregression.result[[ len.Blogreg ]] <- empty.line
+						terms <- coef[[var]]
+						actualName<-list()
+					
+						for (j in seq_along(terms)){
+							actualName[[j]] <- paste(lookup.table[[ terms[j] ]], collapse=" = ")
+						}			
+						varName<-paste0(actualName, collapse="*")
+							
+						Bayesianlogregression.result[[ len.Blogreg ]]$"Name" <- varName
+						Bayesianlogregression.result[[ len.Blogreg ]]$"post_prob" <- as.numeric(logBlm.estimates$prob[var])
+						Bayesianlogregression.result[[ len.Blogreg ]]$"post_mean" <- as.numeric(logBlm.estimates$post_mean[var])
+						Bayesianlogregression.result[[ len.Blogreg ]]$"post_var" <- as.numeric(logBlm.estimates$post_var[var])
+						
+						if (options$regressionCoefficientsCredibleIntervals == TRUE){			
+							Bayesianlogregression.result[[ len.Blogreg ]]$"lower_lim" <- as.numeric(logBlm.estimates$lower[var])
+							Bayesianlogregression.result[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.estimates$upper[var])
+						}
+					
+						len.Blogreg <- len.Blogreg + 1
+					}		
+				}			
+
+			} else {
+		
+				len.Blogreg <- length(Bayesianlogregression.result) + 1
+				Bayesianlogregression.result[[ len.Blogreg ]] <- dotted.line
+		
+				if (length(logBlm.model$variables) > 0) {
+			
+					variables.in.model <- logBlm.model$variables
+			
+					len.Blogreg <- len.Blogreg + 1
+			
+					for (var in 1:length(variables.in.model)) {
+				
+						Bayesianlogregression.result[[ len.Blogreg ]] <- dotted.line
+				
+						if (base::grepl(":", variables.in.model[var])) {
+					
+							# if interaction term					
+							vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+							name <- paste0(vars, collapse="\u2009\u273b\u2009")
+					
+						} else {
+					
+							name <- as.character(variables.in.model[ var])
+						}
+				
+						Bayesianlogregression.result[[ len.Blogreg ]]$"Name" <- name
+						len.Blogreg <- len.Blogreg + 1
+					}
+				}
+			}
+		
+		} else {
+						
+			len.Blogreg <- length(Bayesianlogregression.result) + 1
+
+			if (length(logBlm.model$variables) > 0) {
+
+				variables.in.model <- logBlm.model$variables
+
+				for (var in 1:length(variables.in.model)) {
+	
+					Bayesianlogregression.result[[ len.Blogreg ]] <- dotted.line
+					Bayesianlogregression.result[[ len.Blogreg ]]$"Model" <- ""
+	
+					if (var == 1) {
+						Bayesianlogregression.result[[ len.Blogreg ]][[".isNewGroup"]] <- TRUE
+					}
+	
+					if (base::grepl(":", variables.in.model[var])) {
+		
+						# interaction term
+		
+						vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+						name <- paste0(vars, collapse="\u2009\u273b\u2009")
+		
+					} else {
+		
+						name <- as.character(variables.in.model[ var])
+					}
+	
+					Bayesianlogregression.result[[ len.Blogreg ]]$"Name" <- name
+					Blen.logreg <- len.Blogreg + 1
+				}
+			}
+
+			len.Blogreg <- length(Bayesianlogregression.result) + 1
+			Bayesianlogregression.result[[ len.Blogreg ]] <- dotted.line
+			Bayesianlogregression.result[[ len.Blogreg ]]$"Model" <- 1
+			if (length(list.of.errors) == 1){
+			Bayesianlogregression[["error"]] <- list(errorType = "badData", errorMessage = list.of.errors[[ 1 ]])}	
+		}
+	
+		
+		Bayesianlogregression[["data"]] <- Bayesianlogregression.result
+		results[["Bayesianlogregression"]] <- Bayesianlogregression
+	}
+	
+################################################################################
+	#						  SUB-MODEL COEFFICIENTS TABLE   						#
+################################################################################		
+	if (options$regressionCoefficientsSubmodel  == TRUE){
+		BayesianSublogregression <- list()
+		BayesianSublogregression[["title"]] <- "Posterior Summary Statistics of Log Linear Parameters"
+		#ci.label <- paste(100*options$regressionCoefficientsSubmodelCredibleIntervalsInterval, "% Highest posterior density intervals", sep="")
+		ci.label <- paste(100*options$regressionCoefficientsSubmodelCredibleIntervalsInterval, "% HPD intervals", sep="")
+		# Declare table elements
+		fields <- list(
+			list(name = "Name", title = "Model terms", type = "string"),
+			list(name = "post_mean", title="Mean", type = "number", format = "dp:3"),
+			list(name = "post_var", title = "Variance",type="number", format = "dp:3"))
+		if (options$regressionCoefficientsSubmodelCredibleIntervals == TRUE){
+			fields <- c(fields,list(
+				list(name = "lower_lim", title = "Lower", overTitle=ci.label, type="number", format = "sf:4;dp:3"),
+				list(name = "upper_lim", title = "Upper", overTitle=ci.label, type = "number", format = "sf:4;dp:3")))
+		}
+
+		empty.line <- list(                     #for empty elements in tables when given output
+			"Name" = "",
+			"post_mean" = "",
+			"post_var" = "",
+			"lower_lim" = "",
+			"upper_lim" = "")
+	
+		dotted.line <- list(                     #for empty tables
+			"Name" = ".",
+			"post_mean" = ".",
+			"post_var" = ".",
+			"lower_lim" = ".",
+			"upper_lim" = ".")
+
+		BayesianSublogregression[["schema"]] <- list(fields = fields)
+		
+		BayesianSublogregression.result <- list()
+		
+		lookup.table <- .regressionLogLinearBayesianBuildLookup(dataset, options$factors)
+		lookup.table[["(Intercept)"]] <- "(Intercept)"
+		footnotes <- .newFootnotes()	
+		if (perform == "run" && length(list.of.errors) == 0 ) {
+		
+			logBlm.subestimates = try(conting::sub_model(logBlm.fit, n.burnin=no.burnin, order=options$regressionCoefficientsSubmodelNo, 
+				             prob.level = options$regressionCoefficientsSubmodelCredibleIntervalsInterval), silent = TRUE)
+			
+			if (inherits(logBlm.subestimates, "try-error")) {
+				error <- .extractErrorMessage (logBlm.subestimates)
+				BayesianSublogregression[["error"]] <- list(errorType= "badData",errorMessage = error)
+		
+			} else if ( class(logBlm.subestimates) == "submod"){
+			
+				
+				
+				print(logBlm.subestimates)
+				len.Blogreg <- length(BayesianSublogregression.result) + 1		
+				term.names <- logBlm.subestimates$term	
+				
+				Model.formula <- logBlm.subestimates$formula
+				
+				Model.formula <- as.character(Model.formula)
+				Model.formula <- substring(Model.formula, 2)  # trim leading ~
+				Model.formula <- .unvf(Model.formula)	
+				message1 <- Model.formula
+				.addFootnote (footnotes, symbol = "<em>Model Formula:</em>", text = message1)
+													
+				Post.pob <- round(logBlm.subestimates$post_prob, 3)
+				.addFootnote (footnotes, symbol = "<em>Posterior model probability =</em>", text = Post.pob )	
+				print(message)
+				if (length(logBlm.model$variables) > 0) {
+				
+					variables.in.model <- logBlm.model$variables
+					terms<- as.character(logBlm.subestimates$term)
+					coef<-base::strsplit (terms, split = ":", fixed = TRUE)				
+					
+					for (var in seq_along(coef)) {
+					
+						BayesianSublogregression.result[[ len.Blogreg ]] <- empty.line
+						terms <- coef[[var]]
+						actualName<-list()
+					
+						for (j in seq_along(terms)){
+							actualName[[j]] <- paste(lookup.table[[ terms[j] ]], collapse=" = ")
+						}			
+						varName<-paste0(actualName, collapse="*")
+							
+						BayesianSublogregression.result[[ len.Blogreg ]]$"Name" <- varName
+						BayesianSublogregression.result[[ len.Blogreg ]]$"post_mean" <- as.numeric(logBlm.subestimates$post_mean[var])
+						BayesianSublogregression.result[[ len.Blogreg ]]$"post_var" <- as.numeric(logBlm.subestimates$post_var[var])
+						
+						if (options$regressionCoefficientsSubmodelCredibleIntervals == TRUE){			
+							BayesianSublogregression.result[[ len.Blogreg ]]$"lower_lim" <- as.numeric(logBlm.subestimates$lower[var])
+							BayesianSublogregression.result[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.subestimates$upper[var])
+						}
+					
+						BayesianSublogregression.result[[ len.Blogreg ]]$ "footnotes" <- as.list (footnotes)	
+						len.Blogreg <- len.Blogreg + 1
+					}		
+				}			
+
+			} else {
+		
+				len.Blogreg <- length(BayesianSublogregression.result) + 1
+				BayesianSublogregression.result[[ len.Blogreg ]] <- dotted.line
+		
+				if (length(logBlm.model$variables) > 0) {
+			
+					variables.in.model <- logBlm.model$variables
+			
+					len.Blogreg <- len.Blogreg + 1
+			
+					for (var in 1:length(variables.in.model)) {
+				
+						BayesianSublogregression.result[[ len.Blogreg ]] <- dotted.line
+				
+						if (base::grepl(":", variables.in.model[var])) {
+					
+							# if interaction term					
+							vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+							name <- paste0(vars, collapse="\u2009\u273b\u2009")
+					
+						} else {
+					
+							name <- as.character(variables.in.model[ var])
+						}
+				
+						BayesianSublogregression.result[[ len.Blogreg ]]$"Name" <- name
+						len.Blogreg <- len.Blogreg + 1
+					}
+				}
+			}
+		
+		} else {		
+			
+			len.Blogreg <- length(BayesianSublogregression.result) + 1
+
+			if (length(logBlm.model$variables) > 0) {
+
+				variables.in.model <- logBlm.model$variables
+
+				for (var in 1:length(variables.in.model)) {
+	
+					BayesianSublogregression.result[[ len.Blogreg ]] <- dotted.line
+					BayesianSublogregression.result[[ len.Blogreg ]]$"Model" <- ""
+	
+					if (var == 1) {
+						BayesianSublogregression.result[[ len.Blogreg ]][[".isNewGroup"]] <- TRUE
+					}
+	
+					if (base::grepl(":", variables.in.model[var])) {
+		
+						# interaction term
+		
+						vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+						name <- paste0(vars, collapse="\u2009\u273b\u2009")
+		
+					} else {
+		
+						name <- as.character(variables.in.model[ var])
+					}
+	
+					BayesianSublogregression.result[[ len.Blogreg ]]$"Name" <- name
+					Blen.logreg <- len.Blogreg + 1
+				}
+			}
+
+			len.Blogreg <- length(BayesianSublogregression.result) + 1
+			BayesianSublogregression.result[[ len.Blogreg ]] <- dotted.line
+			BayesianSublogregression.result[[ len.Blogreg ]]$"Model" <- 1
+			if (length(list.of.errors) == 1){
+				BayesianSublogregression[["error"]] <- list(errorType = "badData", errorMessage = list.of.errors[[ 1 ]])
+			}
+		}
+		BayesianSublogregression[["footnotes"]] <- as.list (footnotes)	
+		BayesianSublogregression[["data"]] <- BayesianSublogregression.result
+		results[["BayesianSublogregression"]] <- BayesianSublogregression
+		
+	}
+	
+########################################################################	
 	if (perform == "init") {
 
 		list(results=results, status="inited")
@@ -79,3 +726,24 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		list(results=results, status="complete")
 	}
 }
+
+.regressionLogLinearBayesianBuildLookup <- function(dataset, factors) {
+
+	table <- list()
+
+	for (v in factors) {
+	
+		levels <- base::levels(dataset[[ .v(v) ]])
+
+		for (i in seq_along(levels)) {
+		
+			l <- levels[i]
+			mangled.name <- paste(.v(v), i, sep="")
+			actual <- c(v, l)
+			table[[mangled.name]] <- actual
+		}
+	}
+	
+	table
+}
+

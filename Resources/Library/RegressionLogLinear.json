@@ -8,11 +8,6 @@
 			"type": "Variable"
 		},
 		{
-			"name": "method",
-			"type": "List",
-			"options": [ "enter", "backward", "forward" ]
-		},
-		{
 			"name": "factors",
 			"type": "Variables"
 		},
@@ -29,7 +24,20 @@
 		{
 			"name": "regressionCoefficientsEstimates",
 			"type": "Boolean",
-			"default": true
+			"default": false
+		},
+		{
+			"name": "regressionCoefficientsConfidenceIntervals",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.5,
+			"name": "regressionCoefficientsConfidenceIntervalsInterval",
+			"type": "Number",
+			"value": 0.950
 		}
 	]
 }

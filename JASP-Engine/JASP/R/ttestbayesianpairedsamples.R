@@ -1,3 +1,19 @@
+#
+# Copyright (C) 2013-2015 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 	
@@ -35,11 +51,14 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 	meta <- list()
 	
-	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="ttest", type="table")
-	meta[[3]] <- list(name="inequalityOfVariances", type="table")
-	meta[[4]] <- list(name="descriptives", type="table")
-	meta[[5]] <- list(name="plots", type="images")
+	meta[[1]] <- list(name="ttest", type="table")
+	meta[[2]] <- list(name="descriptives", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name = "descriptivesPlots", type = "collection", meta="image")))
+	meta[[3]] <- list(name="inferentialPlots", type="collection", meta=list(	name="plotGroups", type="object",
+																	meta=list(
+																				list(name="PriorPosteriorPlot", type="image"),
+																				list(name="BFrobustnessPlot", type="image"),
+																				list(name="BFsequentialPlot", type="image")
+																				)))
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian T-Test"
@@ -132,9 +151,12 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	ttest[["schema"]] <- list(fields=fields)
 	
 	ttest.rows <- list()
+	plotGroups <- list()
 	plots.ttest <- list()
 	plotTypes <- list()
 	plotPairs <- list()
+	descriptivesPlots <- list()
+	descriptPlotPairs <- list()
 	tablePairs <- list()
 	errorFootnotes <- rep("no", length(options$pairs))
 	
@@ -148,20 +170,63 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	
 	}
 	
+	if (options$descriptives || options$descriptivesPlots)
+		results[["descriptives"]] <- list(title="Descriptives")
 	
 	footnotes <- .newFootnotes()
 	
+	i <- 1
 	
 	for (pair in options$pairs)
 	{
 		
 		currentPair <- paste(pair, collapse=" - ")
 		
+		if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis) {
+			
+			plotGroups[[i]] <- list()
+			plotGroups[[i]][["title"]] <- currentPair
+			plotGroups[[i]][["name"]] <- currentPair
+		}
+		
+		if (options$descriptivesPlots) {
+			
+			if (!is.null(state) && currentPair %in% state$descriptPlotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$missingValues == FALSE && diff$plotWidth == FALSE &&
+				diff$plotHeight == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots) {
+				
+				
+				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+				# then, if the requested plot already exists, use it
+				
+				index <- which(state$descriptPlotPairs == currentPair)
+				
+				descriptivesPlots[[length(descriptivesPlots)+1]] <- state$descriptivesPlots[[index]]
+				
+				
+			} else {
+				
+				descriptivesPlot <- list()
+				
+				descriptivesPlot[["title"]] <- currentPair
+				descriptivesPlot[["width"]] <- options$plotWidth
+				descriptivesPlot[["height"]] <- options$plotHeight
+				descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
+				descriptivesPlot[["status"]] <- "waiting"
+				descriptivesPlot[["data"]] <- ""
+				
+				descriptivesPlots[[length(descriptivesPlots)+1]] <- descriptivesPlot
+				
+			}
+			
+			descriptPlotPairs[[length(descriptPlotPairs)+1]] <- currentPair
+		}
+		
 		if (options$plotPriorAndPosterior) {
 			
 			
 			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
+				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && options$plotPriorAndPosteriorAdditionalInfo &&
+				"posteriorPlotAddInfo" %in% state$plotTypes) {
 				
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
@@ -184,7 +249,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				plot <- list()
 				
-				plot[["title"]] <- paste(pair, collapse=" - ")
+				plot[["title"]] <- "Prior and Posterior"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -195,6 +260,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
+			
+			plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[length(plots.ttest)]]
 			
 			if (options$plotPriorAndPosteriorAdditionalInfo) {
 				
@@ -226,7 +293,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				plot <- list()
 				
-				plot[["title"]] <- paste(pair, collapse=" - ")
+				plot[["title"]] <- "Bayes Factor Robustness Check"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -238,6 +305,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				plots.ttest[[length(plots.ttest)+1]] <- plot
 			}
 			
+			plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[length(plots.ttest)]]
 			plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
 		}
@@ -246,7 +314,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			
 			
 			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
+				&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && options$plotSequentialAnalysisRobustness &&
+				"sequentialRobustnessPlot" %in% state$plotTypes) {
 				
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# then, if the requested plot already exists, use it
@@ -256,7 +325,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				plots.ttest[[length(plots.ttest)+1]] <- state$plotsTtest[[stateIndex]]
 				
 			} else if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-						&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && !options$plotSequentialAnalysisRobustness  && "sequentialPlot" %in% state$plotTypes) {
+						&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && !options$plotSequentialAnalysisRobustness  &&
+						"sequentialPlot" %in% state$plotTypes) {
 				
 				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 				# if the requested plot already exists use it
@@ -269,7 +339,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				plot <- list()
 				
-				plot[["title"]] <- paste(pair, collapse=" - ")
+				plot[["title"]] <- "Sequential Analysis"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
 				plot[["status"]] <- "waiting"
@@ -291,48 +361,21 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 			}
 			
 			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
+			plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[length(plots.ttest)]]
 		}
 		
-		if (options$descriptivesPlots) {
-			
-			if (!is.null(state) && currentPair %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots && "descriptivesPlot" %in% state$plotTypes) {
-				
-				
-				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-				# then, if the requested plot already exists, use it
-				
-				index <- which(state$plotPairs == currentPair & state$plotTypes == "descriptivesPlot")
-				
-				plots.ttest[[length(plots.ttest)+1]] <- state$plotsTtest[[index]]
-				
-				
-			} else {
-				
-				descriptivesPlot <- list()
-				
-				descriptivesPlot[["title"]] <- paste(pair, collapse=" - ")
-				descriptivesPlot[["width"]] <- options$plotWidth
-				descriptivesPlot[["height"]] <- options$plotHeight
-				descriptivesPlot[["custom"]] <- list(width="plotWidth", height="plotHeight")
-				descriptivesPlot[["status"]] <- "waiting"
-				descriptivesPlot[["data"]] <- ""
-				
-				plots.ttest[[length(plots.ttest)+1]] <- descriptivesPlot
-			}
-			
-			plotTypes[[length(plotTypes)+1]] <- "descriptivesPlot"
-			plotPairs[[length(plotPairs)+1]] <- paste(pair, collapse=" - ")
-			
-		}
+		i <- i + 1
 		
 	}
 	
+	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness || options$plotSequentialAnalysis)
+			results[["inferentialPlots"]] <- list(title=ifelse(length(options$pairs) > 1 || sum(c(options$plotPriorAndPosterior, options$plotBayesFactorRobustness, options$plotSequentialAnalysis)) > 1,
+				"Inferential Plots", "Inferential Plot"), collection=plotGroups)
 	
-	results[["plots"]] <- plots.ttest
+	if (options$descriptivesPlots)
+		results[["descriptives"]][["descriptivesPlots"]] <- list(title=ifelse(length(options$pairs) > 1, "Descriptives Plots", "Descriptives Plot"), collection=descriptivesPlots)
 	
 	pair.statuses <- list()
-	
-	i <- 1
 	
 	BF10post <- numeric(length(options$pairs))
 	
@@ -425,15 +468,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						
 						bf.raw <- exp(as.numeric(r@bayesFactor$bf))[1]
 						
-						# deltaHat <- mean(c1 - c2) / sd(c1 - c2)
-						# 	
-						# N <- length(c1)
-						# df <- N - 1
-						# sigmaStart <- 1 / N
-						# 
-						# if (sigmaStart < .01) 
-						# 	sigmaStart <- .01
-						
 						if (oneSided == "right") {
 							
 							samples <- BayesFactor::ttestBF(c1, c2, paired=TRUE, posterior = TRUE, iterations = 10000, rscale= options$priorWidth)
@@ -454,15 +488,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 								
 								bf.raw <- .oneSidedTtestBFRichardAdaptive(c1, c2, paired=TRUE, oneSided="right", r=options$priorWidth)
 								
-								# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-								# 
-								# 
-								# if (class(parameters) == "try-error") {
-								# 
-								# 	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
-								# }
-								# 
-								# bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=FALSE)							
 							}
 						}
 						
@@ -486,14 +511,6 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 								
 								bf.raw <- .oneSidedTtestBFRichardAdaptive(c1, c2, paired=TRUE, oneSided="left", r=options$priorWidth)
 								
-								# parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-								# 
-								# if (class(parameters) == "try-error") {
-								# 
-								# 	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
-								# }
-								# 
-								# bf.raw <- 2 * bf.raw * pt((0 - parameters[1]) / parameters[2], parameters[3], lower.tail=TRUE)
 							}
 						}
 						
@@ -569,7 +586,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		}
 		
 		ttest.rows[[length(ttest.rows)+1]] <- result
-		i <- i + 1
+		
 	}
 	
 	if (length(ttest.rows) == 0)
@@ -582,6 +599,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		ttest[["status"]] <- "complete"
 	
 	results[["ttest"]] <- ttest
+	
+	descriptives <- NULL
 	
 	if (options$descriptives) {
 		
@@ -637,8 +656,10 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		descriptives[["data"]] <- descriptives.results
 		descriptives[["status"]] <- "complete"
 		
-		results[["descriptives"]] <- descriptives
+		
 	}
+	
+	results[["descriptives"]][["descriptivesTable"]] <- descriptives
 	
 	
 	# PLOTS
@@ -652,7 +673,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 		n.plots <- length(options$pairs) * n.plots.per.variable
 		
 		j <- 1
-		i <- 1
+		descriptInd <- 1
 		
 		for (i in .indices(options$pairs)) {
 			
@@ -685,11 +706,64 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				c2 <- NULL
 			}
 			
+			if (options$descriptivesPlots) {
+				
+				if (!is.null(state) && tablePairs[[i]] %in% state$descriptPlotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$missingValues == FALSE &&
+					diff$plotWidth == FALSE && diff$plotHeight == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots) {
+					
+					
+					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
+					# then, if the requested plot already exists, use it
+					
+					index <- which(state$descriptPlotPairs == tablePairs[[i]])
+					
+					descriptivesPlots[[descriptInd]] <- state$descriptivesPlots[[index]]
+					
+					
+				} else {
+					
+					results[["descriptives"]][["descriptivesPlots"]][["collection"]][[descriptInd]][["status"]] <- "running"
+					
+					if ( ! .shouldContinue(callback(results)))
+						return()
+					
+					plot <- descriptivesPlots[[descriptInd]]
+					
+					p <- try(silent= FALSE, expr= {
+							
+							image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+							.plot2GroupMeansBayesIndTtest(v1 = c1, v2 = c2, nameV1 = pair[[1]], nameV2 = pair[[2]], descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+							plot[["data"]] <- .endSaveImage(image)
+						})
+						
+					if (class(p) == "try-error") {
+						
+						errorMessageTmp <- .extractErrorMessage(p)
+						errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
+						plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+					}
+					
+					plot[["status"]] <- "complete"
+					
+					descriptivesPlots[[descriptInd]] <- plot
+					
+				}
+				
+				results[["descriptives"]][["descriptivesPlots"]][["collection"]] <- descriptivesPlots
+				
+				if ( ! .shouldContinue(callback(results)))
+					return()
+				
+				descriptInd <- descriptInd + 1
+				
+			}
+			
 			if (options$plotPriorAndPosterior) {
 				
 				
 				if (!is.null(state) && tablePairs[[i]] %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes) {
+					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && options$plotPriorAndPosteriorAdditionalInfo &&
+					"posteriorPlotAddInfo" %in% state$plotTypes) {
 					
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
@@ -710,8 +784,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				} else {
 					
-					plots.ttest[[j]]$status <- "running"
-					results[["plots"]] <- plots.ttest
+					results[["inferentialPlots"]][["collection"]][[i]][["PriorPosteriorPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -725,9 +798,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 						p <- try(silent= FALSE, expr= {
 							
 							image <- .beginSaveImage(530, 400)
-							
 							.plotPosterior.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, addInformation=options$plotPriorAndPosteriorAdditionalInfo, BF=BF10post[i], BFH1H0=BFH1H0)
-							
 							plot[["data"]] <- .endSaveImage(image)
 							})
 							
@@ -758,7 +829,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j]] <- plot
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["PriorPosteriorPlot"]] <- plots.ttest[[j]]
+				results[["inferentialPlots"]][["collection"]] <- plotGroups
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -781,8 +853,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				} else {
 					
-					plots.ttest[[j]]$status <- "running"
-					results[["plots"]] <- plots.ttest
+					results[["inferentialPlots"]][["collection"]][[i]][["BFrobustnessPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -790,14 +861,30 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plot <- plots.ttest[[j]]
 					
 					if (status$unplotable == FALSE) {
-						
-						image <- .beginSaveImage(530, 400)
-						
-						.plotBF.robustnessCheck.ttest(x=c1, y=c2, BF10post=BF10post[i], paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
-						
-						content <- .endSaveImage(image)
-						
-						plot[["data"]]  <- content
+					
+						p <- try(silent= FALSE, expr= {
+							
+							image <- .beginSaveImage(530, 400)
+							.plotBF.robustnessCheck.ttest(x=c1, y=c2, BF10post=BF10post[i], paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BFH1H0=BFH1H0)
+							content <- .endSaveImage(image)
+							plot[["data"]]  <- content
+							})
+							
+							
+						if (class(p) == "try-error") {
+							
+							errorMessage <- .extractErrorMessage(p)
+							
+							if (errorMessage == "not enough data") {
+								
+								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+							} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
+								
+								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+							}
+							
+							plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						}
 						
 					} else if (status$unplotable && "unplotableMessage" %in% names(status)) {
 						
@@ -810,7 +897,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j]] <- plot
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["BFrobustnessPlot"]] <- plots.ttest[[j]]
+				results[["inferentialPlots"]][["collection"]] <- plotGroups
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -822,7 +910,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				
 				
 				if (!is.null(state) && tablePairs[[i]] %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && options$plotSequentialAnalysisRobustness && "sequentialRobustnessPlot" %in% state$plotTypes) {
+					&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && options$plotSequentialAnalysisRobustness &&
+					"sequentialRobustnessPlot" %in% state$plotTypes) {
 					
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# then, if the requested plot already exists, use it
@@ -832,7 +921,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j]] <- state$plotsTtest[[stateIndex]]
 					
 				} else if (!is.null(state) && tablePairs[[i]] %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-							&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && !options$plotSequentialAnalysisRobustness  && "sequentialPlot" %in% state$plotTypes) {
+							&& diff$bayesFactorType == FALSE && diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE))) && !options$plotSequentialAnalysisRobustness &&
+							"sequentialPlot" %in% state$plotTypes) {
 					
 					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
 					# if the requested plot already exists use it
@@ -843,8 +933,7 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 				} else {
 					
-					plots.ttest[[j]]$status <- "running"
-					results[["plots"]] <- plots.ttest
+					results[["inferentialPlots"]][["collection"]][[i]][["BFsequentialPlot"]][["status"]] <- "running"
 					
 					if ( ! .shouldContinue(callback(results)))
 						return()
@@ -853,13 +942,31 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					
 					if (status$unplotable == FALSE && sequentialIsViable) {
 						
-						image <- .beginSaveImage(530, 400)
+						p <- try(silent= FALSE, expr= {
+							
+							image <- .beginSaveImage(530, 400)
+							.plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BF10post=BF10post[i], plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=
+							BFH1H0)
+							content <- .endSaveImage(image)
+							plot[["data"]]  <- content
+							})
+							
+						if (class(p) == "try-error") {
+							
+							errorMessage <- .extractErrorMessage(p)
+							
+							if (errorMessage == "not enough data") {
+								
+								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+							} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
+								
+								errorMessage <- "Plotting is not possible: The Bayes factor is too small"
+							}
+							
+							plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+						}
 						
-						.plotSequentialBF.ttest(x=c1, y=c2, paired=TRUE, oneSided=oneSided, rscale=options$priorWidth, BF10post=BF10post[i], plotDifferentPriors=options$plotSequentialAnalysisRobustness, BFH1H0=BFH1H0)
 						
-						content <- .endSaveImage(image)
-						
-						plot[["data"]]  <- content
 					}
 					
 					if (sequentialIsViable == FALSE) {
@@ -877,7 +984,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 					plots.ttest[[j]] <- plot
 				}
 				
-				results[["plots"]] <- plots.ttest
+				plotGroups[[i]][["BFsequentialPlot"]] <- plots.ttest[[j]]
+				results[["inferentialPlots"]][["collection"]] <- plotGroups
 				
 				if ( ! .shouldContinue(callback(results)))
 					return()
@@ -885,68 +993,17 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 				j <- j + 1
 			}
 			
-			if (options$descriptivesPlots) {
-				
-				if (!is.null(state) && tablePairs[[i]] %in% state$plotPairs && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$missingValues == FALSE && diff$plotWidth == FALSE && diff$plotHeight == FALSE && diff$descriptivesPlotsCredibleInterval == FALSE))) && options$descriptivesPlots && "descriptivesPlot" %in% state$plotTypes) {
-					
-					
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-					# then, if the requested plot already exists, use it
-					
-					index <- which(state$plotPairs == tablePairs[[i]] & state$plotTypes == "descriptivesPlot")
-					
-					plots.ttest[[j]] <- state$plotsTtest[[index]]
-					
-					
-				} else {
-					
-					plots.ttest[[j]]$status <- "running"
-					results[["plots"]] <- plots.ttest
-					
-					if ( ! .shouldContinue(callback(results)))
-						return()
-					
-					plot <- plots.ttest[[j]]
-					
-					p <- try(silent= FALSE, expr= {
-							
-							image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-							
-							.plot2GroupMeansBayesIndTtest(v1 = c1, v2 = c2, nameV1 = pair[[1]], nameV2 = pair[[2]], descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-							
-							plot[["data"]] <- .endSaveImage(image)
-						})
-						
-					if (class(p) == "try-error") {
-						
-						errorMessageTmp <- .extractErrorMessage(p)
-						errorMessage <- paste0("Plotting not possible: ", errorMessageTmp)
-						plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-					}
-					
-					plot[["status"]] <- "complete"
-					
-					plots.ttest[[j]] <- plot
-					
-				}
-				
-				results[["plots"]] <- plots.ttest
-				
-				if ( ! .shouldContinue(callback(results)))
-					return()
-				
-				j <- j + 1
-				
-			}
 		}
 	}
 	
 	results[["ttest"]] <- ttest
-	results[["plots"]] <- plots.ttest
 	
 	keep <- NULL
 	
 	for (plot in plots.ttest)
+		keep <- c(keep, plot$data)
+	
+	for (plot in descriptivesPlots)
 		keep <- c(keep, plot$data)
 	
 	if (perform == "init") {
@@ -956,7 +1013,8 @@ TTestBayesianPairedSamples <- function(dataset=NULL, options, perform="run", cal
 	} else {
 	
 		return(list(results=results, status="complete", state=list(options=options, results=results, plotsTtest=plots.ttest, plotTypes=plotTypes, plotPairs=plotPairs,
-		pairStatuses=pair.statuses, BF10post=BF10post, tablePairs=tablePairs, errorFootnotes=errorFootnotes), keep=keep))
+		descriptPlotPairs=descriptPlotPairs, descriptivesPlots=descriptivesPlots, pairStatuses=pair.statuses, BF10post=BF10post, tablePairs=tablePairs,
+		errorFootnotes=errorFootnotes), keep=keep))
 	}
 }
 

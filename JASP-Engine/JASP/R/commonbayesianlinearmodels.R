@@ -1,3 +1,20 @@
+#
+# Copyright (C) 2013-2015 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
 .readBayesianRepeatedMeasuresDataOptions <- function (dataset = NULL, options = list (), perform = "init") {
 	if (("" %in% options$repeatedMeasuresCells) == FALSE) {
 		rm.vars <- options$repeatedMeasuresCells
@@ -569,7 +586,7 @@
 
 	if (!status$ready)
 		modelTable [["error"]] <- list (errorType = "badData", errorMessage = status$error.message)
-
+	
 	return (list (modelTable = modelTable, model = model))
 }
 
@@ -643,6 +660,8 @@
 		dim (posterior.probabilities) <- c (1, no.models)
 		prior.inclusion.probabilities <- prior.probabilities %*% effects.matrix
 		posterior.inclusion.probabilities <- posterior.probabilities %*% effects.matrix
+		posterior.inclusion.probabilities[posterior.inclusion.probabilities > 1] <- 1
+		posterior.inclusion.probabilities[posterior.inclusion.probabilities < 0] <- 0
 		bayes.factor.inclusion <- (posterior.inclusion.probabilities / (1 - posterior.inclusion.probabilities)) /
 			(prior.inclusion.probabilities / (1 - prior.inclusion.probabilities))
 		model.complexity <- rowSums (effects.matrix)

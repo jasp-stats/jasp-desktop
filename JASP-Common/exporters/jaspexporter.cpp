@@ -1,3 +1,19 @@
+//
+// Copyright (C) 2015 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 #include "jaspexporter.h"
 
@@ -18,8 +34,8 @@
 
 using namespace std;
 
-const Version JASPExporter::dataArchiveVersion = Version("1.0.1");
-const Version JASPExporter::jaspArchiveVersion = Version("1.0.1");
+const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
+const Version JASPExporter::jaspArchiveVersion = Version("2.0.0");
 
 void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
@@ -246,7 +262,12 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 		archive_entry_free(entry);
 
 		char imagebuff[8192];
-		for (Json::Value::iterator iter = analysesJson.begin(); iter != analysesJson.end(); iter++)
+
+		Json::Value analysesDataList = analysesJson;
+		if (!analysesDataList.isArray())
+			analysesDataList = analysesJson["analyses"];
+
+		for (Json::Value::iterator iter = analysesDataList.begin(); iter != analysesDataList.end(); iter++)
 		{
 			Json::Value &analysisJson = *iter;
 			vector<string> paths = tempfiles_retrieveList(analysisJson["id"].asInt());

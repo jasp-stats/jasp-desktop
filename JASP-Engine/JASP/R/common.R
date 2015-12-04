@@ -1,7 +1,23 @@
+#
+# Copyright (C) 2013-2015 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 run <- function(name, options.as.json.string, perform="run") {
 
-	options <- RJSONIO::fromJSON(options.as.json.string, asText=TRUE, simplify=FALSE, encoding="UTF-8")
+	options <- rjson::fromJSON(options.as.json.string)
 	analysis <- eval(parse(text=name))
 	
 	env <- new.env()
@@ -38,7 +54,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		error <- gsub("\n", "\\\\n", as.character(results), fixed=TRUE)
 		errorMessage <- paste("This analysis terminated unexpectedly. Please contact its author.", error, sep="\\\\n\\\\n")
 	
-		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
+		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 		
 		errorResponse
 		
@@ -77,7 +93,7 @@ run <- function(name, options.as.json.string, perform="run") {
 			results <- .addCitationToResults(results)
 		}
 		
-		json <- try({ RJSONIO::toJSON(results, digits=12) })
+		json <- try({ rjson::toJSON(results) })
 		
 		if (class(json) == "try-error") {
 		
@@ -93,7 +109,7 @@ run <- function(name, options.as.json.string, perform="run") {
 
 checkPackages <- function() {
 
-	RJSONIO::toJSON(.checkPackages())
+	rjson::toJSON(.checkPackages())
 }
 
 .addCitationToTable <- function(table) {
@@ -324,7 +340,7 @@ checkPackages <- function() {
 .shortToLong <- function(dataset, rm.factors, rm.vars, bt.vars) {
 
 	f  <- rm.factors[[length(rm.factors)]]
-	df <- data.frame(as.factor(unlist(f$levels)))
+	df <- data.frame(factor(unlist(f$levels), unlist(f$levels)))
 	
 	names(df) <- .v(f$name)
 	
@@ -350,8 +366,7 @@ checkPackages <- function() {
 		row.count <- dim(df)[1]
 
 		cells <- rep(unlist(f$levels), each=row.count / length(f$levels))
-		cells <- as.factor(cells)
-		
+		cells <- factor(cells, unlist(f$levels))
 		
 		df <- cbind(cells, df)
 		names(df)[[1]] <- .v(f$name)
@@ -502,14 +517,14 @@ callback <- function(results=NULL) {
 		if (is.null(results)) {
 			json.string <- "null"
 		} else {
-			json.string <- RJSONIO::toJSON(results, digits=12)
+			json.string <- rjson::toJSON(results)
 		}
 	
 		response <- .callbackNative(json.string)
 		
 		if (is.character(response)) {
 		
-			ret <- RJSONIO::fromJSON(base::paste("[", response, "]"), encoding="UTF-8", asText=TRUE, simplify=FALSE)[[1]]
+			ret <- rjson::fromJSON(base::paste("[", response, "]"))[[1]]
 			
 		} else {
 		
@@ -522,7 +537,7 @@ callback <- function(results=NULL) {
 
 .cat <- function(object) {
 	
-	cat(RJSONIO::toJSON(object))
+	cat(rjson::toJSON(object))
 }
 
 .dataFrameToRowList <- function(df, discard.column.names=FALSE) {

@@ -12,23 +12,27 @@
 			"type": "Variable"
 		},
 		{
-			"name": "equalityOfVariances",
-			"options": [ "assumeEqual", "noAssumption", "reportBoth" ],
-			"default": "assumeEqual",
-			"type": "List"
+			"name": "students",
+			"type": "Boolean",
+			"default" : true
 		},
 		{
-			"default": false,
+			"name": "welchs",
+			"type": "Boolean"
+		},
+		{
+			"name": "mannWhitneyU",
+			"type": "Boolean"
+		},
+		{
 			"name": "equalityOfVariancesTests",
 			"type": "Boolean"
 		},
 		{
-			"default": false,
 			"name": "meanDifference",
 			"type": "Boolean"
 		},
 		{
-			"default": false,
 			"name": "confidenceInterval",
 			"type": "Boolean"
 		},
@@ -45,7 +49,6 @@
 			"value": 0.950
 		},
 		{
-			"default": false,
 			"name": "descriptives",
 			"type": "Boolean"
 		},

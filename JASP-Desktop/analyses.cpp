@@ -1,3 +1,21 @@
+//
+// Copyright (C) 2013-2015 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
 #include "analyses.h"
 
 #include "analysisloader.h"
@@ -47,6 +65,7 @@ Analysis *Analyses::create(const QString &name, int id, Json::Value *options, An
 
 	analysis->optionsChanged.connect(boost::bind(&Analyses::analysisOptionsChangedHandler, this, _1));
 	analysis->resultsChanged.connect(boost::bind(&Analyses::analysisResultsChangedHandler, this, _1));
+	analysis->userDataLoaded.connect(boost::bind(&Analyses::analysisUserDataLoadedHandler, this, _1));
 
 	analysisAdded(analysis);
 
@@ -164,6 +183,11 @@ void Analyses::assignDefaults(Analysis *analysis)
 		}
 
 	}*/
+}
+
+void Analyses::analysisUserDataLoadedHandler(Analysis *analysis)
+{
+	analysisUserDataLoaded(analysis);
 }
 
 void Analyses::analysisResultsChangedHandler(Analysis *analysis)

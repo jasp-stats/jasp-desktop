@@ -8,12 +8,23 @@
 			"type": "VariablesGroups"
 		},
 		{
-			"default": false,
+			"name": "students",
+			"type": "Boolean",
+			"default" : true
+		},
+		{
+			"name": "welchs",
+			"type": "Boolean"
+		},
+		{
+			"name": "wilcoxonSignedRank",
+			"type": "Boolean"
+		},
+		{
 			"name": "meanDifference",
 			"type": "Boolean"
 		},
 		{
-			"default": false,
 			"name": "confidenceInterval",
 			"type": "Boolean"
 		},
@@ -26,7 +37,6 @@
 			"value": 0.950
 		},
 		{
-			"default": false,
 			"name": "descriptives",
 			"type": "Boolean"
 		},
@@ -35,7 +45,6 @@
 			"type": "Boolean"
 		},
 		{
-			"default": false,
 			"name": "effectSize",
 			"type": "Boolean"
 		},

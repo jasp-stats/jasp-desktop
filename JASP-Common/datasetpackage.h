@@ -1,3 +1,20 @@
+//
+// Copyright (C) 2013-2015 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #ifndef FILEPACKAGE_H
 #define FILEPACKAGE_H
 
@@ -12,7 +29,7 @@ class DataSetPackage
 public:
 	DataSetPackage();
 
-	DataSet *dataSet;
+	DataSet *dataSet = NULL;
 	std::string analysesHTML;
 	Json::Value analysesData;
 	Version archiveVersion;
@@ -24,15 +41,19 @@ public:
 
 	void reset();
 	void setModified(bool value);
-	bool isModified();
+	bool isModified() const;
 	void setLoaded();
-	bool isLoaded();
+	bool isLoaded() const;
+	bool isReady() const;
+	void setWaitingForReady();
+	void setAnalysesHTMLReady();
 
 	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;
 
 private:
 	bool _isModified = false;
 	bool _isLoaded = false;
+	bool _analysesHTMLReady = false;
 };
 
 #endif // FILEPACKAGE_H

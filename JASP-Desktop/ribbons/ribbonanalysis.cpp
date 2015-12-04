@@ -1,3 +1,21 @@
+//
+// Copyright (C) 2013-2015 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
 #include "ribbonanalysis.h"
 #include "ui_ribbonanalysis.h"
 
@@ -10,7 +28,15 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->bayesianPanel->hide();
+	addRibbonButton(ui->Descriptives);
+	addRibbonButton(ui->ttestButton);
+	addRibbonButton(ui->anovaButton);
+	addRibbonButton(ui->frequenciesButton);
+	addRibbonButton(ui->regressionButton);
+	addRibbonButton(ui->BFFromT);
+
+	ui->BFFromT->setDataSetNotNeeded();
+
 
 	connect(ui->Descriptives, SIGNAL(clicked()), this, SLOT(itemSelected()));
 
@@ -27,7 +53,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian Paired Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianPairedSamples");
 	menu->addAction(QString("Bayesian One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianOneSample");
 
-	ui->classicalTTestButton->setMenu(menu);
+	ui->ttestButton->setMenu(menu);
 
 
 	menu = new QMenu(this);
@@ -42,36 +68,43 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("Bayesian Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasuresBayesian");
 	menu->addAction(QString("Bayesian ANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaBayesian");
 
-	ui->classicalAnovaButton->setMenu(menu);
+	ui->anovaButton->setMenu(menu);
 
 
 	menu = new QMenu(this);
 
 	menu->addAction(QString("Correlation Matrix"), this, SLOT(itemSelected()))->setObjectName("Correlation");
 	menu->addAction(QString("Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinear");
-#ifdef QT_DEBUG
 	menu->addAction(QString("Log Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinear");
-#endif
 
 	menu->addSeparator();
 
 	menu->addAction(QString("Bayesian Correlation Matrix"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesian");
 	menu->addAction(QString("Bayesian Correlation Pairs"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesianPairs");
 	menu->addAction(QString("Bayesian Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinearBayesian");
-#ifdef QT_DEBUG
 	menu->addAction(QString("Bayesian Log Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinearBayesian");
-#endif
 
-	ui->classicalRegressionButton->setMenu(menu);
+	ui->regressionButton->setMenu(menu);
 
 
 	menu = new QMenu(this);
 
 	menu->addAction(QString("Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTables");
+	menu->addAction(QString("Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BinomialTest");
 	menu->addSeparator();
 	menu->addAction(QString("Bayesian Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTablesBayesian");
+	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BinomialTestBayesian");
 
-	ui->classicalCrosstabsButton->setMenu(menu);
+	ui->frequenciesButton->setMenu(menu);
+
+#ifndef QT_DEBUG
+	ui->otherPanel->hide();
+#else
+	menu = new QMenu(this);
+	menu->addAction(QString("BF From t"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
+
+	ui->BFFromT->setMenu(menu);
+#endif
 }
 
 RibbonAnalysis::~RibbonAnalysis()

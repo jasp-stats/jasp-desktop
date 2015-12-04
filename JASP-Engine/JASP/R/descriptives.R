@@ -1,6 +1,22 @@
+#
+# Copyright (C) 2013-2015 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 Descriptives <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-
+	
 	variables <- unlist(options$variables)
 	
 	if (is.null(dataset)) {
@@ -19,9 +35,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	state <- .retrieveState()
 	
-
+	
 	run <- perform == "run"
-
+	
 	results <- list()
 	
 	#### META
@@ -32,28 +48,27 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	meta[[2]] <- list(name="stats", type="table")
 	meta[[3]] <- list(name="frequenciesHeading", type="h1")
 	meta[[4]] <- list(name="tables", type="tables")
-	meta[[5]] <- list(name="plots", type="images")
-	meta[[6]] <- list(name="matrixPlot", type="image")
+	meta[[5]] <- list(name="plots", type="object", meta=list(list(name="distributionPlots", type="collection", meta="image"), list(name="matrixPlot", type="image"))) 
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Descriptives"
-
-
+	
+	
 	#### STATS TABLE
 	
 	last.stats.table <- NULL
 	if (is.list(state))
 		last.stats.table <- state[["results"]][["stats"]]
-
+	
 	results[["stats"]] <- .descriptivesDescriptivesTable(dataset, options, run, last.stats.table)
 	
-
+	
 	#### FREQUENCIES TABLES
 	
 	last.frequency.tables <- NULL
 	if (is.list(state))
 		last.frequency.tables <- state[["results"]][["tables"]]
-
+	
 	if (options$frequencyTables) {
 	
 		frequency.tables <- .descriptivesFrequencyTables(dataset.factors, options, run, last.frequency.tables)
@@ -64,25 +79,35 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		results[["tables"]] <- frequency.tables
 	}
 	
-
-    ####  FREQUENCY PLOTS
-
+	####  FREQUENCY PLOTS
+	
 	last.plots <- NULL
 	if (is.list(state))
-		last.plots <- state$results$plots
-
-	results[["plots"]] <- .descriptivesFrequencyPlots(dataset.factors, options, run, last.plots)
+		last.plots <- state$results$plots$distributionPlots$collection
 		
-	keep <- NULL
-
-	for (plot in results$plots)
-		keep <- c(keep, plot$data)
+	
+	if (length(variables) > 1) {
+	
+		distrPlotsTitle <- "Distribution Plots"
+		
+	} else {
+	
+		distrPlotsTitle <- "Distribution Plot"
+	}
+	
+	distrPlots <- list(collection=.descriptivesFrequencyPlots(dataset.factors, options, run, last.plots), title=distrPlotsTitle)
 	
 	
 	####  MATRIX PLOT
 	
-	results[["matrixPlot"]] <- .descriptivesMatrixPlot(dataset, options, run)
+	corrPlot <- .descriptivesMatrixPlot(dataset, options, run)
 	
+	results[["plots"]] <- list(distributionPlots=distrPlots, matrixPlot=corrPlot, title="Plots")
+	
+	keep <- NULL
+	
+	for (plot in results$plots$distributionPlots$collection)
+		keep <- c(keep, plot$data)
 	
 	
 	if (perform == "init") {
@@ -103,23 +128,23 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 }
 
 .descriptivesDescriptivesTable <- function(dataset, options, run, last.table=NULL) {
-
+	
 	variables <- unlist(options$variables)
 	equalGroupsNo <- options$percentileValuesEqualGroupsNo 
 	percentilesPercentiles  <- options$percentileValuesPercentilesPercentiles
-
+	
 	stats.results <- list()
 	
 	stats.results[["title"]] <- "Descriptive Statistics"
 	stats.results[["casesAcrossColumns"]] <- TRUE
-
+	
 	fields <- list()
-
+	
 	fields[[length(fields) + 1]] <- list(name="Variable", title="", type="string")
 	fields[[length(fields) + 1]] <- list(name="Valid", type="integer")
 	fields[[length(fields) + 1]] <- list(name="Missing", type="integer")
-
-
+	
+	
 	if (options$mean)
 		fields[[length(fields) + 1]] <- list(name="Mean", type="number", format="sf:4")
 	if (options$standardErrorMean)
@@ -172,7 +197,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		for (i in percentilesPercentiles) 
 			fields[[length(fields) + 1]] <- list(name=paste("pc", i, sep=""), title=paste(i, "th percentile", sep=""), type="number", format="sf:4")
 	} 
-  
+	
 	stats.results[["schema"]] <- list(fields=fields)
 
 	footnotes <- .newFootnotes()
@@ -182,11 +207,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	
 	stats.values <- list()
-
+	
 	for (variable in variables) {
 		
 		variable.results <- list(Variable=variable)
-
+		
 		for (col in last.table$data) {
 		
 			if (col$Variable == variable) {
@@ -195,11 +220,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				break
 			}
 		}
-
+		
 		column <- dataset[[ .v(variable) ]]
-
+		
 		if (perform == "run") {
-
+			
 			rows <- nrow(dataset)
 			na.omitted <- na.omit(column)
 			
@@ -207,12 +232,12 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			variable.results[["Missing"]] = rows - length(na.omitted)
 		}
 		else {
-
+		
 			na.omitted <- column
 		}
-
-
-
+		
+		
+		
 		if (options$mean) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
@@ -234,7 +259,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		if (options$median) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
-
+			
 				if (perform == "run")
 					variable.results[["Median"]] <- .clean(median(na.omitted))
 				
@@ -244,7 +269,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				.addFootnote(footnotes, na.for.categorical, note.symbol)
 			}
 		} else {
-
+			
 			variable.results[["Median"]] <- NULL
 		}
 		
@@ -253,15 +278,15 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			if (base::is.factor(na.omitted) == FALSE) {
 		
 				if (perform == "run") {
-
+				
 					mode <- as.numeric(names(table(na.omitted)[table(na.omitted)==max(table(na.omitted))]))
-
+				
 					if (length(mode) > 1) {
-
+					
 						index <- .addFootnote(footnotes, "More than one mode exists, only the first is reported")
 						variable.results[[".footnotes"]] <- list(Mode=list(index))
 					}
-		
+					
 					variable.results[["Mode"]] <- .clean(mode[1])
 					
 				}
@@ -279,7 +304,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		if (options$sum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
-
+			
 				if (perform == "run")
 					variable.results[["Sum"]] <- .clean(sum(na.omitted))
 				
@@ -297,7 +322,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		if (options$maximum) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
-
+			
 				if (perform == "run")
 					variable.results[["Maximum"]] <- .clean(max(na.omitted))
 				
@@ -332,7 +357,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		if (options$range) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
-
+			
 				if (perform == "run")
 					variable.results[["Range"]] <- .clean(range(na.omitted)[2]-range(na.omitted)[1])
 				
@@ -368,7 +393,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		if (options$standardErrorMean) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
-
+			
 				if (perform == "run")
 					variable.results[["Std. Error of Mean"]] <- .clean(sd(na.omitted)/sqrt(length(na.omitted)))
 				
@@ -386,7 +411,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		if (options$variance) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
-
+			
 				if (perform == "run")
 					variable.results[["Variance"]] <- .clean(var(na.omitted))
 				
@@ -397,14 +422,14 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			}
 			
 		} else {
-
+		
 			variable.results[["Variance"]] <- NULL
 		}
 		
 		if (options$kurtosis) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
-
+			
 				if (perform == "run") {
 				
 					variable.results[["Kurtosis"]] <- .clean(.descriptivesKurtosis(na.omitted))
@@ -483,7 +508,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			if (substr(row, 1, 2) == "eg" && ((row %in% equalGroupNames) == FALSE))
 				variable.results[[row]] <- NULL
 		}
-
+		
 		if (options$percentileValuesEqualGroups) {
 		
 			if (base::is.factor(na.omitted) == FALSE) {
@@ -534,28 +559,28 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		}
 		
 		stats.values[[length(stats.values) + 1]] <- variable.results
-			
-	
+		
+		
 		stats.results[["data"]] <- stats.values
 		stats.results[["footnotes"]] <- as.list(footnotes)
 	}
-
+	
 	stats.results
 }
 
 .descriptivesFrequencyTables <- function(dataset, options, run, last.tables) {
-
+	
 	frequency.tables <- list()
 		
 	for (variable in options$variables) {
-
+	
 		column <- dataset[[ .v(variable) ]]
 	
 		if (base::is.factor(column) == FALSE)
 			next
 		
 		frequency.table <- list()
-
+		
 		for (last in last.tables) {
 		
 			if (last$name == variable) {
@@ -564,65 +589,65 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				break
 			}
 		}
-	
+		
 		fields <- list(
 						list(name="Level", type="string", title=""),
 						list(name="Frequency", type="integer"),
 						list(name="Percent", type="number", format="dp:1"),
 						list(name="Valid Percent", type="number", format="dp:1"),
 						list(name="Cumulative Percent", type="number", format="dp:1"))
-
+		
 		frequency.table[["title"]] <- paste("Frequencies for", variable)
 		frequency.table[["name"]]  <- variable
 		frequency.table[["schema"]] <- list(fields=fields)
-	
+		
 		lvls <- levels(dataset[[ .v(variable) ]])
-
+		
 		if (run) {
-
+		
 			t <- table(column)
 			total <- sum(t)
-
+			
 			ns <- list()
 			freqs <- list()
 			percent <- list()
 			validPercent <- list()
 			cumPercent <- list()
-
+			
 			cumFreq <- 0
-
+			
 			for (n in names(t)) {
-
+			
 				ns[[length(ns)+1]] <- n
 				freq <- as.vector(t[n])
 				
 				cumFreq <- cumFreq + freq
-
+				
 				freqs[[length(freqs) + 1]] <- freq
 				percent[[length(percent) + 1]] <- freq / total * 100
 				validPercent[[length(validPercent) + 1]] <- freq / total * 100
 				cumPercent[[length(cumPercent)+1]] <- cumFreq / total * 100
 			}
-
+			
 			ns[[length(ns)+1]] <- "Total"
 			freqs[[length(freqs)+1]] <- total
 			percent[[length(percent)+1]] <- 100
 			validPercent[[length(validPercent)+1]] <- 100
 			cumPercent[[length(cumPercent)+1]] <- ""
-
+			
 			data <- list()
-
+			
 			for (i in seq(freqs))
 				data[[length(data)+1]] <- list(Level=ns[[i]], "Frequency"=freqs[[i]], "Percent"=percent[[i]], "Valid Percent"=validPercent[[i]], "Cumulative Percent"=cumPercent[[i]])
-
+			
 			frequency.table[["data"]] <- data
-
+		
 		} else {
-
+			
 			if (("data" %in% names(frequency.table)) == FALSE) {
 			
 				data <- list()
-			
+				
 				for (level in lvls)
 					data[[length(data)+1]] <- list(level=level)
 				
@@ -643,17 +668,18 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 }
 
 .descriptivesFrequencyPlots <- function(dataset, options, run, last.plots) {
-
+	
 	frequency.plots <- NULL
-
+	
 	if (options$plotVariables) {
 	
 		for (variable in options$variables) {
-
+			
 			plot <- list()
 			plotted <- FALSE
-
+			
 			for (last.plot in last.plots) {
+			
 			
 				if (variable == last.plot$name) {
 				
@@ -673,7 +699,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			plot[["custom"]] <- list(width="plotWidth", height="plotHeight")
 				
 			column <- na.omit(dataset[[ .v(variable) ]])
-
+			
 			if (plotted) {
 			
 				# already plotted, no nothing
@@ -742,9 +768,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 }
 
 .descriptivesMatrixPlot <- function(dataset, options, run) {
-
+	
 	matrix.plot <- NULL
-
+	
 	if (options$plotCorrelationMatrix) {
 		
 		if (run) {
@@ -758,7 +784,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 }
 
 .descriptivesKurtosis <- function(x) {
-
+	
 	# Kurtosis function as in SPSS: 
 	# http://www.ats.ucla.edu/stat/mult_pkg/faq/general/kurtosis.htm
 	# http://en.wikipedia.org/wiki/Kurtosis#Estimators_of_population_kurtosis
@@ -775,7 +801,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 }
 
 .descriptivesSkewness <- function(x) {
-
+	
 	# Skewness function as in SPSS (for samlpes spaces): 
 	# http://suite101.com/article/skew-and-how-skewness-is-calculated-in-statistical-software-a231005
 	
@@ -789,7 +815,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 }
 
 .descriptivesSES <- function(x) {
-
+	
 	# Standard Error of Skewness
 	# Formula found http://web.ipac.caltech.edu/staff/fmasci/home/statistics_refs/SkewStatSignif.pdf
 	
@@ -799,7 +825,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 }
 
 .descriptivesSEK <- function(x) {
-
+	
 	# Standard Error of Kurtosis
 	# Formula found http://web.ipac.caltech.edu/staff/fmasci/home/statistics_refs/SkewStatSignif.pdf
 	
@@ -809,7 +835,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 } 
 
 .barplotJASP <- function(column, variable, dontPlotData= FALSE){
-
+	
 	if (dontPlotData) {
 	
 		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
@@ -821,7 +847,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		
 		return()
 	}
-
+	
 	maxFrequency <- max(summary(column))
 	
 	i <- 1
@@ -879,7 +905,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 }
 
 .plotMarginal <- function(variable, variableName, cexYlab= 1.3, lwd= 2, rugs= FALSE){
-
+	
 	par(mar= c(5, 4.5, 4, 2) + 0.1)
 	
 	density <- density(variable)
@@ -950,12 +976,12 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 #### Matrix Plot function #####
 .matrixPlot <- function(dataset, perform, options) {
-
+	
 	if (!options$plotCorrelationMatrix)
 		return()
 	
 	matrix.plot <- list()
-
+	
 	if (perform == "init") {
 	
 		variables <- unlist(options$variables)
@@ -963,7 +989,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		l <- length(variables)
 		
 		if (l > 0) {
-
+		
 			if (l <= 2) {
 			
 				width <- 580
@@ -979,7 +1005,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 			plot <- list()
 			
-			plot[["title"]] <- ""
+			plot[["title"]] <- "Correlation Plot"
 			plot[["width"]]  <- width
 			plot[["height"]] <- height
 			
@@ -993,7 +1019,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	
 	if (perform == "run" && length(unlist(options$variables)) > 0) {
-
+		
 		variables <- unlist(options$variables)
 		
 		l <- length(variables)
@@ -1053,7 +1079,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			
 			plot <- list()
 			
-			plot[["title"]] <- ""
+			plot[["title"]] <- "Correlation Plot"
 			plot[["width"]]  <- width
 			plot[["height"]] <- height
 			
@@ -1082,7 +1108,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				} else if (l > 1) {
 				
 					par(mfrow= c(l,l), cex.axis= 1.3, mar= c(3, 4, 2, 1.5) + 0.1, oma= c(0.2, 2.2, 2, 0))
-				
+					
 					for (row in seq_len(l)) {
 					
 						for (col in seq_len(l)) {
@@ -1122,7 +1148,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					textpos <- seq(1/(l*2), (l*2-1)/(l*2), 2/(l*2))
 					
 					for (t in seq_along(textpos)) {
-							
+						
 						mtext(text = .unv(variables)[t], side = 3, outer = TRUE, at= textpos[t], cex=1.5, line= -0.8)
 						mtext(text = .unv(variables)[t], side = 2, outer = TRUE, at= rev(textpos)[t], cex=1.5, line= -0.1, las= 0)
 					}
@@ -1139,6 +1165,3 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	
 	matrix.plot
 }
-
-
-

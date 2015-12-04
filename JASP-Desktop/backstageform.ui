@@ -16,9 +16,6 @@
     <verstretch>1</verstretch>
    </sizepolicy>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
-  </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <property name="spacing">
     <number>0</number>
@@ -36,7 +33,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QFrame" name="leftPanel">
+    <widget class="QWidget" name="leftPanel" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -50,185 +47,17 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">QFrame {
-	margin: 0;
+      <string notr="true">QWidget {
 	background-color: #f4f6f7;
-}
-
-QPushButton {
-	text-align: left ;
 }
 
 QWidget#leftPanel {
 	border-right: 1px solid #A3A4A5 ;
 }</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <property name="leftMargin">
-       <number>12</number>
-      </property>
-      <property name="topMargin">
-       <number>12</number>
-      </property>
-      <property name="rightMargin">
-       <number>12</number>
-      </property>
-      <property name="bottomMargin">
-       <number>12</number>
-      </property>
-      <item>
-       <widget class="StealthButton" name="buttonNew">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>New</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources/icons.qrc">
-          <normaloff>:/icons/document-new.png</normaloff>:/icons/document-new.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="StealthButton" name="buttonOpen">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Open</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources/icons.qrc">
-          <normaloff>:/icons/document-open.png</normaloff>:/icons/document-open.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="StealthButton" name="buttonSave">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Save</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources/icons.qrc">
-          <normaloff>:/icons/document-save.png</normaloff>:/icons/document-save.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="StealthButton" name="buttonSaveAs">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Save As</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources/icons.qrc">
-          <normaloff>:/icons/document-save-as.png</normaloff>:/icons/document-save-as.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="StealthButton" name="buttonExport">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Export</string>
-        </property>
-        <property name="icon">
-         <iconset theme="help-about">
-          <normaloff>../../JASP/qtui</normaloff>../../JASP/qtui</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="StealthButton" name="buttonClose">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Close</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources/icons.qrc">
-          <normaloff>:/icons/dialog-close.png</normaloff>:/icons/dialog-close.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <widget class="VerticalTabBar" name="fileMenu" native="true"/>
       </item>
      </layout>
     </widget>
@@ -249,128 +78,69 @@ QWidget#leftPanel {
        <number>0</number>
       </property>
       <item row="0" column="0">
-       <widget class="QWidget" name="widget" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <widget class="QWidget" name="widget_4" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
         </property>
         <layout class="QGridLayout" name="gridLayout">
          <property name="leftMargin">
-          <number>24</number>
-         </property>
-         <property name="rightMargin">
-          <number>24</number>
-         </property>
-         <property name="verticalSpacing">
           <number>0</number>
          </property>
-         <item row="1" column="0">
-          <widget class="DataSetsSelectWidget" name="recentDataSets" native="true"/>
-         </item>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
-          <widget class="QWidget" name="widget_3" native="true">
-           <layout class="QGridLayout" name="gridLayout_4">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>3</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="recentDataSetsHeading">
-              <property name="text">
-               <string>Recent Data Sets</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+          <widget class="QStackedWidget" name="stackedWidget">
+           <widget class="QWidget" name="openWidget">
+            <layout class="QGridLayout" name="gridLayout_2">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="VerticalTabBar" name="openMenu" native="true">
+               <property name="minimumSize">
+                <size>
+                 <width>200</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QWidget" name="widget" native="true">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_4"/>
           </widget>
-         </item>
-         <item row="2" column="0">
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>369</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="Line" name="line">
-        <property name="styleSheet">
-         <string notr="true">QWidget {	color : #929292 ; }</string>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Plain</enum>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
        <widget class="QWidget" name="widget_2" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+        <property name="minimumSize">
+         <size>
+          <width>60</width>
+          <height>0</height>
+         </size>
         </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <property name="leftMargin">
-          <number>24</number>
-         </property>
-         <property name="rightMargin">
-          <number>24</number>
-         </property>
-         <property name="verticalSpacing">
-          <number>0</number>
-         </property>
-         <item row="0" column="0">
-          <widget class="QWidget" name="exampleDataSetsPadding" native="true">
-           <layout class="QGridLayout" name="gridLayout_5">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>3</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="exampleDataSetsHeading">
-              <property name="text">
-               <string>Example Data Sets</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="DataSetsSelectWidget" name="exampleDataSets" native="true"/>
-         </item>
-         <item row="2" column="0">
-          <spacer name="exampleDataSetsSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>198</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
        </widget>
       </item>
      </layout>
@@ -380,20 +150,13 @@ QWidget#leftPanel {
  </widget>
  <customwidgets>
   <customwidget>
-   <class>StealthButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/stealthbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>DataSetsSelectWidget</class>
+   <class>VerticalTabBar</class>
    <extends>QWidget</extends>
-   <header>widgets/datasetsselectwidget.h</header>
+   <header>backstage/verticaltabbar.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="resources/icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
  <slots>
   <slot>fileItemSelected()</slot>

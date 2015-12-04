@@ -1,3 +1,21 @@
+//
+// Copyright (C) 2013-2015 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
 #include "enginesync.h"
 
 #include <QApplication>
@@ -328,6 +346,29 @@ void EngineSync::startSlaveProcess(int no)
 	args << QString::number(no);
 
 #ifdef __WIN32__
+	QString rHomePath = programDir.absoluteFilePath("R");
+#elif __APPLE__
+	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources");
+#else //linux
+
+#ifndef R_HOME
+	QString rHomePath = programDir.absoluteFilePath("R/lib/libR.so");
+	if (QFileInfo(rHomePath).exists() == false)
+		rHomePath = "/usr/lib/R";
+#else
+	QString rHomePath;
+	if (QDir::isRelativePath(R_HOME))
+		rHomePath = programDir.absoluteFilePath(R_HOME);
+	else
+		rHomePath = R_HOME;
+#endif
+
+#endif
+
+	QDir rHome(rHomePath);
+
+
+#ifdef __WIN32__
 
 #if defined(ARCH_32)
 #define ARCH_SUBPATH "i386"
@@ -336,28 +377,41 @@ void EngineSync::startSlaveProcess(int no)
 #endif
 
 	env.insert("PATH", programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
-	env.insert("R_HOME", programDir.absoluteFilePath("R"));
+	env.insert("R_HOME", rHome.absolutePath());
 
 	unsigned long processId = ProcessInfo::currentPID();
     args << QString::number(processId);
 
 #undef ARCH_SUBPATH
 
-#elif __APPLE__
-	env.insert("R_HOME", programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources"));
-#else
-	env.insert("LD_LIBRARY_PATH", programDir.absoluteFilePath("R/lib") + ";" + programDir.absoluteFilePath("R/library/RInside/lib") + ";" + programDir.absoluteFilePath("R/library/Rcpp/lib"));
-	env.insert("R_HOME", programDir.absoluteFilePath("R"));
-#endif
+	env.insert("R_LIBS", rHome.absoluteFilePath("library"));
 
 	env.insert("R_ENVIRON", "something-which-doesnt-exist");
 	env.insert("R_PROFILE", "something-which-doesnt-exist");
 	env.insert("R_PROFILE_USER", "something-which-doesnt-exist");
 	env.insert("R_ENVIRON_USER", "something-which-doesnt-exist");
-	env.insert("R_LIBS", "something-which-doesnt-exist");
 	env.insert("R_LIBS_SITE", "something-which-doesnt-exist");
 	env.insert("R_LIBS_USER", "something-which-doesnt-exist");
 
+#elif __APPLE__
+
+	env.insert("R_HOME", rHome.absolutePath());
+	env.insert("R_LIBS", rHome.absoluteFilePath("library") + ":" + programDir.absoluteFilePath("R/library"));
+
+	env.insert("R_ENVIRON", "something-which-doesnt-exist");
+	env.insert("R_PROFILE", "something-which-doesnt-exist");
+	env.insert("R_PROFILE_USER", "something-which-doesnt-exist");
+	env.insert("R_ENVIRON_USER", "something-which-doesnt-exist");
+	env.insert("R_LIBS_SITE", "something-which-doesnt-exist");
+	env.insert("R_LIBS_USER", "something-which-doesnt-exist");
+
+#else  // linux
+
+	env.insert("LD_LIBRARY_PATH", rHome.absoluteFilePath("lib") + ";" + rHome.absoluteFilePath("library/RInside/lib") + ";" + rHome.absoluteFilePath("library/Rcpp/lib") + ";" + rHome.absoluteFilePath("site-library/RInside/lib") + ";" + rHome.absoluteFilePath("site-library/Rcpp/lib"));
+	env.insert("R_HOME", rHome.absolutePath());
+	env.insert("R_LIBS", programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
+
+#endif
 
 	QProcess *slave = new QProcess(this);
 	slave->setProcessEnvironment(env);

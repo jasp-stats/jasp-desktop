@@ -1,3 +1,21 @@
+//
+// Copyright (C) 2013-2015 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
 #ifndef ASYNCLOADER_H
 #define ASYNCLOADER_H
 
@@ -9,6 +27,9 @@
 #include "dataset.h"
 #include "datasetloader.h"
 #include "datasetpackage.h"
+#include "fileevent.h"
+
+#include "onlinedatamanager.h"
 
 class AsyncLoader : public QObject
 {
@@ -17,27 +38,22 @@ class AsyncLoader : public QObject
 public:
 	explicit AsyncLoader(QObject *parent = 0);
 
-	void load(DataSetPackage* package, const QString &filename);
-	void save(const QString &filename, DataSetPackage *package);
-	void exportData(const QString &filename, DataSetPackage *package);
+	void io(FileEvent *event, DataSetPackage *package);
 	void free(DataSet *dataSet);
+	void setOnlineDataManager(OnlineDataManager *odm);
 
 signals:
-	void loads(DataSetPackage*, const QString &filename);
-	void saves(const QString &filename, DataSetPackage *dataSet);
-	void exports(const QString &filename, DataSetPackage *dataSet);
+	void beginLoad(FileEvent*, DataSetPackage*);
+	void beginSave(FileEvent*, DataSetPackage*);
 	void progress(const QString &status, int progress);
-	void complete(const QString &dataSetName, DataSetPackage *packageData, const QString &filename);
-	void saveComplete(const QString &dataSetName);
-	void exportComplete(const QString &dataSetName);
-	void fail(const QString &reason);
-	void saveFail(const QString &reason);
-	void exportFail(const QString &reason);
+	void beginFileUpload(QString nodePath, QString sourcePath);
 
 private slots:
-	void loadTask(DataSetPackage *package, const QString &filename);
-	void saveTask(const QString &filename, DataSetPackage *package);
-	void exportTask(const QString &filename, DataSetPackage *package);
+	void loadTask(FileEvent *event, DataSetPackage *package);
+	void saveTask(FileEvent *event, DataSetPackage *package);
+	void loadPackage(QString id);
+	void uploadFileFinished(QString id);
+	void errorFlagged(QString msg, QString id);
 
 private:
 
@@ -45,6 +61,11 @@ private:
 	void progressHandler(std::string status, int progress);
 	QThread _thread;
 	DataSetLoader _loader;
+
+	FileEvent *_currentEvent;
+	DataSetPackage *_currentPackage;
+
+	OnlineDataManager *_odm = NULL;
 	
 };
 

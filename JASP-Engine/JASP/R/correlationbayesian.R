@@ -1,3 +1,20 @@
+#
+# Copyright (C) 2013-2015 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
 # options is a list with the following names:
 # "variables": data.frame thingie vfc
 # "pearson": TRUE/FALSE 
@@ -46,7 +63,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	meta <- list()
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="correlations", type="table")
-	meta[[3]] <- list(name="plots", type="image")
+	meta[[3]] <- list(name="plot", type="image")
 	
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Correlation Matrix"
@@ -75,14 +92,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 																										&& diff$hypothesis == FALSE && diff$kendallsTauB == FALSE && diff$missingValues == FALSE && diff$pearson == FALSE && diff$plotCorrelationMatrix == FALSE
 																										&& diff$plotDensitiesForVariables == FALSE && diff$plotPosteriors == FALSE && diff$spearman == FALSE && diff$variables == FALSE && diff$priorWidth == FALSE)))) {
 		
-		results[["plots"]] <- state$correlationPlots
+		results[["plot"]] <- state$correlationPlot
 		
 	} else {
 		
-		results[["plots"]] <- .correlationMatrixPlotBayesian(dataset, perform, options, hypothesis=options$hypothesis)
+		results[["plot"]] <- .correlationMatrixPlotBayesian(dataset, perform, options, hypothesis=options$hypothesis)
 	}
 	
-	keep <- results[["plots"]]$data
+	keep <- results[["plot"]]$data
 	
 	if (perform == "init") {
 		if (length(options$variables) < 2) {
@@ -110,7 +127,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							   footnotesExcludePairwise=correlationTableOutput$footnotesExcludePairwise,
 							   bfValuesExcludeListwise=correlationTableOutput$bfValuesExcludeListwise,
 							   footnotesExcludeListwise=correlationTableOutput$footnotesExcludeListwise,
-							   correlationPlots=results$plots), keep=keep))
+							   correlationPlot=results$plot), keep=keep))
 	}
 }
 # "variables": data.frame thingie vfc
@@ -1953,7 +1970,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			
 			plot <- list()
 			
-			plot[["title"]] <- ""
+			plot[["title"]] <- "Correlation Plot"
 			plot[["width"]]  <- width
 			plot[["height"]] <- height
 			
@@ -2030,7 +2047,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		plot <- list()
 		
-		plot[["title"]] <-  ""
+		plot[["title"]] <-  "Correlation Plot"
 		plot[["width"]]  <- width
 		plot[["height"]] <- height
 		

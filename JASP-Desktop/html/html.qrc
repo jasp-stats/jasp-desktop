@@ -26,13 +26,11 @@
         <file>js/table.js</file>
         <file>css/theme-spss.css</file>
         <file>css/theme-jasp.css</file>
-        <file>js/tables.js</file>
         <file>css/images/copy.png</file>
         <file>css/images/running.gif</file>
         <file>css/images/waiting.gif</file>
         <file>css/images/logo.svg</file>
         <file>js/image.js</file>
-        <file>js/images.js</file>
         <file>js/analysis.js</file>
         <file>css/images/cite.svg</file>
         <file>css/images/running-large.gif</file>
@@ -42,5 +40,15 @@
         <file>css/images/arrowsmalldownbtn.png</file>
         <file>css/images/resizer.png</file>
         <file>css/images/menu-indicator.svg</file>
+        <file>js/etch.js</file>
+        <file>css/etch.css</file>
+        <file>css/images/editor_icons.png</file>
+        <file>js/mrkdwn.js</file>
+        <file>js/analyses.js</file>
+        <file>css/images/closer.png</file>
+        <file>js/object.js</file>
+        <file>js/collection.js</file>
+        <file>css/images/expand.png</file>
+        <file>css/images/collapse.png</file>
     </qresource>
 </RCC>

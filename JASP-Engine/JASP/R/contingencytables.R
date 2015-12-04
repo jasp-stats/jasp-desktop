@@ -1,4 +1,19 @@
-
+#
+# Copyright (C) 2013-2015 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 ContingencyTables <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
 
@@ -368,18 +383,19 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		odds.ratio.table <- list()
 		
 		odds.ratio.table[["title"]] <- "Log Odds Ratio"
+		ci.label <- paste(100*options$oddsRatioConfidenceIntervalInterval, "% Confidence intervals", sep="")
 		
 		odds.ratio.fields <- fields
 			
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[oddsRatio]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower CI", type="number", format="dp:3")
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper CI", type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower",overTitle=ci.label, type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper",overTitle=ci.label, type="number", format="dp:3")
 		
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="type[FisherTest]", title="", type="string")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[FisherTest]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[FisherTest]", title="Lower CI", type="number", format="dp:3")
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[FisherTest]",  title="Upper CI", type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[FisherTest]", title="Lower", overTitle=ci.label, type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[FisherTest]",  title="Upper", overTitle=ci.label, type="number", format="dp:3")
 		
 		schema <- list(fields=odds.ratio.fields)
 		

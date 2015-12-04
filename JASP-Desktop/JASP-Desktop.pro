@@ -39,11 +39,16 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
+linux {
+    _R_HOME = $$(R_HOME)
+    isEmpty(_R_HOME):_R_HOME = /usr/lib/R
+    QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
+}
+
 SOURCES += main.cpp \
     analyses.cpp \
     mainwindow.cpp \
     datasettablemodel.cpp \
-    backstageform.cpp \
     enginesync.cpp \
     availablefields.cpp \
     asyncloader.cpp \
@@ -114,8 +119,6 @@ SOURCES += main.cpp \
     widgets/tablemodelanovamodel.cpp \
     widgets/tablemodelcontrasts.cpp \
     widgets/tablemodelanovadesign.cpp \
-    widgets/datasetsselectwidget.cpp \
-    widgets/datasetselectwidget.cpp \
     appdirs.cpp \
     widgets/tablemodelanovawithinsubjectcells.cpp \
     analysisforms/ancovabayesianform.cpp \
@@ -133,13 +136,46 @@ SOURCES += main.cpp \
     widgets/button.cpp \
     analysisforms/r11tlearnform.cpp \
     ribbons/ribbonr11tlearn.cpp \
+    backstage/breadcrumbs.cpp \
+    backstage/verticaltabbar.cpp \
+    backstage/verticaltabwidget.cpp \
+    backstagewidget.cpp \
+    backstage/fsentrywidget.cpp \
+    backstage/fsbrowser.cpp \
+    backstage/verticalscrollarea.cpp \
+    backstage/elidelabel.cpp \
+    backstage/backstageosf.cpp \
+    backstage/backstagecomputer.cpp \
+    backstage/backstagepage.cpp \
+    backstage/opensavewidget.cpp \
     analysisforms/regressionloglinearform.cpp \
-    analysisforms/regressionloglinearbayesianform.cpp
+    analysisforms/regressionloglinearbayesianform.cpp \
+    backstage/fsbmexamples.cpp \
+    backstage/fsbmodel.cpp \
+    backstage/fsbmcomputer.cpp \
+    backstage/fsbmrecent.cpp \
+    backstage/fsbmrecentfolders.cpp \
+    fileevent.cpp \
+    widgets/boundsingleitemview.cpp \
+    analysisforms/binomialtestform.cpp \
+	analysisforms/binomialtestbayesianform.cpp \
+    analysisforms/bffromtform.cpp \
+    variableswidget.cpp \
+    variablespage/levelstablemodel.cpp \
+    variablespage/variablestablemodel.cpp \
+    backstage/fsbmosf.cpp \
+    osfnam.cpp \
+    onlinedatamanager.cpp \
+    onlinedataconnection.cpp \
+    onlinedatanodeosf.cpp \
+    onlinedatanode.cpp \
+    onlineusernode.cpp \
+    onlinenode.cpp \
+    onlineusernodeosf.cpp
 
 HEADERS  += \
     analyses.h \
     datasettablemodel.h \
-    backstageform.h \
     enginesync.h \
     availablefields.h \
     analysisforms/analysisform.h \
@@ -217,8 +253,6 @@ HEADERS  += \
     widgets/tablemodelanovamodel.h \
     widgets/tablemodelcontrasts.h \
     widgets/tablemodelanovadesign.h \
-    widgets/datasetsselectwidget.h \
-    widgets/datasetselectwidget.h \
     appdirs.h \
     widgets/tablemodelanovawithinsubjectcells.h \
     analysisforms/ancovabayesianform.h \
@@ -237,11 +271,45 @@ HEADERS  += \
     widgets/webview.h \
     analysisforms/r11tlearnform.h \
     ribbons/ribbonr11tlearn.h \
+    backstage/breadcrumbs.h \
+    backstage/verticaltabbar.h \
+    backstage/verticaltabwidget.h \
+    backstagewidget.h \
+    backstage/fsentrywidget.h \
+    backstage/fsbrowser.h \
+    backstage/fsentry.h \
+    backstage/verticalscrollarea.h \
+    backstage/elidelabel.h \
+    backstage/backstageosf.h \
+    backstage/backstagecomputer.h \
+    backstage/backstagepage.h \
+    backstage/opensavewidget.h \
     analysisforms/regressionloglinearform.h \
-    analysisforms/regressionloglinearbayesianform.h
+    analysisforms/regressionloglinearbayesianform.h \
+    backstage/fsbmexamples.h \
+    backstage/fsbmodel.h \
+    backstage/fsbmcomputer.h \
+    backstage/fsbmrecent.h \
+    backstage/fsbmrecentfolders.h \
+    fileevent.h \
+    widgets/boundsingleitemview.h \
+    analysisforms/binomialtestform.h \
+	analysisforms/binomialtestbayesianform.h \
+    analysisforms/bffromtform.h \
+    variableswidget.h \
+    variablespage/levelstablemodel.h \
+    variablespage/variablestablemodel.h \
+    backstage/fsbmosf.h \
+    osfnam.h \
+    onlinedatamanager.h \
+    onlinedataconnection.h \
+    onlinedatanodeosf.h \
+    onlinedatanode.h \
+    onlineusernode.h \
+    onlinenode.h \
+    onlineusernodeosf.h
 
 FORMS += \
-    backstageform.ui \
     analysisforms/anovabayesianform.ui \
     analysisforms/ttestpairedsamplesform.ui \
     analysisforms/anovamultivariateform.ui \
@@ -269,7 +337,6 @@ FORMS += \
     analysisforms/ttestbayesianindependentsamplesform.ui \
     analysisforms/ttestbayesianpairedsamplesform.ui \
     optionsform.ui \
-    widgets/datasetselectwidget.ui \
     analysisforms/ancovabayesianform.ui \
     analysisforms/anovarepeatedmeasuresbayesianform.ui \
     analysisforms/correlationbayesianform.ui \
@@ -278,11 +345,17 @@ FORMS += \
     analysisforms/regressionlinearbayesianform.ui \
     analysisforms/r11tlearnform.ui \
     ribbons/ribbonr11tlearn.ui \
+    backstage/backstagecomputer.ui \
     analysisforms/regressionloglinearform.ui \
-    analysisforms/regressionloglinearbayesianform.ui
+    analysisforms/regressionloglinearbayesianform.ui \
+    analysisforms/binomialtestform.ui \
+	analysisforms/binomialtestbayesianform.ui \
+    analysisforms/bffromtform.ui \
+    variableswidget.ui
 
 
 RESOURCES += \
+    backstage/backstage.qrc \
     html/html.qrc \
     resources/icons.qrc \
     resources/resources.qrc
@@ -425,26 +498,17 @@ RESOURCES_PATH = $${PWD}/../Resources
 
 win32 {
 
-    HELP_PATH_DEST = $${OUT_PWD}/../Help/
     RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
-
-    HELP_PATH ~= s,/,\\,g
-    HELP_PATH_DEST ~= s,/,\\,g
 
     RESOURCES_PATH ~= s,/,\\,g
     RESOURCES_PATH_DEST ~= s,/,\\,g
 
-    copydocs.commands += $$quote(cmd /c xcopy /S /I /Y $${HELP_PATH} $${HELP_PATH_DEST})
     copyres.commands  += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
 }
 
 macx {
 
-    HELP_PATH_DEST      = $${OUT_PWD}/../../Resources/Help/
     RESOURCES_PATH_DEST = $${OUT_PWD}/../../Resources/
-
-    copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
-    copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
 
     copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
     copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
@@ -452,11 +516,7 @@ macx {
 
 linux {
 
-    HELP_PATH_DEST      = $${OUT_PWD}/../Help/
     RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
-
-    copydocs.commands += $(MKDIR) $$HELP_PATH_DEST ;
-    copydocs.commands += cp -R $$HELP_PATH/* $$HELP_PATH_DEST ;
 
     copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
     copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
@@ -464,6 +524,11 @@ linux {
 
 ! equals(PWD, $${OUT_PWD}) {
 
-    QMAKE_EXTRA_TARGETS += copydocs copyres
-    POST_TARGETDEPS     += copydocs copyres
+    QMAKE_EXTRA_TARGETS += copyres
+    POST_TARGETDEPS     += copyres
 }
+
+DISTFILES += \
+    backstage/firsttabsstylesheet.qss \
+    backstage/secondtabsstylesheet.qss \
+    resources/icons/file-jasp.svg

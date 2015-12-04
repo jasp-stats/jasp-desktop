@@ -1,0 +1,25 @@
+{
+	"name": "BinomialTest",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+        {
+            "name": "variables",
+            "type": "Variables"
+        },
+		{
+			"format": "",
+            "name": "testValue",
+			"type": "Number",
+            "value": 0.5,
+            "max": 1,
+            "min": 0
+		},
+        {
+            "name": "hypothesis",
+            "options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
+            "default": "notEqualToTestValue",
+            "type": "List"
+        }
+	]
+}

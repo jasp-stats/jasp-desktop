@@ -10,12 +10,60 @@ JASPWidgets.image = JASPWidgets.Resizeable.extend({
 	}
 });
 
-JASPWidgets.imageView = JASPWidgets.View.extend({
+JASPWidgets.imageView = JASPWidgets.objectView.extend({
+
+	exportComplete: function (exportParams, exportContent) {
+		if (!exportParams.error && exportParams.process == JASPWidgets.ExportProperties.process.copy) {
+			if (exportParams.htmlOnly())
+				pushHTMLToClipboard(exportContent, exportParams);
+			else if (exportParams.format == JASPWidgets.ExportProperties.format.raw)
+				pushImageToClipboard(exportContent, exportParams);
+		}
+	},
+
+	copyMenuClicked: function () {
+		var exportParams = new JASPWidgets.Exporter.params();
+		exportParams.format = JASPWidgets.ExportProperties.format.raw;
+		exportParams.process = JASPWidgets.ExportProperties.process.copy;
+		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes = false;
+
+		this.exportBegin(exportParams);
+
+		return true;
+	},
+
+	hasNotes: function () {
+		return this.$el.hasClass('jasp-collection-item') === false;
+	},
+
+	hasCollapse: function () {
+		return this.$el.hasClass('jasp-collection-item') === false;
+	},
+
+	menuName: "Plot",
+
+	indentChildren: false,
+
+	notePositionBottom: true,
+
+	constructChildren: function (constructor, data) {
+
+		var self = this;
+		this.toolbar.selectionElement = function () {
+			return self.$el.find('.jasp-image-holder');
+		};
+
+		var imagePrimative = new JASPWidgets.imagePrimative({ model: this.model, className: "jasp-image-holder  jasp-display-primative" });
+		this.resizer = imagePrimative.resizer;
+		this.localViews.push(imagePrimative);
+		this.views.push(imagePrimative);
+	},
+});
+
+JASPWidgets.imagePrimative= JASPWidgets.View.extend({
 
 	initialize: function () {
-
-		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar" })
-		this.toolbar.setParent(this);
 
 		this.resizer = new JASPWidgets.ResizeableView({ model: this.model, className: "jasp-resize" });
 
@@ -24,8 +72,8 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		this.listenTo(this.resizer, "ResizeableView:resizeStop", this.onResizeStop)
 		var self = this;
 		this.resizer.resizeTargetElement = function () {
-			var t = self.$(".jasp-image-holder");
-			return self.$(".jasp-image-holder");
+			var t = self.$el;
+			return self.$el;
 		};
 		this.resizer.resizeDisabled = function () {
 			var custom = self.model.get("custom");
@@ -55,49 +103,37 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 	},
 
 	events: {
-			'mouseenter': '_hoveringStart',
-			'mouseleave': '_hoveringEnd',
+		'mouseenter': '_hoveringStartImage',
+		'mouseleave': '_hoveringEndImage',
 	},
 
-	_hoveringStart: function (e) {
-		this.toolbar.setVisibility(true);
+	_hoveringStartImage: function (e) {
 		this.resizer.setVisibility(true);
 	},
 
-	_hoveringEnd: function (e) {
-		this.toolbar.setVisibility(false);
+	_hoveringEndImage: function (e) {
 		this.resizer.setVisibility(false);
 	},
 
 	render: function () {
 		var html = ''
-		var title = this.model.get("title");
 		var status = this.model.get("status");
 		var error = this.model.get("error");
 		var data = this.model.get("data");
 		var custom = this.model.get("custom");
 
-		if (title) {
-			this.toolbar.title = title;
-			this.toolbar.titleTag = "h2";
-		}
+		var width = this.model.get("width");
+		var height = this.model.get("height");
 
-		this.toolbar.render();
-
-		this.$el.append(this.toolbar.$el);
-
-		var classes = ""
 		if (error)
-			classes += " error-state"
-
-		html += '<div class="jasp-image-holder ' + classes + '>'
+			this.$el.addClass("error-state");
 
 		html += '<div class="jasp-image-image" style="'
 
 		if (data) {
-			html += 'background-image : url(\'' + data + '?x=' + Math.random() + '\') ;'
+			html += 'background-image : url(\'' + data + '?x=' + Math.random() + '\'); '
 
-			html += 'background-size : 100% 100% ;'
+			html += 'background-size : 100% 100%; '
 		}
 
 		html += '">'
@@ -112,9 +148,8 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 			html += '</div>'
 		}
 
-		html += '</div>'
-
 		html += '<div class="image-status"></div>';
+		html += '</div>'
 
 		html += '</div>'
 
@@ -123,26 +158,33 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 		var $status = this.$el.find("div.image-status");
 		$status.addClass(status);
 
-		var self = this
-
+		var $t = this.$el;
+		$t.css({
+			width: width,
+			height: height
+		});
 		this.resizer.render();
 
 		return this;
 	},
 
-	exportBegin: function (exportParams) {
+	exportBegin: function (exportParams, completedCallback) {
 
 		if (exportParams == undefined)
 			exportParams = new JASPWidgets.Exporter.params();
 		else if (exportParams.error)
 			return false;
 
+		var callback = this.exportComplete;
+		if (completedCallback !== undefined)
+			callback = completedCallback;
+
 		var width = this.model.get("width");
 		var height = this.model.get("height");
 
 		var htmlImageFormatData = { resource: this.model.get("data") };
 		if (exportParams.htmlOnly() && exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.resource)
-			this.exportComplete(exportParams, new JASPWidgets.Exporter.data(null, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
+			callback.call(this, exportParams, new JASPWidgets.Exporter.data(null, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
 		else {
 			var data = this.model.get("data");
 			JASPWidgets.Encodings.base64Request(data, function (base64) {
@@ -150,11 +192,11 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 				if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary) {
 					saveImageBegin(data, base64, function (fullpath) {
 						htmlImageFormatData.temporary = fullpath;
-						this.exportComplete(exportParams, new JASPWidgets.Exporter.data(base64, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
+						callback.call(this, exportParams, new JASPWidgets.Exporter.data(base64, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
 					}, this);
 				}
 				else
-					this.exportComplete(exportParams, new JASPWidgets.Exporter.data(base64, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
+					callback.call(this, exportParams, new JASPWidgets.Exporter.data(base64, this._getHTMLImage(htmlImageFormatData, width, height, exportParams)));
 			}, this);
 		}
 
@@ -164,54 +206,15 @@ JASPWidgets.imageView = JASPWidgets.View.extend({
 	_getHTMLImage: function (htmlImageFormatData, width, height, exportParams) {
 		var html = "";
 		if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary)
-			html = this._addHTMLWrapper('<img src="file:///' + htmlImageFormatData.temporary + '" style="width:' + width + 'px; height:' + height + 'px;" />\n', exportParams);
+			html = '<img src="file:///' + htmlImageFormatData.temporary + '" style="width:' + width + 'px; height:' + height + 'px;" />';
 		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.embedded)
-			html = this._addHTMLWrapper('<div style="background-image : url(data:image/png;base64,' + htmlImageFormatData.embedded + '); width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
+			html = '<div style="background-image : url(data:image/png;base64,' + htmlImageFormatData.embedded + '); background-size:' + width + 'px ' + height + 'px; width:' + width + 'px; height:' + height + 'px;"></div>';
 		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.resource)
-			html = this._addHTMLWrapper('<div style="background-image : url(\'' + htmlImageFormatData.resource + '\'); width:' + width + 'px; height:' + height + 'px;"></div>', exportParams);
+			html = '<img src="' + htmlImageFormatData.resource + '" style="width:' + width + 'px; height:' + height + 'px;" />';
+
+		var error = this.model.get("error");
+		html += JASPWidgets.Exporter.exportErrorWindow(this.$el.find('.error-message-positioner'), error);
 
 		return html;
-	},
-
-	_addHTMLWrapper: function(innerHTML, exportParams)
-	{
-		var error = this.model.get("error");
-		var title = this.model.get("title");
-		var style = this.getStyleAttr();
-		var text = '<div ' + style + '>\n';
-
-		text += JASPWidgets.Exporter.getTitleHtml(this.toolbar, exportParams);
-		text += innerHTML;
-		text += JASPWidgets.Exporter.exportErrorWindow(this.$el.find('.error-message-positioner'), error);
-		text += '</div>\n';
-
-		return text;
-	},
-
-	exportComplete: function (exportParams, exportContent) {
-		if (!exportParams.error && exportParams.process == JASPWidgets.ExportProperties.process.copy) {
-			if (exportParams.htmlOnly())
-				pushHTMLToClipboard(exportContent, exportParams);
-			else if (exportParams.format == JASPWidgets.ExportProperties.format.raw)
-				pushImageToClipboard(exportContent, exportParams);
-		}
-	},
-
-	copyMenuClicked: function () {
-		var exportParams = new JASPWidgets.Exporter.params();
-		exportParams.format = JASPWidgets.ExportProperties.format.raw;
-		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
-
-		this.exportBegin(exportParams);
-
-		return true;
-	},
-
-	menuName: "Plot",
-
-	onClose: function () {
-		this.toolbar.close();
-		this.resizer.close();
 	}
 });

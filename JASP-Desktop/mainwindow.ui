@@ -32,7 +32,30 @@
     </property>
     <item row="1" column="0" colspan="2">
      <widget class="QStackedWidget" name="topLevelWidgets">
-      <widget class="BackStageForm" name="backStage"/>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <widget class="BackStageWidget" name="backStage">
+       <property name="minimumSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_8"/>
+      </widget>
+      <widget class="VariablesWidget" name="variablesPage">
+       <property name="minimumSize">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+       <layout class="QGridLayout" name="variablesPageLayout"/>
+      </widget>
       <widget class="QWidget" name="mainPage">
        <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
         <property name="spacing">
@@ -111,7 +134,10 @@
               <property name="styleSheet">
                <string notr="true">QTableCornerButton::section, QHeaderView::section {
 	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0.7 rgb(240, 240, 240), stop:0.701 rgb(227, 225, 226));
-	padding: 0.3em ;
+	padding-top: 0.1em ;
+	padding-bottom: 0.1em ;
+	padding-left: 0.3em ;
+	padding-right: 0.3em ;
 	border-right: 1px solid #929292 ;
 	border-bottom: 1px solid #929292 ;
 	border-left: none ;
@@ -157,20 +183,20 @@ QTableView::item::last
              </widget>
              <widget class="QWidget" name="panelMid" native="true">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
               <property name="minimumSize">
                <size>
-                <width>590</width>
+                <width>0</width>
                 <height>0</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>590</width>
+                <width>16777215</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -195,82 +221,6 @@ QTableView::item::last
                <property name="spacing">
                 <number>0</number>
                </property>
-               <item row="1" column="0">
-                <widget class="QWidget" name="widget_2" native="true"/>
-               </item>
-               <item row="1" column="1">
-                <widget class="QWidget" name="pageOptions" native="true">
-                 <property name="maximumSize">
-                  <size>
-                   <width>590</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_4">
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item row="0" column="0">
-                   <widget class="QScrollArea" name="scrollArea">
-                    <property name="styleSheet">
-                     <string notr="true">QWidget#scrollArea {
-	border-top: 1px solid #929292 ;
-	/*border-right: 1px solid #929292 ;*/
-}</string>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum>
-                    </property>
-                    <property name="verticalScrollBarPolicy">
-                     <enum>Qt::ScrollBarAlwaysOn</enum>
-                    </property>
-                    <property name="horizontalScrollBarPolicy">
-                     <enum>Qt::ScrollBarAlwaysOff</enum>
-                    </property>
-                    <property name="widgetResizable">
-                     <bool>true</bool>
-                    </property>
-                    <widget class="QWidget" name="optionsContentArea">
-                     <property name="geometry">
-                      <rect>
-                       <x>0</x>
-                       <y>0</y>
-                       <width>552</width>
-                       <height>537</height>
-                      </rect>
-                     </property>
-                     <layout class="QGridLayout" name="optionsContentAreaLayout">
-                      <property name="leftMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
-                       <number>0</number>
-                      </property>
-                      <item row="0" column="0" rowspan="2" colspan="2">
-                       <widget class="QWidget" name="widget" native="true"/>
-                      </item>
-                     </layout>
-                    </widget>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
                <item row="0" column="0" colspan="2">
                 <widget class="QWidget" name="optionsErrorPanel" native="true">
                  <property name="minimumSize">
@@ -291,6 +241,113 @@ QTableView::item::last
                    </widget>
                   </item>
                  </layout>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QWidget" name="pageOptions" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_4">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QScrollArea" name="scrollArea">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QWidget#scrollArea {
+	border-top: 1px solid #929292 ;
+	/*border-right: 1px solid #929292 ;*/
+}</string>
+                    </property>
+                    <property name="frameShape">
+                     <enum>QFrame::NoFrame</enum>
+                    </property>
+                    <property name="verticalScrollBarPolicy">
+                     <enum>Qt::ScrollBarAlwaysOn</enum>
+                    </property>
+                    <property name="horizontalScrollBarPolicy">
+                     <enum>Qt::ScrollBarAlwaysOff</enum>
+                    </property>
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+                    </property>
+                    <widget class="QWidget" name="optionsContentArea">
+                     <property name="geometry">
+                      <rect>
+                       <x>18</x>
+                       <y>0</y>
+                       <width>82</width>
+                       <height>28</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <layout class="QGridLayout" name="optionsContentAreaLayout">
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
+                      <item row="0" column="0">
+                       <widget class="QWidget" name="optionArea" native="true"/>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QWidget" name="widget_2" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -405,13 +462,11 @@ QPushButton:checked {
 
 QPushButton#help {
 	margin-right: 5px ;
-	height: 11px ;
-	margin-bottom: 2px ;
 	border-bottom: 1px solid transparent;
 }
 
 QPushButton#help:checked {
-	border-bottom: 1px solid #919191;
+	/*border-bottom: 1px solid #919191;*/
 }
 
 QPushButton#first {
@@ -444,12 +499,6 @@ QPushButton#first:checked {
    <class>QWebView</class>
    <extends>QWidget</extends>
    <header>QtWebKitWidgets/QWebView</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BackStageForm</class>
-   <extends>QWidget</extends>
-   <header>backstageform.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -488,6 +537,18 @@ QPushButton#first:checked {
    <class>WebView</class>
    <extends>QWidget</extends>
    <header>widgets/webview.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BackStageWidget</class>
+   <extends>QWidget</extends>
+   <header>backstagewidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VariablesWidget</class>
+   <extends>QWidget</extends>
+   <header>variableswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -1,3 +1,21 @@
+//
+// Copyright (C) 2013-2015 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
 #include "asyncloader.h"
 
 #include "exporters/jaspexporter.h"
@@ -12,37 +30,37 @@
 
 #include "qutils.h"
 #include "utils.h"
+#include "onlinedatamanager.h"
 
 using namespace std;
 
 AsyncLoader::AsyncLoader(QObject *parent) :
 	QObject(parent)
-{
+{ 
 	this->moveToThread(&_thread);
 
-	connect(this, SIGNAL(loads(DataSetPackage*, QString)), this, SLOT(loadTask(DataSetPackage*, QString)));
-	connect(this, SIGNAL(saves(QString, DataSetPackage*)), this, SLOT(saveTask(QString, DataSetPackage*)));
-	connect(this, SIGNAL(exports(QString, DataSetPackage*)), this, SLOT(exportTask(QString, DataSetPackage*)));
+	connect(this, SIGNAL(beginLoad(FileEvent*, DataSetPackage*)), this, SLOT(loadTask(FileEvent*, DataSetPackage*)));
+	connect(this, SIGNAL(beginSave(FileEvent*, DataSetPackage*)), this, SLOT(saveTask(FileEvent*, DataSetPackage*)));
 
 	_thread.start();
 }
 
-void AsyncLoader::load(DataSetPackage *package, const QString &filename)
+void AsyncLoader::io(FileEvent *event, DataSetPackage *package)
 {
-	emit progress("Loading Data Set", 0);
-	emit loads(package, filename);
-}
-
-void AsyncLoader::save(const QString &filename, DataSetPackage *package)
-{
-	emit progress("Saving Data Set", 0);
-	emit saves(filename, package);
-}
-
-void AsyncLoader::exportData(const QString &filename, DataSetPackage *package)
-{
-	emit progress("Exporting Data Set", 0);
-	emit exports(filename, package);
+	if (event->operation() == FileEvent::FileOpen)
+	{
+		emit progress("Loading Data Set", 0);
+		emit beginLoad(event, package);
+	}
+	else if (event->operation() == FileEvent::FileSave)
+	{
+		emit progress("Saving Data Set", 0);
+		emit beginSave(event, package);
+	}
+	else if (event->operation() == FileEvent::FileClose)
+	{
+		event->setComplete();
+	}
 }
 
 void AsyncLoader::free(DataSet *dataSet)
@@ -50,58 +68,34 @@ void AsyncLoader::free(DataSet *dataSet)
 	_loader.freeDataSet(dataSet);
 }
 
-void AsyncLoader::loadTask(DataSetPackage *package, const QString &filename)
+void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
 {
-	try
-	{		
-		_loader.loadPackage(package, fq(filename), boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+	_currentEvent = event;
+	_currentPackage = package;
 
-		QString name = QFileInfo(filename).baseName();
-
-		emit complete(name, package, filename);
-	}
-	catch (runtime_error e)
-	{
-		emit fail(e.what());
-	}
-	catch (exception e)
-	{
-		emit fail(e.what());
-	}
+	if (event->IsOnlineNode())
+		QMetaObject::invokeMethod(_odm, "beginDownloadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"));
+	else
+		this->loadPackage("asyncloader");
 }
 
-void AsyncLoader::progressHandler(string status, int progress)
+void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 {
-	emit this->progress(QString::fromUtf8(status.c_str(), status.length()), progress);
-}
 
-void AsyncLoader::exportTask(const QString &filename, DataSetPackage *package)
-{
-	try
-	{
-		CSVExporter::saveDataSet(fq(filename), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-		QString name = QFileInfo(filename).baseName();
-		emit exportComplete(name);
-	}
-	catch (runtime_error e)
-	{
-		emit exportFail(e.what());
-	}
-	catch (exception e)
-	{
-		emit exportFail(e.what());
-	}
-}
+	_currentEvent = event;
 
-void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
-{
-	QString tempFilename = filename + tq(".tmp");
+	QString path = event->path();
+	if (event->IsOnlineNode())
+		path = _odm->getLocalPath(path);
+
+	QString tempPath = path + QString(".tmp");
+
 	try
 	{
 		int maxSleepTime = 2000;
 		int sleepTime = 100;
 		int delay = 0;
-		while (package->analysesHTML.empty())
+		while (package->isReady() == false)
 		{
 			if (delay > maxSleepTime)
 				break;
@@ -110,26 +104,34 @@ void AsyncLoader::saveTask(const QString &filename, DataSetPackage *package)
 			delay += sleepTime;
 		}
 
-		JASPExporter::saveDataSet(fq(tempFilename), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		JASPExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
-		if ( ! Utils::renameOverwrite(fq(tempFilename), fq(filename)))
-			throw runtime_error("File '" + fq(filename) + "' is being used by another application.");
+		if ( ! Utils::renameOverwrite(fq(tempPath), fq(path)))
+			throw runtime_error("File '" + fq(path) + "' is being used by another application.");
 
-		QString name = QFileInfo(filename).baseName();
-
-		emit saveComplete(name);
+		if (event->IsOnlineNode())
+			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"));
+		else
+			event->setComplete();
 	}
 	catch (runtime_error e)
 	{
-		Utils::removeFile(fq(tempFilename));
-		emit saveFail(e.what());
+		Utils::removeFile(fq(tempPath));
+		event->setComplete(false, e.what());
 	}
 	catch (exception e)
 	{
-		Utils::removeFile(fq(tempFilename));
-		emit saveFail(e.what());
+		Utils::removeFile(fq(tempPath));
+		event->setComplete(false, e.what());
 	}
 }
+
+void AsyncLoader::progressHandler(string status, int progress)
+{
+	emit this->progress(QString::fromUtf8(status.c_str(), status.length()), progress);
+}
+
+
 
 void AsyncLoader::sleep(int ms)
 {
@@ -140,4 +142,60 @@ void AsyncLoader::sleep(int ms)
 	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
 	nanosleep(&ts, NULL);
 #endif
+}
+
+void AsyncLoader::setOnlineDataManager(OnlineDataManager *odm)
+{
+	if (_odm != NULL)
+	{
+		disconnect(_odm, SIGNAL(uploadFileFinished(QString)), this, SLOT(uploadFileFinished(QString)));
+		disconnect(_odm, SIGNAL(downloadFileFinished(QString)), this, SLOT(loadPackage(QString)));
+		disconnect(_odm, SIGNAL(error(QString, QString)), this, SLOT(errorFlagged(QString, QString)));
+	}
+
+	_odm = odm;
+
+	if (_odm != NULL)
+	{
+		connect(_odm, SIGNAL(uploadFileFinished(QString)), this, SLOT(uploadFileFinished(QString)));
+		connect(_odm, SIGNAL(downloadFileFinished(QString)), this, SLOT(loadPackage(QString)));
+		connect(_odm, SIGNAL(error(QString, QString)), this, SLOT(errorFlagged(QString, QString)));
+	}
+}
+
+void AsyncLoader::errorFlagged(QString msg, QString id)
+{
+	if (id != "asyncloader")
+		return;
+
+	_currentEvent->setComplete(false, msg);
+}
+
+void AsyncLoader::loadPackage(QString id)
+{
+	if (id != "asyncloader")
+		return;
+
+	try
+	{
+		string path = fq(_currentEvent->path());
+		if (_currentEvent->IsOnlineNode())
+			path = fq(_odm->getLocalPath(_currentEvent->path()));
+
+		_loader.loadPackage(_currentPackage, path, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		_currentEvent->setComplete();
+	}
+	catch (runtime_error e)
+	{
+		_currentEvent->setComplete(false, e.what());
+	}
+	catch (exception e)
+	{
+		_currentEvent->setComplete(false, e.what());
+	}
+}
+
+void AsyncLoader::uploadFileFinished(QString id)
+{
+	_currentEvent->setComplete();
 }

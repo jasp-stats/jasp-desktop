@@ -1,3 +1,21 @@
+//
+// Copyright (C) 2013-2015 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
@@ -14,6 +32,7 @@
 #include "asyncloader.h"
 #include "optionsform.h"
 #include "activitylog.h"
+#include "fileevent.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,7 +44,7 @@ class MainWindow : public QMainWindow
 
 public:
 	explicit MainWindow(QWidget *parent = 0);
-	void open(QString filename);
+	void open(QString filepath);
 	~MainWindow();
 
 protected:
@@ -43,6 +62,12 @@ private:
 	DataSetTableModel *_tableModel;
 	Analysis *_currentAnalysis;
 
+	int _scrollbarWidth = 0;
+
+	double _webViewZoom;
+
+	OnlineDataManager *_odm;
+
 	Analyses *_analyses;
 	EngineSync* _engineSync;
 
@@ -51,16 +76,18 @@ private:
 	bool closeRequestCheck(bool &isSaving);
 
 	AsyncLoader _loader;
-	ProgressWidget *_alert;
+	ProgressWidget *_progressIndicator;
 
 	bool _inited;
-	bool _isClosed = false;
-	bool _dataSetClosing = false;
+	bool _applicationExiting = false;
 
 	AnalysisForm* loadForm(Analysis *analysis);
+	AnalysisForm* loadForm(const std::string name);
 	void showForm(Analysis *analysis);
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
+
+	void setupOptionPanelSize();
 
 	QWidget *_buttonPanel;
 	QVBoxLayout *_buttonPanelLayout;
@@ -81,6 +108,10 @@ private:
 	ActivityLog *_log;
 	QString _fatalError;
 
+	QString escapeJavascriptString(const QString &str);
+	void getAnalysesUserData();
+	Json::Value getResultsMeta();
+
 signals:
 	void analysisSelected(int id);
 	void analysisUnselected();
@@ -89,39 +120,47 @@ signals:
 	void pushToClipboard(QString mimeType, QString data, QString html);
 	void pushImageToClipboard(QByteArray base64, QString html);
 	void saveTempImage(int id, QString path, QByteArray data);
+	void displayMessageFromResults(QString path);
 	void showAnalysesMenu(QString options);
 	void removeAnalysisRequest(int id);
+	void updateUserData(int id, QString key);
+	void updateAnalysesUserData(QString userData);
+	void simulatedMouseClick(int x, int y, int count);
+	void resultsDocumentChanged();
 
 private slots:
 
 	void analysisResultsChangedHandler(Analysis* analysis);
+	void analysisUserDataLoadedHandler(Analysis *analysis);
 	void analysisSelectedHandler(int id);
 	void analysisUnselectedHandler();
 	void pushImageToClipboardHandler(const QByteArray &base64, const QString &html);
 	void saveTextToFileHandler(const QString &filename, const QString &data);
 	void pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html);
 	void saveTempImageHandler(int id, QString path, QByteArray data);
+	void displayMessageFromResultsHandler(QString msg);
 	void analysisChangedDownstreamHandler(int id, QString options);
 
+	void resultsDocumentChangedHandler();
+	void simulatedMouseClickHandler(int x, int y, int count);
+	void updateUserDataHandler(int id, QString key);
 	void removeAnalysisRequestHandler(int id);
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
+	void collapseSelected();
+	void editTitleSelected();
 	void copySelected();
 	void citeSelected();
+	void noteSelected();
 	void menuHidding();
 
 	void tabChanged(int index);
 	void helpToggled(bool on);
-	void dataSetSelected(const QString &filename);
-	void dataSetCloseRequested();
-	void dataSetLoaded(const QString &dataSetName, DataSetPackage *package, const QString &filename);
-	void dataSetLoadFailed(const QString &message);
-	void saveFailed(const QString &message);
-	void exportFailed(const QString &message);
+	void dataSetIORequest(FileEvent *event);
+	void dataSetIOCompleted(FileEvent *event);
+	void populateUIfromDataSet();
 	void itemSelected(const QString &item);
 	void exportSelected(const QString &filename);
-	void saveSelected(const QString &filename);
-	void saveComplete(const QString &name);
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);

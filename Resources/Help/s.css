@@ -1,0 +1,23 @@
+
+body
+{
+	font-size: 12px ;
+	font-family: "Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;
+	color: #333333;
+	background-color: #FAFAFA
+}
+
+h1
+{
+	font-size: 175% ; ;
+}
+
+h2
+{
+	font-size: 150% ;
+}
+
+h3
+{
+	font-size: 125% ;
+}

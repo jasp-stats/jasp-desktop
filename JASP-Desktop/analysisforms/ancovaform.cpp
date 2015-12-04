@@ -1,3 +1,21 @@
+//
+// Copyright (C) 2013-2015 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
 #include "ancovaform.h"
 #include "ui_ancovaform.h"
 
@@ -94,15 +112,20 @@ AncovaForm::AncovaForm(QWidget *parent) :
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
+	ui->containerAssumptions->hide();
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 
 #ifdef QT_NO_DEBUG
 	ui->factorCovariateIndependence->hide();
-	ui->randomFactorsBox->hide();
+	ui->randomFactors->hide();
+	ui->buttonAssignRandom->hide();
+	ui->label_3->hide();
 #else
 	ui->factorCovariateIndependence->setStyleSheet("background-color: pink ;");
-	ui->randomFactorsBox->setStyleSheet("background-color: pink ;");
+	ui->randomFactors->setStyleSheet("background-color: pink ;");
+	ui->buttonAssignRandom->setStyleSheet("background-color: pink ;");
+	ui->label_3->setStyleSheet("background-color: pink ;");
 #endif
 
 }

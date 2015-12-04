@@ -1,3 +1,20 @@
+//
+// Copyright (C) 2013-2015 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
 
 #include "anovarepeatedmeasuresform.h"
 #include "ui_anovarepeatedmeasuresform.h"
@@ -93,6 +110,7 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	ui->containerOptions->hide();
 	ui->containerPostHocTests->hide();
 	ui->containerDescriptivesPlot->hide();
+	ui->containerAssumptions->hide();
 
 	ui->withinModelTerms->setFactorsLabel("Repeated Measures Components");
 	ui->betweenModelTerms->setFactorsLabel("Between Subjects Components");
@@ -102,23 +120,11 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	connect(_designTableModel, SIGNAL(designChanged()), this, SLOT(withinSubjectsDesignChanged()));
 
 #ifdef QT_NO_DEBUG
-	ui->groupContrasts->hide();
-	ui->groupPostHoc->hide();
 	ui->groupCompareMainEffects->hide();
 
-	ui->buttonAssignCovariates->hide();
-	ui->covariates->hide();
-	ui->spacerCovariates->hide();
-	ui->labelCovariates->hide();
 #else
-	ui->groupContrasts->setStyleSheet("background-color: pink ;");
-	ui->groupPostHoc->setStyleSheet("background-color: pink ;");
 	ui->groupCompareMainEffects->setStyleSheet("background-color: pink ;");
 
-	ui->buttonAssignCovariates->setStyleSheet("background-color: pink ;");
-	ui->covariates->setStyleSheet("background-color: pink ;");
-	ui->spacerCovariates->setStyleSheet("background-color: pink ;");
-	ui->labelCovariates->setStyleSheet("background-color: pink ;");
 #endif
 }
 

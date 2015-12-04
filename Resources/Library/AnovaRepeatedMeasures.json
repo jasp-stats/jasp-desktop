@@ -83,7 +83,7 @@
 						"deviation",
 						"simple",
 						"difference",
-						"helmert",
+						"Helmert",
 						"repeated",
 						"polynomial"
 					],
@@ -105,19 +105,12 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "postHocTestsFDR",
-			"type": "Boolean"
+			"name": "postHocTestsTukey",
+			"type": "Boolean",
+			"default": true
 		},
 		{
-			"name": "postHocTestsHochberg",
-			"type": "Boolean"
-		},
-		{
-			"name": "postHocTestsHommel",
-			"type": "Boolean"
-		},
-		{
-			"name": "postHocTestsBenjamini",
+			"name": "postHocTestsScheffe",
 			"type": "Boolean"
 		},
 		{
