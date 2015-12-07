@@ -460,6 +460,19 @@
          <string>Output</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_8">
+         <item row="1" column="0" colspan="2">
+          <widget class="BoundCheckBox" name="posteriorEstimates">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Posterior estimates</string>
+           </property>
+          </widget>
+         </item>
          <item row="2" column="0" colspan="3">
           <widget class="QWidget" name="widgetPosteriorOptions" native="true">
            <layout class="QGridLayout" name="gridLayout_12">
@@ -539,18 +552,18 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0" colspan="2">
-          <widget class="BoundCheckBox" name="posteriorEstimates">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+         <item row="3" column="0">
+          <spacer name="verticalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
-           <property name="text">
-            <string>Posterior estimates</string>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
            </property>
-          </widget>
+          </spacer>
          </item>
         </layout>
        </widget>
