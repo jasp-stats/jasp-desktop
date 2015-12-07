@@ -45,11 +45,14 @@ private:
 
 	QMap<QString, OnlineNodeData> _pathUrls;
 
-	QNetworkAccessManager *_manager = NULL;
+	OnlineDataManager *_dataManager;
+	QNetworkAccessManager *_manager;
 
 	QString _userId;
 	QString _filesPath;
 	QString _fullname;
+
+	bool _isAuthenticated;
 
 	void loadProjects();
 	void loadFilesAndFolders(QUrl url);
