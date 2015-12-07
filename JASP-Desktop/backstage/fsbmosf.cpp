@@ -32,6 +32,21 @@ void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
 	refresh();
 }
 
+bool FSBMOSF::requiresAuthentication() const
+{
+	return true;
+}
+
+void FSBMOSF::authenticate(const QString &username, const QString &password)
+{
+	emit authenticationFail("Username and password are not correct. Please try again.");
+}
+
+bool FSBMOSF::isAuthenticated() const
+{
+	return false;
+}
+
 void FSBMOSF::refresh()
 {
 	if (_manager == NULL)

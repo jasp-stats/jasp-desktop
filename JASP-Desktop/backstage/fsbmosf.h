@@ -30,6 +30,10 @@ public:
 	OnlineNodeData getNodeData(QString key);
 	void setOnlineDataManager(OnlineDataManager *odm);
 
+	bool requiresAuthentication() const OVERRIDE;
+	void authenticate(const QString &username, const QString &password) OVERRIDE;
+	bool isAuthenticated() const OVERRIDE;
+
 signals:
 	void userDataChanged();
 
