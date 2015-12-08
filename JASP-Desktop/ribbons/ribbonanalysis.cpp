@@ -75,14 +75,14 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 
 	menu->addAction(QString("Correlation Matrix"), this, SLOT(itemSelected()))->setObjectName("Correlation");
 	menu->addAction(QString("Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinear");
-	menu->addAction(QString("Log Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinear");
+	menu->addAction(QString("Log-linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinear");
 
 	menu->addSeparator();
 
 	menu->addAction(QString("Bayesian Correlation Matrix"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesian");
 	menu->addAction(QString("Bayesian Correlation Pairs"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesianPairs");
 	menu->addAction(QString("Bayesian Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinearBayesian");
-	menu->addAction(QString("Bayesian Log Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinearBayesian");
+	menu->addAction(QString("Bayesian Log-linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinearBayesian");
 
 	ui->regressionButton->setMenu(menu);
 
