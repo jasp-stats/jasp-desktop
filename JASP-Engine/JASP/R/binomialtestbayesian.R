@@ -160,7 +160,8 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 
 	table[["data"]] <- data
 	
-	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste("proportions tested against value:", options$testValue)))
+	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste("proportions tested against value:", options$testValue)),
+								 list(symbol="<i>Note.</i>", text="assumes uniform prior under alternative hypothesis"))
 
 	results[["binomial"]] <- table
 
@@ -179,7 +180,23 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 
 .bayesBinomialTest.twoSided <- function(counts, n, theta0, a, b) {
 	
-	logBF10 <- lbeta(counts+a, n-counts+b) -  lbeta(a, b) - counts*log(theta0) - (n-counts)*log(1-theta0) 
+	if (theta0 == 0 && counts == 0) {
+	
+		# in this case, counts*log(theta0) should be zero, omit to avoid numerical issue with log(0)
+		
+		logBF10 <- lbeta(counts + a, n - counts + b) -  lbeta(a, b) - (n - counts)*log(1 - theta0)
+		
+	} else if (theta0 == 1 && counts == n) {
+	
+		# in this case, (n - counts)*log(1 - theta0) should be zero, omit to avoid numerical issue with log(0)
+		
+		logBF10 <- lbeta(counts + a, n - counts + b) -  lbeta(a, b) - counts*log(theta0) 
+		
+	} else {
+	
+		logBF10 <- lbeta(counts + a, n - counts + b) -  lbeta(a, b) - counts*log(theta0) - (n - counts)*log(1 - theta0)
+	}
+	
 	BF10 <- exp(logBF10)
 	
 	return(BF10)
@@ -191,13 +208,13 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 	if (hypothesis == "less") {
 		
 		lowerTail <- TRUE
-
-	} else if(hypothesis == "greater") {
+	
+	} else if (hypothesis == "greater") {
 		
 		lowerTail <- FALSE
-
+	
 	}
-
+	
 	logMLikelihoodH0 <- counts*log(theta0) + (n - counts)*log(1 - theta0)
 	term1 <- pbeta(theta0, a + counts, b + n - counts, lower.tail = lowerTail, log.p = TRUE) +
 		lbeta(a + counts, b + n - counts)
@@ -210,14 +227,14 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 }
 
 .bayesBinomialTest <- function(counts, n, theta0, hypothesis, a, b) {
-
+	
 	if (hypothesis == "two.sided") {
 		
 		BF10 <- try(.bayesBinomialTest.twoSided(counts, n, theta0, a, b), silent = TRUE)
 		
 	} else {
 		
-		if(theta0 == 0 || theta0 == 1) {
+		if (theta0 == 0 || theta0 == 1) {
 			
 			BF10 <- NA
 			
