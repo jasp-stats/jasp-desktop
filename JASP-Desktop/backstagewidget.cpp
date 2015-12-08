@@ -63,6 +63,10 @@ BackStageWidget::BackStageWidget(QWidget *parent) : QWidget(parent)
 	_tabBar->addTab("Export");
 	_tabBar->addTab("Close");
 
+#ifndef QT_DEBUG
+	_tabBar->hideTab(3);
+#endif
+
 	_tabBar->setTabEnabled(1, false);
 	_tabBar->setTabEnabled(2, false);
 	_tabBar->setTabEnabled(3, false);
