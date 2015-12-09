@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>386</width>
-    <height>228</height>
+    <height>241</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -103,6 +103,9 @@
            <property name="text">
             <string>Login</string>
            </property>
+           <property name="default">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item>
@@ -185,6 +188,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>email</tabstop>
+  <tabstop>password</tabstop>
+  <tabstop>loginButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
