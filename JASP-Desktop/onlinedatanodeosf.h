@@ -9,9 +9,9 @@ class OnlineDataNodeOSF: public OnlineDataNode
 	Q_OBJECT
 
 public:
-	OnlineDataNodeOSF(QNetworkAccessManager *manager, QString id, QObject *parent = 0);
+	OnlineDataNodeOSF(QString localPath, QNetworkAccessManager *manager, QString id, QObject *parent = 0);
 
-	virtual void getNodeInfo() const OVERRIDE;
+	virtual void initialise() OVERRIDE;
 
 	virtual QString getUploadPath() const OVERRIDE;
 	virtual QString getUploadPath(QString filename) const OVERRIDE;
@@ -19,8 +19,25 @@ public:
 	virtual QString getNewFolderPath(QString folderName) const OVERRIDE;
 	virtual QString getDeletePath() const OVERRIDE;
 
+	virtual void beginDownloadFile() OVERRIDE;
+	virtual void beginUploadFile() OVERRIDE;
+	virtual void beginUploadFile(QString name) OVERRIDE;
+	virtual void beginNewFolder(QString name) OVERRIDE;
+
 private slots:
 	void nodeInfoReceived();
+	void checkFinished();
+
+private:
+
+	bool interpretNode(QJsonObject nodeObject);
+	void extractNodeData(OnlineDataNodeOSF * node);
+	OnlineDataNode::Kind parseKind(QString kind);
+
+	QString _contentsPath;
+
+	OnlineDataNode::Kind _dataKind = OnlineDataNode::Unknown;
+	QString _expectedName = "";
 
 };
 

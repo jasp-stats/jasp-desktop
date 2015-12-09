@@ -27,8 +27,9 @@ public:
 	QNetworkAccessManager* getNetworkAccessManager(OnlineDataManager::Provider provider);
 	void setNetworkAccessManager(OnlineDataManager::Provider provider, QNetworkAccessManager*);
 
-	OnlineDataConnection* uploadFileAsync(QString nodePath, QString id);
-	OnlineDataConnection* downloadFileAsync(QString nodePath, QString id);
+	OnlineDataNode* uploadFileAsync(QString nodePath, QString id);
+	OnlineDataNode* downloadFileAsync(QString nodePath, QString id);
+	OnlineDataNode* createNewFileAsync(QString nodePath, QString filename, QString id);
 
 	OnlineUserNode* getOnlineUserData(QString nodePath, QString id);
 
@@ -39,15 +40,15 @@ public slots:
 	void beginDownloadFile(QString nodePath, QString id);
 
 signals:
+	void newFileFinished(QString id);
 	void downloadFileFinished(QString id);
 	void uploadFileFinished(QString id);
 	void error(QString msg, QString id);
 
 private slots:
+	void newFileFinished();
 	void uploadFileFinished();
 	void downloadFileFinished();
-	void downloadDataReceived();
-	void uploadDataReceived();
 
 private:
 

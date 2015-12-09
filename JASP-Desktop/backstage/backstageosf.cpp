@@ -82,6 +82,8 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	connect(_fsBrowser, SIGNAL(entryOpened(QString)), this, SLOT(notifyDataSetOpened(QString)));
 	connect(_fsBrowser, SIGNAL(entrySelected(QString)), this, SLOT(notifyDataSetSelected(QString)));
 
+	connect(_saveButton, SIGNAL(clicked()), this, SLOT(saveClicked()));
+
 	line = new QWidget(this);
 	line->setFixedWidth(1);
 	line->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
@@ -112,7 +114,7 @@ void BackstageOSF::updateUserDetails()
 {
 	OnlineUserNode *userNode = _odm->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
 
-	userNode->getNodeInfo();
+	userNode->initialise();
 
 	connect(userNode, SIGNAL(finished()), this, SLOT(userDetailsReceived()));
 }
@@ -147,27 +149,41 @@ void BackstageOSF::notifyDataSetOpened(QString path)
 
 void BackstageOSF::notifyDataSetSelected(QString path)
 {
-	_fileNameTextBox->setText(QFileInfo(path).baseName());
+	_fileNameTextBox->setText(QFileInfo(path).fileName());
 }
 
+void BackstageOSF::saveClicked()
+{
+	QString filename = _fileNameTextBox->text();
+
+	if (filename.endsWith(".jasp") == false)
+	{
+		filename = filename + ".jasp";
+		_fileNameTextBox->setText(filename);
+	}
+
+	QString path;
+
+	if (_model->hasFileEntry(filename, path))
+		notifyDataSetOpened(path);
+	else
+		openFile(_model->currentNodeData().nodePath, filename);
+}
 
 void BackstageOSF::openFile(const QString &nodePath, const QString &filename)
 {
-	if (_mode == FileEvent::FileOpen)
+	FileEvent *event = new FileEvent(this);
+	event->setOperation(_mode);
+
+	if (filename != "")
 	{
-		FileEvent *event = new FileEvent(this);
-		event->setOperation(FileEvent::FileOpen);
+		event->setPath(nodePath + "#file://" + filename);
 
-		if (filename != "")
-		{
-			event->setPath(nodePath + "#" + filename);
-
-			if ( ! filename.endsWith(".jasp", Qt::CaseInsensitive))
-				event->setReadOnly();
-		}
-		else
-			event->setComplete(false, "Failed to open file from OSF");
-
-		emit dataSetIORequest(event);
+		if ( ! filename.endsWith(".jasp", Qt::CaseInsensitive))
+			event->setReadOnly();
 	}
+	else
+		event->setComplete(false, "Failed to open file from OSF");
+
+	emit dataSetIORequest(event);
 }

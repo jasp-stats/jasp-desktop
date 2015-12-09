@@ -34,6 +34,8 @@ public:
 	void authenticate(const QString &username, const QString &password) OVERRIDE;
 	bool isAuthenticated() const OVERRIDE;
 
+	OnlineNodeData currentNodeData();
+
 signals:
 	void userDataChanged();
 

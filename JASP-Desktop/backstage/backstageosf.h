@@ -46,6 +46,7 @@ signals:
 private slots:
 	void notifyDataSetSelected(QString path);
 	void notifyDataSetOpened(QString path);
+	void saveClicked();
 
 	void openFile(const QString &nodePath, const QString &filename);
 	void userDetailsReceived();
