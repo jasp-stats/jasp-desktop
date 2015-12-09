@@ -26,7 +26,9 @@
 #include "fsbmosf.h"
 #include "fsbrowser.h"
 #include "breadcrumbs.h"
+
 #include <QLabel>
+#include <QCursor>
 
 class BackstageOSF : public BackstagePage
 {
@@ -61,6 +63,20 @@ private:
 	QWidget *_fileNameContainer;
 	QLineEdit *_fileNameTextBox;
 	QPushButton *_saveButton;
+
+	class HyperlinkLabel : public QLabel
+	{
+	public:
+		HyperlinkLabel(QWidget *parent)
+			: QLabel(parent)
+		{
+			setOpenExternalLinks(true);
+			setCursor(Qt::PointingHandCursor);
+			setTextFormat(Qt::RichText);
+			setStyleSheet("color : blue ; text-decoration: underline ;");
+		}
+	};
+
 };
 
 #endif // BACKSTAGEOSF_H

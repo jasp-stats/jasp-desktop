@@ -64,7 +64,7 @@ void rbridge_init()
 	rInside[".callbackNative"] = Rcpp::InternalFunction(&rbridge_callbackSEXP);
 	rInside[".requestTempFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestTempFileNameSEXP);
 	rInside[".requestStateFileNameNative"] = Rcpp::InternalFunction(&rbridge_requestStateFileNameSEXP);
-	rInside[".baseCitation"] = "Love, J., Selker, R., Marsman, M., Jamil, T., Dropmann, D., Verhagen, A. J., Ly, A., Gronau, Q. F., Smira, M., Epskamp, S., Matzke, D., Wild, A., Knight, P., Rouder, J. N., Morey, R. D., & Wagenmakers, E.-J. (2015). JASP (Version 0.7.1)[Computer software].";
+	rInside[".baseCitation"] = "Love, J., Selker, R., Marsman, M., Jamil, T., Dropmann, D., Verhagen, A. J., Ly, A., Gronau, Q. F., Smira, M., Epskamp, S., Matzke, D., Wild, A., Knight, P., Rouder, J. N., Morey, R. D., & Wagenmakers, E.-J. (2015). JASP (Version 0.7.5)[Computer software].";
 
 	rInside["jasp.analyses"] = Rcpp::List();
 	rInside.parseEvalQNT("suppressPackageStartupMessages(library(\"JASP\"))");
@@ -457,6 +457,9 @@ std::map<string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP co
 
 	if (Rf_isLogical(allColumns) && Rcpp::as<bool>(allColumns))
 	{
+		if (rbridge_dataSet == NULL)
+			rbridge_dataSet = rbridge_dataSetSource();
+
 		BOOST_FOREACH(const Column &column, rbridge_dataSet->columns())
 			columnsRequested[column.name()] = Column::ColumnTypeUnknown;
 	}

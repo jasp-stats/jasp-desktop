@@ -44,6 +44,10 @@ public:
 
 	bool contains(const QString &path) const;
 
+	virtual bool requiresAuthentication() const { return false; }
+	virtual bool isAuthenticated() const { return false; }
+	virtual void authenticate(const QString &, const QString &) { }
+
 public slots:
 	void setPath(QString path);
 
@@ -51,7 +55,8 @@ signals:
 	void entriesChanged();
 	void pathChanged(QString path);
 
-public slots:
+	void authenticationFail(const QString &message);
+	void authenticationSuccess();
 
 protected:
 

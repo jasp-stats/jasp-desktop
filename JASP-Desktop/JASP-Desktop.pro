@@ -171,7 +171,8 @@ SOURCES += main.cpp \
     onlinedatanode.cpp \
     onlineusernode.cpp \
     onlinenode.cpp \
-    onlineusernodeosf.cpp
+    onlineusernodeosf.cpp \
+    backstage/authwidget.cpp
 
 HEADERS  += \
     analyses.h \
@@ -307,7 +308,8 @@ HEADERS  += \
     onlinedatanode.h \
     onlineusernode.h \
     onlinenode.h \
-    onlineusernodeosf.h
+    onlineusernodeosf.h \
+    backstage/authwidget.h
 
 FORMS += \
     analysisforms/anovabayesianform.ui \
@@ -351,7 +353,8 @@ FORMS += \
     analysisforms/binomialtestform.ui \
 	analysisforms/binomialtestbayesianform.ui \
     analysisforms/bffromtform.ui \
-    variableswidget.ui
+    variableswidget.ui \
+    backstage/authwidget.ui
 
 
 RESOURCES += \

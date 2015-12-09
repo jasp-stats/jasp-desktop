@@ -20,6 +20,7 @@
 
 #include <QGridLayout>
 #include <QScrollArea>
+#include <QMessageBox>
 
 #include "verticalscrollarea.h"
 #include "fsentrywidget.h"
@@ -46,6 +47,11 @@ FSBrowser::FSBrowser(QWidget *parent) : QWidget(parent)
 	_scrollPane->setLayout(_scrollPaneLayout);
 
 	_buttonGroup = new QButtonGroup(this);
+
+	_authWidget = new AuthWidget(this);
+	_authWidget->hide();
+
+	connect(_authWidget, SIGNAL(loginRequested(QString,QString)), this, SLOT(loginRequested(QString,QString)));
 }
 
 void FSBrowser::setFSModel(FSBModel *model)
@@ -55,6 +61,8 @@ void FSBrowser::setFSModel(FSBModel *model)
 	refresh();
 
 	connect(_model, SIGNAL(entriesChanged()), this, SLOT(refresh()));
+	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(refresh()));
+	connect(_model, SIGNAL(authenticationFail(QString)), this, SLOT(authenticationFailed(QString)));
 }
 
 void FSBrowser::setBrowseMode(FSBrowser::BrowseMode mode)
@@ -69,36 +77,50 @@ void FSBrowser::setViewType(FSBrowser::ViewType viewType)
 
 void FSBrowser::refresh()
 {
-	bool compact = false;
-
-	if (_viewType == ListView)
+	if (_model->requiresAuthentication() && _model->isAuthenticated() == false)
 	{
-		compact = true;
-		_scrollPaneLayout->setContentsMargins(8, 8, 8, 8);
-		_scrollPaneLayout->setSpacing(0);
+		_authWidget->show();
 	}
 	else
 	{
-		_scrollPaneLayout->setContentsMargins(12, 12, 12, 12);
-		_scrollPaneLayout->setSpacing(8);
+		_authWidget->hide();
+
+		bool compact = false;
+
+		if (_viewType == ListView)
+		{
+			compact = true;
+			_scrollPaneLayout->setContentsMargins(8, 8, 8, 8);
+			_scrollPaneLayout->setSpacing(0);
+		}
+		else
+		{
+			_scrollPaneLayout->setContentsMargins(12, 12, 12, 12);
+			_scrollPaneLayout->setSpacing(8);
+		}
+
+		foreach (QAbstractButton *button, _buttonGroup->buttons())
+			delete button;
+
+		int id = 0;
+
+		foreach (const FSEntry &entry, _model->entries())
+		{
+			FSEntryWidget *button = new FSEntryWidget(entry, _scrollPane);
+			button->setCompact(compact);
+
+			_buttonGroup->addButton(button, id++);
+			_scrollPaneLayout->addWidget(button);
+
+			connect(button, SIGNAL(selected()), this, SLOT(entrySelectedHandler()));
+			connect(button, SIGNAL(opened()), this, SLOT(entryOpenedHandler()));
+		}
 	}
+}
 
-	foreach (QAbstractButton *button, _buttonGroup->buttons())
-		delete button;
-
-	int id = 0;
-
-	foreach (const FSEntry &entry, _model->entries())
-	{
-		FSEntryWidget *button = new FSEntryWidget(entry, _scrollPane);
-		button->setCompact(compact);
-
-		_buttonGroup->addButton(button, id++);
-		_scrollPaneLayout->addWidget(button);
-
-		connect(button, SIGNAL(selected()), this, SLOT(entrySelectedHandler()));
-		connect(button, SIGNAL(opened()), this, SLOT(entryOpenedHandler()));
-	}
+void FSBrowser::loginRequested(QString username, QString password)
+{
+	_model->authenticate(username, password);
 }
 
 void FSBrowser::entrySelectedHandler()
@@ -123,5 +145,10 @@ void FSBrowser::entryOpenedHandler()
 		else
 			emit entryOpened(entry->path());
 	}
+}
+
+void FSBrowser::authenticationFailed(QString message)
+{
+	QMessageBox::warning(this, "", message);
 }
 

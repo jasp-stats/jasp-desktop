@@ -41,6 +41,7 @@ rm -rf app/JASPEngine.app/
 
 cp -r R.framework app/JASP.app/Contents/Frameworks
 cp -r Resources/* app/JASP.app/Contents/Resources
+cp -r R           app/JASP.app/Contents/MacOS
 
 cp icon.icns app/JASP.app/Contents/Resources
 cp Info.plist app/JASP.app/Contents

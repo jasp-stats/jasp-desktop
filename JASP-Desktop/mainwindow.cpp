@@ -678,7 +678,7 @@ void MainWindow::tabChanged(int index)
 		ui->ribbon->setCurrentIndex(index - 2);
 #else
 		ui->topLevelWidgets->setCurrentIndex(2);
-		ui->ribbon->setCurrentIndex(index - 2);
+		ui->ribbon->setCurrentIndex(index - 1);
 #endif
 	}
 }

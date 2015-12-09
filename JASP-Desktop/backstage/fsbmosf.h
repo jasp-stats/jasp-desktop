@@ -30,6 +30,10 @@ public:
 	OnlineNodeData getNodeData(QString key);
 	void setOnlineDataManager(OnlineDataManager *odm);
 
+	bool requiresAuthentication() const OVERRIDE;
+	void authenticate(const QString &username, const QString &password) OVERRIDE;
+	bool isAuthenticated() const OVERRIDE;
+
 signals:
 	void userDataChanged();
 
@@ -41,11 +45,14 @@ private:
 
 	QMap<QString, OnlineNodeData> _pathUrls;
 
-	QNetworkAccessManager *_manager = NULL;
+	OnlineDataManager *_dataManager;
+	QNetworkAccessManager *_manager;
 
 	QString _userId;
 	QString _filesPath;
 	QString _fullname;
+
+	bool _isAuthenticated;
 
 	void loadProjects();
 	void loadFilesAndFolders(QUrl url);

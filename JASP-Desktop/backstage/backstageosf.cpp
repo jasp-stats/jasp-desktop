@@ -20,6 +20,7 @@
 
 #include <QLabel>
 #include <QFileInfo>
+#include <QHBoxLayout>
 
 #include "fsbmosf.h"
 
@@ -86,6 +87,25 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	line->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	line->setStyleSheet("QWidget { background-color: #A3A4A5 ; }");
 	layout->addWidget(line, 0, 1, 6, 1);
+
+	QWidget *about = new QWidget(this);
+	about->setObjectName("aboutOSF");
+	about->setStyleSheet("#aboutOSF { border-top: 1px solid #A3A4A5 ; }");
+	layout->addWidget(about);
+
+	QHBoxLayout *aboutLayout = new QHBoxLayout(about);
+	aboutLayout->setSpacing(12);
+	about->setLayout(aboutLayout);
+
+	HyperlinkLabel *aboutOSF = new HyperlinkLabel(about);
+	aboutOSF->setText("<a href='https://osf.io/getting-started/'>About the OSF</a>");
+
+	HyperlinkLabel *registerOSF = new HyperlinkLabel(about);
+	registerOSF->setText("<a href='https://osf.io/'>Register</a>");
+
+	aboutLayout->addWidget(aboutOSF);
+	aboutLayout->addWidget(registerOSF);
+	aboutLayout->addStretch(1);
 }
 
 void BackstageOSF::updateUserDetails()

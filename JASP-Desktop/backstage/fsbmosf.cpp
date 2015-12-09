@@ -17,6 +17,10 @@
 
 FSBMOSF::FSBMOSF()
 {
+	_dataManager = NULL;
+	_manager = NULL;
+	_isAuthenticated = false;
+
 	_rootPath = _path = "Projects";
 }
 
@@ -27,9 +31,38 @@ FSBMOSF::~FSBMOSF()
 
 void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
 {
+	_dataManager = odm;
 	_manager = odm->getNetworkAccessManager(OnlineDataManager::OSF);
 
 	refresh();
+}
+
+bool FSBMOSF::requiresAuthentication() const
+{
+	return true;
+}
+
+void FSBMOSF::authenticate(const QString &username, const QString &password)
+{
+	_dataManager->setAuthentication(OnlineDataManager::OSF, username, password);
+
+	bool success = true;
+
+	if (success)
+	{
+		_isAuthenticated = true;
+		emit authenticationSuccess();
+	}
+	else
+	{
+		_isAuthenticated = false;
+		emit authenticationFail("Username and password are not correct. Please try again.");
+	}
+}
+
+bool FSBMOSF::isAuthenticated() const
+{
+	return _isAuthenticated;
 }
 
 void FSBMOSF::refresh()

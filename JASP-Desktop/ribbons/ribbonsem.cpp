@@ -24,6 +24,8 @@ RibbonSEM::RibbonSEM(QWidget *parent) :
 	ui(new Ui::RibbonSEM)
 {
 	ui->setupUi(this);
+
+	addRibbonButton(ui->SEMSimple);
 }
 
 RibbonSEM::~RibbonSEM()

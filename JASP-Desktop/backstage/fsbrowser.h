@@ -25,6 +25,7 @@
 
 #include "fsbmodel.h"
 #include "breadcrumbs.h"
+#include "authwidget.h"
 
 class FSBrowser : public QWidget
 {
@@ -50,8 +51,10 @@ public slots:
 private slots:
 
 	void refresh();
+	void loginRequested(QString username, QString password);
 	void entrySelectedHandler();
 	void entryOpenedHandler();
+	void authenticationFailed(QString message);
 
 private:
 
@@ -64,6 +67,7 @@ private:
 
 	FSBModel *_model;
 
+	AuthWidget *_authWidget;
 
 };
 
