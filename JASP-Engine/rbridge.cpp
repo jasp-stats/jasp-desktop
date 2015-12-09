@@ -457,6 +457,9 @@ std::map<string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP co
 
 	if (Rf_isLogical(allColumns) && Rcpp::as<bool>(allColumns))
 	{
+		if (rbridge_dataSet == NULL)
+			rbridge_dataSet = rbridge_dataSetSource();
+
 		BOOST_FOREACH(const Column &column, rbridge_dataSet->columns())
 			columnsRequested[column.name()] = Column::ColumnTypeUnknown;
 	}
