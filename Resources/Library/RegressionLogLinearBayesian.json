@@ -94,7 +94,7 @@
 		{
 			"name": "regressionCoefficientsSubmodelEstimates",
 			"type": "Boolean",
-			"default": false
+			"default": true
 		},
 		{
 			"name": "regressionCoefficientsSubmodelCredibleIntervals",
