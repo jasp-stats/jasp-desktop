@@ -24,7 +24,8 @@ public:
 	} AuthData;
 
 	void setAuthentication(OnlineDataManager::Provider provider, QString username, QString password);
-	QNetworkAccessManager* getNetworkAccessManager(OnlineDataManager::Provider provider);
+	bool authenticationSuccessful(OnlineDataManager::Provider provider) const;
+	QNetworkAccessManager* getNetworkAccessManager(OnlineDataManager::Provider provider) const;
 	void setNetworkAccessManager(OnlineDataManager::Provider provider, QNetworkAccessManager*);
 
 	OnlineDataNode* uploadFileAsync(QString nodePath, QString id);

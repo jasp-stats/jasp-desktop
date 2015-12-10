@@ -51,13 +51,13 @@ private slots:
 
 	void openFile(const QString &nodePath, const QString &filename);
 	void userDetailsReceived();
+	void saveCompleted(FileEvent* event);
+	void updateUserDetails();
 
 	void newFolderClicked();
 	void authenticatedHandler();
 
 private:
-
-	void updateUserDetails();
 
 	OnlineDataManager *_odm;
 

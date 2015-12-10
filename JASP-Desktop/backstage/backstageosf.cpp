@@ -84,7 +84,10 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	layout->addWidget(line);
 
 	_model = new FSBMOSF();
-	_model->refresh();
+
+	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(updateUserDetails()));
+
+	//_model->refresh();
 
 	_fsBrowser = new FSBrowser(this);
 	_fsBrowser->setViewType(FSBrowser::ListView);
@@ -160,7 +163,6 @@ void BackstageOSF::authenticatedHandler()
 void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 {
 	_odm = odm;
-	updateUserDetails();
 	_model->setOnlineDataManager(_odm);
 
 	_newFolderButton->setEnabled(_model->isAuthenticated());
@@ -209,6 +211,9 @@ void BackstageOSF::openFile(const QString &nodePath, const QString &filename)
 	FileEvent *event = new FileEvent(this);
 	event->setOperation(_mode);
 
+	if (_mode == FileEvent::FileSave)
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(saveCompleted(FileEvent*)));
+
 	if (filename != "")
 	{
 		event->setPath(nodePath + "#file://" + filename);
@@ -220,4 +225,10 @@ void BackstageOSF::openFile(const QString &nodePath, const QString &filename)
 		event->setComplete(false, "Failed to open file from OSF");
 
 	emit dataSetIORequest(event);
+}
+
+void BackstageOSF::saveCompleted(FileEvent* event)
+{
+	if (event->successful())
+		_model->refresh();
 }

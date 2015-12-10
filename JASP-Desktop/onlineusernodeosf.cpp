@@ -6,7 +6,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QByteArray>
-
+#include <QEventLoop>
 #include <stdexcept>
 
 using namespace std;
@@ -62,4 +62,26 @@ void OnlineUserNodeOSF::nodeInfoReceived() {
 	reply->deleteLater();
 
 	endInit(success);
+}
+
+bool OnlineUserNodeOSF::authenticationSuccessful(QNetworkAccessManager *manager)
+{
+	QUrl url = QUrl("https://test-api.osf.io/v2/users/me/");
+
+	QEventLoop loop;
+	QNetworkRequest request(url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
+	request.setRawHeader("Accept", "application/vnd.api+json");
+
+	QNetworkReply* reply = manager->get(request);
+
+	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+
+	loop.exec();
+
+	bool error = reply->error();
+
+	delete reply;
+
+	return error == false;
 }

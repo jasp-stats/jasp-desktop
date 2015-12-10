@@ -45,10 +45,12 @@ private slots:
 
 private:
 
+	void setAuthenticated(bool value);
+
 	QMap<QString, OnlineNodeData> _pathUrls;
 
-	OnlineDataManager *_dataManager;
-	QNetworkAccessManager *_manager;
+	OnlineDataManager *_dataManager = NULL;
+	QNetworkAccessManager *_manager = NULL;
 
 	QString _userId;
 	QString _filesPath;

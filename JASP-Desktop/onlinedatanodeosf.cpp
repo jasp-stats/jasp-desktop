@@ -16,7 +16,6 @@ using namespace std;
 OnlineDataNodeOSF::OnlineDataNodeOSF(QString localPath, QNetworkAccessManager *manager, QString id, QObject *parent):
 	OnlineDataNode(localPath, manager, id, parent)
 {
-	_uploadConnectionType = OnlineDataNode::Put;
 }
 
 void OnlineDataNodeOSF::initialise() {
@@ -25,9 +24,11 @@ void OnlineDataNodeOSF::initialise() {
 
 	QUrl url = QUrl(_path);
 
-	if (url.fragment().startsWith("file://"))
+	_subPath = url.fragment().split('#');
+
+	if (_subPath.last().startsWith("file://"))
 		_kind = OnlineDataNode::File;
-	else if (url.fragment().startsWith("folder://"))
+	else if (_subPath.last().startsWith("folder://"))
 		_kind = OnlineDataNode::Folder;
 	else
 		_kind = OnlineDataNode::Unknown;
@@ -56,7 +57,7 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 	QNetworkReply *reply = (QNetworkReply*)this->sender();
 
 	bool success = false;
-	bool finished = true;
+	bool finished = false;
 
 	if (reply->error() != QNetworkReply::NoError)
 		setError(true, reply->errorString());
@@ -71,38 +72,21 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 		QJsonObject json = doc.object();
 
 		QJsonObject nodeObject;
-		bool found = true;
+
+
 		if (json.value("data").isArray() && _expectedName != "")
 		{
-			found = false;
+			bool lastItem = _subPath.count() == 1;
+			QString searchName =_subPath.first();
+			searchName = searchName.right(searchName.length() - searchName.lastIndexOf("/") - 1);
+
 			QJsonArray arrayObject = json.value("data").toArray();
-			foreach (const QJsonValue & value, arrayObject)
+
+			bool found = searchList(searchName, lastItem ? _kind : OnlineDataNode::Folder, arrayObject, nodeObject);
+
+			if ( ! found)
 			{
-
-				if (value.isObject() == false)
-					continue;
-
-				nodeObject = value.toObject();
-				QJsonObject attrObj = nodeObject.value("attributes").toObject();
-				QString name = attrObj.value("name").toString();
-				QString dataKindString = attrObj.value("kind").toString();
-
-				OnlineDataNode::Kind dataKind = OnlineDataNode::Unknown;
-				if (dataKindString == "folder")
-					dataKind = OnlineDataNode::Folder;
-				else if (dataKindString == "file")
-					dataKind = OnlineDataNode::File;
-
-				if (name == _expectedName && _kind == dataKind)
-				{
-					found = true;
-					break;
-				}
-			}
-
-			if (found == false)
-			{
-				QJsonObject contentLevelLinks = json.value("links").toObject();
+			   QJsonObject contentLevelLinks = json.value("links").toObject();
 
 				QJsonValue nextContentList = contentLevelLinks.value("next");
 				if (nextContentList.isNull() == false)
@@ -110,26 +94,87 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 					processUrl(QUrl(nextContentList.toString()));
 					finished = false;
 				}
+				else if (lastItem)
+				{
+					finished = true;
+					success = true;
+				}
+				else
+				{
+					finished = true;
+					success = false;
+				}
+			}
+			else if (_subPath.count() > 1)
+			{
+				_subPath.removeFirst();
+				QString basePath = "";
+				if (_subPath.count() == 1)
+				{
+					populateNodeData(nodeObject);
+					basePath = getBaseUrl(nodeObject);
+				}
+				else
+					basePath = getContentsUrl(nodeObject);
+				processUrl(QUrl(basePath));
+				finished = false;
+			}
+			else
+			{
+				_subPath.removeFirst();
+				finished = interpretNode(nodeObject);
+				success = true;
 			}
 		}
 		else if (json.value("data").isObject())
+		{
 			nodeObject = json.value("data").toObject();
+			finished = interpretNode(nodeObject);
+			success = true;
+		}
 		else
 		{
 			setError(true, "Online node data in unknown form.");
-			found = false;
+			finished = true;
+			success = false;
 		}
-
-		if (found)
-			finished = interpretNode(nodeObject);
-
-		success = found;
 	}
 
 	reply->deleteLater();
 
 	if (finished)
 		endInit(success);
+}
+
+bool OnlineDataNodeOSF::searchList(QString searchName, OnlineDataNode::Kind kind, QJsonArray arrayObject, QJsonObject &nodeObject)
+{
+	bool found = false;
+	foreach (const QJsonValue & value, arrayObject)
+	{
+
+		if (value.isObject() == false)
+			continue;
+
+		QJsonObject s1 = value.toObject();
+		QJsonObject attrObj = s1.value("attributes").toObject();
+		QString name = attrObj.value("name").toString();
+		QString dataKindString = attrObj.value("kind").toString();
+
+		OnlineDataNode::Kind dataKind = OnlineDataNode::Unknown;
+		if (dataKindString == "folder")
+			dataKind = OnlineDataNode::Folder;
+		else if (dataKindString == "file")
+			dataKind = OnlineDataNode::File;
+
+		if (name == searchName && kind == dataKind)
+		{
+			nodeObject = s1;
+			found = true;
+			break;
+		}
+	}
+
+	return found;
 }
 
 OnlineDataNode::Kind OnlineDataNodeOSF::parseKind(QString kind)
@@ -143,6 +188,19 @@ OnlineDataNode::Kind OnlineDataNodeOSF::parseKind(QString kind)
 }
 
 bool OnlineDataNodeOSF::interpretNode(QJsonObject nodeObject)
+{
+	populateNodeData(nodeObject);
+
+	if (_dataKind == OnlineDataNode::Folder && _subPath.count() == 1)
+	{	
+		processUrl(QUrl(getContentsUrl(nodeObject)));
+		return false;
+	}
+
+	return true;
+}
+
+void OnlineDataNodeOSF::populateNodeData(QJsonObject nodeObject)
 {
 	QJsonObject attrObj = nodeObject.value("attributes").toObject();
 
@@ -171,43 +229,41 @@ bool OnlineDataNodeOSF::interpretNode(QJsonObject nodeObject)
 		_newFolderPath = linksObj.value("new_folder").toString();
 		_deletePath = linksObj.value("delete").toString();
 	}
-
-	if (_dataKind == OnlineDataNode::Folder && _expectedName != "")
-	{
-		QJsonObject a = nodeObject.value("relationships").toObject();
-		QJsonObject ab = a.value("files").toObject();
-		QJsonObject abc = ab.value("links").toObject();
-		QJsonObject abcd = abc.value("related").toObject();
-
-		QString contentsPath = abcd.value("href").toString();
-
-		OnlineDataNodeOSF *checkNode = new OnlineDataNodeOSF("", _manager, _id, this);
-
-		QUrl url = QUrl(_path);
-		checkNode->setPath(contentsPath + "#" + url.fragment());
-
-		connect(checkNode, SIGNAL(finished()), this, SLOT(checkFinished()));
-		checkNode->initialise();
-
-		return false;
-	}
-
-	return true;
 }
 
-
-
-void OnlineDataNodeOSF::checkFinished()
+QString OnlineDataNodeOSF::getContentsUrl(QJsonObject nodeObject)
 {
-	OnlineDataNodeOSF *checkNode = qobject_cast<OnlineDataNodeOSF *>(sender());
+	QJsonObject a = nodeObject.value("relationships").toObject();
+	QJsonObject ab = a.value("files").toObject();
+	QJsonObject abc = ab.value("links").toObject();
+	QJsonObject abcd = abc.value("related").toObject();
 
-	if (checkNode->_inited)
-		extractNodeData(checkNode);
+	return abcd.value("href").toString();
+}
 
-	checkNode->deleteLater();
+QString OnlineDataNodeOSF::getBaseUrl(QJsonObject nodeObject)
+{
+	QJsonObject linksObj = nodeObject.value("links").toObject();
+
+	QString url = linksObj.value("info").toString();
+
+	if (url == "")
+		url = getContentsUrl(nodeObject);
+
+	return url;
+}
+
+/*void OnlineDataNodeOSF::checkFinished()
+{
+	OnlineDataNodeOSF *childNode = qobject_cast<OnlineDataNodeOSF *>(sender());
+
+	if (childNode->_inited)
+		extractNodeData(childNode);
+
+	childNode->deleteLater();
 
 	endInit(true);
-}
+}*/
 
 
 QString OnlineDataNodeOSF::getUploadPath() const

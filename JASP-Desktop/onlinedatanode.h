@@ -14,7 +14,6 @@ class OnlineDataNode: public OnlineNode
 
 public:
 
-	enum ConnectionType {Put, Post, Get};
 	enum Kind {Unknown, File, Folder};
 	enum Action {None, NewFile, NewFolder, Upload, Download};
 
@@ -38,9 +37,6 @@ public:
 	QString name() const;
 	bool kind() const;
 
-	OnlineDataNode::ConnectionType uploadConnectionType() const;
-	OnlineDataNode::ConnectionType downloadConnectionType() const;
-
 	void prepareAction(Action action, const QString &data);
 
 	virtual QString getActionPath() const OVERRIDE;
@@ -54,9 +50,6 @@ protected:
 	QString _deletePath;
 	QString _name;
 	OnlineDataNode::Kind _kind;
-
-	OnlineDataNode::ConnectionType _uploadConnectionType = OnlineDataNode::Post;
-	OnlineDataNode::ConnectionType _downloadConnectionType = OnlineDataNode::Get;
 
 	Action _preparedAction = OnlineDataNode::None;
 	QString _preparedData;

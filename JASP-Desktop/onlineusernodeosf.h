@@ -13,6 +13,8 @@ public:
 
 	virtual void initialise() OVERRIDE;
 
+	static bool authenticationSuccessful(QNetworkAccessManager *manager);
+
 private slots:
 	void nodeInfoReceived();
 
