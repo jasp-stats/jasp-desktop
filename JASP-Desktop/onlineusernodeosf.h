@@ -11,7 +11,7 @@ class OnlineUserNodeOSF: public OnlineUserNode
 public:
 	OnlineUserNodeOSF(QNetworkAccessManager *manager, QString id, QObject *parent = 0);
 
-	virtual void getNodeInfo() const OVERRIDE;
+	virtual void initialise() OVERRIDE;
 
 private slots:
 	void nodeInfoReceived();

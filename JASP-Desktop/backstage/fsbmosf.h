@@ -34,6 +34,8 @@ public:
 	void authenticate(const QString &username, const QString &password) OVERRIDE;
 	bool isAuthenticated() const OVERRIDE;
 
+	OnlineNodeData currentNodeData();
+
 signals:
 	void userDataChanged();
 
@@ -56,6 +58,7 @@ private:
 
 	void loadProjects();
 	void loadFilesAndFolders(QUrl url);
+	void parseFilesAndFolders(QUrl url);
 
 };
 

@@ -79,12 +79,17 @@ void FSBMOSF::refresh()
 	}
 }
 
+FSBMOSF::OnlineNodeData FSBMOSF::currentNodeData()
+{
+	return _pathUrls[_path];
+}
+
 void FSBMOSF::loadProjects() {
 
 	_entries.clear();
 	emit entriesChanged();
 
-	QUrl url("https://staging2-api.osf.io/v2/users/me/nodes/");
+	QUrl url("https://test-api.osf.io/v2/users/me/nodes/");
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
@@ -149,6 +154,11 @@ void FSBMOSF::loadFilesAndFolders(QUrl url) {
 	_entries.clear();
 	emit entriesChanged();
 
+	parseFilesAndFolders(url);
+}
+
+void FSBMOSF::parseFilesAndFolders(QUrl url) {
+
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
@@ -161,8 +171,6 @@ void FSBMOSF::loadFilesAndFolders(QUrl url) {
 void FSBMOSF::gotFilesAndFolders() {
 
 	QNetworkReply *reply = (QNetworkReply*)this->sender();
-
-	_entries.clear();
 
 	if (reply->error() != QNetworkReply::NoError)
 		return;
@@ -213,15 +221,22 @@ void FSBMOSF::gotFilesAndFolders() {
 			QJsonObject relatedObj = linksObj.value("related").toObject();
 
 			nodeData.contentsPath = relatedObj.value("href").toString();
+
+			QJsonObject topLinksObj = nodeObject.value("links").toObject();
+
+			nodeData.nodePath = topLinksObj.value("info").toString();
+			nodeData.uploadPath = topLinksObj.value("upload").toString();
 			nodeData.isFolder = true;
 		}
-		else {
+		else
+		{
 			QJsonObject linksObj = nodeObject.value("links").toObject();
 			nodeData.isFolder = false;
 
 			nodeData.uploadPath = linksObj.value("upload").toString();
 			nodeData.downloadPath = linksObj.value("download").toString();
 			nodeData.nodePath = linksObj.value("info").toString();
+
 		}
 
 		_entries.append(createEntry(path, entryType));
@@ -229,7 +244,16 @@ void FSBMOSF::gotFilesAndFolders() {
 
 	}
 
-	emit entriesChanged();
+	QJsonObject contentLevelLinks = json.value("links").toObject();
+
+	QJsonValue nextContentList = contentLevelLinks.value("next");
+	if (nextContentList.isNull() == false)
+	{
+		parseFilesAndFolders(QUrl(nextContentList.toString()));
+	}
+	else
+		emit entriesChanged();
+
 	reply->deleteLater();
 }
 

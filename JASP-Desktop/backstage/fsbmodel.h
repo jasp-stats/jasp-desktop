@@ -48,6 +48,8 @@ public:
 	virtual bool isAuthenticated() const { return false; }
 	virtual void authenticate(const QString &, const QString &) { }
 
+	bool hasFileEntry(QString name, QString &path);
+
 public slots:
 	void setPath(QString path);
 

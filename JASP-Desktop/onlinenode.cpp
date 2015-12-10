@@ -40,8 +40,40 @@ void OnlineNode::setPath(const QString &path)
 
 OnlineDataConnection* OnlineNode::connection()
 {
-	if (_connection == NULL)
-		_connection = new OnlineDataConnection(_id, _manager);
+	if (_connection == NULL) {
+		_connection = new OnlineDataConnection(_manager, this);
+		connect(_connection, SIGNAL(finished()), this, SLOT(connectionFinished()));
+	}
 
 	return _connection;
+}
+
+void OnlineNode::connectionFinished()
+{
+	OnlineDataConnection *conn = connection();
+	if (conn->error())
+		setError(true, conn->errorMessage());
+
+	emit finished();
+}
+
+void OnlineNode::startInit()
+{
+	setError(false, "");
+
+	_inited = false;
+}
+
+void OnlineNode::endInit(bool success)
+{
+	_inited = success;
+
+	if (success == false || beginAction() == false)
+		emit finished();
+}
+
+void OnlineNode::setError(bool value, QString message)
+{
+	_error = value;
+	_errorMsg = message;
 }

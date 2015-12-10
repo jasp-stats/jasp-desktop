@@ -49,49 +49,60 @@ void OnlineDataManager::beginUploadFile(QString nodePath, QString id)
 	uploadFileAsync(nodePath, id);
 }
 
-OnlineDataConnection *OnlineDataManager::uploadFileAsync(QString nodePath, QString id) {
+OnlineDataNode *OnlineDataManager::createNewFileAsync(QString nodePath, QString filename, QString id) {
 
-	OnlineDataNode *nodeData = getOnlineNodeData(nodePath, id);
+	OnlineDataNode *dataNode = getOnlineNodeData(nodePath, id);
 
-	if (nodeData != NULL)
+	if (dataNode != NULL)
 	{
-		connect(nodeData, SIGNAL(finished()), this, SLOT(uploadDataReceived()));
+		connect(dataNode, SIGNAL(finished()), this, SLOT(newFileFinished()));
 
-		nodeData->getNodeInfo();
+		dataNode->processAction(OnlineDataNode::NewFile, filename);
 
-		return nodeData->connection();
+		return dataNode;
 	}
 
 	return NULL;
 }
 
-void OnlineDataManager::uploadDataReceived()
+void OnlineDataManager::newFileFinished()
 {
 	OnlineDataNode *dataNode = qobject_cast<OnlineDataNode *>(sender());
 
 	if (dataNode->error())
 		emit error(dataNode->errorMessage(), dataNode->id());
 	else
-	{
-		OnlineDataConnection *connection = dataNode->connection();
-
-		connect(connection, SIGNAL(finished()), this, SLOT(uploadFileFinished()));
-
-		connection->beginUploadFile(QUrl(dataNode->getUploadPath()), getLocalPath(dataNode->path()));
-	}
+		emit newFileFinished(dataNode->id());
 
 	dataNode->deleteLater();
 }
 
+
+OnlineDataNode *OnlineDataManager::uploadFileAsync(QString nodePath, QString id) {
+
+	OnlineDataNode *dataNode = getOnlineNodeData(nodePath, id);
+
+	if (dataNode != NULL)
+	{
+		connect(dataNode, SIGNAL(finished()), this, SLOT(uploadFileFinished()));
+
+		dataNode->processAction(OnlineDataNode::Upload, "");
+
+		return dataNode;
+	}
+
+	return NULL;
+}
+
 void OnlineDataManager::uploadFileFinished()
 {
-	OnlineDataConnection *connection = qobject_cast<OnlineDataConnection*>(sender());
-	if (connection->error())
-		emit error(connection->errorMessage(), connection->id());
+	OnlineDataNode *dataNode = qobject_cast<OnlineDataNode *>(sender());
+	if (dataNode->error())
+		emit error(dataNode->errorMessage(), dataNode->id());
 	else
-		emit uploadFileFinished(connection->id());
+		emit uploadFileFinished(dataNode->id());
 
-	connection->deleteLater();
+	dataNode->deleteLater();
 }
 
 
@@ -100,49 +111,33 @@ void OnlineDataManager::beginDownloadFile(QString nodePath, QString id) {
 	downloadFileAsync(nodePath, id);
 }
 
-OnlineDataConnection *OnlineDataManager::downloadFileAsync(QString nodePath, QString id)
+OnlineDataNode *OnlineDataManager::downloadFileAsync(QString nodePath, QString id)
 {
-	OnlineDataNode *nodeData = getOnlineNodeData(nodePath, id);
+	OnlineDataNode *dataNode = getOnlineNodeData(nodePath, id);
 
-	if (nodeData != NULL)
+	if (dataNode != NULL)
 	{
-		connect(nodeData, SIGNAL(finished()), this, SLOT(downloadDataReceived()));
-		nodeData->getNodeInfo();
+		connect(dataNode, SIGNAL(finished()), this, SLOT(downloadFileFinished()));
 
-		return nodeData->connection();
+		dataNode->processAction(OnlineDataNode::Download, "");
+
+		return dataNode;
 	}
 
 	return NULL;
 }
 
-void OnlineDataManager::downloadDataReceived()
+
+void OnlineDataManager::downloadFileFinished()
 {
 	OnlineDataNode *dataNode = qobject_cast<OnlineDataNode *>(sender());
 
 	if (dataNode->error())
 		emit error(dataNode->errorMessage(), dataNode->id());
 	else
-	{
-		OnlineDataConnection *connection = dataNode->connection();
-
-		connect(connection, SIGNAL(finished()), this, SLOT(downloadFileFinished()));
-
-		connection->beginDownloadFile(QUrl(dataNode->getDownloadPath()), getLocalPath(dataNode->path()));
-	}
+		emit downloadFileFinished(dataNode->id());
 
 	dataNode->deleteLater();
-}
-
-void OnlineDataManager::downloadFileFinished()
-{
-	OnlineDataConnection *connection = qobject_cast<OnlineDataConnection*>(sender());
-
-	if (connection->error())
-		emit error(connection->errorMessage(), connection->id());
-	else
-		emit downloadFileFinished(connection->id());
-
-	connection->deleteLater();
 }
 
 
@@ -178,7 +173,7 @@ OnlineDataNode *OnlineDataManager::getOnlineNodeData(QString nodePath, QString i
 
 	if (provider == OnlineDataManager::OSF) {
 
-		OnlineDataNodeOSF *nodeData = new OnlineDataNodeOSF(manager, id, this);
+		OnlineDataNodeOSF *nodeData = new OnlineDataNodeOSF(getLocalPath(nodePath), manager, id, this);
 		nodeData->setPath(nodePath);
 		return nodeData;
 	}
