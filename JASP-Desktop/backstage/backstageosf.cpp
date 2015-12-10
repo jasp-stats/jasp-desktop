@@ -21,6 +21,7 @@
 #include <QLabel>
 #include <QFileInfo>
 #include <QHBoxLayout>
+#include <QInputDialog>
 
 #include "fsbmosf.h"
 
@@ -39,8 +40,21 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	_nameLabel->setContentsMargins(12, 12, 0, 1);
 	layout->addWidget(_nameLabel, 1, 0, 1, 1);
 
-	_breadCrumbs = new BreadCrumbs(this);
-	layout->addWidget(_breadCrumbs);
+	QWidget *buttonsWidget = new QWidget(this);
+	buttonsWidget->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(buttonsWidget);
+
+	QGridLayout *buttonsWidgetLayout = new QGridLayout(buttonsWidget);
+	buttonsWidgetLayout->setContentsMargins(0, 0, 12, 0);
+	buttonsWidget->setLayout(buttonsWidgetLayout);
+
+	_breadCrumbs = new BreadCrumbs(buttonsWidget);
+	buttonsWidgetLayout->addWidget(_breadCrumbs, 0, 0);
+
+	_newFolderButton = new QToolButton(buttonsWidget);
+	_newFolderButton->setText("New Folder");
+	_newFolderButton->hide();
+	buttonsWidgetLayout->addWidget(_newFolderButton, 0, 2);
 
 	_fileNameContainer = new QWidget(this);
 	_fileNameContainer->hide();
@@ -83,6 +97,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	connect(_fsBrowser, SIGNAL(entrySelected(QString)), this, SLOT(notifyDataSetSelected(QString)));
 
 	connect(_saveButton, SIGNAL(clicked()), this, SLOT(saveClicked()));
+	connect(_newFolderButton, SIGNAL(clicked(bool)), this, SLOT(newFolderClicked()));
 
 	line = new QWidget(this);
 	line->setFixedWidth(1);
@@ -128,17 +143,36 @@ void BackstageOSF::userDetailsReceived()
 	userNode->deleteLater();
 }
 
+void BackstageOSF::newFolderClicked()
+{
+	bool ok;
+	QString name = QInputDialog::getText(this, "New folder", "New folder name", QLineEdit::Normal, "New folder", &ok);
+
+	if (ok)
+		emit newFolderRequested(name);
+}
+
+void BackstageOSF::authenticatedHandler()
+{
+	_newFolderButton->setEnabled(true);
+}
+
 void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 {
 	_odm = odm;
 	updateUserDetails();
 	_model->setOnlineDataManager(_odm);
+
+	_newFolderButton->setEnabled(_model->isAuthenticated());
+
+	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(authenticatedHandler()));
 }
 
 void BackstageOSF::setMode(FileEvent::FileMode mode)
 {
 	BackstagePage::setMode(mode);
 	_fileNameContainer->setVisible(mode == FileEvent::FileSave);
+	_newFolderButton->setVisible(mode == FileEvent::FileSave);
 }
 
 void BackstageOSF::notifyDataSetOpened(QString path)

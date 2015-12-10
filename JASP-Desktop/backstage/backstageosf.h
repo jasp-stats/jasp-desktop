@@ -42,6 +42,7 @@ public:
 
 signals:
 	void dataSetOpened(QString path);
+	void newFolderRequested(QString folderName);
 
 private slots:
 	void notifyDataSetSelected(QString path);
@@ -50,6 +51,9 @@ private slots:
 
 	void openFile(const QString &nodePath, const QString &filename);
 	void userDetailsReceived();
+
+	void newFolderClicked();
+	void authenticatedHandler();
 
 private:
 
@@ -64,6 +68,7 @@ private:
 	QWidget *_fileNameContainer;
 	QLineEdit *_fileNameTextBox;
 	QPushButton *_saveButton;
+	QToolButton *_newFolderButton;
 
 	class HyperlinkLabel : public QLabel
 	{
