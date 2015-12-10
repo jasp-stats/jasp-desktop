@@ -64,8 +64,21 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	 	dataset <- plyr::count(dataset)
 	 } else {
 	 	dataset <- dataset
-
 	 }
+	 
+	if ( perform == "run" && length(list.of.errors)==0  ) { 
+		variable.names <- NULL
+		for (factor in options$factors) {
+			if(any(is.na(dataset[.v(factor)])))
+			variable.names <- c (variable.names, factor)
+			}
+		
+		if ( !is.null (variable.names))
+		error.message <- "Poisson glm is undefined -- the factors contain(s) empty cell or NaN or incomplete contingency table."
+		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
+	}
+	
+	print(list.of.errors)		 
 
 	results <- list()
 	
@@ -94,7 +107,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	 	dependent.variable <- "freq"
 	 }else{
 	 	dependent.variable <- unlist(options$counts)
-	 	}
+	 }
 
 	if (length(options$modelTerms) > 0) {
 		
@@ -170,6 +183,152 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		loglm.model <- empty.model
 	}
 
+	################################################################
+
+		logregressionanova <- list()
+		logregressionanova[["title"]] <- "ANOVA"
+		
+		# Declare table elements
+		fields <- list(
+			list(name = "Name", title = "  ", type = "string"),
+			list(name = "df", title = "df", type="integer"),
+			list(name = "Deviance",title = "Deviance", type="number", format = "sf:4;dp:3"),
+			list(name = "Residual df", type="integer"),
+			list(name = "Residual Deviance", type="number", format = "sf:4;dp:3"),
+			list(name = "p-value", type = "number", format = "dp:3;p:.001"))
+		
+		empty.line <- list( #for empty elements in tables when given output
+			"Name" = "",
+			"Df" = "",
+			"Deviance" = "",
+			"Residual df" = "",
+			"Residual Deviance" = "",
+			"p-value"="")
+			
+		dotted.line <- list( #for empty tables
+			"Name" = ".",
+			"Df" = ".",
+			"Deviance" = ".",
+			"Residual df" = ".",
+			"Residual Deviance" = ".",
+			"p-value"=".")
+			
+	
+		logregressionanova[["schema"]] <- list(fields = fields)
+		
+		logregressionanova.result <- list()
+		
+		if (perform == "run" && length(list.of.errors) == 0 ) {		
+			
+			if ( class(loglm.model$loglm.fit) == "glm") {
+			
+				loglm.anova = anova(loglm.model$loglm.fit, test="Chisq")
+				loglm.estimates <- loglm.anova				
+				len.logreg <- length(logregressionanova.result) + 1
+				
+				v <- 0					
+				null.model <- "Null model"
+				if (length(loglm.model$variables) > 0) {
+					
+					variables.in.model <- loglm.model$variables						
+					l <- dim(loglm.estimates)[1]
+					name <- dimnames(loglm.estimates)[[1]]
+					 
+					for (var in 1:l) {
+									  
+						logregressionanova.result[[ len.logreg ]] <- empty.line
+						model.name <- .unvf(name)
+						
+						if(var==1){
+							logregressionanova.result[[ len.logreg ]]$"Name" <- "NULL"
+							logregressionanova.result[[ len.logreg ]]$"df" <- " "
+							logregressionanova.result[[ len.logreg ]]$"Deviance" <- " "
+							logregressionanova.result[[ len.logreg ]]$"p-value" <- " "
+						
+
+						}else{							
+							logregressionanova.result[[ len.logreg ]]$"Name" <- model.name[var]
+
+							logregressionanova.result[[ len.logreg ]]$"df" <- as.integer(loglm.estimates$Df[var])
+							logregressionanova.result[[ len.logreg ]]$"Deviance" <- as.numeric(loglm.estimates$Deviance[var])	
+							logregressionanova.result[[ len.logreg ]]$"p-value" <- as.numeric(loglm.estimates$"Pr(>Chi)"[var])
+						}			
+						logregressionanova.result[[ len.logreg ]]$"Residual df" <- as.integer(loglm.estimates$"Resid. Df"[var])
+						logregressionanova.result[[ len.logreg ]]$"Residual Deviance" <- as.numeric(loglm.estimates$"Resid. Dev"[var])
+					
+						len.logreg <- len.logreg + 1
+					}
+							
+				}									
+			
+			} else {
+			
+				len.logreg <- length(logregressionanova.result) + 1
+				logregressionanova.result[[ len.logreg ]] <- dotted.line
+			
+				if (length(loglm.model$variables) > 0) {
+				
+					variables.in.model <- loglm.model$variables
+				
+					len.logreg <- len.logreg + 1
+				
+					for (var in 1:length(variables.in.model)) {
+					
+						logregressionanova.result[[ len.logreg ]] <- dotted.line
+					
+						if (base::grepl(":", variables.in.model[var])) {
+						
+							# if interaction term						
+							vars <- unlist(strsplit(variables.in.model[var], split = ":"))
+							name <- paste0(vars, collapse="\u2009\u273b\u2009")
+						
+						} else {
+						
+							name <- as.character(variables.in.model[ var])
+						}
+					
+						logregressionanova.result[[ len.logreg ]]$"Name" <- name
+						len.logreg <- len.logreg + 1
+					}
+				}
+			}
+			
+		} else {
+				
+			len.logreg <- length(logregressionanova.result) + 1
+
+			if (length(loglm.model$variables) > 0) {
+	
+				variables.in.model <- loglm.model$variables
+	
+			
+			}
+
+			len.logreg <- length(logregressionanova.result) + 1
+			logregressionanova.result[[ len.logreg ]] <- dotted.line
+			logregressionanova.result[[ len.logreg ]]$"Model" <- 1
+		}
+	
+	if (length(list.of.errors) > 1){
+
+		loglm.fit <- try( stats::glm( model.formula, family = poisson(), data = dataset), silent = TRUE)
+		
+		if (inherits(loglm.fit, "try-error")) {
+			error <- .extractErrorMessage (loglm.fit)
+		}
+		logregressionanova[["error"]] <- list(errorType="badData",errorMessage = error)
+		
+	} else if (length(list.of.errors) == 1){
+			
+		logregressionanova[["error"]] <- list(errorType = "badData", errorMessage = list.of.errors[[ 1 ]])
+	}
+		
+    
+	logregressionanova[["data"]] <- logregressionanova.result
+	results[["Bayesianposterior"]] <- logregressionanova
+
+
+	
 	################################################################################
 	#						   MODEL COEFFICIENTS TABLE   						#
 	################################################################################
@@ -199,7 +358,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			fields <- c(fields,list(
 			
 			list(name = "z-value", type="number", format = "sf:4;dp:3"),
-			list(name = "z", type = "number", format = "dp:3;p:.001")))
+			list(name = "p-value", type = "number", format = "dp:3;p:.001")))
 
 					
 		empty.line <- list(                      #for empty elements in tables when given output
@@ -209,7 +368,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			"Lower" = "",
 			"Upper" = "",
 			"z-value" = "",
-			"z" = "")
+			"p-value" = "")
 			
 		dotted.line <- list(                     #for empty tables
 			"Name" = ".",
@@ -218,7 +377,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			"Lower" = ".",
 			"Upper" = ".",
 			"z-value" = ".",
-			"z" = ".")			
+			"p-value" = ".")			
 		
 		lookup.table <- .regressionLogLinearBuildLookup(dataset, options$factors)
 		lookup.table[["(Intercept)"]] <- "(Intercept)"
@@ -274,7 +433,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 						}
 									
 						logregression.result[[ len.logreg ]]$"z-value" <- as.numeric(loglm.estimates[i,3])
-						logregression.result[[ len.logreg ]]$"z" <- as.numeric(loglm.estimates[i,4])
+						logregression.result[[ len.logreg ]]$"p-value" <- as.numeric(loglm.estimates[i,4])
 						
 						len.logreg <- len.logreg + 1
 					}
@@ -322,31 +481,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	
 				variables.in.model <- loglm.model$variables
 	
-				for (var in 1:length(variables.in.model)) {
-		
-					logregression.result[[ len.logreg ]] <- dotted.line
-					logregression.result[[ len.logreg ]]$"Model" <- ""
-		
-					if (var == 1) {
-						#logregression.result[[ len.logreg ]]$"Model" <- as.integer(m)
-						logregression.result[[ len.logreg ]][[".isNewGroup"]] <- TRUE
-					}
-		
-					if (base::grepl(":", variables.in.model[var])) {
-			
-						# if interaction term
-			
-						vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-						name <- paste0(vars, collapse="\u2009\u273b\u2009")
-			
-					} else {
-			
-						name <- as.character(variables.in.model[ var])
-					}
-		
-					logregression.result[[ len.logreg ]]$"Name" <- name
-					len.logreg <- len.logreg + 1
-				}
+	
 			}
 
 
@@ -372,160 +507,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 
 	results[["logregression"]] <- logregression		
 	}
-
-################################################################
-
-	
-		logregressionanova <- list()
-		logregressionanova[["title"]] <- "ANOVA"
-		
-		# Declare table elements
-		fields <- list(
-			list(name = "Name", title = "  ", type = "string"),
-			list(name = "Df", title = "Df", type="integer"),
-			list(name = "Deviance",title = "Deviance", type="number", format = "sf:4;dp:3"),
-			list(name = "Resid. Df", type="integer"),
-			list(name = "Resid. Dev", type="number", format = "sf:4;dp:3"),
-			list(name = "Prob Chi", type = "number", format = "dp:3;p:.001"))
-		
-		empty.line <- list( #for empty elements in tables when given output
-			"Name" = "",
-			"Df" = "",
-			"Deviance" = "",
-			"Resid. Df" = "",
-			"Resid. Dev" = "",
-			"prob Chi"="")
 			
-		dotted.line <- list( #for empty tables
-			"Name" = ".",
-			"Df" = ".",
-			"Deviance" = ".",
-			"Resid. Df" = ".",
-			"Resid. Dev" = ".",
-			"prob Chi"=".")
-			
-	
-		logregressionanova[["schema"]] <- list(fields = fields)
-		
-		logregressionanova.result <- list()
-		
-		if (perform == "run" && length(list.of.errors) == 0 ) {		
-			
-			if ( class(loglm.model$loglm.fit) == "glm") {
-			
-				loglm.anova = anova(loglm.model$loglm.fit, test="Chisq")
-				loglm.estimates <- loglm.anova				
-				len.logreg <- length(logregressionanova.result) + 1
-				
-				v <- 0					
-				null.model <- "Null model"
-				if (length(loglm.model$variables) > 0) {
-					
-					variables.in.model <- loglm.model$variables						
-					l <- dim(loglm.estimates)[1]
-					name <- dimnames(loglm.estimates)[[1]]
-					 
-					for (var in 1:l) {
-									  
-						logregressionanova.result[[ len.logreg ]] <- empty.line
-						model.name <- .unvf(name)
-						
-						if(var==1){
-							logregressionanova.result[[ len.logreg ]]$"Name" <- "NULL"
-							logregressionanova.result[[ len.logreg ]]$"Df" <- " "
-							logregressionanova.result[[ len.logreg ]]$"Deviance" <- " "
-							logregressionanova.result[[ len.logreg ]]$"Prob Chi" <- " "
-						
-
-						}else{							
-							logregressionanova.result[[ len.logreg ]]$"Name" <- model.name[var]
-
-							logregressionanova.result[[ len.logreg ]]$"Df" <- as.integer(loglm.estimates$Df[var])
-							logregressionanova.result[[ len.logreg ]]$"Deviance" <- as.numeric(loglm.estimates$Deviance[var])	
-							logregressionanova.result[[ len.logreg ]]$"Prob Chi" <- as.numeric(loglm.estimates$"Pr(>Chi)"[var])
-						}			
-						logregressionanova.result[[ len.logreg ]]$"Resid. Df" <- as.integer(loglm.estimates$"Resid. Df"[var])
-						logregressionanova.result[[ len.logreg ]]$"Resid. Dev" <- as.numeric(loglm.estimates$"Resid. Dev"[var])
-					
-						len.logreg <- len.logreg + 1
-					}
-							
-				}									
-			
-			} else {
-			
-				len.logreg <- length(logregressionanova.result) + 1
-				logregressionanova.result[[ len.logreg ]] <- dotted.line
-			
-				if (length(loglm.model$variables) > 0) {
-				
-					variables.in.model <- loglm.model$variables
-				
-					len.logreg <- len.logreg + 1
-				
-					for (var in 1:length(variables.in.model)) {
-					
-						logregressionanova.result[[ len.logreg ]] <- dotted.line
-					
-						if (base::grepl(":", variables.in.model[var])) {
-						
-							# if interaction term						
-							vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-							name <- paste0(vars, collapse="\u2009\u273b\u2009")
-						
-						} else {
-						
-							name <- as.character(variables.in.model[ var])
-						}
-					
-						logregressionanova.result[[ len.logreg ]]$"Name" <- name
-						len.logreg <- len.logreg + 1
-					}
-				}
-			}
-			
-		} else {
-				
-			len.logreg <- length(logregressionanova.result) + 1
-
-			if (length(loglm.model$variables) > 0) {
-	
-				variables.in.model <- loglm.model$variables
-	
-				for (var in 1:length(variables.in.model)) {
-		
-					logregressionanova.result[[ len.logreg ]] <- dotted.line
-					logregressionanova.result[[ len.logreg ]]$"Model" <- ""
-		
-					if (var == 1) {
-						#logregressionanova.result[[ len.logreg ]]$"Model" <- as.integer(m)
-						logregressionanova.result[[ len.logreg ]][[".isNewGroup"]] <- TRUE
-					}
-		
-					if (base::grepl(":", variables.in.model[var])) {
-			
-						# if interaction term
-			
-						vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-						name <- paste0(vars, collapse="\u2009\u273b\u2009")
-			
-					} else {
-			
-						name <- as.character(variables.in.model[ var])
-					}
-		
-					logregressionanova.result[[ len.logreg ]]$"Name" <- name
-					len.logreg <- len.logreg + 1
-				}
-			}
-
-			len.logreg <- length(logregressionanova.result) + 1
-			logregressionanova.result[[ len.logreg ]] <- dotted.line
-			logregressionanova.result[[ len.logreg ]]$"Model" <- 1
-		}
-	
-
-		
 #######################################################################	
 
 	

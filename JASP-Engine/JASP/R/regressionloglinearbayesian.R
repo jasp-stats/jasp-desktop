@@ -44,7 +44,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			}
 	
 		if ( !is.null (variable.names))
-			error.message <- paste ("Bayes factor is undefined -- the count variable ", variable.names, " contain(s) empty cell or NaN. ", sep = "")
+			error.message <- paste ("Bayes factor is undefined -- incomplete contingency table, the count variable ", variable.names, " contain(s) empty cell or NaN. ", sep = "")
 		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
 	
 		if (length(list.of.errors)==0 ){
@@ -58,6 +58,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 				error.message <- paste ("Bayes factor is undefined -- the count variable ", variable.names, " contain(s) infinity and/or negative numbers.", sep = "")
 				list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
 			}
+			
 		}
 		
 		
@@ -65,9 +66,20 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	 	dataset <- plyr::count(dataset)
 	} else {
 	 	dataset <- dataset
-	}	 
-	 
-	#print(dataset) 	
+	}
+	
+	if ( perform == "run" && length(list.of.errors)==0  ) { 
+		variable.names <- NULL
+		for (factor in options$factors) {
+			if(any(is.na(dataset[.v(factor)])))
+			variable.names <- c (variable.names, factor)
+			}
+		
+		if ( !is.null (variable.names))
+		error.message <- "Bayes factor is undefined -- the factors contain(s) empty cell or NaN or incomplete contingency table."
+		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
+	}
+			 	 	
 	results <- list()
 	meta <- list()
 	.meta <-  list(
@@ -225,7 +237,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	Bayesianposterior.result <- list()
 	footnotes <- .newFootnotes()
 		
-		if (perform == "run" ) {		
+		if (perform == "run" && length(list.of.errors) == 0 ) {		
 			
 		if ( class(logBlm.model$logBlm.fit) == "bcct") {
 		
@@ -325,8 +337,6 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		if (length(logBlm.model$variables) > 0) {
 	
 			variables.in.model <- logBlm.model$variables
-			print(variables.in.model)
-	
 			
 		}
 
@@ -337,7 +347,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	
 	if (length(list.of.errors) > 1){
 
-		logBlm.fit <- try( conting::bcct( model.formula, data = dataset, prior = options$priorType, n.sample=1000), silent = TRUE)
+		logBlm.fit <- try( conting::bcct( model.formula, data = dataset,  prior = "SBH", n.sample=1000), silent = TRUE)
 
 		
 		if (inherits(logBlm.fit, "try-error")) {
