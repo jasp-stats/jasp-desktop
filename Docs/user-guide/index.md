@@ -47,9 +47,11 @@ JASP is available for the Linux versions:
  - Ubuntu Trusty (14.04 LTS)
  - Arch Linux
 
+The current JASP beta (0.7.5) is available for Ubuntu Wily
+
 #### Ubuntu
 
-JASP for Vivid and Trusty are available from Jonathon's *Personal Package Archive* (PPA). Once the PPA is added to your system, you will be able to install JASP, and JASP will be automatically kept up-to-date by Ubuntu.
+JASP for Vivid, Trusty and Wily are available from Jonathon's *Personal Package Archive* (PPA). Once the PPA is added to your system, you will be able to install JASP, and JASP will be automatically kept up-to-date by Ubuntu.
 
 The PPA and JASP can be installed by issuing the following commands at the terminal:
 
