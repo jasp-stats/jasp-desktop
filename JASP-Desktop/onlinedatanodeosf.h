@@ -33,6 +33,7 @@ private:
 	bool interpretNode(QJsonObject nodeObject);
 	void extractNodeData(OnlineDataNodeOSF * node);
 	OnlineDataNode::Kind parseKind(QString kind);
+	void processUrl(QUrl url);
 
 	QString _contentsPath;
 

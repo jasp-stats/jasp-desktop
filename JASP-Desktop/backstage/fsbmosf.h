@@ -58,6 +58,7 @@ private:
 
 	void loadProjects();
 	void loadFilesAndFolders(QUrl url);
+	void parseFilesAndFolders(QUrl url);
 
 };
 

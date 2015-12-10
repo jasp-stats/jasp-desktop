@@ -35,6 +35,12 @@ void OnlineDataNodeOSF::initialise() {
 	if (_kind == OnlineDataNode::File || _kind == OnlineDataNode::Folder)
 		_expectedName = _path.right(_path.length() - _path.lastIndexOf("/") - 1);
 
+	processUrl(url);
+}
+
+
+void OnlineDataNodeOSF::processUrl(QUrl url)
+{
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
@@ -91,6 +97,18 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 				{
 					found = true;
 					break;
+				}
+			}
+
+			if (found == false)
+			{
+				QJsonObject contentLevelLinks = json.value("links").toObject();
+
+				QJsonValue nextContentList = contentLevelLinks.value("next");
+				if (nextContentList.isNull() == false)
+				{
+					processUrl(QUrl(nextContentList.toString()));
+					finished = false;
 				}
 			}
 		}

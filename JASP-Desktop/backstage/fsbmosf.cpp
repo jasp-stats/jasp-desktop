@@ -154,6 +154,11 @@ void FSBMOSF::loadFilesAndFolders(QUrl url) {
 	_entries.clear();
 	emit entriesChanged();
 
+	parseFilesAndFolders(url);
+}
+
+void FSBMOSF::parseFilesAndFolders(QUrl url) {
+
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
@@ -166,8 +171,6 @@ void FSBMOSF::loadFilesAndFolders(QUrl url) {
 void FSBMOSF::gotFilesAndFolders() {
 
 	QNetworkReply *reply = (QNetworkReply*)this->sender();
-
-	_entries.clear();
 
 	if (reply->error() != QNetworkReply::NoError)
 		return;
@@ -241,7 +244,16 @@ void FSBMOSF::gotFilesAndFolders() {
 
 	}
 
-	emit entriesChanged();
+	QJsonObject contentLevelLinks = json.value("links").toObject();
+
+	QJsonValue nextContentList = contentLevelLinks.value("next");
+	if (nextContentList.isNull() == false)
+	{
+		parseFilesAndFolders(QUrl(nextContentList.toString()));
+	}
+	else
+		emit entriesChanged();
+
 	reply->deleteLater();
 }
 
