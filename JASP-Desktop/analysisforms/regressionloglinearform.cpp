@@ -46,7 +46,7 @@ RegressionLogLinearForm::RegressionLogLinearForm(QWidget *parent) :
 	ui->modelTerms->setModel(_model);
 	ui->modelTerms->hide();
 
-	connect(_factorsModel, SIGNAL(assignedTo(Terms)), _model, SLOT(addCovariates(Terms)));
+	connect(_factorsModel, SIGNAL(assignedTo(Terms)), _model, SLOT(addFixedFactors(Terms)));
 	connect(_factorsModel, SIGNAL(unassigned(Terms)), _model, SLOT(removeVariables(Terms)));
 
 	ui->panelStatistics->hide();
