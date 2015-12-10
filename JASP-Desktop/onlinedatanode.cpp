@@ -32,16 +32,6 @@ bool OnlineDataNode::kind() const
 	return _kind;
 }
 
-OnlineDataNode::ConnectionType OnlineDataNode::downloadConnectionType() const {
-
-	return _downloadConnectionType;
-}
-
-OnlineDataNode::ConnectionType OnlineDataNode::uploadConnectionType() const {
-
-	return _uploadConnectionType;
-}
-
 void OnlineDataNode::prepareAction(OnlineDataNode::Action action, const QString &data)
 {
 	_preparedAction = action;

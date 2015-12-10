@@ -8,6 +8,7 @@
 #include "onlinedatanodeosf.h"
 #include "onlineusernodeosf.h"
 
+
 OnlineDataManager::OnlineDataManager(QObject *parent):
 	QObject(parent)
 {
@@ -18,6 +19,16 @@ OnlineDataManager::~OnlineDataManager()
 {
 }
 
+bool OnlineDataManager::authenticationSuccessful(OnlineDataManager::Provider provider) const
+{
+	if (_authList.contains(provider) == false)
+		return false;
+
+	if (provider == OnlineDataManager::OSF)
+		return OnlineUserNodeOSF::authenticationSuccessful(getNetworkAccessManager(provider));
+
+	return false;
+}
 
 void OnlineDataManager::setAuthentication(OnlineDataManager::Provider provider, QString username, QString password)
 {
@@ -38,7 +49,7 @@ void OnlineDataManager::setNetworkAccessManager(OnlineDataManager::Provider prov
 	_providers[provider] = manager;
 }
 
-QNetworkAccessManager* OnlineDataManager::getNetworkAccessManager(OnlineDataManager::Provider provider)
+QNetworkAccessManager* OnlineDataManager::getNetworkAccessManager(OnlineDataManager::Provider provider) const
 {
 	return _providers[provider];
 }

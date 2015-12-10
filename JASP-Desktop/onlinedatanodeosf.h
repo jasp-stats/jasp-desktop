@@ -26,14 +26,20 @@ public:
 
 private slots:
 	void nodeInfoReceived();
-	void checkFinished();
+	//void checkFinished();
 
 private:
 
+	bool searchList(QString searchName, OnlineDataNode::Kind kind, QJsonArray arrayObject, QJsonObject &nodeObject);
 	bool interpretNode(QJsonObject nodeObject);
 	void extractNodeData(OnlineDataNodeOSF * node);
 	OnlineDataNode::Kind parseKind(QString kind);
 	void processUrl(QUrl url);
+	QString getContentsUrl(QJsonObject nodeObject);
+	void populateNodeData(QJsonObject nodeObject);
+	QString getBaseUrl(QJsonObject nodeObject);
+
+	QStringList _subPath;
 
 	QString _contentsPath;
 

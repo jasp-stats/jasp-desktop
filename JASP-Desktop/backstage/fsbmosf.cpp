@@ -32,9 +32,11 @@ FSBMOSF::~FSBMOSF()
 void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
 {
 	_dataManager = odm;
+
 	_manager = odm->getNetworkAccessManager(OnlineDataManager::OSF);
 
-	refresh();
+	if (_isAuthenticated == false && _dataManager != NULL && _dataManager->authenticationSuccessful(OnlineDataManager::OSF))
+		setAuthenticated(true);
 }
 
 bool FSBMOSF::requiresAuthentication() const
@@ -46,12 +48,18 @@ void FSBMOSF::authenticate(const QString &username, const QString &password)
 {
 	_dataManager->setAuthentication(OnlineDataManager::OSF, username, password);
 
-	bool success = true;
+	bool success = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
 
-	if (success)
+	setAuthenticated(success);
+}
+
+void FSBMOSF::setAuthenticated(bool value)
+{
+	if (value)
 	{
 		_isAuthenticated = true;
 		emit authenticationSuccess();
+		refresh();
 	}
 	else
 	{
@@ -67,7 +75,7 @@ bool FSBMOSF::isAuthenticated() const
 
 void FSBMOSF::refresh()
 {
-	if (_manager == NULL)
+	if (_manager == NULL || _isAuthenticated == false)
 		return;
 
 	if (_path == "Projects")
@@ -137,6 +145,8 @@ void FSBMOSF::gotProjects()
 		QJsonObject relatedObj = linksObj.value("related").toObject();
 
 		nodeData.contentsPath = relatedObj.value("href").toString();// + "/osfstorage/";
+
+		nodeData.nodePath = reply->url().toString() + "#folder://" + nodeData.name;
 
 		QString path = _path + "/" + nodeData.name;
 		_entries.append(createEntry(path, FSEntry::Folder));
@@ -227,6 +237,9 @@ void FSBMOSF::gotFilesAndFolders() {
 			nodeData.nodePath = topLinksObj.value("info").toString();
 			nodeData.uploadPath = topLinksObj.value("upload").toString();
 			nodeData.isFolder = true;
+
+			if (nodeData.nodePath == "")
+				nodeData.nodePath = reply->url().toString() + "#folder://" + nodeData.name;
 		}
 		else
 		{
