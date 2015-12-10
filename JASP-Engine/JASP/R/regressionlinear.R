@@ -850,7 +850,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			list(name = "Coefficient", title = "Unstandardized", type = "number", format = "dp:3"),
 			list(name = "Standard Error", type="number", format = "dp:3"),
 			list(name = "Standardized Coefficient", title = "Standardized", type = "number", format = "dp:3"),
-			list(name = "t-value", type="number", format = "sf:4;dp:3"),
+			list(name = "t", type="number", format = "sf:4;dp:3"),
 			list(name = "p", type = "number", format = "dp:3;p:.001"))
 		
 		empty.line <- list( #for empty elements in tables when given output
