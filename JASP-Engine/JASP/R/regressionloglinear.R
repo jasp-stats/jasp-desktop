@@ -92,7 +92,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	
 	results[[".meta"]] <- .meta
 	
-	results[["title"]] <- "Log Linear Regression"
+	results[["title"]] <- "Log-linear Regression"
 	
 	
     #######################################
@@ -195,7 +195,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			list(name = "Deviance",title = "Deviance", type="number", format = "sf:4;dp:3"),
 			list(name = "Residual df", type="integer"),
 			list(name = "Residual Deviance", type="number", format = "sf:4;dp:3"),
-			list(name = "p-value", type = "number", format = "dp:3;p:.001"))
+			list(name = "p", type = "number", format = "dp:3;p:.001"))
 		
 		empty.line <- list( #for empty elements in tables when given output
 			"Name" = "",
@@ -203,7 +203,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			"Deviance" = "",
 			"Residual df" = "",
 			"Residual Deviance" = "",
-			"p-value"="")
+			"p"="")
 			
 		dotted.line <- list( #for empty tables
 			"Name" = ".",
@@ -211,7 +211,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			"Deviance" = ".",
 			"Residual df" = ".",
 			"Residual Deviance" = ".",
-			"p-value"=".")
+			"p"=".")
 			
 	
 		logregressionanova[["schema"]] <- list(fields = fields)
@@ -243,7 +243,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 							logregressionanova.result[[ len.logreg ]]$"Name" <- "NULL"
 							logregressionanova.result[[ len.logreg ]]$"df" <- " "
 							logregressionanova.result[[ len.logreg ]]$"Deviance" <- " "
-							logregressionanova.result[[ len.logreg ]]$"p-value" <- " "
+							logregressionanova.result[[ len.logreg ]]$"p" <- " "
 						
 
 						}else{							
@@ -251,10 +251,14 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 
 							logregressionanova.result[[ len.logreg ]]$"df" <- as.integer(loglm.estimates$Df[var])
 							logregressionanova.result[[ len.logreg ]]$"Deviance" <- as.numeric(loglm.estimates$Deviance[var])	
-							logregressionanova.result[[ len.logreg ]]$"p-value" <- as.numeric(loglm.estimates$"Pr(>Chi)"[var])
+							logregressionanova.result[[ len.logreg ]]$"p" <- as.numeric(loglm.estimates$"Pr(>Chi)"[var])
 						}			
 						logregressionanova.result[[ len.logreg ]]$"Residual df" <- as.integer(loglm.estimates$"Resid. Df"[var])
-						logregressionanova.result[[ len.logreg ]]$"Residual Deviance" <- as.numeric(loglm.estimates$"Resid. Dev"[var])
+						res <- as.numeric(loglm.estimates$"Resid. Dev"[var])
+						if (abs(res) < 10^(-4))
+							res <- 0
+						
+						logregressionanova.result[[ len.logreg ]]$"Residual Deviance" <- res
 					
 						len.logreg <- len.logreg + 1
 					}
@@ -339,7 +343,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		logregression[["title"]] <- "Coefficients"
 		
 		if (options$regressionCoefficientsConfidenceIntervals == TRUE){
-			ci.label <- paste(100*options$regressionCoefficientsConfidenceIntervalsInterval, "% Confidence intervals", sep="")
+			ci.label <- paste(100*options$regressionCoefficientsConfidenceIntervalsInterval, "% Confidence Intervals", sep="")
 		}
 		#ci.label <- paste(95, "% Confidence intervals", sep="")
 		
@@ -357,8 +361,8 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			
 			fields <- c(fields,list(
 			
-			list(name = "z-value", type="number", format = "sf:4;dp:3"),
-			list(name = "p-value", type = "number", format = "dp:3;p:.001")))
+			list(name = "Z", type="number", format = "sf:4;dp:3"),
+			list(name = "p", type = "number", format = "dp:3;p:.001")))
 
 					
 		empty.line <- list(                      #for empty elements in tables when given output
@@ -367,8 +371,8 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			"Standard Error" = "",
 			"Lower" = "",
 			"Upper" = "",
-			"z-value" = "",
-			"p-value" = "")
+			"Z" = "",
+			"p" = "")
 			
 		dotted.line <- list(                     #for empty tables
 			"Name" = ".",
@@ -376,8 +380,8 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			"Standard Error" = ".",
 			"Lower" = ".",
 			"Upper" = ".",
-			"z-value" = ".",
-			"p-value" = ".")			
+			"Z" = ".",
+			"p" = ".")			
 		
 		lookup.table <- .regressionLogLinearBuildLookup(dataset, options$factors)
 		lookup.table[["(Intercept)"]] <- "(Intercept)"
@@ -432,8 +436,8 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 							logregression.result[[ len.logreg ]]$"Upper" <- as.numeric(upper[i])
 						}
 									
-						logregression.result[[ len.logreg ]]$"z-value" <- as.numeric(loglm.estimates[i,3])
-						logregression.result[[ len.logreg ]]$"p-value" <- as.numeric(loglm.estimates[i,4])
+						logregression.result[[ len.logreg ]]$"Z" <- as.numeric(loglm.estimates[i,3])
+						logregression.result[[ len.logreg ]]$"p" <- as.numeric(loglm.estimates[i,4])
 						
 						len.logreg <- len.logreg + 1
 					}

@@ -373,10 +373,10 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		Bayesianlogregression[["title"]] <- "Posterior Summary Statistics"
 		Bayesianlogregression[["citation"]] <- .LogLinearBayesianCitations
 		#ci.label <- paste(100*options$regressionCoefficientsCredibleIntervalsInterval, "% Highest posterior density intervals", sep="")
-		ci.label <- paste(100*options$regressionCoefficientsCredibleIntervalsInterval, "% HPD intervals", sep="")
+		ci.label <- paste(100*options$regressionCoefficientsCredibleIntervalsInterval, "% Credible Intervals", sep="")
 		# Declare table elements
 		fields <- list(
-			list(name = "Name", title = "Model terms", type = "string"),
+			list(name = "Name", title = " ", type = "string"),
 			list(name = "post_prob", title="P(incl|data)", type = "number", format = "dp:3"),
 			list(name = "post_mean", title = "Mean",type="number", format = "dp:3"),
 			list(name = "post_var", title = "Variance",type="number", format = "dp:3"))
@@ -518,13 +518,12 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 ################################################################################		
 	if (options$regressionCoefficientsSubmodel  == TRUE){
 		BayesianSublogregression <- list()
-		BayesianSublogregression[["title"]] <- "Posterior Summary Statistics of Log-linear Parameters"
+		BayesianSublogregression[["title"]] <-paste( "Posterior Summary Statistics for Submodel", options$regressionCoefficientsSubmodelNo, sep=" ")
 		BayesianSublogregression[["citation"]] <- .LogLinearBayesianCitations
-		#ci.label <- paste(100*options$regressionCoefficientsSubmodelCredibleIntervalsInterval, "% Highest posterior density intervals", sep="")
-		ci.label <- paste(100*options$regressionCoefficientsSubmodelCredibleIntervalsInterval, "% HPD intervals", sep="")
+		ci.label <- paste(100*options$regressionCoefficientsSubmodelCredibleIntervalsInterval, "% Credible Intervals", sep="")
 		# Declare table elements
 		fields <- list(
-			list(name = "Name", title = "Model terms", type = "string"),
+			list(name = "Name", title = " ", type = "string"),
 			list(name = "post_mean", title="Mean", type = "number", format = "dp:3"),
 			list(name = "post_var", title = "Variance",type="number", format = "dp:3"))
 		if (options$regressionCoefficientsSubmodelCredibleIntervals == TRUE){
