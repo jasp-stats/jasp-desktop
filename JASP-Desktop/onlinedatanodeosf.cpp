@@ -51,6 +51,10 @@ void OnlineDataNodeOSF::processUrl(QUrl url)
 	connect(reply, SIGNAL(finished()), this, SLOT(nodeInfoReceived()));
 }
 
+bool OnlineDataNodeOSF::exists()
+{
+	return _exists && _inited;
+}
 
 void OnlineDataNodeOSF::nodeInfoReceived() {
 
@@ -98,6 +102,7 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 				{
 					finished = true;
 					success = true;
+					_exists = false;
 				}
 				else
 				{
@@ -197,6 +202,7 @@ bool OnlineDataNodeOSF::interpretNode(QJsonObject nodeObject)
 		return false;
 	}
 
+
 	return true;
 }
 
@@ -253,19 +259,6 @@ QString OnlineDataNodeOSF::getBaseUrl(QJsonObject nodeObject)
 	return url;
 }
 
-/*void OnlineDataNodeOSF::checkFinished()
-{
-	OnlineDataNodeOSF *childNode = qobject_cast<OnlineDataNodeOSF *>(sender());
-
-	if (childNode->_inited)
-		extractNodeData(childNode);
-
-	childNode->deleteLater();
-
-	endInit(true);
-}*/
-
-
 QString OnlineDataNodeOSF::getUploadPath() const
 {
 	if (_dataKind == OnlineDataNode::File)
@@ -312,8 +305,8 @@ QString OnlineDataNodeOSF::getNewFolderPath(QString folderName) const
 {
 	if (_dataKind == OnlineDataNode::Folder)
 	{
-		QUrlQuery query(_newFolderPath + "?");
-		query.addQueryItem("kind", "folder");
+		QUrlQuery query(_newFolderPath);
+		//query.addQueryItem("kind", "folder");
 		query.addQueryItem("name", folderName);
 		return query.toString(QUrl::FullyEncoded);
 	}
@@ -362,19 +355,7 @@ void OnlineDataNodeOSF::beginUploadFile(QString name) {
 void OnlineDataNodeOSF::beginNewFolder(QString name) {
 
 	if (_dataKind == OnlineDataNode::Folder)
-			connection()->beginAction(QUrl(getNewFolderPath(name)), OnlineDataConnection::Put, NULL);
+			connection()->beginAction(QUrl(getNewFolderPath(name)), OnlineDataConnection::Put, "");
 	else
 		throw runtime_error("This node kind does not handle the 'upload' action.");
-}
-
-
-void OnlineDataNodeOSF::extractNodeData(OnlineDataNodeOSF * node)
-{
-	_uploadPath = node->_uploadPath;
-	_downloadPath = node->_downloadPath;
-	_newFolderPath = node->_newFolderPath;
-	_deletePath = node->_deletePath;
-	_dataKind = node->_dataKind;
-	_kind = node->_kind;
-	_name = node->_name;
 }

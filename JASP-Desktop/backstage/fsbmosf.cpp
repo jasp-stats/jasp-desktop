@@ -83,7 +83,7 @@ void FSBMOSF::refresh()
 	else {
 		OnlineNodeData nodeData = _pathUrls[_path];
 		if (nodeData.isFolder)
-			loadFilesAndFolders(QUrl(nodeData.contentsPath));
+			loadFilesAndFolders(QUrl(nodeData.contentsPath), nodeData.level + 1);
 	}
 }
 
@@ -97,7 +97,9 @@ void FSBMOSF::loadProjects() {
 	_entries.clear();
 	emit entriesChanged();
 
-	QUrl url("https://test-api.osf.io/v2/users/me/nodes/");
+
+	QUrl url("https://api.osf.io/v2/users/me/nodes/");
+	//QUrl url("https://test-api.osf.io/v2/users/me/nodes/");
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
@@ -146,7 +148,12 @@ void FSBMOSF::gotProjects()
 
 		nodeData.contentsPath = relatedObj.value("href").toString();// + "/osfstorage/";
 
-		nodeData.nodePath = reply->url().toString() + "#folder://" + nodeData.name;
+		QJsonObject topLinksObj = nodeObject.value("links").toObject();
+
+		nodeData.nodePath = topLinksObj.value("self").toString();
+		nodeData.level = 1;
+		nodeData.canCreateFolders = false;
+		nodeData.canCreateFiles = false;
 
 		QString path = _path + "/" + nodeData.name;
 		_entries.append(createEntry(path, FSEntry::Folder));
@@ -159,16 +166,17 @@ void FSBMOSF::gotProjects()
 	reply->deleteLater();
 }
 
-void FSBMOSF::loadFilesAndFolders(QUrl url) {
+void FSBMOSF::loadFilesAndFolders(QUrl url, int level) {
 
 	_entries.clear();
 	emit entriesChanged();
 
-	parseFilesAndFolders(url);
+	parseFilesAndFolders(url, level);
 }
 
-void FSBMOSF::parseFilesAndFolders(QUrl url) {
+void FSBMOSF::parseFilesAndFolders(QUrl url, int level) {
 
+	_level = level;
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
@@ -238,6 +246,9 @@ void FSBMOSF::gotFilesAndFolders() {
 			nodeData.uploadPath = topLinksObj.value("upload").toString();
 			nodeData.isFolder = true;
 
+			nodeData.canCreateFolders = topLinksObj.contains("new_folder");
+			nodeData.canCreateFiles = topLinksObj.contains("upload");
+
 			if (nodeData.nodePath == "")
 				nodeData.nodePath = reply->url().toString() + "#folder://" + nodeData.name;
 		}
@@ -250,7 +261,11 @@ void FSBMOSF::gotFilesAndFolders() {
 			nodeData.downloadPath = linksObj.value("download").toString();
 			nodeData.nodePath = linksObj.value("info").toString();
 
+			nodeData.canCreateFolders = false;
+			nodeData.canCreateFiles = false;
 		}
+
+		nodeData.level = _level;
 
 		_entries.append(createEntry(path, entryType));
 		_pathUrls[path] = nodeData;
@@ -262,7 +277,7 @@ void FSBMOSF::gotFilesAndFolders() {
 	QJsonValue nextContentList = contentLevelLinks.value("next");
 	if (nextContentList.isNull() == false)
 	{
-		parseFilesAndFolders(QUrl(nextContentList.toString()));
+		parseFilesAndFolders(QUrl(nextContentList.toString()), _level + 1);
 	}
 	else
 		emit entriesChanged();

@@ -25,6 +25,9 @@ public:
 		QString uploadPath;
 		QString downloadPath;
 		QString nodePath;
+		bool canCreateFolders;
+		bool canCreateFiles;
+		int level = 0;
 	} OnlineNodeData;
 
 	OnlineNodeData getNodeData(QString key);
@@ -59,8 +62,10 @@ private:
 	bool _isAuthenticated;
 
 	void loadProjects();
-	void loadFilesAndFolders(QUrl url);
-	void parseFilesAndFolders(QUrl url);
+	void loadFilesAndFolders(QUrl url, int level);
+	void parseFilesAndFolders(QUrl url, int level);
+
+	int _level = 0;
 
 };
 

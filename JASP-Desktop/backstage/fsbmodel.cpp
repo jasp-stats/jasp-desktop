@@ -62,10 +62,20 @@ bool FSBModel::hasFileEntry(QString name, QString &path)
 {
 	for (int i =0; i < _entries.length(); i++)
 	{
-		if (_entries[i].entryType != FSEntry::Folder && _entries[i].name == name) {
+		if (_entries[i].entryType != FSEntry::Folder && _entries[i].name.toLower() == name) {
 			path = _entries[i].path;
 			return true;
 		}
+	}
+	return false;
+}
+
+bool FSBModel::hasFolderEntry(QString name)
+{
+	for (int i =0; i < _entries.length(); i++)
+	{
+		if (_entries[i].entryType == FSEntry::Folder && _entries[i].name.toLower() == name)
+			return true;
 	}
 	return false;
 }

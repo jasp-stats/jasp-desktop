@@ -24,6 +24,8 @@ public:
 	virtual void beginUploadFile(QString name) OVERRIDE;
 	virtual void beginNewFolder(QString name) OVERRIDE;
 
+	bool exists();
+
 private slots:
 	void nodeInfoReceived();
 	//void checkFinished();
@@ -32,7 +34,6 @@ private:
 
 	bool searchList(QString searchName, OnlineDataNode::Kind kind, QJsonArray arrayObject, QJsonObject &nodeObject);
 	bool interpretNode(QJsonObject nodeObject);
-	void extractNodeData(OnlineDataNodeOSF * node);
 	OnlineDataNode::Kind parseKind(QString kind);
 	void processUrl(QUrl url);
 	QString getContentsUrl(QJsonObject nodeObject);
@@ -41,7 +42,7 @@ private:
 
 	QStringList _subPath;
 
-	QString _contentsPath;
+	bool _exists = true;
 
 	OnlineDataNode::Kind _dataKind = OnlineDataNode::Unknown;
 	QString _expectedName = "";

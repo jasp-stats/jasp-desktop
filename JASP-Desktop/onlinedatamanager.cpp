@@ -60,6 +60,36 @@ void OnlineDataManager::beginUploadFile(QString nodePath, QString id)
 	uploadFileAsync(nodePath, id);
 }
 
+
+OnlineDataNode *OnlineDataManager::createNewFolderAsync(QString nodePath, QString name, QString id) {
+
+	OnlineDataNode *dataNode = getOnlineNodeData(nodePath, id);
+
+	if (dataNode != NULL)
+	{
+		connect(dataNode, SIGNAL(finished()), this, SLOT(newFolderFinished()));
+
+		dataNode->processAction(OnlineDataNode::NewFolder, name);
+
+		return dataNode;
+	}
+
+	return NULL;
+}
+
+void OnlineDataManager::newFolderFinished()
+{
+	OnlineDataNode *dataNode = qobject_cast<OnlineDataNode *>(sender());
+
+	if (dataNode->error())
+		emit error(dataNode->errorMessage(), dataNode->id());
+	else
+		emit newFolderFinished(dataNode->id());
+
+	dataNode->deleteLater();
+}
+
+
 OnlineDataNode *OnlineDataManager::createNewFileAsync(QString nodePath, QString filename, QString id) {
 
 	OnlineDataNode *dataNode = getOnlineNodeData(nodePath, id);
