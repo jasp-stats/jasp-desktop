@@ -54,10 +54,14 @@ private slots:
 	void saveCompleted(FileEvent* event);
 	void updateUserDetails();
 
+	void newFolderCreated();
+
 	void newFolderClicked();
 	void authenticatedHandler();
 
 private:
+
+	bool checkEntryName(QString name, QString entryTitle, bool allowFullStop);
 
 	OnlineDataManager *_odm;
 

@@ -22,6 +22,8 @@
 #include <QFileInfo>
 #include <QHBoxLayout>
 #include <QInputDialog>
+#include <QMessageBox>
+#include <QRegularExpression>
 
 #include "fsbmosf.h"
 
@@ -87,8 +89,6 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(updateUserDetails()));
 
-	//_model->refresh();
-
 	_fsBrowser = new FSBrowser(this);
 	_fsBrowser->setViewType(FSBrowser::ListView);
 	_fsBrowser->setFSModel(_model);
@@ -148,11 +148,50 @@ void BackstageOSF::userDetailsReceived()
 
 void BackstageOSF::newFolderClicked()
 {
+	FSBMOSF::OnlineNodeData currentNodeData = _model->currentNodeData();
+
+	if (currentNodeData.canCreateFolders == false)
+	{
+		if (currentNodeData.level == 0)
+			QMessageBox::warning(this, "Projects", "A new folder cannot be added to the projects list.\n\nTo add a new project please use the online OSF services.");
+		else if (currentNodeData.level == 1)
+			QMessageBox::warning(this, "Data Providers", "A new folder cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services.");
+		else
+			QMessageBox::warning(this, currentNodeData.name, "A new folder cannot be added to '" + currentNodeData.name + "' for an unknown reason.");
+		return;
+	}
+
 	bool ok;
-	QString name = QInputDialog::getText(this, "New folder", "New folder name", QLineEdit::Normal, "New folder", &ok);
+	QString name = "New folder";
+
+
+	do
+	{
+		name = QInputDialog::getText(this, "New folder", "New folder name", QLineEdit::Normal, name, &ok);
+	}
+	while(ok && checkEntryName(name, "Folder", false) == false);
+
 
 	if (ok)
+	{
 		emit newFolderRequested(name);
+
+		if (_model->hasFolderEntry(name.toLower()) == false)
+		{
+			OnlineDataNode *node = _odm->createNewFolderAsync(_model->currentNodeData().nodePath + "#folder://" + name, name, "createNewFolder");
+			connect(node, SIGNAL(finished()), this, SLOT(newFolderCreated()));
+		}
+	}
+}
+
+void BackstageOSF::newFolderCreated()
+{
+	OnlineDataNode *node = qobject_cast<OnlineDataNode *>(sender());
+
+	if (node->error())
+		QMessageBox::warning(this, "", "An error occured and the folder could not be created.");
+	else
+		_model->refresh();
 }
 
 void BackstageOSF::authenticatedHandler()
@@ -188,9 +227,45 @@ void BackstageOSF::notifyDataSetSelected(QString path)
 	_fileNameTextBox->setText(QFileInfo(path).fileName());
 }
 
+bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFullStop)
+{
+	if (name.trimmed() == "")
+	{
+		QMessageBox::warning(this, "", "Entry name cannot be empty.");
+		return false;
+	}
+	else
+	{
+		QRegularExpression r("[^\\w\\s" + (QString)(allowFullStop ? "\\.-" : "-") + "]");
+		if (r.match(name).hasMatch())
+		{
+			QMessageBox::warning(this, "", entryTitle + " name can only contain the following characters A-Z a-z 0-9 _ " + (allowFullStop ? ". -" : "-"));
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void BackstageOSF::saveClicked()
 {
+	 FSBMOSF::OnlineNodeData currentNodeData = _model->currentNodeData();
+
+	if (currentNodeData.canCreateFiles == false)
+	{
+		if (currentNodeData.level == 0)
+			QMessageBox::warning(this, "Projects", "Files cannot be added to the projects list.\n\nTo add a new project please use the online OSF services.");
+		else if (currentNodeData.level == 1)
+			QMessageBox::warning(this, "Data Providers", "Files cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services.");
+		else
+			QMessageBox::warning(this, currentNodeData.name, "Files cannot be added to '" + currentNodeData.name + "' for an unknown reason.");
+		return;
+	}
+
 	QString filename = _fileNameTextBox->text();
+
+	if (checkEntryName(filename, "File", true) == false)
+		return;
 
 	if (filename.endsWith(".jasp") == false)
 	{
@@ -200,10 +275,10 @@ void BackstageOSF::saveClicked()
 
 	QString path;
 
-	if (_model->hasFileEntry(filename, path))
+	if (_model->hasFileEntry(filename.toLower(), path))
 		notifyDataSetOpened(path);
 	else
-		openFile(_model->currentNodeData().nodePath, filename);
+		openFile(currentNodeData.nodePath, filename);
 }
 
 void BackstageOSF::openFile(const QString &nodePath, const QString &filename)

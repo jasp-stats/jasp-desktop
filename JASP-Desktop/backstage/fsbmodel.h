@@ -49,6 +49,7 @@ public:
 	virtual void authenticate(const QString &, const QString &) { }
 
 	bool hasFileEntry(QString name, QString &path);
+	bool hasFolderEntry(QString name);
 
 public slots:
 	void setPath(QString path);

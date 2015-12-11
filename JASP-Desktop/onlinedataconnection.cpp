@@ -30,13 +30,6 @@ void OnlineDataConnection::beginAction(QUrl url, OnlineDataConnection::Type type
 {
 	setError(false, "");
 
-	_uploadFile = data;
-	_actionType = type;
-
-	QNetworkRequest request(url);
-
-	QNetworkReply *reply;
-
 	if ((type == OnlineDataConnection::Put || type == OnlineDataConnection::Post) && data != NULL)
 	{
 		if (_uploadFile != NULL && _uploadFile->isOpen() == false && _uploadFile->open(QIODevice::ReadOnly) == false)
@@ -46,6 +39,40 @@ void OnlineDataConnection::beginAction(QUrl url, OnlineDataConnection::Type type
 		else if (_uploadFile != NULL && _uploadFile->pos() != 0 && _uploadFile->reset() == false)
 			setError(true, "File cannot be reset for online data action.");
 	}
+
+	_uploadFile = data;
+
+	_actionType = type;
+
+	QNetworkRequest request(url);
+
+	QNetworkReply *reply;
+
+	if (_error == false)
+	{
+		if (type == OnlineDataConnection::Put)
+			reply = _manager->put(request, data);
+		else if (type == OnlineDataConnection::Post)
+			reply = _manager->post(request, data);
+		else
+			reply = _manager->get(request);
+
+		connect(reply, SIGNAL(finished()), this, SLOT(actionFinished()));
+	}
+	else
+		actionFinished(NULL);
+}
+
+void OnlineDataConnection::beginAction(QUrl url, OnlineDataConnection::Type type, const QByteArray &data)
+{
+	setError(false, "");
+
+	_uploadFile = NULL;
+	_actionType = type;
+
+	QNetworkRequest request(url);
+
+	QNetworkReply *reply;
 
 	if (_error == false)
 	{
@@ -96,7 +123,7 @@ void OnlineDataConnection::actionFinished(QNetworkReply *reply)
 		}
 	}
 
-	if (_uploadFile != NULL)
+	if (_uploadFile != NULL && _uploadFile->isOpen())
 		_uploadFile->close();
 
 	_uploadFile = NULL;
@@ -112,3 +139,4 @@ void OnlineDataConnection::setError(bool value, QString msg)
 	_error = value;
 	_errorMsg = msg;
 }
+

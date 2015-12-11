@@ -141,7 +141,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 	_odm = new OnlineDataManager(this);
-	_odm->setAuthentication(OnlineDataManager::OSF, "username", "password");
 	_loader.setOnlineDataManager(_odm);
 	ui->backStage->setOnlineDataManager(_odm);
 

@@ -17,6 +17,7 @@ public:
 	OnlineDataConnection(QNetworkAccessManager *manager, QObject *parent = 0);
 
 	void beginAction(QUrl url, OnlineDataConnection::Type type, QIODevice *data);
+	void beginAction(QUrl url, OnlineDataConnection::Type type, const QByteArray &data);
 
 	bool error() const;
 	QString errorMessage() const;
@@ -38,11 +39,11 @@ private:
 	bool _error = false;
 	QString _errorMsg = "";
 
-	QIODevice *_uploadFile;
+	QIODevice *_uploadFile = NULL;
 
 	OnlineDataConnection::Type _actionType;
 
-	QNetworkAccessManager* _manager;
+	QNetworkAccessManager* _manager = NULL;
 };
 
 #endif // ONLINEDATACONNECTION_H

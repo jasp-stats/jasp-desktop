@@ -31,6 +31,7 @@ public:
 	OnlineDataNode* uploadFileAsync(QString nodePath, QString id);
 	OnlineDataNode* downloadFileAsync(QString nodePath, QString id);
 	OnlineDataNode* createNewFileAsync(QString nodePath, QString filename, QString id);
+	OnlineDataNode* createNewFolderAsync(QString nodePath, QString name, QString id);
 
 	OnlineUserNode* getOnlineUserData(QString nodePath, QString id);
 
@@ -41,12 +42,14 @@ public slots:
 	void beginDownloadFile(QString nodePath, QString id);
 
 signals:
+	void newFolderFinished(QString id);
 	void newFileFinished(QString id);
 	void downloadFileFinished(QString id);
 	void uploadFileFinished(QString id);
 	void error(QString msg, QString id);
 
 private slots:
+	void newFolderFinished();
 	void newFileFinished();
 	void uploadFileFinished();
 	void downloadFileFinished();
