@@ -19,8 +19,6 @@
 #ifndef BACKSTAGEOSF_H
 #define BACKSTAGEOSF_H
 
-#include <QLineEdit>
-
 #include "backstagepage.h"
 
 #include "fsbmosf.h"
@@ -29,6 +27,8 @@
 
 #include <QLabel>
 #include <QCursor>
+#include <QSettings>
+#include <QLineEdit>
 
 class BackstageOSF : public BackstagePage
 {
@@ -58,6 +58,7 @@ private slots:
 
 	void newFolderClicked();
 	void authenticatedHandler();
+	void nameClicked();
 
 private:
 
@@ -68,11 +69,13 @@ private:
 	BreadCrumbs *_breadCrumbs;
 	FSBMOSF *_model;
 	FSBrowser *_fsBrowser;
-	QLabel *_nameLabel;
+	QToolButton *_nameButton;
 	QWidget *_fileNameContainer;
 	QLineEdit *_fileNameTextBox;
 	QPushButton *_saveButton;
 	QToolButton *_newFolderButton;
+
+	QSettings _settings;
 
 	class HyperlinkLabel : public QLabel
 	{

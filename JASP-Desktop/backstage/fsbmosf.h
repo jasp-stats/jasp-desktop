@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QNetworkAccessManager>
 #include <QMap>
+#include <QSettings>
 
 #include "fsbmodel.h"
 #include "common.h"
@@ -36,6 +37,7 @@ public:
 	bool requiresAuthentication() const OVERRIDE;
 	void authenticate(const QString &username, const QString &password) OVERRIDE;
 	bool isAuthenticated() const OVERRIDE;
+	void clearAuthentication() OVERRIDE;
 
 	OnlineNodeData currentNodeData();
 
@@ -47,6 +49,8 @@ private slots:
 	void gotFilesAndFolders();
 
 private:
+
+	QSettings _settings;
 
 	void setAuthenticated(bool value);
 

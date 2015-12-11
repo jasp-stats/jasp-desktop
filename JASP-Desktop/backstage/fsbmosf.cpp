@@ -50,6 +50,21 @@ void FSBMOSF::authenticate(const QString &username, const QString &password)
 
 	bool success = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
 
+	_settings.sync();
+
+	if (success)
+	{
+		_settings.setValue("OSFUsername", username);
+		_settings.setValue("OSFPassword", password);
+	}
+	else
+	{
+		_settings.remove("OSFUsername");
+		_settings.remove("OSFPassword");
+	}
+
+	_settings.sync();
+
 	setAuthenticated(success);
 }
 
@@ -71,6 +86,16 @@ void FSBMOSF::setAuthenticated(bool value)
 bool FSBMOSF::isAuthenticated() const
 {
 	return _isAuthenticated;
+}
+
+void FSBMOSF::clearAuthentication()
+{
+	_isAuthenticated = false;
+
+	_settings.sync();
+	_settings.remove("OSFUsername");
+	_settings.remove("OSFPassword");
+	_settings.sync();
 }
 
 void FSBMOSF::refresh()

@@ -34,13 +34,25 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	layout->setContentsMargins(0, 0, 0, 0);
 	setLayout(layout);
 
-	QLabel *label = new QLabel("Open Science Framework", this);
-	label->setContentsMargins(12, 12, 0, 1);
-	layout->addWidget(label, 0, 0, 1, 1);
+	QWidget *topRow = new QWidget(this);
+	layout->addWidget(topRow);
 
-	_nameLabel = new QLabel(this);
-	_nameLabel->setContentsMargins(12, 12, 0, 1);
-	layout->addWidget(_nameLabel, 1, 0, 1, 1);
+	QGridLayout *topRowLayout = new QGridLayout();
+	topRowLayout->setContentsMargins(0, 6, 12, 0);
+	topRow->setLayout(topRowLayout);
+
+	QLabel *label = new QLabel("Open Science Framework", topRow);
+	QSizePolicy sp = label->sizePolicy();
+	sp.setHorizontalStretch(1);
+	label->setSizePolicy(sp);
+	label->setContentsMargins(12, 12, 12, 1);
+	topRowLayout->addWidget(label, 0, 0);
+
+	_nameButton = new QToolButton(topRow);
+	_nameButton->hide();
+	topRowLayout->addWidget(_nameButton, 0, 1);
+
+	connect(_nameButton, SIGNAL(clicked(bool)), this, SLOT(nameClicked()));
 
 	QWidget *buttonsWidget = new QWidget(this);
 	buttonsWidget->setContentsMargins(0, 0, 0, 0);
@@ -141,7 +153,7 @@ void BackstageOSF::userDetailsReceived()
 {
 	OnlineUserNode *userNode = qobject_cast<OnlineUserNode*>(sender());
 
-	_nameLabel->setText(userNode->getFullname());
+	_nameButton->setText("Logout " + userNode->getFullname());
 
 	userNode->deleteLater();
 }
@@ -197,6 +209,14 @@ void BackstageOSF::newFolderCreated()
 void BackstageOSF::authenticatedHandler()
 {
 	_newFolderButton->setEnabled(true);
+	_nameButton->show();
+}
+
+void BackstageOSF::nameClicked()
+{
+	_model->clearAuthentication();
+	_nameButton->hide();
+	_model->refresh();
 }
 
 void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
@@ -205,6 +225,7 @@ void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 	_model->setOnlineDataManager(_odm);
 
 	_newFolderButton->setEnabled(_model->isAuthenticated());
+	_nameButton->setVisible(_model->isAuthenticated());
 
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(authenticatedHandler()));
 }

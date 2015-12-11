@@ -47,6 +47,7 @@ public:
 	virtual bool requiresAuthentication() const { return false; }
 	virtual bool isAuthenticated() const { return false; }
 	virtual void authenticate(const QString &, const QString &) { }
+	virtual void clearAuthentication() { }
 
 	bool hasFileEntry(QString name, QString &path);
 	bool hasFolderEntry(QString name);
