@@ -141,8 +141,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 	_odm = new OnlineDataManager(this);
-	_loader.setOnlineDataManager(_odm);
-	ui->backStage->setOnlineDataManager(_odm);
 
 	QVariant osfUsernameV = _settings.value("OSFUsername");
 	QVariant osfPasswordV = _settings.value("OSFPassword", "");
@@ -153,6 +151,9 @@ MainWindow::MainWindow(QWidget *parent) :
 		QString password = osfPasswordV.toString();
 		_odm->setAuthentication(OnlineDataManager::OSF, username, password);
 	}
+
+	_loader.setOnlineDataManager(_odm);
+	ui->backStage->setOnlineDataManager(_odm);
 
 	// the LRNAM adds mime types to local resources; important for SVGs
 	ui->webViewResults->page()->setNetworkAccessManager(new LRNAM(tq(tempfiles_sessionDirName()), this));

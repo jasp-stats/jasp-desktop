@@ -82,11 +82,13 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	QSizePolicy policy = _fileNameTextBox->sizePolicy();
 	policy.setHorizontalStretch(1);
 	_fileNameTextBox->setSizePolicy(policy);
+	_fileNameTextBox->setEnabled(false);
 
 	saveLayout->addWidget(_fileNameTextBox);
 
 	_saveButton = new QPushButton(_fileNameContainer);
 	_saveButton->setText("Save");
+	_saveButton->setEnabled(false);
 	saveLayout->addWidget(_saveButton, 0, Qt::AlignRight);
 
 	QWidget *line;
@@ -100,6 +102,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	_model = new FSBMOSF();
 
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(updateUserDetails()));
+	connect(_model, SIGNAL(authenticationClear()), this, SLOT(updateUserDetails()));
 
 	_fsBrowser = new FSBrowser(this);
 	_fsBrowser->setViewType(FSBrowser::ListView);
@@ -107,6 +110,7 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	layout->addWidget(_fsBrowser);
 
 	_breadCrumbs->setModel(_model);
+	_breadCrumbs->setEnabled(false);
 
 	connect(_fsBrowser, SIGNAL(entryOpened(QString)), this, SLOT(notifyDataSetOpened(QString)));
 	connect(_fsBrowser, SIGNAL(entrySelected(QString)), this, SLOT(notifyDataSetSelected(QString)));
@@ -142,11 +146,26 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 
 void BackstageOSF::updateUserDetails()
 {
-	OnlineUserNode *userNode = _odm->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
+	if (_model->isAuthenticated())
+	{
+		_breadCrumbs->setEnabled(true);
+		_saveButton->setEnabled(true);
+		_fileNameTextBox->setEnabled(true);
+		_newFolderButton->setEnabled(true);
 
-	userNode->initialise();
+		OnlineUserNode *userNode = _odm->getOnlineUserData("https://staging2-api.osf.io/v2/users/me/", "fsbmosf");
 
-	connect(userNode, SIGNAL(finished()), this, SLOT(userDetailsReceived()));
+		userNode->initialise();
+
+		connect(userNode, SIGNAL(finished()), this, SLOT(userDetailsReceived()));
+	}
+	else
+	{
+		_breadCrumbs->setEnabled(false);
+		_saveButton->setEnabled(false);
+		_fileNameTextBox->setEnabled(false);
+		_newFolderButton->setEnabled(false);
+	}
 }
 
 void BackstageOSF::userDetailsReceived()

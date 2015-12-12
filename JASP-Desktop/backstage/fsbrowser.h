@@ -58,6 +58,8 @@ private slots:
 
 private:
 
+	void clearItems();
+
 	BrowseMode _browseMode;
 	ViewType _viewType;
 
