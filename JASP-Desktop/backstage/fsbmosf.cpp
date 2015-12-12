@@ -92,10 +92,18 @@ void FSBMOSF::clearAuthentication()
 {
 	_isAuthenticated = false;
 
+	_dataManager->clearAuthentication(OnlineDataManager::OSF);
+	_entries.clear();
+	_pathUrls.clear();
+	setPath(_rootPath);
+	emit entriesChanged();
+
 	_settings.sync();
 	_settings.remove("OSFUsername");
 	_settings.remove("OSFPassword");
 	_settings.sync();
+
+	emit authenticationClear();
 }
 
 void FSBMOSF::refresh()

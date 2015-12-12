@@ -62,6 +62,7 @@ void FSBrowser::setFSModel(FSBModel *model)
 
 	connect(_model, SIGNAL(entriesChanged()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(refresh()));
+	connect(_model, SIGNAL(authenticationClear()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationFail(QString)), this, SLOT(authenticationFailed(QString)));
 }
 
@@ -75,8 +76,16 @@ void FSBrowser::setViewType(FSBrowser::ViewType viewType)
 	_viewType = viewType;
 }
 
+void FSBrowser::clearItems()
+{
+	foreach (QAbstractButton *button, _buttonGroup->buttons())
+		delete button;
+}
+
 void FSBrowser::refresh()
 {
+	clearItems();
+
 	if (_model->requiresAuthentication() && _model->isAuthenticated() == false)
 	{
 		_authWidget->show();
@@ -98,9 +107,6 @@ void FSBrowser::refresh()
 			_scrollPaneLayout->setContentsMargins(12, 12, 12, 12);
 			_scrollPaneLayout->setSpacing(8);
 		}
-
-		foreach (QAbstractButton *button, _buttonGroup->buttons())
-			delete button;
 
 		int id = 0;
 

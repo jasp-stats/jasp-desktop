@@ -61,6 +61,7 @@ signals:
 
 	void authenticationFail(const QString &message);
 	void authenticationSuccess();
+	void authenticationClear();
 
 protected:
 

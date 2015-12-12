@@ -44,6 +44,13 @@ void OnlineDataManager::setAuthentication(OnlineDataManager::Provider provider, 
 		manager->osfAuthentication(authData.username, authData.password);
 }
 
+void OnlineDataManager::clearAuthentication(OnlineDataManager::Provider provider)
+{
+	setAuthentication(provider, "", "");
+
+	emit authenticationCleared((int)provider);
+}
+
 void OnlineDataManager::setNetworkAccessManager(OnlineDataManager::Provider provider, QNetworkAccessManager* manager) {
 
 	_providers[provider] = manager;

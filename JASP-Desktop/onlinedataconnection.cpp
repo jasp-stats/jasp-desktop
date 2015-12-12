@@ -30,6 +30,9 @@ void OnlineDataConnection::beginAction(QUrl url, OnlineDataConnection::Type type
 {
 	setError(false, "");
 
+	_uploadFile = data;
+	_actionType = type;
+
 	if ((type == OnlineDataConnection::Put || type == OnlineDataConnection::Post) && data != NULL)
 	{
 		if (_uploadFile != NULL && _uploadFile->isOpen() == false && _uploadFile->open(QIODevice::ReadOnly) == false)
@@ -39,10 +42,6 @@ void OnlineDataConnection::beginAction(QUrl url, OnlineDataConnection::Type type
 		else if (_uploadFile != NULL && _uploadFile->pos() != 0 && _uploadFile->reset() == false)
 			setError(true, "File cannot be reset for online data action.");
 	}
-
-	_uploadFile = data;
-
-	_actionType = type;
 
 	QNetworkRequest request(url);
 

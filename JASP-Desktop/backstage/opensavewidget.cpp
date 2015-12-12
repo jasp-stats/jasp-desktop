@@ -95,7 +95,9 @@ VerticalTabWidget *OpenSaveWidget::tabWidget()
 void OpenSaveWidget::setOnlineDataManager(OnlineDataManager *odm)
 {
 #ifdef QT_DEBUG
+	_odm = odm;
 	_bsOSF->setOnlineDataManager(odm);
+	connect(_odm, SIGNAL(authenticationCleared(int)), this, SLOT(clearOnlineDataFromRecentList(int)));
 #endif
 }
 
@@ -171,6 +173,17 @@ FileEvent *OpenSaveWidget::close()
 	dataSetIORequestHandler(event);
 
 	return event;
+}
+
+void OpenSaveWidget::clearOnlineDataFromRecentList(int provider)
+{
+	if ((OnlineDataManager::Provider)provider == OnlineDataManager::OSF)
+		_fsmRecent->filter(&clearOSFFromRecentList);
+}
+
+bool OpenSaveWidget::clearOSFFromRecentList(QString path)
+{
+	return OnlineDataManager::determineProvider(path) != OnlineDataManager::OSF;
 }
 
 void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)

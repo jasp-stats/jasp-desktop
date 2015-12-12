@@ -27,6 +27,7 @@ public:
 	bool authenticationSuccessful(OnlineDataManager::Provider provider) const;
 	QNetworkAccessManager* getNetworkAccessManager(OnlineDataManager::Provider provider) const;
 	void setNetworkAccessManager(OnlineDataManager::Provider provider, QNetworkAccessManager*);
+	void clearAuthentication(OnlineDataManager::Provider provider);
 
 	OnlineDataNode* uploadFileAsync(QString nodePath, QString id);
 	OnlineDataNode* downloadFileAsync(QString nodePath, QString id);
@@ -35,6 +36,8 @@ public:
 
 	OnlineUserNode* getOnlineUserData(QString nodePath, QString id);
 
+	static OnlineDataManager::Provider determineProvider(QString nodePath);
+
 	QString getLocalPath(QString nodePath) const;
 
 public slots:
@@ -42,6 +45,7 @@ public slots:
 	void beginDownloadFile(QString nodePath, QString id);
 
 signals:
+	void authenticationCleared(int provider);
 	void newFolderFinished(QString id);
 	void newFileFinished(QString id);
 	void downloadFileFinished(QString id);
@@ -60,7 +64,7 @@ private:
 	QMap<OnlineDataManager::Provider, AuthData> _authList;
 
 	OnlineDataNode *getOnlineNodeData(QString nodePath, QString id);
-	OnlineDataManager::Provider determineProvider(QString nodePath);
+
 
 
 };
