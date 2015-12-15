@@ -88,6 +88,7 @@ void FSBrowser::refresh()
 
 	if (_model->requiresAuthentication() && _model->isAuthenticated() == false)
 	{
+		_authWidget->clearPassword();
 		_authWidget->show();
 	}
 	else

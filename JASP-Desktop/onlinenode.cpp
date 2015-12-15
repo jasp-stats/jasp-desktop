@@ -13,6 +13,11 @@ QString OnlineNode::id() const
 	return _id;
 }
 
+QString OnlineNode::nodeId() const
+{
+	return _nodeId;
+}
+
 bool OnlineNode::error() const
 {
 	return _error;
@@ -53,7 +58,13 @@ void OnlineNode::connectionFinished()
 	OnlineDataConnection *conn = connection();
 	if (conn->error())
 		setError(true, conn->errorMessage());
+	else if (_reinitialise)
+	{
+		initialise();
+		return;
+	}
 
+	_reinitialise = false;
 	emit finished();
 }
 
@@ -68,8 +79,11 @@ void OnlineNode::endInit(bool success)
 {
 	_inited = success;
 
-	if (success == false || beginAction() == false)
+	if (success == false || _reinitialise || beginAction() == false)
+	{
+		_reinitialise = false;
 		emit finished();
+	}
 }
 
 void OnlineNode::setError(bool value, QString message)

@@ -133,6 +133,7 @@ void FSBMOSF::loadProjects() {
 
 	QUrl url("https://api.osf.io/v2/users/me/nodes/");
 	//QUrl url("https://test-api.osf.io/v2/users/me/nodes/");
+	//QUrl url("https://staging2-api.osf.io/v2/users/me/nodes/");
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");

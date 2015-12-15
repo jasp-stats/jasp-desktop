@@ -53,9 +53,11 @@ private slots:
 	void saveTask(FileEvent *event, DataSetPackage *package);
 	void loadPackage(QString id);
 	void uploadFileFinished(QString id);
-	void errorFlagged(QString msg, QString id);
+	//void errorFlagged(QString msg, QString id);
 
 private:
+
+	QString fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
 
 	void sleep(int ms);
 	void progressHandler(std::string status, int progress);

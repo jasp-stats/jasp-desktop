@@ -51,10 +51,6 @@ void OnlineDataNodeOSF::processUrl(QUrl url)
 	connect(reply, SIGNAL(finished()), this, SLOT(nodeInfoReceived()));
 }
 
-bool OnlineDataNodeOSF::exists()
-{
-	return _exists && _inited;
-}
 
 void OnlineDataNodeOSF::nodeInfoReceived() {
 
@@ -64,7 +60,10 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 	bool finished = false;
 
 	if (reply->error() != QNetworkReply::NoError)
+	{
 		setError(true, reply->errorString());
+		finished = true;
+	}
 	else
 	{
 		QByteArray data = reply->readAll();
@@ -126,8 +125,8 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 			}
 			else
 			{
-				_subPath.removeFirst();
-				finished = interpretNode(nodeObject);
+				populateNodeData(nodeObject);
+				finished = true;
 				success = true;
 			}
 		}
@@ -213,11 +212,13 @@ void OnlineDataNodeOSF::populateNodeData(QJsonObject nodeObject)
 	QString dataKind = attrObj.value("kind").toString();
 
 	_name = attrObj.value("name").toString();
+	_nodeId = nodeObject.value("id").toString();
 
 	_dataKind = parseKind(dataKind);
 
 	if (_kind == OnlineDataNode::Unknown)
 		_kind = _dataKind;
+
 
 	QJsonObject linksObj = nodeObject.value("links").toObject();
 
@@ -227,6 +228,12 @@ void OnlineDataNodeOSF::populateNodeData(QJsonObject nodeObject)
 		_downloadPath = linksObj.value("download").toString();
 		_newFolderPath = "";
 		_deletePath = linksObj.value("delete").toString();
+		
+		
+		QJsonObject extraObj = attrObj.value("extra").toObject();
+		QJsonObject hashesObj = extraObj.value("hashes").toObject();
+
+		_md5 = hashesObj.value("md5").toString();
 	}
 	else if (_dataKind == OnlineDataNode::Folder)
 	{
@@ -234,6 +241,20 @@ void OnlineDataNodeOSF::populateNodeData(QJsonObject nodeObject)
 		_downloadPath = "";
 		_newFolderPath = linksObj.value("new_folder").toString();
 		_deletePath = linksObj.value("delete").toString();
+	}
+	else
+	{
+		_uploadPath = "";
+		_downloadPath = "";
+		_newFolderPath = "";
+		_deletePath = "";
+	}
+
+	if (linksObj.contains("info"))
+	{
+		QString selfUrl = linksObj.value("info").toString() + "#" + _subPath.join('#');
+		if (selfUrl != _path)
+			setPath(selfUrl);
 	}
 }
 
@@ -320,42 +341,74 @@ QString OnlineDataNodeOSF::getDeletePath() const
 }
 
 
-void OnlineDataNodeOSF::beginDownloadFile() {
+bool OnlineDataNodeOSF::beginDownloadFile()
+{
+	if (_exists == false)
+		setError(true, "This file does not exisit and cannot be downloaded.");
 
-	if (_dataKind == OnlineDataNode::File)
+	else if (_dataKind == OnlineDataNode::File)
+	{
 		connection()->beginAction(QUrl(getDownloadPath()), OnlineDataConnection::Get, &_localFile);
+		return true;
+	}
 	else
-		throw runtime_error("This node kind does not handle the 'download' action.");
+		setError(true, "This node kind does not handle the 'download' action.");
+
+	return false;
 }
 
-void OnlineDataNodeOSF::beginUploadFile() {
+bool OnlineDataNodeOSF::beginUploadFile()
+{
 
 	if (_dataKind == OnlineDataNode::File || (_dataKind == OnlineDataNode::Folder && _kind == OnlineDataNode::File)) {
 		if (_localFile.exists())
+		{
+			if (_exists == false)
+				_reinitialise = true;
+
 			connection()->beginAction(QUrl(getUploadPath()), OnlineDataConnection::Put, &_localFile);
+			return true;
+		}
 		else
-			throw runtime_error("Local file cannot be found.");
+			setError(true, "Local file cannot be found.");
 	}
 	else
-		throw runtime_error("This node kind does not handle the 'upload' action.");
+		setError(true, "This node kind does not handle the 'upload' action.");
+
+	return false;
 }
 
-void OnlineDataNodeOSF::beginUploadFile(QString name) {
-
-	if (_dataKind == OnlineDataNode::Folder) {
-		if (_localFile.exists())
-			connection()->beginAction(QUrl(getUploadPath(name)), OnlineDataConnection::Put, &_localFile);
-		else
-			throw runtime_error("Local file cannot be found.");
-	}
-	else
-		throw runtime_error("This node kind does not handle the 'upload' action.");
-}
-
-void OnlineDataNodeOSF::beginNewFolder(QString name) {
+bool OnlineDataNodeOSF::beginUploadFile(QString name)
+{
 
 	if (_dataKind == OnlineDataNode::Folder)
-			connection()->beginAction(QUrl(getNewFolderPath(name)), OnlineDataConnection::Put, "");
+	{
+		if (_localFile.exists())
+		{
+			if (_exists == false)
+				_reinitialise = true;
+
+			connection()->beginAction(QUrl(getUploadPath(name)), OnlineDataConnection::Put, &_localFile);
+			return true;
+		}
+		else
+			setError(true, "Local file cannot be found.");
+	}
 	else
-		throw runtime_error("This node kind does not handle the 'upload' action.");
+		setError(true, "This node kind does not handle the 'upload' action.");
+
+	return false;
+}
+
+bool OnlineDataNodeOSF::beginNewFolder(QString name)
+{
+	if (_dataKind == OnlineDataNode::Folder)
+	{
+		connection()->beginAction(QUrl(getNewFolderPath(name)), OnlineDataConnection::Put, "");
+		return true;
+	}
+	else
+		setError(true, "This node kind does not handle the 'upload' action.");
+
+	return false;
 }

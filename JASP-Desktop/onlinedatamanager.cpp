@@ -7,6 +7,7 @@
 #include "onlinedataconnection.h"
 #include "onlinedatanodeosf.h"
 #include "onlineusernodeosf.h"
+#include <QMessageBox>
 
 
 OnlineDataManager::OnlineDataManager(QObject *parent):
@@ -62,38 +63,24 @@ QNetworkAccessManager* OnlineDataManager::getNetworkAccessManager(OnlineDataMana
 }
 
 
-void OnlineDataManager::beginUploadFile(QString nodePath, QString id)
-{
-	uploadFileAsync(nodePath, id);
-}
-
-
 OnlineDataNode *OnlineDataManager::createNewFolderAsync(QString nodePath, QString name, QString id) {
 
 	OnlineDataNode *dataNode = getOnlineNodeData(nodePath, id);
 
 	if (dataNode != NULL)
 	{
-		connect(dataNode, SIGNAL(finished()), this, SLOT(newFolderFinished()));
-
+		//connect(dataNode, SIGNAL(finished()), this, SLOT(newFolderFinished()));
 		dataNode->processAction(OnlineDataNode::NewFolder, name);
-
-		return dataNode;
 	}
 
-	return NULL;
+	return dataNode;
 }
 
 void OnlineDataManager::newFolderFinished()
 {
 	OnlineDataNode *dataNode = qobject_cast<OnlineDataNode *>(sender());
 
-	if (dataNode->error())
-		emit error(dataNode->errorMessage(), dataNode->id());
-	else
-		emit newFolderFinished(dataNode->id());
-
-	dataNode->deleteLater();
+	emit newFolderFinished(dataNode->id());
 }
 
 
@@ -103,89 +90,98 @@ OnlineDataNode *OnlineDataManager::createNewFileAsync(QString nodePath, QString 
 
 	if (dataNode != NULL)
 	{
-		connect(dataNode, SIGNAL(finished()), this, SLOT(newFileFinished()));
-
+		//connect(dataNode, SIGNAL(finished()), this, SLOT(newFileFinished()));
 		dataNode->processAction(OnlineDataNode::NewFile, filename);
-
-		return dataNode;
 	}
 
-	return NULL;
+	return dataNode;
 }
+
 
 void OnlineDataManager::newFileFinished()
 {
 	OnlineDataNode *dataNode = qobject_cast<OnlineDataNode *>(sender());
 
-	if (dataNode->error())
-		emit error(dataNode->errorMessage(), dataNode->id());
-	else
-		emit newFileFinished(dataNode->id());
+	emit newFileFinished(dataNode->id());
+}
 
+OnlineDataNode* OnlineDataManager::getActionDataNode(QString id)
+{
+	return _actionNodes[id];
+}
+
+void OnlineDataManager::deleteActionDataNode(QString id)
+{
+	OnlineDataNode *dataNode = _actionNodes[id];
+	_actionNodes.remove(id);
+
+	dataNode->deleteActionFilter();
 	dataNode->deleteLater();
 }
 
-
-OnlineDataNode *OnlineDataManager::uploadFileAsync(QString nodePath, QString id) {
+OnlineDataNode *OnlineDataManager::uploadFileAsync(QString nodePath, QString id, OnlineDataNode::ActionFilter *filter) {
 
 	OnlineDataNode *dataNode = getOnlineNodeData(nodePath, id);
 
 	if (dataNode != NULL)
 	{
-		connect(dataNode, SIGNAL(finished()), this, SLOT(uploadFileFinished()));
-
+		dataNode->setActionFilter(filter);
 		dataNode->processAction(OnlineDataNode::Upload, "");
-
-		return dataNode;
 	}
 
-	return NULL;
+	return dataNode;
+}
+
+bool OnlineDataManager::md5UploadFilter(OnlineDataNode *dataNode, OnlineDataNode::ActionFilter *filter)
+{
+	if (dataNode->exists() && dataNode->nodeId() == filter->arg1.toString() && dataNode->md5() != filter->arg2.toString())
+	{
+		int pressed = QMessageBox::warning(NULL, "File Changed", "The online copy of this file has changed since it was opened.\n\nWould you like to override the online file?", QMessageBox::Yes, QMessageBox::No);
+		return pressed == QMessageBox::Yes;
+	}
+	return true;
+}
+
+void OnlineDataManager::beginUploadFile(QString nodePath, QString actionId, QString oldFileId, QString oldMD5)
+{
+	OnlineDataNode::ActionFilter *filter = new OnlineDataNode::ActionFilter(OnlineDataManager::md5UploadFilter, oldFileId, oldMD5);
+	OnlineDataNode *dataNode = uploadFileAsync(nodePath, actionId, filter);
+	_actionNodes[actionId] = dataNode;
+	connect(dataNode, SIGNAL(finished()), this, SLOT(uploadFileFinished()));
 }
 
 void OnlineDataManager::uploadFileFinished()
 {
 	OnlineDataNode *dataNode = qobject_cast<OnlineDataNode *>(sender());
-	if (dataNode->error())
-		emit error(dataNode->errorMessage(), dataNode->id());
-	else
-		emit uploadFileFinished(dataNode->id());
-
-	dataNode->deleteLater();
+	emit uploadFileFinished(dataNode->id());
 }
 
 
-void OnlineDataManager::beginDownloadFile(QString nodePath, QString id) {
+void OnlineDataManager::beginDownloadFile(QString nodePath, QString actionId) {
 
-	downloadFileAsync(nodePath, id);
+	OnlineDataNode *dataNode = downloadFileAsync(nodePath, actionId);
+	_actionNodes[actionId] = dataNode;
+	connect(dataNode, SIGNAL(finished()), this, SLOT(downloadFileFinished()));
 }
 
-OnlineDataNode *OnlineDataManager::downloadFileAsync(QString nodePath, QString id)
+OnlineDataNode *OnlineDataManager::downloadFileAsync(QString nodePath, QString id, OnlineDataNode::ActionFilter *filter)
 {
 	OnlineDataNode *dataNode = getOnlineNodeData(nodePath, id);
 
 	if (dataNode != NULL)
 	{
-		connect(dataNode, SIGNAL(finished()), this, SLOT(downloadFileFinished()));
-
+		dataNode->setActionFilter(filter);
 		dataNode->processAction(OnlineDataNode::Download, "");
-
-		return dataNode;
 	}
 
-	return NULL;
+	return dataNode;
 }
 
 
 void OnlineDataManager::downloadFileFinished()
 {
 	OnlineDataNode *dataNode = qobject_cast<OnlineDataNode *>(sender());
-
-	if (dataNode->error())
-		emit error(dataNode->errorMessage(), dataNode->id());
-	else
-		emit downloadFileFinished(dataNode->id());
-
-	dataNode->deleteLater();
+	emit downloadFileFinished(dataNode->id());
 }
 
 

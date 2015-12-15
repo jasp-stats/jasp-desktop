@@ -110,7 +110,7 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 			throw runtime_error("File '" + fq(path) + "' is being used by another application.");
 
 		if (event->IsOnlineNode())
-			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"));
+			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"), Q_ARG(QString, tq(package->id)), Q_ARG(QString, tq(package->initalMD5)));
 		else
 			event->setComplete();
 	}
@@ -150,7 +150,6 @@ void AsyncLoader::setOnlineDataManager(OnlineDataManager *odm)
 	{
 		disconnect(_odm, SIGNAL(uploadFileFinished(QString)), this, SLOT(uploadFileFinished(QString)));
 		disconnect(_odm, SIGNAL(downloadFileFinished(QString)), this, SLOT(loadPackage(QString)));
-		disconnect(_odm, SIGNAL(error(QString, QString)), this, SLOT(errorFlagged(QString, QString)));
 	}
 
 	_odm = odm;
@@ -159,43 +158,129 @@ void AsyncLoader::setOnlineDataManager(OnlineDataManager *odm)
 	{
 		connect(_odm, SIGNAL(uploadFileFinished(QString)), this, SLOT(uploadFileFinished(QString)));
 		connect(_odm, SIGNAL(downloadFileFinished(QString)), this, SLOT(loadPackage(QString)));
-		connect(_odm, SIGNAL(error(QString, QString)), this, SLOT(errorFlagged(QString, QString)));
 	}
 }
 
-void AsyncLoader::errorFlagged(QString msg, QString id)
-{
-	if (id != "asyncloader")
-		return;
-
-	_currentEvent->setComplete(false, msg);
-}
 
 void AsyncLoader::loadPackage(QString id)
 {
-	if (id != "asyncloader")
-		return;
+	if (id == "asyncloader")
+	{
+		OnlineDataNode *dataNode = NULL;
 
-	try
-	{
-		string path = fq(_currentEvent->path());
-		if (_currentEvent->IsOnlineNode())
-			path = fq(_odm->getLocalPath(_currentEvent->path()));
+		try
+		{
+			string path = fq(_currentEvent->path());
 
-		_loader.loadPackage(_currentPackage, path, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-		_currentEvent->setComplete();
+			if (_currentEvent->IsOnlineNode())
+			{
+				dataNode = _odm->getActionDataNode(id);
+
+				if (dataNode != NULL && dataNode->error())
+					throw runtime_error(fq(dataNode->errorMessage()));
+
+				path = fq(_odm->getLocalPath(_currentEvent->path()));
+			}
+
+			_loader.loadPackage(_currentPackage, path, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+
+			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
+
+			if (dataNode != NULL)
+			{
+				if (calcMD5 != dataNode->md5().toLower())
+					throw runtime_error("The securtiy check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
+			}
+
+			_currentPackage->initalMD5 = fq(calcMD5);
+
+			if (dataNode != NULL)
+			{
+				_currentPackage->id = fq(dataNode->nodeId());
+				_currentEvent->setPath(dataNode->path());
+			}
+			else
+				_currentPackage->id = path;
+
+			_currentEvent->setComplete();
+
+			if (dataNode != NULL)
+				_odm->deleteActionDataNode(id);
+		}
+		catch (runtime_error e)
+		{
+			if (dataNode != NULL)
+				_odm->deleteActionDataNode(id);
+			_currentEvent->setComplete(false, e.what());
+		}
+		catch (exception e)
+		{
+			if (dataNode != NULL)
+				_odm->deleteActionDataNode(id);
+			_currentEvent->setComplete(false, e.what());
+		}
 	}
-	catch (runtime_error e)
-	{
-		_currentEvent->setComplete(false, e.what());
+}
+
+QString AsyncLoader::fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm)
+{
+	QString hashString = "";
+	QFile f(fileName);
+	if (f.open(QFile::ReadOnly)) {
+		QCryptographicHash hash(hashAlgorithm);
+		if (hash.addData(&f)) {
+			hashString = (QString)hash.result().toHex();
+		}
+		f.close();
 	}
-	catch (exception e)
-	{
-		_currentEvent->setComplete(false, e.what());
-	}
+	return hashString.toLower();
 }
 
 void AsyncLoader::uploadFileFinished(QString id)
 {
-	_currentEvent->setComplete();
+	if (id == "asyncloader")
+	{
+		OnlineDataNode *dataNode = NULL;
+
+		try
+		{
+			string path = fq(_currentEvent->path());
+
+			if (_currentEvent->IsOnlineNode())
+			{
+				dataNode = _odm->getActionDataNode(id);
+
+				if (dataNode->error())
+					throw runtime_error(fq(dataNode->errorMessage()));
+
+				path = fq(_odm->getLocalPath(_currentEvent->path()));
+
+				_currentEvent->setPath(dataNode->path());
+			}
+
+			_currentPackage->initalMD5 = fq(fileChecksum(tq(path), QCryptographicHash::Md5));
+
+			if (dataNode != NULL)
+				_currentPackage->id = fq(dataNode->nodeId());
+			else
+				_currentPackage->id = path;
+
+			_currentEvent->setComplete();
+
+			if (dataNode != NULL)
+				_odm->deleteActionDataNode(id);
+		}
+		catch (runtime_error e)
+		{
+			if (dataNode != NULL)
+				_odm->deleteActionDataNode(id);
+			_currentEvent->setComplete(false, e.what());
+		}
+		catch (exception e)
+		{
+			if (dataNode != NULL)
+				_odm->deleteActionDataNode(id);
+			_currentEvent->setComplete(false, e.what());
+		}
+	}
 }

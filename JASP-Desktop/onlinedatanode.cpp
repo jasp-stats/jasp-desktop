@@ -32,6 +32,25 @@ bool OnlineDataNode::kind() const
 	return _kind;
 }
 
+void OnlineDataNode::setActionFilter(ActionFilter *filter)
+{
+	_actionFilter = filter;
+}
+
+OnlineDataNode::ActionFilter* OnlineDataNode::actionFilter()
+{
+	return _actionFilter;
+}
+
+void OnlineDataNode::deleteActionFilter()
+{
+	if (_actionFilter != NULL)
+	{
+		delete _actionFilter;
+		_actionFilter = NULL;
+	}
+}
+
 void OnlineDataNode::prepareAction(OnlineDataNode::Action action, const QString &data)
 {
 	_preparedAction = action;
@@ -41,6 +60,16 @@ void OnlineDataNode::prepareAction(OnlineDataNode::Action action, const QString 
 QString OnlineDataNode::getLocalPath()
 {
 	return _localPath;
+}
+
+QString OnlineDataNode::md5() const
+{
+	return _md5;
+}
+
+bool OnlineDataNode::exists()
+{
+	return _exists && _inited;
 }
 
 QString OnlineDataNode::getActionPath() const
@@ -57,21 +86,21 @@ QString OnlineDataNode::getActionPath() const
 		return "";
 }
 
-
 bool OnlineDataNode::beginAction() {
 
-	if (_preparedAction == OnlineDataNode::Upload)
-		beginUploadFile();
-	else if (_preparedAction == OnlineDataNode::NewFile)
-		beginUploadFile(_preparedData);
-	else if (_preparedAction == OnlineDataNode::Download)
-		beginDownloadFile();
-	else if (_preparedAction == OnlineDataNode::NewFolder)
-		beginNewFolder(_preparedData);
-	else
-		return false;
+	if (_actionFilter == NULL || _actionFilter->call(this, _actionFilter) == true)
+	{
+		if (_preparedAction == OnlineDataNode::Upload)
+			return beginUploadFile();
+		else if (_preparedAction == OnlineDataNode::NewFile)
+			return beginUploadFile(_preparedData);
+		else if (_preparedAction == OnlineDataNode::Download)
+			return beginDownloadFile();
+		else if (_preparedAction == OnlineDataNode::NewFolder)
+			return beginNewFolder(_preparedData);
+	}
 
-	return true;
+	return false;
 }
 
 bool OnlineDataNode::processAction(Action action, const QString &data)
