@@ -69,5 +69,6 @@
         <file>icons/file-jasp.svg</file>
         <file>icons/expand.png</file>
         <file>icons/collapse.png</file>
+        <file>icons/loading.gif</file>
     </qresource>
 </RCC>

@@ -326,8 +326,18 @@ void BackstageOSF::openFile(const QString &nodePath, const QString &filename)
 	FileEvent *event = new FileEvent(this);
 	event->setOperation(_mode);
 
+
 	if (_mode == FileEvent::FileSave)
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(saveCompleted(FileEvent*)));
+	{
+		_breadCrumbs->setEnabled(false);
+		_saveButton->setEnabled(false);
+		_fileNameTextBox->setEnabled(false);
+		_newFolderButton->setEnabled(false);
+
+		_fsBrowser->StartProcessing();
+
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
+	}
 
 	if (filename != "")
 	{
@@ -342,8 +352,16 @@ void BackstageOSF::openFile(const QString &nodePath, const QString &filename)
 	emit dataSetIORequest(event);
 }
 
-void BackstageOSF::saveCompleted(FileEvent* event)
+void BackstageOSF::openSaveCompleted(FileEvent* event)
 {
+
+	_breadCrumbs->setEnabled(true);
+	_saveButton->setEnabled(true);
+	_fileNameTextBox->setEnabled(true);
+	_newFolderButton->setEnabled(true);
+
+	_fsBrowser->StopProcessing();
+
 	if (event->successful())
 		_model->refresh();
 }
