@@ -22,7 +22,10 @@ public:
 	typedef struct {
 		QString name;
 		bool isFolder;
+		bool isComponent;
+		bool isProvider;
 		QString contentsPath;
+		QString childrenPath;
 		QString uploadPath;
 		QString downloadPath;
 		QString nodePath;
@@ -53,6 +56,8 @@ private:
 	QSettings _settings;
 
 	void setAuthenticated(bool value);
+
+	QString getRelationshipUrl(QJsonObject nodeObject, QString name);
 
 	QMap<QString, OnlineNodeData> _pathUrls;
 

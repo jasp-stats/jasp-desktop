@@ -111,12 +111,18 @@ void FSBMOSF::refresh()
 	if (_manager == NULL || _isAuthenticated == false)
 		return;
 
+	emit processingEntries();
+
+	_entries.clear();
+
 	if (_path == "Projects")
 		loadProjects();
 	else {
 		OnlineNodeData nodeData = _pathUrls[_path];
 		if (nodeData.isFolder)
 			loadFilesAndFolders(QUrl(nodeData.contentsPath), nodeData.level + 1);
+		if (nodeData.isComponent)
+			loadFilesAndFolders(QUrl(nodeData.childrenPath), nodeData.level + 1);
 	}
 }
 
@@ -126,10 +132,6 @@ FSBMOSF::OnlineNodeData FSBMOSF::currentNodeData()
 }
 
 void FSBMOSF::loadProjects() {
-
-	emit processingEntries();
-
-	_entries.clear();
 
 	QUrl url("https://api.osf.io/v2/users/me/nodes/");
 	//QUrl url("https://test-api.osf.io/v2/users/me/nodes/");
@@ -171,13 +173,10 @@ void FSBMOSF::gotProjects()
 
 			nodeData.name = attrObj.value("title").toString();
 			nodeData.isFolder = true;
+			nodeData.isComponent = true;
 
-			QJsonObject relationshipsObj = nodeObject.value("relationships").toObject();
-			QJsonObject filesObj = relationshipsObj.value("files").toObject();
-			QJsonObject linksObj = filesObj.value("links").toObject();
-			QJsonObject relatedObj = linksObj.value("related").toObject();
-
-			nodeData.contentsPath = relatedObj.value("href").toString();// + "/osfstorage/";
+			nodeData.contentsPath = getRelationshipUrl(nodeObject, "files");
+			nodeData.childrenPath = getRelationshipUrl(nodeObject, "children");
 
 			QJsonObject topLinksObj = nodeObject.value("links").toObject();
 
@@ -200,10 +199,6 @@ void FSBMOSF::gotProjects()
 
 void FSBMOSF::loadFilesAndFolders(QUrl url, int level)
 {
-	emit processingEntries();
-
-	_entries.clear();
-
 	parseFilesAndFolders(url, level);
 }
 
@@ -240,44 +235,52 @@ void FSBMOSF::gotFilesAndFolders()
 		foreach (const QJsonValue & value, dataArray) {
 			QJsonObject nodeObject = value.toObject();
 
-			QJsonObject attrObj = nodeObject.value("attributes").toObject();
-
-			QString kind = attrObj.value("kind").toString();
-			if (kind != "folder" && kind != "file")
-				continue;
-
 			OnlineNodeData nodeData;
-			nodeData.name = attrObj.value("name").toString();
+
+			nodeData.isComponent = nodeObject.value("type").toString() == "nodes";
 
 			FSEntry::EntryType entryType = FSEntry::Other;
+			QJsonObject attrObj = nodeObject.value("attributes").toObject();
 
-			if (kind == "folder")
-				entryType = FSEntry::Folder;
-			else if (nodeData.name.endsWith(".jasp", Qt::CaseInsensitive))
-				entryType = FSEntry::JASP;
-			else if (nodeData.name.endsWith(".csv", Qt::CaseInsensitive))
-				entryType = FSEntry::CSV;
-	#ifdef QT_DEBUG
-			else if (nodeData.name.endsWith(".spss", Qt::CaseInsensitive))
-				entryType = FSEntry::SPSS;
-	#endif
+			if (nodeData.isComponent == false)
+			{
+				QString kind = attrObj.value("kind").toString();
+				if (kind != "folder" && kind != "file")
+					continue;
+
+				nodeData.name = attrObj.value("name").toString();
+
+				if (kind == "folder")
+					entryType = FSEntry::Folder;
+				else if (nodeData.name.endsWith(".jasp", Qt::CaseInsensitive))
+					entryType = FSEntry::JASP;
+				else if (nodeData.name.endsWith(".csv", Qt::CaseInsensitive))
+					entryType = FSEntry::CSV;
+		#ifdef QT_DEBUG
+				else if (nodeData.name.endsWith(".spss", Qt::CaseInsensitive))
+					entryType = FSEntry::SPSS;
+		#endif
+				else
+					continue;
+			}
 			else
-				continue;
-
-
-			QString path = _path + "/" + nodeData.name;
+			{
+				entryType = FSEntry::Folder;
+				nodeData.name = attrObj.value("title").toString();
+			}
 
 			if (entryType == FSEntry::Folder) {
-				QJsonObject relationshipsObj = nodeObject.value("relationships").toObject();
-				QJsonObject filesObj = relationshipsObj.value("files").toObject();
-				QJsonObject linksObj = filesObj.value("links").toObject();
-				QJsonObject relatedObj = linksObj.value("related").toObject();
 
-				nodeData.contentsPath = relatedObj.value("href").toString();
+				nodeData.contentsPath = getRelationshipUrl(nodeObject, "files");
+				nodeData.childrenPath = getRelationshipUrl(nodeObject, "children");
 
 				QJsonObject topLinksObj = nodeObject.value("links").toObject();
 
-				nodeData.nodePath = topLinksObj.value("info").toString();
+				if (nodeData.isComponent)
+					nodeData.nodePath = topLinksObj.value("self").toString();
+				else
+					nodeData.nodePath = topLinksObj.value("info").toString();
+
 				nodeData.uploadPath = topLinksObj.value("upload").toString();
 				nodeData.isFolder = true;
 
@@ -299,6 +302,9 @@ void FSBMOSF::gotFilesAndFolders()
 				nodeData.canCreateFolders = false;
 				nodeData.canCreateFiles = false;
 			}
+
+
+			QString path = _path + "/" + nodeData.name;
 
 			nodeData.level = _level;
 
@@ -323,7 +329,19 @@ void FSBMOSF::gotFilesAndFolders()
 	reply->deleteLater();
 }
 
+QString FSBMOSF::getRelationshipUrl(QJsonObject nodeObject, QString name)
+{
+	QJsonObject relationshipsObj = nodeObject.value("relationships").toObject();
 
+	if (relationshipsObj.contains(name) == false)
+		return "";
+
+	QJsonObject filesObj = relationshipsObj.value(name).toObject();
+	QJsonObject linksObj = filesObj.value("links").toObject();
+	QJsonObject relatedObj = linksObj.value("related").toObject();
+
+	return relatedObj.value("href").toString();
+}
 
 FSBMOSF::OnlineNodeData FSBMOSF::getNodeData(QString key)
 {
