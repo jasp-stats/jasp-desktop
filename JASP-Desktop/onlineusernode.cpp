@@ -9,3 +9,14 @@ QString OnlineUserNode::getFullname() const
 {
 	return _fullname;
 }
+
+
+ QString OnlineUserNode::getActionPath() const
+ {
+	 return "";
+ }
+
+ bool OnlineUserNode::beginAction()
+ {
+	 return false;
+ }

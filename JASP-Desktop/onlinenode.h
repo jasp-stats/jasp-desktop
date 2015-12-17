@@ -19,28 +19,47 @@ public:
 	QString id() const;
 	QNetworkAccessManager* manager() const;
 
+	QString nodeId() const;
+
 	void setPath(const QString &path);
 
-	virtual void getNodeInfo() const = 0;
+	virtual void initialise() = 0;
+	virtual bool beginAction() = 0;
 
 	bool error() const;
 	QString errorMessage() const;
 
-	OnlineDataConnection* connection();
+	virtual QString getActionPath() const = 0;
+
+	void setError(bool value, QString message);
+
+protected slots:
+	void connectionFinished();
 
 signals:
 	void finished();
 
 protected:
-	QString _path;
 
-	bool _error = false;
-	QString _errorMsg = "";
+	void startInit();
+	void endInit(bool success);
+	OnlineDataConnection* connection();
+
+	QString _path;
+	bool _inited = false;
 
 	QNetworkAccessManager *_manager;
 	QString _id;
+	QString _nodeId;
+
+	bool _reinitialise = false;
+
+
+private:
 
 	OnlineDataConnection* _connection = NULL;
+	bool _error;
+	QString _errorMsg;
 };
 
 #endif // ONLINENODE_H

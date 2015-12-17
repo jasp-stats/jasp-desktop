@@ -58,8 +58,13 @@ private slots:
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetOpenRequestHandler(QString path);
 	void dataSetOpenExampleRequestHandler(QString path);
+	void clearOnlineDataFromRecentList(int provider);
 
 private:
+
+	static bool clearOSFFromRecentList(QString path);
+	OnlineDataManager *_odm = NULL;
+
 	bool _currentFileHasPath;
 	QString _currentFilePath;
 	bool _currentFileReadOnly;

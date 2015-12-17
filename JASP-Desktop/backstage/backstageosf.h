@@ -19,8 +19,6 @@
 #ifndef BACKSTAGEOSF_H
 #define BACKSTAGEOSF_H
 
-#include <QLineEdit>
-
 #include "backstagepage.h"
 
 #include "fsbmosf.h"
@@ -29,6 +27,8 @@
 
 #include <QLabel>
 #include <QCursor>
+#include <QSettings>
+#include <QLineEdit>
 
 class BackstageOSF : public BackstagePage
 {
@@ -42,27 +42,40 @@ public:
 
 signals:
 	void dataSetOpened(QString path);
+	void newFolderRequested(QString folderName);
 
 private slots:
 	void notifyDataSetSelected(QString path);
 	void notifyDataSetOpened(QString path);
+	void saveClicked();
 
 	void openFile(const QString &nodePath, const QString &filename);
 	void userDetailsReceived();
+	void openSaveCompleted(FileEvent* event);
+	void updateUserDetails();
+
+	void newFolderCreated();
+
+	void newFolderClicked();
+	void authenticatedHandler();
+	void nameClicked();
 
 private:
 
-	void updateUserDetails();
+	bool checkEntryName(QString name, QString entryTitle, bool allowFullStop);
 
 	OnlineDataManager *_odm;
 
 	BreadCrumbs *_breadCrumbs;
 	FSBMOSF *_model;
 	FSBrowser *_fsBrowser;
-	QLabel *_nameLabel;
+	QToolButton *_nameButton;
 	QWidget *_fileNameContainer;
 	QLineEdit *_fileNameTextBox;
 	QPushButton *_saveButton;
+	QToolButton *_newFolderButton;
+
+	QSettings _settings;
 
 	class HyperlinkLabel : public QLabel
 	{

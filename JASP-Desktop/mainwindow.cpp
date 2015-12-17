@@ -141,7 +141,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 	_odm = new OnlineDataManager(this);
-	_odm->setAuthentication(OnlineDataManager::OSF, "username", "password");
+
+	QVariant osfUsernameV = _settings.value("OSFUsername");
+	QVariant osfPasswordV = _settings.value("OSFPassword", "");
+
+	if (osfUsernameV.canConvert(QMetaType::QString) && osfPasswordV.canConvert(QMetaType::QString))
+	{
+		QString username = osfUsernameV.toString();
+		QString password = osfPasswordV.toString();
+		_odm->setAuthentication(OnlineDataManager::OSF, username, password);
+	}
+
 	_loader.setOnlineDataManager(_odm);
 	ui->backStage->setOnlineDataManager(_odm);
 

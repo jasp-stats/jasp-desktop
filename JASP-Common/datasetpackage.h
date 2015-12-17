@@ -37,6 +37,9 @@ public:
 	bool isArchive = false;
 	std::string warningMessage;
 
+	std::string id;
+	std::string initalMD5;
+
 	bool hasAnalyses;
 
 	void reset();

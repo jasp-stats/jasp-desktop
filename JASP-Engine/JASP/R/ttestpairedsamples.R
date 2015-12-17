@@ -217,9 +217,10 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 						p <- as.numeric(r$p.value)
 						stat <- .clean(as.numeric(r$statistic))
 						sed <- .clean(sd(c1 - c2) / sqrt(length(c1)))
-						num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
-						d <- .clean(mean(c1) - mean(c2) / num)
-									
+						# num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
+						# d <- .clean(mean(c1) - mean(c2) / num)
+						d <- mean(c1 - c2) / sd(c1 - c2)
+						
 						m <- as.numeric(r$estimate)
 						ciLow <- ifelse(direction == "less", .clean(-Inf),
 										as.numeric(r$conf.int[1]))

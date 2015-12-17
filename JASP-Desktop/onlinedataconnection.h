@@ -3,7 +3,8 @@
 
 #include <QUrl>
 #include <QNetworkAccessManager>
-#include <QFile>
+#include <QIODevice>
+#include <QByteArray>
 
 class OnlineDataConnection: public QObject
 {
@@ -11,43 +12,38 @@ class OnlineDataConnection: public QObject
 
 public:
 
-	OnlineDataConnection(QString id, QNetworkAccessManager *manager, QObject *parent = 0);
+	enum Type { Put, Post, Get };
 
-	void beginUploadFile(QUrl url, QString sourcePath);
-	bool retryUploadFile(QUrl url);
+	OnlineDataConnection(QNetworkAccessManager *manager, QObject *parent = 0);
 
-	void beginDownloadFile(QUrl url, QString destination);
+	void beginAction(QUrl url, OnlineDataConnection::Type type, QIODevice *data);
+	void beginAction(QUrl url, OnlineDataConnection::Type type, const QByteArray &data);
 
 	bool error() const;
 	QString errorMessage() const;
 
-	QString id() const;
-
 	QNetworkAccessManager* manager() const;
 
 private slots:
-	void uploadFinished();
-	void downloadFinished();
+	void actionFinished();
 
 signals:
 	void finished();
 
 private:
 
-	//OnlineDataNode::ConnectionType _uploadConnectionType;
+	void actionFinished(QNetworkReply *reply);
 
-	void setError(QString msg);
+	void setError(bool value, QString msg);
 
 	bool _error = false;
 	QString _errorMsg = "";
 
-	QFile *_uploadFile;
+	QIODevice *_uploadFile = NULL;
 
-	QString _downloadDest;
+	OnlineDataConnection::Type _actionType;
 
-	QString _id;
-
-	QNetworkAccessManager* _manager;
+	QNetworkAccessManager* _manager = NULL;
 };
 
 #endif // ONLINEDATACONNECTION_H

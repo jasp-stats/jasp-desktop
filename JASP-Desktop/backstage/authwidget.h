@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "common.h"
+
 namespace Ui {
 class AuthWidget;
 }
@@ -14,6 +16,10 @@ class AuthWidget : public QWidget
 public:
 	explicit AuthWidget(QWidget *parent = 0);
 	~AuthWidget();
+	void clearPassword();
+
+protected:
+	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
 
 private slots:
 	void loginSelected();

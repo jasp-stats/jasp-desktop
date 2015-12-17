@@ -22,10 +22,12 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QButtonGroup>
+#include <QLabel>
 
 #include "fsbmodel.h"
 #include "breadcrumbs.h"
 #include "authwidget.h"
+#include "verticalscrollarea.h"
 
 class FSBrowser : public QWidget
 {
@@ -40,6 +42,8 @@ public:
 
 	void setBrowseMode(BrowseMode mode);
 	void setViewType(ViewType viewType);
+	void StartProcessing();
+	void StopProcessing();
 
 signals:
 
@@ -50,6 +54,7 @@ public slots:
 
 private slots:
 
+	void processingEntries();
 	void refresh();
 	void loginRequested(QString username, QString password);
 	void entrySelectedHandler();
@@ -58,12 +63,16 @@ private slots:
 
 private:
 
+	void clearItems();
+
 	BrowseMode _browseMode;
 	ViewType _viewType;
 
 	QWidget *_scrollPane;
 	QVBoxLayout *_scrollPaneLayout;
 	QButtonGroup *_buttonGroup;
+	QLabel *_processLabel;
+	VerticalScrollArea *_scrollArea;
 
 	FSBModel *_model;
 

@@ -6,7 +6,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QByteArray>
-
+#include <QEventLoop>
 #include <stdexcept>
 
 using namespace std;
@@ -16,7 +16,9 @@ OnlineUserNodeOSF::OnlineUserNodeOSF(QNetworkAccessManager *manager, QString id,
 {
 }
 
-void OnlineUserNodeOSF::getNodeInfo() const {
+void OnlineUserNodeOSF::initialise() {
+
+	startInit();
 
 	QUrl url = QUrl(_path);
 
@@ -34,14 +36,10 @@ void OnlineUserNodeOSF::nodeInfoReceived() {
 
 	QNetworkReply *reply = (QNetworkReply*)this->sender();
 
-	_error = false;
-	_errorMsg = "";
+	bool success = false;
 
 	if (reply->error() != QNetworkReply::NoError)
-	{
-		_error = true;
-		_errorMsg = reply->errorString();
-	}
+		setError(true, reply->errorString());
 	else
 	{
 		QByteArray data = reply->readAll();
@@ -57,9 +55,33 @@ void OnlineUserNodeOSF::nodeInfoReceived() {
 
 		QJsonObject attributes = dataObj.value("attributes").toObject();
 		_fullname = attributes.value("full_name").toString();
+
+		success = true;
 	}
 
 	reply->deleteLater();
 
-	emit finished();
+	endInit(success);
+}
+
+bool OnlineUserNodeOSF::authenticationSuccessful(QNetworkAccessManager *manager)
+{
+	QUrl url = QUrl("https://api.osf.io/v2/users/me/");
+
+	QEventLoop loop;
+	QNetworkRequest request(url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
+	request.setRawHeader("Accept", "application/vnd.api+json");
+
+	QNetworkReply* reply = manager->get(request);
+
+	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+
+	loop.exec();
+
+	bool error = reply->error();
+
+	delete reply;
+
+	return error == false;
 }

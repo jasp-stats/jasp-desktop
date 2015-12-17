@@ -44,7 +44,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			}
 	
 		if ( !is.null (variable.names))
-			error.message <- paste ("Bayes factor is undefined -- the count variable ", variable.names, " contain(s) empty cell or NaN. ", sep = "")
+			error.message <- paste ("Bayes factor is undefined -- incomplete contingency table, the count variable ", variable.names, " contain(s) empty cell or NaN. ", sep = "")
 		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
 	
 		if (length(list.of.errors)==0 ){
@@ -58,15 +58,28 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 				error.message <- paste ("Bayes factor is undefined -- the count variable ", variable.names, " contain(s) infinity and/or negative numbers.", sep = "")
 				list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
 			}
+			
 		}
+		
 		
 	if (options$counts == ""){ 
 	 	dataset <- plyr::count(dataset)
 	} else {
 	 	dataset <- dataset
-	}	 
-	 
-	#print(dataset) 	
+	}
+	
+	if ( perform == "run" && length(list.of.errors)==0  ) { 
+		variable.names <- NULL
+		for (factor in options$factors) {
+			if(any(is.na(dataset[.v(factor)])))
+			variable.names <- c (variable.names, factor)
+			}
+		
+		if ( !is.null (variable.names))
+		error.message <- "Bayes factor is undefined -- the factors contain(s) empty cell or NaN or incomplete contingency table."
+		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
+	}
+			 	 	
 	results <- list()
 	meta <- list()
 	.meta <-  list(
@@ -80,7 +93,13 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 
 	results[[".meta"]] <- .meta
 	
-	results[["title"]] <- "Bayesian Log Linear Regression"
+	results[["title"]] <- "Bayesian Log-linear Regression"
+	
+	.LogLinearBayesianCitations <- 	list(
+		"Overstall, A., & King, R. (2014). conting: an R package for Bayesian analysis of complete and incomplete contingency tables. Journal of Statistical Software, 58(7), 1-27.",
+		"Overstall, A. M., & King, R. (2014). A default prior distribution for contingency tables with dependent factor levels. Statistical methodology, 16, 90-99."
+		)
+
 
     #######################################
 	###	 	 BAYESIAN LOGLINEAR REGRESSION		###
@@ -184,6 +203,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	Bayesianposterior <- list()
 	
 	Bayesianposterior[["title"]] <- "Model Comparison"
+	Bayesianposterior[["citation"]] <- .LogLinearBayesianCitations
 		
 	if (options$bayesFactorType == "BF10") {
 		bfTitle <- "BF<sub>10</sub>"
@@ -217,11 +237,11 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	Bayesianposterior.result <- list()
 	footnotes <- .newFootnotes()
 		
-	if (perform == "run" ) {		
+		if (perform == "run" && length(list.of.errors) == 0 ) {		
 			
 		if ( class(logBlm.model$logBlm.fit) == "bcct") {
 		
-			logBlm.posterior <- conting::mod_probs(logBlm.fit, n.burnin =no.burnin, scale=0.001, best = options$maxModels)
+			logBlm.posterior <- conting::mod_probs(logBlm.fit,scale=0.001, best = options$maxModels)
 				
 			len.Blogreg <- length(Bayesianposterior.result) + 1
 			v <- 0
@@ -291,7 +311,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 				
 				for (var in 1:length(variables.in.model)) {
 				
-					Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
+					#Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
 				
 					if (base::grepl(":", variables.in.model[var])) {
 					
@@ -317,30 +337,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		if (length(logBlm.model$variables) > 0) {
 	
 			variables.in.model <- logBlm.model$variables
-	
-			for (var in 1:length(variables.in.model)) {
-		
-				Bayesianposterior.result[[ len.Blogreg ]] <- dotted.line
-				Bayesianposterior.result[[ len.Blogreg ]]$"Model" <- ""
-		
-				if (var == 1) {
-				
-					Bayesianposterior.result[[ len.Blogreg ]][[".isNewGroup"]] <- TRUE
-				}
-		
-				if (base::grepl(":", variables.in.model[var])) {
 			
-					vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-					name <- paste0(vars, collapse="\u2009\u273b\u2009")
-			
-				} else {
-			
-					name <- as.character(variables.in.model[ var])
-				}
-		
-				Bayesianposterior.result[[ len.Blogreg ]]$"Name" <- name
-				Blen.logreg <- len.Blogreg + 1
-			}
 		}
 
 		len.Blogreg <- length(Bayesianposterior.result) + 1
@@ -350,7 +347,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	
 	if (length(list.of.errors) > 1){
 
-		logBlm.fit <- try( conting::bcct( model.formula, data = dataset, prior = options$priorType, n.sample=1000), silent = TRUE)
+		logBlm.fit <- try( conting::bcct( model.formula, data = dataset,  prior = "SBH", n.sample=1000), silent = TRUE)
 
 		
 		if (inherits(logBlm.fit, "try-error")) {
@@ -367,19 +364,19 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	Bayesianposterior[["data"]] <- Bayesianposterior.result
 	results[["Bayesianposterior"]] <- Bayesianposterior
 
-	
-	
+
 	################################################################################
 	#						   MODEL COEFFICIENTS TABLE   						#
 	################################################################################		
 	if (options$regressionCoefficientsEstimates  == TRUE){
 		Bayesianlogregression <- list()
 		Bayesianlogregression[["title"]] <- "Posterior Summary Statistics"
+		Bayesianlogregression[["citation"]] <- .LogLinearBayesianCitations
 		#ci.label <- paste(100*options$regressionCoefficientsCredibleIntervalsInterval, "% Highest posterior density intervals", sep="")
-		ci.label <- paste(100*options$regressionCoefficientsCredibleIntervalsInterval, "% HPD intervals", sep="")
+		ci.label <- paste(100*options$regressionCoefficientsCredibleIntervalsInterval, "% Credible Intervals", sep="")
 		# Declare table elements
 		fields <- list(
-			list(name = "Name", title = "Model terms", type = "string"),
+			list(name = "Name", title = " ", type = "string"),
 			list(name = "post_prob", title="P(incl|data)", type = "number", format = "dp:3"),
 			list(name = "post_mean", title = "Mean",type="number", format = "dp:3"),
 			list(name = "post_var", title = "Variance",type="number", format = "dp:3"))
@@ -500,32 +497,10 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 
 				variables.in.model <- logBlm.model$variables
 
-				for (var in 1:length(variables.in.model)) {
-	
-					Bayesianlogregression.result[[ len.Blogreg ]] <- dotted.line
-					Bayesianlogregression.result[[ len.Blogreg ]]$"Model" <- ""
-	
-					if (var == 1) {
-						Bayesianlogregression.result[[ len.Blogreg ]][[".isNewGroup"]] <- TRUE
-					}
-	
-					if (base::grepl(":", variables.in.model[var])) {
-		
-						# interaction term
-		
-						vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-						name <- paste0(vars, collapse="\u2009\u273b\u2009")
-		
-					} else {
-		
-						name <- as.character(variables.in.model[ var])
-					}
-	
-					Bayesianlogregression.result[[ len.Blogreg ]]$"Name" <- name
-					Blen.logreg <- len.Blogreg + 1
-				}
+				
 			}
 
+			#Bayesianlogregression.result[[ len.Blogreg ]] <- dotted.line
 			len.Blogreg <- length(Bayesianlogregression.result) + 1
 			Bayesianlogregression.result[[ len.Blogreg ]] <- dotted.line
 			Bayesianlogregression.result[[ len.Blogreg ]]$"Model" <- 1
@@ -543,12 +518,12 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 ################################################################################		
 	if (options$regressionCoefficientsSubmodel  == TRUE){
 		BayesianSublogregression <- list()
-		BayesianSublogregression[["title"]] <- "Posterior Summary Statistics of Log Linear Parameters"
-		#ci.label <- paste(100*options$regressionCoefficientsSubmodelCredibleIntervalsInterval, "% Highest posterior density intervals", sep="")
-		ci.label <- paste(100*options$regressionCoefficientsSubmodelCredibleIntervalsInterval, "% HPD intervals", sep="")
+		BayesianSublogregression[["title"]] <-paste( "Posterior Summary Statistics for Submodel", options$regressionCoefficientsSubmodelNo, sep=" ")
+		BayesianSublogregression[["citation"]] <- .LogLinearBayesianCitations
+		ci.label <- paste(100*options$regressionCoefficientsSubmodelCredibleIntervalsInterval, "% Credible Intervals", sep="")
 		# Declare table elements
 		fields <- list(
-			list(name = "Name", title = "Model terms", type = "string"),
+			list(name = "Name", title = " ", type = "string"),
 			list(name = "post_mean", title="Mean", type = "number", format = "dp:3"),
 			list(name = "post_var", title = "Variance",type="number", format = "dp:3"))
 		if (options$regressionCoefficientsSubmodelCredibleIntervals == TRUE){
@@ -632,7 +607,8 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 							BayesianSublogregression.result[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.subestimates$upper[var])
 						}
 					
-						BayesianSublogregression.result[[ len.Blogreg ]]$ "footnotes" <- as.list (footnotes)	
+						BayesianSublogregression.result[[ len.Blogreg ]]$ "footnotes" <- as.list (footnotes)
+						#BayesianSublogregression.result[["citation"]] <- .LogLinearBayesianCitations()	
 						len.Blogreg <- len.Blogreg + 1
 					}		
 				}			
@@ -677,30 +653,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 
 				variables.in.model <- logBlm.model$variables
 
-				for (var in 1:length(variables.in.model)) {
-	
-					BayesianSublogregression.result[[ len.Blogreg ]] <- dotted.line
-					BayesianSublogregression.result[[ len.Blogreg ]]$"Model" <- ""
-	
-					if (var == 1) {
-						BayesianSublogregression.result[[ len.Blogreg ]][[".isNewGroup"]] <- TRUE
-					}
-	
-					if (base::grepl(":", variables.in.model[var])) {
-		
-						# interaction term
-		
-						vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-						name <- paste0(vars, collapse="\u2009\u273b\u2009")
-		
-					} else {
-		
-						name <- as.character(variables.in.model[ var])
-					}
-	
-					BayesianSublogregression.result[[ len.Blogreg ]]$"Name" <- name
-					Blen.logreg <- len.Blogreg + 1
-				}
+				
 			}
 
 			len.Blogreg <- length(BayesianSublogregression.result) + 1

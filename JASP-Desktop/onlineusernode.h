@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QNetworkAccessManager>
 #include "onlinenode.h"
+#include "common.h"
 
 class OnlineUserNode: public OnlineNode
 {
@@ -16,6 +17,10 @@ public:
 
 
 	virtual QString getFullname() const;
+
+	virtual QString getActionPath() const OVERRIDE;
+
+	virtual bool beginAction() OVERRIDE;
 
 protected:
 

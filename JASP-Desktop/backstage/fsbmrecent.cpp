@@ -42,6 +42,7 @@ bool FSBMRecent::eventFilter(QObject *object, QEvent *event)
 	return QObject::eventFilter(object, event);
 }
 
+
 void FSBMRecent::addRecent(const QString &path)
 {
 	QStringList recents = load();
@@ -57,6 +58,24 @@ void FSBMRecent::addRecent(const QString &path)
 	populate(recents);
 }
 
+void FSBMRecent::filter(bool (*filterFunction)(QString))
+{
+	QStringList recents = load();
+
+	for (int i = 0; i < recents.length(); i++)
+	{
+		if (filterFunction(recents.at(i)) == false)
+		{
+			recents.removeAt(i);
+			i -= 1;
+		}
+	}
+
+	_settings.setValue("recentItems", recents);
+	_settings.sync();
+
+	populate(recents);
+}
 
 void FSBMRecent::populate(const QStringList &paths)
 {
@@ -71,12 +90,6 @@ void FSBMRecent::populate(const QStringList &paths)
 			entryType = FSEntry::JASP;
 
 		FSEntry entry = createEntry(path, entryType);
-
-		if (isUrl(path))
-		{
-			QString name = entry.name.right(entry.name.length() - entry.name.lastIndexOf("#") - 1);
-			entry.name = name;
-		}
 
 		_entries.append(entry);
 	}

@@ -47,16 +47,22 @@ public:
 	virtual bool requiresAuthentication() const { return false; }
 	virtual bool isAuthenticated() const { return false; }
 	virtual void authenticate(const QString &, const QString &) { }
+	virtual void clearAuthentication() { }
+
+	bool hasFileEntry(QString name, QString &path);
+	bool hasFolderEntry(QString name);
 
 public slots:
 	void setPath(QString path);
 
 signals:
+	void processingEntries();
 	void entriesChanged();
 	void pathChanged(QString path);
 
 	void authenticationFail(const QString &message);
 	void authenticationSuccess();
+	void authenticationClear();
 
 protected:
 

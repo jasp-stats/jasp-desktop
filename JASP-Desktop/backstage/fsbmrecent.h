@@ -33,6 +33,7 @@ public:
 	void refresh() OVERRIDE;
 
 	void addRecent(const QString &path);
+	void filter(bool (*filterFunction)(QString));
 
 protected:
 	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;
