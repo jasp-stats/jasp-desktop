@@ -19,6 +19,8 @@ public:
 	QString id() const;
 	QNetworkAccessManager* manager() const;
 
+	QString nodeId() const;
+
 	void setPath(const QString &path);
 
 	virtual void initialise() = 0;
@@ -48,6 +50,9 @@ protected:
 
 	QNetworkAccessManager *_manager;
 	QString _id;
+	QString _nodeId;
+
+	bool _reinitialise = false;
 
 
 private:

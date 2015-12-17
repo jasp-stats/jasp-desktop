@@ -21,8 +21,10 @@
 #include <QGridLayout>
 #include <QScrollArea>
 #include <QMessageBox>
+#include <QMovie>
 
-#include "verticalscrollarea.h"
+
+
 #include "fsentrywidget.h"
 
 FSBrowser::FSBrowser(QWidget *parent) : QWidget(parent)
@@ -34,12 +36,12 @@ FSBrowser::FSBrowser(QWidget *parent) : QWidget(parent)
 	layout->setContentsMargins(0, 0, 0, 0);
 	setLayout(layout);
 
-	VerticalScrollArea *scrollArea = new VerticalScrollArea(this);
-	scrollArea->setFrameShape(QScrollArea::NoFrame);
-	layout->addWidget(scrollArea);
+	_scrollArea = new VerticalScrollArea(this);
+	_scrollArea->setFrameShape(QScrollArea::NoFrame);
+	layout->addWidget(_scrollArea);
 
 	_scrollPane = new QWidget;
-	scrollArea->setWidget(_scrollPane);
+	_scrollArea->setWidget(_scrollPane);
 
 	_scrollPaneLayout = new QVBoxLayout(_scrollPane);
 	_scrollPaneLayout->setSpacing(1);
@@ -51,7 +53,31 @@ FSBrowser::FSBrowser(QWidget *parent) : QWidget(parent)
 	_authWidget = new AuthWidget(this);
 	_authWidget->hide();
 
+
+	_processLabel = new QLabel(this);
+	_processLabel->setAlignment(Qt::AlignCenter);
+	_processLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	_processLabel->setMovie(new QMovie(":/icons/loading.gif", QByteArray(), _processLabel));
+	_processLabel->setHidden(true);
+	layout->addWidget(_processLabel);
+
+
 	connect(_authWidget, SIGNAL(loginRequested(QString,QString)), this, SLOT(loginRequested(QString,QString)));
+}
+
+
+void FSBrowser::StartProcessing()
+{
+	_processLabel->movie()->start();
+	_processLabel->setHidden(false);
+	_scrollArea->setHidden(true);
+}
+
+void FSBrowser::StopProcessing()
+{
+	_processLabel->movie()->stop();
+	_processLabel->setHidden(true);
+	_scrollArea->setHidden(false);
 }
 
 void FSBrowser::setFSModel(FSBModel *model)
@@ -61,6 +87,7 @@ void FSBrowser::setFSModel(FSBModel *model)
 	refresh();
 
 	connect(_model, SIGNAL(entriesChanged()), this, SLOT(refresh()));
+	connect(_model, SIGNAL(processingEntries()), this, SLOT(processingEntries()));
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationClear()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationFail(QString)), this, SLOT(authenticationFailed(QString)));
@@ -82,12 +109,20 @@ void FSBrowser::clearItems()
 		delete button;
 }
 
+void FSBrowser::processingEntries()
+{
+	StartProcessing();
+}
+
 void FSBrowser::refresh()
 {
 	clearItems();
 
+	StopProcessing();
+
 	if (_model->requiresAuthentication() && _model->isAuthenticated() == false)
 	{
+		_authWidget->clearPassword();
 		_authWidget->show();
 	}
 	else

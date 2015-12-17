@@ -51,7 +51,7 @@ private slots:
 
 	void openFile(const QString &nodePath, const QString &filename);
 	void userDetailsReceived();
-	void saveCompleted(FileEvent* event);
+	void openSaveCompleted(FileEvent* event);
 	void updateUserDetails();
 
 	void newFolderCreated();

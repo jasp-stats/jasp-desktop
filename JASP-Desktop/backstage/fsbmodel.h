@@ -56,6 +56,7 @@ public slots:
 	void setPath(QString path);
 
 signals:
+	void processingEntries();
 	void entriesChanged();
 	void pathChanged(QString path);
 

@@ -21,6 +21,12 @@ AuthWidget::~AuthWidget()
 	delete ui;
 }
 
+void AuthWidget::clearPassword()
+{
+	ui->password->setText("");
+	ui->email->setSelection(0, ui->email->text().length());
+}
+
 bool AuthWidget::eventFilter(QObject *object, QEvent *event)
 {
 	if (object == ui->password && event->type() == QEvent::KeyPress)

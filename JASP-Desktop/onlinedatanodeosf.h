@@ -19,12 +19,12 @@ public:
 	virtual QString getNewFolderPath(QString folderName) const OVERRIDE;
 	virtual QString getDeletePath() const OVERRIDE;
 
-	virtual void beginDownloadFile() OVERRIDE;
-	virtual void beginUploadFile() OVERRIDE;
-	virtual void beginUploadFile(QString name) OVERRIDE;
-	virtual void beginNewFolder(QString name) OVERRIDE;
+	virtual bool beginDownloadFile() OVERRIDE;
+	virtual bool beginUploadFile() OVERRIDE;
+	virtual bool beginUploadFile(QString name) OVERRIDE;
+	virtual bool beginNewFolder(QString name) OVERRIDE;
 
-	bool exists();
+
 
 private slots:
 	void nodeInfoReceived();
@@ -41,8 +41,6 @@ private:
 	QString getBaseUrl(QJsonObject nodeObject);
 
 	QStringList _subPath;
-
-	bool _exists = true;
 
 	OnlineDataNode::Kind _dataKind = OnlineDataNode::Unknown;
 	QString _expectedName = "";

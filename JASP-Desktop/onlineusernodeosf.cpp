@@ -66,7 +66,7 @@ void OnlineUserNodeOSF::nodeInfoReceived() {
 
 bool OnlineUserNodeOSF::authenticationSuccessful(QNetworkAccessManager *manager)
 {
-	QUrl url = QUrl("https://test-api.osf.io/v2/users/me/");
+	QUrl url = QUrl("https://api.osf.io/v2/users/me/");
 
 	QEventLoop loop;
 	QNetworkRequest request(url);
