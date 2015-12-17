@@ -65,25 +65,25 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_bsRecent->setFSModel(_fsmRecent);
 
 	_bsComputer = new BackstageComputer(_tabWidget);
-#ifdef QT_DEBUG
+
 	_bsOSF = new BackstageOSF(_tabWidget);
-#endif
+
 
 	_bsExamples = new FSBrowser(_tabWidget);
 	_bsExamples->setFSModel(_fsmExamples);
 
 	_tabWidget->addTab(_bsRecent, "Recent");
 	_tabWidget->addTab(_bsComputer, "Computer");
-#ifdef QT_DEBUG
+
 	_tabWidget->addTab(_bsOSF, "OSF", QIcon(":/icons/logo-osf.png"));
-#endif
+
 	_tabWidget->addTab(_bsExamples, "Examples");
 
 	connect(_bsRecent, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenRequestHandler(QString)));
 	connect(_bsComputer, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
-#ifdef QT_DEBUG
+
 	connect(_bsOSF, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
-#endif
+
 	connect(_bsExamples, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenExampleRequestHandler(QString)));
 }
 
@@ -94,11 +94,9 @@ VerticalTabWidget *OpenSaveWidget::tabWidget()
 
 void OpenSaveWidget::setOnlineDataManager(OnlineDataManager *odm)
 {
-#ifdef QT_DEBUG
 	_odm = odm;
 	_bsOSF->setOnlineDataManager(odm);
 	connect(_odm, SIGNAL(authenticationCleared(int)), this, SLOT(clearOnlineDataFromRecentList(int)));
-#endif
 }
 
 void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
@@ -106,9 +104,9 @@ void OpenSaveWidget::setSaveMode(FileEvent::FileMode mode)
 	_mode = mode;
 
 	_bsComputer->setMode(_mode);
-#ifdef QT_DEBUG
+
 	_bsOSF->setMode(_mode);
-#endif
+
 
 	if (_mode == FileEvent::FileOpen)
 	{
