@@ -254,8 +254,8 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 					ms <- tapply(y, groups, mean, na.rm = TRUE)
 					ns <- tapply(y, groups, function(x) length(na.omit(x)))
 
-					num <- sqrt(((ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2))
-					sdPooled <- num / (ns[1] + ns[2] - 2)
+					num <- (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
+					sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
 					d <- as.numeric((ms[1] - ms[2]) / sdPooled) # Cohen's d
 				
 					sed <- .clean(as.numeric(sqrt(sds[1]^2 / ns[1] + sds[2]^2 / ns[2])))
