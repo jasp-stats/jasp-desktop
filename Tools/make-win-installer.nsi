@@ -5,27 +5,30 @@
 !include "nsProcess.nsh"
 !include "x64.nsh"
 
-!define CONTENTS_DIR "C:\Users\jonathon\Desktop\InstallerCreator\JASP"
+!define MAIN_VERSION "0.7.5"
+!define PATCH_NUM "103"
+!define VERSION "${MAIN_VERSION}.${PATCH_NUM}"
+!define BETA "Beta3"
 !define APP_NAME "JASP"
-!define APP_DISPLAY_NAME "${APP_NAME} 0.7.1.12"
-!define COMP_NAME "The JASP Statistics Project"
+!define INSTALLER_NAME "${APP_NAME}-${MAIN_VERSION}-${BETA}-Setup.exe"
+!define CONTENTS_DIR "C:\Jasp\Install"
+!define APP_DISPLAY_NAME "${APP_NAME} ${MAIN_VERSION} ${BETA}"
+!define COMP_NAME "The ${APP_NAME} Statistics Project"
 !define WEB_SITE "https://jasp-stats.org"
-!define VERSION "0.7.1.12"
-!define COPYRIGHT "JASP  © 2015"
-!define DESCRIPTION "JASP - A Fresh Way to Do Statistics"
-!define LICENSE_TXT "AGPL.txt"
-!define INSTALLER_NAME "JASP-0.7.1.12-Setup.exe"
-!define MAIN_APP_EXE "JASP.exe"
-!define MAIN_APP_ICO "JASP.ico"
+!define COPYRIGHT "${APP_NAME} Â© 2016"
+!define DESCRIPTION "${APP_NAME} - A Fresh Way to Do Statistics"
+!define LICENSE_TXT "${CONTENTS_DIR}\AGPL.txt"
+!define MAIN_APP_EXE "${APP_NAME}.exe"
+!define MAIN_APP_ICO "${APP_NAME}.ico"
 !define INSTALL_TYPE "SetShellVarContext all"
 !define REG_ROOT "HKLM"
-!define VERSION_TRACKING "SOFTWARE\JASP\Versions"
+!define VERSION_TRACKING "SOFTWARE\${APP_NAME}\Versions"
 !define REG_APP_PATH "Software\Microsoft\Windows\CurrentVersion\App Paths\${MAIN_APP_EXE}"
 !define UNINSTALL_BASEPATH "Software\Microsoft\Windows\CurrentVersion\Uninstall"
 !define UNINSTALL_PATH "${UNINSTALL_BASEPATH}\${APP_DISPLAY_NAME}"
 !define FILE_EXTENSION ".jasp"
-!define OPEN_CMD_PATH "JASP\Shell\open\command"
-!define ICON_REG_PATH "JASP\DefaultIcon"
+!define OPEN_CMD_PATH "${APP_NAME}\Shell\open\command"
+!define ICON_REG_PATH "${APP_NAME}\DefaultIcon"
 
 
 ######################################################################
@@ -162,7 +165,7 @@ Function un.onInit
 	
 	${nsProcess::FindProcess} "${MAIN_APP_EXE}" $R0
 	StrCmp $R0 0 0 notRunning
-	MessageBox MB_OK|MB_ICONEXCLAMATION "Cannot continue while JASP is running. Please close all JASP windows and try again." IDOK
+	MessageBox MB_OK|MB_ICONEXCLAMATION "Cannot continue while ${APP_NAME} is running. Please close all ${APP_NAME} windows and try again." IDOK
 		Abort
 		
 notRunning:
@@ -202,7 +205,7 @@ WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "URLInfoAbout" "${WEB_SITE}"
 
 WriteRegStr ${REG_ROOT} "${VERSION_TRACKING}\${APP_DISPLAY_NAME}" "" "$INSTDIR"
 
-WriteRegStr HKCR "${FILE_EXTENSION}" "" "JASP"
+WriteRegStr HKCR "${FILE_EXTENSION}" "" "${APP_NAME}"
 WriteRegStr HKCR "${OPEN_CMD_PATH}" "" '$INSTDIR\${MAIN_APP_EXE} "%1"'
 WriteRegStr HKCR "${ICON_REG_PATH}" "" "$INSTDIR\${MAIN_APP_ICO}"
 
