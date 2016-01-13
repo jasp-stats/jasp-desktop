@@ -1355,7 +1355,7 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
-      <item row="3" column="0">
+      <item row="3" column="0" alignment="Qt::AlignLeft">
        <widget class="QWidget" name="containerOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
          <property name="leftMargin">
