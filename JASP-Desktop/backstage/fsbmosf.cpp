@@ -113,8 +113,6 @@ void FSBMOSF::refresh()
 
 	emit processingEntries();
 
-	_entries.clear();
-
 	if (_path == "Projects")
 		loadProjects();
 	else {
@@ -159,6 +157,9 @@ void FSBMOSF::gotProjects()
 
 		QJsonObject json = doc.object();
 		QJsonArray dataArray = json.value("data").toArray();
+
+		if (dataArray.size() > 0)
+			 _entries.clear();
 
 		foreach (const QJsonValue & value, dataArray) {
 			QJsonObject nodeObject = value.toObject();
@@ -231,6 +232,9 @@ void FSBMOSF::gotFilesAndFolders()
 
 		QJsonObject json = doc.object();
 		QJsonArray dataArray = json.value("data").toArray();
+
+		if (dataArray.size() > 0)
+			 _entries.clear();
 
 		foreach (const QJsonValue & value, dataArray) {
 			QJsonObject nodeObject = value.toObject();
