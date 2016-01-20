@@ -16,6 +16,22 @@
 			"min": 0
 		},
 		{
+			"format": "",
+			"name": "priorAlpha",
+			"type": "Number",
+			"value": 1,
+			"min": 0.1,
+			"max": 9999
+		},
+		{
+			"format": "",
+			"name": "priorBeta",
+			"type": "Number",
+			"value": 1,
+			"min": 0.1,
+			"max": 9999
+		},
+		{
 			"name": "hypothesis",
 			"options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
 			"default": "notEqualToTestValue",
@@ -26,6 +42,21 @@
 			"options": [ "BF10", "BF01", "LogBF10" ],
 			"default": "BF10",
 			"type": "List"
+		},
+		{
+			"default": false,
+			"name": "plotPriorAndPosterior",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotPriorAndPosteriorAdditionalInfo",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotSequentialAnalysis",
+			"type": "Boolean"
 		}
 	]
 }
