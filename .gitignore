@@ -25,3 +25,10 @@ Thumbs.db
 
 # R
 JASP-Engine/R-*
+
+# .exe
+*.exe
+
+# .nsi
+Tools/deleteFiles*.nsi
+Tools/includeFiles*.nsi
