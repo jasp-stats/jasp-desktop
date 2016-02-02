@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>808</height>
+    <height>818</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -241,7 +241,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Welch's</string>
+            <string>Welch</string>
            </property>
           </widget>
          </item>
@@ -254,7 +254,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Student's</string>
+            <string>Student</string>
            </property>
           </widget>
          </item>

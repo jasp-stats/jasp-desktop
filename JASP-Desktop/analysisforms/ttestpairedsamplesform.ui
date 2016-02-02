@@ -601,7 +601,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Student's</string>
+            <string>Student</string>
            </property>
           </widget>
          </item>
