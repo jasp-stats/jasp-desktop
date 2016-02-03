@@ -73,6 +73,8 @@
 #include <QFileInfo>
 #include <QShortcut>
 #include <QDesktopWidget>
+#include <QTabBar>
+#include <QMenuBar>
 
 #include "analysisloader.h"
 #include "qutils.h"
@@ -83,6 +85,7 @@
 
 #include "lrnam.h"
 #include "activitylog.h"
+#include "aboutdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -225,6 +228,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	_okButton->setDefault(true);
 	_runButton = new QPushButton(QString("Run"), _buttonPanel);
 	_menuButton = new QPushButton(QString("..."), _buttonPanel);
+
+	QMenuBar *_mMenuBar = new QMenuBar(parent=0);
+	QMenu *aboutMenu = _mMenuBar->addMenu("JASP");
+	aboutMenu->addAction("About",this,SLOT(showAbout()));
+	_mMenuBar->addMenu(aboutMenu);
 
 	QMenu *menu = new QMenu(_menuButton);
 	menu->addAction("Remove Analysis", this, SLOT(analysisRemoved()));
@@ -1651,5 +1659,14 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 
 	analysis->options()->set(root);
 
+
+}
+
+void MainWindow::showAbout()
+{
+
+	AboutDialog aboutdialog;
+	aboutdialog.setModal(true);
+	aboutdialog.exec();
 
 }

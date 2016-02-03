@@ -48,6 +48,20 @@ $(document).ready(function () {
 		$(".app-version").text("Version " + version);
 	}
 
+    window.setAppBuildDate = function(){
+       var today = new Date();
+       $(".app-builddate").text(today);
+    }
+
+    window.noInstructions = function () {
+        $('#instructions').text("");
+    }
+
+    window.noPatchinfo = function () {
+        $('#patchinfo').text("");
+    }
+
+
 	window.setTextHeight = function (height) {
 		$('body').css('font-size', height + 'px')
 	}
