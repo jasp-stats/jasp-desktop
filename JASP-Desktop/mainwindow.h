@@ -94,6 +94,7 @@ private:
 	QPushButton *_okButton;
 	QPushButton *_runButton;
 	QPushButton *_menuButton;
+	QTabBar *_mTabBar;
 
 	OptionsForm *_optionsForm;
 
@@ -188,6 +189,7 @@ private slots:
 
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);
+	void showAbout();
 };
 
 #endif // MAINWIDGET_H
