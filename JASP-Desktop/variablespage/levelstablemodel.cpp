@@ -1,5 +1,9 @@
 
 #include "levelstablemodel.h"
+#include <boost/foreach.hpp>
+#include <boost/container/vector.hpp>
+#include <algorithm>
+#include <QDebug>
 
 #include "qutils.h"
 
@@ -77,3 +81,31 @@ QVariant LevelsTableModel::headerData(int section, Qt::Orientation orientation, 
 		return "Value";
 }
 
+void LevelsTableModel::_moveRows(QModelIndexList &selection, bool up) {
+	if (_column == NULL)
+		return;
+
+	Labels &labels = _column->labels();
+	std::vector<LabelEntry> new_labels(labels.begin(), labels.end());
+
+	BOOST_FOREACH (QModelIndex &index, selection)
+	{
+		if (index.column() == 0) {
+			iter_swap(new_labels.begin() + index.row(), new_labels.begin() + (index.row() + (up ? - 1: 1)));
+		}
+	}
+	labels.set(new_labels);
+
+	QModelIndex topLeft = createIndex(0,0);
+	QModelIndex bottonRight = createIndex(labels.size() - 1, 1);
+	//emit a signal to make the view reread identified data
+	emit dataChanged(topLeft, bottonRight);
+}
+
+void LevelsTableModel::moveUp(QModelIndexList &selection) {
+	_moveRows(selection, true);
+}
+
+void LevelsTableModel::moveDown(QModelIndexList &selection) {
+	_moveRows(selection, false);
+}

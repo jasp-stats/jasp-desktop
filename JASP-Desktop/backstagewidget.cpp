@@ -59,7 +59,7 @@ BackStageWidget::BackStageWidget(QWidget *parent) : QWidget(parent)
 
 	_tabBar->addTab("Open");
 	_tabBar->addTab("Save");
-	_tabBar->addTab("Save As");
+	_tabBar->addTab("Save As", QIcon(":/icons/document-save-as.png"));
 	_tabBar->addTab("Export");
 	_tabBar->addTab("Close");
 

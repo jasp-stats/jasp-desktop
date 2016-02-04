@@ -16,11 +16,12 @@
 //
 
 #include "labels.h"
+#include <boost/foreach.hpp>
 
 using namespace std;
 
 Labels::Labels(boost::interprocess::managed_shared_memory *mem)
-	: _labels(std::less<int>(), mem->get_segment_manager())
+	: _labels(mem->get_segment_manager())
 {
 	_mem = mem;
 }
@@ -42,21 +43,43 @@ int Labels::add(const std::string &display)
 
 int Labels::add(int raw, int display)
 {
-	_labels[raw] = Label(display);
+	LabelEntry entry(raw, Label(display));
+	_labels.push_back(entry);
 
 	return display;
 }
 
 int Labels::add(int raw, const std::string &display)
 {
-	_labels[raw] = Label(display, raw);
+	LabelEntry entry(raw, Label(display, raw));
+	_labels.push_back(entry);
 
 	return raw;
 }
 
-const Label &Labels::at(int raw) const
+const Label &Labels::labelFor(int raw) const
 {
-	return _labels.at(raw);
+	BOOST_FOREACH(const LabelEntry &entry, _labels)
+	{
+		if (entry.first == raw)
+			return entry.second;
+	}
+
+	throw runtime_error("Cannot find this entry");
+}
+
+const LabelEntry &Labels::at(int index) const
+{
+	return _labels.at(index);
+}
+
+void Labels::set(vector<LabelEntry> &labels)
+{
+	clear();
+	BOOST_FOREACH(LabelEntry &label, labels)
+	{
+		add(label.first, label.second.text());
+	}
 }
 
 size_t Labels::size() const

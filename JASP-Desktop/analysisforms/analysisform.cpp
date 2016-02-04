@@ -139,7 +139,7 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 		QStringList values;
 		Labels &labels = _dataSet->column(term.asString()).labels();
 		for (uint i = 0; i < labels.size(); i++)
-			values.append(tq(labels.at(i).text()));
+			values.append(tq(labels.labelFor(i).text()));
 
 		return values;
 	}

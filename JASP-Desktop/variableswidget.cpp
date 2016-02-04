@@ -5,6 +5,9 @@
 #include "variablespage/variablestablemodel.h"
 
 #include <QModelIndexList>
+#include <boost/foreach.hpp>
+#include <algorithm>
+#include <QDebug>
 
 VariablesWidget::VariablesWidget(QWidget *parent) :
 	QWidget(parent),
@@ -13,6 +16,7 @@ VariablesWidget::VariablesWidget(QWidget *parent) :
 	ui->setupUi(this);
 
 	_dataSet = NULL;
+	_currentColumn = NULL;
 
 	_variablesTableModel = new VariablesTableModel(this);
 	_levelsTableModel = new LevelsTableModel(this);
@@ -21,6 +25,8 @@ VariablesWidget::VariablesWidget(QWidget *parent) :
 	ui->levelsList->setModel(_levelsTableModel);
 
 	connect(ui->variablesList->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(selectedVariableChanged(QModelIndex,QModelIndex)));
+	connect(ui->moveUpButton, SIGNAL(clicked()), this, SLOT(moveUpClicked()));
+	connect(ui->moveDownButton, SIGNAL(clicked()), this, SLOT(moveDownClicked()));
 }
 
 VariablesWidget::~VariablesWidget()
@@ -37,6 +43,7 @@ void VariablesWidget::setDataSet(DataSet *dataSet)
 void VariablesWidget::clearDataSet()
 {
 	_dataSet = NULL;
+	_currentColumn = NULL;
 	_variablesTableModel->clearDataSet();
 }
 
@@ -45,16 +52,33 @@ void VariablesWidget::selectedVariableChanged(QModelIndex selection, QModelIndex
 	Q_UNUSED(old);
 
 	int columnIndex = selection.row();
-	Column &column = _dataSet->columns().at(columnIndex);
+	_currentColumn = &_dataSet->columns().at(columnIndex);
 
-	_levelsTableModel->setColumn(&column);
+	_levelsTableModel->setColumn(_currentColumn);
 }
 
 void VariablesWidget::moveUpClicked()
 {
 	QModelIndexList selection = ui->levelsList->selectionModel()->selectedIndexes();
+
 	if (selection.length() == 0)
-		return;
+			return;
+
+	qSort(selection.begin(), selection.end(), qLess<QModelIndex>());
+
+	if (selection.at(0).row() == 0) return;
+
+	_levelsTableModel->moveUp(selection);
+
+	// Reset Selection
+	ui->levelsList->clearSelection();
+	ui->levelsList->setSelectionMode(QAbstractItemView::MultiSelection);
+	BOOST_FOREACH (QModelIndex &index, selection)
+	{
+		if (index.column() == 0) {
+			ui->levelsList->selectRow(index.row() - 1);
+		}
+	}
 
 
 }
@@ -64,6 +88,23 @@ void VariablesWidget::moveDownClicked()
 	QModelIndexList selection = ui->levelsList->selectionModel()->selectedIndexes();
 	if (selection.length() == 0)
 		return;
+
+	qSort(selection.begin(), selection.end(), qGreater<QModelIndex>());
+
+	QModelIndex dummy = QModelIndex();
+	if (selection.at(0).row() >= (_levelsTableModel->rowCount(dummy) - 1)) return;
+
+	_levelsTableModel->moveDown(selection);
+
+	// Reset Selection
+	ui->levelsList->clearSelection();
+	ui->levelsList->setSelectionMode(QAbstractItemView::MultiSelection);
+	BOOST_FOREACH (QModelIndex &index, selection)
+	{
+		if (index.column() == 0) {
+			ui->levelsList->selectRow(index.row() + 1);
+		}
+	}
 
 
 }
