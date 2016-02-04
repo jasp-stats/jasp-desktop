@@ -19,6 +19,7 @@ public:
 	int rowCount(const QModelIndex &parent) const OVERRIDE;
 	int columnCount(const QModelIndex &parent) const OVERRIDE;
 
+
 private:
 	DataSet *_dataSet;
 
