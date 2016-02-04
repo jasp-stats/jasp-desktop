@@ -73,7 +73,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
 			diff[['plotWidthDescriptivesPlotLegend']] == FALSE && diff[['plotWidthDescriptivesPlotLegend']] == FALSE &&
 			diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE && diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE &&
-			diff[['repeatedMeasuresFactors']] == FALSE) {
+			diff[['repeatedMeasuresFactors']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE) {
 			
 			# old descriptives plots can be used
 						
