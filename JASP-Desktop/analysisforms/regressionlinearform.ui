@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>785</width>
-    <height>1794</height>
+    <height>1911</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -993,6 +993,9 @@
            <layout class="QGridLayout" name="gridLayout_28">
             <item row="5" column="1" colspan="2">
              <widget class="BoundCheckBox" name="plotResidualsHistogramStandardized">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
@@ -1110,6 +1113,16 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
+  </customwidget>
+  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
@@ -1121,19 +1134,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundComboBox</class>
    <extends>QComboBox</extends>
    <header>widgets/boundcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -1199,6 +1202,22 @@
     <hint type="destinationlabel">
      <x>153</x>
      <y>1000</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotResidualsHistogram</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotResidualsHistogramStandardized</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>126</x>
+     <y>1809</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>137</x>
+     <y>1836</y>
     </hint>
    </hints>
   </connection>

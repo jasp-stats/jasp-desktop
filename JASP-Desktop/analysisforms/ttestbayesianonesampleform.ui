@@ -663,6 +663,9 @@
             </item>
             <item row="7" column="1" colspan="4">
              <widget class="QWidget" name="horizontalWidget" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <layout class="QHBoxLayout" name="horizontalLayout">
                <property name="leftMargin">
                 <number>0</number>
@@ -799,12 +802,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>426</x>
-     <y>364</y>
+     <x>405</x>
+     <y>440</y>
     </hint>
     <hint type="destinationlabel">
-     <x>440</x>
-     <y>387</y>
+     <x>420</x>
+     <y>467</y>
     </hint>
    </hints>
   </connection>
@@ -815,12 +818,28 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>397</x>
-     <y>322</y>
+     <x>403</x>
+     <y>359</y>
     </hint>
     <hint type="destinationlabel">
-     <x>411</x>
-     <y>343</y>
+     <x>400</x>
+     <y>386</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>descriptivesPlots</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>horizontalWidget</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>332</x>
+     <y>484</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>397</x>
+     <y>512</y>
     </hint>
    </hints>
   </connection>
