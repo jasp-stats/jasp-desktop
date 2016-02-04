@@ -385,6 +385,9 @@
             </item>
             <item row="3" column="0" colspan="2">
              <widget class="QWidget" name="oddsRatioCredibleIntervalContainer" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <layout class="QGridLayout" name="gridLayout_22">
                <property name="leftMargin">
                 <number>24</number>
@@ -571,6 +574,9 @@
                </property>
                <item row="0" column="0">
                 <widget class="BoundCheckBox" name="plotPosteriorOddsRatioAdditionalInfo">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
                   <string>Additional info</string>
                  </property>
@@ -844,6 +850,11 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -866,19 +877,14 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
+   <class>boundSingleItemView</class>
    <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
+   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
   <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -960,6 +966,38 @@
     <hint type="destinationlabel">
      <x>292</x>
      <y>453</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>oddsRatio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>oddsRatioCredibleIntervalContainer</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>460</x>
+     <y>622</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>460</x>
+     <y>650</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotPosteriorOddsRatio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotPosteriorOddsRatioAdditionalInfo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>460</x>
+     <y>805</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>472</x>
+     <y>832</y>
     </hint>
    </hints>
   </connection>

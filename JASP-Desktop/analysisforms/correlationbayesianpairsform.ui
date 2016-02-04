@@ -387,6 +387,9 @@
             </item>
             <item row="2" column="1" colspan="2">
              <widget class="BoundCheckBox" name="plotPriorAndPosteriorAdditionalInfo">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Additional info</string>
               </property>
@@ -487,6 +490,22 @@
     <hint type="destinationlabel">
      <x>431</x>
      <y>357</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotPriorAndPosterior</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotPriorAndPosteriorAdditionalInfo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>337</x>
+     <y>299</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>348</x>
+     <y>326</y>
     </hint>
    </hints>
   </connection>

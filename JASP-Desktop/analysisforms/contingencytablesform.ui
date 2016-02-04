@@ -422,7 +422,10 @@
              <number>0</number>
             </property>
             <item row="2" column="1">
-             <widget class="QWidget" name="widget_20" native="true">
+             <widget class="QWidget" name="widgetOddsRatioConfidenceIntervalInterval" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <layout class="QGridLayout" name="gridLayout_23">
                <property name="leftMargin">
                 <number>24</number>
@@ -991,11 +994,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
@@ -1004,6 +1002,11 @@
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -1085,6 +1088,22 @@
     <hint type="destinationlabel">
      <x>337</x>
      <y>916</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>oddsRatio</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetOddsRatioConfidenceIntervalInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>395</x>
+     <y>607</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>644</y>
     </hint>
    </hints>
   </connection>

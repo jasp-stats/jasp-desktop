@@ -1241,7 +1241,10 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QWidget" name="widget_7" native="true">
+                <widget class="QWidget" name="widgetConfidenceIntervalInterval" native="true">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <layout class="QGridLayout" name="gridLayout_28">
                   <property name="leftMargin">
                    <number>40</number>
@@ -1280,7 +1283,7 @@
                 </widget>
                </item>
               </layout>
-              <zorder>widget_7</zorder>
+              <zorder>widgetConfidenceIntervalInterval</zorder>
               <zorder>confidenceInterval</zorder>
               <zorder>standardError</zorder>
              </widget>
@@ -1635,6 +1638,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
@@ -1644,11 +1652,6 @@
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundComboBox</class>
@@ -1714,6 +1717,22 @@
     <hint type="destinationlabel">
      <x>325</x>
      <y>1279</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>confidenceInterval</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetConfidenceIntervalInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>2115</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>193</x>
+     <y>2145</y>
     </hint>
    </hints>
   </connection>
