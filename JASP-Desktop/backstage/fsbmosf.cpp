@@ -260,7 +260,7 @@ void FSBMOSF::gotFilesAndFolders()
 					entryType = FSEntry::Folder;
 				else if (nodeData.name.endsWith(".jasp", Qt::CaseInsensitive))
 					entryType = FSEntry::JASP;
-				else if (nodeData.name.endsWith(".csv", Qt::CaseInsensitive))
+				else if (nodeData.name.endsWith(".csv", Qt::CaseInsensitive) || nodeData.name.endsWith(".txt", Qt::CaseInsensitive))
 					entryType = FSEntry::CSV;
 		#ifdef QT_DEBUG
 				else if (nodeData.name.endsWith(".spss", Qt::CaseInsensitive))
