@@ -24,6 +24,10 @@
 #include <QHBoxLayout>
 #include <QList>
 #include <QPushButton>
+#include <QComboBox>
+#include <QMenu>
+#include <QMenuBar>
+#include <QAction>
 
 class TabBar : public QWidget
 {
@@ -50,6 +54,10 @@ public slots:
 private slots:
 	void tabSelectedHandler();
 	void helpToggledHandler(bool on);
+	void showAbout();
+	void toggleHelp();
+	void toggleSEM();
+	void toggleReinforcement();
 
 private:
 
@@ -60,6 +68,9 @@ private:
 
 	QPushButton *_optionsTab;
 	QPushButton *_helpTab;
+	QComboBox *_comboTab;
+	QMenu *_menuTab;
+	QMenuBar *_menuBarTab;
 
 };
 

@@ -18,6 +18,7 @@
 #include "datasetloader.h"
 
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "sharedmemory.h"
 #include "dataset.h"
@@ -30,6 +31,18 @@ using namespace boost::interprocess;
 using namespace boost;
 using namespace std;
 
+void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+{
+	filesystem::path path(locator);
+
+	//compare case insensitive file extension to choose importer
+	if (boost::iequals(extension,"sav"))
+		SPSSImporter::loadDataSet(packageData, locator, progress);
+	else if (boost::iequals(extension,"csv") || boost::iequals(extension,"txt"))
+		CSVImporter::loadDataSet(packageData, locator, progress);
+	else
+		JASPImporter::loadDataSet(packageData, locator, progress);
+}
 
 void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, boost::function<void(const string &, int)> progress)
 {
@@ -37,7 +50,7 @@ void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locat
 
 	if (path.extension().compare(string(".sav")) == 0)
 		SPSSImporter::loadDataSet(packageData, locator, progress);
-	else if (path.extension().compare(string(".csv")) == 0)
+	else if (path.extension().compare(string(".csv")) == 0 || path.extension().compare(string(".txt")) == 0)
 		CSVImporter::loadDataSet(packageData, locator, progress);
 	else
 		JASPImporter::loadDataSet(packageData, locator, progress);
