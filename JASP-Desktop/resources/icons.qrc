@@ -70,5 +70,6 @@
         <file>icons/expand.png</file>
         <file>icons/collapse.png</file>
         <file>icons/loading.gif</file>
+        <file>icons/summarize.svg</file>
     </qresource>
 </RCC>
