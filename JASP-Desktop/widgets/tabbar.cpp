@@ -17,6 +17,9 @@
 //
 
 #include "tabbar.h"
+#include <QMessageBox>
+#include "aboutdialog.h"
+#include "widgets/ribbonbutton.h"
 
 TabBar::TabBar(QWidget *parent) :
 	QWidget(parent)
@@ -49,6 +52,7 @@ void TabBar::addTab(QString tabName)
 	}
 
 	QPushButton *button = new QPushButton(tabName, this);
+	button->setStyleSheet("border-top-left-radius:0px;border-top-right-radius:0px;");
 	button->setObjectName(tabName);
 	button->setCheckable(true);
 	connect(button, SIGNAL(clicked()), this, SLOT(tabSelectedHandler()));
@@ -83,22 +87,104 @@ void TabBar::removeTab(QString tabName)
 
 void TabBar::addOptionsTab()
 {
-	_optionsTab = new QPushButton("Options", this);
-	_optionsTab->setCheckable(true);
-	connect(_optionsTab, SIGNAL(clicked()), this, SLOT(tabSelectedHandler()));
+	_optionsTab = new QPushButton("", this);
 
 	_layout->addWidget(_optionsTab);
+
 }
 
 void TabBar::addHelpTab()
 {
-	_helpTab = new QPushButton("Help", this);
-	_helpTab->setObjectName("help");
-	_helpTab->setCheckable(true);
-	connect(_helpTab, SIGNAL(toggled(bool)), this, SLOT(helpToggledHandler(bool)));
 
-	_layout->addWidget(_helpTab);
+	RibbonButton *rb = new RibbonButton();
+	rb->setIcon(QIcon(":/icons/summarize.svg"));
+	rb->setPopupMode(QToolButton::InstantPopup);
+
+	QMenu  *helpmenu   = new QMenu(this);
+
+	QAction *act_about = new QAction("About",helpmenu);
+	QAction *act_extrahelp = new QAction("Help",helpmenu);
+
+	// About
+	act_about->setObjectName("About");
+	helpmenu->addAction(act_about);
+	helpmenu->addSeparator();
+	//helpmenu->setLayoutDirection(Qt::RightToLeft);
+
+	//Special Help
+	act_extrahelp->setObjectName("Special Help");
+	act_extrahelp->setCheckable(true);
+	act_extrahelp->setChecked(false);
+	helpmenu->addAction(act_extrahelp);
+	helpmenu->addSeparator();
+
+	//Options
+	QMenu *optionmenu   = new QMenu("Modules",this);
+	QAction *sem = new QAction("SEM ToolBox",optionmenu);
+	QAction *rei = new QAction("Reinforcement Learning Toolbox",optionmenu);
+
+		//SEM
+	sem->setObjectName("SEM Toolbox");
+	sem->setCheckable(true);
+	sem->setChecked(false);
+	optionmenu->addAction(sem);
+		//Reinforcement
+	rei->setObjectName("Reinforcement Learning Toolbo");
+	rei->setCheckable(true);
+	rei->setChecked(false);
+	optionmenu->addAction(rei);
+
+	optionmenu->acceptDrops();
+	helpmenu->acceptDrops();
+	helpmenu->addMenu(optionmenu);
+
+	rb->setMenu(helpmenu);
+	_layout->addWidget(rb);
+
+	//Slots helpmenu
+	connect(act_about, SIGNAL(triggered()), this, SLOT(showAbout()));
+	connect(act_extrahelp, SIGNAL(triggered()), this, SLOT(toggleHelp()));
+
+	// Slots options
+	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
+	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
+
 }
+
+void TabBar::showAbout()
+{
+	AboutDialog aboutdialog;
+	aboutdialog.setModal(true);
+	aboutdialog.exec();
+}
+
+void TabBar::toggleHelp()
+{
+	static bool on;
+	on = ! on;
+	helpToggledHandler(on);
+}
+
+void TabBar::toggleSEM()
+{
+	static bool on;
+	on = ! on;
+	if (on)
+		this->addTab("SEM");
+	else
+		this->removeTab("SEM");
+}
+
+void TabBar::toggleReinforcement()
+{
+	static bool on;
+	on = ! on;
+	if (on)
+		this->addTab("R11t Learn");
+	else
+		this->removeTab("R11t Learn");
+}
+
 
 int TabBar::count() const
 {
@@ -139,6 +225,8 @@ void TabBar::tabSelectedHandler()
 	if (source == _optionsTab)
 		setCurrentIndex(i);
 }
+
+
 
 void TabBar::helpToggledHandler(bool on)
 {

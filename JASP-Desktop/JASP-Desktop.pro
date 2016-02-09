@@ -46,6 +46,7 @@ linux {
 }
 
 SOURCES += main.cpp \
+    aboutdialog.cpp \
     analyses.cpp \
     mainwindow.cpp \
     datasettablemodel.cpp \
@@ -175,6 +176,7 @@ SOURCES += main.cpp \
     backstage/authwidget.cpp
 
 HEADERS  += \
+    aboutdialog.h \
     analyses.h \
     datasettablemodel.h \
     enginesync.h \
@@ -354,7 +356,9 @@ FORMS += \
 	analysisforms/binomialtestbayesianform.ui \
     analysisforms/bffromtform.ui \
     variableswidget.ui \
-    backstage/authwidget.ui
+    backstage/authwidget.ui\
+    aboutdialog.ui
+    
 
 
 RESOURCES += \
@@ -534,4 +538,5 @@ linux {
 DISTFILES += \
     backstage/firsttabsstylesheet.qss \
     backstage/secondtabsstylesheet.qss \
-    resources/icons/file-jasp.svg
+    resources/icons/file-jasp.svg \
+    html/css/images/tinylogo.svg
