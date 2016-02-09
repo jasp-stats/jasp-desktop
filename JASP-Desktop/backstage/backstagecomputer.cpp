@@ -58,9 +58,9 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 		browsePath = path;
 
 #ifdef QT_DEBUG
-	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv *.spss)");
+	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv *.txt *.spss)");
 #else
-	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv)");
+	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv *.txt)");
 #endif
 
 	FileEvent *event = new FileEvent(this);
