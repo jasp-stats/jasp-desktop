@@ -19,6 +19,7 @@
 #define LABELS_H
 
 #include "label.h"
+#include <vector>
 
 #include <boost/container/vector.hpp>
 
