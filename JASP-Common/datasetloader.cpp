@@ -37,7 +37,7 @@ void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locat
 
 	if (path.extension().compare(string(".sav")) == 0)
 		SPSSImporter::loadDataSet(packageData, locator, progress);
-	else if (path.extension().compare(string(".csv")) == 0)
+	else if (path.extension().compare(string(".csv")) == 0 || path.extension().compare(string(".txt")) == 0)
 		CSVImporter::loadDataSet(packageData, locator, progress);
 	else
 		JASPImporter::loadDataSet(packageData, locator, progress);
