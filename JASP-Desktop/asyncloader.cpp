@@ -174,15 +174,30 @@ void AsyncLoader::loadPackage(QString id)
 
 			if (_currentEvent->IsOnlineNode())
 			{
+				//Find file extension in the OSF
+				string extension=".jasp"; //default
+				QString qpath(path.c_str());
+				int slashPos = qpath.lastIndexOf("/");
+				int dotPos = qpath.lastIndexOf('.');
+				if (dotPos != -1 && dotPos > slashPos)
+				{
+					QString ext = qpath.mid(dotPos);
+					extension=ext.toStdString();
+				}
+
 				dataNode = _odm->getActionDataNode(id);
 
 				if (dataNode != NULL && dataNode->error())
 					throw runtime_error(fq(dataNode->errorMessage()));
 
+				//Generated local path has no extension
 				path = fq(_odm->getLocalPath(_currentEvent->path()));
-			}
 
-			_loader.loadPackage(_currentPackage, path, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+				//loadPackage argument extension determines type
+				_loader.loadPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+			}
+			else
+				_loader.loadPackage(_currentPackage, path, "", boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
 
