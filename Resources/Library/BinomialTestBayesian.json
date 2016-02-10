@@ -17,7 +17,7 @@
 		},
 		{
 			"format": "",
-			"name": "priorAlpha",
+			"name": "priorA",
 			"type": "Number",
 			"value": 1,
 			"min": 0.1,
@@ -25,7 +25,7 @@
 		},
 		{
 			"format": "",
-			"name": "priorBeta",
+			"name": "priorB",
 			"type": "Number",
 			"value": 1,
 			"min": 0.1,

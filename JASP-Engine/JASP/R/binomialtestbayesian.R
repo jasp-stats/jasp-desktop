@@ -127,8 +127,8 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 	rowIdentifier <- character()
 	
 	# beta distribution parameters
-	a <- options$priorAlpha
-	b <- options$priorBeta
+	a <- options$priorA
+	b <- options$priorB
 	
 	if (perform == "run" && !is.null(variables)) {
 	
@@ -150,8 +150,8 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 				counts <- sum(d == lev)
 				prop <- counts/n
 				
-				if (!is.null(state) && rowIdentifier[r] %in% state$rowIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$priorAlpha &&
-					! diff$priorBeta && ! diff$bayesFactorType) {
+				if (!is.null(state) && rowIdentifier[r] %in% state$rowIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$priorA &&
+					! diff$priorB && ! diff$bayesFactorType) {
 						
 						index <- which(state$rowIdentifier == rowIdentifier[r])
 						row <- state$rowsBinomtest[[index]]
@@ -205,7 +205,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 					plotIdentifier[j] <- paste0(plotType, plotGroups[[i]][["name"]])
 					
 					
-					if (!is.null(state) && plotIdentifier[j] %in% state$plotIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$priorAlpha && ! diff$priorBeta) {
+					if (!is.null(state) && plotIdentifier[j] %in% state$plotIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$priorA && ! diff$priorB) {
 						
 						index <- which(state$plotIdentifier == plotIdentifier[j])
 						plot <- state$plotsBinomtest[[index]]
@@ -245,7 +245,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 					
 					plotIdentifier[j] <- paste("SequentialAnalysisPlot:", plotGroups[[i]][["name"]])
 					
-					if (!is.null(state) && plotIdentifier[j] %in% state$plotIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$bayesFactorType && ! diff$priorAlpha && ! diff$priorBeta) {
+					if (!is.null(state) && plotIdentifier[j] %in% state$plotIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$bayesFactorType && ! diff$priorA && ! diff$priorB) {
 						
 						index <- which(state$plotIdentifier == plotIdentifier[j])
 						plot <- state$plotsBinomtest[[index]]
@@ -303,8 +303,8 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 				
 				rowIdentifier[length(rowIdentifier) + 1] <- paste(c(var, lev), collapse = " - ")
 				
-				if (!is.null(state) && rowIdentifier[length(rowIdentifier)] %in% state$rowIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$priorAlpha &&
-					! diff$priorBeta && ! diff$bayesFactorType) {
+				if (!is.null(state) && rowIdentifier[length(rowIdentifier)] %in% state$rowIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$priorA &&
+					! diff$priorB && ! diff$bayesFactorType) {
 						
 						index <- which(state$rowIdentifier == rowIdentifier[length(rowIdentifier)])
 						data[[length(data) + 1]] <- state$rowsBinomtest[[index]]
@@ -334,7 +334,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 					plotType <- ifelse(options$plotPriorAndPosteriorAdditionalInfo, "PriorPosteriorAddInfoPlot:", "PriorPosteriorPlot:")
 					plotIdentifier[length(plotIdentifier) + 1] <- paste0(plotType, plotGroups[[length(plotGroups)]][["name"]])
 					
-					if (!is.null(state) && plotIdentifier[length(plotIdentifier)] %in% state$plotIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$priorAlpha && ! diff$priorBeta) {
+					if (!is.null(state) && plotIdentifier[length(plotIdentifier)] %in% state$plotIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$priorA && ! diff$priorB) {
 						
 						index <- which(state$plotIdentifier == plotIdentifier[length(plotIdentifier)])
 						plot <- state$plotsBinomtest[[index]]
@@ -362,7 +362,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 					plotIdentifier[length(plotIdentifier) + 1] <- paste("SequentialAnalysisPlot:", plotGroups[[length(plotGroups)]][["name"]])
 					
 					if (!is.null(state) && plotIdentifier[length(plotIdentifier)] %in% state$plotIdentifier && ! diff$testValue && ! diff$hypothesis && ! diff$bayesFactorType &&
-						! diff$priorAlpha && ! diff$priorBeta) {
+						! diff$priorA && ! diff$priorB) {
 						
 						index <- which(state$plotIdentifier == plotIdentifier[length(plotIdentifier)])
 						plot <- state$plotsBinomtest[[index]]
