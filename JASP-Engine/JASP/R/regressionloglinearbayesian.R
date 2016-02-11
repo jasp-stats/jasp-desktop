@@ -94,8 +94,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	results[["title"]] <- "Bayesian Log-linear Regression"
 	
 	.LogLinearBayesianCitations <- 	list(
-		"Overstall, A., & King, R. (2014). conting: an R package for Bayesian analysis of complete and incomplete contingency tables. Journal of Statistical Software, 58(7), 1-27.",
-		"Overstall, A. M., & King, R. (2014). A default prior distribution for contingency tables with dependent factor levels. Statistical methodology, 16, 90-99."
+		"Overstall, A., & King, R. (2014). conting: an R package for Bayesian analysis of complete and incomplete contingency tables. Journal of Statistical Software, 58(7), 1-27."
 		)
 
 
@@ -604,7 +603,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 						}
 					
 						BayesianSublogregression.result[[ len.Blogreg ]]$ "footnotes" <- as.list (footnotes)
-						#BayesianSublogregression.result[["citation"]] <- .LogLinearBayesianCitations()	
+					
 						len.Blogreg <- len.Blogreg + 1
 					}		
 				}			
