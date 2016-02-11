@@ -41,7 +41,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		for (counts in options$counts) {
 			if(any(is.na(dataset [[.v (options$counts)]])))
 				variable.names <- c (variable.names, options$counts)
-			}
+		}
 	
 		if ( !is.null (variable.names))
 			error.message <- paste ("Bayes factor is undefined -- incomplete contingency table, the count variable ", variable.names, " contain(s) empty cell or NaN. ", sep = "")
@@ -57,9 +57,8 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			if ( !is.null (variable.names))
 				error.message <- paste ("Bayes factor is undefined -- the count variable ", variable.names, " contain(s) infinity and/or negative numbers.", sep = "")
 				list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
-			}
-			
 		}
+	}
 		
 		
 	if (options$counts == ""){ 
@@ -90,7 +89,6 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		list(name = "Bayesianlogregression", type = "table"),
 		list(name = "BayesianSublogregression", type = "table"))
 		
-
 	results[[".meta"]] <- .meta
 	
 	results[["title"]] <- "Bayesian Log-linear Regression"
@@ -107,15 +105,15 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	# Fit Loglinear Model
 	#footnotes <- .newFootnotes()
 	logBlm.model <- list()
-	empty.model <- list(logBlm.fit = NULL, variables = NULL)
+	logBlm.fit = NULL
+	empty.model <- list(logBlm.fit, variables = NULL)
 	
 	 if (options$counts == ""){ 
 	 	dependent.variable <- "freq"
-	 }else{
+	 } else {
 	 	dependent.variable <- unlist(options$counts)
-	 	}
+	 }
 	
-
 	if (length(options$modelTerms) > 0) {
 		
 		variables.in.model <- NULL
@@ -158,7 +156,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			model.definition <- NULL #this model has no parameters				
 		}
 			
-		if (perform == "run" && !is.null(model.definition) && length(list.of.errors) == 0 ) {
+		if (perform == "run"  && !is.null(model.definition) && length(list.of.errors) == 0 ) {
 				
 			model.formula <- as.formula(model.definition)
 
@@ -171,11 +169,11 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 				no.burnin = 2000 * 0.2
 				if (options$sampleMode == "manual"){
 				
-					logBlm.fit <- try(conting::bcctu(object = logBlm.fit, n.sample = options$fixedSamplesNumber), silent = TRUE)				
+					logBlm.fit <- try(conting::bcct(object = logBlm.fit, n.sample = options$fixedSamplesNumber), silent = TRUE)				
 					n.sample = options$fixedSamplesNumber
 					no.burnin = (2000 + n.sample)* 0.2
 				}
-				
+		
 			if ( class(logBlm.fit) == "bcct") {
 					
 				logBlm.model <- list(logBlm.fit = logBlm.fit, variables = variables.in.model)
@@ -496,13 +494,12 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			if (length(logBlm.model$variables) > 0) {
 
 				variables.in.model <- logBlm.model$variables
-
 				
 			}
 
-			#Bayesianlogregression.result[[ len.Blogreg ]] <- dotted.line
-			len.Blogreg <- length(Bayesianlogregression.result) + 1
 			Bayesianlogregression.result[[ len.Blogreg ]] <- dotted.line
+			#len.Blogreg <- length(Bayesianlogregression.result) + 1
+			#Bayesianlogregression.result[[ len.Blogreg ]] <- dotted.line
 			Bayesianlogregression.result[[ len.Blogreg ]]$"Model" <- 1
 			if (length(list.of.errors) == 1){
 			Bayesianlogregression[["error"]] <- list(errorType = "badData", errorMessage = list.of.errors[[ 1 ]])}	
@@ -552,8 +549,10 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		
 		lookup.table <- .regressionLogLinearBayesianBuildLookup(dataset, options$factors)
 		lookup.table[["(Intercept)"]] <- "(Intercept)"
-		footnotes <- .newFootnotes()	
-		if (perform == "run" && length(list.of.errors) == 0 ) {
+		footnotes <- .newFootnotes()
+		
+			
+		if (perform == "run" && length(list.of.errors) == 0 && !is.null(logBlm.fit)  ) {
 		
 			logBlm.subestimates = try(conting::sub_model(logBlm.fit, n.burnin=no.burnin, order=options$regressionCoefficientsSubmodelNo, 
 				             prob.level = options$regressionCoefficientsSubmodelCredibleIntervalsInterval), silent = TRUE)
@@ -563,10 +562,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 				BayesianSublogregression[["error"]] <- list(errorType= "badData",errorMessage = error)
 		
 			} else if ( class(logBlm.subestimates) == "submod"){
-			
-				
-				
-				print(logBlm.subestimates)
+	
 				len.Blogreg <- length(BayesianSublogregression.result) + 1		
 				term.names <- logBlm.subestimates$term	
 				
@@ -580,7 +576,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 													
 				Post.pob <- round(logBlm.subestimates$post_prob, 3)
 				.addFootnote (footnotes, symbol = "<em>Posterior model probability =</em>", text = Post.pob )	
-				print(message)
+	
 				if (length(logBlm.model$variables) > 0) {
 				
 					variables.in.model <- logBlm.model$variables
@@ -652,11 +648,9 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			if (length(logBlm.model$variables) > 0) {
 
 				variables.in.model <- logBlm.model$variables
-
 				
 			}
 
-			len.Blogreg <- length(BayesianSublogregression.result) + 1
 			BayesianSublogregression.result[[ len.Blogreg ]] <- dotted.line
 			BayesianSublogregression.result[[ len.Blogreg ]]$"Model" <- 1
 			if (length(list.of.errors) == 1){
