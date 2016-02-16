@@ -65,6 +65,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	 } else {
 	 	dataset <- dataset
 	 }
+	
 	 
 	if ( perform == "run" && length(list.of.errors)==0  ) { 
 		variable.names <- NULL
@@ -76,10 +77,8 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		if ( !is.null (variable.names))
 		error.message <- "Poisson glm is undefined -- the factors contain(s) empty cell or NaN or incomplete contingency table."
 		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
-	}
-	
-	print(list.of.errors)		 
-
+	}	
+	 
 	results <- list()
 	
 	meta <- list()
@@ -93,6 +92,10 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	results[[".meta"]] <- .meta
 	
 	results[["title"]] <- "Log-linear Regression"
+	
+	.LogLinearCitations <- 	list(
+		"R Core Team (2015). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/."
+		)
 	
 	
     #######################################
@@ -187,6 +190,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 
 		logregressionanova <- list()
 		logregressionanova[["title"]] <- "ANOVA"
+		logregressionanova[["citation"]] <- .LogLinearCitations
 		
 		# Declare table elements
 		fields <- list(
@@ -304,8 +308,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			if (length(loglm.model$variables) > 0) {
 	
 				variables.in.model <- loglm.model$variables
-	
-			
+				
 			}
 
 			len.logreg <- length(logregressionanova.result) + 1
@@ -330,8 +333,6 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
     
 	logregressionanova[["data"]] <- logregressionanova.result
 	results[["Bayesianposterior"]] <- logregressionanova
-
-
 	
 	################################################################################
 	#						   MODEL COEFFICIENTS TABLE   						#
@@ -341,6 +342,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 		
 		logregression <- list()
 		logregression[["title"]] <- "Coefficients"
+		logregression[["citation"]] <- .LogLinearCitations
 		
 		if (options$regressionCoefficientsConfidenceIntervals == TRUE){
 			ci.label <- paste(100*options$regressionCoefficientsConfidenceIntervalsInterval, "% Confidence Intervals", sep="")
@@ -484,10 +486,8 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 			if (length(loglm.model$variables) > 0) {
 	
 				variables.in.model <- loglm.model$variables
-	
-	
+		
 			}
-
 
 			len.logreg <- length(logregression.result) + 1
 			logregression.result[[ len.logreg ]] <- dotted.line
