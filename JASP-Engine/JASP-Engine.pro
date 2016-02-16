@@ -28,34 +28,34 @@ _R_HOME = $$(R_HOME)
 
 macx {
 
-    INCLUDEPATH += ../../boost_1_54_0
+	INCLUDEPATH += ../../boost_1_54_0
 
-    isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.1/Resources
-    R_EXE  = $$_R_HOME/bin/R
+	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../../Frameworks/R.framework/Versions/3.1/Resources
+	R_EXE  = $$_R_HOME/bin/R
 }
 
 linux {
 
-    isEmpty(_R_HOME):_R_HOME = /usr/lib/R
-    R_EXE  = $$_R_HOME/bin/R
+	isEmpty(_R_HOME):_R_HOME = /usr/lib/R
+	R_EXE  = $$_R_HOME/bin/R
 }
 
 windows {
 
-    COMPILER_DUMP = $$system(g++ -dumpmachine)
-    contains(COMPILER_DUMP, x86_64-w64-mingw32) {
+	COMPILER_DUMP = $$system(g++ -dumpmachine)
+	contains(COMPILER_DUMP, x86_64-w64-mingw32) {
 
-        ARCH = x64
+		ARCH = x64
 
-    } else {
+	} else {
 
-        ARCH = i386
-    }
+		ARCH = i386
+	}
 
-    INCLUDEPATH += ../../boost_1_54_0
+	INCLUDEPATH += ../../boost_1_54_0
 
-    isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../R
-    R_EXE  = $$_R_HOME/bin/$$ARCH/R
+	isEmpty(_R_HOME):_R_HOME = $$OUT_PWD/../R
+	R_EXE  = $$_R_HOME/bin/$$ARCH/R
 }
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
@@ -66,28 +66,28 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 INCLUDEPATH += \
-    $$_R_HOME/include \
-    $$_R_HOME/library/RInside/include \
-    $$_R_HOME/library/Rcpp/include
+	$$_R_HOME/include \
+	$$_R_HOME/library/RInside/include \
+	$$_R_HOME/library/Rcpp/include
 
 linux:INCLUDEPATH += \
-    /usr/share/R/include \
-    $$_R_HOME/site-library/RInside/include \
-    $$_R_HOME/site-library/Rcpp/include
+	/usr/share/R/include \
+	$$_R_HOME/site-library/RInside/include \
+	$$_R_HOME/site-library/Rcpp/include
 
 macx:LIBS += \
-    -L$$_R_HOME/library/RInside/lib -lRInside \
-    -L$$_R_HOME/lib -lR
+	-L$$_R_HOME/library/RInside/lib -lRInside \
+	-L$$_R_HOME/lib -lR
 
 linux:LIBS += \
-    -L$$_R_HOME/library/RInside/lib \
-    -L$$_R_HOME/site-library/RInside/lib -lRInside \
-    -L$$_R_HOME/lib -lR \
-    -lrt
+	-L$$_R_HOME/library/RInside/lib \
+	-L$$_R_HOME/site-library/RInside/lib -lRInside \
+	-L$$_R_HOME/lib -lR \
+	-lrt
 
 win32:LIBS += \
-    -L$$_R_HOME/library/RInside/lib/$$ARCH -lRInside \
-    -L$$_R_HOME/bin/$$ARCH -lR
+	-L$$_R_HOME/library/RInside/lib/$$ARCH -lRInside \
+	-L$$_R_HOME/bin/$$ARCH -lR
 
 win32:LIBS += -lole32 -loleaut32
 
@@ -99,9 +99,9 @@ QMAKE_EXTRA_TARGETS += InstallJASPRPackage
 PRE_TARGETDEPS      += InstallJASPRPackage
 
 SOURCES += main.cpp \
-    engine.cpp \
-    rbridge.cpp
+	engine.cpp \
+	rbridge.cpp
 
 HEADERS += \
-    engine.h \
-    rbridge.h
+	engine.h \
+	rbridge.h
