@@ -37,6 +37,8 @@ BinomialTestBayesianForm::BinomialTestBayesianForm(QWidget *parent) :
 	ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
 	
 	ui->testValue->setLabel("Test value");
+	ui->priorA->setLabel("a");
+	ui->priorB->setLabel("b");
 }
 
 BinomialTestBayesianForm::~BinomialTestBayesianForm()
