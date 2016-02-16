@@ -129,7 +129,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			for (; doubles != this->AsDoubles.end(); doubles++)
 			{
 				int v = (int)*doubles;
-				if ( ! isnan(v))
+                if ( ! std::isnan(v))
 					uniqueValues.insert(v);
 			}
 
@@ -151,7 +151,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			for (; ints != end; ints++, doubles++)
 			{
 				double value = *doubles;
-				if (isnan(value))
+                if (std::isnan(value))
 				{
 					*ints = INT_MIN;
 				}
@@ -328,7 +328,7 @@ string Column::operator [](int index)
 			char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
 			return string(ninf);
 		}
-		else if (isnan(v))
+        else if (std::isnan(v))
 		{
 			return ".";
 		}

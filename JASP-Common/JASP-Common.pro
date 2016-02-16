@@ -7,6 +7,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 windows:CONFIG += c++11
+linux:CONFIG += c++11
 
    macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
