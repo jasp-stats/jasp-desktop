@@ -26,7 +26,7 @@ class DataSetLoader
 {
 public:
 
-	static void loadPackage(DataSetPackage *packageData, const std::string &locator, boost::function<void (const std::string &stage, int progress)> progress = NULL);
+	static void loadPackage(DataSetPackage *packageData, const std::string &locator, const std::string &extension, boost::function<void (const std::string &stage, int progress)> progress = NULL);
 	static DataSet *getDataSet();
 	static void freeDataSet(DataSet *dataSet);
 
