@@ -19,14 +19,8 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 
-#include <QFile>
-#include <QTextstream>
-#include <QMessageBox>
-#include "lrnam.h"
-#include "tempfiles.h"
 #include "qutils.h"
 #include <QWebFrame>
-#include <QWebHistory>
 #include "appinfo.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
@@ -56,7 +50,7 @@ void AboutDialog::on_buttonBox_clicked(QAbstractButton *button)
 void AboutDialog::aboutPageLoaded(bool success)
 {
 
-	// File aboutWebView with about.htm
+	// Show aboutWebView with about.html
 	if (success)
 	{
 		QString version = tq(AppInfo::version.asString());

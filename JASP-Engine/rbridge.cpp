@@ -257,7 +257,7 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 				{
 					(void)column;
 
-					if (isnan(value))
+					if (std::isnan(value))
 						continue;
 
 					int intValue;
@@ -305,7 +305,7 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 				{
 					(void)column;
 
-					if (isnan(value))
+					if (std::isnan(value))
 						v[rowNo] = INT_MIN;
 					else if (isfinite(value))
 						v[rowNo] = valueToIndex[(int)(value * 1000)] + 1;
