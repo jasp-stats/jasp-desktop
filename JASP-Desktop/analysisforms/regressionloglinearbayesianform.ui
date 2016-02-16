@@ -725,7 +725,10 @@
                 </spacer>
                </item>
                <item row="1" column="0" colspan="3">
-                <widget class="QWidget" name="widget_2" native="true">
+                <widget class="QWidget" name="widgetSubmodelParameters" native="true">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <layout class="QVBoxLayout" name="verticalLayout">
                   <property name="leftMargin">
                    <number>24</number>
@@ -743,6 +746,12 @@
                    <widget class="BoundCheckBox" name="regressionCoefficientsSubmodelEstimates">
                     <property name="text">
                      <string>Estimates</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
@@ -930,6 +939,38 @@
     <hint type="destinationlabel">
      <x>335</x>
      <y>937</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>regressionCoefficientsSubmodel</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>regressionCoefficientsSubmodelEstimates</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>276</x>
+     <y>859</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>344</x>
+     <y>889</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>regressionCoefficientsSubmodel</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetSubmodelParameters</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>276</x>
+     <y>859</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>913</y>
     </hint>
    </hints>
   </connection>
