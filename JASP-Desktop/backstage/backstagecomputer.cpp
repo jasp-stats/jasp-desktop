@@ -99,6 +99,11 @@ FileEvent *BackstageComputer::browseSave(const QString &path)
 
 	if (finalPath != "")
 	{
+		// force the filename end with .jasp - workaround for linux saving issue
+		if(!finalPath.endsWith(".jasp", Qt::CaseInsensitive))
+		{
+			finalPath.append(QString(".jasp"));
+		}
 		event->setPath(finalPath);
 		emit dataSetIORequest(event);
 	}
