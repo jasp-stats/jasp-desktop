@@ -219,7 +219,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	if (is.null(stateContrasts)) {
 	
-		result <- .anovaContrastsTable(dataset, options, perform, model, status, stateContrasts)
+		result <- .anovaContrastsTable(dataset, options, perform, model, status, stateContrasts, singular)
 		results[["contrasts"]] <- list(collection=result$result, title = "Contrasts")
 		status <- result$status
 		stateContrasts <- result$stateContrasts
@@ -234,7 +234,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	
 	## Create Post Hoc Tables
 	
-	result <- .anovaPostHocTable(dataset, options, perform, model, status, statePostHoc)
+	result <- .anovaPostHocTable(dataset, options, perform, model, status, statePostHoc, singular)
 	
 	results[["posthoc"]] <- list(collection=result$result, title = "Post Hoc Tests")
 	status <- result$status
@@ -862,7 +862,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=anova, status=status)
 }
 
-.anovaContrastsTable <- function(dataset, options, perform, model, status, stateContrasts) {
+.anovaContrastsTable <- function(dataset, options, perform, model, status, stateContrasts, singular) {
 
 	no.contrasts <- TRUE
 
@@ -903,6 +903,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				list(name="Std. Error", type="number", format="sf:4;dp:3"),
 				list(name="t", type="number", format="sf:4;dp:3"),
 				list(name="p", type="number", format="dp:3;p:.001")))
+				
+			footnotes <- .newFootnotes()
 			
 			v <- .v(variable)
 
@@ -915,7 +917,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			
 			contrast.rows <- list()
 			
-			if (perform == "init" || status$error || !status$ready) {
+			if (perform == "init" || status$error || !status$ready || singular) {
 			
 				for (case in cases) {
 
@@ -927,8 +929,15 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 						row[[".isNewGroup"]] <- FALSE
 					}
 					
-					contrast.rows[[length(contrast.rows)+1]] <- row	
+					contrast.rows[[length(contrast.rows)+1]] <- row
 				}
+				
+				if (singular) {
+					
+					.addFootnote(footnotes, text = "Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables", symbol = "<em>Warning.</em>")
+						
+				}
+				
 			} else {
 								
 				for (i in .indices(cases)) {
@@ -958,6 +967,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			}
 
 			contrast.table[["data"]] <- contrast.rows
+			contrast.table[["footnotes"]] <- as.list(footnotes)
 			
 			if (perform == "run" && status$ready && status$error == FALSE)
 				contrast.table[["status"]] <- "complete"
@@ -1006,7 +1016,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	return(contrasts)	
 }
 
-.anovaPostHocTable <- function(dataset, options, perform, model, status, statePostHoc) {
+.anovaPostHocTable <- function(dataset, options, perform, model, status, statePostHoc, singular) {
 	
 	posthoc.variables <- unlist(options$postHocTestsVariables)
 	
@@ -1048,7 +1058,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		variable.levels <- levels(dataset[[ .v(posthoc.var) ]])
 		nLevels <- length(variable.levels)
 		
-		if (perform == "run" && status$ready && status$error == FALSE && is.null(statePostHoc[[posthoc.var]])) {
+		if (perform == "run" && status$ready && status$error == FALSE && is.null(statePostHoc[[posthoc.var]]) && !singular) {
 		
 			statePostHoc[[posthoc.var]] <- list()
 			
@@ -1170,6 +1180,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		}
 		
 		posthoc.table[["data"]] <- rows
+		
+		if (singular)
+			posthoc.table[["footnotes"]] <- list(list(symbol = "<em>Warning.</em>", text = "Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables"))
 		
 		if (status$error)
 			posthoc.table[["error"]] <- list(errorType="badData")
