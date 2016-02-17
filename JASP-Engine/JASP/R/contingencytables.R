@@ -405,7 +405,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	
 	##### Nominal Table (Symmetric Measures)
 	
-	if (options$contingencyCoefficient|| options$phiAndCramersV) {
+	if (options$contingencyCoefficient|| options$phiAndCramersV || options$lambda) {
 		
 		nominal.table <- list()
 
@@ -424,6 +424,13 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[PhiCoef]", title="Value", type="number", format="sf:4;dp:3")
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[CramerV]", title="", type="string")
 			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[CramerV]", title="Value", type="number", format="sf:4;dp:3")
+		}
+		
+		if (options$lambda) {
+			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[LambdaR]", title="", type="string")
+			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[LambdaR]", title="Value", type="number", format="sf:4;dp:3")
+			nominal.fields[[length(nominal.fields)+1]] <- list(name="type[LambdaC]", title="", type="string")
+			nominal.fields[[length(nominal.fields)+1]] <- list(name="value[LambdaC]", title="Value", type="number", format="sf:4;dp:3")
 		}
 
 		schema <- list(fields=nominal.fields)
@@ -562,7 +569,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		tables[[3]] <- odds.ratio.table
 	}
 	
-	if (options$contingencyCoefficient || options$phiAndCramersV) {
+	if (options$contingencyCoefficient || options$phiAndCramersV || options$lambda) {
 	
 		nominal.table[["data"]] <- nominal.rows
 		nominal.table[["footnotes"]] <- as.list(nominal.footnotes)
@@ -915,6 +922,59 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 			row[["value[CramerV]"]] <- "."
 		}
 	}
+
+	 if (options$lambda) {
+		
+		row[["type[LambdaR]"]] <- paste("Lambda (", options$rows, "Dependent)", sep= " ")
+		
+		if (perform == "run" && status$error == FALSE) {
+				
+				N <- sum(counts.matrix)
+				E1 <- N- max(rowSums(counts.matrix))
+				E2 <- sum(apply(counts.matrix,2, function (x) sum(x)-max(x) ))
+				lambda<-(E1-E2)/E1
+				row[["value[LambdaR]"]] <- lambda
+			
+		 if (is.na(lambda)) {
+		
+				row[["value[LambdaR]"]] <- .clean(NaN)
+	
+				sup <- .addFootnote(footnotes, "Value could not be calculated - At least one row sums or column sums contains all zeros")
+				row.footnotes[["value[LambdaR]"]] <- list(sup)
+				
+		
+		}
+		} else {
+			
+			row[["value[LambdaR]"]] <- "."
+		}
+	}
+	
+	
+	if (options$lambda) {
+		
+		row[["type[LambdaC]"]] <- paste("Lambda (", options$columns, "Dependent)", sep= " ")
+		
+		if (perform == "run" && status$error == FALSE) {
+				
+				N <- sum(counts.matrix)
+				E1 <- N- max(colSums(counts.matrix))
+				E2 <- sum(apply(counts.matrix,1, function (x) sum(x)-max(x) ))
+				lambda<-(E1-E2)/E1
+				print(N)
+				print(E1)
+				print(E2)
+				print(lambda)
+				row[["value[LambdaC]"]] <- lambda
+			
+			
+		} else {
+			
+			row[["value[LambdaC]"]] <- "."
+		}
+	}
+	
+
 
 	row[[".footnotes"]] <- row.footnotes
 	list(row)

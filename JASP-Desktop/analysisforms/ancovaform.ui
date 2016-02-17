@@ -1265,7 +1265,10 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QWidget" name="widget_16" native="true">
+                <widget class="QWidget" name="widgetConfidenceIntervalInterval" native="true">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -1337,7 +1340,7 @@
                 </widget>
                </item>
               </layout>
-              <zorder>widget_16</zorder>
+              <zorder>widgetConfidenceIntervalInterval</zorder>
               <zorder>confidenceInterval</zorder>
               <zorder>standardError</zorder>
              </widget>
@@ -1686,6 +1689,16 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>boundSingleItemView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundsingleitemview.h</header>
+  </customwidget>
+  <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
    <header>widgets/expanderbutton.h</header>
@@ -1695,11 +1708,6 @@
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundComboBox</class>
@@ -1716,11 +1724,6 @@
    <extends>QWidget</extends>
    <header>widgets/boundassignwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>boundSingleItemView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundsingleitemview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -1754,6 +1757,22 @@
     <hint type="destinationlabel">
      <x>194</x>
      <y>1639</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>confidenceInterval</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetConfidenceIntervalInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>102</x>
+     <y>2219</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>119</x>
+     <y>2249</y>
     </hint>
    </hints>
   </connection>

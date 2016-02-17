@@ -50,5 +50,8 @@
         <file>js/collection.js</file>
         <file>css/images/expand.png</file>
         <file>css/images/collapse.png</file>
+        <file>about.html</file>
+        <file>css/images/tinylogo.svg</file>
+        <file>welcome.html</file>
     </qresource>
 </RCC>

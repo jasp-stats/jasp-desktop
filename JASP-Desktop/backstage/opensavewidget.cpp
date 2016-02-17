@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 University of Amsterdam
+// Copyright (C) 2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -75,7 +75,7 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_tabWidget->addTab(_bsRecent, "Recent");
 	_tabWidget->addTab(_bsComputer, "Computer");
 
-	_tabWidget->addTab(_bsOSF, "OSF", QIcon(":/icons/logo-osf.png"));
+	_tabWidget->addTab(_bsOSF, "OSF");
 
 	_tabWidget->addTab(_bsExamples, "Examples");
 

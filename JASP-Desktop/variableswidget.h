@@ -34,6 +34,7 @@ private:
 	DataSet *_dataSet;
 	VariablesTableModel *_variablesTableModel;
 	LevelsTableModel *_levelsTableModel;
+	Column *_currentColumn;
 };
 
 #endif // VARIABLESWIDGET_H

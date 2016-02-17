@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2015 University of Amsterdam
+// Copyright (C) 2013-2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ class DataSetLoader
 {
 public:
 
-	static void loadPackage(DataSetPackage *packageData, const std::string &locator, boost::function<void (const std::string &stage, int progress)> progress = NULL);
+	static void loadPackage(DataSetPackage *packageData, const std::string &locator, const std::string &extension, boost::function<void (const std::string &stage, int progress)> progress = NULL);
 	static DataSet *getDataSet();
 	static void freeDataSet(DataSet *dataSet);
 

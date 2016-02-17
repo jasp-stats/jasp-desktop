@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 University of Amsterdam
+// Copyright (C) 2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 #include "appinfo.h"
 
 
-const Version AppInfo::version = Version(0, 7, 5, 103);
+const Version AppInfo::version = Version(0, 7, 5, 255);
 const std::string AppInfo::name = "JASP";
 
 std::string AppInfo::getShortDesc()

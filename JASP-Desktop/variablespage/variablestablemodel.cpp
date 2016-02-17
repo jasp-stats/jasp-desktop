@@ -51,4 +51,3 @@ int VariablesTableModel::columnCount(const QModelIndex &parent) const
 
 	return 1;
 }
-

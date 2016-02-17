@@ -134,8 +134,6 @@ FSBMOSF::OnlineNodeData FSBMOSF::currentNodeData()
 void FSBMOSF::loadProjects() {
 
 	QUrl url("https://api.osf.io/v2/users/me/nodes/");
-	//QUrl url("https://test-api.osf.io/v2/users/me/nodes/");
-	//QUrl url("https://staging2-api.osf.io/v2/users/me/nodes/");
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
@@ -159,6 +157,9 @@ void FSBMOSF::gotProjects()
 
 		QJsonObject json = doc.object();
 		QJsonArray dataArray = json.value("data").toArray();
+
+		if ( dataArray.size() > 0 )
+			_entries.clear();
 
 		foreach (const QJsonValue & value, dataArray) {
 			QJsonObject nodeObject = value.toObject();
@@ -232,6 +233,9 @@ void FSBMOSF::gotFilesAndFolders()
 		QJsonObject json = doc.object();
 		QJsonArray dataArray = json.value("data").toArray();
 
+		if ( dataArray.size() > 0 )
+			_entries.clear();
+
 		foreach (const QJsonValue & value, dataArray) {
 			QJsonObject nodeObject = value.toObject();
 
@@ -254,7 +258,7 @@ void FSBMOSF::gotFilesAndFolders()
 					entryType = FSEntry::Folder;
 				else if (nodeData.name.endsWith(".jasp", Qt::CaseInsensitive))
 					entryType = FSEntry::JASP;
-				else if (nodeData.name.endsWith(".csv", Qt::CaseInsensitive))
+				else if (nodeData.name.endsWith(".csv", Qt::CaseInsensitive) || nodeData.name.endsWith(".txt", Qt::CaseInsensitive))
 					entryType = FSEntry::CSV;
 		#ifdef QT_DEBUG
 				else if (nodeData.name.endsWith(".spss", Qt::CaseInsensitive))

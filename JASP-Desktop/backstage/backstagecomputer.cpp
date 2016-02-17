@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 University of Amsterdam
+// Copyright (C) 2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -58,9 +58,9 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 		browsePath = path;
 
 #ifdef QT_DEBUG
-	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv *.spss)");
+	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv *.txt *.spss)");
 #else
-	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv)");
+	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv *.txt)");
 #endif
 
 	FileEvent *event = new FileEvent(this);
@@ -99,6 +99,11 @@ FileEvent *BackstageComputer::browseSave(const QString &path)
 
 	if (finalPath != "")
 	{
+		// force the filename end with .jasp - workaround for linux saving issue
+		if(!finalPath.endsWith(".jasp", Qt::CaseInsensitive))
+		{
+			finalPath.append(QString(".jasp"));
+		}
 		event->setPath(finalPath);
 		emit dataSetIORequest(event);
 	}

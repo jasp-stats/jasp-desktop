@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2015 University of Amsterdam
+// Copyright (C) 2013-2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,10 @@
 #include <QHBoxLayout>
 #include <QList>
 #include <QPushButton>
+#include <QComboBox>
+#include <QMenu>
+#include <QMenuBar>
+#include <QAction>
 
 class TabBar : public QWidget
 {
@@ -50,6 +54,10 @@ public slots:
 private slots:
 	void tabSelectedHandler();
 	void helpToggledHandler(bool on);
+	void showAbout();
+	void toggleHelp();
+	void toggleSEM();
+	void toggleReinforcement();
 
 private:
 
@@ -60,6 +68,9 @@ private:
 
 	QPushButton *_optionsTab;
 	QPushButton *_helpTab;
+	QComboBox *_comboTab;
+	QMenu *_menuTab;
+	QMenuBar *_menuBarTab;
 
 };
 

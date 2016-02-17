@@ -247,7 +247,10 @@
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QWidget" name="widget_4" native="true">
+          <widget class="QWidget" name="widgetConfidenceIntervalInterval" native="true">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <layout class="QGridLayout" name="gridLayout_8">
             <property name="leftMargin">
              <number>40</number>
@@ -313,7 +316,10 @@
           </widget>
          </item>
          <item row="6" column="0" colspan="2">
-          <widget class="QWidget" name="widget_6" native="true">
+          <widget class="QWidget" name="widgetDescriptivesPlotsConfidenceInterval" native="true">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <layout class="QGridLayout" name="gridLayout_9">
             <property name="leftMargin">
              <number>40</number>
@@ -601,7 +607,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Student's</string>
+            <string>Student</string>
            </property>
           </widget>
          </item>
@@ -679,5 +685,38 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>confidenceInterval</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetConfidenceIntervalInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>337</x>
+     <y>324</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>349</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>descriptivesPlots</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetDescriptivesPlotsConfidenceInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>332</x>
+     <y>407</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>382</x>
+     <y>435</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

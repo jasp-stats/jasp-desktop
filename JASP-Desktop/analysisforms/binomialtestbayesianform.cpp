@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015 University of Amsterdam
+// Copyright (C) 2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -37,6 +37,8 @@ BinomialTestBayesianForm::BinomialTestBayesianForm(QWidget *parent) :
 	ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
 	
 	ui->testValue->setLabel("Test value");
+	ui->priorA->setLabel("a");
+	ui->priorB->setLabel("b");
 }
 
 BinomialTestBayesianForm::~BinomialTestBayesianForm()

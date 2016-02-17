@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2015 University of Amsterdam
+// Copyright (C) 2013-2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -73,6 +73,8 @@
 #include <QFileInfo>
 #include <QShortcut>
 #include <QDesktopWidget>
+#include <QTabBar>
+#include <QMenuBar>
 
 #include "analysisloader.h"
 #include "qutils.h"
@@ -83,6 +85,7 @@
 
 #include "lrnam.h"
 #include "activitylog.h"
+#include "aboutdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -224,15 +227,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	_okButton = new QPushButton(QString("OK"), _buttonPanel);
 	_okButton->setDefault(true);
 	_runButton = new QPushButton(QString("Run"), _buttonPanel);
-	_menuButton = new QPushButton(QString("..."), _buttonPanel);
 
-	QMenu *menu = new QMenu(_menuButton);
-	menu->addAction("Remove Analysis", this, SLOT(analysisRemoved()));
-	_menuButton->setMenu(menu);
+	QMenuBar *_mMenuBar = new QMenuBar(parent=0);
+	QMenu *aboutMenu = _mMenuBar->addMenu("JASP");
+	aboutMenu->addAction("About",this,SLOT(showAbout()));
+	_mMenuBar->addMenu(aboutMenu);
 
 	_buttonPanelLayout->addWidget(_okButton);
 	_buttonPanelLayout->addWidget(_runButton);
-	_buttonPanelLayout->addWidget(_menuButton);
 	_buttonPanelLayout->addStretch();
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
@@ -823,6 +825,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		if (event->successful())
 		{
 			populateUIfromDataSet();
+			QString name =  QFileInfo(event->path()).baseName();
+			setWindowTitle(name);
 		}
 		else
 		{
@@ -1651,5 +1655,14 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 
 	analysis->options()->set(root);
 
+
+}
+
+void MainWindow::showAbout()
+{
+
+	AboutDialog aboutdialog;
+	aboutdialog.setModal(true);
+	aboutdialog.exec();
 
 }

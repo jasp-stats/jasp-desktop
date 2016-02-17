@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2015 University of Amsterdam
+// Copyright (C) 2013-2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			{
 				try
 				{
-					std::string text = labels.at(i).text();
+					std::string text = labels.labelFor(i).text();
 					int value = lexical_cast<int>(text);
 					int raw = labels.add(value);
 					oldIndexToNewIndex[i] = raw;
@@ -129,7 +129,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			for (; doubles != this->AsDoubles.end(); doubles++)
 			{
 				int v = (int)*doubles;
-				if ( ! isnan(v))
+				if ( ! std::isnan(v))
 					uniqueValues.insert(v);
 			}
 
@@ -151,7 +151,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			for (; ints != end; ints++, doubles++)
 			{
 				double value = *doubles;
-				if (isnan(value))
+				if (std::isnan(value))
 				{
 					*ints = INT_MIN;
 				}
@@ -229,7 +229,7 @@ string Column::stringFromRaw(int value) const
 		return ".";
 
 	if (_labels.size() > 0)
-		return _labels.at(value).text();
+		return _labels.labelFor(value).text();
 
 	stringstream ss;
 	ss << value;
@@ -258,7 +258,7 @@ void Column::setValue(int rowIndex, string value)
 		}
 		catch (...)
 		{
-            //qDebug() << "could not assign: " << value.c_str();
+			//qDebug() << "could not assign: " << value.c_str();
 		}
 	}
 	else
@@ -272,7 +272,7 @@ void Column::setValue(int rowIndex, string value)
 			}
 			catch (...)
 			{
-                //qDebug() << "could not assign: " << value.c_str();
+				//qDebug() << "could not assign: " << value.c_str();
 			}
 		}
 	}*/
@@ -284,7 +284,7 @@ void Column::setValue(int rowIndex, int value)
 
 	if (itr == _blocks.end())
 	{
-        //qDebug() << "Column::setValue(), bad rowIndex";
+		//qDebug() << "Column::setValue(), bad rowIndex";
 		return;
 	}
 
@@ -301,7 +301,7 @@ void Column::setValue(int rowIndex, double value)
 
 	if (itr == _blocks.end())
 	{
-        //qDebug() << "Column::setValue(), bad rowIndex";
+		//qDebug() << "Column::setValue(), bad rowIndex";
 		return;
 	}
 
@@ -320,15 +320,15 @@ string Column::operator [](int index)
 
 		if (v > DBL_MAX)
 		{
-            char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
+			char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
 			return string(inf);
 		}
 		else if (v < -DBL_MAX)
 		{
-            char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
+			char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
 			return string(ninf);
 		}
-		else if (isnan(v))
+		else if (std::isnan(v))
 		{
 			return ".";
 		}
@@ -471,7 +471,7 @@ int& Column::IntsStruct::operator [](int rowIndex)
 
 	if (itr == parent->_blocks.end())
 	{
-        //qDebug() << "Column::Ints[], bad rowIndex";
+		//qDebug() << "Column::Ints[], bad rowIndex";
 	}
 
 	int blockId = itr->first;
@@ -563,7 +563,7 @@ double& Column::DoublesStruct::operator [](int rowIndex)
 
 	if (itr == parent->_blocks.end())
 	{
-        //qDebug() << "Column::Ints[], bad rowIndex";
+		//qDebug() << "Column::Ints[], bad rowIndex";
 	}
 
 	int blockId = itr->first;

@@ -2483,7 +2483,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	BF10 <- BF
 	BF01 <- 1 / BF10
 
-	# fit denisty estimator
+	# fit density estimator
 	fit.posterior <-  logspline::logspline(samples)
 	
 	# density function posterior
@@ -2580,7 +2580,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	if (addInformation) {
 		
 		# display BF10 value
-		offsetTopPart <- 0.06	
+		offsetTopPart <- 0.06
 		
 		yy <- grconvertY(0.75 + offsetTopPart, "ndc", "user")
 		yy2 <- grconvertY(0.806 + offsetTopPart, "ndc", "user")
@@ -2617,7 +2617,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 		yy <- grconvertY(0.756 + offsetTopPart, "ndc", "user")
 		yy2 <- grconvertY(0.812 + offsetTopPart, "ndc", "user")
-				
+		
 		CIwidth <- selectedCI * 100
 		CInumber <- paste(CIwidth, "% CI: [", sep="")
 		CIText <- paste(CInumber,  bquote(.(formatC(CIlow,3, format="f"))), ", ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
@@ -2663,7 +2663,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		alpha <- 2 / (BF01 + 1) * A / radius^2
 		startpos <- pi/2 - alpha/2
 		
-		# draw probability wheel		
+		# draw probability wheel
 		plotrix::floating.pie(xx, yy,c(BF10, 1),radius= radius, col=c("darkred", "white"), lwd=2,startpos = startpos)
 		
 		yy <- grconvertY(0.865 + offsetTopPart, "ndc", "user")
@@ -2687,7 +2687,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			text(xx, yy2, "data|H0", cex= cexCI)
 		}
 		
-		# add legend		
+		# add legend
 		CIText <- paste("95% CI: [",  bquote(.(formatC(CIlow,3, format="f"))), " ; ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
 		
 		medianLegendText <- paste("median =", medianText)
@@ -2708,7 +2708,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 	} else if (oneSided == "left") {
 		
-		ifelse (logOR <= 0,  dnorm(logOR, mean, sd) / pnorm(0, mean, sd, lower.tail=TRUE), 0 )		
+		ifelse (logOR <= 0,  dnorm(logOR, mean, sd) / pnorm(0, mean, sd, lower.tail=TRUE), 0 )
 	}
 }
 
@@ -2733,8 +2733,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	selectedCI = options$effectSizeCredibleIntervalInterval,
 	options) {
 	
-	
-		par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
+	par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
 	
 	
 	if (dontPlotData) {
@@ -2749,93 +2748,74 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 		return()
 	}
-
-	# fit denisty estimator
-	fit.posterior <-  logspline::logspline(samples)
-	
-	# density function posterior
-	dposterior0 <- function(x, samples= samples){
-	
-		return(logspline::dlogspline(x, fit.posterior))
-	}
 	
 	# set limits plot
-	xlim <- vector("numeric", 2)
+	
+	xlim <- c(0, 1)
+	xticks <- pretty(xlim)
+	xlabels <- formatC(xticks)
 	
 	stretch <- 1.2
-		xlim[1] <- quantile(samples, probs = 0.002)
-		xlim[2] <- quantile(samples, probs = 0.998)
-	
 
-	xticks <- pretty(xlim)
+	posteriorDensity <- .dposteriorCV(seq(min(xticks), max(xticks),length.out = 10000), samples)
+	posteriorDensityFinite <- is.finite(posteriorDensity)
+	posteriorDensityFinite <- posteriorDensity[is.finite(posteriorDensity)]
+	dmax <- max(posteriorDensityFinite)
+	
+	stretch <- 1.2
+	
 	ylim <- vector("numeric", 2)
-
 	ylim[1] <- 0
-
-	ylim[2] <- stretch * max(.dposteriorCV(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)))
+	ylim[2] <- stretch * dmax
 	
-	# calculate position of "nice" tick marks and create labels
-	#xticks <- pretty(xlim)
 	yticks <- pretty(ylim)
-	xlabels <- formatC(xticks, 1, format= "f")
-	ylabels <- formatC(yticks, 1, format= "f")
+	ylabels <- formatC(yticks)
 	
-	# compute 95% credible interval & median:	
 	CIlow <- CI[1]
 	CIhigh <- CI[2]
-	medianPosterior <- medianSamples
 	
-	z<-density(samples) 
+	plot(0, xlim = range(xticks), ylim = c(0, range(yticks)[2]), ylab = "", xlab = "", type = "n", axes= FALSE)
 	
-	plot(0,0, xlim= range(xticks), ylim= c(0, range(yticks)[2]), ylab= "", xlab="", type= "n", axes= FALSE)
-		
-	lines(seq(min(xticks), max(xticks),length.out = 10000), .dposteriorCV(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)), lwd= lwd)
-
-	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
-	axis(2, at= yticks, labels= ylabels, cex.axis= cexAxis, lwd= lwdAxis)
+	hist(samples, prob = TRUE, xlim = xlim, add = TRUE)
+	
+	lines(seq(min(xticks), max(xticks), length.out = 10000), posteriorDensity, lwd = lwd)
+    
+	axis(1, at = xticks, labels = xlabels, cex.axis = cexAxis, lwd = lwdAxis)
+	axis(2, at = yticks, labels = ylabels, cex.axis = cexAxis, lwd = lwdAxis)
 		
 	if (nchar(ylabels[length(ylabels)]) > 4) {
 		
-		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 4)
+		mtext(text = "Density", side = 2, las = 0, cex = cexYlab, line = 4)
+		
 	} else if (nchar(ylabels[length(ylabels)]) == 4) {
 		
-		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
+		mtext(text = "Density", side = 2, las = 0, cex = cexYlab, line = 3.25)
+		
 	} else if (nchar(ylabels[length(ylabels)]) < 4) {
 		
-		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
+		mtext(text = "Density", side = 2, las = 0, cex = cexYlab, line = 2.85)
 	}
 	
-	mtext("Cramer's V", side = 1, cex = cexXlab, line= 2.5)	
-		
-	# credible interval
-	dmax <- optimize(function(x)dposterior0(x, samples=samples), interval= range(xticks), maximum = TRUE)$objective # get maximum density
+	mtext("Cramer's V", side = 1, cex = cexXlab, line = 2.5)
 	
-	# enable plotting in margin
-	par(xpd=TRUE)
+	par(xpd = TRUE) # enable plotting in margin
 	
 	yCI <- grconvertY(dmax, "user", "ndc") + 0.04
 	yCI <- grconvertY(yCI, "ndc", "user")
 	
-
-		arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
+	arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
+	points(medianSamples, yCI, cex = 1.4, pch = 21, bg = "black", col = "black")
 	
-	medianText <- formatC(medianPosterior, digits= 3, format="f")
-	
-		CIwidth <- selectedCI * 100
-		CInumber <- paste(CIwidth, "% CI: [", sep="")
-		CIText <- paste(CInumber,  bquote(.(formatC(CIlow,3, format="f"))), ", ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
-		medianLegendText <- paste("median =", medianText)
-	
-		# add legend		
-		CIText <- paste("95% CI: [",  bquote(.(formatC(CIlow,3, format="f"))), " ; ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
-		
-		medianLegendText <- paste("median =", medianText)
-
-	
-	mostPosterior <- mean(samples > mean(range(xticks)))
 }
 
-.dposteriorCV <- function(CV, mean, sd) {	
-		
-		dnorm(CV, mean, sd)
-	}
+.dposteriorCV <- function(x, samples) {
+	
+	meanCV <- mean(samples)
+	varCV <- var(samples)
+	
+	alpha <- (meanCV^2*(1-meanCV)/varCV)-meanCV
+	beta <- (meanCV*(1-meanCV)^2/varCV)-(1-meanCV)
+	
+	dbeta(x, alpha, beta)
+	
+}

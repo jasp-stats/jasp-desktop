@@ -20,9 +20,13 @@ public:
 	QVariant data(const QModelIndex &index, int role) const OVERRIDE;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const OVERRIDE;
 
+	void moveUp(QModelIndexList &selection);
+	void moveDown(QModelIndexList &selection);
+
 private:
 	Column *_column;
 
+	void _moveRows(QModelIndexList &selection, bool up = true);
 };
 
 #endif // LEVELSTABLEMODEL_H

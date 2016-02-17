@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2015 University of Amsterdam
+// Copyright (C) 2013-2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -93,7 +93,7 @@ private:
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
 	QPushButton *_runButton;
-	QPushButton *_menuButton;
+	QTabBar *_mTabBar;
 
 	OptionsForm *_optionsForm;
 
@@ -188,6 +188,7 @@ private slots:
 
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);
+	void showAbout();
 };
 
 #endif // MAINWIDGET_H

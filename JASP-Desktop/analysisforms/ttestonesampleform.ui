@@ -344,7 +344,10 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="3" column="0">
-          <widget class="QWidget" name="widget_4" native="true">
+          <widget class="QWidget" name="widgetConfidenceIntervalInterval" native="true">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -481,7 +484,10 @@
           </widget>
          </item>
          <item row="6" column="0">
-          <widget class="QWidget" name="widget_7" native="true">
+          <widget class="QWidget" name="widgetDescriptivesPlotsConfidenceInterval" native="true">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -705,7 +711,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Student's</string>
+            <string>Student</string>
            </property>
           </widget>
          </item>
@@ -789,5 +795,38 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>confidenceInterval</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetConfidenceIntervalInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>337</x>
+     <y>324</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>349</x>
+     <y>353</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>descriptivesPlots</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widgetDescriptivesPlotsConfidenceInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>332</x>
+     <y>409</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>382</x>
+     <y>438</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
