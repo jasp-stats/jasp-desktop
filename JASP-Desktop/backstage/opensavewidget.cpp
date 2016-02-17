@@ -75,7 +75,7 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_tabWidget->addTab(_bsRecent, "Recent");
 	_tabWidget->addTab(_bsComputer, "Computer");
 
-	_tabWidget->addTab(_bsOSF, "OSF", QIcon(":/icons/logo-osf.png"));
+	_tabWidget->addTab(_bsOSF, "OSF");
 
 	_tabWidget->addTab(_bsExamples, "Examples");
 
