@@ -123,16 +123,20 @@ void TabBar::addHelpTab()
 	QAction *sem = new QAction("SEM ToolBox",optionmenu);
 	QAction *rei = new QAction("Reinforcement Learning Toolbox",optionmenu);
 
-		//SEM
+	//SEM
 	sem->setObjectName("SEM Toolbox");
 	sem->setCheckable(true);
 	sem->setChecked(false);
 	optionmenu->addAction(sem);
-		//Reinforcement
-	rei->setObjectName("Reinforcement Learning Toolbo");
+
+	//Reinforcement
+	rei->setObjectName("Reinforcement Learning Toolbox");
 	rei->setCheckable(true);
 	rei->setChecked(false);
+
+#ifdef QT_DEBUG
 	optionmenu->addAction(rei);
+#endif
 
 	optionmenu->acceptDrops();
 	helpmenu->acceptDrops();
