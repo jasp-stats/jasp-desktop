@@ -825,6 +825,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		if (event->successful())
 		{
 			populateUIfromDataSet();
+			QString name =  QFileInfo(event->path()).baseName();
+			setWindowTitle(name);
 		}
 		else
 		{
