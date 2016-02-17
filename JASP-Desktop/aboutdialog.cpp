@@ -21,6 +21,9 @@
 
 #include "qutils.h"
 #include <QWebFrame>
+#include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
 #include "appinfo.h"
 
 AboutDialog::AboutDialog(QWidget *parent) :
@@ -29,8 +32,18 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {	
 	ui->setupUi(this);
 
-	//Disable maximize option dialog
+	// Disable maximize option dialog
 	setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint /* | Qt::WindowMaximizeButtonHint */ | Qt::CustomizeWindowHint);
+
+	// Fill textBrowser with welcome.html
+	QFile file(":/core/welcome.html");
+	if  ( !file.open(QIODevice::ReadOnly) )
+		QMessageBox::information(0,"Information",file.errorString());
+	else
+	{
+		QTextStream in(&file);
+		ui->textBrowser->setText(in.readAll());
+	}
 
 	ui->aboutWebView->setUrl((QUrl(QString("qrc:///core/about.html"))));
 	connect(ui->aboutWebView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
@@ -50,18 +63,14 @@ void AboutDialog::on_buttonBox_clicked(QAbstractButton *button)
 void AboutDialog::aboutPageLoaded(bool success)
 {
 
-	// Show aboutWebView with about.html
+	// Show aboutWebView with about.html and patch information
 	if (success)
 	{
 		QString version = tq(AppInfo::version.asString());
 		ui->aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
 		ui->aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate()");
-		ui->aboutWebView->page()->mainFrame()->evaluateJavaScript("window.noInstructions()");
 		QString html = ui->aboutWebView->page()->mainFrame()->toHtml();
 		ui->label->setText(html);
-		ui->aboutWebView->page()->mainFrame()->evaluateJavaScript("window.noPatchinfo()");
-		html = ui->aboutWebView->page()->mainFrame()->toHtml();
-		ui->textBrowser->setText(html);
-	}
+		}
 
 }
