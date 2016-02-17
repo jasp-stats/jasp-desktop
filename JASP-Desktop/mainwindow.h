@@ -93,7 +93,6 @@ private:
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
 	QPushButton *_runButton;
-	QPushButton *_menuButton;
 	QTabBar *_mTabBar;
 
 	OptionsForm *_optionsForm;
