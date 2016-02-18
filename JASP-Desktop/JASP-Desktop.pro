@@ -1,5 +1,5 @@
 
-QT += core gui webkit webkitwidgets svg
+QT += core gui webkit webkitwidgets svg network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
