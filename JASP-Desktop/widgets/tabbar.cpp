@@ -124,15 +124,17 @@ void TabBar::addHelpTab()
 	QAction *rei = new QAction("Reinforcement Learning Toolbox",optionmenu);
 
 	//SEM
+	QVariant sem_setting = _settings.value("plugins/sem", false);
 	sem->setObjectName("SEM Toolbox");
 	sem->setCheckable(true);
-	sem->setChecked(false);
+	sem->setChecked(sem_setting.canConvert(QVariant::Bool) && sem_setting.toBool());
 	optionmenu->addAction(sem);
 
 	//Reinforcement
+	QVariant ri_setting = _settings.value("toolboxes/r11tLearn", false);
 	rei->setObjectName("Reinforcement Learning Toolbox");
 	rei->setCheckable(true);
-	rei->setChecked(false);
+	rei->setChecked(ri_setting.canConvert(QVariant::Bool) && ri_setting.toBool());
 
 #ifdef QT_DEBUG
 	optionmenu->addAction(rei);
@@ -171,7 +173,8 @@ void TabBar::toggleHelp()
 
 void TabBar::toggleSEM()
 {
-	static bool on;
+	QVariant sem_setting = _settings.value("plugins/sem", false);
+	static bool on = (sem_setting.canConvert(QVariant::Bool) && sem_setting.toBool());
 	on = ! on;
 	if (on)
 		this->addTab("SEM");
@@ -181,7 +184,8 @@ void TabBar::toggleSEM()
 
 void TabBar::toggleReinforcement()
 {
-	static bool on;
+	QVariant ri_setting = _settings.value("toolboxes/r11tLearn", false);
+	static bool on = (ri_setting.canConvert(QVariant::Bool) && ri_setting.toBool());
 	on = ! on;
 	if (on)
 		this->addTab("R11t Learn");

@@ -67,8 +67,9 @@ void AboutDialog::aboutPageLoaded(bool success)
 	if (success)
 	{
 		QString version = tq(AppInfo::version.asString());
+		QString builddate = tq(AppInfo::builddate);
 		ui->aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
-		ui->aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate()");
+		ui->aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
 		QString html = ui->aboutWebView->page()->mainFrame()->toHtml();
 		ui->label->setText(html);
 		}

@@ -20,6 +20,7 @@
 
 const Version AppInfo::version = Version(0, 7, 5, 255);
 const std::string AppInfo::name = "JASP";
+const std::string AppInfo::builddate = "Fri Feb 19 2016 12:55:58 GMT+0100 (CET)";
 
 std::string AppInfo::getShortDesc()
 {
