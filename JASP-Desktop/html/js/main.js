@@ -48,9 +48,8 @@ $(document).ready(function () {
 		$(".app-version").text("Version " + version);
 	}
 
-    window.setAppBuildDate = function(){
-       var today = new Date();
-       $(".app-builddate").text(today);
+    window.setAppBuildDate = function(builddate){
+       $(".app-builddate").text(builddate);
     }
 
     window.noInstructions = function () {
