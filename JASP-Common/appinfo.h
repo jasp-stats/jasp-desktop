@@ -25,6 +25,7 @@ class AppInfo
 public:
 	static const Version version;
 	static const std::string name;
+	static const std::string builddate;
 
 	static std::string getShortDesc();
 };

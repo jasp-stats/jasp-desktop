@@ -28,6 +28,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
+#include <QSettings>
 
 class TabBar : public QWidget
 {
@@ -71,6 +72,7 @@ private:
 	QComboBox *_comboTab;
 	QMenu *_menuTab;
 	QMenuBar *_menuBarTab;
+	QSettings _settings;
 
 };
 

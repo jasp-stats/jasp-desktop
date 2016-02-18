@@ -8,6 +8,8 @@
 #include <QByteArray>
 #include <QEventLoop>
 #include <stdexcept>
+#include <QMessageBox>
+
 
 using namespace std;
 
@@ -80,6 +82,8 @@ bool OnlineUserNodeOSF::authenticationSuccessful(QNetworkAccessManager *manager)
 	loop.exec();
 
 	bool error = reply->error();
+	if (error)
+		QMessageBox::warning(NULL, "OSF Warning", reply->errorString());
 
 	delete reply;
 
