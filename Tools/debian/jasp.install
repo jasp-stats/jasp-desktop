@@ -1,0 +1,7 @@
+JASP                usr/lib/JASP
+JASPEngine          usr/lib/JASP
+R/*                 usr/lib/JASP/R
+Resources/*         usr/lib/JASP/Resources
+debian/jasp.svg     usr/lib/JASP/Resources
+debian/jasp.desktop usr/share/applications
+
