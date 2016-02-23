@@ -101,10 +101,7 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 
 ## Posterior Table
 	model.comparison <- .theBayesianLinearModelsComparison (model, options, perform, status, populate = FALSE)
-	print(model.comparison)
 	results [["model comparison"]] <- model.comparison$modelTable
-	
-	print(results [["model comparison"]])
 	
 	if ( is.null (state))
 		model <- model.comparison$model

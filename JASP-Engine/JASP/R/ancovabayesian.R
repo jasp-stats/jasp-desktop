@@ -105,8 +105,6 @@ AncovaBayesian	 <- function (dataset = NULL, options, perform = "run", callback 
 	}
 ## Posterior Table
 	model.comparison <- .theBayesianLinearModelsComparison (model, options, perform, status, populate = FALSE)
-	print("BAnCova")
-	print(model.comparison)
 	results [["model comparison"]] <- model.comparison$modelTable
 	if ( is.null (state))
 		model <- model.comparison$model

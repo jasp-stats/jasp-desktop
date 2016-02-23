@@ -391,21 +391,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 	
 	table[["data"]] <- data
 	
-	errorMessage <- NULL
-	
-	if (options$testValue == 1 && hyp == "greater") {
-	
-		errorMessage <- "Cannot test the hypothesis that the test value is greater than 1."
-	
-	} else if (options$testValue == 0 && hyp == "less") {
-	
-		errorMessage <- "Cannot test the hypothesis that the test value is less than 0."
-	}
-	
-	if ( ! is.null(errorMessage))
-		table[["error"]] <- list(errorType = "badData", errorMessage = errorMessage)
-	
-	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste0("Proportions tested against value: ", options$testValue, ".")))
+	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste("proportions tested against value:", options$testValue)))
 	
 	results[["binomial"]] <- table
 	
@@ -464,41 +450,26 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 }
 
 .bayesBinomialTest.oneSided <- function(counts, n, theta0, a, b, hypothesis) {
-  
-  if (hypothesis == "less") {
-    
-    lowerTail <- TRUE
-    
-  } else if (hypothesis == "greater") {
-    
-    lowerTail <- FALSE
-    
-  }
-  
-  if (theta0 == 0 && counts == 0) {
-    
-    # in this case, counts*log(theta0) should be zero, omit to avoid numerical issue with log(0)
-    logMLikelihoodH0 <- (n - counts)*log(1 - theta0)
-    
-  } else if (theta0 == 1 && counts == n) {
-    
-    # in this case, (n - counts)*log(1 - theta0) should be zero, omit to avoid numerical issue with log(0)
-    logMLikelihoodH0 <- counts*log(theta0)
-
-  } else {
-  
-  logMLikelihoodH0 <- counts*log(theta0) + (n - counts)*log(1 - theta0)
-  
-  }
-  
-  term1 <- pbeta(theta0, a + counts, b + n - counts, lower.tail = lowerTail, log.p = TRUE) +
-    lbeta(a + counts, b + n - counts)
-  term2 <- lbeta(a,b) + pbeta(theta0, a, b, lower.tail = lowerTail, log.p = TRUE)
-  logMLikelihoodH1 <- term1 - term2
-  BF10 <- exp(logMLikelihoodH1 - logMLikelihoodH0)
-  
-  return(BF10)
-  
+	
+	if (hypothesis == "less") {
+		
+		lowerTail <- TRUE
+	
+	} else if (hypothesis == "greater") {
+		
+		lowerTail <- FALSE
+	
+	}
+	
+	logMLikelihoodH0 <- counts*log(theta0) + (n - counts)*log(1 - theta0)
+	term1 <- pbeta(theta0, a + counts, b + n - counts, lower.tail = lowerTail, log.p = TRUE) +
+		lbeta(a + counts, b + n - counts)
+	term2 <- lbeta(a,b) + pbeta(theta0, a, b, lower.tail = lowerTail, log.p = TRUE)
+	logMLikelihoodH1 <- term1 - term2
+	BF10 <- exp(logMLikelihoodH1 - logMLikelihoodH0)
+	
+	return(BF10)
+	
 }
 
 .bayesBinomialTest <- function(counts, n, theta0, hypothesis, a, b) {
@@ -509,15 +480,15 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 		
 	} else {
 		
-		#if (theta0 == 0 || theta0 == 1) {
-		#	
-		#	BF10 <- NA
-		#	
-		#} else {
+		if (theta0 == 0 || theta0 == 1) {
+			
+			BF10 <- NA
+			
+		} else {
 			
 			BF10 <- try(.bayesBinomialTest.oneSided(counts, n, theta0, a, b, hypothesis), silent = TRUE)
 			
-		#}
+		}
 	}
 	
 	if (class(BF10) == "try-error")
