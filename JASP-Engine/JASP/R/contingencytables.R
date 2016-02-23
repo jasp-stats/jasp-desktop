@@ -168,6 +168,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	### SETUP COLUMNS COMMON TO BOTH TABLES
 
 	fields <- list()
+
 	
 	if (length(analysis) >= 3) {
 	
@@ -249,6 +250,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	overTitle <- unlist(analysis$columns)
 	if (overTitle == "")
 		overTitle <- "."
+
 	
 	for (column.name in lvls) {
 

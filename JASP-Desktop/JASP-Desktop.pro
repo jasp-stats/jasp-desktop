@@ -531,8 +531,8 @@ linux {
 
 ! equals(PWD, $${OUT_PWD}) {
 
-    QMAKE_EXTRA_TARGETS += copyres
-    POST_TARGETDEPS     += copyres
+    #QMAKE_EXTRA_TARGETS += copyres
+    #POST_TARGETDEPS     += copyres
 }
 
 DISTFILES += \
