@@ -20,6 +20,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 
 	variables <- unlist(options$variables)
 	
+	
 	if (is.null(dataset)) {
 		
 		if (perform == "run") {
@@ -130,6 +131,17 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 	a <- options$priorA
 	b <- options$priorB
 	
+	errorMessageTable <- NULL
+	
+	if (options$testValue == 1 && hyp == "greater") {
+	
+		errorMessageTable <- "Cannot test the hypothesis that the test value is greater than 1."
+	
+	} else if (options$testValue == 0 && hyp == "less") {
+	
+		errorMessageTable <- "Cannot test the hypothesis that the test value is less than 0."
+	}
+	
 	if (perform == "run" && !is.null(variables)) {
 	
 		i <- 1 # plotGroups index
@@ -199,7 +211,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 					
 				}
 				
-				if (options$plotPriorAndPosterior) {
+				if (options$plotPriorAndPosterior && is.null(errorMessageTable)) {
 					
 					plotType <- ifelse(options$plotPriorAndPosteriorAdditionalInfo, "PriorPosteriorAddInfoPlot:", "PriorPosteriorPlot:")
 					plotIdentifier[j] <- paste0(plotType, plotGroups[[i]][["name"]])
@@ -241,7 +253,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 					
 				}
 				
-				if (options$plotSequentialAnalysis) {
+				if (options$plotSequentialAnalysis && is.null(errorMessageTable)) {
 					
 					plotIdentifier[j] <- paste("SequentialAnalysisPlot:", plotGroups[[i]][["name"]])
 					
@@ -329,7 +341,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 					
 				}
 				
-				if (options$plotPriorAndPosterior) {
+				if (options$plotPriorAndPosterior && is.null(errorMessageTable)) {
 					
 					plotType <- ifelse(options$plotPriorAndPosteriorAdditionalInfo, "PriorPosteriorAddInfoPlot:", "PriorPosteriorPlot:")
 					plotIdentifier[length(plotIdentifier) + 1] <- paste0(plotType, plotGroups[[length(plotGroups)]][["name"]])
@@ -357,7 +369,7 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 					
 				}
 				
-				if (options$plotSequentialAnalysis) {
+				if (options$plotSequentialAnalysis && is.null(errorMessageTable)) {
 					
 					plotIdentifier[length(plotIdentifier) + 1] <- paste("SequentialAnalysisPlot:", plotGroups[[length(plotGroups)]][["name"]])
 					
@@ -391,7 +403,11 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 	
 	table[["data"]] <- data
 	
-	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste("proportions tested against value:", options$testValue)))
+	
+	if ( ! is.null(errorMessageTable))
+		table[["error"]] <- list(errorType = "badData", errorMessage = errorMessageTable)
+	
+	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste0("Proportions tested against value: ", options$testValue, ".")))
 	
 	results[["binomial"]] <- table
 	
@@ -450,26 +466,41 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 }
 
 .bayesBinomialTest.oneSided <- function(counts, n, theta0, a, b, hypothesis) {
-	
-	if (hypothesis == "less") {
-		
-		lowerTail <- TRUE
-	
-	} else if (hypothesis == "greater") {
-		
-		lowerTail <- FALSE
-	
-	}
-	
-	logMLikelihoodH0 <- counts*log(theta0) + (n - counts)*log(1 - theta0)
-	term1 <- pbeta(theta0, a + counts, b + n - counts, lower.tail = lowerTail, log.p = TRUE) +
-		lbeta(a + counts, b + n - counts)
-	term2 <- lbeta(a,b) + pbeta(theta0, a, b, lower.tail = lowerTail, log.p = TRUE)
-	logMLikelihoodH1 <- term1 - term2
-	BF10 <- exp(logMLikelihoodH1 - logMLikelihoodH0)
-	
-	return(BF10)
-	
+  
+  if (hypothesis == "less") {
+    
+    lowerTail <- TRUE
+    
+  } else if (hypothesis == "greater") {
+    
+    lowerTail <- FALSE
+    
+  }
+  
+  if (theta0 == 0 && counts == 0) {
+    
+    # in this case, counts*log(theta0) should be zero, omit to avoid numerical issue with log(0)
+    logMLikelihoodH0 <- (n - counts)*log(1 - theta0)
+    
+  } else if (theta0 == 1 && counts == n) {
+    
+    # in this case, (n - counts)*log(1 - theta0) should be zero, omit to avoid numerical issue with log(0)
+    logMLikelihoodH0 <- counts*log(theta0)
+
+  } else {
+  
+  logMLikelihoodH0 <- counts*log(theta0) + (n - counts)*log(1 - theta0)
+  
+  }
+  
+  term1 <- pbeta(theta0, a + counts, b + n - counts, lower.tail = lowerTail, log.p = TRUE) +
+    lbeta(a + counts, b + n - counts)
+  term2 <- lbeta(a,b) + pbeta(theta0, a, b, lower.tail = lowerTail, log.p = TRUE)
+  logMLikelihoodH1 <- term1 - term2
+  BF10 <- exp(logMLikelihoodH1 - logMLikelihoodH0)
+  
+  return(BF10)
+  
 }
 
 .bayesBinomialTest <- function(counts, n, theta0, hypothesis, a, b) {
@@ -480,15 +511,15 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 		
 	} else {
 		
-		if (theta0 == 0 || theta0 == 1) {
-			
-			BF10 <- NA
-			
-		} else {
+		#if (theta0 == 0 || theta0 == 1) {
+		#	
+		#	BF10 <- NA
+		#	
+		#} else {
 			
 			BF10 <- try(.bayesBinomialTest.oneSided(counts, n, theta0, a, b, hypothesis), silent = TRUE)
 			
-		}
+		#}
 	}
 	
 	if (class(BF10) == "try-error")
