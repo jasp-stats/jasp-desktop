@@ -17,7 +17,7 @@
 
 ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) {
 
-	layer.variables <- c()
+	layer.variables <- c()  
 
 	for (layer in options$layers)
 		layer.variables <- c(layer.variables, unlist(layer$variables))
@@ -46,7 +46,9 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	meta <- list()
 	meta[[1]] <- list(name="title", type="title")
 	meta[[2]] <- list(name="tables", type="tables")
-	meta[[3]] <- list(name="plots", type="images")
+	#meta[[3]] <- list(name="plots", type="images")
+	meta[[3]] <- list(name="plots", type="collection", meta=list(name="plotGroups", type="object",
+																 meta=list(list(name="LogORplot", type="image"))))
 	
 	results[[".meta"]] <- meta
 	
@@ -88,6 +90,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	next.table.index <- 1
 	next.plot.index  <- 1
 	keep <- list()
+	plotGroups <- list()
 
 	for (i in seq_along(analyses)) {
 	
@@ -133,12 +136,10 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		next.plot.index  <- 1
 
 		for (i in seq_along(analyses))
-		{
+		{	
+			
 			results[["tables"]] <- cont.tables
-			results[["plots"]] <- plots
-		
-			callback(results)
-		
+			
 			analysis <- analyses[[i]]
 		
 			if ("results" %in% names(old.state) && i <= length(old.state$results)) {
@@ -178,8 +179,20 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	}
 	
 	results[["tables"]] <- cont.tables
-	results[["plots"]] <- plots
-
+	
+	for (i in seq_along(plots)) {
+		
+		title <- ifelse(plots[[i]]$title == "Log odds ratio", "", plots[[i]]$title)
+		plots[[i]]$title <- "Log odds ratio"
+		plotGroups[[i]] <- list()
+		plotGroups[[i]][["LogORplot"]] <- plots[[i]]
+		plotGroups[[i]][["title"]] <- title
+		plotGroups[[i]][["name"]] <- title
+		
+	}
+	
+	results[["plots"]] <- list(title=ifelse(length(plots) > 1, "Plots", "Plot"), collection=plotGroups)
+	
 	if (perform == "run") {
 	
 		list(results=results, status="complete", state=new.state, keep=keep)
@@ -243,9 +256,9 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	if ("plots.state" %in% names(state))
 		plots.state <- state$plots.state
 		
-	plotsCV.state <- NULL
-	if ("plotsCV.state" %in% names(state))
-		plotsCV.state <- state$plotsCV.state	
+	#plotsCV.state <- NULL
+	#if ("plotsCV.state" %in% names(state))
+	#	plotsCV.state <- state$plotsCV.state	
 	
 	old.options <- NULL
 	if ("options" %in% names(state))
@@ -299,12 +312,12 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	keep     <- res$keep
 	complete <- complete && res$complete
 	
-	res <- .contTablesBayesianCreateCramerVPlots(dataset, analysis, group.matrices, groups, options, populate, CramersV.results, bf.results, plotsCV.state, old.options, status)
+	#res <- .contTablesBayesianCreateCramerVPlots(dataset, analysis, group.matrices, groups, options, populate, CramersV.results, bf.results, plotsCV.state, old.options, status)
 	
-	plots <- c(plots, res$plots)
-	new.state$plotsCV.state <- res$state
-	keep     <- res$keep
-	complete <- complete && res$complete
+	#plots <- c(plots, res$plots)
+	#new.state$plotsCV.state <- res$state
+	#keep     <- res$keep
+	#complete <- complete && res$complete
 		
 	new.state$options <- options
 	
@@ -392,7 +405,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	if (length(group) == 0) {
 	
-		odds.ratio.plot[["title"]] <- "Odds ratio"
+		odds.ratio.plot[["title"]] <- "Log odds ratio"
 		
 	} else if (length(group) > 0) {
 		
@@ -414,16 +427,12 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 	if (is.null(plot.state) == FALSE) {
 	
-		print("we are so for here")
-		print("plot.state")
-		print(plot.state)
 	
 		odds.ratio.plot[["data"]] <- plot.state$keep
 		
 		if ("status" %in% names(plot.state) && plot.state$status$error) {
 			odds.ratio.plot[["error"]] <- list(errorType="badData", errorMessage=paste0("Plotting is not possible: " , plot.state$status$errorMessage))
 			
-			print("inside if statement")
 			}
 		
 		return(list(plot=odds.ratio.plot, state=plot.state, keep=plot.state$keep, complete=TRUE))
@@ -553,198 +562,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	list(plot=odds.ratio.plot, state=new.plot.state, keep=plot, complete=complete)
 }
 
-.contTablesBayesianCreateCramerVPlots <- function(dataset, analysis, counts.matrices, groups, options, populate, CramersV.results, bf.results, state, state.options, status) {
 
-	if (options$plotPosteriorEffectSize == FALSE )
-		return(list(complete=TRUE))
-
-	if (is.null(state.options) ||
-		base::identical(state.options$rows, options$rows) == FALSE ||
-		base::identical(state.options$columns, options$columns) == FALSE ||
-		base::identical(state.options$counts, options$counts) == FALSE ||
-		base::identical(state.options$layers, options$layers) == FALSE ||
-		base::identical(state.options$columnOrder, options$columnOrder) == FALSE ||
-		base::identical(state.options$rowOrder, options$rowOrder) == FALSE ||
-		base::identical(state.options$samplingModel, options$samplingModel) == FALSE ||
-		base::identical(state.options$hypothesis, options$hypothesis) == FALSE ||
-		base::identical(state.options$effectSizeCredibleIntervalInterval, options$effectSizeCredibleIntervalInterval) == FALSE ||
-		base::identical(state.options$priorConcentration, options$priorConcentration) == FALSE) {
-		
-		state <- NULL
-	}
-
-	plots <- list()
-	keep  <- list()
-	new.state <- list()
-	
-	complete <- TRUE
-	
-	for (i in 1:length(counts.matrices)) {
-	
-		counts.matrix <- counts.matrices[[i]]
-		
-		if ( ! is.null(groups)) {
-		
-			group <- groups[[i]]
-			
-		} else {
-		
-			group <- NULL
-		}
-		
-		plotCV.state <- NULL
-		if (i <= length(state))
-			plotCV.state <- state[[i]]
-
-		CramersV.result <- NULL
-		if (i <= length(CramersV.results))
-			CramersV.result <- CramersV.results[[i]]
-		
-		bf.result <- NULL
-		if (i <= length(bf.results))
-			bf.result <- bf.results[[i]]
-
-		res <- .contTablesBayesianCreateCramerVPlot(analysis$rows, counts.matrix, options, populate, group, CramersV.result, bf.result, plotCV.state, state.options, status)
-
-		complete <- complete && res$complete
-		
-		plots[[length(plots)+1]] <- res$plot
-		
-		keep <- c(keep, res$keep)
-		
-		new.state[[length(new.state)+1]] <- res$state
-	}
-	
-	complete <- complete && (populate || is.null(state) == FALSE || length(options$rows) == 0 || length(options$columns) == 0)
-
-	list(plots=plots, keep=keep, state=new.state, complete=complete)
-}
-
-.contTablesBayesianCreateCramerVPlot <- function(var.name, counts.matrix, options, populate, group, CramersV.result, bf.result, plotCV.state, state.options, status) {
-	
-	CramersV.plot  <- list()
-	image <- NULL
-	
-    group[group == ""] <- "Total"
-    
-	
-	if (length(group) == 0) {
-	
-		CramersV.plot[["title"]] <- "Cramer's V"
-		
-	} else if (length(group) > 0) {
-		
-		layer.levels <- paste(names(group),"=", group)
-		layer.levels <- gsub(pattern = " = Total", layer.levels, replacement = "")
-
-		plot.title <- paste(layer.levels, collapse="; ")
-		CramersV.plot[["title"]] <- plot.title
-	}
-		
-	width  <- 530
-	height <- 400
-	
-	CramersV.plot[["width"]]  <- width
-	CramersV.plot[["height"]] <- height
-	CramersV.plot[["citation"]] <- .contTablesBayesianCitations()
-	
-	if (is.null(plotCV.state) == FALSE) {
-	
-		CramersV.plot[["data"]] <- plotCV.state$keep	
-		
-		if ("status" %in% names(plotCV.state) && plotCV.state$status$error)
-			CramersV.plot[["error"]] <- list(errorType="badData", errorMessage=paste0("No samples are available: ",plotCV.state$status$errorMessage))
-		
-		return(list(plot=CramersV.plot, state=plotCV.state, keep=plotCV.state$keep, complete=TRUE))
-	}
-	
-	if (populate && status$error == FALSE) {
-	
-		if (is.null(bf.result$BF) == FALSE && inherits(bf.result$BF, "try-error")) {
-	
-			message <- .extractErrorMessage(bf.result$BF)
-			status <- list(error=TRUE, errorMessage=message)
-		
-		} else if (options$samplingModel == "hypergeometric") {
-		
-			status <- list(error=TRUE, errorMessage="Effect size for this model not yet implemented")
-		
-		} 
-	}
-	
-	if (populate && status$error == FALSE) {
-	
-		image <- .beginSaveImage(width, height)
-
-		p <- try(silent=TRUE, expr={
-						
-				#oneSided <- FALSE
-				#(CramersV.samples=CramersV.samples, BF=BF, CVmedian=CramersV.median, CV.lower.ci=lower, CV.upper.ci=upper)		
-				.contTablesBayesianPlotPosteriorCV(
-				samples = CramersV.result$CramersV.samples,
-				CI = c(CramersV.result$CV.lower.ci, CramersV.result$CV.upper.ci),
-				medianSamples = CramersV.result$CVmedian,
-				BF = bf.result$BF$BF10,
-				selectedCI = options$effectSizeCredibleIntervalInterval,
-				options=options
-				)
-		})
-		
-		plot <- .endSaveImage(image)
-
-		if (inherits(p, "try-error")) {
-			
-			errorMessage <- .extractErrorMessage(p)
-			
-	#		if (errorMessage == "not enough data") {
-			
-	#			errorMessage <- "The Bayes factor is too small"
-					
-	#		} else if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-			
-	#			errorMessage <- "The Bayes factor is too small"
-	#		}
-			
-			status <- list(error=TRUE, errorMessage=errorMessage)
-		}
-	
-	}
-
-	if (populate && status$error == FALSE) {
-	
-		CramersV.plot[["data"]] <- plot
-		CramersV.plot[["status"]] <- "complete"
-		
-		new.plot.state <- list(keep=plot)
-		
-		complete <- TRUE
-	
-	} else {
-	
-		image <- .beginSaveImage(width, height)
-		.contTablesBayesianPlotPosteriorCV(dontPlotData=TRUE)
-		plot <- .endSaveImage(image)
-		
-		CramersV.plot[["data"]] <- plot
-
-		if (status$error) {
-		
-			new.plot.state <- list(keep=plot, status=status)
-
-			message <- status$errorMessage
-			CramersV.plot[["error"]]  <- list(error="badData", errorMessage=paste("Plotting is not possible:", message))
-			CramersV.plot[["status"]] <- "complete"
-			complete <- TRUE
-			
-		} else {
-		
-			new.plot.state <- NULL
-			complete <- FALSE
-		}
-	}
-	
-	list(plot=CramersV.plot, state=new.plot.state, keep=plot, complete=complete)
-}
 
 .contTablesBayesianCreateCountsTable <- function(dataset, analysis, counts.matrices, groups, footnotes, options, populate, state, state.options, status) {
 
@@ -2473,13 +2291,12 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
 		
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
-		mtext("log(odds ratio)", side = 1, cex = cexXlab, line= 2.5)
+		mtext("Log odds ratio", side = 1, cex = cexXlab, line= 2.5)
 	
 		return()
 	}
 
-	print(BF)
-	print("we are so far here")
+
 	BF10 <- BF
 	BF01 <- 1 / BF10
 
@@ -2539,7 +2356,10 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	plot(0,0, xlim= range(xticks), ylim= c(0, range(yticks)[2]), ylab= "", xlab="", type= "n", axes= FALSE)
 		
 	lines(seq(min(xticks), max(xticks),length.out = 10000), .dposteriorOR(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples), oneSided=oneSided), lwd= lwd)
-				
+	
+	if ( oneSided == "right" || oneSided == "left")
+		lines(rep(0, 2), c(0, .dposteriorOR(0, mean(samples), sd(samples), oneSided=oneSided)), lwd = lwd)
+	
 	#lines(seq(min(xticks), max(xticks),length.out = 10000),posteriorLine, lwd= lwd)
 	#lines(seq(min(xticks), max(xticks),length.out = 10000),dnorm(seq(min(xticks), max(xticks),length.out = 10000), mean(samples), sd(samples)),lwd= lwd)
 	#points(z$x,z$y,type="l", col= "green")	
@@ -2563,7 +2383,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	
 	# credible interval
-	dmax <- optimize(function(x)dposterior(x,oneSided= oneSided, samples=samples), interval= range(xticks), maximum = TRUE)$objective # get maximum density
+	dmax <- optimize(function(x).dposteriorOR(x, mean(samples), sd(samples), oneSided=oneSided), interval= range(xticks), maximum = TRUE)$objective # get maximum density
 	
 	# enable plotting in margin
 	par(xpd=TRUE)
@@ -2713,109 +2533,3 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 }
 
 ##############################################
-.contTablesBayesianPlotPosteriorCV <- function(
-	samples,
-	CI,
-	medianSamples,
-	BF,
-	
-	iterations = 10000,
-	lwd = 2,
-	cexPoints = 1.5,
-	cexAxis = 1.2,
-	cexYlab = 1.5,
-	cexXlab = 1.5,
-	cexTextBF = 1.4,
-	cexCI = 1.1,
-	cexLegend = 1.2,
-	lwdAxis = 1.2,
-	dontPlotData =FALSE,
-	selectedCI = options$effectSizeCredibleIntervalInterval,
-	options) {
-	
-	par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
-	
-	
-	if (dontPlotData) {
-	
-		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
-		
-		axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
-		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
-		
-		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
-		mtext("Cramer's V", side = 1, cex = cexXlab, line= 2.5)
-	
-		return()
-	}
-	
-	# set limits plot
-	
-	xlim <- c(0, 1)
-	xticks <- pretty(xlim)
-	xlabels <- formatC(xticks)
-	
-	stretch <- 1.2
-
-	posteriorDensity <- .dposteriorCV(seq(min(xticks), max(xticks),length.out = 10000), samples)
-	posteriorDensityFinite <- is.finite(posteriorDensity)
-	posteriorDensityFinite <- posteriorDensity[is.finite(posteriorDensity)]
-	dmax <- max(posteriorDensityFinite)
-	
-	stretch <- 1.2
-	
-	ylim <- vector("numeric", 2)
-	ylim[1] <- 0
-	ylim[2] <- stretch * dmax
-	
-	yticks <- pretty(ylim)
-	ylabels <- formatC(yticks)
-	
-	CIlow <- CI[1]
-	CIhigh <- CI[2]
-	
-	plot(0, xlim = range(xticks), ylim = c(0, range(yticks)[2]), ylab = "", xlab = "", type = "n", axes= FALSE)
-	
-	hist(samples, prob = TRUE, xlim = xlim, add = TRUE)
-	
-	lines(seq(min(xticks), max(xticks), length.out = 10000), posteriorDensity, lwd = lwd)
-    
-	axis(1, at = xticks, labels = xlabels, cex.axis = cexAxis, lwd = lwdAxis)
-	axis(2, at = yticks, labels = ylabels, cex.axis = cexAxis, lwd = lwdAxis)
-		
-	if (nchar(ylabels[length(ylabels)]) > 4) {
-		
-		mtext(text = "Density", side = 2, las = 0, cex = cexYlab, line = 4)
-		
-	} else if (nchar(ylabels[length(ylabels)]) == 4) {
-		
-		mtext(text = "Density", side = 2, las = 0, cex = cexYlab, line = 3.25)
-		
-	} else if (nchar(ylabels[length(ylabels)]) < 4) {
-		
-		mtext(text = "Density", side = 2, las = 0, cex = cexYlab, line = 2.85)
-	}
-	
-	mtext("Cramer's V", side = 1, cex = cexXlab, line = 2.5)
-	
-	par(xpd = TRUE) # enable plotting in margin
-	
-	yCI <- grconvertY(dmax, "user", "ndc") + 0.04
-	yCI <- grconvertY(yCI, "ndc", "user")
-	
-	arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
-	points(medianSamples, yCI, cex = 1.4, pch = 21, bg = "black", col = "black")
-	
-}
-
-.dposteriorCV <- function(x, samples) {
-	
-	meanCV <- mean(samples)
-	varCV <- var(samples)
-	
-	alpha <- (meanCV^2*(1-meanCV)/varCV)-meanCV
-	beta <- (meanCV*(1-meanCV)^2/varCV)-(1-meanCV)
-	
-	dbeta(x, alpha, beta)
-	
-}
