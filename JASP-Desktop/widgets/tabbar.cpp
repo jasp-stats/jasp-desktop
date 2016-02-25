@@ -99,6 +99,9 @@ void TabBar::addHelpTab()
 	RibbonButton *rb = new RibbonButton();
 	rb->setIcon(QIcon(":/icons/summarize.svg"));
 	rb->setPopupMode(QToolButton::InstantPopup);
+	rb->setProperty("button-type", "summarize");
+	rb->setMinimumSize(30,0);
+	_layout->setContentsMargins(0,0,2,0);
 
 	QMenu  *helpmenu   = new QMenu(this);
 

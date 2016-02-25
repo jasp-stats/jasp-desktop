@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=JASP
+Comment=Statistical analysis package
+Keywords=statistics;data
+Exec=JASP
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=/usr/lib/JASP/Resources/jasp.svg
+

@@ -77,7 +77,6 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
 		)
 	
-	
 	bf.type <- options$bayesFactorType
 	
 	if (bf.type == "BF10") {
@@ -157,6 +156,13 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	pair.statuses <- list()
 	
 	footnotes <- .newFootnotes()
+	
+	if (options$hypothesis == "correlatedPositively"){
+		.addFootnote(footnotes, "For all tests, the alternative hypothesis specifies that the correlation is positive.", symbol="<i>Note</i>.")
+	} else if (options$hypothesis == "correlatedNegatively") {
+		.addFootnote(footnotes, "For all tests, the alternative hypothesis specifies that the correlation is negative.", symbol="<i>Note</i>.")
+	}
+	
 	
 	plotGroups <- list()
 	plots.correlation <- list()

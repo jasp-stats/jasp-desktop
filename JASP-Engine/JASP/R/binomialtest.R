@@ -117,7 +117,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 	table[["data"]] <- data
 	
-	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste("proportions tested against value:", options$testValue)))
+	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste0("Proportions tested against value: ", options$testValue, ".")))
 
 	results[["binomial"]] <- table
 

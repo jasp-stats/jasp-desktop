@@ -222,9 +222,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	if (flagSupported || reportBayesFactors) {
 		if (hypothesis == "correlatedPositively") {
-			.addFootnote(footnotes, "All tests one-tailed, for positive correlation", symbol="<i>Note</i>.")
+			.addFootnote(footnotes, "For all tests, the alternative hypothesis specifies that the correlation is positive.", symbol="<i>Note</i>.")
 		} else if (hypothesis == "correlatedNegatively") {
-			.addFootnote(footnotes, "All tests one-tailed, for negative correlation", symbol="<i>Note</i>.")
+			.addFootnote(footnotes, "For all tests, the alternative hypothesis specifies that the correlation is negative.", symbol="<i>Note</i>.")
 		}
 	}
 	
@@ -1477,6 +1477,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	return(output)
 }
 
+# Replication Bayes factors
+# 
+.bfR0Josine <- function(nOri, rOri, nRep, rRep, kappa=1){
+	# Verhagen & Wagenmakers 2014
+	integrand <- function(rho){.hFunction(nRep, rRep, rho)*.hFunction(nOri, rOri, rho)*.priorRho(rho, kappa)}
+	logNumerator <- log(integrate(integrand, -1, 1)$value)
+	logDenominator <- log(.bf10Exact(n=nOri, r=rOri, kappa))
+	
+	logBfR0 <- logNumerator-logDenominator
+	return(exp(logBfR0))
+}
 
 
 # 4.0 Posteriors to graph TODO: we have to think about this, different

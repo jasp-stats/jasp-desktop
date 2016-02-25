@@ -360,6 +360,9 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
+      <property name="verticalSpacing">
+       <number>0</number>
+      </property>
       <item row="1" column="0" colspan="3">
        <widget class="ExpanderButton" name="pushButton">
         <property name="text">
@@ -1006,7 +1009,7 @@
   <customwidget>
    <class>ExpanderButton</class>
    <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
+   <header location="global">widgets/expanderbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
