@@ -475,7 +475,7 @@
             <item row="1" column="0" colspan="2">
              <widget class="BoundCheckBox" name="oddsRatio">
               <property name="text">
-               <string>Log( odds ratio ) (2x2 only)</string>
+               <string>Log odds ratio (2x2 only)</string>
               </property>
              </widget>
             </item>
