@@ -1336,86 +1336,93 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			BF <- BayesFactor::contingencyTableBF(counts.matrix, sampleType=sampleType, priorConcentration=options$priorConcentration, fixedMargin=fixedMargin)
 			bf1 <- exp(as.numeric(BF@bayesFactor$bf))
 			lbf1 <- as.numeric(BF@bayesFactor$bf)
-			ch.result = BayesFactor::posterior(BF, iterations = 10000)
 			
-			if (options$hypothesis=="groupOneGreater" && options$samplingModel=="poisson") {
+			if (options$samplingModel=="hypergeometric"){
+			
+				list(BF=BF, BF10=bf1, LogBF10=lbf1)		
+			
+			} else {
+				
+				ch.result = BayesFactor::posterior(BF, iterations = 10000)
+			
+				if (options$hypothesis=="groupOneGreater" && options$samplingModel=="poisson") {
 										
-				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
-				theta <- as.data.frame(ch.result)
+					#ch.result = BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result)
 				
-				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
-				logOR<-log(odds.ratio)
-				prop.consistent <- 1-mean(logOR < 0)
-				bf1 <- bf1 * prop.consistent / 0.5
-				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+					logOR<-log(odds.ratio)
+					prop.consistent <- 1-mean(logOR < 0)
+					bf1 <- bf1 * prop.consistent / 0.5
+					lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 				
-			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="poisson") {
+				} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="poisson") {
 			
-				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
-				theta <- as.data.frame(ch.result)
+					#ch.result = BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result)
 				
-				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
-				logOR<-log(odds.ratio)
-				prop.consistent <- mean(logOR < 0)
-				bf1 <- bf1 * prop.consistent / 0.5
-				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+					logOR<-log(odds.ratio)
+					prop.consistent <- mean(logOR < 0)
+					bf1 <- bf1 * prop.consistent / 0.5
+					lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			
-			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="jointMultinomial") {
+				} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="jointMultinomial") {
 										
-				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
-				theta <- as.data.frame(ch.result)
+					#ch.result = BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result)
 				
-				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
-				logOR<-log(odds.ratio)
-				prop.consistent <- 1-mean(logOR < 0)
-				bf1 <- bf1 * prop.consistent / 0.5
-				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+					logOR<-log(odds.ratio)
+					prop.consistent <- 1-mean(logOR < 0)
+					bf1 <- bf1 * prop.consistent / 0.5
+					lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 				
-			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="jointMultinomial") {
+				} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="jointMultinomial") {
 			
-				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
-				theta <- as.data.frame(ch.result)
+					#ch.result = BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result)
 				
-				odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
-				logOR<-log(odds.ratio)
-				prop.consistent <- mean(logOR < 0)
-				bf1 <- bf1 * prop.consistent / 0.5
-				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+					odds.ratio<-(theta[,1]*theta[,4])/(theta[,2]*theta[,3])
+					logOR<-log(odds.ratio)
+					prop.consistent <- mean(logOR < 0)
+					bf1 <- bf1 * prop.consistent / 0.5
+					lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			
-			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
+				} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
 										
-				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
-				theta <- as.data.frame(ch.result[,7:10])
-				prop.consistent <- mean(theta[,1] > theta[,3])  #sum(p1.sim > p2.sim)/N.sim
-				bf1 <- bf1 * prop.consistent / 0.5
-				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+					#ch.result = BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result[,7:10])
+					prop.consistent <- mean(theta[,1] > theta[,3])  #sum(p1.sim > p2.sim)/N.sim
+					bf1 <- bf1 * prop.consistent / 0.5
+					lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			
-			} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed") {
+				} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed") {
 								
-				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
-				theta <- as.data.frame(ch.result[,7:10])
-				prop.consistent <- mean(theta[,1] > theta[,2]) 
-				bf1 <- bf1 * prop.consistent / 0.5
-				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+					#ch.result = BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result[,7:10])
+					prop.consistent <- mean(theta[,1] > theta[,2]) 
+					bf1 <- bf1 * prop.consistent / 0.5
+					lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 			
-			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
+				} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
 				
-				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
-				theta <- as.data.frame(ch.result[,7:10])
-				prop.consistent <- mean(theta[,3] > theta[,1])
-				bf1 <- bf1 * prop.consistent / 0.5
-				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+					#ch.result = BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result[,7:10])
+					prop.consistent <- mean(theta[,3] > theta[,1])
+					bf1 <- bf1 * prop.consistent / 0.5
+					lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
 				
-			} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
+				} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
 								
-				#ch.result = BayesFactor::posterior(BF, iterations = 10000)
-				theta <- as.data.frame(ch.result[,7:10])
-				prop.consistent <- mean(theta[,2] > theta[,1])
-				bf1 <- bf1 * prop.consistent / 0.5
-				lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
-			}
+					#ch.result = BayesFactor::posterior(BF, iterations = 10000)
+					theta <- as.data.frame(ch.result[,7:10])
+					prop.consistent <- mean(theta[,2] > theta[,1])
+					bf1 <- bf1 * prop.consistent / 0.5
+					lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+				}
 			
-			list(BF=BF, BF10=bf1, LogBF10=lbf1, post.samples=ch.result)		
+			list(BF=BF, BF10=bf1, LogBF10=lbf1, post.samples=ch.result)	}	
 		})
 		
 		new.state <- results

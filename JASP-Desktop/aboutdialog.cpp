@@ -35,16 +35,6 @@ AboutDialog::AboutDialog(QWidget *parent) :
 	// Disable maximize option dialog
 	setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint /* | Qt::WindowMaximizeButtonHint */ | Qt::CustomizeWindowHint);
 
-	// Fill textBrowser with welcome.html
-	QFile file(":/core/welcome.html");
-	if  ( !file.open(QIODevice::ReadOnly) )
-		QMessageBox::information(0,"Information",file.errorString());
-	else
-	{
-		QTextStream in(&file);
-		ui->textBrowser->setText(in.readAll());
-	}
-
 	ui->aboutWebView->setUrl((QUrl(QString("qrc:///core/about.html"))));
 	connect(ui->aboutWebView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
 
@@ -72,6 +62,5 @@ void AboutDialog::aboutPageLoaded(bool success)
 		ui->aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
 		QString html = ui->aboutWebView->page()->mainFrame()->toHtml();
 		ui->label->setText(html);
-		}
-
+	}
 }
