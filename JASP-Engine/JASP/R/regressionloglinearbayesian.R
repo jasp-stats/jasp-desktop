@@ -44,7 +44,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		}
 	
 		if ( !is.null (variable.names))
-			error.message <- paste ("Bayes factor is undefined -- incomplete contingency table, the count variable ", variable.names, " contain(s) empty cell or NaN. ", sep = "")
+			error.message <- paste ("Bayes factor is undefined -- incomplete contingency table, the count variable ", variable.names, " contain(s) empty cell and/or NaN. ", sep = "")
 		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
 	
 		if (length(list.of.errors)==0 ){
@@ -75,7 +75,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			}
 		
 		if ( !is.null (variable.names))
-		error.message <- "Bayes factor is undefined -- the factors contain(s) empty cell or NaN or incomplete contingency table."
+		error.message <- "Bayes factor is undefined -- the factors contain(s) empty cell and/or NaN and/or incomplete contingency table."
 		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
 	}
 			 	 	
@@ -168,7 +168,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 				no.burnin = 2000 * 0.2
 				if (options$sampleMode == "manual"){
 				
-					logBlm.fit <- try(conting::bcct(object = logBlm.fit, n.sample = options$fixedSamplesNumber), silent = TRUE)				
+					logBlm.fit <- try(conting::bcctu(object = logBlm.fit, n.sample = options$fixedSamplesNumber), silent = TRUE)				
 					n.sample = options$fixedSamplesNumber
 					no.burnin = (2000 + n.sample)* 0.2
 				}
