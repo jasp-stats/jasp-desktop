@@ -1,7 +1,7 @@
 QT_DIR=~/Qt/5.5
 R_FRAMEWORK=~/Jasp/Build/Frameworks/R.framework
 JASP_DESKTOP=~/Jasp/Build/jasp-desktop
-JASP_VERSION=0.7.5
+JASP_VERSION=0.7.5.2
 
 # This script builds the JASP.dmg installer
 # Run this script from the build-jasp-desktop-Release folder 
@@ -53,6 +53,10 @@ rm -rf app/JASPEngine.app/
 cp -r $R_FRAMEWORK app/JASP.app/Contents/Frameworks
 cp -r $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
 cp -r R           app/JASP.app/Contents/MacOS
+
+#Copy the Openssl from Qt to our Framework because OSF no longer supports tlsv1 traffic
+cp $QT_DIR/../Qt\ Creator.app/Contents/Frameworks/libcrypto.1.0.0.dylib app/JASP.app/Contents/Frameworks
+cp $QT_DIR/../Qt\ Creator.app/Contents/Frameworks/libssl.1.0.0.dylib app/JASP.app/Contents/Frameworks
 
 cp $JASP_DESKTOP/Tools/icon.icns app/JASP.app/Contents/Resources
 cp $JASP_DESKTOP/Tools/Info.plist app/JASP.app/Contents
