@@ -60,6 +60,32 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 	data <- list()
 	
+	footnotes <- .newFootnotes()
+	
+	if (options$hypothesis == "notEqualToTestValue") {
+		
+		hyp <- "two.sided"
+		message <- paste0("Proportions tested against value: ", options$testValue, ".")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		
+	} else if (options$hypothesis == "greaterThanTestValue") {
+		
+		hyp <- "greater"
+		note <- "For all tests, the alternative hypothesis specifies that the proportion
+					is greater than "
+		message <- paste0(note, options$testValue, ".")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		
+	} else {
+		
+		hyp <- "less"
+		note <- "For all tests, the alternative hypothesis specifies that the proportion
+					is less than "
+		message <- paste0(note, options$testValue, ".")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		
+	}
+	
 	if (perform == "run" && !is.null(variables)) {
 
 		for (var in variables) {
@@ -74,15 +100,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 				
 				counts <- sum(d == lev)
 				prop <- counts/n
-
-				if (options$hypothesis == "notEqualToTestValue") {
-					hyp <- "two.sided"
-				} else if (options$hypothesis == "greaterThanTestValue") {
-					hyp <- "greater"
-				} else {
-					hyp <- "less"
-				}
-
+				
 				r <- stats::binom.test(counts, n, p = options$testValue, alternative = hyp)
 				
 				p <- r$p.value
@@ -92,7 +110,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 				} else if (p == TRUE) {
 					p <- 1
 				}
-								
+				
 				row <- list(case=var, level=lev, counts=.clean(counts), total=.clean(n), proportion=.clean(prop), p=.clean(p))
 				
 				if (lev == levels[1]) {
@@ -117,7 +135,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 	table[["data"]] <- data
 	
-	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste0("Proportions tested against value: ", options$testValue, ".")))
+	table[["footnotes"]] <- as.list(footnotes)
 
 	results[["binomial"]] <- table
 
