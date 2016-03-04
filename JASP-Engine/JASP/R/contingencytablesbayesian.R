@@ -1482,7 +1482,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			gp1 <- rownames(counts.matrix)[1]
 			gp2 <- rownames(counts.matrix)[2]
 
-			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", "<em>", gp2, "</em>", sep="")
+			message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is greater than group <em>", gp2, ".</em>", sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 		} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="poisson"){
@@ -1490,7 +1490,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			gp1 <- rownames(counts.matrix)[1]
 			gp2 <- rownames(counts.matrix)[2]
 
-			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
+			message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is less than group <em>", gp2, ".</em>", sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)			
 
 		} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="jointMultinomial"){
@@ -1498,7 +1498,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			gp1 <- rownames(counts.matrix)[1]
 			gp2 <- rownames(counts.matrix)[2]
 
-			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", "<em>", gp2, "</em>", sep="")
+			message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is greater than group <em>", gp2, ".</em>", sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 		} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="jointMultinomial"){
@@ -1506,7 +1506,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			gp1 <- rownames(counts.matrix)[1]
 			gp2 <- rownames(counts.matrix)[2]
 
-			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
+			message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is less than group <em>", gp2, ".</em>", sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)			
 
 		} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialRowsFixed"){
@@ -1514,7 +1514,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			gp1 <- rownames(counts.matrix)[1]
 			gp2 <- rownames(counts.matrix)[2]
 
-			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", "<em>", gp2, "</em>", sep="")
+			message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is greater than group <em>", gp2, ".</em>", sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 		} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialRowsFixed"){
@@ -1522,7 +1522,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			gp1 <- rownames(counts.matrix)[1]
 			gp2 <- rownames(counts.matrix)[2]
 
-			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
+			message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is less than group <em>", gp2, ".</em>", sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)			
 
 		} else if (options$hypothesis=="groupOneGreater" && options$samplingModel=="independentMultinomialColumnsFixed") {
@@ -1530,7 +1530,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			gp1 <- colnames(counts.matrix)[1]
 			gp2 <- colnames(counts.matrix)[2]
 
-			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> greater than group <em>", gp2, "</em>", sep="")
+			message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is greater than group <em>", gp2, ".</em>", sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 		} else if (options$hypothesis=="groupTwoGreater"  && options$samplingModel=="independentMultinomialColumnsFixed") {
@@ -1538,7 +1538,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			gp1 <- colnames(counts.matrix)[1]
 			gp2 <- colnames(counts.matrix)[2]
 
-			message <- paste("All tests, hypothesis is group <em>", gp1, "</em> less than group <em>", gp2, "</em>", sep="")
+			message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is less than group <em>", gp2, ".</em>", sep="")
 			.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		}
 		
