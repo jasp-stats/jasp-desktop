@@ -47,6 +47,7 @@ linux {
 SOURCES += \
 	main.cpp \
     textfilereadtest.cpp \
+    osftest.cpp \
     ../JASP-Desktop/aboutdialog.cpp \
     ../JASP-Desktop/analyses.cpp \
     ../JASP-Desktop/mainwindow.cpp \
@@ -179,6 +180,7 @@ SOURCES += \
 HEADERS += \
     AutomatedTests.h \
     textfilereadtest.h \
+    osftest.h \
     ../JASP-Desktop/aboutdialog.h \
     ../JASP-Desktop/analyses.h \
     ../JASP-Desktop/datasettablemodel.h \
