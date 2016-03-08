@@ -167,15 +167,15 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 		if (options$hypothesis == "groupOneGreater") {
 			
 			direction <- "greater"
-			message <- paste0("All tests, hypothesis is group <em>", levels[1],
-							  "</em> greater than group <em>", levels[2], "</em>.")
+			message <- paste0("For all tests, the alternative hypothesis specifies that group <em>", levels[1],
+							  "</em> is greater than group <em>", levels[2], "</em>.")
 			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 			
 		} else if (options$hypothesis == "groupTwoGreater") {
 			
 			direction <- "less"
-			message <- paste0("All tests, hypothesis is group <em>", levels[1],
-							  "</em> less than group <em>", levels[2], "</em>.")
+			message <- paste0("For all tests, the alternative hypothesis specifies that group  <em>", levels[1],
+							  "</em> is less than group <em>", levels[2], "</em>.")
 			.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 			
 		} else {

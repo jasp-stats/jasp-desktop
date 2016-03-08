@@ -755,12 +755,12 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 	
 	if (options$hypothesis == "groupOneGreater") {
 		
-		message <- paste("All tests, hypothesis is group <em>", g1, "</em> greater than group <em>", g2, "</em>", sep="")
+		message <- paste("For all tests, the alternative hypothesis specifies that group <em>", g1, "</em> is greater than group <em>", g2, "</em>.", sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		
 	} else if (options$hypothesis == "groupTwoGreater") {
 		
-		message <- paste("All tests, hypothesis is group <em>", g1, "</em> less than group <em>", g2, "</em>", sep="")
+		message <- paste("For all tests, the alternative hypothesis specifies that group <em>", g1, "</em> is less than group <em>", g2, "</em>.", sep="")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 	}
 	

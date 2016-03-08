@@ -146,14 +146,16 @@ TTestOneSample <- function(dataset = NULL, options, perform = "run",
 	if (options$hypothesis == "greaterThanTestValue") {
 		
 		direction <- "greater"
-		note <- "All tests, hypothesis is population mean is greater than "
+		note <- "For all tests, the alternative hypothesis specifies that the mean
+					is greater than "
 		message <- paste0(note, options$testValue, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 		
 	} else if (options$hypothesis == "lessThanTestValue") {
 		
 		direction <- "less"
-		note <- "All tests, hypothesis is population mean is less than "
+		note <- "For all tests, the alternative hypothesis specifies that the mean
+					is less than "
 		message <- paste0(note, options$testValue, ".")
 		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
 		

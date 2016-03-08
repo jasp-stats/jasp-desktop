@@ -140,12 +140,16 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	if (options$hypothesis == "greaterThanTestValue") {
 		
-		message <- paste("All tests, hypothesis is population mean is greater than ", options$testValue, sep="")
+		note <- "For all tests, the alternative hypothesis specifies that the mean
+					is greater than "
+		message <- paste0(note, options$testValue, ".")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 	
 	} else if (options$hypothesis == "lessThanTestValue") {
 		
-		message <- paste("All tests, hypothesis is population mean is less than ", options$testValue, sep="")
+		note <- "For all tests, the alternative hypothesis specifies that the mean
+					is less than "
+		message <- paste0(note, options$testValue, ".")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		
 	} else {
