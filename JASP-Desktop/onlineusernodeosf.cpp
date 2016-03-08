@@ -81,8 +81,8 @@ bool OnlineUserNodeOSF::authenticationSuccessful(QNetworkAccessManager *manager)
 
 	loop.exec();
 
-	bool error = reply->error();
-	if (error)
+	QNetworkReply::NetworkError error = reply->error();
+	if (error != QNetworkReply::NoError && error != QNetworkReply::AuthenticationRequiredError) //Authorisation message will be shown later on
 		QMessageBox::warning(NULL, "OSF Warning", reply->errorString());
 
 	delete reply;
