@@ -469,7 +469,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		kendalls.fields <- fields
 			
 		#kendalls.fields[[length(kendalls.fields)+1]] <- list(name="type[kTauB]", title="", type="string")
-		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="value[kTauB]", title="Kendall's Tau B", type="number", format="sf:4;dp:3")
+		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="value[kTauB]", title="Kendall's tau-b ", type="number", format="sf:4;dp:3")
 		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="statistic[kTauB]", title="z statistic", type="number", format="dp:3")
 		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="p[kTauB]", title="p", type="number", format="dp:3;p:.001")
 		
