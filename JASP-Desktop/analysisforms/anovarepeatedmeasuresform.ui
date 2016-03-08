@@ -1511,7 +1511,7 @@
             </sizepolicy>
            </property>
            <property name="title">
-            <string>Display</string>
+            <string/>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="2" column="1" colspan="2">
@@ -1654,14 +1654,14 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundTableView</class>
    <extends>QTableView</extends>
    <header>widgets/boundtableview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundAssignWidget</class>
