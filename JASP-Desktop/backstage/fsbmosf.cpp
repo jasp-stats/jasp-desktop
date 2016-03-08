@@ -79,7 +79,7 @@ void FSBMOSF::setAuthenticated(bool value)
 	else
 	{
 		_isAuthenticated = false;
-		emit authenticationFail("Username and password are not correct. Please try again.");
+		emit authenticationFail("Username and/or password are not correct. Please try again.");
 	}
 }
 
@@ -101,6 +101,7 @@ void FSBMOSF::clearAuthentication()
 	_settings.sync();
 	_settings.remove("OSFUsername");
 	_settings.remove("OSFPassword");
+	_settings.remove("OSFRememberMe");
 	_settings.sync();
 
 	emit authenticationClear();

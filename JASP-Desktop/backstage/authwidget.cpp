@@ -10,7 +10,13 @@ AuthWidget::AuthWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	if (_settings.value("OSFRememberMe", false).toBool() == false)
+		ui->RememberMeCheckBox->setChecked(false);
+	else
+		ui->RememberMeCheckBox->setChecked(true);
+
 	connect(ui->loginButton, SIGNAL(clicked(bool)), this, SLOT(loginSelected()));
+	connect(ui->RememberMeCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_RememberMeCheckBox_clicked(bool)));
 
 	ui->email->installEventFilter(this);
 	ui->password->installEventFilter(this);
@@ -25,6 +31,7 @@ void AuthWidget::clearPassword()
 {
 	ui->password->setText("");
 	ui->email->setSelection(0, ui->email->text().length());
+	ui->RememberMeCheckBox->setChecked(false);
 }
 
 bool AuthWidget::eventFilter(QObject *object, QEvent *event)
@@ -52,4 +59,9 @@ bool AuthWidget::eventFilter(QObject *object, QEvent *event)
 void AuthWidget::loginSelected()
 {
 	emit loginRequested(ui->email->text(), ui->password->text());
+}
+
+void AuthWidget::on_RememberMeCheckBox_clicked(bool check)
+{
+	_settings.setValue("OSFRememberMe", check);
 }

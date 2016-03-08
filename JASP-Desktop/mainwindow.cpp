@@ -320,6 +320,16 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+
+	if (ProcessInfo::isParentRunning())
+	{
+		if (_settings.value("OSFRememberMe", false).toBool() == false)
+		{
+			_settings.remove("OSFUsername");
+			_settings.remove("OSFPassword");
+		}
+	}
+
 	if (_applicationExiting)
 	{
 		// sometimes on osx we get two events
