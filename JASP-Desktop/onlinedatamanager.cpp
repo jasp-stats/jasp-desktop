@@ -45,6 +45,11 @@ void OnlineDataManager::setAuthentication(OnlineDataManager::Provider provider, 
 		manager->osfAuthentication(authData.username, authData.password);
 }
 
+OnlineDataManager::AuthData OnlineDataManager::getAuthData(OnlineDataManager::Provider provider)
+{
+	return _authList[provider];
+}
+
 void OnlineDataManager::clearAuthentication(OnlineDataManager::Provider provider)
 {
 	setAuthentication(provider, "", "");
