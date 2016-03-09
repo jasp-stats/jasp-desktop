@@ -2,6 +2,7 @@
 #define AUTHWIDGET_H
 
 #include <QWidget>
+#include<QSettings>
 
 #include "common.h"
 
@@ -23,12 +24,14 @@ protected:
 
 private slots:
 	void loginSelected();
+	void on_RememberMeCheckBox_clicked(bool check);
 
 signals:
 	void loginRequested(QString username, QString password);
 
 private:
 	Ui::AuthWidget *ui;
+	QSettings _settings;
 };
 
 #endif // AUTHWIDGET_H
