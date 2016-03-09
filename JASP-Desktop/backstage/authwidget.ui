@@ -161,9 +161,9 @@
     <property name="geometry">
      <rect>
       <x>24</x>
-      <y>24</y>
+      <y>14</y>
       <width>181</width>
-      <height>19</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="sizePolicy">
