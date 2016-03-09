@@ -4,6 +4,7 @@ Unit Tests
 
 Guide to build Unit test project and run (for Linux)
 ----------------------------------------------------
+(JASP project must be built before building this)
 
 1) use Qt creator and open the file Test.pro
 
@@ -28,5 +29,6 @@ Unit Tests in the project
 -------------------------
 
 1) Opening of Text files (tests the AsyncLoader class)
+2) OSF login authentication
 
 
