@@ -23,13 +23,21 @@
 
 #include <QEventLoop>
 #include <QSignalSpy>
+#include <QMetaType>
 #include <fstream>
 
 #include "AutomatedTests.h"
 #include "backstage/fsbrowser.h"
 #include "backstage/fsbmosf.h"
 #include "backstage/fsbmodel.h"
+#include "backstage/fsentrywidget.h"
+#include "backstage/fsentry.h"
+#include "backstage/backstageosf.h"
 #include "onlinedatamanager.h"
+#include "fileevent.h"
+#include "asyncloader.h"
+#include "datasetpackage.h"
+
 
 class OSFTest : public QObject
 {
@@ -41,6 +49,7 @@ public:
     OnlineDataManager *_odm;
 
     bool authenticationTest(QString, QString);
+    void waitTillExists(QButtonGroup *);
 
 private slots:
     void initTestCase();
@@ -49,6 +58,7 @@ private slots:
     void cleanupTestCase();
     void loginAuthenticationTest_data();
     void loginAuthenticationTest();
+    void fileListTest();
 };
 
 DECLARE_TEST(OSFTest)
