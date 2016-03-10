@@ -320,6 +320,14 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+
+	// If User switch 'Remember me' is off remove OSF settings
+	if (_settings.value("OSFRememberMe", false).toBool() == false)
+	{
+		_settings.remove("OSFUsername");
+		_settings.remove("OSFPassword");
+	}
+
 	if (_applicationExiting)
 	{
 		// sometimes on osx we get two events
@@ -730,6 +738,13 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	{
 		if (_package->isLoaded())
 		{
+			if (_odm->authenticationSuccessful(OnlineDataManager::OSF))
+			{
+				//If this instance has a valid OSF connection save these settings for a new instance
+				OnlineDataManager::AuthData sec = _odm->getAuthData(OnlineDataManager::OSF);
+				_settings.setValue("OSFUsername", sec.username);
+				_settings.setValue("OSFPassword", sec.password);
+			}
 			// begin new instance
 			QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
 		}

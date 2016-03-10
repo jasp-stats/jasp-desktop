@@ -91,12 +91,31 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 		}
 	}
 	
+	
+	footnotes <- .newFootnotes()
+	
 	if (options$hypothesis == "notEqualToTestValue") {
+		
 		hyp <- "two.sided"
+		message <- paste0("Proportions tested against value: ", options$testValue, ".")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		
 	} else if (options$hypothesis == "greaterThanTestValue") {
+		
 		hyp <- "greater"
+		note <- "For all tests, the alternative hypothesis specifies that the proportion
+					is greater than "
+		message <- paste0(note, options$testValue, ".")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		
 	} else {
+		
 		hyp <- "less"
+		note <- "For all tests, the alternative hypothesis specifies that the proportion
+					is less than "
+		message <- paste0(note, options$testValue, ".")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		
 	}
 	
 	
@@ -407,12 +426,12 @@ BinomialTestBayesian <- function(dataset = NULL, options, perform = "run",
 	if ( ! is.null(errorMessageTable))
 		table[["error"]] <- list(errorType = "badData", errorMessage = errorMessageTable)
 	
-	table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", text=paste0("Proportions tested against value: ", options$testValue, ".")))
+	table[["footnotes"]] <- as.list(footnotes)
 	
 	results[["binomial"]] <- table
 	
 	if (options$plotPriorAndPosterior || options$plotSequentialAnalysis)
-		results[["plots"]] <- list(title="Plots", collection=plotGroups)
+		results[["plots"]] <- list(title=ifelse(length(plotGroups) == 1 && length(plotGroups[[1]]) == 3, "Plot", "Plots"), collection=plotGroups)
 	
 	keep <- NULL
 	
