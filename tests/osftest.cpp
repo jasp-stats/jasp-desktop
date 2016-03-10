@@ -16,6 +16,9 @@
 //
 
 #include "osftest.h"
+#include "tempfiles.h"
+#include "processinfo.h"
+
 
 void OSFTest::initTestCase()
 {
@@ -53,6 +56,10 @@ void OSFTest::loginAuthenticationTest_data()
   QTest::newRow("1") << "akash.07.raj@gmail.com" << "123456qwerty" << true;
   QTest::newRow("2") << "Hello.com" << "123456qwerty" << false;
   QTest::newRow("3") << "akash.07.raj@gmail.com" <<  "12345qwerty" << false;
+  QTest::newRow("4") << "osftester1@yopmail.com" <<  "!@#$%^" << false;
+  QTest::newRow("5") << "osftester2@yopmail.com" <<  "" << false;
+  QTest::newRow("6") << "" <<  "12345qwerty" << false;
+  QTest::newRow("7") << "" <<  "" << false;
 }
 
 
@@ -87,7 +94,67 @@ bool OSFTest::authenticationTest(QString username, QString password)
   return false;
 }
 
+void OSFTest::fileListTest()
+{
+  tempfiles_init(ProcessInfo::currentPID()); //set the root path(directory)
+  qRegisterMetaType<FileEvent>();//register the datatype FileEvent
+  BackstageOSF *bosf = new BackstageOSF(); //initialize BackstageOSF
+  DataSetPackage *dsf = new DataSetPackage();
+  AsyncLoader *asf = new AsyncLoader();
+
+  asf->setOnlineDataManager(_odm);
+  bosf->setOnlineDataManager(_odm);
+  bosf->_fsBrowser->loginRequested("akash.07.raj@gmail.com", "123456qwerty");
+
+  QSignalSpy spy(bosf, SIGNAL(dataSetIORequest(FileEvent *))); //spy for dataSetIORequest
+
+  if(bosf->_model->isAuthenticated())
+  {
+    bosf->_model->refresh();
+
+    QButtonGroup *buttonGroup = bosf->_fsBrowser->_buttonGroup;
+
+    waitTillExists(buttonGroup);
+
+    if(!(buttonGroup->button(0)))
+    {
+      QVERIFY2(false, "Button doesn't exist");
+    }
+
+    // simulate (GUI) mouse double clicks
+    QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);;
+    waitTillExists(buttonGroup);
+    QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);    
+    waitTillExists(buttonGroup);
+
+    FSEntryWidget *entry = qobject_cast<FSEntryWidget*>(buttonGroup->button(0));
+    qDebug() << "File selected - " << entry->_entry.name << "\n"; //jasp_tester.jasp
+    QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);
+
+    FileEvent *fevent = qvariant_cast<FileEvent *>(spy.at(0).at(0)); //filevent parameter of the dataSetIORequest event
+
+    fevent->setComplete(false, "initialize the set");
+    QSignalSpy spy2(fevent, SIGNAL(completed(FileEvent *))); //completed signal is emitted when dataset load is complete
+
+    asf->loadTask(fevent, dsf);
+
+    while(spy2.count() != 1)
+    {
+      QTest::qWait(250);
+    }
+
+    QVERIFY(fevent->_success); //_success is true only if data is loaded
+  }
+}
 
 
+/* waits until the button is created */ 
+void OSFTest::waitTillExists(QButtonGroup *buttonGroup)
+{
+  QTest::qWait(1000);
 
-
+  while(!(buttonGroup->button(0)))
+  {
+    QTest::qWait(250);
+  }
+}
