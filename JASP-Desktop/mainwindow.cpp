@@ -738,10 +738,11 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	{
 		if (_package->isLoaded())
 		{
-			if (_odm->authenticationSuccessful(OnlineDataManager::OSF))
+			OnlineDataManager::AuthData sec = _odm->getAuthData(OnlineDataManager::OSF);
+			if (sec.username!="" && _odm->authenticationSuccessful(OnlineDataManager::OSF))
 			{
 				//If this instance has a valid OSF connection save these settings for a new instance
-				OnlineDataManager::AuthData sec = _odm->getAuthData(OnlineDataManager::OSF);
+
 				_settings.setValue("OSFUsername", sec.username);
 				_settings.setValue("OSFPassword", sec.password);
 			}
