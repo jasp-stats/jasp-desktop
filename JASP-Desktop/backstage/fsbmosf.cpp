@@ -46,11 +46,15 @@ bool FSBMOSF::requiresAuthentication() const
 
 void FSBMOSF::authenticate(const QString &username, const QString &password)
 {
-	_dataManager->setAuthentication(OnlineDataManager::OSF, username, password);
+	bool success = false;
+	if (username!="")
+	{
+		_dataManager->setAuthentication(OnlineDataManager::OSF, username, password);
 
-	bool success = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
+		success = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
 
-	_settings.sync();
+		_settings.sync();
+	}
 
 	if (success)
 	{

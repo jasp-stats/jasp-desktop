@@ -44,13 +44,6 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	### META
 
 	meta <- list()
-	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="tables", type="tables")
-	#meta[[3]] <- list(name="plots", type="images")
-	meta[[3]] <- list(name="plots", type="collection", meta=list(name="plotGroups", type="object",
-																 meta=list(list(name="LogORplot", type="image"))))
-	
-	results[[".meta"]] <- meta
 	
 	results[["title"]] <- "Bayesian Contingency Tables"
 	
@@ -103,13 +96,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		}
 	
 		res <- .contTablesBayesian(dataset, options, populate=FALSE, analysis, last.results)
-		
-		for (table in res$tables) {
-
-			cont.tables[[next.table.index]] <- table
-			next.table.index <- next.table.index + 1
-		}
-		
+				
 		for (plot in res$plots) {
 
 			plots[[next.plot.index]] <- plot
@@ -136,10 +123,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		next.plot.index  <- 1
 
 		for (i in seq_along(analyses))
-		{	
-			
-			results[["tables"]] <- cont.tables
-			
+		{					
 			analysis <- analyses[[i]]
 		
 			if ("results" %in% names(old.state) && i <= length(old.state$results)) {
@@ -149,12 +133,6 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			}
 		
 			res <- .contTablesBayesian(dataset, options, populate=TRUE, analysis, last.results)
-		
-			for (table in res$tables) {
-			
-				cont.tables[[next.table.index]] <- table
-				next.table.index <- next.table.index + 1
-			}
 			
 			for (plot in res$plots) {
 
@@ -172,14 +150,40 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 			
 				new.state$results[i] <- list(NULL)
 			}
-		}
-	
-		results[["tables"]] <- cont.tables
-		
+		}		
 	}
 	
-	results[["tables"]] <- cont.tables
 	
+	if (!is.null(res$tables[["counts.table"]])) {
+	
+		results[["Counts Table"]] <- res$tables[["counts.table"]]
+		meta[[length(meta)+1]] <- list(name="Counts Table", type="table")
+
+	}
+	if (!is.null(res$tables[["tests.table"]])) {
+	
+		results[["Tests Table"]] <- res$tables[["tests.table"]]
+		meta[[length(meta)+1]] <- list(name="Tests Table", type="table")
+
+	}
+	if (!is.null(res$tables[["odds.ratio.table"]])) {
+	
+		results[["Odds Ratio Table"]] <- res$tables[["odds.ratio.table"]]
+		meta[[length(meta)+1]] <- list(name="Odds Ratio Table", type="table")
+
+	}	
+	if (!is.null(res$tables[["cramersV.table"]])) {
+	
+		results[["Kramers V Table"]] <- res$tables[["cramersV.table"]]
+		meta[[length(meta)+1]] <- list(name="Kramers V Table", type="table")
+
+	}
+	
+	meta[[length(meta)+1]] <- list(name="plots", type="collection", meta=list(name="plotGroups", type="object",
+																 meta=list(list(name="LogORplot", type="image"))))
+	
+	results[[".meta"]] <- meta
+		
 	for (i in seq_along(plots)) {
 		
 		title <- ifelse(plots[[i]]$title == "Log odds ratio", "", plots[[i]]$title)
@@ -275,7 +279,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 	
 	res <- .contTablesBayesianCreateCountsTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, counts.state, old.options, status)
 
-	tables[[length(tables)+1]] <- res$table
+	tables[["counts.table"]] <- res$table
 	new.state$counts <- res$state
 	status <- res$status
 	complete <- complete && res$complete
@@ -283,7 +287,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 	res <- .contTablesBayesianCreateTestsTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, tests.state, old.options, status)
 
-	tables[[length(tables)+1]] <- res$table
+	tables[["tests.table"]] <- res$table
 	bf.results      <- res$state
 	new.state$tests <- res$state
 	status <- res$status
@@ -292,14 +296,14 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		
 	res <- .contTablesBayesianCreateOddsRatioTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, bf.results, odds.ratio.state, old.options, status)
 
-	tables[[length(tables)+1]] <- res$table
+	tables[["odds.ratio.table"]] <- res$table
 	odds.ratio.results   <- res$state
 	new.state$odds.ratio <- res$state
 	complete <- complete && res$complete
 	
 	res <- .contTablesBayesianCreateCramerVTable(dataset, analysis, group.matrices, groups, footnotes, options, populate, bf.results, CramersV.state, old.options, status)
 
-	tables[[length(tables)+1]] <- res$table
+	tables[["cramersV.table"]] <- res$table
 	CramersV.results   <- res$state
 	new.state$CramersV <- res$state
 	complete <- complete && res$complete
