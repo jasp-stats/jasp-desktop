@@ -39,16 +39,11 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 
 	results <- list()
 	
-	### META
-
-	meta <- list()
-	meta[[1]] <- list(name="title", type="title")
-	meta[[2]] <- list(name="Contingency Tables", type="tables")
-	
-	results[[".meta"]] <- meta
+	### TITLE
 	
 	results[["title"]] <- "Contingency Tables"
 	
+	meta <- list()
 	
 	### CROSS TABS
 	
@@ -74,15 +69,52 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	}
 	
 	analyses <- .dataFrameToRowList(analyses)
-
+	
 	for (analysis in analyses)
 	{
 		tables <- .crosstab(dataset, options, perform, analysis)
-		for (table in tables)
-			crosstabs[[length(crosstabs)+1]] <- table				
+		
+		if (!is.null(tables[["counts.table"]])) {
+			
+			results[["Counts Table"]] <- tables[["counts.table"]]
+			meta[[length(meta)+1]] <- list(name="Counts Table", type="table")
+		
+		}
+		if (!is.null(tables[["tests.table"]])) {
+			
+			results[["Tests Table"]] <- tables[["tests.table"]]
+			meta[[length(meta)+1]] <- list(name="Tests Table", type="table")
+		
+		}
+		if (!is.null(tables[["odds.ratio.table"]])) {
+			
+			results[["Odds Ratio Table"]] <- tables[["odds.ratio.table"]]
+			meta[[length(meta)+1]] <- list(name="Odds Ratio Table", type="table")
+		
+		}	
+		if (!is.null(tables[["nominal.table"]])) {
+			
+			results[["Nominal Table"]] <- tables[["nominal.table"]]
+			meta[[length(meta)+1]] <- list(name="Nominal Table", type="table")
+		
+		}	
+		if (!is.null(tables[["ordinal.table"]])) {
+			
+			results[["Ordinal Table"]] <- tables[["ordinal.table"]]
+			meta[[length(meta)+1]] <- list(name="Ordinal Table", type="table")
+		
+		}	
+		if (!is.null(tables[["kendalls.table"]])) {
+			
+			results[["Kendalls Table"]] <- tables[["kendalls.table"]]
+			meta[[length(meta)+1]] <- list(name="Kendalls Table", type="table")
+		
+		}	
 	}
-
-	results[["Contingency Tables"]] <- crosstabs
+	
+	results[[".meta"]] <- meta
+	
+	
 
 	if (perform == "run" || length(options$rows) == 0 || length(options$columns) == 0) {
 	
@@ -546,7 +578,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	if (status$error)
 		counts.table[["error"]] <- list(errorType="badData", errorMessage=status$errorMessage)
 	
-	tables[[1]] <- counts.table
+	tables[["counts.table"]] <- counts.table
 	
 	if (options$chiSquared || options$chiSquaredContinuityCorrection || options$likelihoodRatio ) {
 
@@ -556,7 +588,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		if (status$error)
 			tests.table[["error"]] <- list(errorType="badData")
 
-		tables[[2]] <- tests.table
+		tables[["tests.table"]] <- tests.table
 	}
 	
 	if (options$oddsRatio) {
@@ -566,7 +598,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		if (status$error)
 			odds.ratio.table[["error"]] <- list(errorType="badData")
 			
-		tables[[3]] <- odds.ratio.table
+		tables[["odds.ratio.table"]] <- odds.ratio.table
 	}
 	
 	if (options$contingencyCoefficient || options$phiAndCramersV || options$lambda) {
@@ -577,7 +609,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		if (status$error)
 			nominal.table[["error"]] <- list(errorType="badData")
 		
-		tables[[4]] <- nominal.table
+		tables[["nominal.table"]] <- nominal.table
 	}
 	
 	if (options$gamma) {
@@ -588,7 +620,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		if (status$error)
 			ordinal.table[["error"]] <- list(errorType="badData")
 		
-		tables[[5]] <- ordinal.table
+		tables[["ordinal.table"]] <- ordinal.table
 	}
 	
 	if (options$kendallsTauB) {
@@ -599,7 +631,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		if (status$error)
 			kendalls.table[["error"]] <- list(errorType="badData")
 		
-		tables[[6]] <- kendalls.table
+		tables[["kendalls.table"]] <- kendalls.table
 	}
 
 	tables
