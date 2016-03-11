@@ -56,7 +56,7 @@ void OSFTest::loginAuthenticationTest_data()
   QTest::newRow("1") << "akash.07.raj@gmail.com" << "123456qwerty" << true;
   QTest::newRow("2") << "Hello.com" << "123456qwerty" << false;
   QTest::newRow("3") << "akash.07.raj@gmail.com" <<  "12345qwerty" << false;
-  QTest::newRow("4") << "osftester1@yopmail.com" <<  "!@#$%^" << false;
+  QTest::newRow("4") << "osftester1@yopmail.com" <<  "!@#$%^" << true;
   QTest::newRow("5") << "osftester2@yopmail.com" <<  "" << false;
   QTest::newRow("6") << "" <<  "12345qwerty" << false;
   QTest::newRow("7") << "" <<  "" << false;
@@ -97,7 +97,7 @@ bool OSFTest::authenticationTest(QString username, QString password)
 void OSFTest::fileListTest()
 {
   tempfiles_init(ProcessInfo::currentPID()); //set the root path(directory)
-  qRegisterMetaType<FileEvent>();//register the datatype FileEvent
+  qRegisterMetaType<FileEvent *>();//register the datatype FileEvent
   BackstageOSF *bosf = new BackstageOSF(); //initialize BackstageOSF
   DataSetPackage *dsf = new DataSetPackage();
   AsyncLoader *asf = new AsyncLoader();
