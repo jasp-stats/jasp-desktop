@@ -20,6 +20,7 @@
 #define FILEEVENT_H
 
 #include <QObject>
+#include <QMetaType>
 
 class FileEvent : public QObject
 {
@@ -27,6 +28,8 @@ class FileEvent : public QObject
 
 public:
 	FileEvent(QObject *parent = NULL);
+	~FileEvent() = default;
+	FileEvent(const FileEvent&) = default;
 
 	enum FileMode { FileSave, FileOpen, FileExport, FileClose };
 
@@ -68,4 +71,5 @@ private:
 
 };
 
+Q_DECLARE_METATYPE(FileEvent *)
 #endif // FILEEVENT_H
