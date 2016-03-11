@@ -53,7 +53,8 @@ public:
   DataSetPackage *dsp;
   AsyncLoader *asl;
 
-  void readFromFile(std::string, struct fileContent*);
+  void readDataFromFile(std::string, struct fileContent*);
+  bool checkIfEqual(struct fileContent *);
 
 private slots:
     void initTestCase();

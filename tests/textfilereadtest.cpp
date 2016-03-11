@@ -151,15 +151,50 @@ void TextFileReadTest::readDataFromFile(std::string path, struct fileContent *fc
     fc->columns = numCols;
     fc->headers = tempRow;
     buffer.clear();
+    tempRow.clear();
 
     while(std::getline(input, line))
     {
       numRows++;
       buffer.str(line);
-      for(int i=0; i<numCols; ++i)
+
+      int numWordsCurrent = 1;
+      for(int i=0; i<line.size(); ++i)
+      {
+        if(line[i]==delimiter)
+        {
+          numWordsCurrent++;
+        }
+      }
+
+      for(int i=0; i<numWordsCurrent; ++i)
       {
         std::getline(buffer, currentWord, delimiter);
-        tempRow.push_back(currentWord);
+
+        bool valid = false;
+        //check if current word has letters/numbers
+        for(int j=0; j<currentWord.size(); ++j)
+        {
+          if(currentWord[j] != ' ' && currentWord[j] != '\t')
+          {
+            valid = true;
+            break;
+          }
+        }
+        if(valid)
+        {
+
+          tempRow.push_back(currentWord);  
+        }
+        else
+        {
+          tempRow.push_back(".");
+        }
+      }
+
+      for(int i=numWordsCurrent; i<numCols; ++i)//fill remaining with '.'
+      {
+        tempRow.push_back(".");
       }
 
       fileRows.push_back(tempRow);
