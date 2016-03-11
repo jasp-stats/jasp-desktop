@@ -28,7 +28,8 @@ The test will run automatically when the project is built and run.
 Unit Tests in the project
 -------------------------
 
-1) Opening of Text files (tests the AsyncLoader class)
-2) OSF login authentication
+1) Opening of Text files (tests the AsyncLoader class) - "textfilereadtest.h"
+
+2) OSF login (login authentication, file heirarchy-opening a file) - "osftest.h"
 
 
