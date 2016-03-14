@@ -383,17 +383,17 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		odds.ratio.table <- list()
 		
 		odds.ratio.table[["title"]] <- "Log Odds Ratio"
-		ci.label <- paste(100*options$oddsRatioConfidenceIntervalInterval, "% Confidence intervals", sep="")
+		ci.label <- paste(100*options$oddsRatioConfidenceIntervalInterval, "% Confidence Intervals", sep="")
 		
 		odds.ratio.fields <- fields
 			
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="type[oddsRatio]", title="", type="string")
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[oddsRatio]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[oddsRatio]", title="Log Odds Ratio", type="number", format="sf:4;dp:3")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower",overTitle=ci.label, type="number", format="dp:3")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper",overTitle=ci.label, type="number", format="dp:3")
 		
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="type[FisherTest]", title="", type="string")
-		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[FisherTest]", title="Log\u2009(\u2009odds ratio)", type="number", format="sf:4;dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[FisherTest]", title="Log Odds Ratio", type="number", format="sf:4;dp:3")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[FisherTest]", title="Lower", overTitle=ci.label, type="number", format="dp:3")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[FisherTest]",  title="Upper", overTitle=ci.label, type="number", format="dp:3")
 		
@@ -445,13 +445,16 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		ordinal.table <- list()
 		
 		ordinal.table[["title"]] <- "Ordinal Gamma"
+		ci.label <- paste( "95% Confidence Intervals")
 		
 		ordinal.fields <- fields
 		
 		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="value[gammaCoef]", title="Gamma", type="number", format="sf:4;dp:3")
-		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="Sigma[gammaCoef]", title="std. error", type="number", format="dp:3")
-		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="low[gammaCoef]", title="Lower CI", type="number", format="dp:3")
-		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="up[gammaCoef]",  title="Upper CI", type="number", format="dp:3")
+		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="Sigma[gammaCoef]", title="Standard Error", type="number", format="dp:3")
+		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="low[gammaCoef]", title="Lower",overTitle=ci.label, type="number", format="dp:3")
+		ordinal.fields[[length(ordinal.fields)+1]] <- list(name="up[gammaCoef]",  title="Upper",overTitle=ci.label, type="number", format="dp:3")
+		#ordinal.fields[[length(ordinal.fields)+1]] <- list(name="low[gammaCoef]", title="Lower CI", type="number", format="dp:3")
+		#ordinal.fields[[length(ordinal.fields)+1]] <- list(name="up[gammaCoef]",  title="Upper CI", type="number", format="dp:3")
 		
 		schema <- list(fields=ordinal.fields)
 		
@@ -469,8 +472,8 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		kendalls.fields <- fields
 			
 		#kendalls.fields[[length(kendalls.fields)+1]] <- list(name="type[kTauB]", title="", type="string")
-		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="value[kTauB]", title="Kendall's tau-b ", type="number", format="sf:4;dp:3")
-		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="statistic[kTauB]", title="z statistic", type="number", format="dp:3")
+		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="value[kTauB]", title="Kendall's Tau-b ", type="number", format="sf:4;dp:3")
+		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="statistic[kTauB]", title="Z", type="number", format="dp:3")
 		kendalls.fields[[length(kendalls.fields)+1]] <- list(name="p[kTauB]", title="p", type="number", format="dp:3;p:.001")
 		
 		
@@ -696,7 +699,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	
 	if (options$chiSquaredContinuityCorrection) {
 	
-		row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 Continuity correction"
+		row[["type[chiSquared-cc]"]] <- "\u03A7\u00B2 continuity correction"
 
 		if (perform == "run" && status$error == FALSE && status$ready) {
 		
@@ -805,7 +808,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 
 	if (options$contingencyCoefficient) {
 		 
-		row[["type[ContCoef]"]] <- "Contingency Coefficient" 
+		row[["type[ContCoef]"]] <- "Contingency coefficient" 
 		 
 		if (perform == "run" && status$error == FALSE) {
 			 
@@ -845,7 +848,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 
 	if (options$phiAndCramersV) {
 	
-		row[["type[PhiCoef]"]] <- "Phi-Coefficient"
+		row[["type[PhiCoef]"]] <- "Phi-coefficient"
 		
 		
 		if (perform == "run" && status$error == FALSE) {
@@ -925,7 +928,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 
 	 if (options$lambda) {
 		
-		row[["type[LambdaR]"]] <- paste("Lambda (", options$rows, "Dependent)", sep= " ")
+		row[["type[LambdaR]"]] <- paste("Lambda (", options$rows, "dependent)", sep= " ")
 		
 		if (perform == "run" && status$error == FALSE) {
 				
@@ -953,7 +956,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	
 	if (options$lambda) {
 		
-		row[["type[LambdaC]"]] <- paste("Lambda (", options$columns, "Dependent)", sep= " ")
+		row[["type[LambdaC]"]] <- paste("Lambda (", options$columns, "dependent)", sep= " ")
 		
 		if (perform == "run" && status$error == FALSE) {
 				
@@ -1001,7 +1004,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	
 	if (options$gamma) {
 		
-		row[["type[gammaCoef]"]] <- "Gamma Coefficient"
+		row[["type[gammaCoef]"]] <- "Gamma coefficient"
 		
 		
 		if (perform == "run" && status$error == FALSE) {
@@ -1011,6 +1014,9 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 				chi.result <- vcdExtra::GKgamma(counts.matrix)
 				
 			})
+			
+			print(chi.result)
+			print("we are here")
 			
 			if (class(chi.result) == "try-error") {
 				
@@ -1062,7 +1068,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 			
 	if (options$kendallsTauB) {
 		
-		row[["type[kTauB]"]] <- "Kendall's Tau B"
+		row[["type[kTauB]"]] <- "Kendall's Tau-b"
 		
 		
 		if (perform == "run" && status$error == FALSE) {
@@ -1364,7 +1370,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 			
 			if (options$countsExpected) {
 			
-				row.expected[["type[expected]"]] <- "Expected Count"
+				row.expected[["type[expected]"]] <- "Expected count"
 
 				expected <- as.list(expected.matrix[i,])
 				names(expected) <- paste(names(expected),"[expected]",  sep="")
