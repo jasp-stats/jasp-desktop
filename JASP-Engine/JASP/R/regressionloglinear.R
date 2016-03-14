@@ -91,7 +91,7 @@ RegressionLogLinear <- function(dataset, options, perform="run", callback, ...) 
 	
 	results[[".meta"]] <- .meta
 	
-	results[["title"]] <- "Log-linear Regression"
+	results[["title"]] <- "Log-Linear Regression"
 	
 	.LogLinearCitations <- 	list(
 		"R Core Team (2015). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/."

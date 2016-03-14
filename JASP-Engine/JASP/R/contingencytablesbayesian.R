@@ -944,7 +944,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 
 	ci.label <- paste(100 * options$oddsRatioCredibleIntervalInterval, "% Credible Interval", sep="")
 		
-	fields[[length(fields)+1]] <- list(name="value[oddsRatio]", title="Odds ratio", type="number", format="sf:4;dp:3")
+	fields[[length(fields)+1]] <- list(name="value[oddsRatio]", title="Log Odds Ratio", type="number", format="sf:4;dp:3")
 	fields[[length(fields)+1]] <- list(name="low[oddsRatio]", title="Lower", overTitle=ci.label, type="number", format="dp:3")
 	fields[[length(fields)+1]] <- list(name="up[oddsRatio]",  title="Upper", overTitle=ci.label, type="number", format="dp:3")
 	
