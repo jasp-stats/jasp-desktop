@@ -49,11 +49,11 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 	schema <- list(fields=list(
 		list(name="case", title="", type="string", combine=TRUE),
-		list(name="level", type="string"),
-		list(name="counts", type="integer"),
-		list(name="total", type="integer"),
-		list(name="proportion", type="number", format="sf:4;dp:3"),
-		list(name="p", type="number", format="dp:3;p:.001")
+		list(name="level", title="Level", type="string"),
+		list(name="counts", title="Counts", type="integer"),
+		list(name="total", title="Total", type="integer"),
+		list(name="proportion", title="Proportion", type="number", format="sf:4;dp:3"),
+		list(name="p", title="p", type="number", format="dp:3;p:.001")
 		))
 
 	table[["schema"]] <- schema
