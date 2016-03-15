@@ -15,57 +15,52 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TEXTFILEREADTEST_H
-#define TEXTFILEREADTEST_H
+#ifndef OSFTEST_H
+#define OSFTEST_H
 
 #pragma once
 #define private public
 
+#include <QEventLoop>
 #include <QSignalSpy>
-#include <QSignalBlocker>
+#include <QMetaType>
 #include <fstream>
-#include <vector>
-#include <sstream>
-#include <string>
+
 #include "AutomatedTests.h"
-#include "asyncloader.h"
-#include "sharedmemory.h"
+#include "backstage/fsbrowser.h"
+#include "backstage/fsbmosf.h"
+#include "backstage/fsbmodel.h"
+#include "backstage/fsentrywidget.h"
+#include "backstage/fsentry.h"
+#include "backstage/backstageosf.h"
+#include "onlinedatamanager.h"
 #include "fileevent.h"
-#include "mainwindow.h"
+#include "asyncloader.h"
 #include "datasetpackage.h"
 
 
-class TextFileReadTest : public QObject
+class OSFTest : public QObject
 {
     Q_OBJECT
 
 public:
+    FSBrowser *fs;
+    FSBMOSF *_model;
+    OnlineDataManager *_odm;
 
-  struct fileContent
-  {
-    int columns;
-    int rows;
-    std::vector <std::string> headers;
-    std::vector< std::vector<std::string> > data;
-  };
-
-  FileEvent *fe;
-  DataSetPackage *dsp;
-  AsyncLoader *asl;
-
-  void readDataFromFile(std::string, struct fileContent*);
-  bool checkIfEqual(struct fileContent *);
+    bool authenticationTest(QString, QString);
+    void waitTillExists(QButtonGroup *);
 
 private slots:
     void initTestCase();
-    void cleanupTestCase();
     void init();
     void cleanup();
-    void asyncloaderTester1();
-    void asyncloaderTester2();
+    void cleanupTestCase();
+    void loginAuthenticationTest_data();
+    void loginAuthenticationTest();
+    void fileListTest();
 };
 
+DECLARE_TEST(OSFTest)
 
-DECLARE_TEST(TextFileReadTest)
-
-#endif // TEXTFILEREADTEST_H
+#endif // OSFTEST_H
