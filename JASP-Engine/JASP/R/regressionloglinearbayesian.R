@@ -75,7 +75,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			}
 		
 		if ( !is.null (variable.names))
-		error.message <- "Bayes factor is undefined -- the factors contain(s) empty cell and/or NaN and/or incomplete contingency table."
+		error.message <- "Bayes factor is undefined -- the factors contain(s) empty cell and/or NaN or incomplete contingency table."
 		list.of.errors[[ length(list.of.errors) + 1 ]] <- error.message
 	}
 			 	 	
@@ -91,7 +91,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 		
 	results[[".meta"]] <- .meta
 	
-	results[["title"]] <- "Bayesian Log-linear Regression"
+	results[["title"]] <- "Bayesian Log-Linear Regression"
 	
 	.LogLinearBayesianCitations <- 	list(
 		"Overstall, A., & King, R. (2014). conting: an R package for Bayesian analysis of complete and incomplete contingency tables. Journal of Statistical Software, 58(7), 1-27."
@@ -514,7 +514,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 ################################################################################		
 	if (options$regressionCoefficientsSubmodel  == TRUE){
 		BayesianSublogregression <- list()
-		BayesianSublogregression[["title"]] <-paste( "Posterior Summary Statistics for Submodel", options$regressionCoefficientsSubmodelNo, sep=" ")
+		BayesianSublogregression[["title"]] <-paste( "Posterior Summary Statistics For Submodel", options$regressionCoefficientsSubmodelNo, sep=" ")
 		BayesianSublogregression[["citation"]] <- .LogLinearBayesianCitations
 		ci.label <- paste(100*options$regressionCoefficientsSubmodelCredibleIntervalsInterval, "% Credible Intervals", sep="")
 		# Declare table elements
@@ -571,7 +571,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 				Model.formula <- substring(Model.formula, 2)  # trim leading ~
 				Model.formula <- .unvf(Model.formula)	
 				message1 <- Model.formula
-				.addFootnote (footnotes, symbol = "<em>Model Formula:</em>", text = message1)
+				.addFootnote (footnotes, symbol = "<em>Model formula:</em>", text = message1)
 													
 				Post.pob <- round(logBlm.subestimates$post_prob, 3)
 				.addFootnote (footnotes, symbol = "<em>Posterior model probability =</em>", text = Post.pob )	
