@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>528</width>
-    <height>239</height>
+    <height>262</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -87,7 +87,7 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>8</pointsize>
+              <pointsize>12</pointsize>
              </font>
             </property>
             <property name="text">
@@ -102,6 +102,11 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
             </property>
             <property name="text">
              <string>Password</string>
@@ -154,7 +159,7 @@
           </property>
           <property name="font">
            <font>
-            <pointsize>8</pointsize>
+            <pointsize>12</pointsize>
            </font>
           </property>
           <property name="text">
