@@ -8,6 +8,7 @@ CONFIG += staticlib
 
 windows:CONFIG += c++11
 linux:CONFIG += c++11
+linux:CONFIG += -pipe
 
    macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
@@ -20,7 +21,7 @@ QMAKE_CXXFLAGS += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-c++11-long-long
 QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
-QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
+windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 SOURCES += \
 	analysis.cpp \
@@ -70,7 +71,26 @@ SOURCES += \
 	tempfiles.cpp \
 	utils.cpp \
 	version.cpp \
-	exporters/csvexporter.cpp
+	exporters/csvexporter.cpp \
+	exporters/csvexporter.cpp \
+	importers/spss/datainforecord.cpp \
+	importers/spss/datarecords.cpp \
+	importers/spss/dictionaryterminationrecord.cpp \
+	importers/spss/documentrecord.cpp \
+	importers/spss/extnumbercasesrecord.cpp \
+	importers/spss/fileheaderrecord.cpp \
+	importers/spss/floatinforecord.cpp \
+	importers/spss/longvarnamesrecord.cpp \
+	importers/spss/miscinforecord.cpp \
+	importers/spss/missingvaluechecker.cpp \
+	importers/spss/readablerecord.cpp \
+	importers/spss/spssrecinter.cpp \
+	importers/spss/valuelabelvarsrecord.cpp \
+	importers/spss/vardisplayparamrecord.cpp \
+	importers/spss/variablerecord.cpp \
+	importers/spss/verylongstringrecord.cpp \
+	importers/spss/integerinforecord.cpp \
+	importers/spss/stringutils.cpp
 
 
 HEADERS += \
@@ -141,6 +161,28 @@ HEADERS += \
 	tempfiles.h \
 	utils.h \
 	version.h \
-	exporters/csvexporter.h
+	exporters/csvexporter.h \
+	importers/spss/datainforecord.h \
+	importers/spss/datarecords.h \
+	importers/spss/debug_cout.h \
+	importers/spss/dictionaryterminationrecord.h \
+	importers/spss/documentrecord.h \
+	importers/spss/extnumbercasesrecord.h \
+	importers/spss/fileheaderrecord.h \
+	importers/spss/floatinforecord.h \
+	importers/spss/integerinforecord.h \
+	importers/spss/longvarnamesrecord.h \
+	importers/spss/measures.h \
+	importers/spss/miscinforecord.h \
+	importers/spss/missingvaluechecker.h \
+	importers/spss/readablerecord.h \
+	importers/spss/spssrecinter.h \
+	importers/spss/spssstream.h \
+	importers/spss/systemfileformat.h \
+	importers/spss/valuelabelvarsrecord.h \
+	importers/spss/vardisplayparamrecord.h \
+	importers/spss/variablerecord.h \
+	importers/spss/verylongstringrecord.h \
+	importers/spss/stringutils.h
 
 

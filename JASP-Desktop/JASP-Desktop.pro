@@ -5,6 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 windows:CONFIG += c++11
 linux:CONFIG += c++11
+linux:CONFIG += -pipe
 
 DESTDIR = ..
 TARGET = JASP
