@@ -2,9 +2,10 @@
 Name=JASP
 Comment=Statistical analysis package
 Keywords=statistics;data
-Exec=JASP
+Exec=JASP %f
 Terminal=false
 Type=Application
+MimeType=application/jasp
 StartupNotify=true
 Icon=/usr/lib/JASP/Resources/jasp.svg
 
