@@ -921,6 +921,7 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		base::identical(state.options$rowOrder, options$rowOrder) == FALSE ||
 		base::identical(state.options$samplingModel, options$samplingModel) == FALSE ||
 		base::identical(state.options$hypothesis, options$hypothesis) == FALSE ||
+		base::identical(state.options$priorConcentration, options$priorConcentration) == FALSE ||
 		base::identical(state.options$oddsRatioCredibleIntervalInterval, options$oddsRatioCredibleIntervalInterval) == FALSE ||
 		base::identical(state.options$plotPosteriorOddsRatioAdditionalInfo, options$plotPosteriorOddsRatioAdditionalInfo) == FALSE) {
 		
@@ -1036,6 +1037,8 @@ ContingencyTablesBayesian <- function(dataset, options, perform, callback, ...) 
 		base::identical(state.options$columnOrder, options$columnOrder) == FALSE ||
 		base::identical(state.options$rowOrder, options$rowOrder) == FALSE ||
 		base::identical(state.options$samplingModel, options$samplingModel) == FALSE ||
+		base::identical(state.options$priorConcentration, options$priorConcentration) == FALSE ||
+		base::identical(state.options$effectSizeCredibleIntervalInterval, options$effectSizeCredibleIntervalInterval) == FALSE ||
 		base::identical(state.options$hypothesis, options$hypothesis) == FALSE) {
 		
 		state <- NULL
