@@ -375,8 +375,8 @@ RESOURCES += \
 	../JASP-Desktop/resources/icons.qrc \
 	../JASP-Desktop/resources/resources.qrc
 
-   unix:OTHER_FILES += icon.icns
-windows:OTHER_FILES += icon.rc
+   unix:OTHER_FILES += ../JASP-Desktop/icon.icns
+windows:OTHER_FILES += ../JASP-Desktop/icon.rc
 
 OTHER_FILES += \
 	../JASP-Desktop/html/index.html \
