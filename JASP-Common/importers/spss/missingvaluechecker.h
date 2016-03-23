@@ -4,8 +4,8 @@
 #include <set>
 #include <vector>
 #include <cfloat>
-#include <cstdint>
-#include <cmath>
+#include <stdint.h>
+#include <math.h>
 
 namespace spss {
 
