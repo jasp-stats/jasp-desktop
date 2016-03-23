@@ -8,6 +8,10 @@ linux:CONFIG += c++11
 linux:CONFIG += -pipe
 
 DESTDIR = ..
+OBJECTS_DIR = ../JASP-Desktop
+MOC_DIR = ../JASP-Desktop
+RCC_DIR = ../JASP-Desktop
+UI_DIR	= ../JASP-Desktop
 
 TARGET = JASP-Desktop
 TEMPLATE = lib
