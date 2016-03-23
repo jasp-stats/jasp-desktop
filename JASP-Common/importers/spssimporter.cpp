@@ -194,8 +194,8 @@ void SPSSImporter::loadDataSet(
 	}
 
 	//If we got a file header then..
-	if (_pFhr == nullptr)
-		throw runtime_error("No header found on .SAV file.");
+	if (_pFhr == 0)
+		throw runtime_error("No header found in .SAV file.");
 
 	// read the data records from the file.
 	DataRecords data(*_pFhr, dictData, stream, progress);

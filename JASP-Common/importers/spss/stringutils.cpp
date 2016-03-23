@@ -36,7 +36,7 @@ string StrUtils::rTrimWS(const string &str)
 {
 	string result = str;
 	while ( isspace(result[result.size() -1]) )
-		result.pop_back();
+		result = result.substr(0, result.length() - 1);
 	return result;
 }
 
@@ -50,7 +50,7 @@ string StrUtils::rTrimWS(const string &str)
 void StrUtils::rTrimWSIP(string &str)
 {
 	while ( isspace(str[str.size() -1]) )
-		str.pop_back();
+		str = str.substr(0, str.length() - 1);
 }
 
 /**
