@@ -19,13 +19,13 @@
 #define TEXTFILEREADTEST_H
 
 #pragma once
+#include <sstream>
 #define private public
 
 #include <QSignalSpy>
 #include <QSignalBlocker>
 #include <fstream>
 #include <vector>
-#include <sstream>
 #include <string>
 #include "AutomatedTests.h"
 #include "asyncloader.h"
@@ -53,7 +53,8 @@ public:
   DataSetPackage *dsp;
   AsyncLoader *asl;
 
-  void readFromFile(std::string, struct fileContent*);
+  void readDataFromFile(std::string, struct fileContent*);
+  bool checkIfEqual(struct fileContent *);
 
 private slots:
     void initTestCase();
