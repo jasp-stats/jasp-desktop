@@ -58,7 +58,7 @@ MissingValueChecker & MissingValueChecker::operator = (const MissingValueChecker
 bool MissingValueChecker::isMissingValue(const FloatInfoRecord &fir, double value)
 {
 	// SYSMIS?
-    if ((value == fir.sysmis()) || ::isnan(value))
+	if ((value == fir.sysmis()) || std::isnan(value))
 	    return true;
 	// in the range of mssing values?
     else if ((value >= _minMissing) && (value <= _maxMissing))
