@@ -8,15 +8,21 @@ linux:CONFIG += c++11
 linux:CONFIG += -pipe
 
 DESTDIR = ..
+OBJECTS_DIR = ../JASP-Desktop
+MOC_DIR = ../JASP-Desktop
+RCC_DIR = ../JASP-Desktop
+UI_DIR	= ../JASP-Desktop
 
-TARGET = JASP
-TEMPLATE = app
+TARGET = JASP-Desktop
+TEMPLATE = lib
+CONFIG += staticlib
+
 
 DEPENDPATH = ..
 
 CONFIG -= app_bundle
 
-INCLUDEPATH += ../JASP-Common/
+INCLUDEPATH += ../JASP-Common/ 
 
    macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
@@ -40,9 +46,10 @@ QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 linux {
-        _R_HOME = $$(R_HOME)
-        isEmpty(_R_HOME):_R_HOME = /usr/lib/R
-        QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
+	_R_HOME = $$(R_HOME)
+	isEmpty(_R_HOME):_R_HOME = /usr/lib/R
+	QMAKE_CXXFLAGS += -D\'R_HOME=\"$$_R_HOME\"\'
 }
 
-include(JASP-Desktop.pri)
+
+include(../JASP-Desktop/JASP-Desktop.pri)

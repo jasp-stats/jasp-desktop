@@ -1,4 +1,21 @@
-#include "textfilereadtest.h"
+//
+// Copyright (C) 2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+#include "textfileread_test.h"
 
 
 void TextFileReadTest::initTestCase()
@@ -134,15 +151,50 @@ void TextFileReadTest::readDataFromFile(std::string path, struct fileContent *fc
     fc->columns = numCols;
     fc->headers = tempRow;
     buffer.clear();
+    tempRow.clear();
 
     while(std::getline(input, line))
     {
       numRows++;
       buffer.str(line);
-      for(int i=0; i<numCols; ++i)
+
+      int numWordsCurrent = 1;
+      for(int i=0; i<line.size(); ++i)
+      {
+        if(line[i]==delimiter)
+        {
+          numWordsCurrent++;
+        }
+      }
+
+      for(int i=0; i<numWordsCurrent; ++i)
       {
         std::getline(buffer, currentWord, delimiter);
-        tempRow.push_back(currentWord);
+
+        bool valid = false;
+        //check if current word has letters/numbers
+        for(int j=0; j<currentWord.size(); ++j)
+        {
+          if(currentWord[j] != ' ' && currentWord[j] != '\t')
+          {
+            valid = true;
+            break;
+          }
+        }
+        if(valid)
+        {
+
+          tempRow.push_back(currentWord);
+        }
+        else
+        {
+          tempRow.push_back(".");
+        }
+      }
+
+      for(int i=numWordsCurrent; i<numCols; ++i)//fill remaining with '.'
+      {
+        tempRow.push_back(".");
       }
 
       fileRows.push_back(tempRow);
@@ -158,4 +210,3 @@ void TextFileReadTest::readDataFromFile(std::string path, struct fileContent *fc
     qDebug() << "File open failed";
   }
 }
-
