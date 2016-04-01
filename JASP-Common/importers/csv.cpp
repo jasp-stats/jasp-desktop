@@ -372,27 +372,32 @@ bool CSV::readLine(vector<string> &items)
 		}
 		else if (ch == '\r')
 		{
-			string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
-			trim(token);
-
-			items.push_back(token);
+            if (items.size() > 0 || i > _utf8BufferStartPos) {
+                string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
+                trim(token);
+                items.push_back(token);
+            }
 
 			if (i + 1 < _utf8BufferEndPos && _utf8Buffer[i + 1] == '\n')
 				_utf8BufferStartPos = i + 2;
 			else
 				_utf8BufferStartPos = i + 1;
 
-			break;
+            if (items.size() > 0)
+                break;
 		}
 		else if (ch == '\n')
 		{
-			string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
-			trim(token);
-
-			items.push_back(token);
+            if (items.size() > 0 || i > _utf8BufferStartPos) {
+                string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
+                trim(token);
+                items.push_back(token);
+            }
 
 			_utf8BufferStartPos = i + 1;
-			break;
+
+            if (items.size() > 0)
+                break;
 		}
 
 		if (i >= _utf8BufferEndPos - 1)
@@ -405,10 +410,11 @@ bool CSV::readLine(vector<string> &items)
 			}
 			else // eof
 			{
-				string token(&_utf8Buffer[_utf8BufferStartPos], _utf8BufferEndPos - _utf8BufferStartPos);
-				trim(token);
-
-				items.push_back(token);
+                if (items.size() > 0 || _utf8BufferEndPos > _utf8BufferStartPos) {
+                    string token(&_utf8Buffer[_utf8BufferStartPos], _utf8BufferEndPos - _utf8BufferStartPos);
+                    trim(token);
+                    items.push_back(token);
+                }
 				_eof = true;
 				break;
 			}
@@ -417,12 +423,12 @@ bool CSV::readLine(vector<string> &items)
 		i++;
 	}
 
-	for (int i = 0; i < items.size(); i++)
+    for (size_t index = 0; index < items.size(); index++)
 	{
-		string item = items.at(i);
+        string item = items.at(index);
 		if (item.size() >= 2 && item[0] == '"' && item[item.size()-1] == '"')
 			item = item.substr(1, item.size()-2);
-		items[i] = item;
+        items[index] = item;
 	}
 
 	return true;

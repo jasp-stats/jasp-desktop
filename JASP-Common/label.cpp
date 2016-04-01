@@ -67,6 +67,11 @@ int Label::value() const
 	return _intValue;
 }
 
+void Label::setValue(int value) {
+    _intValue = value;
+    _hasIntValue = true;
+}
+
 Label &Label::operator=(const Label &label)
 {
 	this->_hasIntValue = label._hasIntValue;

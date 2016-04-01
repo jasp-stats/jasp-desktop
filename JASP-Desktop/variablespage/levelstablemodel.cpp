@@ -109,3 +109,32 @@ void LevelsTableModel::moveUp(QModelIndexList &selection) {
 void LevelsTableModel::moveDown(QModelIndexList &selection) {
 	_moveRows(selection, false);
 }
+
+Qt::ItemFlags LevelsTableModel::flags(const QModelIndex &index) const
+{
+    if (index.column() == 1) {
+        return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
+    } else {
+        return QAbstractTableModel::flags(index);
+    }
+}
+
+bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value, int role)
+{
+    if (_column == NULL)
+        return false;
+
+    if (role == Qt::EditRole)
+    {
+//        Labels &labels = _column->labels();
+//        std::vector<LabelEntry> new_labels(labels.begin(), labels.end());
+
+//        LabelEntry new_label_entry = new_labels[index.row()];
+//        int new_value = value.toInt();
+//        new_label_entry.first = new_value;
+//        new_label_entry.second.setValue(new_value);
+//        new_labels[index.row()] = new_label_entry;
+//        labels.set(new_labels);
+    }
+    return true;
+}

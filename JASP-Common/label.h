@@ -30,6 +30,7 @@ public:
 	std::string text() const;
 	bool hasIntValue() const;
 	int value() const;
+    void setValue(int value);
 	Label& operator=(const Label &label);
 
 private:
