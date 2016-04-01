@@ -126,21 +126,15 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
 
     if (role == Qt::EditRole)
     {
-        Labels &labels = _column->labels();
-        std::vector<LabelEntry> new_labels(labels.begin(), labels.end());
-//        const LabelEntry &old_label_entry = labels.at(index.row());
-//        Label *new_label = new Label(old_label_entry.second.text(), value.toInt());
-//        LabelEntry *new_label_entry = new LabelEntry(value.toInt(), *new_label);
+//        Labels &labels = _column->labels();
+//        std::vector<LabelEntry> new_labels(labels.begin(), labels.end());
 
-        LabelEntry new_label_entry = new_labels[index.row()];
-        int new_value = new_label_entry.first; //2;//value.toInt();
-        new_label_entry.first = new_value;
-        new_label_entry.second.setValue(new_value);
-        new_labels[index.row()] = new_label_entry;
-        labels.set(new_labels);
-
-        //_column->labels().setValue(index.row(), value.toInt());
-        //entry.second = value.toString();
+//        LabelEntry new_label_entry = new_labels[index.row()];
+//        int new_value = value.toInt();
+//        new_label_entry.first = new_value;
+//        new_label_entry.second.setValue(new_value);
+//        new_labels[index.row()] = new_label_entry;
+//        labels.set(new_labels);
     }
     return true;
 }
