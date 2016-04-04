@@ -28,17 +28,23 @@
  */
 #define _SPSSIMPORTER_ATTRIB(type, variable) private: type _##variable;
 
-#define SPSSIMPORTER_READ_ATTRIB(type, variable)								 \
-	_SPSSIMPORTER_ATTRIB(type, variable)										 \
-	public: const type & variable () const { return _##variable; } \
+#define SPSSIMPORTER_READ_ATTRIB(type, variable)					\
+	_SPSSIMPORTER_ATTRIB(type, variable)							\
+	public: const type & variable () const { return _##variable; }	\
 
 
 /*
  * We use this fragment in constuctors, so, make a macro out of it.
- * (This macro assumes that file is an instance of an ifstream like object, in that it has a member function of signature read(char *, size_t) ).
+ * (This macro assumes that file is an instance of an ifstream like object,
+ * in that it has a member function of signature read(char *, size_t) ).
  */
-#define _SPSSIMPORTER_READ_VAR(variable, file)  (file.read((char *) &variable, sizeof(variable)))
-#define SPSSIMPORTER_READ_MEMBER(variable, file)  _SPSSIMPORTER_READ_VAR(_##variable, file)
+#define _SPSSIMPORTER_READ_VAR(variable, file)			\
+	(file.read((char *) &variable, sizeof(variable)))	\
+
+#define SPSSIMPORTER_READ_MEMBER(variable, file, fixer) \
+	_SPSSIMPORTER_READ_VAR(_##variable, file);			\
+	fixer.fixup( &_##variable )							\
+
 
 namespace spss {
 

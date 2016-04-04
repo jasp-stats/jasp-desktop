@@ -10,31 +10,33 @@ using namespace spss;
 
 /**
  * @brief VarDisplayParamRecord Ctor
+ * @param fixer - The Endainness fixer
  * @param useWidth True if we use the width.
  * @param fromStream The file to read from.
  */
-VarDisplayParamRecord::DisplayParams::DisplayParams(bool usedWidth, SPSSStream &from)
+VarDisplayParamRecord::DisplayParams::DisplayParams(const HardwareFormats &fixer, bool usedWidth, SPSSStream &from)
  : _width(0)
 {
-	SPSSIMPORTER_READ_MEMBER(measure, from);
+	SPSSIMPORTER_READ_MEMBER(measure, from, fixer);
 	if (usedWidth)
 	{
-		SPSSIMPORTER_READ_MEMBER(width, from);
+		SPSSIMPORTER_READ_MEMBER(width, from,fixer);
 	}
-	SPSSIMPORTER_READ_MEMBER(alignment, from);
+	SPSSIMPORTER_READ_MEMBER(alignment, from,fixer);
 };
 
 
 
 /**
  * @brief VarDisplayRecord Ctor
+ * @param fixer - The Endainness fixer
  * @param fileSubType The record subtype value, as found in the file.
  * @param fileType The record type value, as found in the file.
  * @param numCoumns The number of columns discovered (to date)
  * @param fromStream The file to read from.
  */
-VarDisplayParamRecord::VarDisplayParamRecord(RecordSubTypes fileSubType, RecordTypes fileType, int32_t numColumns, SPSSStream &from)
-	: DataInfoRecord(fileSubType, fileType, from)
+VarDisplayParamRecord::VarDisplayParamRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, int32_t numColumns, SPSSStream &from)
+	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	// do we read the width value?
 	bool useWidth = count() > (2 * numColumns);
@@ -42,7 +44,7 @@ VarDisplayParamRecord::VarDisplayParamRecord(RecordSubTypes fileSubType, RecordT
 	// Fetch all the records.
 	for (int i = 0; i < numColumns; i++)
 	{
-		DisplayParams dp(useWidth, from);
+		DisplayParams dp(fixer, useWidth, from);
 		_displayParams.push_back( dp );
 	}
 }

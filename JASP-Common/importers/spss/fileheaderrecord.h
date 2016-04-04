@@ -17,6 +17,7 @@ public:
 
 	/**
 	 * @brief FileHeader Read from file.
+	 * @param HardwareFormats &fixer - Fixer for eindiness.
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream file to read.
 	 * @param double expectedBias The bias value expected.
@@ -25,7 +26,7 @@ public:
 	 * same as passed - This is method used to check that the
 	 * file uses the same floating point format.
 	 */
-	FileHeaderRecord(RecordTypes fileType, SPSSStream &fromStream, double expectedBias = 100.0);
+	FileHeaderRecord(HardwareFormats &fixer, RecordTypes fileType, SPSSStream &fromStream, double expectedBias = 100.0);
 
 	virtual ~FileHeaderRecord();
 
@@ -63,19 +64,16 @@ public:
 	int32_t incVarRecordCount() { return _varRecordCount++; }
 
 	/**
-	 * @brief biasIsAcceptable Checks for an expected bias value.
-	 * @param value The expected value.
-	 * @return True if the \code bias \endcode == \code value \endcode
-	 */
-	bool biasIsAcceptable(double value = 100.0) const { return (bias() == value); }
-
-	/**
 	 * @brief process Manipulates columns by adding the contents of thie record.
 	 * @param columns
 	 *
 	 * Implematations should examine columns to determine the record history.
 	 */
 	virtual void process(SPSSColumns & columns);
+
+private:
+	 static const int32_t _layout_code_good_vals[3];
+	 static const double _bias_good_vals[2];
 };
 
 }

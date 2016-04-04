@@ -74,7 +74,9 @@ SOURCES += \
 	version.cpp \
 	exporters/csvexporter.cpp \
 	exporters/csvexporter.cpp \
-	importers/spss/datainforecord.cpp \
+        exporters/htmlexporter.cpp \
+        exporters/pdfexporter.cpp \
+        importers/spss/datainforecord.cpp \
 	importers/spss/datarecords.cpp \
 	importers/spss/dictionaryterminationrecord.cpp \
 	importers/spss/documentrecord.cpp \
@@ -92,8 +94,7 @@ SOURCES += \
 	importers/spss/verylongstringrecord.cpp \
 	importers/spss/integerinforecord.cpp \
 	importers/spss/stringutils.cpp \
-    exporters/htmlexporter.cpp \
-    exporters/pdfexporter.cpp
+        importers/spss/hardwareformats.cpp
 
 
 HEADERS += \
@@ -165,7 +166,9 @@ HEADERS += \
 	utils.h \
 	version.h \
 	exporters/csvexporter.h \
-	importers/spss/datainforecord.h \
+        exporters/htmlexporter.h \
+        exporters/pdfexporter.h \
+        importers/spss/datainforecord.h \
 	importers/spss/datarecords.h \
 	importers/spss/debug_cout.h \
 	importers/spss/dictionaryterminationrecord.h \
@@ -187,7 +190,4 @@ HEADERS += \
 	importers/spss/variablerecord.h \
 	importers/spss/verylongstringrecord.h \
 	importers/spss/stringutils.h \
-    exporters/htmlexporter.h \
-    exporters/pdfexporter.h
-
-
+        importers/spss/hardwareformats.h

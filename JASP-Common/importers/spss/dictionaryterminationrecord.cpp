@@ -10,10 +10,10 @@ using namespace spss;
  * @param fileType The record type value, as found in the file.
  * @param fromStream File to read from
  */
-DictionaryTermination::DictionaryTermination(RecordTypes fileType, SPSSStream &from)
- : ReadableRecord(fileType, from)
+DictionaryTermination::DictionaryTermination(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &from)
+ : ReadableRecord(fixer, fileType, from)
 {
-	SPSSIMPORTER_READ_MEMBER(filler, from);
+	SPSSIMPORTER_READ_MEMBER(filler, from, fixer);
 }
 
 DictionaryTermination::~DictionaryTermination()

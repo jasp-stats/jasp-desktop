@@ -21,11 +21,12 @@ public:
 
 	/**
 	 * @brief FloatInfoRecord Ctor
+	 * @param const HardwareFormats &fixer Fixes endainness.
 	 * @param fileSubType The record subtype value, as found in the file.
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream The file to read from.
 	 */
-	FloatInfoRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
+	FloatInfoRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
 
 	virtual ~FloatInfoRecord();
 

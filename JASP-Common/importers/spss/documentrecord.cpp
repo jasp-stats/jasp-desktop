@@ -12,10 +12,10 @@ using namespace spss;
  * @param from The file to read from.
  *
  */
-DocumentRecord::DocumentRecord(RecordTypes fileType, SPSSStream &from)
-	: ReadableRecord(fileType, from)
+DocumentRecord::DocumentRecord(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &from)
+	: ReadableRecord(fixer, fileType, from)
 {
-	SPSSIMPORTER_READ_MEMBER(n_lines, from);
+	SPSSIMPORTER_READ_MEMBER(n_lines, from, fixer);
 
 	for (int32_t i = 0; i < n_lines(); i++ )
 	{

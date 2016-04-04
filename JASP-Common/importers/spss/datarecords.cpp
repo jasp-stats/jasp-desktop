@@ -12,17 +12,19 @@ using namespace spss;
 
 /**
  * @brief DataRecords ctor
+ * @param fixer - Fixes byte order for data.
  * @param fileHeader the File header record.
  * @param columns The columns data we collected readling the headers.
  * @param fromStream The stream to read.
  */
-DataRecords::DataRecords(const FileHeaderRecord &fileHeader, SPSSColumns &columns,
-						 SPSSStream &fromStream,
+DataRecords::DataRecords(const HardwareFormats &fixer, const FileHeaderRecord &fileHeader,
+						 SPSSColumns &columns, SPSSStream &fromStream,
 						 boost::function<void (const std::string &, int)> &progress)
  : _fileHeader(fileHeader)
  , _cols(columns)
  , _from(fromStream)
  , _progress(progress)
+ , _fixer(fixer)
  , _numDbls(0)
  , _numStrs(0)
 {
@@ -140,7 +142,6 @@ void DataRecords::insertToCol(SPSSColumn &col, double value)
 	if (col.isString() == false)
 	{
 		col.numerics.push_back(value);
-
 		_numDbls++;
 	}
 
@@ -158,5 +159,8 @@ void DataRecords::readUnCompVal(SPSSColumn &col)
 	if (col.isString())
 		insertToCol(col, string(dta.c, col.cellCharsRemaining(sizeof(dta.c))));
 	else
+	{
+		_fixer.fixup(&dta.d);
 		insertToCol(col, dta.d);
+	}
 }

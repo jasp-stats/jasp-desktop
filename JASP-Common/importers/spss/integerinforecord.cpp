@@ -25,26 +25,55 @@ IntegerInfoRecord::IntegerInfoRecord()
 
 /**
  * @brief IntegerInfoRecord Ctor
+ * @param fixer The endiness fixer
  * @param fileSubType The record subtype value, as found in the file.
  * @param fileType The record type value, as found in the file.
  * @param from The file to read from.
  */
-IntegerInfoRecord::IntegerInfoRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
-	: DataInfoRecord(fileSubType, fileType, from)
+IntegerInfoRecord::IntegerInfoRecord(HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
-	SPSSIMPORTER_READ_MEMBER(version_major, from);
-	SPSSIMPORTER_READ_MEMBER(version_minor, from);
-	SPSSIMPORTER_READ_MEMBER(version_revision, from);
-	SPSSIMPORTER_READ_MEMBER(machine_code, from);
-	SPSSIMPORTER_READ_MEMBER(floating_point_rep, from);
-	SPSSIMPORTER_READ_MEMBER(compression_code, from);
-	SPSSIMPORTER_READ_MEMBER(endianness, from);
-	SPSSIMPORTER_READ_MEMBER(character_code, from);
+	SPSSIMPORTER_READ_MEMBER(version_major, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(version_minor, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(version_revision, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(machine_code, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(floating_point_rep, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(compression_code, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(endianness, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(character_code, from, fixer);
 
+	// Decode the floating point info.
+	{
+		HardwareFormats::FPTypes fpType = HardwareFormats::fp_unknown;
+		switch(floating_point_rep())
+		{
+		case 1:
+			fpType = HardwareFormats::fp_IEEE754;
+			break;
+		case 2:
+			fpType = HardwareFormats::fp_IBM370;
+			break;
+		case 3:
+			fpType = HardwareFormats::fp_DECVAX_E;
+			break;
+		}
+		fixer.setFPType(fpType);
+	}
 
-	// We can only deal with IEEE Floating point numbers.
-	if (floating_point_rep() != 1)
-		throw runtime_error("JASP cannot read floating-point numbers from DEC or IBM mainframes - How old is this file?");
+	// Decode the endiannses.
+	{
+		HardwareFormats::Endians endian = HardwareFormats::mach_unknown;
+		switch(endianness())
+		{
+		case 1:
+			endian = HardwareFormats::mach_bigEndian;
+			break;
+		case 2:
+			endian = HardwareFormats::mach_littleEndian;
+			break;
+		}
+		fixer.setEndian(endian);
+	}
 };
 
 
