@@ -15,12 +15,13 @@ class DataRecords {
 public:
 	/**
 	 * @brief DataRecords ctor
+	 * @param fixer - Fixes byte order for data.
 	 * @param fileHeader File header record.
 	 * @param columns The columns data we collected readling the headers.
 	 * @param fromStream The stream to read.
 	 * @param progress Report progress call back.
 	 */
-	DataRecords(const FileHeaderRecord &fileHeader, SPSSColumns &columns, SPSSStream &fromStream,
+	DataRecords(const HardwareFormats &fixer,  const FileHeaderRecord &fileHeader, SPSSColumns &columns, SPSSStream &fromStream,
 				boost::function<void (const std::string &, int)> &progress);
 
 
@@ -64,7 +65,10 @@ protected:
 	void readUncompressed(/* OUT */ DataSetPackage *dataSet);
 
 private:
-
+	/**
+	 * Hold a copy of the fixer.
+	 */
+	const HardwareFormats &_fixer;
 
 	/**
 	 * @brief _numDbls Number doubles read to date.

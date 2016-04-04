@@ -18,12 +18,13 @@ public:
 
 	/**
 	 * @brief VariableRecord Ctor
+	 * @param const HardwareFormats &fixer - Fixes Endianness
 	 * @param fileType The record type value, as found in the file.
 	 * @param fileHeader The file ehadewr we are associated with.
 	 * @param fromStream The file to read from.
 	 *
 	 */
-	VariableRecord(RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &fromStream);
+	VariableRecord(const HardwareFormats &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &fromStream);
 
 	virtual ~VariableRecord();
 
@@ -78,7 +79,7 @@ public:
 	virtual void process(SPSSColumns & columns);
 
 private:
-	const FileHeaderRecord *_pFHR;
+//	const FileHeaderRecord *_pFHR;
 	std::string  _name;
 };
 

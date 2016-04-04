@@ -77,33 +77,42 @@ void SPSSImporter::loadDataSet(
 
 	// Data we have scraped to date.
 	SPSSColumns dictData;
+	HardwareFormats fixer;
 
 	// Fetch the dictionary.
 	bool processingDict = true;
 
 	while(stream.good() && processingDict)
 	{
+		// Inform user of progress.
 		reportProgress(stream.tellg(), progress);
+
+		// Get the record type.
 		union { int32_t u; RecordTypes t; Char_4 c; } rec_type;
 		rec_type.u = rectype_unknown;
 		stream.read((char *) &rec_type.u, sizeof(rec_type.u));
+		// Endiness for rec_type.
+		if (_pFhr != 0)
+			fixer.fixup(&rec_type.u);
+
+		// ... and the record type type is....
 		switch(rec_type.t)
 		{
 		case FileHeaderRecord::RECORD_TYPE:
-			_pFhr = new FileHeaderRecord(rec_type.t, stream);
+			_pFhr = new FileHeaderRecord(fixer, rec_type.t, stream);
 			_pFhr->process(dictData);
 			break;
 
 		case VariableRecord::RECORD_TYPE:
 		{
-			VariableRecord record(rec_type.t, _pFhr, stream);
+			VariableRecord record(fixer, rec_type.t, _pFhr, stream);
 			record.process(dictData);
 		}
 			break;
 
 		case ValueLabelVarsRecord::RECORD_TYPE:
 		{
-			ValueLabelVarsRecord record(rec_type.t, stream);
+			ValueLabelVarsRecord record(fixer, rec_type.t, stream);
 			record.process(dictData);
 		}
 			break;
@@ -117,49 +126,49 @@ void SPSSImporter::loadDataSet(
 			{
 			case  IntegerInfoRecord::SUB_RECORD_TYPE:
 			{
-				_integerInfo = IntegerInfoRecord(sub_type.s, rec_type.t, stream);
+				_integerInfo = IntegerInfoRecord(fixer, sub_type.s, rec_type.t, stream);
 				_integerInfo.process(dictData);
 			}
 				break;
 
 			case FloatInfoRecord::SUB_RECORD_TYPE:
 			{
-				_floatInfo = FloatInfoRecord(sub_type.s, rec_type.t, stream);
+				_floatInfo = FloatInfoRecord(fixer, sub_type.s, rec_type.t, stream);
 				_floatInfo.process(dictData);
 			}
 				break;
 
 			case VarDisplayParamRecord::SUB_RECORD_TYPE:
 			{
-				VarDisplayParamRecord record(sub_type.s, rec_type.t, dictData.size(), stream);
+				VarDisplayParamRecord record(fixer, sub_type.s, rec_type.t, dictData.size(), stream);
 				record.process(dictData);
 			}
 				break;
 
 			case LongVarNamesRecord::SUB_RECORD_TYPE:
 			{
-				LongVarNamesRecord record(sub_type.s, rec_type.t, stream);
+				LongVarNamesRecord record(fixer, sub_type.s, rec_type.t, stream);
 				record.process(dictData);
 			}
 				break;
 
 			case VeryLongStringRecord::SUB_RECORD_TYPE:
 			{
-				VeryLongStringRecord record(sub_type.s, rec_type.t, stream);
+				VeryLongStringRecord record(fixer, sub_type.s, rec_type.t, stream);
 				record.process(dictData);
 			}
 				break;
 
 			case ExtNumberCasesRecord::SUB_RECORD_TYPE:
 			{
-				ExtNumberCasesRecord record(sub_type.s, rec_type.t, stream);
+				ExtNumberCasesRecord record(fixer, sub_type.s, rec_type.t, stream);
 				record.process(dictData);
 			}
 				break;
 
 			default:
 			{
-				MiscInfoRecord record(sub_type.i, rec_type.t, stream);
+				MiscInfoRecord record(fixer, sub_type.i, rec_type.t, stream);
 				record.process(dictData);
 			}
 			}
@@ -168,14 +177,14 @@ void SPSSImporter::loadDataSet(
 
 		case DocumentRecord::RECORD_TYPE:
 		{
-			DocumentRecord dummy(rec_type.t, stream);
+			DocumentRecord dummy(fixer, rec_type.t, stream);
 			dummy.process(dictData);
 		}
 			break;
 
 		case DictionaryTermination::RECORD_TYPE:
 		{
-			DictionaryTermination dummy(rec_type.t, stream);
+			DictionaryTermination dummy(fixer, rec_type.t, stream);
 			dummy.process(dictData);
 		}
 			processingDict = false; // Got end of dictionary.
@@ -198,7 +207,7 @@ void SPSSImporter::loadDataSet(
 		throw runtime_error("No header found in .SAV file.");
 
 	// read the data records from the file.
-	DataRecords data(*_pFhr, dictData, stream, progress);
+	DataRecords data(fixer, *_pFhr, dictData, stream, progress);
 	data.read(packageData);
 
 	dictData.processVeryLongStrings();
@@ -226,6 +235,8 @@ void SPSSImporter::loadDataSet(
 		{
 			switch(column.columnType())
 			{
+			default:	// Skip unknown columns
+				break;
 			case Column::ColumnTypeScale:
 			{
 				Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();

@@ -18,11 +18,12 @@ public:
 
 	/**
 	 * @brief ValueLabelRecord Ctor
+	 * @param const HardwareFormats &fixer - Fixexes endianness.
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream The file to read from.
 	 *
 	 */
-	ValueLabelVarsRecord(RecordTypes fileType, SPSSStream &fromStream);
+	ValueLabelVarsRecord(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &fromStream);
 
 	virtual ~ValueLabelVarsRecord();
 

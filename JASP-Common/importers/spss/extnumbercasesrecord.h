@@ -2,6 +2,7 @@
 #define EXTNUMBERCASESRECORD_H
 
 #include "datainforecord.h"
+#include "hardwareformats.h"
 
 namespace spss {
 
@@ -16,11 +17,12 @@ public:
 
 	/**
 	 * @brief ExtNumberCasesRecord Ctor
+	 * @param const HardwareFormats &fixer Fixer for endianness.
 	 * @param fileSubType The record subtype value, as found in the file.
 	 * @param fileType The record type value, as found in the file.
 	 * @param from The file to read from.
 	 */
-	ExtNumberCasesRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
+	ExtNumberCasesRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
 
 	SPSSIMPORTER_READ_ATTRIB(int64_t, unknown);
 	SPSSIMPORTER_READ_ATTRIB(int64_t, ncases64);

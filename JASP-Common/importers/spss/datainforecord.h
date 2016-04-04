@@ -14,8 +14,8 @@ class DataInfoRecord : public ReadableRecord<rectype_meta_data>
 {
 public:
 
-	DataInfoRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
-		: ReadableRecord<rectype_meta_data>(fileType, from)
+	DataInfoRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+		: ReadableRecord<rectype_meta_data>(fixer, fileType, from)
 	{
 		if (fileSubType != SUB_RECORD_TYPE)
 		{
@@ -23,8 +23,8 @@ public:
 			throw std::runtime_error("SPSS record sub type mismatch.");
 		}
 		// Read the file values.
-		SPSSIMPORTER_READ_MEMBER(size, from);
-		SPSSIMPORTER_READ_MEMBER(count, from);
+		SPSSIMPORTER_READ_MEMBER(size, from, fixer);
+		SPSSIMPORTER_READ_MEMBER(count, from, fixer);
 	}
 
 	DataInfoRecord(RecordSubTypes fileSubType, RecordTypes fileType)

@@ -17,16 +17,17 @@ FloatInfoRecord::FloatInfoRecord()
 
 /**
  * @brief FloatInfoRecord Ctor
+ * @param const HardwareFormats &fixer Fixes endainness.
  * @param fileSubType The record subtype value, as found in the file.
  * @param fileType The record type value, as found in the file.
  * @param from The file to read from.
  */
-FloatInfoRecord::FloatInfoRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
-	: DataInfoRecord(fileSubType, fileType, from)
+FloatInfoRecord::FloatInfoRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
-	SPSSIMPORTER_READ_MEMBER(sysmis, from);
-	SPSSIMPORTER_READ_MEMBER(highest, from);
-	SPSSIMPORTER_READ_MEMBER(lowest, from);
+	SPSSIMPORTER_READ_MEMBER(sysmis, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(highest, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(lowest, from, fixer);
 }
 
 FloatInfoRecord::~FloatInfoRecord()

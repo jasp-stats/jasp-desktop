@@ -20,10 +20,11 @@ public:
 
 	/**
 	 * @brief DictionaryTermination Ctor
+	 * @brief HardwareFormats &fixer _ Converts endiness (if required)
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream File to read from
 	 */
-    DictionaryTermination(RecordTypes fileType, SPSSStream &fromStream);
+	DictionaryTermination(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &fromStream);
 
     virtual ~DictionaryTermination();
 

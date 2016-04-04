@@ -4,14 +4,18 @@
 
 #include "systemfileformat.h"
 #include "debug_cout.h"
+#include "hardwareformats.h"
+
 
 namespace spss
 {
+
 
 /**
   * @brief The ReadableRecord class: Base class for readable objects.
   *
   */
+
 template <RecordTypes recType>
 class ReadableRecord
 {
@@ -21,16 +25,18 @@ public:
 	  * @brief ReadableRecord default Ctor : Builds from the input stream
 	  * @param type The record type value.
 	  *
+	  * When Constructing a FileHeaderRecord fileHEader is 0.
 	  */
 	ReadableRecord(RecordTypes type);
 
 	/**
 	  * @brief ReadableRecord default Ctor : Builds from the input stream
+	  * @param HardwareFormats &fixer Object that knowns about endiness.
 	  * @param fileType The record type value, as found in the file.
 	  * @param ifstream from - file to read from
 	  *
 	  */
-	ReadableRecord(RecordTypes fileType, SPSSStream &from);
+	ReadableRecord(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &from);
 
 	virtual ~ReadableRecord() {}
 
@@ -43,6 +49,7 @@ public:
 	virtual void process(SPSSColumns & columns) = 0;
 
 	static const RecordTypes RECORD_TYPE = recType;
+
 
 protected:
 
@@ -81,7 +88,7 @@ ReadableRecord<rT>::ReadableRecord(RecordTypes fileType)
 #endif
 
 template <RecordTypes rT>
-ReadableRecord<rT>::ReadableRecord(RecordTypes fileType, SPSSStream &from)
+ReadableRecord<rT>::ReadableRecord(const HardwareFormats &, RecordTypes fileType, SPSSStream &from)
 {
 	if (!from.good())
 	{

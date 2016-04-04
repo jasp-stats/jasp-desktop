@@ -8,18 +8,20 @@ using namespace spss;
 
 /**
  * @brief VarDisplayParamRecord Ctor
+ * @param fixer The endainness fixer.
  * @param fileSubType The record subtype value, as found in the file.
  * @param fileType The record type value, as found in the file.
  * @param fromStream The file to read from.
  */
-VeryLongStringRecord::VeryLongStringRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
-	:DataInfoRecord(fileSubType, fileType, from)
+VeryLongStringRecord::VeryLongStringRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+	:DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	// Read string lengths.
 	size_t len = size() * count();
 	{
 		char * buffer = new char[len + 1];
 		from.read(buffer, len);
+		fixer.fixup(buffer, len);
 		buffer[len] = '\0';
 		_string_lengths = string(buffer, len);
 		delete [] buffer;
