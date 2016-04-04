@@ -10,14 +10,15 @@ using namespace spss;
 
 /**
  * @brief ValueLabelRecord Ctor
+ * @param const HardwareFormats &fixer - Fixes endianness.
  * @param fileType The record type value, as found in the file.
  * @param from The file to read from.
  *
  */
-ValueLabelVarsRecord::ValueLabelVarsRecord(RecordTypes fileType, SPSSStream &from)
-	: ReadableRecord(fileType, from)
+ValueLabelVarsRecord::ValueLabelVarsRecord(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &from)
+	: ReadableRecord(fixer, fileType, from)
 {
-	SPSSIMPORTER_READ_MEMBER(label_count, from);
+	SPSSIMPORTER_READ_MEMBER(label_count, from, fixer);
 	for (int32_t i = 0; i < label_count(); i++ )
 	{
 		// Read a single meta..
@@ -27,6 +28,7 @@ ValueLabelVarsRecord::ValueLabelVarsRecord(RecordTypes fileType, SPSSStream &fro
 		{
 			char * buffer = new char [meta.label_len + 2];
 			from.read(buffer, meta.label_len);
+			fixer.fixup(buffer, meta.label_len);
 			meta.label.append(buffer, meta.label_len);
 			delete buffer;
 		}
@@ -44,7 +46,7 @@ ValueLabelVarsRecord::ValueLabelVarsRecord(RecordTypes fileType, SPSSStream &fro
 	}
 
 	// now start in the value label record.
-	SPSSIMPORTER_READ_MEMBER(var_rec_type, from);
+	SPSSIMPORTER_READ_MEMBER(var_rec_type, from, fixer);
 
 	if (var_rec_type() != rectype_value_labels_var)
 	{
@@ -52,11 +54,12 @@ ValueLabelVarsRecord::ValueLabelVarsRecord(RecordTypes fileType, SPSSStream &fro
 		throw runtime_error("Incorrect record following a value labels record. SAV file corrupt.");
 	}
 
-	SPSSIMPORTER_READ_MEMBER(var_count, from);
+	SPSSIMPORTER_READ_MEMBER(var_count, from, fixer);
 	for (int i = 0; i < var_count(); i++)
 	{
 		int32_t indx;
 		_SPSSIMPORTER_READ_VAR(indx, from);
+		fixer.fixup(&indx);
 		_vars.push_back(indx);
 	}
 }

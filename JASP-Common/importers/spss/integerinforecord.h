@@ -23,11 +23,14 @@ public:
 
 	/**
 	 * @brief IntegerInfoRecord Ctor
+	 * @param HardwareFormats fixer Fixes endainness.
 	 * @param fileSubType The record subtype value, as found in the file.
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream The file to read from.
+	 *
+	 * NB This constructor will modify the contents of fixer!
 	 */
-	IntegerInfoRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &fromStream);
+	IntegerInfoRecord(HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &fromStream);
 
 	virtual ~IntegerInfoRecord();
 

@@ -17,11 +17,12 @@ public:
 
 	/**
 	 * @brief MiscInfoRecord::MiscInfoRecord
+	 * @param const HardwareFormats &fixer	Endain Fixer.
 	 * @param fileSubType the record sub type from file.
 	 * @param fileType The record type from file
 	 * @param fromStream The file to read.
 	 */
-	MiscInfoRecord(int32_t fileSubType, RecordTypes fileType, SPSSStream &fromStream);
+	MiscInfoRecord(const HardwareFormats &fixer, int32_t fileSubType, RecordTypes fileType, SPSSStream &fromStream);
 
 	SPSSIMPORTER_READ_ATTRIB(int32_t, size)
 	SPSSIMPORTER_READ_ATTRIB(int32_t, count)

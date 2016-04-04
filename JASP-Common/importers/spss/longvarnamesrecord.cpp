@@ -6,15 +6,17 @@ using namespace spss;
 
 /**
  * @brief LongVarNamesRecord Ctor
+ * @param const HardwareFormats &fixer The endain fixer.
  * @param fileSubType The record subtype value, as found in the file.
  * @param fileType The record type value, as found in the file.
  * @param fromStream The file to read from.
  */
-LongVarNamesRecord::LongVarNamesRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
-	: DataInfoRecord(fileSubType, fileType, from)
+LongVarNamesRecord::LongVarNamesRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	char * buffer = new char[count() * size() + 2];
 	from.read(buffer, count());
+	fixer.fixup(buffer, count());
 	_var_name_pairs.append(buffer, count());
 	delete buffer;
 }

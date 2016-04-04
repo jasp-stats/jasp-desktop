@@ -17,11 +17,12 @@ public:
 
 	/**
 	 * @brief DocumentRecord Ctor
+	 * @param const HardwareFormats &fixer Fixes endiness.
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream The file to read from.
 	 *
 	 */
-	DocumentRecord(RecordTypes fileType, SPSSStream &fromStream);
+	DocumentRecord(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &fromStream);
 
 	virtual ~DocumentRecord();
 
