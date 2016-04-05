@@ -32,10 +32,8 @@ windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
    macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
   linux:LIBS += -lboost_filesystem    -lboost_system    -larchive -lrt
 
-macx:ICON = icon.icns
-windows:RC_FILE = icon.rc
 
-windows:LIBS += -lole32 -lole
+windows:LIBS += -lole32 -loleaut32
 
 QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter

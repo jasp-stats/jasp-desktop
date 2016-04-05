@@ -23,7 +23,7 @@
 #define private public
 
 #include <QSignalSpy>
-#include <QSignalBlocker>
+//#include <QSignalBlocker>
 #include <fstream>
 #include <vector>
 #include <string>
