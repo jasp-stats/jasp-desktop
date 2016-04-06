@@ -23,7 +23,9 @@
 #define private public
 
 #include <QSignalSpy>
-//#include <QSignalBlocker>
+#if QT_VERSION > QT_VERSION_CHECK(5, 3, 0)
+#include <QSignalBlocker>
+#endif
 #include <fstream>
 #include <vector>
 #include <string>
