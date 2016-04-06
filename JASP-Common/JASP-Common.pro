@@ -8,10 +8,11 @@ CONFIG += staticlib
 
 windows:CONFIG += c++11
 linux:CONFIG += c++11
-linux:CONFIG += -pipe
 
    macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
+
+INCLUDEPATH += ../icu-connector/
 
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
 

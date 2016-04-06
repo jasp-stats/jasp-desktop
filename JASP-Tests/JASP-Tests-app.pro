@@ -24,8 +24,10 @@ windows:INCLUDEPATH += ../../boost_1_54_0
 PRE_TARGETDEPS += ../libJASP-Desktop.a
 LIBS += -L.. -lJASP-Desktop
 
+
 PRE_TARGETDEPS += ../libJASP-Common.a
-LIBS += -L.. -lJASP-Common 
+PRE_TARGETDEPS += ../libicu-connector.a
+LIBS += -L.. -lJASP-Common  -licu-connector
 
 
 windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
