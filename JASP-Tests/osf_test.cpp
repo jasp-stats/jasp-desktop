@@ -144,6 +144,8 @@ void OSFTest::fileListTest()
     }
 
     QVERIFY(fevent->_success); //_success is true only if data is loaded
+    // destroy all the objects created and delete the dataSet from the shared memory
+    SharedMemory::deleteDataSet(dsf->dataSet);
   }
 }
 

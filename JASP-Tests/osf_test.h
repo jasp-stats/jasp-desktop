@@ -33,6 +33,7 @@
 #include "backstage/fsentrywidget.h"
 #include "backstage/fsentry.h"
 #include "backstage/backstageosf.h"
+#include "sharedmemory.h"
 #include "onlinedatamanager.h"
 #include "fileevent.h"
 #include "asyncloader.h"
