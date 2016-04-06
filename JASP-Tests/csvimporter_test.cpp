@@ -53,6 +53,7 @@ void CSVImporterTest::csvTester_data()
 
   boost::filesystem::path p("test_files");
 
+  //add files to be tested in a folder "test_files"
   for (auto i = boost::filesystem::directory_iterator(p); i != boost::filesystem::directory_iterator(); i++)
   {
     if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
@@ -91,10 +92,11 @@ void CSVImporterTest::csvTester()
   {
     QVERIFY(false);
   }
-
-  bool ans = checkIfEqual(&fc);
-
-  QVERIFY(ans);
+  else
+  {
+    bool ans = checkIfEqual(&fc);
+    QVERIFY(ans);
+  }
 }
 
 
@@ -171,7 +173,7 @@ int CSVImporterTest::readDataFromCSV(QString path, struct fileContent *fc)
         {
           if(!fileRows.empty())
           {
-            if(columnIsNumeric[i])
+            if(columnIsNumeric[i])//check if the column has strings that are non-nueric
             {
               if(!(std::regex_match(currentWord, numeric_rgx))) //check if the currentWord is numeric
               {
