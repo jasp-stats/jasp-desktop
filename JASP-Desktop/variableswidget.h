@@ -27,6 +27,7 @@ private slots:
 	void selectedVariableChanged(QModelIndex selection, QModelIndex old);
 	void moveUpClicked();
 	void moveDownClicked();
+    void reverseClicked();
 
 private:
 	Ui::VariablesWidget *ui;

@@ -24,6 +24,7 @@ public:
 
 	void moveUp(QModelIndexList &selection);
 	void moveDown(QModelIndexList &selection);
+    void reverse();
 
 private:
 	Column *_column;

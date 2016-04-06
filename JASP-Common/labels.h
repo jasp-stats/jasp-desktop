@@ -46,6 +46,7 @@ public:
 
 	const Label &labelFor(int raw) const;
 	const LabelEntry &at(int index) const;
+    void setLabel(int index, const std::string &display);
 	void set(std::vector<LabelEntry> &labels);
 	size_t size() const;
 
