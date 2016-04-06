@@ -39,7 +39,7 @@ FileHeaderRecord::FileHeaderRecord(HardwareFormats &fixer, RecordTypes fileType,
 	SPSSIMPORTER_READ_MEMBER(ncases, from, fixer);
 	_SPSSIMPORTER_READ_VAR(_bias, from);
 	// Attempt to check the bias value,
-	// assuming it is the same as ints,
+	// assuming it is the same endian as ints,
 	// if value is not 100.
 	try { fixer.analyse(_bias, _bias_good_vals); }
 	catch (runtime_error &e) { fixer.forceLocalSystemDbl(); }

@@ -33,11 +33,14 @@
 #include "dataset.h"
 #include "./spss/debug_cout.h"
 
+#include "../icu-connector/icuconnector.h"
 
 using namespace std;
 
 using namespace boost;
 using namespace spss;
+using namespace icu;
+
 
 FileHeaderRecord *SPSSImporter::_pFhr = 0;
 IntegerInfoRecord SPSSImporter::_integerInfo;
@@ -62,6 +65,11 @@ void SPSSImporter::loadDataSet(
 		boost::function<void (const std::string &, int)> progress)
 {
 	(void)progress;
+
+	{
+		ICUConnector::get("utf-8")->from7ASCII('6');
+	}
+
 	packageData->isArchive = false;						 // SPSS/spss files are never archives.
 	packageData->dataSet = SharedMemory::createDataSet();   // Do our space.
 

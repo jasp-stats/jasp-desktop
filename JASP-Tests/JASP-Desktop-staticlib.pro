@@ -22,16 +22,22 @@ DEPENDPATH = ..
 
 CONFIG -= app_bundle
 
+<<<<<<< HEAD
 INCLUDEPATH += ../JASP-Desktop/ \
         ../JASP-Common/ \
         ../JASP-Engine/
+=======
+INCLUDEPATH += ../JASP-Common/
+INCLUDEPATH += ../icu-connector/
+>>>>>>> Added bare-bones of ICU connector - To add
 
    macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
 
 PRE_TARGETDEPS += ../libJASP-Common.a
+PRE_TARGETDEPS += ../libicu-connector.a
 
-LIBS += -L.. -lJASP-Common
+LIBS += -L.. -lJASP-Common -licu-connector
 
 windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
    macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
