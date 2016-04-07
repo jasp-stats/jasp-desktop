@@ -135,7 +135,7 @@ bool CSVImporterTest::checkIfEqual(struct fileContent *fc)
 
       if(currentWord != dsp->dataSet->column(i)[j])
       {
-        qDebug() << "Data mismatch";
+        qDebug() << "Data mismatch " << QString::fromStdString(currentWord)<< " " << QString::fromStdString(dsp->dataSet->column(i)[j]);
         return false;
       }
     }
@@ -147,7 +147,6 @@ bool CSVImporterTest::checkIfEqual(struct fileContent *fc)
 /* read data from the file specified from path and store it in the struct fileContent */
 int CSVImporterTest::readDataFromCSV(QString path, struct fileContent *fc)
 {
-  std::regex numeric_rgx("-?[0-9]+([.][0-9]+)?"); //regular expression for a numeric
   std::ifstream input(path.toStdString().c_str());
   std::vector< std::vector<std::string> > fileRows;
   std::string currentWord;
@@ -175,7 +174,7 @@ int CSVImporterTest::readDataFromCSV(QString path, struct fileContent *fc)
           {
             if(columnIsNumeric[i])//check if the column has strings that are non-nueric
             {
-              if(!(std::regex_match(currentWord, numeric_rgx))) //check if the currentWord is numeric
+              if(!checkIfNumeric(currentWord)) //check if the currentWord is numeric
               {
                 columnIsNumeric[i] = false;
               }
@@ -211,4 +210,40 @@ std::string CSVImporterTest::roundTo6Digits(double x, int n)
   sprintf(buff, "%.*g", n, x);
   std::string cppString(buff);
   return cppString;
+}
+
+bool CSVImporterTest::checkIfNumeric(std::string word)
+{
+    std::string::const_iterator it = word.begin();
+    bool decimalPoint = false;
+    int minimumSize = 0;
+
+    if( word.size()>0 && ( word[0] == '-' || word[0] == '+' ) )
+    {
+      it++;
+      minimumSize++;
+    }
+
+    while(it != word.end())
+    {
+      if(*it == '.')
+      {
+        if(!decimalPoint)
+        {
+          decimalPoint = true;
+        }
+        else
+        {
+          break;
+        }
+      }
+      else if( !std::isdigit(*it) && ( (*it!='f') || it+1 != word.end() || !decimalPoint ) )
+      {
+        break;
+      }
+
+      ++it;
+    }
+
+    return (word.size()>minimumSize && it == word.end());
 }

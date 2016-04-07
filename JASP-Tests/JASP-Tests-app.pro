@@ -4,7 +4,6 @@ QT += core gui webkit webkitwidgets svg network testlib
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 windows:CONFIG += c++11
-macx:CONFIG += c++11 libc++
 linux:CONFIG += c++11
 linux:CONFIG += -pipe
 

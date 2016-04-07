@@ -26,7 +26,6 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <regex>
 #include <boost/filesystem.hpp>
 #include <iomanip>
 #include <cstdio>
@@ -60,6 +59,7 @@ public:
   bool checkIfEqual(struct fileContent *);
   int readDataFromCSV(QString, struct fileContent*);
   std::string roundTo6Digits(double, int);
+  bool checkIfNumeric(std::string);
 
 private slots:
     void initTestCase();
