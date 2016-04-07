@@ -30,7 +30,7 @@ public:
 	std::string text() const;
 	bool hasIntValue() const;
 	int value() const;
-    void setValue(int value);
+    void setLabel(const std::string &label);
 	Label& operator=(const Label &label);
 
 private:
@@ -39,6 +39,8 @@ private:
 	int _intValue;
 	char _stringValue[128];
 	int  _stringLength;
+
+    void _setLabel(const std::string &label);
 };
 
 #endif // LABEL_H

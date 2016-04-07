@@ -73,6 +73,11 @@ const LabelEntry &Labels::at(int index) const
 	return _labels.at(index);
 }
 
+void Labels::setLabel(int index, const std::string &display) {
+    LabelEntry &label_entry = _labels.at(index);
+    label_entry.second.setLabel(display);
+}
+
 void Labels::set(vector<LabelEntry> &labels)
 {
 	clear();
