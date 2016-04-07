@@ -15,53 +15,62 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef OSFTEST_H
-#define OSFTEST_H
+#ifndef CSVIMPORTERTEST_H
+#define CSVIMPORTERTEST_H
 
 #pragma once
 #include <sstream>
 #define private public
 
-#include <QEventLoop>
 #include <QSignalSpy>
-#include <QMetaType>
 #include <fstream>
+#include <vector>
+#include <string>
+#include <regex>
+#include <boost/filesystem.hpp>
+#include <iomanip>
+#include <cstdio>
 #include "AutomatedTests.h"
-#include "backstage/fsbrowser.h"
-#include "backstage/fsbmosf.h"
-#include "backstage/fsbmodel.h"
-#include "backstage/fsentrywidget.h"
-#include "backstage/fsentry.h"
-#include "backstage/backstageosf.h"
-#include "sharedmemory.h"
-#include "onlinedatamanager.h"
-#include "fileevent.h"
 #include "asyncloader.h"
+#include "sharedmemory.h"
+#include "fileevent.h"
+#include "mainwindow.h"
 #include "datasetpackage.h"
 
 
-class OSFTest : public QObject
+class CSVImporterTest : public QObject
 {
     Q_OBJECT
 
 public:
-    FSBrowser *fs;
-    FSBMOSF *_model;
-    OnlineDataManager *_odm;
 
-    bool authenticationTest(QString, QString);
-    void waitTillExists(QButtonGroup *);
+  struct fileContent
+  {
+    int columns;
+    int rows;
+    std::vector <std::string> headers;
+    std::vector< std::vector<std::string> > data;
+  };
+
+  FileEvent *fe;
+  DataSetPackage *dsp;
+  AsyncLoader *asl;
+  std::vector<bool> columnIsNumeric;
+
+  bool checkIfEqual(struct fileContent *);
+  int readDataFromCSV(QString, struct fileContent*);
+  std::string roundTo6Digits(double, int);
 
 private slots:
     void initTestCase();
+    void cleanupTestCase();
     void init();
     void cleanup();
-    void cleanupTestCase();
-    void loginAuthenticationTest_data();
-    void loginAuthenticationTest();
-    void fileListTest();
+    void csvTester();
+    void csvTester_data();
 };
 
-DECLARE_TEST(OSFTest)
 
-#endif // OSFTEST_H
+DECLARE_TEST(CSVImporterTest)
+
+#endif // CSVIMPORTERTEST_H
