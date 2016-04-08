@@ -53,6 +53,7 @@ SOURCES += \
     main.cpp \
     textfileread_test.cpp \
     osf_test.cpp \
+    spssimporter_test.cpp \
     csvimporter_test.cpp
 
 HEADERS += \
@@ -60,6 +61,7 @@ HEADERS += \
     textfileread_test.h \
     osf_test.h \
     csviterator.h \
+    spssimporter_test.h \
     csvimporter_test.h
 
 HELP_PATH = $${PWD}/../Docs/help

@@ -26,6 +26,7 @@ void SPSSImporterTest::init()
   asl_csv = new AsyncLoader();
 }
 
+
 void SPSSImporterTest::cleanup()
 {
   fe_spss->~FileEvent();
@@ -33,6 +34,7 @@ void SPSSImporterTest::cleanup()
   fe_csv->~FileEvent();
   asl_csv->~AsyncLoader();  
 }
+
 
 void SPSSImporterTest::spssTester_data()
 {
@@ -88,6 +90,7 @@ void SPSSImporterTest::spssTester()
 
   QVERIFY(checkIfEqual(&fc_spss, &fc_csv)); // end of test  
 }
+
 
 /* copy from the DataSetPackage to fileContents structure - required since dataset is deleted in the sharedmemory  */
 void SPSSImporterTest::copyToStructure(DataSetPackage *dsPackage, struct fileContent *fc)
