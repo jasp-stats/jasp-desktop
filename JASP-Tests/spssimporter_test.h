@@ -57,9 +57,6 @@ public:
   std::vector<bool> columnIsNumeric;
 
   bool checkIfEqual(struct fileContent*, struct fileContent*);
-  int readDataFromCSV(QString, struct fileContent*);
-  std::string roundTo6Digits(double, int);
-  bool checkIfNumeric(std::string);
   void copyToStructure(DataSetPackage*, struct fileContent*);
 
 private slots:
