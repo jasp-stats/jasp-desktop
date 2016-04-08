@@ -25,7 +25,7 @@
 #include <vector>
 #include <string>
 
-std::string trim(const std::string& str, const std::string& whitespace = " \t")
+static std::string trim(const std::string& str, const std::string& whitespace = " \t")
 {
   const auto strBegin = str.find_first_not_of(whitespace);
 
@@ -69,7 +69,7 @@ class CSVRow
         std::vector<std::string> currentWord;
 };
 
-std::istream& operator>>(std::istream& str,CSVRow& data)
+static std::istream& operator>>(std::istream& str,CSVRow& data)
 {
     data.readNextRow(str);
     return str;
