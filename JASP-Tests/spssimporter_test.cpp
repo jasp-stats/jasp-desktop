@@ -18,16 +18,6 @@
 #include "spssimporter_test.h"
 
 
-void SPSSImporterTest::initTestCase()
-{
-
-}
-
-void SPSSImporterTest::cleanupTestCase()
-{
-
-}
-
 void SPSSImporterTest::init()
 {
   fe = new FileEvent();
