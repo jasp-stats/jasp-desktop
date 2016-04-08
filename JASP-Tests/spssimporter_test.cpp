@@ -42,7 +42,7 @@ void SPSSImporterTest::spssTester_data()
 
   boost::filesystem::path _path("test_files/spss_files");
 
-  //add files to be tested in a folder "test_files"
+  //add files to be tested in a folder "test_files/spss_files"
   for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++)
   {
     if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
@@ -88,7 +88,7 @@ void SPSSImporterTest::spssTester()
   SharedMemory::deleteDataSet(ds_csv->dataSet);  //clear the shared memory
   ds_csv->~DataSetPackage();
 
-  QVERIFY(checkIfEqual(&fc_spss, &fc_csv)); // end of test  
+  QVERIFY(checkIfEqual(&fc_spss, &fc_csv));      // end of test  
 }
 
 
@@ -149,7 +149,6 @@ bool SPSSImporterTest::checkIfEqual(struct fileContent *fc1, struct fileContent 
 
     for(int j=0; j<fc2->rows; ++j)
     {
-
       if(fc1->data[j][i] != fc2->data[j][i])
       {
         qDebug() << "Data mismatch at row: " << QString::number(j+1) << " and column: " << QString::number(i);

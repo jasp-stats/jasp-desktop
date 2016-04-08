@@ -22,13 +22,9 @@
 #include <sstream>
 #define private public
 
-#include <QSignalSpy>
-#include <fstream>
 #include <vector>
 #include <string>
 #include <boost/filesystem.hpp>
-#include <iomanip>
-#include <cstdio>
 #include "AutomatedTests.h"
 #include "asyncloader.h"
 #include "sharedmemory.h"
@@ -58,8 +54,6 @@ public:
   void copyToStructure(DataSetPackage*, struct fileContent*);
 
 private slots:
-    void initTestCase();
-    void cleanupTestCase();
     void init();
     void cleanup();
     void spssTester();
