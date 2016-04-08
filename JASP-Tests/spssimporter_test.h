@@ -51,10 +51,8 @@ public:
     std::vector< std::vector<std::string> > data;
   };
 
-  FileEvent *fe, *fe2;
-  DataSetPackage *dsp, *dsp2;
-  AsyncLoader *asl, *asl2;
-  std::vector<bool> columnIsNumeric;
+  FileEvent *fe_spss, *fe_csv;
+  AsyncLoader *asl_spss, *asl_csv;
 
   bool checkIfEqual(struct fileContent*, struct fileContent*);
   void copyToStructure(DataSetPackage*, struct fileContent*);
