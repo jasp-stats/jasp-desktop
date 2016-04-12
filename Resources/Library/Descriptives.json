@@ -58,7 +58,7 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "valuesAreGroupMidpoints",
+			"name": "statisticsValuesAreGroupMidpoints",
 			"type": "Boolean"
 		},
 		{
