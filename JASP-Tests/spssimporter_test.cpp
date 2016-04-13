@@ -40,9 +40,9 @@ void SPSSImporterTest::spssTester_data()
 {
   QTest::addColumn<QString>("filename");
 
-  boost::filesystem::path _path("test_files/spss_files");
+  boost::filesystem::path _path("Resources/TestFiles/spssimporter_test/spss_files");
 
-  //add files to be tested in a folder "test_files/spss_files"
+  //add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
   for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++)
   {
     if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
@@ -59,7 +59,7 @@ void SPSSImporterTest::spssTester()
   qDebug() << "File: " << filename;
 
   //spss file open 
-  QString fullPath_spss = QString("test_files/spss_files/").append(filename);
+  QString fullPath_spss = QString("Resources/TestFiles/spssimporter_test/spss_files/").append(filename);
 
   DataSetPackage *ds_spss = new DataSetPackage();
   fe_spss->setOperation(FileEvent::FileOpen);
@@ -75,7 +75,7 @@ void SPSSImporterTest::spssTester()
   //csv file open
   QString csvFile = filename;
   csvFile.replace(filename.size()-3, 3, "csv");
-  QString fullPath_csv = QString("test_files/csv_files/").append(csvFile);  
+  QString fullPath_csv = QString("Resources/TestFiles/spssimporter_test/csv_files/").append(csvFile);  
 
   DataSetPackage *ds_csv = new DataSetPackage();
   fe_csv->setOperation(FileEvent::FileOpen);

@@ -47,7 +47,7 @@ void TextFileReadTest::cleanup()
 
 void TextFileReadTest::asyncloaderTester1()
 {
-  std::string _path = "testfile1.txt";
+  std::string _path = "Resources/TestFiles/textfileread_test/testfile1.txt";
 
   bool wasBlocked = fe->blockSignals(true); //block all signals emitted by the FileEvent object
   fe->setOperation(FileEvent::FileOpen);
@@ -66,7 +66,7 @@ void TextFileReadTest::asyncloaderTester1()
 
 void TextFileReadTest::asyncloaderTester2()
 {
-  std::string _path = "testfile2.txt";
+  std::string _path = "Resources/TestFiles/textfileread_test/testfile2.txt";
   bool wasBlocked = fe->blockSignals(true);
   fe->setOperation(FileEvent::FileOpen);
   fe->setPath(QString::fromStdString(_path));
