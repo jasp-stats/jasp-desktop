@@ -51,9 +51,9 @@ void CSVImporterTest::csvTester_data()
   QTest::addColumn<QString>("filename");
   int count = 0;
 
-  boost::filesystem::path p("test_files");
+  boost::filesystem::path p("Resources/TestFiles/csvimporter_test");
 
-  //add files to be tested in a folder "test_files"
+  //add files to be tested in a folder "Resources/TestFiles/csvimporter_test"
   for (auto i = boost::filesystem::directory_iterator(p); i != boost::filesystem::directory_iterator(); i++)
   {
     if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
@@ -71,7 +71,7 @@ void CSVImporterTest::csvTester()
 
   qDebug() << "filename: " << filename;
 
-  QString full_path = QString("test_files/").append(filename);
+  QString full_path = QString("Resources/TestFiles/csvimporter_test/").append(filename);
 
   fe->setOperation(FileEvent::FileOpen);
   fe->setPath(full_path);
