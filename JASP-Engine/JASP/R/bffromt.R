@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2015 University of Amsterdam
+# Copyright (C) 2016 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,13 +21,29 @@ BFFromT <- function(dataset=NULL, options, perform = 'run', callback) {
 	
 	results[[".meta"]] <- list(list(name="table", type="table"))
 	
+	result_akash <- ttest.tstat(options$tStatistic, options$n1Size, options$n2Size)
+
 	table <- list()
-	table[["title"]] <- "BF from <i>t</i>"
-	
+	#table[["title"]] <- "BF from <i>t</i>"
+	table[["title"]] <- result_akash
+
 	table[["schema"]] <- list(fields=list())
 	table[["data"]] <- list()
 	
 	results[["table"]] <- table
+
+	state <- .retrieveState()
+
+	
 	
 	list(results=results, status="complete")
+
+#	if (perform == "init") {
+#		return(list(results=results, status="inited", state=state, keep=keep))
+#	} else {
+#		return(list(results=results, status="complete"))
+#	}
+
+
+
 }
