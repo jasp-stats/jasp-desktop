@@ -7,7 +7,6 @@
 			"format": "",
 			"name": "tStatistic",
 			"type": "Number",
-			"value": 1,
 			"min": 0,
 			"max": 2
 		},
@@ -15,7 +14,6 @@
 			"format": "",
 			"name": "n1Size",
 			"type": "Number",
-			"value": 2,
 			"min": 2
 		},
 		{
