@@ -21,20 +21,23 @@ BFFromT <- function(dataset=NULL, options, perform = 'run', callback) {
 	
 	results[[".meta"]] <- list(list(name="table", type="table"))
 	
-	result_akash <- ttest.tstat(options$tStatistic, options$n1Size, options$n2Size)
+	bayesFactor01 <- BayesFactor::ttest.tstat(options$tStatistic, options$n1Size, options$n2Size)
 
 	table <- list()
-	#table[["title"]] <- "BF from <i>t</i>"
-	table[["title"]] <- result_akash
+	table[["title"]] <- "BF from <i>t</i>"
 
-	table[["schema"]] <- list(fields=list())
-	table[["data"]] <- list()
+	table[["schema"]] <- list(fields=list(
+		list(name="BF", title="BF01", type="number", format="sf:4;dp:3")
+		))
+
+	row <- list(BF = .clean(exp(bayesFactor01$bf)))
+
+	table[["data"]] <- list(row)
 	
 	results[["table"]] <- table
 
-	state <- .retrieveState()
+	#state <- .retrieveState()
 
-	
 	
 	list(results=results, status="complete")
 
@@ -43,7 +46,5 @@ BFFromT <- function(dataset=NULL, options, perform = 'run', callback) {
 #	} else {
 #		return(list(results=results, status="complete"))
 #	}
-
-
 
 }
