@@ -54,8 +54,8 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 
 	ui->advancedOptions->hide();
 
-	ui->priorFixedEffects->setLabel("R-scale fixed effects");
-	ui->priorRandomEffects->setLabel("R-scale random effects");
+	ui->priorFixedEffects->setLabel("r scale fixed effects");
+	ui->priorRandomEffects->setLabel("r scale random effects");
 
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_fixedFactorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
@@ -68,10 +68,8 @@ AnovaBayesianForm::AnovaBayesianForm(QWidget *parent) :
 	connect(_randomFactorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 #ifdef QT_DEBUG
-	ui->groupBox->setStyleSheet("QWidget { background-color: pink; }");
 	ui->advancedBox->setStyleSheet("QWidget { background-color: pink; }");
 #else
-	ui->groupBox->hide();
 	ui->advancedBox->hide();
 #endif
 }

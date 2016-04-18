@@ -74,14 +74,20 @@ AncovaBayesianForm::AncovaBayesianForm(QWidget *parent) :
 	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
 	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
+	ui->advancedOptions->hide();
+
+	ui->priorFixedEffects->setLabel("r scale fixed effects");
+	ui->priorRandomEffects->setLabel("r scale random effects");
+	ui->priorCovariates->setLabel("r scale covariates");
+
 #ifdef QT_DEBUG
-	ui->groupBox->setStyleSheet("QWidget { background-color: pink; }");
 	ui->widgetPosteriorOptions->setStyleSheet("QWidget { background-color: pink; }");
 	ui->posteriorEstimates->setStyleSheet("QWidget { background-color: pink; }");
+	ui->advancedBox->setStyleSheet("QWidget { background-color: pink; }");
 #else
-	ui->groupBox->hide();
 	ui->widgetPosteriorOptions->hide();
 	ui->posteriorEstimates->hide();
+	ui->advancedBox->hide();
 #endif
 }
 

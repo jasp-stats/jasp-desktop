@@ -52,13 +52,6 @@
 			"type": "List"
 		},
 		{
-			"name": "priorWidth",
-			"type": "Number",
-			"value": 0.5,
-			"min": 0,
-			"max": 2
-		},
-		{
 			"name": "posteriorEstimates",
 			"type": "Boolean"
 		},
