@@ -80,11 +80,16 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	connect(_designTableModel, SIGNAL(factorRemoved(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	ui->containerModel->hide();
+	ui->advancedOptions->hide();
+
+	ui->priorFixedEffects->setLabel("r scale fixed effects");
+	ui->priorRandomEffects->setLabel("r scale random effects");
+	ui->priorCovariates->setLabel("r scale covariates");
 
 #ifdef QT_DEBUG
-	ui->groupBox->setStyleSheet("QWidget { background-color: pink; }");
+	ui->advancedBox->setStyleSheet("QWidget { background-color: pink; }");
 #else
-	ui->groupBox->hide();
+	ui->advancedBox->hide();
 #endif
 }
 
