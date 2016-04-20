@@ -13,7 +13,7 @@ using namespace spss;
  * @param fileType The record type value, as found in the file.
  * @param fromStream The file to read from.
  */
-VeryLongStringRecord::VeryLongStringRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+VeryLongStringRecord::VeryLongStringRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
 	:DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	// Read string lengths.
@@ -21,7 +21,6 @@ VeryLongStringRecord::VeryLongStringRecord(const HardwareFormats &fixer, RecordS
 	{
 		char * buffer = new char[len + 1];
 		from.read(buffer, len);
-		fixer.fixup(buffer, len);
 		buffer[len] = '\0';
 		_string_lengths = string(buffer, len);
 		delete [] buffer;
@@ -40,7 +39,7 @@ void VeryLongStringRecord::process(SPSSColumns & columns)
 	SPSSColumns::LongColsData strLengths;
 
 	{
-		Tuples strLens = breakNamePairs(string_lengths());
+		Tuples strLens = breakNamePairs(_string_lengths);
 		for (Tuples::const_iterator i = strLens.begin(); i != strLens.end(); i++)
 			strLengths.insert(pair<string, size_t>(i->first, atol(i->second.c_str())));
 	}

@@ -1,10 +1,12 @@
-#include "hardwareformats.h"
+
+#include "systemfileformat.h"
+#include "numericconverter.h"
 #include <stdexcept>
 
 using namespace std;
 using namespace spss;
 
-HardwareFormats::HardwareFormats()
+NumericConverter::NumericConverter()
 	: _endSource(mach_unknown)
 	, _fpType(fp_unknown)
 {
@@ -15,7 +17,7 @@ HardwareFormats::HardwareFormats()
  * @brief setFPType Sets the FP type.
  * @param type FP type to set.
  */
-void HardwareFormats::setFPType(FPTypes type)
+void NumericConverter::setFPType(FPTypes type)
 {
 	const char * msg;
 
@@ -42,7 +44,7 @@ void HardwareFormats::setFPType(FPTypes type)
  * @brief Sets the Endainness.
  * @param type Type to set.
  */
-void HardwareFormats::setEndian(Endians type)
+void NumericConverter::setEndian(Endians type)
 {
 	switch (type)
 	{
@@ -62,7 +64,7 @@ void HardwareFormats::setEndian(Endians type)
  * @param value Value to analyse.
  * @param expectedValues Zero terminated array of expected values.
  */
-void HardwareFormats::analyse(int32_t value, const int32_t *expectedValues)
+void NumericConverter::analyse(int32_t value, const int32_t *expectedValues)
 {
 
 	// Check for unmodified...
@@ -83,7 +85,7 @@ void HardwareFormats::analyse(int32_t value, const int32_t *expectedValues)
  * @param value Value to analyse.
  * @param expectedValues Zero terminated array of expected values.
  */
-void HardwareFormats::analyse(double value, const double *expectedValues)
+void NumericConverter::analyse(double value, const double *expectedValues)
 {
 	// NB This simple implmneation only searches for IEEE floating point values.
 

@@ -8,12 +8,12 @@ using namespace spss;
 
 /**
  * @brief MiscInfoRecord::MiscInfoRecord
- * @param const HardwareFormats &fixer - Endain fixer.
+ * @param const Converters &fixer - Endain fixer.
  * @param fileSubType the record sub type from file.
  * @param fileType The record type from file
  * @param fromStream The file to read.
  */
-MiscInfoRecord::MiscInfoRecord(const HardwareFormats &fixer, int32_t fileSubType, RecordTypes fileType, SPSSStream &from)
+MiscInfoRecord::MiscInfoRecord(const NumericConverter &fixer, int32_t fileSubType, RecordTypes fileType, SPSSStream &from)
 	: ReadableRecord(fixer, fileType, from)
 {
 	SPSSIMPORTER_READ_MEMBER(size, from, fixer);

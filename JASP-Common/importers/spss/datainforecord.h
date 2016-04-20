@@ -5,6 +5,7 @@
 #include "readablerecord.h"
 #include "debug_cout.h"
 #include "stringutils.h"
+#include "numericconverter.h"
 
 namespace spss
 {
@@ -14,7 +15,7 @@ class DataInfoRecord : public ReadableRecord<rectype_meta_data>
 {
 public:
 
-	DataInfoRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+	DataInfoRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
 		: ReadableRecord<rectype_meta_data>(fixer, fileType, from)
 	{
 		if (fileSubType != SUB_RECORD_TYPE)
@@ -40,7 +41,7 @@ public:
 	}
 
 
-	// All these type have both szie and count values.
+	// All these type have both size and count values.
 	SPSSIMPORTER_READ_ATTRIB(int32_t, size)
 	SPSSIMPORTER_READ_ATTRIB(int32_t, count)
 

@@ -30,7 +30,7 @@ IntegerInfoRecord::IntegerInfoRecord()
  * @param fileType The record type value, as found in the file.
  * @param from The file to read from.
  */
-IntegerInfoRecord::IntegerInfoRecord(HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+IntegerInfoRecord::IntegerInfoRecord(NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
 	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	SPSSIMPORTER_READ_MEMBER(version_major, from, fixer);
@@ -38,52 +38,51 @@ IntegerInfoRecord::IntegerInfoRecord(HardwareFormats &fixer, RecordSubTypes file
 	SPSSIMPORTER_READ_MEMBER(version_revision, from, fixer);
 	SPSSIMPORTER_READ_MEMBER(machine_code, from, fixer);
 	SPSSIMPORTER_READ_MEMBER(floating_point_rep, from, fixer);
-	SPSSIMPORTER_READ_MEMBER(compression_code, from, fixer);
-	SPSSIMPORTER_READ_MEMBER(endianness, from, fixer);
-	SPSSIMPORTER_READ_MEMBER(character_code, from, fixer);
-
 	// Decode the floating point info.
 	{
-		HardwareFormats::FPTypes fpType = HardwareFormats::fp_unknown;
+		NumericConverter::FPTypes fpType = NumericConverter::fp_unknown;
 		switch(floating_point_rep())
 		{
 		case 1:
-			fpType = HardwareFormats::fp_IEEE754;
+			fpType = NumericConverter::fp_IEEE754;
 			break;
 		case 2:
-			fpType = HardwareFormats::fp_IBM370;
+			fpType = NumericConverter::fp_IBM370;
 			break;
 		case 3:
-			fpType = HardwareFormats::fp_DECVAX_E;
+			fpType = NumericConverter::fp_DECVAX_E;
 			break;
 		}
 		fixer.setFPType(fpType);
 	}
 
+	SPSSIMPORTER_READ_MEMBER(compression_code, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(endianness, from, fixer);
 	// Decode the endiannses.
 	{
-		HardwareFormats::Endians endian = HardwareFormats::mach_unknown;
+		NumericConverter::Endians endian = NumericConverter::mach_unknown;
 		switch(endianness())
 		{
 		case 1:
-			endian = HardwareFormats::mach_bigEndian;
+			endian = NumericConverter::mach_bigEndian;
 			break;
 		case 2:
-			endian = HardwareFormats::mach_littleEndian;
+			endian = NumericConverter::mach_littleEndian;
 			break;
 		}
 		fixer.setEndian(endian);
 	}
+	SPSSIMPORTER_READ_MEMBER(character_code, from, fixer);
 };
 
 
 IntegerInfoRecord::~IntegerInfoRecord()
 {
-
 }
 
 
 void IntegerInfoRecord::process(SPSSColumns &columns)
 {
-	// Do Nohting.
+	// Build a string convertor based on the charactor code.
+	columns.setStrCnvrtr( new SpssCPConvert(SpssCPConvert::findCodepage( character_code() )) );
 }

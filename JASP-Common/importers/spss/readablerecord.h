@@ -4,12 +4,45 @@
 
 #include "systemfileformat.h"
 #include "debug_cout.h"
-#include "hardwareformats.h"
+#include "numericconverter.h"
+#include "spssrecinter.h"
 
+#include <set>
 
 namespace spss
 {
 
+	class RecordRoot
+	{
+	public:
+
+		/**
+		  * @brief RecordRoot default Ctor
+		  *
+		  * When Constructing a FileHeaderRecord fileHEader is 0.
+		  */
+		RecordRoot();
+
+		~RecordRoot();
+
+		/**
+		 * @brief processStrings Converts any strings in the data fields.
+		 * @param dictData The
+		 *
+		 * Should be implemented in classes where holdStrings maybe or is true.
+		 *
+		 */
+		virtual void processStrings(const SpssCPConvert &converter) {};
+
+		/**
+		 * @brief processAllStrings Calls processStrings(const SpssCPConvert) on all memeber of _stringholders.
+		 * @param converter The convertor to pass on.
+		 */
+		static void processAllStrings(const SpssCPConvert &converter);
+
+	protected:
+		static std::set<RecordRoot *> * _pRecords; /** < Holds all instances where holdsStrings == true */
+	};
 
 /**
   * @brief The ReadableRecord class: Base class for readable objects.
@@ -17,7 +50,7 @@ namespace spss
   */
 
 template <RecordTypes recType>
-class ReadableRecord
+class ReadableRecord : public RecordRoot
 {
 public:
 
@@ -31,12 +64,12 @@ public:
 
 	/**
 	  * @brief ReadableRecord default Ctor : Builds from the input stream
-	  * @param HardwareFormats &fixer Object that knowns about endiness.
+	  * @param Converters &fixer Object that knowns about endiness.
 	  * @param fileType The record type value, as found in the file.
 	  * @param ifstream from - file to read from
 	  *
 	  */
-	ReadableRecord(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &from);
+	ReadableRecord(const NumericConverter &fixer, RecordTypes fileType, SPSSStream &from);
 
 	virtual ~ReadableRecord() {}
 
@@ -46,10 +79,9 @@ public:
 	 *
 	 * Implematations should examine columns to determine the record history.
 	 */
-	virtual void process(SPSSColumns & columns) = 0;
+	virtual void process(SPSSColumns & columns) = 0;\
 
 	static const RecordTypes RECORD_TYPE = recType;
-
 
 protected:
 
@@ -88,14 +120,15 @@ ReadableRecord<rT>::ReadableRecord(RecordTypes fileType)
 #endif
 
 template <RecordTypes rT>
-ReadableRecord<rT>::ReadableRecord(const HardwareFormats &, RecordTypes fileType, SPSSStream &from)
+ReadableRecord<rT>::ReadableRecord(const NumericConverter &, RecordTypes fileType, SPSSStream &from)
+	: RecordRoot()
 {
 	if (!from.good())
 	{
 		DEBUG_COUT1("ReadableRecord::ctor File gone bad.");
 		throw std::runtime_error("unexpected EOF");
 	}
-	if (fileType != RECORD_TYPE)
+		if (fileType != RECORD_TYPE)
 	{
 		DEBUG_COUT5("ReadableRecord::ctor: Expected record type ", RECORD_TYPE, " got type ", fileType, ".");
 		throw std::runtime_error("SPSS record type mismatch.");

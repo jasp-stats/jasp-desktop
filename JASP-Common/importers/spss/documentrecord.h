@@ -17,17 +17,17 @@ public:
 
 	/**
 	 * @brief DocumentRecord Ctor
-	 * @param const HardwareFormats &fixer Fixes endiness.
+	 * @param const Converters &fixer Fixes endiness.
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream The file to read from.
 	 *
 	 */
-	DocumentRecord(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &fromStream);
+	DocumentRecord(const NumericConverter &fixer, RecordTypes fileType, SPSSStream &fromStream);
 
 	virtual ~DocumentRecord();
 
 	SPSSIMPORTER_READ_ATTRIB(int32_t,					n_lines)
-	SPSSIMPORTER_READ_ATTRIB(std::vector< std::string >, lines)
+	SPSSIMPORTER_READ_ATTRIB(std::vector< std::string >, Lines)
 
 	/**
 	 * @brief process Manipulates columns by adding the contents of thie record.
@@ -36,6 +36,16 @@ public:
 	 * Implematations should examine columns to determine the record history.
 	 */
 	virtual void process(SPSSColumns & columns);
+
+	/**
+	 * @brief processStrings Converts any strings in the data fields.
+	 * @param dictData The
+	 *
+	 * Should be implemented in classes where holdStrings maybe or is true.
+	 *
+	 */
+	virtual void processStrings(const SpssCPConvert &converter);
+
 
 	static const size_t LINE_LENGTH = 80;
 };

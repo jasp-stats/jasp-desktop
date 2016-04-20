@@ -16,12 +16,12 @@ class LongVarNamesRecord : public DataInfoRecord<recsubtype_longvar>
 public:
 	/**
 	 * @brief LongVarNamesRecord Ctor
-	 * @param const HardwareFormats &fixer - Endain fixer.
+	 * @param const Converters &fixer - Endain fixer.
 	 * @param fileSubType The record subtype value, as found in the file.
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream The file to read from.
 	 */
-	LongVarNamesRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
+	LongVarNamesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
 
 	// TODO: Break up the name / var pairs.
 	// Not currently required for JASP.
@@ -34,6 +34,7 @@ public:
 	 * Implematations should examine columns to determine the record history.
 	 */
 	virtual void process(SPSSColumns & columns);
+
 };
 
 }

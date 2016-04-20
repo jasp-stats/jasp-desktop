@@ -6,17 +6,16 @@ using namespace spss;
 
 /**
  * @brief LongVarNamesRecord Ctor
- * @param const HardwareFormats &fixer The endain fixer.
+ * @param const Converters &fixer The endain fixer.
  * @param fileSubType The record subtype value, as found in the file.
  * @param fileType The record type value, as found in the file.
  * @param fromStream The file to read from.
  */
-LongVarNamesRecord::LongVarNamesRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+LongVarNamesRecord::LongVarNamesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
 	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	char * buffer = new char[count() * size() + 2];
 	from.read(buffer, count());
-	fixer.fixup(buffer, count());
 	_var_name_pairs.append(buffer, count());
 	delete buffer;
 }
@@ -46,8 +45,9 @@ void LongVarNamesRecord::process(SPSSColumns & columns)
 		map<string, string>::const_iterator nv = nameVals.find(srchName);
 		if (nv != nameVals.end())
 		{
-			DEBUG_COUT4("Replaced label ", colI->spssLabel, " with ", colI->spssLabel);
-			colI->spssLabel = nv->second;
+			string lbl = columns.stringsConv().fwdConvertCodePage(nv->second);
+			DEBUG_COUT6("Replaced label ", colI->spssLabel, " with ", nv->second, "/", lbl);
+			colI->spssLabel = lbl;
 		}
 
 	}

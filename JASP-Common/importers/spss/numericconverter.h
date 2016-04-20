@@ -1,23 +1,21 @@
-#ifndef HARDWAREFORMATS_H
-#define HARDWAREFORMATS_H
+#ifndef _NUMERICCONVERTER_H__
+#define _NUMERICCONVERTER_H__
 
 #include <stdint.h>
 #include <stddef.h>
 #include <endian.h>
 
-#include "systemfileformat.h"
-
 namespace spss
 {
 
 /**
- * @brief The HardwareFormats class
+ * @brief The Converters class
  *
  * Holds flags and performs actions on 32 bit is and doubles.
  * In addtion it performs anaylsis of values determining
  * what action needs to be taken.
  */
-class HardwareFormats
+class NumericConverter
 {
 public:
 
@@ -36,7 +34,7 @@ public:
 		mach_littleEndian = 1
 	} Endians;
 
-	HardwareFormats();
+	NumericConverter();
 
 	/**
 	 * @brief setFPType Sets the FP type.
@@ -79,6 +77,7 @@ public:
 
 	/**
 	 * A dummy fixups for strings
+	 * CodePage converstion is done elsewhere.
 	 */
 	inline void fixup(char *, size_t) const {}
 	inline void fixup(Char_3 *) const {}
@@ -88,7 +87,6 @@ public:
 	inline void fixup(Char_60 *) const {}
 	inline void fixup(Char_64 *) const {}
 	inline void fixup(Char_80 *) const {}
-
 
 	/**
 	 * @brief Makes the double endinnes the same as ints
@@ -117,7 +115,7 @@ private:
 	} DbleBytes;
 
 	/**
-	 * Template function to check if teh passed value is in the list.
+	 * Template function to check if the passed value is in the list.
 	 */
 	template <class T>
 	bool _isInExpected(T value, const T *expectedValues);
@@ -125,19 +123,23 @@ private:
 	Endians _endSource;	/** < Endain from analysis / setters. */
 	FPTypes _fpType;	/** Floating point number. */
 	const FPTypes _fpThisMachine = fp_IEEE754;
+
+/*
+ * Define the endian order the target machine uses.
+ */
 #if defined(__BYTE_ORDER) && defined(__LITTLE_ENDIAN) && (__BYTE_ORDER == __LITTLE_ENDIAN)
 	const Endians _endThisMachine = mach_littleEndian;
 #elif defined(__BYTE_ORDER) && defined(__BIG_ENDIAN) && (__BYTE_ORDER == __BIG_ENDIAN)
 	const Endians _endThisMachine = mach_bigEndian;
 #else
-  #error "Could not determine target system byte order."
+  #error "Could not determine target system endian byte order."
 #endif
 };
 
 /*
  * These functions are inlined for speed.
  */
-inline void HardwareFormats::fixup(int32_t *value) const
+inline void NumericConverter::fixup(int32_t *value) const
 {
 	assert( _endSource != mach_unknown );
 	if ( _endSource != _endThisMachine )
@@ -154,7 +156,7 @@ inline void HardwareFormats::fixup(int32_t *value) const
 	}
 }
 
-inline void HardwareFormats::fixup(int64_t *value) const
+inline void NumericConverter::fixup(int64_t *value) const
 {
 	assert( _endSource != mach_unknown );
 	if ( _endSource != _endThisMachine )
@@ -172,7 +174,7 @@ inline void HardwareFormats::fixup(int64_t *value) const
 }
 
 
-inline void HardwareFormats::fixup(double *value) const
+inline void NumericConverter::fixup(double *value) const
 {
 	assert (_fpType == fp_IEEE754);
 	assert( _endSource != mach_unknown );
@@ -194,7 +196,7 @@ inline void HardwareFormats::fixup(double *value) const
  * Template function to check if the passed value is in the list.
  */
 template <class T>
-bool HardwareFormats::_isInExpected(T value, const T *expectedValues)
+bool NumericConverter::_isInExpected(T value, const T *expectedValues)
 {
 	const T *ep = expectedValues;
 	while ( (*ep != 0 ) && (value != *ep) )
@@ -204,4 +206,4 @@ bool HardwareFormats::_isInExpected(T value, const T *expectedValues)
 
 
 } // end namespace spss
-#endif // HARDWAREFORMATS_H
+#endif // Converters_H

@@ -19,12 +19,12 @@ public:
 
 	/**
 	 * @brief VarDisplayParamRecord Ctor
-	 * @param const HardwareFormats &fixer	Endain Fixer.
+	 * @param const Converters &fixer	Endain Fixer.
 	 * @param fileSubType The record subtype value, as found in the file.
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream The file to read from.
 	 */
-	VeryLongStringRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
+	VeryLongStringRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
 
 	// The name value pairs we got.
 	SPSSIMPORTER_READ_ATTRIB(std::string, string_lengths);

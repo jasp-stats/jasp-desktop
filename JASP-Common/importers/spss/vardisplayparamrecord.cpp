@@ -14,7 +14,7 @@ using namespace spss;
  * @param useWidth True if we use the width.
  * @param fromStream The file to read from.
  */
-VarDisplayParamRecord::DisplayParams::DisplayParams(const HardwareFormats &fixer, bool usedWidth, SPSSStream &from)
+VarDisplayParamRecord::DisplayParams::DisplayParams(const NumericConverter &fixer, bool usedWidth, SPSSStream &from)
  : _width(0)
 {
 	SPSSIMPORTER_READ_MEMBER(measure, from, fixer);
@@ -35,7 +35,7 @@ VarDisplayParamRecord::DisplayParams::DisplayParams(const HardwareFormats &fixer
  * @param numCoumns The number of columns discovered (to date)
  * @param fromStream The file to read from.
  */
-VarDisplayParamRecord::VarDisplayParamRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType, RecordTypes fileType, int32_t numColumns, SPSSStream &from)
+VarDisplayParamRecord::VarDisplayParamRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, int32_t numColumns, SPSSStream &from)
 	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	// do we read the width value?

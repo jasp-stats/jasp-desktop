@@ -21,7 +21,7 @@ public:
 	 * @param fromStream The stream to read.
 	 * @param progress Report progress call back.
 	 */
-	DataRecords(const HardwareFormats &fixer,  const FileHeaderRecord &fileHeader, SPSSColumns &columns, SPSSStream &fromStream,
+	DataRecords(const NumericConverter &fixer,  const FileHeaderRecord &fileHeader, SPSSColumns &columns, SPSSStream &fromStream,
 				boost::function<void (const std::string &, int)> &progress);
 
 
@@ -68,7 +68,7 @@ private:
 	/**
 	 * Hold a copy of the fixer.
 	 */
-	const HardwareFormats &_fixer;
+	const NumericConverter &_fixer;
 
 	/**
 	 * @brief _numDbls Number doubles read to date.

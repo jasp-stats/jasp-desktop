@@ -18,12 +18,12 @@ public:
 
 	/**
 	 * @brief ValueLabelRecord Ctor
-	 * @param const HardwareFormats &fixer - Fixexes endianness.
+	 * @param const Converters &fixer - Fixexes endianness.
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream The file to read from.
 	 *
 	 */
-	ValueLabelVarsRecord(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &fromStream);
+	ValueLabelVarsRecord(const NumericConverter &fixer, RecordTypes fileType, SPSSStream &fromStream);
 
 	virtual ~ValueLabelVarsRecord();
 
@@ -40,11 +40,11 @@ public:
 	   std::string label;
    };
 
-   typedef std::vector<LabelMeta> Labels;
+   typedef std::vector<LabelMeta> LabelMetas;
 
 
    SPSSIMPORTER_READ_ATTRIB(int32_t, label_count)
-   SPSSIMPORTER_READ_ATTRIB(Labels,  labels)
+   SPSSIMPORTER_READ_ATTRIB(LabelMetas,  Labels)
    SPSSIMPORTER_READ_ATTRIB(int32_t, var_rec_type) // must be == rectype_value_labels_var
    SPSSIMPORTER_READ_ATTRIB(int32_t, var_count)
    SPSSIMPORTER_READ_ATTRIB(std::vector<int32_t>, vars)
@@ -56,6 +56,16 @@ public:
 	* Implematations should examine columns to determine the record history.
 	*/
    virtual void process(SPSSColumns & columns);
+
+   /**
+	* @brief processStrings Converts any strings in the data fields.
+	* @param dictData The
+	*
+	* Should be implemented in classes where holdStrings maybe or is true.
+	*
+	*/
+   virtual void processStrings(const SpssCPConvert &converter);
+
 };
 
 }

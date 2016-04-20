@@ -10,12 +10,12 @@ using namespace spss;
 
 /**
  * @brief ValueLabelRecord Ctor
- * @param const HardwareFormats &fixer - Fixes endianness.
+ * @param const Converters &fixer - Fixes endianness.
  * @param fileType The record type value, as found in the file.
  * @param from The file to read from.
  *
  */
-ValueLabelVarsRecord::ValueLabelVarsRecord(const HardwareFormats &fixer, RecordTypes fileType, SPSSStream &from)
+ValueLabelVarsRecord::ValueLabelVarsRecord(const NumericConverter &fixer, RecordTypes fileType, SPSSStream &from)
 	: ReadableRecord(fixer, fileType, from)
 {
 	SPSSIMPORTER_READ_MEMBER(label_count, from, fixer);
@@ -33,7 +33,7 @@ ValueLabelVarsRecord::ValueLabelVarsRecord(const HardwareFormats &fixer, RecordT
 			delete buffer;
 		}
 		// insert
-		_labels.push_back(meta);
+		_Labels.push_back(meta);
 
 		// find the following padding, by rounding up to 8 byte blocks,
 		// and taking modulo
@@ -76,3 +76,17 @@ ValueLabelVarsRecord::~ValueLabelVarsRecord()
 void ValueLabelVarsRecord::process(SPSSColumns & /* columns */)
 {
 }
+
+/**
+ * @brief processStrings Converts any strings in the data fields.
+ * @param dictData The
+ *
+ * Should be implemented in classes where holdStrings maybe or is true.
+ *
+ */
+void ValueLabelVarsRecord::processStrings(const SpssCPConvert &converter)
+{
+	for (size_t i = 0; i < _Labels.size(); ++i)
+		_Labels[i].label = converter.fwdConvertCodePage(_Labels[i].label);
+}
+
