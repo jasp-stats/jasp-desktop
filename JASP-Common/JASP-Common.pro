@@ -92,7 +92,7 @@ SOURCES += \
 	importers/spss/verylongstringrecord.cpp \
 	importers/spss/integerinforecord.cpp \
 	importers/spss/stringutils.cpp \
-    importers/spss/hardwareformats.cpp
+    importers/spss/numericconvertor.cpp
 
 
 HEADERS += \
@@ -186,6 +186,6 @@ HEADERS += \
 	importers/spss/variablerecord.h \
 	importers/spss/verylongstringrecord.h \
 	importers/spss/stringutils.h \
-    importers/spss/hardwareformats.h
+    importers/spss/numericconverter.h
 
 

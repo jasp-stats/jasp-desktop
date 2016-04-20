@@ -10,7 +10,6 @@
 #include "spssstream.h"
 
 #include "datasetpackage.h"
-#include "spssrecinter.h"
 
 /*
  *

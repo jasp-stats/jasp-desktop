@@ -17,7 +17,6 @@ public:
 
 	/**
 	 * @brief FileHeader Read from file.
-	 * @param HardwareFormats &fixer - Fixer for eindiness.
 	 * @param fileType The record type value, as found in the file.
 	 * @param fromStream file to read.
 	 * @param double expectedBias The bias value expected.
@@ -26,7 +25,7 @@ public:
 	 * same as passed - This is method used to check that the
 	 * file uses the same floating point format.
 	 */
-	FileHeaderRecord(HardwareFormats &fixer, RecordTypes fileType, SPSSStream &fromStream, double expectedBias = 100.0);
+	FileHeaderRecord(NumericConverter &fixer, RecordTypes fileType, SPSSStream &fromStream, double expectedBias = 100.0);
 
 	virtual ~FileHeaderRecord();
 
@@ -70,6 +69,21 @@ public:
 	 * Implematations should examine columns to determine the record history.
 	 */
 	virtual void process(SPSSColumns & columns);
+
+
+	/**
+	 * @brief processStrings Converts any strings in the data fields.
+	 * @param dictData The
+	 */
+	virtual void processStrings(const SpssCPConvert &converter);
+
+	/*
+	 * Code Page converted values.
+	 */
+	SPSSIMPORTER_READ_ATTRIB(std::string, ProductName);
+	SPSSIMPORTER_READ_ATTRIB(std::string, CreationDate);
+	SPSSIMPORTER_READ_ATTRIB(std::string, CreationTime);
+	SPSSIMPORTER_READ_ATTRIB(std::string, FileLabel);
 
 private:
 	 static const int32_t _layout_code_good_vals[3];

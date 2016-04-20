@@ -46,6 +46,26 @@ public:
 	* @param end End position of string.
 	*/
 	static void rTrimWSIP(char *str, size_t end);
+
+	/**
+	* @brief lTrimWS Strips whitespace from the left side of str.
+	* @param str The string to strip.
+	* @return A copy of the string stript.
+	*/
+	static std::string lTrimWS(const std::string &str);
+
+	/**
+	* @brief lTrimWS Strips whitespace from the left side of str, in place.
+	* @param str The string to strip.
+	*/
+	static void lTrimWSIP(std::string &str);
+
+	/**
+	* @brief lTrimWS Strips whitespace in place from the left side of str
+	* @param str The buffer to strip.
+	*/
+	static void lTrimWSIP(char *str);
+
 };
 
 

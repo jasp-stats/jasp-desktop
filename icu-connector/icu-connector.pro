@@ -13,6 +13,9 @@ CONFIG += staticlib
 
 CONFIG += c++11
 
-SOURCES += icuconnector.cpp
+SOURCES += icuconnector.cpp \
+    spsscpconvert.cpp
 
-HEADERS += icuconnector.h
+HEADERS += icuconnector.h \
+    icu-names.h \
+    spsscpconvert.h

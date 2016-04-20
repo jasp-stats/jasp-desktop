@@ -16,7 +16,7 @@ using namespace spss;
  * @param fromStream The file to read from.
  *
  */
-VariableRecord::VariableRecord(const HardwareFormats &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &from)
+VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &from)
 	: ReadableRecord(fixer, fileType, from)
 {
 	/*
@@ -27,12 +27,12 @@ VariableRecord::VariableRecord(const HardwareFormats &fixer, RecordTypes fileTyp
 	SPSSIMPORTER_READ_MEMBER(n_missing_values, from, fixer);
 	SPSSIMPORTER_READ_MEMBER(print, from, fixer);
 	SPSSIMPORTER_READ_MEMBER(write, from, fixer);
-	SPSSIMPORTER_READ_MEMBER(name_file, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(nameInFile, from, fixer);
 
 	{
-		const size_t numChars = sizeof(_name_file) / sizeof(char);
+		const size_t numChars = sizeof(_nameInFile) / sizeof(char);
 		char buffer[numChars + 1];
-		memcpy(buffer, _name_file, numChars);
+		memcpy(buffer, _nameInFile, numChars);
 		buffer[numChars] = '\0';
 		StrUtils::rTrimWSIP(buffer, numChars - 1);
 		_name = buffer;

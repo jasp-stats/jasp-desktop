@@ -22,11 +22,11 @@ public:
 
 		/**
 		 * @brief VarDisplayRecord Ctor
-		 * @param const HardwareFormats &fixer - Endain fixer.
+		 * @param const Converters &fixer - Endain fixer.
 		 * @param useWidth True if the width vlaue is read.
 		 * @param fromStream The file to read from.
 		 */
-		DisplayParams(const HardwareFormats &fixer, bool readWidth, SPSSStream &from);
+		DisplayParams(const NumericConverter &fixer, bool readWidth, SPSSStream &from);
 
 		SPSSIMPORTER_READ_ATTRIB(int32_t, measure)
 		SPSSIMPORTER_READ_ATTRIB(int32_t, width)
@@ -35,13 +35,13 @@ public:
 
 	/**
 	 * @brief VarDisplayParamRecord Ctor
-	 * @param const HardwareFormats &fixer - Endain fixer.
+	 * @param const Converters &fixer - Endain fixer.
 	 * @param fileSubType The record subtype value, as found in the file.
 	 * @param fileType The record type value, as found in the file.
 	 * @param numColumns The number of columns discovered (to date)
 	 * @param fromStream The file to read from.
 	 */
-	VarDisplayParamRecord(const HardwareFormats &fixer, RecordSubTypes fileSubType,
+	VarDisplayParamRecord(const NumericConverter &fixer, RecordSubTypes fileSubType,
 						  RecordTypes fileType, int32_t numCoumns, SPSSStream &from);
 
 	std::vector<DisplayParams>  _displayParams;

@@ -15,7 +15,7 @@ const double FileHeaderRecord::_bias_good_vals[2] = { 100.0, 0.0 };
 
 /**
  * @brief FileHeader Read from file.
- * @param HardwareFormats &fixer - Fixer for eindiness.
+ * @param Converters &fixer - Fixer for eindiness.
  * @param fileType The record type value, as found in the file.
  * @param from file to read.
  * @param double expectedBias The bias value expected.
@@ -24,7 +24,7 @@ const double FileHeaderRecord::_bias_good_vals[2] = { 100.0, 0.0 };
  * same as passed - This is method used to check that the
  * file uses the same floating point format.
  */
-FileHeaderRecord::FileHeaderRecord(HardwareFormats &fixer, RecordTypes fileType, SPSSStream &from, double expectedBias)
+FileHeaderRecord::FileHeaderRecord(NumericConverter &fixer, RecordTypes fileType, SPSSStream &from, double expectedBias)
 	: ReadableRecord(fixer, fileType, from)
 	, _varRecordCount(0)
 {
@@ -82,4 +82,16 @@ void FileHeaderRecord::process(SPSSColumns &columns)
 	// Extract the number of cases.
 	if (ncases() != -1)
 		columns.numCases(ncases());
+}
+
+/**
+ * @brief processStrings Converts any strings in the data fields.
+ * @param dictData The
+ */
+void FileHeaderRecord::processStrings(const SpssCPConvert &converter)
+{
+	_ProductName = converter.fwdConvertCodePage( _prod_name, sizeof(_prod_name) );
+	_CreationDate = converter.fwdConvertCodePage( _creation_date, sizeof(_creation_date) );
+	_CreationTime = converter.fwdConvertCodePage( _creation_time, sizeof(_creation_time) );
+	_FileLabel = converter.fwdConvertCodePage( _file_label, sizeof(_file_label) );
 }

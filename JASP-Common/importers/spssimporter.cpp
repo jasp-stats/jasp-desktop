@@ -42,7 +42,7 @@ using namespace spss;
 using namespace icu;
 
 
-FileHeaderRecord *SPSSImporter::_pFhr = 0;
+FileHeaderRecord *SPSSImporter::_pFileHeaderRecord = 0;
 IntegerInfoRecord SPSSImporter::_integerInfo;
 FloatInfoRecord SPSSImporter::_floatInfo;
 double SPSSImporter::_fileSize = 0.0;
@@ -51,10 +51,10 @@ double SPSSImporter::_fileSize = 0.0;
 
 void SPSSImporter::killFhr()
 {
-	if (_pFhr != 0)
+	if (_pFileHeaderRecord != 0)
 	{
-		delete _pFhr;
-		_pFhr = 0;
+		delete _pFileHeaderRecord;
+		_pFileHeaderRecord = 0;
 	}
 }
 
@@ -65,10 +65,6 @@ void SPSSImporter::loadDataSet(
 		boost::function<void (const std::string &, int)> progress)
 {
 	(void)progress;
-
-	{
-		ICUConnector::get("utf-8")->from7ASCII('6');
-	}
 
 	packageData->isArchive = false;						 // SPSS/spss files are never archives.
 	packageData->dataSet = SharedMemory::createDataSet();   // Do our space.
@@ -85,7 +81,6 @@ void SPSSImporter::loadDataSet(
 
 	// Data we have scraped to date.
 	SPSSColumns dictData;
-	HardwareFormats fixer;
 
 	// Fetch the dictionary.
 	bool processingDict = true;
@@ -99,84 +94,85 @@ void SPSSImporter::loadDataSet(
 		union { int32_t u; RecordTypes t; Char_4 c; } rec_type;
 		rec_type.u = rectype_unknown;
 		stream.read((char *) &rec_type.u, sizeof(rec_type.u));
-		// Endiness for rec_type.
-		if (_pFhr != 0)
-			fixer.fixup(&rec_type.u);
+		// Endiness for rec_type, if known.
+		if (_pFileHeaderRecord != 0)
+			dictData.numericsConv().fixup(&rec_type.u);
 
 		// ... and the record type type is....
 		switch(rec_type.t)
 		{
 		case FileHeaderRecord::RECORD_TYPE:
-			_pFhr = new FileHeaderRecord(fixer, rec_type.t, stream);
-			_pFhr->process(dictData);
+			_pFileHeaderRecord = new FileHeaderRecord(dictData.numericsConv(), rec_type.t, stream);
+			_pFileHeaderRecord->process(dictData);
 			break;
 
 		case VariableRecord::RECORD_TYPE:
 		{
-			VariableRecord record(fixer, rec_type.t, _pFhr, stream);
+			VariableRecord record(dictData.numericsConv(), rec_type.t, _pFileHeaderRecord, stream);
 			record.process(dictData);
 		}
 			break;
 
 		case ValueLabelVarsRecord::RECORD_TYPE:
 		{
-			ValueLabelVarsRecord record(fixer, rec_type.t, stream);
+			ValueLabelVarsRecord record(dictData.numericsConv(), rec_type.t, stream);
 			record.process(dictData);
 		}
 			break;
 
 		case rectype_meta_data: // Need to find the type of the data..
 		{
-            union { int32_t i; RecordSubTypes s; } sub_type;
+			union { int32_t i; RecordSubTypes s; } sub_type;
 			sub_type.s = recsubtype_unknown;
 			stream.read((char *) &sub_type.i, sizeof(sub_type.i));
+			dictData.numericsConv().fixup(&sub_type.i);
 			switch (sub_type.s)
 			{
 			case  IntegerInfoRecord::SUB_RECORD_TYPE:
 			{
-				_integerInfo = IntegerInfoRecord(fixer, sub_type.s, rec_type.t, stream);
+				_integerInfo = IntegerInfoRecord(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
 				_integerInfo.process(dictData);
 			}
 				break;
 
 			case FloatInfoRecord::SUB_RECORD_TYPE:
 			{
-				_floatInfo = FloatInfoRecord(fixer, sub_type.s, rec_type.t, stream);
+				_floatInfo = FloatInfoRecord(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
 				_floatInfo.process(dictData);
 			}
 				break;
 
 			case VarDisplayParamRecord::SUB_RECORD_TYPE:
 			{
-				VarDisplayParamRecord record(fixer, sub_type.s, rec_type.t, dictData.size(), stream);
+				VarDisplayParamRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, dictData.size(), stream);
 				record.process(dictData);
 			}
 				break;
 
 			case LongVarNamesRecord::SUB_RECORD_TYPE:
 			{
-				LongVarNamesRecord record(fixer, sub_type.s, rec_type.t, stream);
+				LongVarNamesRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
 				record.process(dictData);
 			}
 				break;
 
 			case VeryLongStringRecord::SUB_RECORD_TYPE:
 			{
-				VeryLongStringRecord record(fixer, sub_type.s, rec_type.t, stream);
+				VeryLongStringRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
 				record.process(dictData);
 			}
 				break;
 
 			case ExtNumberCasesRecord::SUB_RECORD_TYPE:
 			{
-				ExtNumberCasesRecord record(fixer, sub_type.s, rec_type.t, stream);
+				ExtNumberCasesRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
 				record.process(dictData);
 			}
 				break;
 
 			default:
 			{
-				MiscInfoRecord record(fixer, sub_type.i, rec_type.t, stream);
+				MiscInfoRecord record(dictData.numericsConv(), sub_type.i, rec_type.t, stream);
 				record.process(dictData);
 			}
 			}
@@ -185,14 +181,14 @@ void SPSSImporter::loadDataSet(
 
 		case DocumentRecord::RECORD_TYPE:
 		{
-			DocumentRecord dummy(fixer, rec_type.t, stream);
+			DocumentRecord dummy(dictData.numericsConv(), rec_type.t, stream);
 			dummy.process(dictData);
 		}
 			break;
 
 		case DictionaryTermination::RECORD_TYPE:
 		{
-			DictionaryTermination dummy(fixer, rec_type.t, stream);
+			DictionaryTermination dummy(dictData.numericsConv(), rec_type.t, stream);
 			dummy.process(dictData);
 		}
 			processingDict = false; // Got end of dictionary.
@@ -211,14 +207,17 @@ void SPSSImporter::loadDataSet(
 	}
 
 	//If we got a file header then..
-	if (_pFhr == 0)
+	if (_pFileHeaderRecord == 0)
 		throw runtime_error("No header found in .SAV file.");
 
+	// Now convert the stirng in the header that we are interested in.,
+	RecordRoot::processAllStrings(dictData.stringsConv());
+
 	// read the data records from the file.
-	DataRecords data(fixer, *_pFhr, dictData, stream, progress);
+	DataRecords data(dictData.numericsConv(), *_pFileHeaderRecord, dictData, stream, progress);
 	data.read(packageData);
 
-	dictData.processVeryLongStrings();
+	dictData.processStringsPostLoad(progress);
 
 	DEBUG_COUT5("Read ", data.numDbls(), " doubles and ", data.numStrs(), " string cells.");
 

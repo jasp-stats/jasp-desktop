@@ -35,8 +35,7 @@ using namespace std;
 string StrUtils::rTrimWS(const string &str)
 {
 	string result = str;
-	while ( isspace(result[result.size() -1]) )
-		result = result.substr(0, result.length() - 1);
+	rTrimWSIP(result);
 	return result;
 }
 
@@ -49,8 +48,11 @@ string StrUtils::rTrimWS(const string &str)
 
 void StrUtils::rTrimWSIP(string &str)
 {
-	while ( isspace(str[str.size() -1]) )
-		str = str.substr(0, str.length() - 1);
+	if (str.length() == 0)
+		return;
+	else
+		while (isspace(str[str.size() -1]))
+			str = str.substr(0, str.length() - 1);
 }
 
 /**
@@ -70,3 +72,48 @@ void StrUtils::rTrimWSIP(char *str, size_t end)
 	}
 }
 
+/**
+* @brief lTrimWS Strips whitespace from the left side of str.
+* @param str The string to strip.
+* @return A copy of the string stript.
+*/
+string StrUtils::lTrimWS(const std::string &str)
+{
+	string result = str;
+	lTrimWSIP(result);
+	return result;
+}
+
+/**
+* @brief lTrimWS Strips whitespace from the left side of str, in place.
+* @param str The string to strip.
+*/
+void StrUtils::lTrimWSIP(std::string &str)
+{
+	if (str.length() == 0)
+		return;
+	else
+		while (isspace(str[0]) )
+			str = str.substr(1);
+}
+
+/**
+* @brief lTrimWS Strips whitespace in place from the left side of str
+* @param str The buffer to strip.
+*/
+void StrUtils::lTrimWSIP(char *str)
+{
+	if (str != 0)
+	{
+		if (isspace(*str))
+		{
+			char *pos = str;
+			do
+			{
+				pos++;
+				*(pos - 1) = *pos;
+			} while (*pos != '\0');
+
+		}
+	}
+}

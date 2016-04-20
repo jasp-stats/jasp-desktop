@@ -17,7 +17,7 @@ using namespace spss;
  * @param columns The columns data we collected readling the headers.
  * @param fromStream The stream to read.
  */
-DataRecords::DataRecords(const HardwareFormats &fixer, const FileHeaderRecord &fileHeader,
+DataRecords::DataRecords(const NumericConverter &fixer, const FileHeaderRecord &fileHeader,
 						 SPSSColumns &columns, SPSSStream &fromStream,
 						 boost::function<void (const std::string &, int)> &progress)
  : _fileHeader(fileHeader)

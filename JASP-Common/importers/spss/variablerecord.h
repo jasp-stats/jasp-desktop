@@ -18,13 +18,13 @@ public:
 
 	/**
 	 * @brief VariableRecord Ctor
-	 * @param const HardwareFormats &fixer - Fixes Endianness
+	 * @param const Converters &fixer - Fixes Endianness
 	 * @param fileType The record type value, as found in the file.
 	 * @param fileHeader The file ehadewr we are associated with.
 	 * @param fromStream The file to read from.
 	 *
 	 */
-	VariableRecord(const HardwareFormats &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &fromStream);
+	VariableRecord(const NumericConverter &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &fromStream);
 
 	virtual ~VariableRecord();
 
@@ -38,14 +38,13 @@ public:
 	SPSSIMPORTER_READ_ATTRIB(int32_t, n_missing_values)
 	SPSSIMPORTER_READ_ATTRIB(int32_t, print)
 	SPSSIMPORTER_READ_ATTRIB(int32_t, write)
-	SPSSIMPORTER_READ_ATTRIB(Char_8, name_file)
+	SPSSIMPORTER_READ_ATTRIB(Char_8, nameInFile)
 	SPSSIMPORTER_READ_ATTRIB(int32_t, label_len)
 	SPSSIMPORTER_READ_ATTRIB(std::string, label) // label().length() == label_len
 	SPSSIMPORTER_READ_ATTRIB(VecDbls, missing_values)
 
 	// Not from the file, but from counting number times we are created,
 	SPSSIMPORTER_READ_ATTRIB(size_t, dictionary_index)
-
 
 	/*
 	 * Write and Print fields are in fact unions:
@@ -79,7 +78,6 @@ public:
 	virtual void process(SPSSColumns & columns);
 
 private:
-//	const FileHeaderRecord *_pFHR;
 	std::string  _name;
 };
 
