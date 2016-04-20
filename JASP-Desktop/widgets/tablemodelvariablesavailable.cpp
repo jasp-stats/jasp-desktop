@@ -47,7 +47,6 @@ void TableModelVariablesAvailable::setVariables(const Terms &variables)
 		else
 			allowed.add(term);
 	}
-
 	Terms ordered; // present them in a nice order
 
 	ordered.add(suggested);
@@ -55,6 +54,7 @@ void TableModelVariablesAvailable::setVariables(const Terms &variables)
 	ordered.add(forbidden);
 
 	_allVariables.set(ordered);
+	_variables.removeParent();
 	_variables.set(ordered);
 
 	_variables.setSortParent(_allVariables);

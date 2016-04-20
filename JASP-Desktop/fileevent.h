@@ -20,6 +20,7 @@
 #define FILEEVENT_H
 
 #include <QObject>
+#include <QMetaType>
 
 class FileEvent : public QObject
 {
@@ -27,16 +28,23 @@ class FileEvent : public QObject
 
 public:
 	FileEvent(QObject *parent = NULL);
+	~FileEvent() = default;
+	FileEvent(const FileEvent&) = default;
 
-	enum FileMode { FileSave, FileOpen, FileExport, FileClose };
+	enum FileMode { FileSave, FileOpen, FileExportResults, FileExportData, FileClose };
+	enum FileType { jasp, html, csv, txt, pdf, empty, unknown };
 
 	void setOperation(FileMode fileMode);
+	void setType(FileType fileType);
+	void setTypeFromPath(const QString &path);
+	static FileType getTypeFromPath(const QString &path);
 	void setPath(const QString &path);
 	void setReadOnly();
 
 	bool IsOnlineNode() const;
 
 	FileMode operation() const;
+	FileType type() const;
 	const QString &path() const;
 	bool isReadOnly() const;
 
@@ -57,6 +65,7 @@ private slots:
 
 private:
 	FileMode _operation;
+	FileType _type;
 	QString _path;
 	bool _readOnly;
 
@@ -68,4 +77,5 @@ private:
 
 };
 
+Q_DECLARE_METATYPE(FileEvent *)
 #endif // FILEEVENT_H

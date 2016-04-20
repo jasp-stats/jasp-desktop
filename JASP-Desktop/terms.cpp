@@ -23,7 +23,6 @@
 
 #include <QDataStream>
 #include <QIODevice>
-
 using namespace std;
 
 Terms::Terms(const QList<QList<QString> > &terms, Terms *parent)
@@ -120,6 +119,10 @@ void Terms::set(const QList<QString> &terms)
 void Terms::setSortParent(const Terms &parent)
 {
 	_parent = &parent;
+}
+
+void Terms::removeParent() {
+	_parent = NULL;
 }
 
 void Terms::add(const Term &term)

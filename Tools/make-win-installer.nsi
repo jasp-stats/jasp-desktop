@@ -6,7 +6,7 @@
 !include "x64.nsh"
 
 !define MAIN_VERSION "0.7.5"
-!define PATCH_NUM "5"
+!define PATCH_NUM "6"
 !define VERSION "${MAIN_VERSION}.${PATCH_NUM}"
 !define BETA ""
 !define APP_NAME "JASP"

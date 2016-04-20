@@ -20,14 +20,17 @@
 #include <sstream>
 #include <cstring>
 
+void Label::_setLabel(const std::string &label) {
+    _stringLength = label.length();
+    if (sizeof(_stringValue) < label.length())
+        _stringLength = sizeof(_stringValue);
+
+    std::memcpy(_stringValue, label.c_str(), _stringLength);
+}
+
 Label::Label(const std::string &label, int value)
 {
-	_stringLength = label.length();
-	if (sizeof(_stringValue) < label.length())
-		_stringLength = sizeof(_stringValue);
-
-	std::memcpy(_stringValue, label.c_str(), _stringLength);
-
+    _setLabel(label);
 	_hasIntValue = true;
 	_intValue = value;
 }
@@ -65,6 +68,10 @@ bool Label::hasIntValue() const
 int Label::value() const
 {
 	return _intValue;
+}
+
+void Label::setLabel(const std::string &label) {
+    _setLabel(label);
 }
 
 Label &Label::operator=(const Label &label)

@@ -4,6 +4,7 @@ QT -= gui
 
 windows:CONFIG += c++11
 linux:CONFIG += c++11
+linux:CONFIG += -pipe
 
 DESTDIR = ..
 TARGET = JASPEngine

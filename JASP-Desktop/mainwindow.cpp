@@ -75,17 +75,22 @@
 #include <QDesktopWidget>
 #include <QTabBar>
 #include <QMenuBar>
+#include <QDir>
 
 #include "analysisloader.h"
+
 #include "qutils.h"
 #include "appdirs.h"
 #include "tempfiles.h"
 #include "processinfo.h"
 #include "appinfo.h"
 
+
 #include "lrnam.h"
 #include "activitylog.h"
 #include "aboutdialog.h"
+#include <boost/filesystem.hpp>
+#include "dirs.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -742,7 +747,6 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			if (sec.username!="" && _odm->authenticationSuccessful(OnlineDataManager::OSF))
 			{
 				//If this instance has a valid OSF connection save these settings for a new instance
-
 				_settings.setValue("OSFUsername", sec.username);
 				_settings.setValue("OSFPassword", sec.password);
 			}
@@ -796,6 +800,33 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
+		_loader.io(event, _package);
+		_progressIndicator->show();
+	}
+	else if (event->operation() == FileEvent::FileExportResults)
+	{
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+
+		// Save HTML result to temp file
+		// WebFrame->evaluateJavaScript can only be executed from main thread.
+		boost::filesystem::path temp = boost::filesystem::unique_path();
+		QString tempstr = QString::fromStdWString(temp.generic_wstring());
+		QString tmpFileName = QString::fromStdString(Dirs::tempDir()) +tempstr; // + QString::fromStdString(tempstr);
+
+		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + tmpFileName + "');");
+
+		if (event->type() == FileEvent::FileType::html)
+			HTMLExporter::setTransferFile(tmpFileName);
+		if (event->type() == FileEvent::FileType::pdf)
+			PDFExporter::setTransferFile(tmpFileName);
+
+		_loader.io(event, _package);
+		_progressIndicator->show();
+
+	}
+	else if (event->operation() == FileEvent::FileExportData)
+	{
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
 		_progressIndicator->show();
 	}
