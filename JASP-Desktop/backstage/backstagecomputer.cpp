@@ -65,6 +65,7 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 	if (finalPath != "")
 	{
 		event->setPath(finalPath);
+		event->setTypeFromPath(finalPath);
 
 		if ( ! path.endsWith(".jasp", Qt::CaseInsensitive))
 			event->setReadOnly();
@@ -79,8 +80,11 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 	return event;
 }
 
-FileEvent *BackstageComputer::browseSave(const QString &path)
+FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMode mode)
 {
+	QString caption = "Save";
+	QString filter = "JASP Files (*.jasp)";
+
 	QString browsePath = path;
 	if (path == "")
 		browsePath = _model->mostRecent();
@@ -88,27 +92,44 @@ FileEvent *BackstageComputer::browseSave(const QString &path)
 	if (_hasFileName)
 		browsePath += QDir::separator() + _fileName;
 
-	QString finalPath = QFileDialog::getSaveFileName(this, "Save", browsePath, "JASP Files (*.jasp)");
+	if (mode==FileEvent::FileExportResults)
+	{
+		caption = "Export Result as HTML";
+#ifdef QT_DEBUG
+		// In debug mode enable pdf export
+		filter = "HTML Files (*.html *.pdf)";
+#else
+		// For future use of pdf export switch to line above
+		filter = "HTML Files (*.html)";
+#endif
+	}
+	else if (mode==FileEvent::FileExportData)
+	{
+		caption = "Export Data as CSV";
+		filter = "CSV Files (*.csv *.txt)";
+	}
+
+	QString finalPath = QFileDialog::getSaveFileName(this, caption, browsePath, filter);
 
 	FileEvent *event = new FileEvent(this);
-	event->setOperation(FileEvent::FileSave);
+	event->setOperation(mode);
 
 	if (finalPath != "")
 	{
 		// force the filename end with .jasp - workaround for linux saving issue
-		if(!finalPath.endsWith(".jasp", Qt::CaseInsensitive))
-		{
+		if (mode == FileEvent::FileSave && !finalPath.endsWith(".jasp", Qt::CaseInsensitive))
 			finalPath.append(QString(".jasp"));
-		}
+
 		event->setPath(finalPath);
+		event->setTypeFromPath(finalPath);
+
 		emit dataSetIORequest(event);
 	}
 	else
-	{
 		event->setComplete(false);
-	}
 
 	return event;
+
 }
 
 void BackstageComputer::addRecent(const QString &path)
@@ -140,7 +161,7 @@ void BackstageComputer::selectionMade(QString path)
 	if (_mode == FileEvent::FileOpen)
 		browseOpen(path);
 	else
-		browseSave(path);
+		browseSave(path, _mode);
 }
 
 void BackstageComputer::browseSelected()

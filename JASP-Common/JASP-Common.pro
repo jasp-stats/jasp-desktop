@@ -1,5 +1,6 @@
 
 QT -= gui
+QT += webkitwidgets printsupport
 
 DESTDIR = ..
 TARGET = JASP-Common
@@ -90,7 +91,9 @@ SOURCES += \
 	importers/spss/variablerecord.cpp \
 	importers/spss/verylongstringrecord.cpp \
 	importers/spss/integerinforecord.cpp \
-	importers/spss/stringutils.cpp
+	importers/spss/stringutils.cpp \
+    exporters/htmlexporter.cpp \
+    exporters/pdfexporter.cpp
 
 
 HEADERS += \
@@ -183,6 +186,8 @@ HEADERS += \
 	importers/spss/vardisplayparamrecord.h \
 	importers/spss/variablerecord.h \
 	importers/spss/verylongstringrecord.h \
-	importers/spss/stringutils.h
+	importers/spss/stringutils.h \
+    exporters/htmlexporter.h \
+    exporters/pdfexporter.h
 
 
