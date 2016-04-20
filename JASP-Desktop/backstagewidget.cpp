@@ -60,17 +60,15 @@ BackStageWidget::BackStageWidget(QWidget *parent) : QWidget(parent)
 	_tabBar->addTab("Open");
 	_tabBar->addTab("Save");
 	_tabBar->addTab("Save As");
-	_tabBar->addTab("Export");
+	_tabBar->addTab("Export Results");
+	_tabBar->addTab("Export Data");
 	_tabBar->addTab("Close");
-
-#ifndef QT_DEBUG
-	_tabBar->hideTab(3);
-#endif
 
 	_tabBar->setTabEnabled(1, false);
 	_tabBar->setTabEnabled(2, false);
 	_tabBar->setTabEnabled(3, false);
 	_tabBar->setTabEnabled(4, false);
+	_tabBar->setTabEnabled(5, false);
 
 	connect(_openAndSaveWidget, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequestHandler(FileEvent*)));
 	connect(_tabBar, SIGNAL(currentChanging(int,bool&)), this, SLOT(tabPageChanging(int,bool&)));
@@ -120,10 +118,11 @@ void BackStageWidget::dataSetIORequestCompleted(FileEvent *event)
 		{
 			_dataSetHasPathAndIsntReadOnly = ! event->isReadOnly();
 
-			_tabBar->setTabEnabled(1, true);
-			_tabBar->setTabEnabled(2, true);
-			_tabBar->setTabEnabled(3, true);
-			_tabBar->setTabEnabled(4, true);
+			_tabBar->setTabEnabled(1, true); //Save
+			_tabBar->setTabEnabled(2, true); //Save As
+			_tabBar->setTabEnabled(3, true); //Export Results
+			_tabBar->setTabEnabled(4, true); //Export Data
+			_tabBar->setTabEnabled(5, true); //Close
 		}
 		else if (event->operation() == FileEvent::FileSave)
 		{
@@ -136,6 +135,7 @@ void BackStageWidget::dataSetIORequestCompleted(FileEvent *event)
 			_tabBar->setTabEnabled(2, false);
 			_tabBar->setTabEnabled(3, false);
 			_tabBar->setTabEnabled(4, false);
+			_tabBar->setTabEnabled(5, false);
 		}
 	}
 }
@@ -148,11 +148,10 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 		_openAndSaveWidget->setSaveMode(FileEvent::FileOpen);
 		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
+
 	case 1:  // Save
 		if (_dataSetHasPathAndIsntReadOnly)
-		{
 			_openAndSaveWidget->save();
-		}
 		else
 		{
 			_tabBar->setCurrentIndex(2);
@@ -161,13 +160,23 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 		}
 		cancel = true;
 		break;
+
 	case 2:  // Save As
 		_openAndSaveWidget->setSaveMode(FileEvent::FileSave);
 		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
-	case 3:  // Export
+
+	case 3:  // Export Results
+		_openAndSaveWidget->setSaveMode(FileEvent::FileExportResults);
+		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
-	case 4: // Close
+
+	case 4:  // Export Data
+		_openAndSaveWidget->setSaveMode(FileEvent::FileExportData);
+		_tabPages->setCurrentWidget(_openAndSaveWidget);
+		break;
+
+	case 5: // Close
 		_openAndSaveWidget->close();
 		_tabBar->setCurrentIndex(0);
 		_openAndSaveWidget->setSaveMode(FileEvent::FileOpen);

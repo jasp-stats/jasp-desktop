@@ -18,9 +18,6 @@
 
 #include "asyncloader.h"
 
-#include "exporters/jaspexporter.h"
-#include "exporters/csvexporter.h"
-
 #include <iostream>
 #include <fstream>
 #include <QTimer>
@@ -47,20 +44,35 @@ AsyncLoader::AsyncLoader(QObject *parent) :
 
 void AsyncLoader::io(FileEvent *event, DataSetPackage *package)
 {
-	if (event->operation() == FileEvent::FileOpen)
+
+	switch (event->operation())
 	{
-		emit progress("Loading Data Set", 0);
-		emit beginLoad(event, package);
+		case FileEvent::FileOpen:
+			emit progress("Loading Data Set", 0);
+			emit beginLoad(event, package);
+			break;
+
+		case FileEvent::FileSave:
+			emit progress("Saving Data Set", 0);
+			emit beginSave(event, package);
+			break;
+
+		case FileEvent::FileExportResults:
+			emit progress("Exporting Result Set", 0);
+			emit beginSave(event, package);
+			break;
+
+		case FileEvent::FileExportData:
+			emit progress("Exporting Data Set", 0);
+			emit beginSave(event, package);
+			break;
+
+		case FileEvent::FileClose:
+			event->setComplete();
+			break;
+
 	}
-	else if (event->operation() == FileEvent::FileSave)
-	{
-		emit progress("Saving Data Set", 0);
-		emit beginSave(event, package);
-	}
-	else if (event->operation() == FileEvent::FileClose)
-	{
-		event->setComplete();
-	}
+
 }
 
 void AsyncLoader::free(DataSet *dataSet)
@@ -104,7 +116,16 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 			delay += sleepTime;
 		}
 
-		JASPExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		if (event->operation() == FileEvent::FileSave)
+			JASPExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		if (event->operation() == FileEvent::FileExportData && event->type() == FileEvent::FileType::csv)
+			CSVExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		if (event->operation() == FileEvent::FileExportData && event->type() == FileEvent::FileType::txt)
+			CSVExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		if (event->operation() == FileEvent::FileExportResults && event->type() == FileEvent::FileType::html)
+			HTMLExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		if (event->operation() == FileEvent::FileExportResults && event->type() == FileEvent::FileType::pdf)
+			PDFExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 		if ( ! Utils::renameOverwrite(fq(tempPath), fq(path)))
 			throw runtime_error("File '" + fq(path) + "' is being used by another application.");

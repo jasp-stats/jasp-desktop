@@ -33,6 +33,42 @@ void FileEvent::setOperation(FileEvent::FileMode fileMode)
 	_operation = fileMode;
 }
 
+void FileEvent::setType(FileEvent::FileType fileType)
+{
+	_type = fileType;
+}
+
+void FileEvent::setTypeFromPath(const QString &path)
+{
+
+	FileEvent::FileType filetype;
+
+	filetype = getTypeFromPath(path);
+
+	_type = filetype;
+}
+
+FileEvent::FileType FileEvent::getTypeFromPath(const QString &path)
+{
+
+	FileEvent::FileType filetype =  FileEvent::FileType::unknown;
+
+	if (path.endsWith(".jasp", Qt::CaseInsensitive)) filetype = FileEvent::FileType::jasp;
+	else if (path.endsWith(".html", Qt::CaseInsensitive)) filetype = FileEvent::FileType::html;
+	else if (path.endsWith(".csv", Qt::CaseInsensitive)) filetype = FileEvent::FileType::csv;
+	else if (path.endsWith(".txt", Qt::CaseInsensitive)) filetype =  FileEvent::FileType::txt;
+	else if (path.endsWith(".pdf", Qt::CaseInsensitive)) filetype =  FileEvent::FileType::pdf;
+
+	if (filetype == FileEvent::FileType::unknown)
+	{
+		int dotPos = path.lastIndexOf('.');
+		if (dotPos == -1 )
+			filetype =  FileEvent::FileType::empty;
+	}
+
+	return filetype;
+}
+
 void FileEvent::setPath(const QString &path)
 {
 	_path = path;
@@ -47,6 +83,12 @@ FileEvent::FileMode FileEvent::operation() const
 {
 	return _operation;
 }
+
+FileEvent::FileType FileEvent::type() const
+{
+	return _type;
+}
+
 
 const QString &FileEvent::path() const
 {

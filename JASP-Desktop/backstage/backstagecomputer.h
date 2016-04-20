@@ -36,7 +36,7 @@ public:
 	~BackstageComputer();
 
 	FileEvent *browseOpen(const QString &path = "");
-	FileEvent *browseSave(const QString &path = "");
+	FileEvent *browseSave(const QString &path = "", FileEvent::FileMode mode = FileEvent::FileSave);
 
 	void addRecent(const QString &path);
 
