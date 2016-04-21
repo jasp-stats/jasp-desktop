@@ -64,7 +64,6 @@ private:
 
 	QString fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
 
-	void sleep(int ms);
 	void progressHandler(std::string status, int progress);
 	QThread _thread;
 	DataSetLoader _loader;
