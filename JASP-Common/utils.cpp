@@ -216,7 +216,7 @@ void Utils::sleep(int ms)
 {
 
 #ifdef __WIN32__
-	Sleep(uint(ms));
+    Sleep(DWORD(ms));
 #else
 	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
 	nanosleep(&ts, NULL);
