@@ -23,7 +23,18 @@ QString HTMLExporter::_transferFile = "";
 void HTMLExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 
-	Utils::renameOverwrite(_transferFile.toStdString(), path);
+	int maxSleepTime = 5000;
+	int sleepTime = 100;
+	int delay = 0;
+
+	while (Utils::renameOverwrite(_transferFile.toStdString(), path) == false)
+	{
+		if (delay > maxSleepTime)
+			break;
+
+		Utils::sleep(sleepTime);
+		delay += sleepTime;
+	}
 
 	progressCallback("Export Html Set", 100);
 

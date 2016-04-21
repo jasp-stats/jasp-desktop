@@ -291,7 +291,7 @@ bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFu
 void BackstageOSF::saveClicked()
 {
 	FSBMOSF::OnlineNodeData currentNodeData = _model->currentNodeData();
-	bool allowedfiletype;
+	bool allowedfiletype = true;
 
 	if (currentNodeData.canCreateFiles == false)
 	{

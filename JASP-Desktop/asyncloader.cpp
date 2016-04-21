@@ -112,7 +112,7 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 			if (delay > maxSleepTime)
 				break;
 
-			sleep(sleepTime);
+			Utils::sleep(sleepTime);
 			delay += sleepTime;
 		}
 
@@ -150,19 +150,6 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 void AsyncLoader::progressHandler(string status, int progress)
 {
 	emit this->progress(QString::fromUtf8(status.c_str(), status.length()), progress);
-}
-
-
-
-void AsyncLoader::sleep(int ms)
-{
-
-#ifdef __WIN32__
-	Sleep(uint(ms));
-#else
-	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
-	nanosleep(&ts, NULL);
-#endif
 }
 
 void AsyncLoader::setOnlineDataManager(OnlineDataManager *odm)
