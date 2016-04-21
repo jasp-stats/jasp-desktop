@@ -26,11 +26,16 @@ BFFromT <- function(dataset=NULL, options, perform = 'run', callback) {
 	table <- list()
 	table[["title"]] <- "BF from <i>t</i>"
 
-	table[["schema"]] <- list(fields=list(
-		list(name="BF", title="BF01", type="number", format="sf:4;dp:3")
-		))
+	fields=list()
 
-	row <- list(BF = .clean(exp(bayesFactor01$bf)))
+	fields[[length(fields)+1]] <- list(name="tStatistic", type="number", format="sf:4;dp:3")
+	fields[[length(fields)+1]] <- list(name="n1Size", type="number")
+	fields[[length(fields)+1]] <- list(name="n2Size", type="number")
+	fields[[length(fields)+1]] <- list(name="BF", title="BF01", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
+
+	table[["schema"]] <- list(fields=fields)
+
+	row <- list(BF = .clean(exp(bayesFactor01$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size)
 
 	table[["data"]] <- list(row)
 	
