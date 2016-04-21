@@ -106,8 +106,8 @@
     <rect>
      <x>20</x>
      <y>250</y>
-     <width>231</width>
-     <height>341</height>
+     <width>501</width>
+     <height>111</height>
     </rect>
    </property>
    <widget class="BoundGroupBox" name="hypothesis">
@@ -186,8 +186,8 @@
    <widget class="BoundGroupBox" name="bayesFactorType">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>120</y>
+      <x>270</x>
+      <y>0</y>
       <width>231</width>
       <height>117</height>
      </rect>
@@ -253,59 +253,59 @@
      </item>
     </layout>
    </widget>
-   <widget class="GroupBox" name="groupBox_2">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>240</y>
-      <width>211</width>
-      <height>62</height>
-     </rect>
+  </widget>
+  <widget class="GroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>150</y>
+     <width>211</width>
+     <height>62</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Prior</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_11">
+    <property name="topMargin">
+     <number>6</number>
     </property>
-    <property name="title">
-     <string>Prior</string>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_11">
-     <property name="topMargin">
-      <number>6</number>
-     </property>
-     <item row="0" column="2">
-      <widget class="BoundTextBox" name="priorWidth">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>60</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>60</width>
-         <height>16777215</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="label_4">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Cauchy prior width</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
+    <item row="0" column="2">
+     <widget class="BoundTextBox" name="priorWidth">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>60</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>60</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Cauchy prior width</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <customwidgets>
