@@ -108,10 +108,12 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 #ifndef QT_DEBUG
 	ui->BFFromT->hide();
 #else
-	menu = new QMenu(this);
-	menu->addAction(QString("BF From t"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
+    connect(ui->BFFromT, SIGNAL(clicked()), this, SLOT(itemSelected()));
 
-	ui->BFFromT->setMenu(menu);
+//	menu = new QMenu(this);
+//	menu->addAction(QString("BF From t"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
+
+//	ui->BFFromT->setMenu(menu);
 #endif
 }
 
