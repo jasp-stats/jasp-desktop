@@ -38,6 +38,7 @@ public:
 	static std::string osPath(const boost::filesystem::path &path);
 
 	static void remove(std::vector<std::string> &target, const std::vector<std::string> &toRemove);
+	static void sleep(int ms);
 };
 
 #endif // UTILS_H

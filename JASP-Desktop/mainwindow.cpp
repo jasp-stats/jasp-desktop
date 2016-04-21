@@ -811,7 +811,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		// WebFrame->evaluateJavaScript can only be executed from main thread.
 		boost::filesystem::path temp = boost::filesystem::unique_path();
 		QString tempstr = QString::fromStdWString(temp.generic_wstring());
-		QString tmpFileName = QString::fromStdString(Dirs::tempDir()) +tempstr; // + QString::fromStdString(tempstr);
+		QString tmpFileName = QString::fromStdString(Dirs::tempDir()) + QDir::separator() + tempstr; // + QString::fromStdString(tempstr);
 
 		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + tmpFileName + "');");
 
