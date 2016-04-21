@@ -20,7 +20,8 @@ BFFromT <- function(dataset=NULL, options, perform = 'run', callback) {
 	results <- list()
 	
 	results[[".meta"]] <- list(list(name="table", type="table"))
-	
+	results[["title"]] <- "Summary Statistics"
+
 	bayesFactor01 <- BayesFactor::ttest.tstat(options$tStatistic, options$n1Size, options$n2Size)
 
 	table <- list()
@@ -28,10 +29,10 @@ BFFromT <- function(dataset=NULL, options, perform = 'run', callback) {
 
 	fields=list()
 
-	fields[[length(fields)+1]] <- list(name="tStatistic", type="number", format="sf:4;dp:3")
-	fields[[length(fields)+1]] <- list(name="n1Size", type="number")
-	fields[[length(fields)+1]] <- list(name="n2Size", type="number")
-	fields[[length(fields)+1]] <- list(name="BF", title="BF01", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
+	fields[[length(fields)+1]] <- list(name="tStatistic", type="number", format="sf:4;dp:3", title="t value")
+	fields[[length(fields)+1]] <- list(name="n1Size", type="number", title="group 1 size")
+	fields[[length(fields)+1]] <- list(name="n2Size", type="number", title="group 2 size")
+	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
 
 	table[["schema"]] <- list(fields=fields)
 
