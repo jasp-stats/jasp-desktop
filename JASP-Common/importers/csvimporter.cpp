@@ -61,11 +61,13 @@ void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator
 			lastProgress = progress;
 		}
 
-		int i = 0;
-		for (; i < line.size() && i < columnCount; i++)
-			cells[i].push_back(line[i]);
-		for (; i < columnCount; i++)
-			cells[i].push_back(string());
+        if (line.size() != 0) {
+            int i = 0;
+            for (; i < line.size() && i < columnCount; i++)
+                cells[i].push_back(line[i]);
+            for (; i < columnCount; i++)
+                cells[i].push_back(string());
+        }
 
 		line.clear();
 		success = csv.readLine(line);

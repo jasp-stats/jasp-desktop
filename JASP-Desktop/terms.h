@@ -47,6 +47,7 @@ public:
 	void set(const Terms &terms);
 	void set(QByteArray &array);
 
+	void removeParent();
 	void setSortParent(const Terms &parent);
 
 	void add(const Term &term);

@@ -23,10 +23,22 @@ VariablesWidget::VariablesWidget(QWidget *parent) :
 
 	ui->variablesList->setModel(_variablesTableModel);
 	ui->levelsList->setModel(_levelsTableModel);
+    /*
+    ui->levelsList->setDragEnabled(true);
+    ui->levelsList->setAcceptDrops(true);
+    ui->levelsList->viewport()->setAcceptDrops(true);
+    ui->levelsList->setDragDropOverwriteMode(false);
+    ui->levelsList->setDropIndicatorShown(true);
+
+    ui->levelsList->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->levelsList->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->levelsList->setDragDropMode(QAbstractItemView::InternalMove);
+    */
 
 	connect(ui->variablesList->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(selectedVariableChanged(QModelIndex,QModelIndex)));
 	connect(ui->moveUpButton, SIGNAL(clicked()), this, SLOT(moveUpClicked()));
-	connect(ui->moveDownButton, SIGNAL(clicked()), this, SLOT(moveDownClicked()));
+    connect(ui->moveDownButton, SIGNAL(clicked()), this, SLOT(moveDownClicked()));
+    connect(ui->reverseButton, SIGNAL(clicked()), this, SLOT(reverseClicked()));
 }
 
 VariablesWidget::~VariablesWidget()
@@ -106,5 +118,8 @@ void VariablesWidget::moveDownClicked()
 		}
 	}
 
+}
 
+void VariablesWidget::reverseClicked() {
+    _levelsTableModel->reverse();
 }

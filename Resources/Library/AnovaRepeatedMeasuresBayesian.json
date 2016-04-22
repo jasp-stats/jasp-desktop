@@ -72,13 +72,6 @@
 			]
 		},
 		{
-			"name": "priorWidth",
-			"type": "Number",
-			"value": 0.5,
-			"min": 0,
-			"max": 2
-		},
-		{
 			"name": "posteriorEstimates",
 			"type": "Boolean"
 		},
@@ -96,6 +89,27 @@
 			"value": 10000,
 			"min": 1,
 			"max": 1000000
+		},
+		{
+			"name": "priorFixedEffects",
+			"type": "Number",
+			"value": 0.5,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"name": "priorRandomEffects",
+			"type": "Number",
+			"value": 1,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"name": "priorCovariates",
+			"type": "Number",
+			"value": 0.354,
+			"min": 0,
+			"max": 2
 		}
 	]
 }

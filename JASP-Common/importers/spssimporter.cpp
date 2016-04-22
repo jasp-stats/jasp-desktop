@@ -16,263 +16,388 @@
 //
 
 #include "spssimporter.h"
+#include "./spss/spssrecinter.h"
+#include "./spss/floatinforecord.h"
+#include "./spss/variablerecord.h"
+#include "./spss/valuelabelvarsrecord.h"
+#include "./spss/vardisplayparamrecord.h"
+#include "./spss/longvarnamesrecord.h"
+#include "./spss/verylongstringrecord.h"
+#include "./spss/extnumbercasesrecord.h"
+#include "./spss/miscinforecord.h"
+#include "./spss/documentrecord.h"
+#include "./spss/dictionaryterminationrecord.h"
+#include "./spss/datarecords.h"
 
 #include "sharedmemory.h"
 #include "dataset.h"
+#include "./spss/debug_cout.h"
 
-#include <boost/nowide/fstream.hpp>
 
 using namespace std;
+
 using namespace boost;
+using namespace spss;
 
-void SPSSImporter::loadDataSet(DataSetPackage *packageData, const string &locator, boost::function<void (const string &, int)> progress)
+FileHeaderRecord *SPSSImporter::_pFhr = 0;
+IntegerInfoRecord SPSSImporter::_integerInfo;
+FloatInfoRecord SPSSImporter::_floatInfo;
+double SPSSImporter::_fileSize = 0.0;
+
+
+
+void SPSSImporter::killFhr()
 {
-	DataSet *dataSet = SharedMemory::createDataSet();
+	if (_pFhr != 0)
+	{
+		delete _pFhr;
+		_pFhr = 0;
+	}
+}
 
+
+void SPSSImporter::loadDataSet(
+		DataSetPackage *packageData,
+		const std::string &locator,
+		boost::function<void (const std::string &, int)> progress)
+{
 	(void)progress;
+	packageData->isArchive = false;						 // SPSS/spss files are never archives.
+	packageData->dataSet = SharedMemory::createDataSet();   // Do our space.
 
-	nowide::ifstream stream(locator.c_str(), ios::in);
+	killFhr();
 
-	int rowCount;
-	stream.seekg(80);
-	stream.read((char*)&rowCount, sizeof(int));
+	// Open the file.
+	SPSSStream stream(locator.c_str(), ios::in | ios::binary);
 
-	stream.seekg(176);
+	// Get it's size
+	stream.seekg(0, stream.end);
+	_fileSize = static_cast<double>(stream.tellg());
+	stream.seekg(0, stream.beg);
 
-	vector<SPSSColumn> columns;
+	// Data we have scraped to date.
+	SPSSColumns dictData;
 
-	readHeaders(stream, columns);
-	readData(stream, columns);
+	// Fetch the dictionary.
+	bool processingDict = true;
 
-	dataSet = setDataSetSize(dataSet, rowCount, columns.size());
-
-	for (int i = 0; i < columns.size(); i++)
+	while(stream.good() && processingDict)
 	{
-		SPSSColumn &spss = columns[i];
-		Column &column = dataSet->column(i);
-
-		column.setName(spss.name);
-
-		if (spss.isStrings == false)
+		reportProgress(stream.tellg(), progress);
+		union { int32_t u; RecordTypes t; Char_4 c; } rec_type;
+		rec_type.u = rectype_unknown;
+		stream.read((char *) &rec_type.u, sizeof(rec_type.u));
+		switch(rec_type.t)
 		{
-			column.setColumnType(Column::ColumnTypeScale);
+		case FileHeaderRecord::RECORD_TYPE:
+			_pFhr = new FileHeaderRecord(rec_type.t, stream);
+			_pFhr->process(dictData);
+			break;
 
-			Column::Doubles::iterator itr = column.AsDoubles.begin();
-
-			for (int j = 0; j < rowCount; j++)
-				*itr++ = spss.numeric.at(j);
+		case VariableRecord::RECORD_TYPE:
+		{
+			VariableRecord record(rec_type.t, _pFhr, stream);
+			record.process(dictData);
 		}
-	}
+			break;
 
-	packageData->isArchive = false;
-	packageData->dataSet = dataSet;
-}
-
-typedef enum { VariableRecord = 2, LabelRecord = 3, DataRecord = 7, EndHeader = 999 } RecordType;
-
-void SPSSImporter::readHeaders(istream &stream, vector<SPSSColumn> &columns)
-{
-	while (true)
-	{
-		int recordType;
-		stream.read((char*)&recordType, sizeof(recordType));
-
-		if ( ! stream.good())
-			throw runtime_error("unexpected EOF");
-
-		std::cout << "recordType: " << recordType << "@" << stream.tellg() << "\n";
-		std::cout.flush();
-
-		switch (recordType)
+		case ValueLabelVarsRecord::RECORD_TYPE:
 		{
-		case VariableRecord:
-			readColumnInfoRecord(stream, columns);
+			ValueLabelVarsRecord record(rec_type.t, stream);
+			record.process(dictData);
+		}
 			break;
-		case LabelRecord:
-			readLabelRecord(stream);
+
+		case rectype_meta_data: // Need to find the type of the data..
+		{
+            union { int32_t i; RecordSubTypes s; } sub_type;
+			sub_type.s = recsubtype_unknown;
+			stream.read((char *) &sub_type.i, sizeof(sub_type.i));
+			switch (sub_type.s)
+			{
+			case  IntegerInfoRecord::SUB_RECORD_TYPE:
+			{
+				_integerInfo = IntegerInfoRecord(sub_type.s, rec_type.t, stream);
+				_integerInfo.process(dictData);
+			}
+				break;
+
+			case FloatInfoRecord::SUB_RECORD_TYPE:
+			{
+				_floatInfo = FloatInfoRecord(sub_type.s, rec_type.t, stream);
+				_floatInfo.process(dictData);
+			}
+				break;
+
+			case VarDisplayParamRecord::SUB_RECORD_TYPE:
+			{
+				VarDisplayParamRecord record(sub_type.s, rec_type.t, dictData.size(), stream);
+				record.process(dictData);
+			}
+				break;
+
+			case LongVarNamesRecord::SUB_RECORD_TYPE:
+			{
+				LongVarNamesRecord record(sub_type.s, rec_type.t, stream);
+				record.process(dictData);
+			}
+				break;
+
+			case VeryLongStringRecord::SUB_RECORD_TYPE:
+			{
+				VeryLongStringRecord record(sub_type.s, rec_type.t, stream);
+				record.process(dictData);
+			}
+				break;
+
+			case ExtNumberCasesRecord::SUB_RECORD_TYPE:
+			{
+				ExtNumberCasesRecord record(sub_type.s, rec_type.t, stream);
+				record.process(dictData);
+			}
+				break;
+
+			default:
+			{
+				MiscInfoRecord record(sub_type.i, rec_type.t, stream);
+				record.process(dictData);
+			}
+			}
+		}
 			break;
-		case DataRecord:
-			readDataRecord(stream);
+
+		case DocumentRecord::RECORD_TYPE:
+		{
+			DocumentRecord dummy(rec_type.t, stream);
+			dummy.process(dictData);
+		}
 			break;
-		case EndHeader:
-			stream.seekg(sizeof(int), ios_base::cur); // skip padding
-			return;
+
+		case DictionaryTermination::RECORD_TYPE:
+		{
+			DictionaryTermination dummy(rec_type.t, stream);
+			dummy.process(dictData);
+		}
+			processingDict = false; // Got end of dictionary.
+			break;
+
+		case rectype_unknown:
 		default:
-			std::cout << "unknown record type: " << recordType << "@" << stream.tellg() << "\n";
-			std::cout.flush();
-			return;
+        {
+            string msg("Unknown record type '");
+            msg.append(rec_type.c, sizeof(rec_type.c));
+            msg.append("' found.\nThe SAV importer cannot read this file.");
+            throw runtime_error(msg);
+			break;
 		}
-	}
-}
-
-void SPSSImporter::readColumnInfoRecord(istream &stream, std::vector<SPSSColumn> &columns)
-{
-	// record type already skipped by readNextRecord
-
-	char buffer[28];
-
-	stream.read(buffer, sizeof(buffer));
-
-	int type = *(int*)&buffer;
-
-	if (type == -1)
-	{
-		if (columns.size() == 0)
-			throw runtime_error("-1 subtype not expected at beginning");
-
-		columns[columns.size() - 1].columnSpan++;
-
-		return;
+        }
 	}
 
-	int hasVarLabel = *(int*)&buffer[4];
-	int missingCount = *(int*)&buffer[8];
-	char *name = &buffer[20];
-	string columnName = string(name, 8);
+	//If we got a file header then..
+	if (_pFhr == 0)
+		throw runtime_error("No header found in .SAV file.");
 
-	if (hasVarLabel)
+	// read the data records from the file.
+	DataRecords data(*_pFhr, dictData, stream, progress);
+	data.read(packageData);
+
+	dictData.processVeryLongStrings();
+
+	DEBUG_COUT5("Read ", data.numDbls(), " doubles and ", data.numStrs(), " string cells.");
+
+
+	// bail if unknown number of cases.
+	if (dictData.hasNoCases())
+		throw runtime_error("Found no cases in .SAV file.");
+
+	// Set the data size
+	setDataSetSize(*packageData, dictData.numCases(), dictData.size());
+
+	// Now go fetch the data.
+	for (size_t i = 0; i < dictData.size(); i++)
 	{
-		int labelLength;
-		stream.read((char*)&labelLength, sizeof(int));
-		char name[labelLength + 2];
+		SPSSColumn &spss = dictData[i];
+		Column &column = packageData->dataSet->column(i);
 
-		stream.read(name, labelLength + 2); // consume an additional 2 spaces, not sure why
-		columnName = string(name, labelLength);
-	}
+		column.setName(spss.spssLabel);
+		column.setColumnType(convert(spss.measure));
+		column.labels().clear();
 
-	SPSSColumn c;
-	c.name = columnName;
-	c.columnSpan = 1;
-	c.isStrings = type != 0;
-
-	columns.push_back(c);
-
-	if (missingCount > 0)
-		stream.seekg(8 * missingCount, ios_base::cur);
-}
-
-void SPSSImporter::readDataRecord(istream &stream)
-{
-	char header[12];
-
-	stream.read(header, sizeof(header));
-	if (stream.gcount() != 12)
-		throw std::runtime_error("unexpected EOF");
-
-	int subType = *(int*)&header[0];
-	int siz = *(int*)&header[4];
-	int count = *(int*)&header[8];
-
-	stream.seekg(siz * count, ios_base::cur);
-}
-
-void SPSSImporter::readLabelRecord(istream &stream)
-{
-	int labelCount;
-	stream.read((char*)&labelCount, sizeof(int));
-
-	for (int i = 0; i < labelCount; i++)
-	{
-		unsigned char labelSize;
-		stream.seekg(8, ios_base::cur);
-		stream.read((char*)&labelSize, sizeof(char));
-
-		int padding = 8 - ((labelSize + 1) % 8);
-
-		stream.seekg(labelSize + padding, ios_base::cur);
-	}
-
-	stream.seekg(4, ios_base::cur);
-	int varCount;
-	stream.read((char*)&varCount, sizeof(int));
-
-	stream.seekg(sizeof(int) * varCount, ios_base::cur);
-}
-
-void SPSSImporter::readData(istream &stream, vector<SPSSColumn> &columns)
-{
-	unsigned char buffer[8];
-
-	int index = 0;
-	int subIndex = 0;
-
-	stream.read((char*)buffer, sizeof(buffer));
-
-	while (stream.eof() == false)
-	{
-		for (int i = 0; i < sizeof(buffer); i++)
 		{
-			SPSSColumn &column = columns[index];
-			int v = buffer[i];
-
-			if (v >= 1 && v <= 251)
+			switch(column.columnType())
 			{
-				columns[index].numeric.push_back(v - 100);
-			}
-			else if (v == 253)
+			case Column::ColumnTypeScale:
 			{
-				if (column.isStrings)
+				Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
+				for (size_t row = 0; (row < dictData.numCases()) && (doubleInputItr != column.AsDoubles.end()) ; row++, doubleInputItr++)
 				{
-					char str[8];
-					stream.read(str, sizeof(str));
-					column.strings.push_back(string(str, sizeof(str)));
-				}
-				else
-				{
-					double value;
-					stream.read((char*)&value, sizeof(double));
-					column.numeric.push_back(value);
+					double val = spss.numerics[row];
+					// Jasp uses a NAN as missing value.
+					*doubleInputItr = spss.missingChecker.processMissingValue(_floatInfo, val);
 				}
 			}
-			else
+				break;
+			case Column::ColumnTypeNominal:
+			case Column::ColumnTypeOrdinal:
 			{
-				column.numeric.push_back(numeric_limits<double>::signaling_NaN());
-				column.strings.push_back("");
+				Column::Ints::iterator intsInputItr = column.AsInts.begin();
+				for (size_t row = 0; (row < dictData.numCases()) && (intsInputItr != column.AsInts.end()) ; row++, intsInputItr++)
+					*intsInputItr = static_cast<int>(spss.numerics[row]);
 			}
-
-			subIndex++;
-			if (subIndex >= column.columnSpan)
+				break;
+			case Column::ColumnTypeNominalText:
 			{
-				subIndex = 0;
-				index = (index + 1) % columns.size();
+				const vector<string> &strs = spss.strings();
+
+				map<int, int> indexes; // index keyed by row.
+				{
+					set<string> unique;
+					for (size_t i = 0; i < strs.size(); i++)
+					{
+						if (strs[i].size() != 0)
+							unique.insert(strs[i]);
+					}
+
+#ifndef QT_NO_DEBUG
+					DEBUG_COUT3("Strings ex unique (N=", unique.size(), ")");
+					for (set<string>::const_iterator  i = unique.begin(); i != unique.end(); i++)
+					{
+						DEBUG_COUT3("... \"", *i, "\".");
+					}
+#endif
+					assert(column.labels().size() == 0);
+					for (set<string>::const_iterator i = unique.begin(); i != unique.end(); i++)
+						column.labels().add(*i);
+
+					// Build the indexes to the lables.
+					for (size_t row = 0; row < dictData.numCases(); row++)
+					{
+						set<string>::const_iterator is = unique.find(strs[row]);
+						if ((is == unique.end()) || (is->length() == 0) || (*is == "") || (*is == " "))
+							indexes.insert( pair<int, int>(row, INT_MIN) );
+						else
+							indexes.insert( pair<int, int>(row, distance(unique.begin(), is)) );
+					}
+
+#ifndef QT_NO_DEBUG
+					DEBUG_COUT3("Indexes (N=", indexes.size(), ")");
+					for (map<int, int>::const_iterator  i = indexes.begin(); i != indexes.end(); i++)
+					{
+						DEBUG_COUT5("... row=", i->first, " index=", i->second, ".");
+					}
+#endif
+				} // Done with unique.
+
+
+				Column::Ints::iterator intsInputItr = column.AsInts.begin();
+				for (size_t row = 0; (row < dictData.numCases()) && (intsInputItr != column.AsInts.end()); row++, intsInputItr++)
+				{
+					map<int, int>::iterator indexI = indexes.find(row);
+					assert(indexI != indexes.end());
+					*intsInputItr = indexI->second;
+#ifndef QT_NO_DEBUG
+					DEBUG_COUT5("Inserted index :", *intsInputItr, " for row :", row, ".");
+#endif
+				}
+			}
+				break;
 			}
 		}
-
-		stream.read((char*)buffer, sizeof(buffer));
 	}
-}
 
-DataSet *SPSSImporter::setDataSetSize(DataSet *dataSet, int rowCount, int columnCount)
+	if (stream.bad())
+	{
+		killFhr();
+		SharedMemory::deleteDataSet(packageData->dataSet);
+		throw runtime_error("Error reading .SAV file.");
+	}
+};
+
+
+/**
+ * @brief setDataSetSize Sets the data set size in the passed
+ * @param dataSet The Data set to manipluate.
+ * @param rowCount The (real) number of rows we have.
+ * @param colCount The number of columns.
+ */
+void SPSSImporter::setDataSetSize(DataSetPackage &dataSetPg, size_t rowCount, size_t colCount)
 {
-	bool success;
-
+	bool retry(true);
 	do
 	{
 		try {
 
-			success = true;
-
-			dataSet->setColumnCount(columnCount);
-			dataSet->setRowCount(rowCount);
-
+			dataSetPg.dataSet->setColumnCount(colCount);
+			dataSetPg.dataSet->setRowCount(rowCount);
+			retry = false;
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
-			dataSet = SharedMemory::enlargeDataSet(dataSet);
-			success = false;
+
+			try {
+
+				dataSetPg.dataSet = SharedMemory::enlargeDataSet(dataSetPg.dataSet);
+				retry = false;
+			}
+			catch (std::exception &e)
+			{
+				DEBUG_COUT2("SPSSImporter::setDataSetSize(), reallocating. std::exeption: ", e.what());
+				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
 		}
 		catch (std::exception e)
 		{
-			cout << "n " << e.what();
-			cout.flush();
+			DEBUG_COUT2("SPSSImporter::setDataSetSize() std::exeption: ", e.what());
+			throw runtime_error("Exception when reading .SAV file.");
 		}
 		catch (...)
 		{
-			cout << "something else\n ";
-			cout.flush();
+			DEBUG_COUT1("SPSSImporter::setDataSetSize() unknown exception.");
+			throw runtime_error("Unidentified error when reading .SAV file.");
 		}
 	}
-	while ( ! success);
+	while (retry);
 
-	return dataSet;
+
 }
+
+
+/**
+ * @brief convert convert from spss/SPSS measure value to JASP.
+ * @param measure spss value.
+ * @return Converted measure
+ */
+Column::ColumnType SPSSImporter::convert(int32_t measure)
+{
+	switch(measure)
+	{
+	case Measures::measure_continuous:
+	case Measures::measure_spss_unknown:
+	case Measures::measure_undefined:
+		return Column::ColumnTypeScale;
+	case Measures::measure_nominal: return Column::ColumnTypeNominal;
+	case Measures::measure_ordinal: return Column::ColumnTypeOrdinal;
+	case Measures::string_type: return Column::ColumnTypeNominalText;
+
+	}
+	return Column::ColumnTypeScale;
+}
+
+
+/**
+ * @brief ReportProgress Reports progress for stream.
+ * @param position Position to report.
+ * @param progress report to here.
+ */
+void SPSSImporter::reportProgress(SPSSStream::pos_type position, boost::function<void (const std::string &, int)> prgrss)
+{
+	static int lastPC = -1.0;
+	int thisPC = static_cast<int>((100.0 * static_cast<double>(position) / _fileSize) + 0.5);
+	if (lastPC != thisPC)
+	{
+		int pg = static_cast<int>(thisPC + 0.5);
+		prgrss("Loading .SAV file", pg);
+		lastPC = thisPC;
+	}
+}
+

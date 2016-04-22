@@ -859,7 +859,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			"Coefficient" = "",
 			"Standard Error" = "",
 			"Standardized Coefficient" = "",
-			"t-value" = "",
+			"t" = "",
 			"p" = "")
 		dotted.line <- list( #for empty tables
 			"Model" = ".",
@@ -867,7 +867,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 			"Coefficient" = ".",
 			"Standard Error" = ".",
 			"Standardized Coefficient" = ".",
-			"t-value" = ".",
+			"t" = ".",
 			"p" = ".")
 		
 		if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
@@ -933,7 +933,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 							regression.result[[ len.reg ]]$"Name" <- as.character("intercept")
 							regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v,1])
 							regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v,2])
-							regression.result[[ len.reg ]]$"t-value" <- as.numeric(lm.estimates[v,3])
+							regression.result[[ len.reg ]]$"t" <- as.numeric(lm.estimates[v,3])
 							regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v,4])
 							regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
 							
@@ -1051,7 +1051,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 								regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v+var,2])
 								regression.result[[ len.reg ]]$"Standardized Coefficient" <- as.numeric(lm.estimates[v+var,1] * sd.ind / sd.dep)
 								
-								regression.result[[ len.reg ]]$"t-value" <- as.numeric(lm.estimates[v+var,3])
+								regression.result[[ len.reg ]]$"t" <- as.numeric(lm.estimates[v+var,3])
 								regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v+var,4])
 								
 								if (options$regressionCoefficientsConfidenceIntervals == TRUE) {

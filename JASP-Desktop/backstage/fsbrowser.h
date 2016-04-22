@@ -37,7 +37,7 @@ public:
 
 	void setFSModel(FSBModel *model);
 
-	enum BrowseMode { BrowseOpenFile, BrowseOpenFolder, BrowseSaveFile };
+	enum BrowseMode { BrowseOpenFile, BrowseOpenFolder, BrowseSaveFile, BrowseExportFile};
 	enum ViewType   { IconView, ListView };
 
 	void setBrowseMode(BrowseMode mode);

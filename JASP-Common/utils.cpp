@@ -212,3 +212,13 @@ void Utils::remove(vector<string> &target, const vector<string> &toRemove)
 	}
 }
 
+void Utils::sleep(int ms)
+{
+
+#ifdef __WIN32__
+    Sleep(DWORD(ms));
+#else
+	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+	nanosleep(&ts, NULL);
+#endif
+}

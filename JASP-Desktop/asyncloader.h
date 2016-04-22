@@ -31,6 +31,11 @@
 
 #include "onlinedatamanager.h"
 
+#include "exporters/jaspexporter.h"
+#include "exporters/csvexporter.h"
+#include "exporters/htmlexporter.h"
+#include "exporters/pdfexporter.h"
+
 class AsyncLoader : public QObject
 {
 	Q_OBJECT
@@ -59,7 +64,6 @@ private:
 
 	QString fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
 
-	void sleep(int ms);
 	void progressHandler(std::string status, int progress);
 	QThread _thread;
 	DataSetLoader _loader;

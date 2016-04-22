@@ -30,13 +30,6 @@
    <item row="0" column="1">
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="1">
-       <widget class="QPushButton" name="moveUpButton">
-        <property name="text">
-         <string>UP!</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1">
        <widget class="QPushButton" name="moveDownButton">
         <property name="text">
@@ -44,10 +37,24 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0" rowspan="3">
+      <item row="0" column="0" rowspan="4">
        <widget class="QTableView" name="levelsList">
         <property name="selectionBehavior">
          <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="moveUpButton">
+        <property name="text">
+         <string>UP!</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="reverseButton">
+        <property name="text">
+         <string>REVERSE!</string>
         </property>
        </widget>
       </item>
