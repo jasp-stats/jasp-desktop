@@ -229,7 +229,7 @@ private:
 
 	NumericConverter				_numConvert; /** < Numeric Endain fixer. */
 
-	std::unique_ptr<SpssCPConvert>	_stringConvert; /** < Code Page convertor. */
+    std::auto_ptr<SpssCPConvert>	_stringConvert; /** < Code Page convertor. */
 
 	// Count columns.
 	size_t _colCtr;

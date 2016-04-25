@@ -32,6 +32,7 @@ LIBS += -L.. -lJASP-Common
 #
 # For code page conversion.
   linux:LIBS += -licu-connector -licuuc -licudata
+   macx:LIBS += -licu-connector -licucore
 
 windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
    macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
