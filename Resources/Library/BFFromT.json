@@ -7,9 +7,7 @@
 			"format": "",
 			"name": "tStatistic",
 			"type": "Number",
-			"value": 1,
-			"min": 0,
-			"max": 2
+			"value": 1
 		},
 		{
 			"format": "",
@@ -23,12 +21,12 @@
 			"name": "n2Size",
 			"type": "Number",
 			"value": 0,
-			"min": 2
+			"min": 0
 		},		
 		{
 			"name": "hypothesis",
-			"options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
-			"default": "groupsNotEqual",
+			"options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
+			"default": "notEqualToTestValue",
 			"type": "List"
 		},
 		{
@@ -38,12 +36,17 @@
 			"value": 0.7070,
 			"min": 0,
 			"max": 2
-		},,
+		},
 		{
 			"name": "bayesFactorType",
 			"options": [ "BF10", "BF01", "LogBF10" ],
 			"default": "BF10",
 			"type": "List"
+		},
+		{
+			"default": false,
+			"name": "errorEstimate",
+			"type": "Boolean"
 		}
 	]
 }
