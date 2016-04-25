@@ -262,7 +262,7 @@ string ICUConnector::convert(const UCharBuffer &instring)
 		if (ec == U_BUFFER_OVERFLOW_ERROR)
 		{
 			// Resize dest buffer
-			delete destBuffer;
+            delete [] destBuffer;
 			destBufferSize = res;
 			destBuffer = new char[destBufferSize];
 		}
@@ -271,7 +271,7 @@ string ICUConnector::convert(const UCharBuffer &instring)
 	}
 
 	string result(destBuffer, destBufferSize);
-	delete destBuffer;
+    delete [] destBuffer;
 	return result;
 }
 
@@ -290,7 +290,7 @@ ICUConnector::UCharBuffer ICUConnector::convert(const string &instring)
 		if (ec == U_BUFFER_OVERFLOW_ERROR)
 		{
 			// Resize dest buffer
-			delete destBuffer;
+            delete [] destBuffer;
 			destBufferSize = res;
 			destBuffer = new UChar[destBufferSize];
 		}
@@ -300,7 +300,7 @@ ICUConnector::UCharBuffer ICUConnector::convert(const string &instring)
 
 	UCharBuffer result;
 	result.set(destBuffer, destBufferSize);
-	delete destBuffer;
+    delete [] destBuffer;
 	return result;
 }
 

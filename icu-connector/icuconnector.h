@@ -34,7 +34,7 @@ public:
 		int32_t size() const { return _size; }
 
 	private:
-		std::unique_ptr<UChar>	_buffer;
+        std::auto_ptr<UChar>	_buffer;
 		int32_t					_size;
 	};
 
