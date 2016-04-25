@@ -10,6 +10,12 @@
 
 #include <unicode/ucnv.h>
 
+/*
+ * Disbale depricated warnings: CLang (on Mac)
+ * doesn't yet have std:unqiue_ptr available.
+ */
+#pragma GCC diagnostic push
+
 /**
  * @brief The Icuconnector class
  *
@@ -34,7 +40,9 @@ public:
 		int32_t size() const { return _size; }
 
 	private:
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
         std::auto_ptr<UChar>	_buffer;
+#pragma GCC diagnostic pop
 		int32_t					_size;
 	};
 
