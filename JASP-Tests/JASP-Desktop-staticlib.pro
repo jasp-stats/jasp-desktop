@@ -22,15 +22,11 @@ DEPENDPATH = ..
 
 CONFIG -= app_bundle
 
-<<<<<<< HEAD
-
 INCLUDEPATH += ../JASP-Desktop/ \
         ../JASP-Common/ \
         ../JASP-Engine/
 
-=======
 INCLUDEPATH += ../JASP-Common/
->>>>>>> origin/development
 INCLUDEPATH += ../icu-connector/
 
    macx:INCLUDEPATH += ../../boost_1_54_0
