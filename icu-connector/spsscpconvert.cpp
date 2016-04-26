@@ -32,8 +32,8 @@ string SpssCPConvert::fwdConvertCodePage(const string &instring) const
 {
 	// If source and destination are 100% compatible, just copy.
 	if ((_destination->codepage() == ICUConnector::utf_8)
-		&& ((_source->codepage()  == ICUConnector::utf_8)
-			||(_source->codepage()  == ICUConnector::us_ascii)) )
+        || ((_source->codepage()  == ICUConnector::utf_8)
+            &&(_source->codepage()  == ICUConnector::us_ascii)) )
 			return instring;
 	else
 		return _destination->convert(_source->convert(instring));
@@ -54,9 +54,9 @@ string SpssCPConvert::fwdConvertCodePage(const char *instring, size_t strLen) co
 string SpssCPConvert::revConvertCodePage(const std::string &instring) const
 {
 	// If source and destination are 100% compatible, just copy.
-	if ((_source->codepage() == ICUConnector::utf_8)
-		&& ((_destination->codepage()  == ICUConnector::utf_8)
-			||(_destination->codepage()  == ICUConnector::us_ascii)) )
+    if ((_source->codepage() == _destination->codepage())
+        || ((_destination->codepage()  == ICUConnector::utf_8)
+            &&(_destination->codepage()  == ICUConnector::us_ascii)) )
 			return instring;
 	else
 		return _source->convert(_destination->convert(instring));

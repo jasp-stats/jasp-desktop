@@ -11,7 +11,8 @@ TARGET = icu-connector
 TEMPLATE = lib
 CONFIG += staticlib
 
-CONFIG += c++11
+linux:CONFIG += c++11
+
 #
 # Include ICU headers:
 # On Mac use our own except from IBM source code,
