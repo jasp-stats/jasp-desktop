@@ -22,11 +22,15 @@ DEPENDPATH = ..
 
 CONFIG -= app_bundle
 
+<<<<<<< HEAD
 
 INCLUDEPATH += ../JASP-Desktop/ \
         ../JASP-Common/ \
         ../JASP-Engine/
 
+=======
+INCLUDEPATH += ../JASP-Common/
+>>>>>>> origin/development
 INCLUDEPATH += ../icu-connector/
 
    macx:INCLUDEPATH += ../../boost_1_54_0
@@ -36,6 +40,9 @@ PRE_TARGETDEPS += ../libJASP-Common.a
 PRE_TARGETDEPS += ../libicu-connector.a
 
 LIBS += -L.. -lJASP-Common
+#
+# For code page conversion.
+linux:LIBS += -licu-connector -licuuc -licudata
 
 #
 # For code page conversion.
