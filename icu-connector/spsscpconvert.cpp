@@ -31,7 +31,7 @@ SpssCPConvert::~SpssCPConvert()
 string SpssCPConvert::fwdConvertCodePage(const string &instring) const
 {
 	// If source and destination are 100% compatible, just copy.
-	if ((_destination->codepage() == ICUConnector::utf_8)
+	if ((_destination->codepage() == _source->codepage())
         || ((_source->codepage()  == ICUConnector::utf_8)
             &&(_source->codepage()  == ICUConnector::us_ascii)) )
 			return instring;
@@ -89,7 +89,7 @@ ICUConnector::CodePage SpssCPConvert::findCodepage(int32_t character_code)
 	else if (character_code == 65000)	// UTF-7
 		return ICUConnector::utf_7;
 	// Windows (native) code pages...
-	else if ((character_code >= ICUConnector::win1250) && (character_code <= ICUConnector::IS08859_1))
+	else if ((character_code >= ICUConnector::win1250) && (character_code <= ICUConnector::win1258))
 		return (ICUConnector::CodePage) (character_code);
 	// ISO 8599-1 varients.
 	else if ((character_code >= ICUConnector::IS08859_1) && (character_code < ICUConnector::ISO8859_15))
