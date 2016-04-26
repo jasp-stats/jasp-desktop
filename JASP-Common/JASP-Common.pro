@@ -110,12 +110,7 @@ SOURCES += \
 	importers/spss/verylongstringrecord.cpp \
 	importers/spss/integerinforecord.cpp \
 	importers/spss/stringutils.cpp \
-<<<<<<< HEAD
-        importers/spss/hardwareformats.cpp
-=======
-    importers/spss/numericconvertor.cpp
->>>>>>> Added ICU library for code page conversion.
-
+        importers/spss/numericconvertor.cpp
 
 HEADERS += \
 	analysis.h \
@@ -210,10 +205,4 @@ HEADERS += \
 	importers/spss/variablerecord.h \
 	importers/spss/verylongstringrecord.h \
 	importers/spss/stringutils.h \
-<<<<<<< HEAD
-        importers/spss/hardwareformats.h
-=======
-    importers/spss/numericconverter.h
-
-
->>>>>>> Added ICU library for code page conversion.
+        importers/spss/numericconverter.h
