@@ -18,9 +18,88 @@
 BFFromT <- function(dataset=NULL, options, perform = 'run', callback) {
 
 	results <- list()
-	
+
 	results[[".meta"]] <- list(list(name="table", type="table"))
 	results[["title"]] <- "Summary Statistics"
+
+
+	fields=list()
+
+	fields[[length(fields)+1]] <- list(name="tStatistic", type="number", format="sf:4;dp:3", title="t value")
+	
+	fields[[length(fields)+1]] <- list(name="n1Size", type="number", title="n\u2081")
+	
+	if(options$n2Size > 1) {
+		fields[[length(fields)+1]] <- list(name="n2Size", type="number", title="n\u2082")
+	}
+	
+	if(options$bayesFactorType == "BF10")
+	{
+		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080")
+	}
+	else if(options$bayesFactorType == "BF01")
+	{
+		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
+	}
+	else
+	{
+		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(BF\u2081\u2080)")
+	}
+
+	if(options$errorEstimate)
+	{
+		fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="Error estimate")		
+	}
+
+	table <- list()
+	table[["title"]] <- "BF from <i>t</i>"
+	table[["schema"]] <- list(fields=fields)
+	table[["citation"]] <- list(
+		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+
+	status <- .summaryStatisticsCheck(options) #check validity of data
+	if(status$ready)                           #check if data has been entered
+	{
+		if(status$error)
+		{
+			table[["error"]] <- list(errorType = "badData", errorMessage = status$errorMessage)
+		}
+		else
+		{
+			bayesFactor10 <- .calculateBayesFactor(options) #calculate Bayes factor from t value
+
+			if(options$bayesFactorType == "BF10")
+			{
+				row <- list(BF = .clean(exp(bayesFactor10$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor10$properror))
+			}
+			else if(options$bayesFactorType == "BF01")
+			{
+				row <- list(BF = .clean(1/exp(bayesFactor10$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor10$properror))
+			}
+			else
+			{
+				row <- list(BF = .clean(bayesFactor10$bf), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor10$properror))
+			}
+
+			table[["data"]] <- list(row)
+		}
+	}
+
+	
+	footnotes <- .newFootnotes()
+	message <- paste("The prior width used is ", options$priorWidth, sep="")
+	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+
+	table[["footnotes"]] <- as.list(footnotes)
+
+	results[["table"]] <- table
+	
+	list(results=results, status="complete")
+}
+
+
+.calculateBayesFactor <- function(options) {
 
 	if (options$hypothesis == "notEqualToTestValue") {
 		nullInterval <- NULL
@@ -45,69 +124,47 @@ BFFromT <- function(dataset=NULL, options, perform = 'run', callback) {
 		nullInterval <- c(-Inf, 0)
 	}
 
-	bayesFactor01 <- BayesFactor::ttest.tstat(t = options$tStatistic, n1 = options$n1Size, n2 = options$n2Size, rscale = options$priorWidth, nullInterval = nullInterval)
+	bf10 <- BayesFactor::ttest.tstat(t = options$tStatistic, n1 = options$n1Size, n2 = options$n2Size, rscale = options$priorWidth, nullInterval = nullInterval)
 
-	table <- list()
-	table[["title"]] <- "BF from <i>t</i>"
+	list(bf=bf10$bf, properror=bf10$properror)
+}
 
-	fields=list()
 
-	fields[[length(fields)+1]] <- list(name="tStatistic", type="number", format="sf:4;dp:3", title="t value")
-	fields[[length(fields)+1]] <- list(name="n1Size", type="number", title="n<sub>1</sub>")
+.summaryStatisticsCheck <- function(options) {
 
-	if(options$n2Size > 0)
+	error <- FALSE
+	errorMessage <- NULL
+	ready <- TRUE
+
+	if(is.null(options$tStatistic))
 	{
-		fields[[length(fields)+1]] <- list(name="n2Size", type="number", title="n<sub>2</sub>")
+		error <- TRUE
+		errorMessage <- paste("argument \"<em>t</em>\" is missing", sep="")
+	}
+	else if(is.null(options$n1Size))
+	{
+		error <- TRUE
+		errorMessage <- paste("argument \"<em>n<sub>1</sub></em>\" is missing", sep="")
 	}
 
-	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
-
-	if(options$errorEstimate)
+	if(!error)
 	{
-		fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="Error estimate")		
+		if(options$n1Size < 2)
+		{
+			error <- TRUE
+			errorMessage <-paste("argument \"<em>n<sub>1</sub></em>\" : not enough observations", sep="")
+		}
+		else if((options$n2Size != 0) && options$n2Size < 2)
+		{
+			error <- TRUE
+			errorMessage <-paste("argument \"<em>n<sub>2</sub></em>\" : not enough observations", sep="")
+		}
 	}
 
-	table[["schema"]] <- list(fields=fields)
-
-	
-	if(options$bayesFactorType == "BF10")
+	if(options$tStatistic==0 && options$n1Size==0 && options$n2Size==0)
 	{
-		row <- list(BF = .clean(exp(bayesFactor01$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor01$properror))
-	}
-	else if(options$bayesFactorType == "BF01")
-	{
-		row <- list(BF = .clean(1/exp(bayesFactor01$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor01$properror))
-	}
-	else
-	{
-		row <- list(BF = .clean(bayesFactor01$bf), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor01$properror))
+		ready <- FALSE
 	}
 
-
-
-
-
-	table[["data"]] <- list(row)
-	
-	footnotes <- .newFootnotes()
-	message <- paste("The prior width used is ", options$priorWidth, sep="")
-	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
-
-	table[["footnotes"]] <- as.list(footnotes)
-
-
-
-
-	#state <- .retrieveState()
-
-	results[["table"]] <- table
-	
-	list(results=results, status="complete")
-
-#	if (perform == "init") {
-#		return(list(results=results, status="inited", state=state, keep=keep))
-#	} else {
-#		return(list(results=results, status="complete"))
-#	}
-
+	list(error=error, errorMessage=errorMessage, ready=ready)
 }

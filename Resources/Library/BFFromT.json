@@ -6,22 +6,17 @@
 		{
 			"format": "",
 			"name": "tStatistic",
-			"type": "Number",
-			"value": 1
+			"type": "Number"
 		},
 		{
 			"format": "",
 			"name": "n1Size",
-			"type": "Number",
-			"value": 2,
-			"min": 2
+			"type": "Number"
 		},
 		{
 			"format": "",
 			"name": "n2Size",
-			"type": "Number",
-			"value": 0,
-			"min": 0
+			"type": "Number"
 		},		
 		{
 			"name": "hypothesis",
