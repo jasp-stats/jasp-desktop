@@ -21,7 +21,7 @@
 
 #include <QWidget>
 #include "widgets/ribbonbutton.h"
-#include <QDebug>
+
 class RibbonWidget : public QWidget
 {
 	Q_OBJECT

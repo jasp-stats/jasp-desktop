@@ -33,10 +33,10 @@ void RibbonWidget::addRibbonButton(RibbonButton *button)
 }
 
 void RibbonWidget::itemSelected()
-{qDebug() << "RibbonWidget::itemSelected() ";
+{
 	QObject *source = this->sender();
 	QString name = source->objectName();
-qDebug () << name;
+
 	emit itemSelected(name);
 }
 
