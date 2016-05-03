@@ -15,18 +15,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef CSVEXPORTER_H
-#define CSVEXPORTER_H
+#ifndef DATAEXPORTER_H
+#define DATAEXPORTER_H
 
-#include <string>
-#include "datasetpackage.h"
-#include <boost/function.hpp>
+#include "exporter.h"
 
-class CSVExporter
+class DataExporter : public Exporter
 {
 public:
-	static void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback);
-	static bool escapeValue(std::string &value);
+	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
+	bool escapeValue(std::string &value);
 };
 
-#endif // CSVEXPORTER_H
+#endif // DATAEXPORTER_H

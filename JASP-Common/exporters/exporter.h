@@ -15,16 +15,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PDFEXPORTER_H
-#define PDFEXPORTER_H
+#ifndef EXPORTER_H
+#define EXPORTER_H
 
-#include "exporter.h"
-#include <QWebFrame>
+#include <string>
+#include "datasetpackage.h"
+#include <boost/function.hpp>
 
-class PDFExporter: public Exporter
+#include "common.h"
+
+class Exporter
 {
 public:
-	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
+	Exporter();
+
+	virtual ~Exporter();
+	virtual void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) = 0;
 };
 
-#endif // PDFEXPORTER_H
+#endif // EXPORTER_H

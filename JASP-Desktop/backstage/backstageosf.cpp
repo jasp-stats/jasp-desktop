@@ -353,8 +353,7 @@ void BackstageOSF::openFile(const QString &nodePath, const QString &filename)
 	QString usedfilename = filename;
 	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode ==FileEvent::FileExportData);
 
-	FileEvent *event = new FileEvent(this);
-	event->setOperation(_mode);
+	FileEvent *event = new FileEvent(this, _mode);
 	event->setTypeFromPath(usedfilename);
 
 	if ( event->type() == FileEvent::FileType::empty)

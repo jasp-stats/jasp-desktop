@@ -807,18 +807,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	{
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
-		// Save HTML result to temp file
-		// WebFrame->evaluateJavaScript can only be executed from main thread.
-		boost::filesystem::path temp = boost::filesystem::unique_path();
-		QString tempstr = QString::fromStdWString(temp.generic_wstring());
-        QString tmpFileName = QString::fromStdString(Dirs::tempDir()) + "/" + tempstr; // Warning: use forward slash even for window!!!
-
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + tmpFileName + "');");
-
-		if (event->type() == FileEvent::FileType::html)
-			HTMLExporter::setTransferFile(tmpFileName);
-		if (event->type() == FileEvent::FileType::pdf)
-			PDFExporter::setTransferFile(tmpFileName);
+		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%EXPORT%');");
 
 		_loader.io(event, _package);
 		_progressIndicator->show();
@@ -1172,7 +1161,7 @@ void MainWindow::itemSelected(const QString &item)
 
 void MainWindow::saveTextToFileHandler(const QString &filename, const QString &data)
 {
-	if (filename == "%PREVIEW%")
+	if (filename == "%PREVIEW%" || filename == "%EXPORT%")
 	{
 		_package->analysesHTML = fq(data);
 		_package->setAnalysesHTMLReady();

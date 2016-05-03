@@ -59,8 +59,7 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 
 	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv *.txt *.sav)");
 
-	FileEvent *event = new FileEvent(this);
-	event->setOperation(FileEvent::FileOpen);
+	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
 
 	if (finalPath != "")
 	{
@@ -84,6 +83,7 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 {
 	QString caption = "Save";
 	QString filter = "JASP Files (*.jasp)";
+	Exporter *exporter;
 
 	QString browsePath = path;
 	if (path == "")
@@ -111,8 +111,7 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 
 	QString finalPath = QFileDialog::getSaveFileName(this, caption, browsePath, filter);
 
-	FileEvent *event = new FileEvent(this);
-	event->setOperation(mode);
+	FileEvent *event = new FileEvent(this, mode);
 
 	if (finalPath != "")
 	{

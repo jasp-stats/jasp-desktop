@@ -15,16 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PDFEXPORTER_H
-#define PDFEXPORTER_H
-
 #include "exporter.h"
-#include <QWebFrame>
 
-class PDFExporter: public Exporter
-{
-public:
-	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
-};
+Exporter::Exporter() {
 
-#endif // PDFEXPORTER_H
+}
+
+Exporter::~Exporter() {
+
+}

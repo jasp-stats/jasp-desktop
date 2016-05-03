@@ -73,7 +73,6 @@ void CSVImporterTest::csvTester()
 
   QString full_path = QString("Resources/TestFiles/csvimporter_test/").append(filename);
 
-  fe->setOperation(FileEvent::FileOpen);
   fe->setPath(full_path);
 
   asl->loadTask(fe, dsp);

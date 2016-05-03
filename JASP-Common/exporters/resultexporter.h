@@ -15,21 +15,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef HTMLEXPORTER_H
-#define HTMLEXPORTER_H
+#ifndef RESULTEXPORTER_H
+#define RESULTEXPORTER_H
 
-#include "datasetpackage.h"
+#include "exporter.h"
 #include <QWebFrame>
 
-class HTMLExporter
+class ResultExporter: public Exporter
 {
 
 public:
-	static void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback);
-	static void setTransferFile(QString filename);
-
-	static QString _transferFile;
+	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
 
 };
 
-#endif // HTMLEXPORTER_H
+#endif // RESULTEXPORTER_H

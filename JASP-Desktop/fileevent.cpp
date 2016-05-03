@@ -17,20 +17,47 @@
 //
 
 #include "fileevent.h"
+#include "exporters/dataexporter.h"
+#include "exporters/resultexporter.h"
+#include "exporters/jaspexporter.h"
 
 #include <QTimer>
 
-FileEvent::FileEvent(QObject *parent)
+FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	: QObject(parent)
 {
-	_operation = FileEvent::FileOpen;
 	_readOnly = false;
 	_chainedTo = NULL;
+	_operation = fileMode;
+	switch (fileMode)
+	{
+		case FileEvent::FileExportResults:
+			{
+				_exporter = new ResultExporter();
+			}
+			break;
+		case FileEvent::FileExportData:
+			{
+				_exporter = new DataExporter();
+			}
+			break;
+		case FileEvent::FileSave:
+			{
+				_exporter = new JASPExporter();
+			}
+			break;
+		default:
+			{
+				_exporter = NULL;
+			}
+	}
 }
 
-void FileEvent::setOperation(FileEvent::FileMode fileMode)
+FileEvent::~FileEvent()
 {
-	_operation = fileMode;
+	if (_exporter != NULL) {
+		delete _exporter;
+	}
 }
 
 void FileEvent::setType(FileEvent::FileType fileType)

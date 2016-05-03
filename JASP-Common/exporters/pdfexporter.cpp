@@ -22,16 +22,9 @@
 #include <QPrinter>
 #include <QWebView>
 
-QString PDFExporter::_transferFile = "";
-
 void PDFExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
-
-	QFile file(_transferFile);
-	file.open(QIODevice::ReadOnly);
-	QString htmlContent;
-	QTextStream s1(&file);
-	htmlContent.append(s1.readAll());
+	QString htmlContent = QString::fromStdString(package->analysesHTML);
 
 	//Next code could be a hack to show plots in pdf
 	//QUrl url = QUrl::fromLocalFile(QDir::current().absoluteFilePath("htmloutput.html"));
@@ -44,19 +37,12 @@ void PDFExporter::saveDataSet(const std::string &path, DataSetPackage* package, 
 	QPrinter printer(QPrinter::PrinterResolution);
 	printer.setPaperSize(QPrinter::A4);
 	printer.setOutputFormat(QPrinter::PdfFormat);
-	printer.setOutputFileName(_transferFile);
+	printer.setOutputFileName(QString::fromStdString(path));
 	document->print(&printer);
 	delete document;
 
-	Utils::renameOverwrite(_transferFile.toStdString(), path);
-
 	progressCallback("Export pdf Set", 100);
 
-}
-
-void PDFExporter::setTransferFile(QString filename)
-{
-	_transferFile = filename;
 }
 
 

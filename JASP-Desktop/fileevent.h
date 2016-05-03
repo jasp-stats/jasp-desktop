@@ -22,24 +22,26 @@
 #include <QObject>
 #include <QMetaType>
 
+#include "exporters/exporter.h"
+
 class FileEvent : public QObject
 {
 	Q_OBJECT
 
 public:
-	FileEvent(QObject *parent = NULL);
-	~FileEvent() = default;
-	FileEvent(const FileEvent&) = default;
-
 	enum FileMode { FileSave, FileOpen, FileExportResults, FileExportData, FileClose };
 	enum FileType { jasp, html, csv, txt, pdf, empty, unknown };
 
-	void setOperation(FileMode fileMode);
+	FileEvent(QObject *parent = NULL, FileMode fileMode = FileMode::FileOpen);
+	virtual ~FileEvent();
+	FileEvent(const FileEvent&) = default;
+
 	void setType(FileType fileType);
 	void setTypeFromPath(const QString &path);
 	static FileType getTypeFromPath(const QString &path);
 	void setPath(const QString &path);
 	void setReadOnly();
+	Exporter *getExporter() const {return _exporter;}
 
 	bool IsOnlineNode() const;
 
@@ -75,6 +77,7 @@ private:
 
 	FileEvent *_chainedTo;
 
+	Exporter *_exporter;
 };
 
 Q_DECLARE_METATYPE(FileEvent *)

@@ -15,19 +15,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "htmlexporter.h"
+#include "resultexporter.h"
 #include "utils.h"
+#include <boost/nowide/fstream.hpp>
 
-QString HTMLExporter::_transferFile = "";
-
-void HTMLExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 
 	int maxSleepTime = 5000;
 	int sleepTime = 100;
 	int delay = 0;
 
-	while (Utils::renameOverwrite(_transferFile.toStdString(), path) == false)
+	while (package->isReady() == false)
 	{
 		if (delay > maxSleepTime)
 			break;
@@ -36,13 +35,14 @@ void HTMLExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 		delay += sleepTime;
 	}
 
+
+	boost::nowide::ofstream outfile(path.c_str(), std::ios::out);
+
+	outfile << package->analysesHTML;
+	outfile.flush();
+	outfile.close();
+
 	progressCallback("Export Html Set", 100);
-
-}
-
-void HTMLExporter::setTransferFile(QString filename)
-{
-	_transferFile = filename;
 }
 
 

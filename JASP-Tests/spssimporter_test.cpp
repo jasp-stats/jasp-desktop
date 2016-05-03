@@ -62,7 +62,6 @@ void SPSSImporterTest::spssTester()
   QString fullPath_spss = QString("Resources/TestFiles/spssimporter_test/spss_files/").append(filename);
 
   DataSetPackage *ds_spss = new DataSetPackage();
-  fe_spss->setOperation(FileEvent::FileOpen);
   fe_spss->setPath(fullPath_spss);
   asl_spss->loadTask(fe_spss, ds_spss);          //load the spss file
   asl_spss->_thread.quit();
@@ -78,7 +77,6 @@ void SPSSImporterTest::spssTester()
   QString fullPath_csv = QString("Resources/TestFiles/spssimporter_test/csv_files/").append(csvFile);  
 
   DataSetPackage *ds_csv = new DataSetPackage();
-  fe_csv->setOperation(FileEvent::FileOpen);
   fe_csv->setPath(fullPath_csv);
   asl_csv->loadTask(fe_csv, ds_csv);             //load the corresponding csv file - this is the expected output
   asl_csv->_thread.quit();
