@@ -35,8 +35,13 @@ OptionsForm::OptionsForm(QWidget *parent) :
 	if (v.canConvert(QVariant::Bool))
 		ui->toolboxes_r11tLearn->setChecked(v.toBool());
 
+	v = _settings.value("toolboxes/summaryStats", false);
+	if (v.canConvert(QVariant::Bool))
+		ui->toolboxes_summaryStatistics->setChecked(v.toBool());
+
 	connect(ui->plugins_sem, SIGNAL(clicked(bool)), this, SLOT(optionChangedHandler(bool)));
 	connect(ui->toolboxes_r11tLearn, SIGNAL(clicked(bool)), this, SLOT(optionChangedHandler(bool)));
+	connect(ui->toolboxes_summaryStatistics, SIGNAL(clicked(bool)), this, SLOT(optionChangedHandler(bool)));
 
 #ifdef QT_DEBUG
 	ui->toolboxes_r11tLearn->setStyleSheet("QWidget { background-color: pink ; }");
