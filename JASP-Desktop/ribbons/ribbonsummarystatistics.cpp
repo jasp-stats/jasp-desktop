@@ -28,85 +28,18 @@ RibbonSummaryStatistics::RibbonSummaryStatistics(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	//addRibbonButton(ui->ttestButton);
-	//addRibbonButton(ui->anovaButton);
-	//addRibbonButton(ui->frequenciesButton);
-	//addRibbonButton(ui->regressionButton);
 	addRibbonButton(ui->BFFromT);
 
 	ui->BFFromT->setDataSetNotNeeded();
 
-
-	//connect(ui->Descriptives, SIGNAL(clicked()), this, SLOT(itemSelected()));
-
 	QMenu *menu;
-/*
-	menu = new QMenu(this);
-	menu->addAction(QString("Independent Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestIndependentSamples");
-	menu->addAction(QString("Paired Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestPairedSamples");
-	menu->addAction(QString("One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestOneSample");
-
-	menu->addSeparator();
-
-	menu->addAction(QString("Bayesian Independent Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianIndependentSamples");
-	menu->addAction(QString("Bayesian Paired Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianPairedSamples");
-	menu->addAction(QString("Bayesian One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("TTestBayesianOneSample");
-
-	ui->ttestButton->setMenu(menu);
-
 
 	menu = new QMenu(this);
+	menu->addAction(QString("Independent Samples"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
+	menu->addAction(QString("Paired Samples"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
+	menu->addAction(QString("One Sample"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
 
-	menu->addAction(QString("ANOVA"), this, SLOT(itemSelected()))->setObjectName("Anova");
-	menu->addAction(QString("Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasures");
-	menu->addAction(QString("ANCOVA"), this, SLOT(itemSelected()))->setObjectName("Ancova");
-
-	menu->addSeparator();
-
-	menu->addAction(QString("Bayesian ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaBayesian");
-	menu->addAction(QString("Bayesian Repeated Measures ANOVA"), this, SLOT(itemSelected()))->setObjectName("AnovaRepeatedMeasuresBayesian");
-	menu->addAction(QString("Bayesian ANCOVA"), this, SLOT(itemSelected()))->setObjectName("AncovaBayesian");
-
-	ui->anovaButton->setMenu(menu);
-
-
-	menu = new QMenu(this);
-
-	menu->addAction(QString("Correlation Matrix"), this, SLOT(itemSelected()))->setObjectName("Correlation");
-	menu->addAction(QString("Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinear");
-
-	menu->addSeparator();
-
-	menu->addAction(QString("Bayesian Correlation Matrix"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesian");
-	menu->addAction(QString("Bayesian Correlation Pairs"), this, SLOT(itemSelected()))->setObjectName("CorrelationBayesianPairs");
-	menu->addAction(QString("Bayesian Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLinearBayesian");
-
-	ui->regressionButton->setMenu(menu);
-
-
-	menu = new QMenu(this);
-
-	menu->addAction(QString("Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTables");
-	menu->addAction(QString("Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BinomialTest");
-    menu->addAction(QString("Log-Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinear");
-
-	menu->addSeparator();
-	menu->addAction(QString("Bayesian Contingency Tables"), this, SLOT(itemSelected()))->setObjectName("ContingencyTablesBayesian");
-	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BinomialTestBayesian");
-    menu->addAction(QString("Bayesian Log-Linear Regression"), this, SLOT(itemSelected()))->setObjectName("RegressionLogLinearBayesian");
-
-	ui->frequenciesButton->setMenu(menu);
-*/
-#ifndef QT_DEBUG
-	ui->otherPanel->hide();
-#else
-    connect(ui->BFFromT, SIGNAL(clicked()), this, SLOT(itemSelected()));
-
-//	menu = new QMenu(this);
-//	menu->addAction(QString("BF From t"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
-
-//	ui->BFFromT->setMenu(menu);
-#endif
+	ui->BFFromT->setMenu(menu);
 }
 
 RibbonSummaryStatistics::~RibbonSummaryStatistics()
