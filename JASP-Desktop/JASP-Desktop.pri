@@ -118,6 +118,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/binomialtestform.cpp \
         $$PWD/analysisforms/binomialtestbayesianform.cpp \
         $$PWD/analysisforms/bffromtform.cpp \
+        $$PWD/ribbons/ribbonsummarystatistics.cpp \
         $$PWD/variableswidget.cpp \
         $$PWD/variablespage/levelstablemodel.cpp \
         $$PWD/variablespage/variablestablemodel.cpp \
@@ -257,6 +258,7 @@ HEADERS  += \
         $$PWD/analysisforms/binomialtestform.h \
         $$PWD/analysisforms/binomialtestbayesianform.h \
         $$PWD/analysisforms/bffromtform.h \
+        $$PWD/ribbons/ribbonsummarystatistics.h \
         $$PWD/variableswidget.h \
         $$PWD/variablespage/levelstablemodel.h \
         $$PWD/variablespage/variablestablemodel.h \
@@ -314,6 +316,7 @@ FORMS += \
         $$PWD/analysisforms/binomialtestform.ui \
         $$PWD/analysisforms/binomialtestbayesianform.ui \
         $$PWD/analysisforms/bffromtform.ui \
+        $$PWD/ribbons/ribbonsummarystatistics.ui \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
         $$PWD/aboutdialog.ui \

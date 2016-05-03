@@ -138,6 +138,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonAnalysis->setDataSetLoaded(false);
 	ui->ribbonSEM->setDataSetLoaded(false);
 	ui->ribbonR11tLearn->setDataSetLoaded(false);
+	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -1060,6 +1061,12 @@ void MainWindow::updateUIFromOptions()
 		ui->tabBar->addTab("R11t Learn");
 	else
 		ui->tabBar->removeTab("R11t Learn");
+
+	QVariant sumStats = _settings.value("toolboxes/summaryStatistics", false);
+	if (sumStats.canConvert(QVariant::Bool) && sumStats.toBool())
+		ui->tabBar->addTab("Summary Statistics");
+	else
+		ui->tabBar->removeTab("Summary Statistics");
 
 }
 
