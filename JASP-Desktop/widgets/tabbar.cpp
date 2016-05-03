@@ -141,7 +141,7 @@ void TabBar::addHelpTab()
 	rei->setChecked(ri_setting.canConvert(QVariant::Bool) && ri_setting.toBool());
 
 	//Summary Stats
-	QVariant sumStats_setting = _settings.value("toolboxes/summaryStats", false);
+	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
 	summaryStats->setObjectName("Summary Statistics Toolbox");
 	summaryStats->setCheckable(true);
 	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
@@ -165,7 +165,7 @@ void TabBar::addHelpTab()
 	// Slots options
 	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
-
+	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
 }
 
 void TabBar::showAbout()
@@ -206,7 +206,7 @@ void TabBar::toggleReinforcement()
 
 void TabBar::toggleSummaryStats()
 {
-	QVariant sumStats_setting = _settings.value("toolboxes/summaryStats", false);
+	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
 	static bool on = (sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
 	on = ! on;
 	if (on)

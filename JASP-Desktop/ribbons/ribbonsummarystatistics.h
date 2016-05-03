@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,32 +16,25 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef RIBBONWIDGET_H
-#define RIBBONWIDGET_H
+#ifndef RIBBONSUMMARYSTATISTICS_H
+#define RIBBONSUMMARYSTATISTICS_H
 
-#include <QWidget>
-#include "widgets/ribbonbutton.h"
-#include <QDebug>
-class RibbonWidget : public QWidget
+#include "ribbonwidget.h"
+
+namespace Ui {
+class RibbonSummaryStatistics;
+}
+
+class RibbonSummaryStatistics : public RibbonWidget
 {
 	Q_OBJECT
+	
 public:
-	explicit RibbonWidget(QWidget *parent = 0);
-	void addRibbonButton(RibbonButton *button);
-
-signals:
-	void itemSelected(QString itemName);
-
-public slots:
-	void setDataSetLoaded(bool loaded);
-
-protected slots:
-	void itemSelected();
+	explicit RibbonSummaryStatistics(QWidget *parent = 0);
+	~RibbonSummaryStatistics();
 
 private:
-
-	QList<RibbonButton*> _buttons;
-
+	Ui::RibbonSummaryStatistics *ui;
 };
 
-#endif // RIBBONWIDGET_H
+#endif // RIBBONSUMMARYSTATISTICS_H

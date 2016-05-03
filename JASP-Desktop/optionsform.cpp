@@ -35,7 +35,7 @@ OptionsForm::OptionsForm(QWidget *parent) :
 	if (v.canConvert(QVariant::Bool))
 		ui->toolboxes_r11tLearn->setChecked(v.toBool());
 
-	v = _settings.value("toolboxes/summaryStats", false);
+	v = _settings.value("toolboxes/summaryStatistics", false);
 	if (v.canConvert(QVariant::Bool))
 		ui->toolboxes_summaryStatistics->setChecked(v.toBool());
 
