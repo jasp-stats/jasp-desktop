@@ -1385,9 +1385,13 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 		hideOptionsPanel();
 }
 
-void MainWindow::analysisRemoved()
+void MainWindow::removeAllAnalyses()
 {
-	removeAnalysis(_currentAnalysis);
+	for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
+	{
+		Analysis *analysis = *itr;
+		removeAnalysis(analysis);
+	}
 }
 
 void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html)
@@ -1531,6 +1535,13 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 		_analysisMenu->addSeparator();
 		_analysisMenu->addAction("Remove " + objName, this, SLOT(removeSelected()));
 	}
+
+	if (menuOptions["hasRemoveAllAnalyses"].asBool())
+	{
+		_analysisMenu->addSeparator();
+		_analysisMenu->addAction("Remove All ", this, SLOT(removeAllAnalyses()));
+	}
+
 
 	QPoint point = ui->webViewResults->mapToGlobal(QPoint(round(menuOptions["rX"].asInt() * _webViewZoom), round(menuOptions["rY"].asInt() * _webViewZoom)));
 
