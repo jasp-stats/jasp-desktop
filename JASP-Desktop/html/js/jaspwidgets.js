@@ -1031,12 +1031,13 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasNotes: (parent.hasNotes === undefined || parent.hasNotes()) && parent.notesMenuClicked !== undefined,
 			hasEditTitle: (parent.hasEditTitle === undefined || parent.hasEditTitle()) && parent.editTitleClicked !== undefined,
 			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
+            hasRemoveAllAnalyses: (parent.hasRemoveAllAnalyses === undefined || parent.hasRemoveAllAnalyses()) && parent.removeAllAnalysesClicked !== undefined,
 			hasCollapse: (parent.hasCollapse === undefined || parent.hasCollapse()) && parent.collapseMenuClicked !== undefined,
 
 			objectName: parent.menuName,
 		};
 
-		this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasNotes || this.options.hasRemove || this.options.hasEditTitle || this.options.hasCollapse;
+        this.hasMenu = this.options.hasCopy || this.options.hasCite || this.options.hasNotes || this.options.hasRemove || this.options.hasRemoveAll || this.options.hasEditTitle || this.options.hasCollapse;
 	},
 
 	selectionElement: function() {

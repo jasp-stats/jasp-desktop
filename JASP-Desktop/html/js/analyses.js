@@ -53,6 +53,10 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		this.toolbar.startEdit();
 	},
 
+    removeAllAnalysesClicked: function () {
+        return true;
+    },
+
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
