@@ -713,10 +713,6 @@ void MainWindow::tabChanged(int index)
 		{
 			ui->ribbon->setCurrentIndex(2);
 		}
-		else if(currentActiveTab == "Summary Statistics")
-		{
-			ui->ribbon->setCurrentIndex(3);
-		}
 	}
 }
 
