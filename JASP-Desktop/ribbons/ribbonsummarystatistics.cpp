@@ -28,18 +28,18 @@ RibbonSummaryStatistics::RibbonSummaryStatistics(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	addRibbonButton(ui->BFFromT);
+	addRibbonButton(ui->bfFromTButton);
 
-	ui->BFFromT->setDataSetNotNeeded();
+	ui->bfFromTButton->setDataSetNotNeeded();
 
 	QMenu *menu;
 
 	menu = new QMenu(this);
-	menu->addAction(QString("Independent Samples"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
+	menu->addAction(QString("Independent Samples"), this, SLOT(itemSelected()))->setObjectName("BFFromTIndependentSamples");
 	menu->addAction(QString("Paired Samples"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
 	menu->addAction(QString("One Sample"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
 
-	ui->BFFromT->setMenu(menu);
+	ui->bfFromTButton->setMenu(menu);
 }
 
 RibbonSummaryStatistics::~RibbonSummaryStatistics()
