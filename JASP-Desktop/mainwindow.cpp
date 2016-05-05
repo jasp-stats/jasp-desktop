@@ -698,13 +698,25 @@ void MainWindow::tabChanged(int index)
 #endif
 	else
 	{
-#ifdef QT_DEBUG  // if variables tab enabled
 		ui->topLevelWidgets->setCurrentIndex(2);
-		ui->ribbon->setCurrentIndex(index - 2);
-#else
-		ui->topLevelWidgets->setCurrentIndex(2);
-		ui->ribbon->setCurrentIndex(index - 1);
-#endif
+
+		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
+		if(currentActiveTab == "Common")
+		{
+			ui->ribbon->setCurrentIndex(0);
+		}
+		else if(currentActiveTab == "SEM")
+		{
+			ui->ribbon->setCurrentIndex(1);
+		}
+		else if(currentActiveTab == "R11t Learn")
+		{
+			ui->ribbon->setCurrentIndex(2);
+		}
+		else if(currentActiveTab == "Summary Statistics")
+		{
+			ui->ribbon->setCurrentIndex(3);
+		}
 	}
 }
 
