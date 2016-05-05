@@ -36,7 +36,7 @@ RibbonSummaryStatistics::RibbonSummaryStatistics(QWidget *parent) :
 
 	menu = new QMenu(this);
 	menu->addAction(QString("Independent Samples"), this, SLOT(itemSelected()))->setObjectName("BFFromTIndependentSamples");
-	menu->addAction(QString("Paired Samples"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
+	menu->addAction(QString("Paired Samples"), this, SLOT(itemSelected()))->setObjectName("BFFromTPairedSamples");
 	menu->addAction(QString("One Sample"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
 
 	ui->bfFromTButton->setMenu(menu);

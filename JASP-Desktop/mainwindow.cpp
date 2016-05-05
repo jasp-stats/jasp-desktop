@@ -55,6 +55,7 @@
 #include "analysisforms/binomialtestbayesianform.h"
 #include "analysisforms/bffromtform.h"
 #include "analysisforms/bffromtindependentsamplesform.h"
+#include "analysisforms/bffromtpairedsamplesform.h"
 
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
@@ -563,6 +564,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BFFromTForm(contentArea);
 	else if (name == "ExploratoryFactorAnalysis")
         form = new ExploratoryFactorAnalysisForm(contentArea);
+	else if (name == "BFFromTPairedSamples")
+		form = new BFFromTPairedSamplesForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
