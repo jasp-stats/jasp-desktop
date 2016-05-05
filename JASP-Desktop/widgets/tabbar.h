@@ -39,6 +39,7 @@ public:
 	void addTab(QString tabName);
 	void removeTab(QString tabName);
 	void removeTab(int index);
+	QString getCurrentActiveTab();
 
 	void addOptionsTab();
 	void addHelpTab();
@@ -73,7 +74,7 @@ private:
 	QMenu *_menuTab;
 	QMenuBar *_menuBarTab;
 	QSettings _settings;
-
+	QString _currentActiveTab;
 };
 
 #endif // TABBAR_H

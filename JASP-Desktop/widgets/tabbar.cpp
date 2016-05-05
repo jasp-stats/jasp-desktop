@@ -227,6 +227,7 @@ void TabBar::tabSelectedHandler()
 	{
 		if (source == button)
 		{
+			_currentActiveTab = button->objectName();
 			setCurrentIndex(i);
 			return;
 		}
@@ -237,7 +238,10 @@ void TabBar::tabSelectedHandler()
 		setCurrentIndex(i);
 }
 
-
+QString TabBar::getCurrentActiveTab()
+{
+	return _currentActiveTab;
+}
 
 void TabBar::helpToggledHandler(bool on)
 {
