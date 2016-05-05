@@ -55,6 +55,7 @@
 #include "analysisforms/binomialtestbayesianform.h"
 #include "analysisforms/bffromtform.h"
 #include "analysisforms/bffromtindependentsamplesform.h"
+#include "analysisforms/bffromtpairedsamplesform.h"
 
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
