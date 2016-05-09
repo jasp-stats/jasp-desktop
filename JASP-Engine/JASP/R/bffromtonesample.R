@@ -19,8 +19,18 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback) {
 
 	results <- list()
 
-	results[[".meta"]] <- list(list(name="table", type="table"))
+	meta <- list()
+
+	meta[[1]] <- list(name="table", type="table")
+	meta[[2]] <- list(name="inferentialPlots", type="object", meta=list(list(name="PriorPosteriorPlot", type="image"),
+																		list(name="BFrobustnessPlot", type="image")
+																		))
+
+
+
+	results[[".meta"]] <- meta
 	results[["title"]] <- "Summary Statistics"
+	
 
 
 	fields=list()
@@ -95,7 +105,7 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback) {
 	if (options$plotBayesFactorRobustness) {
 		
 		plotGroups <- list()
-		plots.ttest <- list()
+##		plotGroups[[1]] <- list()
 	}
 
 	if (options$plotBayesFactorRobustness){
@@ -119,18 +129,17 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback) {
 		image <- .beginSaveImage(530, 400)
 		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=BFH1H01, dontPlotData= FALSE, rscale=options$priorWidth, BF10post = .clean(exp(bayesFactor10$bf)), oneSided = FALSE)
 		plot[["data"]] <- .endSaveImage(image)
-		
-		plots.ttest[[length(plots.ttest)+1]] <- plot
 
-		
-		plotGroups[["BFrobustnessPlot"]] <- plots.ttest[[length(plots.ttest)]]
-		
-		#plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
-		#plotVariables[[length(plotVariables)+1]] <- variable
+		plot[["status"]] <- "complete"
+##		plotGroups[[1]][["BFrobustnessPlot"]] <- plot
+		plotGroups <- plot
 	}
 
 	if (options$plotBayesFactorRobustness)
-		results[["inferentialPlots"]][["collection"]] <- list(title="Inferential Plot", collection=plotGroups)
+	{	#results[["plots"]] <- list(distributionPlots=distrPlots, matrixPlot=corrPlot, title="Plots")
+		#results[["inferentialPlots"]][["collection"]][[1]] = plotsGroups
+		results[["inferentialPlots"]] <- list(title="Inferential Plots", BFrobustnessPlot=plotGroups)
+	}
 	
 	list(results=results, status="complete")
 }
@@ -274,7 +283,7 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback) {
 		
 		mtext("Cauchy prior width", side = 1, cex = cexYXlab, line= 2.5)
 		
-		return()
+		return()	
 	}
 	print("after dont plot data")	
 	#### get BFs ###
