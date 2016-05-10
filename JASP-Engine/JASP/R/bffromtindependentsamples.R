@@ -15,23 +15,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', callback) {
-
+BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', callback)
+{
 	results <- list()
 
-	results[[".meta"]] <- list(list(name="table", type="table"))
+	meta <- list()
+
+	meta[[1]] <- list(name="table", type="table")
+	meta[[2]] <- list(name="inferentialPlots", type="object", meta=list(list(name="PriorPosteriorPlot", type="image"),
+																		list(name="BFrobustnessPlot", type="image")))
+
+	results[[".meta"]] <- meta
 	results[["title"]] <- "Summary Statistics"
 
 
 	fields=list()
-
 	fields[[length(fields)+1]] <- list(name="tStatistic", type="number", format="sf:4;dp:3", title="t value")
-	
 	fields[[length(fields)+1]] <- list(name="n1Size", type="number", title="n\u2081")
-	
 	fields[[length(fields)+1]] <- list(name="n2Size", type="number", title="n\u2082")
 
-	
+	#Bayes factor type (BF10, BF01, log(BF10))
 	if(options$bayesFactorType == "BF10")
 	{
 		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080")
@@ -45,10 +48,8 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(BF\u2081\u2080)")
 	}
 
-	if(options$errorEstimate)
-	{
-		fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="Error estimate")		
-	}
+	#proportional error estimate on the Bayes factor
+	fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="Error estimate")
 
 	table <- list()
 	table[["title"]] <- "BF from <i>t</i> - Independent Samples"
@@ -85,7 +86,7 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 		}
 	}
 
-	
+	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()
 	message <- paste("The prior width used is ", options$priorWidth, sep="")
 	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
@@ -93,33 +94,66 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 	table[["footnotes"]] <- as.list(footnotes)
 
 	results[["table"]] <- table
+
+	bayesFactorRobustnessPlot <- NULL
+	priorAndPosteriorPlot <- NULL
+
+	#add Bayes factor Robustness and Prior & posterior plots to result if needed
+	if (options$plotBayesFactorRobustness)
+	{
+		width  <- 530
+		height <- 400
+
+		plot <- list()
+
+		plot[["title"]]  <- "Bayes Factor Robustness Check"
+		plot[["width"]]  <- width
+		plot[["height"]] <- height
+		plot[["status"]] <- "waiting"
+
+		image <- .beginSaveImage(width, height)
+		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= FALSE, rscale=options$priorWidth, BF10post = .clean(exp(bayesFactor10$bf)), oneSided = FALSE)
+		plot[["data"]]   <- .endSaveImage(image)
+
+		plot[["status"]] <- "complete"
+
+		bayesFactorRobustnessPlot <- plot
+	}
+
+	results[["inferentialPlots"]] <- list(title="Inferential Plots", PriorPosteriorPlot=priorAndPosteriorPlot, BFrobustnessPlot=bayesFactorRobustnessPlot)
 	
 	list(results=results, status="complete")
 }
 
 
-.calcluateBFIndependentSamples <- function(options) {
-
-	if (options$hypothesis == "groupsNotEqual") {
+.calcluateBFIndependentSamples <- function(options)
+{
+	if (options$hypothesis == "groupsNotEqual")
+	{
 		nullInterval <- NULL
 		oneSided <- FALSE
 	}
-	if (options$hypothesis == "groupOneGreater") {
+	else if (options$hypothesis == "groupOneGreater")
+	{
 		nullInterval <- c(0, Inf)
 		oneSided <- "right"
 	}
-	if (options$hypothesis == "groupTwoGreater") {
+	else if (options$hypothesis == "groupTwoGreater")
+	{
 		nullInterval <- c(-Inf, 0)
 		oneSided <- "left"
 	}
 
-	if (oneSided == FALSE) {
+	if (oneSided == FALSE)
+	{
 		nullInterval <- NULL
 	}
-	if (oneSided == "right") {
+	else if (oneSided == "right")
+	{
 		nullInterval <- c(0, Inf)
 	}
-	if (oneSided == "left") {
+	else if (oneSided == "left")
+	{
 		nullInterval <- c(-Inf, 0)
 	}
 
@@ -129,8 +163,9 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 }
 
 
-.isInputValidIndependentSamples <- function(options) {
-
+# checks if the input given is valid
+.isInputValidIndependentSamples <- function(options)
+{
 	error <- FALSE
 	errorMessage <- NULL
 	ready <- TRUE
