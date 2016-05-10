@@ -42,6 +42,21 @@
 			"default": false,
 			"name": "errorEstimate",
 			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotPriorAndPosterior",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotPriorAndPosteriorAdditionalInfo",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotBayesFactorRobustness",
+			"type": "Boolean"
 		}
 	]
 }

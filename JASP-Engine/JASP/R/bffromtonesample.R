@@ -73,15 +73,15 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 
 			if(options$bayesFactorType == "BF10")
 			{
-				row <- list(BF = .clean(exp(bayesFactor10$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor10$properror))
+				row <- list(BF = .clean(exp(bayesFactor10$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, errorEstimate = .clean(bayesFactor10$properror))
 			}
 			else if(options$bayesFactorType == "BF01")
 			{
-				row <- list(BF = .clean(1/exp(bayesFactor10$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor10$properror))
+				row <- list(BF = .clean(1/exp(bayesFactor10$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, errorEstimate = .clean(bayesFactor10$properror))
 			}
 			else
 			{
-				row <- list(BF = .clean(bayesFactor10$bf), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor10$properror))
+				row <- list(BF = .clean(bayesFactor10$bf), tStatistic = options$tStatistic, n1Size = options$n1Size, errorEstimate = .clean(bayesFactor10$properror))
 			}
 
 			table[["data"]] <- list(row)
@@ -114,7 +114,7 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 		plot[["status"]] <- "waiting"
 
 		image <- .beginSaveImage(width, height)
-		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=options$n2Size, BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= FALSE, rscale=options$priorWidth, BF10post = .clean(exp(bayesFactor10$bf)), oneSided = FALSE)
+		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= FALSE, rscale=options$priorWidth, BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactor10$bf)), .clean(1/exp(bayesFactor10$bf))), oneSided = FALSE)
 		plot[["data"]]   <- .endSaveImage(image)
 
 		plot[["status"]] <- "complete"
@@ -203,8 +203,6 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 .plotBF.robustnessCheck.bffromt <- function(t= NULL, n1= NULL, n2=NULL, BF10post, callback=function(...) 0, formula= NULL, data= NULL, rscale= 1, oneSided= FALSE, lwd= 2, cexPoints= 1.4, cexAxis= 1.2,
  cexYXlab= 1.5,  cexText=1.2, cexLegend= 1.4, lwdAxis= 1.2, cexEvidence= 1.6, BFH1H0 = TRUE, dontPlotData= FALSE)
 {
-	print("inside .plot.robustnessCheck.bffromt")
-
 	#### settings ####
 	if (rscale == "medium")
 	{
@@ -237,7 +235,7 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 	}
 
 	par(mar= c(5, 6, 6, 7) + 0.1, las=1)
-	print("before dont plot data")
+
 	if (dontPlotData)
 	{
 		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
@@ -301,24 +299,18 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 	# BF10 "medium" prior
 	BF10m <- BayesFactor::ttest.tstat(t=t, n1=n1, n2=n2, nullInterval=nullInterval, rscale= "medium")
 	BF10m <- .clean(exp(BF10m$bf))
-	print("BF10 medium prior")
-	print(BF10m)
-	BF10mText <- BF10m	
-	
+	BF10mText <- BF10m
+
 	# BF10 "wide" prior
 	BF10w <- BayesFactor::ttest.tstat(t=t, n1=n1, n2=n2, nullInterval= nullInterval, rscale= "wide")
 	BF10w <- .clean(exp(BF10w$bf))
-	print("BF10 wide prior")
-	print(BF10w)
 	BF10wText <- BF10w
-	
+
 	# BF10 "ultrawide" prior
 	BF10ultra <- BayesFactor::ttest.tstat(t=t, n1=n1, n2=n2, nullInterval= nullInterval, rscale= "ultrawide")
 	BF10ultra <- .clean(exp(BF10ultra$bf))
-	print("BF10 ultrawide prior")
-	print(BF10ultra)
 	BF10ultraText <- BF10ultra
-	
+
 	# BF10 user prior
 	BF10user <- BF10post 
 	BF10userText <- BF10user
@@ -387,11 +379,11 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 		y3h <- c(y3h, newy)
 		i <- i + 1
 	}
-	
+
 	yhigh <- vector("numeric", length(y1h) + length(y3h))
 	o <- 1
 	e <- 1
-	
+
 	for (i in seq_along(yhigh))
 	{
 		if (i %% 2 == 1)

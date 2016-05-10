@@ -93,6 +93,33 @@ BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callbac
 	table[["footnotes"]] <- as.list(footnotes)
 
 	results[["table"]] <- table
+
+	bayesFactorRobustnessPlot <- NULL
+	priorAndPosteriorPlot <- NULL
+
+	#add Bayes factor Robustness and Prior & posterior plots to result if needed
+	if (options$plotBayesFactorRobustness)
+	{
+		width  <- 530
+		height <- 400
+
+		plot <- list()
+
+		plot[["title"]]  <- "Bayes Factor Robustness Check"
+		plot[["width"]]  <- width
+		plot[["height"]] <- height
+		plot[["status"]] <- "waiting"
+
+		image <- .beginSaveImage(width, height)
+		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=options$n2Size, BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= FALSE, rscale=options$priorWidth, BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactor10$bf)), .clean(1/exp(bayesFactor10$bf))), oneSided = FALSE)
+		plot[["data"]]   <- .endSaveImage(image)
+
+		plot[["status"]] <- "complete"
+
+		bayesFactorRobustnessPlot <- plot
+	}
+
+	results[["inferentialPlots"]] <- list(title="Inferential Plots", PriorPosteriorPlot=priorAndPosteriorPlot, BFrobustnessPlot=bayesFactorRobustnessPlot)
 	
 	list(results=results, status="complete")
 }
