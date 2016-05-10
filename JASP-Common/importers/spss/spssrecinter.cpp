@@ -214,8 +214,19 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 {
 	// For every found very long string.
 	const LongColsData &strLens = veryLongColsDat();
+	float numStrlens = distance(strLens.begin(), strLens.end());
 	for (map<string, size_t>::const_iterator ituple = strLens.begin(); ituple != strLens.end(); ituple++)
 	{
+		{ // report progress
+			float prog = 100.0 * ((float) distance(strLens.begin(), ituple)) / numStrlens;
+			static float lastProg = -1.0;
+			if ((prog - lastProg) >= 1.0)
+			{
+				progress("Processing long strings.", (int) (prog + 0.5));
+				lastProg = prog;
+			}
+
+		}
 		// find the root col...
 		SPSSColumns::iterator rootIter;
 		for (rootIter = begin(); rootIter != end(); rootIter++)
@@ -253,8 +264,19 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 	}
 
 	// Trim trialing spaces for all strings in the data set.
+	float numStrs = distance(begin(), end());
 	for (std::vector<SPSSColumn>::iterator iCol = begin(); iCol != end(); ++iCol)
 	{
+		{ // report progress
+			float prog = 100.0 * ((float) distance(begin(), iCol)) / numStrs;
+			static float lastProg = -1.0;
+			if ((prog - lastProg) >= 1.0)
+			{
+				progress("Processing strings for alphabet.", (int) (prog + 0.5));
+				lastProg = prog;
+			}
+
+		}
 		if (iCol->isString())
 		{
 			for (size_t cse  = 0; cse < iCol->strings().size(); cse++)

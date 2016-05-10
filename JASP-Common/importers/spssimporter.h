@@ -46,7 +46,7 @@ public:
 	* @param position Position to report.
 	* @param progress report to here.
 	*/
-    static void reportProgress(SPSSStream::pos_type position, boost::function<void (const std::string &, int)> progress);
+    static void reportFileProgress(SPSSStream::pos_type position, boost::function<void (const std::string &, int)> progress);
 
 protected:
 

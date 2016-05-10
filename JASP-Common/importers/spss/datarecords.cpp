@@ -70,7 +70,7 @@ void DataRecords::readCompressed(/* OUT */ DataSetPackage *dataSet)
 	bool eofFlag = false;
 	while (_from.good() && !eofFlag)
 	{
-		SPSSImporter::reportProgress(_from.tellg(), _progress);
+		SPSSImporter::reportFileProgress(_from.tellg(), _progress);
 		memset(codes, code_eof, sizeof(codes));
 
 		_SPSSIMPORTER_READ_VAR(codes, _from);
@@ -119,7 +119,7 @@ void DataRecords::readUncompressed(/* OUT */ DataSetPackage *dataSet)
 	DEBUG_COUT1("Reading UNCOMPRESSED data..");
 	while (_from.good())
 	{
-		SPSSImporter::reportProgress(_from.tellg(), _progress);
+		SPSSImporter::reportFileProgress(_from.tellg(), _progress);
 		readUnCompVal(_cols.getNextColumn());
 	}
 }

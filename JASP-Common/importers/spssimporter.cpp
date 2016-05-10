@@ -85,7 +85,7 @@ void SPSSImporter::loadDataSet(
 	while(stream.good() && processingDict)
 	{
 		// Inform user of progress.
-		reportProgress(stream.tellg(), progress);
+		reportFileProgress(stream.tellg(), progress);
 
 		// Get the record type.
 		union { int32_t u; RecordTypes t; Char_4 c; } rec_type;
@@ -207,7 +207,7 @@ void SPSSImporter::loadDataSet(
 	if (_pFileHeaderRecord == 0)
 		throw runtime_error("No header found in .SAV file.");
 
-	// Now convert the stirng in the header that we are interested in.,
+	// Now convert the string in the header that we are interested in.,
 	RecordRoot::processAllStrings(dictData.stringsConv());
 
 	// read the data records from the file.
@@ -404,7 +404,7 @@ Column::ColumnType SPSSImporter::convert(int32_t measure)
  * @param position Position to report.
  * @param progress report to here.
  */
-void SPSSImporter::reportProgress(SPSSStream::pos_type position, boost::function<void (const std::string &, int)> prgrss)
+void SPSSImporter::reportFileProgress(SPSSStream::pos_type position, boost::function<void (const std::string &, int)> prgrss)
 {
 	static int lastPC = -1.0;
 	int thisPC = static_cast<int>((100.0 * static_cast<double>(position) / _fileSize) + 0.5);

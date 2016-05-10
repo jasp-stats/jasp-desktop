@@ -71,6 +71,7 @@ QByteArray CodePageConvert::findIANANameFromSPSS(int32_t character_code)
 		break;
 
 	case 2:
+	case 20127: // Windows code page for 7 bit ASCII.
 		result += "US-ASCII";	// 7 Bit.
 		break;
 
