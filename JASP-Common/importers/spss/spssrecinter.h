@@ -21,7 +21,7 @@
 #include "missingvaluechecker.h"
 #include "measures.h"
 #include "numericconverter.h"
-#include <spsscpconvert.h>
+#include "../codepageconvert.h"
 
 #define INDEXED_STRINGS 1
 
@@ -229,7 +229,7 @@ public:
 		...
 	   @endcode
 	 */
-	void setStrCnvrtr(SpssCPConvert *convtr)
+	void setStrCnvrtr(CodePageConvert *convtr)
 	{
 		_stringConvert.reset(convtr);
 	}
@@ -240,13 +240,13 @@ public:
 	 *
 	 * N.B. Will "blow-up" (null pointer exception) if not set!
 	 */
-	SpssCPConvert &stringsConv() { return *_stringConvert.get(); }
+	CodePageConvert &stringsConv() { return *_stringConvert.get(); }
 
 private:
 
 	NumericConverter				_numConvert; /** < Numeric Endain fixer. */
 
-    std::auto_ptr<SpssCPConvert>	_stringConvert; /** < Code Page convertor. */
+	std::auto_ptr<CodePageConvert>	_stringConvert; /** < Code Page convertor. */
 
 	// Count columns.
 	size_t _colCtr;

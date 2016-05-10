@@ -1,6 +1,7 @@
 
 QT -= gui
 QT += webkitwidgets printsupport
+QT += core
 
 DESTDIR = ..
 TARGET = JASP-Common
@@ -13,30 +14,14 @@ linux:CONFIG += c++11
    macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
 
-#
-# Include ICU headers:
-# On Mac use our own except from IBM source code,
-# and link with OS supplied lib. (See jasp-desktop.pro)
-# See blog.lukhnos.org/6441462604/using-os-xs-built-in-icu-library-in-your-own
-# Some (system) dependent header for ICU are supplied with QT sources,
-# so we put the QT directory ahead of the ICU excerpt.
-mac: INCLUDEPATH += /Users/aknight1/Qt/5.2.1/Src/qtwebkit/Source/WebKit/mac/icu
-mac: INCLUDEPATH +=../../icu-src/include
-mac: QMAKE_CXXFLAGS += -DU_NOEXCEPT= -DU_DISABLE_RENAMING
-#
-# Linux buids use the system supplied ICU implementation.
-# unicode on the system library path.
-#
-
-INCLUDEPATH += ../icu-connector/
 
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
 
-QMAKE_CXXFLAGS += -Wno-c++11-extensions
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
-QMAKE_CXXFLAGS += -Wno-c++11-long-long
-QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
@@ -90,9 +75,9 @@ SOURCES += \
 	version.cpp \
 	exporters/csvexporter.cpp \
 	exporters/csvexporter.cpp \
-        exporters/htmlexporter.cpp \
-        exporters/pdfexporter.cpp \
-        importers/spss/datainforecord.cpp \
+	exporters/htmlexporter.cpp \
+	exporters/pdfexporter.cpp \
+	importers/spss/datainforecord.cpp \
 	importers/spss/datarecords.cpp \
 	importers/spss/dictionaryterminationrecord.cpp \
 	importers/spss/documentrecord.cpp \
@@ -110,7 +95,8 @@ SOURCES += \
 	importers/spss/verylongstringrecord.cpp \
 	importers/spss/integerinforecord.cpp \
 	importers/spss/stringutils.cpp \
-        importers/spss/numericconvertor.cpp
+	importers/spss/numericconvertor.cpp \
+    importers/codepageconvert.cpp
 
 HEADERS += \
 	analysis.h \
@@ -181,9 +167,9 @@ HEADERS += \
 	utils.h \
 	version.h \
 	exporters/csvexporter.h \
-        exporters/htmlexporter.h \
-        exporters/pdfexporter.h \
-        importers/spss/datainforecord.h \
+	exporters/htmlexporter.h \
+	exporters/pdfexporter.h \
+	importers/spss/datainforecord.h \
 	importers/spss/datarecords.h \
 	importers/spss/debug_cout.h \
 	importers/spss/dictionaryterminationrecord.h \
@@ -205,4 +191,5 @@ HEADERS += \
 	importers/spss/variablerecord.h \
 	importers/spss/verylongstringrecord.h \
 	importers/spss/stringutils.h \
-        importers/spss/numericconverter.h
+	importers/spss/numericconverter.h \
+    importers/codepageconvert.h

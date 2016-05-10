@@ -92,7 +92,7 @@ public:
 	 * @brief processStrings Converts any strings in the data fields.
 	 * @param dictData The
 	 */
-	virtual void processStrings(const SpssCPConvert &converter);
+	virtual void processStrings(const CodePageConvert &converter);
 
 	/*
 	 * Code Page converted values.

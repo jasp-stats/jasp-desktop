@@ -260,7 +260,7 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 			for (size_t cse  = 0; cse < iCol->strings().size(); cse++)
 			{
 				// Do a code page conversion on the the string.
-				iCol->strings()[cse] = _stringConvert->fwdConvertCodePage(iCol->strings()[cse]);
+				iCol->strings()[cse] = _stringConvert->convertCodePage(iCol->strings()[cse]);
 				// Trim left and right.
 				StrUtils::lTrimWSIP(iCol->strings()[cse]);
 				StrUtils::rTrimWSIP(iCol->strings()[cse]);

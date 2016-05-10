@@ -33,16 +33,8 @@ INCLUDEPATH += ../icu-connector/
 windows:INCLUDEPATH += ../../boost_1_54_0
 
 PRE_TARGETDEPS += ../libJASP-Common.a
-PRE_TARGETDEPS += ../libicu-connector.a
 
 LIBS += -L.. -lJASP-Common
-#
-# For code page conversion.
-linux:LIBS += -licu-connector -licuuc -licudata
-
-#
-# For code page conversion.
-linux:LIBS += -licu-connector -licuuc -licudata
  macx:LIBS += -licu-connector
 
 windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
@@ -52,10 +44,10 @@ windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
 windows:LIBS += -lole32 -loleaut32
   linux:LIBS += -lrt
 
-QMAKE_CXXFLAGS += -Wno-c++11-extensions
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
-QMAKE_CXXFLAGS += -Wno-c++11-long-long
-QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 

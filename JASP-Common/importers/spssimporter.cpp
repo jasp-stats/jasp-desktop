@@ -33,13 +33,10 @@
 #include "dataset.h"
 #include "./spss/debug_cout.h"
 
-#include "../icu-connector/icuconnector.h"
-
 using namespace std;
 
 using namespace boost;
 using namespace spss;
-using namespace icu;
 
 
 FileHeaderRecord *SPSSImporter::_pFileHeaderRecord = 0;

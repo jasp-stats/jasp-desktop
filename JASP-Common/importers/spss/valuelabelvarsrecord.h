@@ -64,7 +64,7 @@ public:
 	* Should be implemented in classes where holdStrings maybe or is true.
 	*
 	*/
-   virtual void processStrings(const SpssCPConvert &converter);
+   virtual void processStrings(const CodePageConvert &converter);
 
 };
 

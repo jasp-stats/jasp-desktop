@@ -61,7 +61,7 @@ void LongVarNamesRecord::process(SPSSColumns & columns)
 		map<string, string>::const_iterator nv = nameVals.find(srchName);
 		if (nv != nameVals.end())
 		{
-			string lbl = columns.stringsConv().fwdConvertCodePage(nv->second);
+			string lbl = columns.stringsConv().convertCodePage(nv->second);
 			DEBUG_COUT6("Replaced label ", colI->spssLabel, " with ", nv->second, "/", lbl);
 			colI->spssLabel = lbl;
 		}

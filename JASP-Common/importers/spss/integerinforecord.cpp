@@ -100,5 +100,5 @@ IntegerInfoRecord::~IntegerInfoRecord()
 void IntegerInfoRecord::process(SPSSColumns &columns)
 {
 	// Build a string convertor based on the charactor code.
-	columns.setStrCnvrtr( new SpssCPConvert(SpssCPConvert::findCodepage( character_code() )) );
+	columns.setStrCnvrtr( new CodePageConvert(CodePageConvert::findIANANameFromSPSS(character_code())));
 }

@@ -49,7 +49,7 @@ RecordRoot::~RecordRoot()
  * @brief processAllStrings Calls processStrings(const SpssCPConvert) on all memeber of _records.
  * @param converter The convertor to pass on.
  */
-void RecordRoot::processAllStrings(const SpssCPConvert &converter)
+void RecordRoot::processAllStrings(const CodePageConvert &converter)
 {
 	for(set<RecordRoot *>::iterator iter = _pRecords->begin();
 		iter != _pRecords->end();

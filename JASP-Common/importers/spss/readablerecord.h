@@ -49,13 +49,13 @@ namespace spss
 		 * Should be implemented in classes where holdStrings maybe or is true.
 		 *
 		 */
-		virtual void processStrings(const SpssCPConvert &converter) {};
+		virtual void processStrings(const CodePageConvert &converter) {};
 
 		/**
 		 * @brief processAllStrings Calls processStrings(const SpssCPConvert) on all memeber of _stringholders.
 		 * @param converter The convertor to pass on.
 		 */
-		static void processAllStrings(const SpssCPConvert &converter);
+		static void processAllStrings(const CodePageConvert &converter);
 
 	protected:
 		static std::set<RecordRoot *> * _pRecords; /** < Holds all instances where holdsStrings == true */

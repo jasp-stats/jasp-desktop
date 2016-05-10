@@ -105,10 +105,10 @@ void FileHeaderRecord::process(SPSSColumns &columns)
  * @brief processStrings Converts any strings in the data fields.
  * @param dictData The
  */
-void FileHeaderRecord::processStrings(const SpssCPConvert &converter)
+void FileHeaderRecord::processStrings(const CodePageConvert &converter)
 {
-	_ProductName = converter.fwdConvertCodePage( _prod_name, sizeof(_prod_name) );
-	_CreationDate = converter.fwdConvertCodePage( _creation_date, sizeof(_creation_date) );
-	_CreationTime = converter.fwdConvertCodePage( _creation_time, sizeof(_creation_time) );
-	_FileLabel = converter.fwdConvertCodePage( _file_label, sizeof(_file_label) );
+	_ProductName = converter.convertCodePage( _prod_name, sizeof(_prod_name) );
+	_CreationDate = converter.convertCodePage( _creation_date, sizeof(_creation_date) );
+	_CreationTime = converter.convertCodePage( _creation_time, sizeof(_creation_time) );
+	_FileLabel = converter.convertCodePage( _file_label, sizeof(_file_label) );
 }
