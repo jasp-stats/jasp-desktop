@@ -1,6 +1,7 @@
 
 QT -= gui
 QT += webkitwidgets printsupport
+QT += core
 
 DESTDIR = ..
 TARGET = JASP-Common
@@ -9,18 +10,18 @@ CONFIG += staticlib
 
 windows:CONFIG += c++11
 linux:CONFIG += c++11
-linux:CONFIG += -pipe
 
    macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
 
+
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
 
-QMAKE_CXXFLAGS += -Wno-c++11-extensions
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
 QMAKE_CXXFLAGS += -Wno-unused-parameter
-QMAKE_CXXFLAGS += -Wno-c++11-long-long
-QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
@@ -74,6 +75,8 @@ SOURCES += \
 	version.cpp \
 	exporters/csvexporter.cpp \
 	exporters/csvexporter.cpp \
+	exporters/htmlexporter.cpp \
+	exporters/pdfexporter.cpp \
 	importers/spss/datainforecord.cpp \
 	importers/spss/datarecords.cpp \
 	importers/spss/dictionaryterminationrecord.cpp \
@@ -92,9 +95,8 @@ SOURCES += \
 	importers/spss/verylongstringrecord.cpp \
 	importers/spss/integerinforecord.cpp \
 	importers/spss/stringutils.cpp \
-    exporters/htmlexporter.cpp \
-    exporters/pdfexporter.cpp
-
+	importers/spss/numericconvertor.cpp \
+    importers/codepageconvert.cpp
 
 HEADERS += \
 	analysis.h \
@@ -165,6 +167,8 @@ HEADERS += \
 	utils.h \
 	version.h \
 	exporters/csvexporter.h \
+	exporters/htmlexporter.h \
+	exporters/pdfexporter.h \
 	importers/spss/datainforecord.h \
 	importers/spss/datarecords.h \
 	importers/spss/debug_cout.h \
@@ -187,7 +191,5 @@ HEADERS += \
 	importers/spss/variablerecord.h \
 	importers/spss/verylongstringrecord.h \
 	importers/spss/stringutils.h \
-    exporters/htmlexporter.h \
-    exporters/pdfexporter.h
-
-
+	importers/spss/numericconverter.h \
+    importers/codepageconvert.h

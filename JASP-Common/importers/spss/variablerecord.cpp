@@ -1,3 +1,19 @@
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 
 #include "variablerecord.h"
@@ -10,38 +26,38 @@ using namespace spss;
 
 /**
  * @brief VariableRecord Ctor
+ * @param fixer - The Endian fixer.
  * @param fileType The record type value, as found in the file.
  * @param fileHeader The file ehadewr we are associated with.
  * @param fromStream The file to read from.
  *
  */
-VariableRecord::VariableRecord(RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &from)
-	: ReadableRecord(fileType, from)
-	, _pFHR(fileHeader)
+VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &from)
+	: ReadableRecord(fixer, fileType, from)
 {
 	/*
 	 * The data,
 	 */
-	SPSSIMPORTER_READ_MEMBER(type, from);
-	SPSSIMPORTER_READ_MEMBER(has_var_label, from);
-	SPSSIMPORTER_READ_MEMBER(n_missing_values, from);
-	SPSSIMPORTER_READ_MEMBER(print, from);
-	SPSSIMPORTER_READ_MEMBER(write, from);
-	SPSSIMPORTER_READ_MEMBER(name_file, from);
+	SPSSIMPORTER_READ_MEMBER(type, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(has_var_label, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(n_missing_values, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(print, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(write, from, fixer);
+	SPSSIMPORTER_READ_MEMBER(nameInFile, from, fixer);
 
 	{
-		const size_t numChars = sizeof(_name_file) / sizeof(char);
+		const size_t numChars = sizeof(_nameInFile) / sizeof(char);
 		char buffer[numChars + 1];
-		memcpy(buffer, _name_file, numChars);
+		memcpy(buffer, _nameInFile, numChars);
 		buffer[numChars] = '\0';
 		StrUtils::rTrimWSIP(buffer, numChars - 1);
 		_name = buffer;
 	}
 
-
-	if (has_var_label() == 1)
+	// Works if has_var_label not yet endded.
+	if (has_var_label() != 0)
 	{
-		SPSSIMPORTER_READ_MEMBER(label_len, from);
+		SPSSIMPORTER_READ_MEMBER(label_len, from, fixer);
 		if (label_len() > 0)
 		{
 			// Find the buffer size rounded up to 32 bit increments,
@@ -61,7 +77,6 @@ VariableRecord::VariableRecord(RecordTypes fileType, FileHeaderRecord * fileHead
 	}
 
 	_dictionary_index = fileHeader->incVarRecordCount();
-
 }
 
 

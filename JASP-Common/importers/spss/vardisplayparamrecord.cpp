@@ -1,3 +1,19 @@
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 
 #include "vardisplayparamrecord.h"
@@ -10,31 +26,33 @@ using namespace spss;
 
 /**
  * @brief VarDisplayParamRecord Ctor
+ * @param fixer - The Endainness fixer
  * @param useWidth True if we use the width.
  * @param fromStream The file to read from.
  */
-VarDisplayParamRecord::DisplayParams::DisplayParams(bool usedWidth, SPSSStream &from)
+VarDisplayParamRecord::DisplayParams::DisplayParams(const NumericConverter &fixer, bool usedWidth, SPSSStream &from)
  : _width(0)
 {
-	SPSSIMPORTER_READ_MEMBER(measure, from);
+	SPSSIMPORTER_READ_MEMBER(measure, from, fixer);
 	if (usedWidth)
 	{
-		SPSSIMPORTER_READ_MEMBER(width, from);
+		SPSSIMPORTER_READ_MEMBER(width, from,fixer);
 	}
-	SPSSIMPORTER_READ_MEMBER(alignment, from);
+	SPSSIMPORTER_READ_MEMBER(alignment, from,fixer);
 };
 
 
 
 /**
  * @brief VarDisplayRecord Ctor
+ * @param fixer - The Endainness fixer
  * @param fileSubType The record subtype value, as found in the file.
  * @param fileType The record type value, as found in the file.
  * @param numCoumns The number of columns discovered (to date)
  * @param fromStream The file to read from.
  */
-VarDisplayParamRecord::VarDisplayParamRecord(RecordSubTypes fileSubType, RecordTypes fileType, int32_t numColumns, SPSSStream &from)
-	: DataInfoRecord(fileSubType, fileType, from)
+VarDisplayParamRecord::VarDisplayParamRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, int32_t numColumns, SPSSStream &from)
+	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	// do we read the width value?
 	bool useWidth = count() > (2 * numColumns);
@@ -42,7 +60,7 @@ VarDisplayParamRecord::VarDisplayParamRecord(RecordSubTypes fileSubType, RecordT
 	// Fetch all the records.
 	for (int i = 0; i < numColumns; i++)
 	{
-		DisplayParams dp(useWidth, from);
+		DisplayParams dp(fixer, useWidth, from);
 		_displayParams.push_back( dp );
 	}
 }

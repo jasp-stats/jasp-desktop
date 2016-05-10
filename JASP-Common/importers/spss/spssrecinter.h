@@ -1,8 +1,27 @@
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #ifndef SPSSRECINTER_H
 #define SPSSRECINTER_H
 
 #include "missingvaluechecker.h"
 #include "measures.h"
+#include "numericconverter.h"
+#include "../codepageconvert.h"
 
 #define INDEXED_STRINGS 1
 
@@ -15,6 +34,8 @@
 
 // If defined the stringsa re vaiable as as indexed values.
 
+namespace spss
+{
 
 /**
  * A type that holds the data in an intermate format
@@ -111,6 +132,8 @@ public:
 
 /*
  * A vector of SPSSColumns, with an "auto iterator."
+ * Also holds the convertors for both numeric endian
+ * and string code page convertors.
  */
 class SPSSColumns : public std::vector<SPSSColumn>
 {
@@ -184,13 +207,47 @@ public:
 	}
 
 	/**
-	 * @brief processVerLongStrings Appends very long strings together, if present.
+	 * @brief processStringsPostLoad - Delas with very Long strings (len > 255) and CP processes all strings.
 	 * Call after the data is loaded!.
 	 */
-	void processVeryLongStrings();
+	void processStringsPostLoad(boost::function<void (const std::string &, int)> progress);
 
+	/**
+	 * @brief numericsConv Access the numeric convertor.
+	 * @return
+	 */
+	NumericConverter &numericsConv() { return _numConvert; }
+
+	/**
+	 * @brief setStrCnvrtr Sets the string convertor to use.
+	 * @param convtr
+	 *
+	 * N.B. This class takes over ownership of the instance:
+	 * @code
+		...
+		inst.setStrCnvrtr( new SpssCPConvert(ICUConnnector::dos437) );
+		...
+	   @endcode
+	 */
+	void setStrCnvrtr(CodePageConvert *convtr)
+	{
+		_stringConvert.reset(convtr);
+	}
+
+	/**
+	 * @brief stringsConv Gets the string convertor.
+	 * @return String convertoer instance.
+	 *
+	 * N.B. Will "blow-up" (null pointer exception) if not set!
+	 */
+	CodePageConvert &stringsConv() { return *_stringConvert.get(); }
 
 private:
+
+	NumericConverter				_numConvert; /** < Numeric Endain fixer. */
+
+	std::auto_ptr<CodePageConvert>	_stringConvert; /** < Code Page convertor. */
+
 	// Count columns.
 	size_t _colCtr;
 
@@ -200,9 +257,9 @@ private:
 
 	LongColsData	_longColsDta; /** < Very long strings data. */
 
-
 	int64_t _numCases; /** < Number of cases found to date. */
 };
 
+} // end namespace
 
 #endif // SPSSRECINTER_H

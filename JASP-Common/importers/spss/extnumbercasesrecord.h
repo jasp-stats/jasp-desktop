@@ -1,7 +1,25 @@
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #ifndef EXTNUMBERCASESRECORD_H
 #define EXTNUMBERCASESRECORD_H
 
 #include "datainforecord.h"
+#include "numericconverter.h"
 
 namespace spss {
 
@@ -16,11 +34,12 @@ public:
 
 	/**
 	 * @brief ExtNumberCasesRecord Ctor
+	 * @param const Converters &fixer Fixer for endianness.
 	 * @param fileSubType The record subtype value, as found in the file.
 	 * @param fileType The record type value, as found in the file.
 	 * @param from The file to read from.
 	 */
-	ExtNumberCasesRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
+	ExtNumberCasesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
 
 	SPSSIMPORTER_READ_ATTRIB(int64_t, unknown);
 	SPSSIMPORTER_READ_ATTRIB(int64_t, ncases64);

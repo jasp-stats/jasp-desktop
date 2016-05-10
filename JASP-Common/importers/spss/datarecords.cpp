@@ -1,4 +1,19 @@
-
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 #include "datarecords.h"
 
@@ -12,17 +27,19 @@ using namespace spss;
 
 /**
  * @brief DataRecords ctor
+ * @param fixer - Fixes byte order for data.
  * @param fileHeader the File header record.
  * @param columns The columns data we collected readling the headers.
  * @param fromStream The stream to read.
  */
-DataRecords::DataRecords(const FileHeaderRecord &fileHeader, SPSSColumns &columns,
-						 SPSSStream &fromStream,
+DataRecords::DataRecords(const NumericConverter &fixer, const FileHeaderRecord &fileHeader,
+						 SPSSColumns &columns, SPSSStream &fromStream,
 						 boost::function<void (const std::string &, int)> &progress)
  : _fileHeader(fileHeader)
  , _cols(columns)
  , _from(fromStream)
  , _progress(progress)
+ , _fixer(fixer)
  , _numDbls(0)
  , _numStrs(0)
 {
@@ -53,7 +70,7 @@ void DataRecords::readCompressed(/* OUT */ DataSetPackage *dataSet)
 	bool eofFlag = false;
 	while (_from.good() && !eofFlag)
 	{
-		SPSSImporter::reportProgress(_from.tellg(), _progress);
+		SPSSImporter::reportFileProgress(_from.tellg(), _progress);
 		memset(codes, code_eof, sizeof(codes));
 
 		_SPSSIMPORTER_READ_VAR(codes, _from);
@@ -102,7 +119,7 @@ void DataRecords::readUncompressed(/* OUT */ DataSetPackage *dataSet)
 	DEBUG_COUT1("Reading UNCOMPRESSED data..");
 	while (_from.good())
 	{
-		SPSSImporter::reportProgress(_from.tellg(), _progress);
+		SPSSImporter::reportFileProgress(_from.tellg(), _progress);
 		readUnCompVal(_cols.getNextColumn());
 	}
 }
@@ -140,7 +157,6 @@ void DataRecords::insertToCol(SPSSColumn &col, double value)
 	if (col.isString() == false)
 	{
 		col.numerics.push_back(value);
-
 		_numDbls++;
 	}
 
@@ -158,5 +174,8 @@ void DataRecords::readUnCompVal(SPSSColumn &col)
 	if (col.isString())
 		insertToCol(col, string(dta.c, col.cellCharsRemaining(sizeof(dta.c))));
 	else
+	{
+		_fixer.fixup(&dta.d);
 		insertToCol(col, dta.d);
+	}
 }

@@ -1,3 +1,20 @@
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #ifndef FILEHEADERRECORD_H
 #define FILEHEADERRECORD_H
 
@@ -25,7 +42,7 @@ public:
 	 * same as passed - This is method used to check that the
 	 * file uses the same floating point format.
 	 */
-	FileHeaderRecord(RecordTypes fileType, SPSSStream &fromStream, double expectedBias = 100.0);
+	FileHeaderRecord(NumericConverter &fixer, RecordTypes fileType, SPSSStream &fromStream, double expectedBias = 100.0);
 
 	virtual ~FileHeaderRecord();
 
@@ -63,19 +80,31 @@ public:
 	int32_t incVarRecordCount() { return _varRecordCount++; }
 
 	/**
-	 * @brief biasIsAcceptable Checks for an expected bias value.
-	 * @param value The expected value.
-	 * @return True if the \code bias \endcode == \code value \endcode
-	 */
-	bool biasIsAcceptable(double value = 100.0) const { return (bias() == value); }
-
-	/**
 	 * @brief process Manipulates columns by adding the contents of thie record.
 	 * @param columns
 	 *
 	 * Implematations should examine columns to determine the record history.
 	 */
 	virtual void process(SPSSColumns & columns);
+
+
+	/**
+	 * @brief processStrings Converts any strings in the data fields.
+	 * @param dictData The
+	 */
+	virtual void processStrings(const CodePageConvert &converter);
+
+	/*
+	 * Code Page converted values.
+	 */
+	SPSSIMPORTER_READ_ATTRIB(std::string, ProductName);
+	SPSSIMPORTER_READ_ATTRIB(std::string, CreationDate);
+	SPSSIMPORTER_READ_ATTRIB(std::string, CreationTime);
+	SPSSIMPORTER_READ_ATTRIB(std::string, FileLabel);
+
+private:
+	 static const int32_t _layout_code_good_vals[3];
+	 static const double _bias_good_vals[2];
 };
 
 }
