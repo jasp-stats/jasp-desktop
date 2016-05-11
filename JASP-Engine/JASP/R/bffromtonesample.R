@@ -282,7 +282,14 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 	}
 
 	#### get BFs ###
-	rValues <- seq(0.0005, 1.5, length.out = 400)
+	if(r > 1.5)
+	{
+		rValues <- seq(0.0005, 2, length.out = 535)	
+	}
+	else
+	{
+		rValues <- seq(0.0005, 1.5, length.out = 400)
+	}
 	
 	# BF10
 	BF10 <- vector("numeric", length(rValues))
@@ -712,7 +719,14 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 	
 	####################### plot ###########################
 
-	xLab <- c(0, 0.25, 0.5, 0.75, 1, 1.25, 1.5)
+	if(r > 1.5)
+	{
+		xLab <- c(0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2)
+	}
+	else
+	{
+		xLab <- c(0, 0.25, 0.5, 0.75, 1, 1.25, 1.5)
+	}
 	xlim <- range(xLab)
 	ylow <- log(eval(parse(text= yLab[1])))
 	yhigh <- log(eval(parse(text= yLab[length(yLab)])))
