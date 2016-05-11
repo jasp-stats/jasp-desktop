@@ -90,7 +90,6 @@ SOURCES += \
 	importers/spss/verylongstringrecord.cpp \
 	importers/spss/integerinforecord.cpp \
 	importers/spss/stringutils.cpp \
-    exporters/pdfexporter.cpp \
     exporters/exporter.cpp \
     exporters/resultexporter.cpp \
     exporters/dataexporter.cpp
@@ -186,7 +185,6 @@ HEADERS += \
 	importers/spss/variablerecord.h \
 	importers/spss/verylongstringrecord.h \
 	importers/spss/stringutils.h \
-    exporters/pdfexporter.h \
     exporters/exporter.h \
     exporters/resultexporter.h \
     exporters/dataexporter.h

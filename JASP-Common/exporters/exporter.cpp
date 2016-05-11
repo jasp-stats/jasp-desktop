@@ -17,10 +17,37 @@
 
 #include "exporter.h"
 
-Exporter::Exporter() {
-
+Exporter::Exporter()
+{
 }
 
 Exporter::~Exporter() {
 
+}
+
+Utils::FileType Exporter::getDefaultFileType()
+{
+	return _defaultFileType;
+}
+
+bool Exporter::isFileTypeAllowed(Utils::FileType filetype) {
+	for (Utils::FileTypeVector::const_iterator i = _allowedFileTypes.begin(); i != _allowedFileTypes.end(); ++i) {
+		if (*i == filetype) return true;
+	}
+	return false;
+}
+
+Utils::FileTypeVector Exporter::getAllowedFileTypes() {
+	return _allowedFileTypes;
+}
+
+bool Exporter::setFileType(Utils::FileType filetype) {
+	if (isFileTypeAllowed(filetype)) {
+		_currentFileType = filetype;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

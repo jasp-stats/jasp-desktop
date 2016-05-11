@@ -28,6 +28,7 @@ public:
 	static const Version jaspArchiveVersion;
 	static const Version dataArchiveVersion;
 
+	JASPExporter();
 	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
 
 private:

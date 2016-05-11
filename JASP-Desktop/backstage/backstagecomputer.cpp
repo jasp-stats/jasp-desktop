@@ -64,7 +64,6 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 	if (finalPath != "")
 	{
 		event->setPath(finalPath);
-		event->setTypeFromPath(finalPath);
 
 		if ( ! path.endsWith(".jasp", Qt::CaseInsensitive))
 			event->setReadOnly();
@@ -83,7 +82,6 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 {
 	QString caption = "Save";
 	QString filter = "JASP Files (*.jasp)";
-	Exporter *exporter;
 
 	QString browsePath = path;
 	if (path == "")
@@ -120,7 +118,6 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 			finalPath.append(QString(".jasp"));
 
 		event->setPath(finalPath);
-		event->setTypeFromPath(finalPath);
 
 		emit dataSetIORequest(event);
 	}

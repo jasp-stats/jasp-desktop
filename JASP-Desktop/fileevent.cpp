@@ -29,27 +29,20 @@ FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	_readOnly = false;
 	_chainedTo = NULL;
 	_operation = fileMode;
+	_last_error = "Unkown error";
 	switch (fileMode)
 	{
-		case FileEvent::FileExportResults:
-			{
-				_exporter = new ResultExporter();
-			}
-			break;
-		case FileEvent::FileExportData:
-			{
-				_exporter = new DataExporter();
-			}
-			break;
-		case FileEvent::FileSave:
-			{
-				_exporter = new JASPExporter();
-			}
-			break;
-		default:
-			{
-				_exporter = NULL;
-			}
+	case FileEvent::FileExportResults:
+		_exporter = new ResultExporter();
+		break;
+	case FileEvent::FileExportData:
+		_exporter = new DataExporter();
+		break;
+	case FileEvent::FileSave:
+		_exporter = new JASPExporter();
+		break;
+	default:
+		_exporter = NULL;
 	}
 }
 
@@ -60,45 +53,49 @@ FileEvent::~FileEvent()
 	}
 }
 
-void FileEvent::setType(FileEvent::FileType fileType)
-{
-	_type = fileType;
-}
-
-void FileEvent::setTypeFromPath(const QString &path)
-{
-
-	FileEvent::FileType filetype;
-
-	filetype = getTypeFromPath(path);
-
-	_type = filetype;
-}
-
-FileEvent::FileType FileEvent::getTypeFromPath(const QString &path)
-{
-
-	FileEvent::FileType filetype =  FileEvent::FileType::unknown;
-
-	if (path.endsWith(".jasp", Qt::CaseInsensitive)) filetype = FileEvent::FileType::jasp;
-	else if (path.endsWith(".html", Qt::CaseInsensitive)) filetype = FileEvent::FileType::html;
-	else if (path.endsWith(".csv", Qt::CaseInsensitive)) filetype = FileEvent::FileType::csv;
-	else if (path.endsWith(".txt", Qt::CaseInsensitive)) filetype =  FileEvent::FileType::txt;
-	else if (path.endsWith(".pdf", Qt::CaseInsensitive)) filetype =  FileEvent::FileType::pdf;
-
-	if (filetype == FileEvent::FileType::unknown)
-	{
-		int dotPos = path.lastIndexOf('.');
-		if (dotPos == -1 )
-			filetype =  FileEvent::FileType::empty;
-	}
-
-	return filetype;
-}
-
-void FileEvent::setPath(const QString &path)
+bool FileEvent::setPath(const QString &path)
 {
 	_path = path;
+	bool result = true;
+	Utils::FileType filetype = Utils::getTypeFromFileName(path.toStdString());
+
+	if (filetype == Utils::FileType::unknown)
+	{
+		if (_exporter != NULL) {
+			filetype = _exporter->getDefaultFileType();
+			_path.append('.');
+			_path.append(Utils::getFileTypeString(filetype));
+		}
+	}
+
+	if (_exporter != NULL)
+	{
+		result = _exporter->isFileTypeAllowed(filetype);
+		if (result)
+		{
+			_exporter->setFileType(filetype);
+		}
+		else
+		{
+			_last_error = "File must be of type ";
+			bool first = true;
+			Utils::FileTypeVector allowedFileTypes = _exporter->getAllowedFileTypes();
+			for (Utils::FileTypeVector::const_iterator it = allowedFileTypes.begin(); it != allowedFileTypes.end(); it++) {
+				if (!first) _last_error.append(', ');
+				_last_error.append(Utils::getFileTypeString(*it));
+				first = false;
+			}
+		}
+	}
+
+	_type = filetype;
+
+	return result;
+
+}
+
+QString FileEvent::getLastError() const {
+	return _last_error;
 }
 
 void FileEvent::setReadOnly()
@@ -111,7 +108,7 @@ FileEvent::FileMode FileEvent::operation() const
 	return _operation;
 }
 
-FileEvent::FileType FileEvent::type() const
+Utils::FileType FileEvent::type() const
 {
 	return _type;
 }

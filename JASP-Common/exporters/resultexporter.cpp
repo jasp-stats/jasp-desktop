@@ -18,6 +18,20 @@
 #include "resultexporter.h"
 #include "utils.h"
 #include <boost/nowide/fstream.hpp>
+#include <QFile>
+#include <QTextDocument>
+#include <QPrinter>
+#include <QWebView>
+
+ResultExporter::ResultExporter()
+{
+	_defaultFileType = Utils::html;
+#ifdef QT_DEBUG
+	_allowedFileTypes =	boost::assign::list_of(Utils::html)(Utils::pdf)(Utils::empty);
+#else
+	_allowedFileTypes =	boost::assign::list_of(Utils::html)(Utils::empty);
+#endif
+}
 
 void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
@@ -36,13 +50,34 @@ void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* packag
 	}
 
 
-	boost::nowide::ofstream outfile(path.c_str(), std::ios::out);
+	if (_currentFileType == Utils::pdf)
+	{
+		QString htmlContent = QString::fromStdString(package->analysesHTML);
 
-	outfile << package->analysesHTML;
-	outfile.flush();
-	outfile.close();
+		//Next code could be a hack to show plots in pdf
+		//QUrl url = QUrl::fromLocalFile(QDir::current().absoluteFilePath("htmloutput.html"));
+		//QUrl url = QUrl::fromLocalFile(_transferFile);
+		//QWebView wdocument;
+		//wdocument.setHtml(htmlContent, url); // str1 is the html file stored as QString.
+
+		QTextDocument *document = new QTextDocument();
+		document->setHtml(htmlContent);
+		QPrinter printer(QPrinter::PrinterResolution);
+		printer.setPaperSize(QPrinter::A4);
+		printer.setOutputFormat(QPrinter::PdfFormat);
+		printer.setOutputFileName(QString::fromStdString(path));
+		document->print(&printer);
+		delete document;
+
+	}
+	else
+	{
+		boost::nowide::ofstream outfile(path.c_str(), std::ios::out);
+
+		outfile << package->analysesHTML;
+		outfile.flush();
+		outfile.close();
+	}
 
 	progressCallback("Export Html Set", 100);
 }
-
-

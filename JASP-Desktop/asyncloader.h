@@ -31,11 +31,6 @@
 
 #include "onlinedatamanager.h"
 
-#include "exporters/jaspexporter.h"
-#include "exporters/dataexporter.h"
-#include "exporters/resultexporter.h"
-#include "exporters/pdfexporter.h"
-
 class AsyncLoader : public QObject
 {
 	Q_OBJECT

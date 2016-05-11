@@ -28,6 +28,11 @@
 
 using namespace std;
 
+DataExporter::DataExporter() {
+	_defaultFileType = Utils::csv;
+	_allowedFileTypes = boost::assign::list_of(Utils::csv)(Utils::txt)(Utils::empty);
+}
+
 void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 
@@ -79,6 +84,7 @@ void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 
 	progressCallback("Export Data Set", 100);
 }
+
 
 bool DataExporter::escapeValue(std::string &value)
 {

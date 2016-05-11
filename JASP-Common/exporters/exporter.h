@@ -21,16 +21,29 @@
 #include <string>
 #include "datasetpackage.h"
 #include <boost/function.hpp>
+#include <boost/assign/list_of.hpp>
+#include <vector>
 
 #include "common.h"
+#include "utils.h"
 
 class Exporter
 {
-public:
+protected:
+	Utils::FileType _defaultFileType;
+	Utils::FileTypeVector _allowedFileTypes;
+	Utils::FileType _currentFileType;
 	Exporter();
+
+public:
 
 	virtual ~Exporter();
 	virtual void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) = 0;
+
+	Utils::FileType getDefaultFileType();
+	bool isFileTypeAllowed(Utils::FileType filetype);
+	Utils::FileTypeVector getAllowedFileTypes();
+	bool setFileType(Utils::FileType filetype);
 };
 
 #endif // EXPORTER_H
