@@ -26,6 +26,7 @@
 #include "./spss/extnumbercasesrecord.h"
 #include "./spss/miscinforecord.h"
 #include "./spss/documentrecord.h"
+#include "./spss/characterencodingrecord.h"
 #include "./spss/dictionaryterminationrecord.h"
 #include "./spss/datarecords.h"
 
@@ -163,6 +164,13 @@ void SPSSImporter::loadDataSet(
 			case ExtNumberCasesRecord::SUB_RECORD_TYPE:
 			{
 				ExtNumberCasesRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
+				record.process(dictData);
+			}
+				break;
+
+			case CharacterEncodingRecord::SUB_RECORD_TYPE:
+			{
+				CharacterEncodingRecord record(dictData.numericsConv(), sub_type.s, rec_type.t, stream);
 				record.process(dictData);
 			}
 				break;

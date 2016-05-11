@@ -20,21 +20,49 @@
 
 using namespace std;
 
+QSet<QByteArray> CodePageConvert::_knownCPs;
+
 /**
  * @brief _CodePageConvert CTor
  * @param ianaCSNameSrc The IANA name of the source we need to read from.
  * @param ianaCSNameDest The IANA name of the coding passed as Target values.
  */
 CodePageConvert::CodePageConvert(const char *ianaCSNameSrc, const char *ianaCSNameDest)
+ : _source(0)
+ , _destination(0)
 {
-	_source = QTextCodec::codecForName(ianaCSNameSrc)->makeDecoder();
-	_destination = QTextCodec::codecForName(ianaCSNameDest)->makeEncoder();
+	static const string msg("Cannot find charactor set ");
+
+	// build the list of known names.
+	if (_knownCPs.size() == 0)
+	{
+		QList<QByteArray> cps = QTextCodec::availableCodecs();
+		for (QList<QByteArray>::const_iterator i = cps.begin(); i != cps.end(); i++)
+			_knownCPs.insert(*i);
+	}
+
+	// Just copy if no conversion required.
+	if (strcasecmp(ianaCSNameDest, ianaCSNameSrc) != 0)
+	{
+		// do we know of this codec?
+		if (_knownCPs.find(ianaCSNameSrc) != _knownCPs.end())
+			_source = QTextCodec::codecForName(ianaCSNameSrc)->makeDecoder();
+		else
+			throw runtime_error(msg + ianaCSNameSrc);
+
+		if (_knownCPs.find(ianaCSNameDest) != _knownCPs.end())
+			_destination = QTextCodec::codecForName(ianaCSNameDest)->makeEncoder();
+		else
+			throw runtime_error(msg + ianaCSNameDest);
+	}
 }
 
 CodePageConvert::~CodePageConvert()
 {
-	delete _source;
-	delete _destination;
+	if (_source != 0)
+		delete _source;
+	if (_destination != 0)
+		delete _destination;
 
 }
 
@@ -46,8 +74,13 @@ CodePageConvert::~CodePageConvert()
 string CodePageConvert::convertCodePage(const string &instring) const
 {
 
-	QByteArray temp = _destination->fromUnicode(_source->toUnicode(instring.c_str(), instring.size()));
-	return string(temp.data(), temp.size());
+	if (_destination != 0)
+	{
+		QByteArray temp = _destination->fromUnicode(_source->toUnicode(instring.c_str(), instring.size()));
+		return string(temp.data(), temp.size());
+	}
+	else
+		return instring;
 }
 
 string CodePageConvert::convertCodePage(const char *instring, size_t strLen) const

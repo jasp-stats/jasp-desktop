@@ -19,6 +19,7 @@
 #define _CODEPAGE_CONVERT_H_
 
 #include <QTextCodec>
+#include <QSet>
 
 /**
  * Template class for converting
@@ -56,7 +57,10 @@ public:
 	 */
 	static QByteArray findIANANameFromSPSS(int32_t character_code);
 
+
 private:
+
+	static QSet<QByteArray> _knownCPs;
 
 	QTextDecoder	*_source;
 	QTextEncoder	*_destination;

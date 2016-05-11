@@ -108,7 +108,8 @@ typedef enum e_subRecordTypes
 	recsubtype_display = 11,
 	recsubtype_longvar = 13,
 	recsubtype_verylongstr = 14,
-	recsubtype_extnumcases = 16	// New 13th July 2014.
+	recsubtype_extnumcases = 16,	// New 13th July 2014.
+	recsubtype_charEncoding = 20	// New May 2016
 } RecordSubTypes;
 
 }; // end namespace!
