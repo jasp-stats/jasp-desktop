@@ -862,6 +862,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
+	bool showAnalysis = false;
 	_progressIndicator->hide();
 
 	if (event->operation() == FileEvent::FileOpen)
@@ -892,17 +893,15 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			_package->setModified(false);
 			setWindowTitle(name);
-
-#ifdef QT_DEBUG // variables view
-			ui->tabBar->setCurrentIndex(2);
-#else
-			ui->tabBar->setCurrentIndex(1);
-#endif
+			showAnalysis = true;
 		}
 		else
 		{
 			QMessageBox::warning(this, "", "Unable to save file.\n\n" + event->message());
 		}
+	}
+	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults) {
+		showAnalysis = true;
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
@@ -925,6 +924,16 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		{
 			_applicationExiting = false;
 		}
+	}
+
+	if (showAnalysis)
+	{
+#ifdef QT_DEBUG // variables view
+		ui->tabBar->setCurrentIndex(2);
+#else
+		ui->tabBar->setCurrentIndex(1);
+#endif
+
 	}
 }
 
