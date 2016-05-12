@@ -130,8 +130,7 @@ FileEvent *OpenSaveWidget::open()
 
 FileEvent *OpenSaveWidget::open(const QString &path)
 {
-	FileEvent *event = new FileEvent(this);
-	event->setOperation(FileEvent::FileOpen);
+	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
 	event->setPath(path);
 
 	if ( ! path.endsWith(".jasp", Qt::CaseInsensitive))
@@ -154,8 +153,7 @@ FileEvent *OpenSaveWidget::save()
 	}
 	else
 	{
-		event = new FileEvent(this);
-		event->setOperation(FileEvent::FileSave);
+		event = new FileEvent(this, FileEvent::FileSave);
 		event->setPath(_currentFilePath);
 	}
 
@@ -166,8 +164,7 @@ FileEvent *OpenSaveWidget::save()
 
 FileEvent *OpenSaveWidget::close()
 {
-	FileEvent *event = new FileEvent(this);
-	event->setOperation(FileEvent::FileClose);
+	FileEvent *event = new FileEvent(this, FileEvent::FileClose);
 	dataSetIORequestHandler(event);
 
 	return event;

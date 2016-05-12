@@ -28,10 +28,48 @@
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/nowide/convert.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace std;
 using namespace boost::posix_time;
 using namespace boost;
+
+const char* Utils::getFileTypeString(const Utils::FileType &fileType) {
+	switch (fileType) {
+		case Utils::FileType::csv: return "csv";
+		case Utils::FileType::txt: return "txt";
+		case Utils::FileType::jasp: return "jasp";
+		case Utils::FileType::html: return "html";
+		case Utils::FileType::pdf: return "pdf";
+		default: return "";
+	}
+}
+
+Utils::FileType Utils::getTypeFromFileName(const std::string &path)
+{
+
+	Utils::FileType filetype =  Utils::unknown;
+
+	for (int i = 0; i < Utils::empty; i++)
+	{
+		Utils::FileType it = static_cast<Utils::FileType>(i);
+		std::string it_str(".");
+		it_str += Utils::getFileTypeString(it);
+		if (algorithm::iends_with(path, it_str))
+		{
+			filetype = it;
+			break;
+		}
+	}
+
+	if (filetype == Utils::unknown)
+	{
+		if (!algorithm::find_last(path, "."))
+			filetype =  Utils::empty;
+	}
+
+	return filetype;
+}
 
 long Utils::currentMillis()
 {

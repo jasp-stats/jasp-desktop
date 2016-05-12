@@ -15,19 +15,39 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef PDFEXPORTER_H
-#define PDFEXPORTER_H
+#include "exporter.h"
 
-#include "datasetpackage.h"
-#include <QWebFrame>
-
-class PDFExporter
+Exporter::Exporter()
 {
-public:
-	static void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback);
-	static void setTransferFile(QString filename);
+}
 
-	static QString _transferFile;
-};
+Exporter::~Exporter() {
 
-#endif // PDFEXPORTER_H
+}
+
+Utils::FileType Exporter::getDefaultFileType()
+{
+	return _defaultFileType;
+}
+
+bool Exporter::isFileTypeAllowed(Utils::FileType filetype) {
+	for (Utils::FileTypeVector::const_iterator i = _allowedFileTypes.begin(); i != _allowedFileTypes.end(); ++i) {
+		if (*i == filetype) return true;
+	}
+	return false;
+}
+
+Utils::FileTypeVector Exporter::getAllowedFileTypes() {
+	return _allowedFileTypes;
+}
+
+bool Exporter::setFileType(Utils::FileType filetype) {
+	if (isFileTypeAllowed(filetype)) {
+		_currentFileType = filetype;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}

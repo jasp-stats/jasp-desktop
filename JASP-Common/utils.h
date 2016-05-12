@@ -25,6 +25,11 @@
 class Utils
 {
 public:
+	enum FileType { jasp = 0, html, csv, txt, pdf, empty, unknown };
+	typedef std::vector<Utils::FileType> FileTypeVector;
+
+	static const char* getFileTypeString(const Utils::FileType &fileType);
+	static Utils::FileType getTypeFromFileName(const std::string &path);
 
 	static long currentMillis();
 	static long currentSeconds();

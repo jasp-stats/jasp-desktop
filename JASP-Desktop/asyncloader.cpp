@@ -28,6 +28,7 @@
 #include "qutils.h"
 #include "utils.h"
 #include "onlinedatamanager.h"
+#include <QDebug>
 
 using namespace std;
 
@@ -116,16 +117,13 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 			delay += sleepTime;
 		}
 
-		if (event->operation() == FileEvent::FileSave)
-			JASPExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-		if (event->operation() == FileEvent::FileExportData && event->type() == FileEvent::FileType::csv)
-			CSVExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-		if (event->operation() == FileEvent::FileExportData && event->type() == FileEvent::FileType::txt)
-			CSVExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-		if (event->operation() == FileEvent::FileExportResults && event->type() == FileEvent::FileType::html)
-			HTMLExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-		if (event->operation() == FileEvent::FileExportResults && event->type() == FileEvent::FileType::pdf)
-			PDFExporter::saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		Exporter *exporter = event->getExporter();
+		if (exporter)
+		{
+			exporter->saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		} else {
+			throw runtime_error("No Exporter found!");
+		}
 
 		if ( ! Utils::renameOverwrite(fq(tempPath), fq(path)))
 			throw runtime_error("File '" + fq(path) + "' is being used by another application.");

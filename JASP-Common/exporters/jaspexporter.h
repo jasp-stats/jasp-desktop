@@ -18,20 +18,18 @@
 #ifndef JASPEXPORTER_H
 #define JASPEXPORTER_H
 
-#include "datasetpackage.h"
+#include "exporter.h"
 
-#include <boost/function.hpp>
-
-#include <string>
 #include "libzip/archive.h"
 
-class JASPExporter
+class JASPExporter: public Exporter
 {
 public:
 	static const Version jaspArchiveVersion;
 	static const Version dataArchiveVersion;
 
-	static void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback);
+	JASPExporter();
+	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
 
 private:
 	static void saveDataArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback);

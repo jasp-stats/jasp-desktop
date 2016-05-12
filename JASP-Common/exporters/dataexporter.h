@@ -15,34 +15,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "htmlexporter.h"
-#include "utils.h"
+#ifndef DATAEXPORTER_H
+#define DATAEXPORTER_H
 
-QString HTMLExporter::_transferFile = "";
+#include "exporter.h"
 
-void HTMLExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+class DataExporter : public Exporter
 {
+public:
+	DataExporter();
+	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
 
-	int maxSleepTime = 5000;
-	int sleepTime = 100;
-	int delay = 0;
+	bool escapeValue(std::string &value);
+};
 
-	while (Utils::renameOverwrite(_transferFile.toStdString(), path) == false)
-	{
-		if (delay > maxSleepTime)
-			break;
-
-		Utils::sleep(sleepTime);
-		delay += sleepTime;
-	}
-
-	progressCallback("Export Html Set", 100);
-
-}
-
-void HTMLExporter::setTransferFile(QString filename)
-{
-	_transferFile = filename;
-}
-
-
+#endif // DATAEXPORTER_H

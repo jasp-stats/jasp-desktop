@@ -22,29 +22,28 @@
 #include <QObject>
 #include <QMetaType>
 
+#include "exporters/exporter.h"
+
 class FileEvent : public QObject
 {
 	Q_OBJECT
 
 public:
-	FileEvent(QObject *parent = NULL);
-	~FileEvent() = default;
+	enum FileMode { FileSave, FileOpen, FileExportResults, FileExportData, FileClose };
+
+	FileEvent(QObject *parent = NULL, FileMode fileMode = FileMode::FileOpen);
+	virtual ~FileEvent();
 	FileEvent(const FileEvent&) = default;
 
-	enum FileMode { FileSave, FileOpen, FileExportResults, FileExportData, FileClose };
-	enum FileType { jasp, html, csv, txt, pdf, empty, unknown };
-
-	void setOperation(FileMode fileMode);
-	void setType(FileType fileType);
-	void setTypeFromPath(const QString &path);
-	static FileType getTypeFromPath(const QString &path);
-	void setPath(const QString &path);
+	bool setPath(const QString &path);
 	void setReadOnly();
+	Exporter *getExporter() const {return _exporter;}
+	QString getLastError() const;
 
 	bool IsOnlineNode() const;
 
 	FileMode operation() const;
-	FileType type() const;
+	Utils::FileType type() const;
 	const QString &path() const;
 	bool isReadOnly() const;
 
@@ -65,8 +64,9 @@ private slots:
 
 private:
 	FileMode _operation;
-	FileType _type;
+	Utils::FileType _type;
 	QString _path;
+	QString _last_error;
 	bool _readOnly;
 
 	bool _isComplete;
@@ -75,6 +75,7 @@ private:
 
 	FileEvent *_chainedTo;
 
+	Exporter *_exporter;
 };
 
 Q_DECLARE_METATYPE(FileEvent *)

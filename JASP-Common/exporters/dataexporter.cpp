@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "csvexporter.h"
+#include "dataexporter.h"
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
@@ -28,7 +28,12 @@
 
 using namespace std;
 
-void CSVExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+DataExporter::DataExporter() {
+	_defaultFileType = Utils::csv;
+	_allowedFileTypes = boost::assign::list_of(Utils::csv)(Utils::txt);
+}
+
+void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
 {
 
 	boost::nowide::ofstream outfile(path.c_str(), ios::out);
@@ -80,7 +85,8 @@ void CSVExporter::saveDataSet(const std::string &path, DataSetPackage* package, 
 	progressCallback("Export Data Set", 100);
 }
 
-bool CSVExporter::escapeValue(std::string &value)
+
+bool DataExporter::escapeValue(std::string &value)
 {
 	bool useQuotes = false;
 	std::size_t found = value.find(",");

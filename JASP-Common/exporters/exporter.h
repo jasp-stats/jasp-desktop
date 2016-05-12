@@ -15,21 +15,35 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef HTMLEXPORTER_H
-#define HTMLEXPORTER_H
+#ifndef EXPORTER_H
+#define EXPORTER_H
 
+#include <string>
 #include "datasetpackage.h"
-#include <QWebFrame>
+#include <boost/function.hpp>
+#include <boost/assign/list_of.hpp>
+#include <vector>
 
-class HTMLExporter
+#include "common.h"
+#include "utils.h"
+
+class Exporter
 {
+protected:
+	Utils::FileType _defaultFileType;
+	Utils::FileTypeVector _allowedFileTypes;
+	Utils::FileType _currentFileType;
+	Exporter();
 
 public:
-	static void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback);
-	static void setTransferFile(QString filename);
 
-	static QString _transferFile;
+	virtual ~Exporter();
+	virtual void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) = 0;
 
+	Utils::FileType getDefaultFileType();
+	bool isFileTypeAllowed(Utils::FileType filetype);
+	Utils::FileTypeVector getAllowedFileTypes();
+	bool setFileType(Utils::FileType filetype);
 };
 
-#endif // HTMLEXPORTER_H
+#endif // EXPORTER_H
