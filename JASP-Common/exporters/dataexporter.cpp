@@ -30,7 +30,8 @@ using namespace std;
 
 DataExporter::DataExporter() {
 	_defaultFileType = Utils::csv;
-	_allowedFileTypes = boost::assign::list_of(Utils::csv)(Utils::txt);
+    _allowedFileTypes.push_back(Utils::csv);
+    _allowedFileTypes.push_back(Utils::txt);
 }
 
 void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)

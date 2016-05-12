@@ -40,7 +40,7 @@ const Version JASPExporter::jaspArchiveVersion = Version("2.0.0");
 
 JASPExporter::JASPExporter() {
 	_defaultFileType = Utils::jasp;
-	_allowedFileTypes = boost::assign::list_of(Utils::jasp);
+    _allowedFileTypes.push_back(Utils::jasp);
 }
 
 void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
