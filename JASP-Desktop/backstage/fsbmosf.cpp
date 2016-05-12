@@ -207,9 +207,10 @@ void FSBMOSF::loadFilesAndFolders(QUrl url, int level)
 	parseFilesAndFolders(url, level);
 }
 
-void FSBMOSF::parseFilesAndFolders(QUrl url, int level)
+void FSBMOSF::parseFilesAndFolders(QUrl url, int level, bool recursive)
 {
 	_level = level;
+	_isPaginationCall = recursive;
 
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
@@ -237,7 +238,7 @@ void FSBMOSF::gotFilesAndFolders()
 		QJsonObject json = doc.object();
 		QJsonArray dataArray = json.value("data").toArray();
 
-		if ( dataArray.size() > 0 )
+		if ( dataArray.size() > 0 && !_isPaginationCall)
 			_entries.clear();
 
 		foreach (const QJsonValue & value, dataArray) {
@@ -327,7 +328,7 @@ void FSBMOSF::gotFilesAndFolders()
 
 		QJsonValue nextContentList = contentLevelLinks.value("next");
 		if (nextContentList.isNull() == false)
-			parseFilesAndFolders(QUrl(nextContentList.toString()), _level + 1);
+			parseFilesAndFolders(QUrl(nextContentList.toString()), _level + 1, true);
 		else
 			finished = true;
 

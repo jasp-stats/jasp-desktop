@@ -69,10 +69,11 @@ private:
 	QString _fullname;
 
 	bool _isAuthenticated;
+	bool _isPaginationCall = false;
 
 	void loadProjects();
 	void loadFilesAndFolders(QUrl url, int level);
-	void parseFilesAndFolders(QUrl url, int level);
+	void parseFilesAndFolders(QUrl url, int level, bool recursive = false);
 
 	int _level = 0;
 
