@@ -27,9 +27,9 @@ ResultExporter::ResultExporter()
 {
 	_defaultFileType = Utils::html;
 #ifdef QT_DEBUG
-	_allowedFileTypes =	boost::assign::list_of(Utils::html)(Utils::pdf)(Utils::empty);
+	_allowedFileTypes =	boost::assign::list_of(Utils::html)(Utils::pdf);
 #else
-	_allowedFileTypes =	boost::assign::list_of(Utils::html)(Utils::empty);
+	_allowedFileTypes =	boost::assign::list_of(Utils::html);
 #endif
 }
 

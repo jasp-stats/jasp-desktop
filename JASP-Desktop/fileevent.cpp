@@ -79,9 +79,13 @@ bool FileEvent::setPath(const QString &path)
 		{
 			_last_error = "File must be of type ";
 			bool first = true;
+			bool last = false;
 			Utils::FileTypeVector allowedFileTypes = _exporter->getAllowedFileTypes();
 			for (Utils::FileTypeVector::const_iterator it = allowedFileTypes.begin(); it != allowedFileTypes.end(); it++) {
-				if (!first) _last_error.append(', ');
+				Utils::FileTypeVector::const_iterator next = it; next++;
+				if (next == allowedFileTypes.end()) last = true;
+				if (last && !first) _last_error.append(" or ");
+				if (!last && !first) _last_error.append(", ");
 				_last_error.append(Utils::getFileTypeString(*it));
 				first = false;
 			}
