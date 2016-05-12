@@ -31,7 +31,7 @@ class FileEvent : public QObject
 public:
 	enum FileMode { FileSave, FileOpen, FileExportResults, FileExportData, FileClose };
 
-	FileEvent(QObject *parent = NULL, FileMode fileMode = FileMode::FileOpen);
+    FileEvent(QObject *parent = NULL, FileMode fileMode = FileEvent::FileOpen);
 	virtual ~FileEvent();
 	FileEvent(const FileEvent&) = default;
 
