@@ -36,11 +36,11 @@ using namespace boost;
 
 const char* Utils::getFileTypeString(const Utils::FileType &fileType) {
 	switch (fileType) {
-		case Utils::FileType::csv: return "csv";
-		case Utils::FileType::txt: return "txt";
-		case Utils::FileType::jasp: return "jasp";
-		case Utils::FileType::html: return "html";
-		case Utils::FileType::pdf: return "pdf";
+        case Utils::csv: return "csv";
+        case Utils::txt: return "txt";
+        case Utils::jasp: return "jasp";
+        case Utils::html: return "html";
+        case Utils::pdf: return "pdf";
 		default: return "";
 	}
 }
