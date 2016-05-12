@@ -130,7 +130,8 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/onlineusernode.cpp \
         $$PWD/onlinenode.cpp \
         $$PWD/onlineusernodeosf.cpp \
-        $$PWD/backstage/authwidget.cpp
+        $$PWD/backstage/authwidget.cpp \
+    $$PWD/analysisforms/exploratoryfactoranalysisform.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -268,7 +269,8 @@ HEADERS  += \
         $$PWD/onlineusernode.h \
         $$PWD/onlinenode.h \
         $$PWD/onlineusernodeosf.h \
-        $$PWD/backstage/authwidget.h
+        $$PWD/backstage/authwidget.h \
+    $$PWD/analysisforms/exploratoryfactoranalysisform.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -314,7 +316,8 @@ FORMS += \
         $$PWD/analysisforms/bffromtform.ui \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
-        $$PWD/aboutdialog.ui
+        $$PWD/aboutdialog.ui \
+    $$PWD/analysisforms/exploratoryfactoranalysisform.ui
 
 
 
