@@ -34,6 +34,9 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	addRibbonButton(ui->frequenciesButton);
 	addRibbonButton(ui->regressionButton);
 	addRibbonButton(ui->BFFromT);
+    #ifdef QT_DEBUG
+    addRibbonButton(ui->factoranalysisButton);
+#endif
 
 	ui->BFFromT->setDataSetNotNeeded();
 
@@ -105,6 +108,12 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 	menu->addAction(QString("BF From t"), this, SLOT(itemSelected()))->setObjectName("BFFromT");
 
 	ui->BFFromT->setMenu(menu);
+#endif
+#ifdef QT_DEBUG
+	menu = new QMenu(this);
+	menu->addAction(QString("Exploratory Factor Analysis"), this, SLOT(itemSelected()))->setObjectName("ExploratoryFactorAnalysis");
+	
+	ui->factoranalysisButton->setMenu(menu);
 #endif
 }
 

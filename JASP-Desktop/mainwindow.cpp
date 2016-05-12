@@ -58,6 +58,8 @@
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
 
+#include "analysisforms/exploratoryfactoranalysisform.h"
+
 #include <QDebug>
 #include <QWebFrame>
 #include <QFile>
@@ -556,6 +558,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BinomialTestBayesianForm(contentArea);
 	else if (name == "BFFromT")
 		form = new BFFromTForm(contentArea);
+	else if (name == "ExploratoryFactorAnalysis")
+        form = new ExploratoryFactorAnalysisForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
