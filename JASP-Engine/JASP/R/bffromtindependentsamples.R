@@ -49,7 +49,10 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 	}
 
 	#proportional error estimate on the Bayes factor
-	fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="Error estimate")
+	if(options$errorEstimate)
+	{
+		fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="Error estimate")		
+	}
 
 	table <- list()
 	table[["title"]] <- "BF from <i>t</i> - Independent Samples"
@@ -95,6 +98,19 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 
 	results[["table"]] <- table
 
+	if(options$hypothesis == "groupsNotEqual")
+	{
+		oneSidedHypothesis <- FALSE
+	}
+	else if (options$hypothesis == "groupOneGreater")
+	{
+		oneSidedHypothesis <- "right"
+	}
+	else
+	{
+		oneSidedHypothesis <- "left"
+	}
+
 	bayesFactorRobustnessPlot <- NULL
 	priorAndPosteriorPlot <- NULL
 
@@ -112,7 +128,10 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 		plot[["status"]] <- "waiting"
 
 		image <- .beginSaveImage(width, height)
-		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= FALSE, rscale=options$priorWidth, BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactor10$bf)), .clean(1/exp(bayesFactor10$bf))), oneSided = FALSE)
+		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=options$n2Size, BFH1H0=(options$bayesFactorType == "BF10"), 
+										 dontPlotData= FALSE, rscale=options$priorWidth, 
+										 BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactor10$bf)), .clean(1/exp(bayesFactor10$bf))), 
+										 oneSided = oneSidedHypothesis)
 		plot[["data"]]   <- .endSaveImage(image)
 
 		plot[["status"]] <- "complete"

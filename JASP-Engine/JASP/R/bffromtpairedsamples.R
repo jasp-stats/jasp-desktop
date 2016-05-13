@@ -15,36 +15,73 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callback) {
-
+BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callback) 
+{
 	results <- list()
 
-	results[[".meta"]] <- list(list(name="table", type="table"))
+	meta <- list()
+
+	meta[[1]] <- list(name="table", type="table")
+	meta[[2]] <- list(name="inferentialPlots", type="object", meta=list(list(name="PriorPosteriorPlot", type="image"),
+																		list(name="BFrobustnessPlot", type="image")))
+
+	results[[".meta"]] <- meta
 	results[["title"]] <- "Summary Statistics"
 
 
 	fields=list()
-
 	fields[[length(fields)+1]] <- list(name="tStatistic", type="number", format="sf:4;dp:3", title="t value")
-	
 	fields[[length(fields)+1]] <- list(name="n1Size", type="number", title="n\u2081")
-	
-	fields[[length(fields)+1]] <- list(name="n2Size", type="number", title="n\u2082")
 
+	#Bayes factor type (BF10, BF01, log(BF10))
+	bf.type <- options$bayesFactorType
 	
-	if(options$bayesFactorType == "BF10")
-	{
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080")
-	}
-	else if(options$bayesFactorType == "BF01")
-	{
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
-	}
-	else
-	{
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(BF\u2081\u2080)")
+	if (bf.type == "BF10") {
+		
+		BFH1H0 <- TRUE
+		
+		if (options$hypothesis == "groupsNotEqual") {
+			bf.title <- "BF\u2081\u2080"
+		}
+		if (options$hypothesis == "groupOneGreater") {
+			bf.title <- "BF\u208A\u2080"
+		}
+		if (options$hypothesis == "groupTwoGreater") {
+			bf.title <- "BF\u208B\u2080"
+		}
+		
+	} else if (bf.type == "LogBF10") {
+		
+		BFH1H0 <- TRUE
+		
+		if (options$hypothesis == "groupsNotEqual") {
+			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+		}
+		if (options$hypothesis == "groupOneGreater") {
+			bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
+		}
+		if (options$hypothesis == "groupTwoGreater") {
+			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
+		}
+		
+	} else if (bf.type == "BF01") {
+		
+		BFH1H0 <- FALSE
+		
+		if (options$hypothesis == "groupsNotEqual") {
+			bf.title <- "BF\u2080\u2081"
+		}
+		if (options$hypothesis == "groupOneGreater") {
+			bf.title <- "BF\u2080\u208A"
+		}
+		if (options$hypothesis == "groupTwoGreater") {
+			bf.title <- "BF\u2080\u208B"
+		}
 	}
 
+	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
+
+	#portional error estimate on the Bayes factor
 	if(options$errorEstimate)
 	{
 		fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="Error estimate")		
@@ -57,7 +94,7 @@ BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callbac
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
 
-	status <- .isInputValidPairedSamples(options) #check validity of data
+	status <- .isInputValidSummaryStatistics(options) #check validity of data
 	if(status$ready)                           #check if data has been entered
 	{
 		if(status$error)
@@ -94,6 +131,19 @@ BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callbac
 
 	results[["table"]] <- table
 
+	if(options$hypothesis == "groupsNotEqual")
+	{
+		oneSidedHypothesis <- FALSE
+	}
+	else if (options$hypothesis == "groupOneGreater")
+	{
+		oneSidedHypothesis <- "right"
+	}
+	else
+	{
+		oneSidedHypothesis <- "left"
+	}
+
 	bayesFactorRobustnessPlot <- NULL
 	priorAndPosteriorPlot <- NULL
 
@@ -111,7 +161,10 @@ BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callbac
 		plot[["status"]] <- "waiting"
 
 		image <- .beginSaveImage(width, height)
-		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=options$n2Size, BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= FALSE, rscale=options$priorWidth, BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactor10$bf)), .clean(1/exp(bayesFactor10$bf))), oneSided = FALSE)
+		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=(options$bayesFactorType == "BF10"), 
+										 dontPlotData= FALSE, rscale=options$priorWidth, 
+										 BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactor10$bf)), .clean(1/exp(bayesFactor10$bf))), 
+										 oneSided = oneSidedHypothesis)
 		plot[["data"]]   <- .endSaveImage(image)
 
 		plot[["status"]] <- "complete"
@@ -120,7 +173,7 @@ BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callbac
 	}
 
 	results[["inferentialPlots"]] <- list(title="Inferential Plots", PriorPosteriorPlot=priorAndPosteriorPlot, BFrobustnessPlot=bayesFactorRobustnessPlot)
-	
+
 	list(results=results, status="complete")
 }
 
@@ -150,52 +203,7 @@ BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callbac
 		nullInterval <- c(-Inf, 0)
 	}
 
-	bf10 <- BayesFactor::ttest.tstat(t = options$tStatistic, n1 = options$n1Size, n2 = options$n2Size, rscale = options$priorWidth, nullInterval = nullInterval)
+	bf10 <- BayesFactor::ttest.tstat(t = options$tStatistic, n1 = options$n1Size, n2 = 0, rscale = options$priorWidth, nullInterval = nullInterval)
 
 	list(bf=bf10$bf, properror=bf10$properror)
-}
-
-
-.isInputValidPairedSamples <- function(options) {
-
-	error <- FALSE
-	errorMessage <- NULL
-	ready <- TRUE
-
-	if(is.null(options$tStatistic))
-	{
-		error <- TRUE
-		errorMessage <- paste("argument \"<em>t</em>\" is missing", sep="")
-	}
-	else if(is.null(options$n1Size))
-	{
-		error <- TRUE
-		errorMessage <- paste("argument \"<em>n<sub>1</sub></em>\" is missing", sep="")
-	}
-	else if(is.null(options$n1Size))
-	{
-		error <- TRUE
-		errorMessage <- paste("argument \"<em>n<sub>2</sub></em>\" is missing", sep="")
-	}
-
-	if(!error)
-	{
-		if(options$n1Size < 2)
-		{
-			error <- TRUE
-			errorMessage <-paste("argument \"<em>n<sub>1</sub></em>\" : not enough observations", sep="")
-		}
-		else if(options$n2Size < 2)
-		{
-			error <- TRUE
-			errorMessage <-paste("argument \"<em>n<sub>2</sub></em>\" : not enough observations", sep="")
-		}
-	}
-
-	if(options$tStatistic==0 && options$n1Size==0 && options$n2Size==0)
-	{
-		ready <- FALSE
-	}
-
-	list(error=error, errorMessage=errorMessage, ready=ready)
 }

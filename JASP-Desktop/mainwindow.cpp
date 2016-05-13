@@ -569,7 +569,7 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BFFromTPairedSamplesForm(contentArea);
 	else if (name == "BFFromTOneSample")
 		form = new BFFromTOneSampleForm(contentArea);
-		else if (name == "BFFromTIndpendentSamples")
+		else if (name == "BFFromTIndependentSamples")
 		form = new BFFromTIndependentSamplesForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
