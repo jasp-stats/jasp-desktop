@@ -155,7 +155,7 @@
          <item row="4" column="0">
           <widget class="BoundGroupBox" name="missingValues">
            <property name="title">
-            <string>Missing Values</string>
+            <string>Stats</string>
            </property>
            <property name="flat">
             <bool>false</bool>
@@ -289,7 +289,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>&lt; Test value</string>
+               <string>&lt; Test &amp;value</string>
               </property>
              </widget>
             </item>
