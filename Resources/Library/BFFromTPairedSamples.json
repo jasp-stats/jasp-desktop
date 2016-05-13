@@ -14,11 +14,6 @@
 			"type": "Number"
 		},
 		{
-			"format": "",
-			"name": "n2Size",
-			"type": "Number"
-		},		
-		{
 			"name": "hypothesis",
 			"options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
 			"default": "groupsNotEqual",

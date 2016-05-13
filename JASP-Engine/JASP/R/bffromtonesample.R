@@ -34,18 +34,52 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 	fields[[length(fields)+1]] <- list(name="n1Size", type="number", title="n\u2081")
 
 	#Bayes factor type (BF10, BF01, log(BF10))
-	if(options$bayesFactorType == "BF10")
-	{
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080")
+	bf.type <- options$bayesFactorType
+	
+	if (bf.type == "BF10") {
+		
+		BFH1H0 <- TRUE
+		
+		if (options$hypothesis == "notEqualToTestValue") {
+			bf.title <- "BF\u2081\u2080"
+		}
+		if (options$hypothesis == "greaterThanTestValue") {
+			bf.title <- "BF\u208A\u2080"
+		}
+		if (options$hypothesis == "lessThanTestValue") {
+			bf.title <- "BF\u208B\u2080"
+		}
+		
+	} else if (bf.type == "LogBF10") {
+		
+		BFH1H0 <- TRUE
+		
+		if (options$hypothesis == "notEqualToTestValue") {
+			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+		}
+		if (options$hypothesis == "greaterThanTestValue") {
+			bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
+		}
+		if (options$hypothesis == "lessThanTestValue") {
+			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
+		}
+		
+	} else if (bf.type == "BF01") {
+		
+		BFH1H0 <- FALSE
+		
+		if (options$hypothesis == "notEqualToTestValue") {
+			bf.title <- "BF\u2080\u2081"
+		}
+		if (options$hypothesis == "greaterThanTestValue") {
+			bf.title <- "BF\u2080\u208A"
+		}
+		if (options$hypothesis == "lessThanTestValue") {
+			bf.title <- "BF\u2080\u208B"
+		}
 	}
-	else if(options$bayesFactorType == "BF01")
-	{
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
-	}
-	else
-	{
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(BF\u2081\u2080)")
-	}
+
+	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
 
 	#portional error estimate on the Bayes factor
 	if(options$errorEstimate)
@@ -60,7 +94,7 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
 
-	status <- .summaryStatisticsCheck(options) #check validity of data
+	status <- .isInputValidSummaryStatistics(options) #check validity of data
 	if(status$ready)                           #check if data has been entered
 	{
 		if(status$error)
@@ -97,6 +131,19 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 
 	results[["table"]] <- table
 
+	if(options$hypothesis == "notEqualToTestValue")
+	{
+		oneSidedHypothesis <- FALSE
+	}
+	else if (options$hypothesis == "greaterThanTestValue")
+	{
+		oneSidedHypothesis <- "right"
+	}
+	else
+	{
+		oneSidedHypothesis <- "left"
+	}
+
 	bayesFactorRobustnessPlot <- NULL
 	priorAndPosteriorPlot <- NULL
 
@@ -114,7 +161,10 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 		plot[["status"]] <- "waiting"
 
 		image <- .beginSaveImage(width, height)
-		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= FALSE, rscale=options$priorWidth, BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactor10$bf)), .clean(1/exp(bayesFactor10$bf))), oneSided = FALSE)
+		.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=(options$bayesFactorType == "BF10"), 
+										 dontPlotData= FALSE, rscale=options$priorWidth, 
+										 BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactor10$bf)), .clean(1/exp(bayesFactor10$bf))), 
+										 oneSided = oneSidedHypothesis)
 		plot[["data"]]   <- .endSaveImage(image)
 
 		plot[["status"]] <- "complete"
@@ -167,7 +217,7 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 
 
 # checks if the input given is valid
-.summaryStatisticsCheck <- function(options)
+.isInputValidSummaryStatistics <- function(options)
 {
 	error <- FALSE
 	errorMessage <- NULL
