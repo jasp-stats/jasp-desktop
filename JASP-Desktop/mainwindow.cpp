@@ -54,6 +54,9 @@
 #include "analysisforms/binomialtestform.h"
 #include "analysisforms/binomialtestbayesianform.h"
 #include "analysisforms/bffromtform.h"
+#include "analysisforms/bffromtindependentsamplesform.h"
+#include "analysisforms/bffromtpairedsamplesform.h"
+#include "analysisforms/bffromtonesampleform.h"
 
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
@@ -138,6 +141,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonAnalysis->setDataSetLoaded(false);
 	ui->ribbonSEM->setDataSetLoaded(false);
 	ui->ribbonR11tLearn->setDataSetLoaded(false);
+	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -193,6 +197,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
 
@@ -560,6 +565,12 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BFFromTForm(contentArea);
 	else if (name == "ExploratoryFactorAnalysis")
         form = new ExploratoryFactorAnalysisForm(contentArea);
+	else if (name == "BFFromTPairedSamples")
+		form = new BFFromTPairedSamplesForm(contentArea);
+	else if (name == "BFFromTOneSample")
+		form = new BFFromTOneSampleForm(contentArea);
+		else if (name == "BFFromTIndependentSamples")
+		form = new BFFromTIndependentSamplesForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -716,6 +727,10 @@ void MainWindow::tabChanged(int index)
 		else if(currentActiveTab == "R11t Learn")
 		{
 			ui->ribbon->setCurrentIndex(2);
+		}
+		else if(currentActiveTab == "Summary Statistics")
+		{
+			ui->ribbon->setCurrentIndex(3);
 		}
 	}
 }
@@ -1060,6 +1075,12 @@ void MainWindow::updateUIFromOptions()
 		ui->tabBar->addTab("R11t Learn");
 	else
 		ui->tabBar->removeTab("R11t Learn");
+
+	QVariant sumStats = _settings.value("toolboxes/summaryStatistics", false);
+	if (sumStats.canConvert(QVariant::Bool) && sumStats.toBool())
+		ui->tabBar->addTab("Summary Statistics");
+	else
+		ui->tabBar->removeTab("Summary Statistics");
 
 }
 
