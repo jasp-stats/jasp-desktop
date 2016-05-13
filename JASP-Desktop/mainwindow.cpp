@@ -569,6 +569,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BFFromTPairedSamplesForm(contentArea);
 	else if (name == "BFFromTOneSample")
 		form = new BFFromTOneSampleForm(contentArea);
+		else if (name == "BFFromTIndpendentSamples")
+		form = new BFFromTIndependentSamplesForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -725,6 +727,10 @@ void MainWindow::tabChanged(int index)
 		else if(currentActiveTab == "R11t Learn")
 		{
 			ui->ribbon->setCurrentIndex(2);
+		}
+		else if(currentActiveTab == "Summary Statistics")
+		{
+			ui->ribbon->setCurrentIndex(3);
 		}
 	}
 }
