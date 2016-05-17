@@ -50,7 +50,9 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 			if (change$modelTerms || 
 				change$dependent ||
 				change$fixedFactors ||
-				change$randomFactors)
+				change$randomFactors ||
+				change$priorFixedEffects ||
+				change$priorRandomEffects)
 				return (response)
 			response$status <- "ok"
 		}
@@ -63,7 +65,9 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 		if ( ! base::identical(change, FALSE) && (change$modelTerms || 
 				change$dependent ||
 				change$fixedFactors ||
-				change$randomFactors)) {
+				change$randomFactors ||
+				change$priorFixedEffects ||
+				change$priorRandomEffects)) {
 			state <- NULL
 		} else {
 			perform <- "run"
@@ -87,7 +91,7 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 		status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
 ## MODEL
-		model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, 			.callbackBFpackage, results = results)
+		model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results = results, analysisType = "ANOVA")
 	
 		if (is.null(model.object))
 			return()

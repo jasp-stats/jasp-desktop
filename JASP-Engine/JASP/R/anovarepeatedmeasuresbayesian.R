@@ -68,7 +68,10 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 				change$betweenSubjectFactors || 
 				change$covariates || 
 				change$repeatedMeasuresFactors ||
-				change$repeatedMeasuresCells)
+				change$repeatedMeasuresCells ||
+				change$priorFixedEffects ||
+				change$priorRandomEffects ||
+				change$priorCovariates)
 				return (response)
 				
 			response$status <- "ok"
@@ -99,7 +102,10 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 				change$betweenSubjectFactors || 
 				change$covariates || 
 				change$repeatedMeasuresFactors ||
-				change$repeatedMeasuresCells)) {
+				change$repeatedMeasuresCells ||
+				change$priorFixedEffects ||
+				change$priorRandomEffects ||
+				change$priorCovariates)) {
 			state <- NULL
 		} else {
 			perform <- "run"
@@ -111,7 +117,7 @@ if (is.null(state)) {
 	status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
 ## MODEL
-	model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results = results)
+	model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results = results, analysisType = "RM-ANOVA")
 	
 	if (is.null(model.object)) # analysis cancelled by the callback
 		return()
