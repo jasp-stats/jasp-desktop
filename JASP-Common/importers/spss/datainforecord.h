@@ -1,3 +1,20 @@
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #ifndef DATAINFORECORD_H
 #define DATAINFORECORD_H
 
@@ -5,6 +22,7 @@
 #include "readablerecord.h"
 #include "debug_cout.h"
 #include "stringutils.h"
+#include "numericconverter.h"
 
 namespace spss
 {
@@ -14,8 +32,8 @@ class DataInfoRecord : public ReadableRecord<rectype_meta_data>
 {
 public:
 
-	DataInfoRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
-		: ReadableRecord<rectype_meta_data>(fileType, from)
+	DataInfoRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+		: ReadableRecord<rectype_meta_data>(fixer, fileType, from)
 	{
 		if (fileSubType != SUB_RECORD_TYPE)
 		{
@@ -23,8 +41,8 @@ public:
 			throw std::runtime_error("SPSS record sub type mismatch.");
 		}
 		// Read the file values.
-		SPSSIMPORTER_READ_MEMBER(size, from);
-		SPSSIMPORTER_READ_MEMBER(count, from);
+		SPSSIMPORTER_READ_MEMBER(size, from, fixer);
+		SPSSIMPORTER_READ_MEMBER(count, from, fixer);
 	}
 
 	DataInfoRecord(RecordSubTypes fileSubType, RecordTypes fileType)
@@ -40,7 +58,7 @@ public:
 	}
 
 
-	// All these type have both szie and count values.
+	// All these type have both size and count values.
 	SPSSIMPORTER_READ_ATTRIB(int32_t, size)
 	SPSSIMPORTER_READ_ATTRIB(int32_t, count)
 

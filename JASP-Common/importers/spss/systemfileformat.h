@@ -1,3 +1,20 @@
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #ifndef SYSTEM_FILE_FORMAT_H
 #define SYSTEM_FILE_FORMAT_H
 
@@ -10,7 +27,6 @@
 #include "spssstream.h"
 
 #include "datasetpackage.h"
-#include "spssrecinter.h"
 
 /*
  *
@@ -28,17 +44,23 @@
  */
 #define _SPSSIMPORTER_ATTRIB(type, variable) private: type _##variable;
 
-#define SPSSIMPORTER_READ_ATTRIB(type, variable)								 \
-	_SPSSIMPORTER_ATTRIB(type, variable)										 \
-	public: const type & variable () const { return _##variable; } \
+#define SPSSIMPORTER_READ_ATTRIB(type, variable)					\
+	_SPSSIMPORTER_ATTRIB(type, variable)							\
+	public: const type & variable () const { return _##variable; }	\
 
 
 /*
  * We use this fragment in constuctors, so, make a macro out of it.
- * (This macro assumes that file is an instance of an ifstream like object, in that it has a member function of signature read(char *, size_t) ).
+ * (This macro assumes that file is an instance of an ifstream like object,
+ * in that it has a member function of signature read(char *, size_t) ).
  */
-#define _SPSSIMPORTER_READ_VAR(variable, file)  (file.read((char *) &variable, sizeof(variable)))
-#define SPSSIMPORTER_READ_MEMBER(variable, file)  _SPSSIMPORTER_READ_VAR(_##variable, file)
+#define _SPSSIMPORTER_READ_VAR(variable, file)			\
+	(file.read((char *) &variable, sizeof(variable)))	\
+
+#define SPSSIMPORTER_READ_MEMBER(variable, file, fixer) \
+	_SPSSIMPORTER_READ_VAR(_##variable, file);			\
+	fixer.fixup( &_##variable )							\
+
 
 namespace spss {
 
@@ -86,7 +108,8 @@ typedef enum e_subRecordTypes
 	recsubtype_display = 11,
 	recsubtype_longvar = 13,
 	recsubtype_verylongstr = 14,
-	recsubtype_extnumcases = 16	// New 13th July 2014.
+	recsubtype_extnumcases = 16,	// New 13th July 2014.
+	recsubtype_charEncoding = 20	// New May 2016
 } RecordSubTypes;
 
 }; // end namespace!

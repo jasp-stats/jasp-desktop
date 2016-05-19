@@ -46,7 +46,7 @@ public:
 	* @param position Position to report.
 	* @param progress report to here.
 	*/
-    static void reportProgress(SPSSStream::pos_type position, boost::function<void (const std::string &, int)> progress);
+    static void reportFileProgress(SPSSStream::pos_type position, boost::function<void (const std::string &, int)> progress);
 
 protected:
 
@@ -76,12 +76,12 @@ private:
     /**
 	* @brief m_pFhr A (pointer to a) File header.
 	*/
-    static spss::FileHeaderRecord *_pFhr;
+	static spss::FileHeaderRecord *_pFileHeaderRecord;
 
     /*
 	* Last found Integer info record, or default values.
 	*/
-    static spss::IntegerInfoRecord _integerInfo;
+	static spss::IntegerInfoRecord _integerInfo;
 
     /*
 	* Last found Float info, or default.
