@@ -41,7 +41,8 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 		response <- callback(results)
 		if (response$status == "changed") {
 			change <- .diff (options, response$options)
-			if (change$modelTerms || change$dependent)
+			if (change$modelTerms || change$dependent ||
+				change$priorCovariates)
 				return (response)
 			response$status <- "ok"
 		}
@@ -51,7 +52,8 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 	state <- .retrieveState ()
 	if ( ! is.null (state)) {
 		change <- .diff (options, state$options)
-		if ( ! base::identical(change, FALSE) && (change$dependent || change$modelTerms)) {
+		if ( ! base::identical(change, FALSE) && (change$dependent || change$modelTerms ||
+			change$priorCovariates)) {
 			state <- NULL
 		} else {
 			perform <- "run"
@@ -75,7 +77,7 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 		status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
 ## MODEL
-		model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, 			.callbackBFpackage, results = results)
+		model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results = results, analysisType = "Regression")
 	
 		if (is.null(model.object))
 			return()
