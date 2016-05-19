@@ -18,8 +18,8 @@ windows:INCLUDEPATH += ../../boost_1_54_0
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
 
+QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
-QMAKE_CXXFLAGS += -Wno-unused-parameter
 macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
