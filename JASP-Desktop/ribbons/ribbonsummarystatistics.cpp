@@ -29,7 +29,11 @@ RibbonSummaryStatistics::RibbonSummaryStatistics(QWidget *parent) :
 	ui->setupUi(this);
 
 	addRibbonButton(ui->bfFromTButton);
+	addRibbonButton(ui->regressionButton);
+	addRibbonButton(ui->frequenciesButton);
 	ui->bfFromTButton->setDataSetNotNeeded();
+	ui->regressionButton->setDataSetNotNeeded();
+	ui->frequenciesButton->setDataSetNotNeeded();
 
 	QMenu *menu;
 
@@ -39,6 +43,13 @@ RibbonSummaryStatistics::RibbonSummaryStatistics(QWidget *parent) :
 	menu->addAction(QString("One Sample"), this, SLOT(itemSelected()))->setObjectName("BFFromTOneSample");
 
 	ui->bfFromTButton->setMenu(menu);
+
+	connect(ui->regressionButton, SIGNAL(clicked()), this, SLOT(itemSelected()));
+
+	menu = new QMenu(this);
+	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BinomialBayesianSummaryStatistics");
+
+	ui->frequenciesButton->setMenu(menu);
 }
 
 RibbonSummaryStatistics::~RibbonSummaryStatistics()

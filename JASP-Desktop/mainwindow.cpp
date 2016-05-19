@@ -57,6 +57,7 @@
 #include "analysisforms/bffromtindependentsamplesform.h"
 #include "analysisforms/bffromtpairedsamplesform.h"
 #include "analysisforms/bffromtonesampleform.h"
+#include "analysisforms/binomialbayesiansummarystatisticsform.h"
 
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
@@ -570,8 +571,10 @@ AnalysisForm* MainWindow::loadForm(const string name)
         form = new PrincipalComponentAnalysisForm(contentArea);
 	else if (name == "BFFromTOneSample")
 		form = new BFFromTOneSampleForm(contentArea);
-		else if (name == "BFFromTIndependentSamples")
+	else if (name == "BFFromTIndependentSamples")
 		form = new BFFromTIndependentSamplesForm(contentArea);
+	else if (name == "BinomialBayesianSummaryStatistics")
+		form = new BinomialBayesianSummaryStatisticsForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
