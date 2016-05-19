@@ -1,4 +1,21 @@
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
+#include "fileheaderrecord.h"
 #include "spssrecinter.h"
 #include "debug_cout.h"
 #include "stringutils.h"
@@ -6,6 +23,8 @@
 #include <algorithm>
 
 using namespace std;
+using namespace spss;
+
 
 
 SPSSColumn::SPSSColumn(const string &nm, const string &lbl, const spss::MissingValueChecker & mssngChckr, long strngLn, int32_t msr)
@@ -188,22 +207,31 @@ void SPSSColumns::numCases(int64_t num)
 }
 
 /**
- * @brief processVerLongStrings Appends very long strings together, if present.
+ * @brief processStringsPostLoad - Delas with very Long strings (len > 255) and CP processes all strings.
  * Call after the data is loaded!.
  */
-void SPSSColumns::processVeryLongStrings()
+void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string &, int)> progress)
 {
-	// For every found ver long string.
+	// For every found very long string.
 	const LongColsData &strLens = veryLongColsDat();
+	float numStrlens = distance(strLens.begin(), strLens.end());
 	for (map<string, size_t>::const_iterator ituple = strLens.begin(); ituple != strLens.end(); ituple++)
 	{
+		{ // report progress
+			float prog = 100.0 * ((float) distance(strLens.begin(), ituple)) / numStrlens;
+			static float lastProg = -1.0;
+			if ((prog - lastProg) >= 1.0)
+			{
+				progress("Processing long strings.", (int) (prog + 0.5));
+				lastProg = prog;
+			}
+
+		}
 		// find the root col...
 		SPSSColumns::iterator rootIter;
 		for (rootIter = begin(); rootIter != end(); rootIter++)
 		{
-#ifndef QT_NO_DEBUG
-			DEBUG_COUT5("Matching: \"", rootIter->spssName, "\" with \"", ituple->first, "\"");
-#endif
+			DEBUG_COUT6("Matching: \"", rootIter->spssName, "\" with \"", ituple->first, "\" ", ((rootIter->spssName == ituple->first) ? "successfully." : "failed."));
 			if (rootIter->spssName == ituple->first)
 					break;
 		}
@@ -227,26 +255,38 @@ void SPSSColumns::processVeryLongStrings()
 				long needed = min(ituple->second - rootIter->strings()[cse].size(), rootIter->strings()[cse].size());
 				if (needed > 0)
 					rootIter->strings()[cse].append(ncol->strings()[cse], 0, needed);
-//				DEBUG_COUT9("Appended ", needed, " to \"", ncol->strings()[cse], "\" to ", rootIter->spssName, " for case ", cse, ".");
 			}
 			rootIter->spssStringLen( rootIter->spssStringLen() + ncol->spssStringLen() );
 			// Dump the column.
 			erase(ncol);
 			// Debug
-#ifndef QT_NO_DEBUG
-//			for (size_t cse  = 0; cse < rootIter->strings().size(); cse++)
-//				DEBUG_COUT7("Found \"", rootIter->strings()[cse], "\" for ", rootIter->spssName, " for case ", cse, ".");
-#endif
 		}
 	}
 
 	// Trim trialing spaces for all strings in the data set.
+	float numStrs = distance(begin(), end());
 	for (std::vector<SPSSColumn>::iterator iCol = begin(); iCol != end(); ++iCol)
 	{
+		{ // report progress
+			float prog = 100.0 * ((float) distance(begin(), iCol)) / numStrs;
+			static float lastProg = -1.0;
+			if ((prog - lastProg) >= 1.0)
+			{
+				progress("Processing strings for alphabet.", (int) (prog + 0.5));
+				lastProg = prog;
+			}
+
+		}
 		if (iCol->isString())
 		{
 			for (size_t cse  = 0; cse < iCol->strings().size(); cse++)
+			{
+				// Do a code page conversion on the the string.
+				iCol->strings()[cse] = _stringConvert->convertCodePage(iCol->strings()[cse]);
+				// Trim left and right.
+				StrUtils::lTrimWSIP(iCol->strings()[cse]);
 				StrUtils::rTrimWSIP(iCol->strings()[cse]);
+			}
 		}
 	}
 

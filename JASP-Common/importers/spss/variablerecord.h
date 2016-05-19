@@ -1,3 +1,20 @@
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #ifndef VARIBABLERECORD_H
 #define VARIBABLERECORD_H
 
@@ -18,12 +35,13 @@ public:
 
 	/**
 	 * @brief VariableRecord Ctor
+	 * @param const Converters &fixer - Fixes Endianness
 	 * @param fileType The record type value, as found in the file.
 	 * @param fileHeader The file ehadewr we are associated with.
 	 * @param fromStream The file to read from.
 	 *
 	 */
-	VariableRecord(RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &fromStream);
+	VariableRecord(const NumericConverter &fixer, RecordTypes fileType, FileHeaderRecord * fileHeader, SPSSStream &fromStream);
 
 	virtual ~VariableRecord();
 
@@ -37,14 +55,13 @@ public:
 	SPSSIMPORTER_READ_ATTRIB(int32_t, n_missing_values)
 	SPSSIMPORTER_READ_ATTRIB(int32_t, print)
 	SPSSIMPORTER_READ_ATTRIB(int32_t, write)
-	SPSSIMPORTER_READ_ATTRIB(Char_8, name_file)
+	SPSSIMPORTER_READ_ATTRIB(Char_8, nameInFile)
 	SPSSIMPORTER_READ_ATTRIB(int32_t, label_len)
 	SPSSIMPORTER_READ_ATTRIB(std::string, label) // label().length() == label_len
 	SPSSIMPORTER_READ_ATTRIB(VecDbls, missing_values)
 
 	// Not from the file, but from counting number times we are created,
 	SPSSIMPORTER_READ_ATTRIB(size_t, dictionary_index)
-
 
 	/*
 	 * Write and Print fields are in fact unions:
@@ -78,7 +95,6 @@ public:
 	virtual void process(SPSSColumns & columns);
 
 private:
-	const FileHeaderRecord *_pFHR;
 	std::string  _name;
 };
 

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2015-2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 
 #ifndef __SPSS_STRING_UTILS_H_
 #define __SPSS_STRING_UTILS_H_
@@ -46,6 +47,26 @@ public:
 	* @param end End position of string.
 	*/
 	static void rTrimWSIP(char *str, size_t end);
+
+	/**
+	* @brief lTrimWS Strips whitespace from the left side of str.
+	* @param str The string to strip.
+	* @return A copy of the string stript.
+	*/
+	static std::string lTrimWS(const std::string &str);
+
+	/**
+	* @brief lTrimWS Strips whitespace from the left side of str, in place.
+	* @param str The string to strip.
+	*/
+	static void lTrimWSIP(std::string &str);
+
+	/**
+	* @brief lTrimWS Strips whitespace in place from the left side of str
+	* @param str The buffer to strip.
+	*/
+	static void lTrimWSIP(char *str);
+
 };
 
 

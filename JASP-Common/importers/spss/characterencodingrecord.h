@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,45 +15,54 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef EXTNUMBERCASESRECORD_H
-#define EXTNUMBERCASESRECORD_H
+
+#ifndef _CHARACTERENCODINGRECORD_H_
+#define _CHARACTERENCODINGRECORD_H_
 
 #include "datainforecord.h"
-#include "numericconverter.h"
 
 namespace spss {
 
 /**
- * @brief The ExtNumberCasesRecord class
+ * @brief The CharacterEncodingRecord class
  *
- * Associated with record type rectype_value_labels = rectype_meta_data = 7, sub type recsubtype_extnumcases = 16,
+ * Associated with record type rectype_value_labels = rectype_meta_data = 7, sub type recsubtype_charEncoding = 20,
  */
-class ExtNumberCasesRecord : public DataInfoRecord<recsubtype_extnumcases>
+class CharacterEncodingRecord : public DataInfoRecord<recsubtype_charEncoding>
 {
 public:
 
+
 	/**
-	 * @brief ExtNumberCasesRecord Ctor
-	 * @param const Converters &fixer Fixer for endianness.
+	 * @brief CharacterEncodingRecord Ctor
+	 * @param Converters fixer Fixes endainness.
 	 * @param fileSubType The record subtype value, as found in the file.
 	 * @param fileType The record type value, as found in the file.
 	 * @param from The file to read from.
+	 *
+	 * NB This constructor will modify the contents of fixer!
 	 */
-	ExtNumberCasesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
+	CharacterEncodingRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from);
 
-	SPSSIMPORTER_READ_ATTRIB(int64_t, unknown);
-	SPSSIMPORTER_READ_ATTRIB(int64_t, ncases64);
+	virtual ~CharacterEncodingRecord();
+
+	/*
+	 * Data!
+	 */
+	SPSSIMPORTER_READ_ATTRIB(int32_t, size)
+	SPSSIMPORTER_READ_ATTRIB(int32_t, count)
+	SPSSIMPORTER_READ_ATTRIB(std::string, encoding)
 
 	/**
 	 * @brief process Manipulates columns by adding the contents of thie record.
 	 * @param columns
 	 *
-	 * Implemetations should examine columns to determine the record history.
+	 * Implematations should examine columns to determine the record history.
 	 */
 	virtual void process(SPSSColumns & columns);
+
 };
 
+} // End name space.
 
-}
-
-#endif // EXTNUMBERCASESRECORD_H
+#endif // CHARACTERENCODINGRECORD_H

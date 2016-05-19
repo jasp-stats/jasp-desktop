@@ -1,3 +1,19 @@
+//
+// Copyright (C) 2015-2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 #include "longvarnamesrecord.h"
 
 using namespace std;
@@ -6,12 +22,13 @@ using namespace spss;
 
 /**
  * @brief LongVarNamesRecord Ctor
+ * @param const Converters &fixer The endain fixer.
  * @param fileSubType The record subtype value, as found in the file.
  * @param fileType The record type value, as found in the file.
  * @param fromStream The file to read from.
  */
-LongVarNamesRecord::LongVarNamesRecord(RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
-	: DataInfoRecord(fileSubType, fileType, from)
+LongVarNamesRecord::LongVarNamesRecord(const NumericConverter &fixer, RecordSubTypes fileSubType, RecordTypes fileType, SPSSStream &from)
+	: DataInfoRecord(fixer, fileSubType, fileType, from)
 {
 	char * buffer = new char[count() * size() + 2];
 	from.read(buffer, count());
@@ -44,8 +61,9 @@ void LongVarNamesRecord::process(SPSSColumns & columns)
 		map<string, string>::const_iterator nv = nameVals.find(srchName);
 		if (nv != nameVals.end())
 		{
-			DEBUG_COUT4("Replaced label ", colI->spssLabel, " with ", colI->spssLabel);
-			colI->spssLabel = nv->second;
+			string lbl = columns.stringsConv().convertCodePage(nv->second);
+			DEBUG_COUT6("Replaced label ", colI->spssLabel, " with ", nv->second, "/", lbl);
+			colI->spssLabel = lbl;
 		}
 
 	}
