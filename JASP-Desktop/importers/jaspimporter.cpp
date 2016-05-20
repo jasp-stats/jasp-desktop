@@ -30,7 +30,7 @@
 //#include "libzip/config.h"
 #include "libzip/archive.h"
 #include "libzip/archive_entry.h"
-#include "../lib_json/json.h"
+#include "lib_json/json.h"
 
 #include "filereader.h"
 #include "tempfiles.h"

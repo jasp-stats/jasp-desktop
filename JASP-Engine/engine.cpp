@@ -24,9 +24,9 @@
 #include "../JASP-Common/lib_json/json.h"
 #include "../JASP-Common/analysisloader.h"
 #include "../JASP-Common/processinfo.h"
-#include "../JASP-Common/datasetloader.h"
 #include "../JASP-Common/tempfiles.h"
 #include "../JASP-Common/utils.h"
+#include "../JASP-Common/sharedmemory.h"
 
 #include "rbridge.h"
 
@@ -332,7 +332,7 @@ string Engine::callback(const string &results)
 
 DataSet *Engine::provideDataSet()
 {
-	return DataSetLoader::getDataSet();
+	return SharedMemory::retrieveDataSet();
 }
 
 void Engine::provideStateFileName(string &root, string &relativePath)

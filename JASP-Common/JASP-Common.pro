@@ -1,7 +1,6 @@
 
 QT -= gui
-QT += webkitwidgets printsupport
-QT += core
+QT += webkitwidgets
 
 DESTDIR = ..
 TARGET = JASP-Common
@@ -37,14 +36,8 @@ SOURCES += \
 	datablock.cpp \
 	dataset.cpp \
 	datasetpackage.cpp \
-	datasetloader.cpp \
 	dirs.cpp \
-	exporters/jaspexporter.cpp \
 	filereader.cpp \
-	importers/csv.cpp \
-	importers/csvimporter.cpp \
-	importers/jaspimporter.cpp \
-	importers/spssimporter.cpp \
 	ipcchannel.cpp \
 	label.cpp \
 	labels.cpp \
@@ -72,31 +65,7 @@ SOURCES += \
 	sharedmemory.cpp \
 	tempfiles.cpp \
 	utils.cpp \
-	version.cpp \
-	importers/spss/datainforecord.cpp \
-	importers/spss/datarecords.cpp \
-	importers/spss/dictionaryterminationrecord.cpp \
-	importers/spss/documentrecord.cpp \
-	importers/spss/extnumbercasesrecord.cpp \
-	importers/spss/fileheaderrecord.cpp \
-	importers/spss/floatinforecord.cpp \
-	importers/spss/longvarnamesrecord.cpp \
-	importers/spss/miscinforecord.cpp \
-	importers/spss/missingvaluechecker.cpp \
-	importers/spss/readablerecord.cpp \
-	importers/spss/spssrecinter.cpp \
-	importers/spss/valuelabelvarsrecord.cpp \
-	importers/spss/vardisplayparamrecord.cpp \
-	importers/spss/variablerecord.cpp \
-	importers/spss/verylongstringrecord.cpp \
-	importers/spss/integerinforecord.cpp \
-	importers/spss/stringutils.cpp \
-        exporters/exporter.cpp \
-        exporters/resultexporter.cpp \
-        exporters/dataexporter.cpp \
-	importers/spss/numericconvertor.cpp \
-        importers/codepageconvert.cpp \
-        importers/spss/characterencodingrecord.cpp
+	version.cpp
 
 HEADERS += \
 	analysis.h \
@@ -123,15 +92,9 @@ HEADERS += \
 	datablock.h \
 	dataset.h \
 	datasetpackage.h \
-	datasetloader.h \
 	dirs.h \
-	exporters/jaspexporter.h \
 	filepackage.h \
 	filereader.h \
-	importers/csv.h \
-	importers/csvimporter.h \
-	importers/jaspimporter.h \
-	importers/spssimporter.h \
 	ipcchannel.h \
 	label.h \
 	labels.h \
@@ -165,32 +128,4 @@ HEADERS += \
 	sharedmemory.h \
 	tempfiles.h \
 	utils.h \
-	version.h \
-	importers/spss/datainforecord.h \
-	importers/spss/datarecords.h \
-	importers/spss/debug_cout.h \
-	importers/spss/dictionaryterminationrecord.h \
-	importers/spss/documentrecord.h \
-	importers/spss/extnumbercasesrecord.h \
-	importers/spss/fileheaderrecord.h \
-	importers/spss/floatinforecord.h \
-	importers/spss/integerinforecord.h \
-	importers/spss/longvarnamesrecord.h \
-	importers/spss/measures.h \
-	importers/spss/miscinforecord.h \
-	importers/spss/missingvaluechecker.h \
-	importers/spss/readablerecord.h \
-	importers/spss/spssrecinter.h \
-	importers/spss/spssstream.h \
-	importers/spss/systemfileformat.h \
-	importers/spss/valuelabelvarsrecord.h \
-	importers/spss/vardisplayparamrecord.h \
-	importers/spss/variablerecord.h \
-	importers/spss/verylongstringrecord.h \
-	importers/spss/stringutils.h \
-        exporters/exporter.h \
-        exporters/resultexporter.h \
-        exporters/dataexporter.h \
-	importers/spss/numericconverter.h \
-        importers/codepageconvert.h \
-        importers/spss/characterencodingrecord.h
+	version.h
