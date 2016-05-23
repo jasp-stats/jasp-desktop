@@ -653,8 +653,11 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					r.squared <- lm.summary$r.squared
 					r.squared.change <- r.squared - r.squared.old
 					
-					df1 <- 1
-					if (m > 1){
+					if (m == 1) {
+					
+						df1 <- abs(length(lm.model[[ m ]]$variables))
+					
+					} else if (m > 1){
 					
 						df1 <- abs(length(lm.model[[ m ]]$variables) - length(lm.model[[ m-1 ]]$variables) )
 					}
