@@ -36,8 +36,8 @@ CharacterEncodingRecord::CharacterEncodingRecord(const NumericConverter &fixer, 
 	SPSSIMPORTER_READ_MEMBER(count, from, fixer);
 	{
 		size_t numBytes = count() * size();
-		char buffer[numBytes + 1];
-		_SPSSIMPORTER_READ_VAR(buffer, from);
+		char buffer[numBytes+1];
+		from.read(buffer, numBytes);
 		_encoding = string(buffer, numBytes);
 	}
 }
@@ -55,6 +55,6 @@ CharacterEncodingRecord::~CharacterEncodingRecord()
  */
 void CharacterEncodingRecord::process(SPSSColumns & columns)
 {
-	columns.setStrCnvrtr(new CodePageConvert( "bollocks" /* encoding().c_str() */ ));
+	columns.setStrCnvrtr(new CodePageConvert( encoding().c_str() ));
 }
 

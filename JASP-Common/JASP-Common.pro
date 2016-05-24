@@ -19,6 +19,7 @@ windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
+QMAKE_CXXFLAGS += -Wno-deprecated-declarations
 macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
 macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
@@ -129,3 +130,4 @@ HEADERS += \
 	tempfiles.h \
 	utils.h \
 	version.h
+
