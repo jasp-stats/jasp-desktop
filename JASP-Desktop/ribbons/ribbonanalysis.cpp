@@ -112,6 +112,7 @@ RibbonAnalysis::RibbonAnalysis(QWidget *parent) :
 #ifdef QT_DEBUG
 	menu = new QMenu(this);
 	menu->addAction(QString("Exploratory Factor Analysis"), this, SLOT(itemSelected()))->setObjectName("ExploratoryFactorAnalysis");
+	menu->addAction(QString("Principal Component Analysis"), this, SLOT(itemSelected()))->setObjectName("PrincipalComponentAnalysis");
 	
 	ui->factoranalysisButton->setMenu(menu);
 #endif
