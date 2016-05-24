@@ -11,7 +11,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/availablefields.cpp \
         $$PWD/asyncloader.cpp \
         $$PWD/maintableview.cpp \
-		$$PWD/datasetloader.cpp \
+        $$PWD/datasetloader.cpp \
         $$PWD/maintablehorizontalheader.cpp \
         $$PWD/widgets/assignbutton.cpp \
         $$PWD/widgets/availablefieldslistview.cpp \
@@ -132,37 +132,37 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/onlinenode.cpp \
         $$PWD/onlineusernodeosf.cpp \
         $$PWD/backstage/authwidget.cpp \
-		$$PWD/analysisforms/exploratoryfactoranalysisform.cpp \
-		$$PWD/exporters/dataexporter.cpp \
-		$$PWD/exporters/exporter.cpp \
-		$$PWD/exporters/jaspexporter.cpp \
-		$$PWD/exporters/resultexporter.cpp \
-		$$PWD/importers/spss/characterencodingrecord.cpp \
-		$$PWD/importers/spss/datainforecord.cpp \
-		$$PWD/importers/spss/datarecords.cpp \
-		$$PWD/importers/spss/dictionaryterminationrecord.cpp \
-		$$PWD/importers/spss/documentrecord.cpp \
-		$$PWD/importers/spss/extnumbercasesrecord.cpp \
-		$$PWD/importers/spss/fileheaderrecord.cpp \
-		$$PWD/importers/spss/floatinforecord.cpp \
-		$$PWD/importers/spss/integerinforecord.cpp \
-		$$PWD/importers/spss/longvarnamesrecord.cpp \
-		$$PWD/importers/spss/miscinforecord.cpp \
-		$$PWD/importers/spss/missingvaluechecker.cpp \
-		$$PWD/importers/spss/numericconvertor.cpp \
-		$$PWD/importers/spss/readablerecord.cpp \
-		$$PWD/importers/spss/spssrecinter.cpp \
-		$$PWD/importers/spss/stringutils.cpp \
-		$$PWD/importers/spss/valuelabelvarsrecord.cpp \
-		$$PWD/importers/spss/vardisplayparamrecord.cpp \
-		$$PWD/importers/spss/variablerecord.cpp \
-		$$PWD/importers/spss/verylongstringrecord.cpp \
-		$$PWD/importers/codepageconvert.cpp \
-		$$PWD/importers/csv.cpp \
-		$$PWD/importers/csvimporter.cpp \
-		$$PWD/importers/jaspimporter.cpp \
-		$$PWD/importers/spssimporter.cpp
-
+        $$PWD/exporters/dataexporter.cpp \
+        $$PWD/exporters/exporter.cpp \
+        $$PWD/exporters/jaspexporter.cpp \
+        $$PWD/exporters/resultexporter.cpp \
+        $$PWD/importers/spss/characterencodingrecord.cpp \
+        $$PWD/importers/spss/datainforecord.cpp \
+        $$PWD/importers/spss/datarecords.cpp \
+        $$PWD/importers/spss/dictionaryterminationrecord.cpp \
+        $$PWD/importers/spss/documentrecord.cpp \
+        $$PWD/importers/spss/extnumbercasesrecord.cpp \
+        $$PWD/importers/spss/fileheaderrecord.cpp \
+        $$PWD/importers/spss/floatinforecord.cpp \
+        $$PWD/importers/spss/integerinforecord.cpp \
+        $$PWD/importers/spss/longvarnamesrecord.cpp \
+        $$PWD/importers/spss/miscinforecord.cpp \
+        $$PWD/importers/spss/missingvaluechecker.cpp \
+        $$PWD/importers/spss/numericconvertor.cpp \
+        $$PWD/importers/spss/readablerecord.cpp \
+        $$PWD/importers/spss/spssrecinter.cpp \
+        $$PWD/importers/spss/stringutils.cpp \
+        $$PWD/importers/spss/valuelabelvarsrecord.cpp \
+        $$PWD/importers/spss/vardisplayparamrecord.cpp \
+        $$PWD/importers/spss/variablerecord.cpp \
+        $$PWD/importers/spss/verylongstringrecord.cpp \
+        $$PWD/importers/codepageconvert.cpp \
+        $$PWD/importers/csv.cpp \
+        $$PWD/importers/csvimporter.cpp \
+        $$PWD/importers/jaspimporter.cpp \
+        $$PWD/importers/spssimporter.cpp \
+        $$PWD/analysisforms/exploratoryfactoranalysisform.cpp \
+        $$PWD/analysisforms/principalcomponentanalysisform.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -171,7 +171,7 @@ HEADERS  += \
         $$PWD/enginesync.h \
         $$PWD/availablefields.h \
         $$PWD/analysisforms/analysisform.h \
-		$$PWD/datasetloader.h \
+        $$PWD/datasetloader.h \
         $$PWD/widgets/assignbutton.h \
         $$PWD/widgets/availablefieldslistview.h \
         $$PWD/widgets/boundcheckbox.h \
@@ -302,42 +302,42 @@ HEADERS  += \
         $$PWD/onlinenode.h \
         $$PWD/onlineusernodeosf.h \
         $$PWD/backstage/authwidget.h \
-		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
-		$$PWD/exporters/dataexporter.h \
-		$$PWD/exporters/exporter.h \
-		$$PWD/exporters/jaspexporter.h \
-		$$PWD/exporters/resultexporter.h \
-		$$PWD/importers/spss/characterencodingrecord.h \
-		$$PWD/importers/spss/cpconverter.h \
-		$$PWD/importers/spss/datainforecord.h \
-		$$PWD/importers/spss/datarecords.h \
-		$$PWD/importers/spss/debug_cout.h \
-		$$PWD/importers/spss/dictionaryterminationrecord.h \
-		$$PWD/importers/spss/documentrecord.h \
-		$$PWD/importers/spss/extnumbercasesrecord.h \
-		$$PWD/importers/spss/fileheaderrecord.h \
-		$$PWD/importers/spss/floatinforecord.h \
-		$$PWD/importers/spss/integerinforecord.h \
-		$$PWD/importers/spss/longvarnamesrecord.h \
-		$$PWD/importers/spss/measures.h \
-		$$PWD/importers/spss/miscinforecord.h \
-		$$PWD/importers/spss/missingvaluechecker.h \
-		$$PWD/importers/spss/numericconverter.h \
-		$$PWD/importers/spss/readablerecord.h \
-		$$PWD/importers/spss/spssrecinter.h \
-		$$PWD/importers/spss/spssstream.h \
-		$$PWD/importers/spss/stringutils.h \
-		$$PWD/importers/spss/systemfileformat.h \
-		$$PWD/importers/spss/valuelabelvarsrecord.h \
-		$$PWD/importers/spss/vardisplayparamrecord.h \
-		$$PWD/importers/spss/variablerecord.h \
-		$$PWD/importers/spss/verylongstringrecord.h \
-		$$PWD/importers/codepageconvert.h \
-		$$PWD/importers/csv.h \
-		$$PWD/importers/csvimporter.h \
-		$$PWD/importers/jaspimporter.h \
-		$$PWD/importers/spssimporter.h
-
+        $$PWD/exporters/dataexporter.h \
+        $$PWD/exporters/exporter.h \
+        $$PWD/exporters/jaspexporter.h \
+        $$PWD/exporters/resultexporter.h \
+        $$PWD/importers/spss/characterencodingrecord.h \
+        $$PWD/importers/spss/cpconverter.h \
+        $$PWD/importers/spss/datainforecord.h \
+        $$PWD/importers/spss/datarecords.h \
+        $$PWD/importers/spss/debug_cout.h \
+        $$PWD/importers/spss/dictionaryterminationrecord.h \
+        $$PWD/importers/spss/documentrecord.h \
+        $$PWD/importers/spss/extnumbercasesrecord.h \
+        $$PWD/importers/spss/fileheaderrecord.h \
+        $$PWD/importers/spss/floatinforecord.h \
+        $$PWD/importers/spss/integerinforecord.h \
+        $$PWD/importers/spss/longvarnamesrecord.h \
+        $$PWD/importers/spss/measures.h \
+        $$PWD/importers/spss/miscinforecord.h \
+        $$PWD/importers/spss/missingvaluechecker.h \
+        $$PWD/importers/spss/numericconverter.h \
+        $$PWD/importers/spss/readablerecord.h \
+        $$PWD/importers/spss/spssrecinter.h \
+        $$PWD/importers/spss/spssstream.h \
+        $$PWD/importers/spss/stringutils.h \
+        $$PWD/importers/spss/systemfileformat.h \
+        $$PWD/importers/spss/valuelabelvarsrecord.h \
+        $$PWD/importers/spss/vardisplayparamrecord.h \
+        $$PWD/importers/spss/variablerecord.h \
+        $$PWD/importers/spss/verylongstringrecord.h \
+        $$PWD/importers/codepageconvert.h \
+        $$PWD/importers/csv.h \
+        $$PWD/importers/csvimporter.h \
+        $$PWD/importers/jaspimporter.h \
+        $$PWD/importers/spssimporter.h \
+        $$PWD/analysisforms/exploratoryfactoranalysisform.h \
+        $$PWD/analysisforms/principalcomponentanalysisform.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -384,7 +384,8 @@ FORMS += \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
         $$PWD/aboutdialog.ui \
-    $$PWD/analysisforms/exploratoryfactoranalysisform.ui
+        $$PWD/analysisforms/exploratoryfactoranalysisform.ui \
+        $$PWD/analysisforms/principalcomponentanalysisform.ui
 
 
 

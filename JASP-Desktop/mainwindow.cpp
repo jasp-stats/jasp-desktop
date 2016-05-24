@@ -59,6 +59,7 @@
 #include "analysisforms/r11tlearnform.h"
 
 #include "analysisforms/exploratoryfactoranalysisform.h"
+#include "analysisforms/principalcomponentanalysisform.h"
 
 #include <QDebug>
 #include <QWebFrame>
@@ -560,6 +561,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BFFromTForm(contentArea);
 	else if (name == "ExploratoryFactorAnalysis")
         form = new ExploratoryFactorAnalysisForm(contentArea);
+    else if (name == "PrincipalComponentAnalysis")
+        form = new PrincipalComponentAnalysisForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
