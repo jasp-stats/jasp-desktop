@@ -20,6 +20,10 @@
 using namespace std;
 using namespace spss;
 
+/**< character set name substitution. */
+CharacterEncodingRecord::_NameSubs CharacterEncodingRecord::_nameSubstitution;
+
+
 /**
  * @brief CharacterEncodingRecord Ctor
  * @param Converters fixer Fixes endainness.
@@ -40,6 +44,9 @@ CharacterEncodingRecord::CharacterEncodingRecord(const NumericConverter &fixer, 
 		from.read(buffer, numBytes);
 		_encoding = string(buffer, numBytes);
 	}
+
+	if (_nameSubstitution.size() == 0)
+		_nameSubstitution = _buildNs();
 }
 
 CharacterEncodingRecord::~CharacterEncodingRecord()
@@ -55,6 +62,26 @@ CharacterEncodingRecord::~CharacterEncodingRecord()
  */
 void CharacterEncodingRecord::process(SPSSColumns & columns)
 {
-	columns.setStrCnvrtr(new CodePageConvert( encoding().c_str() ));
+	string buffer = encoding();
+	// This should work, since we are only really expecting ASCII
+	transform(buffer.begin(), buffer.end(), buffer.begin(), ::tolower);
+	_NameSubs::const_iterator i = _nameSubstitution.find(buffer);
+	if  (i != _nameSubstitution.end())
+		buffer = i->second;
+
+	columns.setStrCnvrtr(new CodePageConvert( buffer.c_str() ));
 }
 
+/**
+/*  @brief _buildNs Builds the nameSubstitution map.
+/*  @return
+/*
+ */
+CharacterEncodingRecord::_NameSubs CharacterEncodingRecord::_buildNs()
+{
+	map<string, string> result;
+
+	result.insert(pair<string, string>("us-ascii", "utf-8"));
+
+	return result;
+}

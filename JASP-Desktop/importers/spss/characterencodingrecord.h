@@ -21,6 +21,8 @@
 
 #include "datainforecord.h"
 
+#include <map>
+
 namespace spss {
 
 /**
@@ -60,6 +62,18 @@ public:
 	 * Implematations should examine columns to determine the record history.
 	 */
 	virtual void process(SPSSColumns & columns);
+
+private:
+
+	typedef std::map<std::string, std::string> _NameSubs;
+	static _NameSubs _nameSubstitution; /**< character set name substitution. */
+
+	/**
+	 *  @brief _buildNs Builds the nameSubstitution map.
+	 *  @return
+	 *
+	 */
+	static _NameSubs _buildNs();
 
 };
 
