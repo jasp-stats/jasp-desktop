@@ -125,12 +125,8 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 	}
 
 
-
 	bayesFactorRobustnessPlot <- NULL
 	priorAndPosteriorPlot <- NULL
-print("lllllllllllllllllllllllllllllllla")
-print(is.list(state))
-print("llllllllllllllllllllllllllllllllb")
 
 	if(options$plotPriorAndPosterior || options$plotBayesFactorRobustness)
 	{
@@ -156,7 +152,7 @@ print("llllllllllllllllllllllllllllllllb")
 		{
 			if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 						&& BFtypeRequiresNewPlot == FALSE ))) && !is.null(state$bayesFactorRobustnessPlot))
-			{print("@#############################################")
+			{
 				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
 			}
 			else
@@ -226,7 +222,7 @@ print("llllllllllllllllllllllllllllllllb")
 {
 	if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && 
 		(diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$tStatistic == FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE))))
-	{print("WTFFFFFFFFFFFFFFFFFFFFFFFFF")
+	{
 		bf10 <- state$bayesFactor10
 	}
 	else
