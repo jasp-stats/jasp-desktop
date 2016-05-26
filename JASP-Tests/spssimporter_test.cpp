@@ -139,7 +139,7 @@ bool SPSSImporterTest::checkIfEqual(struct fileContent *fc1, struct fileContent 
 
   for(int i=0; i<fc2->columns; ++i)
   {
-    if(fc1->headers[i] != fc2->headers[i])
+	if(QString::fromStdString(fc1->headers[i]) != QString::fromStdString(fc2->headers[i]))
     {
       qDebug() << "Header name mismatch: " << QString::fromStdString(fc1->headers[i]) << " " << QString::fromStdString(fc2->headers[i]);
       return false;
