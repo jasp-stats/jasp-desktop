@@ -362,6 +362,9 @@
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0" colspan="3">
              <widget class="BoundCheckBox" name="plotPriorAndPosterior">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
