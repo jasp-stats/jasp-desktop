@@ -122,7 +122,7 @@ void OSFTest::fileListTest()
     }
 
     // simulate (GUI) mouse double clicks
-    QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);;
+	QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);
     waitTillExists(buttonGroup);
     QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);    
     waitTillExists(buttonGroup);
@@ -153,7 +153,7 @@ void OSFTest::fileListTest()
 /* waits until the button is created */ 
 void OSFTest::waitTillExists(QButtonGroup *buttonGroup)
 {
-  QTest::qWait(1000);
+  QTest::qWait(2000);
 
   while(!(buttonGroup->button(0)))
   {
