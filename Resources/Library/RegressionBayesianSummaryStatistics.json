@@ -4,16 +4,10 @@
 	"version": "1.0",
 	"options": [
 		{
-			"name": "hypothesis",
-			"options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
-			"default": "notEqualToTestValue",
-			"type": "List"
-		},
-		{
 			"format": "",
-			"name": "testValue",
+			"name": "unadjustedRSquared",
 			"type": "Number",
-			"value": 0.5,
+			"value": 0,
 			"min": 0,
 			"max": 1
 		},
@@ -25,38 +19,26 @@
 		},
 		{
 			"default": false,
-			"name": "plotPriorAndPosterior",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
-			"name": "plotPriorAndPosteriorAdditionalInfo",
+			"name": "plotBayesFactorRobustness",
 			"type": "Boolean"
 		},
 		{
 			"format": "",
-			"name": "successes",
+			"name": "sampleSize",
 			"type": "Number",
-			"min": 0
+			"value": 0
 		},
 		{
 			"format": "",
-			"name": "trials",
+			"name": "numberOfCovariates",
 			"type": "Number",
-			"min": 0
+			"value": 0
 		},
 		{
 			"format": "",
-			"name": "betaPriorParamA",
+			"name": "priorWidth",
 			"type": "Number",
-			"value": 1,
-			"min": 0
-		},
-		{
-			"format": "",
-			"name": "betaPriorParamB",
-			"type": "Number",
-			"value": 1,
+			"value": 0.707,
 			"min": 0
 		}
 	]	
