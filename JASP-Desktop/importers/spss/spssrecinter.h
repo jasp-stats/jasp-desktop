@@ -162,7 +162,6 @@ public:
 	 */
 	std::string format(double value);
 
-
 private:
 	// Day Zero for spss files.
 	static const QDate _beginEpoch;
