@@ -16,7 +16,7 @@
 #
 
 TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-
+	
 	dependents <- unlist(options$variables)
 	
 	grouping   <- options$groupingVariable

@@ -39,7 +39,8 @@
 			"name": "priorWidth",
 			"type": "Number",
 			"value": 0.707,
-			"min": 0
+			"min": 0,
+			"max": 2
 		}
 	]	
 }
