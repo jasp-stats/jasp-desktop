@@ -20,19 +20,40 @@
 
 #include "missingvaluechecker.h"
 #include "measures.h"
+#include "spssformattype.h"
 #include "numericconverter.h"
 #include "../codepageconvert.h"
 
-#define INDEXED_STRINGS 1
+
+#include "measures.h"
+#include "spssformattype.h"
+#include <column.h>
 
 #include <vector>
 #include <string>
-#ifdef INDEXED_STRINGS
 #include <set>
 #include <map>
-#endif
+#include <qdatetime.h>
 
-// If defined the stringsa re vaiable as as indexed values.
+/*
+ * Macros to build attriutes of a class.
+ */
+#define _ATT_VALUE(type, name)		\
+private:							\
+	type _##name;					\
+
+#define READ_ATTR(type, name)		\
+	_ATT_VALUE(type, name)			\
+public:								\
+	const type & name() const		\
+		{ return _##name; }			\
+
+#define RW_ATTR(type, name)			\
+	READ_ATTR(type, name)			\
+public:								\
+	void name(const type &value)	\
+		{ _##name = value; }		\
+
 
 namespace spss
 {
@@ -43,39 +64,81 @@ namespace spss
 class SPSSColumn
 {
 public:
-	std::string spssLabel;		// The name as shown to the user.
-	std::string spssName;		// The name as in hte file.
-
-	SPSSColumn(const std::string &name, const std::string &label, const spss::MissingValueChecker &missingChecker, long stringLen, int32_t measure);
-
-private:
-	long _spssStringLen;	// The length of this string (-1 for none).
-	long _charsRemaining;	// The numer of chars (in this case!) remaind to read-in.
-public:
 
 	/**
-	 * @brief spssStringLen Find the length of the string (in column).
-	 * @param value Value to set.
+	 * @brief SPSSColumn Ctor
+	 * @param name SPSS column name (short form)
+	 * @param label Column label.
+	 * @param stringLen String length or zero.
+	 * @param formattype The format Type from the variable record.
+	 * @param missingChecker Check for missing value with this.
 	 */
-	void spssStringLen(long value);
+	SPSSColumn(const std::string &name, const std::string &label, long stringLen, FormatTypes formattype, const spss::MissingValueChecker &missingChecker);
+
+	/*
+	 * Attributes for the column.
+	 */
+	RW_ATTR(std::string, spssLabel)		// The name as shown to the user.
+
+	READ_ATTR(std::string, spssName)	// The name as in hte file.
+
+	READ_ATTR(long, spssStringLen)		// Lenght of the string (if string).
+
+	READ_ATTR(int, columnSpan)			// Number of data cells this column spans.
+	void incrementColumnSpan() { _columnSpan++; }
+
+	RW_ATTR(Measure, spssMeasure)			// The Measure from the SPSS file (if any)
+	READ_ATTR(FormatTypes, spssFormatType)	// The Format / Type value from the SPSS file.
+
+	READ_ATTR(spss::MissingValueChecker, missingChecker) // A Missing value checker machine.
+
+	RW_ATTR(size_t, charsRemaining)		// The numer of chars (in this case!) remaind to read-in.
+
+	std::vector<double>			numerics;	// Numeric values, one per case.
+	std::vector<std::string>	strings;	// String values, one per case.
+
+	enum e_celTypeReturn { cellDouble, cellString };
+	/**
+	 * @brief cellType Gets the cell data type we expect to read for this coloumn.
+	 * @return
+	 */
+	enum e_celTypeReturn cellType() const;
+
+
+	/**
+	 * @brief insert Insert a string into the columns.
+	 * @param str String to insert.
+	 * @return index of the inserted value (=== case)
+	 */
+	size_t insert(const std::string &str);
+
+	/**
+	 * @brief append Appends a value to the last inserted string.
+	 * @param str The string to append.
+	 * @return index of the inserted value (=== case)
+	 */
+	size_t append(const std::string &str);
+
+	/**
+	 * @brief getString Gets the string at index.
+	 * @param index (== case)
+	 * @return The value.
+	 */
+	const std::string &getString(size_t index) const;
+
+	/**
+	 * @brief insert Inserts a double.
+	 * @param value The value to insert,
+	 * @return index of the inserted value (=== case)
+	 */
+	size_t insert(double value);
+
 
 	/**
 	 * @brief spssStringLen Set the length of the string (in column).
-	 * @return Value
-	 */
-	long spssStringLen() const;
-
-	/**
-	 * @brief charsRemaining Set the number of chars remaining for this column/case.
 	 * @param value Value to set.
 	 */
-	void charsRemaining(long value);
-
-	/**
-	 * @brief charsRemaining Find the number of chars remaining for this column/case.
-	 * @return Value
-	 */
-	long charsRemaining() const;
+	void spssStringLen(long value);
 
 	/**
 	 * @brief charsRemaining Find the number of chars remaining for this buffer, for one data cell.
@@ -84,49 +147,38 @@ public:
 	 */
 	long cellCharsRemaining(size_t bufferSize);
 
-	int columnSpan;
-	int32_t measure;
-	std::vector<double> numerics;	// one per case.
-private:
-	std::vector<std::string> _strings; // one per case.
-public:
-
 	/**
-	 * @brief insert Insert a string into the columns.
-	 * @param str
-	 * @return The index of the inserted string.
+	 * @brief getJaspColumnType Finds the column type that JASP will use.
+	 * @return A column type.
+	 *
 	 */
-	size_t insert(const std::string &str);
+	Column::ColumnType getJaspColumnType() const;
 
 	/**
-	 * @brief append Appends a value to the last inserted string.
-	 * @param str The string to append.
-	 * @return index of the last inserted string.
-	 */
-	size_t append(const std::string &str);
-
-	/**
-	 * @brief get Gets the string at index.
-	 * @param index
+	 * @brief format Fomats a number that SPSS holds as a numeric value that JASP cannot deal with.
+	 * @param value The value to format.
 	 * @return
 	 */
-	const std::string &get(size_t index) const;
+	std::string format(double value);
+
+private:
+	// Day Zero for spss files.
+	static const QDate _beginEpoch;
 
 	/**
-	 * @brief strings Get the strings.
-	 * @return Reference  to strings.
+	 * @brief _toQDateTime Convert SPSS seconds to a date/time.
+	 * @param dt - Target
+	 * @param seconds Number of seconds since start of SPSS epoch.
+	 * @return void
 	 */
-	const std::vector<std::string> &strings() const { return _strings; }
-	std::vector<std::string> &strings() { return _strings; }
+	QDateTime* _asDateTime(double seconds) const;
 
-	// A Missing value checker machine.
-	spss::MissingValueChecker missingChecker;
+	/*
+	 * Help functions for _toDateTime().
+	 */
+	QString _weekday(unsigned short int wd) const;
 
-	bool isString()
-	{
-		return measure == spss::Measures::string_type;
-	}
-
+	QString _month(unsigned short int mnth) const;
 };
 
 
@@ -261,5 +313,10 @@ private:
 };
 
 } // end namespace
+
+
+#undef _ATT_VALUE
+#undef READ_ATTR
+#undef RW_ATTR
 
 #endif // SPSSRECINTER_H

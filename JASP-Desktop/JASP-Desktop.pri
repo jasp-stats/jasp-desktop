@@ -319,7 +319,6 @@ HEADERS  += \
 		$$PWD/importers/spss/floatinforecord.h \
 		$$PWD/importers/spss/integerinforecord.h \
 		$$PWD/importers/spss/longvarnamesrecord.h \
-		$$PWD/importers/spss/measures.h \
 		$$PWD/importers/spss/miscinforecord.h \
 		$$PWD/importers/spss/missingvaluechecker.h \
 		$$PWD/importers/spss/numericconverter.h \
@@ -332,11 +331,13 @@ HEADERS  += \
 		$$PWD/importers/spss/vardisplayparamrecord.h \
 		$$PWD/importers/spss/variablerecord.h \
 		$$PWD/importers/spss/verylongstringrecord.h \
+		$$PWD/importers/spss/measures.h \
 		$$PWD/importers/codepageconvert.h \
 		$$PWD/importers/csv.h \
 		$$PWD/importers/csvimporter.h \
 		$$PWD/importers/jaspimporter.h \
-		$$PWD/importers/spssimporter.h
+		$$PWD/importers/spssimporter.h \
+    $$PWD/importers/spss/spssformattype.h
 
 
 FORMS += \

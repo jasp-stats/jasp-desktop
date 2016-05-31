@@ -116,7 +116,7 @@ void DataRecords::readCompressed(/* OUT */ DataSetPackage *dataSet)
  */
 void DataRecords::readUncompressed(/* OUT */ DataSetPackage *dataSet)
 {
-	DEBUG_COUT1("Reading UNCOMPRESSED data..");
+//	DEBUG_COUT1("Reading UNCOMPRESSED data..");
 	while (_from.good())
 	{
 		SPSSImporter::reportFileProgress(_from.tellg(), _progress);
@@ -131,20 +131,14 @@ void DataRecords::readUncompressed(/* OUT */ DataSetPackage *dataSet)
  */
 void DataRecords::insertToCol(SPSSColumn &col, const string &str)
 {
-	if (col.isString())
+	if (col.cellType() == SPSSColumn::cellString)
 	{
 		if (_cols.isSpanning())
-		{
-			//			col.strings[ col.strings.size() - 1 ].append(str);
 			col.append(str);
-//			DEBUG_COUT5("Is spanning col ", col.spssName, " index is '", col.strings().size() - 1, ".");
-		}
 		else
 			col.insert(str);
 
 		_numStrs++;
-
-//		DEBUG_COUT5("Col ", col.spssName, " string is '", col.strings()[ col.strings().size() - 1 ], "'.");
 	}
 }
 
@@ -154,13 +148,12 @@ void DataRecords::insertToCol(SPSSColumn &col, const string &str)
  */
 void DataRecords::insertToCol(SPSSColumn &col, double value)
 {
-	if (col.isString() == false)
+	if (col.cellType() == SPSSColumn::cellDouble)
 	{
 		col.numerics.push_back(value);
 		_numDbls++;
 	}
 
-//	DEBUG_COUT5("Col ", col.name, " number is : ", value, ".");
 }
 
 /**
@@ -171,11 +164,13 @@ void DataRecords::readUnCompVal(SPSSColumn &col)
 {
 	union u_dta { Char_8 c; double d; } dta;
 	_SPSSIMPORTER_READ_VAR(dta, _from);
-	if (col.isString())
+	if (col.cellType() == SPSSColumn::cellString)
 		insertToCol(col, string(dta.c, col.cellCharsRemaining(sizeof(dta.c))));
 	else
 	{
 		_fixer.fixup(&dta.d);
+
+		// TODO: Enstring date types!
 		insertToCol(col, dta.d);
 	}
 }

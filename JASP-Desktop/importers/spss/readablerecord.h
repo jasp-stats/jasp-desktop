@@ -120,7 +120,7 @@ ReadableRecord<rT>::ReadableRecord(RecordTypes fileType)
 {
 	if (fileType != RECORD_TYPE)
 	{
-		DEBUG_COUT5("ReadableRecord::ctor: Expected record type ", RECORD_TYPE, " got type ", fileType, ".");
+//		DEBUG_COUT5("ReadableRecord::ctor: Expected record type ", RECORD_TYPE, " got type ", fileType, ".");
 		throw std::runtime_error("SPSS record type mismatch (non-file).");
 	}
 }
@@ -142,12 +142,12 @@ ReadableRecord<rT>::ReadableRecord(const NumericConverter &, RecordTypes fileTyp
 {
 	if (!from.good())
 	{
-		DEBUG_COUT1("ReadableRecord::ctor File gone bad.");
+//		DEBUG_COUT1("ReadableRecord::ctor File gone bad.");
 		throw std::runtime_error("unexpected EOF");
 	}
 		if (fileType != RECORD_TYPE)
 	{
-		DEBUG_COUT5("ReadableRecord::ctor: Expected record type ", RECORD_TYPE, " got type ", fileType, ".");
+//		DEBUG_COUT5("ReadableRecord::ctor: Expected record type ", RECORD_TYPE, " got type ", fileType, ".");
 		throw std::runtime_error("SPSS record type mismatch.");
 	}
 

@@ -73,9 +73,9 @@ void CharacterEncodingRecord::process(SPSSColumns & columns)
 }
 
 /**
-/*  @brief _buildNs Builds the nameSubstitution map.
-/*  @return
-/*
+ *  @brief _buildNs Builds the nameSubstitution map.
+ *  @return
+ *
  */
 CharacterEncodingRecord::_NameSubs CharacterEncodingRecord::_buildNs()
 {

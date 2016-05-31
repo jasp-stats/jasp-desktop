@@ -52,7 +52,7 @@ public:
 	 * @param value Value to test
 	 * @return true if a missing value.
 	 */
-	bool isMissingValue(const FloatInfoRecord &fir, double value);
+	bool isMissingValue(const FloatInfoRecord &fir, double value) const;
 
 	/**
 	 * @brief processMissingValue Checks a processes a value for missing.
@@ -62,6 +62,7 @@ public:
 	 * @return \code jasp_missing \endcode if missing value, \code value \endcode if not.
 	 */
 	double processMissingValue(const FloatInfoRecord &fir, double value, double jasp_missing = NAN)
+	const
 	{ return (isMissingValue(fir, value)) ? jasp_missing : value; }
 
 private:

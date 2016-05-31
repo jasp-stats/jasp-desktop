@@ -22,20 +22,36 @@
 #include <assert.h>
 #include <algorithm>
 
+#include <float.h>
+
+#include <QDateTime>
+
 using namespace std;
 using namespace spss;
 
+const QDate SPSSColumn::_beginEpoch(1582, 10, 14);
 
 
-SPSSColumn::SPSSColumn(const string &nm, const string &lbl, const spss::MissingValueChecker & mssngChckr, long strngLn, int32_t msr)
-	: spssLabel(lbl)
-	, spssName(nm)
-	, _spssStringLen(strngLn)
-	, _charsRemaining(strngLn)
-	, columnSpan(1)
-	, measure(msr)
-	, missingChecker(mssngChckr)
-{}
+/**
+ * @brief SPSSColumn Ctor
+ * @param name SPSS column name (short form)
+ * @param label Column label.
+ * @param stringLen String length or zero.
+ * @param formattype The format Type from the variable record.
+ * @param missingChecker Check for missing value with this.
+ */
+SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long stringLen, FormatTypes formattype, const spss::MissingValueChecker &missingChecker)
+	: _spssLabel(label)
+	, _spssName(name)
+	, _spssStringLen(stringLen)
+	, _columnSpan(1)
+	, _spssMeasure(measure_undefined)
+	, _spssFormatType(formattype)
+	, _missingChecker(missingChecker)
+	, _charsRemaining(stringLen)
+{
+
+}
 
 /**
  * @brief spssStringLen Find the length of the string (in column).
@@ -47,34 +63,6 @@ void SPSSColumn::spssStringLen(long value)
 	_charsRemaining = value;
 }
 
-/**
- * @brief spssStringLen Set the length of the string (in column).
- * @return Value
- */
-long SPSSColumn::spssStringLen()
-const
-{
-	return _spssStringLen;
-}
-
-/**
- * @brief charsRemaining Set the number of chars remaining for this column/case.
- * @param value Value to set.
- */
-void SPSSColumn::charsRemaining(long value)
-{
-	_charsRemaining = value;
-}
-
-/**
- * @brief charsRemaining Find the number of chars remaining for this column/case.
- * @return Value
- */
-long SPSSColumn::charsRemaining()
-const
-{
-	return _charsRemaining;
-}
 
 /**
  * @brief charsRemaining Find the number of chars remaining for this buffer, for one data cell.
@@ -87,15 +75,244 @@ long SPSSColumn::cellCharsRemaining(size_t bufferSize)
 }
 
 /**
+ * @brief getJaspColumnType Finds the column type that JASP will use.
+ * @return A column type.
+ *
+ */
+Column::ColumnType SPSSColumn::getJaspColumnType() const
+{
+	switch(spssFormatType())
+	{
+	case format_A:
+	case format_AHEX:
+		return Column::ColumnTypeNominalText;	// Strings are nominal text.
+
+	// Date and time formats are converted to
+	// strings, when read in.
+	case format_TIME:
+	case format_DTIME:
+	case format_DATE:
+	case format_ADATE:
+	case format_EDATE:
+	case format_JDATE:
+	case format_SDATE:
+	case format_QYR:
+	case format_MOYR:
+	case format_WKYR:
+	case format_DATETIME:
+	case format_WKDAY:
+	case format_MONTH:
+		return Column::ColumnTypeNominalText;
+
+	default: // Everything else is a number of some sort.
+
+		switch(spssMeasure())
+		{
+		case measure_continuous:
+		case measure_undefined:
+			// If we know no better, then it is a FP.
+			return Column::ColumnTypeScale;
+		case measure_nominal:
+			return Column::ColumnTypeNominal;
+		case measure_ordinal:
+			return Column::ColumnTypeOrdinal;
+		}
+	}
+}
+
+
+
+/**
+ * @brief _toQDateTime Convert SPSS seconds to a date/time.
+ * @param dt - Target
+ * @param seconds Number of seconds since start of SPSS epoch.
+ * @return void
+ */
+QDateTime* SPSSColumn::_asDateTime(double seconds) const
+{
+	qint64 totalSecs = floor(seconds);
+	qint64 days = totalSecs / (24*3600);
+	qint64 secs = totalSecs % (24*3600);
+
+	QDate dt = QDate::fromJulianDay(days + _beginEpoch.toJulianDay());
+
+	int hours = secs / 3600;
+	secs = secs % 3600;
+	int mins = secs / 60;
+	secs = secs % 60;
+	QTime tm(hours, mins, (int) secs);
+
+	return new QDateTime(dt, tm, Qt::UTC);
+}
+
+
+QString SPSSColumn::_weekday(unsigned short int wd)
+const
+{
+	switch(wd)
+	{
+	case 1:
+		return "Sunday";
+	case 2:
+		return "Monday";
+	case 3:
+		return "Tuesday";
+	case 4:
+		return "Wednesday";
+	case 5:
+		return "Thursday";
+	case 6:
+		return "Friday";
+	case 7:
+		return "Saturday";
+	default:
+		return "";
+	}
+}
+
+QString SPSSColumn::_month(unsigned short int mnth)
+const
+{
+	switch(mnth)
+	{
+	case 1:
+		return "January";
+	case 2:
+		return "February";
+	case 3:
+		return "March";
+	case 4:
+		return "April";
+	case 5:
+		return "May";
+	case 6:
+		return "June";
+	case 7:
+		return "July";
+	case 8:
+		return "August";
+	case 9:
+		return "September";
+	case 10:
+		return "October";
+	case 11:
+		return "November";
+	case 12:
+		return "December";
+	default:
+		return "";
+	}
+}
+
+
+
+/**
+ * @brief format Fomats a number that SPSS holds as a numeric value that JASP cannot deal with.
+ * @param value The value to format.
+ * @return Formatted date, or "" (string empty) for no value (0)
+ */
+string SPSSColumn::format(double value)
+{
+	QString result;
+	if (!isnan(value))
+	{
+		QDateTime * dt = _asDateTime(value);
+
+		switch(spssFormatType())
+		{
+		case format_A:
+		case format_AHEX:
+		default:
+			break;
+
+		// Date and time formats are converted to
+		// strings, when read in.
+		case format_TIME:
+			result = dt->time().toString("hh:mm:ss");
+			break;
+
+		case format_DTIME:
+			result = QString("%1").arg(dt->date().toJulianDay() - _beginEpoch.toJulianDay(), 2, QLatin1Char('0'));
+			result.append(dt->time().toString(" hh:mm:ss"));
+			break;
+
+		case format_DATE:
+			result = dt->toString("dd-MMM-yyyy");
+			break;
+		case format_ADATE:
+			result = dt->toString("MM-dd-yyyy");
+			break;
+		case format_EDATE:
+			result = dt->toString("dd.MM.yyyy");
+			break;
+		case format_JDATE:
+			result = dt->date().toString("yyyy");
+			result.append(QString("%1").arg(dt->date().daysInYear(), 3, 10, QLatin1Char('0')));
+			break;
+		case format_SDATE:
+			result = dt->toString("yyyy/MM/dd");
+			break;
+		case format_QYR:
+			result = QString::number(dt->date().month() % 4);
+			result.append(dt->toString(" Q yyyy"));
+			break;
+		case format_MOYR:
+			result = dt->toString("MMM yyyy");
+			break;
+		case format_WKYR:
+			result.append(QString("%1").arg((dt->date().dayOfYear() / 7) + 1, 2, 10, QLatin1Char('0')));
+			result.append(dt->toString(" WK yyyy"));
+			break;
+
+		case format_DATETIME:
+			result = dt->toString("dd-MMM-yyyy hh:mm:ss");
+			break;
+		case format_WKDAY:
+			result = _weekday(static_cast<unsigned short int>(floor(value)));
+			break;
+		case format_MONTH:
+			result = _month(static_cast<unsigned short int>(floor(value)));
+			break;
+		}
+
+		delete dt;
+	}
+
+	return static_cast<const char *>(result.toUtf8());
+}
+
+/**
+ * @brief cellType Gets the cell data type we expect to read for this coloumn.
+ * @return
+ */
+enum SPSSColumn::e_celTypeReturn SPSSColumn::cellType() const
+{
+	switch(_spssFormatType)
+	{
+	case format_A:
+	case format_AHEX:
+		return cellString;
+	default:
+		return cellDouble;
+	}
+}
+
+
+/**
  * @brief insert Insert a string into the columns.
  * @param str
  * @return The index of the inserted string.
  */
 size_t SPSSColumn::insert(const string &str)
 {
-	_strings.push_back(str);
-	_charsRemaining = _spssStringLen - str.length();
-	return _strings.size() - 1;
+	if (cellType() == cellString)
+	{
+		strings.push_back(str);
+		_charsRemaining = _spssStringLen - str.length();
+		return strings.size() - 1;
+	}
+	else
+		return 0;
 }
 
 /**
@@ -105,13 +322,18 @@ size_t SPSSColumn::insert(const string &str)
  */
 size_t SPSSColumn::append(const std::string &str)
 {
-	size_t index =_strings.size() - 1;
-	_strings[index].append(str);
-	if (_charsRemaining > str.size())
-		_charsRemaining = _charsRemaining - str.size();
+	if (cellType() == cellString)
+	{
+		size_t index = strings.size() - 1;
+		strings[index].append(str);
+		if (_charsRemaining > str.size())
+			_charsRemaining = _charsRemaining - str.size();
+		else
+			_charsRemaining = 0;
+		return index;
+	}
 	else
-		_charsRemaining = 0;
-	return index;
+		return 0;
 }
 
 /**
@@ -119,10 +341,13 @@ size_t SPSSColumn::append(const std::string &str)
  * @param index
  * @return
  */
-const std::string &SPSSColumn::get(size_t index)
+const std::string &SPSSColumn::getString(size_t index)
 const
 {
-	return _strings.at(index);
+	if (cellType() == cellString)
+		return strings.at(index);
+	else
+		return "";
 }
 
 
@@ -153,7 +378,7 @@ SPSSColumn& SPSSColumns::getNextColumn()
 {
 
 	// First time or done spanning the (last) column?
-	if ((_colCtr == -1) || (at(_colCtr).columnSpan == _spanCtr))
+	if ((_colCtr == -1) || (at(_colCtr).columnSpan() == _spanCtr))
 	{
 		// Goto next column..
 		_colCtr++;
@@ -207,7 +432,7 @@ void SPSSColumns::numCases(int64_t num)
 }
 
 /**
- * @brief processStringsPostLoad - Delas with very Long strings (len > 255) and CP processes all strings.
+ * @brief processStringsPostLoad - Deals with very Long strings (len > 255) and CP processes all strings.
  * Call after the data is loaded!.
  */
 void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string &, int)> progress)
@@ -231,16 +456,16 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 		SPSSColumns::iterator rootIter;
 		for (rootIter = begin(); rootIter != end(); rootIter++)
 		{
-			DEBUG_COUT6("Matching: \"", rootIter->spssName, "\" with \"", ituple->first, "\" ", ((rootIter->spssName == ituple->first) ? "successfully." : "failed."));
-			if (rootIter->spssName == ituple->first)
+//			DEBUG_COUT6("Matching: \"", rootIter->spssName(), "\" with \"", ituple->first, "\" ", ((rootIter->spssName() == ituple->first) ? "successfully." : "failed."));
+			if (rootIter->spssName() == ituple->first)
 					break;
 		}
 
 		// Shouldn't happen..
 		if (rootIter == end())
-			DEBUG_COUT2("SPSSColumns::processVeryLongStrings(): Failed to find match for ", ituple->first.c_str());
+//			DEBUG_COUT2("SPSSColumns::processVeryLongStrings(): Failed to find match for ", ituple->first.c_str());
 
-		DEBUG_COUT3("Found SPSS col ", rootIter->spssName.c_str(), " root to append..");
+//		DEBUG_COUT3("Found SPSS col ", rootIter->spssName().c_str(), " root to append..");
 
 		while (rootIter->spssStringLen() < ituple->second)
 		{
@@ -249,12 +474,12 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 			ncol++;
 
 			// concatinate all the strings, going down the cases.
-			for (size_t cse  = 0; cse < rootIter->strings().size(); cse++)
+			for (size_t cse  = 0; cse < rootIter->strings.size(); cse++)
 			{
 				// How much more to add?
-				long needed = min(ituple->second - rootIter->strings()[cse].size(), rootIter->strings()[cse].size());
+				long needed = min(ituple->second - rootIter->strings[cse].size(), rootIter->strings[cse].size());
 				if (needed > 0)
-					rootIter->strings()[cse].append(ncol->strings()[cse], 0, needed);
+					rootIter->strings[cse].append(ncol->strings[cse], 0, needed);
 			}
 			rootIter->spssStringLen( rootIter->spssStringLen() + ncol->spssStringLen() );
 			// Dump the column.
@@ -277,15 +502,15 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 			}
 
 		}
-		if (iCol->isString())
+		if (iCol->cellType() == SPSSColumn::cellString)
 		{
-			for (size_t cse  = 0; cse < iCol->strings().size(); cse++)
+			for (size_t cse  = 0; cse < iCol->strings.size(); cse++)
 			{
 				// Do a code page conversion on the the string.
-				iCol->strings()[cse] = _stringConvert->convertCodePage(iCol->strings()[cse]);
+				iCol->strings[cse] = _stringConvert->convertCodePage(iCol->strings[cse]);
 				// Trim left and right.
-				StrUtils::lTrimWSIP(iCol->strings()[cse]);
-				StrUtils::rTrimWSIP(iCol->strings()[cse]);
+				StrUtils::lTrimWSIP(iCol->strings[cse]);
+				StrUtils::rTrimWSIP(iCol->strings[cse]);
 			}
 		}
 	}

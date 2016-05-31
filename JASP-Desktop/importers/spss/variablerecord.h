@@ -82,7 +82,7 @@ public:
 	 */
 	bool isNumeric() const { return (_type == 0); }
 	bool isString() const { return ((_type != 0) && (_type != -1)); }
-	bool isStringContinuation() const { return (_type == -1) && !hasVarLabel() && !hasMissingValues(); }
+	bool isStringContinuation() const { return (_type == -1); }
 	bool hasVarLabel() const { return (_has_var_label == 1); }
 	bool hasMissingValues() const { return (_n_missing_values != 0); }
 
@@ -96,6 +96,24 @@ public:
 
 private:
 	std::string  _name;
+
+	/*
+	 * Macros to break the print or write fields to
+	 * format / width / decimal places.
+	 */
+	static const int32_t _DEC_PLACES_MASK	= 0x000000FF;
+	static const int32_t _WIDTH_MASK		= 0x0000FF00;
+	static const int32_t _FORMAT_MASK		= 0x00FF0000;
+
+	static FormatTypes _getType(int32_t field)
+		{ return static_cast<FormatTypes>((field & _FORMAT_MASK) >> 16); }
+
+	short unsigned int  _getWidth(int32_t field)
+		{ return (field & _WIDTH_MASK) >> 8; }
+
+	short unsigned int  _getDecPlaces(int32_t field)
+		{ return field & _DEC_PLACES_MASK; }
+
 };
 
 }
