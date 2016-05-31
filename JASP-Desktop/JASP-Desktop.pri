@@ -164,6 +164,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/principalcomponentanalysisform.cpp \
         $$PWD/analysisforms/reliabilityanalysisform.cpp \
         $$PWD/analysisforms/SEM/semsimpleform.cpp \
+<<<<<<< 3697157bc4a65c546349b419dbeac90e79df59d5
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.cpp \
@@ -172,6 +173,14 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
 		$$PWD/simplecrypt.cpp
+=======
+        $$PWD/analysisforms/SummaryStatistics/bffromtindependentsamplesform.cpp \
+        $$PWD/analysisforms/SummaryStatistics/bffromtonesampleform.cpp \
+        $$PWD/analysisforms/SummaryStatistics/bffromtpairedsamplesform.cpp \
+        $$PWD/analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.cpp \
+        $$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.cpp \
+        $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp
+>>>>>>> Import Date/Time/DateTime (like) data types as strings.
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -362,7 +371,6 @@ HEADERS  += \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h
 
-
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
         $$PWD/analysisforms/ttestpairedsamplesform.ui \
@@ -417,6 +425,11 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
+        $$PWD/analysisforms/SummaryStatistics/bffromtindependentsamplesform.ui \
+        $$PWD/analysisforms/SummaryStatistics/bffromtonesampleform.ui \
+        $$PWD/analysisforms/SummaryStatistics/bffromtpairedsamplesform.ui \
+        $$PWD/analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.ui \
+        $$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
 
 

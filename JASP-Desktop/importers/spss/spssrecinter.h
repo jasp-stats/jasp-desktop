@@ -85,6 +85,7 @@ public:
 	READ_ATTR(long, spssStringLen)		// Length of the string (if string).
 
 	READ_ATTR(int, columnSpan)			// Number of data cells this column spans.
+
 	void incrementColumnSpan() { _columnSpan++; }
 
 	RW_ATTR(Measure, spssMeasure)			// The Measure from the SPSS file (if any)

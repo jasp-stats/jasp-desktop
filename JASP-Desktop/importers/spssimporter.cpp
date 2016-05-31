@@ -82,7 +82,6 @@ void SPSSImporter::loadDataSet(
 
 	// Fetch the dictionary.
 	bool processingDict = true;
-
 	while(stream.good() && processingDict)
 	{
 		// Inform user of progress.

@@ -23,7 +23,7 @@
 #include <algorithm>
 
 #include <math.h>
-
+#include <float.h>
 
 #include <QDateTime>
 
@@ -120,6 +120,7 @@ Column::ColumnType SPSSColumn::getJaspColumnType() const
 			return Column::ColumnTypeOrdinal;
 		}
 	}
+	// if it's anything else, say it's a scalar
 	return Column::ColumnTypeScale;
 }
 
@@ -205,7 +206,6 @@ const
 		return "";
 	}
 }
-
 
 /**
  * @brief format Fomats a number that SPSS holds as a numeric value that JASP cannot deal with.
@@ -506,54 +506,50 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 		if (rootIter == end())
 			throw runtime_error("Failed to process a very long string value.");
 
-//			DEBUG_COUT2("SPSSColumns::processVeryLongStrings(): Failed to find match for ", ituple->first.c_str());
+        while (rootIter->spssStringLen() < ituple->second)
+        {
+            // Find the next segment, (Should be next one along)
+            SPSSColumns::iterator ncol = rootIter;
+            ncol++;
 
-//		DEBUG_COUT3("Found SPSS col ", rootIter->spssName().c_str(), " root to append..");
+            // concatinate all the strings, going down the cases.
+            for (size_t cse  = 0; cse < rootIter->strings.size(); cse++)
+            {
+                // How much more to add?
+                long needed = min(ituple->second - rootIter->strings[cse].size(), rootIter->strings[cse].size());
+                if (needed > 0)
+                    rootIter->strings[cse].append(ncol->strings[cse], 0, needed);
+            }
+            rootIter->spssStringLen( rootIter->spssStringLen() + ncol->spssStringLen() );
+            // Dump the column.
+            erase(ncol);
+        }
+    }
 
-		while (rootIter->spssStringLen() < ituple->second)
-		{
-			// Find the next segment, (Should be next one along)
-			SPSSColumns::iterator ncol = rootIter;
-			ncol++;
+    // Trim trialing spaces for all strings in the data set.
+    float numStrs = distance(begin(), end());
+    for (std::vector<SPSSColumn>::iterator iCol = begin(); iCol != end(); ++iCol)
+    {
+        { // report progress
+            float prog = 100.0 * ((float) distance(begin(), iCol)) / numStrs;
+            static float lastProg = -1.0;
+            if ((prog - lastProg) >= 1.0)
+            {
+                progress("Processing strings for alphabet.", (int) (prog + 0.5));
+                lastProg = prog;
+            }
 
-			// concatinate all the strings, going down the cases.
-			for (size_t cse  = 0; cse < rootIter->strings.size(); cse++)
-			{
-				// How much more to add?
-				long needed = min(ituple->second - rootIter->strings[cse].size(), rootIter->strings[cse].size());
-				if (needed > 0)
-					rootIter->strings[cse].append(ncol->strings[cse], 0, needed);
-			}
-			rootIter->spssStringLen( rootIter->spssStringLen() + ncol->spssStringLen() );
-			// Dump the column.
-			erase(ncol);
-		}
-	}
-
-	// Trim trialing spaces for all strings in the data set.
-	float numStrs = distance(begin(), end());
-	for (std::vector<SPSSColumn>::iterator iCol = begin(); iCol != end(); ++iCol)
-	{
-		{ // report progress
-			float prog = 100.0 * ((float) distance(begin(), iCol)) / numStrs;
-			static float lastProg = -1.0;
-			if ((prog - lastProg) >= 1.0)
-			{
-				progress("Processing strings for alphabet.", (int) (prog + 0.5));
-				lastProg = prog;
-			}
-
-		}
-		if (iCol->cellType() == SPSSColumn::cellString)
-		{
-			for (size_t cse  = 0; cse < iCol->strings.size(); cse++)
-			{
-				// Do a code page conversion on the the string.
-				iCol->strings[cse] = _stringConvert->convertCodePage(iCol->strings[cse]);
-				// Trim left and right.
-				StrUtils::lTrimWSIP(iCol->strings[cse]);
-				StrUtils::rTrimWSIP(iCol->strings[cse]);
-			}
-		}
-	}
+        }
+        if (iCol->cellType() == SPSSColumn::cellString)
+        {
+            for (size_t cse  = 0; cse < iCol->strings.size(); cse++)
+            {
+                // Do a code page conversion on the the string.
+                iCol->strings[cse] = _stringConvert->convertCodePage(iCol->strings[cse]);
+                // Trim left and right.
+                StrUtils::lTrimWSIP(iCol->strings[cse]);
+                StrUtils::rTrimWSIP(iCol->strings[cse]);
+            }
+        }
+    }
 }
