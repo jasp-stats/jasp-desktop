@@ -60,8 +60,8 @@ SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long s
  */
 void SPSSColumn::spssStringLen(long value)
 {
-    _spssStringLen = value;
-    _charsRemaining = value;
+	_spssStringLen = value;
+	_charsRemaining = value;
 }
 
 
@@ -120,6 +120,7 @@ Column::ColumnType SPSSColumn::getJaspColumnType() const
 			return Column::ColumnTypeOrdinal;
 		}
 	}
+	// if it's anything else, say it's a scalar
 	return Column::ColumnTypeScale;
 }
 
@@ -206,7 +207,6 @@ const
 		return "";
 	}
 }
-
 
 /**
  * @brief format Fomats a number that SPSS holds as a numeric value that JASP cannot deal with.
