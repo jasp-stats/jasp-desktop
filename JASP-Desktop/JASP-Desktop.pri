@@ -310,7 +310,8 @@ HEADERS  += \
         $$PWD/onlinenode.h \
         $$PWD/onlineusernodeosf.h \
         $$PWD/backstage/authwidget.h \
-        $$PWD/exporters/dataexporter.h \
+		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
+		$$PWD/exporters/dataexporter.h \
         $$PWD/exporters/exporter.h \
         $$PWD/exporters/jaspexporter.h \
         $$PWD/exporters/resultexporter.h \
@@ -339,11 +340,13 @@ HEADERS  += \
         $$PWD/importers/spss/vardisplayparamrecord.h \
         $$PWD/importers/spss/variablerecord.h \
         $$PWD/importers/spss/verylongstringrecord.h \
+		$$PWD/importers/spss/measures.h \
         $$PWD/importers/codepageconvert.h \
         $$PWD/importers/csv.h \
         $$PWD/importers/csvimporter.h \
         $$PWD/importers/jaspimporter.h \
         $$PWD/importers/spssimporter.h \
+		$$PWD/importers/spss/spssformattype.h \
         $$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
         $$PWD/importers/spss/spssformattype.h \
@@ -358,6 +361,7 @@ HEADERS  += \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h
+
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
