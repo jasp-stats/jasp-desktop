@@ -23,7 +23,7 @@
 #include <algorithm>
 
 #include <math.h>
-
+#include <float.h>
 
 #include <QDateTime>
 
@@ -42,14 +42,14 @@ const QDate SPSSColumn::_beginEpoch(1582, 10, 14);
  * @param missingChecker Check for missing value with this.
  */
 SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long stringLen, FormatTypes formattype, const spss::MissingValueChecker &missingChecker)
-    : _spssLabel(label)
-    , _spssName(name)
-    , _spssStringLen(stringLen)
-    , _columnSpan(1)
-    , _spssMeasure(measure_undefined)
-    , _spssFormatType(formattype)
-    , _missingChecker(missingChecker)
-    , _charsRemaining(stringLen)
+	: _spssLabel(label)
+	, _spssName(name)
+	, _spssStringLen(stringLen)
+	, _columnSpan(1)
+	, _spssMeasure(measure_undefined)
+	, _spssFormatType(formattype)
+	, _missingChecker(missingChecker)
+	, _charsRemaining(stringLen)
 {
 
 }
@@ -60,8 +60,8 @@ SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long s
  */
 void SPSSColumn::spssStringLen(size_t value)
 {
-    _spssStringLen = value;
-    _charsRemaining = value;
+	_spssStringLen = value;
+	_charsRemaining = value;
 }
 
 
@@ -72,7 +72,7 @@ void SPSSColumn::spssStringLen(size_t value)
  */
 long SPSSColumn::cellCharsRemaining(size_t bufferSize)
 {
-    return (_charsRemaining > bufferSize) ? bufferSize : _charsRemaining;
+	return (_charsRemaining > bufferSize) ? bufferSize : _charsRemaining;
 }
 
 /**
@@ -82,45 +82,46 @@ long SPSSColumn::cellCharsRemaining(size_t bufferSize)
  */
 Column::ColumnType SPSSColumn::getJaspColumnType() const
 {
-    switch(spssFormatType())
-    {
-    case format_A:
-    case format_AHEX:
-        return Column::ColumnTypeNominalText;	// Strings are nominal text.
+	switch(spssFormatType())
+	{
+	case format_A:
+	case format_AHEX:
+		return Column::ColumnTypeNominalText;	// Strings are nominal text.
 
-    // Date and time formats are converted to
-    // strings, when read in.
-    case format_TIME:
-    case format_DTIME:
-    case format_DATE:
-    case format_ADATE:
-    case format_EDATE:
-    case format_JDATE:
-    case format_SDATE:
-    case format_QYR:
-    case format_MOYR:
-    case format_WKYR:
-    case format_DATETIME:
-    case format_WKDAY:
-    case format_MONTH:
-        return Column::ColumnTypeNominalText;
+	// Date and time formats are converted to
+	// strings, when read in.
+	case format_TIME:
+	case format_DTIME:
+	case format_DATE:
+	case format_ADATE:
+	case format_EDATE:
+	case format_JDATE:
+	case format_SDATE:
+	case format_QYR:
+	case format_MOYR:
+	case format_WKYR:
+	case format_DATETIME:
+	case format_WKDAY:
+	case format_MONTH:
+		return Column::ColumnTypeNominalText;
 
-    default: // Everything else is a number of some sort.
+	default: // Everything else is a number of some sort.
 
-        switch(spssMeasure())
-        {
-        case measure_continuous:
-        case measure_undefined:
-        case measure_spss_unknown:
-            // If we know no better, then it is a FP.
-            return Column::ColumnTypeScale;
-        case measure_nominal:
-            return (_containsFraction(numerics) == true) ? Column::ColumnTypeNominalText : Column::ColumnTypeNominal;
-        case measure_ordinal:
-            return Column::ColumnTypeOrdinal;
-        }
-    }
-    return Column::ColumnTypeScale;
+		switch(spssMeasure())
+		{
+		case measure_continuous:
+		case measure_undefined:
+		case measure_spss_unknown:
+			// If we know no better, then it is a FP.
+			return Column::ColumnTypeScale;
+		case measure_nominal:
+			return (_containsFraction(numerics) == true) ? Column::ColumnTypeNominalText : Column::ColumnTypeNominal;
+		case measure_ordinal:
+			return Column::ColumnTypeOrdinal;
+		}
+	}
+	// if it's anything else, say it's a scalar
+	return Column::ColumnTypeScale;
 }
 
 
@@ -133,7 +134,7 @@ Column::ColumnType SPSSColumn::getJaspColumnType() const
  */
 QDateTime* SPSSColumn::_asDateTime(double seconds) const
 {
-    qint64 totalSecs = floor(seconds);
+	qint64 totalSecs = floor(seconds);
     qint64 days = totalSecs / (24*3600);
     qint64 secs = totalSecs % (24*3600);
 
@@ -152,7 +153,7 @@ QDateTime* SPSSColumn::_asDateTime(double seconds) const
 QString SPSSColumn::_weekday(unsigned short int wd)
 const
 {
-    switch(wd)
+	switch(wd)
     {
     case 1:
         return "Sunday";
@@ -176,7 +177,7 @@ const
 QString SPSSColumn::_month(unsigned short int mnth)
 const
 {
-    switch(mnth)
+	switch(mnth)
     {
     case 1:
         return "January";
@@ -206,7 +207,6 @@ const
         return "";
     }
 }
-
 
 /**
  * @brief format Fomats a number that SPSS holds as a numeric value that JASP cannot deal with.
@@ -506,10 +506,6 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
         // Shouldn't happen..
         if (rootIter == end())
             throw runtime_error("Failed to process a very long string value.");
-
-//			DEBUG_COUT2("SPSSColumns::processVeryLongStrings(): Failed to find match for ", ituple->first.c_str());
-
-//		DEBUG_COUT3("Found SPSS col ", rootIter->spssName().c_str(), " root to append..");
 
         while (rootIter->spssStringLen() < ituple->second)
         {
