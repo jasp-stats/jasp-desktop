@@ -36,56 +36,62 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 	#Bayes factor type (BF10, BF01, log(BF10))
 	bf.type <- options$bayesFactorType
 	
-	if (bf.type == "BF10") {
-		
+	if (bf.type == "BF10")
+	{
 		BFH1H0 <- TRUE
 		
-		if (options$hypothesis == "notEqualToTestValue") {
+		if (options$hypothesis == "notEqualToTestValue")
+		{
 			bf.title <- "BF\u2081\u2080"
 		}
-		if (options$hypothesis == "greaterThanTestValue") {
+		else if (options$hypothesis == "greaterThanTestValue")
+		{
 			bf.title <- "BF\u208A\u2080"
 		}
-		if (options$hypothesis == "lessThanTestValue") {
+		else if (options$hypothesis == "lessThanTestValue")
+		{
 			bf.title <- "BF\u208B\u2080"
 		}
-		
-	} else if (bf.type == "LogBF10") {
-		
+	}
+	else if (bf.type == "LogBF10")
+	{
 		BFH1H0 <- TRUE
 		
-		if (options$hypothesis == "notEqualToTestValue") {
+		if (options$hypothesis == "notEqualToTestValue")
+		{
 			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
 		}
-		if (options$hypothesis == "greaterThanTestValue") {
+		else if (options$hypothesis == "greaterThanTestValue")
+		{
 			bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
 		}
-		if (options$hypothesis == "lessThanTestValue") {
+		else if (options$hypothesis == "lessThanTestValue")
+		{
 			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
 		}
 		
-	} else if (bf.type == "BF01") {
-		
+	}
+	else if (bf.type == "BF01")
+	{
 		BFH1H0 <- FALSE
 		
-		if (options$hypothesis == "notEqualToTestValue") {
+		if (options$hypothesis == "notEqualToTestValue")
+		{
 			bf.title <- "BF\u2080\u2081"
 		}
-		if (options$hypothesis == "greaterThanTestValue") {
+		else if (options$hypothesis == "greaterThanTestValue")
+		{
 			bf.title <- "BF\u2080\u208A"
 		}
-		if (options$hypothesis == "lessThanTestValue") {
+		else if (options$hypothesis == "lessThanTestValue")
+		{
 			bf.title <- "BF\u2080\u208B"
 		}
 	}
 
 	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
 
-	#portional error estimate on the Bayes factor
-	if(options$errorEstimate)
-	{
-		fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="Error estimate")		
-	}
+	fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="error %")
 
 	table <- list()
 	table[["title"]] <- "BF from <i>t</i> - One Sample"
@@ -124,8 +130,17 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 
 	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()
-	message <- paste("The prior width used is ", options$priorWidth, sep="")
-	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	
+	if (options$hypothesis == "greaterThanTestValue")
+	{
+		message <- paste("For all tests, the alternative hypothesis specifies that the mean is greater than 0.", sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	}
+	else if(options$hypothesis == "lessThanTestValue")
+	{
+		message <- paste("For all tests, the alternative hypothesis specifies that the mean is lesser than 0.", sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	}
 
 	table[["footnotes"]] <- as.list(footnotes)
 
@@ -271,7 +286,7 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 		r <- rscale
 	}
 	
-	if (oneSided == FALSE)
+	if (oneSided == FALSE || t == 0)
 	{
 		nullInterval <- NULL
 	}
@@ -340,7 +355,7 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 	{
 		rValues <- seq(0.0005, 1.5, length.out = 400)
 	}
-	
+
 	# BF10
 	BF10 <- vector("numeric", length(rValues))
 

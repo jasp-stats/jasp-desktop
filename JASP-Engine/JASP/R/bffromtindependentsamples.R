@@ -58,11 +58,7 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(BF\u2081\u2080)")
 	}
 
-	#proportional error estimate on the Bayes factor
-	if(options$errorEstimate)
-	{
-		fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="Error estimate")		
-	}
+	fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="error %")
 
 	table <- list()
 	table[["title"]] <- "BF from <i>t</i> - Independent Samples"
@@ -104,8 +100,16 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 
 	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()
-	message <- paste("The prior width used is ", options$priorWidth, sep="")
-	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	if (options$hypothesis == "groupOneGreater")
+	{
+		message <- paste("For all tests, the alternative hypothesis specifies that group 1 is greater than group 2", sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	}
+	else if(options$hypothesis == "groupTwoGreater")
+	{
+		message <- paste("For all tests, the alternative hypothesis specifies that group 1 is lesser than group 2", sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	}
 
 	table[["footnotes"]] <- as.list(footnotes)
 

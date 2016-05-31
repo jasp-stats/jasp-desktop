@@ -36,7 +36,7 @@ RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform =
 	meta[[2]] <- list(name="inferentialPlots", type="object", meta=list(list(name="bayesFactorRobustnessPlot", type="image")))
 
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian Binomial Test"
+	results[["title"]] <- "Bayesian Linear Regression"
 
 	fields=list()
 	fields[[length(fields)+1]] <- list(name="sampleSize", type="integer", title="Sample Size")

@@ -36,56 +36,61 @@ BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callbac
 	#Bayes factor type (BF10, BF01, log(BF10))
 	bf.type <- options$bayesFactorType
 	
-	if (bf.type == "BF10") {
-		
+	if (bf.type == "BF10")
+	{
 		BFH1H0 <- TRUE
 		
-		if (options$hypothesis == "groupsNotEqual") {
+		if (options$hypothesis == "groupsNotEqual")
+		{
 			bf.title <- "BF\u2081\u2080"
 		}
-		if (options$hypothesis == "groupOneGreater") {
+		else if (options$hypothesis == "groupOneGreater")
+		{
 			bf.title <- "BF\u208A\u2080"
 		}
-		if (options$hypothesis == "groupTwoGreater") {
+		else if (options$hypothesis == "groupTwoGreater")
+		{
 			bf.title <- "BF\u208B\u2080"
 		}
-		
-	} else if (bf.type == "LogBF10") {
-		
+	}
+	else if (bf.type == "LogBF10")
+	{
 		BFH1H0 <- TRUE
 		
-		if (options$hypothesis == "groupsNotEqual") {
+		if (options$hypothesis == "groupsNotEqual")
+		{
 			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
 		}
-		if (options$hypothesis == "groupOneGreater") {
+		else if (options$hypothesis == "groupOneGreater")
+		{
 			bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
 		}
-		if (options$hypothesis == "groupTwoGreater") {
+		else if (options$hypothesis == "groupTwoGreater")
+		{
 			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
 		}
-		
-	} else if (bf.type == "BF01") {
-		
+	}
+	else if (bf.type == "BF01")
+	{
 		BFH1H0 <- FALSE
 		
-		if (options$hypothesis == "groupsNotEqual") {
+		if (options$hypothesis == "groupsNotEqual")
+		{
 			bf.title <- "BF\u2080\u2081"
 		}
-		if (options$hypothesis == "groupOneGreater") {
+		else if (options$hypothesis == "groupOneGreater")
+		{
 			bf.title <- "BF\u2080\u208A"
 		}
-		if (options$hypothesis == "groupTwoGreater") {
+		else if (options$hypothesis == "groupTwoGreater")
+		{
 			bf.title <- "BF\u2080\u208B"
 		}
 	}
 
 	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
 
-	#portional error estimate on the Bayes factor
-	if(options$errorEstimate)
-	{
-		fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="Error estimate")		
-	}
+	fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="error %")
 
 	table <- list()
 	table[["title"]] <- "BF from <i>t</i> - Paired Samples"
@@ -124,8 +129,17 @@ BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callbac
 
 	
 	footnotes <- .newFootnotes()
-	message <- paste("The prior width used is ", options$priorWidth, sep="")
-	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	
+	if (options$hypothesis == "groupOneGreater")
+	{
+		message <- paste("For all tests, the alternative hyp specifies that measure 1 is greater than measure 2", sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	}
+	else if(options$hypothesis == "groupTwoGreater")
+	{
+		message <- paste("For all tests, the alternative hypothesis specifies that measure 1 is lesser than measure 2", sep="")
+		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	}
 
 	table[["footnotes"]] <- as.list(footnotes)
 
@@ -180,26 +194,32 @@ BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callbac
 
 .calcluateBFPairedSamples <- function(options) {
 
-	if (options$hypothesis == "groupsNotEqual") {
+	if (options$hypothesis == "groupsNotEqual")
+	{
 		nullInterval <- NULL
 		oneSided <- FALSE
 	}
-	if (options$hypothesis == "groupOneGreater") {
+	else if (options$hypothesis == "groupOneGreater")
+	{
 		nullInterval <- c(0, Inf)
 		oneSided <- "right"
 	}
-	if (options$hypothesis == "groupTwoGreater") {
+	else if (options$hypothesis == "groupTwoGreater")
+	{
 		nullInterval <- c(-Inf, 0)
 		oneSided <- "left"
 	}
 
-	if (oneSided == FALSE) {
+	if (oneSided == FALSE)
+	{
 		nullInterval <- NULL
 	}
-	if (oneSided == "right") {
+	else if (oneSided == "right")
+	{
 		nullInterval <- c(0, Inf)
 	}
-	if (oneSided == "left") {
+	else if (oneSided == "left")
+	{
 		nullInterval <- c(-Inf, 0)
 	}
 

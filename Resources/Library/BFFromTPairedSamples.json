@@ -35,11 +35,6 @@
 		},
 		{
 			"default": false,
-			"name": "errorEstimate",
-			"type": "Boolean"
-		},
-		{
-			"default": false,
 			"name": "plotPriorAndPosterior",
 			"type": "Boolean"
 		},
