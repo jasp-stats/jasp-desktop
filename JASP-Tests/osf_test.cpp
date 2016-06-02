@@ -22,7 +22,7 @@
 
 void OSFTest::initTestCase()
 {
-  qDebug() << "********* Beginning OSFTest**********";
+
 }
 
 void OSFTest::init()
@@ -42,7 +42,7 @@ void OSFTest::cleanup()
 
 void OSFTest::cleanupTestCase()
 {
-  qDebug() << "*********  Ending OSFTest  **********";
+
 }
 
 
@@ -53,9 +53,9 @@ void OSFTest::loginAuthenticationTest_data()
   QTest::addColumn<QString>("password");
   QTest::addColumn<bool>("result");
 
-  QTest::newRow("1") << "akash.07.raj@gmail.com" << "123456qwerty" << true;
+  QTest::newRow("1") << "jasp.tester@gmail.com" << "testerJASP" << true;
   QTest::newRow("2") << "Hello.com" << "123456qwerty" << false;
-  QTest::newRow("3") << "akash.07.raj@gmail.com" <<  "12345qwerty" << false;
+  QTest::newRow("3") << "jasp.tester@gmail.com" <<  "12345qwerty" << false;
   QTest::newRow("4") << "osftester1@yopmail.com" <<  "!@#$%^" << true;
   QTest::newRow("5") << "osftester2@yopmail.com" <<  "" << false;
   QTest::newRow("6") << "" <<  "12345qwerty" << false;
@@ -104,7 +104,7 @@ void OSFTest::fileListTest()
 
   asf->setOnlineDataManager(_odm);
   bosf->setOnlineDataManager(_odm);
-  bosf->_fsBrowser->loginRequested("akash.07.raj@gmail.com", "123456qwerty");
+  bosf->_fsBrowser->loginRequested("jasp.tester@gmail.com", "testerJASP");
 
   QSignalSpy spy(bosf, SIGNAL(dataSetIORequest(FileEvent *))); //spy for dataSetIORequest
 
@@ -122,7 +122,7 @@ void OSFTest::fileListTest()
     }
 
     // simulate (GUI) mouse double clicks
-	QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);
+	  QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);
     waitTillExists(buttonGroup);
     QTest::mouseDClick(buttonGroup->button(0), Qt::LeftButton,Qt::NoModifier, QPoint(), 50);    
     waitTillExists(buttonGroup);

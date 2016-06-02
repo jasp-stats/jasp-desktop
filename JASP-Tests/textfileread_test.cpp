@@ -76,6 +76,8 @@ void TextFileReadTest::asyncloaderTester_data()
 
 void TextFileReadTest::asyncloaderTester()
 {
+  QString folderPath = "Resources/TestFiles/textfileread_test/";
+
   if(folderPathFound)
   {
     QFETCH(QString, filename);
