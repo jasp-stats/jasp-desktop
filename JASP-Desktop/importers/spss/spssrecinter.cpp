@@ -525,7 +525,6 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 			rootIter->spssStringLen( rootIter->spssStringLen() + ncol->spssStringLen() );
 			// Dump the column.
 			erase(ncol);
-			// Debug
 		}
 	}
 
