@@ -82,7 +82,7 @@ public:
 
 	READ_ATTR(std::string, spssName)	// The name as in hte file.
 
-	READ_ATTR(long, spssStringLen)		// Lenght of the string (if string).
+	READ_ATTR(long, spssStringLen)		// Length of the string (if string).
 
 	READ_ATTR(int, columnSpan)			// Number of data cells this column spans.
 	void incrementColumnSpan() { _columnSpan++; }
@@ -161,6 +161,7 @@ public:
 	 */
 	std::string format(double value);
 
+
 private:
 	// Day Zero for spss files.
 	static const QDate _beginEpoch;
@@ -172,6 +173,13 @@ private:
 	 * @return void
 	 */
 	QDateTime* _asDateTime(double seconds) const;
+
+	/**
+	 * @brief containsFraction Returns false if all values are integer.
+	 * @param values VAlues to check
+	 * @return true if a fractional part found.
+	 */
+	static bool _containsFraction(const std::vector<double> &values);
 
 	/*
 	 * Help functions for _toDateTime().
