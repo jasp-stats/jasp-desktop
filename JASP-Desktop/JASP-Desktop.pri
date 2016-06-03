@@ -430,7 +430,6 @@ FORMS += \
 		$$PWD/analysisforms/R11tLearn/r11tlearnform.ui
 
 
-
 RESOURCES += \
 		$$PWD/backstage/backstage.qrc \
 		$$PWD/html/html.qrc \
