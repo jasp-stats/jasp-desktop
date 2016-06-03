@@ -22,8 +22,8 @@
 #include <assert.h>
 #include <algorithm>
 
-//#include <math.h>
-//#include <float.h>
+#include <math.h>
+
 
 #include <QDateTime>
 
@@ -111,14 +111,16 @@ Column::ColumnType SPSSColumn::getJaspColumnType() const
 		{
 		case measure_continuous:
 		case measure_undefined:
+		case measure_spss_unknown:
 			// If we know no better, then it is a FP.
 			return Column::ColumnTypeScale;
 		case measure_nominal:
-			return Column::ColumnTypeNominal;
+			return (_containsFraction(numerics) == true) ? Column::ColumnTypeNominalText : Column::ColumnTypeNominal;
 		case measure_ordinal:
 			return Column::ColumnTypeOrdinal;
 		}
 	}
+	return Column::ColumnTypeScale;
 }
 
 
@@ -205,7 +207,6 @@ const
 }
 
 
-
 /**
  * @brief format Fomats a number that SPSS holds as a numeric value that JASP cannot deal with.
  * @param value The value to format.
@@ -223,6 +224,21 @@ string SPSSColumn::format(double value)
 		case format_A:
 		case format_AHEX:
 		default:
+			break;
+
+		case format_F:
+		case format_COMMA:
+		case format_DOT:
+		case format_DOLLAR:
+		case format_PCT:
+		case format_E:
+		case format_CCA:
+		case format_CCB:
+		case format_CCC:
+		case format_CCD:
+		case format_CCE:
+		case format_N:
+			result = QString::number(value);
 			break;
 
 		// Date and time formats are converted to
@@ -280,6 +296,29 @@ string SPSSColumn::format(double value)
 
 	return static_cast<const char *>(result.toUtf8());
 }
+
+/**
+ * @brief containsFraction Returns false if all values are integer.
+ * @param values VAlues to check
+ * @return true if a fractional part found.
+ */
+bool SPSSColumn::_containsFraction(const std::vector<double> &values)
+{
+	for (std::vector<double>::const_iterator i = values.begin();
+		 i != values.end();
+		 ++i)
+	{
+		if (std::isnan(*i) == false)
+		{
+			double intprt;
+			double fracprt = modf(*i, &intprt);
+			if (fracprt != 0.0)
+				return true;
+		}
+	}
+	return false;
+}
+
 
 /**
  * @brief cellType Gets the cell data type we expect to read for this coloumn.
@@ -344,10 +383,12 @@ size_t SPSSColumn::append(const std::string &str)
 const std::string &SPSSColumn::getString(size_t index)
 const
 {
+	static const string empty;
+
 	if (cellType() == cellString)
 		return strings.at(index);
 	else
-		return "";
+		return empty;
 }
 
 
@@ -463,6 +504,8 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 
 		// Shouldn't happen..
 		if (rootIter == end())
+			throw runtime_error("Failed to process a very long string value.");
+
 //			DEBUG_COUT2("SPSSColumns::processVeryLongStrings(): Failed to find match for ", ituple->first.c_str());
 
 //		DEBUG_COUT3("Found SPSS col ", rootIter->spssName().c_str(), " root to append..");
@@ -484,7 +527,6 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 			rootIter->spssStringLen( rootIter->spssStringLen() + ncol->spssStringLen() );
 			// Dump the column.
 			erase(ncol);
-			// Debug
 		}
 	}
 
@@ -514,5 +556,4 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 			}
 		}
 	}
-
 }
