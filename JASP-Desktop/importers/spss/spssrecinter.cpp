@@ -208,6 +208,8 @@ const
     }
 }
 
+
+
 /**
  * @brief format Fomats a number that SPSS holds as a numeric value that JASP cannot deal with.
  * @param value The value to format.

@@ -82,7 +82,7 @@ public:
 
 	READ_ATTR(std::string, spssName)	// The name as in hte file.
 
-	READ_ATTR(size_t, spssStringLen)		// Length of the string (if string).
+	READ_ATTR(long, spssStringLen)		// Length of the string (if string).
 
 	READ_ATTR(size_t, columnSpan)			// Number of data cells this column spans.
 	void incrementColumnSpan() { _columnSpan++; }
