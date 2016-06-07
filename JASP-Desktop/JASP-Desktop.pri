@@ -337,7 +337,8 @@ HEADERS  += \
         $$PWD/importers/jaspimporter.h \
         $$PWD/importers/spssimporter.h \
         $$PWD/analysisforms/exploratoryfactoranalysisform.h \
-        $$PWD/analysisforms/principalcomponentanalysisform.h
+        $$PWD/analysisforms/principalcomponentanalysisform.h \
+        $$PWD/importers/spss/spssformattype.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \

@@ -59,13 +59,6 @@ protected:
     static void setDataSetSize(DataSetPackage &dataSetPg, size_t rowCount, size_t colCount);
 
 
-    /**
-	* @brief convert convert from PSPP/SPSS measure value to JASP.
-	* @param measure PSPP value.
-	* @return Converted measure
-	*/
-    static Column::ColumnType convert(int32_t measure);
-
 private:
 
     /**

@@ -63,47 +63,12 @@ void VeryLongStringRecord::process(SPSSColumns & columns)
 	columns.veryLongColsDat(strLengths);
 
 #ifndef QT_NO_DEBUG
-	DEBUG_COUT3("Found ", strLengths.size(), " tuples:");
-	for (map<string, size_t>::const_iterator i = strLengths.begin(); i != strLengths.end(); i++)
-	{
-		DEBUG_COUT5("... name = \"", i->first, "\" value = ", i->second, ".");
-	}
+//	DEBUG_COUT3("Found ", strLengths.size(), " tuples:");
+//	for (map<string, size_t>::const_iterator i = strLengths.begin(); i != strLengths.end(); i++)
+//	{
+//		DEBUG_COUT5("... name = \"", i->first, "\" value = ", i->second, ".");
+//	}
 #endif
 
-//	// For every found string name.
-//	for (map<string, size_t>::const_iterator ituple = strLengths.begin(); ituple != strLengths.end(); ituple++)
-//	{
-//		// find the first col...
-//		SPSSColumns::iterator icol;
-//		for (icol = columns.begin(); icol != columns.end(); icol++)
-//			if (icol->spssName == ituple->first) break;
-//		// Shouldn't happen..
-//		if (icol == columns.end()) continue;
-
-//		// Find the total number of segements / short strings) involved.
-// //		size_t numSegments = ((ituple->second + 251) / 252) * 8;
-// //		DEBUG_COUT5("Found ", numSegments, " segments for very long string ", icol->spssName, ".");
-
-
-//		// Find the number of chars yet to be located;
-//		size_t charsToCome = ituple->second - icol->spssStringLen();
-//		icol->spssStringLen(ituple->second);
-//		DEBUG_COUT7("Found ", charsToCome, " chars to come, from ", ituple->second, " in vlsr, and ", icol->spssStringLen(), "in coluun.");
-//		if (charsToCome > 0)
-//		{
-//			do
-//			{
-//				// Find the next segment, (Shoud be next one..)
-//				SPSSColumns::iterator ncol = icol;
-//				while (ncol->spssName == icol->spssName)
-//					ncol++;
-
-//				icol->columnSpan += ncol->columnSpan;
-//				charsToCome = (charsToCome > ncol->spssStringLen()) ? charsToCome - ncol->spssStringLen() : 0L;
-// //				numSegments--;	// One less segemnt.
-//				columns.erase(ncol); // Ncol now invalid.
-//			} while (charsToCome > 0);
-//		}
-//	}
 }
 

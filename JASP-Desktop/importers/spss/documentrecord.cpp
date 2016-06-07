@@ -58,7 +58,7 @@ DocumentRecord::~DocumentRecord()
 void DocumentRecord::process(SPSSColumns & columns)
 {
 	// Chop the right most spaces off the lines.
-	DEBUG_COUT1("Ignoring a found 'document record'.");
+//	DEBUG_COUT1("Ignoring a found 'document record'.");
 }
 
 

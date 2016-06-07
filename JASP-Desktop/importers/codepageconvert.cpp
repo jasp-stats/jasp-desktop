@@ -100,12 +100,12 @@ QByteArray CodePageConvert::findIANANameFromSPSS(int32_t character_code)
 	switch(character_code)
 	{
 	case 1:
-		result += "EBCDIC-US";	// IBM US/Canada/Nederland.
+		result += "ebcdic-us";	// IBM US/Canada/Nederland.
 		break;
 
 	case 2:
 	case 20127: // Windows code page for 7 bit ASCII.
-		result += "US-ASCII";	// 7 Bit.
+		result += "utf-8";	// 7 Bit ASCII maps directly to UTF-8, and requires no conversion.
 		break;
 
 	case 3:	// 8 bit ascii - probably CP 437.

@@ -71,7 +71,7 @@ MissingValueChecker & MissingValueChecker::operator = (const MissingValueChecker
  * @param value Value to test
  * @return true if a missing value.
  */
-bool MissingValueChecker::isMissingValue(const FloatInfoRecord &fir, double value)
+bool MissingValueChecker::isMissingValue(const FloatInfoRecord &fir, double value) const
 {
 	// SYSMIS?
 	if ((value == fir.sysmis()) || std::isnan(value))

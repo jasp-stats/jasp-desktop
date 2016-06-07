@@ -95,35 +95,20 @@ void VariableRecord::process(SPSSColumns &columns)
 	// check for string continuation.
 	if (isStringContinuation())
 	{
-		if ((columns.size() != 0) && (columns[columns.size()-1].isString()))
-			columns[columns.size()-1].columnSpan++;
+		if ((columns.size() != 0) && (columns[columns.size()-1].cellType() == SPSSColumn::cellString))
+			columns[columns.size()-1].incrementColumnSpan();
 
-		DEBUG_COUT5("Existing column ", columns[columns.size()-1].spssName, " spans ", columns[columns.size()-1].columnSpan, " cols.");
+//		DEBUG_COUT5("Existing column ", columns[columns.size()-1].spssName(), " spans ", columns[columns.size()-1].columnSpan(), " cols.");
 
 		return;
 	}
 
-	int32_t strLen = 0;
-	int32_t measure = spss::Measures::measure_undefined;
-
-	if (type() == 0)
-		measure = spss::Measures::measure_continuous;
-
-	else if (type() == -1)
-		measure = spss::Measures::string_type;
-
-	else
 	{
-		measure = spss::Measures::string_type;
-		strLen = type();
-	}
-
-	{
-		SPSSColumn col(name(), hasVarLabel()? label() : name(),
-					  MissingValueChecker(n_missing_values(), missing_values()),
-					  strLen, measure);
+		SPSSColumn col(name(), hasVarLabel() ? label() : name(), type(), _getType(print()), MissingValueChecker(n_missing_values(), missing_values()));
 		columns.push_back(col);
 	}
 
-	DEBUG_COUT4("VariableRecord::process() - Added column ", columns.back().spssName, "/", columns.back().spssLabel);
+	DEBUG_COUT7("VariableRecord::process() - Column ", columns.size(), ", print: ", print(), ", type: ", _getType(print()), ".");
+
+//	DEBUG_COUT4("VariableRecord::process() - Added column ", columns.back().spssName(), "/", columns.back().spssLabel());
 }

@@ -78,9 +78,7 @@ void VarDisplayParamRecord::process(SPSSColumns &columns)
 	for (size_t colCount = 0; colCount < columns.size(); ++colCount)
 	{
 		// place measure in this col.
-		if (columns[colCount].measure != Measures::string_type)
-			columns[colCount].measure = _displayParams[colCount].measure();
-
-		DEBUG_COUT6("Measure for col :\"", columns[colCount].spssName, "\" (", columns[colCount].spssName, "\") set to ", columns[colCount].measure);
+		columns[colCount].spssMeasure( static_cast<Measure>( _displayParams[colCount].measure()) );
+//		DEBUG_COUT6("Measure for col :\"", columns[colCount].spssLabel(), "\" (", columns[colCount].spssName(), "\") set to ", columns[colCount].spssMeasure());
 	}
 }

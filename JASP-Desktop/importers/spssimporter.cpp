@@ -237,12 +237,14 @@ void SPSSImporter::loadDataSet(
 	// Now go fetch the data.
 	for (size_t i = 0; i < dictData.size(); i++)
 	{
-		SPSSColumn &spss = dictData[i];
+		SPSSColumn &spssCol = dictData[i];
 		Column &column = packageData->dataSet->column(i);
 
-		column.setName(spss.spssLabel);
-		column.setColumnType(convert(spss.measure));
+		column.setName(spssCol.spssLabel());
+		column.setColumnType( spssCol.getJaspColumnType() );
 		column.labels().clear();
+
+		DEBUG_COUT3("Getting col: ", i, ",\n");
 
 		{
 			switch(column.columnType())
@@ -254,9 +256,10 @@ void SPSSImporter::loadDataSet(
 				Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
 				for (size_t row = 0; (row < dictData.numCases()) && (doubleInputItr != column.AsDoubles.end()) ; row++, doubleInputItr++)
 				{
-					double val = spss.numerics[row];
+					double val = spssCol.numerics[row];
+					DEBUG_COUT5(".. Row: ", row+1, ", dbl data: ", val, ",");
 					// Jasp uses a NAN as missing value.
-					*doubleInputItr = spss.missingChecker.processMissingValue(_floatInfo, val);
+					*doubleInputItr = spssCol.missingChecker().processMissingValue(_floatInfo, val);
 				}
 			}
 				break;
@@ -265,52 +268,65 @@ void SPSSImporter::loadDataSet(
 			{
 				Column::Ints::iterator intsInputItr = column.AsInts.begin();
 				for (size_t row = 0; (row < dictData.numCases()) && (intsInputItr != column.AsInts.end()) ; row++, intsInputItr++)
-					*intsInputItr = static_cast<int>(spss.numerics[row]);
+				{
+					DEBUG_COUT5(".. Row: ", row+1, ", int data: ", spssCol.numerics[row], ",");
+					*intsInputItr = static_cast<int>(spssCol.numerics[row]);
+				}
 			}
 				break;
 			case Column::ColumnTypeNominalText:
 			{
-				const vector<string> &strs = spss.strings();
-
+				if (spssCol.cellType() == SPSSColumn::cellDouble)
+				{
+					for (size_t i = 0; i < spssCol.numerics.size(); i++)
+						spssCol.strings.push_back( spssCol.format(spssCol.numerics[i]) );
+				}
 				map<int, int> indexes; // index keyed by row.
 				{
 					set<string> unique;
-					for (size_t i = 0; i < strs.size(); i++)
+					for (size_t i = 0; i < spssCol.strings.size(); i++)
 					{
-						if (strs[i].size() != 0)
-							unique.insert(strs[i]);
+						if (spssCol.strings[i].size() != 0)
+							unique.insert(spssCol.strings[i]);
 					}
-
 #ifndef QT_NO_DEBUG
-					DEBUG_COUT3("Strings ex unique (N=", unique.size(), ")");
-					for (set<string>::const_iterator  i = unique.begin(); i != unique.end(); i++)
-					{
-						DEBUG_COUT3("... \"", *i, "\".");
-					}
-#endif
+//					DEBUG_COUT3("Strings ex unique (N=", unique.size(), ")");
+//					for (set<string>::const_iterator  i = unique.begin(); i != unique.end(); i++)
+//					{
+//						DEBUG_COUT3("... \"", *i, "\".");
+//					}
+#endif				// Push all the unique values into the lables.
 					assert(column.labels().size() == 0);
 					for (set<string>::const_iterator i = unique.begin(); i != unique.end(); i++)
 						column.labels().add(*i);
 
+
 					// Build the indexes to the lables.
 					for (size_t row = 0; row < dictData.numCases(); row++)
 					{
-						set<string>::const_iterator is = unique.find(strs[row]);
+						set<string>::const_iterator is = unique.find(spssCol.strings[row]);
 						if ((is == unique.end()) || (is->length() == 0) || (*is == "") || (*is == " "))
+						{
 							indexes.insert( pair<int, int>(row, INT_MIN) );
+							DEBUG_COUT3(".. Row: ", row+1, ", index data: Not a value.");
+						}
 						else
+						{
 							indexes.insert( pair<int, int>(row, distance(unique.begin(), is)) );
+							DEBUG_COUT5(".. Row: ", row+1, ", index data: ", distance(unique.begin(), is), ".");
+						}
 					}
 
+					// Have done with strings in the dictionary - Ditch them.
+					spssCol.strings.clear();
 #ifndef QT_NO_DEBUG
-					DEBUG_COUT3("Indexes (N=", indexes.size(), ")");
-					for (map<int, int>::const_iterator  i = indexes.begin(); i != indexes.end(); i++)
-					{
-						DEBUG_COUT5("... row=", i->first, " index=", i->second, ".");
-					}
+//					DEBUG_COUT3("Indexes (N=", indexes.size(), ")");
+//					for (map<int, int>::const_iterator  i = indexes.begin(); i != indexes.end(); i++)
+//					{
+//						DEBUG_COUT5("... row=", i->first, " index=", i->second, ".");
+//					}
 #endif
 				} // Done with unique.
-
 
 				Column::Ints::iterator intsInputItr = column.AsInts.begin();
 				for (size_t row = 0; (row < dictData.numCases()) && (intsInputItr != column.AsInts.end()); row++, intsInputItr++)
@@ -382,28 +398,6 @@ void SPSSImporter::setDataSetSize(DataSetPackage &dataSetPg, size_t rowCount, si
 	while (retry);
 
 
-}
-
-
-/**
- * @brief convert convert from spss/SPSS measure value to JASP.
- * @param measure spss value.
- * @return Converted measure
- */
-Column::ColumnType SPSSImporter::convert(int32_t measure)
-{
-	switch(measure)
-	{
-	case Measures::measure_continuous:
-	case Measures::measure_spss_unknown:
-	case Measures::measure_undefined:
-		return Column::ColumnTypeScale;
-	case Measures::measure_nominal: return Column::ColumnTypeNominal;
-	case Measures::measure_ordinal: return Column::ColumnTypeOrdinal;
-	case Measures::string_type: return Column::ColumnTypeNominalText;
-
-	}
-	return Column::ColumnTypeScale;
 }
 
 

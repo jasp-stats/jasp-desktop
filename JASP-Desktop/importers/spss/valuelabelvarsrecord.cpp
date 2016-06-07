@@ -64,7 +64,7 @@ ValueLabelVarsRecord::ValueLabelVarsRecord(const NumericConverter &fixer, Record
 
 	if (var_rec_type() != rectype_value_labels_var)
 	{
-		DEBUG_COUT3("ValueLabelVarsRecord::ctor Next record not ", rectype_value_labels_var, "- File unreadable.");
+//		DEBUG_COUT3("ValueLabelVarsRecord::ctor Next record not ", rectype_value_labels_var, "- File unreadable.");
 		throw runtime_error("Incorrect record following a value labels record. SAV file corrupt.");
 	}
 
