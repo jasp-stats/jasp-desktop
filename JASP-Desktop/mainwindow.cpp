@@ -58,6 +58,7 @@
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
 
+#include "analysisforms/reliabilityanalysisform.h"
 #include "analysisforms/exploratoryfactoranalysisform.h"
 #include "analysisforms/principalcomponentanalysisform.h"
 
@@ -559,6 +560,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BinomialTestBayesianForm(contentArea);
 	else if (name == "BFFromT")
 		form = new BFFromTForm(contentArea);
+	else if (name == "ReliabilityAnalysis")
+		form = new ReliabilityAnalysisForm(contentArea);
 	else if (name == "ExploratoryFactorAnalysis")
         form = new ExploratoryFactorAnalysisForm(contentArea);
     else if (name == "PrincipalComponentAnalysis")

@@ -1,0 +1,41 @@
+{
+	"name": "ReliabilityAnalysis",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+        {
+            "name": "variables",
+            "type": "Variables"
+        },
+        {
+        	"name": "alphaTotal",
+        	"type": "Boolean",
+			"default" : true
+        },
+        {
+        	"name": "gutmannTotal",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "meanTotal",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "alphaItem",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "gutmannItem",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "itemTotalCor",
+        	"type": "Boolean",
+			"default" : false
+        }
+	]
+}
