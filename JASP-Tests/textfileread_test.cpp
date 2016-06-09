@@ -20,7 +20,14 @@
 
 void TextFileReadTest::initTestCase()
 {
-
+  if(boost::filesystem::exists("Resources/TestFiles/textfileread_test"))
+  {
+    folderPathFound = true;
+  }
+  else
+  {
+    folderPathFound = false;
+  }
 }
 
 void TextFileReadTest::cleanupTestCase()
@@ -37,48 +44,72 @@ void TextFileReadTest::init()
 
 void TextFileReadTest::cleanup()
 {
-  // destroy all the objects created and delete the dataSet from the shared memory
-  SharedMemory::deleteDataSet(dsp->dataSet);
+  if(dsp->dataSet != NULL)
+  {
+    // destroy all the objects created and delete the dataSet from the shared memory
+    SharedMemory::deleteDataSet(dsp->dataSet);
+  }
 
   fe->~FileEvent();
   dsp->~DataSetPackage();
   asl->~AsyncLoader();
 }
 
-void TextFileReadTest::asyncloaderTester1()
+void TextFileReadTest::asyncloaderTester_data()
 {
-  std::string _path = "Resources/TestFiles/textfileread_test/testfile1.txt";
+  if(folderPathFound)
+  {
+    QTest::addColumn<QString>("filename");
+    boost::filesystem::path _path("Resources/TestFiles/textfileread_test");
 
-  bool wasBlocked = fe->blockSignals(true); //block all signals emitted by the FileEvent object
-  fe->setPath(QString::fromStdString(_path));
-
-  wasBlocked = asl->blockSignals(true);  //block all signals emitted by the Asyncloader object
-  asl->loadTask(fe, dsp);
-  asl->_thread.quit();
-
-  struct fileContent fc;
-  readDataFromFile(_path, &fc);
-
-  QVERIFY(checkIfEqual(&fc)); //test the opening and reading of text files
+    //add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
+    for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++)
+    {
+      if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
+      {
+        QTest::newRow("text file-read test") << QString::fromStdString(i->path().filename().string());
+      }
+    }
+  }
 }
 
 
-void TextFileReadTest::asyncloaderTester2()
+void TextFileReadTest::asyncloaderTester()
 {
-  std::string _path = "Resources/TestFiles/textfileread_test/testfile2.txt";
-  bool wasBlocked = fe->blockSignals(true);
-  fe->setPath(QString::fromStdString(_path));
+  QString folderPath = "Resources/TestFiles/textfileread_test/";
 
-  wasBlocked = asl->blockSignals(true);
-  asl->loadTask(fe, dsp);
-  asl->_thread.quit();
+  if(folderPathFound)
+  {
+    QFETCH(QString, filename);
+    qDebug() << "File: " << filename;
 
-  struct fileContent fc;
-  readDataFromFile(_path, &fc);
+    //text file open
+    QString folderPath = "Resources/TestFiles/textfileread_test/";
+    QString _path = folderPath.append(filename);
 
-  bool ans = checkIfEqual(&fc);
+    struct fileContent fc;
+    int error = readDataFromFile(_path.toUtf8().constData(), &fc);
 
-  QVERIFY(ans);
+    if(error)
+    {
+      QVERIFY2(false, "File not found");        //file open failed
+    }
+    else
+    {
+      bool wasBlocked = fe->blockSignals(true); //block all signals emitted by the FileEvent object
+      fe->setPath(_path);
+
+      wasBlocked = asl->blockSignals(true);     //block all signals emitted by the Asyncloader object
+      asl->loadTask(fe, dsp);
+      asl->_thread.quit();
+
+      QVERIFY(checkIfEqual(&fc));               //test the opening and reading of text files
+    }
+  }
+  else
+  {
+    QVERIFY2(false, "Folder path not found");
+  }
 }
 
 
@@ -115,7 +146,7 @@ bool TextFileReadTest::checkIfEqual(struct fileContent *fc)
 }
 
 /* read data from the file specified from path and store it in the struct fileContent */
-void TextFileReadTest::readDataFromFile(std::string path, struct fileContent *fc)
+int TextFileReadTest::readDataFromFile(std::string path, struct fileContent *fc)
 {
   std::ifstream input(path.c_str());
   std::vector< std::vector<std::string> > fileRows;
@@ -202,9 +233,13 @@ void TextFileReadTest::readDataFromFile(std::string path, struct fileContent *fc
 
     fc->rows = numRows;
     fc->data = fileRows;
+
+    return 0;
   }
   else
   {
     qDebug() << "File open failed";
+
+    return 1;
   }
 }

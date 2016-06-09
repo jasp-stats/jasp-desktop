@@ -29,6 +29,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <boost/filesystem.hpp>
 #include "AutomatedTests.h"
 #include "asyncloader.h"
 #include "sharedmemory.h"
@@ -54,8 +55,9 @@ public:
   FileEvent *fe;
   DataSetPackage *dsp;
   AsyncLoader *asl;
+  bool folderPathFound;
 
-  void readDataFromFile(std::string, struct fileContent*);
+  int readDataFromFile(std::string, struct fileContent*);
   bool checkIfEqual(struct fileContent *);
 
 private slots:
@@ -63,8 +65,8 @@ private slots:
     void cleanupTestCase();
     void init();
     void cleanup();
-    void asyncloaderTester1();
-    void asyncloaderTester2();
+    void asyncloaderTester_data();
+    void asyncloaderTester();
 };
 
 
