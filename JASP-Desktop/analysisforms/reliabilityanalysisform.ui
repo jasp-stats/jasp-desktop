@@ -26,30 +26,50 @@
       </sizepolicy>
      </property>
      <property name="title">
-      <string>Total scale statistics</string>
+      <string>Scale Statistics</string>
      </property>
      <property name="flat">
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
       <item row="1" column="0">
-       <widget class="BoundCheckBox" name="gutmannTotal">
+       <widget class="BoundCheckBox" name="gutmannScale">
         <property name="text">
          <string>Gutmann's λ6</string>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="BoundCheckBox" name="alphaTotal">
+       <widget class="BoundCheckBox" name="alphaScale">
         <property name="text">
          <string>Cronbach's α</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="BoundCheckBox" name="meanTotal">
+       <widget class="BoundCheckBox" name="meanScale">
         <property name="text">
          <string>Mean</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="3" column="0">
+       <widget class="BoundCheckBox" name="sdScale">
+        <property name="text">
+         <string>Standard deviation</string>
         </property>
        </widget>
       </item>
@@ -131,30 +151,57 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="1">
     <widget class="BoundGroupBox" name="itemStats">
      <property name="title">
-      <string>Individual Item statistics</string>
+      <string>Individual Item Statistics</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="2" column="0">
-       <widget class="BoundCheckBox" name="itemTotalCor">
+      <item row="4" column="0" colspan="3">
+       <widget class="BoundCheckBox" name="sdItem">
         <property name="text">
-         <string>Item-total correlation</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="BoundCheckBox" name="alphaItem">
-        <property name="text">
-         <string>Cronbach's α</string>
+         <string>Standard deviation</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="BoundCheckBox" name="gutmannItem">
         <property name="text">
-         <string>Gutmann's λ6</string>
+         <string>Gutmann's λ6 (if item dropped)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="BoundCheckBox" name="alphaItem">
+        <property name="text">
+         <string>Cronbach's α (if item dropped)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="3">
+       <widget class="BoundCheckBox" name="meanItem">
+        <property name="text">
+         <string>Mean</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <spacer name="verticalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="5" column="0">
+       <widget class="BoundCheckBox" name="itemTotalCor">
+        <property name="text">
+         <string>Item-total correlation</string>
         </property>
        </widget>
       </item>

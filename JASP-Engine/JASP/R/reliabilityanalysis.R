@@ -35,27 +35,63 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 		dataset <- .vdf(dataset, columns.as.numeric=NULL, columns.as.factor=variables)
 	}
-
+	
+	## Retrieve State
+	
+	state <- .retrieveState()
+	
+	resultsAlpha <- NULL
+	
+	if ( ! is.null(state)) {  # is there state?
+	
+		diff <- .diff(options, state$options)  # compare old and new options
+		
+		if (is.list(diff) && diff[['variables']] == FALSE) {
+						
+			resultsAlpha <- state$resultsAlpha
+			
+		}
+	}
+	
+	# Store results
+	
 	results <- list()
 
 	results[["title"]] <- "Reliability Analysis"
 
-	meta <- list(list(name="reliabilityScale", type="table"), 
-			 	 list(name="reliabilityItems", type="table"))
+	meta <- list(list(name="reliabilityScale", type="table"),
+				 list(name="reliabilityItemsObj", type="object", meta=list(list(name="reliabilityItems", type="table"))))
 			 
 	results[[".meta"]] <- meta
+		
+	if (is.null(resultsAlpha)) {
 	
-	r <- .reliabilityResults(dataset, options, variables, perform)
+		resultsAlpha <- .reliabilityResults(dataset, options, variables, perform)
 	
-	results[["reliabilityScale"]] <- .reliabalityScaleTable(r, options, variables, perform)
-	
-	if (options$alphaItem || options$gutmannItem || options$itemTotalCor) {
-		results[["reliabilityItems"]] <- .reliabalityItemsTable(r, options, variables, perform)
-	} else {
-		results[["reliabilityItems"]] <- NULL
 	}
 	
-	results
+	results[["reliabilityScale"]] <- .reliabalityScaleTable(resultsAlpha, options, variables, perform)
+	
+	if (options$alphaItem || options$gutmannItem || options$itemTotalCor) {
+		results[["reliabilityItemsObj"]] <- list(title="Items", reliabilityItems=.reliabalityItemsTable(resultsAlpha, options, variables, perform))
+	} else {
+		results[["reliabilityItemsObj"]] <- NULL
+	}
+	
+	# Save state
+	
+	state[["options"]] <- options
+	state[["resultsAlpha"]] <- resultsAlpha
+
+	
+	if (perform == "init") {
+
+		return(list(results=results, status="inited", state=state))
+		
+	} else {
+	
+		return(list(results=results, status="complete", state=state))	
+	}
 }
 
 .reliabilityResults <- function (dataset, options, variables, perform) {
@@ -80,16 +116,19 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	table[["title"]] <- "Scale Statistics"
 
-	fields = list(list(name="case", title="", type="string", combine=TRUE))
+	fields = list(list(name="case", title="", type="string"))
+
+	if (options$meanScale)
+		fields[[length(fields) + 1]] <- list(name="mu", title="mean", type="number", format="sf:4;dp:3")
+		
+	if (options$sdScale)
+		fields[[length(fields) + 1]] <- list(name="sd", title="sd", type="number", format="sf:4;dp:3")
 	
-	if (options$alphaTotal)
+	if (options$alphaScale)
 		fields[[length(fields) + 1]] <- list(name="alpha", title="Cronbach's \u03B1", type="number", format="sf:4;dp:3")
 		
-	if (options$gutmannTotal)
+	if (options$gutmannScale)
 		fields[[length(fields) + 1]] <- list(name="lambda", title="Gutmann's \u03BB6", type="number", format="sf:4;dp:3")
-	
-#	if (options$meanTotal)
-#		fields[[length(fields) + 1]] <- list(name="mean", title="mean", type="number", format="sf:4;dp:3")
 	
 	table[["schema"]] <- list(fields = fields)
 
@@ -97,29 +136,35 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	footnotes <- .newFootnotes()
 	
-	message <- paste("items used in scale: ", paste0(variables, collapse = ", "))
-	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+	message <- paste("Scale consists of items ", paste0(variables, collapse = ", "))
+	.addFootnote(footnotes, symbol = "<em>Note.</em>", text=message)
 		
-	if (perform == "run" && !is.null(r) && !is.null(variables) && length(variables) > 1) {
+	if (!is.null(r)) {
 		
 		alpha <- NULL
 		lambda <- NULL
-#		mu <- NULL
+		mu <- NULL
+		sd <- NULL
 		
-		if (options$alphaTotal)
+		if (options$alphaScale)
 			alpha <- .clean(r$total$raw_alpha)
 			
-		if (options$gutmannTotal)
+		if (options$gutmannScale)
 			lambda <- .clean(r$total[["G6(smc)"]])
 			
-#		if (options$meanTotal)
-#			mu <- .clean(r$total$mean)
+		if (options$meanScale)
+			mu <- .clean(r$total$mean)
+		
+		if (options$sdScale)
+			sd <- .clean(r$total$sd)
 						
-		data[[1]] <- list(case="scale", alpha=alpha, lambda=lambda)
+		data[[1]] <- list(case="scale", alpha=alpha, lambda=lambda, mu=mu, sd=sd)
+		
+		table[["status"]] <- "complete"
 		
 	} else {
 		
-		data[[1]] <- list(case="scale", alpha=".", lambda=".")
+		data[[1]] <- list(case="scale", alpha=".", lambda=".", mean=".", sd=".")
 		
 	}
 	
@@ -140,15 +185,21 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	overTitle <- paste0("If item dropped")
 	
 	fields = list(list(name="case", title="", type="string", combine=TRUE))
-	
+
+	if (options$meanItem)
+		fields[[length(fields) + 1]] <- list(name="mu", title="mean", type="number", format="sf:4;dp:3")
+
+	if (options$sdItem)
+		fields[[length(fields) + 1]] <- list(name="sd", title="sd", type="number", format="sf:4;dp:3")
+		
+	if (options$itemTotalCor)
+		fields[[length(fields) + 1]] <- list(name="itemTotalCor", title="item-total correlation", type="number", format="sf:4;dp:3")
+		
 	if (options$alphaItem)
 		fields[[length(fields) + 1]] <- list(name="alpha", title="Cronbach's \u03B1", type="number", format="sf:4;dp:3", overTitle = overTitle)
 		
 	if (options$gutmannItem)
 		fields[[length(fields) + 1]] <- list(name="lambda", title="Gutmann's \u03BB6", type="number", format="sf:4;dp:3", overTitle = overTitle)
-	
-	if (options$itemTotalCor)
-		fields[[length(fields) + 1]] <- list(name="itemTotalCor", title="Item-Total Correlation", type="number", format="sf:4;dp:3", overTitle = overTitle)
 	
 	table[["schema"]] <- list(fields = fields)
 
@@ -156,13 +207,15 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	footnotes <- .newFootnotes()
 		
-	if (perform == "run" && !is.null(r) && !is.null(variables) && length(variables) > 1) {
+	if (!is.null(r)) {
 				
 		for (var in variables) {
 		
 			alpha <- NULL
 			lambda <- NULL
 			itemTotalCor <- NULL
+			mu <- NULL
+			sd <- NULL
 		
 			if (options$alphaItem)
 				alpha <- .clean(r$alpha.drop[.v(var),"raw_alpha"])
@@ -171,12 +224,19 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 				lambda <- .clean(r$alpha.drop[.v(var), "G6(smc)"])
 	
 			if (options$itemTotalCor)
-				itemTotalCor <- .clean(r$item.stats[.v(var),"r.drop"])
+				itemTotalCor <- .clean(r$item.stats[.v(var),"r.cor"])
+			
+			if (options$meanItem)
+				mu <- .clean(r$item.stats[.v(var),"mean"])
 				
-			data[[length(data) + 1]] <- list(case=var, alpha=alpha, lambda=lambda, itemTotalCor=itemTotalCor)
+			if (options$sdItem)
+				sd <- .clean(r$item.stats[.v(var),"sd"])
+				
+			data[[length(data) + 1]] <- list(case=var, alpha=alpha, lambda=lambda, itemTotalCor=itemTotalCor, mu=mu, sd=sd)
 		}
-
 		
+		table[["status"]] <- "complete"
+
 	} else {
 		
 		variablesTemp <- variables
@@ -186,7 +246,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	
 		for (var in variablesTemp) {
 			
-			data[[length(data) + 1]] <- list(case=var, alpha=".", lambda=".", itemTotalCor=".")
+			data[[length(data) + 1]] <- list(case=var, alpha=".", lambda=".", itemTotalCor=".", mu=".", sd=".")
 			
 		}
 	}

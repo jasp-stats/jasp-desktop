@@ -8,17 +8,22 @@
             "type": "Variables"
         },
         {
-        	"name": "alphaTotal",
+        	"name": "alphaScale",
         	"type": "Boolean",
 			"default" : true
         },
         {
-        	"name": "gutmannTotal",
+        	"name": "gutmannScale",
         	"type": "Boolean",
 			"default" : false
         },
         {
-        	"name": "meanTotal",
+        	"name": "meanScale",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "sdScale",
         	"type": "Boolean",
 			"default" : false
         },
@@ -36,6 +41,16 @@
         	"name": "itemTotalCor",
         	"type": "Boolean",
 			"default" : false
-        }
+        },
+        {
+        	"name": "meanItem",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "sdItem",
+        	"type": "Boolean",
+			"default" : false
+        },
 	]
 }

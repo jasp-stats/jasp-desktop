@@ -30,17 +30,12 @@ ReliabilityAnalysisForm::ReliabilityAnalysisForm(QWidget *parent) :
 
 	TableModelVariablesAssigned *model = new TableModelVariablesAssigned(this);
 	model->setSource(&_availableVariablesModel);
-	model->setVariableTypesSuggested(Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	model->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	model->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
 	ui->variables->setModel(model);
 	ui->variables->setDoubleClickTarget(ui->listAvailableVariables);
 
 	ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
-
-#ifdef QT_DEBUG
-	ui->meanTotal->setStyleSheet("QWidget { background-color: pink; }");
-#else
-	ui->meanTotal->hide();
-#endif
 }
 
 ReliabilityAnalysisForm::~ReliabilityAnalysisForm()
