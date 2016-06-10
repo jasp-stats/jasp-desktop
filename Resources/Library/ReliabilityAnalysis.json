@@ -38,7 +38,7 @@
 			"default" : false
         },
         {
-        	"name": "itemTotalCor",
+        	"name": "itemRestCor",
         	"type": "Boolean",
 			"default" : false
         },

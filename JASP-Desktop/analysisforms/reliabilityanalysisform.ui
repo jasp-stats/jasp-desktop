@@ -199,9 +199,9 @@
        </spacer>
       </item>
       <item row="5" column="0">
-       <widget class="BoundCheckBox" name="itemTotalCor">
+       <widget class="BoundCheckBox" name="itemRestCor">
         <property name="text">
-         <string>Item-total correlation</string>
+         <string>Item-rest correlation</string>
         </property>
        </widget>
       </item>

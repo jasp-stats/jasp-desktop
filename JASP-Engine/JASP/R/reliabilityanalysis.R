@@ -72,7 +72,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	
 	results[["reliabilityScale"]] <- .reliabalityScaleTable(resultsAlpha, options, variables, perform)
 	
-	if (options$alphaItem || options$gutmannItem || options$itemTotalCor) {
+	if (options$alphaItem || options$gutmannItem || options$itemRestCor) {
 		results[["reliabilityItemsObj"]] <- list(title="Items", reliabilityItems=.reliabalityItemsTable(resultsAlpha, options, variables, perform))
 	} else {
 		results[["reliabilityItemsObj"]] <- NULL
@@ -192,8 +192,8 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	if (options$sdItem)
 		fields[[length(fields) + 1]] <- list(name="sd", title="sd", type="number", format="sf:4;dp:3")
 		
-	if (options$itemTotalCor)
-		fields[[length(fields) + 1]] <- list(name="itemTotalCor", title="item-total correlation", type="number", format="sf:4;dp:3")
+	if (options$itemRestCor)
+		fields[[length(fields) + 1]] <- list(name="itemRestCor", title="item-rest correlation", type="number", format="sf:4;dp:3")
 		
 	if (options$alphaItem)
 		fields[[length(fields) + 1]] <- list(name="alpha", title="Cronbach's \u03B1", type="number", format="sf:4;dp:3", overTitle = overTitle)
@@ -213,7 +213,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		
 			alpha <- NULL
 			lambda <- NULL
-			itemTotalCor <- NULL
+			itemRestCor <- NULL
 			mu <- NULL
 			sd <- NULL
 		
@@ -223,8 +223,8 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			if (options$gutmannItem)
 				lambda <- .clean(r$alpha.drop[.v(var), "G6(smc)"])
 	
-			if (options$itemTotalCor)
-				itemTotalCor <- .clean(r$item.stats[.v(var),"r.cor"])
+			if (options$itemRestCor)
+				itemRestCor <- .clean(r$item.stats[.v(var),"r.drop"])
 			
 			if (options$meanItem)
 				mu <- .clean(r$item.stats[.v(var),"mean"])
@@ -232,7 +232,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			if (options$sdItem)
 				sd <- .clean(r$item.stats[.v(var),"sd"])
 				
-			data[[length(data) + 1]] <- list(case=var, alpha=alpha, lambda=lambda, itemTotalCor=itemTotalCor, mu=mu, sd=sd)
+			data[[length(data) + 1]] <- list(case=var, alpha=alpha, lambda=lambda, itemRestCor=itemRestCor, mu=mu, sd=sd)
 		}
 		
 		table[["status"]] <- "complete"
@@ -246,7 +246,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	
 		for (var in variablesTemp) {
 			
-			data[[length(data) + 1]] <- list(case=var, alpha=".", lambda=".", itemTotalCor=".", mu=".", sd=".")
+			data[[length(data) + 1]] <- list(case=var, alpha=".", lambda=".", itemRestCor=".", mu=".", sd=".")
 			
 		}
 	}
