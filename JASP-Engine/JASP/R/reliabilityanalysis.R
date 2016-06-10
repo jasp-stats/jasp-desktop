@@ -72,7 +72,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	
 	results[["reliabilityScale"]] <- .reliabalityScaleTable(resultsAlpha, options, variables, perform)
 	
-	if (options$alphaItem || options$gutmannItem || options$itemRestCor) {
+	if (options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem) {
 		results[["reliabilityItemsObj"]] <- list(title="Items", reliabilityItems=.reliabalityItemsTable(resultsAlpha, options, variables, perform))
 	} else {
 		results[["reliabilityItemsObj"]] <- NULL
@@ -242,7 +242,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		variablesTemp <- variables
 	
 		if (is.null(variables))
-			variablesTemp <- ""
+			variablesTemp <- "..."
 	
 		for (var in variablesTemp) {
 			
