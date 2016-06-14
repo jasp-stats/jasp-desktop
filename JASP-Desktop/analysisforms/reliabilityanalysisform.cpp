@@ -36,6 +36,16 @@ ReliabilityAnalysisForm::ReliabilityAnalysisForm(QWidget *parent) :
 	ui->variables->setDoubleClickTarget(ui->listAvailableVariables);
 
 	ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
+
+	ui->assignButtonRevScaledItems->setSourceAndTarget(ui->normalScaledItems, ui->reverseScaledItems);
+
+	ui->containerRevScaledItems->hide();
+
+#ifdef QT_NO_DEBUG
+	ui->revScaledItemsBox->hide();
+#else
+	ui->revScaledItemsBox->setStyleSheet("background-color: pink ;");
+#endif
 }
 
 ReliabilityAnalysisForm::~ReliabilityAnalysisForm()
