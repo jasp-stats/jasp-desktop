@@ -117,14 +117,34 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
   table[["schema"]] <- list(fields = fields)
   
   
+  footnotes <- .newFootnotes()
+  
+  if (options$hypothesis == "notEqualToTestValue") {
+
+    message <- paste0("Proportions tested against value: ", options$testValue, 
+                      ".")
+    
+  } else if (options$hypothesis == "greaterThanTestValue") {
+
+    note <- "For all tests, the alternative hypothesis specifies that the 
+    proportion	is greater than "
+    message <- paste0(note, options$testValue, ".")
+    
+  } else {
+
+    note <- "For all tests, the alternative hypothesis specifies that the
+    proportion is less than "
+    message <- paste0(note, options$testValue, ".")
+    
+  }
+  
+  .addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+  table[["footnotes"]] <- as.list(footnotes)
+  
   if (!is.null(r)){
     
-    table[["data"]] <- r$data
+    table[["data"]] <- r
     table[["status"]] <- "complete"
-    
-    footnotes <- .newFootnotes()
-    .addFootnote(footnotes, symbol="<em>Note.</em>", text=r$message)
-    table[["footnotes"]] <- as.list(footnotes)
     
   } else {
     
@@ -153,32 +173,20 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 .binomialTest <- function(dataset, options, variables, perform){
   if (perform == "run" && !is.null(variables)) {
     
-    binomResults <- list()
     
     if (options$hypothesis == "notEqualToTestValue") {
       
       hyp <- "two.sided"
-      message <- paste0("Proportions tested against value: ", options$testValue, 
-                        ".")
       
     } else if (options$hypothesis == "greaterThanTestValue") {
       
       hyp <- "greater"
-      note <- "For all tests, the alternative hypothesis specifies that the 
-      proportion	is greater than "
-      message <- paste0(note, options$testValue, ".")
       
     } else {
       
       hyp <- "less"
-      note <- "For all tests, the alternative hypothesis specifies that the
-      proportion is less than "
-      message <- paste0(note, options$testValue, ".")
       
     }
-    
-    binomResults[["message"]] <- message
-    
     
     data <- list()
     
@@ -226,7 +234,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
       
     }
     
-    binomResults[["data"]] <- data
+    binomResults <- data
     
   } else {
     
