@@ -50,6 +50,14 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 	    
 	    binomResults <- state$binomResults
 	    
+	    if(diff$descriptivesPlotsConfidenceInterval == F ||
+	       diff$descriptivesPlots == F){
+	      
+	      descriptPlots <- state$descriptPlots
+	      
+	    }
+	    
+	      
 	  }
 	}
 	
@@ -68,14 +76,19 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 	results[["binomial"]] <- .binomialTable(binomResults, options, variables, 
 	                                        perform)
 	
+	
 	## if the user wants descriptive plots, s/he shall get them!
 	if (options$descriptivesPlots) {
 	  
 	  plotTitle <- ifelse(length(options$variables) > 1, "Descriptives Plots", 
 	                      "Descriptives Plot")
-	  descriptivesPlots <- .binomialDescriptivesPlot(dataset, options, variables,
-	                                                 perform)		
-	  results[["descriptives"]] <- list(collection = descriptivesPlots, 
+	  
+	  if (is.null(descriptPlots)){
+  	  descriptPlots <- .binomialDescriptivesPlot(dataset, options,
+  	                                             variables, perform)		
+	  }
+	  
+	  results[["descriptives"]] <- list(collection = descriptPlots, 
 	                                    title = plotTitle)
 	  
 	} else {
@@ -87,7 +100,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 	# Save state
 	state[["options"]] <- options
 	state[["binomResults"]] <- binomResults
-	
+	state[["descriptPlots"]] <- descriptPlots
 	
 	if (perform == "init") {
 	  
@@ -290,6 +303,17 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
       
       levels <- levels(d)
       nLevels <- length(levels)
+      
+      # JASP throws an error with too many levels
+      if (nLevels > 5) {
+        plotnote <- .newFootnotes()
+        .addFootnote(plotnote, symbol="<em>Note.</em>", 
+                     text = "Only first five levels shown.")
+        descriptivesPlot[["footnotes"]] <- as.list(plotnote)
+        nLevels <- 5
+        levels <- levels[1:5]
+      }
+      
       nObs <- length(d)
       testValue = options$testValue
       hyp <- "two.sided"
@@ -309,7 +333,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
         ciUpper[k] = r$conf.int[2]
       }
       
-      summaryStat = data.frame(groupingVariable = levels, rate = rate, 
+      summaryStat <- data.frame(groupingVariable = levels, rate = rate, 
                                ciLower = ciLower, ciUpper = ciUpper)
       testValue <- data.frame(testValue = testValue)
       
