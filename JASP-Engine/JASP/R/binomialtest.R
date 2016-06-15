@@ -24,16 +24,21 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 		if (perform == "run") {
 
-			dataset <- .readDataSetToEnd(columns.as.numeric=NULL, columns.as.factor=variables, exclude.na.listwise=NULL)
+			dataset <- .readDataSetToEnd(columns.as.numeric=NULL, 
+			                             columns.as.factor=variables, 
+			                             exclude.na.listwise=NULL)
 
 		} else {
 
-			dataset <- .readDataSetHeader(columns.as.numeric=NULL, columns.as.factor=variables)
+			dataset <- .readDataSetHeader(columns.as.numeric=NULL, 
+			                              columns.as.factor=variables)
+			
 		}
 
 	} else {
 
-		dataset <- .vdf(dataset, columns.as.numeric=NULL, columns.as.factor=variables)
+		dataset <- .vdf(dataset, columns.as.numeric=NULL, 
+		                columns.as.factor=variables)
 	}
 
 	results <- list()
@@ -47,15 +52,32 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 	table[["title"]] <- "Binomial Test"
 
+	# set up table columns
 	schema <- list(fields=list(
 		list(name="case", title="", type="string", combine=TRUE),
 		list(name="level", title="Level", type="string"),
 		list(name="counts", title="Counts", type="integer"),
 		list(name="total", title="Total", type="integer"),
-		list(name="proportion", title="Proportion", type="number", format="sf:4;dp:3"),
+		list(name="proportion", title="Proportion", type="number", 
+		     format="sf:4;dp:3"),
 		list(name="p", title="p", type="number", format="dp:3;p:.001")
 		))
-
+  
+	# if confidence interval required, add two columns
+	if (options$confidenceInterval) {
+	  interval <- 100 * options$confidenceIntervalInterval
+	  title <- paste0(interval, "% Confidence Interval")
+	  
+	  schema$fields[[length(schema$fields) + 1]] <- list(name = "lowerCI",
+	                                                     type = "number",
+	                                       format = "sf:4;dp:3", title = "Lower",
+	                                       overTitle = title)
+	  schema$fields[[length(schema$fields) + 1]] <- list(name = "upperCI", 
+	                                                     type = "number",
+	                                       format = "sf:4;dp:3", title = "Upper",
+	                                       overTitle = title)
+	}
+	
 	table[["schema"]] <- schema
 
 	data <- list()
@@ -65,7 +87,8 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 	if (options$hypothesis == "notEqualToTestValue") {
 		
 		hyp <- "two.sided"
-		message <- paste0("Proportions tested against value: ", options$testValue, ".")
+		message <- paste0("Proportions tested against value: ", options$testValue, 
+		                  ".")
 		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 		
 	} else if (options$hypothesis == "greaterThanTestValue") {
@@ -101,9 +124,13 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 				counts <- sum(d == lev)
 				prop <- counts/n
 				
-				r <- stats::binom.test(counts, n, p = options$testValue, alternative = hyp)
+				r <- stats::binom.test(counts, n, p = options$testValue, 
+				                       alternative = hyp, 
+				                       conf.level = options$confidenceIntervalInterval)
 				
 				p <- r$p.value
+				cil <- r$conf.int[1]
+				ciu <- r$conf.int[2]
 				
 				if (p == FALSE) {
 					p <- 0
@@ -111,7 +138,9 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 					p <- 1
 				}
 				
-				row <- list(case=var, level=lev, counts=.clean(counts), total=.clean(n), proportion=.clean(prop), p=.clean(p))
+				row <- list(case=var, level=lev, counts=.clean(counts), total=.clean(n), 
+				            proportion=.clean(prop), p=.clean(p), lowerCI = .clean(cil),
+				            upperCI = .clean(ciu))
 				
 				if (lev == levels[1]) {
 					row[[".isNewGroup"]] <- TRUE
@@ -129,7 +158,9 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 			variables <- ""
 	
 		for (var in variables)
-			data[[length(data) + 1]] <- list(case=var, level=".", counts=".", total=".",  proportion=".", p=".")
+			data[[length(data) + 1]] <- list(case=var, level=".", counts=".", 
+			                                 total=".",  proportion=".", p=".",
+			                                 lowerCI=".", upperCI=".")
 		
 	}
 
