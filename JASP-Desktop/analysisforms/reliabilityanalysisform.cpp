@@ -25,30 +25,58 @@ ReliabilityAnalysisForm::ReliabilityAnalysisForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	ui->scaledItems->setLabels("Normal-Scaled Items", "Reverse-Scaled Items");
+
 	ui->listAvailableVariables->setModel(&_availableVariablesModel);
+
+	_variableListModel = new TableModelVariablesAssigned(this);
+	_variableListModel->setSource(&_availableVariablesModel);
+	_variableListModel->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	_variableListModel->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
+	ui->variables->setModel(_variableListModel);
+
 	ui->listAvailableVariables->setDoubleClickTarget(ui->variables);
-
-	TableModelVariablesAssigned *model = new TableModelVariablesAssigned(this);
-	model->setSource(&_availableVariablesModel);
-	model->setVariableTypesSuggested(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
-	model->setVariableTypesAllowed(Column::ColumnTypeNominal | Column::ColumnTypeOrdinal | Column::ColumnTypeScale);
-	ui->variables->setModel(model);
-	ui->variables->setDoubleClickTarget(ui->listAvailableVariables);
-
 	ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
 
-	ui->assignButtonRevScaledItems->setSourceAndTarget(ui->normalScaledItems, ui->reverseScaledItems);
+	connect(_variableListModel, SIGNAL(assignmentsChanging()), this, SLOT(variablesChanging()));
+	connect(_variableListModel, SIGNAL(assignmentsChanged()), this, SLOT(variablesChanged()));
+	connect(_variableListModel, SIGNAL(termsChanged()), this, SLOT(termsChanged()));
 
 	ui->containerRevScaledItems->hide();
 
-#ifdef QT_NO_DEBUG
-	ui->revScaledItemsBox->hide();
-#else
-	ui->revScaledItemsBox->setStyleSheet("background-color: pink ;");
-#endif
+}
+
+void ReliabilityAnalysisForm::variablesChanging()
+{
+	if (_options != NULL)
+		_options->blockSignals(true);
+}
+
+void ReliabilityAnalysisForm::variablesChanged()
+{
+	Terms variablesAvailable;
+
+	variablesAvailable.add(_variableListModel->assigned());
+
+	ui->scaledItems->setVariables(variablesAvailable);
+
+	if (_options != NULL)
+		_options->blockSignals(false);
+
 }
 
 ReliabilityAnalysisForm::~ReliabilityAnalysisForm()
 {
 	delete ui;
+}
+
+void ReliabilityAnalysisForm::bindTo(Options *options, DataSet *dataSet)
+{
+
+	AnalysisForm::bindTo(options, dataSet);
+
+	variablesChanging();
+
+	variablesChanged();
+
 }

@@ -52,5 +52,9 @@
         	"type": "Boolean",
 			"default" : false
         },
+        {
+            "name": "scaledItems",
+            "type": "Variables"
+        },
 	]
 }

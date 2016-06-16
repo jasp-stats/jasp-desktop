@@ -33,8 +33,16 @@ public:
 	explicit ReliabilityAnalysisForm(QWidget *parent = 0);
 	~ReliabilityAnalysisForm();
 
+	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
+
+private slots:
+	void variablesChanging();
+	void variablesChanged();
+
 private:
 	Ui::ReliabilityAnalysisForm *ui;
+
+	TableModelVariablesAssigned *_variableListModel;
 };
 
 #endif // RELIABILITYANALYSISFORM_H
