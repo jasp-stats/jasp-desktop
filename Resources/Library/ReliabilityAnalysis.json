@@ -53,7 +53,7 @@
 			"default" : false
         },
         {
-            "name": "scaledItems",
+            "name": "reverseScaledItems",
             "type": "Variables"
         },
 	]

@@ -25,7 +25,7 @@ ReliabilityAnalysisForm::ReliabilityAnalysisForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	ui->scaledItems->setLabels("Normal-Scaled Items", "Reverse-Scaled Items");
+	ui->reverseScaledItems->setLabels("Normal-Scaled Items", "Reverse-Scaled Items");
 
 	ui->listAvailableVariables->setModel(&_availableVariablesModel);
 
@@ -58,7 +58,7 @@ void ReliabilityAnalysisForm::variablesChanged()
 
 	variablesAvailable.add(_variableListModel->assigned());
 
-	ui->scaledItems->setVariables(variablesAvailable);
+	ui->reverseScaledItems->setVariables(variablesAvailable);
 
 	if (_options != NULL)
 		_options->blockSignals(false);

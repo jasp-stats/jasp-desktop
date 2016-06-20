@@ -46,7 +46,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	
 		diff <- .diff(options, state$options)  # compare old and new options
 		
-		if (is.list(diff) && diff[['variables']] == FALSE) {
+		if (is.list(diff) && diff[['variables']] == FALSE && diff[['reverseScaledItems']] == FALSE) {
 						
 			resultsAlpha <- state$resultsAlpha
 			
@@ -97,9 +97,14 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 .reliabilityResults <- function (dataset, options, variables, perform) {
 	
 	if (perform == "run" && !is.null(variables) && length(variables) > 1) {
-	
+		
 		d <- as.matrix(dataset)
-		r <- psych::alpha(d)
+		
+		if (all(options$variables %in% options$reverseScaledItems)) {
+			r <- psych::alpha(d)
+		} else {
+			r <- psych::alpha(d, key = .v(unlist(options$reverseScaledItems)))
+		}
 		
 	} else {
 	
@@ -206,33 +211,49 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	data <- list()
 
 	footnotes <- .newFootnotes()
+	
+	if (length(options$reverseScaledItems) > 0) {
+		message <- "reverse-scaled item"
+		.addFootnote(footnotes, symbol = "\u207B", text=message)
+	}
 		
+	rowNames <- gsub("-","", rownames(r$alpha.drop))
+			
 	if (!is.null(r)) {
 				
 		for (var in variables) {
-		
+			
+			varV <- .v(var)
+			index <- which(varV == rowNames)
+			
 			alpha <- NULL
 			lambda <- NULL
 			itemRestCor <- NULL
 			mu <- NULL
 			sd <- NULL
+			
+			if (var %in% options$reverseScaledItems) {
+				case <- paste0(var,"\u207B")
+			} else {
+				case <- var
+			}
 		
 			if (options$alphaItem)
-				alpha <- .clean(r$alpha.drop[.v(var),"raw_alpha"])
+				alpha <- .clean(r$alpha.drop[index,"raw_alpha"])
 		
 			if (options$gutmannItem)
-				lambda <- .clean(r$alpha.drop[.v(var), "G6(smc)"])
+				lambda <- .clean(r$alpha.drop[index, "G6(smc)"])
 	
 			if (options$itemRestCor)
-				itemRestCor <- .clean(r$item.stats[.v(var),"r.drop"])
+				itemRestCor <- .clean(r$item.stats[index,"r.drop"])
 			
 			if (options$meanItem)
-				mu <- .clean(r$item.stats[.v(var),"mean"])
+				mu <- .clean(r$item.stats[index,"mean"])
 				
 			if (options$sdItem)
-				sd <- .clean(r$item.stats[.v(var),"sd"])
+				sd <- .clean(r$item.stats[index,"sd"])
 				
-			data[[length(data) + 1]] <- list(case=var, alpha=alpha, lambda=lambda, itemRestCor=itemRestCor, mu=mu, sd=sd)
+			data[[length(data) + 1]] <- list(case=case, alpha=alpha, lambda=lambda, itemRestCor=itemRestCor, mu=mu, sd=sd)
 		}
 		
 		table[["status"]] <- "complete"
