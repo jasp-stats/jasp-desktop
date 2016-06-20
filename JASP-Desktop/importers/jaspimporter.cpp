@@ -83,7 +83,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	columnCount = dataSetDesc["columnCount"].asInt();
 	rowCount = dataSetDesc["rowCount"].asInt();
 
-	if (rowCount <= 0 || columnCount <= 0)
+	if (rowCount < 0 || columnCount < 0)
 		throw runtime_error("Data size has been corrupted.");
 
 	do
