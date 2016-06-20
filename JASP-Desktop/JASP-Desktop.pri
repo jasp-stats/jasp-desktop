@@ -168,7 +168,8 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/importers/jaspimporter.cpp \
         $$PWD/importers/spssimporter.cpp \
         $$PWD/analysisforms/exploratoryfactoranalysisform.cpp \
-        $$PWD/analysisforms/principalcomponentanalysisform.cpp
+        $$PWD/analysisforms/principalcomponentanalysisform.cpp \
+    $$PWD/analysisforms/reliabilityanalysisform.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -350,7 +351,8 @@ HEADERS  += \
         $$PWD/importers/spssimporter.h \
         $$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
-        $$PWD/importers/spss/spssformattype.h
+        $$PWD/importers/spss/spssformattype.h \
+    $$PWD/analysisforms/reliabilityanalysisform.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -404,7 +406,8 @@ FORMS += \
         $$PWD/backstage/authwidget.ui\
         $$PWD/aboutdialog.ui \
         $$PWD/analysisforms/exploratoryfactoranalysisform.ui \
-        $$PWD/analysisforms/principalcomponentanalysisform.ui
+        $$PWD/analysisforms/principalcomponentanalysisform.ui \
+    $$PWD/analysisforms/reliabilityanalysisform.ui
 
 
 

@@ -1,0 +1,60 @@
+{
+	"name": "ReliabilityAnalysis",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+        {
+            "name": "variables",
+            "type": "Variables"
+        },
+        {
+        	"name": "alphaScale",
+        	"type": "Boolean",
+			"default" : true
+        },
+        {
+        	"name": "gutmannScale",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "meanScale",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "sdScale",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "alphaItem",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "gutmannItem",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "itemRestCor",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "meanItem",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+        	"name": "sdItem",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
+            "name": "reverseScaledItems",
+            "type": "Variables"
+        },
+	]
+}
