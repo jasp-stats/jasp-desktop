@@ -74,6 +74,11 @@ BackStageWidget::BackStageWidget(QWidget *parent) : QWidget(parent)
 	connect(_tabBar, SIGNAL(currentChanging(int,bool&)), this, SLOT(tabPageChanging(int,bool&)));
 }
 
+void BackStageWidget::analysisAdded(Analysis *analysis) {
+	_tabBar->setTabEnabled(2, true);
+	_tabBar->setTabEnabled(3, true);
+}
+
 void BackStageWidget::setOnlineDataManager(OnlineDataManager *odm)
 {
 	_openAndSaveWidget->setOnlineDataManager(odm);

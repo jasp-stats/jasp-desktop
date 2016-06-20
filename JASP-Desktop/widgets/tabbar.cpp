@@ -125,6 +125,7 @@ void TabBar::addHelpTab()
 	QMenu *optionmenu   = new QMenu("Modules",this);
 	QAction *sem = new QAction("SEM ToolBox",optionmenu);
 	QAction *rei = new QAction("Reinforcement Learning Toolbox",optionmenu);
+	QAction *summaryStats = new QAction("Summary Statistics Toolbox",optionmenu);
 
 	//SEM
 	QVariant sem_setting = _settings.value("plugins/sem", false);
@@ -139,8 +140,15 @@ void TabBar::addHelpTab()
 	rei->setCheckable(true);
 	rei->setChecked(ri_setting.canConvert(QVariant::Bool) && ri_setting.toBool());
 
+	//Summary Stats
+	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
+	summaryStats->setObjectName("Summary Statistics Toolbox");
+	summaryStats->setCheckable(true);
+	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
+
 #ifdef QT_DEBUG
 	optionmenu->addAction(rei);
+	optionmenu->addAction(summaryStats);
 #endif
 
 	optionmenu->acceptDrops();
@@ -157,7 +165,7 @@ void TabBar::addHelpTab()
 	// Slots options
 	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
-
+	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
 }
 
 void TabBar::showAbout()
@@ -194,6 +202,17 @@ void TabBar::toggleReinforcement()
 		this->addTab("R11t Learn");
 	else
 		this->removeTab("R11t Learn");
+}
+
+void TabBar::toggleSummaryStats()
+{
+	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
+	static bool on = (sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
+	on = ! on;
+	if (on)
+		this->addTab("Summary Statistics");
+	else
+		this->removeTab("Summary Statistics");
 }
 
 
