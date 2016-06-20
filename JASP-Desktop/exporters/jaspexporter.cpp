@@ -31,6 +31,7 @@
 #include "version.h"
 #include "tempfiles.h"
 #include "appinfo.h"
+#include <QDebug>
 
 using namespace std;
 
@@ -86,13 +87,13 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	Json::Value metaData = Json::objectValue;
 
 	Json::Value &dataSet = metaData["dataSet"];
-	dataSet["rowCount"] = Json::Value(dataset->rowCount());
-	dataSet["columnCount"] = Json::Value(dataset->columnCount());
+	dataSet["rowCount"] = Json::Value(dataset ? dataset->rowCount() : 0);
+	dataSet["columnCount"] = Json::Value(dataset ? dataset->columnCount(): 0);
 	Json::Value columnsData = Json::arrayValue;
 
 	//Calculate size of data file that'll be added to the archive////////
 	int dataSize = 0;
-	int columnCount = dataset->columnCount();
+	int columnCount = dataset ? dataset->columnCount() : 0;
 	for (int i = 0; i < columnCount; i++)
 	{
 		Column &column = dataset->column(i);
