@@ -65,7 +65,7 @@ VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileTy
 			char * buffer = new char[ buffSize ];
 			from.read(buffer, buffSize);
 			_label.append(buffer, label_len());
-			delete buffer;
+			delete[] buffer;
 		}
 	}
 

@@ -102,8 +102,6 @@ void AnalysisForm::unbind()
 
 	BOOST_FOREACH(const string &name, _options->names)
 	{
-		Option *option = _options->get(name);
-
 		QString qsName = QString::fromUtf8(name.c_str(), name.length());
 		qsName.replace('/', '_');
 

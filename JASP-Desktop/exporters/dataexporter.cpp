@@ -101,7 +101,7 @@ bool DataExporter::escapeValue(std::string &value)
 	if (value.find_last_of(" \n\r\t\v\f") == value.length() - 1)
 		useQuotes = true;
 
-	int p = value.find("\"");
+	size_t p = value.find("\"");
 	while (p != std::string::npos)
 	{
 		value.insert(p, "\"");

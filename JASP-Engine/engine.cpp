@@ -123,7 +123,7 @@ void Engine::runAnalysis()
 
 			if (filesToKeepValue.isArray())
 			{
-				for (int i = 0; i < filesToKeepValue.size(); i++)
+				for (size_t i = 0; i < filesToKeepValue.size(); i++)
 				{
 					Json::Value fileToKeepValue = filesToKeepValue.get(i, Json::nullValue);
 					if ( ! fileToKeepValue.isString())

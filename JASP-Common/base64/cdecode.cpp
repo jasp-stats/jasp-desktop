@@ -22,7 +22,7 @@ void base64_init_decodestate(base64_decodestate* state_in, const char *encoding)
 
 	encoding = encoding ? encoding : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-	for (int i = 0; i < sizeof(state_in->decoding); i++)
+	for (unsigned long i = 0; i < sizeof(state_in->decoding); i++)
 		state_in->decoding[i] = -1;
 
 	for (int i = 0; i < 64; i++)

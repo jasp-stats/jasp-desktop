@@ -33,7 +33,7 @@ LongVarNamesRecord::LongVarNamesRecord(const NumericConverter &fixer, RecordSubT
 	char * buffer = new char[count() * size() + 2];
 	from.read(buffer, count());
 	_var_name_pairs.append(buffer, count());
-	delete buffer;
+	delete[] buffer;
 }
 
 /**

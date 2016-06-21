@@ -44,9 +44,9 @@ void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator
 	unsigned long long progress;
 	unsigned long long lastProgress = -1;
 
-	int columnCount = columns.size();
+	size_t columnCount = columns.size();
 
-	for (int i = 0; i < columnCount; i++)  // columns
+	for (size_t i = 0; i < columnCount; i++)  // columns
 		cells.push_back(vector<string>());
 
 	vector<string> line;
@@ -62,7 +62,7 @@ void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator
 		}
 
         if (line.size() != 0) {
-            int i = 0;
+			size_t i = 0;
             for (; i < line.size() && i < columnCount; i++)
                 cells[i].push_back(line[i]);
             for (; i < columnCount; i++)
@@ -312,7 +312,7 @@ string CSVImporter::deEuropeanise(const string &value)
 	int dots = 0;
 	int commas = 0;
 
-	for (int i = 0; i < value.length(); i++)
+	for (size_t i = 0; i < value.length(); i++)
 	{
 		if (value[i] == '.')
 			dots++;
@@ -326,8 +326,8 @@ string CSVImporter::deEuropeanise(const string &value)
 
 		if (dots > 0)
 		{
-			int i = 0;
-			int j = 0;
+			size_t i = 0;
+			size_t j = 0;
 
 			for (;i < value.size(); i++)
 			{
@@ -341,7 +341,7 @@ string CSVImporter::deEuropeanise(const string &value)
 			uneurope.resize(j);
 		}
 
-		for (int i = 0; i < uneurope.length(); i++)
+		for (size_t i = 0; i < uneurope.length(); i++)
 		{
 			if (uneurope[i] == ',')
 			{

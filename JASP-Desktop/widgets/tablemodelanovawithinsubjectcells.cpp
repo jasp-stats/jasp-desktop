@@ -164,9 +164,9 @@ bool TableModelAnovaWithinSubjectCells::canDropMimeData(const QMimeData *data, Q
 
 	if (rowNo == -1)
 	{
-		int available = 0;
+		size_t available = 0;
 
-		for (int i = 0; i < _variables.size(); i++)
+		for (size_t i = 0; i < _variables.size(); i++)
 		{
 			if (_variables.at(i) == "")
 				available++;
@@ -206,9 +206,9 @@ bool TableModelAnovaWithinSubjectCells::dropMimeData(const QMimeData *data, Qt::
 
 	if (rowNo == -1)
 	{
-		int pos = 0;
+		size_t pos = 0;
 
-		for (int i = 0; i < _variables.size(); i++)
+		for (size_t i = 0; i < _variables.size(); i++)
 		{
 			if (_variables.at(i) == "")
 				_variables[i] = droppedItems.at(pos++);
@@ -219,9 +219,9 @@ bool TableModelAnovaWithinSubjectCells::dropMimeData(const QMimeData *data, Qt::
 	}
 	else
 	{
-		int pos = 0;
+		size_t pos = 0;
 
-		for (int i = rowNo; i < _variables.size(); i++)
+		for (size_t i = rowNo; i < _variables.size(); i++)
 		{
 			string existingVariable = _variables.at(i);
 			if (existingVariable != "")
@@ -333,12 +333,12 @@ void TableModelAnovaWithinSubjectCells::setDesign(const QList<Factor> &design)
 
 	if (_boundTo != NULL)
 	{
-		int designCells = designCellCount();
+		size_t designCells = designCellCount();
 
 		if (_variables.size() > designCells)
 		{
 			vector<string>::iterator itr = _variables.begin();
-			for (int i = 0; i < designCells; i++)
+			for (size_t i = 0; i < designCells; i++)
 				itr++;
 
 			vector<string>::iterator jtr = itr;
@@ -371,9 +371,9 @@ void TableModelAnovaWithinSubjectCells::setDesign(const QList<Factor> &design)
 
 int TableModelAnovaWithinSubjectCells::slotsAvailable() const
 {
-	int available = 0;
+	size_t available = 0;
 
-	for (int i = 0; i < _variables.size(); i++)
+	for (size_t i = 0; i < _variables.size(); i++)
 	{
 		if (_variables.at(i) == "")
 			available++;

@@ -35,7 +35,7 @@ public:
 	virtual void abort() OVERRIDE;
 	virtual qint64 bytesAvailable() const OVERRIDE;
 	virtual bool isSequential() const OVERRIDE;
-	virtual qint64 readData(char * data, qint64 maxSize);
+	virtual qint64 readData(char * data, qint64 maxSize) OVERRIDE;
 
 private:
 

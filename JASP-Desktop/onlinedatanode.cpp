@@ -107,4 +107,6 @@ bool OnlineDataNode::processAction(Action action, const QString &data)
 {
 	prepareAction(action, data);
 	initialise();
+
+	return true;
 }

@@ -94,7 +94,6 @@ HEADERS += \
 	dataset.h \
 	datasetpackage.h \
 	dirs.h \
-	filepackage.h \
 	filereader.h \
 	ipcchannel.h \
 	label.h \

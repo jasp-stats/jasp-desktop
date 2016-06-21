@@ -40,7 +40,7 @@ MiscInfoRecord::MiscInfoRecord(const NumericConverter &fixer, int32_t fileSubTyp
 		from.read(buffer, sizeData);
 		fixer.fixup(buffer, sizeData);
 		_data.append(buffer, sizeData);
-		delete buffer;
+		delete[] buffer;
 	}
 }
 

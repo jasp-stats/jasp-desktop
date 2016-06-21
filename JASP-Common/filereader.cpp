@@ -122,9 +122,9 @@ void FileReader::openEntry(const string &archivePath, const string &entryPath)
 
 string FileReader::fileName() const
 {
-	int last = _entryPath.find_last_of("/");
+	size_t last = _entryPath.find_last_of("/");
 
-	if (last == -1)
+	if (last == std::string::npos)
 		return _entryPath;
 
 	if (last == _entryPath.length() - 1)
@@ -136,9 +136,9 @@ string FileReader::fileName() const
 string FileReader::extension() const
 {
 	string filename = fileName();
-	int last = filename.find_first_of(".");
+	size_t last = filename.find_first_of(".");
 
-	if (last == -1 || last == filename.length() - 1)
+	if (last == std::string::npos || last == filename.length() - 1)
 		return string();
 
 	return filename.substr(last + 1);

@@ -278,7 +278,7 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 		{
 			Json::Value &analysisJson = *iter;
 			vector<string> paths = tempfiles_retrieveList(analysisJson["id"].asInt());
-			for (int j = 0; j < paths.size(); j++)
+			for (size_t j = 0; j < paths.size(); j++)
 			{
 				FileReader fileInfo = FileReader(tempfiles_sessionDirName() + "/" + paths[j]);
 				if (fileInfo.exists())
@@ -351,7 +351,8 @@ string JASPExporter::getColumnTypeName(Column::ColumnType columnType)
 		return "Ordinal";
 	case Column::ColumnTypeScale:
 		return "Continuous";
+	default:
+		return "Unknown";
 	}
 
-	return "Unknown";
 }

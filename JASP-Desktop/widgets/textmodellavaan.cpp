@@ -654,24 +654,6 @@ void TextModelLavaan::checkBlock(QTextBlock &block)
 {
 	blockSignals(true);
 
-	BlockStatus *status = blockStatus(block);
-
-	/*if (block == _currentBlock && status->isError() && status->inserted)
-	{
-		blockSignals(true);
-
-		QTextCursor cursor(block);
-
-		cursor.movePosition(QTextCursor::StartOfBlock);
-		cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, status->pos);
-		cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 5);
-
-		cursor.removeSelectedText();
-		status->inserted = false;
-
-		blockSignals(false);
-	}*/
-
 	QList<Token> tokens = parse(block);
 
 	QTextCursor manipCursor(block);
@@ -715,49 +697,6 @@ void TextModelLavaan::checkBlock(QTextBlock &block)
 
 		manipCursor.setCharFormat(format);
 	}
-
-	/*if (status->isError())
-	{
-		QTextCharFormat format;
-
-		format.setUnderlineStyle(QTextCharFormat::WaveUnderline);
-		format.setUnderlineColor(Qt::red);
-
-		/*if (status->length == -1)
-		{
-			if (i != currentBlock)
-			{
-				if (status->inserted == false)
-				{
-					manipCursor.movePosition(QTextCursor::StartOfBlock);
-					manipCursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, status->pos);
-
-					blockSignals(true);
-					manipCursor.insertText(" ");
-					manipCursor.insertText("            ", format);
-					status->inserted = true;
-					blockSignals(false);
-				}
-				else
-				{
-					manipCursor.movePosition(QTextCursor::StartOfBlock);
-					manipCursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, status->pos + 1);
-					manipCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 12);
-
-					manipCursor.mergeCharFormat(format);
-				}
-			}
-		}
-		else*/
-		/*{
-			manipCursor.movePosition(QTextCursor::StartOfBlock);
-			manipCursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, status->pos);
-			manipCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, status->length);
-
-			manipCursor.mergeCharFormat(format);
-		}
-
-	}*/
 
 	blockSignals(false);
 }
