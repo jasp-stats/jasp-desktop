@@ -352,7 +352,7 @@ HEADERS  += \
         $$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
         $$PWD/importers/spss/spssformattype.h \
-    $$PWD/analysisforms/reliabilityanalysisform.h
+        $$PWD/analysisforms/reliabilityanalysisform.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -407,7 +407,7 @@ FORMS += \
         $$PWD/aboutdialog.ui \
         $$PWD/analysisforms/exploratoryfactoranalysisform.ui \
         $$PWD/analysisforms/principalcomponentanalysisform.ui \
-    $$PWD/analysisforms/reliabilityanalysisform.ui
+        $$PWD/analysisforms/reliabilityanalysisform.ui
 
 
 
