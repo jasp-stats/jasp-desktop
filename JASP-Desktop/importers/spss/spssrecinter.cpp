@@ -58,7 +58,7 @@ SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long s
  * @brief spssStringLen Find the length of the string (in column).
  * @param value Value to set.
  */
-void SPSSColumn::spssStringLen(long value)
+void SPSSColumn::spssStringLen(size_t value)
 {
     _spssStringLen = value;
     _charsRemaining = value;
@@ -407,7 +407,7 @@ SPSSColumns::SPSSColumns()
  */
 void SPSSColumns::resetCols()
 {
-    _colCtr = -1;
+	_colCtr = -1;
     _spanCtr = 1;
 }
 
@@ -420,7 +420,7 @@ SPSSColumn& SPSSColumns::getNextColumn()
 {
 
     // First time or done spanning the (last) column?
-    if ((_colCtr == -1) || (at(_colCtr).columnSpan() == _spanCtr))
+	if ((_colCtr == (size_t)-1) || (at(_colCtr).columnSpan() == _spanCtr))
     {
         // Goto next column..
         _colCtr++;
