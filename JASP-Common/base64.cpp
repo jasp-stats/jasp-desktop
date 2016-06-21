@@ -36,7 +36,7 @@ string Base64::encode(const string &prefix, const string &in, const char *encodi
 
 	char buffer[prefix.size() + 4 * triplets];
 
-	int count;
+	size_t count;
 	for (count = 0; count < prefix.length(); count++)
 		buffer[count] = prefix.c_str()[count];
 

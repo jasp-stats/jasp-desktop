@@ -379,7 +379,7 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const string &path,  const 
 		Json::Reader jsonReader;
 		jsonReader.parse(data, (char*)(data + (size * sizeof(char))), root);
 
-		delete data;
+		delete[] data;
 	}
 
 	dataEntry.close();

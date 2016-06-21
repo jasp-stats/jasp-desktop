@@ -31,7 +31,7 @@ public:
 
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(const Json::Value& value) OVERRIDE;
-	void set(int index);
+	void set(size_t index);
 	const std::vector<std::string> options() const;
 	virtual Option* clone() const OVERRIDE;
 

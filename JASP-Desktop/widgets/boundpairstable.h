@@ -32,14 +32,14 @@ class BoundPairsTable : public TableView, public Bound
 public:
 	explicit BoundPairsTable(QWidget *parent = 0);
 
-	virtual void setModel(QAbstractItemModel *model);
+	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
 	virtual void bindTo(Option *option) OVERRIDE;
 	virtual void notifyDragWasDropped() OVERRIDE;
 
 protected:
 
-	void resizeEvent(QResizeEvent *e);
-	void moveEvent(QMoveEvent *e);
+	void resizeEvent(QResizeEvent *e) OVERRIDE;
+	void moveEvent(QMoveEvent *e) OVERRIDE;
 
 	void setupKey();
 	void repositionKey();

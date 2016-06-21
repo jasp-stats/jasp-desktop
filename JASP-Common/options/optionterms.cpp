@@ -41,7 +41,7 @@ void OptionTerms::set(const Json::Value &value)
 
 	vector<vector<string> > terms;
 
-	for (int i = 0; i < value.size(); i++)
+	for (size_t i = 0; i < value.size(); i++)
 	{
 		const Json::Value &jVariable = value.get(i, Json::nullValue);
 		if ( ! jVariable.isArray())
@@ -49,7 +49,7 @@ void OptionTerms::set(const Json::Value &value)
 
 		vector<string> term;
 
-		for (int j = 0; j < jVariable.size(); j++)
+		for (size_t j = 0; j < jVariable.size(); j++)
 		{
 			Json::Value jComponent = jVariable.get(j, Json::nullValue);
 			if ( ! jComponent.isString())

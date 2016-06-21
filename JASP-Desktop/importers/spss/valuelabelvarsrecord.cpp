@@ -44,7 +44,7 @@ ValueLabelVarsRecord::ValueLabelVarsRecord(const NumericConverter &fixer, Record
 			from.read(buffer, meta.label_len);
 			fixer.fixup(buffer, meta.label_len);
 			meta.label.append(buffer, meta.label_len);
-			delete buffer;
+			delete[] buffer;
 		}
 		// insert
 		_Labels.push_back(meta);

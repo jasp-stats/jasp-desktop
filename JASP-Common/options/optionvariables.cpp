@@ -72,7 +72,7 @@ vector<string> OptionVariables::variables() const
 {
 	vector<string> variables;
 
-	for (int i = 0; i < _value.size(); i++)
+	for (size_t i = 0; i < _value.size(); i++)
 	{
 		const vector<string> &variable = _value.at(i);
 		if (variable.size() > 0)

@@ -356,7 +356,7 @@ bool TableModelVariablesLevels::dropMimeData(const QMimeData *data, Qt::DropActi
 			else if (row == 0)  // dropped at beginning
 				row = 1;
 
-			int level = 0;
+			size_t level = 0;
 			int positionInLevel = 0;
 			for (int i = 1; i < row; i++)
 			{

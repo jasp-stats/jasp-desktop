@@ -58,7 +58,7 @@ EngineSync::~EngineSync()
 {
 	if (_engineStarted)
 	{
-		for (int i = 0; i < _slaveProcesses.size(); i++)
+		for (size_t i = 0; i < _slaveProcesses.size(); i++)
 		{
 			_slaveProcesses[i]->terminate();
 			_slaveProcesses[i]->kill();
@@ -178,7 +178,6 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 	}
 
 	string str = json.toStyledString();
-
 	_channels[processNo]->send(str);
 
 #ifndef QT_NO_DEBUG
@@ -190,7 +189,7 @@ void EngineSync::sendToProcess(int processNo, Analysis *analysis)
 
 void EngineSync::process()
 {
-	for (int i = 0; i < _channels.size(); i++)
+	for (size_t i = 0; i < _channels.size(); i++)
 	{
 		Analysis *analysis = _analysesInProgress[i];
 
@@ -277,7 +276,7 @@ void EngineSync::sendMessages()
 	std::cout.flush();
 #endif
 
-	for (int i = 0; i < _analysesInProgress.size(); i++) // this loop handles changes in running analyses
+	for (size_t i = 0; i < _analysesInProgress.size(); i++) // this loop handles changes in running analyses
 	{
 		Analysis *analysis = _analysesInProgress[i];
 		if (analysis != NULL)
@@ -304,7 +303,7 @@ void EngineSync::sendMessages()
 		{
 			bool sent = false;
 
-			for (int i = 0; i < _analysesInProgress.size(); i++)
+			for (size_t i = 0; i < _analysesInProgress.size(); i++)
 			{
 				if (_analysesInProgress[i] == NULL)
 				{
@@ -320,9 +319,9 @@ void EngineSync::sendMessages()
 		else if (analysis->status() == Analysis::Inited)
 		{
 #ifndef QT_DEBUG
-			for (int i = 1; i < _analysesInProgress.size(); i++) // don't perform 'runs' on process 0, only inits.
+			for (size_t i = 1; i < _analysesInProgress.size(); i++) // don't perform 'runs' on process 0, only inits.
 #else
-			for (int i = 0; i < _analysesInProgress.size(); i++)
+			for (size_t i = 0; i < _analysesInProgress.size(); i++)
 #endif
 			{
 				if (_analysesInProgress[i] == NULL)

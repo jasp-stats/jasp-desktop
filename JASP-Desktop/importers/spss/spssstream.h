@@ -16,7 +16,7 @@
 //
 
 #ifndef SPSSSTREAM_H
-#define PSPPSTREAM_H
+#define SPSSSTREAM_H
 
 //#include <boost/nowide/fstream.hpp>
 #include <fstream>

@@ -453,7 +453,6 @@ bool CSV::utf16to8(char *out, char *in, int outSize, int inSize, int &written, i
 {
 	written = 0;
 	read = 0;
-	int i;
 	bool success;
 
 	while (true)
