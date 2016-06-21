@@ -73,7 +73,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	results[["reliabilityScale"]] <- .reliabalityScaleTable(resultsAlpha, options, variables, perform)
 	
 	if (options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem) {
-		results[["reliabilityItemsObj"]] <- list(title="Items", reliabilityItems=.reliabalityItemsTable(resultsAlpha, options, variables, perform))
+		results[["reliabilityItemsObj"]] <- list(title="Item Statistics", reliabilityItems=.reliabalityItemsTable(resultsAlpha, options, variables, perform))
 	} else {
 		results[["reliabilityItemsObj"]] <- NULL
 	}
@@ -119,7 +119,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	table <- list()
 
-	table[["title"]] <- "Scale Statistics"
+	table[["title"]] <- "Scale Reliability Statistics"
 
 	fields = list(list(name="case", title="", type="string"))
 
@@ -185,7 +185,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	table <- list()
 
-	table[["title"]] <- "Item Statistics"
+	table[["title"]] <- "Item Reliability Statistics"
 	
 	overTitle <- paste0("If item dropped")
 	
