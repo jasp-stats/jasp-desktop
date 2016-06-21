@@ -82,9 +82,9 @@ public:
 
     READ_ATTR(std::string, spssName)	// The name as in hte file.
 
-    READ_ATTR(long, spssStringLen)		// Length of the string (if string).
+	READ_ATTR(size_t, spssStringLen)		// Length of the string (if string).
 
-    READ_ATTR(int, columnSpan)			// Number of data cells this column spans.
+	READ_ATTR(size_t, columnSpan)			// Number of data cells this column spans.
     void incrementColumnSpan() { _columnSpan++; }
 
     RW_ATTR(Measure, spssMeasure)			// The Measure from the SPSS file (if any)
@@ -138,7 +138,7 @@ public:
      * @brief spssStringLen Set the length of the string (in column).
      * @param value Value to set.
      */
-    void spssStringLen(long value);
+	void spssStringLen(size_t value);
 
     /**
      * @brief charsRemaining Find the number of chars remaining for this buffer, for one data cell.
@@ -309,9 +309,9 @@ private:
     std::auto_ptr<CodePageConvert>	_stringConvert; /** < Code Page convertor. */
 
     // Count columns.
-    size_t _colCtr;
+	size_t _colCtr;
 
-    // Counter for spanned columns.
+	// Counter for spanned columns.
     // 1 if not spanning.
     size_t _spanCtr;
 

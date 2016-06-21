@@ -78,9 +78,9 @@ bool OSFTest::authenticationTest(QString username, QString password)
 
   fs->setFSModel(_model);
 
-  bool wasBlocked = fs->_model->blockSignals(true);
+//  bool wasBlocked = fs->_model->blockSignals(true);
 
-  bool wasBlocked1 = fs->_model->signalsBlocked();
+//  bool wasBlocked1 = fs->_model->signalsBlocked();
 
   fs->setFSModel(_model);
 

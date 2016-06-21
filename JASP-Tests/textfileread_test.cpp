@@ -188,7 +188,7 @@ int TextFileReadTest::readDataFromFile(std::string path, struct fileContent *fc)
       buffer.str(line);
 
       int numWordsCurrent = 1;
-      for(int i=0; i<line.size(); ++i)
+	  for(size_t i=0; i<line.size(); ++i)
       {
         if(line[i]==delimiter)
         {
@@ -202,7 +202,7 @@ int TextFileReadTest::readDataFromFile(std::string path, struct fileContent *fc)
 
         bool valid = false;
         //check if current word has letters/numbers
-        for(int j=0; j<currentWord.size(); ++j)
+		for(size_t j=0; j<currentWord.size(); ++j)
         {
           if(currentWord[j] != ' ' && currentWord[j] != '\t')
           {
