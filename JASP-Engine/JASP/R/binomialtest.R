@@ -71,7 +71,8 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 	                      "Descriptives Plot")
 
 		if (!is.null(state) && !is.null(state$options$variables) &&
-				state$options$plotWidth != options$plotWidth &&
+				(state$options$plotWidth != options$plotWidth || 
+					state$options$plotHeight != options$plotHeight) &&
 				state$options$descriptivesPlots == TRUE){
 
 			# if only width is changed, use scaling proper
