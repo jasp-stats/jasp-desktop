@@ -45,13 +45,25 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
   results <- list()
 
+	descriptivesPlotsMeta <- list()
+
+	for (j in .indices(variables)){
+		descriptivesPlotsMeta[[j]] <- list(name = variables[j], type = "collection",
+																			 meta = "image")
+	}
+
+
+
+
 	results[["title"]] <- "Binomial Test"
 	results[[".meta"]] <- list(list(name = "binomial", type = "table"),
-	                           list(name = "descriptives", type = "collection",
-	                                meta = "image"))
+	                           list(name = "descriptives", type = "object",
+	                                meta = descriptivesPlotsMeta))
 
-  if (is.list(diff) && (!any(diff$variables, diff$confidenceIntervalInterval,
-			diff$hypothesis, diff$testValue) || perform == "init")){
+  if (is.list(diff) && (all(diff[["variables"]] == FALSE,
+			diff[["confidenceIntervalInterval"]] == FALSE,
+			diff[["hypothesis"]] == FALSE,
+			diff[["testValue"]] == FALSE) || perform != "run")){
 
 		binomResults <- state$binomResults
 
@@ -66,31 +78,34 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
                                           perform)
 
 
-  if (options$descriptivesPlots){
-    plotTitle <- ifelse(length(options$variables) > 1, "Descriptives Plots",
-	                      "Descriptives Plot")
+  if (options[["descriptivesPlots"]] == TRUE){
 
-		if (!is.null(state) && !is.null(state$options$variables) &&
-				(state$options$plotWidth != options$plotWidth || 
-					state$options$plotHeight != options$plotHeight) &&
-				state$options$descriptivesPlots == TRUE){
+		if (is.list(diff) && all(diff[["variables"]] == FALSE,
+			diff[["descriptivesPlots"]] == FALSE,
+			diff[["descriptivesPlotsConfidenceInterval"]] == FALSE,
+			diff[["plotWidth"]] == FALSE,
+			diff[["plotHeight"]] == FALSE)){
 
-			# if only width is changed, use scaling proper
-			descriptPlots <- .binomialDescriptivesPlot(dataset, options, variables,
-																								 perform, initial = F)
+			descriptPlots <- state$descriptPlots
 
 		} else {
 
 			descriptPlots <- .binomialDescriptivesPlot(dataset, options, variables,
-																								 perform, initial = T)
+																								 perform)
 
+			descriptPlots[["title"]] <- "Descriptive Plots"
 		}
 
-    results[["descriptives"]] <- list(collection = descriptPlots,
-	                                    title = plotTitle)
+		# select vector of plot paths to keep when rerunning analysis.
+		plotPaths <- lapply(descriptPlots[names(descriptPlots) == ""],
+												function(x) x$data)
+
+    results[["descriptives"]] <- descriptPlots
+
   } else {
 
 	  results[["descriptives"]] <- NULL
+		plotPaths <- NULL
 
 	}
 
@@ -103,12 +118,14 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 		state[["binomTable"]] <- results[["binomial"]]
 		state[["descriptPlots"]] <- results[["descriptives"]]
 
-    return(list(results=results, status="complete", state=state))
+    return(list(results=results, status="complete", state=state,
+								keep = plotPaths))
 
   } else {
 
 
-		return(list(results=results, status="inited", state=state))
+		return(list(results=results, status="inited", state=state,
+								keep = plotPaths))
 
   }
 
@@ -266,16 +283,14 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 }
 
-.binomialDescriptivesPlot <- function(dataset, options, variables, perform,
-																			initial) {
+.binomialDescriptivesPlot <- function(dataset, options, variables, perform) {
 
-  descriptivesPlotList <- list()
+  descriptivesPlotCollection <- list()
+
+	testValue <- options$testValue
+	confLevel <- options$descriptivesPlotsConfidenceInterval
 
   base_breaks_y <- function(x, testValue) {
-
-    values <- c(testValue, x[, "ciLower"], x[, "ciUpper"])
-    ci.pos <- c(min(values), max(values))
-    b <- pretty(ci.pos)
     d <- data.frame(x = -Inf, xend = -Inf, y = 0, yend = 1)
     list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
                                             yend = yend),
@@ -289,122 +304,108 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
 		var <- options$variables[[i]]
 
-    descriptivesPlot <- list("title" = var)
-    descriptivesPlot[["width"]] <- options$plotWidth
-    descriptivesPlot[["height"]] <- options$plotHeight
-    descriptivesPlot[["custom"]] <- list(width = "plotWidth",
-                                         height = "plotHeight")
-
-    if (perform == "run") {
-
-      d <- dataset[[.v(var)]]
-      d <- d[!is.na(d)]
-
-      levels <- levels(d)
-      nLevels <- length(levels)
-
-      # R throws an error with too many levels, here catch it
-			if (nLevels > 30){
-
-				descriptivesPlot[["error"]] <- list(errorType="badData",
-																						errorMessage="Too many levels to
-																						display descriptives plot.")
-				descriptivesPlot[["data"]] <- ""
-
-			} else {
-
-	      nObs <- length(d)
-	      testValue = options$testValue
-	      hyp <- "two.sided"
-
-				if (initial == TRUE){
-					# Initial width dependent on levels, later widths not
-					descriptivesPlot[["width"]] <- 80 * nLevels
-				}
-
-	      counts = rate = ciLower = ciUpper = numeric(nLevels)
-
-	      for (k in 1:nLevels) {
-	        counts[k] <- sum(d == levels[k])
-	        rate[k] <- counts[k]/nObs
-
-	        r <- stats::binom.test(counts[k], nObs, p = testValue,
-	                               alternative = hyp,
-	                               conf.level = options$descriptivesPlotsConfidenceInterval)
-					ciLower[k] = r$conf.int[1]
-					ciUpper[k] = r$conf.int[2]
-
-	      }
-
-	      summaryStat <- data.frame(groupingVariable = levels, rate = rate,
-																	ciLower = ciLower, ciUpper = ciUpper)
-	      testValue <- data.frame(testValue = testValue)
 
 
-	      p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable,
-	                                                     y = rate, group = 1)) +
+    d <- dataset[[.v(var)]]
+    d <- d[!is.na(d)]
+		nObs <- length(d)
+
+		descriptivesPlotList <- list()
+
+
+		for (k in .indices(levels(d))){
+
+			level <- levels(d)[k]
+
+			descriptivesPlot <- list("title" = level)
+
+			if (perform == "run") {
+
+				count <- sum(d == level)
+				rate <- count/nObs
+
+
+				descriptivesPlot[["width"]] <- options$plotWidth
+				descriptivesPlot[["height"]] <- options$plotHeight
+				descriptivesPlot[["custom"]] <- list(width = "plotWidth",
+																					 	 height = "plotHeight")
+
+			  r <- stats::binom.test(x = count, n = nObs, p = testValue,
+ 															 alternative = "two.sided",
+ 															 conf.level = confLevel)
+				ciLower <- r$conf.int[1]
+				ciUpper <- r$conf.int[2]
+
+				summaryStat <- data.frame(label = level, rate = rate, ciLower = ciLower,
+																	ciUpper = ciUpper)
+
+	      dfTestValue <- data.frame(testValue = testValue)
+
+				p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = label,
+																											 y = rate, group = 1)) +
 					ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower, ymax = ciUpper),
-	                               colour = "black", width = 0.2, position = pd) +
-				  ggplot2::geom_point(position = pd, size = 4) +
-	        ggplot2::geom_hline(data = testValue,
+																 colour = "black", width = 0.2, position = pd) +
+					ggplot2::geom_point(position = pd, size = 4) +
+					ggplot2::geom_hline(data = dfTestValue,
 															ggplot2::aes(yintercept = testValue),
-	                      			linetype = "dashed") +
-	        ggplot2::ylab(NULL) +
+															linetype = "dashed") +
+					ggplot2::ylab(NULL) +
 					ggplot2::xlab(NULL) +
-	        ggplot2::theme_bw() +
-	        ggplot2::ylim(min = 0, max = 1) +
-	        ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
-	                       plot.title = ggplot2::element_text(size = 18),
-	                       panel.grid.major = ggplot2::element_blank(),
-	                       axis.title.x = ggplot2::element_blank(),
-	                       axis.title.y = ggplot2::element_text(size = 18,
-	                                                            vjust = -1),
-	                       axis.text.x = ggplot2::element_text(size = 15),
-	                       axis.text.y = ggplot2::element_text(size = 15),
-	                       panel.background =
-	                         ggplot2::element_rect(fill = "transparent",
-	                                               colour = NA),
-	                       plot.background =
-	                         ggplot2::element_rect(fill = "transparent",
-	                                               colour = NA),
-	                       legend.background =
-	                         ggplot2::element_rect(fill = "transparent",
-	                                               colour = NA),
-	                       panel.border = ggplot2::element_blank(),
-	                       axis.line = ggplot2::element_blank(),
-	                       legend.key = ggplot2::element_blank(),
-	                       legend.title = ggplot2::element_text(size = 12),
-	                       legend.text = ggplot2::element_text(size = 12),
-	                       axis.ticks = ggplot2::element_line(size = 0.5),
-	                       axis.ticks.margin = grid::unit(1, "mm"),
-	                       axis.ticks.length = grid::unit(3, "mm"),
-	                       plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
-	        base_breaks_y(summaryStat, testValue$testValue)
+					ggplot2::theme_bw() +
+					ggplot2::ylim(min = 0, max = 1) +
+					ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+												 plot.title = ggplot2::element_text(size = 18),
+												 panel.grid.major = ggplot2::element_blank(),
+												 axis.title.x = ggplot2::element_blank(),
+												 axis.title.y = ggplot2::element_text(size = 18,
+																															vjust = -1),
+												 axis.text.x = ggplot2::element_text(size = 15),
+												 axis.text.y = ggplot2::element_text(size = 15),
+												 panel.background =
+													 ggplot2::element_rect(fill = "transparent",
+																								 colour = NA),
+												 plot.background =
+													 ggplot2::element_rect(fill = "transparent",
+																								 colour = NA),
+												 legend.background =
+													 ggplot2::element_rect(fill = "transparent",
+																								 colour = NA),
+												 panel.border = ggplot2::element_blank(),
+												 axis.line = ggplot2::element_blank(),
+												 legend.key = ggplot2::element_blank(),
+												 legend.title = ggplot2::element_text(size = 12),
+												 legend.text = ggplot2::element_text(size = 12),
+												 axis.ticks = ggplot2::element_line(size = 0.5),
+												 axis.ticks.margin = grid::unit(1, "mm"),
+												 axis.ticks.length = grid::unit(3, "mm"),
+												 plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
+					base_breaks_y(summaryStat, dfTestValue$testValue)
 
+					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+					print(p)
+		      content <- .endSaveImage(image)
 
-				if (initial == TRUE){
-					# Initial width dependent on levels, later widths not
-					image <- .beginSaveImage(80 * nLevels,
-		                               options$plotHeight)
+		      descriptivesPlot[["data"]] <- content
+					descriptivesPlot[["status"]] <- "complete"
+
 				} else {
-					image <- .beginSaveImage(options$plotWidth,
-		                               options$plotHeight)
+
+					descriptivesPlot[["width"]] <- options$plotWidth
+					descriptivesPlot[["height"]] <- options$plotHeight
+					descriptivesPlot[["custom"]] <- list(width = "plotWidth",
+																						 	 height = "plotHeight")
+					descriptivesPlot[["data"]] <- ""
+
 				}
 
-	      print(p)
-	      content <- .endSaveImage(image)
+				descriptivesPlotList[[k]] <- descriptivesPlot
+		}
 
-	      descriptivesPlot[["data"]] <- content
+		descriptivesPlotVar <- list(collection = descriptivesPlotList, title = var)
 
-			}
+		descriptivesPlotCollection[[var]] <- descriptivesPlotVar
 
-    } else {
-      descriptivesPlot[["data"]] <- ""
-    }
+	}
 
-    descriptivesPlotList[[i]] <- descriptivesPlot
-
-  }
-
-  descriptivesPlotList
+	return(descriptivesPlotCollection)
 }
