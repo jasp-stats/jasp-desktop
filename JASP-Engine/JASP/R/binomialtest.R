@@ -19,6 +19,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 						   callback = function(...) 0,  ...) {
 
   variables <- unlist(options$variables)
+	results <- list()
 
   if (is.null(dataset)) {
 		if (perform == "run") {
@@ -34,17 +35,38 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 		                columns.as.factor=variables)
 	}
 
-  # Retrieve state
 
+  # Retrieve state
   state <- .retrieveState()
-	diff <- NULL
+	descriptPlots <- NULL
+	binomResults <- NULL
+
 	if (!is.null(state)){
+
 		diff <- .diff(state$options, options)
+
+		if (is.list(diff) && !any(diff[["variables"]],
+				diff[["confidenceIntervalInterval"]],
+				diff[["hypothesis"]],
+				diff[["testValue"]])){
+
+			binomResults <- state$binomResults
+		}
+
+		if (is.list(diff) && options[["descriptivesPlots"]] &&
+				!any(diff[["variables"]], diff[["testValue"]],
+				diff[["descriptivesPlots"]],
+				diff[["descriptivesPlotsConfidenceInterval"]],
+				diff[["plotWidth"]],
+				diff[["plotHeight"]])){
+
+			descriptPlots <- state$descriptPlots
+		}
+
 	}
 
 
-  results <- list()
-
+	# Meta information
 	descriptivesPlotsMeta <- list()
 
 	for (j in .indices(variables)){
@@ -52,22 +74,14 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 																			 meta = "image")
 	}
 
-
-
-
 	results[["title"]] <- "Binomial Test"
 	results[[".meta"]] <- list(list(name = "binomial", type = "table"),
 	                           list(name = "descriptives", type = "object",
 	                                meta = descriptivesPlotsMeta))
 
-  if (is.list(diff) && (all(diff[["variables"]] == FALSE,
-			diff[["confidenceIntervalInterval"]] == FALSE,
-			diff[["hypothesis"]] == FALSE,
-			diff[["testValue"]] == FALSE) || perform != "run")){
 
-		binomResults <- state$binomResults
-
-	} else {
+	# Generate results
+  if (is.null(binomResults)){
 
 		binomResults <- .binomialTest(dataset, options, variables, perform)
 
@@ -78,36 +92,35 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
                                           perform)
 
 
-  if (options[["descriptivesPlots"]] == TRUE){
+  if (options[["descriptivesPlots"]]){
 
-		if (is.list(diff) && all(diff[["variables"]] == FALSE,
-			diff[["descriptivesPlots"]] == FALSE,
-			diff[["descriptivesPlotsConfidenceInterval"]] == FALSE,
-			diff[["plotWidth"]] == FALSE,
-			diff[["plotHeight"]] == FALSE)){
-
-			descriptPlots <- state$descriptPlots
-
-		} else {
+		if (is.null(descriptPlots)) {
 
 			descriptPlots <- .binomialDescriptivesPlot(dataset, options, variables,
 																								 perform)
-
 			descriptPlots[["title"]] <- "Descriptive Plots"
 		}
 
-		# select vector of plot paths to keep when rerunning analysis.
-		plotPaths <- lapply(descriptPlots[names(descriptPlots) == ""],
-												function(x) x$data)
+		# select list of plot paths to keep when rerunning analysis.
+		plotPaths <- list()
+		for (i in 1:length(descriptPlots)){
+		  if (is.list(descriptPlots[[i]])){
+				for (j in 1:length(descriptPlots[[i]]$collection)){
+      		plotPaths[[length(plotPaths)+1]] <-
+						descriptPlots[[i]]$collection[[j]]$data
+		    }
+		  }
+		}
 
     results[["descriptives"]] <- descriptPlots
 
   } else {
 
 	  results[["descriptives"]] <- NULL
-		plotPaths <- NULL
+		plotPaths <- list()
 
 	}
+
 
 
   if (perform == "run") {
@@ -123,14 +136,12 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 
   } else {
 
-
 		return(list(results=results, status="inited", state=state,
 								keep = plotPaths))
 
   }
 
 }
-
 
 .binomialTable <- function(r, options, variables, perform){
 
