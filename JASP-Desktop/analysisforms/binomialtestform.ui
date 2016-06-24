@@ -382,7 +382,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Descriptives plots</string>
+         <string>Descriptive plots</string>
         </property>
        </widget>
       </item>
