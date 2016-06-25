@@ -216,7 +216,7 @@ const
 string SPSSColumn::format(double value)
 {
     QString result;
-    if (!isnan(value))
+    if (!std::isnan(value))
     {
         QDateTime * dt = _asDateTime(value);
 
