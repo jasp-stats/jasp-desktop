@@ -1,10 +1,18 @@
 Summary Statistics - Bayesian Binomial Test
 ==========================
 
+This function computes the Bayes factor for a binomially distributed observation
+
 The Bayesian binomial test is described in Jeffreys (1961, p. 256).
 This test informs us whether the data support or contradict a value suggested for the parameter (chance) in question.
 
-*a0* is the suggested value of the rate parameter of Binomial under null hypothesis. Data observed: *s* successes and *f* failures, total number of trials, *n = s + f*. In Theory of Probability, Jeffreys assumes a uniform prior on the rate parameter under alternative hypothesis. The Bayes factor used here is a more general case, assuming a beta prior on the rate parameter. [beta(1,1) corresponds to a uniform prior]
+
+### Models:
+Null model: *p = p0*
+
+Alt  model: *p ~ Beta(a,b)*
+
+*p0* is the suggested value of the rate parameter of Binomial under null hypothesis. Data observed: *s* successes and *f* failures, total number of trials, *n = s + f*. In Theory of Probability, Jeffreys assumes a uniform prior on the rate parameter under alternative hypothesis. The Bayes factor used here is a more general case, assuming a beta prior on the rate parameter. [beta(1,1) corresponds to a uniform prior]
 
 Default Options
 -------
