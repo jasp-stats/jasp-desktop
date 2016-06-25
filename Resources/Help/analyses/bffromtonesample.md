@@ -1,23 +1,20 @@
+
 Summary Statistics - Bayes factor from t-value
 ==========================
 
-Independent Samples
+One Sample
 ==========================
 
-This function allows you to compute Bayes factor corresponding to an independent groups t-test using the classical *t* statistic. (Null hypothesis states that the population means of two independent groups are equal) It can be used when you don't have access to full data set, but you do have the t statistic.
+This function allows you to compute Bayes factor corresponding to a one sample t-test using the classical *t* statistic. (Null hypothesis states that the population mean equals a specific constant, i.e., the test value) It can be used when you don't have access to full data set, but you do have the t statistic.
 
-Assumptions
------------
-- The observations in both groups are a random sample from the population
-- The dependent variable is normally distributed in both populations
-- The population variances in the two groups are homogeneous
 
 Default Options
 -------
+
 ### Hypothesis:
-- Group 1 &ne; Group 2: Two-sided alternative hypothesis that the population means are equal
-- Group 1 &gt; Group 2: One-sided alternative hypothesis that the population mean of Group one is larger than the population mean of Group two
-- Group 1 &lt; Group 2: One-sided alternative hypothesis that the population mean of Group one is smaller than the population mean of Group two 
+- &ne; Test value: Two-sided alternative hypothesis that the population mean is not equal to the test value
+- &gt; Test value: One-sided alternative hypothesis that the population mean is larger than the test value 
+- &lt; Test value: One sided alternative hypothesis that the population mean is smaller than the test value 
 
 ### Bayes Factor:
 - BF10: Bayes factor to quantify evidence for the alternative hypothesis relative to the null hypothesis
@@ -30,14 +27,15 @@ Default Options
  
 Default Output
 -------
-
-### Bayes factor for Independent Samples T-Test:
+### Bayes factor for One Sample T-Test:
 - BF10 (or BF01): Bayes factor. If one-sided test is requested: 
-  - BF+0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that Group one > Group two
-  - BF-0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that Group one < Group two
-  - BF0+: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that Group one > Group two
-  - BF0-: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that Group one < Group two
-- error %: The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor.
+  - BF+0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is larger than the test value
+  - BF-0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is smaller than the test value
+  - BF0+: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that the population mean is larger
+   than the test value
+  - BF0-: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that that the population mean is 
+  smaller than the test value
+- error %: The error of the Gaussian quadrature integration routine used for the computation of the Bayes factor
 
 Additional Options
 -------
@@ -45,8 +43,7 @@ Additional Options
 ### Plots:
 - Prior and posterior: Displays the prior and posterior density of the effect size under the alternative hypothesis
   - Additional info: Adds the Bayes factor computed with the user-defined prior; adds a pizza plot depicting the odds of the data under the null vs. alternative hypothesis; adds the median and the 95% credible interval of the posterior density of the effect size
-- Bayes factor robustness check: Displays the Bayes factor as a function of the width of the Cauchy prior on effect size. The scale of the Cauchy prior is varied between 0 and 1.5 (0 - 2 if user prior width is greater than 1.5), creating progressively more uninformative priors
-
+- Bayes factor robustness check: Displays the Bayes factor as a function of the width of the Cauchy prior on effect size. The scale of the Cauchy prior is varied between 0 and 1.5 (between 0 and 2 if user prior width is greater than 1.5), creating progressively more uninformative priors
  
 Additional Output
 -------

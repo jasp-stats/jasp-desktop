@@ -5,7 +5,7 @@ Summary Statistics - Bayes factor from t-value
 Paired Samples
 ==========================
 
-This function allows you to compute Bayes factor corresponding to an paired groups t-test using the classical *t* statistic. (Null hypothesis states that the population mean of the difference between paired observations equals 0) It can be used when you don't have access to full data set, but you do have the t statistic.
+This function allows you to compute Bayes factor corresponding to a paired groups t-test using the classical *t* statistic. (Null hypothesis states that the population mean of the difference between paired observations equals 0) It can be used when you don't have access to full data set, but you do have the t statistic.
 
 
 Default Options
@@ -27,7 +27,7 @@ Default Options
 Default Output
 -------
 
-### Bayes factor from Paired Samples T-Test:
+### Bayes factor for Paired Samples T-Test:
 - BF10 (or BF01): Bayes factor. If one-sided test is requested: 
   - BF+0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the difference is larger than 0
   - BF-0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the difference is smaller than 0
@@ -40,7 +40,7 @@ Additional Options
 ### Plots:
 - Prior and posterior: Displays the prior and posterior density of the effect size under the alternative hypothesis
   - Additional info: Adds the Bayes factor computed with the user-defined prior; adds a pizza plot depicting the odds of the data under the null vs. alternative hypothesis; adds the median and the 95% credible interval of the posterior density of the effect size
-- Bayes factor robustness check: Displays the Bayes factor as a function of the width of the Cauchy prior on effect size. The scale of the Cauchy prior is varied between 0 and 1.5, creating progressively more uninformative priors
+- Bayes factor robustness check: Displays the Bayes factor as a function of the width of the Cauchy prior on effect size. The scale of the Cauchy prior is varied between 0 and 1.5 (between 0 and 2 if user prior width is greater than 1.5), creating progressively more uninformative priors
  
 Additional Output
 -------
