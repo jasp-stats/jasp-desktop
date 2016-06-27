@@ -20,19 +20,6 @@
       <string>Plots</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
-       <widget class="BoundCheckBox" name="descriptivesPlots">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Descriptive plots</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QWidget" name="widgetPlotCI" native="true">
         <property name="enabled">
@@ -100,6 +87,19 @@
           </widget>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="BoundCheckBox" name="descriptivesPlots">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Descriptive plots</string>
+        </property>
        </widget>
       </item>
       <item row="1" column="1">
@@ -321,19 +321,6 @@
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
-      <item row="1" column="0">
-       <widget class="QRadioButton" name="_2groupOneGreater">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>&gt; Test value</string>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="0">
        <widget class="QRadioButton" name="_3groupTwoGreater">
         <property name="sizePolicy">
@@ -347,8 +334,8 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="_1notEqual">
+      <item row="1" column="0">
+       <widget class="QRadioButton" name="_2groupOneGreater">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -356,7 +343,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>≠ Test value</string>
+         <string>&gt; Test value</string>
         </property>
        </widget>
       </item>
@@ -373,7 +360,20 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="1">
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="_1notEqual">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>≠ Test value</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
