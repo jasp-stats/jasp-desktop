@@ -17,7 +17,7 @@
    <item row="3" column="1">
     <widget class="BoundGroupBox" name="groupBox">
      <property name="title">
-      <string>Plot</string>
+      <string>Plots</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
