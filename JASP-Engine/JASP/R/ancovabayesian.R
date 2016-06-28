@@ -54,7 +54,9 @@ AncovaBayesian	 <- function (dataset = NULL, options, perform = "run", callback 
 				change$randomFactors ||
 				change$priorFixedEffects ||
 				change$priorRandomEffects ||
-				change$priorCovariates)
+				change$priorCovariates ||
+				change$sampleMode ||
+				change$fixedSamplesNumber)
 				return (response)
 			response$status <- "ok"
 		}
@@ -73,7 +75,9 @@ AncovaBayesian	 <- function (dataset = NULL, options, perform = "run", callback 
 				change$posteriorEstimatesMCMCIterations ||
 				change$priorFixedEffects ||
 				change$priorRandomEffects ||
-				change$priorCovariates)) {
+				change$priorCovariates ||
+				change$sampleMode ||
+				change$fixedSamplesNumber)) {
 			state <- NULL
 		} else {
 			perform <- "run"

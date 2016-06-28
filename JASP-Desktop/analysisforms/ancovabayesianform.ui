@@ -657,18 +657,17 @@
       <property name="rightMargin">
        <number>0</number>
       </property>
-      <item row="0" column="0" rowspan="2" colspan="2">
-       <widget class="ExpanderButton" name="expanderAdvanced">
-        <property name="text">
-         <string>Advanced Options</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" rowspan="2" colspan="2">
+      <item row="3" column="0" rowspan="2" colspan="2">
        <widget class="QWidget" name="advancedOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_7">
          <item row="0" column="0">
           <widget class="GroupBox" name="groupBox_2">
+           <property name="maximumSize">
+            <size>
+             <width>300</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="title">
             <string>Prior</string>
            </property>
@@ -784,7 +783,72 @@
            </layout>
           </widget>
          </item>
+         <item row="0" column="1">
+          <widget class="BoundGroupBox" name="sampleMode">
+           <property name="title">
+            <string>Samples</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_14">
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="_2fixed">
+              <property name="text">
+               <string>Manual</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QWidget" name="fixedSamplesNumberContainer" native="true">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_15">
+               <property name="leftMargin">
+                <number>24</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>No. samples</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="BoundTextBox" name="fixedSamplesNumber">
+                 <property name="maximumSize">
+                  <size>
+                   <width>120</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="_1auto">
+              <property name="text">
+               <string>Auto</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
         </layout>
+       </widget>
+      </item>
+      <item row="0" column="0" rowspan="2" colspan="2">
+       <widget class="ExpanderButton" name="expanderAdvanced">
+        <property name="text">
+         <string>Advanced Options</string>
+        </property>
        </widget>
       </item>
      </layout>
@@ -848,5 +912,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>_2fixed</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fixedSamplesNumberContainer</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>506</x>
+     <y>1084</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>506</x>
+     <y>1111</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

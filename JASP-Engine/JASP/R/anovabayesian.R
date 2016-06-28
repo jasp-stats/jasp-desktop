@@ -52,7 +52,9 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 				change$fixedFactors ||
 				change$randomFactors ||
 				change$priorFixedEffects ||
-				change$priorRandomEffects)
+				change$priorRandomEffects ||
+				change$sampleMode ||
+				change$fixedSamplesNumber)
 				return (response)
 			response$status <- "ok"
 		}
@@ -67,7 +69,9 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 				change$fixedFactors ||
 				change$randomFactors ||
 				change$priorFixedEffects ||
-				change$priorRandomEffects)) {
+				change$priorRandomEffects ||
+				change$sampleMode ||
+				change$fixedSamplesNumber)) {
 			state <- NULL
 		} else {
 			perform <- "run"
