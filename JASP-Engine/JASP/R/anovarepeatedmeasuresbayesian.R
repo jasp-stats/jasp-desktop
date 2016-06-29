@@ -71,7 +71,9 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 				change$repeatedMeasuresCells ||
 				change$priorFixedEffects ||
 				change$priorRandomEffects ||
-				change$priorCovariates)
+				change$priorCovariates ||
+				change$sampleMode ||
+				change$fixedSamplesNumber)
 				return (response)
 				
 			response$status <- "ok"
@@ -105,7 +107,9 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 				change$repeatedMeasuresCells ||
 				change$priorFixedEffects ||
 				change$priorRandomEffects ||
-				change$priorCovariates)) {
+				change$priorCovariates ||
+				change$sampleMode ||
+				change$fixedSamplesNumber)) {
 			state <- NULL
 		} else {
 			perform <- "run"
