@@ -74,16 +74,32 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   # Number of factors:
   
-  if (options$factorMethod == "eigenValues"){
+  if (options$factorMethod == "parallelAnalysis"){
+    
     if (nrow(dataset)>0 && nVariable > 0){
-      # Covariance matrix:
-      corMatrix <- cor(dataset, use = "pairwise.complete.obs") ### ADD MISSING OPTION
+      image <- .beginSaveImage()
+      pa <- psych::fa.parallel(dataset)   
+      .endSaveImage(image)
+      if (is.na(pa$ncomp)) pa$ncomp <- 1
+      nFactor <- max(1,pa$ncomp)
       
-      # Eigenvalues:
-      EV <- eigen(corMatrix,only.values = TRUE)$values
+    } else {
+      if (is.null(state$nFactor)){
+        nFactor <- 1          
+      } else {
+        nFactor <- state$nFactor
+      }
+    }
+    
+  } else if (options$factorMethod == "eigenValues"){
+    if (nrow(dataset)>0 && nVariable > 0){
+      # Compute ev:
+      image <- .beginSaveImage()
+      pa <- psych::fa.parallel(dataset)   
+      .endSaveImage(image)
       
       # Number of factors:
-      nFactor <- sum(EV > options$eigenValuesBox)
+      nFactor <- sum(pa$pc.values > options$eigenValuesBox)
     } else {
       if (is.null(state$nFactor)){
         nFactor <- 1          
@@ -96,9 +112,18 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     nFactor <- options$numberOfFactors
   }
   
+  # Check if number of factors is correct:
+  if (length(options$variables) > 0 && nFactor > length(options$variables)){
+    error <- TRUE
+    errorMessage <- "Too many factors requested"
+  } else {
+    error <- FALSE
+    errorMessage <- ""
+  }
   
   
-  if (perform == "run" && nrow(dataset) > 0 && is.null(analysisResults)){
+  
+  if (perform == "run" && nrow(dataset) > 0 && is.null(analysisResults) && length(options$variables) > 1 && !error){
     
     analysisResults <- .estimatePCA(dataset, options, perform,nFactor)
     
@@ -169,9 +194,25 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   results[[".meta"]] <- meta
   
   # Dummies:
-  status <- list(ready=TRUE, error=FALSE)
+  status <- list(ready=TRUE, error=error,errorMessage=errorMessage)
   
-  if (perform == "run" && status$ready && status$error == FALSE) {
+  if (status$error == TRUE){
+    results[["factorLoadings"]][["error"]] <-  list(errorType="badData", errorMessage=status$errorMessage)
+    results[["factorCorrelations"]][["error"]] <-  list(errorType="badData")
+    results[["goodnessOfFit"]][["error"]] <-  list(errorType="badData")
+    results[["fitMeasures"]][["error"]] <-  list(errorType="badData")
+    results[["pathDiagram"]][["error"]] <-  list(errorType="badData")
+    results[["screePlot"]][["error"]] <-  list(errorType="badData")
+  } else {
+    results[["factorLoadings"]][["error"]] <- NULL
+    results[["factorCorrelations"]][["error"]] <-  NULL
+    results[["goodnessOfFit"]][["error"]] <-  NULL
+    results[["fitMeasures"]][["error"]] <-  NULL
+    results[["pathDiagram"]][["error"]] <-  NULL
+    results[["screePlot"]][["error"]] <-  NULL
+  }
+  
+  if (perform == "run" && status$ready) {
     state <- list(options=options,analysisResults=analysisResults,nFactor=nFactor,results=results,complete=TRUE)
     
     return(list(results=results, status="complete", state=state))	    
@@ -212,7 +253,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   #   }
   
   if (nFactor == 0) stop("Number of factors must be > 0")
-  if (nFactor > nVariable ||  nFactor*nVariable >= nVariable*(nVariable+1)/2){
+  if (nFactor > nVariable){
     stop("Too many factors requested")
   }
   
@@ -329,7 +370,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   if (is.null(dataset)) {
     ## if we are ready to run, read in the dataset
-    if (perform == "run") {
+    if (perform == "run" && length(options$variables) > 1) {
       #
       #       if (options$missingValues == "excludeListwise") {
       #         exclude <- depvars
@@ -378,7 +419,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   }
   pathDiagram$custom <- list(width="plotWidthPathDiagram", height="plotHeightPathDiagram")
   
-  image <- .beginSaveImage(pathDiagram$width,pathDiagram$height)
+  
   #   filename <- .requestTempFileNameNative("svg")
   #   grDevices::svg(filename=filename, width=width/72, height=height/72, bg="transparent")
   #   
@@ -388,12 +429,14 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   # if (perform != "run" | is.null(analysisResults) | !isTRUE(options$incl_pathDiagram)){
   
-  if (is.null(analysisResults) | !isTRUE(options$incl_pathDiagram)){
+  if (is.null(analysisResults) || !isTRUE(options$incl_pathDiagram) || perform == "init"){
     
-    
-    # plot(1,type="n",xlab="",ylab="",axes = FALSE)
+    pathDiagram$data <- NULL
     
   } else {
+    
+    
+    image <- .beginSaveImage(pathDiagram$width,pathDiagram$height)
 #     Lambda <- loadings(analysisResults)
 #     labels <- .unv(rownames(Lambda))
 #     Lambda <- matrix(c(Lambda),nrow(Lambda),ncol(Lambda))
@@ -536,20 +579,23 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     qgraph::qgraph(E, layout = L, directed=TRUE, bidirectional=bidir, residuals = TRUE, residScale  = 10,
                    labels = c(factors,labels), curve = curve, curveScale = FALSE, edgeConnectPoints = ECP,
                    loopRotation=loopRotation, shape = shape, vsize = size1, vsize2 = size2,label.scale.equal=label.scale.equal,
-                   residScale = 2, mar = c(5,10,5,12), normalize = FALSE, label.fill.vertical = 0.75, cut = options$highlightText
+                   residScale = 2, mar = c(5,10,5,12), normalize = FALSE, label.fill.vertical = 0.75, cut = options$highlightText,
+                   bg = "transparent"
     )
     
     
-    
+    pathDiagram$data <- .endSaveImage(image)
+    pathDiagram$status <- "complete"
     
   }
   
-  pathDiagram$data <- .endSaveImage(image)
-  pathDiagram$status <- "complete"
+  
+  
   # grDevices::dev.off()
   
   return(pathDiagram)
 }
+
 
 # Factor correlations:
 .getFactorCorrelationsPCA <- function(analysisResults, options,perform){
@@ -682,14 +728,14 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   # Create JASP table:
   goodnessOfFit <- list()
-  goodnessOfFit[["title"]] <- "Goodness of fit"
+  goodnessOfFit[["title"]] <- "Chi-squared Test"
   
   # Create the columns:
   goodnessOfFit[["schema"]] <- list(fields = list(
     list(name = "model", title="", type = "string"),
-    list(name = "chisq", title = "Chi-square", type="number", format = "dp:3"),
-    list(name = "df", title = "DF", type="integer"),
-    list(name = "p", title = "p-value", type="number", format = "dp:3;p:.001")
+    list(name = "chisq", title = "Value", type="number", format = "dp:3"),
+    list(name = "df", title = "df", type="integer"),
+    list(name = "p", title = "p", type="number", format = "dp:3;p:.001")
     # list(name = "RMS", title = "RMS", type="number", format = "dp:3")
   ))
   
@@ -697,9 +743,9 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   goodnessOfFit[["data"]] <- list(
     list(
       model = "Model", 
-      chisq = Fits$CHI,
-      df = Fits$DF,
-      p = Fits$PVAL
+      chisq = ifelse(Fits$DF>0,Fits$CHI,"."),
+      df = ifelse(Fits$DF>0,Fits$DF,"."),
+      p = ifelse(Fits$DF>0,Fits$PVAL,".")
       # RMS = Fits$RMS
     )
   )
@@ -795,7 +841,7 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
   
   #   if (perform == "run" && status$ready && !status$error && !is.null(model)) {
   #    
-  if (perform == "run" && ncol(dataset) > 0 && nrow(dataset)> 0) {
+  if (perform == "run" && ncol(dataset) > 0 && nrow(dataset)> 0 && length(options$variables) > 1) {
     
     screePlot$title <- "Scree Plot"
     screePlot$width <- options$plotWidthScreePlot
@@ -803,13 +849,30 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
     screePlot$custom <- list(width="plotWidthScreePlot", height="plotHeightScreePlot")
     
     # Compute ev:
+    
+    # Compute ev:
+    image <- .beginSaveImage()
+    pa <- psych::fa.parallel(dataset)   
+    .endSaveImage(image)
+    
+    # Eigenvalues:
     EV <- data.frame(
       id = seq_len(ncol(dataset)),
-      ev = sort(eigen(cor(dataset,use="pairwise.complete.obs"),only.values = TRUE)$values,decreasing = TRUE)
+      ev = pa$pc.values,
+      type = "Data"
     )
     
-    p <- ggplot2::ggplot(EV, ggplot2::aes_string(x="id",y="ev")) + ggplot2::geom_point(na.rm = TRUE) +
-      ggplot2::xlab("") + ggplot2::ylab("Eigenvalue") +ggplot2::geom_line(na.rm = TRUE) +
+    # Parallel analysis:
+    PA <- data.frame(
+      id = seq_len(ncol(dataset)),
+      ev = pa$pc.sim,
+      type = "Simulated (95th quantile)"
+    )
+    
+    combined <- rbind(EV,PA)
+    
+    p <- ggplot2::ggplot(combined, ggplot2::aes_string(x="id",y="ev",lty="type",pch="type")) + ggplot2::geom_point(na.rm = TRUE, size=3) +
+      ggplot2::xlab("") + ggplot2::ylab("Eigenvalue")+ ggplot2::xlab("Components") +ggplot2::geom_line(na.rm = TRUE) +
       ggplot2::ggtitle("") + ggplot2::theme_bw() + ggplot2::geom_hline(yintercept = options$eigenValuesBox) +
       ggplot2::theme(panel.grid.minor=ggplot2::element_blank(), plot.title = ggplot2::element_text(size=18),
                      panel.grid.major=ggplot2::element_blank(), axis.line = ggplot2::element_line(colour = "black", size=1.2),
@@ -822,7 +885,14 @@ PrincipalComponentAnalysis <- function(dataset = NULL, options, perform = "run",
                      axis.ticks = ggplot2::element_line(size = 0.5),
                      axis.ticks.margin = grid::unit(1,"mm"),
                      axis.ticks.length = grid::unit(3, "mm"),
-                     plot.margin = grid::unit(c(0,0,.5,.5), "cm"))
+                     plot.margin = grid::unit(c(0,0,.5,.5), "cm")) + 
+      ggplot2::scale_linetype_discrete("") +  ggplot2::scale_shape_discrete("") +
+      ggplot2::theme(legend.position = c(0.99,0.99),legend.justification = c(1,1),legend.key = ggplot2::element_blank(),
+                     legend.text=ggplot2::element_text(size=12.5),
+                     panel.background=ggplot2::element_rect(fill="transparent",colour=NA),
+                     plot.background=ggplot2::element_rect(fill="transparent",colour=NA),
+                     legend.key = ggplot2::element_rect(fill = "transparent", colour = "transparent"),
+                     legend.background=ggplot2::element_rect(fill="transparent",colour=NA))
     
     image <- .beginSaveImage(options$plotWidthScreePlot, options$plotHeightScreePlot)
     print(p)

@@ -9,15 +9,15 @@
 		},
         {
             "name": "factorMethod",
-            "options": [ "eigenValues", "manual" ],
-            "default": "eigenValues",
+            "options": [ "eigenValues", "manual", "parallelAnalysis" ],
+            "default": "parallelAnalysis",
             "type": "List"
         },
         {
             "name": "eigenValuesBox",
             "type": "Number",
             "min": 0.0,
-            "value": 1.0
+            "value": 0.0
         },
         {
             "name": "numberOfFactors",
