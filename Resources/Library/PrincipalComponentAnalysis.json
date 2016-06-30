@@ -9,8 +9,8 @@
 		},
         {
             "name": "factorMethod",
-            "options": [ "eigenValues", "manual" ],
-            "default": "eigenValues",
+            "options": [ "eigenValues", "manual", "parallelAnalysis" ],
+            "default": "parallelAnalysis",
             "type": "List"
         },
         {
