@@ -55,7 +55,7 @@ void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
 
 }
 
-void FSBMOSF::authenticationCheck()
+void FSBMOSF::attemptToConnect()
 {
 	QString password = _settings.value("OSFPassword", "").toString();
 	QString username = _settings.value("OSFUsername", "").toString();
@@ -83,19 +83,23 @@ bool FSBMOSF::requiresAuthentication() const
 void FSBMOSF::authenticate(const QString &username, const QString &password)
 {
 	bool success = false;
+
 	if (_dataManager && username!="")
 	{
+		_settings.setValue("OSFUsername", username);
+
 		_dataManager->setAuthentication(OnlineDataManager::OSF, username, password);
 
 		success = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
 
+		if (success)
+			_settings.setValue("OSFPassword", password);
+		else
+			_settings.remove("OSFPassword");
+
 		_settings.sync();
 	}
 
-	if (success)
-		_settings.setValue("OSFPassword", password);
-	else
-		_settings.remove("OSFPassword");
 
 	_settings.sync();
 
@@ -126,6 +130,7 @@ void FSBMOSF::clearAuthentication()
 {
 	_isAuthenticated = false;
 	_dataManager->clearAuthentication(OnlineDataManager::OSF);
+	_settings.remove("OSFPassword");
 	_entries.clear();
 	_pathUrls.clear();
 	setPath(_rootPath);

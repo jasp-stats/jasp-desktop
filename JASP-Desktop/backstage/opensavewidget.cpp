@@ -95,7 +95,7 @@ void OpenSaveWidget::tabWidgetChanged(int index)
 {
 	//Check the OSF tab
 	if ( index==2 )
-		_bsOSF->authenticationCheck();
+		_bsOSF->attemptToConnect();
 }
 
 VerticalTabWidget *OpenSaveWidget::tabWidget()

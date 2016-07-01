@@ -72,10 +72,9 @@ bool AuthWidget::eventFilter(QObject *object, QEvent *event)
 
 void AuthWidget::loginSelected()
 {
-	_settings.setValue("OSFUsername", ui->email->text());
 	if  ( ui->password->text()=="" || ui->email->text()=="" )
 	{
-		QMessageBox::warning(this, "OSF Login", " User or password cannot be empty. ");
+		QMessageBox::warning(this, "Login", " User or password cannot be empty. ");
 		return;
 	}
 

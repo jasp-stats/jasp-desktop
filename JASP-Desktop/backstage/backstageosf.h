@@ -37,7 +37,7 @@ public:
 	explicit BackstageOSF(QWidget *parent = 0);
 
 	void setOnlineDataManager(OnlineDataManager *odm);
-	void authenticationCheck();
+	void attemptToConnect();
 
 	void setMode(FileEvent::FileMode mode) OVERRIDE;
 

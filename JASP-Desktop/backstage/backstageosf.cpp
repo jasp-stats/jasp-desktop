@@ -144,9 +144,9 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	aboutLayout->addStretch(1);
 }
 
-void BackstageOSF::authenticationCheck()
+void BackstageOSF::attemptToConnect()
 {
-	_model->authenticationCheck();
+	_model->attemptToConnect();
 }
 
 void BackstageOSF::updateUserDetails()
