@@ -157,18 +157,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
-
 	_odm = new OnlineDataManager(this);
 
-	QVariant osfUsernameV = _settings.value("OSFUsername");
-	QVariant osfPasswordV = _settings.value("OSFPassword", "");
-
-	if (osfUsernameV.canConvert(QMetaType::QString) && osfPasswordV.canConvert(QMetaType::QString))
-	{
-		QString username = osfUsernameV.toString();
-		QString password = osfPasswordV.toString();
-		_odm->setAuthentication(OnlineDataManager::OSF, username, password);
-	}
+	QString username = _settings.value("OSFUsername", "").toString();
+	QString password = _settings.value("OSFPassword", "").toString();
+	_odm->setAuthentication(OnlineDataManager::OSF, username, password);
 
 	_loader.setOnlineDataManager(_odm);
 	ui->backStage->setOnlineDataManager(_odm);
@@ -338,12 +331,9 @@ void MainWindow::dropEvent(QDropEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 
-	// If User switch 'Remember me' is off remove OSF settings
+	//If User switch 'Remember me' is off remove OSF settings
 	if (_settings.value("OSFRememberMe", false).toBool() == false)
-	{
-		_settings.remove("OSFUsername");
 		_settings.remove("OSFPassword");
-	}
 
 	if (_applicationExiting)
 	{
@@ -784,12 +774,11 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		if (_package->isLoaded())
 		{
 			OnlineDataManager::AuthData sec = _odm->getAuthData(OnlineDataManager::OSF);
-			if (sec.username!="" && _odm->authenticationSuccessful(OnlineDataManager::OSF))
-			{
-				//If this instance has a valid OSF connection save these settings for a new instance
-				_settings.setValue("OSFUsername", sec.username);
+
+			//If this instance has a valid OSF connection save this setting for a new instance
+			if (sec.password!="")
 				_settings.setValue("OSFPassword", sec.password);
-			}
+
 			// begin new instance
 			QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
 		}

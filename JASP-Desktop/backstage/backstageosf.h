@@ -37,6 +37,7 @@ public:
 	explicit BackstageOSF(QWidget *parent = 0);
 
 	void setOnlineDataManager(OnlineDataManager *odm);
+	void attemptToConnect();
 
 	void setMode(FileEvent::FileMode mode) OVERRIDE;
 
@@ -58,7 +59,7 @@ private slots:
 
 	void newFolderClicked();
 	void authenticatedHandler();
-	void nameClicked();
+	void logoutClicked();
 
 private:
 
@@ -69,7 +70,7 @@ private:
 	BreadCrumbs *_breadCrumbs;
 	FSBMOSF *_model;
 	FSBrowser *_fsBrowser;
-	QToolButton *_nameButton;
+	QToolButton *_logoutButton;
 	QWidget *_fileNameContainer;
 	QLineEdit *_fileNameTextBox;
 	QPushButton *_saveButton;

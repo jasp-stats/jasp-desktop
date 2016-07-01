@@ -60,6 +60,7 @@ private slots:
 	void entrySelectedHandler();
 	void entryOpenedHandler();
 	void authenticationFailed(QString message);
+	void hideAuthentication();
 
 private:
 

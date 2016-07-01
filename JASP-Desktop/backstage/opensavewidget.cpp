@@ -85,6 +85,17 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	connect(_bsOSF, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
 
 	connect(_bsExamples, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenExampleRequestHandler(QString)));
+
+	VerticalTabWidget *osvw = tabWidget();
+	VerticalTabBar *vtb = osvw->tabBar();
+	connect(vtb, SIGNAL(currentChanged(int)), this, SLOT(tabWidgetChanged(int)));
+}
+
+void OpenSaveWidget::tabWidgetChanged(int index)
+{
+	//Check the OSF tab
+	if ( index==2 )
+		_bsOSF->attemptToConnect();
 }
 
 VerticalTabWidget *OpenSaveWidget::tabWidget()
