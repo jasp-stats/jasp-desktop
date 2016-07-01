@@ -17,7 +17,7 @@ class AuthWidget : public QWidget
 public:
 	explicit AuthWidget(QWidget *parent = 0);
 	~AuthWidget();
-	void clearPassword();
+	void setUsernameclearPassword();
 
 protected:
 	bool eventFilter(QObject *object, QEvent *event) OVERRIDE;

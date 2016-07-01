@@ -1,3 +1,21 @@
+//
+// Copyright (C) 2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+
 #include "fsbmosf.h"
 
 #include <QGridLayout>
@@ -20,7 +38,6 @@ FSBMOSF::FSBMOSF()
 	_dataManager = NULL;
 	_manager = NULL;
 	_isAuthenticated = false;
-
 	_rootPath = _path = "Projects";
 }
 
@@ -35,9 +52,28 @@ void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
 
 	_manager = odm->getNetworkAccessManager(OnlineDataManager::OSF);
 
-	if (_isAuthenticated == false && _dataManager != NULL && _dataManager->authenticationSuccessful(OnlineDataManager::OSF))
-		setAuthenticated(true);
+
 }
+
+void FSBMOSF::authenticationCheck()
+{
+	QString password = _settings.value("OSFPassword", "").toString();
+	QString username = _settings.value("OSFUsername", "").toString();
+
+	if ( username=="" || password =="" )
+		return;
+
+	if ( _isAuthenticated == false && _dataManager != NULL )
+	{
+		emit hideAuthentication();
+		emit processingEntries();
+		bool authsuccess = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
+		setAuthenticated(authsuccess);
+		if (!authsuccess)
+			emit entriesChanged();
+	}
+}
+
 
 bool FSBMOSF::requiresAuthentication() const
 {
@@ -47,7 +83,7 @@ bool FSBMOSF::requiresAuthentication() const
 void FSBMOSF::authenticate(const QString &username, const QString &password)
 {
 	bool success = false;
-	if (username!="")
+	if (_dataManager && username!="")
 	{
 		_dataManager->setAuthentication(OnlineDataManager::OSF, username, password);
 
@@ -57,15 +93,9 @@ void FSBMOSF::authenticate(const QString &username, const QString &password)
 	}
 
 	if (success)
-	{
-		_settings.setValue("OSFUsername", username);
 		_settings.setValue("OSFPassword", password);
-	}
 	else
-	{
-		_settings.remove("OSFUsername");
 		_settings.remove("OSFPassword");
-	}
 
 	_settings.sync();
 
@@ -95,18 +125,11 @@ bool FSBMOSF::isAuthenticated() const
 void FSBMOSF::clearAuthentication()
 {
 	_isAuthenticated = false;
-
 	_dataManager->clearAuthentication(OnlineDataManager::OSF);
 	_entries.clear();
 	_pathUrls.clear();
 	setPath(_rootPath);
 	emit entriesChanged();
-
-	_settings.sync();
-	_settings.remove("OSFUsername");
-	_settings.remove("OSFPassword");
-	_settings.sync();
-
 	emit authenticationClear();
 }
 

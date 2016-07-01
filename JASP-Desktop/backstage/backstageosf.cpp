@@ -48,11 +48,11 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	label->setContentsMargins(12, 12, 12, 1);
 	topRowLayout->addWidget(label, 0, 0);
 
-	_nameButton = new QToolButton(topRow);
-	_nameButton->hide();
-	topRowLayout->addWidget(_nameButton, 0, 1);
+	_logoutButton = new QToolButton(topRow);
+	_logoutButton->hide();
+	topRowLayout->addWidget(_logoutButton, 0, 1);
 
-	connect(_nameButton, SIGNAL(clicked(bool)), this, SLOT(nameClicked()));
+	connect(_logoutButton, SIGNAL(clicked(bool)), this, SLOT(logoutClicked()));
 
 	QWidget *buttonsWidget = new QWidget(this);
 	buttonsWidget->setContentsMargins(0, 0, 0, 0);
@@ -144,6 +144,11 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	aboutLayout->addStretch(1);
 }
 
+void BackstageOSF::authenticationCheck()
+{
+	_model->authenticationCheck();
+}
+
 void BackstageOSF::updateUserDetails()
 {
 	if (_model->isAuthenticated())
@@ -172,7 +177,7 @@ void BackstageOSF::userDetailsReceived()
 {
 	OnlineUserNode *userNode = qobject_cast<OnlineUserNode*>(sender());
 
-	_nameButton->setText("Logout " + userNode->getFullname());
+	_logoutButton->setText("Logout " + userNode->getFullname());
 
 	userNode->deleteLater();
 }
@@ -228,13 +233,13 @@ void BackstageOSF::newFolderCreated()
 void BackstageOSF::authenticatedHandler()
 {
 	_newFolderButton->setEnabled(true);
-	_nameButton->show();
+	_logoutButton->show();
 }
 
-void BackstageOSF::nameClicked()
+void BackstageOSF::logoutClicked()
 {
 	_model->clearAuthentication();
-	_nameButton->hide();
+	_logoutButton->hide();
 	_model->refresh();
 }
 
@@ -244,7 +249,7 @@ void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 	_model->setOnlineDataManager(_odm);
 
 	_newFolderButton->setEnabled(_model->isAuthenticated());
-	_nameButton->setVisible(_model->isAuthenticated());
+	_logoutButton->setVisible(_model->isAuthenticated());
 
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(authenticatedHandler()));
 }

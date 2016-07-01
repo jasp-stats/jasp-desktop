@@ -59,6 +59,7 @@ private slots:
 	void dataSetOpenRequestHandler(QString path);
 	void dataSetOpenExampleRequestHandler(QString path);
 	void clearOnlineDataFromRecentList(int provider);
+	void tabWidgetChanged(int id);
 
 private:
 

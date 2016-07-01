@@ -1,8 +1,26 @@
+//
+// Copyright (C) 2016 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
 
 #include "authwidget.h"
 #include "ui_authwidget.h"
 
 #include <QKeyEvent>
+#include <QMessageBox>
 
 AuthWidget::AuthWidget(QWidget *parent) :
 	QWidget(parent),
@@ -23,10 +41,11 @@ AuthWidget::~AuthWidget()
 	delete ui;
 }
 
-void AuthWidget::clearPassword()
+void AuthWidget::setUsernameclearPassword()
 {
 	ui->password->setText("");
-	ui->email->setSelection(0, ui->email->text().length());
+	QString username = _settings.value("OSFUsername", "").toString();
+	ui->email->setText(username);
 }
 
 bool AuthWidget::eventFilter(QObject *object, QEvent *event)
@@ -53,6 +72,13 @@ bool AuthWidget::eventFilter(QObject *object, QEvent *event)
 
 void AuthWidget::loginSelected()
 {
+	_settings.setValue("OSFUsername", ui->email->text());
+	if  ( ui->password->text()=="" || ui->email->text()=="" )
+	{
+		QMessageBox::warning(this, "OSF Login", " User or password cannot be empty. ");
+		return;
+	}
+
 	emit loginRequested(ui->email->text(), ui->password->text());
 }
 
