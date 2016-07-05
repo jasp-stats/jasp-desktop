@@ -134,22 +134,5 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>availableVariables</sender>
-   <signal>clicked(QModelIndex)</signal>
-   <receiver>assignButton</receiver>
-   <slot>click()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>149</x>
-     <y>137</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>327</x>
-     <y>125</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
