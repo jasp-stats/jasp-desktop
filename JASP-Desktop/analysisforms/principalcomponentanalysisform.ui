@@ -186,6 +186,18 @@
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="1" column="0" alignment="Qt::AlignHCenter">
              <widget class="QSlider" name="highlightSlider">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>70</height>
+               </size>
+              </property>
               <property name="maximum">
                <number>100</number>
               </property>

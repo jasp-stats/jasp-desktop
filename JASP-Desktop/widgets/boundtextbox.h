@@ -37,13 +37,12 @@ public:
 	virtual void bindTo(Option *option) OVERRIDE;
 
 	void setLabel(const QString &label);
-	
+    void finalise();
 signals:
 	
 protected:
 	void keyPressEvent(QKeyEvent *event) OVERRIDE;
 	void focusOutEvent(QFocusEvent *event) OVERRIDE;
-	void finalise();
 
 private:
 	OptionInteger *_integer;

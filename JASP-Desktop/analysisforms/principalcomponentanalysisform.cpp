@@ -67,7 +67,8 @@ void PrincipalComponentAnalysisForm::HandleSlider(double i)
 void PrincipalComponentAnalysisForm::HandleSlider(int i)
 {
 	QString	s = QString::number(((double)i)/100.0, 'f', 2);
-	ui->highlightText->setText(s);
+    ui->highlightText->setText(s);
+    ui->highlightText->finalise();
 }
 
 void PrincipalComponentAnalysisForm::HandleLineEdit(QString s)
