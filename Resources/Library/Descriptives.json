@@ -8,6 +8,10 @@
 			"type": "Variables"
 		},
 		{
+			"name": "splitby",
+			"type": "Variable"
+		},
+		{
 			"name": "frequencyTables",
 			"type": "Boolean"
 		},
@@ -95,6 +99,36 @@
 		{
 			"name": "kurtosis",
 			"type": "Boolean"
+		},
+		{
+			"name": "splitPlots",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "splitPlotBoxplot",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "splitPlotViolin",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "splitPlotJitter",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "splitPlotOutlierLabel",
+			"type": "Boolean",
+			"default": true
+		},
+		{
+			"name": "splitPlotColour",
+			"type": "Boolean",
+			"default": false
 		},
 		{
 			"name": "plotWidth",
