@@ -16,17 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "regressionbayesiansummarystatisticsform.h"
-#include "ui_regressionbayesiansummarystatisticsform.h"
+#include "summarystatsregressionlinearbayesianform.h"
+#include "ui_summarystatsregressionlinearbayesianform.h"
 
-RegressionBayesianSummaryStatisticsForm::RegressionBayesianSummaryStatisticsForm(QWidget *parent) :
-	AnalysisForm("RegressionBayesianSummaryStatisticsForm", parent),
-	ui(new Ui::RegressionBayesianSummaryStatisticsForm)
+SummaryStatsRegressionLinearBayesianForm::SummaryStatsRegressionLinearBayesianForm(QWidget *parent) :
+	AnalysisForm("SummaryStatsRegressionLinearBayesianForm", parent),
+	ui(new Ui::SummaryStatsRegressionLinearBayesianForm)
 {
 	ui->setupUi(this);
 }
 
-RegressionBayesianSummaryStatisticsForm::~RegressionBayesianSummaryStatisticsForm()
+SummaryStatsRegressionLinearBayesianForm::~SummaryStatsRegressionLinearBayesianForm()
 {
 	delete ui;
 }

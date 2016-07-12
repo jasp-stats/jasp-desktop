@@ -1,5 +1,5 @@
 {
-	"name": "RegressionBayesianSummaryStatistics",
+	"name": "SummaryStatsRegressionLinearBayesian",
 	"autorun": true,
 	"version": "1.0",
 	"options": [

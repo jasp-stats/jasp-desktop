@@ -168,7 +168,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.cpp \
-        $$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.cpp \
+        $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp
 
 HEADERS  += \
@@ -351,7 +351,7 @@ HEADERS  += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h \
-        $$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.h \
+        $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h
 
 FORMS += \
@@ -406,7 +406,7 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.ui \
-        $$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.ui \
+        $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
 
 
