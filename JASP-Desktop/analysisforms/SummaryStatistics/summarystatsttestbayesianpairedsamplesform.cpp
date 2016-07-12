@@ -16,17 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "bffromtpairedsamplesform.h"
-#include "ui_bffromtpairedsamplesform.h"
+#include "summarystatsttestbayesianpairedsamplesform.h"
+#include "ui_summarystatsttestbayesianpairedsamplesform.h"
 
-BFFromTPairedSamplesForm::BFFromTPairedSamplesForm(QWidget *parent) :
-	AnalysisForm("BFFromTPairedSamplesForm", parent),
-	ui(new Ui::BFFromTPairedSamplesForm)
+SummaryStatsTTestBayesianPairedSamplesForm::SummaryStatsTTestBayesianPairedSamplesForm(QWidget *parent) :
+	AnalysisForm("SummaryStatsTTestBayesianPairedSamplesForm", parent),
+	ui(new Ui::SummaryStatsTTestBayesianPairedSamplesForm)
 {
 	ui->setupUi(this);
 }
 
-BFFromTPairedSamplesForm::~BFFromTPairedSamplesForm()
+SummaryStatsTTestBayesianPairedSamplesForm::~SummaryStatsTTestBayesianPairedSamplesForm()
 {
 	delete ui;
 }

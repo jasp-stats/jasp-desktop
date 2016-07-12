@@ -165,8 +165,8 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/reliabilityanalysisform.cpp \
         $$PWD/analysisforms/SEM/semsimpleform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.cpp \
-        $$PWD/analysisforms/SummaryStatistics/bffromtonesampleform.cpp \
-        $$PWD/analysisforms/SummaryStatistics/bffromtpairedsamplesform.cpp \
+        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.cpp \
+        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.cpp \
         $$PWD/analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.cpp \
         $$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp
@@ -348,8 +348,8 @@ HEADERS  += \
         $$PWD/analysisforms/reliabilityanalysisform.h \
         $$PWD/analysisforms/SEM/semsimpleform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h \
-        $$PWD/analysisforms/SummaryStatistics/bffromtonesampleform.h \
-        $$PWD/analysisforms/SummaryStatistics/bffromtpairedsamplesform.h \
+        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h \
+        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h \
         $$PWD/analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.h \
         $$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.h \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h
@@ -403,8 +403,8 @@ FORMS += \
         $$PWD/analysisforms/reliabilityanalysisform.ui \
         $$PWD/analysisforms/SEM/semsimpleform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.ui \
-        $$PWD/analysisforms/SummaryStatistics/bffromtonesampleform.ui \
-        $$PWD/analysisforms/SummaryStatistics/bffromtpairedsamplesform.ui \
+        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.ui \
+        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.ui \
         $$PWD/analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.ui \
         $$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui

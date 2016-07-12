@@ -16,25 +16,25 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BFFROMTONESAMPLEFORM_H
-#define BFFROMTONESAMPLEFORM_H
+#ifndef SUMMARYSTATSTTESTBAYESIANONESAMPLEFORM_H
+#define SUMMARYSTATSTTESTBAYESIANONESAMPLEFORM_H
 
 #include "../analysisform.h"
 
 namespace Ui {
-class BFFromTOneSampleForm;
+class SummaryStatsTTestBayesianOneSampleForm;
 }
 
-class BFFromTOneSampleForm : public AnalysisForm
+class SummaryStatsTTestBayesianOneSampleForm : public AnalysisForm
 {
 	Q_OBJECT
 
 public:
-	explicit BFFromTOneSampleForm(QWidget *parent = 0);
-	~BFFromTOneSampleForm();
+	explicit SummaryStatsTTestBayesianOneSampleForm(QWidget *parent = 0);
+	~SummaryStatsTTestBayesianOneSampleForm();
 
 private:
-	Ui::BFFromTOneSampleForm *ui;
+	Ui::SummaryStatsTTestBayesianOneSampleForm *ui;
 };
 
-#endif // BFFROMTONESAMPLEFORM_H
+#endif // SUMMARYSTATSTTESTBAYESIANONESAMPLEFORM_H

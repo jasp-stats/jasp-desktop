@@ -55,8 +55,8 @@
 #include "analysisforms/binomialtestbayesianform.h"
 #include "analysisforms/bffromtform.h"
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
-#include "analysisforms/SummaryStatistics/bffromtpairedsamplesform.h"
-#include "analysisforms/SummaryStatistics/bffromtonesampleform.h"
+#include "analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h"
+#include "analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h"
 #include "analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.h"
 #include "analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.h"
 
@@ -564,12 +564,12 @@ AnalysisForm* MainWindow::loadForm(const string name)
     form = new ExploratoryFactorAnalysisForm(contentArea);
   else if (name == "PrincipalComponentAnalysis")
     form = new PrincipalComponentAnalysisForm(contentArea);
-	else if (name == "BFFromTOneSample")
-		form = new BFFromTOneSampleForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianOneSample")
+		form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
 	else if (name == "SummaryStatsTTestBayesianIndependentSamples")
 		form = new SummaryStatsTTestBayesianIndependentSamplesForm(contentArea);
-	else if (name == "BFFromTPairedSamples")
-		form = new BFFromTPairedSamplesForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianPairedSamples")
+		form = new SummaryStatsTTestBayesianPairedSamplesForm(contentArea);
 	else if (name == "BinomialBayesianSummaryStatistics")
 		form = new BinomialBayesianSummaryStatisticsForm(contentArea);
 	else if (name == "RegressionBayesianSummaryStatistics")

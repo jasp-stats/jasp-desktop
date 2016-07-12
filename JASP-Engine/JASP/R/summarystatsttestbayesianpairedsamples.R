@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BFFromTPairedSamples <- function(dataset=NULL, options, perform = 'run', callback) 
+SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perform = 'run', callback) 
 {
 	results <- list()
 
