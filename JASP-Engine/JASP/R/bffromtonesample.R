@@ -26,12 +26,12 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 																		list(name="BFrobustnessPlot", type="image")))
 
 	results[[".meta"]] <- meta
-	results[["title"]] <- "T-Test"
+	results[["title"]] <- "Bayesian T-Test"
 
 
 	fields=list()
 	fields[[length(fields)+1]] <- list(name="tStatistic", type="number", format="sf:4;dp:3", title="t value")
-	fields[[length(fields)+1]] <- list(name="n1Size", type="number", title="n\u2081")
+	fields[[length(fields)+1]] <- list(name="n1Size", type="number", title="n")
 
 	#Bayes factor type (BF10, BF01, log(BF10))
 	bf.type <- options$bayesFactorType
@@ -94,7 +94,7 @@ BFFromTOneSample <- function(dataset=NULL, options, perform = 'run', callback)
 	fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="error %")
 
 	table <- list()
-	table[["title"]] <- "One Sample T-Test"
+	table[["title"]] <- "Bayesian One Sample T-Test"
 	table[["schema"]] <- list(fields=fields)
 	table[["citation"]] <- list(
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
