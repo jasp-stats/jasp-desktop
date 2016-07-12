@@ -127,26 +127,26 @@ void TabBar::addHelpTab()
 
 	//Options
 	QMenu *optionmenu   = new QMenu("Modules",this);
-	QAction *sem = new QAction("SEM ToolBox",optionmenu);
-	QAction *rei = new QAction("Reinforcement Learning Toolbox",optionmenu);
-	QAction *summaryStats = new QAction("Summary Statistics Toolbox",optionmenu);
+	QAction *sem = new QAction("SEM",optionmenu);
+	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
+	QAction *summaryStats = new QAction("Summary Statistics",optionmenu);
 
 	//SEM
 	QVariant sem_setting = _settings.value("plugins/sem", false);
-	sem->setObjectName("SEM Toolbox");
+	sem->setObjectName("SEM");
 	sem->setCheckable(true);
 	sem->setChecked(sem_setting.canConvert(QVariant::Bool) && sem_setting.toBool());
 	optionmenu->addAction(sem);
 
 	//Reinforcement
 	QVariant ri_setting = _settings.value("toolboxes/r11tLearn", false);
-	rei->setObjectName("Reinforcement Learning Toolbox");
+	rei->setObjectName("Reinforcement Learning");
 	rei->setCheckable(true);
 	rei->setChecked(ri_setting.canConvert(QVariant::Bool) && ri_setting.toBool());
 
 	//Summary Stats
 	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
-	summaryStats->setObjectName("Summary Statistics Toolbox");
+	summaryStats->setObjectName("Summary Statistics");
 	summaryStats->setCheckable(true);
 	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
 
