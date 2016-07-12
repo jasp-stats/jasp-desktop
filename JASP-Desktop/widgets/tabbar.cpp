@@ -236,6 +236,7 @@ void TabBar::setCurrentIndex(int index)
 	foreach (QPushButton *button, _tabButtons)
 	{
 		button->setChecked(i == index);
+        if (i == index) _currentActiveTab = button->objectName();
 		i++;
 	}
 
