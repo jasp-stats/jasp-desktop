@@ -514,7 +514,7 @@ gridline-color: rgba(255, 255, 255, 0);</string>
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Split By (optional)</string>
+               <string>Split by (optional)</string>
               </property>
              </widget>
             </item>
