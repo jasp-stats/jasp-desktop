@@ -315,10 +315,7 @@ HEADERS  += \
 		$$PWD/onlinenode.h \
 		$$PWD/onlineusernodeosf.h \
 		$$PWD/backstage/authwidget.h \
-<<<<<<< 7e48ef0e49a3a68af758e0c9ab5051b5a01e117f
-=======
 		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
->>>>>>> Import Date/Time/DateTime (like) data types as strings.
 		$$PWD/exporters/dataexporter.h \
 		$$PWD/exporters/exporter.h \
 		$$PWD/exporters/jaspexporter.h \
