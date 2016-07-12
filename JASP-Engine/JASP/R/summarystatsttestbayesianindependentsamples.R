@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', callback)
+SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, perform = 'run', callback)
 {
 	run <- (perform == "run")
 

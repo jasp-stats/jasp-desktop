@@ -54,7 +54,7 @@
 #include "analysisforms/binomialtestform.h"
 #include "analysisforms/binomialtestbayesianform.h"
 #include "analysisforms/bffromtform.h"
-#include "analysisforms/SummaryStatistics/bffromtindependentsamplesform.h"
+#include "analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
 #include "analysisforms/SummaryStatistics/bffromtpairedsamplesform.h"
 #include "analysisforms/SummaryStatistics/bffromtonesampleform.h"
 #include "analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.h"
@@ -566,8 +566,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
     form = new PrincipalComponentAnalysisForm(contentArea);
 	else if (name == "BFFromTOneSample")
 		form = new BFFromTOneSampleForm(contentArea);
-	else if (name == "BFFromTIndependentSamples")
-		form = new BFFromTIndependentSamplesForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianIndependentSamples")
+		form = new SummaryStatsTTestBayesianIndependentSamplesForm(contentArea);
 	else if (name == "BFFromTPairedSamples")
 		form = new BFFromTPairedSamplesForm(contentArea);
 	else if (name == "BinomialBayesianSummaryStatistics")

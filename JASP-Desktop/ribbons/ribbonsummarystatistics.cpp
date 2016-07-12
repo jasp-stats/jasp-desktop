@@ -38,7 +38,7 @@ RibbonSummaryStatistics::RibbonSummaryStatistics(QWidget *parent) :
 	QMenu *menu;
 
 	menu = new QMenu(this);
-	menu->addAction(QString("Bayesian Independent Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("BFFromTIndependentSamples");
+	menu->addAction(QString("Bayesian Independent Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("SummaryStatsTTestBayesianIndependentSamples");
 	menu->addAction(QString("Bayesian Paired Samples T-Test"), this, SLOT(itemSelected()))->setObjectName("BFFromTPairedSamples");
 	menu->addAction(QString("Bayesian One Sample T-Test"), this, SLOT(itemSelected()))->setObjectName("BFFromTOneSample");
 

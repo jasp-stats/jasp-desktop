@@ -16,17 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "bffromtindependentsamplesform.h"
-#include "ui_bffromtindependentsamplesform.h"
+#include "summarystatsttestbayesianindependentsamplesform.h"
+#include "ui_summarystatsttestbayesianindependentsamplesform.h"
 
-BFFromTIndependentSamplesForm::BFFromTIndependentSamplesForm(QWidget *parent) :
-	AnalysisForm("BFFromTIndependentSamplesForm", parent),
-	ui(new Ui::BFFromTIndependentSamplesForm)
+SummaryStatsTTestBayesianIndependentSamplesForm::SummaryStatsTTestBayesianIndependentSamplesForm(QWidget *parent) :
+	AnalysisForm("SummaryStatsTTestBayesianIndependentSamplesForm", parent),
+	ui(new Ui::SummaryStatsTTestBayesianIndependentSamplesForm)
 {
 	ui->setupUi(this);
 }
 
-BFFromTIndependentSamplesForm::~BFFromTIndependentSamplesForm()
+SummaryStatsTTestBayesianIndependentSamplesForm::~SummaryStatsTTestBayesianIndependentSamplesForm()
 {
 	delete ui;
 }
