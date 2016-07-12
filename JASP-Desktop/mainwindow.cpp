@@ -731,7 +731,7 @@ void MainWindow::tabChanged(int index)
 		{
 			ui->ribbon->setCurrentIndex(2);
 		}
-		else if(currentActiveTab == "Summary Statistics")
+		else if(currentActiveTab == "Summary Stats")
 		{
 			ui->ribbon->setCurrentIndex(3);
 		}
@@ -1080,9 +1080,9 @@ void MainWindow::updateUIFromOptions()
 
 	QVariant sumStats = _settings.value("toolboxes/summaryStatistics", false);
 	if (sumStats.canConvert(QVariant::Bool) && sumStats.toBool())
-		ui->tabBar->addTab("Summary Statistics");
+		ui->tabBar->addTab("Summary Stats");
 	else
-		ui->tabBar->removeTab("Summary Statistics");
+		ui->tabBar->removeTab("Summary Stats");
 
 }
 

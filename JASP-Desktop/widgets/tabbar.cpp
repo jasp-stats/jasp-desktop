@@ -129,7 +129,7 @@ void TabBar::addHelpTab()
 	QMenu *optionmenu   = new QMenu("Modules",this);
 	QAction *sem = new QAction("SEM",optionmenu);
 	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
-	QAction *summaryStats = new QAction("Summary Statistics",optionmenu);
+	QAction *summaryStats = new QAction("Summary Stats",optionmenu);
 
 	//SEM
 	QVariant sem_setting = _settings.value("plugins/sem", false);
@@ -146,7 +146,7 @@ void TabBar::addHelpTab()
 
 	//Summary Stats
 	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
-	summaryStats->setObjectName("Summary Statistics");
+	summaryStats->setObjectName("Summary Stats");
 	summaryStats->setCheckable(true);
 	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
 
@@ -215,11 +215,11 @@ void TabBar::toggleSummaryStats()
 	on = ! on;
     if (on)
     {
-		this->addTab("Summary Statistics");
+		this->addTab("Summary Stats");
     }
 	else
     {
-		this->removeTab("Summary Statistics");
+		this->removeTab("Summary Stats");
     }
 }
 
