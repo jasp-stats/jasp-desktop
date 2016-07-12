@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2013-2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,25 +16,25 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef REGRESSIONBAYESIANSUMMARYSTATISTICS_H
-#define REGRESSIONBAYESIANSUMMARYSTATISTICS_H
+#ifndef SEMSIMPLEFORM_H
+#define SEMSIMPLEFORM_H
 
-#include "analysisform.h"
+#include "../analysisform.h"
 
 namespace Ui {
-class RegressionBayesianSummaryStatisticsForm;
+class SEMSimpleForm;
 }
 
-class RegressionBayesianSummaryStatisticsForm : public AnalysisForm
+class SEMSimpleForm : public AnalysisForm
 {
 	Q_OBJECT
 
 public:
-	explicit RegressionBayesianSummaryStatisticsForm(QWidget *parent = 0);
-	~RegressionBayesianSummaryStatisticsForm();
+	explicit SEMSimpleForm(QWidget *parent = 0);
+	~SEMSimpleForm();
 
 private:
-	Ui::RegressionBayesianSummaryStatisticsForm *ui;
+	Ui::SEMSimpleForm *ui;
 };
 
-#endif // REGRESSIONBAYESIANSUMMARYSTATISTICS_H
+#endif // SEMSIMPLEFORM_H

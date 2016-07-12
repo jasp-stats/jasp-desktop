@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,25 +16,25 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef SEMSIMPLEFORM_H
-#define SEMSIMPLEFORM_H
+#ifndef BFFROMTINDEPENDENTSAMPLESFORM_H
+#define BFFROMTINDEPENDENTSAMPLESFORM_H
 
-#include "analysisform.h"
+#include "../analysisform.h"
 
 namespace Ui {
-class SEMSimpleForm;
+class BFFromTIndependentSamplesForm;
 }
 
-class SEMSimpleForm : public AnalysisForm
+class BFFromTIndependentSamplesForm : public AnalysisForm
 {
 	Q_OBJECT
 
 public:
-	explicit SEMSimpleForm(QWidget *parent = 0);
-	~SEMSimpleForm();
+	explicit BFFromTIndependentSamplesForm(QWidget *parent = 0);
+	~BFFromTIndependentSamplesForm();
 
 private:
-	Ui::SEMSimpleForm *ui;
+	Ui::BFFromTIndependentSamplesForm *ui;
 };
 
-#endif // SEMSIMPLEFORM_H
+#endif // BFFROMTINDEPENDENTSAMPLESFORM_H

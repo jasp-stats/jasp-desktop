@@ -19,7 +19,7 @@
 #ifndef R11TLEARNFORM_H
 #define R11TLEARNFORM_H
 
-#include "analysisform.h"
+#include "../analysisform.h"
 
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodel.h"

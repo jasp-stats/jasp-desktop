@@ -19,7 +19,7 @@
 #ifndef BFFROMTPAIREDSAMPLESFORM_H
 #define BFFROMTPAIREDSAMPLESFORM_H
 
-#include "analysisform.h"
+#include "../analysisform.h"
 
 namespace Ui {
 class BFFromTPairedSamplesForm;
