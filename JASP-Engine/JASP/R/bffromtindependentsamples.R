@@ -28,7 +28,7 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 																		list(name="BFrobustnessPlot", type="image")))
 
 	results[[".meta"]] <- meta
-	results[["title"]] <- "Summary Statistics"
+	results[["title"]] <- "T-Test"
 
 	state <- .retrieveState()
 
@@ -61,7 +61,7 @@ BFFromTIndependentSamples <- function(dataset=NULL, options, perform = 'run', ca
 	fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="error %")
 
 	table <- list()
-	table[["title"]] <- "BF from <i>t</i> - Independent Samples"
+	table[["title"]] <- "Independent Samples T-Test"
 	table[["schema"]] <- list(fields=fields)
 	table[["citation"]] <- list(
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
