@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BinomialBayesianSummaryStatistics <- function(dataset=NULL, options, perform = 'run', callback = function(...) 0,  ...)
+SummaryStatsBinomialTestBayesian <- function(dataset=NULL, options, perform = 'run', callback = function(...) 0,  ...)
 {
 	state <- .retrieveState()
 

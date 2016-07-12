@@ -16,17 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "binomialbayesiansummarystatisticsform.h"
-#include "ui_binomialbayesiansummarystatisticsform.h"
+#include "summarystatsbinomialtestbayesianform.h"
+#include "ui_summarystatsbinomialtestbayesianform.h"
 
-BinomialBayesianSummaryStatisticsForm::BinomialBayesianSummaryStatisticsForm(QWidget *parent) :
-	AnalysisForm("BinomialBayesianSummaryStatisticsForm", parent),
-	ui(new Ui::BinomialBayesianSummaryStatisticsForm)
+SummaryStatsBinomialTestBayesianForm::SummaryStatsBinomialTestBayesianForm(QWidget *parent) :
+	AnalysisForm("SummaryStatsBinomialTestBayesianForm", parent),
+	ui(new Ui::SummaryStatsBinomialTestBayesianForm)
 {
 	ui->setupUi(this);
 }
 
-BinomialBayesianSummaryStatisticsForm::~BinomialBayesianSummaryStatisticsForm()
+SummaryStatsBinomialTestBayesianForm::~SummaryStatsBinomialTestBayesianForm()
 {
 	delete ui;
 }

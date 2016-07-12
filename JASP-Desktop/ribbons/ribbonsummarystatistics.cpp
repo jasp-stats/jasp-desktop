@@ -50,7 +50,7 @@ RibbonSummaryStatistics::RibbonSummaryStatistics(QWidget *parent) :
 	ui->regressionButton->setMenu(menu);
 
 	menu = new QMenu(this);
-	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("BinomialBayesianSummaryStatistics");
+	menu->addAction(QString("Bayesian Binomial Test"), this, SLOT(itemSelected()))->setObjectName("SummaryStatsBinomialTestBayesian");
 
 	ui->frequenciesButton->setMenu(menu);
 }
