@@ -152,7 +152,7 @@
             </size>
            </property>
            <property name="text">
-            <string>Correlation</string>
+            <string>Regression</string>
            </property>
            <property name="icon">
             <iconset resource="../resources/icons.qrc">
@@ -181,7 +181,7 @@
             </size>
            </property>
            <property name="text">
-            <string>BF from t</string>
+            <string>T-Tests</string>
            </property>
            <property name="icon">
             <iconset resource="../resources/icons.qrc">

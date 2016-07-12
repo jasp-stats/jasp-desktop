@@ -59,6 +59,7 @@
 #include "analysisforms/bffromtonesampleform.h"
 #include "analysisforms/binomialbayesiansummarystatisticsform.h"
 #include "analysisforms/regressionbayesiansummarystatisticsform.h"
+#include "analysisforms/correlationpairsbayesiansummarystatisticsform.h"
 
 #include "analysisforms/semsimpleform.h"
 #include "analysisforms/r11tlearnform.h"
@@ -574,6 +575,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BinomialBayesianSummaryStatisticsForm(contentArea);
 	else if (name == "RegressionBayesianSummaryStatistics")
 		form = new RegressionBayesianSummaryStatisticsForm(contentArea);
+	else if (name == "CorrelationPairsBayesianSummaryStatistics")
+		form = new CorrelationPairsBayesianSummaryStatisticsForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
