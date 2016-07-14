@@ -11,13 +11,15 @@
 		{
 			"format": "",
 			"name": "n1Size",
-			"type": "Number"
+			"type": "Integer",
+			"min": 2
 		},
 		{
 			"format": "",
 			"name": "n2Size",
-			"type": "Number"
-		},		
+			"type": "Integer",
+			"min": 2
+		},
 		{
 			"name": "hypothesis",
 			"options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
