@@ -46,7 +46,6 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	#Bayes factor type (BF10, BF01, log(BF10))
 	if (options$bayesFactorType == "BF01")
 	{
-
 		bf.title <- "BF\u2080\u2081"
 	}
 	else if (options$bayesFactorType == "BF10")

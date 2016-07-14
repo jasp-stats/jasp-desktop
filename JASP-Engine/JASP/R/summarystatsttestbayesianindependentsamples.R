@@ -204,7 +204,6 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 				bayesFactorRobustnessPlot <- plot
 			}
 		}
-
 	}
 
 
@@ -271,43 +270,31 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 .isInputValidIndependentSamples <- function(options)
 {
 	error <- FALSE
-	errorMessage <- NULL
-	ready <- TRUE
+	ready <- FALSE
 
-	if(is.null(options$tStatistic))
+	if(is.null(options$tStatistic) || is.null(options$n1Size) || is.null(options$n1Size))
 	{
 		error <- TRUE
-		errorMessage <- paste("argument \"<em>t</em>\" is missing", sep="")
-	}
-	else if(is.null(options$n1Size))
-	{
-		error <- TRUE
-		errorMessage <- paste("argument \"<em>n<sub>1</sub></em>\" is missing", sep="")
-	}
-	else if(is.null(options$n1Size))
-	{
-		error <- TRUE
-		errorMessage <- paste("argument \"<em>n<sub>2</sub></em>\" is missing", sep="")
 	}
 
-	if(!error)
-	{
-		if(options$n1Size < 2)
-		{
-			error <- TRUE
-			errorMessage <-paste("argument \"<em>n<sub>1</sub></em>\" : not enough observations", sep="")
-		}
-		else if(options$n2Size < 2)
-		{
-			error <- TRUE
-			errorMessage <-paste("argument \"<em>n<sub>2</sub></em>\" : not enough observations", sep="")
-		}
-	}
+	row <- list(BF = ".", tStatistic = ".", n1Size = ".", n2Size = ".", errorEstimate = ".")
 
-	if(options$tStatistic==0 && options$n1Size==0 && options$n2Size==0)
+	if(options$tStatistic!=0 && options$n1Size==0 && options$n2Size==0)
 	{
 		ready <- FALSE
+		row <- list(BF = ".", tStatistic = options$tStatistic, n1Size = ".", n2Size = ".", errorEstimate = ".")
+	}
+	else if(options$n2Size==0)
+	{
+		ready <- FALSE
+		row <- list(BF = ".", tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = ".", errorEstimate = ".")
+	}
+	else if(options$n1Size==0)
+	{
+		ready <- FALSE
+		row <- list(BF = ".", tStatistic = options$tStatistic, n1Size = ".", n2Size = options$n2Size, errorEstimate = ".")
 	}
 
-	list(error=error, errorMessage=errorMessage, ready=ready)
+
+	list(error=error, ready=ready, row=row)
 }
