@@ -85,12 +85,6 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	ui->priorFixedEffects->setLabel("r scale fixed effects");
 	ui->priorRandomEffects->setLabel("r scale random effects");
 	ui->priorCovariates->setLabel("r scale covariates");
-
-#ifdef QT_DEBUG
-	ui->advancedBox->setStyleSheet("QWidget { background-color: pink; }");
-#else
-	ui->advancedBox->hide();
-#endif
 }
 
 AnovaRepeatedMeasuresBayesianForm::~AnovaRepeatedMeasuresBayesianForm()

@@ -56,7 +56,7 @@ void OptionList::set(const Json::Value &value)
 	_value = value.asString();
 }
 
-void OptionList::set(int index)
+void OptionList::set(size_t index)
 {
 	if (index < _options.size())
 	{

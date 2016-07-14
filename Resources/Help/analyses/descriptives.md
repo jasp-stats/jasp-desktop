@@ -1,4 +1,4 @@
-Descriptives
+﻿Descriptives
 ============
 
 Descriptives allows you to obtain basic descriptive statistics, histograms and density plots, correlation plots, and frequency tables.
@@ -12,28 +12,30 @@ Default Options
   - Std. deviation: Standard deviation of the data points
   - Minimum: Minimum value of the data points
   - Maximum: Maximum value of the data points
-  
+
 Default Output
 -------
 ### Descriptive Statistics:
 - Valid: Number of valid cases
 - Missing: Number of missing values
-- Mean: Arithmetic mean of the data points 
-- Std. Deviation: Standard deviation of the data points 
-- Minimum: Minimum value of the data points 
-- Maximum: Maximum value of the data points 
+- Mean: Arithmetic mean of the data points
+- Std. Deviation: Standard deviation of the data points
+- Minimum: Minimum value of the data points
+- Maximum: Maximum value of the data points
 
 Additional Options
 ------------------
-###Display Plots:
-- For continuous variables, displays a histogram and the fit of a nonparametric density estimator 
-- For nominal and ordinal variables, displays a frequency distribution
-
-### Display Correlation Plot:
-- For continuous variables, displays histograms, density plots, and scatterplots
-
 ###Display Frequency Tables (nominal and ordinal variables):
 - Displays a frequency table for each variable
+
+### Plots:
+- Distribution Plots:
+  - For continuous variables, displays a histogram and the fit of a nonparametric density estimator
+  - For nominal and ordinal variables, displays a frequency distribution
+- Correlation Plot:
+  - For continuous variables, displays histograms, density plots, and scatterplots
+- Boxplots:
+  - For continuous variables, displays a boxplot. Optionally, the outliers are labelled. Outliers are based on the interquartile range (IQR), i.e. [25th Quartile] - 1.5 × IQR and [75th Quartile] + 1.5 × IQR.
 
 ###Statistics (only for continuous variables):
 - Percentile Values:
@@ -51,11 +53,11 @@ Additional Options
 - Distribution:
   -Skewness: Skew of the distribution of the data points
   -Kurtosis: Kurtosis of the distribution of the data points
-  
+
 Additional Output
 ------------------
 ###Display Plots:
-- For continuous variables, displays a histogram and the fit of a nonparametric density estimator 
+- For continuous variables, displays a histogram and the fit of a nonparametric density estimator
 - For nominal and ordinal variables, displays a frequency distribution
 
 ### Display Correlation Plot:
@@ -71,14 +73,14 @@ Additional Output
 
 ###Descriptive Statistics:
   - Std. Error of Mean: Standard error of the mean
-  - Median: Median of the data points 
+  - Median: Median of the data points
   - Mode: Mode of the data points
   - Variance: Variance of the data points
   - Skewness: Skew of the distribution of the data points
   - Std. Error of Skewness: Standard error of the skewness
   - Kurtosis: Kurtosis of the distribution of the data points
   - Std. Error of Kurtosis: Standard error of kurtosis
-  - Range: Range of the data points 
+  - Range: Range of the data points
   - Sum: Sum of the data points
   - Quartiles: 25th, 50th, and 75th quartile of the data points
   - Cut points for x equal groups: Cut points that divide the data into x equal groups

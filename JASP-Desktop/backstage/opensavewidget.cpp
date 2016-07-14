@@ -85,6 +85,17 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	connect(_bsOSF, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
 
 	connect(_bsExamples, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenExampleRequestHandler(QString)));
+
+	VerticalTabWidget *osvw = tabWidget();
+	VerticalTabBar *vtb = osvw->tabBar();
+	connect(vtb, SIGNAL(currentChanged(int)), this, SLOT(tabWidgetChanged(int)));
+}
+
+void OpenSaveWidget::tabWidgetChanged(int index)
+{
+	//Check the OSF tab
+	if ( index==2 )
+		_bsOSF->attemptToConnect();
 }
 
 VerticalTabWidget *OpenSaveWidget::tabWidget()
@@ -130,8 +141,7 @@ FileEvent *OpenSaveWidget::open()
 
 FileEvent *OpenSaveWidget::open(const QString &path)
 {
-	FileEvent *event = new FileEvent(this);
-	event->setOperation(FileEvent::FileOpen);
+	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
 	event->setPath(path);
 
 	if ( ! path.endsWith(".jasp", Qt::CaseInsensitive))
@@ -154,8 +164,7 @@ FileEvent *OpenSaveWidget::save()
 	}
 	else
 	{
-		event = new FileEvent(this);
-		event->setOperation(FileEvent::FileSave);
+		event = new FileEvent(this, FileEvent::FileSave);
 		event->setPath(_currentFilePath);
 	}
 
@@ -166,8 +175,7 @@ FileEvent *OpenSaveWidget::save()
 
 FileEvent *OpenSaveWidget::close()
 {
-	FileEvent *event = new FileEvent(this);
-	event->setOperation(FileEvent::FileClose);
+	FileEvent *event = new FileEvent(this, FileEvent::FileClose);
 	dataSetIORequestHandler(event);
 
 	return event;

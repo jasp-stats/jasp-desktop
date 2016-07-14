@@ -28,6 +28,7 @@
 #include "fileevent.h"
 
 #include "activitylog.h"
+#include "analysis.h"
 
 class BackStageWidget : public QWidget
 {
@@ -46,6 +47,8 @@ signals:
 	void dataSetIORequest(FileEvent *event);
 	void exportSelected(QString filename);
 
+public slots:
+	void analysisAdded(Analysis *analysis);
 private slots:
 	void tabPageChanging(int index, bool &cancel);
 

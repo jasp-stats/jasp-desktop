@@ -232,11 +232,7 @@ vector<vector<string> > Terms::asVectorOfVectors() const
 	{
 		vector<string> components = term.scomponents();
 		items.push_back(components);
-
-		int t = items.size();
 	}
-
-	int s = items.size();
 
 	return items;
 }
@@ -366,7 +362,7 @@ string Terms::asString() const
 
 	ss << _terms.at(0).asString();
 
-	for (int i = 1; i < _terms.size(); i++)
+	for (size_t i = 1; i < _terms.size(); i++)
 		ss << ", " << _terms.at(i).asString();
 
 	return ss.str();

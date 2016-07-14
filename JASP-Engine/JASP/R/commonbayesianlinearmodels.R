@@ -219,7 +219,34 @@
 	return(results)
 }
 
-.theBayesianLinearModels <- function (dataset = NULL, options = list (), perform = "init", status = list (), .callbackBayesianLinearModels, .callbackBFpackage, results = list()) {
+.theBayesianLinearModels <- function (dataset = NULL, options = list (), perform = "init",
+									  status = list (), .callbackBayesianLinearModels,
+									  .callbackBFpackage, results = list(),
+									  analysisType = "") {
+	
+	# priors
+	rscaleFixed <- "medium"     # 1/2
+	rscaleRandom <- "nuisance"  # 1
+	rscaleCont <- "medium"      # sqrt(2)/4
+	
+	# MCMC iterations
+	if (options$sampleMode == "auto") {
+		iter <- 10000
+	} else if (options$sampleMode == "manual") {
+		iter <- options$fixedSamplesNumber
+	}
+	
+	if (analysisType == "ANOVA") {
+		rscaleFixed <- options$priorFixedEffects
+		rscaleRandom <- options$priorRandomEffects
+	} else if (analysisType == "ANCOVA" || analysisType == "RM-ANOVA") {
+		rscaleFixed <- options$priorFixedEffects
+		rscaleRandom <- options$priorRandomEffects
+		rscaleCont <- options$priorCovariates
+	} else if (analysisType == "Regression") {
+		rscaleCont <- options$priorCovariates
+	}
+	
 	if (!status$ready && is.null (status$error.message))
 		return (list (model =  list (models = NULL, effects = NULL), status = status))
 
@@ -291,7 +318,9 @@
 		if (perform == "run" && status$ready) {
 			bf <- try (BayesFactor::lmBF (null.formula,
 				data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-				progress = FALSE, posterior = FALSE, callback = .callbackBFpackage))
+				progress = FALSE, posterior = FALSE, callback = .callbackBFpackage,
+				rscaleFixed = rscaleFixed, rscaleRandom = rscaleRandom, rscaleCont = rscaleCont,
+				iterations = iter))
 			
 			null.model$bf <- bf
 			
@@ -383,7 +412,9 @@
 			if (perform == "run" && status$ready) {
 				bf <- try (BayesFactor::lmBF (model.list [[m]],
 					data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-					progress = FALSE, posterior = FALSE, callback = .callbackBFpackage))
+					progress = FALSE, posterior = FALSE, callback = .callbackBFpackage,
+					rscaleFixed = rscaleFixed, rscaleRandom = rscaleRandom, rscaleCont = rscaleCont,
+					iterations = iter))
 				model.object [[m]]$bf <- bf
 
 				if (inherits (bf, "try-error")) {
@@ -420,7 +451,9 @@
 			chains <- try (BayesFactor::lmBF (model.list [[m]],
 					data = dataset, whichRandom = .v (unlist (options$randomFactors)),
 					progress = FALSE, posterior = TRUE, callback = .callbackBFpackage, 
-					iterations = options$posteriorEstimatesMCMCIterations))
+					iterations = options$posteriorEstimatesMCMCIterations,
+					rscaleFixed = rscaleFixed, rscaleRandom = rscaleRandom, rscaleCont = rscaleCont,
+					iterations = iter))
 			
 			if (inherits (bf, "try-error")) {
 				message <- .extractErrorMessage (bf)

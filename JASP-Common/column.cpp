@@ -93,7 +93,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 
 			map<int, int> oldIndexToNewIndex;
 
-			for (int i = 0; i < labels.size(); i++)
+			for (size_t i = 0; i < labels.size(); i++)
 			{
 				try
 				{
@@ -442,7 +442,7 @@ void Column::setRowCount(int rowCount)
 
 void Column::insert(int rowCount, int index)
 {
-	BlockMap::iterator itr = _blocks.lower_bound(index);
+	//BlockMap::iterator itr = _blocks.lower_bound(index);
 
 	// should check that itr != end()
 

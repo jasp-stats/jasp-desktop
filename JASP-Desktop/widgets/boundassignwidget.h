@@ -44,6 +44,8 @@ public:
 	virtual void bindTo(Option *option) OVERRIDE;
 
 	void setVariables(const Terms &variables);
+	void setLabels(const QString &left, const QString &right);
+
 private:
 	Ui::BoundAssignWidget *ui;
 

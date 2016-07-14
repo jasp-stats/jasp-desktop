@@ -145,6 +145,7 @@ private slots:
 	void simulatedMouseClickHandler(int x, int y, int count);
 	void updateUserDataHandler(int id, QString key);
 	void removeAnalysisRequestHandler(int id);
+	void removeAllAnalyses();
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
 	void collapseSelected();
@@ -172,7 +173,6 @@ private slots:
 
 	void analysisOKed();
 	void analysisRunned();
-	void analysisRemoved();
 
 	void updateMenuEnabledDisabledStatus();
 	void updateUIFromOptions();

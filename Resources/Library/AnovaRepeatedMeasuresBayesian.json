@@ -91,6 +91,17 @@
 			"max": 1000000
 		},
 		{
+			"name": "sampleMode",
+			"type": "List",
+			"options": [ "auto", "manual" ]
+		},
+		{
+			"name": "fixedSamplesNumber",
+			"type": "Integer",
+			"default": 10000,
+			"min": 0
+		},
+		{
 			"name": "priorFixedEffects",
 			"type": "Number",
 			"value": 0.5,

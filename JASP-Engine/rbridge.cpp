@@ -467,28 +467,28 @@ std::map<string, Column::ColumnType> rbridge_marshallSEXPs(SEXP columns, SEXP co
 	if (Rf_isString(columns))
 	{
 		vector<string> temp = Rcpp::as<vector<string> >(columns);
-		for (int i = 0; i < temp.size(); i++)
+		for (size_t i = 0; i < temp.size(); i++)
 			columnsRequested[temp.at(i)] = Column::ColumnTypeUnknown;
 	}
 
 	if (Rf_isString(columnsAsNumeric))
 	{
 		vector<string> temp = Rcpp::as<vector<string> >(columnsAsNumeric);
-		for (int i = 0; i < temp.size(); i++)
+		for (size_t i = 0; i < temp.size(); i++)
 			columnsRequested[temp.at(i)] = Column::ColumnTypeScale;
 	}
 
 	if (Rf_isString(columnsAsOrdinal))
 	{
 		vector<string> temp = Rcpp::as<vector<string> >(columnsAsOrdinal);
-		for (int i = 0; i < temp.size(); i++)
+		for (size_t i = 0; i < temp.size(); i++)
 			columnsRequested[temp.at(i)] = Column::ColumnTypeOrdinal;
 	}
 
 	if (Rf_isString(columnsAsNominal))
 	{
 		vector<string> temp = Rcpp::as<vector<string> >(columnsAsNominal);
-		for (int i = 0; i < temp.size(); i++)
+		for (size_t i = 0; i < temp.size(); i++)
 			columnsRequested[temp.at(i)] = Column::ColumnTypeNominal;
 	}
 

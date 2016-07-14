@@ -54,9 +54,18 @@
 #include "analysisforms/binomialtestform.h"
 #include "analysisforms/binomialtestbayesianform.h"
 #include "analysisforms/bffromtform.h"
+#include "analysisforms/SummaryStatistics/bffromtindependentsamplesform.h"
+#include "analysisforms/SummaryStatistics/bffromtpairedsamplesform.h"
+#include "analysisforms/SummaryStatistics/bffromtonesampleform.h"
+#include "analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.h"
+#include "analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.h"
 
-#include "analysisforms/semsimpleform.h"
-#include "analysisforms/r11tlearnform.h"
+#include "analysisforms/SEM/semsimpleform.h"
+#include "analysisforms/R11tLearn/r11tlearnform.h"
+
+#include "analysisforms/reliabilityanalysisform.h"
+#include "analysisforms/exploratoryfactoranalysisform.h"
+#include "analysisforms/principalcomponentanalysisform.h"
 
 #include <QDebug>
 #include <QWebFrame>
@@ -136,6 +145,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonAnalysis->setDataSetLoaded(false);
 	ui->ribbonSEM->setDataSetLoaded(false);
 	ui->ribbonR11tLearn->setDataSetLoaded(false);
+	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -147,18 +157,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
-
 	_odm = new OnlineDataManager(this);
 
-	QVariant osfUsernameV = _settings.value("OSFUsername");
-	QVariant osfPasswordV = _settings.value("OSFPassword", "");
-
-	if (osfUsernameV.canConvert(QMetaType::QString) && osfPasswordV.canConvert(QMetaType::QString))
-	{
-		QString username = osfUsernameV.toString();
-		QString password = osfPasswordV.toString();
-		_odm->setAuthentication(OnlineDataManager::OSF, username, password);
-	}
+	QString username = _settings.value("OSFUsername", "").toString();
+	QString password = _settings.value("OSFPassword", "").toString();
+	_odm->setAuthentication(OnlineDataManager::OSF, username, password);
 
 	_loader.setOnlineDataManager(_odm);
 	ui->backStage->setOnlineDataManager(_odm);
@@ -187,10 +190,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisUserDataLoaded(Analysis*)), this, SLOT(analysisUserDataLoadedHandler(Analysis*)));
+	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
 
 	connect(ui->ribbonAnalysis, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
 
@@ -326,12 +331,9 @@ void MainWindow::dropEvent(QDropEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 
-	// If User switch 'Remember me' is off remove OSF settings
+	//If User switch 'Remember me' is off remove OSF settings
 	if (_settings.value("OSFRememberMe", false).toBool() == false)
-	{
-		_settings.remove("OSFUsername");
 		_settings.remove("OSFPassword");
-	}
 
 	if (_applicationExiting)
 	{
@@ -556,6 +558,22 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BinomialTestBayesianForm(contentArea);
 	else if (name == "BFFromT")
 		form = new BFFromTForm(contentArea);
+	else if (name == "ReliabilityAnalysis")
+		form = new ReliabilityAnalysisForm(contentArea);
+	else if (name == "ExploratoryFactorAnalysis")
+    form = new ExploratoryFactorAnalysisForm(contentArea);
+  else if (name == "PrincipalComponentAnalysis")
+    form = new PrincipalComponentAnalysisForm(contentArea);
+	else if (name == "BFFromTOneSample")
+		form = new BFFromTOneSampleForm(contentArea);
+	else if (name == "BFFromTIndependentSamples")
+		form = new BFFromTIndependentSamplesForm(contentArea);
+	else if (name == "BFFromTPairedSamples")
+		form = new BFFromTPairedSamplesForm(contentArea);
+	else if (name == "BinomialBayesianSummaryStatistics")
+		form = new BinomialBayesianSummaryStatisticsForm(contentArea);
+	else if (name == "RegressionBayesianSummaryStatistics")
+		form = new RegressionBayesianSummaryStatisticsForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -698,13 +716,25 @@ void MainWindow::tabChanged(int index)
 #endif
 	else
 	{
-#ifdef QT_DEBUG  // if variables tab enabled
 		ui->topLevelWidgets->setCurrentIndex(2);
-		ui->ribbon->setCurrentIndex(index - 2);
-#else
-		ui->topLevelWidgets->setCurrentIndex(2);
-		ui->ribbon->setCurrentIndex(index - 1);
-#endif
+
+		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
+		if(currentActiveTab == "Common")
+		{
+			ui->ribbon->setCurrentIndex(0);
+		}
+		else if(currentActiveTab == "SEM")
+		{
+			ui->ribbon->setCurrentIndex(1);
+		}
+		else if(currentActiveTab == "R11t Learn")
+		{
+			ui->ribbon->setCurrentIndex(2);
+		}
+		else if(currentActiveTab == "Summary Stats")
+		{
+			ui->ribbon->setCurrentIndex(3);
+		}
 	}
 }
 
@@ -744,12 +774,11 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		if (_package->isLoaded())
 		{
 			OnlineDataManager::AuthData sec = _odm->getAuthData(OnlineDataManager::OSF);
-			if (sec.username!="" && _odm->authenticationSuccessful(OnlineDataManager::OSF))
-			{
-				//If this instance has a valid OSF connection save these settings for a new instance
-				_settings.setValue("OSFUsername", sec.username);
+
+			//If this instance has a valid OSF connection save this setting for a new instance
+			if (sec.password!="")
 				_settings.setValue("OSFPassword", sec.password);
-			}
+
 			// begin new instance
 			QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
 		}
@@ -807,18 +836,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	{
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 
-		// Save HTML result to temp file
-		// WebFrame->evaluateJavaScript can only be executed from main thread.
-		boost::filesystem::path temp = boost::filesystem::unique_path();
-		QString tempstr = QString::fromStdWString(temp.generic_wstring());
-        QString tmpFileName = QString::fromStdString(Dirs::tempDir()) + "/" + tempstr; // Warning: use forward slash even for window!!!
-
-		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + tmpFileName + "');");
-
-		if (event->type() == FileEvent::FileType::html)
-			HTMLExporter::setTransferFile(tmpFileName);
-		if (event->type() == FileEvent::FileType::pdf)
-			PDFExporter::setTransferFile(tmpFileName);
+		ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('%EXPORT%');");
 
 		_loader.io(event, _package);
 		_progressIndicator->show();
@@ -865,6 +883,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
+	bool showAnalysis = false;
 	_progressIndicator->hide();
 
 	if (event->operation() == FileEvent::FileOpen)
@@ -895,17 +914,15 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			_package->setModified(false);
 			setWindowTitle(name);
-
-#ifdef QT_DEBUG // variables view
-			ui->tabBar->setCurrentIndex(2);
-#else
-			ui->tabBar->setCurrentIndex(1);
-#endif
+			showAnalysis = true;
 		}
 		else
 		{
 			QMessageBox::warning(this, "", "Unable to save file.\n\n" + event->message());
 		}
+	}
+	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults) {
+		showAnalysis = true;
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
@@ -928,6 +945,16 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		{
 			_applicationExiting = false;
 		}
+	}
+
+	if (showAnalysis)
+	{
+#ifdef QT_DEBUG // variables view
+		ui->tabBar->setCurrentIndex(2);
+#else
+		ui->tabBar->setCurrentIndex(1);
+#endif
+
 	}
 }
 
@@ -1051,6 +1078,12 @@ void MainWindow::updateUIFromOptions()
 	else
 		ui->tabBar->removeTab("R11t Learn");
 
+	QVariant sumStats = _settings.value("toolboxes/summaryStatistics", false);
+	if (sumStats.canConvert(QVariant::Bool) && sumStats.toBool())
+		ui->tabBar->addTab("Summary Stats");
+	else
+		ui->tabBar->removeTab("Summary Stats");
+
 }
 
 void MainWindow::resultsPageLoaded(bool success)
@@ -1172,7 +1205,7 @@ void MainWindow::itemSelected(const QString &item)
 
 void MainWindow::saveTextToFileHandler(const QString &filename, const QString &data)
 {
-	if (filename == "%PREVIEW%")
+	if (filename == "%PREVIEW%" || filename == "%EXPORT%")
 	{
 		_package->analysesHTML = fq(data);
 		_package->setAnalysesHTMLReady();
@@ -1385,9 +1418,19 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 		hideOptionsPanel();
 }
 
-void MainWindow::analysisRemoved()
+void MainWindow::removeAllAnalyses()
 {
-	removeAnalysis(_currentAnalysis);
+	QMessageBox::StandardButton reply;
+	reply = QMessageBox::question(this, "Remove All Analyses", " Do you really want to remove all analyses ? ",
+								  QMessageBox::Yes|QMessageBox::No,QMessageBox::Yes);
+	if (reply == QMessageBox::Yes)
+	{
+		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
+		{
+			Analysis *analysis = *itr;
+			removeAnalysis(analysis);
+		}
+	}
 }
 
 void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html)
@@ -1531,6 +1574,13 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 		_analysisMenu->addSeparator();
 		_analysisMenu->addAction("Remove " + objName, this, SLOT(removeSelected()));
 	}
+
+	if (menuOptions["hasRemoveAllAnalyses"].asBool())
+	{
+		_analysisMenu->addSeparator();
+		_analysisMenu->addAction("Remove All ", this, SLOT(removeAllAnalyses()));
+	}
+
 
 	QPoint point = ui->webViewResults->mapToGlobal(QPoint(round(menuOptions["rX"].asInt() * _webViewZoom), round(menuOptions["rY"].asInt() * _webViewZoom)));
 

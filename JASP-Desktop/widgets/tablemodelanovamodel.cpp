@@ -194,7 +194,7 @@ void TableModelAnovaModel::mimeDataMoved(const QModelIndexList &indexes)
 
 	foreach (const Term &rem, toRemove)
 	{
-		int i = 0;
+		size_t i = 0;
 
 		while (i < terms.size())
 		{
@@ -473,7 +473,7 @@ void TableModelAnovaModel::setTerms(const Terms &terms, bool newTermsAreNuisance
 
 	itr = terms.begin();
 
-	for (int i = 0; i < terms.size(); i++)
+	for (size_t i = 0; i < terms.size(); i++)
 	{
 		const Term &term = *itr;
 
@@ -550,7 +550,7 @@ void TableModelAnovaModel::updateNuisances(bool checked)
 
 	// if a higher order interaction is specified as nuisance, then all lower order terms should be changed to nuisance as well
 
-	for (int i = 0; i < _rows.size(); i++)
+	for (size_t i = 0; i < _rows.size(); i++)
 	{
 		Options *row = _rows.at(i);
 		OptionTerm *termOption = static_cast<OptionTerm*>(row->get(0));
@@ -559,7 +559,7 @@ void TableModelAnovaModel::updateNuisances(bool checked)
 
 		if (nuisanceOption->value() == checked)
 		{
-			for (int j = 0; j < _rows.size(); j++)
+			for (size_t j = 0; j < _rows.size(); j++)
 			{
 				if (i == j)
 					continue;

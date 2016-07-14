@@ -51,7 +51,12 @@ AncovaBayesian	 <- function (dataset = NULL, options, perform = "run", callback 
 				change$dependent ||
 				change$covariates ||
 				change$fixedFactors ||
-				change$randomFactors)
+				change$randomFactors ||
+				change$priorFixedEffects ||
+				change$priorRandomEffects ||
+				change$priorCovariates ||
+				change$sampleMode ||
+				change$fixedSamplesNumber)
 				return (response)
 			response$status <- "ok"
 		}
@@ -67,7 +72,12 @@ AncovaBayesian	 <- function (dataset = NULL, options, perform = "run", callback 
 				change$fixedFactors ||
 				change$randomFactors ||
 				change$posteriorEstimates ||
-				change$posteriorEstimatesMCMCIterations)) {
+				change$posteriorEstimatesMCMCIterations ||
+				change$priorFixedEffects ||
+				change$priorRandomEffects ||
+				change$priorCovariates ||
+				change$sampleMode ||
+				change$fixedSamplesNumber)) {
 			state <- NULL
 		} else {
 			perform <- "run"
@@ -92,7 +102,7 @@ AncovaBayesian	 <- function (dataset = NULL, options, perform = "run", callback 
 		status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
 ## MODEL
-		model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, 			.callbackBFpackage, results = results)
+		model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results = results, analysisType = "ANCOVA")
 	
 		if (is.null(model.object)) # analysis cancelled by the callback
 			return()

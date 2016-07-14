@@ -86,6 +86,9 @@ FSEntry FSBModel::createEntry(const QString &path, FSEntry::EntryType type)
 	entry.entryType = type;
 
 	int index = path.lastIndexOf("/");
+	if (index == -1) {
+		index = path.lastIndexOf("\\");
+	}
 	if (index != -1)
 	{
 		entry.name = path.mid(index + 1);

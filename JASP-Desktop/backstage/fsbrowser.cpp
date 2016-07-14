@@ -23,8 +23,6 @@
 #include <QMessageBox>
 #include <QMovie>
 
-
-
 #include "fsentrywidget.h"
 
 FSBrowser::FSBrowser(QWidget *parent) : QWidget(parent)
@@ -53,14 +51,12 @@ FSBrowser::FSBrowser(QWidget *parent) : QWidget(parent)
 	_authWidget = new AuthWidget(this);
 	_authWidget->hide();
 
-
 	_processLabel = new QLabel(this);
 	_processLabel->setAlignment(Qt::AlignCenter);
 	_processLabel->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	_processLabel->setMovie(new QMovie(":/icons/loading.gif", QByteArray(), _processLabel));
 	_processLabel->setHidden(true);
 	layout->addWidget(_processLabel);
-
 
 	connect(_authWidget, SIGNAL(loginRequested(QString,QString)), this, SLOT(loginRequested(QString,QString)));
 }
@@ -91,6 +87,7 @@ void FSBrowser::setFSModel(FSBModel *model)
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationClear()), this, SLOT(refresh()));
 	connect(_model, SIGNAL(authenticationFail(QString)), this, SLOT(authenticationFailed(QString)));
+	connect(_model, SIGNAL(hideAuthentication()), this, SLOT(hideAuthentication()));
 }
 
 void FSBrowser::setBrowseMode(FSBrowser::BrowseMode mode)
@@ -101,6 +98,11 @@ void FSBrowser::setBrowseMode(FSBrowser::BrowseMode mode)
 void FSBrowser::setViewType(FSBrowser::ViewType viewType)
 {
 	_viewType = viewType;
+}
+
+void FSBrowser::hideAuthentication()
+{
+	_authWidget->hide();
 }
 
 void FSBrowser::clearItems()
@@ -120,9 +122,9 @@ void FSBrowser::refresh()
 
 	StopProcessing();
 
-	if (_model->requiresAuthentication() && _model->isAuthenticated() == false)
+	if (_model->requiresAuthentication() && !_model->isAuthenticated())
 	{
-		_authWidget->clearPassword();
+		_authWidget->setUsernameclearPassword();
 		_authWidget->show();
 	}
 	else
@@ -191,5 +193,6 @@ void FSBrowser::entryOpenedHandler()
 void FSBrowser::authenticationFailed(QString message)
 {
 	QMessageBox::warning(this, "", message);
+
 }
 

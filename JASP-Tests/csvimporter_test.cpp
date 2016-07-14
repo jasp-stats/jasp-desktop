@@ -73,7 +73,6 @@ void CSVImporterTest::csvTester()
 
   QString full_path = QString("Resources/TestFiles/csvimporter_test/").append(filename);
 
-  fe->setOperation(FileEvent::FileOpen);
   fe->setPath(full_path);
 
   asl->loadTask(fe, dsp);
@@ -161,7 +160,7 @@ int CSVImporterTest::readDataFromCSV(QString path, struct fileContent *fc)
       {
         continue;
       }
-      for(int i=0; i<(*csvIter).size(); ++i)
+	  for(size_t i=0; i<(*csvIter).size(); ++i)
       {
         currentWord = (*csvIter)[i];
         if(currentWord == "")
@@ -216,7 +215,7 @@ bool CSVImporterTest::checkIfNumeric(std::string word)
 {
     std::string::const_iterator it = word.begin();
     bool decimalPoint = false;
-    int minimumSize = 0;
+	size_t minimumSize = 0;
 
     if( word.size()>0 && ( word[0] == '-' || word[0] == '+' ) )
     {

@@ -57,12 +57,6 @@ RegressionLinearBayesianForm::RegressionLinearBayesianForm(QWidget *parent) :
 	ui->advancedOptions->hide();
 
 	ui->priorCovariates->setLabel("r scale covariates");
-
-#ifdef QT_NO_DEBUG
-	ui->advancedBox->hide();
-#else
-	ui->advancedBox->setStyleSheet("background-color: pink ;");
-#endif
 }
 
 RegressionLinearBayesianForm::~RegressionLinearBayesianForm()

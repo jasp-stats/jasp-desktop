@@ -5,11 +5,14 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 windows:CONFIG += c++11
 linux:CONFIG += c++11
-linux:CONFIG += -pipe
+
 
 DESTDIR = ..
 
-TARGET = JASP
+windows:TARGET = JASP
+   macx:TARGET = JASP
+  linux:TARGET = jasp
+
 TEMPLATE = app
 
 DEPENDPATH = ..
@@ -32,12 +35,12 @@ windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
 windows:LIBS += -lole32 -loleaut32
   linux:LIBS += -lrt
 
-QMAKE_CXXFLAGS += -Wno-c++11-extensions
-QMAKE_CXXFLAGS += -Wno-unused-parameter
-QMAKE_CXXFLAGS += -Wno-c++11-long-long
-QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
+macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
-QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
+windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
 linux {
         _R_HOME = $$(R_HOME)

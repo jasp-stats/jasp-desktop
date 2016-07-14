@@ -62,6 +62,7 @@ void TabBar::addTab(QString tabName)
 
 	_layout->insertWidget(_tabButtons.size(), button);
 	_tabButtons.append(button);
+    button->clicked();
 }
 
 void TabBar::removeTab(int index)
@@ -73,15 +74,18 @@ void TabBar::removeTab(int index)
 
 void TabBar::removeTab(QString tabName)
 {
+    QPushButton *lastbutton;
 	foreach (QPushButton *button, _tabButtons)
 	{
 		if (button->objectName() == tabName)
 		{
 			_tabButtons.removeAll(button);
 			delete button;
+            if (lastbutton) lastbutton->clicked();
 
 			return;
 		}
+        lastbutton = button;
 	}
 }
 
@@ -123,25 +127,33 @@ void TabBar::addHelpTab()
 
 	//Options
 	QMenu *optionmenu   = new QMenu("Modules",this);
-	QAction *sem = new QAction("SEM ToolBox",optionmenu);
-	QAction *rei = new QAction("Reinforcement Learning Toolbox",optionmenu);
+	QAction *sem = new QAction("SEM",optionmenu);
+	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
+	QAction *summaryStats = new QAction("Summary Stats",optionmenu);
 
 	//SEM
 	QVariant sem_setting = _settings.value("plugins/sem", false);
-	sem->setObjectName("SEM Toolbox");
+	sem->setObjectName("SEM");
 	sem->setCheckable(true);
 	sem->setChecked(sem_setting.canConvert(QVariant::Bool) && sem_setting.toBool());
 	optionmenu->addAction(sem);
 
 	//Reinforcement
 	QVariant ri_setting = _settings.value("toolboxes/r11tLearn", false);
-	rei->setObjectName("Reinforcement Learning Toolbox");
+	rei->setObjectName("Reinforcement Learning");
 	rei->setCheckable(true);
 	rei->setChecked(ri_setting.canConvert(QVariant::Bool) && ri_setting.toBool());
+
+	//Summary Stats
+	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
+	summaryStats->setObjectName("Summary Stats");
+	summaryStats->setCheckable(true);
+	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
 
 #ifdef QT_DEBUG
 	optionmenu->addAction(rei);
 #endif
+    optionmenu->addAction(summaryStats);
 
 	optionmenu->acceptDrops();
 	helpmenu->acceptDrops();
@@ -157,7 +169,7 @@ void TabBar::addHelpTab()
 	// Slots options
 	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
-
+	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
 }
 
 void TabBar::showAbout()
@@ -196,6 +208,21 @@ void TabBar::toggleReinforcement()
 		this->removeTab("R11t Learn");
 }
 
+void TabBar::toggleSummaryStats()
+{
+	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
+	static bool on = (sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
+	on = ! on;
+    if (on)
+    {
+		this->addTab("Summary Stats");
+    }
+	else
+    {
+		this->removeTab("Summary Stats");
+    }
+}
+
 
 int TabBar::count() const
 {
@@ -209,6 +236,7 @@ void TabBar::setCurrentIndex(int index)
 	foreach (QPushButton *button, _tabButtons)
 	{
 		button->setChecked(i == index);
+        if (i == index) _currentActiveTab = button->objectName();
 		i++;
 	}
 
@@ -227,6 +255,7 @@ void TabBar::tabSelectedHandler()
 	{
 		if (source == button)
 		{
+			_currentActiveTab = button->objectName();
 			setCurrentIndex(i);
 			return;
 		}
@@ -237,7 +266,10 @@ void TabBar::tabSelectedHandler()
 		setCurrentIndex(i);
 }
 
-
+QString TabBar::getCurrentActiveTab()
+{
+	return _currentActiveTab;
+}
 
 void TabBar::helpToggledHandler(bool on)
 {

@@ -1,6 +1,6 @@
 
 QT -= gui
-QT += webkitwidgets printsupport
+QT += webkitwidgets
 
 DESTDIR = ..
 TARGET = JASP-Common
@@ -9,18 +9,19 @@ CONFIG += staticlib
 
 windows:CONFIG += c++11
 linux:CONFIG += c++11
-linux:CONFIG += -pipe
 
    macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
 
+
 windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
 
-QMAKE_CXXFLAGS += -Wno-c++11-extensions
-QMAKE_CXXFLAGS += -Wno-unused-parameter
-QMAKE_CXXFLAGS += -Wno-c++11-long-long
-QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
+QMAKE_CXXFLAGS += -Wno-deprecated-declarations
+macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 
@@ -36,14 +37,8 @@ SOURCES += \
 	datablock.cpp \
 	dataset.cpp \
 	datasetpackage.cpp \
-	datasetloader.cpp \
 	dirs.cpp \
-	exporters/jaspexporter.cpp \
 	filereader.cpp \
-	importers/csv.cpp \
-	importers/csvimporter.cpp \
-	importers/jaspimporter.cpp \
-	importers/spssimporter.cpp \
 	ipcchannel.cpp \
 	label.cpp \
 	labels.cpp \
@@ -71,30 +66,7 @@ SOURCES += \
 	sharedmemory.cpp \
 	tempfiles.cpp \
 	utils.cpp \
-	version.cpp \
-	exporters/csvexporter.cpp \
-	exporters/csvexporter.cpp \
-	importers/spss/datainforecord.cpp \
-	importers/spss/datarecords.cpp \
-	importers/spss/dictionaryterminationrecord.cpp \
-	importers/spss/documentrecord.cpp \
-	importers/spss/extnumbercasesrecord.cpp \
-	importers/spss/fileheaderrecord.cpp \
-	importers/spss/floatinforecord.cpp \
-	importers/spss/longvarnamesrecord.cpp \
-	importers/spss/miscinforecord.cpp \
-	importers/spss/missingvaluechecker.cpp \
-	importers/spss/readablerecord.cpp \
-	importers/spss/spssrecinter.cpp \
-	importers/spss/valuelabelvarsrecord.cpp \
-	importers/spss/vardisplayparamrecord.cpp \
-	importers/spss/variablerecord.cpp \
-	importers/spss/verylongstringrecord.cpp \
-	importers/spss/integerinforecord.cpp \
-	importers/spss/stringutils.cpp \
-    exporters/htmlexporter.cpp \
-    exporters/pdfexporter.cpp
-
+	version.cpp
 
 HEADERS += \
 	analysis.h \
@@ -121,15 +93,8 @@ HEADERS += \
 	datablock.h \
 	dataset.h \
 	datasetpackage.h \
-	datasetloader.h \
 	dirs.h \
-	exporters/jaspexporter.h \
-	filepackage.h \
 	filereader.h \
-	importers/csv.h \
-	importers/csvimporter.h \
-	importers/jaspimporter.h \
-	importers/spssimporter.h \
 	ipcchannel.h \
 	label.h \
 	labels.h \
@@ -163,31 +128,5 @@ HEADERS += \
 	sharedmemory.h \
 	tempfiles.h \
 	utils.h \
-	version.h \
-	exporters/csvexporter.h \
-	importers/spss/datainforecord.h \
-	importers/spss/datarecords.h \
-	importers/spss/debug_cout.h \
-	importers/spss/dictionaryterminationrecord.h \
-	importers/spss/documentrecord.h \
-	importers/spss/extnumbercasesrecord.h \
-	importers/spss/fileheaderrecord.h \
-	importers/spss/floatinforecord.h \
-	importers/spss/integerinforecord.h \
-	importers/spss/longvarnamesrecord.h \
-	importers/spss/measures.h \
-	importers/spss/miscinforecord.h \
-	importers/spss/missingvaluechecker.h \
-	importers/spss/readablerecord.h \
-	importers/spss/spssrecinter.h \
-	importers/spss/spssstream.h \
-	importers/spss/systemfileformat.h \
-	importers/spss/valuelabelvarsrecord.h \
-	importers/spss/vardisplayparamrecord.h \
-	importers/spss/variablerecord.h \
-	importers/spss/verylongstringrecord.h \
-	importers/spss/stringutils.h \
-    exporters/htmlexporter.h \
-    exporters/pdfexporter.h
-
+	version.h
 

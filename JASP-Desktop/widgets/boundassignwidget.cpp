@@ -25,6 +25,9 @@ BoundAssignWidget::BoundAssignWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	ui->leftLabel->hide();
+	ui->rightLabel->hide();
+
 	_availableModel = new TableModelVariablesAvailable(this);
 	_assignedModel = new TableModelVariablesAssigned(this);
 
@@ -54,4 +57,15 @@ void BoundAssignWidget::setVariables(const Terms &variables)
 {
 	_availableModel->setVariables(variables);
 	_availableModel->notifyAlreadyAssigned(_assignedModel->assigned());
+}
+
+void BoundAssignWidget::setLabels(const QString &left, const QString &right)
+{
+	ui->leftLabel->setText(left);
+	ui->rightLabel->setText(right);
+	if (left.isEmpty()) ui->leftLabel->hide();
+	else ui->leftLabel->show();
+	if (right.isEmpty()) ui->rightLabel->hide();
+	else ui->rightLabel->show();
+
 }

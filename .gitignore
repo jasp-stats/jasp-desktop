@@ -33,3 +33,4 @@ JASP-Engine/R-*
 Tools/deleteFiles*.nsi
 Tools/includeFiles*.nsi
 JASP.pro.user.b601785
+.Rproj.user

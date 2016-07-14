@@ -1,5 +1,5 @@
 
-QT -= core
+#QT -= core
 QT -= gui
 
 windows:CONFIG += c++11
@@ -59,10 +59,10 @@ windows {
 	R_EXE  = $$_R_HOME/bin/$$ARCH/R
 }
 
-QMAKE_CXXFLAGS += -Wno-c++11-extensions
-QMAKE_CXXFLAGS += -Wno-unused-parameter
-QMAKE_CXXFLAGS += -Wno-c++11-long-long
-QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
+macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 

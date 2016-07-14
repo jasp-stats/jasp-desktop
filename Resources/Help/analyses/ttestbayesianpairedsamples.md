@@ -32,7 +32,7 @@ Default Options
 Default Output
 -------
 
-### Bayesian One Sample T-Test:
+### Bayesian Paired Samples T-Test:
 - BF10 (or BF01): Bayes factor. If one-sided test is requested: 
   - BF+0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the difference is larger than 0
   - BF-0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the difference is smaller than 0

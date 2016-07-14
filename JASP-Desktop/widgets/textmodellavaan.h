@@ -90,7 +90,6 @@ private:
 			this->message = message;
 			this->pos = pos;
 			this->length = length;
-			this->inserted = inserted;
 		}
 
 		void clearError()

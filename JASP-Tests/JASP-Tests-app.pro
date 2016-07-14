@@ -24,8 +24,9 @@ windows:INCLUDEPATH += ../../boost_1_54_0
 PRE_TARGETDEPS += ../libJASP-Desktop.a
 LIBS += -L.. -lJASP-Desktop
 
+
 PRE_TARGETDEPS += ../libJASP-Common.a
-LIBS += -L.. -lJASP-Common 
+LIBS += -L.. -lJASP-Common
 
 
 windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
@@ -35,10 +36,10 @@ windows:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive.dll
 
 windows:LIBS += -lole32 -loleaut32
 
-QMAKE_CXXFLAGS += -Wno-c++11-extensions
-QMAKE_CXXFLAGS += -Wno-unused-parameter
-QMAKE_CXXFLAGS += -Wno-c++11-long-long
-QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
+QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
+macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
+macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
 
 QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H
 

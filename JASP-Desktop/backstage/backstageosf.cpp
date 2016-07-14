@@ -48,11 +48,11 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	label->setContentsMargins(12, 12, 12, 1);
 	topRowLayout->addWidget(label, 0, 0);
 
-	_nameButton = new QToolButton(topRow);
-	_nameButton->hide();
-	topRowLayout->addWidget(_nameButton, 0, 1);
+	_logoutButton = new QToolButton(topRow);
+	_logoutButton->hide();
+	topRowLayout->addWidget(_logoutButton, 0, 1);
 
-	connect(_nameButton, SIGNAL(clicked(bool)), this, SLOT(nameClicked()));
+	connect(_logoutButton, SIGNAL(clicked(bool)), this, SLOT(logoutClicked()));
 
 	QWidget *buttonsWidget = new QWidget(this);
 	buttonsWidget->setContentsMargins(0, 0, 0, 0);
@@ -144,6 +144,11 @@ BackstageOSF::BackstageOSF(QWidget *parent) : BackstagePage(parent)
 	aboutLayout->addStretch(1);
 }
 
+void BackstageOSF::attemptToConnect()
+{
+	_model->attemptToConnect();
+}
+
 void BackstageOSF::updateUserDetails()
 {
 	if (_model->isAuthenticated())
@@ -172,7 +177,7 @@ void BackstageOSF::userDetailsReceived()
 {
 	OnlineUserNode *userNode = qobject_cast<OnlineUserNode*>(sender());
 
-	_nameButton->setText("Logout " + userNode->getFullname());
+	_logoutButton->setText("Logout " + userNode->getFullname());
 
 	userNode->deleteLater();
 }
@@ -228,13 +233,13 @@ void BackstageOSF::newFolderCreated()
 void BackstageOSF::authenticatedHandler()
 {
 	_newFolderButton->setEnabled(true);
-	_nameButton->show();
+	_logoutButton->show();
 }
 
-void BackstageOSF::nameClicked()
+void BackstageOSF::logoutClicked()
 {
 	_model->clearAuthentication();
-	_nameButton->hide();
+	_logoutButton->hide();
 	_model->refresh();
 }
 
@@ -244,7 +249,7 @@ void BackstageOSF::setOnlineDataManager(OnlineDataManager *odm)
 	_model->setOnlineDataManager(_odm);
 
 	_newFolderButton->setEnabled(_model->isAuthenticated());
-	_nameButton->setVisible(_model->isAuthenticated());
+	_logoutButton->setVisible(_model->isAuthenticated());
 
 	connect(_model, SIGNAL(authenticationSuccess()), this, SLOT(authenticatedHandler()));
 }
@@ -291,7 +296,6 @@ bool BackstageOSF::checkEntryName(QString name, QString entryTitle, bool allowFu
 void BackstageOSF::saveClicked()
 {
 	FSBMOSF::OnlineNodeData currentNodeData = _model->currentNodeData();
-	bool allowedfiletype = true;
 
 	if (currentNodeData.canCreateFiles == false)
 	{
@@ -309,37 +313,6 @@ void BackstageOSF::saveClicked()
 	if (checkEntryName(filename, "File", true) == false)
 		return;
 
-	FileEvent::FileType filetype = FileEvent::getTypeFromPath(filename);
-
-	switch(_mode)
-	{
-		case FileEvent::FileExportResults:
-#ifdef QT_DEBUG
-			allowedfiletype = (filetype == FileEvent::FileType::html || filetype == FileEvent::FileType::pdf || filetype == FileEvent::FileType::empty);
-			if (!allowedfiletype)
-				QMessageBox::warning(this, "File Types", "Export result files must be of type html or pdf");
-#else
-			allowedfiletype = (filetype == FileEvent::FileType::html || filetype == FileEvent::FileType::empty);
-			if (!allowedfiletype)
-				QMessageBox::warning(this, "File Types", "Export result files must be of type html");
-#endif
-			break;
-
-		case FileEvent::FileExportData:
-			allowedfiletype = (filetype == FileEvent::FileType::csv || filetype == FileEvent::FileType::txt || filetype == FileEvent::FileType::empty);
-			if (!allowedfiletype )
-				QMessageBox::warning(this, "File Types", "Export data files must be of type csv or txt");
-			break;
-
-		case FileEvent::FileSave:
-			allowedfiletype = (filetype == FileEvent::FileType::jasp || filetype == FileEvent::FileType::empty);
-			if (!allowedfiletype )
-				QMessageBox::warning(this, "File Types", "Saving jasp files must be of type jasp");
-			break;
-	}
-
-	if (!allowedfiletype) return;
-
 	QString path;
 
 	if (_model->hasFileEntry(filename.toLower(), path))
@@ -350,54 +323,33 @@ void BackstageOSF::saveClicked()
 
 void BackstageOSF::openFile(const QString &nodePath, const QString &filename)
 {
-	QString usedfilename = filename;
 	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode ==FileEvent::FileExportData);
 
-	FileEvent *event = new FileEvent(this);
-	event->setOperation(_mode);
-	event->setTypeFromPath(usedfilename);
+	FileEvent *event = new FileEvent(this, _mode);
 
-	if ( event->type() == FileEvent::FileType::empty)
+	if (event->setPath(nodePath + "#file://" + filename))
 	{
-		switch (_mode)
+
+		if ( event->type() == Utils::jasp)
+			event->setReadOnly();
+		if (storedata)
 		{
-		case FileEvent::FileSave:
-			usedfilename = filename + ".jasp";
-			event->setType(FileEvent::FileType::jasp);
-			break;
-		case FileEvent::FileExportResults:
-			usedfilename = filename + ".html";
-			event->setType(FileEvent::FileType::html);
-			break;
-		case FileEvent::FileExportData:
-			usedfilename = filename + ".csv";
-			event->setType(FileEvent::FileType::csv);
-			break;
+			_breadCrumbs->setEnabled(false);
+			_saveButton->setEnabled(false);
+			_fileNameTextBox->setEnabled(false);
+			_newFolderButton->setEnabled(false);
+			_fileNameTextBox->setText(filename);
+
+			_fsBrowser->StartProcessing();
+
+			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
 		}
 	}
-
-	if (storedata)
-	{
-		_breadCrumbs->setEnabled(false);
-		_saveButton->setEnabled(false);
-		_fileNameTextBox->setEnabled(false);
-		_newFolderButton->setEnabled(false);
-		_fileNameTextBox->setText(usedfilename);
-
-		_fsBrowser->StartProcessing();
-
-		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
-	}
-
-	if (usedfilename != "")
-	{
-		event->setPath(nodePath + "#file://" + usedfilename);
-
-		if ( event->type() == FileEvent::FileType::jasp)
-			event->setReadOnly();
-	}
 	else
+	{
+		QMessageBox::warning(this, "File Types", event->getLastError());
 		event->setComplete(false, "Failed to open file from OSF");
+	}
 
 	emit dataSetIORequest(event);
 }

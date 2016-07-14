@@ -155,7 +155,7 @@ void TableModelAnovaDesign::refresh()
 
 	beginResetModel();
 
-	int i;
+	size_t i;
 
 	OptionString *nameTemplateOption = static_cast<OptionString *>(_boundTo->rowTemplate()->get("name"));
 	QString nameTemplate = tq(nameTemplateOption->value());
@@ -172,7 +172,7 @@ void TableModelAnovaDesign::refresh()
 
 		vector<string> variables = variablesOption->variables();
 
-		int j;
+		size_t j;
 		for (j = 0; j < variables.size(); j++)
 			_rows.append(Row(tq(variables.at(j)), false, i, j));
 
@@ -310,7 +310,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 
 			_rows.insert(rowNo, Row(name, false, row.index));
 
-			int i;
+			size_t i;
 			for (i = 0; i < levels.size(); i++)
 				_rows.insert(rowNo + i + 1, Row(tq(levels.at(i)), false, row.index, i));
 
@@ -364,7 +364,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 		{
 			bool unique = true;
 
-			for (int i = 0; i < levels.size(); i++)
+			for (size_t i = 0; i < levels.size(); i++)
 			{
 				if (i == row.subIndex)
 					continue;
