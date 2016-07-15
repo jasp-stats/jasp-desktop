@@ -69,6 +69,22 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 
 	BF10post <- NULL
 	bayesFactor10 <- NULL
+	rowsTTestBayesianIndependentSamples <- list()
+	bayesFactorRobustnessPlot <- NULL
+	bayesFactorObject <- NULL
+	priorAndPosteriorPlot <- NULL
+	posteriorPlotAddInfo <- NULL
+
+	if(perform=="run")
+	{
+
+	}
+	else #init phase
+	{
+		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && diff$sampleSize==FALSE && diff$numberOfCovariates==FALSE && diff$unadjustedRSquared==FALSE && diff$priorWidth == FALSE))) && !is.null(state$bayesFactorObject))
+	}
+
+
 
 	status <- .isInputValidIndependentSamples(options) #check validity of data
 	if(status$ready)                           #check if data has been entered
@@ -205,6 +221,8 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 			}
 		}
 	}
+
+
 
 
 
