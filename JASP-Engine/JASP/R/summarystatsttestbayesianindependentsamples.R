@@ -67,53 +67,6 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
 
-	BF10post <- NULL
-	bayesFactor10 <- NULL
-	rowsTTestBayesianIndependentSamples <- list()
-	bayesFactorRobustnessPlot <- NULL
-	bayesFactorObject <- NULL
-	priorAndPosteriorPlot <- NULL
-	posteriorPlotAddInfo <- NULL
-
-	if(perform=="run")
-	{
-
-	}
-	else #init phase
-	{
-		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && diff$sampleSize==FALSE && diff$numberOfCovariates==FALSE && diff$unadjustedRSquared==FALSE && diff$priorWidth == FALSE))) && !is.null(state$bayesFactorObject))
-	}
-
-
-
-	status <- .isInputValidIndependentSamples(options) #check validity of data
-	if(status$ready)                           #check if data has been entered
-	{
-		if(status$error)
-		{
-			table[["error"]] <- list(errorType = "badData", errorMessage = status$errorMessage)
-		}
-		else
-		{
-			bayesFactor10 <- .calcluateBFIndependentSamples(options, state, diff) #calculate Bayes factor from t value
-
-			if(options$bayesFactorType == "BF10")
-			{
-				row <- list(BF = .clean(exp(bayesFactor10$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor10$properror))
-			}
-			else if(options$bayesFactorType == "BF01")
-			{
-				row <- list(BF = .clean(1/exp(bayesFactor10$bf)), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor10$properror))
-			}
-			else
-			{
-				row <- list(BF = .clean(bayesFactor10$bf), tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = options$n2Size, errorEstimate = .clean(bayesFactor10$properror))
-			}
-
-			table[["data"]] <- list(row)
-		}
-	}
-
 	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()
 	if (options$hypothesis == "groupOneGreater")
@@ -129,8 +82,6 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 
 	table[["footnotes"]] <- as.list(footnotes)
 
-	results[["table"]] <- table
-
 	if(options$hypothesis == "groupsNotEqual")
 	{
 		oneSidedHypothesis <- FALSE
@@ -144,36 +95,180 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		oneSidedHypothesis <- "left"
 	}
 
+	BF10post <- NULL
 
-	bayesFactorRobustnessPlot <- NULL
+	rowsTTestBayesianIndependentSamples <- list()
+	bayesFactorObject <- NULL
 	priorAndPosteriorPlot <- NULL
+	posteriorPlotAddInfo <- NULL
+	bayesFactorRobustnessPlot <- NULL
 
-	if(options$plotPriorAndPosterior || options$plotBayesFactorRobustness)
+
+	if(perform=="run")
 	{
-		BFtypeRequiresNewPlot <- TRUE
-		
-		if (!(is.null(state)))
+		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
+			diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
 		{
-			BFtypeRequiresNewPlot <- FALSE
-			BFtype <- options$bayesFactorType
-			BFtypeState <- state$options$bayesFactorType
-			
-			if ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01")
+			print("run state, if part")
+			rowsTTestBayesianIndependentSamples <- state$rowsTTestBayesianIndependentSamples
+			bayesFactorObject <- state$bayesFactorObject
+		}
+		else
+		{
+			print("run state, else part")
+			status <- .isInputValidIndependentSamples(options) #check validity of data
+			row <- status$row
+
+			if(status$ready)                           #check if data has been entered
 			{
-				BFtypeRequiresNewPlot <- TRUE
+				bayesFactor10 <- .calcluateBFIndependentSamples(options, state, diff) #calculate Bayes factor from t value
+
+				if(options$bayesFactorType == "BF10")
+				{
+					BF <- .clean(exp(bayesFactor10$bf))
+				}
+				else if(options$bayesFactorType == "BF01")
+				{
+					BF <- .clean(1/exp(bayesFactor10$bf))
+				}
+				else
+				{
+					BF <- .clean(bayesFactor10$bf)
+				}
+
+				bayesFactorObject <- bayesFactor10
+				row <- list(BF=BF, tStatistic=options$tStatistic, n1Size=options$n1Size, n2Size=options$n2Size, errorEstimate=.clean(bayesFactor10$properror))
 			}
-			else if(BFtypeState == "BF01" && (BFtype == "LogBF10" || BFtype == "BF10"))
-			{
-				BFtypeRequiresNewPlot <- TRUE
-			}
+
+			rowsTTestBayesianIndependentSamples <- row
+		}
+
+
+		if(options$plotPriorAndPosterior)
+		{
+
 		}
 
 		if(options$plotBayesFactorRobustness)
 		{
+			print("inside bf robustnessCheck --- run")
+			
+			BFtypeRequiresNewPlot <- TRUE
+			
+			if (!(is.null(state)))
+			{
+				BFtypeRequiresNewPlot <- FALSE
+				BFtype <- options$bayesFactorType
+				BFtypeState <- state$options$bayesFactorType
+				
+				if ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01")
+				{
+					BFtypeRequiresNewPlot <- TRUE
+				}
+				else if(BFtypeState == "BF01" && (BFtype == "LogBF10" || BFtype == "BF10"))
+				{
+					BFtypeRequiresNewPlot <- TRUE
+				}
+			}
+
 			if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
 						&& BFtypeRequiresNewPlot == FALSE ))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
 				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
+				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "complete"
+			}
+			else
+			{
+				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "running"
+
+				width  <- 530
+				height <- 400
+
+				plot <- list()
+
+				plot[["title"]]  <- "Bayes Factor Robustness Check"
+				plot[["width"]]  <- width
+				plot[["height"]] <- height
+				plot[["status"]] <- "waiting"
+
+				image <- .beginSaveImage(width, height)
+				.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=options$n2Size, BFH1H0=(options$bayesFactorType == "BF10"), 
+												 dontPlotData= FALSE, rscale=options$priorWidth, 
+												 BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactorObject$bf)), .clean(1/exp(bayesFactorObject$bf))), oneSided = oneSidedHypothesis)
+				plot[["data"]]   <- .endSaveImage(image)
+				plot[["status"]] <- "complete"
+
+				bayesFactorRobustnessPlot <- plot
+			}
+		}
+	}
+	else #init phase
+	{
+		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
+			diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
+		{
+			print("init state, if part")
+			rowsTTestBayesianIndependentSamples <- state$rowsTTestBayesianIndependentSamples
+			bayesFactorObject <- state$bayesFactorObject
+		}
+		else
+		{
+			print("init state, else part")
+			rowsTTestBayesianIndependentSamples <- list(tStatistic=".", n1Size=".", n2Size=".", BF=".", errorEstimate=".")
+		}
+
+		if(options$plotPriorAndPosterior)
+		{
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+				diff$sampleSize==FALSE && diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
+				diff$hypothesis==FALSE && diff$plotPriorAndPosteriorAdditionalInfo==FALSE))) && !is.null(state$priorAndPosteriorPlot))
+			{
+				plot <- state$priorAndPosteriorPlot
+			}
+			else
+			{
+				plot <- list()
+				
+				plot[["title"]] <- "Prior and Posterior"
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+				
+				image <- .beginSaveImage(530, 400)
+				.plotPosterior.ttest(BF10 = 1, dontPlotData = TRUE, addInformation = options$plotPriorAndPosteriorAdditionalInfo)
+				plot[["data"]] <- .endSaveImage(image)
+			}
+
+			priorAndPosteriorPlot <- plot
+		}
+
+		if(options$plotBayesFactorRobustness)
+		{
+			print("inside bf robustnessCheck init")
+			BFtypeRequiresNewPlot <- TRUE
+			
+			if (!(is.null(state)))
+			{
+				BFtypeRequiresNewPlot <- FALSE
+				BFtype <- options$bayesFactorType
+				BFtypeState <- state$options$bayesFactorType
+				
+				if ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01")
+				{
+					BFtypeRequiresNewPlot <- TRUE
+				}
+				else if(BFtypeState == "BF01" && (BFtype == "LogBF10" || BFtype == "BF10"))
+				{
+					BFtypeRequiresNewPlot <- TRUE
+				}
+			}
+			
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+				diff$sampleSize==FALSE && diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
+				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE && BFtypeRequiresNewPlot==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
+			{
+				plot <- state$bayesFactorRobustnessPlot
 			}
 			else
 			{
@@ -196,45 +291,23 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		}
 	}
 
-	if(perform == "run")
+	table[["data"]] <- list(rowsTTestBayesianIndependentSamples)
+	results[["table"]] <- table
+
+	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness)
 	{
-		if(options$plotBayesFactorRobustness)
-		{
-			if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-						&& BFtypeRequiresNewPlot == FALSE ))) && !is.null(state$bayesFactorRobustnessPlot))
-			{
-				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
-				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "complete"
-			}
-			else
-			{
-				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "running"
-
-				image <- .beginSaveImage(530, 400)
-				.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=options$n2Size, BFH1H0=(options$bayesFactorType == "BF10"), 
-												 dontPlotData= FALSE, rscale=options$priorWidth, 
-												 BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactor10$bf)), .clean(1/exp(bayesFactor10$bf))), oneSided = oneSidedHypothesis)
-				plot[["data"]]   <- .endSaveImage(image)
-				plot[["status"]] <- "complete"
-
-				bayesFactorRobustnessPlot <- plot
-			}
-		}
+		results[["inferentialPlots"]] <- list(title="Inferential Plots", PriorPosteriorPlot=priorAndPosteriorPlot, BFrobustnessPlot=bayesFactorRobustnessPlot)
 	}
-
-
-
-
 
 	results[["inferentialPlots"]] <- list(title="Inferential Plots", PriorPosteriorPlot=priorAndPosteriorPlot, BFrobustnessPlot=bayesFactorRobustnessPlot)
 
 	if (perform == "init")
 	{
-		return(list(results=results, status="inited"))
+		return(list(results=results, status="inited", state=state))
 	}
 	else
 	{
-		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactor10=bayesFactor10, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot)))
+		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorObject=bayesFactorObject, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot, rowsTTestBayesianIndependentSamples=rowsTTestBayesianIndependentSamples)))
 	}
 }
 
@@ -244,7 +317,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 	if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && 
 		(diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$tStatistic == FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE))))
 	{
-		bf10 <- state$bayesFactor10
+		bf10 <- state$bayesFactorObject$bf
 	}
 	else
 	{
@@ -287,32 +360,31 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 # checks if the input given is valid
 .isInputValidIndependentSamples <- function(options)
 {
-	error <- FALSE
-	ready <- FALSE
+	ready <- TRUE 
 
-	if(is.null(options$tStatistic) || is.null(options$n1Size) || is.null(options$n1Size))
-	{
-		error <- TRUE
-	}
+	n1Value <- options$n1Size
+	n2Value <- options$n2Size
+	tStatValue <- options$tStatistic
 
-	row <- list(BF = ".", tStatistic = ".", n1Size = ".", n2Size = ".", errorEstimate = ".")
-
-	if(options$tStatistic!=0 && options$n1Size==0 && options$n2Size==0)
+	if(options$n1Size==0 || is.null(options$n1Size))
 	{
 		ready <- FALSE
-		row <- list(BF = ".", tStatistic = options$tStatistic, n1Size = ".", n2Size = ".", errorEstimate = ".")
-	}
-	else if(options$n2Size==0)
-	{
-		ready <- FALSE
-		row <- list(BF = ".", tStatistic = options$tStatistic, n1Size = options$n1Size, n2Size = ".", errorEstimate = ".")
-	}
-	else if(options$n1Size==0)
-	{
-		ready <- FALSE
-		row <- list(BF = ".", tStatistic = options$tStatistic, n1Size = ".", n2Size = options$n2Size, errorEstimate = ".")
+		n1Value <- "."
 	}
 
+	if(options$n2Size==0 || is.null(options$n2Size))
+	{
+		ready <- FALSE
+		n2Value <- "."
+	}
 
-	list(error=error, ready=ready, row=row)
+	if(is.null(options$tStatistic))
+	{
+		ready <- FALSE
+		tStatValue <- "."
+	}
+
+	row <- list(BF = ".", tStatistic = tStatValue, n1Size = n1Value, n2Size = n2Value, errorEstimate = ".")
+
+	list(ready=ready, row=row)
 }
