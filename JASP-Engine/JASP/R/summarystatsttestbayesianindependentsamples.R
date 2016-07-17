@@ -95,8 +95,6 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		oneSidedHypothesis <- "left"
 	}
 
-	BF10post <- NULL
-
 	rowsTTestBayesianIndependentSamples <- list()
 	bayesFactorObject <- NULL
 	priorAndPosteriorPlot <- NULL
@@ -107,7 +105,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 	if(perform=="run")
 	{
 		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
+			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE &&
 			diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
 		{
 			print("run state, if part")
@@ -152,7 +150,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 
 		if(options$plotBayesFactorRobustness)
 		{
-			print("inside bf robustnessCheck --- run")
+#			print("inside bf robustnessCheck --- run")
 			
 			BFtypeRequiresNewPlot <- TRUE
 			
@@ -206,7 +204,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 	else #init phase
 	{
 		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
+			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE &&
 			diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
 		{
 			print("init state, if part")
@@ -215,14 +213,15 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		}
 		else
 		{
-			print("init state, else part")
-			rowsTTestBayesianIndependentSamples <- list(tStatistic=".", n1Size=".", n2Size=".", BF=".", errorEstimate=".")
+			print("init state, else part")			
+			row <- .isInputValidIndependentSamples(options)$row
+			rowsTTestBayesianIndependentSamples <- row
 		}
 
 		if(options$plotPriorAndPosterior)
 		{
 			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$sampleSize==FALSE && diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
 				diff$hypothesis==FALSE && diff$plotPriorAndPosteriorAdditionalInfo==FALSE))) && !is.null(state$priorAndPosteriorPlot))
 			{
 				plot <- state$priorAndPosteriorPlot
@@ -245,7 +244,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 
 		if(options$plotBayesFactorRobustness)
 		{
-			print("inside bf robustnessCheck init")
+#			print("inside bf robustnessCheck init")
 			BFtypeRequiresNewPlot <- TRUE
 			
 			if (!(is.null(state)))
@@ -265,7 +264,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 			}
 			
 			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$sampleSize==FALSE && diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
 				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE && BFtypeRequiresNewPlot==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
 				plot <- state$bayesFactorRobustnessPlot
