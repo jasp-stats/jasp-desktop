@@ -25,20 +25,20 @@
 		{
 			"format": "",
 			"name": "sampleSize",
-			"type": "Number",
-			"value": 0
+			"type": "Integer",
+			"min": 3
 		},
 		{
 			"format": "",
 			"name": "numberOfCovariates",
-			"type": "Number",
-			"value": 0
+			"type": "Integer",
+			"min": 1
 		},
 		{
 			"format": "",
 			"name": "priorWidth",
 			"type": "Number",
-			"value": 0.707,
+			"value": 0.3536,
 			"min": 0,
 			"max": 2
 		}

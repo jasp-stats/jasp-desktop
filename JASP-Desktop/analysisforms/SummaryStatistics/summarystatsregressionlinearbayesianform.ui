@@ -227,7 +227,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Cauchy Prior width:</string>
+            <string>r scale</string>
            </property>
           </widget>
          </item>
@@ -267,12 +267,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -287,6 +281,12 @@
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

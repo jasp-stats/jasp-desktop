@@ -70,7 +70,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()
 
-	message <- paste0("Prior width used is: ", options$priorWidth, ".")
+	message <- paste0("r scale used is: ", options$priorWidth, ".")
 	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	table[["footnotes"]] <- as.list(footnotes)
@@ -321,7 +321,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 			mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= 3.1)
 		}
 
-		mtext("Cauchy prior width", side = 1, cex = cexYXlab, line= 2.5)
+		mtext("r scale", side = 1, cex = cexYXlab, line= 2.5)
 		return()
 	}
 
@@ -891,7 +891,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		}
 	}
 
-	mtext("Cauchy prior width", side = 1, cex = cexYXlab, line= 2.5)
+	mtext("r scale", side = 1, cex = cexYXlab, line= 2.5)
 
 	xx <- grconvertX(0.1, "npc", "user")
 	yy1 <- yAt[length(yAt)-1]
