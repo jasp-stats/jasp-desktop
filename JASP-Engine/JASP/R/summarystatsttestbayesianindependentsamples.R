@@ -99,11 +99,11 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 
 	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
 
-	fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="error %")
+
 
 	table <- list()
 	table[["title"]] <- "Bayesian Independent Samples T-Test"
-	table[["schema"]] <- list(fields=fields)
+	
 	table[["citation"]] <- list(
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
@@ -207,7 +207,9 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 				}
 			}
 
-			if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE ))) && !is.null(state$bayesFactorRobustnessPlot))
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
+				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
 				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
 				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "complete"
@@ -277,7 +279,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		}
 
 		if(options$plotBayesFactorRobustness)
-		{			
+		{
 			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
 				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
 				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
@@ -305,15 +307,20 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		}
 	}
 
+
+	if(rowsTTestBayesianIndependentSamples$errorEstimate!="NaN")
+	{
+		fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="error %")
+	}
+
+	table[["schema"]] <- list(fields=fields)
 	table[["data"]] <- list(rowsTTestBayesianIndependentSamples)
 	results[["table"]] <- table
 
 	if (options$plotPriorAndPosterior || options$plotBayesFactorRobustness)
 	{
-		results[["inferentialPlots"]] <- list(title="Inferential Plots", PriorPosteriorPlot=priorAndPosteriorPlot, BFrobustnessPlot=bayesFactorRobustnessPlot)
+		results[["inferentialPlots"]] <- list(title=ifelse(sum(c(options$plotPriorAndPosterior, options$plotBayesFactorRobustness)) > 1,"Inferential Plots", "Inferential Plot"), PriorPosteriorPlot=priorAndPosteriorPlot, BFrobustnessPlot=bayesFactorRobustnessPlot)
 	}
-
-	results[["inferentialPlots"]] <- list(title="Inferential Plots", PriorPosteriorPlot=priorAndPosteriorPlot, BFrobustnessPlot=bayesFactorRobustnessPlot)
 
 	if (perform == "init")
 	{
