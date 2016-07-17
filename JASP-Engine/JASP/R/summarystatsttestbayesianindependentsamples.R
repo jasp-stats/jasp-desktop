@@ -40,23 +40,64 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 	}
 
 	fields=list()
-	fields[[length(fields)+1]] <- list(name="tStatistic", type="number", format="sf:4;dp:3", title="t value")
+	fields[[length(fields)+1]] <- list(name="tStatistic", type="number", format="sf:4;dp:3", title="t")
 	fields[[length(fields)+1]] <- list(name="n1Size", type="number", title="n\u2081")
 	fields[[length(fields)+1]] <- list(name="n2Size", type="number", title="n\u2082")
 
 	#Bayes factor type (BF10, BF01, log(BF10))
-	if(options$bayesFactorType == "BF10")
+	if (options$bayesFactorType == "BF01")
 	{
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2081\u2080")
+		BFH1H0 <- FALSE
+
+		if (options$hypothesis == "groupsNotEqual")
+		{
+			bf.title <- "BF\u2080\u2081"
+		}
+		else if (options$hypothesis == "groupOneGreater")
+		{
+			bf.title <- "BF\u2080\u208A"
+		}
+		else if (options$hypothesis == "groupTwoGreater")
+		{
+			bf.title <-  "BF\u2080\u208B"
+		}	
 	}
-	else if(options$bayesFactorType == "BF01")
+	else if (options$bayesFactorType == "BF10")
 	{
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF\u2080\u2081")
+		BFH1H0 <- TRUE
+		
+		if (options$hypothesis == "groupsNotEqual")
+		{
+			bf.title <- "BF\u2081\u2080"
+		}
+		else if (options$hypothesis == "groupOneGreater")
+		{
+			bf.title <- "BF\u208A\u2080"
+		}
+		else if (options$hypothesis == "groupTwoGreater")
+		{
+			bf.title <- "BF\u208B\u2080"
+		}	
 	}
-	else
+	else if (options$bayesFactorType == "LogBF10")
 	{
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="Log(BF\u2081\u2080)")
+		BFH1H0 <- TRUE
+		
+		if (options$hypothesis == "groupsNotEqual")
+		{
+			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+		}
+		else if (options$hypothesis == "groupOneGreater")
+		{
+			bf.title <-"Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
+		}
+		else if (options$hypothesis == "groupTwoGreater")
+		{
+			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
+		}
 	}
+
+	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
 
 	fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="error %")
 
@@ -166,8 +207,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 				}
 			}
 
-			if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE 
-						&& BFtypeRequiresNewPlot == FALSE ))) && !is.null(state$bayesFactorRobustnessPlot))
+			if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE ))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
 				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
 				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "complete"
@@ -237,28 +277,10 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		}
 
 		if(options$plotBayesFactorRobustness)
-		{
-			BFtypeRequiresNewPlot <- TRUE
-			
-			if (!(is.null(state)))
-			{
-				BFtypeRequiresNewPlot <- FALSE
-				BFtype <- options$bayesFactorType
-				BFtypeState <- state$options$bayesFactorType
-				
-				if ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01")
-				{
-					BFtypeRequiresNewPlot <- TRUE
-				}
-				else if(BFtypeState == "BF01" && (BFtype == "LogBF10" || BFtype == "BF10"))
-				{
-					BFtypeRequiresNewPlot <- TRUE
-				}
-			}
-			
+		{			
 			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
 				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
-				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE && BFtypeRequiresNewPlot==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
+				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
 				plot <- state$bayesFactorRobustnessPlot
 			}
