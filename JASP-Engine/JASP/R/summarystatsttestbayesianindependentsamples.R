@@ -108,13 +108,11 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE &&
 			diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
 		{
-			print("run state, if part")
 			rowsTTestBayesianIndependentSamples <- state$rowsTTestBayesianIndependentSamples
 			bayesFactorObject <- state$bayesFactorObject
 		}
 		else
 		{
-			print("run state, else part")
 			status <- .isInputValidIndependentSamples(options) #check validity of data
 			row <- status$row
 
@@ -150,8 +148,6 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 
 		if(options$plotBayesFactorRobustness)
 		{
-#			print("inside bf robustnessCheck --- run")
-			
 			BFtypeRequiresNewPlot <- TRUE
 			
 			if (!(is.null(state)))
@@ -207,13 +203,11 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE &&
 			diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
 		{
-			print("init state, if part")
 			rowsTTestBayesianIndependentSamples <- state$rowsTTestBayesianIndependentSamples
 			bayesFactorObject <- state$bayesFactorObject
 		}
 		else
 		{
-			print("init state, else part")			
 			row <- .isInputValidIndependentSamples(options)$row
 			rowsTTestBayesianIndependentSamples <- row
 		}
@@ -244,7 +238,6 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 
 		if(options$plotBayesFactorRobustness)
 		{
-#			print("inside bf robustnessCheck init")
 			BFtypeRequiresNewPlot <- TRUE
 			
 			if (!(is.null(state)))
