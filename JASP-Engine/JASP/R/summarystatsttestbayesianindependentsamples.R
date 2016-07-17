@@ -309,7 +309,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 	if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && 
 		(diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$tStatistic == FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE))))
 	{
-		bf10 <- state$bayesFactorObject$bf
+		bf10 <- state$bayesFactorObject
 	}
 	else
 	{
@@ -327,19 +327,6 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		{
 			nullInterval <- c(-Inf, 0)
 			oneSided <- "left"
-		}
-
-		if (oneSided == FALSE)
-		{
-			nullInterval <- NULL
-		}
-		else if (oneSided == "right")
-		{
-			nullInterval <- c(0, Inf)
-		}
-		else if (oneSided == "left")
-		{
-			nullInterval <- c(-Inf, 0)
 		}
 
 		bf10 <- BayesFactor::ttest.tstat(t = options$tStatistic, n1 = options$n1Size, n2 = options$n2Size, rscale = options$priorWidth, nullInterval = nullInterval)
