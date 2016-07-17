@@ -11,7 +11,8 @@
 		{
 			"format": "",
 			"name": "n1Size",
-			"type": "Number"
+			"type": "Integer",
+			"min": 2
 		},
 		{
 			"name": "hypothesis",
