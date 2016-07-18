@@ -36,13 +36,13 @@
 		{
 			"format": "",
 			"name": "successes",
-			"type": "Number",
+			"type": "Integer",
 			"min": 0
 		},
 		{
 			"format": "",
-			"name": "trials",
-			"type": "Number",
+			"name": "failures",
+			"type": "Integer",
 			"min": 0
 		},
 		{
