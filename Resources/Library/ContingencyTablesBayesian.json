@@ -67,7 +67,7 @@
 				"independentMultinomialColumnsFixed",
 				"hypergeometric"
 			],
-			"default": "jointMultinomial",
+            "default": "independentMultinomialRowsFixed",
 			"type": "List"
 		},
 		{
