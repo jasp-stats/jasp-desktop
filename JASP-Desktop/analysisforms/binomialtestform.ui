@@ -53,7 +53,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Confidence Interval</string>
+            <string>Confidence interval</string>
            </property>
           </widget>
          </item>
