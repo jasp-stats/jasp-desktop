@@ -328,7 +328,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 	}
 	else
 	{
-		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorObject=bayesFactorObject, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot, rowsTTestBayesianIndependentSamples=rowsTTestBayesianIndependentSamples)))
+		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorObject=bayesFactorObject, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot, rowsTTestBayesianIndependentSamples=rowsTTestBayesianIndependentSamples	)))
 	}
 }
 

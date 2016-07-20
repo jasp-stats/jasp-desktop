@@ -17,8 +17,6 @@
 
 SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform = 'run', callback = function(...) 0,  ...)
 {
-	run <- (perform == "run")
-
 	results <- list()
 
 	meta <- list()
@@ -38,129 +36,213 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 	}
 
 	fields=list()
-	fields[[length(fields)+1]] <- list(name="sampleSize", type="number", title="Sample size")	
-	fields[[length(fields)+1]] <- list(name="r", type="number", format="sf:4;dp:3", title="r")
+	fields[[length(fields)+1]] <- list(name="sampleSize", type="number", title="n")	
+	fields[[length(fields)+1]] <- list(name="pearsonsR", type="number", format="sf:4;dp:3", title="r")
 
 	#Bayes factor type (BF10, BF01, log(BF10))
 	bf.type <- options$bayesFactorType
 	
-	if (bf.type == "BF10") {
-	
+	if (bf.type == "BF10")
+	{
 		BFH1H0 <- TRUE
 	
-		if (options$hypothesis == "correlated") {
-		
+		if (options$hypothesis == "correlated")
+		{
 			bf.title <- "BF\u2081\u2080"
 			oneSided <- FALSE
-			
-		} else if (options$hypothesis == "correlatedPositively") {
-		
+		}
+		else if (options$hypothesis == "correlatedPositively")
+		{
 			bf.title <- "BF\u208A\u2080"
 			oneSided <- "right"
-			
-		} else if (options$hypothesis == "correlatedNegatively") {
-		
+		}
+		else if (options$hypothesis == "correlatedNegatively")
+		{
 			bf.title <- "BF\u208B\u2080"
 			oneSided <- "left"
 		}
-		
-	} else if (bf.type == "LogBF10") {
-		
+	}
+	else if (bf.type == "LogBF10")
+	{
 		BFH1H0 <- TRUE
 		
-		if (options$hypothesis == "correlated") {
-		
+		if (options$hypothesis == "correlated")
+		{
 			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
 			oneSided <- FALSE
-			
-		} else if (options$hypothesis == "correlatedPositively") {
-		
+		}
+		else if (options$hypothesis == "correlatedPositively")
+		{
 			bf.title <- "Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
 			oneSided <- "right"
-			
-		} else if (options$hypothesis == "correlatedNegatively") {
-		
+		}
+		else if (options$hypothesis == "correlatedNegatively")
+		{
 			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
 			oneSided <- "left"
 		}
-		
-	} else if (bf.type == "BF01") {
-	
+	}
+	else if (bf.type == "BF01")
+	{
 		BFH1H0 <- FALSE
 	
-		if (options$hypothesis == "correlated") {
-		
+		if (options$hypothesis == "correlated")
+		{
 			bf.title <- "BF\u2080\u2081"
 			oneSided <- FALSE
-			
-		} else if (options$hypothesis == "correlatedPositively") {
-		
+		}
+		else if (options$hypothesis == "correlatedPositively")
+		{
 			bf.title <- "BF\u2080\u208A"
 			oneSided <- "right"
-			
-		} else if (options$hypothesis == "correlatedNegatively") {
-		
+		}
+		else if (options$hypothesis == "correlatedNegatively")
+		{
 			bf.title <- "BF\u2080\u208B"
 			oneSided <- "left"
 		}
 	}
 
 	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
-
+	fields[[length(fields)+1]] <- list(name="errorEstimate", type="number", format="sf:4;dp:3", title="% error")
 
 	table <- list()
 	table[["title"]] <- "Bayesian Pearson Correlation"
 	table[["schema"]] <- list(fields=fields)
 	table[["citation"]] <- list(
-		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+				"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication.")
 
-	BF10post <- NULL
-	bayesFactor10 <- NULL
-
-	#status <- .isInputValidIndependentSamples(options) #check validity of data
-	#if(status$ready)                           #check if data has been entered
-	{
-	#	if(status$error)
-		{
-	#		table[["error"]] <- list(errorType = "badData", errorMessage = status$errorMessage)
-		}
-	#	else
-		{
-			bayesFactor10 <- .calcluateBFCorrelationPairs(options, state, diff) #calculate Bayes factor from t value
-
-			row <- list(r=.clean(options$pearsonsR), BF=.clean(bayesFactor10$bf), sampleSize = options$sampleSize)
-
-			table[["data"]] <- list(row)
-		}
-	}
-
-	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()
-	if (options$hypothesis == "groupOneGreater")
+	
+	if (options$hypothesis == "correlatedPositively")
 	{
-		message <- paste("For all tests, the alternative hypothesis specifies that group 1 is greater than group 2", sep="")
-		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		.addFootnote(footnotes, "For all tests, the alternative hypothesis specifies that the correlation is positive.", symbol="<i>Note</i>.")
 	}
-	else if(options$hypothesis == "groupTwoGreater")
+	else if (options$hypothesis == "correlatedNegatively")
 	{
-		message <- paste("For all tests, the alternative hypothesis specifies that group 1 is lesser than group 2", sep="")
-		.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
+		.addFootnote(footnotes, "For all tests, the alternative hypothesis specifies that the correlation is negative.", symbol="<i>Note</i>.")
 	}
 
 	table[["footnotes"]] <- as.list(footnotes)
+
+
+	bayesFactorObject <- NULL
+	rowsCorrelationBayesianPairs <- list()
+	bayesFactorRobustnessPlot <- NULL
+	priorAndPosteriorPlot <- NULL
+
+	if(perform=="run")
+	{
+		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+			diff$sampleSize==FALSE && diff$pearsonsR==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
+		{
+			rowsCorrelationBayesianPairs <- state$rowsCorrelationBayesianPairs
+			bayesFactorObject <- state$bayesFactorObject
+		}
+		else
+		{
+			status <- .checkInputSummaryStatsCorrelationPairs(options)
+			row <- status$row
+
+			if(status$ready)                           #check if data has been entered
+			{
+				bayesFactor10 <- .calcluateBFCorrelationPairs(options, state, diff) #calculate Bayes factor from t value
+
+				if(options$bayesFactorType == "BF10")
+				{
+					BF <- .clean(exp(bayesFactor10$bf))
+				}
+				else if(options$bayesFactorType == "BF01")
+				{
+					BF <- .clean(1/exp(bayesFactor10$bf))
+				}
+				else
+				{
+					BF <- .clean(bayesFactor10$bf)
+				}
+
+				bayesFactorObject <- bayesFactor10
+				row <- list(BF=BF, sampleSize=options$sampleSize, pearsonsR=options$pearsonsR, errorEstimate=.clean(bayesFactor10$properror))
+			}
+
+			rowsCorrelationBayesianPairs <- row
+		}
+
+		if(options$plotPriorAndPosterior)
+		{
+
+		}
+
+		if(options$plotBayesFactorRobustness)
+		{
+
+		}
+	}
+	else #init state
+	{
+		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+			diff$sampleSize==FALSE && diff$pearsonsR==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
+		{
+			rowsCorrelationBayesianPairs <- state$rowsCorrelationBayesianPairs
+			bayesFactorObject <- state$bayesFactorObject
+		}
+		else
+		{
+			rowsCorrelationBayesianPairs <- .checkInputSummaryStatsCorrelationPairs(options)$row
+		}
+
+		if(options$plotPriorAndPosterior)
+		{
+
+		}
+
+		if(options$plotBayesFactorRobustness)
+		{
+
+		}
+	}
+
+	table[["data"]] <- list(rowsCorrelationBayesianPairs)
 
 	results[["table"]] <- table
 
 
 	if (perform == "init")
 	{
-		return(list(results=results, status="inited"))
+		return(list(results=results, status="inited", state=state))
 	}
 	else
 	{
-		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactor10=bayesFactor10)))
+		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorObject=bayesFactorObject, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot, rowsCorrelationBayesianPairs=rowsCorrelationBayesianPairs)))
 	}
+}
+
+.checkInputSummaryStatsCorrelationPairs <- function(options)
+{
+	ready <- TRUE
+
+	sampleSizeValue <- options$sampleSize
+	pearsonsRValue <- options$pearsonsR
+
+
+	print(sampleSizeValue)
+	print(pearsonsRValue)
+
+	if(options$sampleSize==0 || is.null(options$sampleSize))
+	{
+		ready <- FALSE
+		sampleSizeValue <- "."
+	}
+
+	if(is.null(options$pearsonsR))
+	{
+		ready <- FALSE
+		pearsonsRValue <- "p."
+	}
+
+	row <- list(BF = ".", sampleSize = sampleSizeValue, pearsonsR = pearsonsRValue, errorEstimate = ".")
+	
+	list(ready=ready, row=row)	
 }
 
 
