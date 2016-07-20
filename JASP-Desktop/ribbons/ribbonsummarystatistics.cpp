@@ -45,6 +45,7 @@ RibbonSummaryStatistics::RibbonSummaryStatistics(QWidget *parent) :
 	ui->bfFromTButton->setMenu(menu);
 
 	menu = new QMenu(this);
+	menu->addAction(QString("Bayesian Correlation Pairs"), this, SLOT(itemSelected()))->setObjectName("SummaryStatsCorrelationBayesianPairs");
 	menu->addAction(QString("Bayesian Linear Regression"), this, SLOT(itemSelected()))->setObjectName("SummaryStatsRegressionLinearBayesian");
 	
 	ui->regressionButton->setMenu(menu);
