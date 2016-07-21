@@ -209,7 +209,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 
 			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
 				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
-				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
+				diff$hypothesis==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
 				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
 				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "complete"
@@ -282,7 +282,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		{
 			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
 				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
-				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
+				diff$hypothesis==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
 				plot <- state$bayesFactorRobustnessPlot
 			}
