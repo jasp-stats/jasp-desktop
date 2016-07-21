@@ -186,7 +186,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 		if(options$plotPriorAndPosterior)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+			if (is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
 				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && 
 				diff$hypothesis==FALSE && diff$plotPriorAndPosterior==FALSE && diff$plotPriorAndPosteriorAdditionalInfo==FALSE))) && !is.null(state$priorAndPosteriorPlot))
 			{
@@ -209,8 +209,8 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 				image <- .beginSaveImage(width, height)
 				.plotPosterior.ttest.summaryStats (t=options$tStatistic, n1=options$n1Size, n2=NULL, paired=FALSE, BFH1H0=(options$bayesFactorType == "BF10"), 
-												 dontPlotData= FALSE, rscale=options$priorWidth, addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-												 BF = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactorObject$bf)), .clean(1/exp(bayesFactorObject$bf))), oneSided = oneSidedHypothesis)
+												   dontPlotData= FALSE, rscale=options$priorWidth, addInformation = options$plotPriorAndPosteriorAdditionalInfo,
+												   BF = bayesFactorObject$bf, oneSided = oneSidedHypothesis)
 				plot[["data"]]   <- .endSaveImage(image)
 				plot[["status"]] <- "complete"
 
@@ -238,17 +238,14 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				}
 			}
 
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+			if (is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
 				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && 
 				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
 				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
-				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "complete"
 			}
 			else
 			{
-				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "running"
-
 				width  <- 530
 				height <- 400
 
@@ -315,7 +312,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && 
 				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
-				plot <- state$bayesFactorRobustnessPlot
+				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
 			}
 			else
 			{
@@ -1490,7 +1487,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		df <- N - 1
 		sigmaStart <- 1 / N
 	}
-	else if (!is.null(y) && !paired)
+	else if (!is.null(n2) && !paired)
 	{
 		deltaHat <- t * sqrt((n1*n2)/(n1+n2))
 		df <- n1 + n2 - 2

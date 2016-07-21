@@ -182,7 +182,33 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 
 		if(options$plotPriorAndPosterior)
 		{
+			if (is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && 
+				diff$hypothesis==FALSE && diff$plotPriorAndPosterior==FALSE && diff$plotPriorAndPosteriorAdditionalInfo==FALSE))) && !is.null(state$priorAndPosteriorPlot))
+			{
+				priorAndPosteriorPlot <- state$priorAndPosteriorPlot
+			}
+			else
+			{
+				width  <- 530
+				height <- 400
 
+				plot <- list()
+
+				plot[["title"]]  <- "Prior and Posterior"
+				plot[["width"]]  <- width
+				plot[["height"]] <- height
+				plot[["status"]] <- "waiting"
+
+				image <- .beginSaveImage(width, height)
+				.plotPosterior.ttest.summaryStats (t=options$tStatistic, n1=options$n1Size, n2=NULL, paired=TRUE, BFH1H0=(options$bayesFactorType == "BF10"), 
+												   dontPlotData= FALSE, rscale=options$priorWidth, addInformation = options$plotPriorAndPosteriorAdditionalInfo,
+												   BF = bayesFactorObject$bf, oneSided = oneSidedHypothesis)
+				plot[["data"]]   <- .endSaveImage(image)
+				plot[["status"]] <- "complete"
+
+				priorAndPosteriorPlot <- plot
+			}
 		}
 
 		if(options$plotBayesFactorRobustness)
@@ -205,17 +231,14 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 				}
 			}
 
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+			if (is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
 				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && 
 				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
 				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
-				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "complete"
 			}
 			else
 			{
-				results[["inferentialPlots"]][["BFrobustnessPlot"]][["status"]] <- "running"
-
 				width  <- 530
 				height <- 400
 
@@ -269,7 +292,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 				plot[["height"]] <- 400
 				
 				image <- .beginSaveImage(530, 400)
-				.plotPosterior.ttest(BF10 = 1, dontPlotData = TRUE, addInformation = options$plotPriorAndPosteriorAdditionalInfo)
+				.plotPosterior.ttest.summaryStats(BF = 1, dontPlotData = TRUE, addInformation = options$plotPriorAndPosteriorAdditionalInfo)
 				plot[["data"]] <- .endSaveImage(image)
 			}
 
