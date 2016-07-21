@@ -886,6 +886,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
+	this->analysisOKed();
 	bool showAnalysis = false;
 	_progressIndicator->hide();
 
