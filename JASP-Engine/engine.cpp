@@ -17,7 +17,6 @@
 
 #include "engine.h"
 
-#include <strstream>
 #include <sstream>
 #include <cstdio>
 

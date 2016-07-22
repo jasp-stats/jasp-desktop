@@ -64,7 +64,7 @@ void SPSSImporter::loadDataSet(
 {
 	(void)progress;
 
-	packageData->isArchive = false;						 // SPSS/spss files are never archives.
+	packageData->isArchive = false;	// SPSS/spss files are never archives.
 	packageData->dataSet = SharedMemory::createDataSet();   // Do our space.
 
 	killFhr();

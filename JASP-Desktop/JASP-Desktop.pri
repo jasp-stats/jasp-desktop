@@ -169,7 +169,12 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/analysisforms/SummaryStatistics/bffromtpairedsamplesform.cpp \
 		$$PWD/analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.cpp \
 		$$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.cpp \
-		$$PWD/analysisforms/R11tLearn/r11tlearnform.cpp
+		$$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
+		$$PWD/importers/odsimporter.cpp \
+		$$PWD/importers/ods/odsdata.cpp \
+		$$PWD/importers/ods/odsxmlcontentshandler.cpp \
+		$$PWD/importers/ods/odsxmlhandler.cpp \
+		$$PWD/importers/ods/odsxmlmanifesthandler.cpp
 
 HEADERS  += \
 		$$PWD/aboutdialog.h \
@@ -353,7 +358,12 @@ HEADERS  += \
 		$$PWD/analysisforms/SummaryStatistics/bffromtpairedsamplesform.h \
 		$$PWD/analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.h \
 		$$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.h \
-		$$PWD/analysisforms/R11tLearn/r11tlearnform.h
+		$$PWD/analysisforms/R11tLearn/r11tlearnform.h \
+		$$PWD/importers/odsimporter.h \
+		$$PWD/importers/ods/odsxmlhandler.h \
+		$$PWD/importers/ods/odsxmlmanifesthandler.h \
+		$$PWD/importers/ods/odsxmlcontentshandler.h \
+		$$PWD/importers/ods/odsdata.h
 
 FORMS += \
 		$$PWD/analysisforms/anovabayesianform.ui \
@@ -555,38 +565,38 @@ RESOURCES_PATH = $${PWD}/../Resources
 
 win32 {
 
-        RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
+		RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
-        RESOURCES_PATH ~= s,/,\\,g
-        RESOURCES_PATH_DEST ~= s,/,\\,g
+		RESOURCES_PATH ~= s,/,\\,g
+		RESOURCES_PATH_DEST ~= s,/,\\,g
 
-        copyres.commands  += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
+		copyres.commands  += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
 }
 
 macx {
 
-        RESOURCES_PATH_DEST = $${OUT_PWD}/../../Resources/
+		RESOURCES_PATH_DEST = $${OUT_PWD}/../../Resources/
 
-        copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
-        copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
+		copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
+		copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
 }
 
 linux {
 
-        RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
+		RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
-        copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
-        copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
+		copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
+		copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
 }
 
 ! equals(PWD, $${OUT_PWD}) {
 
-        QMAKE_EXTRA_TARGETS += copyres
-        POST_TARGETDEPS     += copyres
+		QMAKE_EXTRA_TARGETS += copyres
+		POST_TARGETDEPS     += copyres
 }
 
 DISTFILES += \
-        $$PWD/backstage/firsttabsstylesheet.qss \
-        $$PWD/backstage/secondtabsstylesheet.qss \
-        $$PWD/resources/icons/file-jasp.svg \
-        $$PWD/html/css/images/tinylogo.svg
+		$$PWD/backstage/firsttabsstylesheet.qss \
+		$$PWD/backstage/secondtabsstylesheet.qss \
+		$$PWD/resources/icons/file-jasp.svg \
+		$$PWD/html/css/images/tinylogo.svg

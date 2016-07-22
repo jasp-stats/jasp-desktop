@@ -20,7 +20,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
-#include <strstream>
+#include <sstream>
 
 #include "libzip/archive_entry.h"
 
@@ -81,7 +81,7 @@ void FileReader::openEntry(const string &archivePath, const string &entryPath)
 	boost::filesystem::path pathArchive = archivePath;
 	#endif
 
-	if (_archiveExists = boost::filesystem::exists(pathArchive))
+	if ((_archiveExists = boost::filesystem::exists(pathArchive)))
 	{
 		_archive = archive_read_new();
 		archive_read_support_filter_all(_archive);
@@ -114,7 +114,7 @@ void FileReader::openEntry(const string &archivePath, const string &entryPath)
 			}
 			if (!success)
 			{
-				strstream str;
+				stringstream str;
 				str << "No entry (" << entryPath << ") found in archive file.";
 				throw runtime_error(str.str());
 			}
