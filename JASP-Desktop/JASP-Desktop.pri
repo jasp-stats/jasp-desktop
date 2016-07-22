@@ -178,6 +178,7 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
 		$$PWD/simplecrypt.cpp
 
+
 HEADERS  += \
 		$$PWD/aboutdialog.h \
 		$$PWD/analyses.h \
@@ -605,4 +606,4 @@ DISTFILES += \
 		$$PWD/backstage/firsttabsstylesheet.qss \
 		$$PWD/backstage/secondtabsstylesheet.qss \
 		$$PWD/resources/icons/file-jasp.svg \
-$$PWD/html/css/images/tinylogo.svg
+		$$PWD/html/css/images/tinylogo.svg
