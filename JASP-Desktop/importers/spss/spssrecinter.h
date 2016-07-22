@@ -84,7 +84,7 @@ public:
 
 	READ_ATTR(long, spssStringLen)		// Length of the string (if string).
 
-	READ_ATTR(size_t, columnSpan)			// Number of data cells this column spans.
+	READ_ATTR(int, columnSpan)			// Number of data cells this column spans.
 	void incrementColumnSpan() { _columnSpan++; }
 
 	RW_ATTR(Measure, spssMeasure)			// The Measure from the SPSS file (if any)
@@ -98,12 +98,12 @@ public:
 	std::vector<std::string>	strings;	// String values, one per case.
 
 	enum e_celTypeReturn { cellDouble, cellString };
+
 	/**
 	 * @brief cellType Gets the cell data type we expect to read for this coloumn.
 	 * @return
 	 */
 	enum e_celTypeReturn cellType() const;
-
 
 	/**
 	 * @brief insert Insert a string into the columns.
@@ -138,14 +138,7 @@ public:
 	 * @brief spssStringLen Set the length of the string (in column).
 	 * @param value Value to set.
 	 */
-	void spssStringLen(size_t value);
-
-	/**
-	 * @brief charsRemaining Find the number of chars remaining for this buffer, for one data cell.
-	 * @param bufferSzie The size of the buffer.
-	 * @return Value
-	 */
-	long cellCharsRemaining(size_t bufferSize);
+	void spssStringLen(long value);
 
 	/**
 	 * @brief getJaspColumnType Finds the column type that JASP will use.
@@ -161,10 +154,17 @@ public:
 	 */
 	std::string format(double value);
 
+	/**
+	 * @brief charsRemaining Find the number of chars remaining for this buffer, for one data cell.
+	 * @param bufferSzie The size of the buffer.
+	 * @return Value
+	 */
+	long cellCharsRemaining(size_t bufferSize);
 
 private:
 	// Day Zero for spss files.
 	static const QDate _beginEpoch;
+
 
 	/**
 	 * @brief _toQDateTime Convert SPSS seconds to a date/time.
@@ -180,6 +180,12 @@ private:
 	 * @return true if a fractional part found.
 	 */
 	static bool _containsFraction(const std::vector<double> &values);
+
+	/**
+	 * @brief spssStringLen Set the length of the string (in column).
+	 * @param value Value to set.
+	 */
+	void spssStringLen(size_t value);
 
 	/*
 	 * Help functions for _toDateTime().
