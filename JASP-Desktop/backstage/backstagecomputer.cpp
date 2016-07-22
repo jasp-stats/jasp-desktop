@@ -57,7 +57,7 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 	else
 		browsePath = path;
 
-	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv *.txt *.sav)");
+	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv *.txt *.ods *.sav)");
 
 	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
 
