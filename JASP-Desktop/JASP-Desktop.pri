@@ -176,7 +176,11 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.cpp \
         $$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.cpp \
 		$$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
-		$$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
+        $$PWD/importers/odsimporter.cpp \
+        $$PWD/importers/ods/odsdata.cpp \
+        $$PWD/importers/ods/odsxmlcontentshandler.cpp \
+        $$PWD/importers/ods/odsxmlhandler.cpp \
+        $$PWD/importers/ods/odsxmlmanifesthandler.cpp
 		$$PWD/simplecrypt.cpp
 
 HEADERS  += \
@@ -355,7 +359,6 @@ HEADERS  += \
 		$$PWD/importers/spss/spssformattype.h \
         $$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
-        $$PWD/importers/spss/spssformattype.h \
         $$PWD/analysisforms/reliabilityanalysisform.h \
         $$PWD/analysisforms/SEM/semsimpleform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h \
@@ -366,7 +369,12 @@ HEADERS  += \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
 		$$PWD/simplecrypt.h \
-		$$PWD/simplecryptkey.h
+		$$PWD/simplecryptkey.h \
+		$$PWD/importers/odsimporter.h \
+		$$PWD/importers/ods/odsxmlhandler.h \
+		$$PWD/importers/ods/odsxmlmanifesthandler.h \
+		$$PWD/importers/ods/odsxmlcontentshandler.h \
+		$$PWD/importers/ods/odsdata.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
