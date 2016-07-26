@@ -1,0 +1,115 @@
+Timestamp,ID,Condition_Code,hits,Lucky_Pre,Lucky_Post,Believe_Luck,Gender_Code,School_year_code,Major_code,hits_match,condition_match,experimenter_code,Lab_Assistant,Informed_Consent,Gender,School_Year,Major,Task_Understood,Task_Completed,Lucky_Pre_String,Lucky_Post_String,Condition_String,Hits_Self_Reported,Withdraw_Check,filter_$
+41564,A19,0,7,1,1,1,1,5,0,1,1,1,Amy Taraszka,I agree to participate,Male,Post-Bac,Pre-medical Studies,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",7,,0
+41557,J10,0,6,2,2,1,0,1,1,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,Psychology,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",6,,0
+41564,J29,0,10,1,1,1,0,3,0,1,1,2,Jamie Mussen,I agree to participate,Female,Junior,biology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",10,,0
+41555,J3,0,2,1,1,1,0,1,0,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,Undecided,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",2,,0
+41559,M32,0,0,2,2,1,0,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Sophomore,Undecided,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",0,,0
+41563,M58,0,3,3,3,1,1,4,1,1,1,3,Malgorzata Rozko,I agree to participate,Male,Senior,Clinical Psychology,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",3,,0
+41558,M18,0,3,4,2,2,0,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Sophomore,biology,Yes,Yes,4 (Agree),2 (Disagree),"A regular ball (white, no marking)",3,,0
+41558,M22,0,5,1,1,2,1,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Male,First-year,undecided,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",5,,0
+41561,M45,0,1,2,2,2,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Undeclared,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",1,,0
+41564,A15,0,8,2,4,3,1,3,0,1,1,1,Amy Taraszka,I agree to participate,Male,Junior,Biology,Yes,Yes,2 (Disagree),4 (Agree),"A regular ball (white, no marking)",8,,0
+41564,A18,0,3,3,1,3,1,2,0,1,1,1,Amy Taraszka,I agree to participate,Male,Sophomore,buisness,Yes,Yes,3 (Neither agree nor disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",3,,0
+41564,J31,0,3,1,1,3,1,4,0,1,1,2,Jamie Mussen,I agree to participate,Male,Senior,political science,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",3,,0
+41564,J32,0,6,1,1,3,1,4,0,1,1,2,Jamie Mussen,I agree to participate,Male,Senior,Biology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",6,,0
+41564,J34,0,8,1,1,3,0,4,0,1,1,2,Jamie Mussen,I agree to participate,Female,Senior,Health Sciences,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",8,,0
+41559,M33,0,1,1,3,3,1,4,0,1,1,3,Malgorzata Rozko,I agree to participate,Male,Senior,theology,Yes,Yes,1 (Strongly Disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",1,,0
+41559,M42,0,4,1,3,3,0,3,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Junior,Biology,Yes,Yes,1 (Strongly Disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",4,,0
+41564,A16,0,7,1,1,4,0,1,0,1,1,1,Amy Taraszka,I agree to participate,Female,First-year,nursing,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",7,,1
+41557,M12,0,3,3,3,4,0,4,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Senior,psychology,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",3,,1
+41558,M27,0,3,1,1,4,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Sculpture,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",3,,1
+41557,M6,0,3,2,2,4,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,psychology and business administration,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",3,,1
+41564,A14,0,4,1,1,5,0,2,0,1,1,1,Amy Taraszka,I agree to participate,Female,Sophomore,Criminology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",4,,1
+41563,J17,0,3,1,1,5,1,4,0,1,1,2,Jamie Mussen,I agree to participate,Male,Senior,Business Administration,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",3,,1
+41564,J20,0,7,3,3,5,0,2,0,1,1,2,Jamie Mussen,I agree to participate,Female,Sophomore,Biology,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",7,,1
+41564,J22,0,3,1,1,5,0,1,1,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,Psychology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",3,,0
+41564,J23,0,6,1,1,5,0,3,0,1,1,2,Jamie Mussen,I agree to participate,Female,Junior,Biology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",6,,1
+41564,J28,0,4,3,3,5,0,3,0,1,1,2,Jamie Mussen,I agree to participate,Female,Junior,Biology,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",4,,1
+41557,M13,0,6,3,3,5,1,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Male,First-year,business management,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",6,,1
+41557,M15,0,0,1,1,5,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,nursing,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",0,,1
+41558,M17,0,3,1,1,5,1,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Male,Sophomore,pyschology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",3,,1
+41558,M28,0,5, ,2,5,1,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Male,First-year,Biochem,Yes,Yes,,2 (Disagree),"A regular ball (white, no marking)",5,,1
+41558,M30,0,3,2,3,5,1,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Male,First-year,Undeclared,Yes,Yes,2 (Disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",3,,1
+41558,M31,0,1,2,2,5,0,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Sophomore,Graphic Design,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",1,,1
+41559,M39,0,4,3,4,5,0,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Sophomore,undecided,Yes,Yes,3 (Neither agree nor disagree),4 (Agree),"A regular ball (white, no marking)",4,,1
+41557,M8,0,2,2,2,5,0,1,1,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Psychology,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",2,SUBMIT,0
+41563,J19,0,7,2,2,6,1,4,0,1,1,2,Jamie Mussen,I agree to participate,Male,Senior,,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",7,,1
+41564,J25,0,4,3,3,6,0,4,0,1,1,2,Jamie Mussen,I agree to participate,Female,Senior,Biology,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",4,,1
+41555,J5,0,6,1,1,6,0,1,0,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,Nutrition,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",6,,1
+41558,M20,0,1,3,3,6,0,1,1,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Psychology,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",1,,0
+41558,M29,0,4,1,1,6,0,4,1,1,1,3,Malgorzata Rozko,I agree to participate,Female,Senior,Psychology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",4,,0
+41562,M48,0,8,1,3,6,0,4,1,1,1,3,Malgorzata Rozko,I agree to participate,Female,Senior,Psychology,Yes,Yes,1 (Strongly Disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",8,,0
+41562,M51,0,3,3,2,6,1,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Male,First-year,Computer Science,Yes,Yes,3 (Neither agree nor disagree),2 (Disagree),"A regular ball (white, no marking)",3,,1
+41562,A4,0,4,3,3,7,0,4,0,1,1,1,Amy Taraszka,I agree to participate,Female,Senior,natural science,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",4,,1
+41564,J21,0,3,3,3,7,0,2,0,1,1,2,Jamie Mussen,I agree to participate,Female,Sophomore,Biology,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",3,,1
+41555,J4,0,6,2,2,7,0,1,0,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,undecided,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",6,,1
+41558,M19,0,2,3,1,7,0,3,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Junior,Business Management,Yes,Yes,3 (Neither agree nor disagree),1 (Strongly Disagree),"A regular ball (white, no marking)",2,,1
+41558,M24,0,4,3,3,7,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,english,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",4,,1
+41559,M36,0,4,2,2,7,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,undecided,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",4,,1
+41559,M37,0,3,3,3,7,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Undecided,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",3,,1
+41557,M9,0,2,2,2,7,0,3,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Junior,Biology,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",2,,1
+41564,A17,0,5,2,2,8,1,4,0,1,1,1,Amy Taraszka,I agree to participate,Male,Senior,Corporate Communications,Yes,Yes,2 (Disagree),2 (Disagree),"A regular ball (white, no marking)",5,,1
+41564,J33,0,5,2,3,8,0,4,0,1,1,2,Jamie Mussen,I agree to participate,Female,Senior,natural science,Yes,Yes,2 (Disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",5,,1
+41557,M3,0,1,4,2,8,0,2,1,1,1,3,Malgorzata Rozko,I agree to participate,Female,Sophomore,Psychology,Yes,Yes,4 (Agree),2 (Disagree),"A regular ball (white, no marking)",1,,0
+41565,J35,0,5,3,3,9,0,4,0,1,1,2,Jamie Mussen,I agree to participate,Female,Senior,Biology,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),"A regular ball (white, no marking)",5,,1
+41557,M10,0,3,3,4,9,0,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Sophomore,early childhood education,Yes,Yes,3 (Neither agree nor disagree),4 (Agree),"A regular ball (white, no marking)",3,,1
+41562,A5,1,3,2,1,1,0,3,0,1,1,1,Amy Taraszka,I agree to participate,Female,Junior,Biology,Yes,Yes,2 (Disagree),1 (Strongly Disagree),A lucky ball (green clover),3,,0
+41564,A9,1,5,4,1,1,0,1,0,1,1,1,Amy Taraszka,I agree to participate,Female,First-year,NUTRITION,Yes,Yes,4 (Agree),1 (Strongly Disagree),A lucky ball (green clover),5,,0
+41558,M23,1,4,1,1,1,0,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Sophomore,undecided,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),4,,0
+41559,M38,1,5,1,1,1,0,3,1,1,1,3,Malgorzata Rozko,I agree to participate,Female,Junior,Psychology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),5,,0
+41563,M57,1,2,3,3,1,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,psychology,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),A lucky ball (green clover),2,,0
+41558,M25,1,4,2,4,2,1,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Male,Sophomore,Biology,Yes,Yes,2 (Disagree),4 (Agree),A lucky ball (green clover),4,,0
+41562,A1,1,5,5,2,3,1,1,0,1,1,1,Amy Taraszka,I agree to participate,Male,First-year,biology-chemistry,Yes,Yes,5 (Strongly agree),2 (Disagree),A lucky ball (green clover),5,,0
+41555,J1,1,6,1,1,3,0,1,0,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,Biology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),6,,0
+41562,J16,1,3,1,1,3,0,5,0,1,1,2,Jamie Mussen,I agree to participate,Female,Post-Bac,,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),3,,0
+41557,M14,1,4,1,1,3,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,undeclared,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),4,,0
+41561,M46,1,2,1,1,3,1,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Male,Sophomore,Natural Science,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),2,,0
+41564,A13,1,2,5,2,4,1,2,0,1,1,1,Amy Taraszka,I agree to participate,Male,Sophomore,nursing,Yes,Yes,5 (Strongly agree),2 (Disagree),A lucky ball (green clover),2,,1
+41564,A20,1,7,3,2,4,0,4,0,1,1,1,Amy Taraszka,I agree to participate,Female,Senior,Neuroscience,Yes,Yes,3 (Neither agree nor disagree),2 (Disagree),A lucky ball (green clover),7,,1
+41562,A8,1,2,1,1,4,0,5,0,1,1,1,Amy Taraszka,I agree to participate,Female,Post-Bac,medical science,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),2,,0
+41564,J30,1,9,1,4,4,1,4,1,1,1,2,Jamie Mussen,I agree to participate,Male,Senior,Clinical Psychology,Yes,Yes,1 (Strongly Disagree),4 (Agree),A lucky ball (green clover),9,,0
+41556,J6,1,8,1,4,4,0,4,0,1,1,2,Jamie Mussen,I agree to participate,Female,Senior,Biology,Yes,Yes,1 (Strongly Disagree),4 (Agree),A lucky ball (green clover),8,,1
+41559,M34,1,4,4,2,4,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Theater Arts,Yes,Yes,4 (Agree),2 (Disagree),A lucky ball (green clover),4,,1
+41563,M54,1,3,3,1,4,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Undecided,Yes,Yes,3 (Neither agree nor disagree),1 (Strongly Disagree),A lucky ball (green clover),3,,1
+41564,A11,1,5,1,1,5,1,3,0,1,1,1,Amy Taraszka,I agree to participate,Male,Junior,,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),5,,1
+41562,A2,1,6,3,3,5,0,1,0,1,1,1,Amy Taraszka,I agree to participate,Female,First-year,communications,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),A lucky ball (green clover),6,,1
+41562,A6,1,1,4,3,5,0,1,0,1,1,1,Amy Taraszka,I agree to participate,Female,First-year,Early Childhood Education,Yes,Yes,4 (Agree),3 (Neither agree nor disagree),A lucky ball (green clover),1,,1
+41562,A7,1,5,5,3,5,0,3,0,1,1,1,Amy Taraszka,I agree to participate,Female,Junior,Early Childhood Education,Yes,Yes,5 (Strongly agree),3 (Neither agree nor disagree),A lucky ball (green clover),5,,1
+41557,J13,1,2,3,3,5,0,1,1,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,Psychology,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),A lucky ball (green clover),2,,0
+41559,J15,1,6,1,1,5,0,1,1,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,Psychology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),6,,0
+41555,J2,1,1,2,1,5,0,1,0,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,Nursing,Yes,Yes,2 (Disagree),1 (Strongly Disagree),A lucky ball (green clover),1,,1
+41557,M11,1,2,3,1,5,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,criminology,Yes,Yes,3 (Neither agree nor disagree),1 (Strongly Disagree),A lucky ball (green clover),2,,1
+41557,M2,1,3,1,1,5,0,3,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Junior,Pycology,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),3,,1
+41559,M35,1,5,3,3,5,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,undecided,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),A lucky ball (green clover),5,,1
+41559,M43,1,3,1,1,5,0,3,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Junior,,Yes,Yes,1 (Strongly Disagree),1 (Strongly Disagree),A lucky ball (green clover),3,,1
+41563,M52,1,2,1,5,5,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Undecided,Yes,Yes,1 (Strongly Disagree),5 (Strongly agree),A lucky ball (green clover),2,,1
+41563,M55,1,6,2,2,5,0,1,1,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Psychology,Yes,Yes,2 (Disagree),2 (Disagree),A lucky ball (green clover),6,,0
+41563,M59,1,5,4,2,5,1,3,0,1,1,3,Malgorzata Rozko,I agree to participate,Male,Junior,criminolgy & sociology,Yes,Yes,4 (Agree),2 (Disagree),A lucky ball (green clover),5,,1
+41557,M7,1,1,2,3,5,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,psychology,Yes,Yes,2 (Disagree),3 (Neither agree nor disagree),A lucky ball (green clover),1,,1
+41564,A10,1,6,3,3,6,0,5,0,1,1,1,Amy Taraszka,I agree to participate,Female,Post-Bac,Nutrition,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),A lucky ball (green clover),6,,0
+41557,M1,1,2,1,3,6,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,undeclared,Yes,Yes,1 (Strongly Disagree),3 (Neither agree nor disagree),A lucky ball (green clover),2,,1
+41558,M21,1,2,2,1,6,0,4,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Senior,Apparel Design,Yes,Yes,2 (Disagree),1 (Strongly Disagree),A lucky ball (green clover),2,,1
+41558,M26,1,3,2,2,6,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Biology,Yes,Yes,2 (Disagree),2 (Disagree),A lucky ball (green clover),3,,1
+41557,M5,1,4,5,3,6,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Undecided,Yes,Yes,5 (Strongly agree),3 (Neither agree nor disagree),A lucky ball (green clover),4,,1
+41557,J11,1,4,4,3,7,1,1,0,1,1,2,Jamie Mussen,I agree to participate,Male,First-year,undecided,Yes,Yes,4 (Agree),3 (Neither agree nor disagree),A lucky ball (green clover),4,,1
+41557,J12,1,4,5,2,7,0,2,0,1,1,2,Jamie Mussen,I agree to participate,Female,Sophomore,Biology,Yes,Yes,5 (Strongly agree),2 (Disagree),A lucky ball (green clover),4,,1
+41557,J7,1,6,3,3,7,0,1,0,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,Undecided,Yes,Yes,3 (Neither agree nor disagree),3 (Neither agree nor disagree),A lucky ball (green clover),6,,1
+41559,M41,1,5,5,5,7,0,4,1,1,1,3,Malgorzata Rozko,I agree to participate,Female,Senior,Psychology,Yes,Yes,5 (Strongly agree),5 (Strongly agree),A lucky ball (green clover),5,,0
+41561,M44,1,4,3,1,7,0,4,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Senior,BioChemistry,Yes,Yes,3 (Neither agree nor disagree),1 (Strongly Disagree),A lucky ball (green clover),4,,1
+41562,M47,1,3,2,2,7,0,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Sophomore,biology,Yes,Yes,2 (Disagree),2 (Disagree),A lucky ball (green clover),3,,1
+41562,M50,1,7,4,3,7,0,3,1,1,1,3,Malgorzata Rozko,I agree to participate,Female,Junior,Psychology,Yes,Yes,4 (Agree),3 (Neither agree nor disagree),A lucky ball (green clover),7,,0
+41563,M56,1,2,4,4,7,0,2,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Sophomore,Undecided,Yes,Yes,4 (Agree),4 (Agree),A lucky ball (green clover),2,,1
+41562,A3,1,6,4,4,8,1,5,0,1,1,1,Amy Taraszka,I agree to participate,Male,Post-Bac,Pre Med,Yes,Yes,4 (Agree),4 (Agree),A lucky ball (green clover),6,,0
+41564,J24,1,7,4,4,8,0,4,0,1,1,2,Jamie Mussen,I agree to participate,Female,Senior,Biochemistry,Yes,Yes,4 (Agree),4 (Agree),A lucky ball (green clover),7,,1
+41557,J9,1,3,4,4,8,0,1,0,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,Biology,Yes,Yes,4 (Agree),4 (Agree),A lucky ball (green clover),3,,1
+41557,M4,1,2,4,2,8,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,,Yes,Yes,4 (Agree),2 (Disagree),A lucky ball (green clover),2,,1
+41559,M40,1,6,4,3,8,0,1,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,First-year,Undecided,Yes,Yes,4 (Agree),3 (Neither agree nor disagree),A lucky ball (green clover),6,,1
+41563,M53,1,2,5,2,8,0,3,0,1,1,3,Malgorzata Rozko,I agree to participate,Female,Junior,Nutrition,Yes,Yes,5 (Strongly agree),2 (Disagree),A lucky ball (green clover),2,,1
+41562,M49, , , , ,8, , , , ,0,3,Malgorzata Rozko,I agree to participate,Male,Senior,Psy,Yes,Yes,4 (Agree),2 (Disagree),A lucky ball (green clover),6,, 
+41563,J18,1,8,5,5,9,1,5,0,1,1,2,Jamie Mussen,I agree to participate,Male,Post-Bac,Pre Med,Yes,Yes,5 (Strongly agree),5 (Strongly agree),A lucky ball (green clover),8,,0
+41564,J27,1,7,5,5,9,0,5,0,1,1,2,Jamie Mussen,I agree to participate,Female,Post-Bac,Medical Science,Yes,Yes,5 (Strongly agree),5 (Strongly agree),A lucky ball (green clover),7,,0
+41557,J8,1,5,3,4,9,0,1,0,1,1,2,Jamie Mussen,I agree to participate,Female,First-year,neuroscience,Yes,Yes,3 (Neither agree nor disagree),4 (Agree),A lucky ball (green clover),5,,1
+41564,A12,1,1,4,4,9,1,1,0,0,1,1,Amy Taraszka,I agree to participate,Male,First-year,intrnatonal relation,Yes,Yes,4 (Agree),4 (Agree),A lucky ball (green clover),0,,1
+41564,J26,1,5,2,2,9,0,4,0,0,1,2,Jamie Mussen,I agree to participate,Female,Senior,Italian and Spanish,Yes,Yes,2 (Disagree),2 (Disagree),A lucky ball (green clover),4,,1
+
+41559,J14, , , , , , , , , , ,2,,,,,,,,,,, ,WITHDRAW, 
