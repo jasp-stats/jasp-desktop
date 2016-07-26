@@ -1,0 +1,6 @@
+hi how are you doing?
+a		r
+b		p
+c		q
+this	is	it.
+amsterdam,	universi,ty
