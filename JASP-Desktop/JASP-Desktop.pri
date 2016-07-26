@@ -348,7 +348,6 @@ HEADERS  += \
 		$$PWD/importers/csvimporter.h \
 		$$PWD/importers/jaspimporter.h \
 		$$PWD/importers/spssimporter.h \
-		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
 		$$PWD/analysisforms/principalcomponentanalysisform.h \
 		$$PWD/importers/spss/spssformattype.h \
 		$$PWD/analysisforms/reliabilityanalysisform.h \
@@ -419,7 +418,6 @@ FORMS += \
 		$$PWD/analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.ui \
 		$$PWD/analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.ui \
 		$$PWD/analysisforms/R11tLearn/r11tlearnform.ui
-
 
 RESOURCES += \
 		$$PWD/backstage/backstage.qrc \

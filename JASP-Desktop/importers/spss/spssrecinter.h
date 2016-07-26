@@ -104,7 +104,6 @@ public:
 	 */
 	enum e_celTypeReturn cellType() const;
 
-
 	/**
 	 * @brief insert Insert a string into the columns.
 	 * @param str String to insert.
@@ -141,13 +140,6 @@ public:
 	void spssStringLen(long value);
 
 	/**
-	 * @brief charsRemaining Find the number of chars remaining for this buffer, for one data cell.
-	 * @param bufferSzie The size of the buffer.
-	 * @return Value
-	 */
-	long cellCharsRemaining(size_t bufferSize);
-
-	/**
 	 * @brief getJaspColumnType Finds the column type that JASP will use.
 	 * @return A column type.
 	 *
@@ -161,6 +153,12 @@ public:
 	 */
 	std::string format(double value);
 
+	/**
+	 * @brief charsRemaining Find the number of chars remaining for this buffer, for one data cell.
+	 * @param bufferSzie The size of the buffer.
+	 * @return Value
+	 */
+	long cellCharsRemaining(size_t bufferSize);
 
 private:
 	// Day Zero for spss files.
@@ -180,6 +178,12 @@ private:
 	 * @return true if a fractional part found.
 	 */
 	static bool _containsFraction(const std::vector<double> &values);
+
+	/**
+	 * @brief spssStringLen Set the length of the string (in column).
+	 * @param value Value to set.
+	 */
+	void spssStringLen(size_t value);
 
 	/*
 	 * Help functions for _toDateTime().
