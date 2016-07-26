@@ -1,8 +1,19 @@
 {
-	"name": "BinomialBayesianSummaryStatistics",
+	"name": "SummaryStatsTTestBayesianOneSample",
 	"autorun": true,
 	"version": "1.0",
 	"options": [
+		{
+			"format": "",
+			"name": "tStatistic",
+			"type": "Number"
+		},
+		{
+			"format": "",
+			"name": "n1Size",
+			"type": "Integer",
+			"min": 2
+		},
 		{
 			"name": "hypothesis",
 			"options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
@@ -11,11 +22,11 @@
 		},
 		{
 			"format": "",
-			"name": "testValue",
+			"name": "priorWidth",
 			"type": "Number",
-			"value": 0.5,
+			"value": 0.7070,
 			"min": 0,
-			"max": 1
+			"max": 2
 		},
 		{
 			"name": "bayesFactorType",
@@ -34,30 +45,9 @@
 			"type": "Boolean"
 		},
 		{
-			"format": "",
-			"name": "successes",
-			"type": "Number",
-			"min": 0
-		},
-		{
-			"format": "",
-			"name": "trials",
-			"type": "Number",
-			"min": 0
-		},
-		{
-			"format": "",
-			"name": "betaPriorParamA",
-			"type": "Number",
-			"value": 1,
-			"min": 0
-		},
-		{
-			"format": "",
-			"name": "betaPriorParamB",
-			"type": "Number",
-			"value": 1,
-			"min": 0
+			"default": false,
+			"name": "plotBayesFactorRobustness",
+			"type": "Boolean"
 		}
-	]	
+	]
 }

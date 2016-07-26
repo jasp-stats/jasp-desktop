@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BinomialBayesianSummaryStatistics <- function(dataset=NULL, options, perform = 'run', callback = function(...) 0,  ...)
+SummaryStatsBinomialTestBayesian <- function(dataset=NULL, options, perform = 'run', callback = function(...) 0,  ...)
 {
 	state <- .retrieveState()
 
@@ -39,8 +39,8 @@ BinomialBayesianSummaryStatistics <- function(dataset=NULL, options, perform = '
 	results[["title"]] <- "Bayesian Binomial Test"
 
 	fields=list()
-	fields[[length(fields)+1]] <- list(name="trials", type="integer", title="Trials")
 	fields[[length(fields)+1]] <- list(name="successes", type="integer", title="Successes")
+	fields[[length(fields)+1]] <- list(name="failures", type="integer", title="Failures")
 	fields[[length(fields)+1]] <- list(name="testValue", type="number", title="Test value")
 
 	#Bayes factor type (BF10, BF01, log(BF10))
@@ -146,11 +146,6 @@ BinomialBayesianSummaryStatistics <- function(dataset=NULL, options, perform = '
 		errorMessageTable <- "Cannot test the hypothesis that the test value is less than 0."
 	}
 
-	if (!is.null(errorMessageTable))
-	{
-		table[["error"]] <- list(errorType = "badData", errorMessage = errorMessageTable)
-	}
-
 
 	data <- list()
 	rowsBinomtest <- list()
@@ -158,14 +153,15 @@ BinomialBayesianSummaryStatistics <- function(dataset=NULL, options, perform = '
 
 	if(perform=="run")
 	{
-		if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && diff$successes==FALSE && diff$trials==FALSE && diff$testValue==FALSE && diff$betaPriorParamA == FALSE && diff$betaPriorParamB==FALSE && diff$hypothesis == FALSE))))
+		if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && diff$successes==FALSE && diff$failures==FALSE && diff$testValue==FALSE && diff$betaPriorParamA == FALSE && diff$betaPriorParamB==FALSE && diff$hypothesis == FALSE))))
 		{
 			row <- state$rowsBinomtest
 			BF10 <- state$BF10
 		}
 		else
 		{
-			BF10 <- .bayesBinomialTest(counts=options$successes, n=options$trials, theta0=options$testValue, hypothesis = hyp, a = options$betaPriorParamB, b = options$betaPriorParamB)
+			n <- options$successes + options$failures
+			BF10 <- .bayesBinomialTest(counts=options$successes, n=n, theta0=options$testValue, hypothesis = hyp, a = options$betaPriorParamB, b = options$betaPriorParamB)
 			BF <- BF10
 
 			if (options$bayesFactorType == "BF01")
@@ -177,7 +173,7 @@ BinomialBayesianSummaryStatistics <- function(dataset=NULL, options, perform = '
 				BF <- log(BF10)
 			}
 			
-			row <- list(successes=.clean(options$successes), trials=.clean(options$trials), testValue=.clean(options$testValue), BF=.clean(BF))
+			row <- list(successes=.clean(options$successes), failures=.clean(options$failures), testValue=.clean(options$testValue), BF=.clean(BF))
 		}
 
 		data <- row
@@ -186,7 +182,7 @@ BinomialBayesianSummaryStatistics <- function(dataset=NULL, options, perform = '
 		###### plots ######
 		if(options$plotPriorAndPosterior)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && diff$successes==FALSE && diff$trials==FALSE && diff$testValue==FALSE && diff$betaPriorParamA == FALSE && diff$betaPriorParamB==FALSE && diff$hypothesis == FALSE && diff$plotPriorAndPosteriorAdditionalInfo==FALSE))) && !is.null(state$priorAndPosteriorPlot))
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && diff$successes==FALSE && diff$failures==FALSE && diff$testValue==FALSE && diff$betaPriorParamA == FALSE && diff$betaPriorParamB==FALSE && diff$hypothesis == FALSE && diff$plotPriorAndPosteriorAdditionalInfo==FALSE))) && !is.null(state$priorAndPosteriorPlot))
 			{
 				plot <- state$priorAndPosteriorPlot
 			}
@@ -201,7 +197,7 @@ BinomialBayesianSummaryStatistics <- function(dataset=NULL, options, perform = '
 				p <- try(silent=FALSE, expr= {
 							
 							image <- .beginSaveImage(530, 400)
-							.plotPosterior.binomTest(counts=options$successes, n=options$trials, theta0=options$testValue, a = options$betaPriorParamA, b = options$betaPriorParamB, BF10=BF10, hypothesis = hyp,
+							.plotPosterior.binomTest(counts=options$successes, n=options$failures, theta0=options$testValue, a = options$betaPriorParamA, b = options$betaPriorParamB, BF10=BF10, hypothesis = hyp,
 								addInformation = options$plotPriorAndPosteriorAdditionalInfo)
 							plot[["data"]] <- .endSaveImage(image)
 							
@@ -219,7 +215,7 @@ BinomialBayesianSummaryStatistics <- function(dataset=NULL, options, perform = '
 	}
 	else #init phase
 	{
-		if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && diff$successes==FALSE && diff$trials==FALSE && diff$testValue==FALSE && diff$betaPriorParamA == FALSE && diff$betaPriorParamB==FALSE && diff$hypothesis == FALSE))))
+		if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && diff$successes==FALSE && diff$failures==FALSE && diff$testValue==FALSE && diff$betaPriorParamA == FALSE && diff$betaPriorParamB==FALSE && diff$hypothesis == FALSE))))
 		{
 			data <- state$rowsBinomtest
 			rowsBinomtest <- state$rowsBinomtest
@@ -227,13 +223,13 @@ BinomialBayesianSummaryStatistics <- function(dataset=NULL, options, perform = '
 		}
 		else
 		{
-			data <- list(successes=".", trials=".", testValue=".", BF=".")
-			rowsBinomtest <- list(successes=".", trials=".", testValue=".", BF=".")
+			data <- list(successes=".", failures=".", testValue=".", BF=".")
+			rowsBinomtest <- list(successes=".", failures=".", testValue=".", BF=".")
 		}
 
 		if(options$plotPriorAndPosterior)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && diff$successes==FALSE && diff$trials==FALSE && diff$testValue==FALSE && diff$betaPriorParamA == FALSE && diff$betaPriorParamB==FALSE && diff$hypothesis == FALSE && diff$plotPriorAndPosteriorAdditionalInfo==FALSE))) && !is.null(state$priorAndPosteriorPlot))
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && diff$successes==FALSE && diff$failures==FALSE && diff$testValue==FALSE && diff$betaPriorParamA == FALSE && diff$betaPriorParamB==FALSE && diff$hypothesis == FALSE && diff$plotPriorAndPosteriorAdditionalInfo==FALSE))) && !is.null(state$priorAndPosteriorPlot))
 			{
 				plot <- state$priorAndPosteriorPlot
 			}

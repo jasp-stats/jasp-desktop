@@ -54,11 +54,12 @@
 #include "analysisforms/binomialtestform.h"
 #include "analysisforms/binomialtestbayesianform.h"
 #include "analysisforms/bffromtform.h"
-#include "analysisforms/SummaryStatistics/bffromtindependentsamplesform.h"
-#include "analysisforms/SummaryStatistics/bffromtpairedsamplesform.h"
-#include "analysisforms/SummaryStatistics/bffromtonesampleform.h"
-#include "analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.h"
-#include "analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.h"
+#include "analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
+#include "analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h"
+#include "analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h"
+#include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
+#include "analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
+#include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
 
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
@@ -564,16 +565,18 @@ AnalysisForm* MainWindow::loadForm(const string name)
     form = new ExploratoryFactorAnalysisForm(contentArea);
   else if (name == "PrincipalComponentAnalysis")
     form = new PrincipalComponentAnalysisForm(contentArea);
-	else if (name == "BFFromTOneSample")
-		form = new BFFromTOneSampleForm(contentArea);
-	else if (name == "BFFromTIndependentSamples")
-		form = new BFFromTIndependentSamplesForm(contentArea);
-	else if (name == "BFFromTPairedSamples")
-		form = new BFFromTPairedSamplesForm(contentArea);
-	else if (name == "BinomialBayesianSummaryStatistics")
-		form = new BinomialBayesianSummaryStatisticsForm(contentArea);
-	else if (name == "RegressionBayesianSummaryStatistics")
-		form = new RegressionBayesianSummaryStatisticsForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianOneSample")
+		form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianIndependentSamples")
+		form = new SummaryStatsTTestBayesianIndependentSamplesForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianPairedSamples")
+		form = new SummaryStatsTTestBayesianPairedSamplesForm(contentArea);
+	else if (name == "SummaryStatsBinomialTestBayesian")
+		form = new SummaryStatsBinomialTestBayesianForm(contentArea);
+	else if (name == "SummaryStatsRegressionLinearBayesian")
+		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
+	else if (name == "SummaryStatsCorrelationBayesianPairs")
+		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -883,6 +886,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
+	this->analysisOKed();
 	bool showAnalysis = false;
 	_progressIndicator->hide();
 

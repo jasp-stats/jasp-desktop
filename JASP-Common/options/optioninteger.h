@@ -21,15 +21,28 @@
 #include "optioni.h"
 #include "common.h"
 
+#include <climits>
+#include <string>
+
 class OptionInteger : public OptionI<int>
 {
 public:
-	OptionInteger(int value = 0);
+	OptionInteger(int value = 0, int min = -999999, int max = 999999, std::string format = "");
 
 	virtual void init(const Json::Value &data) OVERRIDE;
 	virtual Json::Value asJSON() const OVERRIDE;
 	virtual void set(const Json::Value& value) OVERRIDE;
 	virtual Option* clone() const OVERRIDE;
+
+  int min() const;
+  int max() const;
+
+  std::string format() const;
+
+protected:
+  int _min;
+  int _max;
+  std::string _format;
 };
 
 #endif // OPTIONINTEGER_H

@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform = 'run', callback = function(...) 0,  ...)
+SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform = 'run', callback = function(...) 0,  ...)
 {
 	state <- .retrieveState()
 
@@ -39,14 +39,13 @@ RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform =
 	results[["title"]] <- "Bayesian Linear Regression"
 
 	fields=list()
-	fields[[length(fields)+1]] <- list(name="sampleSize", type="integer", title="Sample Size")
+	fields[[length(fields)+1]] <- list(name="sampleSize", type="integer", title="n")
 	fields[[length(fields)+1]] <- list(name="numberOfCovariates", type="integer", title="Covariates")
 	fields[[length(fields)+1]] <- list(name="unadjustedRSquared", type="number", title="R-squared")
 
 	#Bayes factor type (BF10, BF01, log(BF10))
 	if (options$bayesFactorType == "BF01")
 	{
-
 		bf.title <- "BF\u2080\u2081"
 	}
 	else if (options$bayesFactorType == "BF10")
@@ -59,7 +58,7 @@ RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform =
 	}
 
 	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
-	fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="Error estimate")
+	fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="% error")
 
 	table <- list()
 	table[["title"]] <- "Bayesian Linear Regression"
@@ -71,7 +70,7 @@ RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform =
 	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()
 
-	message <- paste0("Prior width used is: ", options$priorWidth, ".")
+	message <- paste0("r scale used is: ", options$priorWidth, ".")
 	.addFootnote(footnotes, symbol="<em>Note.</em>", text=message)
 
 	table[["footnotes"]] <- as.list(footnotes)
@@ -91,7 +90,7 @@ RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform =
 			if(status$error)
 			{
 				table[["error"]] <- list(errorType = "badData", errorMessage = status$errorMessage)
-				row <- list(sampleSize=".", numberOfCovariates=".", unadjustedRSquared=".", BF=".", properror=".")
+				row <- status$row
 			}
 			else
 			{
@@ -167,7 +166,7 @@ RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform =
 		}
 		else
 		{
-			row <- list(sampleSize=".", numberOfCovariates=".", unadjustedRSquared=".", BF=".", properror=".")
+			row <- status$row
 		}
 
 
@@ -189,8 +188,8 @@ RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform =
 		}
 		else
 		{
-			data <- list(sampleSize=".", numberOfCovariates=".", unadjustedRSquared=".", BF=".", properror=".")
-			rowsRegressiontest <- list(sampleSize=".", numberOfCovariates=".", unadjustedRSquared=".", BF=".", properror=".")
+			data <- .isInputValidRegressionSummaryStatistics(options)$row
+			rowsRegressiontest <- data
 		}
 
 		if(options$plotBayesFactorRobustness)
@@ -251,33 +250,41 @@ RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform =
 	error <- FALSE
 	errorMessage <- NULL
 	ready <- TRUE
-	
-	if(options$sampleSize == 0 && options$numberOfCovariates == 0 && options$unadjustedRSquared == 0)
+
+	unadjustedRSquaredValue <- options$unadjustedRSquared
+	sampleSizeValue <- options$sampleSize
+	numberOfCovariatesValue <- options$numberOfCovariates
+
+	if((sampleSizeValue==0 && numberOfCovariatesValue==0 && unadjustedRSquaredValue==0) || is.null(unadjustedRSquaredValue))
 	{
 		ready <- FALSE
+		unadjustedRSquaredValue <- "."
 	}
 
-	if(ready)
+	if(sampleSizeValue==0 || is.null(sampleSizeValue))
 	{
-		if(options$numberOfCovariates <= 0)
+		ready <- FALSE
+		sampleSizeValue <- "."
+	}
+
+	if(numberOfCovariatesValue==0 || is.null(numberOfCovariatesValue))
+	{
+		ready <- FALSE
+		numberOfCovariatesValue <- "."
+	}
+
+	if(options$numberOfCovariates!=0 && options$sampleSize!=0)
+	{
+		if((options$sampleSize - options$numberOfCovariates) < 2)
 		{
 			error <- TRUE
-			errorMessage <- paste("Number of Covariates must be > 0")
-		}
-		else if((options$sampleSize - options$numberOfCovariates) < 2 )
-		{
-			error <- TRUE
-			errorMessage <- paste("Number of Covariates must be less than N-1 (number of data points minus 1)")
-		}
-		else if((options$unadjustedRSquared > 1) || (options$unadjustedRSquared < 0))
-		{
-			error <- TRUE
-			errorMessage <- paste("Illegal R2 value (must be 0 <= R2 < 1)")
+			errorMessage <- paste("Number of Covariates must be less than N-1 (sample size minus 1)")
 		}
 	}
 
+	row <- list(sampleSize=sampleSizeValue, numberOfCovariates=numberOfCovariatesValue, unadjustedRSquared=unadjustedRSquaredValue, BF=".", properror=".")
 
-	list(ready=ready, error=error, errorMessage=errorMessage)
+	list(ready=ready, row=row, error=error, errorMessage=errorMessage)
 }
 
 
@@ -322,7 +329,7 @@ RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform =
 			mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= 3.1)
 		}
 
-		mtext("Cauchy prior width", side = 1, cex = cexYXlab, line= 2.5)
+		mtext("r scale", side = 1, cex = cexYXlab, line= 2.5)
 		return()
 	}
 
@@ -892,7 +899,7 @@ RegressionBayesianSummaryStatistics <- function(dataset=NULL, options, perform =
 		}
 	}
 
-	mtext("Cauchy prior width", side = 1, cex = cexYXlab, line= 2.5)
+	mtext("r scale", side = 1, cex = cexYXlab, line= 2.5)
 
 	xx <- grconvertX(0.1, "npc", "user")
 	yy1 <- yAt[length(yAt)-1]

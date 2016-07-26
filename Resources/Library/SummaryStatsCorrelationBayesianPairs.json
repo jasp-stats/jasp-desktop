@@ -1,42 +1,34 @@
 {
-	"name": "BFFromTIndependentSamples",
+	"name": "SummaryStatsCorrelationBayesianPairs",
 	"autorun": true,
-	"version": "1.0",
+	"version": "1.00",
 	"options": [
 		{
 			"format": "",
-			"name": "tStatistic",
-			"type": "Number"
+			"name": "sampleSize",
+			"type": "Integer",
+			"min": 2
 		},
 		{
 			"format": "",
-			"name": "n1Size",
-			"type": "Number"
+			"name": "pearsonsR",
+			"type": "Number",
+			"min": -1,
+			"max": 1
 		},
-		{
-			"format": "",
-			"name": "n2Size",
-			"type": "Number"
-		},		
 		{
 			"name": "hypothesis",
-			"options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
-			"default": "groupsNotEqual",
+			"options": [ "correlated", "correlatedPositively", "correlatedNegatively" ],
+			"default": "correlated",
 			"type": "List"
 		},
 		{
 			"format": "",
 			"name": "priorWidth",
 			"type": "Number",
-			"value": 0.7070,
-			"min": 0,
-			"max": 2
-		},
-		{
-			"name": "bayesFactorType",
-			"options": [ "BF10", "BF01", "LogBF10" ],
-			"default": "BF10",
-			"type": "List"
+			"value": 1.0,
+			"min" : 0,
+			"max" : 2.0
 		},
 		{
 			"default": false,
@@ -52,6 +44,12 @@
 			"default": false,
 			"name": "plotBayesFactorRobustness",
 			"type": "Boolean"
+		},
+		{
+			"name": "bayesFactorType",
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"type": "List"
 		}
 	]
 }

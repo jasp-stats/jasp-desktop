@@ -16,25 +16,25 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef REGRESSIONBAYESIANSUMMARYSTATISTICS_H
-#define REGRESSIONBAYESIANSUMMARYSTATISTICS_H
+#ifndef SUMMARYSTATSBINOMIALTESTBAYESIAN_H
+#define SUMMARYSTATSBINOMIALTESTBAYESIAN_H
 
 #include "../analysisform.h"
 
 namespace Ui {
-class RegressionBayesianSummaryStatisticsForm;
+class SummaryStatsBinomialTestBayesianForm;
 }
 
-class RegressionBayesianSummaryStatisticsForm : public AnalysisForm
+class SummaryStatsBinomialTestBayesianForm : public AnalysisForm
 {
 	Q_OBJECT
 
 public:
-	explicit RegressionBayesianSummaryStatisticsForm(QWidget *parent = 0);
-	~RegressionBayesianSummaryStatisticsForm();
+	explicit SummaryStatsBinomialTestBayesianForm(QWidget *parent = 0);
+	~SummaryStatsBinomialTestBayesianForm();
 
 private:
-	Ui::RegressionBayesianSummaryStatisticsForm *ui;
+	Ui::SummaryStatsBinomialTestBayesianForm *ui;
 };
 
-#endif // REGRESSIONBAYESIANSUMMARYSTATISTICS_H
+#endif // SUMMARYSTATSBINOMIALTESTBAYESIAN_H

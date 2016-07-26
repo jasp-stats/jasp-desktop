@@ -1,5 +1,5 @@
 {
-	"name": "BFFromTPairedSamples",
+	"name": "SummaryStatsTTestBayesianPairedSamples",
 	"autorun": true,
 	"version": "1.0",
 	"options": [
@@ -11,7 +11,8 @@
 		{
 			"format": "",
 			"name": "n1Size",
-			"type": "Number"
+			"type": "Integer",
+			"min": 2
 		},
 		{
 			"name": "hypothesis",

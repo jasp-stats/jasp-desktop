@@ -16,17 +16,25 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "bffromtpairedsamplesform.h"
-#include "ui_bffromtpairedsamplesform.h"
+#ifndef SUMMARYSTATSREGRESSIONLINEARBAYESIAN_H
+#define SUMMARYSTATSREGRESSIONLINEARBAYESIAN_H
 
-BFFromTPairedSamplesForm::BFFromTPairedSamplesForm(QWidget *parent) :
-	AnalysisForm("BFFromTPairedSamplesForm", parent),
-	ui(new Ui::BFFromTPairedSamplesForm)
-{
-	ui->setupUi(this);
+#include "../analysisform.h"
+
+namespace Ui {
+class SummaryStatsRegressionLinearBayesianForm;
 }
 
-BFFromTPairedSamplesForm::~BFFromTPairedSamplesForm()
+class SummaryStatsRegressionLinearBayesianForm : public AnalysisForm
 {
-	delete ui;
-}
+	Q_OBJECT
+
+public:
+	explicit SummaryStatsRegressionLinearBayesianForm(QWidget *parent = 0);
+	~SummaryStatsRegressionLinearBayesianForm();
+
+private:
+	Ui::SummaryStatsRegressionLinearBayesianForm *ui;
+};
+
+#endif // SUMMARYSTATSREGRESSIONLINEARBAYESIAN_H

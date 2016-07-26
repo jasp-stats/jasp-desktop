@@ -1,5 +1,5 @@
 {
-	"name": "BFFromTOneSample",
+	"name": "SummaryStatsTTestBayesianIndependentSamples",
 	"autorun": true,
 	"version": "1.0",
 	"options": [
@@ -11,12 +11,19 @@
 		{
 			"format": "",
 			"name": "n1Size",
-			"type": "Number"
+			"type": "Integer",
+			"min": 2
+		},
+		{
+			"format": "",
+			"name": "n2Size",
+			"type": "Integer",
+			"min": 2
 		},
 		{
 			"name": "hypothesis",
-			"options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
-			"default": "notEqualToTestValue",
+			"options": [ "groupsNotEqual", "groupOneGreater", "groupTwoGreater" ],
+			"default": "groupsNotEqual",
 			"type": "List"
 		},
 		{
