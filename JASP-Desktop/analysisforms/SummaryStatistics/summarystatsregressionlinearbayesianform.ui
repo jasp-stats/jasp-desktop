@@ -45,7 +45,7 @@
       <item row="2" column="3">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Unadjusted r squared</string>
+         <string>R-squared</string>
         </property>
        </widget>
       </item>
