@@ -210,7 +210,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				image <- .beginSaveImage(width, height)
 				.plotPosterior.ttest.summaryStats (t=options$tStatistic, n1=options$n1Size, n2=NULL, paired=FALSE, BFH1H0=(options$bayesFactorType == "BF10"), 
 												   dontPlotData= FALSE, rscale=options$priorWidth, addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-												   BF = bayesFactorObject$bf, oneSided = oneSidedHypothesis)
+												   BF = exp(bayesFactorObject$bf), oneSided = oneSidedHypothesis)
 				plot[["data"]]   <- .endSaveImage(image)
 				plot[["status"]] <- "complete"
 
@@ -284,7 +284,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 		if(options$plotPriorAndPosterior)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+			if (is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
 				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && 
 				diff$hypothesis==FALSE && diff$plotPriorAndPosteriorAdditionalInfo==FALSE))) && !is.null(state$priorAndPosteriorPlot))
 			{
@@ -308,7 +308,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 		if(options$plotBayesFactorRobustness)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+			if (is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
 				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && 
 				diff$hypothesis==FALSE && diff$plotBayesFactorRobustness==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 			{
