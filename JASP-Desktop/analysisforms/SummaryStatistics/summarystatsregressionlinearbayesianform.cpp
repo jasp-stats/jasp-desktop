@@ -24,6 +24,8 @@ SummaryStatsRegressionLinearBayesianForm::SummaryStatsRegressionLinearBayesianFo
 	ui(new Ui::SummaryStatsRegressionLinearBayesianForm)
 {
 	ui->setupUi(this);
+
+  ui->advancedOptions->hide();
 }
 
 SummaryStatsRegressionLinearBayesianForm::~SummaryStatsRegressionLinearBayesianForm()
