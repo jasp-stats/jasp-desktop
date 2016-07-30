@@ -42,7 +42,11 @@ void BoundTextBox::bindTo(Option *option)
 
 	if (_integer != NULL)
 	{
-		this->setValidator(new QIntValidator(this));
+		int v = _integer->value();
+		int min = _integer->min();
+		int max = _integer->max();
+
+		this->setValidator(new QIntValidator(min, max, this));
 		this->setText(QString::number(_integer->value()));
 		return;
 	}
