@@ -42,9 +42,7 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 		if (response$status == "changed") {
 			change <- .diff (options, response$options)
 			if (change$modelTerms || change$dependent ||
-				change$priorCovariates ||
-				change$sampleMode ||
-				change$fixedSamplesNumber)
+				change$priorCovariates)
 				return (response)
 			response$status <- "ok"
 		}
@@ -55,9 +53,7 @@ RegressionLinearBayesian <- function (dataset = NULL, options, perform = "run", 
 	if ( ! is.null (state)) {
 		change <- .diff (options, state$options)
 		if ( ! base::identical(change, FALSE) && (change$dependent || change$modelTerms ||
-			change$priorCovariates ||
-				change$sampleMode ||
-				change$fixedSamplesNumber)) {
+			change$priorCovariates)) {
 			state <- NULL
 		} else {
 			perform <- "run"
