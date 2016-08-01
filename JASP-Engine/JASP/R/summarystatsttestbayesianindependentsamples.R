@@ -139,8 +139,9 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 	rowsTTestBayesianIndependentSamples <- list()
 	bayesFactorObject <- NULL
 	priorAndPosteriorPlot <- NULL
-	posteriorPlotAddInfo <- NULL
+	priorAndPosteriorPlotAddInfo <- NULL
 	bayesFactorRobustnessPlot <- NULL
+	plots.sumstats.ttest <- list()
 
 
 	if(perform=="run")
@@ -185,10 +186,19 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		if(options$plotPriorAndPosterior)
 		{
 			if (is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size && diff$priorWidth == FALSE && 
-				diff$hypothesis==FALSE && diff$plotPriorAndPosterior==FALSE && diff$plotPriorAndPosteriorAdditionalInfo==FALSE))) && !is.null(state$priorAndPosteriorPlot))
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+				options$plotPriorAndPosteriorAdditionalInfo && !is.null(state$priorAndPosteriorPlot))
+			{
+				priorAndPosteriorPlot <- state$priorAndPosteriorPlotAddInfo
+				plots.sumstats.ttest[3] <- priorAndPosteriorPlot
+				priorAndPosteriorPlotAddInfo <- priorAndPosteriorPlot
+			}
+			else if (is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+				!options$plotPriorAndPosteriorAdditionalInfo && !is.null(state$priorAndPosteriorPlot))
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlot
+				plots.sumstats.ttest[2] <- priorAndPosteriorPlot
 			}
 			else
 			{
@@ -210,6 +220,16 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 				plot[["status"]] <- "complete"
 
 				priorAndPosteriorPlot <- plot
+
+				if(options$plotPriorAndPosteriorAdditionalInfo)
+				{
+					plots.sumstats.ttest[3] <- priorAndPosteriorPlot
+					priorAndPosteriorPlotAddInfo <- priorAndPosteriorPlot
+				}
+				else
+				{
+					plots.sumstats.ttest[2] <- priorAndPosteriorPlot
+				}
 			}
 		}
 
@@ -234,8 +254,8 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 			}
 
 			if (is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && 
-				diff$hypothesis==FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$n2Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+				!is.null(state$bayesFactorRobustnessPlot))
 			{
 				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
 			}
@@ -261,6 +281,8 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 
 				bayesFactorRobustnessPlot <- plot
 			}
+
+			plots.sumstats.ttest[1] <- bayesFactorRobustnessPlot
 		}
 	}
 	else #init phase
@@ -346,13 +368,21 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 		results[["inferentialPlots"]] <- list(title=ifelse(sum(c(options$plotPriorAndPosterior, options$plotBayesFactorRobustness)) > 1,"Inferential Plots", "Inferential Plot"), PriorPosteriorPlot=priorAndPosteriorPlot, BFrobustnessPlot=bayesFactorRobustnessPlot)
 	}
 
+
+	keep <- NULL
+	
+	for (plot in plots.sumstats.ttest)
+		keep <- c(keep, plot$data)
+
+
 	if (perform == "init")
 	{
-		return(list(results=results, status="inited", state=state))
+		return(list(results=results, status="inited", state=state, keep=keep))
 	}
 	else
 	{
-		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorObject=bayesFactorObject, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot, rowsTTestBayesianIndependentSamples=rowsTTestBayesianIndependentSamples	)))
+		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorObject=bayesFactorObject, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot, 
+					rowsTTestBayesianIndependentSamples=rowsTTestBayesianIndependentSamples, keep=keep, plotsTtest=plots.sumstats.ttest, priorAndPosteriorPlotAddInfo=priorAndPosteriorPlotAddInfo)))
 	}
 }
 
