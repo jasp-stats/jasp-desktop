@@ -190,9 +190,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 				options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlotAddInfo
-
 				index <- which(state$plotTypes == "posteriorPlotAddInfo")
-
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 				priorAndPosteriorPlotAddInfo <- priorAndPosteriorPlot
 			}
@@ -201,7 +199,6 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 				!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlot
-
 				index <- which(state$plotTypes == "posteriorPlot")
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 			}
@@ -314,9 +311,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 				options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlotAddInfo
-
 				index <- which(state$plotTypes == "posteriorPlotAddInfo")
-
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 				priorAndPosteriorPlotAddInfo <- priorAndPosteriorPlot
 			}
@@ -325,7 +320,6 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 				!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlot
-
 				index <- which( state$plotTypes == "posteriorPlot")
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 			}
