@@ -197,7 +197,7 @@ SummaryStatsBinomialTestBayesian <- function(dataset=NULL, options, perform = 'r
 				p <- try(silent=FALSE, expr= {
 							
 							image <- .beginSaveImage(530, 400)
-							.plotPosterior.binomTest(counts=options$successes, n=options$failures, theta0=options$testValue, a = options$betaPriorParamA, b = options$betaPriorParamB, BF10=BF10, hypothesis = hyp,
+							.plotPosterior.binomTest(counts=options$successes, n=(options$failures + options$successes), theta0=options$testValue, a = options$betaPriorParamA, b = options$betaPriorParamB, BF10=BF10, hypothesis = hyp,
 								addInformation = options$plotPriorAndPosteriorAdditionalInfo)
 							plot[["data"]] <- .endSaveImage(image)
 							
