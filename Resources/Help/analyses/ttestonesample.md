@@ -11,19 +11,19 @@ Assumptions
 
 Default Options
 -------
-### Test value: 
+### Test value:
 -Test value specified in the null hypothesis
 
 ### Hypothesis:
-- &ne; Test value: Two-sided alternative hypothesis that the population mean is not equal to the test value 
+- &ne; Test value: Two-sided alternative hypothesis that the population mean is not equal to the test value
 - &gt; Test value: One-sided alternative hypothesis that the population mean is larger than the test value
-- &lt; Test value: One sided alternative hypothesis that the population mean is smaller than the test value 
+- &lt; Test value: One sided alternative hypothesis that the population mean is smaller than the test value
 
 ### Missing Values:
- - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. 
+ - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test.
  Sample sizes may therefore vary across the tests.
- - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the tests. 
- 
+ - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the tests.
+
 Default Output
 -------
 ### One Sample T-Test:
@@ -42,6 +42,8 @@ Additional Options
 - Normality tests: Shapiro-Wilk test of normality
 - Descriptive plots: Displays the sample mean and the confidence interval
   - Confidence interval: Coverage of the confidence interval in percentages
+- Vovk-Sellke Maximum *p*-Ratio: The bound 1/(-e *p* log(*p*)) is derived from the shape of the *p*-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform(0,1), and under the alternative (H<sub>1</sub>) it is decreasing in *p*, e.g., a beta(&#945;, 1) distribution, where 0 < &#945; < 1. The Vovk-Sellke MPR is obtained by choosing the shape &#945; of the distribution under H<sub>1</sub> such that the obtained *p*-value is *maximally diagnostic*. The value is then the ratio of the densities at point *p* under H<sub>0</sub> and H<sub>1</sub>. The one-sided transformation follows from Morey & Wagenmakers (2014).  
+For example, if the two-sided *p*-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this *p*-value is at most 2.46 times more likely to occur under H<sub>1</sub> than under H<sub>0</sub>.
 
 Additional Output
 -------
@@ -52,7 +54,7 @@ Additional Output
 
 ### Descriptives:
 - N: Sample size
-- Mean: Sample mean 
+- Mean: Sample mean
 - SD: Sample standard deviation
 - SE: Standard error of the mean
 
@@ -60,7 +62,7 @@ Additional Output
 - W: W test statistic
 - p: p-value
 
-### Descriptive Plots: 
+### Descriptive Plots:
 - Displays the sample mean (black bullet), the x% confidence interval (whiskers), and the value of the test statistic (dashed line)
 
 References
