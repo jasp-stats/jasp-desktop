@@ -7,9 +7,9 @@
 			"format": "",
 			"name": "unadjustedRSquared",
 			"type": "Number",
-			"value": 0,
-			"min": 0,
-			"max": 0.99999
+			"min": 0.00001,
+			"max": 0.99999,
+			"value": 0.5
 		},
 		{
 			"name": "sampleMode",

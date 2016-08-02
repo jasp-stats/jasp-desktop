@@ -113,8 +113,8 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 				{
 					bayesFactorObject <- .bayesRegressionSummaryStatistics(options)
 					BF10 <- bayesFactorObject$bf
-					BF <- BF10
-					errorEstimate <- bayesFactorObject$properror
+					BF <- unname(BF10)
+					errorEstimate <- unname(bayesFactorObject$properror)
 
 					if (options$bayesFactorType == "BF01")
 					{
@@ -239,9 +239,14 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 .bayesRegressionSummaryStatistics <- function(options)
 {
-	bf10 <- BayesFactor::linearReg.R2stat(N = options$sampleSize, p=options$numberOfCovariates, R2=options$unadjustedRSquared, rscale = options$priorWidth)
+	bf10 <- try(BayesFactor::linearReg.R2stat(N = options$sampleSize, p=options$numberOfCovariates, R2=options$unadjustedRSquared, rscale = options$priorWidth))
+	if (class(bf10) != "try-error") {
+		out <- list(bf=exp(bf10[1]), properror=bf10[2])
+	} else {
+		out <- list(bf=NA, properror=NA)
+	}
 
-	list(bf=exp(bf10$bf), properror=bf10$properror)
+	return(out)
 }
 
 
