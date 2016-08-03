@@ -58,11 +58,11 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	// temporarily hides until the appropriate R code is implemented
-	ui->buttonAssignSplitby->hide();
-	ui->splitPlotColour->hide();
-	ui->splitby->hide();
-	ui->splitbyLabel->hide();
-	ui->splitPlotElements->hide();
+	//ui->buttonAssignSplitby->hide();
+	//ui->splitPlotColour->hide();
+	//ui->splitby->hide();
+	//ui->splitbyLabel->hide();
+	//ui->splitPlotElements->hide();
 	ui->widgetCharts->hide();
 	ui->widgetFormat->hide();
 	ui->statisticsValuesAreGroupMidpoints->hide();
