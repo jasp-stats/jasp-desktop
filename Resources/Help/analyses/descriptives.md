@@ -1,11 +1,11 @@
 ﻿Descriptives
 ============
 
-Descriptives allows you to obtain basic descriptive statistics, histograms and density plots, correlation plots, and frequency tables.
+Descriptives allows you to obtain basic descriptive statistics, histograms and density plots, correlation plots, boxplots, and frequency tables.
 
 Default Options
 -------
-###Statistics:
+### Statistics:
 - Central Tendency (only for continuous variables):
   - Mean: Arithmetic mean of the data points
 - Dispersion (only for continuous variables):
@@ -25,7 +25,7 @@ Default Output
 
 Additional Options
 ------------------
-###Display Frequency Tables (nominal and ordinal variables):
+### Display Frequency Tables (nominal and ordinal variables):
 - Displays a frequency table for each variable
 
 ### Plots:
@@ -35,9 +35,13 @@ Additional Options
 - Correlation Plot:
   - For continuous variables, displays histograms, density plots, and scatterplots
 - Boxplots:
-  - For continuous variables, displays a boxplot. Optionally, the outliers are labelled. Outliers are based on the interquartile range (IQR), i.e. [25th Quartile] - 1.5 × IQR and [75th Quartile] + 1.5 × IQR.
+  - For continuous variables, displays a boxplot.
+  - Optionally, the outliers are labelled. Outliers are based on the interquartile range (IQR), i.e., [25th Quartile] - 1.5 × IQR and [75th Quartile] + 1.5 × IQR.
+  - Can also display in color.
+  - Has selectable boxplot, violin, and jitter elements for displaying the distribution of the data.
+  - Can be split by a categorical variable such as experimental condition.
 
-###Statistics (only for continuous variables):
+### Statistics (only for continuous variables):
 - Percentile Values:
   - Quartiles: Displays the 25th, 50th, and 75th quartile of the data points
   - Cut points for x equal groups: Displays the cut points that divide the data into x equal groups; default is 4 equal groups
@@ -56,7 +60,7 @@ Additional Options
 
 Additional Output
 ------------------
-###Display Plots:
+### Display Distribution Plots:
 - For continuous variables, displays a histogram and the fit of a nonparametric density estimator
 - For nominal and ordinal variables, displays a frequency distribution
 
@@ -64,14 +68,17 @@ Additional Output
 - Displays a matrix of plots between continuous variables, with scatterplots between the variables in the off-diagonal entries, and histograms and density plots in the diagonal entries.
  The line represents the fit of a 1st, 2nd, 3rd, or 4th order polynomial (the selection is based on the Bayesian information criterion; Schwarz, 1978).
 
-###Display Frequency Tables (nominal and ordinal variables):
+### Display Boxplots:
+- For continuous variables, displays a boxplot. Optionally, the outliers are labelled. Outliers are based on the interquartile range (IQR), i.e., [25th Quartile] - 1.5 × IQR and [75th Quartile] + 1.5 × IQR. Can also display in color, and has selectable boxplot, violin, and jitter elements for displaying the distribution of the data. This can be split by a categorical variable such as experimental condition.
+
+### Display Frequency Tables (nominal and ordinal variables):
 - Displays a frequency table for each variable
   - Frequency: Frequency of occurrence of each value
   - Percent: Percentage of occurrence of each value
   - Valid Percent: Valid percentage of occurrence of each value
   - Cumulative Percent: Cumulative percentage
 
-###Descriptive Statistics:
+### Descriptive Statistics:
   - Std. Error of Mean: Standard error of the mean
   - Median: Median of the data points
   - Mode: Mode of the data points
