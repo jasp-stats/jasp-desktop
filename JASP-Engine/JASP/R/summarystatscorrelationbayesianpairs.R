@@ -131,7 +131,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 	priorAndPosteriorPlot <- NULL
 	priorAndPosteriorPlotAddInfo <- NULL
 	bayesFactorRobustnessPlot <- NULL
-	plot.sumstats.correlation <- list()
+	plots.sumstats.correlation <- list()
 	plotTypes <- list()
 
 	if(perform=="run")
@@ -179,7 +179,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlotAddInfo
 				index <- which(state$plotTypes == "posteriorPlotAddInfo")
-				plot.sumstats.correlation[[length(plot.sumstats.correlation)+1]] <- state$plotsCorrelationTest[[index]]
+				plots.sumstats.correlation[[length(plots.sumstats.correlation)+1]] <- state$plotsCorrelationTest[[index]]
 				priorAndPosteriorPlotAddInfo <- priorAndPosteriorPlot
 			}
 			else if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
@@ -188,7 +188,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlot
 				index <- which(state$plotTypes == "posteriorPlot")
-				plot.sumstats.correlation[[length(plot.sumstats.correlation)+1]] <- state$plotsCorrelationTest[[index]]
+				plots.sumstats.correlation[[length(plots.sumstats.correlation)+1]] <- state$plotsCorrelationTest[[index]]
 			}
 			else
 			{
@@ -296,7 +296,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlotAddInfo
 				index <- which(state$plotTypes == "posteriorPlotAddInfo")
-				plot.sumstats.correlation[[length(plot.sumstats.correlation)+1]] <- state$plotsCorrelationTest[[index]]
+				plots.sumstats.correlation[[length(plots.sumstats.correlation)+1]] <- state$plotsCorrelationTest[[index]]
 				priorAndPosteriorPlotAddInfo <- priorAndPosteriorPlot
 			}
 			else if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
@@ -305,7 +305,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlot
 				index <- which(state$plotTypes == "posteriorPlot")
-				plot.sumstats.correlation[[length(plot.sumstats.correlation)+1]] <- state$plotsCorrelationTest[[index]]
+				plots.sumstats.correlation[[length(plots.sumstats.correlation)+1]] <- state$plotsCorrelationTest[[index]]
 			}
 			else
 			{
@@ -369,6 +369,8 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 			{
 				width  <- 530
 				height <- 400
+
+				plot <- list()
 
 				plot[["title"]]  <- "Bayes Factor Robustness Check"
 				plot[["width"]]  <- width
