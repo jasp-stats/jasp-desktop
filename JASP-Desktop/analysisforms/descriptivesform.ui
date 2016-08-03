@@ -1457,7 +1457,7 @@
  <connections>
   <connection>
    <sender>percentileValuesPercentiles</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>percentileValuesPercentilesPercentiles</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
@@ -1473,7 +1473,7 @@
   </connection>
   <connection>
    <sender>percentileValuesEqualGroups</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>percentileValuesEqualGroupsNo</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
@@ -1489,7 +1489,7 @@
   </connection>
   <connection>
    <sender>splitPlots</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>splitPlotOptionBox</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
