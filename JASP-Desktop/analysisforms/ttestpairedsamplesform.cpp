@@ -45,6 +45,15 @@ TTestPairedSamplesForm::TTestPairedSamplesForm(QWidget *parent) :
 
 	ui->confidenceIntervalInterval->setLabel("Confidence interval");
 	ui->descriptivesPlotsConfidenceInterval->setLabel("Confidence interval");
+
+#ifdef QT_NO_DEBUG
+	// temporarily hides until the appropriate R code is implemented
+	ui->VovkSellkeMPR->hide();
+
+#else
+	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
+
+#endif
 }
 
 TTestPairedSamplesForm::~TTestPairedSamplesForm()
