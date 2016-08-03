@@ -49,7 +49,7 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 	ui->buttonAssign_main_fields->setSourceAndTarget(ui->listAvailableFields, ui->variables);
 	ui->buttonAssignSplitby->setSourceAndTarget(ui->listAvailableFields, ui->splitby);
 
-	ui->splitPlotOptionBox->setStyleSheet("border:0;");
+	ui->pagePlots->setStyleSheet("QGroupBox {border:0;}");
 
 	ui->pageStatistics->hide();
 	ui->pageCharts->hide();
@@ -57,7 +57,7 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 	ui->pagePlots->hide();
 
 #ifdef QT_NO_DEBUG
-	// temporary hides until the appropriate R code is implemented
+	// temporarily hides until the appropriate R code is implemented
 	ui->buttonAssignSplitby->hide();
 	ui->splitPlotColour->hide();
 	ui->splitby->hide();
@@ -67,11 +67,11 @@ DescriptivesForm::DescriptivesForm(QWidget *parent) :
 	ui->widgetFormat->hide();
 	ui->statisticsValuesAreGroupMidpoints->hide();
 #else
-	ui->buttonAssignSplitby->setStyleSheet("background-color: pink;");
-	ui->splitPlotColour->setStyleSheet("background-color: pink;");
-	ui->splitby->setStyleSheet("background-color: pink;");
-	ui->splitbyLabel->setStyleSheet("background-color: pink;");
-	ui->splitPlotElements->setStyleSheet("background-color: pink;");
+	//ui->buttonAssignSplitby->setStyleSheet("background-color: pink;");
+	//ui->splitPlotColour->setStyleSheet("background-color: pink;");
+	//ui->splitby->setStyleSheet("background-color: pink;");
+	//ui->splitbyLabel->setStyleSheet("background-color: pink;");
+	//ui->splitPlotElements->setStyleSheet("background-color: pink;");
 	ui->widgetCharts->setStyleSheet("background-color: pink;");
 	ui->widgetFormat->setStyleSheet("background-color: pink;");
 	ui->statisticsValuesAreGroupMidpoints->setStyleSheet("background-color: pink;");

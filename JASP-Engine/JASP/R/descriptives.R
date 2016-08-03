@@ -1224,6 +1224,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
 			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y,
 																											xend=xend, yend=yend),
+																 size = 0.75,
 																 inherit.aes=FALSE),
 					 ggplot2::scale_y_continuous(breaks=b))
 		}
@@ -1338,7 +1339,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																				scale = "width") +
 						ggplot2::stat_boxplot(geom = "errorbar",
-																	stat_params = list(width = 0.2/nlevels(group),
+																	stat_params = list(width = boxWidth/2,
 																	size = 0.75)) +
 						ggplot2::geom_boxplot(size = 0.75, width = boxWidth,
 																	outlier.shape = NA) +
@@ -1353,7 +1354,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																				scale = "width") +
 						ggplot2::stat_boxplot(geom = "errorbar",
-																	stat_params = list(width = 0.2/nlevels(group),
+																	stat_params = list(width = boxWidth/2,
 																	size = 0.75)) +
 						ggplot2::geom_boxplot(size = 0.75, outlier.size = 1.5, width = boxWidth) +
 						ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
@@ -1362,7 +1363,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				} else if (options$splitPlotBoxplot && options$splitPlotJitter) {
 
 					p <- p + ggplot2::stat_boxplot(geom = "errorbar",
-																				 stat_params = list(width = 0.2/nlevels(group),
+																				 stat_params = list(width = boxWidth/2,
 																				 size = 0.75)) +
 						ggplot2::geom_boxplot(size = 0.75, outlier.shape = NA, width = boxWidth) +
 						ggplot2::geom_jitter(size = 2.5, shape = 1, stroke = 1,
@@ -1385,7 +1386,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				} else if (options$splitPlotBoxplot){
 
 					p <- p + ggplot2::stat_boxplot(geom = "errorbar",
-																				 stat_params = list(width = 0.2/nlevels(group),
+																				 stat_params = list(width = boxWidth/2,
 																				 size = 0.75)) +
 						ggplot2::geom_boxplot(size = 0.75, outlier.size = 1.5, width = boxWidth)
 
@@ -1410,14 +1411,10 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 						panel.grid.minor = ggplot2::element_blank(),
 						plot.title = ggplot2::element_text(size = 18),
 						panel.grid.major = ggplot2::element_blank(),
-						axis.title.x = ggplot2::element_text(size = 18, vjust=0.5),
-																								 #margin = ggplot2::margin(10, 0, 0, 0)),
-						axis.title.y = ggplot2::element_text(size = 18, vjust=0.5),
-																								 #margin = ggplot2::margin(0, 10, 0, 0)),
+						axis.title.x = ggplot2::element_text(size = 18, vjust=0.1),
+						axis.title.y = ggplot2::element_text(size = 18, vjust=0.9),
 						axis.text.x = ggplot2::element_text(size = 15),
-																								#margin = ggplot2::margin(1, 0, 0, 0)),
 						axis.text.y = ggplot2::element_text(size = 15),
-																								#margin = ggplot2::margin(0, 1, 0, 0)),
 						panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
 						plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
 						legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
