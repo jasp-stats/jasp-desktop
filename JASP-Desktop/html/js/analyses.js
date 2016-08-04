@@ -119,11 +119,43 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		};
 	},
 
+	_toSubSubHtml: function(instr) {
+		var out = "";
+		var supsub = "";
+		for (var x = 0; x < instr.length; x++)
+		{
+			var c = instr.charAt(x);
+			switch (c)
+			{
+			case '<':
+				supsub=instr.substring(x+1, x+5);
+				if (supsub === "sup>" || supsub === "/sup" || supsub === "sub>" || supsub === "/sub")
+					out+=c;
+				else
+					out+="&lt;";
+				break;
+			case '>':
+				supsub=instr.substring(x-4, x);
+				if (supsub === "<sup" || supsub === "/sup" || supsub === "<sub" || supsub === "/sub")
+					out+=c;
+				else
+					out+="&gt;";
+				break;
+			default:
+				out+=c;
+				break;
+			}
+		}
+		return out;
+	},
+
+
 	setResultsMeta: function (resultsNotes) {
 
 		var notes = resultsNotes['notes'];
 		var title = resultsNotes['title'];
 		var first = notes['first'];
+		first['text'] = this._toSubSubHtml(first['text']);
 
 		this.note.set(first);
 		this.noteBox.setVisibility(first['visible']);
