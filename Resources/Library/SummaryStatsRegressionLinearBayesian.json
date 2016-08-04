@@ -5,7 +5,15 @@
 	"options": [
 		{
 			"format": "",
-			"name": "unadjustedRSquared",
+			"name": "unadjustedRSquaredNull",
+			"type": "Number",
+			"value": 0,
+			"min": 0,
+			"max": 0.99999
+		},
+		{
+			"format": "",
+			"name": "unadjustedRSquaredAlternative",
 			"type": "Number",
 			"min": 0.00001,
 			"max": 0.99999,
@@ -35,10 +43,16 @@
 		},
 		{
 			"format": "",
-			"name": "numberOfCovariates",
+			"name": "numberOfCovariatesNull",
 			"type": "Integer",
 			"min": 1
 		},
+		{
+			"format": "",
+			"name": "numberOfCovariatesAlternative",
+			"type": "Integer",
+			"min": 1
+		},		
 		{
 			"format": "",
 			"name": "priorWidth",
