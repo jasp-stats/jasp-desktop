@@ -1,4 +1,4 @@
-{
+	{
 	"name": "SummaryStatsRegressionLinearBayesian",
 	"autorun": true,
 	"version": "1.0",
@@ -18,11 +18,6 @@
 			"min": 0.00001,
 			"max": 0.99999,
 			"value": 0.5
-		},
-		{
-			"name": "sampleMode",
-			"type": "List",
-			"options": [ "auto", "manual" ]
 		},
 		{
 			"name": "bayesFactorType",
@@ -52,7 +47,7 @@
 			"name": "numberOfCovariatesAlternative",
 			"type": "Integer",
 			"min": 1
-		},		
+		},
 		{
 			"format": "",
 			"name": "priorWidth",
@@ -61,5 +56,5 @@
 			"min": 0,
 			"max": 2
 		}
-	]	
+	]
 }
