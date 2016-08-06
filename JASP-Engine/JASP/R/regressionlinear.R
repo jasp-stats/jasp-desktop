@@ -659,7 +659,7 @@ RegressionLinear <- function(dataset=NULL, options, perform="run", callback=func
 					
 					} else if (m > 1){
 					
-						df1 <- abs(length(lm.model[[ m ]]$variables) - length(lm.model[[ m-1 ]]$variables) )
+						df1 <- abs(length(lm.model[[ m ]]$variables))
 					}
 					
 					df2 <- length( dataset[[ dependent.base64 ]]) - length(lm.model[[ m ]]$variables) - 1
