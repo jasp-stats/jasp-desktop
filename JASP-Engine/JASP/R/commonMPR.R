@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# Vovk-Sellke-Bayarri-Berger Maximum p-Ratio calculationa.
+# Vovk-Sellke-Bayarri-Berger Maximum p-Ratio calculation.
 # Sellke, T., Bayarri, M.J., Berger, J.O. (2001) Calibration of p Values for
 # Testing Precise Null Hypotheses. The American Statistician. 55(1) 62-71
 .VovkSellkeMPR <- function(p){
