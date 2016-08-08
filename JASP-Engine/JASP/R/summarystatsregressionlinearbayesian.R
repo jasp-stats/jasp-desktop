@@ -28,7 +28,6 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 	run <- (perform == "run")
 
-
 	results <- list()
 
 	meta <- list()
@@ -38,10 +37,13 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Linear Regression"
 
-	fields=list()
-	fields[[length(fields)+1]] <- list(name="sampleSize", type="integer", title="n")
-	fields[[length(fields)+1]] <- list(name="numberOfCovariates", type="integer", title="Covariates")
-	fields[[length(fields)+1]] <- list(name="unadjustedRSquared", type="number", title="R-squared")
+	nullModelSpecified <- TRUE
+
+	#check if null model values are different from the default values
+	if(options$numberOfCovariatesNull==0 && options$$unadjustedRSquaredNull==0)
+	{
+		nullModelSpecified <- FALSE #use default null model
+	}
 
 	#Bayes factor type (BF10, BF01, log(BF10))
 	if (options$bayesFactorType == "BF01")
@@ -57,15 +59,11 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
 	}
 
-	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
-	fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="% error")
-
 	table <- list()
-	table[["title"]] <- "Bayesian Linear Regression"
-	table[["schema"]] <- list(fields=fields)
+	table[["title"]]    <- "Bayesian Linear Regression"
+	table[["schema"]]   <- list(fields=fields)
 	table[["citation"]] <- list("Liang, F. and Paulo, R. and Molina, G. and Clyde, M. A. and Berger, J. O. (2008). Mixtures of g-priors for Bayesian Variable Selection. Journal of the American Statistical Association, 103, pp. 410-423",
-								"Rouder, J. N. and Morey, R. D. (in press, Multivariate Behavioral Research). Bayesian testing in regression.")
-
+															"Rouder, J. N. and Morey, R. D. (in press, Multivariate Behavioral Research). Bayesian testing in regression.")
 
 	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()
@@ -75,13 +73,32 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 	table[["footnotes"]] <- as.list(footnotes)
 
+	fields=list()
+	fields[[length(fields)+1]] <- list(name="sampleSize", type="integer", title="n")
 
+	if(nullModelSpecified)
+	{
+		fields[[length(fields)+1]] <- list(name="numberOfCovariatesNull", type="integer", title="Covariates\u2081")
+		fields[[length(fields)+1]] <- list(name="unadjustedRSquaredNull", type="number", title="R-squared\u2081")
+		fields[[length(fields)+1]] <- list(name="numberOfCovariatesAlternative", type="integer", title="Covariates\u2082")
+		fields[[length(fields)+1]] <- list(name="unadjustedRSquaredAlternative", type="number", title="R-squared\u2082")
+		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
+	}
+	else
+	{
+		fields[[length(fields)+1]] <- list(name="numberOfCovariatesAlternative", type="integer", title="Covariates")
+		fields[[length(fields)+1]] <- list(name="unadjustedRSquaredAlternative", type="number", title="R-squared")
+		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
+		fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="% error")
+	}
+
+	#initialize variables
 	data <- list()
 	rowsRegressiontest <- list()
 	bayesFactorRobustnessPlot <- NULL
 	bayesFactorObject <- NULL
 
-	if(perform=="run")
+	if(run)
 	{
 		status <- .isInputValidRegressionSummaryStatistics(options)
 
@@ -103,7 +120,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 					if (options$bayesFactorType == "BF01")
 					{
 						BF <- 1/BF10
-					} 
+					}
 					else if(options$bayesFactorType == "LogBF10")
 					{
 						BF <- log(BF10)
@@ -119,12 +136,12 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 					if (options$bayesFactorType == "BF01")
 					{
 						BF <- 1/BF10
-					} 
+					}
 					else if(options$bayesFactorType == "LogBF10")
 					{
 						BF <- log(BF10)
 					}
-					
+
 					row <- list(sampleSize=.clean(options$sampleSize), numberOfCovariates=.clean(options$numberOfCovariates), unadjustedRSquared=.clean(options$unadjustedRSquared), BF=.clean(BF), properror=.clean(errorEstimate))
 				}
 
@@ -138,19 +155,19 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 					else
 					{
 						plot <- list()
-					
+
 						plot[["title"]] <- "Bayes factor Robustness check"
 						plot[["width"]]  <- 530
 						plot[["height"]] <- 400
 
 						p <- try(silent=FALSE, expr= {
-									
+
 									image <- .beginSaveImage(530, 400)
 									.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariates, unadjustedRSquared=options$unadjustedRSquared,
-										rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10" || options$bayesFactorType=="LogBF10"), 
+										rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10" || options$bayesFactorType=="LogBF10"),
 										BF10post = ifelse((options$bayesFactorType == "BF10" || options$bayesFactorType == "BF01"), .clean(BF), .clean(exp(BF))))
 									plot[["data"]] <- .endSaveImage(image)
-									
+
 								})
 
 						if (class(p) == "try-error")
@@ -168,7 +185,6 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			row <- status$row
 		}
-
 
 		data <- row
 		rowsRegressiontest <- row
@@ -201,11 +217,11 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 			else
 			{
 				plot <- list()
-				
+
 				plot[["title"]] <- "Bayes factor Robustness check"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				
+
 				image <- .beginSaveImage(530, 400)
 				.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0= (options$bayesFactorType == "BF10" || options$bayesFactorType=="LogBF10"), dontPlotData= TRUE)
 				plot[["data"]] <- .endSaveImage(image)
@@ -309,17 +325,17 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	{
 		r <- rscale
 	}
-	
+
 
 	par(mar= c(5, 6, 6, 7) + 0.1, las=1)
 
 	if (dontPlotData)
 	{
 		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
-		
+
 		axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
 		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
-		
+
 		if (BFH1H0)
 		{
 			mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= 3.1)
@@ -336,13 +352,13 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	#### get BFs ###
 	if(r > 1.5)
 	{
-		rValues <- seq(0.0005, 2, length.out = 535)	
+		rValues <- seq(0.0005, 2, length.out = 535)
 	}
 	else
 	{
 		rValues <- seq(0.0005, 1.5, length.out = 400)
 	}
-	
+
 	# BF10
 	BF10 <- vector("numeric", length(rValues))
 
@@ -350,7 +366,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 		BF <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariates, R2=unadjustedRSquared, rscale = rValues[i])
 		BF10[i] <- .clean(exp(BF$bf))
-		
+
 		if ( ! .shouldContinue(callback()))
 			return()
 	}
@@ -378,24 +394,24 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	{
 		return()
 	}
-	
+
 	####################### scale y axis ###########################
-	
+
 	BF <- c(BF10, BF10m, BF10w, BF10ultra, BF10user)
-	
+
 	if (!BFH1H0) {
-		
+
 		BF <- 1 / BF
 		BF10 <- 1 / BF10
 		BF10m  <- 1 / BF10m
 		BF10w <- 1 / BF10w
 		BF10ultra <- 1 / BF10ultra
 	}
-	
+
 	# y-axis labels larger than 1
 	y1h <- "1"
 	i <- 1
-	
+
 	while (eval(parse(text= y1h[i])) < max(BF10))
 	{
 		if (grepl(pattern = "e",y1h[i]))
@@ -406,19 +422,19 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			newy <- paste(y1h[i], "0", sep= "")
 		}
-		
+
 		if (eval(parse(text=newy)) >= 10^6)
 		{
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
-		
+
 		y1h <- c(y1h, newy)
 		i <- i + 1
 	}
-	
+
 	y3h <- "3"
 	i <- 1
-	
+
 	while (eval(parse(text= y3h[i])) < max(BF10))
 	{
 		if (grepl(pattern = "e",y3h[i]))
@@ -429,12 +445,12 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			newy <- paste(y3h[i], "0", sep= "")
 		}
-		
+
 		if (as.numeric(newy) >= 10^6)
 		{
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
-		
+
 		y3h <- c(y3h, newy)
 		i <- i + 1
 	}
@@ -459,7 +475,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	}
 
 	yhighLab <- as.character(yhigh)
-	
+
 	# y-axis labels smaller than 1
 	y1l <- "1/1"
 	i <- 1
@@ -474,21 +490,21 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			newy <- paste(y1l[i], "0", sep= "")
 		}
-		
+
 		if (eval(parse(text= newy)) <= 10^(-6))
 		{
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <-  sub("-", "+", x = newy)
 			newy <- paste0("1/", newy)
 		}
-		
+
 		y1l <- c(y1l, newy)
 		i <- i + 1
 	}
-	
+
 	y3l <- "1/3"
 	i <- 1
-	
+
 	while (eval(parse(text= y3l[i])) > min(BF10))
 	{
 		if (grepl(pattern = "e",y3l[i]))
@@ -499,7 +515,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			newy <- paste(y3l[i], "0", sep= "")
 		}
-		
+
 		if (newy == "1/3e+9")
 		{
 			newy <- "1/3e+09"
@@ -540,20 +556,20 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 			e <- e + 1
 		}
 	}
-	
+
 	yLab <- c(rev(ylow[-1]), yhighLab)
-	
+
 	# remove 3's if yLab vector is too long
 	omit3s <- FALSE
-	
+
 	if (length(yLab) > 9)
 	{
 		omit3s <- TRUE
-		
+
 		ind <- which(yLab == "3")
-		
+
 		yLabsHigh <- yLab[ind:length(yLab)]
-		
+
 		if (length(yLabsHigh) > 1)
 		{
 			yLabsHigh <- yLabsHigh[seq(2, length(yLabsHigh),2)]
@@ -562,12 +578,12 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			yLabsHigh <- character(0)
 		}
-		
+
 		yLabsLow <- yLab[1:(ind-1)]
 		yLabsLow <- yLabsLow[-grep(pattern = "/3", x = yLab)]
-		
+
 		yLab1s <- c(yLabsLow, yLabsHigh)
-		
+
 		if (max(BF10) > eval(parse(text= yLab1s[length(yLab1s)])))
 		{
 			for (i in 1:2)
@@ -581,7 +597,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 				{
 					newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 				}
-				
+
 				if (eval(parse(text=newy)) >= 10^6)
 				{
 					newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
@@ -590,7 +606,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 				yLab1s <- c(yLab1s, newy)
 			}
 		}
-		
+
 		if (max(BF10) > eval(parse(text= yLab1s[length(yLab1s)-1])))
 		{
 			if (grepl(pattern = "e",yLab1s[length(yLab1s)]))
@@ -602,15 +618,15 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 			{
 				newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 			}
-			
-			if (eval(parse(text=newy)) >= 10^6) 
+
+			if (eval(parse(text=newy)) >= 10^6)
 			{
 				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			}
-			
+
 			yLab1s <- c(yLab1s, newy)
 		}
-		
+
 		if (yLab1s[1] == "1")
 		{
 			yLab1s <- c(paste0(yLab1s[1], "/", "10"), yLab1s)
@@ -619,7 +635,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			yLab1s <- c(yLab1s, "10")
 		}
-		
+
 		if (min(BF10) < eval(parse(text= yLab1s[1])))
 		{
 			for (i in 1:2)
@@ -641,10 +657,10 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 					newy <- paste0("1/", newy)
 				}
 			}
-			
+
 			yLab1s <- c(newy, yLab1s)
 		}
-		
+
 		if (min(BF10) < eval(parse(text= yLab1s[2])))
 		{
 			if (grepl(pattern = "e",yLab1s[1]))
@@ -655,7 +671,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 			{
 				newy <- paste(yLab1s[1], "0", sep= "")
 			}
-			
+
 			if (eval(parse(text= newy)) <= 10^(-6))
 			{
 				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
@@ -663,14 +679,14 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 				newy <- substring(newy, nchar(newy)-4, nchar(newy))
 				newy <- paste0("1/", newy)
 			}
-			
-			
+
+
 			yLab1s <- c(newy, yLab1s)
 		}
-		
+
 		yLab <- yLab1s
 	}
-	
+
 	if (!(.shouldContinue(callback())))
 	{
 		return()
@@ -679,7 +695,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	while (length(yLab) > 9)
 	{
 		ind <- which(yLab == "1")
-		
+
 		if (ind == 1)
 		{
 			yLabLow <- character(0)
@@ -688,7 +704,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			yLabLow <- yLab[1:(ind-1)]
 		}
-		
+
 		if (ind == length(yLab))
 		{
 			yLabHigh <- character(0)
@@ -706,7 +722,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			yLabLow <- yLabLow
 		}
-		
+
 		if (length(yLabHigh) > 1)
 		{
 			yLabHigh <- yLabHigh[seq(2, length(yLabHigh), 2)]
@@ -728,7 +744,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 		yLab <- c(rev(yLabLow), "1", yLabHigh)
 	}
-	
+
 	if (!(.shouldContinue(callback())))
 	{
 		return()
@@ -738,12 +754,12 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	{
 		interval <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[2])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) + interval
-		
+
 		if (nchar(pot) == 1)
 		{
 			pot <- paste("0", pot, sep="")
 		}
-		
+
 		newy <- paste("1/1e", "+", pot, sep="")
 		yLab <- c(newy, yLab)
 	}
@@ -752,7 +768,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	{
 		interval <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)-1])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) + interval
-		
+
 		if (nchar(pot) == 1)
 		{
 			pot <- paste("0", pot, sep="")
@@ -761,14 +777,14 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		newy <- paste(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
 		yLab <- c( yLab, newy)
 	}
-	
+
 	yAt <- vector("numeric", length(yLab))
-	
+
 	for (i in seq_along(yLab))
 	{
 		yAt[i] <- log(eval(parse(text= yLab[i])))
 	}
-	
+
 	####################### plot ###########################
 
 	if(r > 1.5)
@@ -807,7 +823,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		for (i in 1:(length(yAthigh)-1))
 		{
 			yy <- mean(c(yAthigh[i], yAthigh[i+1]))
-			
+
 			if (yAthigh[i] == log(1))
 			{
 				text(x = xx, yy,"Anecdotal", pos= 4, cex= cexText)
@@ -829,13 +845,13 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 				text(x = xx, yy,"Extreme", pos= 4, cex= cexText)
 			}
 		}
-		
+
 		yAtlow <- rev(yAt[yAt <= 0])
-		
+
 		for (i in 1:(length(yAtlow)-1))
 		{
 			yy <- mean(c(yAtlow[i], yAtlow[i+1]))
-			
+
 			if (yAtlow[i] == log(1))
 			{
 				text(x = xx, yy,"Anecdotal", pos= 4, cex= cexText)
@@ -857,26 +873,26 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 				text(x = xx, yy,"Extreme", pos= 4, cex= cexText)
 			}
 		}
-		
+
 		axis(side=4, at= yAt,tick=TRUE,las=2, cex.axis= cexAxis, lwd= lwdAxis, labels=FALSE, line= -0.6)
-		
+
 		xx <- grconvertX(0.96, "ndc", "user")
 		yy <- grconvertY(0.5, "npc", "user")
 		text(xx, yy, "Evidence", srt= -90, cex= cexEvidence)
 	}
-	
+
 	if (omit3s)
 	{
 		if (eval(parse(text= yLab[1])) <= 1/10^6)
 		{
 			line <- 4.75
-			
+
 		}
 		else
 		{
 			line <- 4.3
 		}
-		
+
 		if (BFH1H0)
 		{
 			mtext(text = expression(BF[1][0]), side = 2, las=0, cex = cexYXlab, line= line)
@@ -886,7 +902,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 			mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= line)
 		}
 	}
-	
+
 	if (omit3s == FALSE)
 	{
 		if (BFH1H0)
@@ -935,7 +951,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	{
 		text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H1", cex= cexText)
 	}
-	
+
 	if ((! .shouldContinue(callback())))
 	{
 		return()
@@ -997,7 +1013,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		BF10wt <- formatC(BF10wText, 3, format = "f")
 		BF01wt <- formatC(BF01wText, 3, format = "f")
 	}
-	
+
 	if (BF10wText >= BF01wText)
 	{
 		wBF <- bquote(BF[10]==.(BF10wt))
@@ -1020,7 +1036,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		BF10ultrat <- formatC(BF10ultraText, 3, format = "f")
 		BF01ultrat <- formatC(BF01ultraText, 3, format = "f")
 	}
-	
+
 	if (BF10ultraText >= BF01ultraText)
 	{
 		ultraBF <- bquote(BF[10]==.(BF10ultrat))
