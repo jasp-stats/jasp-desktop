@@ -1327,11 +1327,13 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				if (options$splitPlotColour){
 					p <- ggplot2::ggplot(plotDat, ggplot2::aes(x = group, y,
 																										 fill = group)) +
-						ggplot2::scale_fill_hue(c=60, l=80)
+						ggplot2::scale_fill_hue(c=60, l=80) +
+						ggplot2::scale_colour_hue(c=60, l=80)
 				} else {
 					p <- ggplot2::ggplot(plotDat, ggplot2::aes(x = group, y,
 																										 fill = group)) +
-						ggplot2::scale_fill_manual(values=rep("grey", nlevels(group)))
+						ggplot2::scale_fill_manual(values=rep("grey", nlevels(group))) +
+						ggplot2::scale_colour_manual(values=rep("grey", nlevels(group)))
 				}
 
 				if (options$splitPlotViolin && options$splitPlotBoxplot && options$splitPlotJitter){

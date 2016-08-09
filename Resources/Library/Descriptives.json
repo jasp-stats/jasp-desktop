@@ -123,7 +123,7 @@
 		{
 			"name": "splitPlotOutlierLabel",
 			"type": "Boolean",
-			"default": true
+			"default": false
 		},
 		{
 			"name": "splitPlotColour",
