@@ -25,7 +25,7 @@
 		"description" : "A nice correlation data set"
 	},
 	{
-		"name" : "Debug Dataset (Erik-Jan & Ravi 2016)",
+		"name" : "Debug Dataset (JASP Team, 2016)",
 		"path" : "debug.csv",
 		"description" : "For testing. Readme: is.gd/jaspdata"
 	}
