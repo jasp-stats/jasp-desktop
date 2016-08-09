@@ -93,7 +93,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			stateDescriptivesPlot <- state$stateDescriptivesPlot
 		}
 
-		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['homogeneityTests']] == FALSE) {
+		if (is.list(diff) && diff[['modelTerms']] == FALSE && diff[['dependent']] == FALSE && diff[['wlsWeights']] == FALSE && diff[['homogeneityTests']] == FALSE && diff[['VovkSellkeMPR']] == FALSE) {
 
 			# old levene's table can be used
 
@@ -1382,7 +1382,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		} else {
 			levenes.table[["data"]] <- list(list("F"=.clean(r[1,2]), "df1"=r[1,1], "df2"=r[2,1], "p"=.clean(r[1,3]), ".isNewGroup"=TRUE))
 		}
-		print(.VovkSellkeMPR(r[1,3]))
+
 		levenes.table[["footnotes"]] <- as.list(footnotes)
 		levenes.table[["status"]] <- "complete"
 
@@ -1390,7 +1390,12 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	} else {
 
-		levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"=".", ".isNewGroup"=TRUE))
+		if (options$VovkSellkeMPR){
+			levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"=".", "VovkSellkeMPR"=".", ".isNewGroup"=TRUE))
+		} else {
+			levenes.table[["data"]] <- list(list("F"=".", "df1"=".", "df2"=".", "p"=".", ".isNewGroup"=TRUE))
+		}
+
 		levenes.table[["footnotes"]] <- as.list(footnotes)
 
 		stateLevene <- NULL
