@@ -164,8 +164,13 @@ FSBMOSF::OnlineNodeData FSBMOSF::currentNodeData()
 }
 
 void FSBMOSF::loadProjects() {
-
 	QUrl url("https://api.osf.io/v2/users/me/nodes/");
+	parseProjects(url);
+}
+
+void FSBMOSF::parseProjects(QUrl url, bool recursive) {
+
+	_isProjectPaginationCall = recursive;
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
@@ -190,7 +195,7 @@ void FSBMOSF::gotProjects()
 		QJsonObject json = doc.object();
 		QJsonArray dataArray = json.value("data").toArray();
 
-		if ( dataArray.size() > 0 )
+		if ( dataArray.size() > 0 && !_isProjectPaginationCall)
 			_entries.clear();
 
 		foreach (const QJsonValue & value, dataArray) {
@@ -224,9 +229,18 @@ void FSBMOSF::gotProjects()
 			_pathUrls[path] = nodeData;
 
 		}
+
+		QJsonObject links = json.value("links").toObject();
+
+		QJsonValue nextProjects = links.value("next");
+		if (nextProjects.isNull() == false)
+			parseProjects(QUrl(nextProjects.toString()), true);
+		else
+			emit entriesChanged();
 	}
 
-	emit entriesChanged();
+
+
 	reply->deleteLater();
 }
 
