@@ -460,6 +460,13 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	BF10ultra <-NULL
 	BF10ultraText <- NULL
 
+	BF10m <-NULL
+	BF10mText <- NULL
+	BF10w <-NULL
+	BF10wText <- NULL
+	BF10ultra <-NULL
+	BF10ultraText <- NULL
+
 	if(nullModelSpecified)
 	{
 		# BF10 "medium" prior
