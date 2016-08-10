@@ -144,8 +144,8 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 					else
 					{
 						bayesFactorObject <- BayesFactor::linearReg.R2stat(N = options$sampleSize, p=options$numberOfCovariatesAlternative, R2=options$unadjustedRSquaredAlternative, rscale = options$priorWidth)
-					BF <- unname(BF10)
-					errorEstimate <- unname(bayesFactorObject$properror)
+						BF <- unname(bayesFactorObject$bf)
+						errorEstimate <- unname(bayesFactorObject$properror)
 
 						if (options$bayesFactorType == "BF01")
 						{
