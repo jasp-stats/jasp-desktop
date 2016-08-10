@@ -287,19 +287,6 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 }
 
 
-.bayesRegressionSummaryStatistics <- function(options)
-{
-	bf10 <- try(BayesFactor::linearReg.R2stat(N = options$sampleSize, p=options$numberOfCovariates, R2=options$unadjustedRSquared, rscale = options$priorWidth))
-	if (class(bf10) != "try-error") {
-		out <- list(bf=exp(bf10[1]), properror=bf10[2])
-	} else {
-		out <- list(bf=NA, properror=NA)
-	}
-
-	return(out)
-}
-
-
 .isInputValidRegressionSummaryStatistics <- function(options, nullModelSpecified)
 {
 	error <- FALSE
