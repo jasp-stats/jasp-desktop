@@ -60,23 +60,19 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	}
 
 	fields=list()
-	fields[[length(fields)+1]] <- list(name="sampleSize", type="integer", title="n")
-
 	if(nullModelSpecified)
 	{
-		fields[[length(fields)+1]] <- list(name="numberOfCovariatesNull", type="integer", title="Covariates\u2081")
-		fields[[length(fields)+1]] <- list(name="unadjustedRSquaredNull", type="number", title="R-squared\u2081")
-		fields[[length(fields)+1]] <- list(name="numberOfCovariatesAlternative", type="integer", title="Covariates\u2082")
-		fields[[length(fields)+1]] <- list(name="unadjustedRSquaredAlternative", type="number", title="R-squared\u2082")
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
+		sampleSize.title <- paste0("n = ", options$sampleSize)
+		fields[[length(fields)+1]] <- list(name="sampleSize", type="string", title=sampleSize.title)
 	}
 	else
 	{
-		fields[[length(fields)+1]] <- list(name="numberOfCovariatesAlternative", type="integer", title="Covariates")
-		fields[[length(fields)+1]] <- list(name="unadjustedRSquaredAlternative", type="number", title="R-squared")
-		fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
-		fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="% error")
+		fields[[length(fields)+1]] <- list(name="sampleSize", type="integer", title="n")
 	}
+	fields[[length(fields)+1]] <- list(name="numberOfCovariates", type="integer", title="Number of covariates")
+	fields[[length(fields)+1]] <- list(name="unadjustedRSquared", type="number", title="R\u00B2", format = "dp:3")
+	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
+	fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="% error")
 
 	table <- list()
 	table[["title"]]    <- "Bayesian Linear Regression"
@@ -94,6 +90,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 	#initialize variables
 	rowsRegressiontest <- list()
+	row <- NULL
 	bayesFactorRobustnessPlot <- NULL
 	bayesFactorObjectNull <- NULL
 	bayesFactorObjectAlternative <- NULL
@@ -124,22 +121,26 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 						bayesFactorObjectNull <- BayesFactor::linearReg.R2stat(N = options$sampleSize, p=options$numberOfCovariatesNull, R2=options$unadjustedRSquaredNull, rscale = options$priorWidth)
 						bayesFactorObjectAlternative <- BayesFactor::linearReg.R2stat(N = options$sampleSize, p=options$numberOfCovariatesAlternative, R2=options$unadjustedRSquaredAlternative, rscale = options$priorWidth)
 
-						BF10 <- exp(bayesFactorObjectAlternative$bf)/exp(bayesFactorObjectNull$bf)
+						#BF10 <- exp(bayesFactorObjectAlternative$bf)/exp(bayesFactorObjectNull$bf)
 
 						if (options$bayesFactorType == "BF01")
 						{
-							BF <- 1/BF10
+							BFNull <- 1/exp(bayesFactorObjectNull$bf)
+							BFAlternative <- 1/exp(bayesFactorObjectAlternative$bf)
 						}
 						else if(options$bayesFactorType == "LogBF10")
 						{
-							BF <- log(BF10)
+							BFNull <- bayesFactorObjectNull$bf
+							BFAlternative <- bayesFactorObjectAlternative$bf
 						}
 						else if(options$bayesFactorType == "BF10")
 						{
-							BF <- BF10
+							BFNull <- exp(bayesFactorObjectNull$bf)
+							BFAlternative <- exp(bayesFactorObjectAlternative$bf)
 						}
 
-						row <- list(sampleSize=.clean(options$sampleSize), numberOfCovariatesNull=options$numberOfCovariatesNull, unadjustedRSquaredNull=.clean(options$unadjustedRSquaredNull), numberOfCovariatesAlternative=.clean(options$numberOfCovariatesAlternative), unadjustedRSquaredAlternative=.clean(options$unadjustedRSquaredAlternative), BF=.clean(BF))
+						row[[1]] <- list(numberOfCovariates=options$numberOfCovariatesNull, sampleSize="Null model", unadjustedRSquared=.clean(options$unadjustedRSquaredNull), BF=.clean(BFNull), properror=.clean(bayesFactorObjectNull$properror))
+						row[[2]] <- list(sampleSize="Alternative model", numberOfCovariates=.clean(options$numberOfCovariatesAlternative), unadjustedRSquared=.clean(options$unadjustedRSquaredAlternative), BF=.clean(BFAlternative), properror=.clean(bayesFactorObjectAlternative$properror))
 					}
 					else
 					{
@@ -162,7 +163,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 						errorEstimate <- bayesFactorObject$properror
 
-						row <- list(sampleSize=.clean(options$sampleSize), numberOfCovariatesAlternative=.clean(options$numberOfCovariatesAlternative), unadjustedRSquaredAlternative=.clean(options$unadjustedRSquaredAlternative), BF=.clean(BF), properror=.clean(errorEstimate))
+						row <- list(sampleSize=.clean(options$sampleSize), numberOfCovariates=.clean(options$numberOfCovariatesAlternative), unadjustedRSquared=.clean(options$unadjustedRSquaredAlternative), BF=.clean(BF), properror=.clean(errorEstimate))
 					}
 				}
 
@@ -255,7 +256,15 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		}
 	}
 
-	table[["data"]] <- list(rowsRegressiontest)
+	if(nullModelSpecified)
+	{
+		table[["data"]][[1]] <- rowsRegressiontest[[1]]
+		table[["data"]][[2]] <- rowsRegressiontest[[2]]
+	}
+	else
+	{
+		table[["data"]] <- list(rowsRegressiontest)
+	}
 
 
 	if (options$plotBayesFactorRobustness)
@@ -346,6 +355,16 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		numberOfCovariatesAlternativeValue <- "."
 	}
 
+	if(options$numberOfCovariatesAlternative > options$numberOfCovariatesNull)
+	{
+		if(options$unadjustedRSquaredAlternative < options$unadjustedRSquaredNull)
+		{
+			ready <- TRUE
+			error <- TRUE
+			errorMessage <- paste("Input: When number of covariates for Alternative hypothesis is greater than that of Null hypothesis, the R\u00B2 has to be higher under Alternative than under Null hypothesis")
+		}
+	}
+
 	if(options$numberOfCovariatesAlternative!=0 && options$sampleSize!=0)
 	{
 		if((options$sampleSize - options$numberOfCovariatesAlternative) < 2)
@@ -358,12 +377,12 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 	if(nullModelSpecified)
 	{
-		row <- list(sampleSize=sampleSizeValue, numberOfCovariatesNull=numberOfCovariatesNullValue, unadjustedRSquaredNull=unadjustedRSquaredNullValue,
-								numberOfCovariatesAlternative=numberOfCovariatesAlternativeValue, unadjustedRSquaredAlternative=unadjustedRSquaredAlternativeValue,BF=".")
+		row[[1]] <- list(sampleSize="Null model", numberOfCovariates=numberOfCovariatesNullValue, unadjustedRSquared=unadjustedRSquaredNullValue, BF=".", properror=".")
+		row[[2]] <- list(sampleSize="Alternative model", numberOfCovariates=numberOfCovariatesAlternativeValue, unadjustedRSquared=unadjustedRSquaredAlternativeValue, BF=".", properror=".")
 	}
 	else
 	{
-		row <- list(sampleSize=sampleSizeValue, numberOfCovariatesAlternative=numberOfCovariatesAlternativeValue, unadjustedRSquaredAlternative=unadjustedRSquaredAlternativeValue, BF=".", properror=".")
+		row <- list(sampleSize=sampleSizeValue, numberOfCovariates=numberOfCovariatesAlternativeValue, unadjustedRSquared=unadjustedRSquaredAlternativeValue, BF=".", properror=".")
 	}
 
 	list(ready=ready, row=row, error=error, errorMessage=errorMessage)

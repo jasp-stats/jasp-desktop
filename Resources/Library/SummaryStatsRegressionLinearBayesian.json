@@ -40,7 +40,7 @@
 			"format": "",
 			"name": "numberOfCovariatesNull",
 			"type": "Integer",
-			"min": 1
+			"min": 0
 		},
 		{
 			"format": "",
