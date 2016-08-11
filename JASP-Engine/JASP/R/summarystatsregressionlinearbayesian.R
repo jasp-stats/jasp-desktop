@@ -126,6 +126,8 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 					diff$unadjustedRSquaredAlternative==FALSE && diff$priorWidth == FALSE))) && !is.null(state$bayesFactorObjectAlternative))
 				{
 					row <- state$rowsRegressiontest
+					bayesFactorObjectAlternative <- state$bayesFactorObjectAlternative
+					bayesFactorObjectNull <- state$bayesFactorObjectNull
 				}
 				else
 				{
@@ -327,7 +329,6 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 								image <- .beginSaveImage(530, 400)
 								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
 								plot[["data"]] <- .endSaveImage(image)
-
 							})
 
 					plots.sumstats.regression[[1]] <- plot
@@ -351,7 +352,6 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 								image <- .beginSaveImage(530, 400)
 								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
 								plot[["data"]] <- .endSaveImage(image)
-
 							})
 
 					plots.sumstats.regression[[2]] <- plot
