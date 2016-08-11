@@ -104,9 +104,12 @@ QString OnlineDataManager::getPassword(OnlineDataManager::Provider provider)
 	if (provider == OnlineDataManager::OSF)
 	{
 		if (_settings.value("OSFEncryption", 0).toInt() == SimpleCryptEncryption)
-			 password = crypto.decryptToString(_settings.value("OSFPassword", "").toString());
+			password = crypto.decryptToString(_settings.value("OSFPassword", "").toString());
 		else
-			 password = _settings.value("OSFPassword", "").toString();
+		{
+			password = _settings.value("OSFPassword", "").toString();
+			if (password!="") savePassword(OnlineDataManager::OSF, password);
+		}
 	}
 
 	return password;
