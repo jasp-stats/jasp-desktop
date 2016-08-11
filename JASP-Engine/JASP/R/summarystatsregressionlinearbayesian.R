@@ -183,96 +183,105 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 				}
 
 				###### plots ######
-				if(nullModelSpecified)
+				if(options$plotBayesFactorRobustness)
 				{
-					plotGroups[[1]] <- list()
-					plotGroups[[1]][["title"]] <- "Null model"
-					plotGroups[[1]][["name"]] <- "Null model"
-
-					plot <- list()
-
-					plot[["title"]] <- "Bayes Factor Robustness Check"
-					plot[["width"]]  <- 530
-					plot[["height"]] <- 400
-
-					p <- try(silent=FALSE, expr= {
-
-								image <- .beginSaveImage(530, 400)
-								.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesNull, unadjustedRSquared=options$unadjustedRSquaredNull,
-											rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectNull$bf)), .clean(1/exp(bayesFactorObjectNull$bf))))
-								plot[["data"]] <- .endSaveImage(image)
-
-							})
-
-					plots.sumstats.regression[[1]] <- plot
-
-					if (class(p) == "try-error")
+					if(nullModelSpecified)
 					{
-						errorMessage <- .extractErrorMessage(p)
-						plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+						plotGroups[[1]] <- list()
+						plotGroups[[1]][["title"]] <- "Null model"
+						plotGroups[[1]][["name"]] <- "Null model"
+
+						plot <- list()
+						plot[["title"]] <- "Bayes Factor Robustness Check"
+						plot[["width"]]  <- 530
+						plot[["height"]] <- 400
+
+						p <- try(silent=FALSE, expr= {
+
+									image <- .beginSaveImage(530, 400)
+									.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesNull, unadjustedRSquared=options$unadjustedRSquaredNull,
+												rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectNull$bf)), .clean(1/exp(bayesFactorObjectNull$bf))))
+									plot[["data"]] <- .endSaveImage(image)
+
+								})
+
+						plots.sumstats.regression[[1]] <- plot
+
+						if (class(p) == "try-error")
+						{
+							errorMessage <- .extractErrorMessage(p)
+							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+						}
+
+						plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
+						plotVariables[[length(plotVariables)+1]] <- "Null model"
+						plotGroups[[1]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[1]]
+
+						plotGroups[[2]] <- list()
+						plotGroups[[2]][["title"]] <- "Alternative model"
+						plotGroups[[2]][["name"]] <- "Alternative model"
+
+						plot <- list()
+						plot[["title"]] <- "Bayes Factor Robustness Check"
+						plot[["width"]]  <- 530
+						plot[["height"]] <- 400
+
+						p <- try(silent=FALSE, expr= {
+
+									image <- .beginSaveImage(530, 400)
+									.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesAlternative, unadjustedRSquared=options$unadjustedRSquaredAlternative,
+												rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative$bf)), .clean(1/exp(bayesFactorObjectAlternative$bf))))
+									plot[["data"]] <- .endSaveImage(image)
+
+								})
+
+						plots.sumstats.regression[[2]] <- plot
+
+						if (class(p) == "try-error")
+						{
+							errorMessage <- .extractErrorMessage(p)
+							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+						}
+
+						plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
+						plotVariables[[length(plotVariables)+1]] <- "Alternative model"
+						plotGroups[[2]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[2]]
 					}
-
-					plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
-					plotVariables[[length(plotVariables)+1]] <- "Null model"
-					plotGroups[[1]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[1]]
-
-					plotGroups[[2]] <- list()
-					plotGroups[[2]][["title"]] <- "Alternative model"
-					plotGroups[[2]][["name"]] <- "Alternative model"
-
-					plot <- list()
-
-					plot[["title"]] <- "Bayes Factor Robustness Check"
-					plot[["width"]]  <- 530
-					plot[["height"]] <- 400
-
-					p <- try(silent=FALSE, expr= {
-
-								image <- .beginSaveImage(530, 400)
-								.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesAlternative, unadjustedRSquared=options$unadjustedRSquaredAlternative,
-											rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative$bf)), .clean(1/exp(bayesFactorObjectAlternative$bf))))
-								plot[["data"]] <- .endSaveImage(image)
-
-							})
-
-					plots.sumstats.regression[[2]] <- plot
-
-					if (class(p) == "try-error")
+					else
 					{
-						errorMessage <- .extractErrorMessage(p)
-						plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
-					}
+						if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+								diff$sampleSize==FALSE && diff$numberOfCovariatesAlternative==FALSE && diff$unadjustedRSquaredAlternative==FALSE &&
+								diff$priorWidth == FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
+						{
+							bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
+						}
+						else
+						{
+							plot <- list()
 
-					plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
-					plotVariables[[length(plotVariables)+1]] <- "Alternative model"
-					plotGroups[[2]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[2]]
+							plot[["title"]] <- "Bayes Factor Robustness Check"
+							plot[["width"]]  <- 530
+							plot[["height"]] <- 400
+
+							p <- try(silent=FALSE, expr= {
+
+										image <- .beginSaveImage(530, 400)
+										.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesAlternative, unadjustedRSquared=options$unadjustedRSquaredAlternative,
+													rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject$bf)), .clean(1/exp(bayesFactorObject$bf))))
+										plot[["data"]] <- .endSaveImage(image)
+
+									})
+
+							if (class(p) == "try-error")
+							{
+								errorMessage <- .extractErrorMessage(p)
+								plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
+							}
+
+							bayesFactorRobustnessPlot <- plot
+						}
+					}
 				}
-				else
-				{
-					plot <- list()
-
-					plot[["title"]] <- "Bayes Factor Robustness Check"
-					plot[["width"]]  <- 530
-					plot[["height"]] <- 400
-
-					p <- try(silent=FALSE, expr= {
-
-								image <- .beginSaveImage(530, 400)
-								.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesAlternative, unadjustedRSquared=options$unadjustedRSquaredAlternative,
-											rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject$bf)), .clean(1/exp(bayesFactorObject$bf))))
-								plot[["data"]] <- .endSaveImage(image)
-
-							})
-
-					if (class(p) == "try-error")
-					{
-						errorMessage <- .extractErrorMessage(p)
-						plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
-					}
-
-					bayesFactorRobustnessPlot <- plot
-				}
-
 			}
 		}
 		else
@@ -291,11 +300,6 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 			rowsRegressiontest <- state$rowsRegressiontest
 			bayesFactorObjectNull <- state$bayesFactorObjectNull
 			bayesFactorObjectAlternative <- state$bayesFactorObjectAlternative
-
-			if(!is.null(state$bayesFactorRobustnessPlot))
-			{
-				bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
-			}
 		}
 		else
 		{
@@ -304,61 +308,61 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 		if(options$plotBayesFactorRobustness)
 		{
-			if (is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
-					diff$sampleSize==FALSE && diff$numberOfCovariatesNull==FALSE && diff$unadjustedRSquaredNull==FALSE && diff$numberOfCovariatesAlternative==FALSE &&
-					diff$unadjustedRSquaredAlternative==FALSE && diff$priorWidth == FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
+			if(nullModelSpecified)
 			{
-				plot <- state$bayesFactorRobustnessPlot
+				plotGroups[[1]] <- list()
+				plotGroups[[1]][["title"]] <- "Null model"
+				plotGroups[[1]][["name"]] <- "Null model"
+
+				plot <- list()
+
+				plot[["title"]] <- "Bayes Factor Robustness Check"
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+
+				p <- try(silent=FALSE, expr= {
+
+							image <- .beginSaveImage(530, 400)
+							.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
+							plot[["data"]] <- .endSaveImage(image)
+						})
+
+				plots.sumstats.regression[[1]] <- plot
+
+				plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
+				plotVariables[[length(plotVariables)+1]] <- "Null model"
+				plotGroups[[1]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[1]]
+
+				plotGroups[[2]] <- list()
+				plotGroups[[2]][["title"]] <- "Alternative model"
+				plotGroups[[2]][["name"]] <- "Alternative model"
+
+				plot <- list()
+
+				plot[["title"]] <- "Bayes Factor Robustness Check"
+				plot[["width"]]  <- 530
+				plot[["height"]] <- 400
+
+				p <- try(silent=FALSE, expr= {
+
+							image <- .beginSaveImage(530, 400)
+							.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
+							plot[["data"]] <- .endSaveImage(image)
+						})
+
+				plots.sumstats.regression[[2]] <- plot
+
+				plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
+				plotVariables[[length(plotVariables)+1]] <- "Alternative model"
+				plotGroups[[2]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[2]]
 			}
 			else
 			{
-				if(nullModelSpecified)
+				if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+						diff$sampleSize==FALSE && diff$numberOfCovariatesAlternative==FALSE && diff$unadjustedRSquaredAlternative==FALSE &&
+						diff$priorWidth == FALSE))) && !is.null(state$bayesFactorRobustnessPlot))
 				{
-					plotGroups[[1]] <- list()
-					plotGroups[[1]][["title"]] <- "Null model"
-					plotGroups[[1]][["name"]] <- "Null model"
-
-					plot <- list()
-
-					plot[["title"]] <- "Bayes Factor Robustness Check"
-					plot[["width"]]  <- 530
-					plot[["height"]] <- 400
-
-					p <- try(silent=FALSE, expr= {
-
-								image <- .beginSaveImage(530, 400)
-								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
-								plot[["data"]] <- .endSaveImage(image)
-							})
-
-					plots.sumstats.regression[[1]] <- plot
-
-					plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
-					plotVariables[[length(plotVariables)+1]] <- "Null model"
-					plotGroups[[1]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[1]]
-
-					plotGroups[[2]] <- list()
-					plotGroups[[2]][["title"]] <- "Alternative model"
-					plotGroups[[2]][["name"]] <- "Alternative model"
-
-					plot <- list()
-
-					plot[["title"]] <- "Bayes Factor Robustness Check"
-					plot[["width"]]  <- 530
-					plot[["height"]] <- 400
-
-					p <- try(silent=FALSE, expr= {
-
-								image <- .beginSaveImage(530, 400)
-								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
-								plot[["data"]] <- .endSaveImage(image)
-							})
-
-					plots.sumstats.regression[[2]] <- plot
-
-					plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
-					plotVariables[[length(plotVariables)+1]] <- "Alternative model"
-					plotGroups[[2]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[2]]
+					bayesFactorRobustnessPlot <- state$bayesFactorRobustnessPlot
 				}
 				else
 				{
@@ -388,6 +392,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		table[["data"]] <- list(rowsRegressiontest)
 	}
 
+	keep <- NULL
 
 	if (options$plotBayesFactorRobustness)
 	{
@@ -398,6 +403,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		else
 		{
 			results[["inferentialPlots"]] <- list(title="Inferential Plot", BFrobustnessPlot=bayesFactorRobustnessPlot)
+			keep <- c(keep, bayesFactorRobustnessPlot$data)
 		}
 	}
 
@@ -406,12 +412,12 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 	if (perform == "init")
 	{
-		return(list(results=results, status="inited", state=state))
+		return(list(results=results, status="inited", state=state, keep=keep))
 	}
 	else
 	{
 		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot,
-								rowsRegressiontest=rowsRegressiontest, bayesFactorObjectAlternative=bayesFactorObjectAlternative, bayesFactorObjectNull=bayesFactorObjectNull)))
+								rowsRegressiontest=rowsRegressiontest, bayesFactorObjectAlternative=bayesFactorObjectAlternative, bayesFactorObjectNull=bayesFactorObjectNull), keep=keep))
 	}
 }
 
@@ -446,50 +452,52 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		{
 			if((options$sampleSize - options$numberOfCovariatesNull) < 2)
 			{
+				ready <- TRUE
 				error <- TRUE
 				errorMessage <- paste("Number of Covariates must be less than N-1 (sample size minus 1)")
 			}
 		}
 	}
 
-
-	if((sampleSizeValue==0 && numberOfCovariatesAlternativeValue==0 && unadjustedRSquaredAlternativeValue==0) || is.null(unadjustedRSquaredAlternativeValue))
+	if(!error)
 	{
-		ready <- FALSE
-		unadjustedRSquaredAlternativeValue <- "."
-	}
-
-	if(sampleSizeValue==0 || is.null(sampleSizeValue))
-	{
-		ready <- FALSE
-		sampleSizeValue <- "."
-	}
-
-	if(numberOfCovariatesAlternativeValue==0 || is.null(numberOfCovariatesAlternativeValue))
-	{
-		ready <- FALSE
-		numberOfCovariatesAlternativeValue <- "."
-	}
-
-	if(options$numberOfCovariatesAlternative > options$numberOfCovariatesNull)
-	{
-		if(options$unadjustedRSquaredAlternative < options$unadjustedRSquaredNull)
+		if((sampleSizeValue==0 && numberOfCovariatesAlternativeValue==0 && unadjustedRSquaredAlternativeValue==0) || is.null(unadjustedRSquaredAlternativeValue))
 		{
-			ready <- TRUE
-			error <- TRUE
-			errorMessage <- paste("Input: When number of covariates for Alternative hypothesis is greater than that of Null hypothesis, the R\u00B2 has to be higher under Alternative than under Null hypothesis")
+			ready <- FALSE
+			unadjustedRSquaredAlternativeValue <- "."
+		}
+
+		if(sampleSizeValue==0 || is.null(sampleSizeValue))
+		{
+			ready <- FALSE
+			sampleSizeValue <- "."
+		}
+
+		if(numberOfCovariatesAlternativeValue==0 || is.null(numberOfCovariatesAlternativeValue))
+		{
+			ready <- FALSE
+			numberOfCovariatesAlternativeValue <- "."
+		}
+
+		if(options$numberOfCovariatesAlternative > options$numberOfCovariatesNull)
+		{
+			if(options$unadjustedRSquaredAlternative < options$unadjustedRSquaredNull)
+			{
+				ready <- TRUE
+				error <- TRUE
+				errorMessage <- paste("Input: When number of covariates for Alternative hypothesis is greater than that of Null hypothesis, the R\u00B2 has to be higher under Alternative than under Null hypothesis")
+			}
+		}
+
+		if(options$numberOfCovariatesAlternative!=0 && options$sampleSize!=0)
+		{
+			if((options$sampleSize - options$numberOfCovariatesAlternative) < 2)
+			{
+				error <- TRUE
+				errorMessage <- paste("Number of Covariates must be less than N-1 (sample size minus 1)")
+			}
 		}
 	}
-
-	if(options$numberOfCovariatesAlternative!=0 && options$sampleSize!=0)
-	{
-		if((options$sampleSize - options$numberOfCovariatesAlternative) < 2)
-		{
-			error <- TRUE
-			errorMessage <- paste("Number of Covariates must be less than N-1 (sample size minus 1)")
-		}
-	}
-
 
 	if(nullModelSpecified)
 	{
