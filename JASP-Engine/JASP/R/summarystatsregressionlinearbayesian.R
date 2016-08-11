@@ -47,7 +47,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	}
 	else
 	{
-		meta[[2]] <- list(name="inferentialPlots", type="object", meta=list(list(name="bayesFactorRobustnessPlot", type="image")))
+		meta[[2]] <- list(name="inferentialPlots", type="object", meta=list(list(name="BFrobustnessPlot", type="image")))
 	}
 
 	results[[".meta"]] <- meta
@@ -163,7 +163,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 						if (options$bayesFactorType == "BF01")
 						{
-							BF <- 1/bayesFactorObject$bf
+							BF <- 1/exp(bayesFactorObject$bf)
 						}
 						else if(options$bayesFactorType == "LogBF10")
 						{
@@ -197,7 +197,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 								image <- .beginSaveImage(530, 400)
 								.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesNull, unadjustedRSquared=options$unadjustedRSquaredNull,
-											rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10" || options$bayesFactorType=="LogBF10"), BF10post = ifelse((options$bayesFactorType == "BF10" || options$bayesFactorType == "BF01"), .clean(exp(bayesFactorObjectNull$bf)), .clean(bayesFactorObjectNull$bf)))
+											rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectNull$bf)), .clean(1/exp(bayesFactorObjectNull$bf))))
 								plot[["data"]] <- .endSaveImage(image)
 
 							})
@@ -210,7 +210,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 						plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 					}
 
-					plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+					plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
 					plotVariables[[length(plotVariables)+1]] <- "Null model"
 					plotGroups[[1]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[1]]
 
@@ -228,7 +228,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 								image <- .beginSaveImage(530, 400)
 								.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesAlternative, unadjustedRSquared=options$unadjustedRSquaredAlternative,
-											rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10" || options$bayesFactorType=="LogBF10"), BF10post = ifelse((options$bayesFactorType == "BF10" || options$bayesFactorType == "BF01"), .clean(exp(bayesFactorObjectAlternative$bf)), .clean(bayesFactorObjectNull$bf)))
+											rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative$bf)), .clean(1/exp(bayesFactorObjectAlternative$bf))))
 								plot[["data"]] <- .endSaveImage(image)
 
 							})
@@ -241,7 +241,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 						plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 					}
 
-					plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+					plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
 					plotVariables[[length(plotVariables)+1]] <- "Alternative model"
 					plotGroups[[2]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[2]]
 				}
@@ -257,7 +257,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 								image <- .beginSaveImage(530, 400)
 								.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesAlternative, unadjustedRSquared=options$unadjustedRSquaredAlternative,
-											rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10" || options$bayesFactorType=="LogBF10"), BF10post = ifelse((options$bayesFactorType == "BF10" || options$bayesFactorType == "BF01"), .clean(exp(bayesFactorObject$bf)), .clean(exp(bayesFactorObject$bf))))
+											rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject$bf)), .clean(1/exp(bayesFactorObject$bf))))
 								plot[["data"]] <- .endSaveImage(image)
 
 							})
@@ -325,14 +325,14 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 					p <- try(silent=FALSE, expr= {
 
 								image <- .beginSaveImage(530, 400)
-								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10" || options$bayesFactorType=="LogBF10"), dontPlotData= TRUE)
+								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
 								plot[["data"]] <- .endSaveImage(image)
 
 							})
 
 					plots.sumstats.regression[[1]] <- plot
 
-					plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+					plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
 					plotVariables[[length(plotVariables)+1]] <- "Null model"
 					plotGroups[[1]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[1]]
 
@@ -349,14 +349,14 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 					p <- try(silent=FALSE, expr= {
 
 								image <- .beginSaveImage(530, 400)
-								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10" || options$bayesFactorType=="LogBF10"), dontPlotData= TRUE)
+								.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10"), dontPlotData= TRUE)
 								plot[["data"]] <- .endSaveImage(image)
 
 							})
 
 					plots.sumstats.regression[[2]] <- plot
 
-					plotTypes[[length(plotTypes)+1]] <- "robustnessPlot"
+					plotTypes[[length(plotTypes)+1]] <- "BFrobustnessPlot"
 					plotVariables[[length(plotVariables)+1]] <- "Alternative model"
 					plotGroups[[2]][["BFrobustnessPlot"]] <- plots.sumstats.regression[[2]]
 				}
@@ -369,11 +369,10 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 					plot[["height"]] <- 400
 
 					image <- .beginSaveImage(530, 400)
-					.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10" || options$bayesFactorType=="LogBF10"), dontPlotData= TRUE)
+					.plotBF.robustnessCheck.regression.summaryStatistics(BFH1H0=(options$bayesFactorType == "BF10" || options$bayesFactorType == "LogBF10"), dontPlotData= TRUE)
 					plot[["data"]] <- .endSaveImage(image)
 
 					bayesFactorRobustnessPlot <- plot
-
 				}
 			}
 		}
@@ -394,11 +393,11 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	{
 		if(nullModelSpecified)
 		{
-			results[["inferentialPlots"]] <- list(title="Inferential plots", collection=plotGroups)
+			results[["inferentialPlots"]] <- list(title="Inferential Plots", collection=plotGroups)
 		}
 		else
 		{
-			results[["inferentialPlots"]] <- list(title="Inferential Plot", bayesFactorRobustnessPlot=bayesFactorRobustnessPlot)
+			results[["inferentialPlots"]] <- list(title="Inferential Plot", BFrobustnessPlot=bayesFactorRobustnessPlot)
 		}
 	}
 
