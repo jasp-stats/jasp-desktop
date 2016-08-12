@@ -5,7 +5,7 @@ The Bayesian Correlation Pairs allows you to test the null hypothesis that the p
 
 Input Box
 ------
-- Sample size, n
+- Sample size, n (minimum sample size is 2)
 - Pearson's r
 
 Default Options
