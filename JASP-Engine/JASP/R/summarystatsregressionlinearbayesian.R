@@ -136,47 +136,47 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 						bayesFactorObjectNull <- BayesFactor::linearReg.R2stat(N = options$sampleSize, p=options$numberOfCovariatesNull, R2=options$unadjustedRSquaredNull, rscale = options$priorWidth)
 						bayesFactorObjectAlternative <- BayesFactor::linearReg.R2stat(N = options$sampleSize, p=options$numberOfCovariatesAlternative, R2=options$unadjustedRSquaredAlternative, rscale = options$priorWidth)
 
-						#BF10 <- exp(bayesFactorObjectAlternative$bf)/exp(bayesFactorObjectNull$bf)
+						#BF10 <- exp(bayesFactorObjectAlternative[["bf"]])/exp(bayesFactorObjectNull[["bf"]])
 
 						if (options$bayesFactorType == "BF01")
 						{
-							BFNull <- 1/exp(bayesFactorObjectNull$bf)
-							BFAlternative <- 1/exp(bayesFactorObjectAlternative$bf)
+							BFNull <- 1/exp(bayesFactorObjectNull[["bf"]])
+							BFAlternative <- 1/exp(bayesFactorObjectAlternative[["bf"]])
 						}
 						else if(options$bayesFactorType == "LogBF10")
 						{
-							BFNull <- bayesFactorObjectNull$bf
-							BFAlternative <- bayesFactorObjectAlternative$bf
+							BFNull <- bayesFactorObjectNull[["bf"]]
+							BFAlternative <- bayesFactorObjectAlternative[["bf"]]
 						}
 						else if(options$bayesFactorType == "BF10")
 						{
-							BFNull <- exp(bayesFactorObjectNull$bf)
-							BFAlternative <- exp(bayesFactorObjectAlternative$bf)
+							BFNull <- exp(bayesFactorObjectNull[["bf"]])
+							BFAlternative <- exp(bayesFactorObjectAlternative[["bf"]])
 						}
 
-						row[[1]] <- list(numberOfCovariates=options$numberOfCovariatesNull, sampleSize="Null model", unadjustedRSquared=.clean(options$unadjustedRSquaredNull), BF=.clean(BFNull), properror=.clean(bayesFactorObjectNull$properror))
-						row[[2]] <- list(sampleSize="Alternative model", numberOfCovariates=.clean(options$numberOfCovariatesAlternative), unadjustedRSquared=.clean(options$unadjustedRSquaredAlternative), BF=.clean(BFAlternative), properror=.clean(bayesFactorObjectAlternative$properror))
+						row[[1]] <- list(numberOfCovariates=options$numberOfCovariatesNull, sampleSize="Null model", unadjustedRSquared=.clean(options$unadjustedRSquaredNull), BF=.clean(BFNull), properror=.clean(bayesFactorObjectNull[["properror"]]))
+						row[[2]] <- list(sampleSize="Alternative model", numberOfCovariates=.clean(options$numberOfCovariatesAlternative), unadjustedRSquared=.clean(options$unadjustedRSquaredAlternative), BF=.clean(BFAlternative), properror=.clean(bayesFactorObjectAlternative[["properror"]]))
 					}
 					else
 					{
 						bayesFactorObject <- BayesFactor::linearReg.R2stat(N = options$sampleSize, p=options$numberOfCovariatesAlternative, R2=options$unadjustedRSquaredAlternative, rscale = options$priorWidth)
-						BF <- unname(bayesFactorObject$bf)
-						errorEstimate <- unname(bayesFactorObject$properror)
+						BF <- unname(bayesFactorObject[["bf"]])
+						errorEstimate <- unname(bayesFactorObject[["properror"]])
 
 						if (options$bayesFactorType == "BF01")
 						{
-							BF <- 1/exp(bayesFactorObject$bf)
+							BF <- 1/exp(bayesFactorObject[["bf"]])
 						}
 						else if(options$bayesFactorType == "LogBF10")
 						{
-							BF <- bayesFactorObject$bf
+							BF <- bayesFactorObject[["bf"]]
 						}
 						else if(options$bayesFactorType == "BF10")
 						{
-							BF <- exp(bayesFactorObject$bf)
+							BF <- exp(bayesFactorObject[["bf"]])
 						}
 
-						errorEstimate <- bayesFactorObject$properror
+						errorEstimate <- bayesFactorObject[["properror"]]
 
 						row <- list(sampleSize=.clean(options$sampleSize), numberOfCovariates=.clean(options$numberOfCovariatesAlternative), unadjustedRSquared=.clean(options$unadjustedRSquaredAlternative), BF=.clean(BF), properror=.clean(errorEstimate))
 					}
@@ -200,7 +200,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 									image <- .beginSaveImage(530, 400)
 									.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesNull, unadjustedRSquared=options$unadjustedRSquaredNull,
-												rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectNull$bf)), .clean(1/exp(bayesFactorObjectNull$bf))))
+												rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectNull[["bf"]])), .clean(1/exp(bayesFactorObjectNull[["bf"]]))))
 									plot[["data"]] <- .endSaveImage(image)
 
 								})
@@ -230,7 +230,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 									image <- .beginSaveImage(530, 400)
 									.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesAlternative, unadjustedRSquared=options$unadjustedRSquaredAlternative,
-												rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative$bf)), .clean(1/exp(bayesFactorObjectAlternative$bf))))
+												rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObjectAlternative[["bf"]])), .clean(1/exp(bayesFactorObjectAlternative[["bf"]]))))
 									plot[["data"]] <- .endSaveImage(image)
 
 								})
@@ -267,7 +267,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 										image <- .beginSaveImage(530, 400)
 										.plotBF.robustnessCheck.regression.summaryStatistics(sampleSize=options$sampleSize, numberOfCovariates=options$numberOfCovariatesAlternative, unadjustedRSquared=options$unadjustedRSquaredAlternative,
-													rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject$bf)), .clean(1/exp(bayesFactorObject$bf))))
+													rscale=options$priorWidth, BFH1H0=(options$bayesFactorType == "BF10"), BF10post = ifelse((options$bayesFactorType == "BF10"), .clean(exp(bayesFactorObject[["bf"]])), .clean(1/exp(bayesFactorObject[["bf"]]))))
 										plot[["data"]] <- .endSaveImage(image)
 
 									})
@@ -574,7 +574,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	for (i in seq_along(rValues)) {
 
 		BF <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariates, R2=unadjustedRSquared, rscale = rValues[i])
-		BF10[i] <- .clean(exp(BF$bf))
+		BF10[i] <- .clean(exp(BF[["bf"]]))
 
 		if ( ! .shouldContinue(callback()))
 			return()
@@ -582,17 +582,17 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 	# BF10 "medium" prior
 	BF10m <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariates, R2=unadjustedRSquared, rscale = sqrt(2) / 2)
-	BF10m <- .clean(exp(BF10m$bf))
+	BF10m <- .clean(exp(BF10m[["bf"]]))
 	BF10mText <- BF10m
 
 	# BF10 "wide" prior
 	BF10w <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariates, R2=unadjustedRSquared, rscale = 1)
-	BF10w <- .clean(exp(BF10w$bf))
+	BF10w <- .clean(exp(BF10w[["bf"]]))
 	BF10wText <- BF10w
 
 	# BF10 "ultrawide" prior
 	BF10ultra <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariates, R2=unadjustedRSquared, rscale = sqrt(2))
-	BF10ultra <- .clean(exp(BF10ultra$bf))
+	BF10ultra <- .clean(exp(BF10ultra[["bf"]]))
 	BF10ultraText <- BF10ultra
 
 	# BF10 user prior
