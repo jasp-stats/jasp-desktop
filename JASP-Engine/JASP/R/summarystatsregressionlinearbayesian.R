@@ -53,20 +53,6 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	results[[".meta"]] <- meta
 	results[["title"]] <- "Bayesian Linear Regression"
 
-	#Bayes factor type (BF10, BF01, log(BF10))
-	if (options$bayesFactorType == "BF01")
-	{
-		bf.title <- "BF\u2080\u2081"
-	}
-	else if (options$bayesFactorType == "BF10")
-	{
-		bf.title <- "BF\u2081\u2080"
-	}
-	else if (options$bayesFactorType == "LogBF10")
-	{
-		bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
-	}
-
 	fields=list()
 	if(nullModelSpecified)
 	{
@@ -79,7 +65,7 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	}
 	fields[[length(fields)+1]] <- list(name="numberOfCovariates", type="integer", title="Number of covariates")
 	fields[[length(fields)+1]] <- list(name="unadjustedRSquared", type="number", title="R\u00B2", format = "dp:3")
-	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
+	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title="BF")
 	fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="% error")
 
 	table <- list()
