@@ -248,7 +248,7 @@ TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
 									lowerCI = ciLow, upperCI = ciUp,
 									sed = sed, .footnotes = row.footnotes)
 
-						if (options$SellkeMPR){
+						if (options$VovkSellkeMPR){
 						  row[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
 						}
 
