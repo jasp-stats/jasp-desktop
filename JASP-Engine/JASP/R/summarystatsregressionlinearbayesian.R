@@ -53,6 +53,11 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 		fields[[length(fields)+1]] <- list(name="sampleSize", type="string", title=sampleSize.title)
 
 		bf.title <- "BF"
+
+		if(options$bayesFactorType == "LogBF10")
+		{
+			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
+		}
 	}
 	else
 	{
@@ -74,7 +79,9 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	}
 	fields[[length(fields)+1]] <- list(name="numberOfCovariates", type="integer", title="Number of covariates")
 	fields[[length(fields)+1]] <- list(name="unadjustedRSquared", type="number", title="R\u00B2", format = "dp:3")
+
 	fields[[length(fields)+1]] <- list(name="BF", type="number", format="sf:4;dp:3", title=bf.title)
+
 	fields[[length(fields)+1]] <- list(name="properror", type="number", format="sf:4;dp:3", title="% error")
 
 	table <- list()
@@ -125,9 +132,27 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 			{
 				if(nullModelSpecified)
 				{
+					BFType <- options$bayesFactorType
+					BFRequiresNewRow <- TRUE
+
+					if(!is.null(state))
+					{
+						BFRequiresNewRow <- FALSE
+						BFTypeState <- state$options$bayesFactorType
+
+						if((BFTypeState=="BF10" || BFTypeState=="BF01") && BFType=="LogBF10")
+						{
+							BFRequiresNewRow <- TRUE
+						}
+						else if((BFType=="BF10" || BFType=="BF01") && BFTypeState=="LogBF10")
+						{
+							BFRequiresNewRow <- TRUE
+						}
+					}
+
 					if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) &&
 					    (diff$sampleSize==FALSE && diff$numberOfCovariatesNull==FALSE && diff$unadjustedRSquaredNull==FALSE && diff$numberOfCovariatesAlternative==FALSE &&
-						  diff$unadjustedRSquaredAlternative==FALSE && diff$priorWidth == FALSE))) && !is.null(state$bayesFactorObjectAlternative))
+						  diff$unadjustedRSquaredAlternative==FALSE && diff$priorWidth == FALSE))) && !is.null(state$bayesFactorObjectAlternative) && !BFRequiresNewRow)
 					{
 						row <- state$rowsRegressiontest
 						bayesFactorObjectAlternative <- state$bayesFactorObjectAlternative
@@ -140,6 +165,12 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 
 						BFNull <- exp(bayesFactorObjectNull[["bf"]])/exp(bayesFactorObjectAlternative[["bf"]])
 						BFAlternative <- exp(bayesFactorObjectAlternative[["bf"]])/exp(bayesFactorObjectNull[["bf"]])
+
+						if(options$bayesFactorType=="LogBF10")
+						{
+							BFNull <- log(BFNull)
+							BFAlternative <- log(BFAlternative)
+						}
 
 						row[[1]] <- list(numberOfCovariates=options$numberOfCovariatesNull, sampleSize="Null model", unadjustedRSquared=.clean(options$unadjustedRSquaredNull), BF=.clean(BFNull), properror=.clean(bayesFactorObjectNull[["properror"]]))
 						row[[2]] <- list(sampleSize="Alternative model", numberOfCovariates=.clean(options$numberOfCovariatesAlternative), unadjustedRSquared=.clean(options$unadjustedRSquaredAlternative), BF=.clean(BFAlternative), properror=.clean(bayesFactorObjectAlternative[["properror"]]))
@@ -237,9 +268,27 @@ SummaryStatsRegressionLinearBayesian <- function(dataset=NULL, options, perform 
 	{
 		if(nullModelSpecified)
 		{
+			BFType <- options$bayesFactorType
+			BFRequiresNewRow <- TRUE
+
+			if(!is.null(state))
+			{
+				BFRequiresNewRow <- FALSE
+				BFTypeState <- state$options$bayesFactorType
+
+				if((BFTypeState=="BF10" || BFTypeState=="BF01") && BFType=="LogBF10")
+				{
+					BFRequiresNewRow <- TRUE
+				}
+				else if((BFType=="BF10" || BFType=="BF01") && BFTypeState=="LogBF10")
+				{
+					BFRequiresNewRow <- TRUE
+				}
+			}
+
 			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (
 					diff$sampleSize==FALSE && diff$numberOfCovariatesAlternative==FALSE && diff$unadjustedRSquaredAlternative==FALSE && diff$priorWidth == FALSE &&
-					diff$numberOfCovariatesNull==FALSE && diff$unadjustedRSquaredNull==FALSE))) && !is.null(state$bayesFactorObjectAlternative))
+					diff$numberOfCovariatesNull==FALSE && diff$unadjustedRSquaredNull==FALSE))) && !is.null(state$bayesFactorObjectAlternative) && !BFRequiresNewRow)
 			{
 				rowsRegressiontest <- state$rowsRegressiontest
 				bayesFactorObjectNull <- state$bayesFactorObjectNull
