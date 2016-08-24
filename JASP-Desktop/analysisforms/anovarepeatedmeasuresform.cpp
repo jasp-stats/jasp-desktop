@@ -124,9 +124,11 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->groupCompareMainEffects->hide();
+	ui->VovkSellkeMPR->hide();
 
 #else
 	ui->groupCompareMainEffects->setStyleSheet("background-color: pink ;");
+	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
 
 #endif
 }
