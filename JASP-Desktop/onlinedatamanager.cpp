@@ -26,7 +26,8 @@
 #include "onlinedatanodeosf.h"
 #include "onlineusernodeosf.h"
 #include <QMessageBox>
-
+#include "simplecrypt.h"
+#include "simplecryptkey.h"
 
 OnlineDataManager::OnlineDataManager(QObject *parent):
 	QObject(parent)
@@ -47,6 +48,100 @@ bool OnlineDataManager::authenticationSuccessful(OnlineDataManager::Provider pro
 		return OnlineUserNodeOSF::authenticationSuccessful(getNetworkAccessManager(provider));
 
 	return false;
+}
+
+void OnlineDataManager::savePasswordFromAuthData(OnlineDataManager::Provider provider)
+{
+	if (provider == OnlineDataManager::OSF)
+	{
+		AuthData sec = getAuthData(provider);
+		if (sec.password!="")
+			savePassword(provider, sec.password);
+	}
+}
+
+void OnlineDataManager::savePassword(OnlineDataManager::Provider provider, QString password)
+{
+
+	long long key = SIMPLECRYPTKEY;
+	SimpleCrypt crypto(key); //some random number
+
+	if (provider == OnlineDataManager::OSF)
+	{
+		_settings.setValue("OSFPassword", crypto.encryptToString(password));
+		_settings.setValue("OSFEncryption", SimpleCryptEncryption);
+		_settings.sync();
+	}
+}
+
+void OnlineDataManager::saveUsername(OnlineDataManager::Provider provider, QString username)
+{
+	if (provider == OnlineDataManager::OSF)
+	{
+		_settings.setValue("OSFUsername", username);
+		_settings.sync();
+	}
+}
+
+QString OnlineDataManager::getUsername(OnlineDataManager::Provider provider)
+{
+	QString username = "";
+
+	if (provider == OnlineDataManager::OSF)
+		username = _settings.value("OSFUsername", "").toString();
+
+	return username;
+
+}
+
+QString OnlineDataManager::getPassword(OnlineDataManager::Provider provider)
+{
+	QString password = "";
+
+	long long key = SIMPLECRYPTKEY;
+	SimpleCrypt crypto(key); //some random number
+
+	if (provider == OnlineDataManager::OSF)
+	{
+		if (_settings.value("OSFEncryption", 0).toInt() == SimpleCryptEncryption)
+			password = crypto.decryptToString(_settings.value("OSFPassword", "").toString());
+		else
+		{
+			password = _settings.value("OSFPassword", "").toString();
+			if (password!="") savePassword(OnlineDataManager::OSF, password);
+		}
+	}
+
+	return password;
+}
+
+void OnlineDataManager::removePassword(OnlineDataManager::Provider provider)
+{
+	if (provider == OnlineDataManager::OSF)
+	{
+		_settings.remove("OSFPassword");
+		_settings.sync();
+	}
+}
+
+void OnlineDataManager::clearAuthenticationOnExit(OnlineDataManager::Provider provider)
+{
+	if (provider == OnlineDataManager::OSF)
+	{
+		//If User switch 'Remember me' is off remove OSF settings
+		if (_settings.value("OSFRememberMe", false).toBool() == false)
+			_settings.remove("OSFPassword");
+		_settings.sync();
+	}
+}
+
+void OnlineDataManager::initAuthentication(OnlineDataManager::Provider provider)
+{
+
+	QString username = getUsername(provider);
+	QString password = getPassword(provider);
+
+	setAuthentication(provider, username, password);
 }
 
 void OnlineDataManager::setAuthentication(OnlineDataManager::Provider provider, QString username, QString password)
@@ -71,6 +166,8 @@ OnlineDataManager::AuthData OnlineDataManager::getAuthData(OnlineDataManager::Pr
 void OnlineDataManager::clearAuthentication(OnlineDataManager::Provider provider)
 {
 	setAuthentication(provider, "", "");
+
+	removePassword(provider);
 
 	emit authenticationCleared((int)provider);
 }

@@ -170,7 +170,8 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
-        $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp
+        $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
+		$$PWD/simplecrypt.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -354,7 +355,9 @@ HEADERS  += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h \
-        $$PWD/analysisforms/R11tLearn/r11tlearnform.h
+        $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
+		$$PWD/simplecrypt.h \
+		$$PWD/simplecryptkey.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \

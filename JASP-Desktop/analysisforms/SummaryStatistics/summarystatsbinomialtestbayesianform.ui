@@ -54,18 +54,12 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="BoundTextBox" name="successes"/>
-      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Failures</string>
         </property>
        </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="BoundTextBox" name="failures"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label">
@@ -74,8 +68,35 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="BoundTextBox" name="successes">
+        <property name="maximumSize">
+         <size>
+          <width>60</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="BoundTextBox" name="failures">
+        <property name="maximumSize">
+         <size>
+          <width>60</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
       <item row="2" column="1">
-       <widget class="BoundTextBox" name="testValue"/>
+       <widget class="BoundTextBox" name="testValue">
+        <property name="maximumSize">
+         <size>
+          <width>60</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -376,6 +397,12 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>GroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>widgets/groupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
    <header>widgets/boundtextbox.h</header>
@@ -390,12 +417,6 @@
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>widgets/groupbox.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

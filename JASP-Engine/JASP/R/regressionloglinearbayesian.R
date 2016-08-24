@@ -163,7 +163,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 	 			names(dataset)[names(dataset)== "freq"]<- dependent.base64
 	 		}	 		
 			
-			logBlm.fit <- try( conting::bcct( model.formula, data = dataset, prior = "SBH", n.sample=2000, a=options$priorScale, b=options$priorShape), silent = TRUE)
+			logBlm.fit <- try( conting::bcct( model.formula, data = dataset, prior = "SBH", n.sample=2000, a=options$priorShape, b=options$priorScale), silent = TRUE)
 			
 				no.burnin = 2000 * 0.2
 				if (options$sampleMode == "manual"){
@@ -238,7 +238,7 @@ RegressionLogLinearBayesian <- function(dataset, options, perform="run", callbac
 			
 		if ( class(logBlm.model$logBlm.fit) == "bcct") {
 		
-			logBlm.posterior <- conting::mod_probs(logBlm.fit,scale=0.001, best = options$maxModels)
+			logBlm.posterior <- conting::mod_probs(logBlm.fit,scale=0, best = options$maxModels)
 				
 			len.Blogreg <- length(Bayesianposterior.result) + 1
 			v <- 0
