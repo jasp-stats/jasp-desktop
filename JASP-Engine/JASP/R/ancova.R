@@ -1346,7 +1346,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	if (options$VovkSellkeMPR) {
 		.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-		<em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum
+		<em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
 		possible odds in favor of H\u2081 over H\u2080 equals
 		1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
 		(Sellke, Bayarri, & Berger, 2001).")
