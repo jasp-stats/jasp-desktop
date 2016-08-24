@@ -26,5 +26,5 @@
 .VovkSellkeMPROneSided <- function(p){
   stop("This function should not be used. In for reference.")
   pTwoSided <- ifelse(p>=0.5,(1-p)*2,p*2)
-  return(.SellkeMPR(pTwoSided)*2*(1-p))
+  return(.VovkSellkeMPR(pTwoSided)*2*(1-p))
 }
