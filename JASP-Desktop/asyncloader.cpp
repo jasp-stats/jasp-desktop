@@ -99,7 +99,15 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 
 	QString path = event->path();
 	if (event->IsOnlineNode())
+	{
+		bool hasHTML = (package->analysesHTML != "");
+		if (!hasHTML)
+		{
+			event->setComplete(false,"Do not upload jasp files with empty result sets to the OSF. Use 'Export Data' option if applicable");
+			return;
+		}
 		path = _odm->getLocalPath(path);
+	}
 
 	QString tempPath = path + QString(".tmp");
 
