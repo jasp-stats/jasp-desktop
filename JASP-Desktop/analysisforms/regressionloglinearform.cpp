@@ -50,6 +50,12 @@ RegressionLogLinearForm::RegressionLogLinearForm(QWidget *parent) :
 	connect(_factorsModel, SIGNAL(unassigned(Terms)), _model, SLOT(removeVariables(Terms)));
 
 	ui->panelStatistics->hide();
+
+#ifdef QT_NO_DEBUG
+	ui->VovkSellkeMPR->hide();
+#else
+	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
+#endif
 }
 
 RegressionLogLinearForm::~RegressionLogLinearForm()
