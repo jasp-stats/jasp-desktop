@@ -37,6 +37,14 @@ BinomialTestForm::BinomialTestForm(QWidget *parent) :
 	ui->assignButton->setSourceAndTarget(ui->listAvailableVariables, ui->variables);
 
 	ui->testValue->setLabel("Test value");
+
+#ifdef QT_NO_DEBUG
+	ui->VovkSellkeMPR->hide();
+#else
+	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
+#endif
+
+
 }
 
 BinomialTestForm::~BinomialTestForm()
