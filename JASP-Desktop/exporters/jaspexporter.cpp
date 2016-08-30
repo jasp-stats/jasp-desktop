@@ -222,26 +222,23 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	archive_entry_free(entry);
 
-	//Take out for the time being
-	if (package->hasAnalyses)
-	{
-		//Create new entry for archive: HTML results
-		string html = package->analysesHTML;
-		int htmlSize = html.size();
-		entry = archive_entry_new();
-		string dd3 = string("index.html");
-		archive_entry_set_pathname(entry, dd3.c_str());
-		archive_entry_set_size(entry, htmlSize);
-		archive_entry_set_filetype(entry, AE_IFREG);
-		archive_entry_set_perm(entry, 0644); // Not sure what this does
-		archive_write_header(a, entry);
+	//Create new entry for archive: HTML results
+	string html = package->analysesHTML;
+	int htmlSize = html.size();
+	entry = archive_entry_new();
+	string dd3 = string("index.html");
+	archive_entry_set_pathname(entry, dd3.c_str());
+	archive_entry_set_size(entry, htmlSize);
+	archive_entry_set_filetype(entry, AE_IFREG);
+	archive_entry_set_perm(entry, 0644); // Not sure what this does
+	archive_write_header(a, entry);
 
-		int ws = archive_write_data(a, html.c_str(), htmlSize);
-		if (ws != htmlSize)
-			throw runtime_error("Can't save jasp archive writing ERROR");
+	int ws = archive_write_data(a, html.c_str(), htmlSize);
+	if (ws != htmlSize)
+		throw runtime_error("Can't save jasp archive writing ERROR");
 
-		archive_entry_free(entry);
-	}
+	archive_entry_free(entry);
+
 }
 
 void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback)
