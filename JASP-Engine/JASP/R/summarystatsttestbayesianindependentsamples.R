@@ -204,6 +204,8 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 			}
 			else
 			{
+				BF10 <- exp(bayesFactorObject$bf)
+
 				width  <- 530
 				height <- 400
 
@@ -214,11 +216,38 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 				plot[["height"]] <- height
 				plot[["status"]] <- "waiting"
 
-				image <- .beginSaveImage(width, height)
-				.plotPosterior.ttest.summaryStats (t=options$tStatistic, n1=options$n1Size, n2=options$n2Size, paired=FALSE, BFH1H0=(options$bayesFactorType == "BF10"), 
-												   dontPlotData= FALSE, rscale=options$priorWidth, addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-												   BF = exp(bayesFactorObject$bf), oneSided = oneSidedHypothesis)
-				plot[["data"]]   <- .endSaveImage(image)
+				p <- try(silent=FALSE, expr = {
+					image <- .beginSaveImage(width, height)
+					.plotPosterior.ttest.summaryStats (t=options$tStatistic, n1=options$n1Size, n2=options$n2Size, paired=FALSE, BFH1H0=(options$bayesFactorType == "BF10"), 
+													   dontPlotData= FALSE, rscale=options$priorWidth, addInformation = options$plotPriorAndPosteriorAdditionalInfo,
+													   BF = BF10, oneSided = oneSidedHypothesis)
+					plot[["data"]]   <- .endSaveImage(image)
+				})
+
+				if (class(p) == "try-error")
+				{
+					errorMessage <- .extractErrorMessage(p)
+
+					if (errorMessage == "not enough data")
+					{
+						errorMessage <- "The Bayes factor is too small"
+					}
+					else if (errorMessage == "'from' cannot be NA, NaN or infinite")
+					{
+						errorMessage <- "The Bayes factor is infinite"
+					}
+					else if (.clean(BF10) == "\u221E")
+					{
+						errorMessage <- "The Bayes factor is infinite"
+					}
+					else if (.clean(BF10) == "NaN")
+					{
+						errorMessage <- "Bayes factor could not be calcluated"
+					}
+
+					plot[["error"]] <- list(error="badData", errorMessage=paste("Plotting is not possible: ", errorMessage))
+				}
+
 				plot[["status"]] <- "complete"
 
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- plot
@@ -275,11 +304,21 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset=NULL, options, p
 				plot[["height"]] <- height
 				plot[["status"]] <- "waiting"
 
-				image <- .beginSaveImage(width, height)
-				.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=options$n2Size, BFH1H0=(options$bayesFactorType == "BF10"), 
-												 dontPlotData= FALSE, rscale=options$priorWidth, 
-												 BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactorObject$bf)), .clean(1/exp(bayesFactorObject$bf))), oneSided = oneSidedHypothesis)
-				plot[["data"]]   <- .endSaveImage(image)
+				p <- try(silent=FALSE, expr = {
+					image <- .beginSaveImage(width, height)
+					.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=options$n2Size, BFH1H0=(options$bayesFactorType == "BF10"), 
+													 dontPlotData= FALSE, rscale=options$priorWidth, 
+													 BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactorObject$bf)), .clean(1/exp(bayesFactorObject$bf))), oneSided = oneSidedHypothesis)
+					plot[["data"]]   <- .endSaveImage(image)
+				})
+
+				if ( class(p) == "try-error")
+				{
+					errorMessage <- .extractErrorMessage(p)
+					
+					plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
+				}
+
 				plot[["status"]] <- "complete"
 
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- plot
