@@ -39,7 +39,7 @@ test_that("T-Test Independent Samples Init", {
                 callback = NULL
             )
 
-    # Sanity Check - output should not be NULL
+    # sanity check - output should not be NULL
     expect_equal(!is.null(output["results"]), TRUE)
 
     expectedOutput <- list()
