@@ -178,7 +178,6 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
 		$$PWD/simplecrypt.cpp
 
-
 HEADERS  += \
 		$$PWD/aboutdialog.h \
 		$$PWD/analyses.h \
@@ -316,7 +315,6 @@ HEADERS  += \
 		$$PWD/onlinenode.h \
 		$$PWD/onlineusernodeosf.h \
 		$$PWD/backstage/authwidget.h \
-		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
 		$$PWD/exporters/dataexporter.h \
 		$$PWD/exporters/exporter.h \
 		$$PWD/exporters/jaspexporter.h \
@@ -426,6 +424,7 @@ FORMS += \
 		$$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
 		$$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
 		$$PWD/analysisforms/R11tLearn/r11tlearnform.ui
+
 
 
 RESOURCES += \
@@ -606,4 +605,4 @@ DISTFILES += \
 		$$PWD/backstage/firsttabsstylesheet.qss \
 		$$PWD/backstage/secondtabsstylesheet.qss \
 		$$PWD/resources/icons/file-jasp.svg \
-		$$PWD/html/css/images/tinylogo.svg
+$$PWD/html/css/images/tinylogo.svg

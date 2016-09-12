@@ -162,6 +162,12 @@ public:
 	 */
 	std::string format(double value);
 
+	/**
+	 * @brief charsRemaining Find the number of chars remaining for this buffer, for one data cell.
+	 * @param bufferSzie The size of the buffer.
+	 * @return Value
+	 */
+//	long cellCharsRemaining(size_t bufferSize);
 
 private:
 	// Day Zero for spss files.
@@ -181,6 +187,12 @@ private:
 	 * @return true if a fractional part found.
 	 */
 	static bool _containsFraction(const std::vector<double> &values);
+
+	/**
+	 * @brief spssStringLen Set the length of the string (in column).
+	 * @param value Value to set.
+	 */
+	void spssStringLen(size_t value);
 
 	/*
 	 * Help functions for _toDateTime().

@@ -173,6 +173,7 @@ const
 	}
 }
 
+
 QString SPSSColumn::_month(unsigned short int mnth)
 const
 {
@@ -298,6 +299,7 @@ string SPSSColumn::format(double value)
 
 	return static_cast<const char *>(result.toUtf8());
 }
+
 
 /**
  * @brief containsFraction Returns false if all values are integer.
