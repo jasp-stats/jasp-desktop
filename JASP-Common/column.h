@@ -151,6 +151,10 @@ public:
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
+	void setColumnAsNominalString(const std::vector<std::string> &values);
+	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, const std::set<int> &uniqueValues, bool is_ordinal = FALSE);
+	void setColumnAsScale(const std::vector<double> &values);
+
 private:
 
 	boost::interprocess::managed_shared_memory *_mem;
@@ -163,7 +167,6 @@ private:
 	Labels _labels;
 
 	void setRowCount(int rowCount);
-	void insert(int rowCount, int index);
 	std::string stringFromRaw(int value) const;
 
 };
