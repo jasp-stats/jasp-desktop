@@ -81,6 +81,11 @@
 			"default": false,
 			"name": "plotStatistics",
 			"type": "Boolean"
+		},
+		{
+		  "name": "VovkSellkeMPR",
+		  "type": "Boolean",
+		  "default": false
 		}
 	]
 }
