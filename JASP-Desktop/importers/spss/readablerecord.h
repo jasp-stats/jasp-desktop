@@ -130,6 +130,7 @@ ReadableRecord<rT>::ReadableRecord(const NumericConverter &, RecordTypes fileTyp
 	__BUILD_BUG_ON(sizeof(Char_60) != 60);
 	__BUILD_BUG_ON(sizeof(Char_64) != 64);
 	__BUILD_BUG_ON(sizeof(Char_80) != 80);
+	__BUILD_BUG_ON(sizeof(SpssDataCell) != 8);
 }
 
 #undef BUILD_BUG_ON

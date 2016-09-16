@@ -64,7 +64,7 @@ public:
 	SPSSIMPORTER_READ_ATTRIB(size_t, dictionary_index)
 
 	/*
-	 * Write and Print fields are in fact unions:
+	 * Write and Print fields are in fact bit-fields:
 	 * Inlines to break up extarct the fields;
 	 */
 	static unsigned char num_places(int32_t prField) { return ((prField >> 0) & 0xFF); }

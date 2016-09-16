@@ -32,10 +32,7 @@ public:
 	 */
    struct LabelMeta
    {
-	   union {
-		   Char_8  c8;
-		   double  d;
-	   } value;
+	   SpssDataCell value;
 	   char	label_len;
 	   std::string label;
    };

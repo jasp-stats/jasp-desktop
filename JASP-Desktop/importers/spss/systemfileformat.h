@@ -79,6 +79,27 @@ typedef SPSSChar Char_64[64];
 typedef SPSSChar Char_80[80];
 typedef std::vector<double> VecDbls;
 
+/**
+ * Data cells are all of this type:
+ */
+union SpssDataCell
+{
+	Char_8 chars;
+	double	dbl;
+
+	// Allow use in ordered collections.
+	bool operator <(const SpssDataCell &that)
+	{
+		return forOrdering < that.forOrdering;
+	}
+
+private:
+	// This type does not exist in the file, but
+	// we use it here to allow the cells to be
+	// used in ordered containers.
+	uint64_t forOrdering;
+};
+
 /*
   * Values we could expect to see in a rec_type field.
   */

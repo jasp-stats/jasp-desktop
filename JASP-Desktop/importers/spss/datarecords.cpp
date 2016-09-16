@@ -162,15 +162,15 @@ void DataRecords::insertToCol(SPSSColumn &col, double value)
  */
 void DataRecords::readUnCompVal(SPSSColumn &col)
 {
-	union u_dta { Char_8 c; double d; } dta;
+	SpssDataCell dta;
 	_SPSSIMPORTER_READ_VAR(dta, _from);
 	if (col.cellType() == SPSSColumn::cellString)
-		insertToCol(col, string(dta.c, col.cellCharsRemaining(sizeof(dta.c))));
+		insertToCol(col, string(dta.chars, col.cellCharsRemaining(sizeof(dta.chars))));
 	else
 	{
-		_fixer.fixup(&dta.d);
+		_fixer.fixup(&dta.dbl);
 
 		// TODO: Enstring date types!
-		insertToCol(col, dta.d);
+		insertToCol(col, dta.dbl);
 	}
 }
