@@ -26,6 +26,7 @@
 #include "importers/csvimporter.h"
 #include "importers/spssimporter.h"
 #include "importers/jaspimporter.h"
+#include "importers/odsimporter.h"
 
 using namespace boost::interprocess;
 using namespace boost;
@@ -43,6 +44,8 @@ void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locat
 		SPSSImporter::loadDataSet(packageData, locator, progress);
 	else if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
 		CSVImporter::loadDataSet(packageData, locator, progress);
+	else if (boost::iequals(ext, ".ods"))
+		ODSImporter::loadDataSet(packageData, locator, progress);
 	else
 		JASPImporter::loadDataSet(packageData, locator, progress);
 }

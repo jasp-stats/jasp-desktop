@@ -1,5 +1,6 @@
 
 QT += core gui webkit webkitwidgets svg network printsupport
+QT += xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -49,3 +50,8 @@ linux {
 }
 
 include(JASP-Desktop.pri)
+
+HEADERS += \
+    importers/ods/odsdata.h
+
+SOURCES +=

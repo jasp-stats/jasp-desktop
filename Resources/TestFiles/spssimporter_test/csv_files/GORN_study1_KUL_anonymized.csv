@@ -1,0 +1,162 @@
+form_nr1,Experiment,Groep,pen_on_slide,music,pen_keus,pen_chosen,chose_advertised_pen,chose_hyp_pen,geslacht1,leeftijd1,coll_nr1,att_muz1,att_muz2,att_muz3,opmerkingen,form_nr2,kleur2,geslacht2,leeftijd2,coll_nr2,reden1,reden2,reden3,NreasonsProvided,reden1_cod1,reden2_cod1,reden3_cod1,reden1_cod2,reden2_cod2,reden3_cod2,uitleg_redenen,prime_reason,sec_reason,sum_doel,beinvl_muz_genoemd,linken_genoemd,beinvl_keuze_genoemd,kleur_geraden,doel_geraden,opmerkingen2,music_att,hyp_awareness,remove,filter_$,chose_ad_pen_reversed
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,4,4,5,,,B,2,99,xxx,blauw mooier,,,1,1, , , , , ,,1,0,peilen naar attitude over kleur balpen en muziek,0,0,0,0,0,,4.333333333333333,0,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,4,4,4,,,B,2,99,xxx,,,,0, , , , , , ,,0,0,invloed muziek op keuze pen,1,1,1,0,0,,4,3,0,1,1
+1AOK2,1,2,2,2,B,2,1,0,1,99,xxx,1,1,1,,,B,1,99,xxx,geen reden,,,0, , , , , , ,,0,0,kijken of je wel consistent antwoord (drie keer zelfde vraag),0,0,0,0,0,,1,0,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,4,5,4,,,B,2,99,xxx,,,,0, , , , , , ,,0,0,om voor reclamespot te gebruiken,0,0,0,0,0,,4.333333333333333,0,0,1,0
+1BOK4,1,4,1,2,B,2,0,1,1,99,xxx,3,4,3,,,B,1,99,xxx,,,,0, , , , , , ,,0,0,pen bij muziek beter of slechter beoordelen,1,1,1,0,0,,3.3333333333333335,3,0,1,1
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,2,2,3,,,W,2,99,xxx,onbewust,,,1,16, , ,5, , ,,0,0,enerverende muziek die beeld over balpen doet veranderen,1,0,0,0,0,,2.3333333333333335,1,0,1,0
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,2,2,3,,,W,2,99,xxx,willekeurig,,,1,16, , , , , ,,0,0,stemming oproepen,0,0,0,0,0,,2.3333333333333335,0,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,5,4,4,,,B,2,99,xxx,vermoeden dat men wit wilde opdringen,,,1,11, , ,11, , ,,11,0,positieve attitude t.a.v. witte pen versterken,1,1,1,1,0,,4.333333333333333,4,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,4,4,4,,,B,2,99,xxx,omdat ik geen keuze had,,,1,6, , , , , ,,6,0,positieve attitude tegenover witte balpen cre?ren,0,0,0,0,0,"hoezo, geen keuze welke pen?",4,0,0,1,1
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,2,2,2,,,B,2,99,xxx,enige te kiezen kleur,,,1,6, , , , , ,,6,0,hoe we staan tov elementen uit andere cultuur,0,0,0,0,0,zegt geen keuze kleur te hebben,2,0,0,1,0
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,1,1,3,,,B,2,99,xxx,er was maar 1 soort,,,1,6, , , , , ,,6,0,attitude meten. clue komt nog,0,0,0,0,0,,1.6666666666666667,0,0,1,1
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,3,4,3,,,W,2,99,xxx,enkel wit gezien,,,1,6, , , , , ,,6,0,om te zien of mensen reclame ok vinden met die muziek,0,0,0,0,0,,3.3333333333333335,0,0,1,0
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,3,4,3,,,B,2,99,xxx,toevallig in die rij,,,1,5, , ,5, , ,,5,0,keuze van kleur be?nvloeden,0,0,0,0,0,,3.3333333333333335,0,0,1,1
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,3,3,4,,,W,2,99,xxx,rij minder lang,,,1,5, , ,5, , ,,5,1,be?nvloeding via dia en afleiding via muziek,1,0,0,0,0,,3.3333333333333335,1,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,1,99,xxx,4,4,4,,,B,1,99,xxx,kortere rij,,,1,5, , ,5, , ,,5,0,door muziek opgeroepen gevoel associ?ren met pen,1,0,0,0,0,,4,1,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,1,99,xxx,2,2,3,,,W,1,99,xxx,"toevallig, stond dichterbij",,,1,5, , ,5, , ,,5,0,blauwe pen onaangename muziek en wit aangenaam. associatie,1,1,1,1,1,muziek andere conditie gehoord of gewoon geraden?,2.3333333333333335,5,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,3,3,3,,,W,2,99,xxx,rij korter,,,1,5, , ,5, , ,,5,0,of muziek je aan cultuur doet denken. indien positief dan wit kiezen,1,1,0,0,0,,3,2,0,1,0
+1AOK1,1,1,1,1,B,2,0,0,1,99,xxx,4,4,4,,,B,1,99,xxx,rij korter,,,1,5, , , , , ,,5,0,of waarderen van fragment samen met witte pen de keuze voor wit verhoogt,1,1,1,1,0,,4,4,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,3,4,4,,,B,2,99,xxx,rij dichterbij,,,1,5, , , , , ,,5,0,welke kleur balpen roept positieve gevoelens op,0,0,0,0,0,,3.6666666666666665,0,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,4,5,4,,,B,2,99,xxx,dichterbij,,,1,5, , , , , ,,5,0,effect afbeelden pen op keuze pen,0,0,1,0,0,,4.333333333333333,1,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,4,4,4,,,B,2,99,xxx,dichtsbijzijnd,,,1,5, , , , , ,,5,0,"pen associ?ren met vrolijke deun, meer inspiratie met ""deze pen""",1,0,0,0,0,,4,1,0,1,1
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,5,5,4,,,W,2,99,xxx,rij korter,,,1,5, , , , , ,,5,0,positieve muziek maakt product positiever,1,0,0,0,0,,4.666666666666667,1,0,1,0
+1AOK1,1,1,1,1,W,1,1,1,1,99,xxx,4,5,5,,,W,1,99,xxx,rij korter,,,1,5, , , , , ,,5,0,effect van muziekgenre of voorkeur kleur,1,1,1,0,0,,4.666666666666667,3,0,1,0
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,4,4,4,,,W,2,99,xxx,"niet bewust, rij korter",,,1,5, , , , , ,,5,0,of foto effect heeft op keuze,0,0,0,0,0,,4,0,0,1,0
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,5,5,3,,,W,2,99,xxx,rij korter,,,1,5, , , , , ,,5,0,associatie tussen muziek en balpen,1,1,0,0,0,,4.333333333333333,2,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,1,99,xxx,2,2,3,,,B,1,99,xxx,kortste afstand,,,1,5, , , , , ,,5,0,of gespeelde muziek effect heeft op getoonde pen,1,1,0,0,0,,2.3333333333333335,2,0,1,0
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,3,2,3,,,W,2,99,xxx,kortere rij,,,1,5, , , , , ,,5,0,tot welke kleur meer aangetrokken na luisteren muziek,1,1,1,0,0,,2.6666666666666665,3,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,1,99,xxx,2,1,1,,,W,1,99,xxx,pen aan mijn kant gekozen,,,1,5, , , , , ,,5,0,gevoelens bij anderstalige muziek,0,0,0,0,0,,1.3333333333333333,0,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,1,99,xxx,1,1,1,,,W,1,99,xxx,rij blauw langer,,,1,5, , , , , ,,5,0,of muziek gevoelens oproept die bij merk pen past,0,0,0,0,0,,1,0,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,2,2,3,,,W,2,99,xxx,rij korter,,,1,5, , , , , ,,5,1,via muziek pos of neg attitude cre?ren tgo pen. kijken naar keuze pen,1,1,1,0,0,,2.3333333333333335,3,0,1,1
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,2,2,3,,,B,2,99,xxx,kortere rij,,,1,5, , , , , ,,5,0,nagaan of (muziek) goed gevoel opwekt om aan balpen te relateren,0,0,0,0,0,,2.3333333333333335,0,0,1,0
+1BOK3,1,3,2,1,W,1,0,0,1,99,xxx,3,4,4,,,W,1,99,xxx,kortste rij,,,1,5, , , , , ,,5,0,invloed van muziek op keuze balpen,1,1,1,0,0,,3.6666666666666665,3,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,3,4,4,,,W,2,99,xxx,minder aanschuiven,,,1,5, , , , , ,,5,0,of muziek be?nvloed welke kleur je kiest,1,1,1,0,0,,3.6666666666666665,3,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,1,99,xxx,2,2,3,,,B,1,99,xxx,dichtbij gekozen,,,1,5, , , , , ,,5,0,wie muziek positief beoordeelt kiest voor witte pen cf. afbeelding?,1,1,1,1,0,,2.3333333333333335,4,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,2,1,3,,,B,2,99,xxx,rij meer op mijn weg,,,1,5, , , , , ,,5,0,geen idee. slecht gevoel bij muziek.,0,0,0,0,0,,2,0,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,2,3,3,,,B,2,99,xxx,rij dichterbij,,,1,5, , , , , ,,5,0,of fragment invloed heeft op keuze pen,1,1,1,0,0,,2.6666666666666665,3,0,1,1
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,1,1,2,,,W,2,99,xxx,mevrouw (wit) stond dichtst,,,1,5, , , , , ,,5,0,"slechte muziek, dus meerderheid blauw kiezen?",1,1,1,1,0,,1.3333333333333333,4,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,1,99,xxx,2,1,3,,,W,1,99,xxx,rij korter,,,1,5, , , , , ,,5,0,link tussen kleur en muziek. invloed muziek op keuze,1,1,1,0,0,,2,3,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,1,99,xxx,1,1,1,,,W,1,99,xxx,minder mensen,,,1,5, , , , , ,,5,0,verband attitude muziek en keuze pen,1,1,0,0,0,,1,2,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,2,1,2,,,W,2,99,xxx,mijn kant aula,,,1,5, , , , , ,,5,0,"muziek + associatie witte pen, effect of keuze?",1,1,1,0,0,,1.6666666666666667,3,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,2,2,3,,,W,2,99,xxx,rij korter,,,1,5, , , , , ,,5,0,geen flauw idee,0,0,0,0,0,,2.3333333333333335,0,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,2,2,2,,,W,2,99,xxx,wit te zien op scherm,,,1,3, , , , , ,,3,0,zien of muziek/afbeelding keuze bepaalt,1,0,1,0,0,,2,2,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,1,99,xxx,2,1,1,,,B,1,99,xxx,cf. andere schrijfwaren,,,1,2, , ,2, , ,,2,0,goede attitude genereren in reclames met muziek,1,0,0,0,0,,1.3333333333333333,1,0,1,0
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,4,4,5,,,W,2,99,xxx,heb al veel blauwe,,,1,2, , , , , ,,2,0,mensen overtuigen blauw te kiezen,0,0,0,0,0,,4.333333333333333,0,0,1,1
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,2,1,2,,,W,2,99,xxx,heb al veel blauwe,,,1,2, , , , , ,,2,0,invloed van muziek op kleurkeuze,1,1,1,0,0,,1.6666666666666667,3,0,1,0
+1AOK1,1,1,1,1,B,2,0,0,1,99,xxx,4,4,3,,,B,1,99,xxx,blauw mooier,,,1,1, , ,1, , ,,1,0,of mooie muziek keuze be?nvloedt; match kleur en gevoel muziek,1,1,1,0,0,,3.6666666666666665,3,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,4,4,5,,,W,2,99,xxx,wit vrouwelijker en neutraler,,,1,1, , ,1, , ,,1,0,positief gevoel muziek associ?ren met product -> positief product,1,0,0,0,0,"discrepantie: zat in stapeltje blauwe pennen, maar stelt wit ontvangen te hebben",4.333333333333333,1,1,0,1
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,4,5,5,,,B,2,99,xxx,blauw mooier,,,1,1, , ,1, , ,,1,0,gevoel muziekfragment bepaalt of je gaat voor je voorkeur,1,1,1,0,0,"discrepantie: zat in stapeltje ""wit"" maar stelt blauwe pen te hebben ontvangen",4.666666666666667,3,1,0,0
+1AOK2,1,2,2,2,B,2,1,0,1,99,xxx,4,4,3,,,B,1,99,xxx,dacht dat het blauw mooier ging zijn,,,1,1, , ,1, , ,,1,0,kijken hoe we reageren op muziek. link tussen muziek en een pen,1,1,0,0,0,,3.6666666666666665,2,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,1,99,xxx,2,2,3,,,B,1,99,xxx,mooier,,,1,1, , ,1, , ,,1,0,of attitude over muziek effect heeft op keuze kleur,1,1,0,0,0,,2.3333333333333335,2,0,1,0
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,4,3,4,,,W,2,99,xxx,wit net anders dan blauw,,,1,1, , ,1, , ,,1,0,muziek + afbeelding -> keuze blauw,1,1,1,1,0,,3.6666666666666665,4,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,4,4,5,,,W,2,99,xxx,wit mooier,,,1,1, , ,1, , ,,1,0,positief gevoel bij fragment dan misschien voor blauw kiezen,1,1,1,1,0,,4.333333333333333,4,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,3,4,3,,,B,2,99,xxx,mooier,,,1,1, , ,1, , ,,1,0,waardering en kleurkeuze en even studentennummers,1,0,0,0,0,,3.3333333333333335,1,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,2,1,3,,,B,2,99,xxx,mooier,,,1,1, , ,1, , ,,1,0,of fragment keuze beinvloedt,1,1,1,0,0,,2,3,0,1,1
+1BOK4,1,4,1,2,W,1,1,0,1,99,xxx,2,2,3,,,W,1,99,xxx,wit heeft iets,,,1,1, , ,1, , ,,1,0,"invloed muziek op kleurkeuze, cf. sfeer opgewekt; iets met afgebeelde kleur?",1,1,1,0,0,,2.3333333333333335,3,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,3,4,4,,,W,2,99,xxx,mooier,,,1,1, , ,1, , ,,1,0,relatie muziek en keuze,1,1,0,0,0,,3.6666666666666665,2,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,2,2,3,,,W,2,99,xxx,mooier,,,1,1, , ,1, , ,,1,0,reclame voor buitenlandse culturen,0,0,0,0,0,,2.3333333333333335,0,0,1,0
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,5,5,5,,,B,2,99,xxx,mooier,,,1,1, , , , , ,,1,0,effect van lied op keuze kleur,1,1,1,0,0,,5,3,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,3,4,4,,,B,2,99,xxx,blauw mooier,,,1,1, , , , , ,,1,0,positief fragment leidt tot witte balpen (cf. projectie),1,1,1,1,0,,3.6666666666666665,4,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,4,4,4,,,B,2,99,xxx,"wit saaier, blauw levendig",,,1,1, , , , , ,,1,0,of muziek keuze balpen be?nvloedt,1,1,1,0,0,,4,3,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,1,99,xxx,4,4,5,,,B,1,99,xxx,wit sneller vuil,,,1,1, , , , , ,,1,0,of deze muziek past bij balpen,0,0,0,0,0,,4.333333333333333,0,0,1,1
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,5,5,5,,,W,2,99,xxx,wit mooier,,,1,1, , , , , ,,1,0,of het fragment positief ervaren wordt,0,0,0,0,0,,5,0,0,1,0
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,4,4,4,,,W,2,99,xxx,mooier dan blauwe,,,1,1, , , , , ,,1,0,"positieve reactie muziek nemen witte (cf scherm), volgende groep wellicht andere pen op scherm",1,1,1,1,1,,4,5,0,1,0
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,4,5,5,,,W,2,99,xxx,heb al genoeg blauwe pennen,,,1,1, , , , , ,,2,0,lied roept gevoelens op en be?nvloedt keuze kleur,1,1,1,0,0,,4.666666666666667,3,0,1,0
+1AOK1,1,1,1,1,W,1,1,1,1,99,xxx,4,4,3,,,W,1,99,xxx,wit is mooier,,,1,1, , , , , ,,1,1,"afbeelding van witte pen, gecombineerd met muziek die je leuk vindt -> keuze",1,1,1,1,0,,3.6666666666666665,4,0,1,0
+1AOK1,1,1,1,1,W,1,1,1,1,99,xxx,4,4,4,,,W,1,99,xxx,dacht dat het rood was (inkt),,,1,1, , , , , ,,14,1,priming,0,0,0,0,0,,4,0,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,2,2,4,,,B,2,99,xxx,blauw mooier,,,1,1, , , , , ,,1,0,keuze kleur te maken met wat je van muziek vodn,1,1,1,0,0,,2.6666666666666665,3,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,2,1,2,,,B,2,99,xxx,mooier,,,1,1, , , , , ,,1,0,of beoordeling muziek invloed heeft op keuze kleur,1,1,1,0,0,,1.6666666666666667,3,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,2,1,2,,,B,2,99,xxx,blauw leuker,,,1,1, , , , , ,,1,0,of muziek ons minder geneigd maakt balpen te kopen,1,0,0,0,0,,1.6666666666666667,1,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,3,2,3,,,B,2,99,xxx,blauw mooier,,,1,1, , , , , ,,1,0,geen idee,0,0,0,0,0,,2.6666666666666665,0,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,2,1,2,,,B,2,99,xxx,wit saaier,,,1,1, , , , , ,,1,0,"muziek roept gevoelens op, wat attitude balpennen verandert",1,0,0,0,0,"coll.nr 933 vs 993, maar lijkt toch zelfde deelnemer",1.6666666666666667,1,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,4,4,4,,,B,2,99,xxx,wit sneller vuil,,,1,1, , , , , ,,1,0,hoe vlamingen staan tegenover oosterse muziek,0,0,0,0,0,,4,0,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,1,99,xxx,2,2,2,,,B,1,99,xxx,mooier,,,1,1, , , , , ,,1,0,hoe je tegenover andere culturen staat,0,0,0,0,0,,2,0,0,1,0
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,3,2,2,,,W,2,99,xxx,mooier,,,1,1, , , , , ,,1,0,reactie muziek in verband met een balpen,1,0,0,0,0,,2.3333333333333335,1,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,3,1,2,,,W,2,99,xxx,wit mooier,,,1,1, , , , , ,,1,0,gevoelens muziek op pen projecteren; onaangenaam dan keuze wit,1,1,1,1, ,,2,4,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,4,3,4,,,W,2,99,xxx,wit origineler,,,1,1, , , , , ,,1,0,volgens mij niets met muziek te maken,0,0,0,0,0,,3.6666666666666665,0,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,2,1,3,,,W,2,99,xxx,mooier,,,1,1, , , , , ,,1,0,of slechte muziek keuze be?nvloedt,1,1,1,0,0,,2,3,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,2,3,2,,,W,2,99,xxx,hou van wit,,,1,1, , , , , ,,1,0,of waardering muziek kleurkeuze be?nvloedt,1,1,1,0,0,,2.3333333333333335,3,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,3,3,3,,,W,2,99,xxx,blauw niet mooi,,,1,1, , , , , ,,1,0,houding tov muziek correleert met keuze pen.,1,1,1,1,0,,3,4,0,1,1
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,5,5,5,,,B,2,99,xxx,blauw lievelingskleur,,,1,1, , , , , ,,1,0,"positief gevoel muziek + blauwe pen op scherm-> blauw kiezen; negatief gevoel, dan wit",1,1,1,1,1,,5,5,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,4,5,4,,,B,2,99,xxx,leukere kleur,,,1,1, , , , , ,,1,0,blauwe pen na horen fragment met zien van foto,1,1,1,1,0,,4.333333333333333,4,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,4,4,4,,,B,2,99,xxx,blauw mooier,,,1,1, , , , , ,,1,0,"positief gevoel bij lied, dan positief bij pen",1,0,0,0,0,,4,1,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,4,4,4,,,B,2,99,xxx,blauw mooier,,,1,1, , , , , ,,1,0,"positieve muziek, dan keuze voor kleur cf. afbeelding",1,1,1,1,0,,4,4,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,5,5,5,,,B,2,99,xxx,blauw mooier,,,1,1, , , , , ,,1,0,of je je positief of negatief voelt,0,0,0,0,0,,5,0,0,1,0
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,4,4,4,,,W,2,99,xxx,wit is eens iets anderd,,,1,1, , , , , ,,1,0,of goed gevoel frangemet keuze voor blauw stimuleert,1,1,1,1,0,,4,4,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,4,4,4,,,W,2,99,xxx,wit is lichter en blij gevoel,,,1,1, , , , , ,,1,0,kijken welk gevoel muziekfragment geeft,1,0,0,0,0,,4,1,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,4,4,5,,,W,2,99,xxx,wit mooier,,,1,1, , , , , ,,1,0,proberen blauw te laten kiezen door positieve muziek,1,1,1,1,0,,4.333333333333333,4,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,1,99,xxx,4,4,4,,,W,1,99,xxx,is eens iets anders,,,1,1, , , , , ,,1,0,of iets eenvoudig als balpen invloed heeft op oordeel muziek,0,0,0,0,0,,4,0,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,5,5,5,,,W,2,99,xxx,wit is frisser,,,1,1, , , , , ,,1,0,na vrolijk fragment kiezen voor licht of donker,1,1,1,0,0,,5,3,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,2,2,3,,,B,2,99,xxx,blauw leuker,,,1,1, , , , , ,,1,0,niet beseffen waarover exp ging,0,0,0,0,0,,2.3333333333333335,0,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,2,2,2,,,B,2,99,xxx,hou van kleur,,,1,1, , , , , ,,1,0,wat beste muziek zou zijn,0,0,0,0,0,,2,0,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,1,1,1,,,B,2,99,xxx,blauw mooier,,,1,1, , , , , ,,1,0,iets anders dan kijken hoe mooi muziek was,0,0,0,0,0,ander coll.nr genoemd,1,0,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,3,2,3,,,B,2,99,xxx,blauw mooier,,,1,1, , , , , ,,1,0,kijken naar keuze kleur bij mooi vs minder mooi fragment,1,1,1,0,1,,2.6666666666666665,4,0,1,1
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,2,2,3,,,W,2,99,xxx,"helder, fris, neutraal",,,1,1, , , , , ,,1,0,welke emotie bij muziek,0,0,0,0,0,,2.3333333333333335,0,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,1,99,xxx,2,2,2,,,W,1,99,xxx,beter gevoel bij witte,,,1,1, , , , , ,,1,0,muziekfragment roept gevoelens op en onbewust zelfde kiezen,1,1,1,1,0,,2,4,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,2,3,2,,,W,2,99,xxx,mooier,,,1,1, , , , , ,,1,0,of sessie be?nvloedt welke kleur je kiest,1,1,1,0,0,,2.3333333333333335,3,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,1,99,xxx,2,2,3,,,W,1,99,xxx,cf persoon voor me,rij korter,,2,12,5, , , , ,,12,5,racisme,0,0,0,0,0,,2.3333333333333335,0,0,1,0
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,2,2,2,,,W,2,99,xxx,andere kleur niet gezien,stond aan de kant van de witte pen,,2,6,5, ,6,5, ,,6,5,welke gevoelens de muziek oproept,0,0,0,0,0,,2,0,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,2,1,2,,,W,2,99,xxx,andere kleur niet gezien,rij korter,,2,6,5, , , , ,,6,5,over wereldmuziek en sociale integratie,0,0,0,0,0,andere kleur niet gezien?,1.6666666666666667,0,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,1,99,xxx,2,4,4,,,B,1,99,xxx,toeval: rij korter,"had liever wit gehad, want mooier",,2,5, , ,5, , ,,5,14,associ?ren witte pen met leuke muziek en zo keuze be?nvloeden,1,1,1,1,0,,3.3333333333333335,4,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,1,2,3,,,W,2,99,xxx,geen reden,bij de blauwe stonden meer mensen,,2,5, , ,5, , ,,5,0,"nogal een vreemd liedje, dus wellicht niet voor reclame. weet het niet",0,0,0,0,0,,2,0,0,1,1
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,4,5,5,,,B,2,99,xxx,blauw dichterbij,blauwe pen is duidelijker over kleur ink,,2,5,2, ,5,15, ,,5,1,of gevoelens keuze be?nvloeden,1,0,0,0,0,muziek letterlijk genoemd maar daar lijkt het toch op,4.666666666666667,1,0,1,0
+1AOK1,1,1,1,1,B,2,0,0,1,99,xxx,4,5,4,,,B,1,99,xxx,dichterbij,maar witte pen sprak plots meer aan,,2,5,1, , , , ,,5,1,of fragment keuze verandert,1,1,1,0,0,,4.333333333333333,3,0,1,1
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,3,4,5,,,W,2,99,xxx,rij korter,balpen is meestal blauw,,2,5,2, , , , ,,5,1,gelukkiger worden van muziek en daardoor balpen willen kopen,1,0,0,0,0,,4,1,0,1,0
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,4,3,2,,,W,2,99,xxx,rij korter,besefte te laat te moeten kiezen,,2,5,6, , , , ,,5,0,of muziek ok is voor reclame,0,0,0,0,0,,3,0,0,1,1
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,2,3,3,,,W,2,99,xxx,minder lang aanschuiven,rood is minder mooi,,2,5,1, , , , ,,5,1,zien welke gevoelend muziek oproept,0,0,0,0,0,rood als alternatieve kleur?,2.6666666666666665,0,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,4,5,5,,,W,2,99,xxx,rij korter,kleur maakt niet veel uit voor mij,,2,5, , , , , ,,5,0,positieve gevoelens oproepen tijdens zien blauwe pen,1,0,0,0,0,,4.666666666666667,1,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,4,4,4,,,W,2,99,xxx,kortere rij,heb al blauwe pennen,,2,5,2, , , , ,,5,2,blauwe pen afgebeeld + positieve muziek -> keuze,1,1,1,1,0,,4,4,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,1,99,xxx,3,2,3,,,B,1,99,xxx,kortst bij,rij minder lang,,2,5,5, , , , ,,5,0,of fragment invloed heeft op keuze,1,1,1,0,0,,2.6666666666666665,3,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,3,4,5,,,B,2,99,xxx,rij dichtbij,minder lang,,2,5,5, , , , ,,5,0,positief onthalen muziek,0,0,0,0,0,,4,0,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,2,2,3,,,B,2,99,xxx,blauwe pen dichterbij,wilde niet voorsteken,,2,5,5, , , , ,,5,0,muziek aangenaam?,0,0,0,0,0,,2.3333333333333335,0,0,1,1
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,3,2,3,,,W,2,99,xxx,rij korter,al mijn pennen wit,,2,5,2, , , , ,,5,2,afleiding voor dit pennenonderzoek,0,0,0,0,0,,2.6666666666666665,0,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,4,4,5,,,B,2,99,xxx,cf. scherm,muziek gaf goed gevoel blauwe pen,,2,3,8, ,3,16, ,positief beeld door relatie met muziek,3,8,wie kiest blauw of wit na horen muziek,1,1,1,0,0,,4.333333333333333,3,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,1,2,2,,,B,2,99,xxx,blauwe kleur voor blauwe inkt,mooier,,2,2,1, ,16,1, ,blauwe pen schrijft ook blauw,1,0,projectie blauwe pen; muziek heeft er niets mee te maken,0,0,0,0,0,,1.6666666666666667,0,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,2,2,3,,,B,2,99,xxx,had al een witte,blauw lievelingskleur,,2,2,1, ,2,1, ,,2,1,invloed van muziek + afgebeelde blauwe pen op keuze. als onaangenaam dan voor wit kiezen?,1,1,1,1,0,,2.3333333333333335,4,0,1,0
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,2,2,2,,,W,2,99,xxx,heb al veel blauwe,wit tof,,2,2,1, , , , ,,1,0,hoeveel mensen na muziek blauw vs wit nemen,1,1,0,0,0,,2,2,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,1,99,xxx,4,4,5,,,W,1,99,xxx,al mij andere pennen blauw,wit is lichter dan blauw,,2,2,1, , , , ,,2,1,keuze kleur in functie van fragment,1,1,1,0,0,,4.333333333333333,3,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,1,99,xxx,1,2,3,,,B,1,99,xxx,consistentie met andere pen van me,wit sober,,2,2,1, , , , ,,2,1,etnocentrisme,0,0,0,0,0,,2,0,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,2,2,3,,,B,2,99,xxx,heb al witte,witte pen cf. onaangename muziek,,2,2,9, , , , ,,2,9,invloed muziek op keuze. gemeten hoeveel meer blauwe pennen gekozen,1,1,1,1,0,,2.3333333333333335,4,0,1,1
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,4,5,4,,,B,2,99,xxx,mooiere kleur,opvallender,,2,1,15, ,1,15, ,,1,0,positieve evaluatie van muziek leidt tot kiezen witte pen,1,1,1,1,0,,4.333333333333333,4,0,1,1
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,4,4,4,,,W,2,99,xxx,wit mooier,gezien op scherm,,2,1,3, ,1,3, ,,1,3,positief gevoel muziek be?nvloedt keuze pen; klassieke conditionerin,1,1,1,1,1,,4,5,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,2,2,3,,,B,2,99,xxx,mooier,wit rap vuil,,2,1,1, ,1,1, ,,1,0,attitude tegenover arabische cultuur,0,0,0,0,0,,2.3333333333333335,0,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,2,2,4,,,B,2,99,xxx,blauw mooier,toevallig in blauwe rij,,2,1,5, ,1,5, ,,1,5,keuze pen afhankelijk van attitude muziek die met pen afgespeeld werd,1,1,1,0,0,,2.6666666666666665,3,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,5,5,4,,,B,2,99,xxx,wit niet mooi,wit sneller vuil,,2,1,1, ,1,1, ,,1,0,kleur keuze na zien van ??n pen en horen fragment,1,1,1,0,0,,4.666666666666667,3,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,4,4,5,,,B,2,99,xxx,mooier kleur,cf. afbeelding scherm,,2,1,3, ,1,3, ,,1,3,positieve of negatieve van muziek be?nvloedt kleurkeuze,1,1,1,0,0,,4.333333333333333,3,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,1,99,xxx,4,4,5,,,B,1,99,xxx,wit is te wit; blauw positiever,blauw past beter bij lied,,2,1,8, ,1,16, ,blauwe pen past bij lied,1,8,attitude over muziek om juiste reclame te maken,0,0,0,0,0,gek dat in de vrije redenen wel suggestie over onderzoeksdoel staat,4.333333333333333,0,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,3,3,4,,,W,2,99,xxx,lichter en vrolijker,"pen nu is blauw, dit anders",,2,1,15, ,1,2, ,,1,0,attitude tov deze muziek,0,0,0,0,0,,3.3333333333333335,0,0,1,0
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,4,3,4,,,W,2,99,xxx,wit neutraler,blauw niet mooi,,2,1,1, , , , ,,1,0,of je liedjes in reclame kan gebruiken,0,0,0,0,0,,3.6666666666666665,0,0,1,0
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,4,5,5,,,B,2,99,xxx,kleur mooier,mijn andere pen is ook blauw,,2,1,2, , , , ,,1,2,of muziek keuze balpen beinvloedt,1,1,1,0,0,,4.666666666666667,3,0,1,1
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,1,1,1,,,B,2,99,xxx,blauw mooier,wit snel vies,,2,1,1, , , , ,,1,0,wsch andere groep ander lied. impact lied op keuze,1,1,1,1,1,,1,5,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,2,2,2,,,B,2,99,xxx,blauw lievelingskleur,wit saai,,2,1,1, , , , ,,1,0,muziek voor reclame zoeken,0,0,0,0,0,,2,0,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,3,2,3,,,B,2,99,xxx,blauw positiever,wit is saai,,2,1,1, , , , ,,1,0,wat voor muziek goed voor reclame over pen,1,0,0,0,0,,2.6666666666666665,1,0,1,0
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,2,1,3,,,B,2,99,xxx,blauw lievelingskleur,wit sneller vuil,,2,1,1, , , , ,,1,0,of afbeelding van blauwe of witte pen keuze be?nvloedt,0,0,1,0,0,,2,1,0,1,0
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,3,2,3,,,W,2,99,xxx,mooier,anders dan meeste pennen,,2,1,1, , , , ,,1,2,keuze afh. van houding tov muziek,1,1,1,0,0,,2.6666666666666665,3,0,1,1
+1AOK2,1,2,2,2,B,2,1,0,1,99,xxx,2,2,3,,,B,1,99,xxx,mooier,dichterbij,,2,1,5, , , , ,,1,5,luisteren naar slechte muziek invloed op keuze pen,1,1,1,1,0,,2.3333333333333335,4,0,1,0
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,2,2,2,,,W,2,99,xxx,wit mooier,rij korter,,2,1,5, , , , ,,1,5,meten attitude muziek,0,0,0,0,0,,2,0,0,1,1
+1BOK3,1,3,2,1,B,2,1,1,1,99,xxx,5,5,5,,,B,1,99,xxx,favoriete kleur,wit straalt minder waarde uit,,2,1,1, , , , ,,1,0,beste muziekfragment zoeken,0,0,0,0,0,,5,0,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,5,5,5,,,B,2,99,xxx,blauw mooier,wit is neutraal en koud,,2,1,1, , , , ,,1,0,na horen keuze voor blauw of wit,1,1,1,0,0,,5,3,0,1,0
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,5,5,5,,,W,2,99,xxx,wit unieker,mooier dan blauw,,2,1,1, , , , ,,1,0,invloed attitude muziek op keuze,1,1,1,0,0,,5,3,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,1,99,xxx,3,3,4,,,W,1,99,xxx,wit specialer,neutrale kleur,,2,1,1, , , , ,,1,0,be?nvloeden in keuze; muziek voor reclame,0,0,0,0,0,"noemt zowel muziek als keuze, maar lijkt los van elkaar",3.3333333333333335,0,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,3,3,4,,,W,2,99,xxx,"mooier, neutraler",wit is eens iets anders,,2,1,1, , , , ,,1,0,invloed uitoefenen op keuze wit of blauw,1,1,1,0,0,,3.3333333333333335,3,0,1,1
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,4,5,4,,,W,2,99,xxx,wit mooi,heb nog geen wit in pennenzak,,2,1,2, , , , ,,1,2,of muziek effect heeft op keuze,1,1,1,0,0,,4.333333333333333,3,0,1,1
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,4,4,4,,,B,2,99,xxx,kleur mooier,kortere rij,,2,1,5, , , , ,,1,5,of dit goede muziek zou zijn voor reclame,0,0,0,0,0,,4,0,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,3,4,4,,,B,2,99,xxx,wit is saai,blauw dichterbij,,2,1,5, , , , ,,1,5,kijken of het geschikt is voor reclame,0,0,0,0,0,,3.6666666666666665,0,0,1,0
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,3,3,3,,,B,2,99,xxx,blauw lievelingskleur,hou van kleur,,2,1,1, , , , ,,1,0,"witte pen met rare muziek, be?nvloedt keuze voor blauwe pen",1,1,1,0,0,,3,3,0,1,1
+1BOK4,1,4,1,2,B,2,0,1,2,99,xxx,2,1,2,,,B,2,99,xxx,meer kleur,niet nagedacht,,2,1,16, , , , ,,1,0,geen idee. muziek niet voor reclame,0,0,0,0,0,,1.6666666666666667,0,0,1,1
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,2,1,3,,,W,2,99,xxx,wit is mooier,blauw is zo gewoon,,2,1,1, , , , ,,1,0,gevoel bij muziek,0,0,0,0,0,,2,0,0,1,0
+1BOK4,1,4,1,2,B,2,0,1,1,99,xxx,1,1,1,,,B,1,99,xxx,minder vrouwelijk,slechte muziek-> blauw,,2,1,9, , , , ,,1,9,kleurvoorkeur ivm muziek,0,1,0,0,0,,1,1,0,1,1
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,4,4,5,,,W,2,99,xxx,doet aan zomer denken (muziek),stond afgebeeld op scherm,frisser dan blauw,3,8,3,1, , , ,,8,3,attitudes t.o.v. kleur door muziek be?nvloeden,1,1,1,0,0,,4.333333333333333,3,0,1,0
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,5,5,5,,,W,2,99,xxx,rij langer voor wit,wist niet meer wie blauwe had,wilde eigenlijk blauw,3,5,5, ,5, , ,,5,1,"goed gevoel bij muziek, dan keuze voor wit; anders blauw",1,1,1,1,0,,5,4,0,1,0
+1AOK2,1,2,2,2,W,1,0,1,1,99,xxx,2,2,3,,,W,1,99,xxx,geen wachtrij,wit neutraler,dacht eerst dat we automatisch blauw kre,3,5,1,11,5,1,11,,5,1,muziek niet appreci?ren terwijl je blauwe pen ziet doet voor wit kiezen,1,1,1,1,0,,2.3333333333333335,4,0,1,1
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,4,5,4,,,B,2,99,xxx,blauw mooier,het is mooi blauw,rij korter,3,1,1,5,1,1,5,,1,5,"goed nummer, dan misschien sneller blauw kiezen",1,1,1,1,0,,4.333333333333333,4,0,1,0
+1BOK3,1,3,2,1,B,2,1,1,2,99,xxx,2,3,4,,,B,2,99,xxx,kleur mooier,blauw positieve associaties,rij wit langer,3,1,1,5,1,1,5,,1,5,fragment leuk vinden en daardoor de balpen meer willen,1,0,0,0,0,,3,1,0,1,0
+1BOK4,1,4,1,2,W,1,1,0,2,99,xxx,2,2,3,,,W,2,99,xxx,mooier,vrouwelijker,vrolijker,3,1,1,1,1,1,1,,1,0,of muziek positieve gevoelens opwekt,0,0,0,0,0,,2.3333333333333335,0,0,1,0
+1AOK1,1,1,1,1,W,1,1,1,2,99,xxx,4,5,5,,,W,2,99,xxx,mooier,netjes,neutraal,3,1,1,1, , , ,,1,0,toekomstige reclame voor deze pennen,0,0,0,0,0,,4.666666666666667,0,0,1,0
+1AOK1,1,1,1,1,B,2,0,0,2,99,xxx,4,4,4,,,B,2,99,xxx,"mooier dan wit, cf. blauwe inkt",wit is saai & lelijk,stond eerder aan blauwe kant,3,1,1,5, , , ,,1,5,gevoelens oproepen door muziek; daardoor ook linken met gevoel die kleur oproept,1,1,1,0,0,,4,3,0,1,1
+1AOK2,1,2,2,2,B,2,1,0,2,99,xxx,3,2,3,,,B,2,99,xxx,blauw mooier,wit saai,blauw kleurrijker,3,1,1,1, , , ,,1,0,of muziek ok is voor reclame,0,0,0,0,0,,2.6666666666666665,0,0,1,0
+1AOK2,1,2,2,2,W,1,0,1,2,99,xxx,2,1,3,,,W,2,99,xxx,blauw niet zo mooi,van een meisje,heb liever wit,3,1,16,1, , , ,,1,0,relatie tussen waardering blauw/wit en muziek,1,1,1,1,0,,2,4,0,1,1
+1BOK3,1,3,2,1,B,2,1,1,1,99,xxx,5,5,5,,,B,1,99,xxx,wit sneller vuil,schrijf graag met blauw,lievelingskleur,3,1,1,1, , , ,,1,0,even tot rust brengen om de juiste keuze te maken,0,1,0,0,0,,5,1,0,1,0
+1BOK3,1,3,2,1,W,1,0,0,2,99,xxx,5,4,4,,,W,2,99,xxx,wit vrouwelijker,paste beter bij muziek,blauw/zilver minder mooie combo,3,1,8,1, , , ,,1,8,keuze tussen blauw en wit controlerelen; of reclamedoel blauw werkt,0,0,0,0,0,,4.333333333333333,0,0,1,1
+
