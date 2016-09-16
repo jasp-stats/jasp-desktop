@@ -25,6 +25,7 @@ Thumbs.db
 
 # R
 JASP-Engine/R-*
+.Rapp.history
 
 # .exe
 *.exe
