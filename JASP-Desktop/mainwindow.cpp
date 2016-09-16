@@ -120,6 +120,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
 	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
 	QObject::connect(openShortcut, SIGNAL(activated()), this, SLOT(openKeysSelected()));
+	QShortcut *refreshShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
+	QObject::connect(refreshShortcut, SIGNAL(activated()), this, SLOT(refreshKeysSelected()));
 
 	ui->setupUi(this);
 
@@ -365,7 +367,12 @@ void MainWindow::saveKeysSelected()
 
 void MainWindow::openKeysSelected()
 {
-	ui->backStage->open();
+
+}
+
+void MainWindow::refreshKeysSelected()
+{
+	refreshAllAnalyses();
 }
 
 void MainWindow::illegalOptionStateChanged()
@@ -1437,6 +1444,14 @@ void MainWindow::removeAllAnalyses()
 	}
 }
 
+void MainWindow::refreshAllAnalyses()
+{
+	for (Analyses::iterator it = _analyses->begin(); it != _analyses->end(); ++it)
+	{
+		(*it)->reRun();
+	}
+}
+
 void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html)
 {
 	if (_log != NULL)
@@ -1585,6 +1600,11 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 		_analysisMenu->addAction("Remove All ", this, SLOT(removeAllAnalyses()));
 	}
 
+	if (menuOptions["hasRefreshAllAnalyses"].asBool())
+	{
+		_analysisMenu->addSeparator();
+		_analysisMenu->addAction("Refresh All ", this, SLOT(refreshAllAnalyses()));
+	}
 
 	QPoint point = ui->webViewResults->mapToGlobal(QPoint(round(menuOptions["rX"].asInt() * _webViewZoom), round(menuOptions["rY"].asInt() * _webViewZoom)));
 
