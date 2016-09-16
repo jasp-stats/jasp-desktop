@@ -29,45 +29,12 @@
 namespace spss
 {
 
-	class RecordRoot
-	{
-	public:
-
-		/**
-		  * @brief RecordRoot default Ctor
-		  *
-		  * When Constructing a FileHeaderRecord fileHEader is 0.
-		  */
-		RecordRoot();
-
-		~RecordRoot();
-
-		/**
-		 * @brief processStrings Converts any strings in the data fields.
-		 * @param dictData The
-		 *
-		 * Should be implemented in classes where holdStrings maybe or is true.
-		 *
-		 */
-		virtual void processStrings(const CodePageConvert &converter) {};
-
-		/**
-		 * @brief processAllStrings Calls processStrings(const SpssCPConvert) on all memeber of _stringholders.
-		 * @param converter The convertor to pass on.
-		 */
-		static void processAllStrings(const CodePageConvert &converter);
-
-	protected:
-		static std::set<RecordRoot *> * _pRecords; /** < Holds all instances where holdsStrings == true */
-	};
-
 /**
   * @brief The ReadableRecord class: Base class for readable objects.
   *
   */
 
-template <RecordTypes recType>
-class ReadableRecord : public RecordRoot
+template <RecordTypes recType> class ReadableRecord
 {
 public:
 
@@ -138,7 +105,6 @@ ReadableRecord<rT>::ReadableRecord(RecordTypes fileType)
 
 template <RecordTypes rT>
 ReadableRecord<rT>::ReadableRecord(const NumericConverter &, RecordTypes fileType, SPSSStream &from)
-	: RecordRoot()
 {
 	if (!from.good())
 	{

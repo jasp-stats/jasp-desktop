@@ -54,6 +54,11 @@ SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long s
 
 }
 
+SPSSColumn::~SPSSColumn()
+{
+
+}
+
 /**
  * @brief spssStringLen Find the length of the string (in column).
  * @param value Value to set.
@@ -299,6 +304,24 @@ string SPSSColumn::format(double value)
 }
 
 /**
+ * @brief processStrings Converts any strings in the data fields.
+ * @param dictData The
+ *
+ * Should be implemented in classes where holdStrings maybe or is true.
+ *
+ */
+void SPSSColumn::processStrings(const CodePageConvert &converter)
+{
+	spssLabel( converter.convertCodePage(spssLabel()) );
+	_spssName = converter.convertCodePage(spssName());
+
+	for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end(); ++it)
+		*it = converter.convertCodePage( *it );
+}
+
+
+
+/**
  * @brief containsFraction Returns false if all values are integer.
  * @param values VAlues to check
  * @return true if a fractional part found.
@@ -418,33 +441,32 @@ void SPSSColumns::resetCols()
  */
 SPSSColumn& SPSSColumns::getNextColumn()
 {
-
-    // First time or done spanning the (last) column?
+	// First time or done spanning the (last) column?
 	if ((_colCtr == (size_t)-1) || (at(_colCtr).columnSpan() == _spanCtr))
-    {
-        // Goto next column..
-        _colCtr++;
-        _spanCtr = 1;
-    }
-    else
-        // increment the colum spanned count.
-        _spanCtr++;
+	{
+		// Goto next column..
+		_colCtr++;
+		_spanCtr = 1;
+	}
+	else
+		// increment the colum spanned count.
+		_spanCtr++;
 
-    // off end?
-    if (((unsigned) _colCtr) >= size())
-    {
-        _colCtr = 0;
-        _spanCtr = 1;
+	// off end?
+	if (((unsigned) _colCtr) >= size())
+	{
+		_colCtr = 0;
+		_spanCtr = 1;
 
-        // Reset all the string remaining values.
-        for (size_t i = 0; i < size(); i++)
-        {
-            SPSSColumn & col = at(i);
-            col.charsRemaining(col.spssStringLen());
-        }
-    }
+		// Reset all the string remaining values.
+		for (size_t i = 0; i < size(); i++)
+		{
+			SPSSColumn & col = at(i);
+			col.charsRemaining(col.spssStringLen());
+		}
+	}
 
-    return at(_colCtr);
+	return at(_colCtr);
 }
 
 /**
@@ -479,82 +501,75 @@ void SPSSColumns::numCases(int64_t num)
  */
 void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string &, int)> progress)
 {
-    // For every found very long string.
-    const LongColsData &strLens = veryLongColsDat();
-    float numStrlens = distance(strLens.begin(), strLens.end());
-    for (map<string, size_t>::const_iterator ituple = strLens.begin(); ituple != strLens.end(); ituple++)
-    {
-        { // report progress
-            float prog = 100.0 * ((float) distance(strLens.begin(), ituple)) / numStrlens;
-            static float lastProg = -1.0;
-            if ((prog - lastProg) >= 1.0)
-            {
-                progress("Processing long strings.", (int) (prog + 0.5));
-                lastProg = prog;
-            }
+	// For every found very long string.
+	const LongColsData &strLens = veryLongColsDat();
+	float numStrlens = distance(strLens.begin(), strLens.end());
+	for (map<string, size_t>::const_iterator ituple = strLens.begin(); ituple != strLens.end(); ituple++)
+	{
+		{ // report progress
+			float prog = 100.0 * ((float) distance(strLens.begin(), ituple)) / numStrlens;
+			static float lastProg = -1.0;
+			if ((prog - lastProg) >= 1.0)
+			{
+				progress("Processing long strings.", (int) (prog + 0.5));
+				lastProg = prog;
+			}
 
-        }
-        // find the root col...
-        SPSSColumns::iterator rootIter;
-        for (rootIter = begin(); rootIter != end(); rootIter++)
-        {
-//			DEBUG_COUT6("Matching: \"", rootIter->spssName(), "\" with \"", ituple->first, "\" ", ((rootIter->spssName() == ituple->first) ? "successfully." : "failed."));
-            if (rootIter->spssName() == ituple->first)
-                    break;
-        }
+		}
+		// find the root col...
+		SPSSColumns::iterator rootIter;
+		for (rootIter = begin(); rootIter != end(); rootIter++)
+		{
+			if (rootIter->spssName() == ituple->first)
+					break;
+		}
 
-        // Shouldn't happen..
-        if (rootIter == end())
-            throw runtime_error("Failed to process a very long string value.");
+		// Shouldn't happen..
+		if (rootIter == end())
+			throw runtime_error("Failed to process a very long string value.");
 
-//			DEBUG_COUT2("SPSSColumns::processVeryLongStrings(): Failed to find match for ", ituple->first.c_str());
+		while (rootIter->spssStringLen() < ituple->second)
+		{
+			// Find the next segment, (Should be next one along)
+			SPSSColumns::iterator ncol = rootIter;
+			ncol++;
 
-//		DEBUG_COUT3("Found SPSS col ", rootIter->spssName().c_str(), " root to append..");
+			// concatinate all the strings, going down the cases.
+			for (size_t cse  = 0; cse < rootIter->strings.size(); cse++)
+			{
+				// How much more to add?
+				long needed = min(ituple->second - rootIter->strings[cse].size(), rootIter->strings[cse].size());
+				if (needed > 0)
+					rootIter->strings[cse].append(ncol->strings[cse], 0, needed);
+			}
+			rootIter->spssStringLen( rootIter->spssStringLen() + ncol->spssStringLen() );
+			// Dump the column.
+			erase(ncol);
+		}
+	}
 
-        while (rootIter->spssStringLen() < ituple->second)
-        {
-            // Find the next segment, (Should be next one along)
-            SPSSColumns::iterator ncol = rootIter;
-            ncol++;
+	// Trim trialing spaces for all strings in the data set.
+	float numStrs = distance(begin(), end());
+	for (std::vector<SPSSColumn>::iterator iCol = begin(); iCol != end(); ++iCol)
+	{
+		{ // report progress
+			float prog = 100.0 * ((float) distance(begin(), iCol)) / numStrs;
+			static float lastProg = -1.0;
+			if ((prog - lastProg) >= 1.0)
+			{
+				progress("Processing strings.", (int) (prog + 0.5));
+				lastProg = prog;
+			}
 
-            // concatinate all the strings, going down the cases.
-            for (size_t cse  = 0; cse < rootIter->strings.size(); cse++)
-            {
-                // How much more to add?
-                long needed = min(ituple->second - rootIter->strings[cse].size(), rootIter->strings[cse].size());
-                if (needed > 0)
-                    rootIter->strings[cse].append(ncol->strings[cse], 0, needed);
-            }
-            rootIter->spssStringLen( rootIter->spssStringLen() + ncol->spssStringLen() );
-            // Dump the column.
-            erase(ncol);
-        }
-    }
-
-    // Trim trialing spaces for all strings in the data set.
-    float numStrs = distance(begin(), end());
-    for (std::vector<SPSSColumn>::iterator iCol = begin(); iCol != end(); ++iCol)
-    {
-        { // report progress
-            float prog = 100.0 * ((float) distance(begin(), iCol)) / numStrs;
-            static float lastProg = -1.0;
-            if ((prog - lastProg) >= 1.0)
-            {
-                progress("Processing strings for alphabet.", (int) (prog + 0.5));
-                lastProg = prog;
-            }
-
-        }
-        if (iCol->cellType() == SPSSColumn::cellString)
-        {
-            for (size_t cse  = 0; cse < iCol->strings.size(); cse++)
-            {
-                // Do a code page conversion on the the string.
-                iCol->strings[cse] = _stringConvert->convertCodePage(iCol->strings[cse]);
-                // Trim left and right.
-                StrUtils::lTrimWSIP(iCol->strings[cse]);
-                StrUtils::rTrimWSIP(iCol->strings[cse]);
-            }
-        }
-    }
+		}
+		if (iCol->cellType() == SPSSColumn::cellString)
+		{
+			for (size_t cse  = 0; cse < iCol->strings.size(); cse++)
+			{
+				// Trim left and right.
+				StrUtils::lTrimWSIP(iCol->strings[cse]);
+				StrUtils::rTrimWSIP(iCol->strings[cse]);
+			}
+		}
+	}
 }

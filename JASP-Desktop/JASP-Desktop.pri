@@ -156,6 +156,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/importers/spss/variablerecord.cpp \
         $$PWD/importers/spss/verylongstringrecord.cpp \
         $$PWD/importers/codepageconvert.cpp \
+		$$PWD/importers/convertedstringcontainer.cpp \
         $$PWD/importers/csv.cpp \
         $$PWD/importers/csvimporter.cpp \
         $$PWD/importers/jaspimporter.cpp \
@@ -344,9 +345,10 @@ HEADERS  += \
         $$PWD/importers/csvimporter.h \
         $$PWD/importers/jaspimporter.h \
         $$PWD/importers/spssimporter.h \
-        $$PWD/analysisforms/exploratoryfactoranalysisform.h \
+		$$PWD/importers/convertedstringcontainer.h \
+		$$PWD/importers/spss/spssformattype.h \
+		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
-        $$PWD/importers/spss/spssformattype.h \
         $$PWD/analysisforms/reliabilityanalysisform.h \
         $$PWD/analysisforms/SEM/semsimpleform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h \

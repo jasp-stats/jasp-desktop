@@ -91,16 +91,3 @@ void ValueLabelVarsRecord::process(SPSSColumns & /* columns */)
 {
 }
 
-/**
- * @brief processStrings Converts any strings in the data fields.
- * @param dictData The
- *
- * Should be implemented in classes where holdStrings maybe or is true.
- *
- */
-void ValueLabelVarsRecord::processStrings(const CodePageConvert &converter)
-{
-	for (size_t i = 0; i < _Labels.size(); ++i)
-		_Labels[i].label = converter.convertCodePage(_Labels[i].label);
-}
-

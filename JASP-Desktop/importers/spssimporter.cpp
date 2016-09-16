@@ -215,14 +215,14 @@ void SPSSImporter::loadDataSet(
 	if (_pFileHeaderRecord == 0)
 		throw runtime_error("No header found in .SAV file.");
 
-	// Now convert the string in the header that we are interested in.,
-	RecordRoot::processAllStrings(dictData.stringsConv());
-
 	// read the data records from the file.
 	DataRecords data(dictData.numericsConv(), *_pFileHeaderRecord, dictData, stream, progress);
 	data.read(packageData);
 
 	dictData.processStringsPostLoad(progress);
+
+	// Now convert the string in the header that we are interested in.,
+	ConvertedStringContainer::processAllStrings(dictData.stringsConv());
 
 	DEBUG_COUT5("Read ", data.numDbls(), " doubles and ", data.numStrs(), " string cells.");
 
