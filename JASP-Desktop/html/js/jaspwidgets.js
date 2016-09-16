@@ -1032,6 +1032,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasEditTitle: (parent.hasEditTitle === undefined || parent.hasEditTitle()) && parent.editTitleClicked !== undefined,
 			hasRemove: (parent.hasRemove === undefined || parent.hasRemove()) && parent.removeMenuClicked !== undefined,
             hasRemoveAllAnalyses: parent.menuName === 'All',
+            hasRefreshAllAnalyses: parent.menuName === 'All',
 			hasCollapse: (parent.hasCollapse === undefined || parent.hasCollapse()) && parent.collapseMenuClicked !== undefined,
 
 			objectName: parent.menuName,
