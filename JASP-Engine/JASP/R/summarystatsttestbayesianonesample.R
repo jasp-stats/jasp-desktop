@@ -45,11 +45,11 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 	#Bayes factor type (BF10, BF01, log(BF10))
 	bf.type <- options$bayesFactorType
-	
+
 	if (bf.type == "BF10")
 	{
 		BFH1H0 <- TRUE
-		
+
 		if (options$hypothesis == "notEqualToTestValue")
 		{
 			bf.title <- "BF\u2081\u2080"
@@ -66,7 +66,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	else if (bf.type == "LogBF10")
 	{
 		BFH1H0 <- TRUE
-		
+
 		if (options$hypothesis == "notEqualToTestValue")
 		{
 			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
@@ -79,12 +79,12 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		{
 			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
 		}
-		
+
 	}
 	else if (bf.type == "BF01")
 	{
 		BFH1H0 <- FALSE
-		
+
 		if (options$hypothesis == "notEqualToTestValue")
 		{
 			bf.title <- "BF\u2080\u2081"
@@ -104,14 +104,14 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 	table <- list()
 	table[["title"]] <- "Bayesian One Sample T-Test"
-	
+
 	table[["citation"]] <- list(
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
 
 	#add footnotes to the analysis result
 	footnotes <- .newFootnotes()
-	
+
 	if (options$hypothesis == "greaterThanTestValue")
 	{
 		message <- paste("For all tests, the alternative hypothesis specifies that the mean is greater than 0.", sep="")
@@ -149,7 +149,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 	if(perform=="run")
 	{
-		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
 			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE &&
 			diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
 		{
@@ -188,8 +188,8 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 		if(options$plotPriorAndPosterior)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
 				options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlotAddInfo
@@ -197,8 +197,8 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 				priorAndPosteriorPlotAddInfo <- priorAndPosteriorPlot
 			}
-			else if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+			else if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
 				!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlot
@@ -207,8 +207,6 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			}
 			else
 			{
-				BF10 <- exp(bayesFactorObject$bf)
-
 				width  <- 530
 				height <- 400
 
@@ -221,9 +219,9 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 				p <- try(silent=FALSE, expr = {
 					image <- .beginSaveImage(width, height)
-					.plotPosterior.ttest.summaryStats (t=options$tStatistic, n1=options$n1Size, n2=NULL, paired=FALSE, BFH1H0=(options$bayesFactorType == "BF10"), 
+					.plotPosterior.ttest.summaryStats (t=options$tStatistic, n1=options$n1Size, n2=NULL, paired=FALSE, BFH1H0=(options$bayesFactorType == "BF10"),
 													   dontPlotData= FALSE, rscale=options$priorWidth, addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-													   BF = BF10, oneSided = oneSidedHypothesis)
+													   BF = exp(bayesFactorObject$bf), oneSided = oneSidedHypothesis)
 					plot[["data"]]   <- .endSaveImage(image)
 				})
 
@@ -239,11 +237,11 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 					{
 						errorMessage <- "The Bayes factor is infinite"
 					}
-					else if (.clean(BF10) == "\u221E")
+					else if (.clean(exp(bayesFactorObject$bf)) == "\u221E")
 					{
 						errorMessage <- "The Bayes factor is infinite"
 					}
-					else if (.clean(BF10) == "NaN")
+					else if (.clean(exp(bayesFactorObject$bf)) == "NaN")
 					{
 						errorMessage <- "Bayes factor could not be calcluated"
 					}
@@ -271,13 +269,13 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		if(options$plotBayesFactorRobustness)
 		{
 			BFtypeRequiresNewPlot <- TRUE
-			
+
 			if (!(is.null(state)))
 			{
 				BFtypeRequiresNewPlot <- FALSE
 				BFtype <- options$bayesFactorType
 				BFtypeState <- state$options$bayesFactorType
-				
+
 				if ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01")
 				{
 					BFtypeRequiresNewPlot <- TRUE
@@ -288,11 +286,11 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				}
 			}
 
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
 				"robustnessPlot" %in% state$plotTypes)
 			{
-				index <- which(state$plotTypes == "robustnessPlot")				
+				index <- which(state$plotTypes == "robustnessPlot")
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 			}
 			else
@@ -309,8 +307,8 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 				p <- try(silent=FALSE, expr = {
 					image <- .beginSaveImage(width, height)
-					.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=(options$bayesFactorType == "BF10"), 
-													 dontPlotData= FALSE, rscale=options$priorWidth, 
+					.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=(options$bayesFactorType == "BF10"),
+													 dontPlotData= FALSE, rscale=options$priorWidth,
 													 BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactorObject$bf)), .clean(1/exp(bayesFactorObject$bf))), oneSided = oneSidedHypothesis)
 					plot[["data"]]   <- .endSaveImage(image)
 				})
@@ -333,7 +331,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	}
 	else #init phase
 	{
-		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
 			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE &&
 			diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
 		{
@@ -348,8 +346,8 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 		if(options$plotPriorAndPosterior)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
 				options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlotAddInfo
@@ -357,8 +355,8 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 				priorAndPosteriorPlotAddInfo <- priorAndPosteriorPlot
 			}
-			else if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+			else if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
 				!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlot
@@ -368,11 +366,11 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			else
 			{
 				plot <- list()
-				
+
 				plot[["title"]] <- "Prior and Posterior"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				
+
 				image <- .beginSaveImage(530, 400)
 				.plotPosterior.ttest.summaryStats(BF = 1, dontPlotData = TRUE, addInformation = options$plotPriorAndPosteriorAdditionalInfo)
 				plot[["data"]] <- .endSaveImage(image)
@@ -394,11 +392,11 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 		if(options$plotBayesFactorRobustness)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && 
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE &&
 				diff$hypothesis==FALSE))) && "robustnessPlot" %in% state$plotTypes)
 			{
-				index <- which(state$plotTypes == "robustnessPlot")				
+				index <- which(state$plotTypes == "robustnessPlot")
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 			}
 			else
@@ -442,7 +440,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 
 	keep <- NULL
-	
+
 	for (plot in plots.sumstats.ttest)
 		keep <- c(keep, plot$data)
 
@@ -453,7 +451,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	}
 	else
 	{
-		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorObject=bayesFactorObject, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot, 
+		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorObject=bayesFactorObject, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot,
 					rowsTTestBayesianOneSample=rowsTTestBayesianOneSample, plotsTtest=plots.sumstats.ttest, priorAndPosteriorPlotAddInfo=priorAndPosteriorPlotAddInfo, plotTypes=plotTypes), keep=keep))
 	}
 }
@@ -461,7 +459,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 .calcluateBFOneSample <- function(options, state, diff)
 {
-	if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && 
+	if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) &&
 		(diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$tStatistic == FALSE && diff$n1Size==FALSE))))
 	{
 		bf10 <- state$bayesFactorObject
@@ -494,7 +492,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 # checks if the input given is valid
 .isInputValidOneSample <- function(options)
 {
-	ready <- TRUE 
+	ready <- TRUE
 
 	n1Value <- options$n1Size
 	tStatValue <- options$tStatistic
@@ -538,7 +536,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	{
 		r <- rscale
 	}
-	
+
 	if (oneSided == FALSE || t == 0)
 	{
 		nullInterval <- NULL
@@ -557,10 +555,10 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	if (dontPlotData)
 	{
 		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
-		
+
 		axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
 		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
-		
+
 		if (oneSided == FALSE)
 		{
 			if (BFH1H0)
@@ -602,7 +600,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	#### get BFs ###
 	if(r > 1.5)
 	{
-		rValues <- seq(0.0005, 2, length.out = 535)	
+		rValues <- seq(0.0005, 2, length.out = 535)
 	}
 	else
 	{
@@ -616,7 +614,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 		BF <- BayesFactor::ttest.tstat(t=t, n1=n1, n2=n2, nullInterval=nullInterval, rscale=rValues[i])
 		BF10[i] <- .clean(exp(BF$bf))
-		
+
 		if ( ! .shouldContinue(callback()))
 			return()
 	}
@@ -637,31 +635,31 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	BF10ultraText <- BF10ultra
 
 	# BF10 user prior
-	BF10user <- BF10post 
+	BF10user <- BF10post
 	BF10userText <- BF10user
 
 	if (!(.shouldContinue(callback())))
 	{
 		return()
 	}
-	
+
 	####################### scale y axis ###########################
-	
+
 	BF <- c(BF10, BF10m, BF10w, BF10ultra, BF10user)
-	
+
 	if (!BFH1H0) {
-		
+
 		BF <- 1 / BF
 		BF10 <- 1 / BF10
 		BF10m  <- 1 / BF10m
 		BF10w <- 1 / BF10w
 		BF10ultra <- 1 / BF10ultra
 	}
-	
+
 	# y-axis labels larger than 1
 	y1h <- "1"
 	i <- 1
-	
+
 	while (eval(parse(text= y1h[i])) < max(BF10))
 	{
 		if (grepl(pattern = "e",y1h[i]))
@@ -672,19 +670,19 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		{
 			newy <- paste(y1h[i], "0", sep= "")
 		}
-		
+
 		if (eval(parse(text=newy)) >= 10^6)
 		{
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
-		
+
 		y1h <- c(y1h, newy)
 		i <- i + 1
 	}
-	
+
 	y3h <- "3"
 	i <- 1
-	
+
 	while (eval(parse(text= y3h[i])) < max(BF10))
 	{
 		if (grepl(pattern = "e",y3h[i]))
@@ -695,12 +693,12 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		{
 			newy <- paste(y3h[i], "0", sep= "")
 		}
-		
+
 		if (as.numeric(newy) >= 10^6)
 		{
 			newy <- format(as.numeric(newy), digits= 3, scientific = TRUE)
 		}
-		
+
 		y3h <- c(y3h, newy)
 		i <- i + 1
 	}
@@ -725,7 +723,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	}
 
 	yhighLab <- as.character(yhigh)
-	
+
 	# y-axis labels smaller than 1
 	y1l <- "1/1"
 	i <- 1
@@ -740,21 +738,21 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		{
 			newy <- paste(y1l[i], "0", sep= "")
 		}
-		
+
 		if (eval(parse(text= newy)) <= 10^(-6))
 		{
 			newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			newy <-  sub("-", "+", x = newy)
 			newy <- paste0("1/", newy)
 		}
-		
+
 		y1l <- c(y1l, newy)
 		i <- i + 1
 	}
-	
+
 	y3l <- "1/3"
 	i <- 1
-	
+
 	while (eval(parse(text= y3l[i])) > min(BF10))
 	{
 		if (grepl(pattern = "e",y3l[i]))
@@ -765,7 +763,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		{
 			newy <- paste(y3l[i], "0", sep= "")
 		}
-		
+
 		if (newy == "1/3e+9")
 		{
 			newy <- "1/3e+09"
@@ -806,20 +804,20 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			e <- e + 1
 		}
 	}
-	
+
 	yLab <- c(rev(ylow[-1]), yhighLab)
-	
+
 	# remove 3's if yLab vector is too long
 	omit3s <- FALSE
-	
+
 	if (length(yLab) > 9)
 	{
 		omit3s <- TRUE
-		
+
 		ind <- which(yLab == "3")
-		
+
 		yLabsHigh <- yLab[ind:length(yLab)]
-		
+
 		if (length(yLabsHigh) > 1)
 		{
 			yLabsHigh <- yLabsHigh[seq(2, length(yLabsHigh),2)]
@@ -828,12 +826,12 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		{
 			yLabsHigh <- character(0)
 		}
-		
+
 		yLabsLow <- yLab[1:(ind-1)]
 		yLabsLow <- yLabsLow[-grep(pattern = "/3", x = yLab)]
-		
+
 		yLab1s <- c(yLabsLow, yLabsHigh)
-		
+
 		if (max(BF10) > eval(parse(text= yLab1s[length(yLab1s)])))
 		{
 			for (i in 1:2)
@@ -847,7 +845,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				{
 					newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 				}
-				
+
 				if (eval(parse(text=newy)) >= 10^6)
 				{
 					newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
@@ -856,7 +854,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				yLab1s <- c(yLab1s, newy)
 			}
 		}
-		
+
 		if (max(BF10) > eval(parse(text= yLab1s[length(yLab1s)-1])))
 		{
 			if (grepl(pattern = "e",yLab1s[length(yLab1s)]))
@@ -868,15 +866,15 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			{
 				newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 			}
-			
-			if (eval(parse(text=newy)) >= 10^6) 
+
+			if (eval(parse(text=newy)) >= 10^6)
 			{
 				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
 			}
-			
+
 			yLab1s <- c(yLab1s, newy)
 		}
-		
+
 		if (yLab1s[1] == "1")
 		{
 			yLab1s <- c(paste0(yLab1s[1], "/", "10"), yLab1s)
@@ -885,7 +883,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		{
 			yLab1s <- c(yLab1s, "10")
 		}
-		
+
 		if (min(BF10) < eval(parse(text= yLab1s[1])))
 		{
 			for (i in 1:2)
@@ -907,10 +905,10 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 					newy <- paste0("1/", newy)
 				}
 			}
-			
+
 			yLab1s <- c(newy, yLab1s)
 		}
-		
+
 		if (min(BF10) < eval(parse(text= yLab1s[2])))
 		{
 			if (grepl(pattern = "e",yLab1s[1]))
@@ -921,7 +919,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			{
 				newy <- paste(yLab1s[1], "0", sep= "")
 			}
-			
+
 			if (eval(parse(text= newy)) <= 10^(-6))
 			{
 				newy <- format(eval(parse(text=newy)), digits= 3, scientific = TRUE)
@@ -929,14 +927,14 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				newy <- substring(newy, nchar(newy)-4, nchar(newy))
 				newy <- paste0("1/", newy)
 			}
-			
-			
+
+
 			yLab1s <- c(newy, yLab1s)
 		}
-		
+
 		yLab <- yLab1s
 	}
-	
+
 	if (!(.shouldContinue(callback())))
 	{
 		return()
@@ -945,7 +943,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	while (length(yLab) > 9)
 	{
 		ind <- which(yLab == "1")
-		
+
 		if (ind == 1)
 		{
 			yLabLow <- character(0)
@@ -954,7 +952,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		{
 			yLabLow <- yLab[1:(ind-1)]
 		}
-		
+
 		if (ind == length(yLab))
 		{
 			yLabHigh <- character(0)
@@ -972,7 +970,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		{
 			yLabLow <- yLabLow
 		}
-		
+
 		if (length(yLabHigh) > 1)
 		{
 			yLabHigh <- yLabHigh[seq(2, length(yLabHigh), 2)]
@@ -994,7 +992,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 		yLab <- c(rev(yLabLow), "1", yLabHigh)
 	}
-	
+
 	if (!(.shouldContinue(callback())))
 	{
 		return()
@@ -1004,12 +1002,12 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	{
 		interval <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[2])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(format(eval(parse(text=yLab[1])), digits=3, scientific=TRUE), "-", fixed= TRUE)[[1]][2]) + interval
-		
+
 		if (nchar(pot) == 1)
 		{
 			pot <- paste("0", pot, sep="")
 		}
-		
+
 		newy <- paste("1/1e", "+", pot, sep="")
 		yLab <- c(newy, yLab)
 	}
@@ -1018,7 +1016,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	{
 		interval <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)-1])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][2]) + interval
-		
+
 		if (nchar(pot) == 1)
 		{
 			pot <- paste("0", pot, sep="")
@@ -1027,14 +1025,14 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		newy <- paste(strsplit(format(eval(parse(text=yLab[length(yLab)])), digits=3, scientific=TRUE), "+", fixed= TRUE)[[1]][1], "+", pot, sep="")
 		yLab <- c( yLab, newy)
 	}
-	
+
 	yAt <- vector("numeric", length(yLab))
-	
+
 	for (i in seq_along(yLab))
 	{
 		yAt[i] <- log(eval(parse(text= yLab[i])))
 	}
-	
+
 	####################### plot ###########################
 
 	if(r > 1.5)
@@ -1073,7 +1071,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		for (i in 1:(length(yAthigh)-1))
 		{
 			yy <- mean(c(yAthigh[i], yAthigh[i+1]))
-			
+
 			if (yAthigh[i] == log(1))
 			{
 				text(x = xx, yy,"Anecdotal", pos= 4, cex= cexText)
@@ -1095,13 +1093,13 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				text(x = xx, yy,"Extreme", pos= 4, cex= cexText)
 			}
 		}
-		
+
 		yAtlow <- rev(yAt[yAt <= 0])
-		
+
 		for (i in 1:(length(yAtlow)-1))
 		{
 			yy <- mean(c(yAtlow[i], yAtlow[i+1]))
-			
+
 			if (yAtlow[i] == log(1))
 			{
 				text(x = xx, yy,"Anecdotal", pos= 4, cex= cexText)
@@ -1123,26 +1121,26 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				text(x = xx, yy,"Extreme", pos= 4, cex= cexText)
 			}
 		}
-		
+
 		axis(side=4, at= yAt,tick=TRUE,las=2, cex.axis= cexAxis, lwd= lwdAxis, labels=FALSE, line= -0.6)
-		
+
 		xx <- grconvertX(0.96, "ndc", "user")
 		yy <- grconvertY(0.5, "npc", "user")
 		text(xx, yy, "Evidence", srt= -90, cex= cexEvidence)
 	}
-	
+
 	if (omit3s)
 	{
 		if (eval(parse(text= yLab[1])) <= 1/10^6)
 		{
 			line <- 4.75
-			
+
 		}
 		else
 		{
 			line <- 4.3
 		}
-		
+
 		if (oneSided == FALSE)
 		{
 			if (BFH1H0)
@@ -1154,7 +1152,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= line)
 			}
 		}
-		
+
 		if (oneSided == "right")
 		{
 			if (BFH1H0)
@@ -1166,7 +1164,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= line)
 			}
 		}
-		
+
 		if (oneSided == "left")
 		{
 			if (BFH1H0)
@@ -1179,7 +1177,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			}
 		}
 	}
-	
+
 	if (omit3s == FALSE)
 	{
 		if (oneSided == FALSE)
@@ -1193,7 +1191,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				mtext(text = expression(BF[0][1]), side = 2, las=0, cex = cexYXlab, line= 3.1)
 			}
 		}
-		
+
 		if (oneSided == "right")
 		{
 			if (BFH1H0)
@@ -1205,7 +1203,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 				mtext(text = expression(BF[0]["+"]), side = 2, las=0, cex = cexYXlab, line= 3.1)
 			}
 		}
-		
+
 		if (oneSided == "left")
 		{
 			if (BFH1H0)
@@ -1242,7 +1240,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
 		}
 	}
-	
+
 	if (oneSided == "right")
 	{
 		if (BFH1H0)
@@ -1254,7 +1252,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
 		}
 	}
-	
+
 	if (oneSided == "left")
 	{
 		if (BFH1H0)
@@ -1297,7 +1295,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
 		}
 	}
-	
+
 	if (oneSided == "left")
 	{
 		if (BFH1H0)
@@ -1309,7 +1307,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H-", cex= cexText)
 		}
 	}
-	
+
 	if ((! .shouldContinue(callback())))
 	{
 		return()
@@ -1396,7 +1394,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		BF10wt <- formatC(BF10wText, 3, format = "f")
 		BF01wt <- formatC(BF01wText, 3, format = "f")
 	}
-	
+
 	if (oneSided == FALSE)
 	{
 		if (BF10wText >= BF01wText)
@@ -1444,7 +1442,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		BF10ultrat <- formatC(BF10ultraText, 3, format = "f")
 		BF01ultrat <- formatC(BF01ultraText, 3, format = "f")
 	}
-	
+
 	if (oneSided == FALSE)
 	{
 		if (BF10ultraText >= BF01ultraText)
@@ -1468,7 +1466,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			ultraBF <- bquote(BF[0]["+"]==.(BF01ultrat))
 		}
 	}
-	
+
 	if (oneSided == "left")
 	{
 		if (BF10ultraText >= BF01ultraText)
@@ -1506,7 +1504,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 
 .plotPosterior.ttest.summaryStats <- function(t=NULL, n1= NULL, n2= NULL, paired= FALSE, oneSided= FALSE, BF, BFH1H0, callback=function(...) 0, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
  cexAxis= 1.2, cexYlab= 1.5, cexXlab= 1.5, cexTextBF= 1.4, cexCI= 1.1, cexLegend= 1.2, lwdAxis= 1.2, addInformation= TRUE, dontPlotData=FALSE) {
-	
+
 	if (addInformation)
 	{
 		par(mar= c(5.6, 5, 7, 4) + 0.1, las=1)
@@ -1515,20 +1513,20 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	{
 		par(mar= c(5.6, 5, 4, 4) + 0.1, las=1)
 	}
-	
+
 	if (dontPlotData)
 	{
 		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
-		
+
 		axis(1, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, xlab="")
 		axis(2, at=0:1, labels=FALSE, cex.axis=cexAxis, lwd=lwdAxis, ylab="")
-		
+
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 3.25)
 		mtext(expression(paste("Effect size", ~delta)), side = 1, cex = cexXlab, line= 2.5)
-		
+
 		return()
 	}
-	
+
 	if (rscale == "medium")
 	{
 		r <- sqrt(2) / 2
@@ -1545,7 +1543,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	{
 		r <- rscale
 	}
-	
+
 	if (oneSided == FALSE)
 	{
 		nullInterval <- NULL
@@ -1569,7 +1567,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	{
 		return()
 	}
-	
+
 	# fit shifted t distribution
 	if (is.null(n2) || paired)
 	{
@@ -1585,23 +1583,23 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		sigmaStart <- sqrt((n1 + n2) / (n1 * n2))
 	}
 
-	if (sigmaStart < .01) 
+	if (sigmaStart < .01)
 	{
 		sigmaStart <- .01
 	}
 
 	parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="BFGS")$par)
-	
+
 	if (class(parameters) == "try-error") {
-		
+
 		parameters <- try(silent=TRUE, expr= optim(par = c(deltaHat, sigmaStart, df), fn=.likelihoodShiftedT, data= delta , method="Nelder-Mead")$par)
 	}
-	
+
 	if ( ! .shouldContinue(callback()))
 	{
 		return()
 	}
-	
+
 	if (BFH1H0)
 	{
 		BF10 <- BF
@@ -1612,16 +1610,16 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		BF01 <- BF
 		BF10 <- 1 / BF01
 	}
-	
-	
+
+
 	# set limits plot
 	xlim <- vector("numeric", 2)
-	
+
 	if (oneSided == FALSE)
 	{
 		xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
-		
+
 		if (n1 < 10)
 		{
 			if (addInformation)
@@ -1637,67 +1635,67 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		{
 			stretch <- 1.2
 		}
-	}	
-	
+	}
+
 	if (oneSided == "right")
 	{
 		#if (length(delta[delta >= 0]) < 10)
 		#	return("Plotting is not possible: To few posterior samples in tested interval")
-		
+
 		xlim[1] <- min(-2, quantile(delta[delta >= 0], probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta[delta >= 0], probs = 0.99)[[1]])
-		
+
 		if (any(is.na(xlim)))
 		{
 			xlim[1] <- min(-2, .qShiftedT(0.01, parameters, oneSided="right"))
 			xlim[2] <- max(2, .qShiftedT(0.99, parameters, oneSided="right"))
 		}
-		
+
 		stretch <- 1.32
 	}
-	
+
 	if (oneSided == "left")
 	{
 		#if (length(delta[delta <= 0]) < 10)
 		#	return("Plotting is not possible: To few posterior samples in tested interval")
-		
+
 		xlim[1] <- min(-2, quantile(delta[delta <= 0], probs = 0.01)[[1]])
 		xlim[2] <- max(2, quantile(delta[delta <= 0], probs = 0.99)[[1]])
-		
+
 		if (any(is.na(xlim)))
 		{
 			xlim[1] <-  min(-2, .qShiftedT(0.01, parameters, oneSided="left"))
 			xlim[2] <- max(2,.qShiftedT(0.99, parameters, oneSided="left"))
 		}
-		
+
 		stretch <- 1.32
 	}
-	
+
 	xticks <- pretty(xlim)
-	
+
 	ylim <- vector("numeric", 2)
-	
+
 	ylim[1] <- 0
 	dmax <- optimize(function(x).dposteriorShiftedT(x, parameters=parameters, oneSided= oneSided), interval= range(xticks), maximum = TRUE)$objective
 	ylim[2] <- max(stretch * .dprior(0,r, oneSided= oneSided), stretch * dmax)# get maximum density
-	
+
 	if ( ! .shouldContinue(callback()))
 	{
 		return()
 	}
-	
+
 	# calculate position of "nice" tick marks and create labels
 	yticks <- pretty(ylim)
 	xlabels <- formatC(xticks, 1, format= "f")
 	ylabels <- formatC(yticks, 1, format= "f")
-	
+
 	# compute 95% credible interval & median:
 	if (oneSided == FALSE)
 	{
 		CIlow <- quantile(delta, probs = 0.025)[[1]]
 		CIhigh <- quantile(delta, probs = 0.975)[[1]]
 		medianPosterior <- median(delta)
-		
+
 		if (any(is.na(c(CIlow, CIhigh, medianPosterior))))
 		{
 			CIlow <- .qShiftedT(0.025, parameters, oneSided=FALSE)
@@ -1705,13 +1703,13 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			medianPosterior <- .qShiftedT(0.5, parameters, oneSided=FALSE)
 		}
 	}
-	
+
 	if (oneSided == "right")
 	{
 		CIlow <- quantile(delta[delta >= 0], probs = 0.025)[[1]]
 		CIhigh <- quantile(delta[delta >= 0], probs = 0.975)[[1]]
 		medianPosterior <- median(delta[delta >= 0])
-		
+
 		if (any(is.na(c(CIlow, CIhigh, medianPosterior))))
 		{
 			CIlow <- .qShiftedT(0.025, parameters, oneSided="right")
@@ -1719,13 +1717,13 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			medianPosterior <- .qShiftedT(0.5, parameters, oneSided="right")
 		}
 	}
-	
+
 	if (oneSided == "left")
 	{
 		CIlow <- quantile(delta[delta <= 0], probs = 0.025)[[1]]
 		CIhigh <- quantile(delta[delta <= 0], probs = 0.975)[[1]]
 		medianPosterior <- median(delta[delta <= 0])
-		
+
 		if (any(is.na(c(CIlow, CIhigh, medianPosterior))))
 		{
 			CIlow <- .qShiftedT(0.025, parameters, oneSided="left")
@@ -1733,20 +1731,20 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			medianPosterior <- .qShiftedT(0.5, parameters, oneSided="left")
 		}
 	}
-	
+
 	posteriorLine <- .dposteriorShiftedT(x= seq(min(xticks), max(xticks),length.out = 1000), parameters=parameters, oneSided = oneSided)
-	
+
 	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
-	
+
 	plot(1,1, xlim= xlim, ylim= range(yticks), ylab= "", xlab="", type= "n", axes= FALSE)
-	
+
 	lines(seq(min(xticks), max(xticks),length.out = 1000),posteriorLine, lwd= lwd)
 	lines(seq(min(xticks), max(xticks),length.out = 1000), .dprior(seq(min(xticks), max(xticks),length.out = 1000), r=r, oneSided= oneSided), lwd= lwd, lty=3)
-	
+
 	axis(1, at= xticks, labels = xlabels, cex.axis= cexAxis, lwd= lwdAxis)
 	axis(2, at= yticks, labels= ylabels, , cex.axis= cexAxis, lwd= lwdAxis)
-	
-	
+
+
 	if (nchar(ylabels[length(ylabels)]) > 4)
 	{
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 4)
@@ -1759,11 +1757,11 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	{
 		mtext(text = "Density", side = 2, las=0, cex = cexYlab, line= 2.85)
 	}
-	
+
 	mtext(expression(paste("Effect size", ~delta)), side = 1, cex = cexXlab, line= 2.5)
-	
+
 	points(0, .dprior(0,r, oneSided= oneSided), col="black", pch=21, bg = "grey", cex= cexPoints)
-	
+
 	if (oneSided == FALSE)
 	{
 		heightPosteriorAtZero <- .dposteriorShiftedT(0, parameters=parameters, oneSided=oneSided)
@@ -1778,141 +1776,141 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 		posteriorLineLargerZero <- posteriorLine[posteriorLine > 0]
 		heightPosteriorAtZero <- posteriorLineLargerZero[length(posteriorLineLargerZero)]
 	}
-	
+
 	points(0, heightPosteriorAtZero, col="black", pch=21, bg = "grey", cex= cexPoints)
-	
+
 	# 95% credible interval
-	
+
 	# enable plotting in margin
 	par(xpd=TRUE)
-	
+
 	yCI <- grconvertY(dmax, "user", "ndc") + 0.04
 	yCI <- grconvertY(yCI, "ndc", "user")
-	
+
 	arrows(CIlow, yCI , CIhigh, yCI, angle = 90, code = 3, length= 0.1, lwd= lwd)
-	
-	medianText <- formatC(medianPosterior, digits= 3, format="f")	
-	
+
+	medianText <- formatC(medianPosterior, digits= 3, format="f")
+
 	if (addInformation)
 	{
 		# display BF10 value
 		offsetTopPart <- 0.06
-		
+
 		yy <- grconvertY(0.75 + offsetTopPart, "ndc", "user")
 		yy2 <- grconvertY(0.806 + offsetTopPart, "ndc", "user")
-		
+
 		xx <- min(xticks)
-		
+
 		if (BF10 >= 1000000 | BF01 >= 1000000)
 		{
 			BF10t <- formatC(BF10,3, format = "e")
 			BF01t <- formatC(BF01,3, format = "e")
 		}
-		
+
 		if (BF10 < 1000000 & BF01 < 1000000)
 		{
 			BF10t <- formatC(BF10,3, format = "f")
 			BF01t <- formatC(BF01,3, format = "f")
 		}
-		
+
 		if (oneSided == FALSE)
 		{
 			text(xx, yy2, bquote(BF[10]==.(BF10t)), cex= cexTextBF, pos = 4)
 			text(xx, yy, bquote(BF[0][1]==.(BF01t)), cex= cexTextBF, pos = 4)
 		}
-		
+
 		if (oneSided == "right")
 		{
 			text(xx, yy2, bquote(BF["+"][0]==.(BF10t)), cex= cexTextBF, pos = 4)
 			text(xx, yy, bquote(BF[0]["+"]==.(BF01t)), cex= cexTextBF, pos = 4)
 		}
-		
+
 		if (oneSided == "left")
 		{
 			text(xx, yy2, bquote(BF["-"][0]==.(BF10t)), cex= cexTextBF, pos = 4)
 			text(xx, yy, bquote(BF[0]["-"]==.(BF01t)), cex= cexTextBF, pos = 4)
 		}
-		
+
 		yy <- grconvertY(0.756 + offsetTopPart, "ndc", "user")
 		yy2 <- grconvertY(0.812 + offsetTopPart, "ndc", "user")
-		
+
 		CIText <- paste("95% CI: [",  bquote(.(formatC(CIlow,3, format="f"))), ", ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
 		medianLegendText <- paste("median =", medianText)
-		
+
 		text(max(xticks) , yy2, medianLegendText, cex= 1.1, pos= 2)
 		text(max(xticks) , yy, CIText, cex= 1.1, pos= 2)
-		
+
 		# probability wheel
 		if (max(nchar(BF10t), nchar(BF01t)) <= 4)
 		{
 			xx <- grconvertX(0.44, "ndc", "user")
 		}
-		
+
 		if (max(nchar(BF10t), nchar(BF01t)) == 5)
 		{
 			xx <- grconvertX(0.44 +  0.001* 5, "ndc", "user")
 		}
-		
+
 		if (max(nchar(BF10t), nchar(BF01t)) == 6)
 		{
-			xx <- grconvertX(0.44 + 0.001* 6, "ndc", "user") 
+			xx <- grconvertX(0.44 + 0.001* 6, "ndc", "user")
 		}
-		
+
 		if (max(nchar(BF10t), nchar(BF01t)) == 7)
 		{
-			xx <- grconvertX(0.44 + 0.002* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
+			xx <- grconvertX(0.44 + 0.002* max(nchar(BF10t), nchar(BF01t)), "ndc", "user")
 		}
-		
+
 		if (max(nchar(BF10t), nchar(BF01t)) == 8)
 		{
-			xx <- grconvertX(0.44 + 0.003* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
+			xx <- grconvertX(0.44 + 0.003* max(nchar(BF10t), nchar(BF01t)), "ndc", "user")
 		}
-		
+
 		if (max(nchar(BF10t), nchar(BF01t)) > 8)
 		{
-			xx <- grconvertX(0.44 + 0.005* max(nchar(BF10t), nchar(BF01t)), "ndc", "user") 
+			xx <- grconvertX(0.44 + 0.005* max(nchar(BF10t), nchar(BF01t)), "ndc", "user")
 		}
-		
+
 		yy <- grconvertY(0.788 + offsetTopPart, "ndc", "user")
-		
+
 		# make sure that colored area is centered
 		radius <- 0.06 * diff(range(xticks))
 		A <- radius^2 * pi
 		alpha <- 2 / (BF01 + 1) * A / radius^2
 		startpos <- pi/2 - alpha/2
-		
+
 		# draw probability wheel
 		plotrix::floating.pie(xx, yy,c(BF10, 1),radius= radius, col=c("darkred", "white"), lwd=2,startpos = startpos)
-		
+
 		yy <- grconvertY(0.865 + offsetTopPart, "ndc", "user")
 		yy2 <- grconvertY(0.708 + offsetTopPart, "ndc", "user")
-		
+
 		if (oneSided == FALSE)
 		{
 			text(xx, yy, "data|H1", cex= cexCI)
 			text(xx, yy2, "data|H0", cex= cexCI)
 		}
-		
+
 		if (oneSided == "right")
 		{
 			text(xx, yy, "data|H+", cex= cexCI)
 			text(xx, yy2, "data|H0", cex= cexCI)
 		}
-		
+
 		if (oneSided == "left")
 		{
 			text(xx, yy, "data|H-", cex= cexCI)
 			text(xx, yy2, "data|H0", cex= cexCI)
 		}
-		
+
 		# add legend
 		CIText <- paste("95% CI: [",  bquote(.(formatC(CIlow,3, format="f"))), " ; ",  bquote(.(formatC(CIhigh,3, format="f"))), "]", sep="")
-		
+
 		medianLegendText <- paste("median =", medianText)
 	}
-	
+
 	mostPosterior <- mean(delta > mean(range(xticks)))
-	
+
 	if (mostPosterior >= .5)
 	{
 		legendPosition <- min(xticks)

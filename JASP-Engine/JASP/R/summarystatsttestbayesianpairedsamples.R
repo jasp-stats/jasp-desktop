@@ -59,12 +59,12 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 		else if (options$hypothesis == "groupTwoGreater")
 		{
 			bf.title <-  "BF\u2080\u208B"
-		}	
+		}
 	}
 	else if (options$bayesFactorType == "BF10")
 	{
 		BFH1H0 <- TRUE
-		
+
 		if (options$hypothesis == "groupsNotEqual")
 		{
 			bf.title <- "BF\u2081\u2080"
@@ -76,12 +76,12 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 		else if (options$hypothesis == "groupTwoGreater")
 		{
 			bf.title <- "BF\u208B\u2080"
-		}	
+		}
 	}
 	else if (options$bayesFactorType == "LogBF10")
 	{
 		BFH1H0 <- TRUE
-		
+
 		if (options$hypothesis == "groupsNotEqual")
 		{
 			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
@@ -101,7 +101,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 
 	table <- list()
 	table[["title"]] <- "Bayesian Paired Samples T-Test"
-	
+
 	table[["citation"]] <- list(
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
@@ -145,7 +145,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 
 	if(perform=="run")
 	{
-		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
 			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE &&
 			diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
 		{
@@ -184,8 +184,8 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 
 		if(options$plotPriorAndPosterior)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
 				options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlotAddInfo
@@ -193,8 +193,8 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 				priorAndPosteriorPlotAddInfo <- priorAndPosteriorPlot
 			}
-			else if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+			else if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
 				!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlot
@@ -203,8 +203,6 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 			}
 			else
 			{
-				BF10 <- exp(bayesFactorObject$bf)
-
 				width  <- 530
 				height <- 400
 
@@ -217,9 +215,9 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 
 				p <- try(silent=FALSE, expr = {
 					image <- .beginSaveImage(width, height)
-					.plotPosterior.ttest.summaryStats (t=options$tStatistic, n1=options$n1Size, n2=NULL, paired=TRUE, BFH1H0=(options$bayesFactorType == "BF10"), 
+					.plotPosterior.ttest.summaryStats (t=options$tStatistic, n1=options$n1Size, n2=NULL, paired=TRUE, BFH1H0=(options$bayesFactorType == "BF10"),
 													   dontPlotData= FALSE, rscale=options$priorWidth, addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-													   BF = BF10, oneSided = oneSidedHypothesis)
+													   BF = exp(bayesFactorObject$bf), oneSided = oneSidedHypothesis)
 					plot[["data"]]   <- .endSaveImage(image)
 				})
 
@@ -235,11 +233,11 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 					{
 						errorMessage <- "The Bayes factor is infinite"
 					}
-					else if (.clean(BF10) == "\u221E")
+					else if (.clean(exp(bayesFactorObject$bf)) == "\u221E")
 					{
 						errorMessage <- "The Bayes factor is infinite"
 					}
-					else if (.clean(BF10) == "NaN")
+					else if (.clean(exp(bayesFactorObject$bf)) == "NaN")
 					{
 						errorMessage <- "Bayes factor could not be calcluated"
 					}
@@ -267,13 +265,13 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 		if(options$plotBayesFactorRobustness)
 		{
 			BFtypeRequiresNewPlot <- TRUE
-			
+
 			if (!(is.null(state)))
 			{
 				BFtypeRequiresNewPlot <- FALSE
 				BFtype <- options$bayesFactorType
 				BFtypeState <- state$options$bayesFactorType
-				
+
 				if ((BFtypeState == "LogBF10" || BFtypeState == "BF10") && BFtype == "BF01")
 				{
 					BFtypeRequiresNewPlot <- TRUE
@@ -284,11 +282,11 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 				}
 			}
 
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
 				"robustnessPlot" %in% state$plotTypes)
 			{
-				index <- which(state$plotTypes == "robustnessPlot")				
+				index <- which(state$plotTypes == "robustnessPlot")
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 			}
 			else
@@ -305,8 +303,8 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 
 				p <- try(silent=FALSE, expr = {
 					image <- .beginSaveImage(width, height)
-					.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=(options$bayesFactorType == "BF10"), 
-													 dontPlotData= FALSE, rscale=options$priorWidth, 
+					.plotBF.robustnessCheck.bffromt (t=options$tStatistic, n1=options$n1Size, n2=0, BFH1H0=(options$bayesFactorType == "BF10"),
+													 dontPlotData= FALSE, rscale=options$priorWidth,
 													 BF10post = ifelse((options$bayesFactorType == "BF10"),.clean(exp(bayesFactorObject$bf)), .clean(1/exp(bayesFactorObject$bf))), oneSided = oneSidedHypothesis)
 					plot[["data"]]   <- .endSaveImage(image)
 				})
@@ -314,7 +312,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 				if ( class(p) == "try-error")
 				{
 					errorMessage <- .extractErrorMessage(p)
-					
+
 					plot[["error"]] <- list(error="badData", errorMessage=errorMessage)
 				}
 				plot[["status"]] <- "complete"
@@ -328,7 +326,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 	}
 	else #init phase
 	{
-		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
+		if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
 			diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE &&
 			diff$hypothesis==FALSE))) && !is.null(state$bayesFactorObject))
 		{
@@ -343,8 +341,8 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 
 		if(options$plotPriorAndPosterior)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
 				options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlotAddInfo" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlotAddInfo
@@ -352,8 +350,8 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 				priorAndPosteriorPlotAddInfo <- priorAndPosteriorPlot
 			}
-			else if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) && 
+			else if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
 				!options$plotPriorAndPosteriorAdditionalInfo && "posteriorPlot" %in% state$plotTypes)
 			{
 				priorAndPosteriorPlot <- state$priorAndPosteriorPlot
@@ -363,15 +361,15 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 			else
 			{
 				plot <- list()
-				
+
 				plot[["title"]] <- "Prior and Posterior"
 				plot[["width"]]  <- 530
 				plot[["height"]] <- 400
-				
+
 				image <- .beginSaveImage(530, 400)
 				.plotPosterior.ttest.summaryStats(BF = 1, dontPlotData = TRUE, addInformation = options$plotPriorAndPosteriorAdditionalInfo)
 				plot[["data"]] <- .endSaveImage(image)
-			
+
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- plot
 			}
 
@@ -389,11 +387,11 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 
 		if(options$plotBayesFactorRobustness)
 		{
-			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE && 
-				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE && 
+			if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && (diff$bayesFactorType==FALSE &&
+				diff$tStatistic==FALSE && diff$n1Size==FALSE && diff$priorWidth == FALSE &&
 				diff$hypothesis==FALSE))) && "robustnessPlot" %in% state$plotTypes)
 			{
-				index <- which(state$plotTypes == "robustnessPlot")				
+				index <- which(state$plotTypes == "robustnessPlot")
 				plots.sumstats.ttest[[length(plots.sumstats.ttest)+1]] <- state$plotsTtest[[index]]
 			}
 			else
@@ -437,7 +435,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 
 
 	keep <- NULL
-	
+
 	for (plot in plots.sumstats.ttest)
 		keep <- c(keep, plot$data)
 
@@ -448,7 +446,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 	}
 	else
 	{
-		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorObject=bayesFactorObject, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot, 
+		return(list(results=results, status="complete", state=list(options=options, results=results, bayesFactorObject=bayesFactorObject, bayesFactorRobustnessPlot=bayesFactorRobustnessPlot, priorAndPosteriorPlot=priorAndPosteriorPlot,
 					rowsTTestBayesianPairedSamples=rowsTTestBayesianPairedSamples, plotsTtest=plots.sumstats.ttest, priorAndPosteriorPlotAddInfo=priorAndPosteriorPlotAddInfo, plotTypes=plotTypes), keep=keep))
 	}
 }
@@ -456,7 +454,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 
 .calcluateBFPairedSamples <- function(options, state, diff)
 {
-	if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) && 
+	if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) || (is.list(diff) &&
 		(diff$priorWidth == FALSE && diff$hypothesis == FALSE && diff$tStatistic == FALSE && diff$n1Size==FALSE))))
 	{
 		bf10 <- state$bayesFactorObject
@@ -489,7 +487,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset=NULL, options, perfor
 # checks if the input given is valid
 .isInputValidPairedSamples <- function(options)
 {
-	ready <- TRUE 
+	ready <- TRUE
 
 	n1Value <- options$n1Size
 	tStatValue <- options$tStatistic

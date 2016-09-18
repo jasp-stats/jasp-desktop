@@ -54,6 +54,11 @@
 			"default": false,
 			"name": "plotBayesFactorRobustness",
 			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotBayesFactorRobustnessAdditionalInfo",
+			"type": "Boolean"
 		}
 	]
 }
