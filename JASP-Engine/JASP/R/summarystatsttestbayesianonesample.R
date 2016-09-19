@@ -1571,25 +1571,18 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	}
 	
 	# fit shifted t distribution
-	if (is.null(n2))
+	if (is.null(n2) || paired)
 	{
-		deltaHat <- t / sqrt(n1)
-		N <- n1
-		df <- N - 1
-		sigmaStart <- 1 / N
-	}
-	else if (paired)
-	{
-		deltaHat <- t*sqrt(n1/2)
+		deltaHat <- t * sqrt(1 / n1)
 		N <- n1
 		df <- N - 1
 		sigmaStart <- 1 / N
 	}
 	else if (!is.null(n2) && !paired)
 	{
-		deltaHat <- t * sqrt((n1*n2)/(n1+n2))
+		deltaHat <- t * sqrt((n1 + n2) / (n1 * n2))
 		df <- n1 + n2 - 2
-		sigmaStart <- sqrt(n1 * n2 / (n1 + n2))
+		sigmaStart <- sqrt((n1 + n2) / (n1 * n2))
 	}
 
 	if (sigmaStart < .01) 
