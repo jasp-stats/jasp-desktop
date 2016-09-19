@@ -64,6 +64,9 @@ namespace spss
 class SPSSColumn : public ConvertedStringContainer
 {
 public:
+	typedef std::map<SpssDataCell, std::string>	LableByValueDict;
+	typedef std::pair<SpssDataCell, std::string>	LableByValueDictEntry;
+
 
 	/**
 	 * @brief SPSSColumn Ctor
@@ -82,7 +85,7 @@ public:
 	 */
 	RW_ATTR(std::string, spssLabel)		// The name as shown to the user.
 
-	READ_ATTR(std::string, spssName)	// The name as in hte file.
+	READ_ATTR(std::string, spssName)	// The name as in the file.
 
 	READ_ATTR(size_t, spssStringLen)		// Length of the string (if string).
 
@@ -98,6 +101,7 @@ public:
 
 	std::vector<double>			numerics;	// Numeric values, one per case.
 	std::vector<std::string>	strings;	// String values, one per case.
+	LableByValueDict			spssLables;	// Lables as found in the .SAV
 
 	enum e_celTypeReturn { cellDouble, cellString };
 	/**

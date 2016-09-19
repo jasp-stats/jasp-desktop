@@ -89,6 +89,7 @@ union SpssDataCell
 
 	// Allow use in ordered collections.
 	bool operator <(const SpssDataCell &that)
+	const
 	{
 		return forOrdering < that.forOrdering;
 	}

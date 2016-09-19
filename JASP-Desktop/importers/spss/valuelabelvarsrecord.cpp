@@ -87,7 +87,20 @@ ValueLabelVarsRecord::~ValueLabelVarsRecord()
  * @brief Does nothing
  *
  */
-void ValueLabelVarsRecord::process(SPSSColumns & /* columns */)
+void ValueLabelVarsRecord::process(SPSSColumns & columns)
 {
+	for (size_t i = 0; i < _vars.size(); ++i)
+	{
+		// Get the next applicable column.
+		SPSSColumn & column = columns[_vars[i]];
+		// Iterate over all the found labels meta.
+		for (size_t j = 0; j < _Labels.size(); ++j)
+		{
+			LabelMeta &meta = _Labels[j];
+			SPSSColumn::LableByValueDictEntry entry(meta.value, meta.label);
+			column.spssLables.insert( entry );
+		}
+	}
+
 }
 
