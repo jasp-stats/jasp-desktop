@@ -511,5 +511,21 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>plotBayesFactorRobustness</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotBayesFactorRobustnessAdditionalInfo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>318</x>
+     <y>588</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>611</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
 </ui>

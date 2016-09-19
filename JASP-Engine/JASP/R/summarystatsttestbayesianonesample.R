@@ -619,6 +619,15 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 			return()
 	}
 
+	# add BF10 = 1 for r = 0
+	rValues <- c(0, rValues)
+	BF10 <- c(1, BF10)
+
+	# maximum BF value
+	maxBF10 <- max(BF10)
+	maxBFrVal <- rValues[which.max(BF10)]
+	BF10maxText <- .clean(maxBF10)
+
 	# BF10 "medium" prior
 	BF10m <- BayesFactor::ttest.tstat(t=t, n1=n1, n2=n2, nullInterval=nullInterval, rscale= "medium")
 	BF10m <- .clean(exp(BF10m$bf))
@@ -1320,6 +1329,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	points(r, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
 	points(1, log(BF10w), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "wide" prior
 	points(sqrt(2), log(BF10ultra), pch=21, bg= "white", cex= 1.1, lwd= 1.3) # "ultrawide" prior
+	points(maxBFrVal, log(maxBF10), pch=21, bg="red", cex=1.1, lwd=1.3)  # max BF value
 
 	#### add legend
 	# BF values
@@ -1480,26 +1490,28 @@ SummaryStatsTTestBayesianOneSample <- function(dataset=NULL, options, perform = 
 	}
 
 	xx <- grconvertX(0.2, "ndc", "user")
-	yy <- grconvertY(0.965, "ndc", "user")
+	yy <- grconvertY(0.999, "ndc", "user")
 
-	BFind <- sort(c(BF10userText, BF10ultraText, BF10wText), decreasing = TRUE, index.return=TRUE)$ix
-	BFsort <- sort(c(BF10userText, BF10ultraText, BF10wText), decreasing = TRUE, index.return=TRUE)$x
+	BFind <- sort(c(BF10userText, BF10ultraText, BF10wText, BF10maxText), decreasing = TRUE, index.return=TRUE)$ix
+	BFsort <- sort(c(BF10userText, BF10ultraText, BF10wText, BF10maxText), decreasing = TRUE, index.return=TRUE)$x
 
-	legend <- c("user prior:", "ultrawide prior:", "wide prior:")
-	pt.bg <-  c("grey", "white", "black")
-	pt.cex <-  c(cexPoints, 1.1, 1.1)
+	legend <- c("user prior:", "ultrawide prior:", "wide prior:", "max BF10:")
+	pt.bg <-  c("grey", "white", "black", "red")
+	pt.cex <-  c(cexPoints, 1.1, 1.1, 1.1)
 
-	legend(xx, yy, legend = legend[BFind], pch=rep(21,3), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,3), pt.lwd=rep(1.3,3), pt.cex= pt.cex[BFind])
+	legend(xx, yy, legend = legend[BFind], pch=rep(21,4), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,4), pt.lwd=rep(1.3,4), pt.cex= pt.cex[BFind])
 
 	xx <- grconvertX(0.5, "ndc", "user")
-	y1 <- grconvertY(0.902, "ndc", "user")
-	y2 <- grconvertY(0.852, "ndc", "user")
-	y3 <- grconvertY(0.802, "ndc", "user")
-	yy <- c(y1, y2, y3)
+	y1 <- grconvertY(0.938, "ndc", "user")
+	y2 <- grconvertY(0.888, "ndc", "user")
+	y3 <- grconvertY(0.838, "ndc", "user")
+	y4 <- grconvertY(0.788, "ndc", "user")
+	yy <- c(y1, y2, y3, y4)
 
-	text(xx, yy[BFsort== BF10userText], userBF, cex= 1.3,pos = 4)
-	text(xx, yy[BFsort== BF10ultraText], ultraBF, cex= 1.3, pos= 4)
-	text(xx, yy[BFsort== BF10wText], wBF, cex= 1.3, pos= 4)
+	text(xx, yy[BFsort == BF10userText], userBF, cex = 1.3, pos = 4)
+	text(xx, yy[BFsort == BF10ultraText], ultraBF, cex = 1.3, pos = 4)
+	text(xx, yy[BFsort == BF10wText], wBF, cex = 1.3, pos = 4)
+	text(xx, yy[BFsort == BF10maxText], maxBF10, cex = 1.3, pos = 4)
 }
 
 .plotPosterior.ttest.summaryStats <- function(t=NULL, n1= NULL, n2= NULL, paired= FALSE, oneSided= FALSE, BF, BFH1H0, callback=function(...) 0, iterations= 10000, rscale= "medium", lwd= 2, cexPoints= 1.5,
