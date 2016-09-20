@@ -677,14 +677,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 
-.scaledBeta <- function(rho, alpha, beta){
+.stretchedBeta <- function(rho, alpha, beta){
 	result <- 1/2*dbeta((rho+1)/2, alpha, beta)
 	return(result)
 }
 
 
 .priorRho <- function(rho, kappa=1) {
-	.scaledBeta(rho, 1/kappa, 1/kappa)
+	.stretchedBeta(rho, 1/kappa, 1/kappa)
 }
 
 .priorRhoPlus <- function(rho, kappa=1) {
@@ -1134,7 +1134,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				# Avoid overflow in hypergeo
 				# Recalculate BF10
 				savageDickyNumerator <- .priorRho(0, kappa)
-				savageDickyDenominator <- .scaledBeta(0, someFit$betaA, someFit$betaB)
+				savageDickyDenominator <- .stretchedBeta(0, someFit$betaA, someFit$betaB)
 				#
 				output$bf10 <- savageDickyNumerator/savageDickyDenominator
 				
@@ -1213,7 +1213,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				# To avoid overflow in the hypergeometric function
 				# Recalculate BF10
 				savageDickyNumerator <- .priorRho(0, kappa)
-				savageDickyDenominator <- .scaledBeta(0, someFit$betaA, someFit$betaB)
+				savageDickyDenominator <- .stretchedBeta(0, someFit$betaA, someFit$betaB)
 				#
 				output$bf10 <- savageDickyNumerator/savageDickyDenominator
 				
@@ -1292,7 +1292,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				# To avoid overflow in the numerical integration
 				# Recalculate BF10
 				savageDickyNumerator <- .priorRho(0, kappa)
-				savageDickyDenominator <- .scaledBeta(0, someFit$betaA, someFit$betaB)
+				savageDickyDenominator <- .stretchedBeta(0, someFit$betaA, someFit$betaB)
 				#
 				output$bf10 <- savageDickyNumerator/savageDickyDenominator
 				
@@ -1336,7 +1336,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		
 		# Calculate bf10
 		savageDickyNumerator <- .priorRho(0, kappa)
-		savageDickyDenominator <- .scaledBeta(0, marsmanResult$betaA, marsmanResult$betaB)
+		savageDickyDenominator <- .stretchedBeta(0, marsmanResult$betaA, marsmanResult$betaB)
 		
 		# Save output
 		output$bf10 <- savageDickyNumerator/savageDickyDenominator
@@ -1855,7 +1855,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			if (any(is.na(c(betaA, betaB))))
 				tooPeaked <- TRUE
 			
-			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho)
+			posteriorLine <- .stretchedBeta(alpha=betaA, beta=betaB, rho=rho)
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
 				tooPeaked <- TRUE
@@ -1873,7 +1873,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			if (any(is.na(c(betaA, betaB))))
 				tooPeaked <- TRUE
 			
-			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=FALSE)
+			posteriorLine <- .stretchedBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=FALSE)
 			posteriorLine[rho < 0] <- 0
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
@@ -1893,7 +1893,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			if (any(is.na(c(betaA, betaB))))
 				tooPeaked <- TRUE
 			
-			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=TRUE)
+			posteriorLine <- .stretchedBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=TRUE)
 			posteriorLine[rho > 0] <- 0
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
