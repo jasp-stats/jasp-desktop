@@ -178,7 +178,8 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 
 	bool success = true;
 	set<int> uniqueValues;
-	vector<int> intValues(cells.size());
+	std::vector<int> intValues;
+	intValues.reserve(cells.size());
 
 	BOOST_FOREACH(const string &value, cells)
 	{
@@ -212,7 +213,8 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 
 	// try to make the column scale
 	success = true;
-	vector<double> doubleValues(cells.size());
+	vector<double> doubleValues;
+	doubleValues.reserve(cells.size());
 
 	BOOST_FOREACH(const string &value, cells)
 	{
