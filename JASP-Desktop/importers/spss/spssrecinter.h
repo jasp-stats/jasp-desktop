@@ -64,8 +64,8 @@ namespace spss
 class SPSSColumn : public ConvertedStringContainer
 {
 public:
-	typedef std::map<SpssDataCell, std::string>	LableByValueDict;
-	typedef std::pair<SpssDataCell, std::string>	LableByValueDictEntry;
+	typedef std::map<SpssDataCell, std::string>		LabelByValueDict;
+	typedef std::pair<SpssDataCell, std::string>	LabelByValueDictEntry;
 
 
 	/**
@@ -101,7 +101,7 @@ public:
 
 	std::vector<double>			numerics;	// Numeric values, one per case.
 	std::vector<std::string>	strings;	// String values, one per case.
-	LableByValueDict			spssLables;	// Lables as found in the .SAV
+	LabelByValueDict			spssLables;	// Lables as found in the .SAV
 
 	enum e_celTypeReturn { cellDouble, cellString };
 	/**
@@ -165,7 +165,15 @@ public:
 	 * @param value The value to format.
 	 * @return
 	 */
-	std::string format(double value);
+	std::string format(double value) const;
+
+	/**
+	 * @brief containsFraction Returns false if all values are integer.
+	 * @param values VAlues to check
+	 * @return true if a fractional part found.
+	 */
+	bool containsFraction() const { return _containsFraction(numerics); }
+
 
 	protected:
 	/**
@@ -187,7 +195,7 @@ public:
 	 * @param seconds Number of seconds since start of SPSS epoch.
 	 * @return void
 	 */
-	QDateTime* _asDateTime(double seconds) const;
+	static QDateTime* _asDateTime(double seconds);
 
 	/**
 	 * @brief containsFraction Returns false if all values are integer.

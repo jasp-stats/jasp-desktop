@@ -136,7 +136,7 @@ Column::ColumnType SPSSColumn::getJaspColumnType() const
  * @param seconds Number of seconds since start of SPSS epoch.
  * @return void
  */
-QDateTime* SPSSColumn::_asDateTime(double seconds) const
+QDateTime* SPSSColumn::_asDateTime(double seconds)
 {
     qint64 totalSecs = floor(seconds);
     qint64 days = totalSecs / (24*3600);
@@ -218,7 +218,7 @@ const
  * @param value The value to format.
  * @return Formatted date, or "" (string empty) for no value (0)
  */
-string SPSSColumn::format(double value)
+string SPSSColumn::format(double value) const
 {
     QString result;
     if (!std::isnan(value))
@@ -315,8 +315,16 @@ void SPSSColumn::processStrings(const CodePageConvert &converter)
 	spssLabel( converter.convertCodePage(spssLabel()) );
 	_spssName = converter.convertCodePage(spssName());
 
-	for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end(); ++it)
-		*it = converter.convertCodePage( *it );
+	// Strings are converted elsewhere,
+	// since, we convert some data types (dates etc.) on the fly to UTF-8 strings.
+//	for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end(); ++it)
+//		*it = converter.convertCodePage( *it );
+	{
+		LabelByValueDict result;
+		for (LabelByValueDict::iterator i = spssLables.begin(); i != spssLables.end(); ++i)
+			result.insert( LabelByValueDictEntry(i->first, converter.convertCodePage(i->second)) );
+		spssLables = result;
+	}
 }
 
 

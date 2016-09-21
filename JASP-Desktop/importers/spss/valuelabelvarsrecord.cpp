@@ -74,7 +74,7 @@ ValueLabelVarsRecord::ValueLabelVarsRecord(const NumericConverter &fixer, Record
 		int32_t indx;
 		_SPSSIMPORTER_READ_VAR(indx, from);
 		fixer.fixup(&indx);
-		_vars.push_back(indx);
+		_vars.push_back(indx - 1);
 	}
 }
 
@@ -97,7 +97,7 @@ void ValueLabelVarsRecord::process(SPSSColumns & columns)
 		for (size_t j = 0; j < _Labels.size(); ++j)
 		{
 			LabelMeta &meta = _Labels[j];
-			SPSSColumn::LableByValueDictEntry entry(meta.value, meta.label);
+			SPSSColumn::LabelByValueDictEntry entry(meta.value, meta.label);
 			column.spssLables.insert( entry );
 		}
 	}
