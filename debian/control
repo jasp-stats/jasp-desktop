@@ -21,8 +21,6 @@ Package: jasp
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         libqt5webkit5,
-         libqt5svg5,
          r-base-core,
          r-cran-afex,
          r-cran-bayesfactor,
