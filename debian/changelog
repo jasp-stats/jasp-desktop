@@ -1,3 +1,9 @@
+jasp (0.7.5~beta3+git384-gb3e407f~dfsg.1-1) UNRELEASED; urgency=low
+
+  * New upstream code.
+
+ -- Michael Hanke <mih@debian.org>  Wed, 21 Sep 2016 09:51:12 +0200
+
 jasp (0.7.5.261-0ubuntu0ppa1~wily) wily; urgency=low
 
   * Initial release.
