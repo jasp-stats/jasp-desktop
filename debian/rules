@@ -2,3 +2,11 @@
 %:
 	dh $@
 
+override_dh_clean:
+	dh_clean
+	# clean after upstream
+	-rm -rf .qmake.cache
+	-rm -rf JASP-Tests/Makefile
+	-rm -rf JASP-Tests/Makefile.JASP-Desktop-staticlib
+	-rm -rf JASP-Tests/Makefile.JASP-Tests-app
+	-rm -rf R/
