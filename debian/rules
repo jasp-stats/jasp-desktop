@@ -13,24 +13,15 @@ upstreamver = $(shell echo $(debver) | cut -d '-' -f 1,1 )
 gitver = $(shell [ -x /usr/bin/git ] && git describe --tags --match 'v[0-9].[0-9]*' $$(git merge-base -a HEAD upstream) | sed -e 's/^v//' -e 's/-/+git/' -e 's/\([0-9]\)\([A-Z]\)/\1~\2/g'| tr [A-Z] [a-z])~dfsg.1
 
 %:
-	dh $@ --sourcedirectory=$(PWD) --builddirectory=$(PWD)/build --parallel
+	dh $@ --sourcedirectory=$(CURDIR) --builddirectory=$(CURDIR)/build --parallel
 
 # qmake support in dh doesn't manage out of tree builds as intended
 # override and pass source dir to qmake manually
 override_dh_auto_configure:
-	dh_auto_configure -- $(PWD)
+	dh_auto_configure -- $(CURDIR)
 
 override_dh_shlibdeps:
 	dh_shlibdeps -l/usr/lib/R/site-library/RInside/lib/
-
-override_dh_clean:
-	dh_clean
-	# clean after upstream
-	-rm -rf .qmake.cache
-	-rm -rf JASP-Tests/Makefile
-	-rm -rf JASP-Tests/Makefile.JASP-Desktop-staticlib
-	-rm -rf JASP-Tests/Makefile.JASP-Tests-app
-	-rm -rf R/
 
 # make orig tarball from repository content
 get-orig-source:

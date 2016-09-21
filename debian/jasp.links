@@ -1,1 +1,3 @@
 /usr/lib/JASP/jasp /usr/bin/jasp
+/usr/share/JASP/Resources /usr/lib/JASP/Resources
+/usr/share/JASP/Resources/jasp.svg /usr/share/icons/gnome/scalable/mimetypes/application-jasp.svg
