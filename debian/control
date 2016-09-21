@@ -2,7 +2,7 @@ Source: jasp
 Maintainer: jasp-uva <b.boutin@uva.nl>
 Section: science
 Priority: optional
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 Build-Depends: debhelper (>= 9),
                libarchive-dev,
                libboost-dev,
