@@ -1,6 +1,7 @@
 jasp (0.7.5~beta3+git384-gb3e407f~dfsg.1-1) UNRELEASED; urgency=low
 
   * New upstream code.
+  * Removed outdated 'menu' file, 'desktop' file is sufficient.
 
  -- Michael Hanke <mih@debian.org>  Wed, 21 Sep 2016 09:51:12 +0200
 
