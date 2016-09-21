@@ -50,7 +50,7 @@ void LongVarNamesRecord::process(SPSSColumns & columns)
 	// Find and replace the names in the columns.
 	for (SPSSColumns::iterator colI = columns.begin(); colI != columns.end(); colI++)
 	{
-		string srchName = colI->spssName();
+		string srchName = colI->second.spssName();
 		// Chop trailing spaces.
 		if (srchName.length() > 0)
 		{
@@ -63,7 +63,7 @@ void LongVarNamesRecord::process(SPSSColumns & columns)
 		{
 			string lbl = columns.stringsConv().convertCodePage(nv->second);
 //			DEBUG_COUT4("Replaced label ", colI->spssLabel(), " with ", nv->second);
-			colI->spssLabel(lbl);
+			colI->second.spssLabel(lbl);
 		}
 
 	}

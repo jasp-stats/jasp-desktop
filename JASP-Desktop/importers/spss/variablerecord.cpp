@@ -76,7 +76,7 @@ VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileTy
 		_missing_values.push_back(val);
 	}
 
-	_dictionary_index = fileHeader->incVarRecordCount();
+	_dictIndex = fileHeader->incVariableCount();
 }
 
 
@@ -95,8 +95,8 @@ void VariableRecord::process(SPSSColumns &columns)
 	// check for string continuation.
 	if (isStringContinuation())
 	{
-		if ((columns.size() != 0) && (columns[columns.size()-1].cellType() == SPSSColumn::cellString))
-			columns[columns.size()-1].incrementColumnSpan();
+		if ((columns.size() != 0) && (columns.getColumn(columns.size()-1).cellType() == SPSSColumn::cellString))
+			columns.getColumn(columns.size()-1).incrementColumnSpan();
 
 //		DEBUG_COUT5("Existing column ", columns[columns.size()-1].spssName(), " spans ", columns[columns.size()-1].columnSpan(), " cols.");
 
@@ -105,10 +105,10 @@ void VariableRecord::process(SPSSColumns &columns)
 
 	{
 		SPSSColumn col(name(), hasVarLabel() ? label() : name(), type(), _getType(print()), MissingValueChecker(n_missing_values(), missing_values()));
-		columns.push_back(col);
+		columns.add(dictIndex(), col);
 	}
 
-	DEBUG_COUT7("VariableRecord::process() - Column ", columns.size(), ", print: ", print(), ", type: ", _getType(print()), ".");
+	DEBUG_COUT7("VariableRecord::process() - Column Dict Index ", dictIndex(), ", print: ", print(), ", type: ", _getType(print()), ".");
 
 //	DEBUG_COUT4("VariableRecord::process() - Added column ", columns.back().spssName(), "/", columns.back().spssLabel());
 }

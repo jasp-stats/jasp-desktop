@@ -240,7 +240,7 @@ void SPSSImporter::loadDataSet(
 	// Now go fetch the data.
 	for (size_t i = 0; i < dictData.size(); i++)
 	{
-		SPSSColumn &spssCol = dictData[i];
+		SPSSColumn &spssCol = dictData.getColumn(i);
 		Column &column = packageData->dataSet->column(i);
 
 		column.setName(spssCol.spssLabel());

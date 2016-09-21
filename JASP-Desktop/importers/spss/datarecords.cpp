@@ -133,7 +133,7 @@ void DataRecords::insertToCol(SPSSColumn &col, const string &str)
 {
 	if (col.cellType() == SPSSColumn::cellString)
 	{
-		if (_cols.isSpanning())
+		if (_cols.isSpaning())
 			col.append(str);
 		else
 			col.insert(str);

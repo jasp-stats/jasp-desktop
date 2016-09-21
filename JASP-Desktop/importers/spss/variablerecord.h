@@ -61,7 +61,7 @@ public:
 	SPSSIMPORTER_READ_ATTRIB(VecDbls, missing_values)
 
 	// Not from the file, but from counting number times we are created,
-	SPSSIMPORTER_READ_ATTRIB(size_t, dictionary_index)
+	SPSSIMPORTER_READ_ATTRIB(size_t, dictIndex)
 
 	/*
 	 * Write and Print fields are in fact bit-fields:

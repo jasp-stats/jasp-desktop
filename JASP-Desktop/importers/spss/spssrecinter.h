@@ -40,19 +40,19 @@
  */
 #define _ATT_VALUE(type, name)		\
 private:							\
-    type _##name;					\
+	type _##name;					\
 
 #define READ_ATTR(type, name)		\
-    _ATT_VALUE(type, name)			\
+	_ATT_VALUE(type, name)			\
 public:								\
-    const type & name() const		\
-        { return _##name; }			\
+	const type & name() const		\
+		{ return _##name; }			\
 
 #define RW_ATTR(type, name)			\
-    READ_ATTR(type, name)			\
+	READ_ATTR(type, name)			\
 public:								\
-    void name(const type &value)	\
-        { _##name = value; }		\
+	void name(const type &value)	\
+		{ _##name = value; }		\
 
 
 namespace spss
@@ -213,134 +213,151 @@ public:
 };
 
 
+class SPSSDictionary : public std::map<size_t, SPSSColumn>
+{
+public:
+
+	/**
+	 * @brief insert Inserts a column.
+	 * @param column Column to insert
+	 */
+	void add(size_t dictIndex, const SPSSColumn &column)
+	{ SPSSDictionary::insert( std::pair<size_t, SPSSColumn>(dictIndex, column) ); }
+
+	/**
+	 * @brief getColumn Gets a column for an entry number.
+	 * @param entry Entry number to fetch
+	 * @return Found column.
+	 */
+	SPSSColumn &getColumn(size_t entry)
+	{ return find(entry)->second; }
+};
+
 /*
  * A vector of SPSSColumns, with an "auto iterator."
  * Also holds the convertors for both numeric endian
  * and string code page convertors.
  */
-class SPSSColumns : public std::vector<SPSSColumn>
+class SPSSColumns : public SPSSDictionary
 {
 public:
 
-    typedef std::map<std::string, size_t> LongColsData;
+	typedef std::map<std::string, size_t> LongColsData;
 
-    SPSSColumns();
+	SPSSColumns();
 
-    /**
-     * @brief resetCols Used after vect::push_back() or similar, reset the next col iterator
-     *
-     */
-    void resetCols();
+	/**
+	 * @brief resetCols Used after vect::push_back() or similar, reset the next col iterator
+	 *
+	 */
+	void resetCols();
 
-    /**
-     * @brief getColumn Get next column wrapping as required.
-     * @return
-     */
-    SPSSColumn& getNextColumn();
+	/**
+	 * @brief getColumn Get next column wrapping as required.
+	 * @return
+	 */
+	SPSSColumn& getNextColumn();
 
-    /**
-     * @brief isSpanning
-     * @return True if the last getColumn() call found a contination column.
-     */
-    bool isSpanning() const;
+	/**
+	 * @brief isSpaning
+	 * @return True if the last getColumn() call found a contination column.
+	 */
+	bool isSpaning() const { return _isSpaning; }
 
+	/**
+	 * @brief numCases Set the number of cases.
+	 * @param num Number of cases to set.
+	 */
+	void numCases(int32_t num);
+	void numCases(int64_t num);
 
-    /**
-     * @brief numCases Set the number of cases.
-     * @param num Number of cases to set.
-     */
-    void numCases(int32_t num);
-    void numCases(int64_t num);
+	/**
+	 * @brief numCases
+	 * @return The numer of cases found (-1 if notknown.)
+	 */
+	size_t numCases()
+	const
+	{
+		return (size_t) _numCases;
+	}
 
-    /**
-     * @brief numCases
-     * @return The numer of cases found (-1 if notknown.)
-     */
-    size_t numCases()
-    const
-    {
-        return (size_t) _numCases;
-    }
+	/**
+	 * @brief hasNoCases Checks for number of cases > 0
+	 * @return true if no cases held/found.
+	 */
+	bool hasNoCases() const
+	{
+		return _numCases < 1L;
+	}
 
-    /**
-     * @brief hasNoCases Checks for number of cases > 0
-     * @return true if no cases held/found.
-     */
-    bool hasNoCases() const
-    {
-        return _numCases < 1L;
-    }
+	/**
+	 * @brief veryLongColsDat Sets the very long strings data.
+	 * @param vlcd The value to set.
+	 */
+	void veryLongColsDat(const LongColsData &vlcd)
+	{
+		_longColsDta.insert(vlcd.begin(), vlcd.end());
+	}
 
-    /**
-     * @brief veryLongColsDat Sets the very long strings data.
-     * @param vlcd The value to set.
-     */
-    void veryLongColsDat(const LongColsData &vlcd)
-    {
-        _longColsDta.insert(vlcd.begin(), vlcd.end());
-    }
+	/**
+	 * @brief veryLongColsDat Gets the very long strings data.
+	 * @return The value found.
+	 */
+	const LongColsData &veryLongColsDat() const
+	{
+		return _longColsDta;
+	}
 
-    /**
-     * @brief veryLongColsDat Gets the very long strings data.
-     * @return The value found.
-     */
-    const LongColsData &veryLongColsDat() const
-    {
-        return _longColsDta;
-    }
+	/**
+	 * @brief processStringsPostLoad - Delas with very Long strings (len > 255) and CP processes all strings.
+	 * Call after the data is loaded!.
+	 */
+	void processStringsPostLoad(boost::function<void (const std::string &, int)> progress);
 
-    /**
-     * @brief processStringsPostLoad - Delas with very Long strings (len > 255) and CP processes all strings.
-     * Call after the data is loaded!.
-     */
-    void processStringsPostLoad(boost::function<void (const std::string &, int)> progress);
+	/**
+	 * @brief numericsConv Access the numeric convertor.
+	 * @return
+	 */
+	NumericConverter &numericsConv() { return _numConvert; }
 
-    /**
-     * @brief numericsConv Access the numeric convertor.
-     * @return
-     */
-    NumericConverter &numericsConv() { return _numConvert; }
+	/**
+	 * @brief setStrCnvrtr Sets the string convertor to use.
+	 * @param convtr
+	 *
+	 * N.B. This class takes over ownership of the instance:
+	 * @code
+		...
+		inst.setStrCnvrtr( new SpssCPConvert(ICUConnnector::dos437) );
+		...
+	   @endcode
+	 */
+	void setStrCnvrtr(CodePageConvert *convtr)
+	{
+		_stringConvert.reset(convtr);
+	}
 
-    /**
-     * @brief setStrCnvrtr Sets the string convertor to use.
-     * @param convtr
-     *
-     * N.B. This class takes over ownership of the instance:
-     * @code
-        ...
-        inst.setStrCnvrtr( new SpssCPConvert(ICUConnnector::dos437) );
-        ...
-       @endcode
-     */
-    void setStrCnvrtr(CodePageConvert *convtr)
-    {
-        _stringConvert.reset(convtr);
-    }
-
-    /**
-     * @brief stringsConv Gets the string convertor.
-     * @return String convertoer instance.
-     *
-     * N.B. Will "blow-up" (null pointer exception) if not set!
-     */
-    CodePageConvert &stringsConv() { return *_stringConvert.get(); }
+	/**
+	 * @brief stringsConv Gets the string convertor.
+	 * @return String convertoer instance.
+	 *
+	 * N.B. Will "blow-up" (null pointer exception) if not set!
+	 */
+	CodePageConvert &stringsConv() { return *_stringConvert.get(); }
 
 private:
 
-    NumericConverter				_numConvert; /** < Numeric Endain fixer. */
+	NumericConverter				_numConvert; /** < Numeric Endain fixer. */
 
-    std::auto_ptr<CodePageConvert>	_stringConvert; /** < Code Page convertor. */
+	std::auto_ptr<CodePageConvert>	_stringConvert; /** < Code Page convertor. */
 
-    // Count columns.
-	size_t _colCtr;
+	// Data objects used in the getNextColumn iterator.
+	SPSSDictionary::iterator	_currentColIter;
+	size_t						_remainingColSpan;
+	bool						_isSpaning;
 
-	// Counter for spanned columns.
-    // 1 if not spanning.
-    size_t _spanCtr;
+	LongColsData	_longColsDta; /** < Very long strings data. */
 
-    LongColsData	_longColsDta; /** < Very long strings data. */
-
-    int64_t _numCases; /** < Number of cases found to date. */
+	int64_t _numCases; /** < Number of cases found to date. */
 };
 
 } // end namespace

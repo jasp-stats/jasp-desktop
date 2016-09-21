@@ -92,7 +92,7 @@ void ValueLabelVarsRecord::process(SPSSColumns & columns)
 	for (size_t i = 0; i < _vars.size(); ++i)
 	{
 		// Get the next applicable column.
-		SPSSColumn & column = columns[_vars[i]];
+		SPSSColumn & column = columns.getColumn(_vars[i]);
 		// Iterate over all the found labels meta.
 		for (size_t j = 0; j < _Labels.size(); ++j)
 		{

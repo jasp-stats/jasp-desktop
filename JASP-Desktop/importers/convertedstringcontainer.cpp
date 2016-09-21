@@ -51,8 +51,6 @@ ConvertedStringContainer::~ConvertedStringContainer()
 		delete _convertContainers;
 		_convertContainers = 0;
 	}
-
-	DEBUG_COUT3("After destruct, now _convertContainers->size()=", _convertContainers->size(), '.');
 }
 
 /**
@@ -78,6 +76,4 @@ void ConvertedStringContainer::_addOne(ConvertedStringContainer *newone)
 
 	// Keep track of instances.
 	_convertContainers->insert(newone);
-
-	DEBUG_COUT3("After construct, now _convertContainers->size()=", _convertContainers->size(), '.');
 }

@@ -43,7 +43,7 @@ const double FileHeaderRecord::_bias_good_vals[2] = { 100.0, 0.0 };
  */
 FileHeaderRecord::FileHeaderRecord(NumericConverter &fixer, RecordTypes fileType, SPSSStream &from, double expectedBias)
 	: ReadableRecord(fixer, fileType, from)
-	, _varRecordCount(0)
+	, _varVariableCount(0)
 {
 	// Go through the fields, just fetching as we go..
 	_SPSSIMPORTER_READ_VAR(_prod_name, from);
