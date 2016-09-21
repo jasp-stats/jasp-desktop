@@ -16,6 +16,9 @@ Build-Depends: debhelper (>= 9),
                r-base-core,
                r-cran-rcpp,
                r-cran-rinside,
+Homepage: https://jasp-stats.org
+Vcs-Browser: https://github.com/neurodebian/jasp-desktop
+Vcs-Git: https://github.com/neurodebian/jasp-desktop.git
 
 Package: jasp
 Architecture: any
@@ -37,4 +40,7 @@ Recommends: r-cran-ggplot2,
             r-cran-rjson,
             r-cran-vcd,
             r-cran-vcdextra,
-Description: JASP!
+Description: Bayesian statistics made accessible
+ This is a statistics package with a graphical user interface.
+ Its authors consider it "a low fat alternative to SPSS, a delicious
+ alternative to R. Bayesian statistics made accessible."
