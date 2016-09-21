@@ -13,6 +13,9 @@ gitver = $(shell [ -x /usr/bin/git ] && git describe --tags --match 'v[0-9].[0-9
 %:
 	dh $@
 
+override_dh_shlibdeps:
+	dh_shlibdeps -l/usr/lib/R/site-library/RInside/lib/
+
 override_dh_clean:
 	dh_clean
 	# clean after upstream
