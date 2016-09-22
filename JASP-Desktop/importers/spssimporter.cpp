@@ -237,49 +237,80 @@ void SPSSImporter::loadDataSet(
 	// Set the data size
 	setDataSetSize(*packageData, dictData.numCases(), dictData.size());
 
-	// Now go fetch the data.
-	for (size_t i = 0; i < dictData.size(); i++)
-	{
-		SPSSColumn &spssCol = dictData.getColumn(i);
-		Column &column = packageData->dataSet->column(i);
+	bool success;
+	do {
 
-		column.setName(spssCol.spssLabel());
-		column.setColumnType( spssCol.getJaspColumnType() );
-		column.labels().clear();
-
-		DEBUG_COUT3("Getting col: ", i, ",\n");
-
-		switch(column.columnType())
-		{
-		default:	// Skip unknown columns
-			break;
-		case Column::ColumnTypeScale:
-			setColumnScaleData(column, dictData.numCases(), spssCol);
-			break;
-
-		case Column::ColumnTypeNominal:
-		case Column::ColumnTypeOrdinal:
-			setColumnLabeledData(column, dictData.numCases(), spssCol);
-			break;
-
-		case Column::ColumnTypeNominalText:
-			switch(spssCol.cellType())
+		success = true;
+		try {
+			// Now go fetch the data.
+			for (size_t i = 0; i < dictData.size(); i++)
 			{
-			case SPSSColumn::cellString:
-				setColumnConvrtStringData(column, dictData.stringsConv(), spssCol);
-				break;
+				SPSSColumn &spssCol = dictData.getColumn(i);
+				Column &column = packageData->dataSet->column(i);
 
-			case SPSSColumn::cellDouble:
-				 // convert to UTF-8 strings.
-				spssCol.strings.clear();
-				for (size_t i = 0; i < spssCol.numerics.size(); i++)
-					spssCol.strings.push_back( spssCol.format(spssCol.numerics[i]) );
-				column.setColumnAsNominalString(spssCol.strings);
-				break;
+				column.setName(spssCol.spssColumnLabel());
+				column.setColumnType( spssCol.getJaspColumnType() );
+				column.labels().clear();
+
+				DEBUG_COUT3("Getting col: ", i, ",\n");
+
+				switch(column.columnType())
+				{
+				default:	// Skip unknown columns
+					break;
+				case Column::ColumnTypeScale:
+					setColumnScaleData(column, dictData.numCases(), spssCol);
+					break;
+
+				case Column::ColumnTypeNominal:
+				case Column::ColumnTypeOrdinal:
+					setColumnLabeledData(column, dictData.numCases(), spssCol);
+					break;
+
+				case Column::ColumnTypeNominalText:
+					switch(spssCol.cellType())
+					{
+					case SPSSColumn::cellString:
+						setColumnConvrtStringData(column, dictData.stringsConv(), spssCol);
+						break;
+
+					case SPSSColumn::cellDouble:
+						 // convert to UTF-8 strings.
+						spssCol.strings.clear();
+						for (size_t i = 0; i < spssCol.numerics.size(); i++)
+							spssCol.strings.push_back( spssCol.format(spssCol.numerics[i]) );
+						column.setColumnAsNominalString(spssCol.strings);
+						break;
+					}
+					break;
+				}
 			}
-			break;
 		}
-	}
+		catch (boost::interprocess::bad_alloc &e)
+		{
+			try {
+
+				packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
+				success = false;
+			}
+			catch (boost::exception &e)
+			{
+				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
+		}
+		catch (std::exception e)
+		{
+			cout << "n " << e.what();
+			cout.flush();
+		}
+		catch (...)
+		{
+			cout << "something else\n ";
+			cout.flush();
+		}
+
+	} while (success == false);
+
 
 	if (stream.bad())
 	{

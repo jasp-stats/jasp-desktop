@@ -46,8 +46,8 @@ const QDate SPSSColumn::_beginEpoch(1582, 10, 14);
  * @param missingChecker Check for missing value with this.
  */
 SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long stringLen, FormatTypes formattype, const spss::MissingValueChecker &missingChecker)
-	: _spssLabel(label)
-	, _spssName(name)
+	: _spssColumnLabel(label)
+	, _spssColumnName(name)
 	, _spssStringLen(stringLen)
 	, _columnSpan(1)
 	, _spssMeasure(measure_undefined)
@@ -61,6 +61,14 @@ SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long s
 SPSSColumn::~SPSSColumn()
 {
 
+}
+
+const string &SPSSColumn::spssColumnLabel()
+{
+	if (_spssColumnLabel.length() > 0)
+		return _spssColumnLabel;
+	else
+		return _spssColumnName;
 }
 
 /**
@@ -316,8 +324,8 @@ string SPSSColumn::format(double value) const
  */
 void SPSSColumn::processStrings(const CodePageConvert &converter)
 {
-	spssLabel( converter.convertCodePage(spssLabel()) );
-	_spssName = converter.convertCodePage(spssName());
+	_spssColumnLabel = converter.convertCodePage(_spssColumnLabel);
+	_spssColumnName = converter.convertCodePage(_spssColumnName);
 
 	// Strings are converted elsewhere,
 	// since, we convert some data types (dates etc.) on the fly to UTF-8 strings.
@@ -464,7 +472,7 @@ SPSSColumn& SPSSColumns::getNextColumn()
 	// Set the spaning var.
 	_isSpaning = result.columnSpan() != _remainingColSpan;
 
-	DEBUG_COUT9("Returning col. ", result.spssLabel(), '/', result.spssName(), ", spanning ", result.columnSpan(), ", with ", _remainingColSpan, " reamining.");
+	DEBUG_COUT9("Returning col. ", result.spssColumnLabel(), '/', result.spssColumnName(), ", spanning ", result.columnSpan(), ", with ", _remainingColSpan, " reamining.");
 
 	// Anthing left (for next time)?
 	if (--_remainingColSpan == 0)
@@ -522,7 +530,7 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 		SPSSColumns::iterator rootIter;
 		for (rootIter = begin(); rootIter != end(); rootIter++)
 		{
-			if (rootIter->second.spssName() == ituple->first)
+			if (rootIter->second.spssColumnName() == ituple->first)
 					break;
 		}
 

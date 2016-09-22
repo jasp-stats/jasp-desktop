@@ -65,6 +65,7 @@ VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileTy
 			char * buffer = new char[ buffSize ];
 			from.read(buffer, buffSize);
 			_label.append(buffer, label_len());
+			DEBUG_COUT7("Created label \"", _label, "\" from buffer \"", buffer, "\" len ", label_len(), ".");
 			delete[] buffer;
 		}
 	}
@@ -76,7 +77,7 @@ VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileTy
 		_missing_values.push_back(val);
 	}
 
-	_dictIndex = fileHeader->incVariableCount();
+	_dictIndex = fileHeader->incRawVariableCount();
 }
 
 
@@ -93,10 +94,11 @@ void VariableRecord::process(SPSSColumns &columns)
 {
 
 	// check for string continuation.
-	if (isStringContinuation())
+	if ((isStringContinuation()) && (dictIndex() > 0))
 	{
-		if ((columns.size() != 0) && (columns.getColumn(columns.size()-1).cellType() == SPSSColumn::cellString))
-			columns.getColumn(columns.size()-1).incrementColumnSpan();
+		SPSSColumn &lastCol = columns.rend()->second;
+		if (lastCol.cellType() == SPSSColumn::cellString)
+			lastCol.incrementColumnSpan();
 
 //		DEBUG_COUT5("Existing column ", columns[columns.size()-1].spssName(), " spans ", columns[columns.size()-1].columnSpan(), " cols.");
 
@@ -104,7 +106,7 @@ void VariableRecord::process(SPSSColumns &columns)
 	}
 
 	{
-		SPSSColumn col(name(), hasVarLabel() ? label() : name(), type(), _getType(print()), MissingValueChecker(n_missing_values(), missing_values()));
+		SPSSColumn col(name(), label(), type(), _getType(print()), MissingValueChecker(n_missing_values(), missing_values()));
 		columns.add(dictIndex(), col);
 	}
 

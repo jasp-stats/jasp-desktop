@@ -48,6 +48,12 @@ public:								\
 	const type & name() const		\
 		{ return _##name; }			\
 
+#define WRITE_ATTR(type, name)		\
+	_ATT_VALUE(type, name)			\
+public:								\
+	void name(const type &value)	\
+		{ _##name = value; }		\
+
 #define RW_ATTR(type, name)			\
 	READ_ATTR(type, name)			\
 public:								\
@@ -83,9 +89,10 @@ public:
 	/*
 	 * Attributes for the column.
 	 */
-	RW_ATTR(std::string, spssLabel)		// The name as shown to the user.
+	WRITE_ATTR(std::string, spssColumnLabel)		// The name as shown to the user.
+	const std::string &spssColumnLabel();
 
-	READ_ATTR(std::string, spssName)	// The name as in the file.
+	RW_ATTR(std::string, spssColumnName)	// The name as in the file.
 
 	READ_ATTR(size_t, spssStringLen)		// Length of the string (if string).
 
