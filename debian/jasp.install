@@ -1,7 +1,7 @@
-build/jasp          usr/lib/JASP
-build/JASPEngine    usr/lib/JASP
-build/R             usr/lib/JASP
-build/Resources     usr/share/JASP
-debian/jasp.svg     usr/share/JASP/Resources
-debian/jasp.desktop usr/share/applications
-debian/jasp.xml     usr/share/mime/packages
+build/jasp           usr/lib/JASP/
+build/JASPEngine     usr/lib/JASP/
+build/R/library/JASP usr/lib/R/site-library/
+build/Resources      usr/share/JASP/
+debian/jasp.svg      usr/share/JASP/Resources/
+debian/jasp.desktop  usr/share/applications/
+debian/jasp.xml      usr/share/mime/packages/
