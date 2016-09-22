@@ -1,4 +1,4 @@
-jasp (0.7.5~beta3+git384-gb3e407f~dfsg.1-1) UNRELEASED; urgency=low
+jasp (0.8.0.0~beta2+git154-g375aad9~dfsg.1-1) UNRELEASED; urgency=low
 
   * New upstream code.
   * Removed outdated 'menu' file, 'desktop' file is sufficient.
