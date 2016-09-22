@@ -178,9 +178,7 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 
 	bool success = true;
 	set<int> uniqueValues;
-	Column::Ints::iterator intInputItr = column.AsInts.begin();
-	Labels &labels = column.labels();
-	labels.clear();
+	vector<int> intValues;
 
 	BOOST_FOREACH(const string &value, cells)
 	{
@@ -190,7 +188,7 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 			{
 				int v = lexical_cast<int>(value);
 				uniqueValues.insert(v);
-				*intInputItr = v;
+				intValues.push_back(v);
 			}
 			catch (...)
 			{
@@ -202,108 +200,54 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 		}
 		else
 		{
-			*intInputItr = INT_MIN;
+			intValues.push_back(INT_MIN);
 		}
-
-		intInputItr++;
 	}
 
 	if (success && uniqueValues.size() <= 24)
 	{
-		labels.clear();
-
-		BOOST_FOREACH(int value, uniqueValues)
-		{
-			(void)uniqueValues;
-			labels.add(value);
-		}
-
-		column.setColumnType(Column::ColumnTypeNominal);
-
+		column.setColumnAsNominalOrOrdinal(intValues, uniqueValues);
 		return;
 	}
 
 	// try to make the column scale
-
-	Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
 	success = true;
+	vector<double> doubleValues;
 
 	BOOST_FOREACH(const string &value, cells)
 	{
 		string v = deEuropeanise(value);
+		double doubleValue;
 
 		if (v != "" && v != " ")
 		{
 			try
 			{
-				*doubleInputItr = lexical_cast<double>(v);
+				doubleValue = lexical_cast<double>(v);
 			}
 			catch (...)
 			{
 				// column can't be made scale
-
 				success = false;
 				break;
 			}
 		}
 		else
 		{
-			*doubleInputItr = NAN;
+			doubleValue = NAN;
 		}
 
-		doubleInputItr++;
+		doubleValues.push_back(doubleValue);
 	}
 
 	if (success)
 	{
-		column.setColumnType(Column::ColumnTypeScale);
+		column.setColumnAsScale(doubleValues);
 		return;
 	}
 
 	// if it can't be made nominal numeric or scale, make it nominal-text
-
-	vector<string> sorted = cells;
-	sort(sorted.begin(), sorted.end());
-	vector<string> cases;
-	unique_copy(sorted.begin(), sorted.end(), back_inserter(cases));
-	sort(cases.begin(), cases.end());
-
-	for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
-	{
-		if (*itr == "") // remove empty string
-		{
-			cases.erase(itr);
-			break;
-		}
-	}
-
-	for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
-	{
-		if (*itr == " ") // remove empty string
-		{
-			cases.erase(itr);
-			break;
-		}
-	}
-
-	labels.clear();
-
-	BOOST_FOREACH (string &value, cases)
-		labels.add(value);
-
-	intInputItr = column.AsInts.begin();
-
-	BOOST_FOREACH (const string &value, cells)
-	{
-		if (value == "" || value == " ")
-			*intInputItr = INT_MIN;
-		else
-			*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
-
-		intInputItr++;
-	}
-
-	column.setColumnType(Column::ColumnTypeNominalText);
+	column.setColumnAsNominalString(cells);
 }
 
 
