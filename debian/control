@@ -17,6 +17,7 @@ Build-Depends: debhelper (>= 9),
                r-base-core,
                r-cran-rcpp,
                r-cran-rinside,
+               r-cran-testthat,
 Homepage: https://jasp-stats.org
 Vcs-Browser: https://github.com/neurodebian/jasp-desktop
 Vcs-Git: https://github.com/neurodebian/jasp-desktop.git

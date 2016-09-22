@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
-DH_VERBOSE = 1
+export DH_VERBOSE = 1
+export QT_SELECT = 5
 
 srcpkg = $(shell LC_ALL=C dpkg-parsechangelog | grep '^Source:' | cut -d ' ' -f 2,2)
 debver = $(shell LC_ALL=C dpkg-parsechangelog | grep '^Version:' | cut -d ' ' -f 2,2 )
@@ -24,6 +25,14 @@ override_dh_auto_install:
 	dh_auto_install
 	# remove bits that will come from dependencies
 	rm build/Resources/Help/marked.js
+
+override_dh_auto_test:
+	# this is likely doing nothing now, but who knows about the future
+	dh_auto_test
+	# We are not running the compiles tests -> gh-1470
+	#JASP-Tests/JASPTests
+	# but we do run the R-based ones
+	cd JASP-Tests && R --no-save --no-restore -f run_tests.R
 
 override_dh_shlibdeps:
 	dh_shlibdeps -l/usr/lib/R/site-library/RInside/lib/
