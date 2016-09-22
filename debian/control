@@ -1,5 +1,7 @@
 Source: jasp
-Maintainer: jasp-uva <b.boutin@uva.nl>
+Maintainer: NeuroDebian Team <team@neuro.debian.net>
+Uploaders: Michael Hanke <mih@debian.org>,
+           jasp-uva <b.boutin@uva.nl>
 Section: science
 Priority: optional
 Standards-Version: 3.9.8
