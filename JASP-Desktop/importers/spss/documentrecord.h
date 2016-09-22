@@ -54,15 +54,6 @@ public:
 	 */
 	virtual void process(SPSSColumns & columns);
 
-	/**
-	 * @brief processStrings Converts any strings in the data fields.
-	 * @param dictData The
-	 *
-	 * Should be implemented in classes where holdStrings maybe or is true.
-	 *
-	 */
-	virtual void processStrings(const CodePageConvert &converter);
-
 
 	static const size_t LINE_LENGTH = 80;
 };

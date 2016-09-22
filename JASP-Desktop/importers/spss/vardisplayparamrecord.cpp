@@ -75,10 +75,13 @@ VarDisplayParamRecord::VarDisplayParamRecord(const NumericConverter &fixer, Reco
 void VarDisplayParamRecord::process(SPSSColumns &columns)
 {
 	// String continuation columns do not have a display params entry.
-	for (size_t colCount = 0; colCount < columns.size(); ++colCount)
+	size_t i = 0;
+	for (SPSSDictionary::iterator iter = columns.begin();
+		 (iter != columns.end()) && (i < _displayParams.size());
+		 ++iter, ++i)
 	{
 		// place measure in this col.
-		columns[colCount].spssMeasure( static_cast<Measure>( _displayParams[colCount].measure()) );
+		iter->second.spssMeasure( static_cast<Measure>( _displayParams[i].measure()) );
 //		DEBUG_COUT6("Measure for col :\"", columns[colCount].spssLabel(), "\" (", columns[colCount].spssName(), "\") set to ", columns[colCount].spssMeasure());
 	}
 }
