@@ -54,6 +54,8 @@ public:
 	int id() const;
 	bool isAutorun() const;
 
+	void reRun();
+
 	virtual void abort();
 	void scheduleRun();
 

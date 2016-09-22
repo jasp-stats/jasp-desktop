@@ -265,7 +265,7 @@ void BackstageOSF::setMode(FileEvent::FileMode mode)
 void BackstageOSF::notifyDataSetOpened(QString path)
 {
 	FSBMOSF::OnlineNodeData nodeData = _model->getNodeData(path);
-	openFile(nodeData.nodePath, nodeData.name);
+	openSaveFile(nodeData.nodePath, nodeData.name);
 }
 
 void BackstageOSF::notifyDataSetSelected(QString path)
@@ -318,10 +318,10 @@ void BackstageOSF::saveClicked()
 	if (_model->hasFileEntry(filename.toLower(), path))
 		notifyDataSetOpened(path);
 	else
-		openFile(currentNodeData.nodePath, filename);
+		openSaveFile(currentNodeData.nodePath, filename);
 }
 
-void BackstageOSF::openFile(const QString &nodePath, const QString &filename)
+void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename)
 {
 	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode ==FileEvent::FileExportData);
 
@@ -349,6 +349,7 @@ void BackstageOSF::openFile(const QString &nodePath, const QString &filename)
 	{
 		QMessageBox::warning(this, "File Types", event->getLastError());
 		event->setComplete(false, "Failed to open file from OSF");
+		return;
 	}
 
 	emit dataSetIORequest(event);

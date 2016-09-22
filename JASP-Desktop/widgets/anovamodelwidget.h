@@ -21,6 +21,9 @@
 
 #include <QWidget>
 #include <QStringListModel>
+#include <QItemDelegate>
+#include <QPainter>
+#include <QToolTip>
 
 #include "bound.h"
 
@@ -29,6 +32,23 @@
 
 #include "tablemodelvariablesavailable.h"
 #include "tablemodelanovamodel.h"
+
+
+class AnovaHoverDelegate : public QItemDelegate
+{
+public:
+	AnovaHoverDelegate(QObject *parent=0) : QItemDelegate(parent){}
+	void paint ( QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+	{
+		if(option.state & QStyle::State_MouseOver)
+		{
+			painter->fillRect(option.rect, Qt::lightGray);
+			QString str = index.data().toString();
+			QToolTip::showText(QCursor::pos(), str);
+		}
+		QItemDelegate::paint(painter, option, index);
+	}
+};
 
 namespace Ui {
 class AnovaModelWidget;

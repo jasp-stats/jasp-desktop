@@ -42,7 +42,11 @@ void BoundTextBox::bindTo(Option *option)
 
 	if (_integer != NULL)
 	{
-		this->setValidator(new QIntValidator(this));
+		int v = _integer->value();
+		int min = _integer->min();
+		int max = _integer->max();
+
+		this->setValidator(new QIntValidator(min, max, this));
 		this->setText(QString::number(_integer->value()));
 		return;
 	}
@@ -108,7 +112,37 @@ void BoundTextBox::finalise()
 	}
 	else if (_integer != NULL)
 	{
-		_integer->setValue(value.toInt());
+		//_integer->setValue(value.toInt());
+
+		double v = value.toInt();
+		double min = _integer->min();
+		double max = _integer->max();
+
+		bool pc = _integer->format() == "%";
+
+		if (pc)
+		{
+			v /= 100;
+			min *= 100;
+			max *= 100;
+		}
+
+		if (v > _integer->max() || v < _integer->min())
+		{
+			if (pc)
+			{
+				setIllegal(QString("%1 must be between %2% and %3%").arg(_label).arg(min).arg(max));
+			}
+			else
+			{
+				setIllegal(QString("%1 must be between %2 and %3").arg(_label).arg(min).arg(max));
+			}
+		}
+		else
+		{
+			_integer->setValue(v);
+			setLegal();
+		}
 	}
 	else if (_number != NULL)
 	{

@@ -442,9 +442,8 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
 		
 		for (i in 1:n.levels-1) {
-		
-			contr[1:i,i] <- (n.levels-i)/n.levels
-			contr[(i+1):n.levels,i] <- -i/n.levels
+			contr[i,i] <- 1
+			contr[i+1,i] <- -1
 		}
 		
 	} else if (contrast.type == "difference") {

@@ -17,15 +17,21 @@
 
 #include "optioninteger.h"
 
-OptionInteger::OptionInteger(int value)
+OptionInteger::OptionInteger(int value, int min, int max, std::string format)
 	: OptionI()
 {
 	_value = value;
+  _min = min;
+  _max = max;
+  _format = format;
 }
 
 void OptionInteger::init(const Json::Value &data)
 {
 	_value = data.get("default", 0).asInt();
+  _min = data.get("min", -999999).asInt();
+  _max = data.get("max",  999999).asInt();
+  _format = data.get("format", "").asString();
 }
 
 Json::Value OptionInteger::asJSON() const
@@ -42,3 +48,19 @@ Option *OptionInteger::clone() const
 {
 	return new OptionInteger(value());
 }
+
+int OptionInteger::min() const
+{
+  return _min;
+}
+
+int OptionInteger::max() const
+{
+  return _max;
+}
+
+std::string OptionInteger::format() const
+{
+  return _format;
+}
+

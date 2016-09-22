@@ -80,141 +80,209 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 	if (newColumnType == _columnType)
 		return;
 
+	bool success = true;
 	if (newColumnType == ColumnTypeOrdinal || newColumnType == ColumnTypeNominal)
 	{
 		if (_columnType == ColumnTypeNominal || _columnType == ColumnTypeOrdinal)
 		{
 			_columnType = newColumnType;
 		}
-		else if (_columnType == ColumnTypeNominalText)
+		else
 		{
-			Labels& labels = this->labels();
-			labels.clear();
-
-			map<int, int> oldIndexToNewIndex;
-
-			for (size_t i = 0; i < labels.size(); i++)
+			vector<int> values;
+			set<int> uniqueValues;
+			if (_columnType == ColumnTypeNominalText)
 			{
-				try
+				Ints::iterator intIterator = AsInts.begin();
+				for (; intIterator != AsInts.end(); intIterator++)
 				{
-					std::string text = labels.labelFor(i).text();
-					int value = lexical_cast<int>(text);
-					int raw = labels.add(value);
-					oldIndexToNewIndex[i] = raw;
+					int value = *intIterator;
+					string display = stringFromRaw(value);
+					try
+					{
+						if (display == "NaN" || display == "nan" || display == "" || display == " " || display == ".")
+						{
+							values.push_back(INT_MIN);
+						}
+						else
+						{
+							int value = lexical_cast<int>(display);
+							values.push_back(value);
+							uniqueValues.insert(value);
+						}
+					}
+					catch (...)
+					{
+						success = false;
+						break;
+					}
 				}
-				catch (...)
+			}
+			else if (_columnType == ColumnTypeScale)
+			{
+				Doubles::iterator doubles = this->AsDoubles.begin();
+				for (; doubles != this->AsDoubles.end(); doubles++)
 				{
-				}
-			}
-
-			Ints::iterator intIterator = AsInts.begin();
-			for (; intIterator != AsInts.end(); intIterator++)
-			{
-				int value = *intIterator;
-				map<int, int>::iterator itr = oldIndexToNewIndex.find(value);
-				if (itr != oldIndexToNewIndex.end())
-					*intIterator = itr->second;
-				else
-					*intIterator = INT_MIN;
-
-			}
-
-			_columnType = newColumnType;
-		}
-		else if (_columnType == ColumnTypeScale)
-		{
-			std::set<int> uniqueValues;
-
-			Doubles::iterator doubles = this->AsDoubles.begin();
-			for (; doubles != this->AsDoubles.end(); doubles++)
-			{
-				int v = (int)*doubles;
-				if ( ! std::isnan(v))
-					uniqueValues.insert(v);
-			}
-
-			Labels& labels = this->labels();
-			map<int, int> valueToIndex;
-
-			set<int>::iterator itr = uniqueValues.begin();
-			for (; itr != uniqueValues.end(); itr++)
-			{
-				int v = *itr;
-				int raw = labels.add(v);
-				valueToIndex[v] = raw;
-			}
-
-			Ints::iterator ints = this->AsInts.begin();
-			Ints::iterator end = this->AsInts.end();
-			doubles = this->AsDoubles.begin();
-
-			for (; ints != end; ints++, doubles++)
-			{
-				double value = *doubles;
-				if (std::isnan(value))
-				{
-					*ints = INT_MIN;
-				}
-				else
-				{
-					int v = (int)*doubles;
-					int index = valueToIndex[v];
-					*ints = index;
+					try
+					{
+						if (*doubles != NAN)
+						{
+							int v = lexical_cast<int>(*doubles);
+							uniqueValues.insert(v);
+							values.push_back(v);
+						}
+						else
+						{
+							values.push_back(INT_MIN);
+						}
+					}
+					catch (...)
+					{
+						success = false;
+						break;
+					}
 				}
 			}
 
-			_columnType = newColumnType;
+			if (success)
+			{
+				setColumnAsNominalOrOrdinal(values, uniqueValues, newColumnType == ColumnTypeOrdinal);
+			}
+			else if (_columnType == ColumnTypeScale && newColumnType == ColumnTypeNominal) // set the column as ColumnTypeNominalText
+			{
+				vector<string> values;
+				Doubles::iterator doubles = this->AsDoubles.begin();
+				for (; doubles != this->AsDoubles.end(); doubles++)
+				{
+					std::ostringstream strs;
+					strs << *doubles;
+					values.push_back(strs.str());
+				}
+				setColumnAsNominalString(values);
+			}
 		}
 	}
 	else if (newColumnType == Column::ColumnTypeScale)
 	{
-		if (_columnType == Column::ColumnTypeNominal || _columnType == ColumnTypeOrdinal)
+		vector<double> values;
+		Ints::iterator ints = AsInts.begin();
+		Ints::iterator end = AsInts.end();
+
+		if (_columnType == Column::ColumnTypeNominal || _columnType == Column::ColumnTypeOrdinal)
 		{
-			Ints::iterator ints = this->AsInts.begin();
-			Ints::iterator end = this->AsInts.end();
-			Doubles::iterator doubles = this->AsDoubles.begin();
-
-			for (; ints != end; ints++, doubles++)
+			for (; ints != end; ints++)
 			{
-				int value = *ints;
-				string display = stringFromRaw(value);
-				double newValue;
+				int intValue = *ints;
+				double doubleValue;
 
-				try
-				{
-					newValue = lexical_cast<double>(display);
-				}
-				catch (...)
-				{
-					newValue = NAN;
-				}
+				if (intValue == INT_MIN)
+					doubleValue = NAN;
+				else
+					doubleValue = (double)intValue;
 
-				*doubles = newValue;
+				values.push_back(doubleValue);
 			}
-
-			_columnType = newColumnType;
 		}
 		else if (_columnType == ColumnTypeNominalText)
 		{
-			Ints::iterator ints = AsInts.begin();
-			Ints::iterator end = AsInts.end();
-			Doubles::iterator doubles = AsDoubles.begin();
-
-			for (; ints != end; ints++, doubles++)
+			for (; ints != end; ints++)
 			{
 				try
 				{
-					*doubles = lexical_cast<double>(this->stringFromRaw(*ints));
+					string value = this->stringFromRaw(*ints);
+					double doubleValue;
+
+					if (value == "NaN" || value == "nan" || value == "" || value == " " || value == ".")
+						doubleValue = NAN;
+					else
+						doubleValue = lexical_cast<double>(value);
+
+					values.push_back(doubleValue);
 				}
 				catch (...)
 				{
-					*doubles = NAN;
+					success = false;
+					break;
 				}
 			}
+		}
 
-			_columnType = newColumnType;
+		if (success)
+			setColumnAsScale(values);
+	}
+}
+
+void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
+{
+	_labels.clear();
+
+	BOOST_FOREACH(int value, uniqueValues)
+	{
+		_labels.add(value);
+	}
+
+	Ints::iterator intInputItr = AsInts.begin();
+
+	BOOST_FOREACH(int value, values)
+	{
+		*intInputItr = value;
+		intInputItr++;
+	}
+
+	setColumnType(is_ordinal ? Column::ColumnTypeOrdinal : Column::ColumnTypeNominal);
+
+}
+
+void Column::setColumnAsScale(const std::vector<double> &values)
+{
+	_labels.clear();
+	Doubles::iterator doubleInputItr = AsDoubles.begin();
+
+	BOOST_FOREACH(double value, values)
+	{
+		*doubleInputItr = value;
+		doubleInputItr++;
+	}
+
+	setColumnType(Column::ColumnTypeScale);
+
+}
+
+void Column::setColumnAsNominalString(const vector<string> &values)
+{
+	vector<string> sorted = values;
+	sort(sorted.begin(), sorted.end());
+	vector<string> cases;
+	unique_copy(sorted.begin(), sorted.end(), back_inserter(cases));
+	sort(cases.begin(), cases.end());
+
+	for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
+	{
+		if (*itr == "" || *itr == " ") // remove empty string
+		{
+			cases.erase(itr);
+			break;
 		}
 	}
+
+	_labels.clear();
+
+	BOOST_FOREACH (string &value, cases)
+		_labels.add(value);
+
+	Column::Ints::iterator intInputItr = AsInts.begin();
+
+	BOOST_FOREACH (const string &value, values)
+	{
+		if (value == "" || value == " ")
+			*intInputItr = INT_MIN;
+		else
+			*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
+
+		intInputItr++;
+	}
+
+	setColumnType(Column::ColumnTypeNominalText);
 
 }
 
@@ -437,15 +505,6 @@ void Column::setRowCount(int rowCount)
 	}
 
 	_blocks.erase(_blocks.upper_bound(rowCount), _blocks.end());
-
-}
-
-void Column::insert(int rowCount, int index)
-{
-	//BlockMap::iterator itr = _blocks.lower_bound(index);
-
-	// should check that itr != end()
-
 
 }
 

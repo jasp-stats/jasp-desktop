@@ -54,11 +54,12 @@
 #include "analysisforms/binomialtestform.h"
 #include "analysisforms/binomialtestbayesianform.h"
 #include "analysisforms/bffromtform.h"
-#include "analysisforms/SummaryStatistics/bffromtindependentsamplesform.h"
-#include "analysisforms/SummaryStatistics/bffromtpairedsamplesform.h"
-#include "analysisforms/SummaryStatistics/bffromtonesampleform.h"
-#include "analysisforms/SummaryStatistics/binomialbayesiansummarystatisticsform.h"
-#include "analysisforms/SummaryStatistics/regressionbayesiansummarystatisticsform.h"
+#include "analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
+#include "analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h"
+#include "analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h"
+#include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
+#include "analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
+#include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
 
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
@@ -119,6 +120,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
 	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
 	QObject::connect(openShortcut, SIGNAL(activated()), this, SLOT(openKeysSelected()));
+	QShortcut *refreshShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
+	QObject::connect(refreshShortcut, SIGNAL(activated()), this, SLOT(refreshKeysSelected()));
 
 	ui->setupUi(this);
 
@@ -158,10 +161,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	tempfiles_init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 	_odm = new OnlineDataManager(this);
-
-	QString username = _settings.value("OSFUsername", "").toString();
-	QString password = _settings.value("OSFPassword", "").toString();
-	_odm->setAuthentication(OnlineDataManager::OSF, username, password);
+	_odm->initAuthentication(OnlineDataManager::OSF);
 
 	_loader.setOnlineDataManager(_odm);
 	ui->backStage->setOnlineDataManager(_odm);
@@ -331,9 +331,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 
-	//If User switch 'Remember me' is off remove OSF settings
-	if (_settings.value("OSFRememberMe", false).toBool() == false)
-		_settings.remove("OSFPassword");
+	_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
 
 	if (_applicationExiting)
 	{
@@ -364,7 +362,12 @@ void MainWindow::saveKeysSelected()
 
 void MainWindow::openKeysSelected()
 {
-	ui->backStage->open();
+
+}
+
+void MainWindow::refreshKeysSelected()
+{
+	refreshAllAnalyses();
 }
 
 void MainWindow::illegalOptionStateChanged()
@@ -564,16 +567,18 @@ AnalysisForm* MainWindow::loadForm(const string name)
     form = new ExploratoryFactorAnalysisForm(contentArea);
   else if (name == "PrincipalComponentAnalysis")
     form = new PrincipalComponentAnalysisForm(contentArea);
-	else if (name == "BFFromTOneSample")
-		form = new BFFromTOneSampleForm(contentArea);
-	else if (name == "BFFromTIndependentSamples")
-		form = new BFFromTIndependentSamplesForm(contentArea);
-	else if (name == "BFFromTPairedSamples")
-		form = new BFFromTPairedSamplesForm(contentArea);
-	else if (name == "BinomialBayesianSummaryStatistics")
-		form = new BinomialBayesianSummaryStatisticsForm(contentArea);
-	else if (name == "RegressionBayesianSummaryStatistics")
-		form = new RegressionBayesianSummaryStatisticsForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianOneSample")
+		form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianIndependentSamples")
+		form = new SummaryStatsTTestBayesianIndependentSamplesForm(contentArea);
+	else if (name == "SummaryStatsTTestBayesianPairedSamples")
+		form = new SummaryStatsTTestBayesianPairedSamplesForm(contentArea);
+	else if (name == "SummaryStatsBinomialTestBayesian")
+		form = new SummaryStatsBinomialTestBayesianForm(contentArea);
+	else if (name == "SummaryStatsRegressionLinearBayesian")
+		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
+	else if (name == "SummaryStatsCorrelationBayesianPairs")
+		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -773,11 +778,8 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	{
 		if (_package->isLoaded())
 		{
-			OnlineDataManager::AuthData sec = _odm->getAuthData(OnlineDataManager::OSF);
-
 			//If this instance has a valid OSF connection save this setting for a new instance
-			if (sec.password!="")
-				_settings.setValue("OSFPassword", sec.password);
+			_odm->savePasswordFromAuthData(OnlineDataManager::OSF);
 
 			// begin new instance
 			QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
@@ -883,6 +885,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 void MainWindow::dataSetIOCompleted(FileEvent *event)
 {
+	this->analysisOKed();
 	bool showAnalysis = false;
 	_progressIndicator->hide();
 
@@ -1433,6 +1436,14 @@ void MainWindow::removeAllAnalyses()
 	}
 }
 
+void MainWindow::refreshAllAnalyses()
+{
+	for (Analyses::iterator it = _analyses->begin(); it != _analyses->end(); ++it)
+	{
+		(*it)->reRun();
+	}
+}
+
 void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html)
 {
 	if (_log != NULL)
@@ -1581,6 +1592,11 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 		_analysisMenu->addAction("Remove All ", this, SLOT(removeAllAnalyses()));
 	}
 
+	if (menuOptions["hasRefreshAllAnalyses"].asBool())
+	{
+		_analysisMenu->addSeparator();
+		_analysisMenu->addAction("Refresh All ", this, SLOT(refreshAllAnalyses()));
+	}
 
 	QPoint point = ui->webViewResults->mapToGlobal(QPoint(round(menuOptions["rX"].asInt() * _webViewZoom), round(menuOptions["rY"].asInt() * _webViewZoom)));
 

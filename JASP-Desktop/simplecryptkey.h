@@ -1,0 +1,6 @@
+#ifndef SIMPLECRYPTKEY_H
+#define SIMPLECRYPTKEY_H
+
+#define SIMPLECRYPTKEY (0x0c2ad4a4acb9f023)
+
+#endif // SIMPLECRYPTKEY_H

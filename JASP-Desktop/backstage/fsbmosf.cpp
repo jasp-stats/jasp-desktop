@@ -32,6 +32,7 @@
 
 #include "fsentry.h"
 #include "onlinedatamanager.h"
+#include "simplecrypt.h"
 
 FSBMOSF::FSBMOSF()
 {
@@ -57,8 +58,9 @@ void FSBMOSF::setOnlineDataManager(OnlineDataManager *odm)
 
 void FSBMOSF::attemptToConnect()
 {
-	QString password = _settings.value("OSFPassword", "").toString();
-	QString username = _settings.value("OSFUsername", "").toString();
+
+	QString password = _dataManager->getPassword(OnlineDataManager::OSF);
+	QString username = _dataManager->getUsername(OnlineDataManager::OSF);
 
 	if ( username=="" || password =="" )
 		return;
@@ -86,18 +88,16 @@ void FSBMOSF::authenticate(const QString &username, const QString &password)
 
 	if (_dataManager && username!="")
 	{
-		_settings.setValue("OSFUsername", username);
+		_dataManager->saveUsername(OnlineDataManager::OSF, username);
 
 		_dataManager->setAuthentication(OnlineDataManager::OSF, username, password);
 
 		success = _dataManager->authenticationSuccessful(OnlineDataManager::OSF);
 
 		if (success)
-			_settings.setValue("OSFPassword", password);
+			_dataManager->savePassword(OnlineDataManager::OSF, password);
 		else
-			_settings.remove("OSFPassword");
-
-		_settings.sync();
+			_dataManager->removePassword(OnlineDataManager::OSF);
 	}
 
 
@@ -130,7 +130,6 @@ void FSBMOSF::clearAuthentication()
 {
 	_isAuthenticated = false;
 	_dataManager->clearAuthentication(OnlineDataManager::OSF);
-	_settings.remove("OSFPassword");
 	_entries.clear();
 	_pathUrls.clear();
 	setPath(_rootPath);
@@ -164,8 +163,13 @@ FSBMOSF::OnlineNodeData FSBMOSF::currentNodeData()
 }
 
 void FSBMOSF::loadProjects() {
-
 	QUrl url("https://api.osf.io/v2/users/me/nodes/");
+	parseProjects(url);
+}
+
+void FSBMOSF::parseProjects(QUrl url, bool recursive) {
+
+	_isProjectPaginationCall = recursive;
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.api+json");
 	request.setRawHeader("Accept", "application/vnd.api+json");
@@ -190,7 +194,7 @@ void FSBMOSF::gotProjects()
 		QJsonObject json = doc.object();
 		QJsonArray dataArray = json.value("data").toArray();
 
-		if ( dataArray.size() > 0 )
+		if ( dataArray.size() > 0 && !_isProjectPaginationCall)
 			_entries.clear();
 
 		foreach (const QJsonValue & value, dataArray) {
@@ -224,9 +228,18 @@ void FSBMOSF::gotProjects()
 			_pathUrls[path] = nodeData;
 
 		}
+
+		QJsonObject links = json.value("links").toObject();
+
+		QJsonValue nextProjects = links.value("next");
+		if (nextProjects.isNull() == false)
+			parseProjects(QUrl(nextProjects.toString()), true);
+		else
+			emit entriesChanged();
 	}
 
-	emit entriesChanged();
+
+
 	reply->deleteLater();
 }
 

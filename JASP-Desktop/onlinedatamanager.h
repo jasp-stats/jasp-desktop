@@ -7,6 +7,8 @@
 #include "onlinedatanode.h"
 #include "onlineusernode.h"
 
+#include <QSettings>
+
 class OnlineDataManager : public QObject
 {
 	Q_OBJECT
@@ -14,6 +16,7 @@ class OnlineDataManager : public QObject
 public:
 
 	enum Provider { None, OSF };
+	enum Encryption { NoEncryption, SimpleCryptEncryption };
 
 	OnlineDataManager(QObject *parent = 0);
 	~OnlineDataManager();
@@ -24,6 +27,14 @@ public:
 	} AuthData;
 
 	void setAuthentication(OnlineDataManager::Provider provider, QString username, QString password);
+	void initAuthentication(OnlineDataManager::Provider provider);
+	void clearAuthenticationOnExit(OnlineDataManager::Provider provider);
+	void savePasswordFromAuthData(OnlineDataManager::Provider provider);
+	void savePassword(OnlineDataManager::Provider provider, QString password);
+	void removePassword(OnlineDataManager::Provider provider);
+	void saveUsername(OnlineDataManager::Provider provider, QString username);
+	QString getUsername(OnlineDataManager::Provider provider);
+	QString getPassword(OnlineDataManager::Provider provider);
 	AuthData getAuthData(OnlineDataManager::Provider provider);
 	bool authenticationSuccessful(OnlineDataManager::Provider provider) const;
 	QNetworkAccessManager* getNetworkAccessManager(OnlineDataManager::Provider provider) const;
@@ -71,8 +82,7 @@ private:
 	OnlineDataNode *getOnlineNodeData(QString nodePath, QString id);
 
 	static bool md5UploadFilter(OnlineDataNode *dataNode, OnlineDataNode::ActionFilter *filter);
-
-
+	QSettings _settings;
 
 };
 
