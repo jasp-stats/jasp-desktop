@@ -19,7 +19,9 @@
 # Sellke, T., Bayarri, M.J., Berger, J.O. (2001) Calibration of p Values for
 # Testing Precise Null Hypotheses. The American Statistician. 55(1) 62-71
 .VovkSellkeMPR <- function(p){
-  return(ifelse(p >= 1/exp(1), 1, 1/(-exp(1)*p*log(p))))
+  MPR <- ifelse(p >= 1/exp(1), 1, 1/(-exp(1)*p*log(p)))
+  if (is.nan(MPR)) MPR <- Inf
+  return(.clean(MPR))
 }
 
 # Type I error probability / posterior probability from same paper
