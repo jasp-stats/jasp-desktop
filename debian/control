@@ -25,6 +25,7 @@ Package: jasp
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         libjs-marked,
          r-base-core,
          r-cran-afex,
          r-cran-bayesfactor,

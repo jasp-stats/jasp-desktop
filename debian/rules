@@ -20,6 +20,11 @@ gitver = $(shell [ -x /usr/bin/git ] && git describe --tags --match 'v[0-9].[0-9
 override_dh_auto_configure:
 	dh_auto_configure -- $(CURDIR)
 
+override_dh_auto_install:
+	dh_auto_install
+	# remove bits that will come from dependencies
+	rm build/Resources/Help/marked.js
+
 override_dh_shlibdeps:
 	dh_shlibdeps -l/usr/lib/R/site-library/RInside/lib/
 
