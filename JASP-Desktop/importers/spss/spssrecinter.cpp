@@ -63,7 +63,7 @@ SPSSColumn::~SPSSColumn()
 
 }
 
-const string &SPSSColumn::spssColumnLabel()
+const string &SPSSColumn::spssColumnLabel() const
 {
 	if (_spssColumnLabel.length() > 0)
 		return _spssColumnLabel;

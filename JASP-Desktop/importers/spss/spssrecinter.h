@@ -90,7 +90,7 @@ public:
 	 * Attributes for the column.
 	 */
 	WRITE_ATTR(std::string, spssColumnLabel)		// The name as shown to the user.
-	const std::string &spssColumnLabel();
+	const std::string &spssColumnLabel() const;
 
 	RW_ATTR(std::string, spssColumnName)	// The name as in the file.
 

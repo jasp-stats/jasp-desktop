@@ -243,16 +243,19 @@ void SPSSImporter::loadDataSet(
 		success = true;
 		try {
 			// Now go fetch the data.
-			for (size_t i = 0; i < dictData.size(); i++)
+			int jaspColCount = 0;
+			for (SPSSDictionary::iterator colI = dictData.begin();
+				 (colI != dictData.end() ) && (jaspColCount < packageData->dataSet->columnCount());
+				 ++colI, ++jaspColCount)
 			{
-				SPSSColumn &spssCol = dictData.getColumn(i);
-				Column &column = packageData->dataSet->column(i);
+				SPSSColumn &spssCol = colI->second;
+				Column &column = packageData->dataSet->column(jaspColCount);
 
 				column.setName(spssCol.spssColumnLabel());
 				column.setColumnType( spssCol.getJaspColumnType() );
 				column.labels().clear();
 
-				DEBUG_COUT3("Getting col: ", i, ",\n");
+				DEBUG_COUT3("Getting col: ", spssCol.spssColumnLabel(), ",\n");
 
 				switch(column.columnType())
 				{
