@@ -28,14 +28,14 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 	}
 
 	# Bayes factor type (BF10, BF01, log(BF10)) and title
-	bftype <- .getBayesfactorTitle(
+	bftype <- .getBayesfactorTitle.summarystats.ttest(
 								bayesFactorType = options$bayesFactorType,
 								hypothesis = options$hypothesis
 							)
 	bf.title <- bftype$bftitle
 	BFH1H0 <- bftype$BFH1H0
 
-	hypothesis.variables <- .hypothesisType(options$hypothesis)
+	hypothesis.variables <- .hypothesisType.summarystats.ttest.paired(options$hypothesis)
 	oneSided <- hypothesis.variables$oneSided
 
 	# initialize variables
@@ -44,26 +44,27 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 	priorAndPosteriorPlot <- NULL
 	bayesFactorRobustnessPlot <- NULL
 
-	outputTableElements <- .getOutputTableRow(
-																		run,
-																		options,
-																		state,
-																		diff,
-																		hypothesis.variables$nullInterval
-																	)
+	outputTableElements <- .getOutputRow.summarystats.ttest.paired(
+														run = run,
+														options = options,
+														state = state,
+														diff = diff,
+														nullInterval = hypothesis.variables$nullInterval
+													)
 	rowsTTestBayesianPairedSamples <- outputTableElements$row
 	bayesFactorObject <- outputTableElements$bayesFactorObject
 
 	# Get prior and posterior plot
 	if (options$plotPriorAndPosterior) {
-		priorAndPosteriorPlot <- .getPriorAndPosteriorPlot(
-																		run = run,
-																		options = options,
-																		state = state,
-																		diff = diff,
-																		bayesFactorObject = bayesFactorObject,
-																		oneSided = oneSided
-																	)
+		priorAndPosteriorPlot <- .getPriorAndPosteriorPlot.summarystats.ttest(
+																run = run,
+																options = options,
+																state = state,
+																diff = diff,
+																bayesFactorObject = bayesFactorObject,
+																oneSided = oneSided,
+																paired = TRUE
+															)
 		plots.sumstats.ttest[[length(plots.sumstats.ttest) + 1]] <- priorAndPosteriorPlot
 		if(options$plotPriorAndPosteriorAdditionalInfo) {
 			plotTypes[[length(plotTypes) + 1]] <- "posteriorPlotAddInfo"
@@ -74,7 +75,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 
 	# Get Bayes factor robustness plot
 	if (options$plotBayesFactorRobustness) {
-		bayesFactorRobustnessPlot <- .getBayesFactorRobustnessPlot(
+		bayesFactorRobustnessPlot <- .getBayesFactorRobustnessPlot.summarystats.ttest(
 																		run = run,
 																		options = options,
 																		state = state,
@@ -157,7 +158,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 }
 
 
-.getOutputTableRow <- function(run, options, state, diff, nullInterval) {
+.getOutputRow.summarystats.ttest.paired <- function(run, options, state, diff, nullInterval) {
 	# Returns a row to be shown in output tables
 	#
 	# Args:
@@ -185,17 +186,17 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 		bayesFactorObject <- state$bayesFactorObject
 
 	} else {
-		status <- .isInputValidPairedSamples(options)
+		status <- .isInputValid.summarystats.ttest(options = options, independent = FALSE)
 		rowsTTestBayesianPairedSamples <- status$row
 
 		# if state of analysis is run
 		if (run) {
 			if (status$ready) {
-				bayesFactorObject <- .calcluateBFPairedSamples(
-																options,
-																state,
-																diff,
-																nullInterval
+				bayesFactorObject <- .calculateBF.summarystats.ttest(
+																options = options,
+																state = state,
+																diff = diff,
+																nullInterval = nullInterval
 															)
 
 				if (options$bayesFactorType == "BF10") {
@@ -216,274 +217,7 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 }
 
 
-.getPriorAndPosteriorPlot <- function(run, options, state, diff, bayesFactorObject, oneSided) {
-	# Returns the prior and posterior plot. If available from previous,
-	#   the function returns that. Else, it calls the plotPosterior function
-	#
-	# Args:
-	#   run: state of analysis - init or run
-	#   options: a list of options given by user
-	#   bayesFactorObject: Bayes factor object containing bf and properror
-	#   oneSided: type of hypothesis
-	#
-	# Output:
-	#   plot - prior and posterior plot
-
-	returnPlot <- NULL
-	BFH1H0 <- ifelse((options$bayesFactorType == "BF01"), FALSE, TRUE)
-	plotType <- "posteriorPlot"
-
-	if (options$plotPriorAndPosteriorAdditionalInfo) {
-		plotType <- "posteriorPlotAddInfo"
-	}
-
-	# Check if available from previous state
-	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
-			(is.list(diff) && (diff$bayesFactorType == FALSE && diff$tStatistic == FALSE &&
-			diff$n1Size == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
-			plotType %in% state$plotTypes) {
-
-		index <- which(state$plotTypes == plotType)
-		returnPlot <- state$plotsTtest[[index]]
-
-	} else {
-
-		width  <- 530
-		height <- 400
-
-		plot <- list()
-		plot[["title"]]  <- "Prior and Posterior"
-		plot[["width"]]  <- width
-		plot[["height"]] <- height
-		plot[["status"]] <- "waiting"
-
-		dontPlotData <- TRUE
-
-		if (run) {
-			dontPlotData <- FALSE
-		}
-
-		p <- try(silent = FALSE, expr = {
-			image <- .beginSaveImage(width, height)
-			.plotPosterior.ttest.summaryStats(
-						t = options$tStatistic, n1 = options$n1Size, n2 = NULL, paired = TRUE,
-						BFH1H0 = BFH1H0, dontPlotData = dontPlotData, rscale = options$priorWidth,
-						addInformation = options$plotPriorAndPosteriorAdditionalInfo,
-						BF = exp(bayesFactorObject$bf), oneSided = oneSided
-				)
-			plot[["data"]] <- .endSaveImage(image)
-		})
-
-		if (class(p) == "try-error") {
-			errorMessage <- .extractErrorMessage(p)
-
-			if (errorMessage == "'from' cannot be NA, NaN or infinite") {
-				errorMessage <- "The Bayes factor is infinite"
-			} else if (!is.null(bayesFactorObject)) {
-				if (.clean(exp(bayesFactorObject$bf)) == "\u221E") {
-					errorMessage <- "The Bayes factor is infinite"
-				} else if (.clean(exp(bayesFactorObject$bf)) == "NaN") {
-					errorMessage <- "The Bayes factor could not be calcluated"
-				}
-			}
-
-			plot[["error"]] <- list(error = "badData",
-							errorMessage = paste("Plotting is not possible: ", errorMessage))
-		}
-
-		if (run) {
-			plot[["status"]] <- "complete"
-		}
-		returnPlot <- plot
-	}
-
-	return(returnPlot)
-}
-
-
-.getBayesFactorRobustnessPlot <- function(run, options, state, diff, bayesFactorObject, oneSided) {
-	# Returns the Bayes factor robustness plot. If available from previous state
-	#   the function returns that. Otherwise, based on 'run' state, it calls
-	#   the plotBayesFactorRobustness function.
-	#
-	# Args:
-	#   run: state of analysis - init or run
-	#   options: user input options
-	#   bayesFactorObject: Bayes factor object containing bf and properror
-	#   oneSided: type of hypothesis
-	#
-	# Output:
-	#   plot - Bayes factor robustness check
-
-	returnPlot <- NULL
-	BFtypeRequiresNewPlot <- TRUE
-	BFH1H0 <- ifelse((options$bayesFactorType == "BF01"), FALSE, TRUE)
-	bftype.current <- options$bayesFactorType
-	bftype.previous <- state$options$bayesFactorType
-
-	# check if BF type requires a new plot
-	if (bftype.current == bftype.previous) {
-		BFtypeRequiresNewPlot <- FALSE
-	}
-
-	if (!(is.null(state)) && BFtypeRequiresNewPlot) {
-		equivalent.bf <- list("BF10", "LogBF10")
-
-		if (bftype.current %in% equivalent.bf && bftype.previous %in% equivalent.bf) {
-			BFtypeRequiresNewPlot <- FALSE
-		}
-	}
-
-	# remove temporary variables from workspace
-	rm(bftype.current, bftype.previous, equivalent.bf)
-
-	# if available, get the plot from state
-	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
-			(is.list(diff) && (diff$tStatistic == FALSE && BFtypeRequiresNewPlot == FALSE &&
-			diff$n1Size == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
-			"robustnessPlot" %in% state$plotTypes) {
-
-		index <- which(state$plotTypes == "robustnessPlot")
-		returnPlot <- state$plotsTtest[[index]]
-
-	} else {
-
-		width  <- 530
-		height <- 400
-
-		plot <- list()
-		plot[["title"]]  <- "Bayes Factor Robustness Check"
-		plot[["width"]]  <- width
-		plot[["height"]] <- height
-		plot[["status"]] <- "waiting"
-
-		BF10post <- NULL
-		if (run) {
-			dontPlotData <- FALSE
-
-			if (!is.null(bayesFactorObject)) {
-				BF10post <- ifelse(BFH1H0,
-													.clean(exp(bayesFactorObject$bf)),
-													.clean(1/exp(bayesFactorObject$bf))
-										)
-			}
-		} else {
-			dontPlotData <- TRUE
-		}
-
-		# plot Bayes factor robustness
-		p <- try(silent = FALSE, expr = {
-			image <- .beginSaveImage(width, height)
-			.plotBF.robustnessCheck.bffromt(
-						t = options$tStatistic, n1 = options$n1Size, n2 = 0,
-						BFH1H0 = BFH1H0, dontPlotData = dontPlotData,
-						rscale = options$priorWidth, oneSided = oneSided,
-						BF10post = BF10post
-				)
-			plot[["data"]] <- .endSaveImage(image)
-		})
-
-		if (class(p) == "try-error") {
-			errorMessage <- .extractErrorMessage(p)
-			plot[["error"]] <- list(error="badData",
-							errorMessage = paste("Plotting is not possible: ", errorMessage))
-		}
-
-		if (run) {
-			plot[["status"]] <- "complete"
-		}
-
-		returnPlot <- plot
-	}
-
-	return(returnPlot)
-}
-
-
-.calcluateBFPairedSamples <- function(options, state, diff, nullInterval) {
-	# calculates the Bayes Factor for the paired samples case
-	#
-	# Args:
-	#   options: list of options input by user
-	#   state: previous state - if possible get the BF from previous state
-	#   diff: diff between previous and current options
-	#   hypothesis.variables: different variables that depend on the hypothesis
-	#      specified. See documentation under the function .hypothesisType
-	#
-	# Output:
-	#   A list containing:
-	#      bf: the required Bayes Factor
-	#      properror: % error in calculating the Bayes factor
-
-	if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
-		(is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE &&
-		diff$tStatistic == FALSE && diff$n1Size==FALSE)))) {
-
-		bf10 <- state$bayesFactorObject
-	} else {
-
-		bf10 <- BayesFactor::ttest.tstat(
-								t = options$tStatistic,
-								n1 = options$n1Size,
-								n2 = 0,
-								rscale = options$priorWidth,
-								nullInterval = nullInterval
-						)
-	}
-
-	return(list(bf = bf10$bf, properror = bf10$properror))
-}
-
-
-.getBayesfactorTitle <- function(bayesFactorType, hypothesis) {
-	# returns the Bayes factor title to be shown on the table
-	#
-	# Args:
-	#   bayesFactorType: the BF type selected by user
-	#   hypothesis: hypothesis type selected by user
-	#
-	# Output:
-	#   A list containing:
-	#     bftitle: title of Bayes factor to be used in the output table
-	#     BFH1H0: true if BF10 or Log(BF10) is selected
-
-	if (bayesFactorType == "BF01") {
-		BFH1H0 <- FALSE
-
-		if (hypothesis == "groupsNotEqual") {
-			bf.title <- "BF\u2080\u2081"
-		} else if (hypothesis == "groupOneGreater") {
-			bf.title <- "BF\u2080\u208A"
-		} else if (hypothesis == "groupTwoGreater") {
-			bf.title <-  "BF\u2080\u208B"
-		}
-	} else if (bayesFactorType == "BF10") {
-		BFH1H0 <- TRUE
-
-		if (hypothesis == "groupsNotEqual") {
-			bf.title <- "BF\u2081\u2080"
-		} else if (hypothesis == "groupOneGreater") {
-			bf.title <- "BF\u208A\u2080"
-		} else if (hypothesis == "groupTwoGreater") {
-			bf.title <- "BF\u208B\u2080"
-		}
-	} else if (bayesFactorType == "LogBF10") {
-		BFH1H0 <- TRUE
-
-		if (hypothesis == "groupsNotEqual") {
-			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
-		} else if (hypothesis == "groupOneGreater") {
-			bf.title <-"Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
-		} else if (hypothesis == "groupTwoGreater") {
-			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
-		}
-	}
-
-	return(list(bftitle = bf.title, BFH1H0 = BFH1H0))
-}
-
-
-.hypothesisType <- function(hypothesis) {
+.hypothesisType.summarystats.ttest.paired <- function(hypothesis) {
 	# Returns different values that are based on the hypothesis chosen
 	#   by the user
 	#
@@ -514,42 +248,5 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 	return(list(nullInterval = nullInterval,
 							oneSided = oneSided,
 							message = message)
-	)
-}
-
-
-.isInputValidPairedSamples <- function(options) {
-	# Checks if the input given is valid
-	# If input is valid, it returns 'ready' to carry out the analysis
-	#
-	# Args:
-	#   options: a list of options from the user
-	#
-	# Output:
-	#   A list containing:
-	#     ready: if ready to carry out the analysis
-	#     row: the output row to be shown in table to user
-
-	ready <- TRUE
-
-	n1Value <- options$n1Size
-	tStatValue <- options$tStatistic
-
-	if (options$n1Size == 0 || is.null(options$n1Size)) {
-		ready <- FALSE
-		n1Value <- "."
-	}
-
-	if (is.null(options$tStatistic)) {
-		ready <- FALSE
-		tStatValue <- "."
-	}
-
-	row <- list(BF = ".",
-							tStatistic = tStatValue,
-							n1Size = n1Value,
-							errorEstimate = "."
-						)
-
-	return(list(ready = ready, row = row))
+				)
 }

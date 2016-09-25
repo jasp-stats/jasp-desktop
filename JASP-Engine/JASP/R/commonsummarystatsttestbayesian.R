@@ -56,7 +56,7 @@
 }
 
 
-.isInputValid.summarystats.ttest <- function(options) {
+.isInputValid.summarystats.ttest <- function(options, independent) {
 	# Checks if the input given is valid
 	# If input is valid, it returns 'ready' to carry out the analysis
 	#
@@ -72,7 +72,6 @@
 
 	tStatValue <- options$tStatistic
 	n1Value <- options$n1Size
-	n2Value <- NULL
 
 	if (!is.null(options$n2Size)) {
 		n2Value <- options$n2Size
@@ -83,11 +82,6 @@
 		n1Value <- "."
 	}
 
-	if (options$n2Size==0 || is.null(options$n2Size)) {
-		ready <- FALSE
-		n2Value <- "."
-	}
-
 	if (is.null(options$tStatistic)) {
 		ready <- FALSE
 		tStatValue <- "."
@@ -96,9 +90,20 @@
 	row <- list(BF = ".",
 							tStatistic = tStatValue,
 							n1Size = n1Value,
-							n2Size = n2Value,
 							errorEstimate = "."
 						)
+
+	if (independent) {
+
+		n2Value <- options$n2Size
+
+		if (options$n2Size==0 || is.null(options$n2Size)) {
+			ready <- FALSE
+			n2Value <- "."
+		}
+
+		row$n2Size <- n2Value
+	}
 
 	return(list(ready = ready, row = row))
 }
@@ -162,7 +167,7 @@
 
 		p <- try(silent = FALSE, expr = {
 			image <- .beginSaveImage(width, height)
-			.plotPosterior.ttest.summaryStats(
+			.plotPosterior.summarystats.ttest(
 						t = options$tStatistic, n1 = options$n1Size, n2 = n2Value, paired = paired,
 						BFH1H0 = BFH1H0, dontPlotData = dontPlotData, rscale = options$priorWidth,
 						addInformation = options$plotPriorAndPosteriorAdditionalInfo,
@@ -280,7 +285,7 @@
 		# plot Bayes factor robustness
 		p <- try(silent = FALSE, expr = {
 			image <- .beginSaveImage(width, height)
-			.plotBF.robustnessCheck.bffromt(
+			.plotBFrobustness.summarystats.ttest(
 						t = options$tStatistic, n1 = options$n1Size, n2 = n2Value,
 						BFH1H0 = BFH1H0, dontPlotData = dontPlotData,
 						rscale = options$priorWidth, oneSided = oneSided,
@@ -354,7 +359,7 @@
 }
 
 
-.plotBF.robustnessCheck.bffromt <- function(t = NULL, n1 = NULL, n2 = NULL, BF10post,
+.plotBFrobustness.summarystats.ttest <- function(t = NULL, n1 = NULL, n2 = NULL, BF10post,
 				callback = function(...) 0, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
 				lwd = 2, cexPoints = 1.4, cexAxis = 1.2, cexYXlab = 1.5, cexText = 1.2, cexLegend = 1.4,
 				lwdAxis = 1.2, cexEvidence = 1.6, BFH1H0 = TRUE, dontPlotData = FALSE) {
@@ -1176,7 +1181,7 @@
 }
 
 
-.plotPosterior.ttest.summaryStats <- function(t = NULL, n1 = NULL, n2 = NULL, paired = FALSE,
+.plotPosterior.summarystats.ttest <- function(t = NULL, n1 = NULL, n2 = NULL, paired = FALSE,
 				oneSided = FALSE, BF, BFH1H0, callback=function(...) 0, iterations = 10000,
 				rscale = "medium", lwd = 2, cexPoints = 1.5, cexAxis = 1.2, cexYlab = 1.5, cexXlab = 1.5,
 				cexTextBF = 1.4, cexCI = 1.1, cexLegend = 1.2, lwdAxis = 1.2, addInformation = TRUE,
