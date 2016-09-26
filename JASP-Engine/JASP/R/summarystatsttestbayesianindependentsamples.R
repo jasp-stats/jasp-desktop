@@ -49,7 +49,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 														options = options,
 														state = state,
 														diff = diff,
-														nullInterval = hypothesis.variables$nullInterval
+														hypothesis.variables = hypothesis.variables
 													)
 	rowsTTestBayesianIndependentSamples <- outputTableElements$row
 	bayesFactorObject <- outputTableElements$bayesFactorObject
@@ -100,10 +100,10 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 	fields[[length(fields)+1]] <- list(name = "n1Size", type = "number", title = "n\u2081")
 	fields[[length(fields)+1]] <- list(name = "n2Size", type = "number", title = "n\u2082")
 	fields[[length(fields)+1]] <- list(name = "BF", type = "number", format = "sf:4;dp:3", title = bf.title)
-
 	if (rowsTTestBayesianIndependentSamples$errorEstimate != "NaN") {
 		fields[[length(fields)+1]] <- list(name = "errorEstimate", type = "number", format = "sf:4;dp:3", title = "error %")
 	}
+	fields[[length(fields)+1]] <- list(name = "pValue", type = "number", format = "sf:4;dp:3", title = "p")
 
 	# add footnotes to the analysis result
 	footnotes <- .newFootnotes()
@@ -159,7 +159,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 }
 
 
-.getOutputRow.summarystats.ttest.independent <- function(run, options, state, diff, nullInterval) {
+.getOutputRow.summarystats.ttest.independent <- function(run, options, state, diff, hypothesis.variables) {
 	# Returns a row to be shown in output tables
 	#
 	# Args:
@@ -197,7 +197,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 																options = options,
 																state = state,
 																diff = diff,
-																nullInterval = nullInterval
+																hypothesis.variables = hypothesis.variables
 															)
 
 				if (options$bayesFactorType == "BF10") {
@@ -210,6 +210,7 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 
 				rowsTTestBayesianIndependentSamples$BF <- BF
 				rowsTTestBayesianIndependentSamples$errorEstimate <- .clean(bayesFactorObject$properror)
+				rowsTTestBayesianIndependentSamples$pValue <- .clean(bayesFactorObject$pValue)
 			}
 		}
 	}

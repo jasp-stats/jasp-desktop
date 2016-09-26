@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.calculateBF.summarystats.ttest <- function(options, state, diff, nullInterval) {
+.calculateBF.summarystats.ttest <- function(options, state, diff, hypothesis.variables) {
 	# calculates the Bayes Factor from t value and sample sizes
 	#
 	# Args:
@@ -33,7 +33,7 @@
 	if(!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
 		(is.list(diff) && (diff$priorWidth == FALSE && diff$hypothesis == FALSE &&
 		diff$n1Size == FALSE && (is.null(diff$n2Size) || diff$n2Size == FALSE) &&
-		diff$tStatistic == FALSE)))) {
+		diff$tStatistic == FALSE && diff$bayesFactorType == FALSE)))) {
 
 		bf10 <- state$bayesFactorObject
 	} else {
@@ -48,11 +48,57 @@
 								n1 = options$n1Size,
 								n2 = n2Value,
 								rscale = options$priorWidth,
-								nullInterval = nullInterval
+								nullInterval = hypothesis.variables$nullInterval
+						)
+
+		pValue <- .pValueFromT(
+								t = options$tStatistic,
+								n1 = options$n1Size,
+								n2 = n2Value,
+								oneSided = hypothesis.variables$oneSided
 						)
 	}
 
-	return(list(bf = bf10$bf, properror = bf10$properror))
+	return(list(bf = bf10$bf, properror = bf10$properror, pValue = pValue))
+}
+
+
+.pValueFromT <- function(t, n1, n2 = 0, oneSided = FALSE, var.equal = TRUE) {
+	# Function returns the p value from t statistic
+	#
+	# Args:
+	#   t: t value input by user
+	#   n1: sample size of group 1
+	#   n2: sample size of group 2 (Note the hack by setting n2 = 0)
+	#   oneSided: hypothesis type
+	#   var.equal: Note: always true: var.equal, we do not have enough info for different
+	#              variances. In that case we also need s1 and s2
+	#
+	# Output:
+	#   number in [0, 1] which is the p value
+
+	result <- NA
+
+	if (n2 > 0) {
+		# If n2 > 0, then two-sample
+		someDf <- n1 + n2 - 2
+	} else {
+		# If n2 <= 0, then one-sample
+		someDf <- n1 - 1
+	}
+
+	if (oneSided == FALSE) {
+		# mu \neq 0
+		result <- 2 * pt(-abs(t), df = someDf)
+	} else if (oneSided == "left") {
+		# mu < 0
+		result <- pt(t, df = someDf)
+	} else if (oneSided == "right") {
+		# mu > 0
+		result <- pt(t, df = someDf, lower.tail = FALSE)
+	}
+
+	return(result)
 }
 
 
@@ -90,7 +136,8 @@
 	row <- list(BF = ".",
 							tStatistic = tStatValue,
 							n1Size = n1Value,
-							errorEstimate = "."
+							errorEstimate = ".",
+							pValue = "."
 						)
 
 	if (independent) {

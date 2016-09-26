@@ -49,7 +49,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 														options = options,
 														state = state,
 														diff = diff,
-														nullInterval = hypothesis.variables$nullInterval
+														hypothesis.variables = hypothesis.variables
 													)
 	rowsTTestBayesianOneSample <- outputTableElements$row
 	bayesFactorObject <- outputTableElements$bayesFactorObject
@@ -99,10 +99,10 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	fields[[length(fields)+1]] <- list(name = "tStatistic", type = "number", format = "sf:4;dp:3", title = "t")
 	fields[[length(fields)+1]] <- list(name = "n1Size", type = "number", title = "n")
 	fields[[length(fields)+1]] <- list(name = "BF", type = "number", format = "sf:4;dp:3", title = bf.title)
-
 	if (rowsTTestBayesianOneSample$errorEstimate != "NaN") {
 		fields[[length(fields)+1]] <- list(name = "errorEstimate", type = "number", format = "sf:4;dp:3", title = "error %")
 	}
+	fields[[length(fields)+1]] <- list(name = "pValue", type = "number", format = "sf:4;dp:3", title = "p")
 
 	# add footnotes to the analysis result
 	footnotes <- .newFootnotes()
@@ -158,7 +158,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 }
 
 
-.getOutputRow.summarystats.ttest.one <- function(run, options, state, diff, nullInterval) {
+.getOutputRow.summarystats.ttest.one <- function(run, options, state, diff, hypothesis.variables) {
 	# Returns a row to be shown in output tables
 	#
 	# Args:
@@ -179,7 +179,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 	# If available from previous state, fetch it
 	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
 			(is.list(diff) && (diff$bayesFactorType == FALSE && diff$tStatistic == FALSE &&
-			diff$n1Size == FALSE && diff$priorWidth == FALSE && diff$hypothesis==FALSE))) &&
+			diff$n1Size == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
 			!is.null(state$bayesFactorObject)) {
 
 		rowsTTestBayesianOneSample <- state$rowsTTestBayesianOneSample
@@ -196,7 +196,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 																options = options,
 																state = state,
 																diff = diff,
-																nullInterval = nullInterval
+																hypothesis.variables = hypothesis.variables
 															)
 
 				if (options$bayesFactorType == "BF10") {
@@ -209,6 +209,7 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 
 				rowsTTestBayesianOneSample$BF <- BF
 				rowsTTestBayesianOneSample$errorEstimate <- .clean(bayesFactorObject$properror)
+				rowsTTestBayesianOneSample$pValue <- .clean(bayesFactorObject$pValue)
 			}
 		}
 	}
