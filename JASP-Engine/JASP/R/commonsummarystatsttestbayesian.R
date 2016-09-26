@@ -273,6 +273,12 @@
 	bftype.current <- options$bayesFactorType
 	bftype.previous <- state$options$bayesFactorType
 
+	plotType <- "robustnessPlot"
+
+	if (options$plotBayesFactorRobustnessAdditionalInfo) {
+		plotType <- "robustnessPlotAddInfo"
+	}
+
 	# check if BF type requires a new plot
 	if (bftype.current == bftype.previous) {
 		BFtypeRequiresNewPlot <- FALSE
@@ -294,9 +300,9 @@
 			(is.list(diff) && (diff$tStatistic == FALSE && BFtypeRequiresNewPlot == FALSE &&
 			diff$n1Size == FALSE && (is.null(diff$n2Size) || diff$n2Size == FALSE) &&
 			diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
-			"robustnessPlot" %in% state$plotTypes) {
+			plotType %in% state$plotTypes) {
 
-		index <- which(state$plotTypes == "robustnessPlot")
+		index <- which(state$plotTypes == plotType)
 		returnPlot <- state$plotsTtest[[index]]
 
 	} else {
@@ -324,18 +330,28 @@
 			dontPlotData <- TRUE
 		}
 
-		n2Value <- 0
+		n1Value <- NULL
+		n2Value <- NULL
+
+		# If analysis is 'ttest independent samples'
 		if (!is.null(options$n2Size)) {
-			n2Value <- options$n2Size
+			if (options$n1Size > 1 && options$n2Size > 1) {
+				n1Value <- options$n1Size
+				n2Value <- options$n2Size
+			}
+		} else {
+			n1Value <- options$n1Size
+			n2Value <- 0
 		}
 
 		# plot Bayes factor robustness
 		p <- try(silent = FALSE, expr = {
 			image <- .beginSaveImage(width, height)
 			.plotBFrobustness.summarystats.ttest(
-						t = options$tStatistic, n1 = options$n1Size, n2 = n2Value,
+						t = options$tStatistic, n1 = n1Value, n2 = n2Value,
 						BFH1H0 = BFH1H0, dontPlotData = dontPlotData,
 						rscale = options$priorWidth, oneSided = oneSided,
+						addInformation = options$plotBayesFactorRobustnessAdditionalInfo,
 						BF10post = BF10post
 				)
 			plot[["data"]] <- .endSaveImage(image)
@@ -409,7 +425,8 @@
 .plotBFrobustness.summarystats.ttest <- function(t = NULL, n1 = NULL, n2 = NULL, BF10post,
 				callback = function(...) 0, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
 				lwd = 2, cexPoints = 1.4, cexAxis = 1.2, cexYXlab = 1.5, cexText = 1.2, cexLegend = 1.4,
-				lwdAxis = 1.2, cexEvidence = 1.6, BFH1H0 = TRUE, dontPlotData = FALSE) {
+				lwdAxis = 1.2, cexEvidence = 1.6, BFH1H0 = TRUE, dontPlotData = FALSE,
+				addInformation = TRUE) {
 	# Function returns the Bayes factor robustness plot
 
 	#### settings ####
@@ -431,7 +448,11 @@
 		nullInterval <- c(-Inf, 0)
 	}
 
-	par(mar= c(5, 6, 6, 7) + 0.1, las=1)
+	if (addInformation) {
+		par(mar = c(5, 6, 6, 7) + 0.1, las = 1)
+	} else {
+		par(mar = c(5.6, 5, 4, 7) + 0.1, las = 1)
+	}
 
 	if (dontPlotData) {
 		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="", ylab="")
@@ -522,7 +543,7 @@
 
 	####################### scale y axis ###########################
 
-	BF <- c(BF10, BF10m, BF10w, BF10ultra, BF10user)
+	BF <- c(BF10, BF10m, BF10w, BF10ultra, BF10user, maxBF10)
 
 	if (!BFH1H0) {
 
@@ -531,6 +552,7 @@
 		BF10m  <- 1 / BF10m
 		BF10w <- 1 / BF10w
 		BF10ultra <- 1 / BF10ultra
+		maxBF10 <- 1 / maxBF10
 	}
 
 	# y-axis labels larger than 1
@@ -1077,154 +1099,173 @@
 	# display BF10
 	lines(rValues,log(BF10), col="black", lwd = 2.7)
 
-	# display "wide", user, and "ultrawide" prior BFs
-	points(r, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
-	points(1, log(BF10w), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "wide" prior
-	points(sqrt(2), log(BF10ultra), pch=21, bg= "white", cex= 1.1, lwd= 1.3) # "ultrawide" prior
-	points(maxBFrVal, log(maxBF10), pch=21, bg="red", cex=1.1, lwd=1.3)  # max BF value
+	if (addInformation) {
+		# display "wide", user, and "ultrawide" prior BFs
+		points(r, log(BF10user), pch=21, bg="grey", cex= cexPoints, lwd = 1.3) # user prior
+		points(1, log(BF10w), pch=21, bg= "black", cex= 1.1, lwd= 1.3) # "wide" prior
+		points(sqrt(2), log(BF10ultra), pch=21, bg= "white", cex= 1.1, lwd= 1.3) # "ultrawide" prior
+		points(maxBFrVal, log(maxBF10), pch=21, bg="red", cex=1.1, lwd=1.3)  # max BF value
 
-	#### add legend
-	# BF values
-	# BFuser
+		#### add legend
+		# BF values
+		# BFuser
 
-	if (BFH1H0) {
-		BF01userText <- 1 / BF10userText
-	} else {
-		BF10userText <- 1 / BF10userText
-		BF01userText <- 1 / BF10userText
-	}
-
-	if (BF10userText >= 1000000 | BF01userText >= 1000000) {
-		BF10usert <- format(BF10userText, digits= 4, scientific = TRUE)
-		BF01usert <- format(BF01userText, digits= 4, scientific = TRUE)
-	}
-
-	if (BF10userText < 1000000 & BF01userText < 1000000) {
-		BF10usert <- formatC(BF10userText, 3, format = "f")
-		BF01usert <- formatC(BF01userText, 3, format = "f")
-	}
-
-	if (oneSided == FALSE) {
-		if( BF10userText >= BF01userText) {
-			userBF <- bquote(BF[10]==.(BF10usert))
+		if (BFH1H0) {
+			BF01userText <- 1 / BF10userText
 		} else {
-			userBF <- bquote(BF[0][1]==.(BF01usert))
+			BF10userText <- 1 / BF10userText
+			BF01userText <- 1 / BF10userText
 		}
-	}
 
-	if (oneSided == "right") {
-		if (BF10userText >= BF01userText) {
-			userBF <- bquote(BF["+"][0]==.(BF10usert))
-		} else {
-			userBF <- bquote(BF[0]["+"]==.(BF01usert))
+		if (BF10userText >= 1000000 | BF01userText >= 1000000) {
+			BF10usert <- format(BF10userText, digits= 4, scientific = TRUE)
+			BF01usert <- format(BF01userText, digits= 4, scientific = TRUE)
 		}
-	}
 
-	if (oneSided == "left") {
-		if (BF10userText >= BF01userText) {
-			userBF <- bquote(BF["-"][0]==.(BF10usert))
-		} else {
-			userBF <- bquote(BF[0]["-"]==.(BF01usert))
+		if (BF10userText < 1000000 & BF01userText < 1000000) {
+			BF10usert <- formatC(BF10userText, 3, format = "f")
+			BF01usert <- formatC(BF01userText, 3, format = "f")
 		}
-	}
 
-	# BFwide
-	BF01wText <- 1 / BF10wText
-
-	if (BF10wText >= 1000000 | BF01wText >= 1000000) {
-		BF10wt <- format(BF10wText, digits= 4, scientific = TRUE)
-		BF01wt <- format(BF01wText, digits= 4, scientific = TRUE)
-	}
-
-	if (BF10wText < 1000000 & BF01wText < 1000000) {
-		BF10wt <- formatC(BF10wText, 3, format = "f")
-		BF01wt <- formatC(BF01wText, 3, format = "f")
-	}
-
-	if (oneSided == FALSE) {
-		if (BF10wText >= BF01wText) {
-			wBF <- bquote(BF[10]==.(BF10wt))
-		} else {
-			wBF <- bquote(BF[0][1]==.(BF01wt))
+		if (oneSided == FALSE) {
+			if( BF10userText >= BF01userText) {
+				userBF <- bquote(BF[10]==.(BF10usert))
+			} else {
+				userBF <- bquote(BF[0][1]==.(BF01usert))
+			}
 		}
-	}
 
-	if (oneSided == "right") {
-		if (BF10wText >= BF01wText) {
-			wBF <- bquote(BF["+"][0]==.(BF10wt))
-		} else {
-			wBF <- bquote(BF[0]["+"]==.(BF01wt))
+		if (oneSided == "right") {
+			if (BF10userText >= BF01userText) {
+				userBF <- bquote(BF["+"][0]==.(BF10usert))
+			} else {
+				userBF <- bquote(BF[0]["+"]==.(BF01usert))
+			}
 		}
-	}
 
-	if (oneSided == "left") {
-		if (BF10wText >= BF01wText) {
-			wBF <- bquote(BF["-"][0]==.(BF10wt))
-		} else {
-			wBF <- bquote(BF[0]["-"]==.(BF01wt))
+		if (oneSided == "left") {
+			if (BF10userText >= BF01userText) {
+				userBF <- bquote(BF["-"][0]==.(BF10usert))
+			} else {
+				userBF <- bquote(BF[0]["-"]==.(BF01usert))
+			}
 		}
-	}
 
-	# BFultrawide
-	BF01ultraText <- 1 / BF10ultraText
+		# BFwide
+		BF01wText <- 1 / BF10wText
 
-	if (BF10ultraText >= 1000000 | BF01ultraText >= 1000000) {
-		BF10ultrat <- format(BF10ultraText, digits= 4, scientific = TRUE)
-		BF01ultrat <- format(BF01ultraText, digits= 4, scientific = TRUE)
-	}
-
-	if (BF10ultraText < 1000000 & BF01ultraText < 1000000) {
-		BF10ultrat <- formatC(BF10ultraText, 3, format = "f")
-		BF01ultrat <- formatC(BF01ultraText, 3, format = "f")
-	}
-
-	if (oneSided == FALSE) {
-		if (BF10ultraText >= BF01ultraText) {
-			ultraBF <- bquote(BF[10]==.(BF10ultrat))
-		} else {
-			ultraBF <- bquote(BF[0][1]==.(BF01ultrat))
+		if (BF10wText >= 1000000 | BF01wText >= 1000000) {
+			BF10wt <- format(BF10wText, digits= 4, scientific = TRUE)
+			BF01wt <- format(BF01wText, digits= 4, scientific = TRUE)
 		}
-	}
 
-	if (oneSided == "right") {
-		if (BF10ultraText >= BF01ultraText) {
-			ultraBF <- bquote(BF["+"][0]==.(BF10ultrat))
-		} else {
-			ultraBF <- bquote(BF[0]["+"]==.(BF01ultrat))
+		if (BF10wText < 1000000 & BF01wText < 1000000) {
+			BF10wt <- formatC(BF10wText, 3, format = "f")
+			BF01wt <- formatC(BF01wText, 3, format = "f")
 		}
-	}
 
-	if (oneSided == "left") {
-		if (BF10ultraText >= BF01ultraText) {
-			ultraBF <- bquote(BF["-"][0]==.(BF10ultrat))
-		} else {
-			ultraBF <- bquote(BF[0]["-"]==.(BF01ultrat))
+		if (oneSided == FALSE) {
+			if (BF10wText >= BF01wText) {
+				wBF <- bquote(BF[10]==.(BF10wt))
+			} else {
+				wBF <- bquote(BF[0][1]==.(BF01wt))
+			}
 		}
+
+		if (oneSided == "right") {
+			if (BF10wText >= BF01wText) {
+				wBF <- bquote(BF["+"][0]==.(BF10wt))
+			} else {
+				wBF <- bquote(BF[0]["+"]==.(BF01wt))
+			}
+		}
+
+		if (oneSided == "left") {
+			if (BF10wText >= BF01wText) {
+				wBF <- bquote(BF["-"][0]==.(BF10wt))
+			} else {
+				wBF <- bquote(BF[0]["-"]==.(BF01wt))
+			}
+		}
+
+		# BFultrawide
+		BF01ultraText <- 1 / BF10ultraText
+
+		if (BF10ultraText >= 1000000 | BF01ultraText >= 1000000) {
+			BF10ultrat <- format(BF10ultraText, digits= 4, scientific = TRUE)
+			BF01ultrat <- format(BF01ultraText, digits= 4, scientific = TRUE)
+		}
+
+		if (BF10ultraText < 1000000 & BF01ultraText < 1000000) {
+			BF10ultrat <- formatC(BF10ultraText, 3, format = "f")
+			BF01ultrat <- formatC(BF01ultraText, 3, format = "f")
+		}
+
+		if (oneSided == FALSE) {
+			if (BF10ultraText >= BF01ultraText) {
+				ultraBF <- bquote(BF[10]==.(BF10ultrat))
+			} else {
+				ultraBF <- bquote(BF[0][1]==.(BF01ultrat))
+			}
+		}
+
+		if (oneSided == "right") {
+			if (BF10ultraText >= BF01ultraText) {
+				ultraBF <- bquote(BF["+"][0]==.(BF10ultrat))
+			} else {
+				ultraBF <- bquote(BF[0]["+"]==.(BF01ultrat))
+			}
+		}
+
+		if (oneSided == "left") {
+			if (BF10ultraText >= BF01ultraText) {
+				ultraBF <- bquote(BF["-"][0]==.(BF10ultrat))
+			} else {
+				ultraBF <- bquote(BF[0]["-"]==.(BF01ultrat))
+			}
+		}
+
+		# maxBF
+		if (BF10maxText >= 1000000 | BF10maxText >= 1000000) {
+			BF10maxt <- format(BF10maxText, digits= 4, scientific = TRUE)
+		}
+
+		if (BF10maxText < 1000000 & BF10maxText < 1000000) {
+			BF10maxt <- formatC(BF10maxText, 3, format = "f")
+		}
+
+		if (oneSided == FALSE) {
+			maxBF10LegendText <- bquote(max~BF[1][0]*":")
+		} else if (oneSided == "right") {
+			maxBF10LegendText <- bquote(max~BF["+"][0]*":")
+		} else if (oneSided == "left") {
+			maxBF10LegendText <- bquote(max~BF["-"][0]*":")
+		}
+
+		xx <- grconvertX(0.2, "ndc", "user")
+		yy <- grconvertY(0.999, "ndc", "user")
+
+		BFind <- sort(c(BF10userText, BF10ultraText, BF10wText, BF10maxText), decreasing = TRUE, index.return=TRUE)$ix
+		BFsort <- sort(c(BF10userText, BF10ultraText, BF10wText, BF10maxText), decreasing = TRUE, index.return=TRUE)$x
+
+		legend <- c("user prior:", "ultrawide prior:", "wide prior:", as.expression(maxBF10LegendText))
+		pt.bg <-  c("grey", "white", "black", "red")
+		pt.cex <-  c(cexPoints, 1.1, 1.1, 1.1)
+
+		legend(xx, yy, legend = legend[BFind], pch=rep(21,4), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,4), pt.lwd=rep(1.3,4), pt.cex= pt.cex[BFind])
+
+		xx <- grconvertX(0.5, "ndc", "user")
+		y1 <- grconvertY(0.938, "ndc", "user")
+		y2 <- grconvertY(0.888, "ndc", "user")
+		y3 <- grconvertY(0.838, "ndc", "user")
+		y4 <- grconvertY(0.788, "ndc", "user")
+		yy <- c(y1, y2, y3, y4)
+
+		text(xx, yy[BFsort == BF10userText], userBF, cex = 1.3, pos = 4)
+		text(xx, yy[BFsort == BF10ultraText], ultraBF, cex = 1.3, pos = 4)
+		text(xx, yy[BFsort == BF10wText], wBF, cex = 1.3, pos = 4)
+		text(xx, yy[BFsort == BF10maxText], BF10maxt, cex = 1.3, pos = 4)
 	}
-
-	xx <- grconvertX(0.2, "ndc", "user")
-	yy <- grconvertY(0.999, "ndc", "user")
-
-	BFind <- sort(c(BF10userText, BF10ultraText, BF10wText, BF10maxText), decreasing = TRUE, index.return=TRUE)$ix
-	BFsort <- sort(c(BF10userText, BF10ultraText, BF10wText, BF10maxText), decreasing = TRUE, index.return=TRUE)$x
-
-	legend <- c("user prior:", "ultrawide prior:", "wide prior:", "max BF10:")
-	pt.bg <-  c("grey", "white", "black", "red")
-	pt.cex <-  c(cexPoints, 1.1, 1.1, 1.1)
-
-	legend(xx, yy, legend = legend[BFind], pch=rep(21,4), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,4), pt.lwd=rep(1.3,4), pt.cex= pt.cex[BFind])
-
-	xx <- grconvertX(0.5, "ndc", "user")
-	y1 <- grconvertY(0.938, "ndc", "user")
-	y2 <- grconvertY(0.888, "ndc", "user")
-	y3 <- grconvertY(0.838, "ndc", "user")
-	y4 <- grconvertY(0.788, "ndc", "user")
-	yy <- c(y1, y2, y3, y4)
-
-	text(xx, yy[BFsort == BF10userText], userBF, cex = 1.3, pos = 4)
-	text(xx, yy[BFsort == BF10ultraText], ultraBF, cex = 1.3, pos = 4)
-	text(xx, yy[BFsort == BF10wText], wBF, cex = 1.3, pos = 4)
-	text(xx, yy[BFsort == BF10maxText], maxBF10, cex = 1.3, pos = 4)
 }
 
 

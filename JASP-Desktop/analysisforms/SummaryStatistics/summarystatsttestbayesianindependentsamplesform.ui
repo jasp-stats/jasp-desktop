@@ -487,7 +487,7 @@
             <string>Additional info</string>
            </property>
            <property name="tristate">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>

@@ -84,7 +84,11 @@ SummaryStatsTTestBayesianOneSample <- function(dataset = NULL, options, perform 
 																		oneSided = oneSided
 																	)
 		plots.sumstats.ttest[[length(plots.sumstats.ttest) + 1]] <- bayesFactorRobustnessPlot
-		plotTypes[[length(plotTypes) + 1]] <- "robustnessPlot"
+		if(options$plotBayesFactorRobustnessAdditionalInfo) {
+			plotTypes[[length(plotTypes) + 1]] <- "robustnessPlotAddInfo"
+		} else {
+			plotTypes[[length(plotTypes) + 1]] <- "robustnessPlot"
+		}
 	}
 
 	# Populate the output table
