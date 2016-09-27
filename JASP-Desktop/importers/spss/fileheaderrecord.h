@@ -19,7 +19,6 @@
 #define FILEHEADERRECORD_H
 
 #include "readablerecord.h"
-#include "../convertedstringcontainer.h"
 
 namespace spss
 {
@@ -29,7 +28,7 @@ namespace spss
  *
  * Associated with record type rectype_file_header = 0x324C4624/"$FL2"
  */
-class FileHeaderRecord : public ReadableRecord< rectype_file_header >, public ConvertedStringContainer
+class FileHeaderRecord : public ReadableRecord< rectype_file_header >
 {
 public:
 

@@ -22,11 +22,10 @@
 #include "measures.h"
 #include "spssformattype.h"
 #include "numericconverter.h"
-#include "../convertedstringcontainer.h"
-
 
 #include "measures.h"
 #include "spssformattype.h"
+#include "../convertedstringcontainer.h"
 #include <column.h>
 
 #include <vector>
@@ -67,7 +66,7 @@ namespace spss
 /**
  * A type that holds the data in an intermate format
  */
-class SPSSColumn : public ConvertedStringContainer
+class SPSSColumn : ConvertedStringContainer
 {
 public:
 	typedef std::map<SpssDataCell, std::string>		LabelByValueDict;
@@ -89,10 +88,11 @@ public:
 	/*
 	 * Attributes for the column.
 	 */
-	WRITE_ATTR(std::string, spssColumnLabel)		// The name as shown to the user.
-	const std::string &spssColumnLabel();
+	WRITE_ATTR(std::string, spssLongColName) // The name as shown to the user.
+	WRITE_ATTR(std::string, spssColumnLabel) // The name as shown to the user.
+	const std::string &spssColumnLabel() const;
 
-	RW_ATTR(std::string, spssColumnName)	// The name as in the file.
+	READ_ATTR(std::string, spssRawColName)	// The name as in the file.
 
 	READ_ATTR(size_t, spssStringLen)		// Length of the string (if string).
 
@@ -170,9 +170,10 @@ public:
 	/**
 	 * @brief format Fomats a number that SPSS holds as a numeric value that JASP cannot deal with.
 	 * @param value The value to format.
+	 * @param floatInfo The float info record we have.
 	 * @return
 	 */
-	std::string format(double value) const;
+	std::string format(double value, const FloatInfoRecord &floatInfo) const;
 
 	/**
 	 * @brief containsFraction Returns false if all values are integer.
@@ -238,6 +239,9 @@ public:
 	 */
 	SPSSColumn &getColumn(size_t entry)
 	{ return find(entry)->second; }
+
+	SPSSColumn &getLastColumn()
+	{ return rend()->second; }
 };
 
 /*

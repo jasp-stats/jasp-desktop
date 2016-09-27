@@ -47,7 +47,7 @@ const QDate SPSSColumn::_beginEpoch(1582, 10, 14);
  */
 SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long stringLen, FormatTypes formattype, const spss::MissingValueChecker &missingChecker)
 	: _spssColumnLabel(label)
-	, _spssColumnName(name)
+	, _spssRawColName(name)
 	, _spssStringLen(stringLen)
 	, _columnSpan(1)
 	, _spssMeasure(measure_undefined)
@@ -63,12 +63,14 @@ SPSSColumn::~SPSSColumn()
 
 }
 
-const string &SPSSColumn::spssColumnLabel()
+const string &SPSSColumn::spssColumnLabel() const
 {
 	if (_spssColumnLabel.length() > 0)
 		return _spssColumnLabel;
+	else if (_spssLongColName.length() > 0)
+		return _spssLongColName;
 	else
-		return _spssColumnName;
+		return _spssRawColName;
 }
 
 /**
@@ -132,7 +134,7 @@ Column::ColumnType SPSSColumn::getJaspColumnType() const
 			// If we know no better, then it is a FP.
 			return Column::ColumnTypeScale;
 		case measure_nominal:
-			return (_containsFraction(numerics) == true) ? Column::ColumnTypeNominalText : Column::ColumnTypeNominal;
+			return Column::ColumnTypeNominal;
 		case measure_ordinal:
 			return Column::ColumnTypeOrdinal;
 		}
@@ -228,9 +230,10 @@ const
 /**
  * @brief format Fomats a number that SPSS holds as a numeric value that JASP cannot deal with.
  * @param value The value to format.
+ * @param floatInfo The float info record we have.
  * @return Formatted date, or "" (string empty) for no value (0)
  */
-string SPSSColumn::format(double value) const
+string SPSSColumn::format(double value, const FloatInfoRecord &floatInfo) const
 {
 	QString result;
 	if (!std::isnan(value))
@@ -256,7 +259,7 @@ string SPSSColumn::format(double value) const
 		case format_CCD:
 		case format_CCE:
 		case format_N:
-			result = QString::number(value);
+			result = (missingChecker().isMissingValue(floatInfo, value)) ? QString() : QString::number(value);
 			break;
 
 		// Date and time formats are converted to
@@ -325,7 +328,8 @@ string SPSSColumn::format(double value) const
 void SPSSColumn::processStrings(const CodePageConvert &converter)
 {
 	_spssColumnLabel = converter.convertCodePage(_spssColumnLabel);
-	_spssColumnName = converter.convertCodePage(_spssColumnName);
+	_spssRawColName = converter.convertCodePage(_spssRawColName);
+	_spssLongColName = converter.convertCodePage(_spssLongColName);
 
 	// Strings are converted elsewhere,
 	// since, we convert some data types (dates etc.) on the fly to UTF-8 strings.
@@ -472,7 +476,7 @@ SPSSColumn& SPSSColumns::getNextColumn()
 	// Set the spaning var.
 	_isSpaning = result.columnSpan() != _remainingColSpan;
 
-	DEBUG_COUT9("Returning col. ", result.spssColumnLabel(), '/', result.spssColumnName(), ", spanning ", result.columnSpan(), ", with ", _remainingColSpan, " reamining.");
+//	DEBUG_COUT11("Returning col. \"", result.spssColumnLabel(), "\"/\"", result.spssColumnName(), "\", spanning ", ((_isSpaning) ? "true" : "false"), " ", result.columnSpan(), ", with ", _remainingColSpan, " remaining.");
 
 	// Anthing left (for next time)?
 	if (--_remainingColSpan == 0)
@@ -530,51 +534,68 @@ void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string
 		SPSSColumns::iterator rootIter;
 		for (rootIter = begin(); rootIter != end(); rootIter++)
 		{
-			if (rootIter->second.spssColumnName() == ituple->first)
+			DEBUG_COUT7("Matching '", ituple->first, "' against '", rootIter->second.spssRawColName(), "' size ", ituple->second, ".");
+			if (rootIter->second.spssRawColName() == ituple->first)
 					break;
 		}
 
+		const long mergedStrlen = 252;
 		// Shouldn't happen..
 		if (rootIter == end())
 			throw runtime_error("Failed to process a very long string value.");
+
+		// merged strings are slightly shorter than what is in the file.
+		// See Appendix B System File Format, PSPP devloper's Guide, release 0.10.2 pp69
+		if (rootIter->second.spssStringLen() == 255)
+			rootIter->second.spssStringLen(mergedStrlen);
+
+		// Chop the length of the strings in the root col.
+		for (size_t cse  = 0; cse < rootIter->second.strings.size(); cse++)
+		{
+			string str = rootIter->second.strings[cse].substr(0, rootIter->second.spssStringLen());
+			rootIter->second.strings[cse] = str;
+		}
 
 		while (rootIter->second.spssStringLen() < ituple->second)
 		{
 			// Find the next segment, (Should be next one along)
 			SPSSColumns::iterator ncol = rootIter;
-			ncol++;
+			++ncol;
 
-			// concatinate all the strings, going down the cases.
+			// How much to fetch?
+			long needed = min(ituple->second - rootIter->second.spssStringLen(), rootIter->second.spssStringLen());
+			needed = min(mergedStrlen, needed);
+
+			// Concatinate all the strings, going down the cases.
 			for (size_t cse  = 0; cse < rootIter->second.strings.size(); cse++)
 			{
-				// How much more to add?
-				long needed = min(ituple->second - rootIter->second.strings[cse].size(), rootIter->second.strings[cse].size());
 				if (needed > 0)
 					rootIter->second.strings[cse].append(ncol->second.strings[cse], 0, needed);
 			}
-			rootIter->second.spssStringLen( rootIter->second.spssStringLen() + ncol->second.spssStringLen() );
+			// Advance the string length.
+			rootIter->second.spssStringLen( rootIter->second.spssStringLen() + needed );
 			// Dump the column.
 			erase(ncol);
 		}
 	}
 
 	// Trim trialing spaces for all strings in the data set.
-	float numStrs = distance(begin(), end());
-	for (SPSSColumns::iterator iCol = begin(); iCol != end(); ++iCol)
+	size_t numCols = distance(begin(), end());
+	for (SPSSDictionary::iterator iCol = begin(); iCol != end(); ++iCol)
 	{
 		{ // report progress
-			float prog = 100.0 * ((float) distance(begin(), iCol)) / numStrs;
+			float prog = 100.0 * ((float) distance(begin(), iCol)) / numCols;
 			static float lastProg = -1.0;
 			if ((prog - lastProg) >= 1.0)
 			{
 				progress("Processing strings.", (int) (prog + 0.5));
 				lastProg = prog;
 			}
-
 		}
 
 		if (iCol->second.cellType() == SPSSColumn::cellString)
 		{
+			DEBUG_COUT3("Dumping column '", iCol->second.spssRawColName(), "'.");
 			for (size_t cse  = 0; cse < iCol->second.strings.size(); cse++)
 			{
 				// Trim left and right.
