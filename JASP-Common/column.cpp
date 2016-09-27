@@ -41,8 +41,8 @@ Column::Column(managed_shared_memory *mem) :
 
 Column::~Column()
 {
-	BOOST_FOREACH(BlockEntry &entry, _blocks)
-		_mem->destroy_ptr(&*entry.second);
+	//BOOST_FOREACH(BlockEntry &entry, _blocks)
+		//_mem->destroy_ptr(&*entry.second);
 }
 
 Labels &Column::labels()
