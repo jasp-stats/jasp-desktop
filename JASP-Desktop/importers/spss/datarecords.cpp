@@ -134,12 +134,19 @@ void DataRecords::insertToCol(SPSSColumn &col, const string &str)
 	if (col.cellType() == SPSSColumn::cellString)
 	{
 		if (_cols.isSpaning())
+		{
 			col.append(str);
+//			DEBUG_COUT5("Appended string \"", str, "\" into column ", col.spssRawColName(), ".");
+		}
 		else
+		{
 			col.insert(str);
-
+//			DEBUG_COUT5("Inserted string \"", str, "\" into column ", col.spssRawColName(), ".");
+		}
 		_numStrs++;
 	}
+	else
+		DEBUG_COUT5("FAILED TO INSERT string \"", str, "\" into column ", col.spssRawColName(), ".");
 }
 
 /**
@@ -152,7 +159,10 @@ void DataRecords::insertToCol(SPSSColumn &col, double value)
 	{
 		col.numerics.push_back(value);
 		_numDbls++;
+//		DEBUG_COUT5("Inserted double ", value, " into column ", col.spssRawColName()(), ".");
 	}
+	else
+		DEBUG_COUT5("FAILED TO INSERT double ", value, " into column ", col.spssRawColName(), ".");
 
 }
 
@@ -165,7 +175,7 @@ void DataRecords::readUnCompVal(SPSSColumn &col)
 	SpssDataCell dta;
 	_SPSSIMPORTER_READ_VAR(dta, _from);
 	if (col.cellType() == SPSSColumn::cellString)
-		insertToCol(col, string(dta.chars, col.cellCharsRemaining(sizeof(dta.chars))));
+		insertToCol(col, string(dta.chars, sizeof(dta.chars)));
 	else
 	{
 		_fixer.fixup(&dta.dbl);

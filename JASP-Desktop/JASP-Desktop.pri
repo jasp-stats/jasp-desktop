@@ -156,7 +156,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/importers/spss/variablerecord.cpp \
         $$PWD/importers/spss/verylongstringrecord.cpp \
         $$PWD/importers/codepageconvert.cpp \
-		$$PWD/importers/convertedstringcontainer.cpp \
         $$PWD/importers/csv.cpp \
         $$PWD/importers/csvimporter.cpp \
         $$PWD/importers/jaspimporter.cpp \
@@ -172,7 +171,8 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
-		$$PWD/simplecrypt.cpp
+		$$PWD/simplecrypt.cpp \
+    $$PWD/importers/convertedstringcontainer.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -345,7 +345,6 @@ HEADERS  += \
         $$PWD/importers/csvimporter.h \
         $$PWD/importers/jaspimporter.h \
         $$PWD/importers/spssimporter.h \
-		$$PWD/importers/convertedstringcontainer.h \
 		$$PWD/importers/spss/spssformattype.h \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
@@ -359,7 +358,8 @@ HEADERS  += \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
 		$$PWD/simplecrypt.h \
-		$$PWD/simplecryptkey.h
+		$$PWD/simplecryptkey.h \
+    $$PWD/importers/convertedstringcontainer.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \

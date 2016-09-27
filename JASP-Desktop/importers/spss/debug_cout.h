@@ -36,6 +36,8 @@
 #define DEBUG_COUT7(t, u, v, w, x, y, z) std::cout << t << u << v << w << x << y << z << std::endl; std::cout.flush()
 #define DEBUG_COUT8(s, t, u, v, w, x, y, z) std::cout << s << t << u << v << w << x << y << z << std::endl; std::cout.flush()
 #define DEBUG_COUT9(r, s, t, u, v, w, x, y, z) std::cout << r << s << t << u << v << w << x << y << z << std::endl; std::cout.flush()
+#define DEBUG_COUT10(q, r, s, t, u, v, w, x, y, z) std::cout << q << r << s << t << u << v << w << x << y << z << std::endl; std::cout.flush()
+#define DEBUG_COUT11(p, q, r, s, t, u, v, w, x, y, z) std::cout << p << q << r << s << t << u << v << w << x << y << z << std::endl; std::cout.flush()
 
 #else
 
@@ -48,6 +50,8 @@
 #define DEBUG_COUT7(t, u, v, w, x, y, z)
 #define DEBUG_COUT8(s, t, u, v, w, x, y, z)
 #define DEBUG_COUT9(r, s, t, u, v, w, x, y, z)
+#define DEBUG_COUT10(q, r, s, t, u, v, w, x, y, z)
+#define DEBUG_COUT11(p, q, r, s, t, u, v, w, x, y, z)
 #endif
 
 #endif // DEBUG_COUT_H
