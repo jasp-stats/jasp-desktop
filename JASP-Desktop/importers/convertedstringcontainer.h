@@ -22,5 +22,29 @@
 #ifndef CONVERTEDSTRINGCONTAINER_H
 #define CONVERTEDSTRINGCONTAINER_H
 
+#include "codepageconvert.h"
+
+#include <set>
+
+class ConvertedStringContainer
+{
+public:
+	ConvertedStringContainer();
+	ConvertedStringContainer(const ConvertedStringContainer &that);
+	~ConvertedStringContainer();
+
+	/**
+	 * @brief processAllStrings Calls processStrings(const SpssCPConvert) on all memeber of _records.
+	 * @param converter The convertor to pass on.
+	 */
+	static void processAllStrings(const CodePageConvert &converter);
+
+	virtual void processStrings(const CodePageConvert &converter) = 0;
+
+private:
+	void _addOne(ConvertedStringContainer *newone);
+	static std::set<ConvertedStringContainer *> *_convertContainers;
+};
+
 #endif // CONVERTEDSTRINGCONTAINER_H
 

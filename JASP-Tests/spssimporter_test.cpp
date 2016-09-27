@@ -16,6 +16,8 @@
 //
 
 #include "spssimporter_test.h"
+#include <boost/lexical_cast.hpp>
+
 
 
 void SPSSImporterTest::init()
@@ -141,17 +143,30 @@ bool SPSSImporterTest::checkIfEqual(struct fileContent *fc1, struct fileContent 
 	{
 		if(QString::fromStdString(fc1->headers[i]) != QString::fromStdString(fc2->headers[i]))
 		{
-			qDebug() << "Header name mismatch: " << QString::fromStdString(fc1->headers[i]) << " " << QString::fromStdString(fc2->headers[i]);
-			return false;
+			qDebug() << "Warning: Header name mismatch: " << QString::fromStdString(fc1->headers[i]) << " " << QString::fromStdString(fc2->headers[i]);
+			//return false;
 		}
 
 		for(int j=0; j<fc2->rows; ++j)
 		{
 			if(fc1->data[j][i] != fc2->data[j][i])
 			{
-				qDebug() << "Data mismatch at row: " << QString::number(j+1) << " and column: " << QString::number(i);
-				qDebug() << QString::fromStdString(fc2->data[j][i])<< " " << QString::fromStdString(fc1->data[j][i]);
-				return false;
+				bool success = false;
+				try
+				{
+					int v1 = boost::lexical_cast<int>(fc1->data[j][i]);
+					int v2 = boost::lexical_cast<int>(fc2->data[j][i]);
+					if (v1 == v2) success = true;
+				}
+				catch (...)
+				{
+				}
+				if (!success)
+				{
+					qDebug() << "Data mismatch at row: " << QString::number(j+1) << " and column: " << QString::number(i);
+					qDebug() << QString::fromStdString(fc2->data[j][i])<< " " << QString::fromStdString(fc1->data[j][i]);
+					return false;
+				}
 			}
 		}
 	}

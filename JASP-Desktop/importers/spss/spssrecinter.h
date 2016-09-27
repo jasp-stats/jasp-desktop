@@ -66,7 +66,7 @@ namespace spss
 /**
  * A type that holds the data in an intermate format
  */
-class SPSSColumn : ConvertedStringContainer
+class SPSSColumn : public ConvertedStringContainer
 {
 public:
 	typedef std::map<SpssDataCell, std::string>		LabelByValueDict;
