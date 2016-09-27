@@ -1110,7 +1110,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			if (any(is.na(c(betaA, betaB))))
 				stop("Posterior is too peaked")
 			
-			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho)
+			posteriorLine <- .stretchedBeta(alpha=betaA, beta=betaB, rho=rho)
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
 				stop("Posterior is too peaked")
@@ -1128,7 +1128,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			if (any(is.na(c(betaA, betaB))))
 				stop("Posterior is too peaked")
 			
-			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=FALSE)
+			posteriorLine <- .stretchedBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=FALSE)
 			posteriorLine[rho < 0] <- 0
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
@@ -1149,7 +1149,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			if (any(is.na(c(betaA, betaB))))
 				stop("Posterior is too peaked")
 			
-			posteriorLine <- .scaledBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=TRUE)
+			posteriorLine <- .stretchedBeta(alpha=betaA, beta=betaB, rho=rho) / pbeta(1/2,  betaA, betaB, lower.tail=TRUE)
 			posteriorLine[rho > 0] <- 0
 			
 			if (sum(is.na(posteriorLine)) > 1 || any(posteriorLine < 0) || any(is.infinite(posteriorLine)))
@@ -1216,7 +1216,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		
 		if (betaApproximation) {
 			
-			points(0, .scaledBeta(alpha=betaA, beta=betaB, rho=0), col="black", pch=21, bg = "grey", cex= cexPoints)
+			points(0, .stretchedBeta(alpha=betaA, beta=betaB, rho=0), col="black", pch=21, bg = "grey", cex= cexPoints)
 		
 		} else {
 		
@@ -1446,7 +1446,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 			}
 		}
 		
-		mtext("Beta* prior width", side = 1, cex = cexYXlab, line= 2.5)
+		mtext("Stretched beta prior width", side = 1, cex = cexYXlab, line= 2.5)
 		
 		return()
 	}
@@ -2066,7 +2066,7 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 		}
 	}
 	
-	mtext("Beta* prior width", side = 1, cex = cexYXlab, line= 2.5)
+	mtext("Stretched beta prior width", side = 1, cex = cexYXlab, line= 2.5)
 	
 	xx <- grconvertX(0.1, "npc", "user")
 	yy1 <- yAt[length(yAt)-1]
