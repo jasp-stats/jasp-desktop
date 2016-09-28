@@ -260,27 +260,27 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
-               <item row="2" column="0">
-                <widget class="QRadioButton" name="bootstrap">
-                 <property name="text">
-                  <string>Bootstrap</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QRadioButton" name="robust">
-                 <property name="text">
-                  <string>Robust</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="0">
-                <widget class="QRadioButton" name="standard">
+                <widget class="QRadioButton" name="_1standard">
                  <property name="text">
                   <string>Standard</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="_2robust">
+                 <property name="text">
+                  <string>Robust</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="_3bootstrap">
+                 <property name="text">
+                  <string>Bootstrap</string>
                  </property>
                 </widget>
                </item>
@@ -803,14 +803,14 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
    <class>BoundComboBox</class>
@@ -858,7 +858,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>bootstrap</sender>
+   <sender>_3bootstrap</sender>
    <signal>toggled(bool)</signal>
    <receiver>containerBootstrapSamples</receiver>
    <slot>setEnabled(bool)</slot>
