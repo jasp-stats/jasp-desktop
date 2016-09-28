@@ -13,10 +13,10 @@
     <string>English</string>
 
 	<key>CFBundleGetInfoString</key>
-	<string>0.8.0 Beta 6</string>
+	<string>0.8.0 Beta 7</string>
 
 	<key>CFBundleShortVersionString</key>
-	<string>0.8.0 Beta 6</string>
+	<string>0.8.0 Beta 7</string>
 
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
