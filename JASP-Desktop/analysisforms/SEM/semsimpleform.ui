@@ -260,13 +260,8 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
-<<<<<<< HEAD
                <item row="0" column="0">
                 <widget class="QRadioButton" name="_1standard">
-=======
-               <item row="2" column="0">
-                <widget class="QRadioButton" name="_3bootstrap">
->>>>>>> origin/development
                  <property name="text">
                   <string>Standard</string>
                  </property>
@@ -282,16 +277,8 @@
                  </property>
                 </widget>
                </item>
-<<<<<<< HEAD
                <item row="2" column="0">
                 <widget class="QRadioButton" name="_3bootstrap">
-=======
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="_1standard">
-                 <property name="enabled">
-                  <bool>true</bool>
-                 </property>
->>>>>>> origin/development
                  <property name="text">
                   <string>Bootstrap</string>
                  </property>
