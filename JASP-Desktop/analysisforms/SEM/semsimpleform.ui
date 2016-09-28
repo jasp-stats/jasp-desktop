@@ -260,8 +260,13 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
+<<<<<<< HEAD
                <item row="0" column="0">
                 <widget class="QRadioButton" name="_1standard">
+=======
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="_3bootstrap">
+>>>>>>> origin/development
                  <property name="text">
                   <string>Standard</string>
                  </property>
@@ -277,8 +282,16 @@
                  </property>
                 </widget>
                </item>
+<<<<<<< HEAD
                <item row="2" column="0">
                 <widget class="QRadioButton" name="_3bootstrap">
+=======
+               <item row="0" column="0">
+                <widget class="QRadioButton" name="_1standard">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+>>>>>>> origin/development
                  <property name="text">
                   <string>Bootstrap</string>
                  </property>
@@ -554,28 +567,28 @@
                 <number>0</number>
                </property>
                <item row="3" column="0">
-                <widget class="QRadioButton" name="WLS">
+                <widget class="QRadioButton" name="_4WLS">
                  <property name="text">
                   <string>WLS</string>
                  </property>
                 </widget>
                </item>
                <item row="5" column="0">
-                <widget class="QRadioButton" name="DWLS">
+                <widget class="QRadioButton" name="_6DWLS">
                  <property name="text">
                   <string>DWLS</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QRadioButton" name="ML">
+                <widget class="QRadioButton" name="_2ML">
                  <property name="text">
                   <string>ML</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QRadioButton" name="automatic">
+                <widget class="QRadioButton" name="_1automatic">
                  <property name="text">
                   <string>Auto</string>
                  </property>
@@ -585,14 +598,14 @@
                 </widget>
                </item>
                <item row="4" column="0">
-                <widget class="QRadioButton" name="ULS">
+                <widget class="QRadioButton" name="_5ULS">
                  <property name="text">
                   <string>ULS</string>
                  </property>
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QRadioButton" name="GLS">
+                <widget class="QRadioButton" name="_3GLS">
                  <property name="text">
                   <string>GLS</string>
                  </property>
@@ -734,7 +747,7 @@
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="QRadioButton" name="none">
+                <widget class="QRadioButton" name="_1none">
                  <property name="text">
                   <string>None</string>
                  </property>
@@ -744,14 +757,14 @@
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QRadioButton" name="EQS">
+                <widget class="QRadioButton" name="_3EQS">
                  <property name="text">
                   <string>EQS</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QRadioButton" name="Mplus">
+                <widget class="QRadioButton" name="_2Mplus">
                  <property name="text">
                   <string>Mplus</string>
                  </property>

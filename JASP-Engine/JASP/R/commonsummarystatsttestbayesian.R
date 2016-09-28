@@ -280,7 +280,7 @@
 	}
 
 	# check if BF type requires a new plot
-	if (bftype.current == bftype.previous) {
+	if (!is.null(bftype.previous) && bftype.current == bftype.previous) {
 		BFtypeRequiresNewPlot <- FALSE
 	}
 
@@ -1226,13 +1226,15 @@
 		}
 
 		# maxBF
-		if (BF10maxText >= 1000000 | BF10maxText >= 1000000) {
-			BF10maxt <- format(BF10maxText, digits= 4, scientific = TRUE)
+		if (BF10maxText >= 1000000) {
+			BF10maxt <- format(BF10maxText, digits = 3, scientific = TRUE)
 		}
 
-		if (BF10maxText < 1000000 & BF10maxText < 1000000) {
-			BF10maxt <- formatC(BF10maxText, 3, format = "f")
+		if (BF10maxText < 1000000) {
+			BF10maxt <- formatC(BF10maxText, digits = 3, format = "f", drop0trailing = TRUE)
 		}
+
+		maxBFrValt <- formatC(maxBFrVal, digits = 4, format = "f", drop0trailing = TRUE )
 
 		if (oneSided == FALSE) {
 			maxBF10LegendText <- bquote(max~BF[1][0]*":")
@@ -1252,25 +1254,26 @@
 		pt.bg <-  c("grey", "white", "black", "red")
 		pt.cex <-  c(cexPoints, 1.1, 1.1, 1.1)
 
-		legend(xx, yy, legend = legend[BFind], pch=rep(21,4), pt.bg= pt.bg[BFind], bty= "n", cex= cexLegend, lty=rep(NULL,4), pt.lwd=rep(1.3,4), pt.cex= pt.cex[BFind])
+		legend(xx, yy, legend = legend[BFind], pch = rep(21,4), pt.bg = pt.bg[BFind], bty = "n",
+			cex = cexLegend, lty = rep(NULL,4), pt.lwd = rep(1.3,4), pt.cex = pt.cex[BFind])
 
-		xx <- grconvertX(0.5, "ndc", "user")
-		y1 <- grconvertY(0.938, "ndc", "user")
-		y2 <- grconvertY(0.888, "ndc", "user")
-		y3 <- grconvertY(0.838, "ndc", "user")
-		y4 <- grconvertY(0.788, "ndc", "user")
+		xx <- grconvertX(0.47, "ndc", "user")
+		y1 <- grconvertY(0.946, "ndc", "user")
+		y2 <- grconvertY(0.890, "ndc", "user")
+		y3 <- grconvertY(0.843, "ndc", "user")
+		y4 <- grconvertY(0.790, "ndc", "user")
 		yy <- c(y1, y2, y3, y4)
 
 		text(xx, yy[BFsort == BF10userText], userBF, cex = 1.3, pos = 4)
 		text(xx, yy[BFsort == BF10ultraText], ultraBF, cex = 1.3, pos = 4)
 		text(xx, yy[BFsort == BF10wText], wBF, cex = 1.3, pos = 4)
-		text(xx, yy[BFsort == BF10maxText], BF10maxt, cex = 1.3, pos = 4)
+		text(xx, yy[BFsort == BF10maxText], as.expression(paste(BF10maxt, "at r =", maxBFrValt)), cex = 1.3, pos = 4)
 	}
 }
 
 
 .plotPosterior.summarystats.ttest <- function(t = NULL, n1 = NULL, n2 = NULL, paired = FALSE,
-				oneSided = FALSE, BF, BFH1H0, callback=function(...) 0, iterations = 10000,
+				oneSided = FALSE, BF, BFH1H0, callback = function(...) 0, iterations = 10000,
 				rscale = "medium", lwd = 2, cexPoints = 1.5, cexAxis = 1.2, cexYlab = 1.5, cexXlab = 1.5,
 				cexTextBF = 1.4, cexCI = 1.1, cexLegend = 1.2, lwdAxis = 1.2, addInformation = TRUE,
 				dontPlotData = FALSE) {
