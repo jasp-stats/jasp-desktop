@@ -280,7 +280,7 @@
 	}
 
 	# check if BF type requires a new plot
-	if (bftype.current == bftype.previous) {
+	if (!is.null(bftype.previous) && bftype.current == bftype.previous) {
 		BFtypeRequiresNewPlot <- FALSE
 	}
 
