@@ -42,12 +42,12 @@ CorrelationBayesianForm::CorrelationBayesianForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->spearman->hide();
-	ui->kendallsTauB->hide();
+    //ui->kendallsTauB->hide();
     ui->credibleIntervalsIntervalContainer->hide();
     ui->credibleIntervals->hide();
 #else
 	ui->spearman->setStyleSheet("background-color: pink ;");
-	ui->kendallsTauB->setStyleSheet("background-color: pink ;");
+    //ui->kendallsTauB->setStyleSheet("background-color: pink ;");
 	ui->credibleIntervalsIntervalContainer->setStyleSheet("background-color: pink ;");
 	ui->credibleIntervals->setStyleSheet("background-color: pink ;");
 #endif
