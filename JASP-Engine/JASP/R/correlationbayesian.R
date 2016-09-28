@@ -1986,7 +1986,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 	}
 	
-	dmax <- max(posteriorLine)
+	dmax <- max(c(posteriorLine*addRho,posteriorLineTau*addTau))
 	
 	ylim <- vector("numeric", 2)
 	ylim[1] <- 0
