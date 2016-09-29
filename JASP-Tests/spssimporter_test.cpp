@@ -17,7 +17,7 @@
 
 #include "spssimporter_test.h"
 #include <boost/lexical_cast.hpp>
-
+#include <algorithm>
 
 
 void SPSSImporterTest::init()
@@ -143,28 +143,35 @@ bool SPSSImporterTest::checkIfEqual(struct fileContent *fc1, struct fileContent 
 	{
 		if(QString::fromStdString(fc1->headers[i]) != QString::fromStdString(fc2->headers[i]))
 		{
-			qDebug() << "Warning: Header name mismatch: " << QString::fromStdString(fc1->headers[i]) << " " << QString::fromStdString(fc2->headers[i]);
+			// qDebug() << "Warning: Header name mismatch: " << QString::fromStdString(fc1->headers[i]) << " " << QString::fromStdString(fc2->headers[i]);
 			//return false;
 		}
 
 		for(int j=0; j<fc2->rows; ++j)
 		{
-			if(fc1->data[j][i] != fc2->data[j][i])
+			std::string str1 = fc1->data[j][i];
+			std::string str2 = fc2->data[j][i];
+			if(str1 != str2)
 			{
 				bool success = false;
 				try
 				{
-					int v1 = boost::lexical_cast<int>(fc1->data[j][i]);
-					int v2 = boost::lexical_cast<int>(fc2->data[j][i]);
+					int v1 = boost::lexical_cast<int>(str1);
+					int v2 = boost::lexical_cast<int>(str2);
 					if (v1 == v2) success = true;
 				}
 				catch (...)
 				{
+					// Remove ""
+					str1.erase(std::remove(str1.begin(), str1.end(), '"'), str1.end());
+					str2.erase(std::remove(str2.begin(), str2.end(), '"'), str2.end());
+					if (str1 == str2) success = true;
 				}
 				if (!success)
 				{
-					qDebug() << "Data mismatch at row: " << QString::number(j+1) << " and column: " << QString::number(i);
-					qDebug() << QString::fromStdString(fc2->data[j][i])<< " " << QString::fromStdString(fc1->data[j][i]);
+					qDebug() << "Data mismatch at row: " << QString::number(j+1) << " and column: " << QString::fromStdString(fc1->headers[i]) << " (number " << QString::number(i) << ")";
+					qDebug() << "CSV: " << QString::fromStdString(str2);
+					qDebug() << "SPSS: " << QString::fromStdString(str1);
 					return false;
 				}
 			}
