@@ -212,7 +212,7 @@
             <item row="0" column="0">
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>Beta* prior width</string>
+               <string>Stretched beta prior width</string>
               </property>
              </widget>
             </item>
