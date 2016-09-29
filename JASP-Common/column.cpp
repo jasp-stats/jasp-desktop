@@ -80,7 +80,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 	if (newColumnType == _columnType)
 		return;
 
-	bool success = TRUE;
+	bool success = true;
 	if (newColumnType == ColumnTypeOrdinal || newColumnType == ColumnTypeNominal)
 	{
 		if (_columnType == ColumnTypeNominal || _columnType == ColumnTypeOrdinal)
@@ -113,7 +113,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 					}
 					catch (...)
 					{
-						success = FALSE;
+						success = false;
 						break;
 					}
 				}
@@ -138,7 +138,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 					}
 					catch (...)
 					{
-						success = FALSE;
+						success = false;
 						break;
 					}
 				}
@@ -201,7 +201,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 				}
 				catch (...)
 				{
-					success = FALSE;
+					success = false;
 					break;
 				}
 			}

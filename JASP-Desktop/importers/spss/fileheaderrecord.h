@@ -19,6 +19,7 @@
 #define FILEHEADERRECORD_H
 
 #include "readablerecord.h"
+#include "../convertedstringcontainer.h"
 
 namespace spss
 {
@@ -28,7 +29,7 @@ namespace spss
  *
  * Associated with record type rectype_file_header = 0x324C4624/"$FL2"
  */
-class FileHeaderRecord : public ReadableRecord< rectype_file_header >
+class FileHeaderRecord : public ReadableRecord< rectype_file_header >, public ConvertedStringContainer
 {
 public:
 
@@ -71,13 +72,13 @@ public:
 	/**
 	 * @brief SPSSIMPORTER_READ_ATTRIB The number of variable records found to date.
 	 */
-	SPSSIMPORTER_READ_ATTRIB(size_t, varRecordCount)
+	SPSSIMPORTER_READ_ATTRIB(size_t, rawVariableCount)
 
 	/**
 	 * @brief incVarRecordCount Found another one!
 	 * @return new value
 	 */
-	int32_t incVarRecordCount() { return _varRecordCount++; }
+	int32_t incRawVariableCount() { return _rawVariableCount++; }
 
 	/**
 	 * @brief process Manipulates columns by adding the contents of thie record.

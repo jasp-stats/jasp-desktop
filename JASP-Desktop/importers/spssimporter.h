@@ -18,7 +18,7 @@
 #ifndef SPSSIMPORTER_H
 #define SPSSIMPORTER_H
 
-#include "datasetpackage.h"
+//#include "datasetpackage.h"
 #include "./spss/fileheaderrecord.h"
 #include "./spss/integerinforecord.h"
 #include <boost/function.hpp>
@@ -26,6 +26,7 @@
 #include <string>
 
 #include "spss/systemfileformat.h"
+#include "column.h"
 
 
 /*
@@ -58,6 +59,29 @@ protected:
 	*/
     static void setDataSetSize(DataSetPackage &dataSetPg, size_t rowCount, size_t colCount);
 
+	/**
+	 * @brief setColumnStringData Sets String data into the column, after doing a code page convert.
+	 * @param column The columns to insert into.
+	 * @param strConvertor The string converter to use.
+	 * @param spssCol The Source of the data.
+	 */
+	static void setColumnConvrtStringData(Column &column, CodePageConvert &strConvertor, spss::SPSSColumn &spssCol);
+
+	/**
+	 * @brief setColumnLabeledData Sets numeric data into the column, with labels.
+	 * @param column The columns to insert into.
+	 * @param numCases The number of cases.
+	 * @param spssCol The Source of the data.
+	 */
+	static void setColumnLabeledData(Column &column, size_t numCases, const spss::SPSSColumn &spssCol);
+
+	/**
+	 * @brief setColumnScaleData Sets floating point / scalar data into the column.
+	 * @param column The columns to insert into.
+	 * @param numCases The number of cases
+	 * @param spssCol The Source of the data.
+	 */
+	static void setColumnScaleData(Column &column, size_t numCases, const spss::SPSSColumn &spssCol);
 
 private:
 
