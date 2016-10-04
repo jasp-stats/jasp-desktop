@@ -69,7 +69,6 @@ private:
 	QGridLayout *_backgroundLayout;
 	QHBoxLayout *_layout;
 
-	QPushButton *_optionsTab;
 	QPushButton *_helpTab;
 	QComboBox *_comboTab;
 	QMenu *_menuTab;

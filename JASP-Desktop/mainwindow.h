@@ -93,8 +93,6 @@ private:
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
 
-	void setupOptionPanelSize();
-
 	QWidget *_buttonPanel;
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
@@ -135,7 +133,6 @@ signals:
 	void resultsDocumentChanged();
 
 private slots:
-
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisUserDataLoadedHandler(Analysis *analysis);
 	void analysisSelectedHandler(int id);
@@ -153,6 +150,8 @@ private slots:
 	void removeAnalysisRequestHandler(int id);
 	void removeAllAnalyses();
 	void refreshAllAnalyses();
+	void refreshCurrentAnalysis();
+	void resetTableView();
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
 	void collapseSelected();
@@ -172,11 +171,13 @@ private slots:
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);
+	void data_splitterMovedHandler(int, int);
 
 	void hideOptionsPanel();
 	void showOptionsPanel();
-	void showTableView();
-	void hideTableView();
+	void showDataPanel();
+	void hideDataPanel();
+	void showVariablesPage();
 
 	void analysisOKed();
 	void analysisRunned();

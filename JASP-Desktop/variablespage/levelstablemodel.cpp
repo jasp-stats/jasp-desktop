@@ -44,7 +44,7 @@ int LevelsTableModel::columnCount(const QModelIndex &parent) const
 
 QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 {
-	if (role != Qt::DisplayRole)
+	if (role != Qt::DisplayRole && role != Qt::EditRole)
 		return QVariant();
 
 	Labels &labels = _column->labels();
@@ -57,13 +57,13 @@ QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 
 	if (index.column() == 0)
 	{
-		const Label &label = entry.second;
-		return tq(label.text());
+		int raw = entry.first;
+		return raw;
 	}
 	else
 	{
-		int raw = entry.first;
-		return raw;
+		const Label &label = entry.second;
+		return tq(label.text());
 	}
 }
 
@@ -76,9 +76,9 @@ QVariant LevelsTableModel::headerData(int section, Qt::Orientation orientation, 
 		return QVariant();
 
 	if (section == 0)
-		return "Labels";
-	else
 		return "Value";
+	else
+		return "Label";
 }
 
 void LevelsTableModel::_moveRows(QModelIndexList &selection, bool up) {
@@ -129,7 +129,7 @@ void LevelsTableModel::reverse() {
 
 Qt::ItemFlags LevelsTableModel::flags(const QModelIndex &index) const
 {
-    if (index.column() == 0) {
+	if (index.column() == 1) {
         return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
     } else {
         return QAbstractTableModel::flags(index);
@@ -149,5 +149,7 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
             labels.setLabel(index.row(), new_label);
         }
     }
+
+	emit dataChanged(index, index);
     return true;
 }

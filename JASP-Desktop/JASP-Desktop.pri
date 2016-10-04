@@ -399,7 +399,6 @@ FORMS += \
         $$PWD/ribbons/ribbonanalysis.ui \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/ttestbayesianpairedsamplesform.ui \
-        $$PWD/optionsform.ui \
         $$PWD/analysisforms/ancovabayesianform.ui \
         $$PWD/analysisforms/anovarepeatedmeasuresbayesianform.ui \
         $$PWD/analysisforms/correlationbayesianform.ui \
