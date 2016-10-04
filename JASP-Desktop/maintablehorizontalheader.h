@@ -28,11 +28,13 @@
 class MainTableHorizontalHeader : public QHeaderView
 {
 	Q_OBJECT
+
 public:
 	explicit MainTableHorizontalHeader(QWidget *parent = 0);
 
 signals:
 	void columnTypeChanged(int columnIndex, Column::ColumnType newColumnType);
+	void columnNamePressed(int columnIndex);
 
 public slots:
 

@@ -9,5 +9,10 @@
         <file>expanded.png</file>
         <file>arrow-right.png</file>
         <file>arrow-left.png</file>
+        <file>arrow-up.png</file>
+        <file>arrow-down.png</file>
+        <file>arrow-up-down.png</file>
+        <file>cross.png</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>

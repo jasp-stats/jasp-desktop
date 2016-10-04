@@ -168,3 +168,8 @@ void DataSetTableModel::setColumnType(int columnIndex, Column::ColumnType newCol
 
 	emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex);
 }
+
+Column::ColumnType DataSetTableModel::getColumnType(int columnIndex)
+{
+	return _dataSet->column(columnIndex).columnType();
+}

@@ -32,10 +32,11 @@ MainTableHorizontalHeader::MainTableHorizontalHeader(QWidget *parent) :
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
 
+	this->setToolTip("Click on column name to change labels.");
+
 	_convertToScale = _menu->addAction(_scaleIcon, "", this, SLOT(scaleSelected()));
 	_convertToOrdinal = _menu->addAction(_ordinalIcon, "", this, SLOT(ordinalSelected()));
 	_convertToNominal = _menu->addAction(_nominalIcon, "", this, SLOT(nominalSelected()));
-
 }
 
 void MainTableHorizontalHeader::mousePressEvent(QMouseEvent *event)
@@ -44,19 +45,19 @@ void MainTableHorizontalHeader::mousePressEvent(QMouseEvent *event)
 	int index = logicalIndexAt(pos);
 
 	int itemPos = sectionViewportPosition(index);
+	_columnSelected = index;
 
 	int x = pos.x() - itemPos;
-
 	if (x >= 4 && x <= 24)
 	{
-		_columnSelected = index;
 
 		QPoint menuPos = this->mapToGlobal(QPoint(itemPos, this->height()));
 
 		_menu->move(menuPos);
 		_menu->show();
 	}
-
+	else
+		emit columnNamePressed(_columnSelected);
 
 	QHeaderView::mousePressEvent(event);
 }

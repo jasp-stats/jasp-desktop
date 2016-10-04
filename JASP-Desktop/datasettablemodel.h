@@ -44,7 +44,7 @@ public:
     virtual Qt::ItemFlags flags(const QModelIndex &index) const OVERRIDE;
 
 	void setColumnType(int columnIndex, Column::ColumnType newColumnType);
-
+	Column::ColumnType getColumnType(int columnIndex);
     
 signals:
 
