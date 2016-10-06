@@ -32,10 +32,7 @@ public:
 	 */
    struct LabelMeta
    {
-	   union {
-		   Char_8  c8;
-		   double  d;
-	   } value;
+	   SpssDataCell value;
 	   char	label_len;
 	   std::string label;
    };
@@ -56,15 +53,6 @@ public:
 	* Implematations should examine columns to determine the record history.
 	*/
    virtual void process(SPSSColumns & columns);
-
-   /**
-	* @brief processStrings Converts any strings in the data fields.
-	* @param dictData The
-	*
-	* Should be implemented in classes where holdStrings maybe or is true.
-	*
-	*/
-   virtual void processStrings(const CodePageConvert &converter);
 
 };
 

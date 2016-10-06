@@ -1137,14 +1137,14 @@
                 <number>9</number>
                </property>
                <item row="2" column="0">
-                <widget class="QRadioButton" name="standardError">
+                <widget class="QRadioButton" name="_2standardError">
                  <property name="text">
                   <string>Standard error</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QRadioButton" name="confidenceInterval">
+                <widget class="QRadioButton" name="_1confidenceInterval">
                  <property name="text">
                   <string>Confidence interval</string>
                  </property>
@@ -1211,8 +1211,8 @@
                 </widget>
                </item>
               </layout>
-              <zorder>confidenceInterval</zorder>
-              <zorder>standardError</zorder>
+              <zorder>_1confidenceInterval</zorder>
+              <zorder>_2standardError</zorder>
               <zorder>widgetConfidenceIntervalInterval</zorder>
              </widget>
             </item>
@@ -1536,11 +1536,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>GroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/groupbox.h</header>
@@ -1563,6 +1558,11 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
@@ -1573,15 +1573,15 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
    <class>AnovaModelWidget</class>
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTableView</class>
@@ -1630,7 +1630,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>confidenceInterval</sender>
+   <sender>_1confidenceInterval</sender>
    <signal>toggled(bool)</signal>
    <receiver>widgetConfidenceIntervalInterval</receiver>
    <slot>setEnabled(bool)</slot>

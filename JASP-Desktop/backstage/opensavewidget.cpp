@@ -166,8 +166,7 @@ FileEvent *OpenSaveWidget::save()
 	else
 	{
 		event = new FileEvent(this, FileEvent::FileSave);
-		event->setPath(_currentFilePath);
-		if (event->getLastError() != "")
+		if (!event->setPath(_currentFilePath))
 		{
 			QMessageBox::warning(this, "File Types", event->getLastError());
 			event->setComplete(false, "Failed to open file from OSF");

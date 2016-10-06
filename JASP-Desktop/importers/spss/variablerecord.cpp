@@ -54,7 +54,6 @@ VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileTy
 		_name = buffer;
 	}
 
-	// Works if has_var_label not yet endded.
 	if (has_var_label() != 0)
 	{
 		SPSSIMPORTER_READ_MEMBER(label_len, from, fixer);
@@ -76,7 +75,7 @@ VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileTy
 		_missing_values.push_back(val);
 	}
 
-	_dictionary_index = fileHeader->incVarRecordCount();
+	_dictIndex = fileHeader->incRawVariableCount();
 }
 
 
@@ -94,9 +93,12 @@ void VariableRecord::process(SPSSColumns &columns)
 
 	// check for string continuation.
 	if (isStringContinuation())
-	{
-		if ((columns.size() != 0) && (columns[columns.size()-1].cellType() == SPSSColumn::cellString))
-			columns[columns.size()-1].incrementColumnSpan();
+{
+		SPSSDictionary::reverse_iterator iter = columns.rbegin();
+		if (iter == columns.rend())
+			throw runtime_error("Programming error: invalid last column found in VariableRecord::process(SPSSColumns &).");
+		else if (iter->second.cellType() == SPSSColumn::cellString)
+			iter->second.incrementColumnSpan();
 
 //		DEBUG_COUT5("Existing column ", columns[columns.size()-1].spssName(), " spans ", columns[columns.size()-1].columnSpan(), " cols.");
 
@@ -104,11 +106,11 @@ void VariableRecord::process(SPSSColumns &columns)
 	}
 
 	{
-		SPSSColumn col(name(), hasVarLabel() ? label() : name(), type(), _getType(print()), MissingValueChecker(n_missing_values(), missing_values()));
-		columns.push_back(col);
+		SPSSColumn col(name(), label(), type(), _getType(print()), MissingValueChecker(n_missing_values(), missing_values()));
+		columns.add(dictIndex(), col);
 	}
 
-	DEBUG_COUT7("VariableRecord::process() - Column ", columns.size(), ", print: ", print(), ", type: ", _getType(print()), ".");
+	DEBUG_COUT7("VariableRecord::process() - Column Dict Index ", dictIndex(), ", print: ", print(), ", type: ", _getType(print()), ".");
 
 //	DEBUG_COUT4("VariableRecord::process() - Added column ", columns.back().spssName(), "/", columns.back().spssLabel());
 }

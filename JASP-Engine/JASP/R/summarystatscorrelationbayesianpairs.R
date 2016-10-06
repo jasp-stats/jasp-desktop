@@ -214,7 +214,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 					errorMessage <- .extractErrorMessage(p)
 					plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 				}
-				else if (bayesFactorObject$tooPeaked)
+				else if (!is.null(bayesFactorObject$tooPeaked) && bayesFactorObject$tooPeaked)
 				{
 					plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", "Posterior is too peaked"))
 				}
@@ -278,7 +278,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 				p <- try (silent=FALSE, expr = {
 					image <- .beginSaveImage(width, height)
 					.plotBF.robustnessCheck.correlation (r=options$pearsonsR, n=options$sampleSize, oneSided=oneSided, dontPlotData=FALSE,
-														 kappa=options$priorWidth, BFH1H0=BFH1H0, BF=bayesFactorObject$bf)
+														 kappa=options$priorWidth, BFH1H0=BFH1H0, BF10post=ifelse(BFH1H0, bayesFactorObject$bf, 1/bayesFactorObject$bf))
 					plot[["data"]] <- .endSaveImage(image)
 				})
 
@@ -287,7 +287,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 					errorMessage <- .extractErrorMessage(p)
 					plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
 				}
-				else if (bayesFactorObject$tooPeaked)
+				else if (!is.null(bayesFactorObject$tooPeaked) && bayesFactorObject$tooPeaked)
 				{
 					print ("hello world")
 					plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", "Bayes factor is infinity"))
@@ -443,6 +443,16 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 
 .checkInputSummaryStatsCorrelationPairs <- function(options)
 {
+	# Checks if the input values provided are valid and ready to calculate
+	#     Bayes factor
+	#
+	# Input:
+	#     options: the list of options provided by user
+	#
+	# Output:
+	#     list containing two attributes -
+	#         ready: if we can carry out the analysis
+	#         row: the values shown in the output table
 	ready <- TRUE
 
 	sampleSizeValue <- options$sampleSize
@@ -462,12 +472,23 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 
 	row <- list(BF = ".", sampleSize = sampleSizeValue, pearsonsR = pearsonsRValue)
 
-	list(ready=ready, row=row)
+	return(list(ready=ready, row=row))
 }
 
 
 .calcluateBFCorrelationPairs <- function(options, state, diff)
 {
+	# Calculate the Bayes factors for correlation pairs
+	#
+	# Input:
+	#     options: user options
+	#     state: previous state variables
+	#     diff: difference between previous and current options
+	#
+	# Ouput:
+	#     list containing -
+	#         bf: the required Bayes factor value
+	#         tooPeaked: whether it is too peaked to plot
 	some.n <- options$sampleSize
 	some.r <- options$pearsonsR
 
@@ -507,5 +528,5 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset=NULL, options, perform 
 		tooPeaked <- all.bfs$minSidedTooPeaked
 	}
 
-	list(bf=some.bf, peaked=tooPeaked)
+	return(list(bf=some.bf, peaked=tooPeaked))
 }

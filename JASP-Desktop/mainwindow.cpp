@@ -641,6 +641,7 @@ void MainWindow::showForm(Analysis *analysis)
 		if (ui->panelMid->isVisible() == false)
 			showOptionsPanel();
 
+		_okButton->setVisible(_currentAnalysis->useData());
 		_runButton->setVisible(_currentAnalysis->isAutorun() == false);
 		_runButton->setEnabled(_currentAnalysis->status() == Analysis::InitedAndWaiting);
 		_buttonPanel->raise();
@@ -682,7 +683,9 @@ void MainWindow::analysisSelectedHandler(int id)
 
 void MainWindow::analysisUnselectedHandler()
 {
-	hideOptionsPanel();
+
+	if (_currentAnalysis->useData())
+		hideOptionsPanel();
 
 	if (_log != NULL && _currentAnalysis != NULL)
 	{

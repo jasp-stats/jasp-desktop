@@ -49,3 +49,7 @@ linux {
 }
 
 include(JASP-Desktop.pri)
+
+HEADERS +=
+
+SOURCES +=

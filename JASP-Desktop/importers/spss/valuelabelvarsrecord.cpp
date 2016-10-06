@@ -74,7 +74,7 @@ ValueLabelVarsRecord::ValueLabelVarsRecord(const NumericConverter &fixer, Record
 		int32_t indx;
 		_SPSSIMPORTER_READ_VAR(indx, from);
 		fixer.fixup(&indx);
-		_vars.push_back(indx);
+		_vars.push_back(indx - 1);
 	}
 }
 
@@ -87,20 +87,20 @@ ValueLabelVarsRecord::~ValueLabelVarsRecord()
  * @brief Does nothing
  *
  */
-void ValueLabelVarsRecord::process(SPSSColumns & /* columns */)
+void ValueLabelVarsRecord::process(SPSSColumns & columns)
 {
-}
+	for (size_t i = 0; i < _vars.size(); ++i)
+	{
+		// Get the next applicable column.
+		SPSSColumn & column = columns.getColumn(_vars[i]);
+		// Iterate over all the found labels meta.
+		for (size_t j = 0; j < _Labels.size(); ++j)
+		{
+			LabelMeta &meta = _Labels[j];
+			SPSSColumn::LabelByValueDictEntry entry(meta.value, meta.label);
+			column.spssLables.insert( entry );
+		}
+	}
 
-/**
- * @brief processStrings Converts any strings in the data fields.
- * @param dictData The
- *
- * Should be implemented in classes where holdStrings maybe or is true.
- *
- */
-void ValueLabelVarsRecord::processStrings(const CodePageConvert &converter)
-{
-	for (size_t i = 0; i < _Labels.size(); ++i)
-		_Labels[i].label = converter.convertCodePage(_Labels[i].label);
 }
 

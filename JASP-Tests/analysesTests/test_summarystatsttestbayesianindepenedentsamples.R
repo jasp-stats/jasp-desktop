@@ -49,8 +49,8 @@ test_that("T-Test Independent Samples Init", {
                                 BF = ".",
                                 tStatistic = 0,
                                 n1Size = ".",
-                                n2Size = ".",
-                                errorEstimate = "."
+                                errorEstimate = ".",
+                                n2Size = "."
                             )
                         )
     }
@@ -85,8 +85,8 @@ test_that("T-Test Independent Samples Run", {
                         BF = .clean(exp(expectedBF$bf)),
                         tStatistic = .clean(tStatistic),
                         n1Size = n1Size,
-                        n2Size = n2Size,
-                        errorEstimate = .clean(expectedBF$properror)
+                        errorEstimate = .clean(expectedBF$properror),
+                        n2Size = n2Size
                     )
 
     options$tStatistic <- tStatistic
@@ -100,4 +100,3 @@ test_that("T-Test Independent Samples Run", {
 
     expect_equal(output$state$rowsTTestBayesianIndependentSamples, expectedOutput)
 })
-
