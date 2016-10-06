@@ -787,7 +787,7 @@ as.list.footnotes <- function(footnotes) {
 				item1 <- one[[name]]
 				item2 <- two[[name]]
 				
-				if (identical(item1, item2) == FALSE) {
+				if (base::identical(item1, item2) == FALSE) {
 				
 					changed[[name]] <- TRUE
 					
@@ -795,7 +795,13 @@ as.list.footnotes <- function(footnotes) {
 				
 					changed[[name]] <- FALSE
 				}
+				
+			} else {
+				
+				changed[[name]] <- TRUE
+				
 			}
+			
 		}
 		
 		for (name in names2) {
@@ -804,7 +810,7 @@ as.list.footnotes <- function(footnotes) {
 				changed[[name]] <- TRUE
 		}
 		
-	} else if (base::indentical(one, two)) {
+	} else if (base::identical(one, two)) {
 		
 		return(FALSE)
 		
