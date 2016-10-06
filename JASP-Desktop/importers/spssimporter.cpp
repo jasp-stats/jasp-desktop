@@ -30,6 +30,8 @@
 #include "./spss/dictionaryterminationrecord.h"
 #include "./spss/datarecords.h"
 
+#include "./convertedstringcontainer.h"
+
 #include "sharedmemory.h"
 #include "dataset.h"
 #include "./spss/debug_cout.h"
@@ -243,16 +245,19 @@ void SPSSImporter::loadDataSet(
 		success = true;
 		try {
 			// Now go fetch the data.
-			for (size_t i = 0; i < dictData.size(); i++)
+			int jaspColCount = 0;
+			for (SPSSDictionary::iterator colI = dictData.begin();
+				 (colI != dictData.end() ) && (jaspColCount < packageData->dataSet->columnCount());
+				 ++colI, ++jaspColCount)
 			{
-				SPSSColumn &spssCol = dictData.getColumn(i);
-				Column &column = packageData->dataSet->column(i);
+				SPSSColumn &spssCol = colI->second;
+				Column &column = packageData->dataSet->column(jaspColCount);
+
+				DEBUG_COUT3("Getting col: ", spssCol.spssRawColName(), ".\n");
 
 				column.setName(spssCol.spssColumnLabel());
 				column.setColumnType( spssCol.getJaspColumnType() );
 				column.labels().clear();
-
-				DEBUG_COUT3("Getting col: ", i, ",\n");
 
 				switch(column.columnType())
 				{
@@ -278,7 +283,7 @@ void SPSSImporter::loadDataSet(
 						 // convert to UTF-8 strings.
 						spssCol.strings.clear();
 						for (size_t i = 0; i < spssCol.numerics.size(); i++)
-							spssCol.strings.push_back( spssCol.format(spssCol.numerics[i]) );
+							spssCol.strings.push_back( spssCol.format(spssCol.numerics[i], _floatInfo) );
 						column.setColumnAsNominalString(spssCol.strings);
 						break;
 					}
@@ -310,7 +315,6 @@ void SPSSImporter::loadDataSet(
 		}
 
 	} while (success == false);
-
 
 	if (stream.bad())
 	{
@@ -392,10 +396,13 @@ void SPSSImporter::reportFileProgress(SPSSStream::pos_type position, boost::func
 void SPSSImporter::setColumnScaleData(Column &column, size_t numCases, const SPSSColumn &spssCol)
 {
 	vector<double> values = spssCol.numerics;
-	while (values.size() < numCases)
-		values.push_back(NAN);
 	if (values.size() > numCases)
 		values.resize(numCases);
+	// Process any NAN values.
+	for (size_t i = 0; i < values.size(); i++)
+		values[i] = spssCol.missingChecker().processMissingValue(_floatInfo, values[i]);
+	while (values.size() < numCases)
+		values.push_back(NAN);
 	// Have the columns do most of the work.
 	column.setColumnAsScale(values);
 }
@@ -420,22 +427,24 @@ void SPSSImporter::setColumnLabeledData(Column &column, size_t numCases, const S
 {
 	column.labels().clear();
 
-	// Generate a lable for each unique floating point value.
+	// Add lables from the SPSS file first.
 	map<double, string> lbs;
-	for (size_t i = 0; i < numCases; ++i)
-		lbs.insert( pair<double, string>( spssCol.numerics[i], spssCol.format(spssCol.numerics[i])) );
-
-	// Add / overwrite any values in the lables header.
 	for (SPSSColumn::LabelByValueDict::const_iterator it = spssCol.spssLables.begin();
 			it != spssCol.spssLables.end(); ++it)
-	{
-		// Got an label for this value?
-		{
-			map<double, string>::iterator iv = lbs.find(it->first.dbl);
-			if (iv != lbs.end())
-				lbs.erase(iv);
-		}
 		lbs.insert( pair<double, string>(it->first.dbl, it->second) );
+
+	// Add labels for numeric values (if not already present)..
+	vector<bool> isMissing(numCases);
+	for (size_t i = 0; i < numCases; ++i)
+	{
+		if (spssCol.missingChecker().isMissingValue(_floatInfo, spssCol.numerics[i]) == false)
+		{
+			isMissing[i] = false;
+			if (lbs.find(spssCol.numerics[i]) == lbs.end())
+				lbs.insert( pair<double, string>( spssCol.numerics[i], spssCol.format(spssCol.numerics[i], _floatInfo)) );
+		}
+		else
+			isMissing[i] = true;
 	}
 
 	// Extract the data were are going to use.
@@ -448,21 +457,33 @@ void SPSSImporter::setColumnLabeledData(Column &column, size_t numCases, const S
 		// Generate an index value for each data point.
 		for (size_t i = 0; i < numCases; ++i)
 		{
-			// Find insert the index as a data point.
-			dataToInsert.push_back( distance(lbs.begin(), lbs.find(spssCol.numerics[i]) ) );
-			// pair the insrted value with a lable string.
-			labels.insert(pair<int, string>(dataToInsert.back(), lbs.find(spssCol.numerics[i])->second));
+			// Find insert the index as a data point, if not missing value.
+			if (isMissing[i])
+				dataToInsert.push_back(INT_MIN);
+			else
+			{
+				map<double, string>::iterator fltLabeI = lbs.find(spssCol.numerics[i]);
+				dataToInsert.push_back( distance(lbs.begin(), fltLabeI) );
+				// Pair the inserted value with a lable string.
+				labels.insert(pair<int, string>(dataToInsert.back(), fltLabeI->second));
+			}
 		}
 	}
 	else
 	{
-		// USe the raw data as the index to labels.
+		// Use the raw data as the index to labels.
 		for (size_t i = 0; i < numCases; ++i)
 		{
 			// insert the (rounded) value as the data point.
-			dataToInsert.push_back( static_cast<int>(spssCol.numerics[i]));
-			// pair the insrted value with a lable string.
-			labels.insert(pair<int, string>(dataToInsert.back(), lbs.find(spssCol.numerics[i])->second));
+			if (isMissing[i])
+				dataToInsert.push_back(INT_MIN);
+			else
+			{
+				dataToInsert.push_back( static_cast<int>(spssCol.numerics[i]) );
+				map<double, string>::iterator fltLabeI = lbs.find(spssCol.numerics[i]);
+				// pair the inserted value with a lable string.
+				labels.insert(pair<int, string>( static_cast<int>(fltLabeI->first), fltLabeI->second));
+			}
 		}
 	}
 
@@ -475,3 +496,4 @@ void SPSSImporter::setColumnLabeledData(Column &column, size_t numCases, const S
 	for (size_t i = 0; i < dataToInsert.size(); ++i, ++intInputItr)
 		*intInputItr = dataToInsert[i];
 }
+

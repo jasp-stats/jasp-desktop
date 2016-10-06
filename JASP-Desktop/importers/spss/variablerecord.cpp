@@ -54,7 +54,6 @@ VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileTy
 		_name = buffer;
 	}
 
-	// Works if has_var_label not yet endded.
 	if (has_var_label() != 0)
 	{
 		SPSSIMPORTER_READ_MEMBER(label_len, from, fixer);
@@ -65,7 +64,6 @@ VariableRecord::VariableRecord(const NumericConverter &fixer, RecordTypes fileTy
 			char * buffer = new char[ buffSize ];
 			from.read(buffer, buffSize);
 			_label.append(buffer, label_len());
-			DEBUG_COUT7("Created label \"", _label, "\" from buffer \"", buffer, "\" len ", label_len(), ".");
 			delete[] buffer;
 		}
 	}
@@ -94,11 +92,13 @@ void VariableRecord::process(SPSSColumns &columns)
 {
 
 	// check for string continuation.
-	if ((isStringContinuation()) && (dictIndex() > 0))
-	{
-		SPSSColumn &lastCol = columns.rend()->second;
-		if (lastCol.cellType() == SPSSColumn::cellString)
-			lastCol.incrementColumnSpan();
+	if (isStringContinuation())
+{
+		SPSSDictionary::reverse_iterator iter = columns.rbegin();
+		if (iter == columns.rend())
+			throw runtime_error("Programming error: invalid last column found in VariableRecord::process(SPSSColumns &).");
+		else if (iter->second.cellType() == SPSSColumn::cellString)
+			iter->second.incrementColumnSpan();
 
 //		DEBUG_COUT5("Existing column ", columns[columns.size()-1].spssName(), " spans ", columns[columns.size()-1].columnSpan(), " cols.");
 

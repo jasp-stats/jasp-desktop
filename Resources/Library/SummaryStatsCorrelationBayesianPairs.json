@@ -1,6 +1,7 @@
 {
 	"name": "SummaryStatsCorrelationBayesianPairs",
 	"autorun": true,
+	"usedata": false,
 	"version": "1.00",
 	"options": [
 		{

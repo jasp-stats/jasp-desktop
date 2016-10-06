@@ -15,57 +15,36 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-	File created by patrick, on 16-09-2016,
-	for class ConvertedStringContainer
-
+	File created by patrick, on 23-09-2016
+	Original file name was
 */
-
 
 #ifndef CONVERTEDSTRINGCONTAINER_H
 #define CONVERTEDSTRINGCONTAINER_H
 
 #include "codepageconvert.h"
 
-
 #include <set>
 
 class ConvertedStringContainer
 {
 public:
-
-	/**
-	  * @brief RecordRoot default Ctor
-	  *
-	  * When Constructing a FileHeaderRecord fileHEader is 0.
-	  */
 	ConvertedStringContainer();
-
-	ConvertedStringContainer(const 	ConvertedStringContainer &that);
-
+	ConvertedStringContainer(const ConvertedStringContainer &that);
 	~ConvertedStringContainer();
 
-
 	/**
-	 * @brief processAllStrings Calls processStrings(const SpssCPConvert) on all memeber of _stringholders.
+	 * @brief processAllStrings Calls processStrings(const SpssCPConvert) on all memeber of _records.
 	 * @param converter The convertor to pass on.
 	 */
 	static void processAllStrings(const CodePageConvert &converter);
 
-protected:
-	/**
-	 * @brief processStrings Converts any strings in the data fields.
-	 * @param dictData The
-	 *
-	 * Should be implemented in classes where holdStrings maybe or is true.
-	 *
-	 */
 	virtual void processStrings(const CodePageConvert &converter) = 0;
 
 private:
-	static void _addOne(ConvertedStringContainer *newOne);
-
-	static std::set<ConvertedStringContainer *> * _convertContainers; /** < Holds all instances where holdsStrings == true */
+	void _addOne(ConvertedStringContainer *newone);
+	static std::set<ConvertedStringContainer *> *_convertContainers;
 };
 
-
 #endif // CONVERTEDSTRINGCONTAINER_H
+
