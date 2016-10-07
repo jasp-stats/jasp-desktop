@@ -1328,8 +1328,7 @@
 	}
 
 	# sample from delta posterior
-	bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r,
-																				nullInterval = nullInterval)
+	bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
 	library(BayesFactor)
 	samples <- BayesFactor::posterior(model = bfObject, iterations = iterations,
 																		index = 1)
