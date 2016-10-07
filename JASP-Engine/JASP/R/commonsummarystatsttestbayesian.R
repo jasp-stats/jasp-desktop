@@ -1347,7 +1347,7 @@
 	} else if (!is.null(n2) && !paired) {
 		deltaHat <- t * sqrt((n1 + n2) / (n1 * n2))
 		df <- n1 + n2 - 2
-		sigmaStart <- sqrt((n1 + n2) / (n1 * n2))
+		sigmaStart <- sqrt((n1 * n2) / (n1 + n2))
 	}
 
 	if (sigmaStart < .01) {
