@@ -144,7 +144,7 @@
 
 		n2Value <- options$n2Size
 
-		if (options$n2Size==0 || is.null(options$n2Size)) {
+		if (options$n2Size == 0 || is.null(options$n2Size)) {
 			ready <- FALSE
 			n2Value <- "."
 		}
@@ -371,54 +371,6 @@
 	}
 
 	return(returnPlot)
-}
-
-
-.getBayesfactorTitle.summarystats.ttest <- function(bayesFactorType, hypothesis) {
-	# returns the Bayes factor title to be shown on the table
-	#
-	# Args:
-	#   bayesFactorType: the BF type selected by user
-	#   hypothesis: hypothesis type selected by user
-	#
-	# Output:
-	#   A list containing:
-	#     bftitle: title of Bayes factor to be used in the output table
-	#     BFH1H0: true if BF10 or Log(BF10) is selected
-
-	if (bayesFactorType == "BF01") {
-		BFH1H0 <- FALSE
-
-		if (hypothesis == "groupsNotEqual" || hypothesis == "notEqualToTestValue") {
-			bf.title <- "BF\u2080\u2081"
-		} else if (hypothesis == "groupOneGreater" || hypothesis == "greaterThanTestValue") {
-			bf.title <- "BF\u2080\u208A"
-		} else if (hypothesis == "groupTwoGreater" || hypothesis == "lessThanTestValue") {
-			bf.title <-  "BF\u2080\u208B"
-		}
-	} else if (bayesFactorType == "BF10") {
-		BFH1H0 <- TRUE
-
-		if (hypothesis == "groupsNotEqual" || hypothesis == "notEqualToTestValue") {
-			bf.title <- "BF\u2081\u2080"
-		} else if (hypothesis == "groupOneGreater" || hypothesis == "greaterThanTestValue") {
-			bf.title <- "BF\u208A\u2080"
-		} else if (hypothesis == "groupTwoGreater" || hypothesis == "lessThanTestValue") {
-			bf.title <- "BF\u208B\u2080"
-		}
-	} else if (bayesFactorType == "LogBF10") {
-		BFH1H0 <- TRUE
-
-		if (hypothesis == "groupsNotEqual" || hypothesis == "notEqualToTestValue") {
-			bf.title <- "Log(\u2009\u0042\u0046\u2081\u2080\u2009)"
-		} else if (hypothesis == "groupOneGreater" || hypothesis == "greaterThanTestValue") {
-			bf.title <-"Log(\u2009\u0042\u0046\u208A\u2080\u2009)"
-		} else if (hypothesis == "groupTwoGreater" || hypothesis == "lessThanTestValue") {
-			bf.title <- "Log(\u2009\u0042\u0046\u208B\u2080\u2009)"
-		}
-	}
-
-	return(list(bftitle = bf.title, BFH1H0 = BFH1H0))
 }
 
 
