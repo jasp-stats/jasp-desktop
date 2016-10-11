@@ -1328,8 +1328,7 @@
 	}
 
 	# sample from delta posterior
-	bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r,
-																				nullInterval = nullInterval)
+	bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
 	library(BayesFactor)
 	samples <- BayesFactor::posterior(model = bfObject, iterations = iterations,
 																		index = 1)
@@ -1348,7 +1347,7 @@
 	} else if (!is.null(n2) && !paired) {
 		deltaHat <- t * sqrt((n1 + n2) / (n1 * n2))
 		df <- n1 + n2 - 2
-		sigmaStart <- sqrt((n1 + n2) / (n1 * n2))
+		sigmaStart <- sqrt((n1 * n2) / (n1 + n2))
 	}
 
 	if (sigmaStart < .01) {
