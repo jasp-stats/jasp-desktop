@@ -90,10 +90,12 @@ private:
 
 	bool _isAuthenticated;
 	bool _isPaginationCall = false;
+	bool _isProjectPaginationCall = false;
 
 	void loadProjects();
 	void loadFilesAndFolders(QUrl url, int level);
 	void parseFilesAndFolders(QUrl url, int level, bool recursive = false);
+	void parseProjects(QUrl url, bool recursive = false);
 
 	int _level = 0;
 

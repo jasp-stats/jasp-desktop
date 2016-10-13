@@ -21,6 +21,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QFileInfo>
+#include <QMessageBox>
 
 #include "fsbmrecent.h"
 
@@ -165,7 +166,12 @@ FileEvent *OpenSaveWidget::save()
 	else
 	{
 		event = new FileEvent(this, FileEvent::FileSave);
-		event->setPath(_currentFilePath);
+		if (!event->setPath(_currentFilePath))
+		{
+			QMessageBox::warning(this, "File Types", event->getLastError());
+			event->setComplete(false, "Failed to open file from OSF");
+			return event;
+		}
 	}
 
 	dataSetIORequestHandler(event);

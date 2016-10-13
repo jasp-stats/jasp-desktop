@@ -44,6 +44,8 @@ AnovaRepeatedMeasuresBayesianForm::AnovaRepeatedMeasuresBayesianForm(QWidget *pa
 	_withinSubjectCellsListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
 	_withinSubjectCellsListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->repeatedMeasuresCells->setModel(_withinSubjectCellsListModel);
+	ui->repeatedMeasuresCells->viewport()->setAttribute(Qt::WA_Hover);
+	ui->repeatedMeasuresCells->setItemDelegate(new AnovaHoverDelegate(ui->repeatedMeasuresCells));
 
 	_betweenSubjectsFactorsListModel = new TableModelVariablesAssigned(this);
 	_betweenSubjectsFactorsListModel->setSource(&_availableVariablesModel);

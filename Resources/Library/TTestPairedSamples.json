@@ -65,6 +65,11 @@
 			"type": "Boolean"
 		},
 		{
+		  "name": "VovkSellkeMPR",
+		  "type": "Boolean",
+		  "default": false
+		},
+		{
 			"format": "%",
 			"max": 0.999,
 			"min": 0.000,

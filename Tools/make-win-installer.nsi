@@ -5,8 +5,8 @@
 !include "nsProcess.nsh"
 !include "x64.nsh"
 
-!define MAIN_VERSION "0.7.5"
-!define PATCH_NUM "6"
+!define MAIN_VERSION "0.8.0"
+!define PATCH_NUM "0"
 !define VERSION "${MAIN_VERSION}.${PATCH_NUM}"
 !define BETA ""
 !define APP_NAME "JASP"

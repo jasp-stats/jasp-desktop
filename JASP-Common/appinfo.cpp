@@ -18,9 +18,9 @@
 #include "appinfo.h"
 
 
-const Version AppInfo::version = Version(0, 8, 0, 102);
+const Version AppInfo::version = Version(0, 8, 0, 255);
 const std::string AppInfo::name = "JASP";
-const std::string AppInfo::builddate = "Thu Jul 14 2016 13:30:41 GMT+0100 (CET)";
+const std::string AppInfo::builddate = "Thu Oct 13 2016 12:10:11 GMT+0100 (CET)";
 
 std::string AppInfo::getShortDesc()
 {

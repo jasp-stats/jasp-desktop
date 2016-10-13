@@ -30,6 +30,8 @@
 #include "./spss/dictionaryterminationrecord.h"
 #include "./spss/datarecords.h"
 
+#include "./convertedstringcontainer.h"
+
 #include "sharedmemory.h"
 #include "dataset.h"
 #include "./spss/debug_cout.h"
@@ -202,10 +204,12 @@ void SPSSImporter::loadDataSet(
 		case rectype_unknown:
 		default:
         {
-            string msg("Unknown record type '");
-            msg.append(rec_type.c, sizeof(rec_type.c));
-            msg.append("' found.\nThe SAV importer cannot read this file.");
-            throw runtime_error(msg);
+			string msg("Unknown record type '"); msg.append(rec_type.c, sizeof(rec_type.c)); msg.append("' found.\n"
+				"The SAV importer cannot yet read this file.\n"
+				"Please report this error at \n"
+				"https://github.com/jasp-stats/jasp-desktop/issues\n"
+				"including a small sample .SAV file that produces this message.");
+			throw runtime_error(msg);
 			break;
 		}
         }
@@ -216,13 +220,14 @@ void SPSSImporter::loadDataSet(
 		throw runtime_error("No header found in .SAV file.");
 
 	// Now convert the string in the header that we are interested in.,
-	RecordRoot::processAllStrings(dictData.stringsConv());
+	ConvertedStringContainer::processAllStrings(dictData.stringsConv());
 
 	// read the data records from the file.
 	DataRecords data(dictData.numericsConv(), *_pFileHeaderRecord, dictData, stream, progress);
 	data.read(packageData);
 
 	dictData.processStringsPostLoad(progress);
+
 
 	DEBUG_COUT5("Read ", data.numDbls(), " doubles and ", data.numStrs(), " string cells.");
 
@@ -234,115 +239,82 @@ void SPSSImporter::loadDataSet(
 	// Set the data size
 	setDataSetSize(*packageData, dictData.numCases(), dictData.size());
 
-	// Now go fetch the data.
-	for (size_t i = 0; i < dictData.size(); i++)
-	{
-		SPSSColumn &spssCol = dictData[i];
-		Column &column = packageData->dataSet->column(i);
+	bool success;
+	do {
 
-		column.setName(spssCol.spssLabel());
-		column.setColumnType( spssCol.getJaspColumnType() );
-		column.labels().clear();
+		success = true;
+		try {
+			// Now go fetch the data.
+			int jaspColCount = 0;
+			for (SPSSDictionary::iterator colI = dictData.begin();
+				 (colI != dictData.end() ) && (jaspColCount < packageData->dataSet->columnCount());
+				 ++colI, ++jaspColCount)
+			{
+				SPSSColumn &spssCol = colI->second;
+				Column &column = packageData->dataSet->column(jaspColCount);
 
-		DEBUG_COUT3("Getting col: ", i, ",\n");
+				DEBUG_COUT3("Getting col: ", spssCol.spssRawColName(), ".\n");
 
-		{
-			switch(column.columnType())
-			{
-			default:	// Skip unknown columns
-				break;
-			case Column::ColumnTypeScale:
-			{
-				Column::Doubles::iterator doubleInputItr = column.AsDoubles.begin();
-				for (size_t row = 0; (row < dictData.numCases()) && (doubleInputItr != column.AsDoubles.end()) ; row++, doubleInputItr++)
+				column.setName(spssCol.spssColumnLabel());
+				column.setColumnType( spssCol.getJaspColumnType() );
+				column.labels().clear();
+
+				switch(column.columnType())
 				{
-					double val = spssCol.numerics[row];
-					DEBUG_COUT5(".. Row: ", row+1, ", dbl data: ", val, ",");
-					// Jasp uses a NAN as missing value.
-					*doubleInputItr = spssCol.missingChecker().processMissingValue(_floatInfo, val);
-				}
-			}
-				break;
-			case Column::ColumnTypeNominal:
-			case Column::ColumnTypeOrdinal:
-			{
-				Column::Ints::iterator intsInputItr = column.AsInts.begin();
-				for (size_t row = 0; (row < dictData.numCases()) && (intsInputItr != column.AsInts.end()) ; row++, intsInputItr++)
-				{
-					DEBUG_COUT5(".. Row: ", row+1, ", int data: ", spssCol.numerics[row], ",");
-					*intsInputItr = static_cast<int>(spssCol.numerics[row]);
-				}
-			}
-				break;
-			case Column::ColumnTypeNominalText:
-			{
-				if (spssCol.cellType() == SPSSColumn::cellDouble)
-				{
-					for (size_t i = 0; i < spssCol.numerics.size(); i++)
-						spssCol.strings.push_back( spssCol.format(spssCol.numerics[i]) );
-				}
-				map<int, int> indexes; // index keyed by row.
-				{
-					set<string> unique;
-					for (size_t i = 0; i < spssCol.strings.size(); i++)
+				default:	// Skip unknown columns
+					break;
+				case Column::ColumnTypeScale:
+					setColumnScaleData(column, dictData.numCases(), spssCol);
+					break;
+
+				case Column::ColumnTypeNominal:
+				case Column::ColumnTypeOrdinal:
+					setColumnLabeledData(column, dictData.numCases(), spssCol);
+					break;
+
+				case Column::ColumnTypeNominalText:
+					switch(spssCol.cellType())
 					{
-						if (spssCol.strings[i].size() != 0)
-							unique.insert(spssCol.strings[i]);
+					case SPSSColumn::cellString:
+						setColumnConvrtStringData(column, dictData.stringsConv(), spssCol);
+						break;
+
+					case SPSSColumn::cellDouble:
+						 // convert to UTF-8 strings.
+						spssCol.strings.clear();
+						for (size_t i = 0; i < spssCol.numerics.size(); i++)
+							spssCol.strings.push_back( spssCol.format(spssCol.numerics[i], _floatInfo) );
+						column.setColumnAsNominalString(spssCol.strings);
+						break;
 					}
-#ifndef QT_NO_DEBUG
-//					DEBUG_COUT3("Strings ex unique (N=", unique.size(), ")");
-//					for (set<string>::const_iterator  i = unique.begin(); i != unique.end(); i++)
-//					{
-//						DEBUG_COUT3("... \"", *i, "\".");
-//					}
-#endif				// Push all the unique values into the lables.
-					assert(column.labels().size() == 0);
-					for (set<string>::const_iterator i = unique.begin(); i != unique.end(); i++)
-						column.labels().add(*i);
-
-
-					// Build the indexes to the lables.
-					for (size_t row = 0; row < dictData.numCases(); row++)
-					{
-						set<string>::const_iterator is = unique.find(spssCol.strings[row]);
-						if ((is == unique.end()) || (is->length() == 0) || (*is == "") || (*is == " "))
-						{
-							indexes.insert( pair<int, int>(row, INT_MIN) );
-							DEBUG_COUT3(".. Row: ", row+1, ", index data: Not a value.");
-						}
-						else
-						{
-							indexes.insert( pair<int, int>(row, distance(unique.begin(), is)) );
-							DEBUG_COUT5(".. Row: ", row+1, ", index data: ", distance(unique.begin(), is), ".");
-						}
-					}
-
-					// Have done with strings in the dictionary - Ditch them.
-					spssCol.strings.clear();
-#ifndef QT_NO_DEBUG
-//					DEBUG_COUT3("Indexes (N=", indexes.size(), ")");
-//					for (map<int, int>::const_iterator  i = indexes.begin(); i != indexes.end(); i++)
-//					{
-//						DEBUG_COUT5("... row=", i->first, " index=", i->second, ".");
-//					}
-#endif
-				} // Done with unique.
-
-				Column::Ints::iterator intsInputItr = column.AsInts.begin();
-				for (size_t row = 0; (row < dictData.numCases()) && (intsInputItr != column.AsInts.end()); row++, intsInputItr++)
-				{
-					map<int, int>::iterator indexI = indexes.find(row);
-					assert(indexI != indexes.end());
-					*intsInputItr = indexI->second;
-#ifndef QT_NO_DEBUG
-					DEBUG_COUT5("Inserted index :", *intsInputItr, " for row :", row, ".");
-#endif
+					break;
 				}
-			}
-				break;
 			}
 		}
-	}
+		catch (boost::interprocess::bad_alloc &e)
+		{
+			try {
+
+				packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
+				success = false;
+			}
+			catch (boost::exception &e)
+			{
+				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
+			}
+		}
+		catch (std::exception e)
+		{
+			cout << "n " << e.what();
+			cout.flush();
+		}
+		catch (...)
+		{
+			cout << "something else\n ";
+			cout.flush();
+		}
+
+	} while (success == false);
 
 	if (stream.bad())
 	{
@@ -378,7 +350,7 @@ void SPSSImporter::setDataSetSize(DataSetPackage &dataSetPg, size_t rowCount, si
 				dataSetPg.dataSet = SharedMemory::enlargeDataSet(dataSetPg.dataSet);
 				retry = false;
 			}
-			catch (std::exception &e)
+			catch (std::exception e)
 			{
 				DEBUG_COUT2("SPSSImporter::setDataSetSize(), reallocating. std::exeption: ", e.what());
 				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
@@ -396,8 +368,6 @@ void SPSSImporter::setDataSetSize(DataSetPackage &dataSetPg, size_t rowCount, si
 		}
 	}
 	while (retry);
-
-
 }
 
 
@@ -416,5 +386,114 @@ void SPSSImporter::reportFileProgress(SPSSStream::pos_type position, boost::func
 		prgrss("Loading .SAV file", pg);
 		lastPC = thisPC;
 	}
+}
+
+/**
+ * @brief setColumnScaleData Sets floating point data into the column.
+ * @param column The columns to insert into.
+ * @param spssCol The Source of the data.
+ */
+void SPSSImporter::setColumnScaleData(Column &column, size_t numCases, const SPSSColumn &spssCol)
+{
+	vector<double> values = spssCol.numerics;
+	if (values.size() > numCases)
+		values.resize(numCases);
+	// Process any NAN values.
+	for (size_t i = 0; i < values.size(); i++)
+		values[i] = spssCol.missingChecker().processMissingValue(_floatInfo, values[i]);
+	while (values.size() < numCases)
+		values.push_back(NAN);
+	// Have the columns do most of the work.
+	column.setColumnAsScale(values);
+}
+
+/**
+ * @brief setColumnConvrtStringData Sets String data into the column.
+ * @param column The columns to insert into.
+ * @param numCases The number of cases.
+ * @param spssCol The Source of the data.
+ */
+void SPSSImporter::setColumnConvrtStringData(Column &column, CodePageConvert &strConvertor, spss::SPSSColumn &spssCol)
+{
+	// Code page convert all strings.
+	for (size_t i = 0; i < spssCol.strings.size(); ++i)
+		spssCol.strings[i] = strConvertor.convertCodePage(spssCol.strings[i]);
+
+	column.setColumnAsNominalString(spssCol.strings);
+}
+
+
+void SPSSImporter::setColumnLabeledData(Column &column, size_t numCases, const SPSSColumn &spssCol)
+{
+	column.labels().clear();
+
+	// Add lables from the SPSS file first.
+	map<double, string> lbs;
+	for (SPSSColumn::LabelByValueDict::const_iterator it = spssCol.spssLables.begin();
+			it != spssCol.spssLables.end(); ++it)
+		lbs.insert( pair<double, string>(it->first.dbl, it->second) );
+
+	// Add labels for numeric values (if not already present)..
+	vector<bool> isMissing(numCases);
+	for (size_t i = 0; i < numCases; ++i)
+	{
+		if (spssCol.missingChecker().isMissingValue(_floatInfo, spssCol.numerics[i]) == false)
+		{
+			isMissing[i] = false;
+			if (lbs.find(spssCol.numerics[i]) == lbs.end())
+				lbs.insert( pair<double, string>( spssCol.numerics[i], spssCol.format(spssCol.numerics[i], _floatInfo)) );
+		}
+		else
+			isMissing[i] = true;
+	}
+
+	// Extract the data were are going to use.
+	vector<int> dataToInsert;
+	map<int, string> labels;
+	// We cannot insert doubles as data valuesm and get labels
+	// for them to work (JASP limitation).
+	if (spssCol.containsFraction())
+	{
+		// Generate an index value for each data point.
+		for (size_t i = 0; i < numCases; ++i)
+		{
+			// Find insert the index as a data point, if not missing value.
+			if (isMissing[i])
+				dataToInsert.push_back(INT_MIN);
+			else
+			{
+				map<double, string>::iterator fltLabeI = lbs.find(spssCol.numerics[i]);
+				dataToInsert.push_back( distance(lbs.begin(), fltLabeI) );
+				// Pair the inserted value with a lable string.
+				labels.insert(pair<int, string>(dataToInsert.back(), fltLabeI->second));
+			}
+		}
+	}
+	else
+	{
+		// Use the raw data as the index to labels.
+		for (size_t i = 0; i < numCases; ++i)
+		{
+			// insert the (rounded) value as the data point.
+			if (isMissing[i])
+				dataToInsert.push_back(INT_MIN);
+			else
+			{
+				dataToInsert.push_back( static_cast<int>(spssCol.numerics[i]) );
+				map<double, string>::iterator fltLabeI = lbs.find(spssCol.numerics[i]);
+				// pair the inserted value with a lable string.
+				labels.insert(pair<int, string>( static_cast<int>(fltLabeI->first), fltLabeI->second));
+			}
+		}
+	}
+
+	// Insert the labels into the JASP data set.
+	for (map<int, string>::const_iterator it = labels.begin(); it != labels.end(); ++it)
+		column.labels().add(it->first, it->second);
+
+	// Insert the data into the data set.
+	Column::Ints::iterator intInputItr = column.AsInts.begin();
+	for (size_t i = 0; i < dataToInsert.size(); ++i, ++intInputItr)
+		*intInputItr = dataToInsert[i];
 }
 

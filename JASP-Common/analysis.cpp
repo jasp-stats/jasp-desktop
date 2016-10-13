@@ -26,12 +26,13 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string name, Options *options, Version version, bool autorun)
+Analysis::Analysis(int id, string name, Options *options, Version version, bool autorun, bool usedata)
 {
 	_id = id;
 	_name = name;
 	_options = options;
 	_autorun = autorun;
+	_usedata = usedata;
 	_version = version;
 
 	_revision = 0;
@@ -82,6 +83,11 @@ const Json::Value &Analysis::results() const
 const Json::Value &Analysis::userData() const
 {
 	return _userData;
+}
+
+void Analysis::reRun()
+{
+	optionsChangedHandler(NULL);
 }
 
 Analysis::Status Analysis::parseStatus(string name)
@@ -176,6 +182,11 @@ int Analysis::id() const
 bool Analysis::isAutorun() const
 {
 	return _autorun;
+}
+
+bool Analysis::useData() const
+{
+	return _usedata;
 }
 
 Options *Analysis::options() const

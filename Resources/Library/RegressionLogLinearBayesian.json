@@ -29,14 +29,14 @@
 		{
 			"name": "priorScale",
 			"type": "Number",
-			"value" : 0.001,
+			"value" : 0,
 			"min" : 0
 		},
 		{
 			"name": "priorShape",
 			"type": "Number",
-			"value" : 0.001,
-			"min" : 0
+			"value" : -1,
+			"min" : -1
 		},
 		{
 			"name": "maxModels",

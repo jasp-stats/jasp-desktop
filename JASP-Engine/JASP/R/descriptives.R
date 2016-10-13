@@ -1224,6 +1224,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
 			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y,
 																											xend=xend, yend=yend),
+																 size = 0.75,
 																 inherit.aes=FALSE),
 					 ggplot2::scale_y_continuous(breaks=b))
 		}
@@ -1282,6 +1283,19 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable is not numeric!")
 				splitPlot[["status"]] <- "complete"
 
+			} else if (!(options$splitPlotViolin || options$splitPlotBoxplot ||
+								 options$splitPlotJitter)) {
+
+					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+					plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
+							 ylab="")
+					axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
+					mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
+					splitPlot[["data"]] <- .endSaveImage(image)
+					splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: No plot type selected!")
+					splitPlot[["status"]] <- "complete"
+
+
 			} else {
 
 				if (is.null(dataset[[.v(options$splitby)]])){
@@ -1290,7 +1304,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					boxWidth <- 0.5
 					vioWidth <- 0.3
 				} else {
-					group <- as.factor(dataset[[.v(options$splitby)]])
+					group <- as.factor(dataset[[.v(options$splitby)]])[!is.na(dataset[[.v(options$variables[[i]])]])]
 					xlab <- options$splitby
 					boxWidth <- 1
 					vioWidth <- 0.6
@@ -1313,47 +1327,46 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				if (options$splitPlotColour){
 					p <- ggplot2::ggplot(plotDat, ggplot2::aes(x = group, y,
 																										 fill = group)) +
-						ggplot2::scale_fill_hue(c=60, l=80)
+						ggplot2::scale_fill_hue(c=60, l=80) +
+						ggplot2::scale_colour_hue(c=60, l=80)
 				} else {
 					p <- ggplot2::ggplot(plotDat, ggplot2::aes(x = group, y,
 																										 fill = group)) +
-						ggplot2::scale_fill_manual(values=rep("grey", nlevels(group)))
+						ggplot2::scale_fill_manual(values=rep("grey", nlevels(group))) +
+						ggplot2::scale_colour_manual(values=rep("grey", nlevels(group)))
 				}
 
 				if (options$splitPlotViolin && options$splitPlotBoxplot && options$splitPlotJitter){
 
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																				scale = "width") +
-						ggplot2::stat_boxplot(geom = "errorbar",
-																	stat_params = list(width = 0.2*(nlevels(group)*0.75),
-																	size = 0.75)) +
+						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2 )+
+
 						ggplot2::geom_boxplot(size = 0.75, width = boxWidth,
 																	outlier.shape = NA) +
 						ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																 fill = "transparent", scale = "width") +
 						ggplot2::geom_jitter(size = 2.5, shape = 1, stroke = 1,
-																 position=ggplot2::position_jitter(0.05),
+																 position = ggplot2::position_jitter(width=0.05, height = 0),
 																 fill = "transparent")
 
 				} else if (options$splitPlotBoxplot && options$splitPlotViolin){
 
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																				scale = "width") +
-						ggplot2::stat_boxplot(geom = "errorbar",
-																	stat_params = list(width = 0.2*(nlevels(group)*0.75),
-																	size = 0.75)) +
+						ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2 )+
+
 						ggplot2::geom_boxplot(size = 0.75, outlier.size = 1.5, width = boxWidth) +
 						ggplot2::geom_violin(trim = F, size = 0.75, width = vioWidth,
 																 fill = "transparent", scale = "width")
 
 				} else if (options$splitPlotBoxplot && options$splitPlotJitter) {
 
-					p <- p + ggplot2::stat_boxplot(geom = "errorbar",
-																				 stat_params = list(width = 0.2*(nlevels(group)*0.75),
-																				 size = 0.75)) +
+					p <- p + ggplot2::stat_boxplot(geom = "errorbar", size = 0.75, width = boxWidth/2 )+
+
 						ggplot2::geom_boxplot(size = 0.75, outlier.shape = NA, width = boxWidth) +
 						ggplot2::geom_jitter(size = 2.5, shape = 1, stroke = 1,
-																 position=ggplot2::position_jitter(0.05),
+																 position = ggplot2::position_jitter(width=0.05, height = 0),
 																 fill = "transparent")
 
 				} else if (options$splitPlotViolin && options$splitPlotJitter){
@@ -1361,7 +1374,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					p <- p + ggplot2::geom_violin(trim = F, size = 0.75, width = 0.75*boxWidth,
 																				scale = "width") +
 						ggplot2::geom_jitter(size = 2.5, shape = 1, stroke = 1,
-																 position=ggplot2::position_jitter(0.05),
+																 position = ggplot2::position_jitter(width=0.05, height = 0),
 																 fill = "transparent")
 
 				} else if (options$splitPlotViolin){
@@ -1371,28 +1384,18 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 				} else if (options$splitPlotBoxplot){
 
-					p <- p + ggplot2::stat_boxplot(geom = "errorbar",
-																				 stat_params = list(width = 0.2*(nlevels(group)*0.75),
-																				 size = 0.75)) +
+					p <- p + ggplot2::stat_boxplot(geom = "errorbar",size = 0.75, width = boxWidth/2 )+
+
 						ggplot2::geom_boxplot(size = 0.75, outlier.size = 1.5, width = boxWidth)
 
 				} else if (options$splitPlotJitter){
 
 					p <- p + ggplot2::geom_jitter(size = 2.5, ggplot2::aes(colour = group),
-																				position=ggplot2::position_jitter(0.1))
+																				position = ggplot2::position_jitter(width=0.1, height = 0))
 
-				} else {
-					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-					plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
-							 ylab="")
-					axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
-					mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
-					splitPlot[["data"]] <- .endSaveImage(image)
-					splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: No plot type selected!")
-					splitPlot[["status"]] <- "complete"
-					break
 				}
 
+				print("for loop has not been broken!")
 				if (options$splitPlotOutlierLabel && (options$splitPlotBoxplot || options$splitPlotJitter)){
 					p <- p + ggplot2::geom_text(ggplot2::aes(label=label), hjust=-0.3)
 				}
@@ -1406,14 +1409,10 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 						panel.grid.minor = ggplot2::element_blank(),
 						plot.title = ggplot2::element_text(size = 18),
 						panel.grid.major = ggplot2::element_blank(),
-						axis.title.x = ggplot2::element_text(size = 18, vjust=0.5),
-																								 #margin = ggplot2::margin(10, 0, 0, 0)),
-						axis.title.y = ggplot2::element_text(size = 18, vjust=0.5),
-																								 #margin = ggplot2::margin(0, 10, 0, 0)),
+						axis.title.x = ggplot2::element_text(size = 18, vjust=0.1),
+						axis.title.y = ggplot2::element_text(size = 18, vjust=0.9),
 						axis.text.x = ggplot2::element_text(size = 15),
-																								#margin = ggplot2::margin(1, 0, 0, 0)),
 						axis.text.y = ggplot2::element_text(size = 15),
-																								#margin = ggplot2::margin(0, 1, 0, 0)),
 						panel.background = ggplot2::element_rect(fill = "transparent", colour = NA),
 						plot.background = ggplot2::element_rect(fill = "transparent", colour = NA),
 						legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
@@ -1439,6 +1438,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		}
 	}
 
+	print(splitPlots)
   splitPlots
 
 }

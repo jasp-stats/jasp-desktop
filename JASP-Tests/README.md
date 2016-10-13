@@ -9,9 +9,11 @@ Guide to build Unit test project and run
 
 2) use qmake from terminal (in a different build directory)
 
+```
     qmake ../jasp-desktop/JASP.pro
     make 
     ./JASPTests
+```
 
 Adding new unit tests to the project
 ------------------------------------
@@ -35,3 +37,18 @@ Unit Tests in the project
 
 4) SPSS importer
 
+
+Analyses - Unit Tests
+=====================
+
+Running the tests
+-----------------
+
+Currently, the Analyses unit tests are not integrated into the JASP-Tests app. 
+To run the tests, R commandline is required. Working directory must point to JASP-Tests folder and then run 
+
+```
+source("run_tests.R")
+```
+
+Any test fails are shown up in the console.

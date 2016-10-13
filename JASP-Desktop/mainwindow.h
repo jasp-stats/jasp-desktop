@@ -146,6 +146,7 @@ private slots:
 	void updateUserDataHandler(int id, QString key);
 	void removeAnalysisRequestHandler(int id);
 	void removeAllAnalyses();
+	void refreshAllAnalyses();
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
 	void collapseSelected();
@@ -182,6 +183,7 @@ private slots:
 
 	void saveKeysSelected();
 	void openKeysSelected();
+	void refreshKeysSelected();
 
 	void illegalOptionStateChanged();
 	void fatalError();

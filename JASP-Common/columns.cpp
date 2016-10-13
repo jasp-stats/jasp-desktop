@@ -49,6 +49,7 @@ void Columns::setRowCount(int rowCount)
 
 void Columns::setColumnCount(int columnCount)
 {
+	_columnStore.reserve(columnCount);
 	for (int i = _columnStore.size(); i < columnCount; i++)
 		_columnStore.push_back(Column(_mem));
 }

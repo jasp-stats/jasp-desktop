@@ -18,6 +18,12 @@
 #ifndef AUTOMATEDTESTS_H
 #define AUTOMATEDTESTS_H
 
+#ifdef __APPLE__
+#define TESTFILE_FOLDER "../Resources/TestFiles/"
+#else
+#define TESTFILE_FOLDER "Resources/TestFiles/"
+#endif
+
 #include <QtWidgets>
 #include <QtTest/QtTest>
 #include <QList>

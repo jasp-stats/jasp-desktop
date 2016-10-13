@@ -230,10 +230,14 @@
 	rscaleCont <- "medium"      # sqrt(2)/4
 	
 	# MCMC iterations
-	if (options$sampleMode == "auto") {
-		iter <- 10000
-	} else if (options$sampleMode == "manual") {
-		iter <- options$fixedSamplesNumber
+	if (analysisType != "Regression") {
+		if (options$sampleMode == "auto") {
+			iter <- 10000
+		} else if (options$sampleMode == "manual") {
+			iter <- options$fixedSamplesNumber
+		}
+	} else {
+		iter <- NA
 	}
 	
 	if (analysisType == "ANOVA") {

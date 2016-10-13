@@ -35,7 +35,7 @@ public:
 
 	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error };
 
-	Analysis(int id, std::string name, Options *options, Version version, bool isAutorun = true);
+	Analysis(int id, std::string name, Options *options, Version version, bool isAutorun = true, bool usedata = true);
 	virtual ~Analysis();
 
 	Options *options() const;
@@ -53,6 +53,9 @@ public:
 	const std::string &name() const;
 	int id() const;
 	bool isAutorun() const;
+	bool useData() const;
+
+	void reRun();
 
 	virtual void abort();
 	void scheduleRun();
@@ -84,6 +87,7 @@ private:
 	std::string _name;
 	int _id;
 	bool _autorun;
+	bool _usedata;
 	Version _version;
 
 	int _revision;

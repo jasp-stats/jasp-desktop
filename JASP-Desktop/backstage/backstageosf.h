@@ -50,7 +50,7 @@ private slots:
 	void notifyDataSetOpened(QString path);
 	void saveClicked();
 
-	void openFile(const QString &nodePath, const QString &filename);
+	void openSaveFile(const QString &nodePath, const QString &filename);
 	void userDetailsReceived();
 	void openSaveCompleted(FileEvent* event);
 	void updateUserDetails();

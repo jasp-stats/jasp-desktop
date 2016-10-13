@@ -71,13 +71,13 @@ public:
 	/**
 	 * @brief SPSSIMPORTER_READ_ATTRIB The number of variable records found to date.
 	 */
-	SPSSIMPORTER_READ_ATTRIB(size_t, varRecordCount)
+	SPSSIMPORTER_READ_ATTRIB(size_t, rawVariableCount)
 
 	/**
 	 * @brief incVarRecordCount Found another one!
 	 * @return new value
 	 */
-	int32_t incVarRecordCount() { return _varRecordCount++; }
+	int32_t incRawVariableCount() { return _rawVariableCount++; }
 
 	/**
 	 * @brief process Manipulates columns by adding the contents of thie record.

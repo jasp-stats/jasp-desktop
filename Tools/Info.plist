@@ -8,15 +8,15 @@
 
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
-	
+
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
 
 	<key>CFBundleGetInfoString</key>
-	<string>0.7.5.5</string>
-	
+	<string>0.8.0.0</string>
+
 	<key>CFBundleShortVersionString</key>
-	<string>0.7.5.5</string>
+	<string>0.8.0.0</string>
 
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
@@ -38,13 +38,13 @@
 
 	<key>CFBundleIdentifier</key>
 	<string>org.jasp-stats.jasp</string>
-	
+
 	<key>LSMinimumSystemVersion</key>
 	<string>10.8.0</string>
-	
+
 	<key>CFBundleSignature</key>
 	<string>JASP</string>
-	
+
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -52,22 +52,22 @@
 			<array>
 				<string>jasp</string>
 			</array>
-			
+
 			<key>CFBundleTypeIconFile</key>
 			<string>icon.icns</string>
-			
+
 			<key>CFBundleTypeName</key>
 			<string>JASP Data Set</string>
-			
+
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-			
+
 			<key>LSHandlerRank</key>
 			<string>owner</string>
-			
+
 			<key>LSIsAppleDefaultForType</key>
 			<true/>
-			
+
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>org.jasp-stats.jasp</string>
@@ -88,7 +88,7 @@
 			</array>
 		</dict>
 	</array>
-	
+
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -109,9 +109,9 @@
 					<string>jasp</string>
 				</array>
 			</dict>
-			
+
 		</dict>
-		
+
 		<dict>
 
 			<key>UTTypeIdentifier</key>
@@ -127,12 +127,12 @@
 					<string>csv</string>
 				</array>
 			</dict>
-			
+
 			<key>UTTypeConformsTo</key>
 			<array/>
-			
+
 		</dict>
 	</array>
-		
+
 </dict>
 </plist>
