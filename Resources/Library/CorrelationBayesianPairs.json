@@ -8,6 +8,12 @@
 			"type": "VariablesGroups"
 		},
 		{
+			"name": "corcoefficient",
+			"options": [ "Pearson", "Kendall"],
+			"default": "Pearson",
+			"type": "List"
+		},
+		{
 			"name": "hypothesis",
 			"options": [ "correlated", "correlatedPositively", "correlatedNegatively" ],
 			"default": "correlated",
