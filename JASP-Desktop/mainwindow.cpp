@@ -1434,6 +1434,7 @@ void MainWindow::removeAllAnalyses()
 		for (Analyses::iterator itr = _analyses->begin(); itr != _analyses->end(); itr++)
 		{
 			Analysis *analysis = *itr;
+			if (analysis == NULL) continue;
 			removeAnalysis(analysis);
 		}
 	}
@@ -1443,7 +1444,9 @@ void MainWindow::refreshAllAnalyses()
 {
 	for (Analyses::iterator it = _analyses->begin(); it != _analyses->end(); ++it)
 	{
-		(*it)->reRun();
+		Analysis *analysis = *it;
+		if (analysis == NULL) continue;
+		analysis->reRun();
 	}
 }
 
