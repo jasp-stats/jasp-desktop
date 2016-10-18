@@ -22,10 +22,12 @@
 #include <sstream>
 #define private public
 
+#include <fstream>
+
 #include <QEventLoop>
 #include <QSignalSpy>
 #include <QMetaType>
-#include <fstream>
+
 #include "AutomatedTests.h"
 #include "backstage/fsbrowser.h"
 #include "backstage/fsbmosf.h"
@@ -42,24 +44,24 @@
 
 class OSFTest : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    FSBrowser *fs;
-    FSBMOSF *_model;
-    OnlineDataManager *_odm;
+	FSBrowser *fs;
+	FSBMOSF *_model;
+	OnlineDataManager *_odm;
 
-    bool authenticationTest(QString, QString);
-    void waitTillExists(QButtonGroup *);
+	bool authenticationTest(QString, QString);
+	void waitTillExists(QButtonGroup *);
 
 private slots:
-    void initTestCase();
-    void init();
-    void cleanup();
-    void cleanupTestCase();
-    void loginAuthenticationTest_data();
-    void loginAuthenticationTest();
-    void fileListTest();
+	void initTestCase();
+	void init();
+	void cleanup();
+	void cleanupTestCase();
+	void loginAuthenticationTest_data();
+	void loginAuthenticationTest();
+	void fileListTest();
 };
 
 DECLARE_TEST(OSFTest)

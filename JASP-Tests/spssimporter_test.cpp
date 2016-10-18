@@ -15,9 +15,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "spssimporter_test.h"
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
+
+#include "spssimporter_test.h"
 
 
 void SPSSImporterTest::init()
@@ -100,7 +101,7 @@ void SPSSImporterTest::copyToStructure(DataSetPackage *dsPackage, struct fileCon
 
 	//copy header names
 	std::vector<std::string> headerNames;
-	for(int i=0; i<fc->columns; ++i)
+	for (int i = 0; i < fc->columns; ++i)
 	{
 		headerNames.push_back(dsPackage->dataSet->column(i).name());
 	}
@@ -108,10 +109,10 @@ void SPSSImporterTest::copyToStructure(DataSetPackage *dsPackage, struct fileCon
 
 	//copy data
 	std::vector< std::vector<std::string> > fileRows;
-	for(int j=0; j<fc->rows; ++j)
+	for (int j = 0; j < fc->rows; ++j)
 	{
 		std::vector<std::string> tempRow;
-		for(int i=0; i<fc->columns; ++i)
+		for (int i = 0; i < fc->columns; ++i)
 		{
 			tempRow.push_back(dsPackage->dataSet->column(i)[j]);
 		}
@@ -127,31 +128,31 @@ void SPSSImporterTest::copyToStructure(DataSetPackage *dsPackage, struct fileCon
 /* checks if data read from spss file is same as in corresponding csv file */
 bool SPSSImporterTest::checkIfEqual(struct fileContent *fc1, struct fileContent *fc2)
 {
-	if(fc1->columns != fc2->columns)
+	if (fc1->columns != fc2->columns)
 	{
 		qDebug() << "Column size mismatch: " << QString::number(fc1->columns) << " " << QString::number(fc2->columns);
 		return false;
 	}
 
-	if(fc1->rows != fc2->rows)
+	if (fc1->rows != fc2->rows)
 	{
 		qDebug() << "Row size mismatch: " << QString::number(fc1->rows) << " " << QString::number(fc2->rows);
 		return false;
 	}
 
-	for(int i=0; i<fc2->columns; ++i)
+	for (int i = 0; i < fc2->columns; ++i)
 	{
-		if(QString::fromStdString(fc1->headers[i]) != QString::fromStdString(fc2->headers[i]))
+		if (QString::fromStdString(fc1->headers[i]) != QString::fromStdString(fc2->headers[i]))
 		{
 			// qDebug() << "Warning: Header name mismatch: " << QString::fromStdString(fc1->headers[i]) << " " << QString::fromStdString(fc2->headers[i]);
 			//return false;
 		}
 
-		for(int j=0; j<fc2->rows; ++j)
+		for (int j = 0; j < fc2->rows; ++j)
 		{
 			std::string str1 = fc1->data[j][i];
 			std::string str2 = fc2->data[j][i];
-			if(str1 != str2)
+			if (str1 != str2)
 			{
 				bool success = false;
 				try
