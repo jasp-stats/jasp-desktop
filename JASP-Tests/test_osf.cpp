@@ -15,24 +15,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "osf_test.h"
+#include "test_osf.h"
 #include "tempfiles.h"
 #include "processinfo.h"
 
 
-void OSFTest::initTestCase()
+void TestOSF::initTestCase()
 {
 
 }
 
-void OSFTest::init()
+void TestOSF::init()
 {
 	fs = new FSBrowser();
 	_model = new FSBMOSF();
 	_odm = new OnlineDataManager(this);
 }
 
-void OSFTest::cleanup()
+void TestOSF::cleanup()
 {
 	fs->~FSBrowser();
 	_model->~FSBMOSF();
@@ -40,14 +40,14 @@ void OSFTest::cleanup()
 }
 
 
-void OSFTest::cleanupTestCase()
+void TestOSF::cleanupTestCase()
 {
 
 }
 
 
 /* data for the loginAuthenticationTest function */
-void OSFTest::loginAuthenticationTest_data()
+void TestOSF::loginAuthenticationTest_data()
 {
 	QTest::addColumn<QString>("username");
 	QTest::addColumn<QString>("password");
@@ -63,7 +63,7 @@ void OSFTest::loginAuthenticationTest_data()
 }
 
 
-void OSFTest::loginAuthenticationTest()
+void TestOSF::loginAuthenticationTest()
 {
 	QFETCH(QString, username);
 	QFETCH(QString, password);
@@ -72,7 +72,7 @@ void OSFTest::loginAuthenticationTest()
 	QCOMPARE(authenticationTest(username, password), result);
 }
 
-bool OSFTest::authenticationTest(QString username, QString password)
+bool TestOSF::authenticationTest(QString username, QString password)
 {
 	_model->setOnlineDataManager(_odm);
 
@@ -94,7 +94,7 @@ bool OSFTest::authenticationTest(QString username, QString password)
 	return false;
 }
 
-void OSFTest::fileListTest()
+void TestOSF::fileListTest()
 {
 	tempfiles_init(ProcessInfo::currentPID()); //set the root path(directory)
 	qRegisterMetaType<FileEvent *>();//register the datatype FileEvent
@@ -151,7 +151,7 @@ void OSFTest::fileListTest()
 
 
 /* waits until the button is created */
-void OSFTest::waitTillExists(QButtonGroup *buttonGroup)
+void TestOSF::waitTillExists(QButtonGroup *buttonGroup)
 {
 	QTest::qWait(2000);
 

@@ -18,10 +18,10 @@
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
 
-#include "spssimporter_test.h"
+#include "test_spssimporter.h"
 
 
-void SPSSImporterTest::init()
+void TestSPSSImporter::init()
 {
 	fe_spss = new FileEvent();
 	asl_spss = new AsyncLoader();
@@ -30,7 +30,7 @@ void SPSSImporterTest::init()
 }
 
 
-void SPSSImporterTest::cleanup()
+void TestSPSSImporter::cleanup()
 {
 	fe_spss->~FileEvent();
 	asl_spss->~AsyncLoader();
@@ -39,7 +39,7 @@ void SPSSImporterTest::cleanup()
 }
 
 
-void SPSSImporterTest::spssTester_data()
+void TestSPSSImporter::spssTester_data()
 {
 	QTest::addColumn<QString>("filename");
 
@@ -56,7 +56,7 @@ void SPSSImporterTest::spssTester_data()
 }
 
 
-void SPSSImporterTest::spssTester()
+void TestSPSSImporter::spssTester()
 {
 	QFETCH(QString, filename);
 	qDebug() << "File: " << filename;
@@ -94,7 +94,7 @@ void SPSSImporterTest::spssTester()
 
 
 /* copy from the DataSetPackage to fileContents structure - required since dataset is deleted in the sharedmemory  */
-void SPSSImporterTest::copyToStructure(DataSetPackage *dsPackage, struct fileContent *fc)
+void TestSPSSImporter::copyToStructure(DataSetPackage *dsPackage, struct fileContent *fc)
 {
 	fc->columns = dsPackage->dataSet->columnCount();//copy column count
 	fc->rows = dsPackage->dataSet->rowCount();      //copy row count
@@ -126,7 +126,7 @@ void SPSSImporterTest::copyToStructure(DataSetPackage *dsPackage, struct fileCon
 
 
 /* checks if data read from spss file is same as in corresponding csv file */
-bool SPSSImporterTest::checkIfEqual(struct fileContent *fc1, struct fileContent *fc2)
+bool TestSPSSImporter::checkIfEqual(struct fileContent *fc1, struct fileContent *fc2)
 {
 	if (fc1->columns != fc2->columns)
 	{

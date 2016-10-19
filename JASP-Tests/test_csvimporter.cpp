@@ -15,28 +15,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "csvimporter_test.h"
+#include "test_csvimporter.h"
 #include "csviterator.h"
 
 
-void CSVImporterTest::initTestCase()
+void TestCSVImporter::initTestCase()
 {
 
 }
 
-void CSVImporterTest::cleanupTestCase()
+void TestCSVImporter::cleanupTestCase()
 {
 
 }
 
-void CSVImporterTest::init()
+void TestCSVImporter::init()
 {
 	fe = new FileEvent();
 	dsp = new DataSetPackage();
 	asl = new AsyncLoader();
 }
 
-void CSVImporterTest::cleanup()
+void TestCSVImporter::cleanup()
 {
 	// destroy all the objects created and delete the dataSet from the shared memory
 	SharedMemory::deleteDataSet(dsp->dataSet);
@@ -46,7 +46,7 @@ void CSVImporterTest::cleanup()
 	asl->~AsyncLoader();
 }
 
-void CSVImporterTest::csvTester_data()
+void TestCSVImporter::csvTester_data()
 {
 	QTest::addColumn<QString>("filename");
 	int count = 0;
@@ -65,7 +65,7 @@ void CSVImporterTest::csvTester_data()
 }
 
 
-void CSVImporterTest::csvTester()
+void TestCSVImporter::csvTester()
 {
 	QFETCH(QString, filename);
 
@@ -100,7 +100,7 @@ void CSVImporterTest::csvTester()
 
 
 /* checks if data read from file is same as the data stored in the shared memory */
-bool CSVImporterTest::checkIfEqual(struct fileContent *fc)
+bool TestCSVImporter::checkIfEqual(struct fileContent *fc)
 {
 	if (fc->columns != dsp->dataSet->columnCount())
 	{
@@ -144,7 +144,7 @@ bool CSVImporterTest::checkIfEqual(struct fileContent *fc)
 }
 
 /* read data from the file specified from path and store it in the struct fileContent */
-int CSVImporterTest::readDataFromCSV(QString path, struct fileContent *fc)
+int TestCSVImporter::readDataFromCSV(QString path, struct fileContent *fc)
 {
 	std::ifstream input(path.toStdString().c_str());
 	std::vector< std::vector<std::string> > fileRows;
@@ -197,7 +197,7 @@ int CSVImporterTest::readDataFromCSV(QString path, struct fileContent *fc)
 	}
 }
 
-std::string CSVImporterTest::roundTo6Digits(double x, int n)
+std::string TestCSVImporter::roundTo6Digits(double x, int n)
 {
 	char buff[32];
 	sprintf(buff, "%.*g", n, x);
@@ -205,7 +205,7 @@ std::string CSVImporterTest::roundTo6Digits(double x, int n)
 	return cppString;
 }
 
-bool CSVImporterTest::checkIfNumeric(std::string word)
+bool TestCSVImporter::checkIfNumeric(std::string word)
 {
 	std::string::const_iterator it = word.begin();
 	bool decimalPoint = false;

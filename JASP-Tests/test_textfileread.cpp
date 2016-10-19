@@ -15,12 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "textfileread_test.h"
+#include "test_textfileread.h"
 
 
-void TextFileReadTest::initTestCase()
+void TestTextFileRead::initTestCase()
 {
-	if (boost::filesystem::exists(TESTFILE_FOLDER "textfileread_test"))
+	if (boost::filesystem::exists(TESTFILE_FOLDER "test_textfileread"))
 	{
 		folderPathFound = true;
 	}
@@ -30,19 +30,19 @@ void TextFileReadTest::initTestCase()
 	}
 }
 
-void TextFileReadTest::cleanupTestCase()
+void TestTextFileRead::cleanupTestCase()
 {
 
 }
 
-void TextFileReadTest::init()
+void TestTextFileRead::init()
 {
 	fe = new FileEvent();
 	dsp = new DataSetPackage();
 	asl = new AsyncLoader();
 }
 
-void TextFileReadTest::cleanup()
+void TestTextFileRead::cleanup()
 {
 	if (dsp->dataSet != NULL)
 	{
@@ -55,7 +55,7 @@ void TextFileReadTest::cleanup()
 	asl->~AsyncLoader();
 }
 
-void TextFileReadTest::asyncloaderTester_data()
+void TestTextFileRead::asyncloaderTester_data()
 {
 	if (!folderPathFound)
 	{
@@ -63,7 +63,7 @@ void TextFileReadTest::asyncloaderTester_data()
 	}
 
 	QTest::addColumn<QString>("filename");
-	boost::filesystem::path _path(TESTFILE_FOLDER "textfileread_test");
+	boost::filesystem::path _path(TESTFILE_FOLDER "test_textfileread");
 
 	//add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
 	for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++)
@@ -76,7 +76,7 @@ void TextFileReadTest::asyncloaderTester_data()
 }
 
 
-void TextFileReadTest::asyncloaderTester()
+void TestTextFileRead::asyncloaderTester()
 {
 	if (folderPathFound)
 	{
@@ -84,7 +84,7 @@ void TextFileReadTest::asyncloaderTester()
 		qDebug() << "File: " << filename;
 
 		//text file open
-		QString folderPath = TESTFILE_FOLDER "textfileread_test/";
+		QString folderPath = TESTFILE_FOLDER "test_textfileread/";
 		QString _path = folderPath.append(filename);
 
 		struct fileContent fc;
@@ -114,7 +114,7 @@ void TextFileReadTest::asyncloaderTester()
 
 
 /* checks if data read from file is same as the data stored in the shared memory */
-bool TextFileReadTest::checkIfEqual(struct fileContent *fc)
+bool TestTextFileRead::checkIfEqual(struct fileContent *fc)
 {
 	if (fc->columns != dsp->dataSet->columnCount())
 	{
@@ -146,7 +146,7 @@ bool TextFileReadTest::checkIfEqual(struct fileContent *fc)
 }
 
 /* read data from the file specified from path and store it in the struct fileContent */
-int TextFileReadTest::readDataFromFile(std::string path, struct fileContent *fc)
+int TestTextFileRead::readDataFromFile(std::string path, struct fileContent *fc)
 {
 	std::ifstream input(path.c_str());
 	std::vector< std::vector<std::string> > fileRows;

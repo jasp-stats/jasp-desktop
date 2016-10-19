@@ -15,16 +15,21 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef SPSSIMPORTERTEST_H
-#define SPSSIMPORTERTEST_H
+#ifndef TESTCSVIMPORTER_H
+#define TESTCSVIMPORTER_H
 
 #pragma once
 #include <sstream>
 #define private public
 
+#include <fstream>
 #include <vector>
 #include <string>
 #include <boost/filesystem.hpp>
+#include <iomanip>
+#include <cstdio>
+
+#include <QSignalSpy>
 
 #include "AutomatedTests.h"
 #include "asyncloader.h"
@@ -34,7 +39,7 @@
 #include "datasetpackage.h"
 
 
-class SPSSImporterTest : public QObject
+class TestCSVImporter : public QObject
 {
 	Q_OBJECT
 
@@ -48,19 +53,25 @@ public:
 		std::vector< std::vector<std::string> > data;
 	};
 
-	FileEvent *fe_spss, *fe_csv;
-	AsyncLoader *asl_spss, *asl_csv;
+	FileEvent *fe;
+	DataSetPackage *dsp;
+	AsyncLoader *asl;
+	std::vector<bool> columnIsNumeric;
 
-	bool checkIfEqual(struct fileContent*, struct fileContent*);
-	void copyToStructure(DataSetPackage*, struct fileContent*);
+	bool checkIfEqual(struct fileContent *);
+	int readDataFromCSV(QString, struct fileContent*);
+	std::string roundTo6Digits(double, int);
+	bool checkIfNumeric(std::string);
 
 private slots:
+	void initTestCase();
+	void cleanupTestCase();
 	void init();
 	void cleanup();
-	void spssTester();
-	void spssTester_data();
+	void csvTester();
+	void csvTester_data();
 };
 
-DECLARE_TEST(SPSSImporterTest)
+DECLARE_TEST(TestCSVImporter)
 
-#endif // SPSSIMPORTERTEST_H
+#endif // TESTCSVIMPORTER_H

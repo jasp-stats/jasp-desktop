@@ -15,55 +15,52 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef OSFTEST_H
-#define OSFTEST_H
+#ifndef TESTSPSSIMPORTER_H
+#define TESTSPSSIMPORTER_H
 
 #pragma once
 #include <sstream>
 #define private public
 
-#include <fstream>
-
-#include <QEventLoop>
-#include <QSignalSpy>
-#include <QMetaType>
+#include <vector>
+#include <string>
+#include <boost/filesystem.hpp>
 
 #include "AutomatedTests.h"
-#include "backstage/fsbrowser.h"
-#include "backstage/fsbmosf.h"
-#include "backstage/fsbmodel.h"
-#include "backstage/fsentrywidget.h"
-#include "backstage/fsentry.h"
-#include "backstage/backstageosf.h"
-#include "sharedmemory.h"
-#include "onlinedatamanager.h"
-#include "fileevent.h"
 #include "asyncloader.h"
+#include "sharedmemory.h"
+#include "fileevent.h"
+#include "mainwindow.h"
 #include "datasetpackage.h"
 
 
-class OSFTest : public QObject
+class TestSPSSImporter : public QObject
 {
 	Q_OBJECT
 
 public:
-	FSBrowser *fs;
-	FSBMOSF *_model;
-	OnlineDataManager *_odm;
 
-	bool authenticationTest(QString, QString);
-	void waitTillExists(QButtonGroup *);
+	struct fileContent
+	{
+		int columns;
+		int rows;
+		std::vector <std::string> headers;
+		std::vector< std::vector<std::string> > data;
+	};
+
+	FileEvent *fe_spss, *fe_csv;
+	AsyncLoader *asl_spss, *asl_csv;
+
+	bool checkIfEqual(struct fileContent*, struct fileContent*);
+	void copyToStructure(DataSetPackage*, struct fileContent*);
 
 private slots:
-	void initTestCase();
 	void init();
 	void cleanup();
-	void cleanupTestCase();
-	void loginAuthenticationTest_data();
-	void loginAuthenticationTest();
-	void fileListTest();
+	void spssTester();
+	void spssTester_data();
 };
 
-DECLARE_TEST(OSFTest)
+DECLARE_TEST(TestSPSSImporter)
 
-#endif // OSFTEST_H
+#endif // TESTSPSSIMPORTER_H

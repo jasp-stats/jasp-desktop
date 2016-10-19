@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TEXTFILEREADTEST_H
-#define TEXTFILEREADTEST_H
+#ifndef TESTTEXTFILEREAD_H
+#define TESTTEXTFILEREAD_H
 
 #pragma once
 #include <sstream>
@@ -40,7 +40,7 @@
 #include "datasetpackage.h"
 
 
-class TextFileReadTest : public QObject
+class TestTextFileRead : public QObject
 {
 	Q_OBJECT
 
@@ -71,6 +71,6 @@ private slots:
 	void asyncloaderTester();
 };
 
-DECLARE_TEST(TextFileReadTest)
+DECLARE_TEST(TestTextFileRead)
 
-#endif // TEXTFILEREADTEST_H
+#endif // TESTTEXTFILEREAD_H

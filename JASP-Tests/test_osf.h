@@ -15,63 +15,55 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef CSVIMPORTERTEST_H
-#define CSVIMPORTERTEST_H
+#ifndef TESTOSF_H
+#define TESTOSF_H
 
 #pragma once
 #include <sstream>
 #define private public
 
 #include <fstream>
-#include <vector>
-#include <string>
-#include <boost/filesystem.hpp>
-#include <iomanip>
-#include <cstdio>
 
+#include <QEventLoop>
 #include <QSignalSpy>
+#include <QMetaType>
 
 #include "AutomatedTests.h"
-#include "asyncloader.h"
+#include "backstage/fsbrowser.h"
+#include "backstage/fsbmosf.h"
+#include "backstage/fsbmodel.h"
+#include "backstage/fsentrywidget.h"
+#include "backstage/fsentry.h"
+#include "backstage/backstageosf.h"
 #include "sharedmemory.h"
+#include "onlinedatamanager.h"
 #include "fileevent.h"
-#include "mainwindow.h"
+#include "asyncloader.h"
 #include "datasetpackage.h"
 
 
-class CSVImporterTest : public QObject
+class TestOSF : public QObject
 {
 	Q_OBJECT
 
 public:
+	FSBrowser *fs;
+	FSBMOSF *_model;
+	OnlineDataManager *_odm;
 
-	struct fileContent
-	{
-		int columns;
-		int rows;
-		std::vector <std::string> headers;
-		std::vector< std::vector<std::string> > data;
-	};
-
-	FileEvent *fe;
-	DataSetPackage *dsp;
-	AsyncLoader *asl;
-	std::vector<bool> columnIsNumeric;
-
-	bool checkIfEqual(struct fileContent *);
-	int readDataFromCSV(QString, struct fileContent*);
-	std::string roundTo6Digits(double, int);
-	bool checkIfNumeric(std::string);
+	bool authenticationTest(QString, QString);
+	void waitTillExists(QButtonGroup *);
 
 private slots:
 	void initTestCase();
-	void cleanupTestCase();
 	void init();
 	void cleanup();
-	void csvTester();
-	void csvTester_data();
+	void cleanupTestCase();
+	void loginAuthenticationTest_data();
+	void loginAuthenticationTest();
+	void fileListTest();
 };
 
-DECLARE_TEST(CSVImporterTest)
+DECLARE_TEST(TestOSF)
 
-#endif // CSVIMPORTERTEST_H
+#endif // TESTOSF_H
