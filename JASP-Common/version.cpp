@@ -157,7 +157,7 @@ string Version::asString() const
 
 	stream << (int)major;
 	stream  << "." << (int)minor;
-	if (revision != 0)
+	if (revision != 0 || build > 255 )
 		stream << "." << (int)revision;
 
 	if (isRelease()) {
