@@ -16,11 +16,12 @@
 //
 
 #include "appinfo.h"
+#include <QString>
 
-
-const Version AppInfo::version = Version(0, 8, 0, 255);
+const Version AppInfo::version = Version(0, 8, 0, 256);
 const std::string AppInfo::name = "JASP";
-const std::string AppInfo::builddate = "Thu Oct 13 2016 12:10:11 GMT+0100 (CET)";
+QString  compilationTime = QString("%1 %2").arg(__DATE__).arg(__TIME__) + " GMT+0200 (CET)";
+const std::string AppInfo::builddate = compilationTime.toStdString();
 
 std::string AppInfo::getShortDesc()
 {
