@@ -78,38 +78,36 @@ void TestTextFileRead::asyncloaderTester_data()
 
 void TestTextFileRead::asyncloaderTester()
 {
-	if (folderPathFound)
-	{
-		QFETCH(QString, filename);
-		qDebug() << "File: " << filename;
-
-		//text file open
-		QString folderPath = TESTFILE_FOLDER "test_textfileread/";
-		QString _path = folderPath.append(filename);
-
-		struct fileContent fc;
-		int error = readDataFromFile(_path.toUtf8().constData(), &fc);
-
-		if (error)
-		{
-			QVERIFY2(false, "File not found");        //file open failed
-		}
-		else
-		{
-			bool wasBlocked = fe->blockSignals(true); //block all signals emitted by the FileEvent object
-			fe->setPath(_path);
-
-			wasBlocked = asl->blockSignals(true);     //block all signals emitted by the Asyncloader object
-			asl->loadTask(fe, dsp);
-			asl->_thread.quit();
-
-			QVERIFY(checkIfEqual(&fc));               //test the opening and reading of text files
-		}
-	}
-	else
+	if (!folderPathFound)
 	{
 		QVERIFY2(false, "Folder path not found");
+		return;
 	}
+
+	QFETCH(QString, filename);
+	qDebug() << "File: " << filename;
+
+	//text file open
+	QString folderPath = TESTFILE_FOLDER "textfileread_test/";
+	QString _path = folderPath.append(filename);
+
+	struct fileContent fc;
+	int error = readDataFromFile(_path.toUtf8().constData(), &fc);
+
+	if (error)
+	{
+		QVERIFY2(false, "File not found");  //file open failed
+		return;
+	}
+
+	bool wasBlocked = fe->blockSignals(true);  //block all signals emitted by the FileEvent object
+	fe->setPath(_path);
+
+	wasBlocked = asl->blockSignals(true);  //block all signals emitted by the Asyncloader object
+	asl->loadTask(fe, dsp);
+	asl->_thread.quit();
+
+	QVERIFY(checkIfEqual(&fc));  //test the opening and reading of text files
 }
 
 
