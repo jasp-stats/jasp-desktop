@@ -52,18 +52,18 @@ linux {
 
 SOURCES += \
     main.cpp \
-    test_textfileread.cpp \
-    test_osf.cpp \
-    test_spssimporter.cpp \
-    test_csvimporter.cpp
+    test_textfileread.cpp
+#    test_osf.cpp \
+#    test_spssimporter.cpp \
+#    test_csvimporter.cpp
 
 HEADERS += \
     AutomatedTests.h \
     test_textfileread.h \
-    test_osf.h \
-    csviterator.h \
-    test_spssimporter.h \
-    test_csvimporter.h
+#    test_osf.h \
+    csviterator.h
+#    test_spssimporter.h \
+#    test_csvimporter.h
 
 HELP_PATH = $${PWD}/../Docs/help
 RESOURCES_PATH = $${PWD}/../Resources

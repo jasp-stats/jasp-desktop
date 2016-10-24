@@ -18,225 +18,181 @@
 #include "test_textfileread.h"
 
 
-void TestTextFileRead::initTestCase()
-{
-	if (boost::filesystem::exists(TESTFILE_FOLDER "test_textfileread"))
-	{
+void TestTextFileRead::initTestCase() {
+
+	bool folderPathFound;
+
+	if (boost::filesystem::exists(TESTFILE_FOLDER "test_textfileread")) {
 		folderPathFound = true;
-	}
-	else
-	{
+	} else {
 		folderPathFound = false;
 	}
+
+	QVERIFY2(folderPathFound, "Testfiles path not found");
 }
 
-void TestTextFileRead::cleanupTestCase()
-{
+void TestTextFileRead::init() {
 
-}
-
-void TestTextFileRead::init()
-{
-	fe = new FileEvent();
 	dsp = new DataSetPackage();
-	asl = new AsyncLoader();
 }
 
-void TestTextFileRead::cleanup()
-{
-	if (dsp->dataSet != NULL)
-	{
-		// destroy all the objects created and delete the dataSet from the shared memory
+void TestTextFileRead::cleanup() {
+	// Destroy all the objects created and delete the dataSet from the shared memory
+	if (dsp->dataSet != NULL) {
 		SharedMemory::deleteDataSet(dsp->dataSet);
 	}
 
-	fe->~FileEvent();
 	dsp->~DataSetPackage();
-	asl->~AsyncLoader();
 }
 
-void TestTextFileRead::asyncloaderTester_data()
-{
-	if (!folderPathFound)
-	{
-		return;
-	}
+void TestTextFileRead::csvImporterTest_data() {
 
 	QTest::addColumn<QString>("filename");
 	boost::filesystem::path _path(TESTFILE_FOLDER "test_textfileread");
 
-	//add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
-	for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++)
-	{
-		if (!boost::filesystem::is_directory(i->path())) //we eliminate directories
-		{
-			QTest::newRow("text file-read test") << QString::fromStdString(i->path().filename().string());
+	// Add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
+	for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++) {
+		// Directories are not considered
+		if (!boost::filesystem::is_directory(i->path())) {
+			QTest::newRow(i->path().filename().string().c_str()) << QString::fromStdString(i->path().filename().string());
 		}
 	}
 }
 
-
-void TestTextFileRead::asyncloaderTester()
-{
-	if (!folderPathFound)
-	{
-		QVERIFY2(false, "Folder path not found");
-		return;
-	}
+void TestTextFileRead::csvImporterTest() {
 
 	QFETCH(QString, filename);
-	qDebug() << "File: " << filename;
 
-	//text file open
-	QString folderPath = TESTFILE_FOLDER "textfileread_test/";
+	// Text file open
+	QString folderPath = TESTFILE_FOLDER "test_textfileread/";
 	QString _path = folderPath.append(filename);
 
 	struct fileContent fc;
-	int error = readDataFromFile(_path.toUtf8().constData(), &fc);
+	std::pair<int, std::string> error = readDataFromFile(_path.toUtf8().constData(), &fc);
 
-	if (error)
-	{
-		QVERIFY2(false, "File not found");  //file open failed
-		return;
-	}
+	QVERIFY2(error.first == 0, error.second.c_str());
 
-	bool wasBlocked = fe->blockSignals(true);  //block all signals emitted by the FileEvent object
-	fe->setPath(_path);
+	CSVImporter::loadDataSet(dsp, _path.toStdString(), boost::bind(&TestTextFileRead::emptyHandler, this, _1, _2));
 
-	wasBlocked = asl->blockSignals(true);  //block all signals emitted by the Asyncloader object
-	asl->loadTask(fe, dsp);
-	asl->_thread.quit();
-
-	QVERIFY(checkIfEqual(&fc));  //test the opening and reading of text files
+	std::pair<bool, std::string> isEqual = checkIfEqual(&fc);
+	QVERIFY2(isEqual.first, isEqual.second.c_str());
 }
 
+void TestTextFileRead::emptyHandler(std::string _1, int _2) {
+	// FIXME: test the calls to this function (mock the function)
+	// this function should be called from loadDataSet method in CSVImporter function
+}
 
 /* checks if data read from file is same as the data stored in the shared memory */
-bool TestTextFileRead::checkIfEqual(struct fileContent *fc)
-{
-	if (fc->columns != dsp->dataSet->columnCount())
-	{
-		return false;
+std::pair<bool, std::string> TestTextFileRead::checkIfEqual(struct fileContent *fc) {
+
+	// FIXME: make error messages more informative
+	if (fc->columns != dsp->dataSet->columnCount()) {
+		return std::make_pair(false, "Column size mismatch");
 	}
 
-	if (fc->rows != dsp->dataSet->rowCount())
-	{
-		return false;
+	if (fc->rows != dsp->dataSet->rowCount()) {
+		return std::make_pair(false, "Row size mismatch");
 	}
 
-	for (int i = 0; i<fc->columns; ++i)
-	{
-		if (fc->headers[i] != dsp->dataSet->column(i).name())
-		{
-			return false;
+	for (int i = 0; i < fc->columns; ++i) {
+
+		if (fc->headers[i] != dsp->dataSet->column(i).name()) {
+			return std::make_pair(false, "Column name mismatch");
 		}
 
-		for (int j = 0; j<fc->rows; ++j)
-		{
-			if (fc->data[j][i] != dsp->dataSet->column(i)[j])
-			{
-				return false;
+		for (int j = 0; j<fc->rows; ++j) {
+			if (fc->data[j][i] != dsp->dataSet->column(i)[j]) {
+				return std::make_pair(false, "Data mismatch");
 			}
 		}
 	}
 
-	return true;
+	return std::make_pair(true, "");
 }
 
-/* read data from the file specified from path and store it in the struct fileContent */
-int TestTextFileRead::readDataFromFile(std::string path, struct fileContent *fc)
-{
-	std::ifstream input(path.c_str());
+/* Read data from the file specified from path and store it in the struct fileContent */
+std::pair<int, std::string> TestTextFileRead::readDataFromFile(std::string path, struct fileContent *fc) {
+
+	std::ifstream infile(path.c_str());
+
+	if (!infile.is_open()) {
+		return std::make_pair(1, "File open failed");
+	}
+
+	char delimiter = '\t';
+	int numRows = 0, numCols = 0;
+	std::string line, currentWord;
+	std::vector<std::string> tempRow;
 	std::vector< std::vector<std::string> > fileRows;
 
-	int numCols = 0;
-	int numRows = 0;
-	char delimiter = '\t';
+	std::getline(infile, line);
+	std::istringstream buffer(line);
+	std::size_t found = line.find(delimiter);
 
-	if (input.is_open())
-	{
-		std::string line; //line from the file
-		std::string currentWord;
-		std::vector<std::string> tempRow;
+	// determine the delimiter
+	if (found == std::string::npos) {
+	  delimiter = ' ';
+	}
 
-		std::getline(input, line);
-		std::size_t found = line.find(delimiter);
+	while (std::getline(buffer, currentWord, delimiter)) {
+		numCols++;
+		tempRow.push_back(currentWord);
+	}
 
-		if (found == std::string::npos) // tab is not found, separater is space character
-		{
-			delimiter = ' ';
+	fc->columns = numCols;
+	fc->headers = tempRow;
+	buffer.clear();
+	tempRow.clear();
+
+	while (std::getline(infile, line)) {
+
+		numRows++;
+		buffer.str(line);
+		int numWordsCurrent = 1;
+
+		for (size_t i = 0; i < line.size(); ++i) {
+			if (line[i] == delimiter) {
+				numWordsCurrent++;
+			}
 		}
 
-		std::istringstream buffer(line);
-
-		while (std::getline(buffer, currentWord, delimiter)) //separate with respect to the delimiter
-		{
-			numCols++;
-			tempRow.push_back(currentWord);
-		}
-
-		fc->columns = numCols;
-		fc->headers = tempRow;
-		buffer.clear();
-		tempRow.clear();
-
-		while (std::getline(input, line))
-		{
-			numRows++;
-			buffer.str(line);
-
-			int numWordsCurrent = 1;
-			for (size_t i = 0; i < line.size(); ++i)
-			{
-				if (line[i] == delimiter)
-				{
-					numWordsCurrent++;
+		for (int i = 0; i < numWordsCurrent; ++i) {
+			std::getline(buffer, currentWord, delimiter);
+			bool valid = false;
+			// check if current word has letters/numbers
+			for (size_t j = 0; j < currentWord.size(); ++j) {
+				if (currentWord[j] != ' ' && currentWord[j] != '\t') {
+					valid = true;
+					break;
 				}
 			}
 
-			for (int i=0; i<numWordsCurrent; ++i)
-			{
-				std::getline(buffer, currentWord, delimiter);
-
-				bool valid = false;
-				//check if current word has letters/numbers
-				for (size_t j=0; j < currentWord.size(); ++j)
-				{
-					if (currentWord[j] != ' ' && currentWord[j] != '\t')
-					{
-						valid = true;
-						break;
-					}
-				}
-				if (valid)
-				{
-					tempRow.push_back(currentWord);
-				}
-				else
-				{
-					tempRow.push_back(".");
-				}
-			}
-
-			for (int i = numWordsCurrent; i < numCols; ++i)//fill remaining with '.'
-			{
+			if (valid) {
+				tempRow.push_back(currentWord);
+			} else {
 				tempRow.push_back(".");
 			}
-
-			fileRows.push_back(tempRow);
-			tempRow.clear();
-			buffer.clear();
 		}
 
-		fc->rows = numRows;
-		fc->data = fileRows;
+		// fill remaining with '.'
+		for (int i = numWordsCurrent; i < numCols; ++i) {
+			tempRow.push_back(".");
+		}
 
-		return 0;
- 	}
-	else
-	{
-		qDebug() << "File open failed";
-
-		return 1;
+		fileRows.push_back(tempRow);
+		tempRow.clear();
+		buffer.clear();
 	}
+
+	fc->rows = numRows;
+	fc->data = fileRows;
+
+	if (infile.bad()) {
+		return std::make_pair(1, "File read failed");
+	}
+
+	infile.close();
+
+	return std::make_pair(0, "");
 }

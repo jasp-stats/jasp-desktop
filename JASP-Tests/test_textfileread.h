@@ -19,25 +19,18 @@
 #define TESTTEXTFILEREAD_H
 
 #pragma once
-#include <sstream>
-#define private public
 
+#include <sstream>
 #include <fstream>
 #include <vector>
 #include <string>
+#include <utility>
 #include <boost/filesystem.hpp>
 
-#include <QSignalSpy>
-#if QT_VERSION > QT_VERSION_CHECK(5, 3, 0)
-#include <QSignalBlocker>
-#endif
-
 #include "AutomatedTests.h"
-#include "asyncloader.h"
 #include "sharedmemory.h"
-#include "fileevent.h"
-#include "mainwindow.h"
 #include "datasetpackage.h"
+#include "importers/csvimporter.h"
 
 
 class TestTextFileRead : public QObject
@@ -54,21 +47,18 @@ public:
 		std::vector< std::vector<std::string> > data;
 	};
 
-	FileEvent *fe;
 	DataSetPackage *dsp;
-	AsyncLoader *asl;
-	bool folderPathFound;
 
-	int readDataFromFile(std::string, struct fileContent*);
-	bool checkIfEqual(struct fileContent *);
+	std::pair<int, std::string> readDataFromFile(std::string, struct fileContent*);
+	std::pair<bool, std::string> checkIfEqual(struct fileContent *);
+	void emptyHandler(std::string, int);
 
 private slots:
 	void initTestCase();
-	void cleanupTestCase();
 	void init();
 	void cleanup();
-	void asyncloaderTester_data();
-	void asyncloaderTester();
+	void csvImporterTest_data();
+	void csvImporterTest();
 };
 
 DECLARE_TEST(TestTextFileRead)
