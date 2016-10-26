@@ -82,7 +82,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			stateqqPlot <- state$stateqqPlot
 		}
 				
-		if (is.list(diff) && diff[['plotHorizontalAxis']] == FALSE && diff[['plotSeparateLines']] == FALSE && diff[['plotSeparatePlots']] == FALSE &&
+		if (is.list(diff) && diff[['dependent']] == FALSE && diff[['plotHorizontalAxis']] == FALSE && diff[['plotSeparateLines']] == FALSE && diff[['plotSeparatePlots']] == FALSE &&
 			diff[['plotErrorBars']] == FALSE && !(diff[['errorBarType']] == TRUE && options$plotErrorBars == TRUE) &&
 			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
 			diff[['plotWidthDescriptivesPlotLegend']] == FALSE && diff[['plotWidthDescriptivesPlotLegend']] == FALSE &&
