@@ -1283,6 +1283,17 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable is not numeric!")
 				splitPlot[["status"]] <- "complete"
 
+				} else if (any(is.infinite(y))) {
+
+					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
+					plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
+							 ylab="")
+					axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
+					mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
+					splitPlot[["data"]] <- .endSaveImage(image)
+					splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity!")
+					splitPlot[["status"]] <- "complete"
+
 			} else if (!(options$splitPlotViolin || options$splitPlotBoxplot ||
 								 options$splitPlotJitter)) {
 
