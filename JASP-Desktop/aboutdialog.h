@@ -21,6 +21,7 @@
 
 #include <QDialog>
 #include <QAbstractButton>
+#include <QWebView>
 
 namespace Ui {
 class AboutDialog;
@@ -40,6 +41,7 @@ private slots:
 
 private:
 	Ui::AboutDialog *ui;
+	QWebView *_aboutWebView;
 };
 
 #endif // ABOUTDIALOG_H
