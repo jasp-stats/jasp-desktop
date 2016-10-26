@@ -617,7 +617,10 @@
 			}
 		}
 	}
-	modelTable [["title"]] <- paste ("Model Comparison - ", options$dependent, sep = "")
+	
+	if (is.null(status$analysis.type) || status$analysis.type != "rmANOVA") {
+		modelTable [["title"]] <- paste ("Model Comparison - ", options$dependent, sep = "")
+	}
 	modelTable [["data"]] <- rows
 	modelTable [["footnotes"]] <- as.list (footnotes)
 
@@ -781,7 +784,9 @@
 		effectsTable [["data"]] <- rows
 	}
 
- 	effectsTable [["title"]] <- paste ("Analysis of Effects - ", options$dependent, sep = "")
+	if (is.null(status$analysis.type) || status$analysis.type != "rmANOVA") {
+		effectsTable [["title"]] <- paste ("Analysis of Effects - ", options$dependent, sep = "")
+	}
 
 	if (!status$ready)
 		effectsTable [["error"]] <- list (errorType = "badData")
