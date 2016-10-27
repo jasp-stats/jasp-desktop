@@ -32,11 +32,14 @@ AboutDialog::AboutDialog(QWidget *parent) :
 {	
 	ui->setupUi(this);
 
+	_aboutWebView = new QWebView(this);
+	_aboutWebView->hide();
+
 	// Disable maximize option dialog
 	setWindowFlags(Qt::Tool | Qt::WindowTitleHint | Qt::WindowCloseButtonHint /* | Qt::WindowMaximizeButtonHint */ | Qt::CustomizeWindowHint);
 
-	ui->aboutWebView->setUrl((QUrl(QString("qrc:///core/about.html"))));
-	connect(ui->aboutWebView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
+	_aboutWebView->setUrl((QUrl(QString("qrc:///core/about.html"))));
+	connect(_aboutWebView, SIGNAL(loadFinished(bool)), this, SLOT(aboutPageLoaded(bool)));
 
  }
 
@@ -58,9 +61,9 @@ void AboutDialog::aboutPageLoaded(bool success)
 	{
 		QString version = tq(AppInfo::version.asString());
 		QString builddate = tq(AppInfo::builddate);
-		ui->aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
-		ui->aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
-		QString html = ui->aboutWebView->page()->mainFrame()->toHtml();
-		ui->label->setText(html);
+		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppVersion('" + version + "')");
+		_aboutWebView->page()->mainFrame()->evaluateJavaScript("window.setAppBuildDate('" + builddate +"')");
+		QString html = _aboutWebView->page()->mainFrame()->toHtml();
+		ui->label_2_About->setText(html);
 	}
 }
