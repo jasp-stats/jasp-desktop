@@ -200,7 +200,7 @@
             <item row="0" column="0">
              <widget class="BoundCheckBox" name="pearson">
               <property name="text">
-               <string>Pearson</string>
+               <string>Pearson's rho</string>
               </property>
              </widget>
             </item>
@@ -431,7 +431,7 @@
             <item row="0" column="0">
              <widget class="QLabel" name="label_3">
               <property name="text">
-               <string>Beta* prior width</string>
+               <string>Stretched beta prior width</string>
               </property>
              </widget>
             </item>

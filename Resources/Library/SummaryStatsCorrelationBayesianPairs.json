@@ -47,6 +47,11 @@
 			"type": "Boolean"
 		},
 		{
+			"default": false,
+			"name": "plotBayesFactorRobustnessAdditionalInfo",
+			"type": "Boolean"
+		},
+		{
 			"name": "bayesFactorType",
 			"options": [ "BF10", "BF01", "LogBF10" ],
 			"default": "BF10",

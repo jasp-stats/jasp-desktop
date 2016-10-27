@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>608</width>
+    <width>623</width>
     <height>496</height>
    </rect>
   </property>
@@ -318,7 +318,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Beta* prior width</string>
+               <string>Stretched beta prior width</string>
               </property>
              </widget>
             </item>

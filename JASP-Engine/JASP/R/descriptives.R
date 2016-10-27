@@ -1304,7 +1304,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					boxWidth <- 0.5
 					vioWidth <- 0.3
 				} else {
-					group <- as.factor(dataset[[.v(options$splitby)]])
+					group <- as.factor(dataset[[.v(options$splitby)]])[!is.na(dataset[[.v(options$variables[[i]])]])]
 					xlab <- options$splitby
 					boxWidth <- 1
 					vioWidth <- 0.6
