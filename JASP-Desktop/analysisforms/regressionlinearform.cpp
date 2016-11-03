@@ -84,11 +84,13 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->factors->hide();
 	ui->buttonAssignFactors->hide();
 	ui->label_13->hide();
+	ui->VovkSellkeMPR->hide();
 #else
     ui->missingValues->setStyleSheet("background-color: pink ;");
 	ui->factors->setStyleSheet("background-color: pink ;");
 	ui->buttonAssignFactors->setStyleSheet("background-color: pink ;");
 	ui->label_13->setStyleSheet("background-color: pink ;");
+	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
 #endif
 
 }

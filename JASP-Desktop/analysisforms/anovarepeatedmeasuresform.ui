@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>737</width>
-    <height>2884</height>
+    <height>3207</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1358,21 +1358,22 @@
       <property name="bottomMargin">
        <number>3</number>
       </property>
+      <item row="0" column="0">
+       <widget class="ExpanderButton" name="expanderOptions">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Additional Options</string>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="0" alignment="Qt::AlignLeft">
        <widget class="QWidget" name="containerOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
          <item row="0" column="0">
           <widget class="QWidget" name="groupCompareMainEffects" native="true">
            <layout class="QGridLayout" name="gridLayout_11">
@@ -1514,6 +1515,20 @@
             <string/>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="1" colspan="2">
+             <widget class="BoundCheckBox" name="descriptives">
+              <property name="text">
+               <string>Descriptive statistics</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" colspan="2">
+             <widget class="BoundCheckBox" name="effectSizeEstimates">
+              <property name="text">
+               <string>Estimates of effect size</string>
+              </property>
+             </widget>
+            </item>
             <item row="2" column="1" colspan="2">
              <widget class="QWidget" name="widgetEffectSizeTypes" native="true">
               <property name="enabled">
@@ -1553,17 +1568,16 @@
               </layout>
              </widget>
             </item>
-            <item row="1" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="effectSizeEstimates">
-              <property name="text">
-               <string>Estimates of effect size</string>
+            <item row="3" column="1">
+             <widget class="BoundCheckBox" name="VovkSellkeMPR">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-             </widget>
-            </item>
-            <item row="0" column="1" colspan="2">
-             <widget class="BoundCheckBox" name="descriptives">
               <property name="text">
-               <string>Descriptive statistics</string>
+               <string>Vovk-Sellke Maximum p-Ratio</string>
               </property>
              </widget>
             </item>
@@ -1571,19 +1585,6 @@
           </widget>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="ExpanderButton" name="expanderOptions">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Additional Options</string>
-        </property>
        </widget>
       </item>
      </layout>

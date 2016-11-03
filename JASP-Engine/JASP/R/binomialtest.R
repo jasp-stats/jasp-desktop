@@ -146,6 +146,7 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
 .binomialTable <- function(r, options, variables, perform){
 
   table <- list()
+	footnotes <- .newFootnotes()
   table[["title"]] <- "Binomial Test"
 
   fields <- list(
@@ -157,6 +158,18 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
          format="sf:4;dp:3"),
     list(name="p", title="p", type="number", format="dp:3;p:.001")
   )
+
+	if (options$VovkSellkeMPR) {
+    .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
+    <em>p</em>-Ratio: Based the <em>p</em>-value, the maximum
+    possible odds in favor of H\u2081 over H\u2080 equals
+    1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
+    (Sellke, Bayarri, & Berger, 2001).")
+    fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
+                                        title = "VS-MPR\u002A",
+                                        type = "number",
+                                        format = "sf:4;dp:3")
+ 	}
 
   if (options$confidenceInterval) {
 
@@ -174,9 +187,6 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
   }
 
   table[["schema"]] <- list(fields = fields)
-
-
-  footnotes <- .newFootnotes()
 
   if (options$hypothesis == "notEqualToTestValue") {
 
@@ -203,6 +213,11 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
   if (!is.null(r)){
 
     table[["data"]] <- r
+		if (options$VovkSellkeMPR){
+			for (row in 1:length(table[["data"]])){
+			  table[["data"]][[row]][["VovkSellkeMPR"]] <- .VovkSellkeMPR(table[["data"]][[row]][["p"]])
+			}
+		}
     table[["status"]] <- "complete"
 
   } else {
@@ -214,9 +229,16 @@ BinomialTest <- function(dataset = NULL, options, perform = "run",
     }
 
     for (var in variables){
-      data[[length(data) + 1]] <- list(case=var, level=".", counts=".",
-                                       total=".",  proportion=".", p=".",
-                                       lowerCI=".", upperCI=".")
+		  if (options$VovkSellkeMPR){
+				data[[length(data) + 1]] <- list(case=var, level=".", counts=".",
+                                         total=".",  proportion=".", p=".",
+                                         VovkSellkeMPR=".", lowerCI=".",
+																				 upperCI=".")
+		 	} else {
+				data[[length(data) + 1]] <- list(case=var, level=".", counts=".",
+	                                       total=".",  proportion=".", p=".",
+	                                       lowerCI=".", upperCI=".")
+			}
     }
 
     table[["data"]] <- data

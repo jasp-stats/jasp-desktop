@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
-    <height>1493</height>
+    <width>703</width>
+    <height>1949</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -417,14 +417,15 @@
          </item>
          <item row="0" column="1" colspan="2">
           <widget class="QWidget" name="groupOddsRatio" native="true">
-           <layout class="QGridLayout" name="gridLayout_22">
-            <property name="leftMargin">
-             <number>0</number>
-            </property>
-            <property name="verticalSpacing">
-             <number>0</number>
-            </property>
-            <item row="2" column="1">
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <widget class="BoundCheckBox" name="oddsRatio">
+              <property name="text">
+               <string>Log odds ratio  (2x2 only)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
              <widget class="QWidget" name="widgetOddsRatioConfidenceIntervalInterval" native="true">
               <property name="enabled">
                <bool>false</bool>
@@ -472,10 +473,16 @@
               </layout>
              </widget>
             </item>
-            <item row="1" column="0" colspan="2">
-             <widget class="BoundCheckBox" name="oddsRatio">
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="VovkSellkeMPR">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
-               <string>Log odds ratio  (2x2 only)</string>
+               <string>Vovk-Sellke Maximum p-Ratio</string>
               </property>
              </widget>
             </item>

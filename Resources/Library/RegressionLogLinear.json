@@ -38,6 +38,11 @@
 			"name": "regressionCoefficientsConfidenceIntervalsInterval",
 			"type": "Number",
 			"value": 0.950
+		},
+		{
+		  "name": "VovkSellkeMPR",
+		  "type": "Boolean",
+		  "default": false
 		}
 	]
 }

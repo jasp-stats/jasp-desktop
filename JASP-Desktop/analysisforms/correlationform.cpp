@@ -42,8 +42,10 @@ CorrelationForm::CorrelationForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->optionsWidget->hide();
+	ui->VovkSellkeMPR->hide();
 #else
 	ui->optionsWidget->setStyleSheet("background-color: pink ;");
+	ui->VovkSellkeMPR->setStyleSheet("background-color: pink ;");
 #endif
 
 	ui->confidenceIntervalsInterval->setLabel("Confidence intervals");

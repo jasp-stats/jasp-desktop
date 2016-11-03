@@ -19,13 +19,14 @@
 # Sellke, T., Bayarri, M.J., Berger, J.O. (2001) Calibration of p Values for
 # Testing Precise Null Hypotheses. The American Statistician. 55(1) 62-71
 .VovkSellkeMPR <- function(p){
-  # requires TWO-SIDED p-value! otherwise use .SellkeOROneSided
-  return(ifelse(p >= 1/exp(1), 1, 1/(-exp(1)*p*log(p))))
+  MPR <- ifelse(p >= 1/exp(1), 1, 1/(-exp(1)*p*log(p)))
+  if (is.nan(MPR)) MPR <- Inf
+  return(.clean(MPR))
 }
 
 # Type I error probability / posterior probability from same paper
 .VovkSellkeMPROneSided <- function(p){
   stop("This function should not be used. In for reference.")
   pTwoSided <- ifelse(p>=0.5,(1-p)*2,p*2)
-  return(.SellkeMPR(pTwoSided)*2*(1-p))
+  return(.VovkSellkeMPR(pTwoSided)*2*(1-p))
 }

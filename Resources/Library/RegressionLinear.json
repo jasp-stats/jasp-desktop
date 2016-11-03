@@ -169,6 +169,11 @@
 			"default": false,
 			"name": "plotResidualsQQ",
 			"type": "Boolean"
+		},
+		{
+		  "name": "VovkSellkeMPR",
+		  "type": "Boolean",
+		  "default": false
 		}
 	]
 }
