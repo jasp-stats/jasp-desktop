@@ -34,6 +34,7 @@ class BackStageWidget : public QWidget
 {
 	Q_OBJECT
 public:
+	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, Close};
 	explicit BackStageWidget(QWidget *parent = NULL);
 	void setOnlineDataManager(OnlineDataManager *odm);
 
@@ -61,7 +62,7 @@ private:
 
 	OpenSaveWidget *_openAndSaveWidget;
 
-	bool _dataSetHasPathAndIsntReadOnly;
+	bool _dataSetHasPathAndIsntReadOnly;	
 };
 
 #endif // BACKSTAGEWIDGET_H
