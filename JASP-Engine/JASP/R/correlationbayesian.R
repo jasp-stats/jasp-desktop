@@ -163,7 +163,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	  )} else if(pearson){
 	    correlation.table[["citation"]] <- list(
 	      "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2015). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
-    )} else if(kendall){
+    )} else if(kendallsTauB){
 	    correlation.table[["citation"]] <- list(
 	    "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
 	  )}
