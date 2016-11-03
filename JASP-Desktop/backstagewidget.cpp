@@ -64,19 +64,19 @@ BackStageWidget::BackStageWidget(QWidget *parent) : QWidget(parent)
 	_tabBar->addTab("Export Data");
 	_tabBar->addTab("Close");
 
-	_tabBar->setTabEnabled(1, false);
-	_tabBar->setTabEnabled(2, false);
-	_tabBar->setTabEnabled(3, false);
-	_tabBar->setTabEnabled(4, false);
-	_tabBar->setTabEnabled(5, false);
+	_tabBar->setTabEnabled(FileOperation::Save, false);
+	_tabBar->setTabEnabled(FileOperation::SaveAs, false);
+	_tabBar->setTabEnabled(FileOperation::ExportResults, false);
+	_tabBar->setTabEnabled(FileOperation::ExportData, false);
+	_tabBar->setTabEnabled(FileOperation::Close, false);
 
 	connect(_openAndSaveWidget, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequestHandler(FileEvent*)));
 	connect(_tabBar, SIGNAL(currentChanging(int,bool&)), this, SLOT(tabPageChanging(int,bool&)));
 }
 
 void BackStageWidget::analysisAdded(Analysis *analysis) {
-	_tabBar->setTabEnabled(2, true);
-	_tabBar->setTabEnabled(3, true);
+	_tabBar->setTabEnabled(FileOperation::SaveAs, true);
+	_tabBar->setTabEnabled(FileOperation::ExportResults, true);
 }
 
 void BackStageWidget::setOnlineDataManager(OnlineDataManager *odm)
@@ -123,24 +123,25 @@ void BackStageWidget::dataSetIORequestCompleted(FileEvent *event)
 		{
 			_dataSetHasPathAndIsntReadOnly = ! event->isReadOnly();
 
-			_tabBar->setTabEnabled(1, true); //Save
-			_tabBar->setTabEnabled(2, true); //Save As
-			_tabBar->setTabEnabled(3, true); //Export Results
-			_tabBar->setTabEnabled(4, true); //Export Data
-			_tabBar->setTabEnabled(5, true); //Close
+			_tabBar->setTabEnabled(FileOperation::Save, _dataSetHasPathAndIsntReadOnly); //Save
+			_tabBar->setTabEnabled(FileOperation::SaveAs, true); //Save As
+			_tabBar->setTabEnabled(FileOperation::ExportResults, true); //Export Results
+			_tabBar->setTabEnabled(FileOperation::ExportData, true); //Export Data
+			_tabBar->setTabEnabled(FileOperation::Close, true); //Close
 		}
 		else if (event->operation() == FileEvent::FileSave)
 		{
+			_tabBar->setTabEnabled(FileOperation::Save, true);
 			_dataSetHasPathAndIsntReadOnly = true;
 		}
 		else if (event->operation() == FileEvent::FileClose)
 		{
 			_dataSetHasPathAndIsntReadOnly = true;
-			_tabBar->setTabEnabled(1, false);
-			_tabBar->setTabEnabled(2, false);
-			_tabBar->setTabEnabled(3, false);
-			_tabBar->setTabEnabled(4, false);
-			_tabBar->setTabEnabled(5, false);
+			_tabBar->setTabEnabled(FileOperation::Save, false);
+			_tabBar->setTabEnabled(FileOperation::SaveAs, false);
+			_tabBar->setTabEnabled(FileOperation::ExportResults, false);
+			_tabBar->setTabEnabled(FileOperation::ExportData, false);
+			_tabBar->setTabEnabled(FileOperation::Close, false);
 		}
 	}
 }
