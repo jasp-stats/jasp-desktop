@@ -18,6 +18,11 @@
 			"default" : false
         },
         {
+        	"name": "averageInterItemCor",
+        	"type": "Boolean",
+			"default" : false
+        },
+        {
         	"name": "meanScale",
         	"type": "Boolean",
 			"default" : false

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>625</width>
-    <height>616</height>
+    <width>638</width>
+    <height>690</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -142,6 +142,27 @@
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout">
+         <item row="8" column="0">
+          <widget class="BoundCheckBox" name="sdScale">
+           <property name="text">
+            <string>Standard deviation</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="BoundCheckBox" name="meanScale">
+           <property name="text">
+            <string>Mean</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="BoundCheckBox" name="averageInterItemCor">
+           <property name="text">
+            <string>Average interitem Correlation</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="0">
           <widget class="BoundCheckBox" name="gutmannScale">
            <property name="text">
@@ -153,27 +174,6 @@
           <widget class="BoundCheckBox" name="alphaScale">
            <property name="text">
             <string>Cronbach's α</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="BoundCheckBox" name="sdScale">
-           <property name="text">
-            <string>Standard deviation</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="BoundCheckBox" name="meanScale">
-           <property name="text">
-            <string>Mean</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string/>
            </property>
           </widget>
          </item>
