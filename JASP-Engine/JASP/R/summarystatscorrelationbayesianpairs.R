@@ -98,6 +98,12 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 		}
 	}
 
+	if (options$correlationCoefficient == "pearsonRho") {
+		correlation.title <- "r"
+	} else if (options$correlationCoefficient == "kendallTau") {
+		correlation.title <- "t"
+	}
+
 	# populate the output table
 	meta <- list()
 	meta[[1]] <- list(name = "table", type = "table")
@@ -109,7 +115,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	fields <- list()
 	fields[[length(fields)+1]] <- list(name = "sampleSize", type = "number", title = "n")
 	fields[[length(fields)+1]] <- list(name = "pearsonsR", type = "number", format = "sf:4;dp:3",
-																			title = "r")
+																	title = correlation.title)
 	fields[[length(fields)+1]] <- list(name = "BF", type = "number", format = "sf:4;dp:3",
 																			title = bf.title)
 

@@ -19,14 +19,43 @@
 #include "summarystatscorrelationbayesianpairsform.h"
 #include "ui_summarystatscorrelationbayesianpairsform.h"
 
+
 SummaryStatsCorrelationBayesianPairsForm::SummaryStatsCorrelationBayesianPairsForm(QWidget *parent) :
 	AnalysisForm("SummaryStatsCorrelationBayesianPairsForm", parent),
 	ui(new Ui::SummaryStatsCorrelationBayesianPairsForm)
 {
 	ui->setupUi(this);
+	QSizePolicy retainKendallTau = ui->kendallTauValue->sizePolicy();
+	retainKendallTau.setRetainSizeWhenHidden(true);
+	ui->kendallTauValue->setSizePolicy(retainKendallTau);
+
+	QSizePolicy retainPearsonRho = ui->pearsonRhoValue->sizePolicy();
+	retainPearsonRho.setRetainSizeWhenHidden(true);
+	ui->pearsonRhoValue->setSizePolicy(retainPearsonRho);
+
+	ui->pearsonRho->setChecked(true);
+	ui->kendallTauValue->hide();
 }
 
 SummaryStatsCorrelationBayesianPairsForm::~SummaryStatsCorrelationBayesianPairsForm()
 {
 	delete ui;
+}
+
+void SummaryStatsCorrelationBayesianPairsForm::on_pearsonRho_clicked(bool checked)
+{
+    if (checked)
+    {
+        ui->pearsonRhoValue->show();
+        ui->kendallTauValue->hide();
+    }
+}
+
+void SummaryStatsCorrelationBayesianPairsForm::on_kendallTau_clicked(bool checked)
+{
+    if (checked)
+    {
+        ui->pearsonRhoValue->hide();
+        ui->kendallTauValue->show();
+    }
 }
