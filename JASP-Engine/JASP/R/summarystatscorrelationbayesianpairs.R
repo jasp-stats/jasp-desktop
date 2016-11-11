@@ -194,7 +194,8 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	# Check if available from previous state
 	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
 		(is.list(diff) && (diff$bayesFactorType == FALSE && diff$sampleSize == FALSE &&
-		diff$pearsonsR == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE )) &&
+		diff$correlationCoefficient == FALSE && diff$pearsonRhoValue == FALSE &&
+		diff$kendallTauValue == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE )) &&
 		plotType %in% state$plotTypes)) {
 
 		index <- which(state$plotTypes == plotType)
@@ -217,12 +218,21 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 			dontPlotData <- FALSE
 		}
 
+		if (options$correlationCoefficient == "pearsonRho") {
+			cor.value <- options$pearsonRhoValue
+			cor.coefficient <- "Pearson"
+		} else if (options$correlationCoefficient == "kendallTau") {
+			cor.value <- options$kendallTauValue
+			cor.coefficient <- "Kendall"
+		}
+
 		p <- try(silent = FALSE, expr = {
 			image <- .beginSaveImage(width, height)
 			.plotPosterior.correlation(
-						r = options$pearsonsR, n = options$sampleSize, oneSided = oneSided,
-						dontPlotData = dontPlotData, kappa = options$priorWidth, BFH1H0 = BFH1H0,
-						addInformation = options$plotPriorAndPosteriorAdditionalInfo, BF = bayesFactorObject$bf
+						r = cor.value, n = options$sampleSize, oneSided = oneSided,
+						corCoefficient = cor.coefficient, dontPlotData = dontPlotData,
+						kappa = options$priorWidth, BFH1H0 = BFH1H0, BF = bayesFactorObject$bf,
+						addInformation = options$plotPriorAndPosteriorAdditionalInfo
 					)
 			plot[["data"]] <- .endSaveImage(image)
 		})
@@ -289,7 +299,8 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	# if available, get the plot from state
 	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
 		(is.list(diff) && (diff$sampleSize == FALSE && BFtypeRequiresNewPlot == FALSE &&
-		diff$pearsonsR == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
+		diff$correlationCoefficient == FALSE && diff$pearsonRhoValue == FALSE &&
+		diff$kendallTauValue == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
 		plotType %in% state$plotTypes) {
 
 		index <- which(state$plotTypes == plotType)
@@ -320,12 +331,21 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 			dontPlotData <- TRUE
 		}
 
+		if (options$correlationCoefficient == "pearsonRho") {
+			cor.value <- options$pearsonRhoValue
+			cor.coefficient <- "Pearson"
+		} else if (options$correlationCoefficient == "kendallTau") {
+			cor.value <- options$kendallTauValue
+			cor.coefficient <- "Kendall"
+		}
+
 		# plot Bayes factor robustness
 		p <- try(silent = FALSE, expr = {
 			image <- .beginSaveImage(width, height)
 			.plotBF.robustnessCheck.correlation(
-				r = options$pearsonsR, n = options$sampleSize, oneSided = oneSided, BFH1H0 = BFH1H0,
-				kappa = options$priorWidth, dontPlotData = dontPlotData, BF10post = BF10post
+				r = cor.value, n = options$sampleSize, oneSided = oneSided, BFH1H0 = BFH1H0,
+				corCoefficient = cor.coefficient, kappa = options$priorWidth,
+				dontPlotData = dontPlotData, BF10post = BF10post
 			)
 
 			plot[["data"]] <- .endSaveImage(image)
@@ -363,19 +383,29 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	ready <- TRUE
 
 	sampleSizeValue <- options$sampleSize
-	pearsonsRValue <- options$pearsonsR
 
 	if (is.null(options$sampleSize) || options$sampleSize == 0) {
 		ready <- FALSE
 		sampleSizeValue <- "."
 	}
 
-	if (is.null(options$pearsonsR)) {
-		ready <- FALSE
-		pearsonsRValue <- "."
+	if (options$correlationCoefficient == "pearsonRho") {
+		cor.value <- options$pearsonRhoValue
+
+		if (is.null(options$pearsonRhoValue)) {
+			ready <- FALSE
+			cor.value <- "."
+		}
+	} else if (options$correlationCoefficient == "kendallTau") {
+		cor.value <- options$kendallTauValue
+
+		if (is.null(options$kendallTauValue)) {
+			ready <- FALSE
+			cor.value <- "."
+		}
 	}
 
-	row <- list(BF = ".", sampleSize = sampleSizeValue, pearsonsR = pearsonsRValue)
+	row <- list(BF = ".", sampleSize = sampleSizeValue, pearsonsR = cor.value)
 
 	return(list(ready = ready, row = row))
 }
@@ -395,22 +425,28 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	#         tooPeaked: whether it is too peaked to plot
 
 	some.n <- options$sampleSize
-	some.r <- options$pearsonsR
-
 	all.bfs <- list(bf10 = NA, bfPlus0 = NA, bfMin0 = NA)
-	method.number <- 1
 
-	while (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0))) && method.number <= 4) {
-		# Note: Try all normal methods
-		all.bfs <- .bfCorrieKernel(n = some.n, r = some.r, kappa = options$priorWidth,
-																method = method.number)
-		method.number <- method.number + 1
-	}
+	if (options$correlationCoefficient == "pearsonRho") {
+		some.r <- options$pearsonRhoValue
+		method.number <- 1
 
-	if (any(is.na(all.bfs))) {
-		# Note: all normal methods FAILED. Use Jeffreys approximation
-		all.bfs <- .bfCorrieKernel(n = some.n, r = some.r, kappa = options$priorWidth,
-																method = "jeffreysApprox")
+		while (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0))) && method.number <= 4) {
+			# Note: Try all normal methods
+			all.bfs <- .bfCorrieKernel(n = some.n, r = some.r, kappa = options$priorWidth,
+																	method = method.number)
+			method.number <- method.number + 1
+		}
+
+		if (any(is.na(all.bfs))) {
+			# Note: all normal methods FAILED. Use Jeffreys approximation
+			all.bfs <- .bfCorrieKernel(n = some.n, r = some.r, kappa = options$priorWidth,
+																	method = "jeffreysApprox")
+		}
+	} else if (options$correlationCoefficient == "kendallTau") {
+		some.r <- options$kendallTauValue
+		all.bfs <- .bfCorrieKernelKendallTau(tau = some.r, n = some.n, kappa = options$priorWidth,
+											var = 1)
 	}
 
 	some.bf10 <- all.bfs$bf10
@@ -457,8 +493,9 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	# If available from previous state, fetch it
 	if (!is.null(state) && !is.null(diff) && ((is.logical(diff) && diff == FALSE) ||
 			(is.list(diff) && (diff$bayesFactorType == FALSE && diff$sampleSize == FALSE &&
-			diff$pearsonsR == FALSE && diff$priorWidth == FALSE && diff$hypothesis == FALSE))) &&
-			!is.null(state$bayesFactorObject)) {
+			diff$correlationCoefficient == FALSE && diff$priorWidth == FALSE &&
+			diff$hypothesis == FALSE && diff$pearsonRhoValue == FALSE &&
+			diff$kendallTauValue == FALSE))) && !is.null(state$bayesFactorObject)) {
 
 		rowsCorrelationBayesianPairs <- state$rowsCorrelationBayesianPairs
 		bayesFactorObject <- state$bayesFactorObject
