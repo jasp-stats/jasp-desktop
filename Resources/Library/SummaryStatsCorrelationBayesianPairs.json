@@ -24,6 +24,12 @@
 			"type": "List"
 		},
 		{
+			"name": "correlationCoefficient",
+			"options": [ "kendallTau", "pearsonRho" ],
+			"default": "pearsonRho",
+			"type": "List"
+		},
+		{
 			"format": "",
 			"name": "priorWidth",
 			"type": "Number",
