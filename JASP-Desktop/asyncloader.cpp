@@ -89,13 +89,7 @@ void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
 	if (event->IsOnlineNode())
 		QMetaObject::invokeMethod(_odm, "beginDownloadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"));
 	else
-	{
-		qDebug() << "before call";
 		this->loadPackage("asyncloader");
-		qDebug() << "after call";
-	}
-
-	qDebug() << "end of loadtask";
 }
 
 void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
@@ -211,7 +205,6 @@ void AsyncLoader::loadPackage(QString id)
 			else
 			{
 				_loader.loadPackage(_currentPackage, path, "", boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-				qDebug() << "+++++++++done ++++++++";
 			}
 			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
 
