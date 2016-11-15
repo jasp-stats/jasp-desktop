@@ -16,6 +16,7 @@
 //
 
 #include "labels.h"
+#include "iostream"
 #include <boost/foreach.hpp>
 
 using namespace std;
@@ -65,12 +66,15 @@ const Label &Labels::labelFor(int raw) const
 			return entry.second;
 	}
 
+	std::cout << "Cannot find entry " << raw << std::endl;
+	BOOST_FOREACH(const LabelEntry &entry, _labels)
+	{
+		std::cout << "Label " << entry.first << ", " << "Value: " << entry.second.value() << ", Text: " << entry.second.text() << std::endl;
+		if (entry.first == raw)
+			return entry.second;
+	}
+	std::cout.flush();
 	throw runtime_error("Cannot find this entry");
-}
-
-const LabelEntry &Labels::at(int index) const
-{
-	return _labels.at(index);
 }
 
 void Labels::setLabel(int index, const std::string &display) {

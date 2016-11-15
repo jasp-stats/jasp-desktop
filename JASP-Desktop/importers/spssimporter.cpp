@@ -224,7 +224,7 @@ void SPSSImporter::loadDataSet(
 
 	// read the data records from the file.
 	DataRecords data(dictData.numericsConv(), *_pFileHeaderRecord, dictData, stream, progress);
-	data.read(packageData);
+	data.read();
 
 	dictData.processStringsPostLoad(progress);
 

@@ -22,9 +22,12 @@
 #include <QWidget>
 
 #include <QWebView>
+#include <QFileSystemWatcher>
+#include <QSettings>
 
 #include "verticaltabwidget.h"
 #include "fsbmrecent.h"
+#include "fsbmcurrent.h"
 #include "fsbmexamples.h"
 #include "fsbrowser.h"
 
@@ -37,17 +40,20 @@ class OpenSaveWidget : public QWidget
 {
 	Q_OBJECT
 public:
+	enum FileLocation {Recent = 0, Current, Computer, OSF, Examples};
+
 	explicit OpenSaveWidget(QWidget *parent = 0);
 
 	VerticalTabWidget *tabWidget();
 	void setSaveMode(FileEvent::FileMode mode);
 	void setOnlineDataManager(OnlineDataManager *odm);
+	bool changeTabIfCurrentFileEmpty();
 
 	FileEvent* open();
 	FileEvent* open(const QString &path);
 	FileEvent* save();
-	FileEvent *close();
-
+	void sync();
+	FileEvent *close();	
 public slots:
 	void dataSetIOCompleted(FileEvent *event);
 
@@ -58,11 +64,16 @@ private slots:
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetOpenRequestHandler(QString path);
 	void dataSetOpenExampleRequestHandler(QString path);
+	void dataSetOpenCurrentRequestHandler(QString path);
+	void setDataFileWatcher(bool watch);
+	void dataFileModifiedHandler(QString path);
 	void clearOnlineDataFromRecentList(int provider);
 	void tabWidgetChanged(int id);
+	void tabWidgetChanging(int index, bool &cancel);
 
 private:
-
+	void setCurrentDataFile(const QString &path);
+	bool checkSyncFileExists(const QString &path);
 	static bool clearOSFFromRecentList(QString path);
 	OnlineDataManager *_odm = NULL;
 
@@ -75,13 +86,17 @@ private:
 	VerticalTabWidget *_tabWidget;
 
 	FSBMRecent   *_fsmRecent;
+	FSBMCurrent   *_fsmCurrent;
 	FSBMExamples *_fsmExamples;
 
 	FSBrowser *_bsRecent;
+	FSBrowser *_bsCurrent;
 	BackstageComputer *_bsComputer;
 	BackstageOSF *_bsOSF;
 	FSBrowser *_bsExamples;
 
+	QFileSystemWatcher _watcher;
+	QSettings _settings;
 };
 
 #endif // OPENWIDGET_H

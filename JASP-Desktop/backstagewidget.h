@@ -34,7 +34,11 @@ class BackStageWidget : public QWidget
 {
 	Q_OBJECT
 public:
+#ifdef QT_DEBUG
+	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close};
+#else
 	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, Close};
+#endif
 	explicit BackStageWidget(QWidget *parent = NULL);
 	void setOnlineDataManager(OnlineDataManager *odm);
 
@@ -42,6 +46,7 @@ public:
 	FileEvent *open();
 	FileEvent *open(const QString &filepath);
 	FileEvent *save();
+	void sync();
 	FileEvent *close();
 
 signals:

@@ -29,14 +29,28 @@ using namespace boost::interprocess;
 using namespace boost;
 using namespace std;
 
+int Column::count = 0;
+
 Column::Column(managed_shared_memory *mem) :
 	_name(mem->get_segment_manager()),
 	_blocks(std::less<ull>(), mem->get_segment_manager()),
 	_labels(mem)
 {
+	id = ++count;
 	_mem = mem;
 	_rowCount = 0;
-	_columnType = Column::ColumnTypeNominal;
+	_columnType = Column::ColumnTypeNominal;	
+}
+
+Column::Column(const Column &col) :
+	_labels(col._labels),
+	_name(col._name),
+	_blocks(col._blocks)
+{
+	id = ++count;
+	_mem = col._mem;
+	_rowCount = col._rowCount;
+	_columnType = col._columnType;
 }
 
 Column::~Column()
@@ -382,36 +396,43 @@ void Column::setValue(int rowIndex, double value)
 
 string Column::operator [](int index)
 {
-	if (_columnType == Column::ColumnTypeScale)
-	{
-		double v = AsDoubles[index];
+	string result = ".";
 
-		if (v > DBL_MAX)
+	if (index < _rowCount)
+	{
+		if (_columnType == Column::ColumnTypeScale)
 		{
-			char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
-			return string(inf);
-		}
-		else if (v < -DBL_MAX)
-		{
-			char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
-			return string(ninf);
-		}
-		else if (std::isnan(v))
-		{
-			return ".";
+			double v = AsDoubles[index];
+
+			if (v > DBL_MAX)
+			{
+				char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
+				result = string(inf);
+			}
+			else if (v < -DBL_MAX)
+			{
+				char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
+				return string(ninf);
+			}
+			else if (std::isnan(v))
+			{
+				result = ".";
+			}
+			else
+			{
+				stringstream s;
+				s << v;
+				result = s.str();
+			}
 		}
 		else
 		{
-			stringstream s;
-			s << v;
-			return s.str();
+			int value = AsInts[index];
+			result = stringFromRaw(value);
 		}
 	}
-	else
-	{
-		int value = AsInts[index];
-		return stringFromRaw(value);
-	}
+
+	return result;
 }
 
 void Column::append(int rows)
@@ -438,12 +459,12 @@ void Column::append(int rows)
 	int rowsLeft = rows - room;
 	if (rowsLeft <= 0)
 	{
-		block->insert(block->rowCount(), rows);
+		block->insert(rows);
 		_rowCount += rows;
 		return;
 	}
 
-	block->insert(block->rowCount(), room);
+	block->insert(room);
 	_rowCount += room;
 
 	int newBlocksRequired = rowsLeft / DataBlock::capacity();
@@ -457,7 +478,7 @@ void Column::append(int rows)
 		DataBlock *newBlock = _mem->construct<DataBlock>(anonymous_instance)();
 
 		int toInsert = std::min(rowsLeft, DataBlock::capacity());
-		newBlock->insert(0, toInsert);
+		newBlock->insert(toInsert);
 		rowsLeft -= toInsert;
 
 		id += DataBlock::capacity();
@@ -475,6 +496,48 @@ void Column::append(int rows)
 	}
 }
 
+void Column::truncate(int rows)
+{
+	if (rows <= 0) return;
+
+	BlockMap::reverse_iterator itr = _blocks.rbegin();
+	DataBlock *block = itr->second.get();
+
+	int rowsToDelete = rows;
+
+	if (rowsToDelete > _rowCount)
+		rowsToDelete = _rowCount;
+
+	while (rowsToDelete > 0)
+	{
+		if (block->rowCount() >= rowsToDelete)
+		{
+			block->erase(rowsToDelete);
+			_rowCount -= rowsToDelete;
+			rowsToDelete = 0;
+		}
+		else
+		{
+			rowsToDelete -= block->rowCount();
+			_rowCount -= block->rowCount();
+			block->erase(block->rowCount());
+			//_mem->destroy_ptr<DataBlock>(block);
+			itr++;
+			if (itr == _blocks.rend())
+			{
+				std::cout << "Try to erase more blocks than existing!!" << std::endl;
+				std::cout.flush();
+				rowsToDelete = 0;
+				_rowCount = 0;
+			}
+			else
+			{
+				block = itr->second.get();
+			}
+		}
+	}
+}
+
 void Column::setColumnType(Column::ColumnType columnType)
 {
 	_columnType = columnType;
@@ -482,30 +545,10 @@ void Column::setColumnType(Column::ColumnType columnType)
 
 void Column::setRowCount(int rowCount)
 {
-	//std::cout << "setting row count, old " << _rowCount << " new " << rowCount << "\n";
-	//std::cout.flush();
-
-	if (rowCount == this->rowCount())
-		return;
-
 	if (rowCount > this->rowCount())
-	{
 		append(rowCount - this->rowCount());
-		return;
-	}
-
-	_rowCount = rowCount;
-
-	for (BlockMap::iterator itr = _blocks.upper_bound(rowCount); itr != _blocks.end(); itr++)
-	{
-		BlockEntry &entry = *itr;
-		DataBlock *block = entry.second.get();
-		_mem->destroy_ptr<DataBlock>(block);
-		entry.second = NULL;
-	}
-
-	_blocks.erase(_blocks.upper_bound(rowCount), _blocks.end());
-
+	else if (rowCount < this->rowCount())
+		truncate(this->rowCount() - rowCount);
 }
 
 Column::Ints::IntsStruct()
@@ -530,7 +573,9 @@ int& Column::IntsStruct::operator [](int rowIndex)
 
 	if (itr == parent->_blocks.end())
 	{
-		//qDebug() << "Column::Ints[], bad rowIndex";
+		std::cout << "Column::Ints[], bad rowIndex: " << rowIndex << std::endl;
+		std::cout << "Nb of blocks: " << parent->_blocks.size() << std::endl;
+		std::cout.flush();
 	}
 
 	int blockId = itr->first;

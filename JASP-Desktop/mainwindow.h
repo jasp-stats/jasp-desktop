@@ -183,6 +183,7 @@ private slots:
 
 	void saveKeysSelected();
 	void openKeysSelected();
+	void syncKeysSelected();
 	void refreshKeysSelected();
 
 	void illegalOptionStateChanged();

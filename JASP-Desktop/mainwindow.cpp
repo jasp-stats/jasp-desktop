@@ -120,6 +120,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
 	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
 	QObject::connect(openShortcut, SIGNAL(activated()), this, SLOT(openKeysSelected()));
+#ifdef QT_DEBUG
+	QShortcut *syncShortcut = new QShortcut(QKeySequence("Ctrl+Y"), this);
+	QObject::connect(syncShortcut, SIGNAL(activated()), this, SLOT(syncKeysSelected()));
+#endif
 	QShortcut *refreshShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
 	QObject::connect(refreshShortcut, SIGNAL(activated()), this, SLOT(refreshKeysSelected()));
 
@@ -368,6 +372,11 @@ void MainWindow::openKeysSelected()
 void MainWindow::refreshKeysSelected()
 {
 	refreshAllAnalyses();
+}
+
+void MainWindow::syncKeysSelected()
+{
+	ui->backStage->sync();
 }
 
 void MainWindow::illegalOptionStateChanged()
@@ -853,6 +862,12 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 		_loader.io(event, _package);
 		_progressIndicator->show();
 	}
+	else if (event->operation() == FileEvent::FileSyncData)
+	{
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
+		_loader.io(event, _package);
+		_progressIndicator->show();
+	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
 		if (_package->isModified())
@@ -899,6 +914,22 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			populateUIfromDataSet();
 			QString name =  QFileInfo(event->path()).baseName();
 			setWindowTitle(name);
+
+			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty())
+			{
+				QString dataFilePath = QString::fromStdString(_package->dataFilePath);
+				if (QFileInfo::exists(dataFilePath))
+				{
+					uint currentDataFileTimestamp = QFileInfo(dataFilePath).lastModified().toTime_t();
+					if (currentDataFileTimestamp > _package->dataFileTimestamp)
+						emit event->dataFileChanged(event->dataFilePath());
+				}
+				else
+				{
+					_package->dataFilePath = "";
+					_package->setModified(true);
+				}
+			}
 		}
 		else
 		{
@@ -927,7 +958,12 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			QMessageBox::warning(this, "", "Unable to save file.\n\n" + event->message());
 		}
 	}
-	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults) {
+	else if (event->operation() == FileEvent::FileSyncData)
+	{
+		showAnalysis = true;
+	}
+	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults)
+	{
 		showAnalysis = true;
 	}
 	else if (event->operation() == FileEvent::FileClose)
@@ -951,6 +987,13 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		{
 			_applicationExiting = false;
 		}
+	}
+
+	if (event->operation() == FileEvent::FileSyncData)
+	{
+		_tableModel->setDataSet(_package->dataSet);
+		ui->variablesPage->setDataSet(_package->dataSet);
+		refreshAllAnalyses();
 	}
 
 	if (showAnalysis)

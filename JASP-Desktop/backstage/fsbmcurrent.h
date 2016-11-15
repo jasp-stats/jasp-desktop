@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,23 +16,28 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "mainwindow.h"
-#include <QApplication>
-#include <QDialog>
-#include <QGridLayout>
-#include <QLayout>
-#include <QDebug>
+#ifndef FSBROWSERMODELCURRENT_H
+#define FSBROWSERMODELCURRENT_H
 
-#include "application.h"
+#include "fsbmodel.h"
 
-int main(int argc, char *argv[])
+#include <QSettings>
+
+#include "common.h"
+
+class FSBMCurrent : public FSBModel
 {
-	QCoreApplication::setOrganizationName("JASP");
-	QCoreApplication::setOrganizationDomain("jasp-stats.org");
-	QCoreApplication::setApplicationName("JASP");
+public:
+	FSBMCurrent(QObject *parent = NULL);
 
-	QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
+	void refresh() OVERRIDE;
 
-	Application a(argc, argv);
-	return a.exec();
-}
+	void setCurrent(const QString &path);
+	QString getCurrent() const;
+	bool isOnlineFile() const;
+
+private:
+	QString _current;
+};
+
+#endif // FSBROWSERMODELCURRENT_H

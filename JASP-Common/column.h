@@ -121,6 +121,7 @@ public:
 	} Doubles;
 
 	Column(boost::interprocess::managed_shared_memory *mem);
+	Column(const Column& col);
 	~Column();
 
 	std::string name() const;
@@ -133,6 +134,7 @@ public:
 	std::string operator[](int index);
 
 	void append(int rows);
+	void truncate(int rows);
 
 	Doubles AsDoubles;
 	Ints AsInts;
@@ -165,6 +167,9 @@ private:
 
 	BlockMap _blocks;
 	Labels _labels;
+
+	int id;
+	static int count;
 
 	void setRowCount(int rowCount);
 	std::string stringFromRaw(int value) const;

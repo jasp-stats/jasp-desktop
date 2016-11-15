@@ -44,12 +44,11 @@ public:
 
 	/**
 	 * @brief read Reads the values to the dataset.
-	 * @param dataSet The data set to write.
 	 */
-	void read(/* OUT */ DataSetPackage *dataSet);
+	void read();
 
 	size_t numDbls() const { return _numDbls; }
-	 size_t numStrs() const { return _numStrs; }
+	size_t numStrs() const { return _numStrs; }
 
 protected:
 	/*
@@ -70,16 +69,14 @@ protected:
 	};
 
 	/**
-	 * @brief readCompressed - Reads compressed data,
-	 * @param dataSet The data set to write.
+	 * @brief readCompressed - Reads compressed data
 	 */
-	void readCompressed(/* OUT */ DataSetPackage *dataSet);
+	void readCompressed();
 
 	/**
-	 * @brief readUncompressed - Reads uncompressed data,
-	 * @param dataSet The data set to write.
+	 * @brief readUncompressed - Reads uncompressed data
 	 */
-	void readUncompressed(/* OUT */ DataSetPackage *dataSet);
+	void readUncompressed();
 
 private:
 	/**

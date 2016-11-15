@@ -18,22 +18,23 @@
 #ifndef CSVIMPORTER_H
 #define CSVIMPORTER_H
 
-#include "datasetpackage.h"
+#include "importer.h"
 
-#include <boost/function.hpp>
+using namespace std;
 
-#include <string>
-#include <vector>
 
-class CSVImporter
+class CSVImporter : public Importer
 {
 public:
+	CSVImporter(DataSetPackage *packageData);
 
-	static void loadDataSet(DataSetPackage *packageData, const std::string &locator, boost::function<void (const std::string &, int)> progressCallback);
+protected:
+	virtual ImportDataSet* loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback);
+	virtual void initSharedMemoryColumn(ImportColumn *importColumn, Column &column);
 
 private:
-	static void initColumn(Column &column, const std::string &name, const std::vector<std::string> &cells);
-	static std::string deEuropeanise(const std::string &value);
+	string deEuropeanise(const string &value);
+
 };
 
 #endif // CSVIMPORTER_H

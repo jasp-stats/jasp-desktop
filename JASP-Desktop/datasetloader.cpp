@@ -27,26 +27,45 @@
 #include "importers/spssimporter.h"
 #include "importers/jaspimporter.h"
 
+#include <QFileInfo>
+#include <QSettings>
+
 using namespace boost::interprocess;
 using namespace boost;
 using namespace std;
 
-void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
-{
+string DataSetLoader::getExtension(const string &locator, const string &extension) {
 	filesystem::path path(locator);
 	string ext = path.extension().generic_string();
 
 	if (!ext.length()) ext=extension;
+	return ext;
+}
 
-	//compare case insensitive file extension to choose importer
-	if (boost::iequals(ext,".sav"))
+void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+{
+	string ext = getExtension(locator, extension);
+
+	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
+	{
+		CSVImporter importer = CSVImporter(packageData);
+		importer.loadDataSet(locator, progress);
+	}
+	else if (boost::iequals(ext,".sav"))
 		SPSSImporter::loadDataSet(packageData, locator, progress);
-	else if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
-		CSVImporter::loadDataSet(packageData, locator, progress);
 	else
 		JASPImporter::loadDataSet(packageData, locator, progress);
 }
 
+void DataSetLoader::syncPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+{
+	string ext = getExtension(locator, extension);
+	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
+	{
+		CSVImporter importer = CSVImporter(packageData);
+		importer.syncDataSet(locator, progress);
+	}
+}
 
 void DataSetLoader::freeDataSet(DataSet *dataSet)
 {

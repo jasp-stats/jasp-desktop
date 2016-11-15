@@ -18,6 +18,7 @@
 #ifndef FILEPACKAGE_H
 #define FILEPACKAGE_H
 
+#include "common.h"
 #include "dataset.h"
 #include "version.h"
 #include "lib_json/json.h"
@@ -39,6 +40,9 @@ public:
 
 	std::string id;
 	std::string initalMD5;
+
+	std::string dataFilePath;
+	uint dataFileTimestamp;
 
 	bool hasAnalyses;
 

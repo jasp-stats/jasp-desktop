@@ -24,17 +24,22 @@ DataBlock::DataBlock()
 	_rowCount = 0;
 }
 
-bool DataBlock::insert(int position, int rows)
+bool DataBlock::insert(int rows)
 {
 	if (_rowCount + rows > BLOCK_SIZE)
 		return false;
 
 	_rowCount += rows;
 
-	for (int i = _rowCount - 1; i >= position + rows; i--)
-		Data[i].d = Data[i - rows].d;
-
 	return true;
+}
+
+bool DataBlock::erase(int rows)
+{
+	if (_rowCount - rows < 0)
+		return false;
+
+	_rowCount -= rows;
 }
 
 int DataBlock::rowCount()
@@ -46,14 +51,3 @@ int DataBlock::capacity()
 {
 	return BLOCK_SIZE;
 }
-
-void DataBlock::moveTo(DataBlock *dest, int position, int rows)
-{
-	if (dest->insert(position, rows) == false)
-	{
-        //qDebug() << "could not move!";
-		return;
-	}
-
-}
-

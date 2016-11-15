@@ -323,7 +323,7 @@ void BackstageOSF::saveClicked()
 
 void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename)
 {
-	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode ==FileEvent::FileExportData);
+	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode == FileEvent::FileExportData);
 
 	FileEvent *event = new FileEvent(this, _mode);
 

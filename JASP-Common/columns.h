@@ -40,6 +40,7 @@ public:
 
 	Column& at(int index);
 	Column& get(std::string name);
+	void removeColumn(int index);
 
 	ColumnVector _columnStore;
 

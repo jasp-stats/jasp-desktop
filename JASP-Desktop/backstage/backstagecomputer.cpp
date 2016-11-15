@@ -57,15 +57,18 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 	else
 		browsePath = path;
 
-	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, "Data Sets (*.jasp *.csv *.txt *.sav)");
+	QString filter = "Data Sets (*.jasp *.csv *.txt *.sav)";
+	if (_mode == FileEvent::FileSyncData)
+		filter = "Data Sets (*.csv *.txt *.sav *.ods)";
+	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, filter);
 
-	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
+	FileEvent *event = new FileEvent(this, _mode);
 
 	if (finalPath != "")
 	{
 		event->setPath(finalPath);
 
-		if ( ! path.endsWith(".jasp", Qt::CaseInsensitive))
+		if ( ! path.endsWith(".jasp", Qt::CaseInsensitive) && _mode != FileEvent::FileSyncData)
 			event->setReadOnly();
 
 		emit dataSetIORequest(event);
@@ -105,6 +108,11 @@ FileEvent *BackstageComputer::browseSave(const QString &path, FileEvent::FileMod
 	{
 		caption = "Export Data as CSV";
 		filter = "CSV Files (*.csv *.txt)";
+	}
+	else if (mode==FileEvent::FileSyncData)
+	{
+		caption = "Sync Data";
+		filter = "Data Files (*.csv *.txt *.sav *.ods)";
 	}
 
 	QString finalPath = QFileDialog::getSaveFileName(this, caption, browsePath, filter);
@@ -154,7 +162,7 @@ bool BackstageComputer::eventFilter(QObject *object, QEvent *event)
 
 void BackstageComputer::selectionMade(QString path)
 {
-	if (_mode == FileEvent::FileOpen)
+	if (_mode == FileEvent::FileOpen || _mode == FileEvent::FileSyncData)
 		browseOpen(path);
 	else
 		browseSave(path, _mode);

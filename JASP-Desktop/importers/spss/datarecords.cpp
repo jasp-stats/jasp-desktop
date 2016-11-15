@@ -47,23 +47,21 @@ DataRecords::DataRecords(const NumericConverter &fixer, const FileHeaderRecord &
 
 /**
  * @brief read Reads the values to the dataset.
- * @param dataSet The data set to write.
  */
-void DataRecords::read(/* OUT */ DataSetPackage *dataSet)
+void DataRecords::read()
 {
 
 	if (_fileHeader.compressed() == 0)
-		readUncompressed(dataSet);
+		readUncompressed();
 	else
-		readCompressed(dataSet);
+		readCompressed();
 }
 
 
 /**
- * @brief readCompressed - Reads compressed data,
- * @param dataSet The data set to write.
+ * @brief readCompressed - Reads compressed data
  */
-void DataRecords::readCompressed(/* OUT */ DataSetPackage *dataSet)
+void DataRecords::readCompressed()
 {
 	unsigned char codes[ sizeof(Char_8) ];
 
@@ -111,10 +109,9 @@ void DataRecords::readCompressed(/* OUT */ DataSetPackage *dataSet)
 
 
 /**
- * @brief readUncompressed - Reads uncompressed data,
- * @param dataSet The data set to write.
+ * @brief readUncompressed - Reads uncompressed data
  */
-void DataRecords::readUncompressed(/* OUT */ DataSetPackage *dataSet)
+void DataRecords::readUncompressed()
 {
 //	DEBUG_COUT1("Reading UNCOMPRESSED data..");
 	while (_from.good())

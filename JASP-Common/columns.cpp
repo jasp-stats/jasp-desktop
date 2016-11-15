@@ -59,6 +59,19 @@ Column &Columns::at(int index)
 	return _columnStore.at(index);
 }
 
+void Columns::removeColumn(int index)
+{
+	int i = 0;
+	for (ColumnVector::iterator it = _columnStore.begin(); it != _columnStore.end(); ++it, ++i)
+	{
+		if (i == index)
+		{
+			_columnStore.erase(it);
+			break;
+		}
+	}
+}
+
 Columns::iterator Columns::begin()
 {
 	return _columnStore.begin();

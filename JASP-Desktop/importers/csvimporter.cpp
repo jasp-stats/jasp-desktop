@@ -16,38 +16,51 @@
 //
 
 #include "csvimporter.h"
-
+#include "csvimportcolumn.h"
+#include "csv.h"
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
-#include <iostream>
-
-#include "sharedmemory.h"
-#include "dataset.h"
-#include "csv.h"
 
 using boost::lexical_cast;
-using namespace boost::interprocess;
-using namespace std;
 
-void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator, boost::function<void(const string &, int)> progressCallback)
+CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
 {
-	packageData->isArchive = false;
+	_packageData->isArchive = false;
+}
 
+ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)
+{
+	ImportDataSet* result = new ImportDataSet();
+	vector<string> colNames;
 	CSV csv(locator);
 	csv.open();
 
-	vector<string> columns = vector<string>();
-	vector<vector<string> > cells = vector<vector<string> >();
+	csv.readLine(colNames);
+	vector<CSVImportColumn *> importColumns;
+	importColumns.reserve(colNames.size());
 
-	csv.readLine(columns);
+	int colNo = 0;
+	for (vector<string>::iterator it = colNames.begin(); it != colNames.end(); ++it, ++colNo)
+	{
+		string colName = *it;
+		if (colName == "")
+		{
+			stringstream ss;
+			ss << "V";
+			ss << (colNo + 1);
+			colName = ss.str();
+		}
+
+		importColumns.push_back(new CSVImportColumn(colName));
+	}
 
 	unsigned long long progress;
 	unsigned long long lastProgress = -1;
 
-	size_t columnCount = columns.size();
+	size_t columnCount = colNames.size();
 
-	for (size_t i = 0; i < columnCount; i++)  // columns
-		cells.push_back(vector<string>());
+//	for (size_t i = 0; i < columnCount; i++)  // columns
+//		cells.push_back(vector<string>());
 
 	vector<string> line;
 	bool success = csv.readLine(line);
@@ -61,125 +74,36 @@ void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator
 			lastProgress = progress;
 		}
 
-        if (line.size() != 0) {
+		if (line.size() != 0) {
 			size_t i = 0;
-            for (; i < line.size() && i < columnCount; i++)
-                cells[i].push_back(line[i]);
-            for (; i < columnCount; i++)
-                cells[i].push_back(string());
-        }
+			for (; i < line.size() && i < columnCount; i++)
+				importColumns.at(i)->data.push_back(line[i]);
+			for (; i < columnCount; i++)
+				importColumns.at(i)->data.push_back(string());
+		}
 
 		line.clear();
 		success = csv.readLine(line);
 	}
 
-	packageData->dataSet = SharedMemory::createDataSet(); // this is required incase the loading of the data fails so that the SharedMemory::createDataSet() can be later freed.
+	for (vector<CSVImportColumn *>::iterator it = importColumns.begin(); it != importColumns.end(); ++it)
+		result->addColumn(*it);
 
-	do
-	{
-		try {
-
-			success = true;
-
-			DataSet *dataSet = packageData->dataSet;
-			dataSet->setColumnCount(columnCount);
-			if (cells.size() > 0)
-				dataSet->setRowCount(cells.at(0).size());
-
-		}
-		catch (boost::interprocess::bad_alloc &e)
-		{
-			try {
-
-				packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
-				success = false;
-			}
-			catch (exception &e)
-			{
-				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
-			}
-		}
-		catch (exception &e)
-		{
-			cout << "n " << e.what() << "\n";
-			cout.flush();
-		}
-		catch (...)
-		{
-			cout << "something else\n ";
-			cout.flush();
-		}
-	}
-	while ( ! success);
-
-
-	for (int colNo = 0; colNo < packageData->dataSet->columnCount(); colNo++)
-	{
-		bool success;
-
-		do {
-
-			success = true;
-
-			try {
-				DataSet *dataSet = packageData->dataSet;
-
-				progressCallback("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
-
-				string columnName = columns.at(colNo);
-
-				if (columnName == "")
-				{
-					stringstream ss;
-					ss << "V";
-					ss << (colNo + 1);
-					columnName = ss.str();
-				}
-
-				Column &column = dataSet->column(colNo);
-				initColumn(column, columnName, cells.at(colNo));
-
-			}
-			catch (boost::interprocess::bad_alloc &e)
-			{
-				try {
-
-					packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
-					success = false;
-				}
-				catch (exception &e)
-				{
-					throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
-				}
-			}
-			catch (exception e)
-			{
-				cout << "n " << e.what();
-				cout.flush();
-			}
-			catch (...)
-			{
-				cout << "something else\n ";
-				cout.flush();
-			}
-
-		} while (success == false);
-	}
+	return result;
 }
 
-
-void CSVImporter::initColumn(Column &column, const string &name, const vector<string> &cells)
+void CSVImporter::initSharedMemoryColumn(ImportColumn *importColumn, Column &column)
 {
 	// we treat single spaces as missing values, because SPSS saves missing values as a single space in CSV files
 
-	column.setName(name);
-
+	column.setName(importColumn->getName());
 	// try to make the column nominal
 
 	bool success = true;
 	set<int> uniqueValues;
 	std::vector<int> intValues;
-	intValues.reserve(cells.size());
+	intValues.reserve(importColumn->size());
+	vector<string> &cells = (dynamic_cast<CSVImportColumn *>(importColumn))->data;
 
 	BOOST_FOREACH(const string &value, cells)
 	{
@@ -214,7 +138,7 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 	// try to make the column scale
 	success = true;
 	vector<double> doubleValues;
-	doubleValues.reserve(cells.size());
+	doubleValues.reserve(importColumn->size());
 
 	BOOST_FOREACH(const string &value, cells)
 	{
@@ -251,7 +175,6 @@ void CSVImporter::initColumn(Column &column, const string &name, const vector<st
 	// if it can't be made nominal numeric or scale, make it nominal-text
 	column.setColumnAsNominalString(cells);
 }
-
 
 string CSVImporter::deEuropeanise(const string &value)
 {
@@ -301,4 +224,3 @@ string CSVImporter::deEuropeanise(const string &value)
 
 	return value;
 }
-
