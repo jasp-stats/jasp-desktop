@@ -519,7 +519,7 @@ TTestBayesianIndependentSamples <- function(dataset=NULL, options, perform="run"
 							p <- try(silent= FALSE, expr= {
 									
 									image <- .beginSaveImage(530, 400)
-									.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=BF10post[i], paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
+									.plotBF.robustnessCheck.ttest(x= group2, y= group1, BF10post=ifelse((options$bayesFactorType=="LogBF10"), exp(BF10post[i]), BF10post[i]), paired= FALSE, oneSided= oneSided, rscale = options$priorWidth, BFH1H0= BFH1H0)
 									content <- .endSaveImage(image)
 									plot[["data"]]  <- content
 								})
