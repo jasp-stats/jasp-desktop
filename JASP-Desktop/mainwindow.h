@@ -205,6 +205,7 @@ private slots:
 
 	void illegalOptionStateChanged();
 	void fatalError();
+	void handleErrorSignal(std::string);
 
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);

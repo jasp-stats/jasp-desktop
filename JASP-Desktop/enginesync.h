@@ -62,6 +62,7 @@ public:
 signals:
 
 	void engineTerminated();
+	void errorReceived(std::string);
 
 private:
 

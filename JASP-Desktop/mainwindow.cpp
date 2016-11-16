@@ -186,6 +186,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_analyses = new Analyses();
 	_engineSync = new EngineSync(_analyses, this);
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
+	connect(_engineSync, SIGNAL(errorReceived(std::string)), this, SLOT(handleErrorSignal(std::string)));
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
@@ -936,7 +937,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 	}
 	else if (event->operation() == FileEvent::FileSave)
-	{		
+	{
 		if (_analyses->count() > 0)
 		{
 			_package->setWaitingForReady();
@@ -1312,9 +1313,16 @@ void MainWindow::fatalError()
 	{
 		exiting = true;
 
-		QMessageBox::warning(this, "Error", "JASP has experienced an unexpected internal error.\n\n\"" + _fatalError + "\"\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.\n\n");
+		QMessageBox::warning(this, "Error", "JASP has experienced an unexpected internal error.\n\n\"\n" + _fatalError + "\"\n\nIf you could report your experiences to the JASP team that would be appreciated.\n\nJASP cannot continue and will now close.\n\n");
 		QApplication::exit(1);
 	}
+}
+
+void MainWindow::handleErrorSignal(std::string errorMessage)
+{
+	_fatalError = QString::fromStdString(errorMessage);
+
+	fatalError();
 }
 
 void MainWindow::helpFirstLoaded(bool ok)
