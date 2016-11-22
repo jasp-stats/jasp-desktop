@@ -927,7 +927,7 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
 	for (i in seq_along(yticks)) {
 
-		if (yticks[i] < 10^6) {
+		if (yticks[i] < 10^6 && yticks[i] > 10^-6) {
 
 			yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
 
