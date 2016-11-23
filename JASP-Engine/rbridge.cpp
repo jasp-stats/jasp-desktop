@@ -520,3 +520,18 @@ string rbridge_check()
 	else
 		return "null";
 }
+
+string rbridge_saveImage(const string &name, const string &type, int ppi, RCallback callback)
+{
+	SEXP results;
+	RInside &rInside = rbridge_rinside->instance();
+
+	rInside["plotName"] = name;
+	rInside["format"] = type;
+
+	SEXP result = rbridge_rinside->parseEvalNT("saveImage(plotName,format)");
+	if (Rf_isString(result))
+		return Rcpp::as<string>(result);
+	else
+		return "null";
+}
