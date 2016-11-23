@@ -64,6 +64,8 @@ Analysis *Analyses::create(const QString &name, int id, Json::Value *options, An
 	_analyses[id] = analysis;
 
 	analysis->optionsChanged.connect(boost::bind(&Analyses::analysisOptionsChangedHandler, this, _1));
+	analysis->saveImage.connect(boost::bind(&Analyses::analysisSaveImageHandler, this, _1, _2));
+	analysis->imageSaved.connect(boost::bind(&Analyses::analysisImageSavedHandler, this, _1));
 	analysis->resultsChanged.connect(boost::bind(&Analyses::analysisResultsChangedHandler, this, _1));
 	analysis->userDataLoaded.connect(boost::bind(&Analyses::analysisUserDataLoadedHandler, this, _1));
 
@@ -195,6 +197,11 @@ void Analyses::analysisResultsChangedHandler(Analysis *analysis)
 	analysisResultsChanged(analysis);
 }
 
+void Analyses::analysisImageSavedHandler(Analysis *analysis)
+{
+	analysisImageSaved(analysis);
+}
+
 void Analyses::analysisOptionsChangedHandler(Analysis *analysis)
 {
 	QString name = QString::fromStdString(analysis->name());
@@ -218,7 +225,12 @@ void Analyses::analysisOptionsChangedHandler(Analysis *analysis)
 	analysisOptionsChanged(analysis);
 }
 
-
+void Analyses::analysisSaveImageHandler(Analysis *analysis, Json::Value &options)
+{
+	analysis->setStatus(Analysis::SaveImg);
+	analysis->setSaveImgOptions(options);
+	analysisSaveImage(analysis);
+}
 
 
 
