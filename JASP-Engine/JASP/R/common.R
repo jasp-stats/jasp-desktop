@@ -693,7 +693,7 @@ callback <- function(results=NULL) {
 }
 
 
-saveImage <- function(plotName, format){
+saveImage <- function(plotName, format, height, width){
 	state <- .retrieveState()
 	height <- state[["options"]][["plotHeight"]]
 	width <- state[["options"]][["plotWidth"]]
@@ -717,6 +717,7 @@ saveImage <- function(plotName, format){
 	print("TEST4")
 	epsMultip <- .ppi / 2.4
 	print("TEST5")
+	print(version)
 
     # Create eps file location
     relativePatheps <- paste0(base::substr(relativePath, start = 1, 
@@ -732,7 +733,8 @@ saveImage <- function(plotName, format){
 	# Open graphics device and plot
     grDevices::cairo_ps(filename=fullPatheps, width=width/epsMultip, 
                         height=height/epsMultip, bg="transparent")
-	print("TEST6")
+	print("TEST68")
+	print(packageVersion("grDevices"))
 	plt <- state[["figures"]][[plotName]][-3]
 	class(plt) <- "recordedplot"
 	print("CLASS")
