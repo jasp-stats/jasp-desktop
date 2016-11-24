@@ -1,9 +1,9 @@
-# Generic function to create error message (mostly used in conjunction with .hasErrors())
+# Generic function to create error message (mostly used in conjunction with .hasErrors()).
 # Args:
 #   type: String containing check type.
-#   variables: Vector/string of variables which did had error specified by type
-#   includeOpening: Boolean, should there be a general opening line (TRUE) or only the specific error message (FALSE)
-#   concatenateWith: String, include if you want to append the error message to an already existing message
+#   variables: Vector/string of variables which did had error specified by type.
+#   includeOpening: Boolean, should there be a general opening line (TRUE) or only the specific error message (FALSE).
+#   concatenateWith: String, include if you want to append the error message to an already existing message.
 #   ...: Each error message can have any number of variables, denoted by %'s. Add these as arg=val pairs.
 #
 # Returns:
@@ -16,23 +16,9 @@
   
   args <- list(...)
   
-  baseMessage <- .messages('error', type)
-  if (is.null(baseMessage)) {
+  message <- .messages('error', type)
+  if (is.null(message)) {
     stop('Could not find error message for "', type, '"')
-  }
-  
-  message <- ''
-  
-  # Add opening line
-  if (includeOpening == TRUE) {
-    message <- paste0(.messages('error', 'opening'), '\n')
-  }
-  
-  # Add line indicator
-  if (includeOpening == TRUE || !is.null(concatenateWith)) {
-    message <- paste0(message, '- ', baseMessage, '\n')
-  } else {
-    message <- paste0(baseMessage, '\n')
   }
   
   # See if we need to specify variables
@@ -45,7 +31,7 @@
   
   # Find all %strings% that needs to be replaced by values
   toBeReplaced <- regmatches(message, gregexpr("(?<=\\%)\\S*?(?=\\%)", message, perl=TRUE))[[1]]
-  if (base::identical(toBeReplaced, character(0)) == FALSE) { # we found %strings%
+  if (base::identical(toBeReplaced, character(0)) == FALSE) { # see if there were any %strings%
     if (all(toBeReplaced %in% names(args)) == FALSE) {
       missingReplacements <- toBeReplaced[!toBeReplaced %in% names(args)]
       stop('Missing required replacement(s): "', paste(missingReplacements, collapse=','), '"')
@@ -55,11 +41,25 @@
     }
   }
   
-  # Concatenate with the provided string
+  # Add line indicator
+  if (!is.null(concatenateWith) || includeOpening == TRUE) {
+    message <- paste0('<li>', message, '</li></ul>')
+  }
+  
+  # See if we should concatenate it with something
   if (!is.null(concatenateWith)) {
+    endOfString <- substr(concatenateWith, nchar(concatenateWith)-4, nchar(concatenateWith))
+    if (endOfString == '</ul>') {
+      concatenateWith <- substr(concatenateWith, 1, nchar(concatenateWith)-5)
+    }
     message <- paste0(concatenateWith, message)
   }
   
+  # Add opening line
+  if (includeOpening == TRUE) {
+    message <- paste0(.messages('error', 'opening'), '<ul>', message)
+  }
+
   return(message)
 }
 
@@ -72,7 +72,7 @@
 #   message: 'short', 'default' or 'verbose', should only the first failure of a check be reported in single line form ('short'), or should every check be mentioned in multi-line form;
 #             in which case, should variables be mentioned multiple times in multiple checks ('verbose'), or only for the first failure ('default'). (In any case a full error list is generated)
 #   ...: Each check may have required and optional arguments, they are specified in the error check subfunctions.
-#        To perform the check only on certain variables instead of all, include a target as specified in the error checks definition (e.g. inf=options$dependent).
+#        To perform the check only on certain variables instead of all, include a target as specified in the error checks definition (e.g. infinity=options$dependent).
 #
 # Returns:
 #   FALSE if no errors were found or a list specifying for each check which variables violated it as well as a general error message.
@@ -84,9 +84,9 @@
   
   # Error checks definition
   checks <- list()
-  checks[['infinity']] <- list(target='infinity', callback=.checkInfinity)
-  checks[['factorLevels']] <- list(target='factorLevels', callback=.checkFactorLevels)
-  checks[['variance']] <- list(target='variance', callback=.checkVariance)
+  checks[['infinity']] <- list(target='target.infinity', callback=.checkInfinity)
+  checks[['factorLevels']] <- list(target='target.factorLevels', callback=.checkFactorLevels)
+  checks[['variance']] <- list(target='target.variance', callback=.checkVariance)
   checks[['groupSize']] <- list(target=NULL, callback=.checkGroupSize)
   
   args <- list(...)
@@ -127,7 +127,7 @@
     }
     
     # Find the appropriate variables to perform the check on
-    variables <- names(dataset)
+    variables <- .unv(names(dataset))
     if (!is.null(check[['target']]) && !is.null(args[[ check[['target']] ]])) {
       variables <- args[[ check[['target']] ]]
     }
@@ -208,7 +208,7 @@
 .checkVariance <- function(dataset, targetVars, errVar=0, ...) {
   result <- list(error=FALSE, errorVars=NULL)
   for (v in targetVars) {
-    if (is.finite(dataset[, v]) && stats::var(dataset[, .v(v)], na.rm=TRUE) == errVar) {
+    if (is.finite(dataset[, .v(v)]) && stats::var(dataset[, .v(v)], na.rm=TRUE) == errVar) {
       result$error <- TRUE
       result$errorVars <- c(result$errorVars, v)
     }
