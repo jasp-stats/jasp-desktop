@@ -96,7 +96,8 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	if (options$frequencyTables) {
 
-		frequency.tables <- .descriptivesFrequencyTables(dataset.factors, options, run, last.frequency.tables)
+		frequency.tables <- .descriptivesFrequencyTables(dataset.factors, options, 
+																										 run, last.frequency.tables)
 
 		if (length(frequency.tables) > 0)
 			results[["frequenciesHeading"]] <- "Frequencies"
@@ -127,27 +128,36 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 	if (is.list(state))
 		last.splitPlots <- state$results$plots$splitPlots$collection
-
 	if (length(variables) > 1) {
-
 		splitPlotsTitle <- "Boxplots"
-
 	} else {
-
 		splitPlotsTitle <- "Boxplot"
-
 	}
-
-	splitPlots <- list(collection=.descriptivesSplitPlots(dataset, options, run, last.splitPlots),
+	
+	# Generate all the plots
+	splPltColl <- .descriptivesSplitPlots(dataset, options, run, last.splitPlots)
+	
+	if (!is.null(splPltColl[[1]][["obj"]])){
+		# Extract plot objects and save to state
+		spltPltObjects <- lapply(splPltColl, function(x) x[["obj"]])
+		names(spltPltObjects) <- unlist(lapply(splPltColl, function(x) x[["data"]]))
+		figstate <- append(figstate, spltPltObjects)
+		# remove objects from collection
+		splPltColl <- lapply(splPltColl, function(x) x[names(x)!="obj"])
+	}
+	
+	splitPlots <- list(collection=splPltColl,
 										 title=splitPlotsTitle)
 
 
 	####  MATRIX PLOT
 
 	corrPlot <- .descriptivesMatrixPlot(dataset, options, run)
-	figstate[[corrPlot[["data"]]]] <- corrPlot[["obj"]]
+	if (!is.null(corrPlot[["obj"]])){
+		figstate[[corrPlot[["data"]]]] <- corrPlot[["obj"]]
+		corrPlot <- corrPlot[names(corrPlot)!="obj"]
+	}
 	
-	corrPlot <- corrPlot[names(corrPlot)!="obj"]
 	
 	results[["plots"]] <- list(distributionPlots=distrPlots, matrixPlot=corrPlot,
 														 splitPlots=splitPlots, title="Plots")
@@ -1204,8 +1214,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				}
 			}
 
-			imgPaths <- .writeImage(width, height, plot=.matrixPlotFunc,
-															format = "png")
+			imgPaths <- .writeImage(width, height, plot=.matrixPlotFunc)
 
 			plot <- matrix.plot
 			plot[["data"]]  <- imgPaths[["png"]]
@@ -1222,10 +1231,18 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 .descriptivesSplitPlots <- function(dataset, options, run, last.plots){
 
 	splitPlots <- NULL
+	
+	# Initialisation plot
+	.initSplitPlot <- function(){
+		plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
+				 ylab="")
+		axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
+		mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
+	}
 
 	if (options$splitPlots && length(options$variables) > 0){
 
-		### Define custom y axis function
+		# Define custom y axis function
 		base_breaks_y <- function(x){
 			b <- pretty(x)
 			d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
@@ -1236,7 +1253,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					 ggplot2::scale_y_continuous(breaks=b))
 		}
 
-		### Plot
+		# Plot
 		for (i in 1:length(options$variables)){
 
 			splitPlot <- list()
@@ -1271,38 +1288,28 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				# already plotted, nothing
 
 			} else if (run == FALSE){
-
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-				plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
-						 ylab="")
-				axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
-				mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
-				splitPlot[["data"]] <- .endSaveImage(image)
+				
+				image <- .writeImage(width = options$plotWidth, height = options$plotHeight,
+														plot = .initSplitPlot, obj = FALSE)
+				splitPlot[["data"]] <- image[["png"]]
 
 			} else if (!is.numeric(y)) {
 
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-				plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
-						 ylab="")
-				axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
-				mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
-				splitPlot[["data"]] <- .endSaveImage(image)
+				image <- .writeImage(width = options$plotWidth, height = options$plotHeight,
+														plot = .initSplitPlot, obj = FALSE)
+				splitPlot[["data"]] <- image[["png"]]
 				splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable is not numeric!")
 				splitPlot[["status"]] <- "complete"
 
 			} else if (!(options$splitPlotViolin || options$splitPlotBoxplot ||
 								 options$splitPlotJitter)) {
 
-					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-					plot(1, type='n', xlim=0:1, ylim=0:1, bty='n', axes=FALSE, xlab="",
-							 ylab="")
-					axis(2, at=0:1, labels=FALSE, cex.axis= 1.4, ylab="")
-					mtext(text = splitPlot[["name"]], side = 1, cex=1.5, line = 3)
-					splitPlot[["data"]] <- .endSaveImage(image)
-					splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: No plot type selected!")
-					splitPlot[["status"]] <- "complete"
+				image <- .writeImage(width = options$plotWidth, height = options$plotHeight,
+														plot = .initSplitPlot, obj = FALSE)
+				splitPlot[["data"]] <- image[["png"]]
+				splitPlot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: No plot type selected!")
+				splitPlot[["status"]] <- "complete"
 					
-
 			} else {
 
 				if (is.null(dataset[[.v(options$splitby)]])){
@@ -1432,13 +1439,12 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 						legend.position = "none")
 
 
-				paths <- .writeImage(width = options$plotWidth, 
+				image <- .writeImage(width = options$plotWidth, 
 														height = options$plotHeight, 
-														plot = p,
-														format = "png")
+														plot = p)
 				
-				splitPlot[["data"]] <- paths[["png"]]
-				splitPlot[["obj"]] <- paths[["obj"]]
+				splitPlot[["data"]] <- image[["png"]]
+				splitPlot[["obj"]] <- image[["obj"]]
 				splitPlot[["status"]] <- "complete"
 
 			}
@@ -1448,7 +1454,5 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 		}
 	}
 
-	print(splitPlots)
   splitPlots
-
 }

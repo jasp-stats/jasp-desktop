@@ -952,3 +952,99 @@ as.list.footnotes <- function(footnotes) {
 	
 	changed
 }
+
+
+.writeImage <- function(width=320, height=320, plot, obj = TRUE){
+	# Initialise output object
+	image <- list()
+
+	# Operating System information
+	type <- "cairo"  
+  if (Sys.info()["sysname"]=="Darwin")
+    type <- "quartz"
+  
+  # Calculate pixel multiplier
+  pngMultip <- .ppi / 96
+  
+  # Create png file location
+  location <- .requestTempFileNameNative("png")
+	relativePathpng <- location$relativePath
+  fullPathpng <- paste(location$root, relativePathpng, sep="/")
+	base::Encoding(relativePathpng) <- "UTF-8"
+  base::Encoding(fullPathpng) <- "UTF-8"
+
+	# Open graphics device and plot
+  grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+                 height=height * pngMultip, bg="transparent", 
+                 res=72 * pngMultip, type=type)
+	if (class(plot) ==  "function"){
+		if (obj) dev.control('enable') # enable plot recording
+		eval(plot())
+		if (obj) plot <- recordPlot() # save plot to R object
+	} else {
+		print(plot)
+	}
+	dev.off()
+	
+	# Save path & plot object to output
+	image[["png"]] <- relativePathpng
+	if (obj) image[["obj"]] <- plot
+	
+	# Return relative paths in list
+	image
+}
+
+
+saveImage <- function(plotName, format, width, height){
+	# Retrieve plot object from state
+	state <- .retrieveState()
+	width <- state$options$plotWidth
+	height <- state$options$plotHeight
+	print(length(state[["figures"]][[plotName]]))
+	
+	# Hacky solution to problem with last element being NULL
+	if (class(state[["figures"]][[plotName]]) == "recordedplot"){
+				print("HACK")
+				plt <- state[["figures"]][[plotName]][-length(state[["figures"]][[plotName]])]
+				class(plt) <- "recordedplot"
+	} else {
+		plt <- state[["figures"]][[plotName]]
+	}
+	
+	# Operating System information
+	type <- "cairo"  
+  if (Sys.info()["sysname"]=="Darwin")
+    type <- "quartz"
+
+  # create file location
+  location <- .requestTempFileNameNative("png") # to extract the root location
+	relativePath <- paste0(base::substr(plotName, start = 1, 
+																			stop = nchar(plotName)-3), format)
+  fullPath <- paste(location$root, relativePath, sep="/")
+	base::Encoding(relativePath) <- "UTF-8"
+  base::Encoding(fullPath) <- "UTF-8"
+
+	if (format == "eps"){
+  	# Calculate eps pixel->inch multiplier
+		epsMultip <- .ppi / 2.4
+
+		# Open graphics device and plot
+    grDevices::cairo_ps(filename=fullPath, width=width/epsMultip, 
+                        height=height/epsMultip, bg="transparent")
+		if (class(plt) == "recordedplot"){
+			grDevices::replayPlot(plt)
+		} else if ("gg" %in% class(plt)){
+			print(plt)
+		}
+		dev.off()
+  } else { # add optional other formats here in else if statement
+		stop("Format incorrectly specified")
+	}
+	
+	# Create JSON string for interpretation by JASP front-end
+	result <- paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"", 
+									relativePath , "\" } }")
+									
+	# Return result
+	result
+}
