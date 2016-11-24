@@ -135,6 +135,7 @@ string rbridge_run(const string &name, const string &options, const string &perf
 	rInside["options.as.json.string"] = options;
 	rInside["perform"] = perform;
 	rInside[".ppi"] = ppi;
+
 	rInside.parseEval("run(name=name, options.as.json.string=options.as.json.string, perform)", results);
 
 	rbridge_runCallback = NULL;
