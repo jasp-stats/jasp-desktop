@@ -34,7 +34,7 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	},
 
     saveImageClicked: function(){
-        var options = {name: this.model.get("data")};
+        var options = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")};
         this.model.trigger("SaveImage:clicked", options);
     },
 

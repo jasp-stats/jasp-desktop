@@ -75,7 +75,9 @@ void Engine::saveImage()
 
 	std::string name = _imageOptions.get("name", Json::nullValue).asString();
 	std::string type = _imageOptions.get("type", Json::nullValue).asString();
-	std::string result = rbridge_saveImage(name, type, _ppi, callback);
+	std::string height = _imageOptions.get("height", Json::nullValue).asString();
+	std::string width = _imageOptions.get("width", Json::nullValue).asString();
+	std::string result = rbridge_saveImage(name, type, height, width);
 
 	_status = complete;
 	Json::Reader parser;
