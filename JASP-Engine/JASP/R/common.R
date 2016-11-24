@@ -998,8 +998,6 @@ as.list.footnotes <- function(footnotes) {
 saveImage <- function(plotName, format, width, height){
 	# Retrieve plot object from state
 	state <- .retrieveState()
-	width <- state$options$plotWidth
-	height <- state$options$plotHeight
 	print(length(state[["figures"]][[plotName]]))
 	
 	# Hacky solution to problem with last element being NULL
