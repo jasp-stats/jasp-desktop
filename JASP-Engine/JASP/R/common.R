@@ -1008,7 +1008,8 @@ saveImage <- function(plotName, format, width, height){
 	# Hacky solution to problem with last element being NULL
 	if (class(state[["figures"]][[plotName]]) == "recordedplot"){
 				print("HACK")
-				plt <- state[["figures"]][[plotName]][-length(state[["figures"]][[plotName]])]
+				#[-length(state[["figures"]][[plotName]])]
+				plt <- state[["figures"]][[plotName]]
 				class(plt) <- "recordedplot"
 	} else {
 		plt <- state[["figures"]][[plotName]]
