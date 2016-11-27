@@ -84,9 +84,10 @@
   
   # Error checks definition
   checks <- list()
-  checks[['infinity']] <- list(target='target.infinity', callback=.checkInfinity)
-  checks[['factorLevels']] <- list(target='target.factorLevels', callback=.checkFactorLevels)
-  checks[['variance']] <- list(target='target.variance', callback=.checkVariance)
+  checks[['infinity']] <- list(target='targetInfinity', callback=.checkInfinity)
+  checks[['factorLevels']] <- list(target='targetFactorLevels', callback=.checkFactorLevels)
+  checks[['variance']] <- list(target='targetVariance', callback=.checkVariance)
+  checks[['observations']] <- list(target='targetObservations', callback=.checkObservations)
   checks[['groupSize']] <- list(target=NULL, callback=.checkGroupSize)
   
   args <- list(...)
@@ -185,7 +186,7 @@
 .checkInfinity <- function(dataset, targetVars, ...) {
   result <- list(error=FALSE, errorVars=NULL)
   for (v in targetVars) {
-    if (any(is.infinite(dataset[, .v(v)]))) {
+    if (any(is.infinite(dataset[[.v(v)]]))) {
       result$error <- TRUE
       result$errorVars <- c(result$errorVars, v)
     }
@@ -196,7 +197,7 @@
 .checkFactorLevels <- function(dataset, targetVars, levels, ...) {
   result <- list(error=FALSE, errorVars=NULL)
   for (v in targetVars) {
-    expr <- paste(length(unique(dataset[, .v(v)])), levels)
+    expr <- paste(length(unique(dataset[[.v(v)]])), levels)
     if (eval(parse(text=expr)) == TRUE) {
       result$error <- TRUE
       result$errorVars <- c(result$errorVars, v)
@@ -208,7 +209,7 @@
 .checkVariance <- function(dataset, targetVars, errVar=0, ...) {
   result <- list(error=FALSE, errorVars=NULL)
   for (v in targetVars) {
-    if (is.finite(dataset[, .v(v)]) && stats::var(dataset[, .v(v)], na.rm=TRUE) == errVar) {
+    if (all(is.finite(na.omit(dataset[[.v(v)]]))) && stats::var(dataset[[.v(v)]], na.rm=TRUE) == errVar) {
       result$error <- TRUE
       result$errorVars <- c(result$errorVars, v)
     }
@@ -220,6 +221,27 @@
   result <- list(error=FALSE, errorVars=NULL)
   if (length(group1) != length(group2)) {
     result$error <- TRUE
+  }
+  return(result)
+}
+
+.checkObservations <- function(dataset, targetVars, amount, groupingObservations=NULL, ...) {
+  result <- list(error=FALSE, errorVars=NULL)
+  for (v in targetVars) {
+    if (!is.null(groupingObservations)) {
+      grouping <- dataset[[.v(groupingObservations)]]
+      for (g in unique(grouping)) {
+        data <- dataset[dataset[[.v(groupingObservations)]] == .v(g), .v(v)]
+        if (length(na.omit(data)) < amount) {
+          result$error <- TRUE
+          result$errorVars <- c(result$errorVars, v)
+          break
+        }
+      }
+    } else if (length(na.omit(dataset[[.v(v)]])) < amount) {
+      result$error <- TRUE
+      result$errorVars <- c(result$errorVars, v)
+    }
   }
   return(result)
 }
