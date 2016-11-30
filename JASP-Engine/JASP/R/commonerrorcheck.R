@@ -14,6 +14,7 @@
     stop('Non-valid type argument provided')
   }
   
+  swaps <- list(' != ' = ' ≠ ')
   args <- list(...)
   
   message <- .messages('error', type)
@@ -38,6 +39,13 @@
     }
     for (i in 1:length(toBeReplaced)) {
       message <- gsub(paste0('%', toBeReplaced[i], '%'), args[[ toBeReplaced[i] ]], message)
+    }
+  }
+  
+  # Find all value swaps that need to occur, e.g. we do not want to show !=
+  for (i in 1:length(swaps)) {
+    if (grepl(names(swaps)[i], message) == TRUE) {
+      message <- gsub(names(swaps)[i], swaps[[i]], message)
     }
   }
   
@@ -88,10 +96,9 @@
   checks[['factorLevels']] <- list(target='factorLevels.target', callback=.checkFactorLevels)
   checks[['variance']] <- list(target='variance.target', callback=.checkVariance)
   checks[['observations']] <- list(target='observations.target', callback=.checkObservations)
-  checks[['groupSize']] <- list(target=NULL, callback=.checkGroupSize)
   
   args <- list(...)
-  errors <- list(msg=NULL)
+  errors <- list(message=NULL)
   
   for (i in 1:length(type)) {
     
@@ -160,10 +167,10 @@
       # Build the error message further
       if (createMessage == TRUE) {
         opening = FALSE
-        if (is.null(errors[['msg']]) && message != 'short') {
+        if (is.null(errors[['message']]) && message != 'short') {
           opening = TRUE
         }
-        errors[['msg']] <- base::do.call(.generateErrorMessage, c(list(type=type[[i]], variables=varsToAdd, includeOpening=opening, concatenateWith=errors[['msg']]), args))
+        errors[['message']] <- base::do.call(.generateErrorMessage, c(list(type=type[[i]], variables=varsToAdd, includeOpening=opening, concatenateWith=errors[['message']]), args))
       }
       
       # Add the error (with any offending variables, otherwise TRUE) to the list
@@ -216,7 +223,7 @@
 }
 
 
-.checkVariance <- function(dataset, targetVars, variance.amount=0, variance.grouping=NULL, ...) {
+.checkVariance <- function(dataset, targetVars, variance.equalTo=0, variance.grouping=NULL, ...) {
   result <- list(error=FALSE, errorVars=NULL)
   for (v in targetVars) {
     
@@ -231,7 +238,7 @@
                                  }
                                  return(variance)
                                }, .v(v))
-      if (any(variances[, ncol(variances)] == variance.amount)) {
+      if (any(variances[, ncol(variances)] == variance.equalTo)) {
         result$error <- TRUE
         result$errorVars <- c(result$errorVars, v)
       }
@@ -241,7 +248,7 @@
       validValues <- dataset[[.v(v)]][is.finite(dataset[[.v(v)]])]
       if (length(validValues) > 1) {
         variance <- stats::var(validValues)
-        if (variance == variance.amount) {
+        if (variance == variance.equalTo) {
           result$error <- TRUE
           result$errorVars <- c(result$errorVars, v)
         }
@@ -254,16 +261,7 @@
 }
 
 
-.checkGroupSize <- function(group1, group2, ...) {
-  result <- list(error=FALSE, errorVars=NULL)
-  if (length(group1) != length(group2)) {
-    result$error <- TRUE
-  }
-  return(result)
-}
-
-
-.checkObservations <- function(dataset, targetVars, observations.amount, observations.grouping=NULL, ...) {
+.checkObservations <- function(dataset, targetVars, observations.lessThan, observations.grouping=NULL, ...) {
   result <- list(error=FALSE, errorVars=NULL)
   for (v in targetVars) {
     
@@ -273,12 +271,12 @@
                          function(x, col) {
                            length(na.omit(x[[col]]))
                          }, .v(v))
-      if (any(obs[, ncol(obs)] < observations.amount)) {
+      if (any(obs[, ncol(obs)] < observations.lessThan)) {
         result$error <- TRUE
         result$errorVars <- c(result$errorVars, v)
       }
       
-    } else if (length(na.omit(dataset[[.v(v)]])) < observations.amount) {
+    } else if (length(na.omit(dataset[[.v(v)]])) < observations.lessThan) {
       result$error <- TRUE
       result$errorVars <- c(result$errorVars, v)
     }
