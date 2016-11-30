@@ -51,8 +51,10 @@ run <- function(name, options.as.json.string, perform="run") {
 	
 	if (class(results) == "try-error") {
 
-		error <- gsub("\n", "\\\\n", as.character(results), fixed=TRUE)
-		errorMessage <- paste("This analysis terminated unexpectedly. Please contact its author.", error, sep="\\\\n\\\\n")
+		error <- gsub("\n", "<br>", as.character(results), fixed=TRUE)
+		error <- gsub("\"", "", error, fixed=TRUE)
+		
+		errorMessage <- paste("This analysis terminated unexpectedly.<br>", error, "To receive assistence with this problem, please report the message above at: https://jasp-stats.org/bug-reports", sep="<br>")
 	
 		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 		
