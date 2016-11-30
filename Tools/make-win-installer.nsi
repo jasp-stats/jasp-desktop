@@ -6,8 +6,8 @@
 !include "x64.nsh"
 
 !define MAIN_VERSION "0.8.0"
-!define PATCH_NUM "0"
-!define VERSION "${MAIN_VERSION}.${PATCH_NUM}"
+!define PATCH_NUM "1"
+!define VERSION "${MAIN_VERSION}.${PATCH_cd NUM}"
 !define BETA ""
 !define APP_NAME "JASP"
 !define INSTALLER_NAME "${APP_NAME}-${VERSION}-Setup.exe"
