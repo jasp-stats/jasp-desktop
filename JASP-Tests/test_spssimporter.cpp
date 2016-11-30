@@ -15,12 +15,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "spssimporter_test.h"
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
 
+#include "test_spssimporter.h"
 
-void SPSSImporterTest::init()
+
+void TestSPSSImporter::init()
 {
 	fe_spss = new FileEvent();
 	asl_spss = new AsyncLoader();
@@ -29,7 +30,7 @@ void SPSSImporterTest::init()
 }
 
 
-void SPSSImporterTest::cleanup()
+void TestSPSSImporter::cleanup()
 {
 	fe_spss->~FileEvent();
 	asl_spss->~AsyncLoader();
@@ -38,7 +39,7 @@ void SPSSImporterTest::cleanup()
 }
 
 
-void SPSSImporterTest::spssTester_data()
+void TestSPSSImporter::spssTester_data()
 {
 	QTest::addColumn<QString>("filename");
 
@@ -55,7 +56,7 @@ void SPSSImporterTest::spssTester_data()
 }
 
 
-void SPSSImporterTest::spssTester()
+void TestSPSSImporter::spssTester()
 {
 	QFETCH(QString, filename);
 	qDebug() << "File: " << filename;
@@ -93,14 +94,14 @@ void SPSSImporterTest::spssTester()
 
 
 /* copy from the DataSetPackage to fileContents structure - required since dataset is deleted in the sharedmemory  */
-void SPSSImporterTest::copyToStructure(DataSetPackage *dsPackage, struct fileContent *fc)
+void TestSPSSImporter::copyToStructure(DataSetPackage *dsPackage, struct fileContent *fc)
 {
 	fc->columns = dsPackage->dataSet->columnCount();//copy column count
 	fc->rows = dsPackage->dataSet->rowCount();      //copy row count
 
 	//copy header names
 	std::vector<std::string> headerNames;
-	for(int i=0; i<fc->columns; ++i)
+	for (int i = 0; i < fc->columns; ++i)
 	{
 		headerNames.push_back(dsPackage->dataSet->column(i).name());
 	}
@@ -108,10 +109,10 @@ void SPSSImporterTest::copyToStructure(DataSetPackage *dsPackage, struct fileCon
 
 	//copy data
 	std::vector< std::vector<std::string> > fileRows;
-	for(int j=0; j<fc->rows; ++j)
+	for (int j = 0; j < fc->rows; ++j)
 	{
 		std::vector<std::string> tempRow;
-		for(int i=0; i<fc->columns; ++i)
+		for (int i = 0; i < fc->columns; ++i)
 		{
 			tempRow.push_back(dsPackage->dataSet->column(i)[j]);
 		}
@@ -125,33 +126,33 @@ void SPSSImporterTest::copyToStructure(DataSetPackage *dsPackage, struct fileCon
 
 
 /* checks if data read from spss file is same as in corresponding csv file */
-bool SPSSImporterTest::checkIfEqual(struct fileContent *fc1, struct fileContent *fc2)
+bool TestSPSSImporter::checkIfEqual(struct fileContent *fc1, struct fileContent *fc2)
 {
-	if(fc1->columns != fc2->columns)
+	if (fc1->columns != fc2->columns)
 	{
 		qDebug() << "Column size mismatch: " << QString::number(fc1->columns) << " " << QString::number(fc2->columns);
 		return false;
 	}
 
-	if(fc1->rows != fc2->rows)
+	if (fc1->rows != fc2->rows)
 	{
 		qDebug() << "Row size mismatch: " << QString::number(fc1->rows) << " " << QString::number(fc2->rows);
 		return false;
 	}
 
-	for(int i=0; i<fc2->columns; ++i)
+	for (int i = 0; i < fc2->columns; ++i)
 	{
-		if(QString::fromStdString(fc1->headers[i]) != QString::fromStdString(fc2->headers[i]))
+		if (QString::fromStdString(fc1->headers[i]) != QString::fromStdString(fc2->headers[i]))
 		{
 			// qDebug() << "Warning: Header name mismatch: " << QString::fromStdString(fc1->headers[i]) << " " << QString::fromStdString(fc2->headers[i]);
 			//return false;
 		}
 
-		for(int j=0; j<fc2->rows; ++j)
+		for (int j = 0; j < fc2->rows; ++j)
 		{
 			std::string str1 = fc1->data[j][i];
 			std::string str2 = fc2->data[j][i];
-			if(str1 != str2)
+			if (str1 != str2)
 			{
 				bool success = false;
 				try

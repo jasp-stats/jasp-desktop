@@ -15,6 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+
+// Script runs all the qt tests in the test folder
 #ifndef AUTOMATEDTESTS_H
 #define AUTOMATEDTESTS_H
 
@@ -24,73 +26,73 @@
 #define TESTFILE_FOLDER "Resources/TestFiles/"
 #endif
 
-#include <QtWidgets>
-#include <QtTest/QtTest>
 #include <QList>
-#include <QString>
-
 #include <QSharedPointer>
+#include <QString>
+#include <QtTest/QtTest>
+#include <QtWidgets>
 
 namespace AutomatedTests
 {
-    typedef QList<QObject*> TestList;
+	typedef QList<QObject*> TestList;
 
-    inline TestList& testList()
-    {
-        static TestList list;
-        return list;
-    }
+	inline TestList& testList()
+	{
+		static TestList list;
+		return list;
+	}
 
-    inline bool findObject(QObject* object)
-    {
-        TestList& list = testList();
-        if (list.contains(object))
-    {
-        return true;
-    }
-        foreach (QObject* test, list)
-        {
-            if (test->objectName() == object->objectName())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+	inline bool findObject(QObject* obj)
+	{
+		TestList& list = testList();
+		if (list.contains(obj))
+		{
+			return true;
+		}
 
-    inline void addTest(QObject* object)
-    {
-        TestList& list = testList();
-        if (!findObject(object))
-        {
-            list.append(object);
-        }
-    }
+		foreach (QObject* test, list)
+		{
+			if (test->objectName() == obj->objectName())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
-    inline int run(int argc, char *argv[])
-    {
-        int ret = 0;
+	inline void addTest(QObject* obj)
+	{
+		TestList& list = testList();
+		if (!findObject(obj))
+		{
+			list.append(obj);
+		}
+	}
 
-        foreach (QObject* test, testList())
-        {
-            ret += QTest::qExec(test, argc, argv);
-        }
+	inline int run(int argc, char *argv[])
+	{
+		int ret = 0;
 
-        return ret;
-    }
+		foreach (QObject* test, testList())
+		{
+			ret += QTest::qExec(test, argc, argv);
+		}
+
+		return ret;
+	}
 }
 
 template <class T>
 class Test
 {
-    public:
-    QSharedPointer<T> child;
+	public:
+	QSharedPointer<T> child;
 
-    Test(const QString& name) : child(new T)
-    {
-        child->setObjectName(name);
-        AutomatedTests::addTest(child.data());
-    }
+	Test(const QString& name): child(new T)
+	{
+		child->setObjectName(name);
+		AutomatedTests::addTest(child.data());
+	}
 };
 
 #define DECLARE_TEST(className) static Test<className> t(#className);
@@ -98,7 +100,7 @@ class Test
 #define TEST_MAIN \
 int main(int argc, char *argv[]) \
 { \
-    return AutomatedTests::run(argc, argv); \
+	return AutomatedTests::run(argc, argv); \
 }
 
 #endif // AUTOMATEDTESTS_H

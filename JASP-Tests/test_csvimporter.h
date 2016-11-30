@@ -15,20 +15,22 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef CSVIMPORTERTEST_H
-#define CSVIMPORTERTEST_H
+#ifndef TESTCSVIMPORTER_H
+#define TESTCSVIMPORTER_H
 
 #pragma once
 #include <sstream>
 #define private public
 
-#include <QSignalSpy>
 #include <fstream>
 #include <vector>
 #include <string>
 #include <boost/filesystem.hpp>
 #include <iomanip>
 #include <cstdio>
+
+#include <QSignalSpy>
+
 #include "AutomatedTests.h"
 #include "asyncloader.h"
 #include "sharedmemory.h"
@@ -37,40 +39,39 @@
 #include "datasetpackage.h"
 
 
-class CSVImporterTest : public QObject
+class TestCSVImporter : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 
-  struct fileContent
-  {
-    int columns;
-    int rows;
-    std::vector <std::string> headers;
-    std::vector< std::vector<std::string> > data;
-  };
+	struct fileContent
+	{
+		int columns;
+		int rows;
+		std::vector <std::string> headers;
+		std::vector< std::vector<std::string> > data;
+	};
 
-  FileEvent *fe;
-  DataSetPackage *dsp;
-  AsyncLoader *asl;
-  std::vector<bool> columnIsNumeric;
+	FileEvent *fe;
+	DataSetPackage *dsp;
+	AsyncLoader *asl;
+	std::vector<bool> columnIsNumeric;
 
-  bool checkIfEqual(struct fileContent *);
-  int readDataFromCSV(QString, struct fileContent*);
-  std::string roundTo6Digits(double, int);
-  bool checkIfNumeric(std::string);
+	bool checkIfEqual(struct fileContent *);
+	int readDataFromCSV(QString, struct fileContent*);
+	std::string roundTo6Digits(double, int);
+	bool checkIfNumeric(std::string);
 
 private slots:
-    void initTestCase();
-    void cleanupTestCase();
-    void init();
-    void cleanup();
-    void csvTester();
-    void csvTester_data();
+	void initTestCase();
+	void cleanupTestCase();
+	void init();
+	void cleanup();
+	void csvTester();
+	void csvTester_data();
 };
 
+DECLARE_TEST(TestCSVImporter)
 
-DECLARE_TEST(CSVImporterTest)
-
-#endif // CSVIMPORTERTEST_H
+#endif // TESTCSVIMPORTER_H

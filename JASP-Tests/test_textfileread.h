@@ -15,53 +15,52 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef OSFTEST_H
-#define OSFTEST_H
+#ifndef TESTTEXTFILEREAD_H
+#define TESTTEXTFILEREAD_H
 
 #pragma once
+
 #include <sstream>
-#define private public
-
-#include <QEventLoop>
-#include <QSignalSpy>
-#include <QMetaType>
 #include <fstream>
+#include <vector>
+#include <string>
+#include <utility>
+#include <boost/filesystem.hpp>
+
 #include "AutomatedTests.h"
-#include "backstage/fsbrowser.h"
-#include "backstage/fsbmosf.h"
-#include "backstage/fsbmodel.h"
-#include "backstage/fsentrywidget.h"
-#include "backstage/fsentry.h"
-#include "backstage/backstageosf.h"
 #include "sharedmemory.h"
-#include "onlinedatamanager.h"
-#include "fileevent.h"
-#include "asyncloader.h"
 #include "datasetpackage.h"
+#include "importers/csvimporter.h"
 
 
-class OSFTest : public QObject
+class TestTextFileRead : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    FSBrowser *fs;
-    FSBMOSF *_model;
-    OnlineDataManager *_odm;
 
-    bool authenticationTest(QString, QString);
-    void waitTillExists(QButtonGroup *);
+	struct fileContent
+	{
+		int columns;
+		int rows;
+		std::vector <std::string> headers;
+		std::vector< std::vector<std::string> > data;
+	};
+
+	DataSetPackage *dsp;
+
+	std::pair<int, std::string> readDataFromFile(std::string, struct fileContent*);
+	std::pair<bool, std::string> checkIfEqual(struct fileContent *);
+	void emptyHandler(std::string, int);
 
 private slots:
-    void initTestCase();
-    void init();
-    void cleanup();
-    void cleanupTestCase();
-    void loginAuthenticationTest_data();
-    void loginAuthenticationTest();
-    void fileListTest();
+	void initTestCase();
+	void init();
+	void cleanup();
+	void csvImporterTest_data();
+	void csvImporterTest();
 };
 
-DECLARE_TEST(OSFTest)
+DECLARE_TEST(TestTextFileRead)
 
-#endif // OSFTEST_H
+#endif // TESTTEXTFILEREAD_H

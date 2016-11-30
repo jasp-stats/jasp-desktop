@@ -15,8 +15,8 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 INCLUDEPATH += ../JASP-Desktop/ \
-	../JASP-Common/ \
-	../JASP-Engine/
+    ../JASP-Common/ \
+    ../JASP-Engine/
 
    macx:INCLUDEPATH += ../../boost_1_54_0
 windows:INCLUDEPATH += ../../boost_1_54_0
@@ -52,18 +52,18 @@ linux {
 
 SOURCES += \
     main.cpp \
-    textfileread_test.cpp \
-    osf_test.cpp \
-    spssimporter_test.cpp \
-    csvimporter_test.cpp
+    test_textfileread.cpp
+#    test_osf.cpp \
+#    test_spssimporter.cpp \
+#    test_csvimporter.cpp
 
 HEADERS += \
     AutomatedTests.h \
-    textfileread_test.h \
-    osf_test.h \
-    csviterator.h \
-    spssimporter_test.h \
-    csvimporter_test.h
+    test_textfileread.h \
+#    test_osf.h \
+    csviterator.h
+#    test_spssimporter.h \
+#    test_csvimporter.h
 
 HELP_PATH = $${PWD}/../Docs/help
 RESOURCES_PATH = $${PWD}/../Resources

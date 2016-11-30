@@ -15,21 +15,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef TEXTFILEREADTEST_H
-#define TEXTFILEREADTEST_H
+#ifndef TESTSPSSIMPORTER_H
+#define TESTSPSSIMPORTER_H
 
 #pragma once
 #include <sstream>
 #define private public
 
-#include <QSignalSpy>
-#if QT_VERSION > QT_VERSION_CHECK(5, 3, 0)
-#include <QSignalBlocker>
-#endif
-#include <fstream>
 #include <vector>
 #include <string>
 #include <boost/filesystem.hpp>
+
 #include "AutomatedTests.h"
 #include "asyncloader.h"
 #include "sharedmemory.h"
@@ -38,38 +34,33 @@
 #include "datasetpackage.h"
 
 
-class TextFileReadTest : public QObject
+class TestSPSSImporter : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 
-  struct fileContent
-  {
-    int columns;
-    int rows;
-    std::vector <std::string> headers;
-    std::vector< std::vector<std::string> > data;
-  };
+	struct fileContent
+	{
+		int columns;
+		int rows;
+		std::vector <std::string> headers;
+		std::vector< std::vector<std::string> > data;
+	};
 
-  FileEvent *fe;
-  DataSetPackage *dsp;
-  AsyncLoader *asl;
-  bool folderPathFound;
+	FileEvent *fe_spss, *fe_csv;
+	AsyncLoader *asl_spss, *asl_csv;
 
-  int readDataFromFile(std::string, struct fileContent*);
-  bool checkIfEqual(struct fileContent *);
+	bool checkIfEqual(struct fileContent*, struct fileContent*);
+	void copyToStructure(DataSetPackage*, struct fileContent*);
 
 private slots:
-    void initTestCase();
-    void cleanupTestCase();
-    void init();
-    void cleanup();
-    void asyncloaderTester_data();
-    void asyncloaderTester();
+	void init();
+	void cleanup();
+	void spssTester();
+	void spssTester_data();
 };
 
+DECLARE_TEST(TestSPSSImporter)
 
-DECLARE_TEST(TextFileReadTest)
-
-#endif // TEXTFILEREADTEST_H
+#endif // TESTSPSSIMPORTER_H
