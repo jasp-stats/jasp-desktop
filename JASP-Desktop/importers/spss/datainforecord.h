@@ -20,9 +20,10 @@
 
 #include "systemfileformat.h"
 #include "readablerecord.h"
-#include "debug_cout.h"
+#include "spssutils.h"
 #include "stringutils.h"
 #include "numericconverter.h"
+#include "../spssimporter.h"
 
 namespace spss
 {
@@ -69,7 +70,7 @@ public:
 	 *
 	 * Implematations should examine columns to determine the record history.
 	 */
-	virtual void process(SPSSColumns & columns) = 0;
+	virtual void process(SPSSImporter* importer, SPSSImportDataSet* dataset) = 0;
 
 	static const RecordSubTypes SUB_RECORD_TYPE = subType;
 

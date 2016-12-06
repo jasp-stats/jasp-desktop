@@ -9,10 +9,21 @@ public:
 	CSVImportColumn(string name);
 	virtual ~CSVImportColumn();
 
-	virtual int size() const;
-	virtual bool isValueEqual(int row, string value);
+	virtual size_t size() const;
+	virtual bool isValueEqual(Column &col, size_t row) const;
 
-	vector<string> data;
+	void addValue(const string &value);
+	const vector<string>& getValues() const;
+	bool convertToInt(vector<int> &intValues, set<int> &uniqueValues) const;
+	bool convertToDouble(vector<double> &doubleValues) const;
+
+private:
+	vector<string> _data;
+
+	string _deEuropeanise(const string &value) const;
+	bool _convertValueToInt(const string &strValue, int &intValue) const;
+	bool _convertValueToDouble(const string &strValue, double &doubleValue) const;
+
 };
 
 #endif // CSVIMPORTCOLUMN_H

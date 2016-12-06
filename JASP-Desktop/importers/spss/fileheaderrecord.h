@@ -19,6 +19,7 @@
 #define FILEHEADERRECORD_H
 
 #include "readablerecord.h"
+#include "../codepageconvert.h"
 
 namespace spss
 {
@@ -85,7 +86,7 @@ public:
 	 *
 	 * Implematations should examine columns to determine the record history.
 	 */
-	virtual void process(SPSSColumns & columns);
+	virtual void process(SPSSImporter* importer, SPSSImportDataSet* dataset);
 
 
 	/**

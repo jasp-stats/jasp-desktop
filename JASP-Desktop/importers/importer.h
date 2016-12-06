@@ -12,12 +12,13 @@ class Importer
 {
 public:
 	Importer(DataSetPackage *packageData);
+	virtual ~Importer();
 	void loadDataSet(const string &locator, boost::function<void (const string &, int)> progressCallback);
 	void syncDataSet(const string &locator, boost::function<void (const string &, int)> progressCallback);
 
 protected:
 	virtual ImportDataSet* loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback) = 0;
-	virtual void initSharedMemoryColumn(ImportColumn *importColumn, Column &column) = 0;
+	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column) = 0;
 
 	DataSetPackage *_packageData;
 
@@ -29,6 +30,7 @@ private:
 			vector<pair<string, int> > &newColumns,
 			vector<pair<string, int> > &changedColumns,
 			map<string, Column *> &missingColumns,
+			map<string, Column *> &changeNameColumns,
 			bool rowCountChanged);
 	void initColumn(int colNo, ImportColumn* importColumn);
 

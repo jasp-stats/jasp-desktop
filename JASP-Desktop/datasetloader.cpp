@@ -42,28 +42,40 @@ string DataSetLoader::getExtension(const string &locator, const string &extensio
 	return ext;
 }
 
-void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &locator, const string &extension)
 {
+	Importer* result = NULL;
 	string ext = getExtension(locator, extension);
 
 	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
-	{
-		CSVImporter importer = CSVImporter(packageData);
-		importer.loadDataSet(locator, progress);
-	}
+		result = new CSVImporter(packageData);
 	else if (boost::iequals(ext,".sav"))
-		SPSSImporter::loadDataSet(packageData, locator, progress);
+		result = new SPSSImporter(packageData);
+
+	return result;
+}
+
+void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+{
+	Importer* importer = getImporter(packageData, locator, extension);
+
+	if (importer)
+	{
+		importer->loadDataSet(locator, progress);
+		delete importer;
+	}
 	else
 		JASPImporter::loadDataSet(packageData, locator, progress);
 }
 
 void DataSetLoader::syncPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
 {
-	string ext = getExtension(locator, extension);
-	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))
+	Importer* importer = getImporter(packageData, locator, extension);
+
+	if (importer)
 	{
-		CSVImporter importer = CSVImporter(packageData);
-		importer.syncDataSet(locator, progress);
+		importer->syncDataSet(locator, progress);
+		delete importer;
 	}
 }
 
@@ -71,10 +83,4 @@ void DataSetLoader::freeDataSet(DataSet *dataSet)
 {
 	SharedMemory::deleteDataSet(dataSet);
 }
-
-DataSet *DataSetLoader::getDataSet()
-{
-	return SharedMemory::retrieveDataSet();
-}
-
 

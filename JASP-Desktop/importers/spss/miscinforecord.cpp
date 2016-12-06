@@ -47,11 +47,10 @@ MiscInfoRecord::MiscInfoRecord(const NumericConverter &fixer, int32_t fileSubTyp
 
 /**
  * @brief process Manipulates columns by adding the contents of thie record.
- * @param columns
  *
  * Implematations should examine columns to determine the record history.
  */
-void MiscInfoRecord::process(SPSSColumns & /* columns */)
+void MiscInfoRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 
 }

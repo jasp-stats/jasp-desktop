@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "float.h"
 #include "floatinforecord.h"
 
 using namespace std;
@@ -52,7 +53,7 @@ FloatInfoRecord::~FloatInfoRecord()
 
 }
 
-void FloatInfoRecord::process(SPSSColumns &columns)
+void FloatInfoRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	// Do Nohting.
 }

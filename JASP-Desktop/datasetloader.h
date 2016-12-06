@@ -21,18 +21,18 @@
 #include "dataset.h"
 #include <boost/function.hpp>
 #include "datasetpackage.h"
+#include "importers/importer.h"
 
 class DataSetLoader
 {
 public:
-
 	static void loadPackage(DataSetPackage *packageData, const std::string &locator, const std::string &extension, boost::function<void (const std::string &stage, int progress)> progress = NULL);
 	static void syncPackage(DataSetPackage *packageData, const std::string &locator, const std::string &extension, boost::function<void (const std::string &, int)> progress = NULL);
-	static DataSet *getDataSet();
 	static void freeDataSet(DataSet *dataSet);
 
 private:
 	static std::string getExtension(const std::string &locator, const std::string &extension);
+	static Importer* getImporter(DataSetPackage *packageData, const string &locator, const string &extension);
 };
 
 #endif // DATASETLOADER_H

@@ -15,8 +15,33 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef DEBUG_COUT_H
-#define DEBUG_COUT_H
+#ifndef SPSSUTILS_H
+#define SPSSUTILS_H
+
+/*
+ * Macros to build attriutes of a class.
+ */
+#define _ATT_VALUE(type, name)		\
+private:							\
+	type _##name;					\
+
+#define READ_ATTR(type, name)		\
+	_ATT_VALUE(type, name)			\
+public:								\
+	const type & name() const		\
+		{ return _##name; }			\
+
+#define WRITE_ATTR(type, name)		\
+	_ATT_VALUE(type, name)			\
+public:								\
+	void name(const type &value)	\
+		{ _##name = value; }		\
+
+#define RW_ATTR(type, name)			\
+	READ_ATTR(type, name)			\
+public:								\
+	void name(const type &value)	\
+		{ _##name = value; }		\
 
 /*
  * Defines a series of DEBUG_COUT macros,

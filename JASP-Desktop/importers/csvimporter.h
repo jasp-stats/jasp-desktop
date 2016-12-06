@@ -30,10 +30,7 @@ public:
 
 protected:
 	virtual ImportDataSet* loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback);
-	virtual void initSharedMemoryColumn(ImportColumn *importColumn, Column &column);
-
-private:
-	string deEuropeanise(const string &value);
+	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column);
 
 };
 

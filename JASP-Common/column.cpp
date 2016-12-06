@@ -31,6 +31,21 @@ using namespace std;
 
 int Column::count = 0;
 
+const string Column::_emptyValue = ".";
+const string Column::_emptyValues[] = {"NaN", "nan", "", " ", "."};
+const int Column::_emptyValuesCount = sizeof(_emptyValues) /sizeof(_emptyValues[0]);
+
+bool Column::isEmptyValue(const string& val)
+{
+
+	for (int i = 0; i < _emptyValuesCount; ++i)
+	{
+		if (_emptyValues[i] == val)
+			return true;
+	}
+	return false;
+}
+
 Column::Column(managed_shared_memory *mem) :
 	_name(mem->get_segment_manager()),
 	_blocks(std::less<ull>(), mem->get_segment_manager()),
@@ -43,9 +58,9 @@ Column::Column(managed_shared_memory *mem) :
 }
 
 Column::Column(const Column &col) :
-	_labels(col._labels),
 	_name(col._name),
-	_blocks(col._blocks)
+	_blocks(col._blocks),
+	_labels(col._labels)
 {
 	id = ++count;
 	_mem = col._mem;
@@ -114,7 +129,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 					string display = stringFromRaw(value);
 					try
 					{
-						if (display == "NaN" || display == "nan" || display == "" || display == " " || display == ".")
+						if (isEmptyValue(display))
 						{
 							values.push_back(INT_MIN);
 						}
@@ -206,7 +221,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 					string value = this->stringFromRaw(*ints);
 					double doubleValue;
 
-					if (value == "NaN" || value == "nan" || value == "" || value == " " || value == ".")
+					if (isEmptyValue(value))
 						doubleValue = NAN;
 					else
 						doubleValue = lexical_cast<double>(value);
@@ -308,7 +323,7 @@ int Column::rowCount() const
 string Column::stringFromRaw(int value) const
 {
 	if (value == INT_MIN)
-		return ".";
+		return _emptyValue;
 
 	if (_labels.size() > 0)
 		return _labels.labelFor(value).text();
@@ -394,9 +409,66 @@ void Column::setValue(int rowIndex, double value)
 	block->Data[blockIndex].d = value;
 }
 
+bool Column::isValueEqual(int rowIndex, double value)
+{
+	if (rowIndex >= _rowCount)
+		return false;
+
+	if (_columnType == Column::ColumnTypeScale)
+	{
+		double d = AsDoubles[rowIndex];
+		if (std::isnan(value))
+			return std::isnan(d);
+		else
+			return d == value;
+	}
+
+	return false;
+}
+
+bool Column::isValueEqual(int rowIndex, int value)
+{
+	if (rowIndex >= _rowCount)
+		return false;
+
+	if (_columnType == Column::ColumnTypeScale)
+		return AsDoubles[rowIndex] == value;
+
+	int intValue = AsInts[rowIndex];
+	if (intValue == INT_MIN)
+		return value == INT_MIN;
+
+	if (_labels.size() > 0)
+	{
+		Label label = _labels.labelFor(intValue);
+		if (label.hasIntValue())
+			return label.value() == value;
+	}
+	return false;
+}
+
+bool Column::isValueEqual(int rowIndex, const string &value)
+{
+	if (rowIndex >= _rowCount)
+		return false;
+
+	if (_columnType == Column::ColumnTypeScale)
+	{
+		double v = AsDoubles[rowIndex];
+		stringstream s;
+		s << v;
+		string str = s.str();
+		return str == value;
+	}
+
+	const string& displayValue = ((value == "" || value == " ") ? _emptyValue : value);
+	int intIndex = AsInts[rowIndex];
+	return stringFromRaw(intIndex) == displayValue;
+}
+
 string Column::operator [](int index)
 {
-	string result = ".";
+	string result = _emptyValue;
 
 	if (index < _rowCount)
 	{
@@ -416,7 +488,7 @@ string Column::operator [](int index)
 			}
 			else if (std::isnan(v))
 			{
-				result = ".";
+				result = _emptyValue;
 			}
 			else
 			{

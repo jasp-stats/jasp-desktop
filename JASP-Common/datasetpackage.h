@@ -56,6 +56,11 @@ public:
 	void setAnalysesHTMLReady();
 
 	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;
+	boost::signals2::signal<void (DataSetPackage *source
+								  , std::vector<std::pair<std::string, int> > &changedColumns
+								  , std::map<std::string, Column *> &missingColumn
+								  , std::map<std::string, Column *> &changeNameColumns
+								  )> dataChanged;
 
 private:
 	bool _isModified = false;

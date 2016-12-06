@@ -6,7 +6,7 @@
 
 using namespace std;
 
-typedef map<string, ImportColumn *> ImportColumns;
+typedef vector<ImportColumn *> ImportColumns;
 
 class ImportDataSet
 {
@@ -15,17 +15,22 @@ public:
 	ImportDataSet();
 	virtual ~ImportDataSet();
 
-	void addColumn(ImportColumn *column);
+	virtual void addColumn(ImportColumn *column);
 
-	int rowCount() const;
-	int columnCount() const;
+	virtual int rowCount() const;
+	virtual int columnCount() const;
 
 	ImportColumn *getColumn(string name) const;
 	ImportColumns::iterator begin();
 	ImportColumns::iterator end();
+	ImportColumns::reverse_iterator rbegin();
+	ImportColumns::reverse_iterator rend();
+	void clear();
+	void erase(ImportColumns::iterator it);
 
-private:
+protected:
 	ImportColumns _columns;
+	map<string, ImportColumn*> _nameToColMap;
 };
 
 #endif // IMPORTDATASET_H

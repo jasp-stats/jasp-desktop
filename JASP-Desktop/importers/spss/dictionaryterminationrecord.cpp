@@ -41,8 +41,8 @@ DictionaryTermination::~DictionaryTermination()
  * @brief Does nothing
  *
  */
-void DictionaryTermination::process(SPSSColumns &columns)
+void DictionaryTermination::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	// inin the columns iterator.
-	columns.resetCols();
+	importer->resetNextCol(dataset);
 }

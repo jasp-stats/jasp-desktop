@@ -72,6 +72,11 @@ private:
 	EngineSync* _engineSync;
 
 	void packageChanged(DataSetPackage *package);
+	void packageDataChanged(DataSetPackage *package
+							   , std::vector<std::pair<std::string, int> > &changedColumns
+							   , std::map<std::string, Column *> &missingColumn
+							   , std::map<std::string, Column *> &changeNameColumns);
+
 
 	bool closeRequestCheck(bool &isSaving);
 

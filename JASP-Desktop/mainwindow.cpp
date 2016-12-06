@@ -116,6 +116,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	_package = new DataSetPackage();
 
 	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged, this, _1));
+	_package->dataChanged.connect(boost::bind(&MainWindow::packageDataChanged, this, _1, _2, _3, _4));
+
 	QShortcut *saveShortcut = new QShortcut(QKeySequence("Ctrl+S"), this);
 	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
 	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
@@ -408,6 +410,17 @@ void MainWindow::packageChanged(DataSetPackage *package)
 		setWindowTitle(title);
 	}
 }
+
+void MainWindow::packageDataChanged(DataSetPackage *package
+									   , std::vector<std::pair<std::string, int> > &changedColumns
+									   , std::map<std::string, Column *> &missingColumn
+									   , std::map<std::string, Column *> &changeNameColumns)
+{
+	_tableModel->setDataSet(package->dataSet);
+	ui->variablesPage->setDataSet(package->dataSet);
+	refreshAllAnalyses();
+}
+
 
 QString MainWindow::escapeJavascriptString(const QString &str)
 {
@@ -987,13 +1000,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		{
 			_applicationExiting = false;
 		}
-	}
-
-	if (event->operation() == FileEvent::FileSyncData)
-	{
-		_tableModel->setDataSet(_package->dataSet);
-		ui->variablesPage->setDataSet(_package->dataSet);
-		refreshAllAnalyses();
 	}
 
 	if (showAnalysis)

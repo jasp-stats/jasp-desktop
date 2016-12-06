@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 
+#include "column.h"
+
 using namespace std;
 
 class ImportColumn
@@ -12,13 +14,13 @@ class ImportColumn
 public:
 	ImportColumn(string name, string longName = "");
 	virtual ~ImportColumn();
-	virtual int size() const = 0;
-	virtual bool isValueEqual(int row, string value) = 0;
+	virtual size_t size() const = 0;
+	virtual bool isValueEqual(Column &col, size_t row) const = 0;
 
-	string getName() const;
-	string getLongName() const;
+	virtual string getName() const;
+	virtual string getLongName() const;
 
-private:
+protected:
 	string _name;
 	string _longName;
 };

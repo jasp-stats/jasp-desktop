@@ -20,6 +20,8 @@
 
 #include "systemfileformat.h"
 #include "fileheaderrecord.h"
+#include "../spssimporter.h"
+#include "spssimportcolumn.h"
 
 namespace spss {
 
@@ -32,13 +34,14 @@ class DataRecords {
 public:
 	/**
 	 * @brief DataRecords ctor
+	 * @param importer
 	 * @param fixer - Fixes byte order for data.
 	 * @param fileHeader File header record.
 	 * @param columns The columns data we collected readling the headers.
 	 * @param fromStream The stream to read.
 	 * @param progress Report progress call back.
 	 */
-	DataRecords(const NumericConverter &fixer,  const FileHeaderRecord &fileHeader, SPSSColumns &columns, SPSSStream &fromStream,
+	DataRecords(SPSSImporter* importer, SPSSImportDataSet *dataset, const NumericConverter &fixer, const FileHeaderRecord &fileHeader, SPSSStream &fromStream,
 				boost::function<void (const std::string &, int)> &progress);
 
 
@@ -54,8 +57,9 @@ protected:
 	/*
 	 * From ctor()
 	 */
+	SPSSImporter			*_importer;
+	SPSSImportDataSet 		*_dataset;
 	const FileHeaderRecord 	&_fileHeader;
-	SPSSColumns 			   &_cols;
 	SPSSStream 				&_from;
 	boost::function<void (const std::string &, int)> &_progress;
 
@@ -99,20 +103,20 @@ private:
 	 * @param col The colum to insert into.
 	 * @param str The teing value to insert / append.
 	 */
-	void insertToCol(SPSSColumn &col, const std::string &str);
+	void insertToCol(SPSSImportColumn &col, const std::string &str);
 
 	/**
 	 * @brief insertToCol Inserts a string into the (next) column.
 	 * @param col The colum to insert into.
 	 * @param value The value to insert
 	 */
-	void insertToCol(SPSSColumn &col, double value);
+	void insertToCol(SPSSImportColumn &col, double value);
 
 	/**
 	 * @brief readUnCompVal Reads in and stores a single data value
 	 * @param col the cilum to insert into.
 	 */
-	void readUnCompVal(SPSSColumn &col);
+	void readUnCompVal(SPSSImportColumn &col);
 
 };
 
