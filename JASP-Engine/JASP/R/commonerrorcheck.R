@@ -4,7 +4,7 @@
 #   variables: Vector/string of variables which did had error specified by type.
 #   includeOpening: Boolean, should there be a general opening line (TRUE) or only the specific error message (FALSE).
 #   concatenateWith: String, include if you want to append the error message to an already existing message.
-#   ...: Each error message can have any number of variables, denoted by %'s. Add these as arg=val pairs.
+#   ...: Each error message can have any number of variables, denoted by {}'s. Add these as arg=val pairs.
 #
 # Returns:
 #   String containing the error message.
@@ -14,7 +14,7 @@
     stop('Non-valid type argument provided')
   }
   
-  swaps <- list(' != ' = ' ≠ ')
+  replaceInMessage <- list('!=' = '≠')
   args <- list(...)
   
   message <- .messages('error', type)
@@ -23,29 +23,29 @@
   }
   
   # See if we need to specify variables
-  if (grepl('%variables%', message) == TRUE) {
+  if (grepl('{variables}', message, fixed=TRUE)) {
     if (is.null(variables)) {
       stop('This error message requires the offending variables to be specified')
     }
-    message <- gsub('%variables%', paste(variables, collapse=', '), message)
+    message <- gsub('{variables}', paste(variables, collapse=', '), message, fixed=TRUE)
   }
   
-  # Find all %strings% that needs to be replaced by values
-  toBeReplaced <- regmatches(message, gregexpr("(?<=\\%)\\S*?(?=\\%)", message, perl=TRUE))[[1]]
-  if (base::identical(toBeReplaced, character(0)) == FALSE) { # see if there were any %strings%
+  # Find all {string}'s that needs to be replaced by values
+  toBeReplaced <- regmatches(message, gregexpr("(?<=\\{)\\S*?(?=\\})", message, perl=TRUE))[[1]]
+  if (base::identical(toBeReplaced, character(0)) == FALSE) { # see if there were any {string}'s
     if (all(toBeReplaced %in% names(args)) == FALSE) {
       missingReplacements <- toBeReplaced[!toBeReplaced %in% names(args)]
       stop('Missing required replacement(s): "', paste(missingReplacements, collapse=','), '"')
     }
     for (i in 1:length(toBeReplaced)) {
-      message <- gsub(paste0('%', toBeReplaced[i], '%'), args[[ toBeReplaced[i] ]], message)
+      message <- gsub(paste0('{', toBeReplaced[i], '}'), args[[ toBeReplaced[i] ]], message, fixed=TRUE)
     }
   }
   
-  # Find all value swaps that need to occur, e.g. we do not want to show !=
-  for (i in 1:length(swaps)) {
-    if (grepl(names(swaps)[i], message) == TRUE) {
-      message <- gsub(names(swaps)[i], swaps[[i]], message)
+  # Find all values we do not want in the output, e.g. we do not want to show !=
+  for (i in 1:length(replaceInMessage)) {
+    if (grepl(names(replaceInMessage)[i], message)) {
+      message <- gsub(names(replaceInMessage)[i], replaceInMessage[[i]], message)
     }
   }
   
@@ -63,7 +63,7 @@
     message <- paste0(concatenateWith, message)
   }
   
-  # Add opening line
+  # See if we should add an opening line
   if (includeOpening == TRUE) {
     message <- paste0(.messages('error', 'opening'), '<ul>', message)
   }
@@ -191,11 +191,12 @@
 }
 
 
+# Check for infinity, requires no additional arguments.
 .checkInfinity <- function(dataset, targetVars, ...) {
   result <- list(error=FALSE, errorVars=NULL)
   for (v in targetVars) {
     data <- dataset[[.v(v)]]
-    if (is.factor(data)) {
+    if (is.factor(data)) { # coerce factor to numeric
       data <- as.numeric(as.character(data))
     } 
     if (any(is.infinite(data))) {
@@ -208,12 +209,14 @@
 }
 
 
-.checkFactorLevels <- function(dataset, targetVars, factorLevels.amount, ...) {
+# Check for the amount of factor levels, required arguments are an amount (numeric) to check and its operator (string) (e.g. '!=' 2 or '>' 1)
+.checkFactorLevels <- function(dataset, targetVars, factorLevels.amount, factorLevels.operator, ...) {
   result <- list(error=FALSE, errorVars=NULL)
   for (v in targetVars) {
-    
-    expr <- paste(length(unique(dataset[[.v(v)]])), factorLevels.amount)
-    if (eval(parse(text=expr)) == TRUE) {
+
+    levelsOfVar <- length(unique(dataset[[.v(v)]]))
+    expr <- paste(levelsOfVar, factorLevels.operator, factorLevels.amount) # Build the expression to check for
+    if (eval(parse(text=expr)) == TRUE) { # See if this expression is true
       result$error <- TRUE
       result$errorVars <- c(result$errorVars, v)
     }
@@ -223,27 +226,28 @@
 }
 
 
+# Check for variance in the data. Optionally specify the variance amount to check and if the dependent should be grouped.
 .checkVariance <- function(dataset, targetVars, variance.equalTo=0, variance.grouping=NULL, ...) {
   result <- list(error=FALSE, errorVars=NULL)
   for (v in targetVars) {
     
-    if (length(variance.grouping) > 0) {
-      
+    if (length(variance.grouping) > 0) { # There are grouping vars
+      # ddply groups the dataset and performs a function on each subgroup, returns a dataframe with the subgroups and the function results
       variances <- plyr::ddply(dataset, .v(variance.grouping),
                                function(x, col) {
                                  validValues <- x[[col]][is.finite(x[[col]])]
-                                 variance <- -1
+                                 variance <- -1 # Prevents the function from returning NA's
                                  if (length(validValues) > 1) {
                                    variance <- stats::var(validValues)
                                  }
                                  return(variance)
                                }, .v(v))
-      if (any(variances[, ncol(variances)] == variance.equalTo)) {
+      if (any(variances[, ncol(variances)] == variance.equalTo)) { # check the last column with the function results
         result$error <- TRUE
         result$errorVars <- c(result$errorVars, v)
       }
       
-    } else {
+    } else { # no grouping vars
       
       validValues <- dataset[[.v(v)]][is.finite(dataset[[.v(v)]])]
       if (length(validValues) > 1) {
@@ -261,17 +265,18 @@
 }
 
 
+# check for the number of observations in the dependent(s). Requires the minimum possible value to be supplied, optionally specify if the dependent should be grouped.
 .checkObservations <- function(dataset, targetVars, observations.lessThan, observations.grouping=NULL, ...) {
   result <- list(error=FALSE, errorVars=NULL)
   for (v in targetVars) {
     
-    if (length(observations.grouping) > 0) {
-      
+    if (length(observations.grouping) > 0) { # there are grouping vars
+      # ddply groups the dataset and performs a function on each subgroup, returns a dataframe with the subgroups and the function results
       obs <- plyr::ddply(dataset, .v(observations.grouping),
                          function(x, col) {
                            length(na.omit(x[[col]]))
                          }, .v(v))
-      if (any(obs[, ncol(obs)] < observations.lessThan)) {
+      if (any(obs[, ncol(obs)] < observations.lessThan)) { # check the last column with the function results
         result$error <- TRUE
         result$errorVars <- c(result$errorVars, v)
       }
