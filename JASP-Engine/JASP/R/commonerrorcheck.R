@@ -1,6 +1,7 @@
 # Generic function to create error message (mostly used in conjunction with .hasErrors()).
 # Args:
 #   type: String containing check type.
+#   variables: Vector of variables or single string indicating what did not pass the check.
 #   includeOpening: Boolean, should there be a general opening line (TRUE) or only the specific error message (FALSE).
 #   concatenateWith: String, include if you want to append the error message to an already existing message.
 #   ...: Each error message can have any number of variables, denoted by {}'s. Add these as arg=val pairs.
