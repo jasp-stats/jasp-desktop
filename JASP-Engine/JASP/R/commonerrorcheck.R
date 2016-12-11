@@ -1,7 +1,6 @@
 # Generic function to create error message (mostly used in conjunction with .hasErrors()).
 # Args:
 #   type: String containing check type.
-#   variables: Vector/string of variables which did had error specified by type.
 #   includeOpening: Boolean, should there be a general opening line (TRUE) or only the specific error message (FALSE).
 #   concatenateWith: String, include if you want to append the error message to an already existing message.
 #   ...: Each error message can have any number of variables, denoted by {}'s. Add these as arg=val pairs.
@@ -80,7 +79,7 @@
 #   message: 'short', 'default' or 'verbose', should only the first failure of a check be reported in single line form ('short'), or should every check be mentioned in multi-line form;
 #             in which case, should variables be mentioned multiple times in multiple checks ('verbose'), or only for the first failure ('default'). (In any case a full error list is generated)
 #   ...: Each check may have required and optional arguments, they are specified in the error check subfunctions.
-#        To perform the check only on certain variables instead of all, include a target as specified in the error checks definition (e.g. infinity=options$dependent).
+#        To perform the check only on certain variables instead of all, include a target (e.g. infinity.target=options$dependent, variance.target...).
 #
 # Returns:
 #   FALSE if no errors were found or a list specifying for each check which variables violated it as well as a general error message.
@@ -148,12 +147,12 @@
       createMessage <- TRUE
       varsToAdd <- checkResult[['errorVars']]
       
-      # Should we create a single line message
+      # In case we want a single line message
       if (message == 'short' && length(errors) > 1) {
         createMessage <- FALSE
       } 
       
-      # Should we mention variables multiple times
+      # Or multi-line but with single variable mentions
       if (message == 'default' && length(errors) > 1 && !is.null(varsToAdd)) {
         for (e in 2:length(errors)) { # first element is the error message
           varsToAdd <- varsToAdd[ !varsToAdd %in% errors[[e]] ]
@@ -164,7 +163,7 @@
         }
       }
       
-      # Build the error message further
+      # If it's all good create/expand the error message
       if (createMessage == TRUE) {
         opening = FALSE
         if (is.null(errors[['message']]) && message != 'short') {
@@ -184,6 +183,7 @@
     
   }
   
+  # Done with all the checks, time to return...
   if (length(errors) == 1)  {
     return(FALSE)
   }
