@@ -422,7 +422,6 @@ void rbridge_makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordin
 void rbridge_makeFactor(Rcpp::IntegerVector &v, const std::vector<string> &levels, bool ordinal)
 {
 	v.attr("levels") = levels;
-
 	vector<string> cla55;
 	if (ordinal)
 		cla55.push_back("ordered");
@@ -515,6 +514,23 @@ Rcpp::DataFrame rbridge_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumeri
 string rbridge_check()
 {
 	SEXP result = rbridge_rinside->parseEvalNT("checkPackages()");
+	if (Rf_isString(result))
+		return Rcpp::as<string>(result);
+	else
+		return "null";
+}
+
+string rbridge_saveImage(const string &name, const string &type, const string &height, const string &width)
+{
+	SEXP results;
+	RInside &rInside = rbridge_rinside->instance();
+
+	rInside["plotName"] = name;
+	rInside["format"] = type;
+	rInside["height"] = height;
+	rInside["width"] = width;
+
+	SEXP result = rbridge_rinside->parseEvalNT("saveImage(plotName,format,height,width)");
 	if (Rf_isString(result))
 		return Rcpp::as<string>(result);
 	else

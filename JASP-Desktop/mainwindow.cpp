@@ -80,12 +80,12 @@
 #include <QStringBuilder>
 #include <QWebHistory>
 #include <QDropEvent>
-#include <QFileInfo>
 #include <QShortcut>
 #include <QDesktopWidget>
 #include <QTabBar>
 #include <QMenuBar>
 #include <QDir>
+#include <QFileDialog>
 
 #include "analysisloader.h"
 
@@ -195,6 +195,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_engineSync, SIGNAL(engineTerminated()), this, SLOT(fatalError()));
 
 	connect(_analyses, SIGNAL(analysisResultsChanged(Analysis*)), this, SLOT(analysisResultsChangedHandler(Analysis*)));
+	connect(_analyses, SIGNAL(analysisImageSaved(Analysis*)), this, SLOT(analysisImageSavedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisUserDataLoaded(Analysis*)), this, SLOT(analysisUserDataLoadedHandler(Analysis*)));
 	connect(_analyses, SIGNAL(analysisAdded(Analysis*)), ui->backStage, SLOT(analysisAdded(Analysis*)));
 
@@ -221,6 +222,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(this, SIGNAL(pushImageToClipboard(QByteArray, QString)), this, SLOT(pushImageToClipboardHandler(QByteArray, QString)));
 	connect(this, SIGNAL(saveTextToFile(QString, QString)), this, SLOT(saveTextToFileHandler(QString, QString)));
 	connect(this, SIGNAL(analysisChangedDownstream(int, QString)), this, SLOT(analysisChangedDownstreamHandler(int, QString)));
+	connect(this, SIGNAL(analysisSaveImage(int, QString)), this, SLOT(analysisSaveImageHandler(int, QString)));
 	connect(this, SIGNAL(showAnalysesMenu(QString)), this, SLOT(showAnalysesMenuHandler(QString)));
 	connect(this, SIGNAL(removeAnalysisRequest(int)), this, SLOT(removeAnalysisRequestHandler(int)));
 	connect(this, SIGNAL(updateUserData(int, QString)), this, SLOT(updateUserDataHandler(int, QString)));
@@ -505,6 +507,55 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	if (_package->isLoaded())
 		_package->setModified(true);
+}
+
+void MainWindow::analysisSaveImageHandler(int id, QString options)
+{
+	Analysis *analysis = _analyses->get(id);
+	if (analysis == NULL)
+		return;
+
+	string utf8 = fq(options);
+	Json::Value root;
+	Json::Reader parser;
+	parser.parse(utf8, root);
+
+	QString caption = "Save Image (with PNG or EPS format)";
+	QString filter = "Encapsulated PostScript (*.eps);;Portable Network Graphics (*.png)";
+    QString selectedFilter;
+
+    QString finalPath = QFileDialog::getSaveFileName(this, caption, QString(), filter, &selectedFilter);
+	if (!finalPath.isEmpty())
+	{
+        if (selectedFilter == "Encapsulated PostScript (*.eps)")
+		{
+			root["type"] = "eps";
+            root["finalPath"] = finalPath.toStdString();
+            analysis->saveImage(analysis, root);
+		}
+		else
+		{
+            QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + root.get("name", Json::nullValue).asCString();
+            QFile::copy(imagePath, finalPath);
+        }
+	}
+}
+
+void MainWindow::analysisImageSavedHandler(Analysis *analysis)
+{
+	Json::Value results = analysis->asJSON().get("results", Json::nullValue);
+	if (results.isNull())
+		return;
+	Json::Value inputOptions = results.get("inputOptions", Json::nullValue);
+
+	QString imagePath = QString::fromStdString(tempfiles_sessionDirName()) + "/" + results.get("name", Json::nullValue).asCString();
+	QString finalPath = QString::fromStdString(inputOptions.get("finalPath", Json::nullValue).asCString());
+	if (!finalPath.isEmpty())
+	{
+		std::cout << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
+		std::cout.flush();
+		QFile::copy(imagePath, finalPath);
+	}
 }
 
 AnalysisForm* MainWindow::loadForm(Analysis *analysis)
@@ -1586,6 +1637,7 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	QIcon _citeIcon = QIcon(":/icons/cite.png");
 	QIcon _collapseIcon = QIcon(":/icons/collapse.png");
 	QIcon _expandIcon = QIcon(":/icons/expand.png");
+	QIcon _saveImageIcon = QIcon(":/icons/document-save-as.png");
 
 	_analysisMenu->clear();
 
@@ -1612,6 +1664,11 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	{
 		_analysisMenu->addSeparator();
 		_analysisMenu->addAction(_citeIcon, "Copy Citations", this, SLOT(citeSelected()));
+	}
+
+	if (menuOptions["hasSaveImg"].asBool())
+	{
+		_analysisMenu->addAction(_saveImageIcon, "Save Image As", this, SLOT(saveImage()));
 	}
 
 	if (menuOptions["hasNotes"].asBool())
@@ -1780,6 +1837,11 @@ void MainWindow::citeSelected()
 
 }
 
+void MainWindow::saveImage()
+{
+	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.saveImageClicked();");
+}
+
 void MainWindow::noteSelected()
 {
 	QAction *action = (QAction *)this->sender();
@@ -1822,8 +1884,6 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	analysis->options()->set(root);
-
-
 }
 
 void MainWindow::showAbout()
