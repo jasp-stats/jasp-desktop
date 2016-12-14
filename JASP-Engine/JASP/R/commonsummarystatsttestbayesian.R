@@ -134,11 +134,11 @@
 	}
 
 	row <- list(BF = ".",
-							tStatistic = tStatValue,
-							n1Size = n1Value,
-							errorEstimate = ".",
-							pValue = "."
-						)
+				tStatistic = tStatValue,
+				n1Size = n1Value,
+				errorEstimate = ".",
+				pValue = "."
+			)
 
 	if (independent) {
 
@@ -156,10 +156,9 @@
 }
 
 
-.getPriorAndPosteriorPlot.summarystats.ttest <- function(
-																									run, options, state,
-																									diff, bayesFactorObject,
-																									oneSided, paired) {
+.getPriorAndPosteriorPlot.summarystats.ttest <- function(run, options, state,
+														diff, bayesFactorObject,
+														oneSided, paired) {
 	# Returns the prior and posterior plot. If available from previous,
 	#   the function returns that. Else, it calls the plotPosterior function
 	#
@@ -251,10 +250,9 @@
 }
 
 
-.getBayesFactorRobustnessPlot.summarystats.ttest <- function(
-																											run, options, state,
-																											diff, bayesFactorObject,
-																											oneSided) {
+.getBayesFactorRobustnessPlot.summarystats.ttest <- function(run, options, state,
+															diff, bayesFactorObject,
+															oneSided) {
 	# Returns the Bayes factor robustness plot. If available from previous state
 	#   the function returns that. Otherwise, based on 'run' state, it calls
 	#   the plotBayesFactorRobustness function.
@@ -323,9 +321,9 @@
 
 			if (!is.null(bayesFactorObject)) {
 				BF10post <- ifelse(BFH1H0,
-													.clean(exp(bayesFactorObject$bf)),
-													.clean(1/exp(bayesFactorObject$bf))
-										)
+								.clean(exp(bayesFactorObject$bf)),
+								.clean(1/exp(bayesFactorObject$bf))
+							)
 			}
 		} else {
 			dontPlotData <- TRUE
@@ -482,7 +480,7 @@
 
 	# BF10 "ultrawide" prior
 	BF10ultra <- BayesFactor::ttest.tstat(t = t, n1 = n1, n2 = n2, nullInterval = nullInterval,
-																				rscale = "ultrawide")
+																		rscale = "ultrawide")
 	BF10ultra <- .clean(exp(BF10ultra$bf))
 	BF10ultraText <- BF10ultra
 
@@ -516,8 +514,8 @@
 
 		if (grepl(pattern = "e",y1h[i])) {
 			newy <- paste(strsplit(y1h[i], split = "+", fixed=TRUE)[[1]][1], "+",
-										as.numeric(strsplit(y1h[i],split = "+", fixed = TRUE)[[1]][2]) + 1,
-										sep = "")
+						as.numeric(strsplit(y1h[i],split = "+", fixed = TRUE)[[1]][2]) + 1,
+						sep = "")
 		} else {
 			newy <- paste(y1h[i], "0", sep= "")
 		}
@@ -575,8 +573,8 @@
 	while (eval(parse(text= y1l[i])) > min(BF10)) {
 		if (grepl(pattern = "e",y1l[i])) {
 			newy <- paste(strsplit(y1l[i], split = "+", fixed=TRUE)[[1]][1], "+",
-										as.numeric(strsplit(y1l[i],split = "+", fixed = TRUE)[[1]][2])+1,
-										sep="")
+						as.numeric(strsplit(y1l[i],split = "+", fixed = TRUE)[[1]][2])+1,
+						sep="")
 		} else {
 			newy <- paste(y1l[i], "0", sep= "")
 		}
@@ -597,8 +595,8 @@
 	while (eval(parse(text= y3l[i])) > min(BF10)) {
 		if (grepl(pattern = "e",y3l[i])) {
 			newy <- paste(strsplit(y3l[i], split = "+", fixed=TRUE)[[1]][1], "+",
-										as.numeric(strsplit(y3l[i],split = "+", fixed = TRUE)[[1]][2])+1,
-										sep = "")
+						as.numeric(strsplit(y3l[i],split = "+", fixed = TRUE)[[1]][2])+1,
+						sep = "")
 		} else {
 			newy <- paste(y3l[i], "0", sep = "")
 		}
@@ -667,8 +665,8 @@
 			for (i in 1:2) {
 				if (grepl(pattern = "e",yLab1s[length(yLab1s)])) {
 					newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+",
-												 fixed = TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],
-												 split = "+", fixed = TRUE)[[1]][2]) + 1, sep = "")
+								 fixed = TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],
+								 split = "+", fixed = TRUE)[[1]][2]) + 1, sep = "")
 				} else {
 					newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 				}
@@ -684,8 +682,8 @@
 		if (max(BF10) > eval(parse(text= yLab1s[length(yLab1s)-1]))) {
 			if (grepl(pattern = "e",yLab1s[length(yLab1s)])) {
 				newy <-  paste(strsplit(yLab1s[length(yLab1s)], split = "+",
-												fixed = TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],
-												split = "+", fixed=TRUE)[[1]][2])+1, sep = "")
+							fixed = TRUE)[[1]][1], "+", as.numeric(strsplit(yLab1s[length(yLab1s)],
+							split = "+", fixed=TRUE)[[1]][2])+1, sep = "")
 			} else {
 				newy <- paste(yLab1s[length(yLab1s)], "0", sep= "")
 			}
@@ -709,8 +707,8 @@
 			for (i in 1:2) {
 				if (grepl(pattern = "e",yLab1s[1])) {
 					newy <- paste(strsplit(yLab1s[1], split = "+", fixed=TRUE)[[1]][1], "+",
-												as.numeric(strsplit(yLab1s[1],split = "+", fixed = TRUE)[[1]][2])+1,
-												sep = "")
+								as.numeric(strsplit(yLab1s[1],split = "+", fixed = TRUE)[[1]][2])+1,
+								sep = "")
 				} else {
 					newy <- paste(yLab1s[1], "0", sep= "")
 				}
@@ -729,8 +727,8 @@
 		if (min(BF10) < eval(parse(text= yLab1s[2]))) {
 			if (grepl(pattern = "e",yLab1s[1])) {
 				newy <- paste(strsplit(yLab1s[1], split = "+", fixed=TRUE)[[1]][1], "+",
-											as.numeric(strsplit(yLab1s[1],split = "+", fixed = TRUE)[[1]][2])+1,
-											sep = "")
+							as.numeric(strsplit(yLab1s[1],split = "+", fixed = TRUE)[[1]][2])+1,
+							sep = "")
 			} else {
 				newy <- paste(yLab1s[1], "0", sep= "")
 			}
@@ -797,8 +795,8 @@
 
 	while (eval(parse(text=yLab[2])) > min(BF10)) {
 		interval <- as.numeric(strsplit(format(eval(parse(text = yLab[1])), digits = 3, scientific = TRUE), "-",
-									fixed = TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[2])), digits = 3,
-									scientific = TRUE), "-", fixed = TRUE)[[1]][2])
+							fixed = TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text=yLab[2])), digits = 3,
+							scientific = TRUE), "-", fixed = TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(format(eval(parse(text = yLab[1])), digits = 3, scientific = TRUE),
 									"-", fixed= TRUE)[[1]][2]) + interval
 
@@ -812,8 +810,8 @@
 
 	while (eval(parse(text=yLab[length(yLab)-1])) < max(BF10)) {
 		interval <- as.numeric(strsplit(format(eval(parse(text = yLab[length(yLab)])), digits = 3, scientific = TRUE), "+",
-									fixed = TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text = yLab[length(yLab)-1])),
-									digits = 3, scientific = TRUE), "+", fixed = TRUE)[[1]][2])
+							fixed = TRUE)[[1]][2]) - as.numeric(strsplit(format(eval(parse(text = yLab[length(yLab)-1])),
+							digits = 3, scientific = TRUE), "+", fixed = TRUE)[[1]][2])
 		pot <- as.numeric(strsplit(format(eval(parse(text = yLab[length(yLab)])), digits = 3, scientific = TRUE),
 									"+", fixed= TRUE)[[1]][2]) + interval
 
@@ -822,7 +820,7 @@
 		}
 
 		newy <- paste(strsplit(format(eval(parse(text = yLab[length(yLab)])), digits = 3,
-									scientific = TRUE), "+", fixed = TRUE)[[1]][1], "+", pot, sep = "")
+					scientific = TRUE), "+", fixed = TRUE)[[1]][1], "+", pot, sep = "")
 		yLab <- c( yLab, newy)
 	}
 
@@ -1188,6 +1186,7 @@
 		}
 
 		maxBFrValt <- formatC(maxBFrVal, digits = 4, format = "f", drop0trailing = TRUE )
+		maxBF <- bquote(.(BF10maxt) ~ .('at r') == .(maxBFrValt))
 
 		if (oneSided == FALSE) {
 			maxBF10LegendText <- bquote(max~BF[1][0]*":")
@@ -1220,7 +1219,7 @@
 		text(xx, yy[BFsort == BF10userText], userBF, cex = 1.3, pos = 4)
 		text(xx, yy[BFsort == BF10ultraText], ultraBF, cex = 1.3, pos = 4)
 		text(xx, yy[BFsort == BF10wText], wBF, cex = 1.3, pos = 4)
-		text(xx, yy[BFsort == BF10maxText], as.expression(paste(BF10maxt, "at r =", maxBFrValt)), cex = 1.3, pos = 4)
+		text(xx, yy[BFsort == BF10maxText], maxBF, cex = 1.3, pos = 4)
 	}
 }
 
@@ -1307,15 +1306,15 @@
 	}
 
 	parameters <- try(silent = TRUE,
-										expr = optim(par = c(deltaHat, sigmaStart, df),
-																	fn =.likelihoodShiftedT, data = delta,
-																	method = "BFGS")$par)
+					expr = optim(par = c(deltaHat, sigmaStart, df),
+								fn =.likelihoodShiftedT, data = delta,
+								method = "BFGS")$par)
 
 	if (class(parameters) == "try-error") {
 		parameters <- try(silent = TRUE,
-											expr = optim(par = c(deltaHat, sigmaStart, df),
-																		fn = .likelihoodShiftedT, data = delta,
-																		method ="Nelder-Mead")$par)
+						expr = optim(par = c(deltaHat, sigmaStart, df),
+									fn = .likelihoodShiftedT, data = delta,
+									method ="Nelder-Mead")$par)
 	}
 
 	if (! .shouldContinue(callback())) {
@@ -1384,8 +1383,8 @@
 
 	ylim[1] <- 0
 	dmax <- optimize(function(x).dposteriorShiftedT(x, parameters = parameters,
-										oneSided = oneSided), interval = range(xticks),
-										maximum = TRUE)$objective
+					oneSided = oneSided), interval = range(xticks),
+					maximum = TRUE)$objective
 	# get maximum density
 	ylim[2] <- max(stretch * .dprior(0,r, oneSided= oneSided), stretch * dmax)
 
@@ -1437,8 +1436,8 @@
 	}
 
 	posteriorLine <- .dposteriorShiftedT(x = seq(min(xticks), max(xticks),
-																	length.out = 1000), parameters = parameters,
-																	oneSided = oneSided)
+										length.out = 1000), parameters = parameters,
+										oneSided = oneSided)
 
 	xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
 
@@ -1601,7 +1600,7 @@
 	} else {
 		legendPosition <- max(xticks)
 		legend(legendPosition, max(yticks), legend = c("Posterior", "Prior"), lty = c(1,3),
-						bty = "n", lwd = c(lwd,lwd), cex = cexLegend, xjust = 1, yjust = 1,
-						x.intersp = .6, seg.len = 1.2)
+				bty = "n", lwd = c(lwd,lwd), cex = cexLegend, xjust = 1, yjust = 1,
+				x.intersp = .6, seg.len = 1.2)
 	}
 }
