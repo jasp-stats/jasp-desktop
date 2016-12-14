@@ -23,6 +23,8 @@
 #include <QGridLayout>
 #include <QButtonGroup>
 #include <QLabel>
+#include <QSettings>
+#include <QCheckBox>
 
 #include "fsbmodel.h"
 #include "breadcrumbs.h"
@@ -33,22 +35,25 @@ class FSBrowser : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit FSBrowser(QWidget *parent = 0);
+	enum BrowseMode { BrowseOpenFile, BrowseOpenFolder, BrowseSaveFile, BrowseExportFile, BrowseCurrent};
+	enum ViewType   { IconView, ListView };
+
+	explicit FSBrowser(QWidget *parent = 0, BrowseMode mode = BrowseOpenFile);
 
 	void setFSModel(FSBModel *model);
 
-	enum BrowseMode { BrowseOpenFile, BrowseOpenFolder, BrowseSaveFile, BrowseExportFile};
-	enum ViewType   { IconView, ListView };
 
 	void setBrowseMode(BrowseMode mode);
 	void setViewType(ViewType viewType);
 	void StartProcessing();
 	void StopProcessing();
+	void setSynchronizationCheckedButton(bool checked);
 
 signals:
 
 	void entryOpened(QString path);
 	void entrySelected(QString path);
+	void dataSynchronization(bool checked);
 
 public slots:
 
@@ -61,6 +66,7 @@ private slots:
 	void entryOpenedHandler();
 	void authenticationFailed(QString message);
 	void hideAuthentication();
+	void dataAutoSynchronization(int state);
 
 private:
 
@@ -75,9 +81,12 @@ private:
 	QLabel *_processLabel;
 	VerticalScrollArea *_scrollArea;
 
+	QCheckBox *_syncAutoCheckBox;
+
 	FSBModel *_model;
 
 	AuthWidget *_authWidget;
+	QSettings _settings;
 
 };
 

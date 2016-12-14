@@ -80,9 +80,11 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	parseJsonEntry(xData, path, "xdata.json", false);
 
 	Json::Value &dataSetDesc = metaData["dataSet"];
+
+	packageData->dataFilePath = metaData["dataFilePath"].isNull() ? std::string() : metaData["dataFilePath"].asString();
+	packageData->dataFileTimestamp = metaData["dataFileTimestamp"].isNull() ? 0 : metaData["dataFileTimestamp"].asInt();
 	columnCount = dataSetDesc["columnCount"].asInt();
 	rowCount = dataSetDesc["rowCount"].asInt();
-
 	if (rowCount < 0 || columnCount < 0)
 		throw runtime_error("Data size has been corrupted.");
 

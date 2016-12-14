@@ -62,12 +62,18 @@ BackStageWidget::BackStageWidget(QWidget *parent) : QWidget(parent)
 	_tabBar->addTab("Save As");
 	_tabBar->addTab("Export Results");
 	_tabBar->addTab("Export Data");
+#ifdef QT_DEBUG
+	_tabBar->addTab("Sync Data");
+#endif
 	_tabBar->addTab("Close");
 
 	_tabBar->setTabEnabled(FileOperation::Save, false);
 	_tabBar->setTabEnabled(FileOperation::SaveAs, false);
 	_tabBar->setTabEnabled(FileOperation::ExportResults, false);
 	_tabBar->setTabEnabled(FileOperation::ExportData, false);
+#ifdef QT_DEBUG
+	_tabBar->setTabEnabled(FileOperation::SyncData, false);
+#endif
 	_tabBar->setTabEnabled(FileOperation::Close, false);
 
 	connect(_openAndSaveWidget, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequestHandler(FileEvent*)));
@@ -104,6 +110,11 @@ FileEvent *BackStageWidget::save()
 	return _openAndSaveWidget->save();
 }
 
+void BackStageWidget::sync()
+{
+	_openAndSaveWidget->sync();
+}
+
 FileEvent *BackStageWidget::close()
 {
 	return _openAndSaveWidget->close();
@@ -127,6 +138,9 @@ void BackStageWidget::dataSetIORequestCompleted(FileEvent *event)
 			_tabBar->setTabEnabled(FileOperation::SaveAs, true); //Save As
 			_tabBar->setTabEnabled(FileOperation::ExportResults, true); //Export Results
 			_tabBar->setTabEnabled(FileOperation::ExportData, true); //Export Data
+#ifdef QT_DEBUG
+			_tabBar->setTabEnabled(FileOperation::SyncData, true); //Close
+#endif
 			_tabBar->setTabEnabled(FileOperation::Close, true); //Close
 		}
 		else if (event->operation() == FileEvent::FileSave)
@@ -141,6 +155,9 @@ void BackStageWidget::dataSetIORequestCompleted(FileEvent *event)
 			_tabBar->setTabEnabled(FileOperation::SaveAs, false);
 			_tabBar->setTabEnabled(FileOperation::ExportResults, false);
 			_tabBar->setTabEnabled(FileOperation::ExportData, false);
+#ifdef QT_DEBUG
+			_tabBar->setTabEnabled(FileOperation::SyncData, false);
+#endif
 			_tabBar->setTabEnabled(FileOperation::Close, false);
 		}
 	}
@@ -150,45 +167,52 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 {
 	switch (index)
 	{
-	case 0:  // Open
+	case FileOperation::Open:  // Open
 		_openAndSaveWidget->setSaveMode(FileEvent::FileOpen);
 		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
-	case 1:  // Save
+	case FileOperation::Save:  // Save
 		if (_dataSetHasPathAndIsntReadOnly)
 			_openAndSaveWidget->save();
 		else
 		{
-			_tabBar->setCurrentIndex(2);
+			_tabBar->setCurrentIndex(FileOperation::SaveAs);
 			_openAndSaveWidget->setSaveMode(FileEvent::FileSave);
 			_tabPages->setCurrentWidget(_openAndSaveWidget);
 		}
 		cancel = true;
 		break;
 
-	case 2:  // Save As
+	case FileOperation::SaveAs:  // Save As
 		_openAndSaveWidget->setSaveMode(FileEvent::FileSave);
 		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
-	case 3:  // Export Results
+	case FileOperation::ExportResults:  // Export Results
 		_openAndSaveWidget->setSaveMode(FileEvent::FileExportResults);
 		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
-	case 4:  // Export Data
+	case FileOperation::ExportData:  // Export Data
 		_openAndSaveWidget->setSaveMode(FileEvent::FileExportData);
 		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		break;
 
-	case 5: // Close
+#ifdef QT_DEBUG
+	case FileOperation::SyncData:  // Sync Data
+		_openAndSaveWidget->setSaveMode(FileEvent::FileSyncData);
+		_tabPages->setCurrentWidget(_openAndSaveWidget);
+		_openAndSaveWidget->changeTabIfCurrentFileEmpty();
+		break;
+#endif
+
+	case FileOperation::Close: // Close
 		_openAndSaveWidget->close();
-		_tabBar->setCurrentIndex(0);
+		_tabBar->setCurrentIndex(FileOperation::Open);
 		_openAndSaveWidget->setSaveMode(FileEvent::FileOpen);
 		_tabPages->setCurrentWidget(_openAndSaveWidget);
 		cancel = true;
 		break;
 	}
 }
-

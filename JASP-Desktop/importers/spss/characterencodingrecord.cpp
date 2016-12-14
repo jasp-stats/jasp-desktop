@@ -16,6 +16,7 @@
 //
 
 #include "characterencodingrecord.h"
+#include "spssimportdataset.h"
 
 using namespace std;
 using namespace spss;
@@ -57,10 +58,9 @@ CharacterEncodingRecord::~CharacterEncodingRecord()
 
 /**
  * @brief process Manipulates columns by adding the contents of thie record.
- * @param columns
  *
  */
-void CharacterEncodingRecord::process(SPSSColumns & columns)
+void CharacterEncodingRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	string buffer = encoding();
 	// This should work, since we are only really expecting ASCII
@@ -69,7 +69,7 @@ void CharacterEncodingRecord::process(SPSSColumns & columns)
 	if  (i != _nameSubstitution.end())
 		buffer = i->second;
 
-	columns.setStrCnvrtr(new CodePageConvert( buffer.c_str() ));
+	dataset->setStrCnvrtr(new CodePageConvert( buffer.c_str() ));
 }
 
 /**

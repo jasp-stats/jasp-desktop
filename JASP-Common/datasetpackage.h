@@ -18,6 +18,7 @@
 #ifndef FILEPACKAGE_H
 #define FILEPACKAGE_H
 
+#include "common.h"
 #include "dataset.h"
 #include "version.h"
 #include "lib_json/json.h"
@@ -40,6 +41,9 @@ public:
 	std::string id;
 	std::string initalMD5;
 
+	std::string dataFilePath;
+	uint dataFileTimestamp;
+
 	bool hasAnalyses;
 
 	void reset();
@@ -52,6 +56,11 @@ public:
 	void setAnalysesHTMLReady();
 
 	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;
+	boost::signals2::signal<void (DataSetPackage *source
+								  , std::vector<std::pair<std::string, int> > &changedColumns
+								  , std::map<std::string, Column *> &missingColumn
+								  , std::map<std::string, Column *> &changeNameColumns
+								  )> dataChanged;
 
 private:
 	bool _isModified = false;

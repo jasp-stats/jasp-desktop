@@ -52,7 +52,7 @@ public:
 	 *
 	 * Implematations should examine columns to determine the record history.
 	 */
-	virtual void process(SPSSColumns & columns);
+	virtual void process(SPSSImporter* importer, SPSSImportDataSet* dataset);
 
 
 	static const size_t LINE_LENGTH = 80;

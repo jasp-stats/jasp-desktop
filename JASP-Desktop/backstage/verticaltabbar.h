@@ -40,6 +40,7 @@ public:
 	void setTabEnabled(int index, bool enable);
 
 	void setCurrentIndex(int index);
+	void click(int index);
 	int currentIndex() const;
 	int count() const;
 

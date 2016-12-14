@@ -18,6 +18,8 @@
 #ifndef _NUMERICCONVERTER_H__
 #define _NUMERICCONVERTER_H__
 
+#include "systemfileformat.h"
+
 #include <stdint.h>
 #include <stddef.h>
 

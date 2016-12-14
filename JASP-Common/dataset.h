@@ -30,14 +30,18 @@ public:
 	int rowCount() const;
 	int columnCount() const;
 
-	Columns &columns();
+	Columns& columns();
 	Column& column(int index);
-	Column &column(std::string name);
+	Column& column(std::string name);
 
+	int getColumnIndex(std::string name);
 	void setRowCount(int rowCount);
 	void setColumnCount(int columnCount);
+	void removeColumn(std::string name);
 
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
+
+	std::string toString();
 
 private:
 

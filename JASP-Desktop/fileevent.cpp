@@ -53,6 +53,11 @@ FileEvent::~FileEvent()
 	}
 }
 
+void FileEvent::setDataFilePath(const QString &path)
+{
+	_dataFilePath = path;
+}
+
 bool FileEvent::setPath(const QString &path)
 {
 	_path = path;
@@ -124,6 +129,11 @@ const QString &FileEvent::path() const
 	return _path;
 }
 
+const QString &FileEvent::dataFilePath() const
+{
+	return _dataFilePath;
+}
+
 bool FileEvent::isReadOnly() const
 {
 	return _readOnly;
@@ -157,11 +167,6 @@ void FileEvent::chain(FileEvent *event)
 {
 	_chainedTo = event;
 	connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(chainedComplete(FileEvent*)));
-}
-
-void FileEvent::emitComplete()
-{
-	emit completed(this);
 }
 
 void FileEvent::chainedComplete(FileEvent *event)

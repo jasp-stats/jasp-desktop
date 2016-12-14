@@ -16,6 +16,7 @@
 //
 
 #include "valuelabelvarsrecord.h"
+#include "spssimportdataset.h"
 
 
 using namespace std;
@@ -84,21 +85,21 @@ ValueLabelVarsRecord::~ValueLabelVarsRecord()
 }
 
 /**
- * @brief Does nothing
+ * @brief Add labels
  *
  */
-void ValueLabelVarsRecord::process(SPSSColumns & columns)
+void ValueLabelVarsRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	for (size_t i = 0; i < _vars.size(); ++i)
 	{
 		// Get the next applicable column.
-		SPSSColumn & column = columns.getColumn(_vars[i]);
+		SPSSImportColumn* column = dataset->getColumn(_vars[i]);
 		// Iterate over all the found labels meta.
 		for (size_t j = 0; j < _Labels.size(); ++j)
 		{
 			LabelMeta &meta = _Labels[j];
-			SPSSColumn::LabelByValueDictEntry entry(meta.value, meta.label);
-			column.spssLables.insert( entry );
+			SPSSImportColumn::LabelByValueDictEntry entry(meta.value, meta.label);
+			column->spssLables.insert( entry );
 		}
 	}
 

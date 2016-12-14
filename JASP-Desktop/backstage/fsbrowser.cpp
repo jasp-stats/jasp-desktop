@@ -24,15 +24,27 @@
 #include <QMovie>
 
 #include "fsentrywidget.h"
+#include <iostream>
 
-FSBrowser::FSBrowser(QWidget *parent) : QWidget(parent)
+
+FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(parent)
 {
-	_browseMode = FSBrowser::BrowseOpenFile;
+	_browseMode = mode;
 	_viewType = FSBrowser::IconView;
 
 	QGridLayout *layout = new QGridLayout(this);
-	layout->setContentsMargins(0, 0, 0, 0);
+	layout->setContentsMargins(10, 10, 0, 0);
 	setLayout(layout);
+
+	_syncAutoCheckBox = NULL;
+	if (mode == FSBrowser::BrowseCurrent)
+	{
+		_syncAutoCheckBox = new QCheckBox("Synchronize automatically");
+		int checked = _settings.value("dataAutoSynchronization", 1).toInt();
+		_syncAutoCheckBox->setChecked(checked > 0);
+		layout->addWidget(_syncAutoCheckBox);
+		connect(_syncAutoCheckBox, SIGNAL(stateChanged(int)), this, SLOT(dataAutoSynchronization(int)));
+	}
 
 	_scrollArea = new VerticalScrollArea(this);
 	_scrollArea->setFrameShape(QScrollArea::NoFrame);
@@ -61,6 +73,24 @@ FSBrowser::FSBrowser(QWidget *parent) : QWidget(parent)
 	connect(_authWidget, SIGNAL(loginRequested(QString,QString)), this, SLOT(loginRequested(QString,QString)));
 }
 
+void FSBrowser::dataAutoSynchronization(int state)
+{
+	bool checked = (state == Qt::Checked);
+	_settings.setValue("dataAutoSynchronization", checked ? 1 : 0);
+	_settings.sync();
+	emit dataSynchronization(checked);
+}
+
+void FSBrowser::setSynchronizationCheckedButton(bool checked)
+{
+	if (_syncAutoCheckBox)
+	{
+		_syncAutoCheckBox->blockSignals(true);
+		_syncAutoCheckBox->setChecked(checked);
+		_syncAutoCheckBox->blockSignals(false);
+	}
+
+}
 
 void FSBrowser::StartProcessing()
 {
@@ -155,9 +185,14 @@ void FSBrowser::refresh()
 			_buttonGroup->addButton(button, id++);
 			_scrollPaneLayout->addWidget(button);
 
+			if (_syncAutoCheckBox)
+				_syncAutoCheckBox->setEnabled(!entry.path.startsWith('http'));
+
 			connect(button, SIGNAL(selected()), this, SLOT(entrySelectedHandler()));
 			connect(button, SIGNAL(opened()), this, SLOT(entryOpenedHandler()));
 		}
+
+
 	}
 }
 

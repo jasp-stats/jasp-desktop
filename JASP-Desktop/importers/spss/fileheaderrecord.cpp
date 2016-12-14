@@ -20,6 +20,7 @@
  */
 
 #include "fileheaderrecord.h"
+#include "spssimportdataset.h"
 
 #include <assert.h>
 
@@ -75,15 +76,15 @@ FileHeaderRecord::~FileHeaderRecord()
  * @brief Clears the columns.
  *
  */
-void FileHeaderRecord::process(SPSSColumns &columns)
+void FileHeaderRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
-	if (columns.size() != 0)
+	if (dataset->columnCount() != 0)
 	{
 		cout << "This file appears to have more than one file header record.\n"
 				"  Only the last one found will be used." << endl;
 		cout.flush();
+		dataset->clear();
 	}
-	columns.clear();
 
 	// Check compression type.
 	switch(compressed())
@@ -98,7 +99,7 @@ void FileHeaderRecord::process(SPSSColumns &columns)
 
 	// Extract the number of cases.
 	if (ncases() != -1)
-		columns.numCases(ncases());
+		dataset->numCases(ncases());
 }
 
 /**

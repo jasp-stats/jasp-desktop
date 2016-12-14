@@ -16,7 +16,7 @@
 //
 
 #include "documentrecord.h"
-#include "debug_cout.h"
+#include "spssutils.h"
 
 using namespace std;
 using namespace boost;
@@ -55,7 +55,7 @@ DocumentRecord::~DocumentRecord()
  * @brief createCol Appends a colum to the vector.
  *
  */
-void DocumentRecord::process(SPSSColumns & columns)
+void DocumentRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	// Chop the right most spaces off the lines.
 //	DEBUG_COUT1("Ignoring a found 'document record'.");
