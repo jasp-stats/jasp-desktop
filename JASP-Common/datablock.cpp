@@ -40,6 +40,8 @@ bool DataBlock::erase(int rows)
 		return false;
 
 	_rowCount -= rows;
+
+	return true;
 }
 
 int DataBlock::rowCount()
