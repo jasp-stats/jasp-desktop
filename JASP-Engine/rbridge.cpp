@@ -523,7 +523,6 @@ string rbridge_check()
 
 string rbridge_saveImage(const string &name, const string &type, const string &height, const string &width)
 {
-	SEXP results;
 	RInside &rInside = rbridge_rinside->instance();
 
 	rInside["plotName"] = name;

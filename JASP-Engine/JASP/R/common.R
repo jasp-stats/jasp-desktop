@@ -617,8 +617,6 @@ callback <- function(results=NULL) {
 	filename
 }
 
-<<<<<<< HEAD
-
 .writeImage <- function(width=320, height=320, plot, 
 												format = "png", relpath = NULL){
 	# initialise output object
