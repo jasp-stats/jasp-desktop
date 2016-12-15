@@ -103,11 +103,11 @@ bool SPSSImportColumn::isValueEqual(Column &col, size_t row) const
 
 const string& SPSSImportColumn::setSuitableName()
 {
-	if (_spssColumnLabel.length() > 0)
-		_name = _spssColumnLabel;
-	else if (_spssLongColName.length() > 0)
+    if (_spssLongColName.length() > 0)
 		_name = _spssLongColName;
-	else
+    else if (_spssColumnLabel.length() > 0)
+        _name = _spssColumnLabel;
+    else
 		_name = _spssRawColName;
 
 	return _name;
