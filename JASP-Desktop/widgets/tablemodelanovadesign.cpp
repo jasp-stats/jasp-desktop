@@ -364,7 +364,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 		{
 			bool unique = true;
 
-			for (size_t i = 0; i < levels.size(); i++)
+			for (int i = 0; i < (int)(levels.size()); i++)
 			{
 				if (i == row.subIndex)
 					continue;

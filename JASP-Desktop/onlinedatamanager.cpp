@@ -179,7 +179,7 @@ void OnlineDataManager::setNetworkAccessManager(OnlineDataManager::Provider prov
 
 QNetworkAccessManager* OnlineDataManager::getNetworkAccessManager(OnlineDataManager::Provider provider) const
 {
-	return _providers[provider];
+	return _providers.find(provider)->second;
 }
 
 
