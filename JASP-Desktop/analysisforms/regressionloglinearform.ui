@@ -314,7 +314,7 @@
            <property name="title">
             <string>Regression Coefficients</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_5">
+           <layout class="QGridLayout" name="gridLayout_51">
             <item row="2" column="0">
              <widget class="QWidget" name="panelConfidenceInterval" native="true">
               <property name="enabled">

@@ -21,7 +21,6 @@ const QDate SPSSImportColumn::_beginEpoch(1582, 10, 14);
  */
 SPSSImportColumn::SPSSImportColumn(SPSSImportDataSet *spssdataset, const std::string &name, const std::string &label, long stringLen, FormatTypes formattype, const spss::MissingValueChecker &missingChecker)
 	: ImportColumn(label, label)
-	, _dataset(spssdataset)
 	, _spssColumnLabel(label)
 	, _spssRawColName(name)
 	, _spssStringLen(stringLen)
@@ -30,6 +29,7 @@ SPSSImportColumn::SPSSImportColumn(SPSSImportDataSet *spssdataset, const std::st
 	, _spssFormatType(formattype)
 	, _missingChecker(missingChecker)
 	, _charsRemaining(stringLen)
+	, _dataset(spssdataset)
 {
 
 }

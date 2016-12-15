@@ -1534,7 +1534,6 @@
   <zorder>widget_10</zorder>
   <zorder>groupAssumptions</zorder>
   <zorder>profilePlot</zorder>
-  <zorder>verticalSpacer_3</zorder>
   <zorder>topWidget</zorder>
  </widget>
  <customwidgets>

@@ -42,7 +42,6 @@ void BoundTextBox::bindTo(Option *option)
 
 	if (_integer != NULL)
 	{
-		int v = _integer->value();
 		int min = _integer->min();
 		int max = _integer->max();
 
