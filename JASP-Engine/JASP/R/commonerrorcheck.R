@@ -1,3 +1,26 @@
+.quitAnalysis <- function(message) {
+  e <- structure(class = c('expectedError', 'error', 'condition'),
+                 list(message=message, call=sys.call(-1)))
+  stop(e)
+}
+
+
+.addStackTrace <- function(e) {
+  stack <- ''
+  if (!is.null(sys.calls()) && length(sys.calls()) > 10) {
+    
+    stack <- sys.calls()  
+    stack <- head(stack[8:length(stack)], -2) # The first 7 and last 2 calls provide no information
+    if (length(stack) > 10) {
+      stack <- tail(stack, 10) # Show at most the final 10 calls before the error
+    }
+    
+  }
+  e$stackTrace <- stack
+  signalCondition(e) # Signal the modified error object
+}
+
+
 # Generic function to create error message (mostly used in conjunction with .hasErrors()).
 # Args:
 #   type: String containing check type.
@@ -8,7 +31,7 @@
 #
 # Returns:
 #   String containing the error message.
-.generateErrorMessage <- function(type, variables=NULL, includeOpening=TRUE, concatenateWith=NULL, ...) {
+.generateErrorMessage <- function(type, variables=NULL, includeOpening=FALSE, concatenateWith=NULL, ...) {
   
   if (length(type) == 0) {
     stop('Non-valid type argument provided')
@@ -23,22 +46,22 @@
   }
   
   # See if we need to specify variables
-  if (grepl('{variables}', message, fixed=TRUE)) {
+  if (grepl('{{variables}}', message, fixed=TRUE)) {
     if (is.null(variables)) {
       stop('This error message requires the offending variables to be specified')
     }
-    message <- gsub('{variables}', paste(variables, collapse=', '), message, fixed=TRUE)
+    message <- gsub('{{variables}}', paste(variables, collapse=', '), message, fixed=TRUE)
   }
   
   # Find all {string}'s that needs to be replaced by values
-  toBeReplaced <- regmatches(message, gregexpr("(?<=\\{)\\S*?(?=\\})", message, perl=TRUE))[[1]]
-  if (base::identical(toBeReplaced, character(0)) == FALSE) { # see if there were any {string}'s
+  toBeReplaced <- regmatches(message, gregexpr("(?<=\\{{)\\S*?(?=\\}})", message, perl=TRUE))[[1]]
+  if (base::identical(toBeReplaced, character(0)) == FALSE) { # were there any {string}'s?
     if (all(toBeReplaced %in% names(args)) == FALSE) {
       missingReplacements <- toBeReplaced[!toBeReplaced %in% names(args)]
       stop('Missing required replacement(s): "', paste(missingReplacements, collapse=','), '"')
     }
     for (i in 1:length(toBeReplaced)) {
-      message <- gsub(paste0('{', toBeReplaced[i], '}'), args[[ toBeReplaced[i] ]], message, fixed=TRUE)
+      message <- gsub(paste0('{{', toBeReplaced[i], '}}'), args[[ toBeReplaced[i] ]], message, fixed=TRUE)
     }
   }
   
@@ -57,7 +80,7 @@
   # See if we should concatenate it with something
   if (!is.null(concatenateWith)) {
     endOfString <- substr(concatenateWith, nchar(concatenateWith)-4, nchar(concatenateWith))
-    if (endOfString == '</ul>') {
+    if (endOfString == '</ul>') { # Check if we need to remove a closing </ul>
       concatenateWith <- substr(concatenateWith, 1, nchar(concatenateWith)-5)
     }
     message <- paste0(concatenateWith, message)
@@ -79,12 +102,13 @@
 #   type: List/vector/character containing check type(s).
 #   message: 'short', 'default' or 'verbose', should only the first failure of a check be reported in single line form ('short'), or should every check be mentioned in multi-line form;
 #             in which case, should variables be mentioned multiple times in multiple checks ('verbose'), or only for the first failure ('default'). (In any case a full error list is generated)
+#   exitAnalysisIfErrors: Boolean, should the function simply return its results, or abort the entire analysis when a failing check is encountered.
 #   ...: Each check may have required and optional arguments, they are specified in the error check subfunctions.
 #        To perform the check only on certain variables instead of all, include a target (e.g. infinity.target=options$dependent, variance.target...).
 #
 # Returns:
 #   FALSE if no errors were found or a list specifying for each check which variables violated it as well as a general error message.
-.hasErrors <- function(dataset, perform, type, message='default', ...) {
+.hasErrors <- function(dataset, perform, type, message='default', exitAnalysisIfErrors=FALSE, ...) {
   
   if (is.null(dataset) || perform != 'run' || length(type) == 0) {
     return(FALSE)
@@ -187,7 +211,12 @@
   # Done with all the checks, time to return...
   if (length(errors) == 1)  {
     return(FALSE)
+  } 
+  
+  if (exitAnalysisIfErrors == TRUE) {
+    .quitAnalysis(errors[['message']])
   }
+  
   return(errors) 
 }
 
