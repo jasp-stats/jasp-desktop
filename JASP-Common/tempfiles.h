@@ -56,7 +56,7 @@ std::string tempfiles_sessionDirName();
 
 void tempfiles_deleteList(const std::vector<std::string> &files);
 
-void tempfiles_deleteAll();
+void tempfiles_deleteAll(int id = -1);
 void tempfiles_deleteOrphans();
 
 

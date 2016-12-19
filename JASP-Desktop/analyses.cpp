@@ -27,6 +27,7 @@
 #include <QTimer>
 
 #include "utils.h"
+#include "tempfiles.h"
 
 using namespace std;
 
@@ -64,6 +65,7 @@ Analysis *Analyses::create(const QString &name, int id, Json::Value *options, An
 	_analyses[id] = analysis;
 
 	analysis->optionsChanged.connect(boost::bind(&Analyses::analysisOptionsChangedHandler, this, _1));
+	analysis->toRefresh.connect(boost::bind(&Analyses::analysisToRefreshHandler, this, _1));
 	analysis->resultsChanged.connect(boost::bind(&Analyses::analysisResultsChangedHandler, this, _1));
 	analysis->userDataLoaded.connect(boost::bind(&Analyses::analysisUserDataLoadedHandler, this, _1));
 
@@ -218,7 +220,11 @@ void Analyses::analysisOptionsChangedHandler(Analysis *analysis)
 	analysisOptionsChanged(analysis);
 }
 
-
-
+void Analyses::analysisToRefreshHandler(Analysis *analysis)
+{
+	analysis->setStatus(Analysis::Empty);
+	tempfiles_deleteAll(analysis->id());
+	analysisToRefresh(analysis);
+}
 
 

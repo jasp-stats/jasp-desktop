@@ -85,9 +85,11 @@ const Json::Value &Analysis::userData() const
 	return _userData;
 }
 
-void Analysis::reRun()
+void Analysis::refresh()
 {
-	optionsChangedHandler(NULL);
+	_status = Empty;
+	_revision++;
+	toRefresh(this);
 }
 
 Analysis::Status Analysis::parseStatus(string name)

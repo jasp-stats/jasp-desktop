@@ -1495,7 +1495,7 @@ void MainWindow::refreshAllAnalyses()
 	{
 		Analysis *analysis = *it;
 		if (analysis == NULL) continue;
-		analysis->reRun();
+		analysis->refresh();
 	}
 }
 
