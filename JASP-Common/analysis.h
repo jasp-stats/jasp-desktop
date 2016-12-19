@@ -41,6 +41,7 @@ public:
 	Options *options() const;
 
 	boost::signals2::signal<void (Analysis *source)> optionsChanged;
+	boost::signals2::signal<void (Analysis *source)> toRefresh;
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
 	boost::signals2::signal<void (Analysis *source)> userDataLoaded;
 
@@ -55,7 +56,7 @@ public:
 	bool isAutorun() const;
 	bool useData() const;
 
-	void reRun();
+	void refresh();
 
 	virtual void abort();
 	void scheduleRun();
