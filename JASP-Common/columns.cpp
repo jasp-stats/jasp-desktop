@@ -38,7 +38,9 @@ Column &Columns::get(string name)
 			return column;
 	}
 
-	throw exception();
+	string message = "Cannot find column ";
+	message += name;
+	throw runtime_error(message);
 }
 
 void Columns::setRowCount(int rowCount)

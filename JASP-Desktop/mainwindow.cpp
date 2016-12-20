@@ -416,14 +416,12 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 									, std::vector<std::string> &missingColumns
 									, std::map<std::string, std::string> &changeNameColumns)
 {
-	_tableModel->setDataSet(package->dataSet);
-	ui->variablesPage->setDataSet(package->dataSet);
-
 	std::vector<std::string> oldColumnNames;
 	for (std::map<std::string, std::string>::iterator it = changeNameColumns.begin(); it != changeNameColumns.end(); ++it)
-	{
 		oldColumnNames.push_back(it->first);
-	}
+	std::sort(changedColumns.begin(), changedColumns.end());
+	std::sort(missingColumns.begin(), missingColumns.end());
+	std::sort(oldColumnNames.begin(), oldColumnNames.end());
 
 	std::vector<Analysis *> analyses_to_refresh;
 	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
@@ -437,10 +435,12 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 		{
 			OptionVariables *option_variables = *var_it;
 			std::vector<std::string> variables = option_variables->variables();
+			std::vector<std::string> variables_sorted = variables;
+			std::sort(variables_sorted.begin(), variables_sorted.end());
 			std::vector<std::string> inter_changecol, inter_changename, inter_missingcol;
-			std::set_intersection(variables.begin(), variables.end(), changedColumns.begin(), changedColumns.end(), std::back_inserter(inter_changecol));
-			std::set_intersection(variables.begin(), variables.end(), oldColumnNames.begin(), oldColumnNames.end(), std::back_inserter(inter_changename));
-			std::set_intersection(variables.begin(), variables.end(), missingColumns.begin(), missingColumns.end(), std::back_inserter(inter_missingcol));
+			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), std::back_inserter(inter_changecol));
+			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), std::back_inserter(inter_changename));
+			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), std::back_inserter(inter_missingcol));
 
 			if (inter_changecol.size() > 0 && !analyse_to_refresh)
 			{
@@ -473,7 +473,6 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 					variables.erase(std::remove(variables.begin(), variables.end(), varname), variables.end());
 				}
 				analysis->setRefreshBlocked(true);
-
 				option_variables->setValue(variables);
 				if (!analyse_to_refresh)
 				{
@@ -483,6 +482,9 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 			}
 		}
 	}
+
+	_tableModel->setDataSet(package->dataSet);
+	ui->variablesPage->setDataSet(package->dataSet);
 
 	for (std::vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
 	{

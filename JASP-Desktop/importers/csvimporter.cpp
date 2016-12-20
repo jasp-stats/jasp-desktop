@@ -53,6 +53,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 
 		if (it != colNames.begin())
 		{
+			// col name must be unique
 			if (std::find(colNames.begin(), it, colName) != it)
 			{
 				stringstream ss;
@@ -60,7 +61,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 				ss << "_";
 				ss << (colNo + 1);
 				colName = ss.str();
-				*it = colName;
+				colNames[colNo] = colName;
 			}
 		}
 
