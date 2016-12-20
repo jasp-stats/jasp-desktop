@@ -73,9 +73,10 @@ private:
 
 	void packageChanged(DataSetPackage *package);
 	void packageDataChanged(DataSetPackage *package
-							   , std::vector<std::pair<std::string, int> > &changedColumns
-							   , std::map<std::string, Column *> &missingColumn
-							   , std::map<std::string, Column *> &changeNameColumns);
+							, std::vector<std::string> &changedColumns
+							, std::vector<std::string> &missingColumns
+							, std::map<std::string, std::string> &changeNameColumns
+							);
 
 
 	bool closeRequestCheck(bool &isSaving);

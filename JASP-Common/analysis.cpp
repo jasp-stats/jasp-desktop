@@ -40,6 +40,14 @@ Analysis::Analysis(int id, string name, Options *options, Version version, bool 
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
+
+	for (size_t i = 0; i < _options->size(); ++i)
+	{
+		Option *option = _options->get(i);
+		OptionVariables *variable = dynamic_cast<OptionVariables *>(option);
+		if (variable != NULL)
+			_variables.push_back(variable);
+	}
 }
 
 Analysis::~Analysis()
@@ -161,6 +169,16 @@ bool Analysis::isVisible()
 	return _visible;
 }
 
+bool Analysis::isRefreshBlocked()
+{
+	return _refreshBlocked;
+}
+
+void Analysis::setRefreshBlocked(bool block)
+{
+	_refreshBlocked = block;
+}
+
 Analysis::Status Analysis::status() const
 {
 	return _status;
@@ -198,6 +216,9 @@ Options *Analysis::options() const
 
 void Analysis::optionsChangedHandler(Option *option)
 {
+	if (_refreshBlocked)
+		return;
+
 	_status = Empty;
 	_revision++;
 	optionsChanged(this);
@@ -218,5 +239,10 @@ int Analysis::callback(Json::Value results)
 	{
 		return 1;
 	}
+}
+
+const std::vector<OptionVariables *> &Analysis::getVariables() const
+{
+	return _variables;
 }
 

@@ -119,8 +119,6 @@ void Importer::syncDataSet(const string &locator, boost::function<void(const str
 
 	_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
 
-	_packageData->dataChanged(_packageData, changedColumns, missingColumns, changeNameColumns);
-
 	delete importDataSet;
 }
 
@@ -217,6 +215,9 @@ void Importer::_syncPackage(
 		bool rowCountChanged)
 
 {
+	vector<string> _changedColumns;
+	vector<string> _missingColumns;
+	map<string, string> _changeNameColumns;
 
 	for (map<string, Column *>::iterator changeNameColumnIt = changeNameColumns.begin(); changeNameColumnIt != changeNameColumns.end(); ++changeNameColumnIt)
 	{
@@ -225,6 +226,7 @@ void Importer::_syncPackage(
 		missingColumns.erase(changedCol->name());
 		std::cout << "Column name changed, from: " << changedCol->name() << " to " << newColName << std::endl;
 		std::cout.flush();
+		_changeNameColumns[changedCol->name()] = newColName;
 		changedCol->setName(newColName);
 	}
 
@@ -238,6 +240,7 @@ void Importer::_syncPackage(
 		{
 			std::cout << "Column changed " << it->first << std::endl;
 			std::cout.flush();
+			_changedColumns.push_back(it->first);
 			initColumn(it->second, syncDataSet->getColumn(it->first));
 		}
 	}
@@ -259,8 +262,11 @@ void Importer::_syncPackage(
 		{
 			std::cout << "Column deleted " << misColIt->first << std::endl;
 			std::cout.flush();
+			_missingColumns.push_back(misColIt->first);
 			_packageData->dataSet->removeColumn(misColIt->first);
 		}
 	}
+
+	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns);
 
 }

@@ -57,9 +57,9 @@ public:
 
 	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;
 	boost::signals2::signal<void (DataSetPackage *source
-								  , std::vector<std::pair<std::string, int> > &changedColumns
-								  , std::map<std::string, Column *> &missingColumn
-								  , std::map<std::string, Column *> &changeNameColumns
+								  , std::vector<std::string> &changedColumns
+								  , std::vector<std::string> &missingColumns
+								  , std::map<std::string, std::string> &changeNameColumns
 								  )> dataChanged;
 
 private:

@@ -19,7 +19,7 @@
 #define OPTIONI_H
 
 #include "option.h"
-#include "common.h"
+#include "../common.h"
 
 template <class T>
 class OptionI : public Option
