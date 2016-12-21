@@ -179,7 +179,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	if (is.null(stateLevene)) {
 
-		result <- .anovaLevenesTable(dataset, options, perform, status, stateLevene)
+		result <- .anovaLevenesTable(dataset, options, perform, status, stateLevene, model)
 		resultLevene <- result$result
 		status <- result$status
 		stateLevene <- result$stateLevene
@@ -1327,7 +1327,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	list(result=descriptives.table, status=status, stateDescriptivesTable=stateDescriptivesTable)
 }
 
-.anovaLevenesTable <- function(dataset, options, perform, status, stateLevene) {
+.anovaLevenesTable <- function(dataset, options, perform, status, stateLevene, model) {
 
 	if (options$homogeneityTests == FALSE)
 		return (list(result=NULL, status=status, stateLevene=NULL))
@@ -1362,26 +1362,33 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if (perform == "run" && status$ready && status$error == FALSE && length(options$fixedFactors) > 0) {
 
 		interaction <- paste(.v(options$fixedFactors), collapse=":", sep="")
-		levene.def <- paste(.v(options$dependent), "~", interaction)
+		# levene.def <- paste(.v(options$dependent), "~", interaction)
+		resids <- abs(model$residuals)
+		levene.def <- paste("resids", "~", interaction)
 		levene.formula <- as.formula(levene.def)
-
-		r <- car::leveneTest(levene.formula, dataset, center = "mean")
-
-		error <- base::tryCatch(car::leveneTest(levene.formula, dataset, center = "mean"),error=function(e) e, warning=function(w) w)
-
+    
+		#r <- car::leveneTest(levene.formula, dataset, center = "mean")
+		r <- summary(aov(levene.formula, dataset))
+		error <- base::tryCatch(summary(aov(levene.formula, dataset)),error=function(e) e, warning=function(w) w)
+		
 		if (!is.null(error$message) && error$message == "ANOVA F-tests on an essentially perfect fit are unreliable") {
 
 			errorMessage <- "F-value equal to zero indicating perfect fit.<br><br>(Levene's tests on an essentially perfect fit are unreliable)"
 			levenes.table[["error"]] <- list(error="badData", errorMessage = errorMessage)
 
 		}
-
-
+		
 		if (options$VovkSellkeMPR){
-		  levenes.table[["data"]] <- list(list("F"=.clean(r[1,2]), "df1"=r[1,1], "df2"=r[2,1], "p"=.clean(r[1,3]), "VovkSellkeMPR"=.VovkSellkeMPR(r[1,3]), ".isNewGroup"=TRUE))
+		  levenes.table[["data"]] <- list(list("F"=.clean(r[[1]]$`F value`[1]), "df1"=r[[1]]$Df[1], "df2"=r[[1]]$Df[2], "p"=.clean(r[[1]]$`Pr(>F)`[1]), "VovkSellkeMPR"=.VovkSellkeMPR(r[[1]]$`Pr(>F)`[1]), ".isNewGroup"=TRUE))
 		} else {
-			levenes.table[["data"]] <- list(list("F"=.clean(r[1,2]), "df1"=r[1,1], "df2"=r[2,1], "p"=.clean(r[1,3]), ".isNewGroup"=TRUE))
+		  levenes.table[["data"]] <- list(list("F"=.clean(r[[1]]$`F value`[1]), "df1"=r[[1]]$Df[1], "df2"=r[[1]]$Df[2], "p"=.clean(r[[1]]$`Pr(>F)`[1]), ".isNewGroup"=TRUE))
 		}
+
+		# if (options$VovkSellkeMPR){
+		#   levenes.table[["data"]] <- list(list("F"=.clean(r[1,2]), "df1"=r[1,1], "df2"=r[2,1], "p"=.clean(r[1,3]), "VovkSellkeMPR"=.VovkSellkeMPR(r[1,3]), ".isNewGroup"=TRUE))
+		# } else {
+		# 	levenes.table[["data"]] <- list(list("F"=.clean(r[1,2]), "df1"=r[1,1], "df2"=r[2,1], "p"=.clean(r[1,3]), ".isNewGroup"=TRUE))
+		# }
 
 		levenes.table[["footnotes"]] <- as.list(footnotes)
 		levenes.table[["status"]] <- "complete"

@@ -190,7 +190,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 	if (is.null(stateLevene)) {
 
-		result <- .rmAnovaLevenesTable(dataset, options, perform, status, stateLevene)
+		result <- .rmAnovaLevenesTable(dataset, options, perform, status, stateLevene, model)
 		resultLevene <- result$result
 		status <- result$status
 		stateLevene <- result$stateLevene
@@ -1704,7 +1704,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 	list(result = sphericity, status = status)
 }
 
-.rmAnovaLevenesTable <- function(dataset, options, perform, status, stateLevene) {
+.rmAnovaLevenesTable <- function(dataset, options, perform, status, stateLevene, model) {
 
 	if (options$homogeneityTests == FALSE)
 		return (list(result=NULL, status=status))
@@ -1740,14 +1740,30 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			} else {
 				newGroup <- FALSE
 			}
-
-			interaction <- paste(.v(options$betweenSubjectFactors), collapse=":", sep="")
-			levene.def <- paste(.v(options$repeatedMeasuresCells[i]), "~", interaction)
+		  
+		  interaction <- paste(.v(options$betweenSubjectFactors), collapse=":", sep="")
+		  if( length(options$covariates) > 0 ){
+		    covterms <- paste(.v(options$covariates), collapse="+", sep="")
+		    combterms <- paste(c(interaction,covterms), collapse="+", sep="")
+		    levene.def <- paste(.v(options$repeatedMeasuresCells[i]), "~", combterms)
+		    }else{levene.def <- paste(.v(options$repeatedMeasuresCells[i]), "~", interaction)}
+		 
 			levene.formula <- as.formula(levene.def)
+# 			r <- car::leveneTest(levene.formula, dataset, center = "mean")
+		  
+		  dummyAov <- aov(levene.formula, data = dataset, qr = T)
+		  resids <- abs(dummyAov$residuals)
+		  levene.def <- paste("resids", "~", interaction)
+		  levene.formula <- as.formula(levene.def)
+		  
+		  #r <- car::leveneTest(levene.formula, dataset, center = "mean")
+		  r <- summary(aov(levene.formula, dataset))
+		  #print(r)
+		  error <- base::tryCatch(summary(aov(levene.formula, dataset)),error=function(e) e, warning=function(w) w)
+			
+			row <- list("case"=options$repeatedMeasuresCells[i],"F"=.clean(r[[1]]$`F value`[1]), "df1"=r[[1]]$Df[1], "df2"=r[[1]]$Df[2], "p"=.clean(r[[1]]$`Pr(>F)`[1]), ".isNewGroup"=newGroup)
 
-			r <- car::leveneTest(levene.formula, dataset, center = "mean")
-
-			row <- list("case"=options$repeatedMeasuresCells[i],"F"=r[1,2], "df1"=r[1,1], "df2"=r[2,1], "p"=r[1,3], ".isNewGroup"=newGroup)
+			
 			if (options$VovkSellkeMPR) {
 				row["VovkSellkeMPR"] <- .VovkSellkeMPR(row[["p"]])
 		  }
