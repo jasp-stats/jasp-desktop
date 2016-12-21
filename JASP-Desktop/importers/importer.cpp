@@ -39,7 +39,7 @@ void Importer::syncDataSet(const string &locator, boost::function<void(const str
 	DataSet *dataSet = _packageData->dataSet;
 	bool rowCountChanged = importDataSet->rowCount() != dataSet->rowCount();
 	vector<pair<string, int> > newColumns;
-	vector<pair<string, int> > changedColumns;
+	vector<pair<string, Column *> > changedColumns;
 	map<string, Column *> missingColumns;
 
 	Columns &orgColumns = dataSet->columns();
@@ -67,7 +67,7 @@ void Importer::syncDataSet(const string &locator, boost::function<void(const str
 			int syncRowCount = syncColumn->size();
 			if (orgRowCount != syncRowCount)
 			{
-				changedColumns.push_back(pair<string, int>(syncColumnName, syncColNo));
+				changedColumns.push_back(pair<string, Column *>(syncColumnName, &orgColumn));
 			}
 			else
 			{
@@ -77,7 +77,7 @@ void Importer::syncDataSet(const string &locator, boost::function<void(const str
 					{
 						std::cout << "Value Changed, col: " << syncColumnName << ", row " << (r+1) << std::endl;
 						std::cout.flush();
-						changedColumns.push_back(pair<string, int>(syncColumnName, syncColNo));
+						changedColumns.push_back(pair<string, Column *>(syncColumnName, &orgColumn));
 						break;
 					}
 				}
@@ -118,8 +118,6 @@ void Importer::syncDataSet(const string &locator, boost::function<void(const str
 	}
 
 	_syncPackage(importDataSet, newColumns, changedColumns, missingColumns, changeNameColumns, rowCountChanged);
-
-	_packageData->dataChanged(_packageData, changedColumns, missingColumns, changeNameColumns);
 
 	delete importDataSet;
 }
@@ -169,6 +167,12 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 
 void Importer::initColumn(int colNo, ImportColumn *importColumn)
 {
+	Column &column = _packageData->dataSet->column(colNo);
+	initColumn(column, importColumn);
+}
+
+void Importer::initColumn(Column &column, ImportColumn *importColumn)
+{
 	bool success;
 
 	do {
@@ -176,7 +180,6 @@ void Importer::initColumn(int colNo, ImportColumn *importColumn)
 		success = true;
 
 		try {
-			Column &column = _packageData->dataSet->column(colNo);
 			column.setName(importColumn->getName());
 			fillSharedMemoryColumn(importColumn, column);
 
@@ -211,12 +214,15 @@ void Importer::initColumn(int colNo, ImportColumn *importColumn)
 void Importer::_syncPackage(
 		ImportDataSet *syncDataSet,
 		vector<pair<string, int> > &newColumns,
-		vector<pair<string, int> > &changedColumns,
+		vector<pair<string, Column *> > &changedColumns,
 		map<string, Column *> &missingColumns,
 		map<string, Column *> &changeNameColumns,
 		bool rowCountChanged)
 
 {
+	vector<string> _changedColumns;
+	vector<string> _missingColumns;
+	map<string, string> _changeNameColumns;
 
 	for (map<string, Column *>::iterator changeNameColumnIt = changeNameColumns.begin(); changeNameColumnIt != changeNameColumns.end(); ++changeNameColumnIt)
 	{
@@ -225,20 +231,21 @@ void Importer::_syncPackage(
 		missingColumns.erase(changedCol->name());
 		std::cout << "Column name changed, from: " << changedCol->name() << " to " << newColName << std::endl;
 		std::cout.flush();
+		_changeNameColumns[changedCol->name()] = newColName;
 		changedCol->setName(newColName);
 	}
-
 	int colNo = _packageData->dataSet->columnCount();
 	if (changedColumns.size() > 0)
 	{
 		if (rowCountChanged)
 			setDataSetSize(colNo, syncDataSet->rowCount());
 
-		for (vector<pair<string, int> >::iterator it = changedColumns.begin(); it != changedColumns.end(); ++it)
+		for (vector<pair<string, Column *> >::iterator it = changedColumns.begin(); it != changedColumns.end(); ++it)
 		{
 			std::cout << "Column changed " << it->first << std::endl;
 			std::cout.flush();
-			initColumn(it->second, syncDataSet->getColumn(it->first));
+			_changedColumns.push_back(it->first);
+			initColumn(*(it->second), syncDataSet->getColumn(it->first));
 		}
 	}
 
@@ -259,8 +266,11 @@ void Importer::_syncPackage(
 		{
 			std::cout << "Column deleted " << misColIt->first << std::endl;
 			std::cout.flush();
+			_missingColumns.push_back(misColIt->first);
 			_packageData->dataSet->removeColumn(misColIt->first);
 		}
 	}
+
+	_packageData->dataChanged(_packageData, _changedColumns, _missingColumns, _changeNameColumns);
 
 }

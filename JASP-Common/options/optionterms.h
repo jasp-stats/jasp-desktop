@@ -20,7 +20,7 @@
 
 #include "optioni.h"
 #include <list>
-#include "common.h"
+#include "../common.h"
 
 class OptionTerms : public OptionI<std::vector<std::vector<std::string> > >
 {

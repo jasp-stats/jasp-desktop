@@ -285,9 +285,21 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 
 bool OpenSaveWidget::checkSyncFileExists(const QString &path)
 {
-	bool exist = path.startsWith("http") ? true : QFileInfo::exists(path);
-	if (!exist)
+    bool exists = path.startsWith("http") ? true : (QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0);
+    if (!exists)
 	{
+        int attempts = 1;
+        while (!exists && attempts < 20)
+        {
+            Utils::sleep(100);
+            attempts++;
+            exists = QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0;
+        }
+    }
+    if (!exists)
+    {
+        std::cout << "Sync file does not exist: " << path.toStdString() << std::endl;
+        std::cout.flush();
 		setDataFileWatcher(false); // must be done before setting the current to empty.
 		_fsmCurrent->setCurrent(QString());
 		_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
@@ -296,7 +308,7 @@ bool OpenSaveWidget::checkSyncFileExists(const QString &path)
 		QMessageBox::warning(this, QString("Data Synchronization"), QString("The associated data file (") + path + ") does not exist. If you want to synchronize your data with another file, click on the 'File/Sync Data' menu.");
 	}
 
-	return exist;
+    return exists;
 }
 
 void OpenSaveWidget::setCurrentDataFile(const QString &path)

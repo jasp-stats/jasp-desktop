@@ -28,12 +28,12 @@ private:
 	void _syncPackage(
 			ImportDataSet *syncDataSet,
 			vector<pair<string, int> > &newColumns,
-			vector<pair<string, int> > &changedColumns,
+			vector<pair<string, Column *> > &changedColumns,
 			map<string, Column *> &missingColumns,
 			map<string, Column *> &changeNameColumns,
 			bool rowCountChanged);
-	void initColumn(int colNo, ImportColumn* importColumn);
-
+	void initColumn(Column &column, ImportColumn* importColumn);
+	void initColumn(int colNo, ImportColumn *importColumn);
 };
 
 #endif // IMPORTER_H
