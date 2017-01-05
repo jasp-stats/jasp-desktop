@@ -64,9 +64,11 @@ run <- function(name, options.as.json.string, perform="run") {
 		
 	} else if (inherits(results, "error")) {
 
+		error <- gsub("\"", "'", c(results$call, results$message), fixed=TRUE)
 		error <- paste(error, collapse=": ")
 		
 		stackTrace <- as.character(results$stackTrace)
+		stackTrace <- gsub("\"", "'", stackTrace, fixed=TRUE)
 		stackTrace <- paste(stackTrace, collapse="<br>")
 		
 		errorMessage <- .generateErrorMessage(type='unexpected', error=error, stackTrace=stackTrace)

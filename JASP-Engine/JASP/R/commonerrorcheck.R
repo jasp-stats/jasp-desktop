@@ -31,7 +31,7 @@
 #
 # Returns:
 #   String containing the error message.
-.generateErrorMessage <- function(type, variables=NULL, includeOpening=FALSE, concatenateWith=NULL, ...) {
+.generateErrorMessage <- function(type, variables=NULL, groupingVars=NULL, includeOpening=FALSE, concatenateWith=NULL, ...) {
   
   if (length(type) == 0) {
     stop('Non-valid type argument provided')
@@ -43,6 +43,12 @@
   message <- .messages('error', type)
   if (is.null(message)) {
     stop('Could not find error message for "', type, '"')
+  }
+  
+  # See if we need to add a grouping line
+  if (length(groupingVars) > 0) {
+    message <- paste(message, .messages('error', 'grouping'))
+    message <- gsub('{{groupingVars}}', paste(groupingVars, collapse=', '), message, fixed=TRUE)
   }
   
   # See if we need to specify variables
@@ -90,7 +96,7 @@
   if (includeOpening == TRUE) {
     message <- paste0(.messages('error', 'opening'), '<ul>', message)
   }
-
+  
   return(message)
 }
 
@@ -114,12 +120,16 @@
     return(FALSE)
   }
   
+  if (exitAnalysisIfErrors && message == 'short') {
+    message <- 'default'
+  }
+  
   # Error checks definition
   checks <- list()
-  checks[['infinity']] <- list(target='infinity.target', callback=.checkInfinity)
-  checks[['factorLevels']] <- list(target='factorLevels.target', callback=.checkFactorLevels)
-  checks[['variance']] <- list(target='variance.target', callback=.checkVariance)
-  checks[['observations']] <- list(target='observations.target', callback=.checkObservations)
+  checks[['infinity']] <- list(callback=.checkInfinity)
+  checks[['factorLevels']] <- list(callback=.checkFactorLevels)
+  checks[['variance']] <- list(callback=.checkVariance)
+  checks[['observations']] <- list(callback=.checkObservations)
   
   args <- list(...)
   errors <- list(message=NULL)
@@ -134,7 +144,26 @@
     
     # Obtain the arguments this specific callback uses
     funcArgs <- base::formals(check[['callback']])
-    exclude <- c('dataset', 'targetVars', '...')
+
+    # Fill in the 'all.*' arguments for this check
+    # TODO when R version 3.3 is installed we can use: argsWithAll <- args[startsWith(names(args), 'all.')]
+    argsAllPrefix <- args[substring(names(args), 1, 4) == 'all.']
+    if (length(argsAllPrefix) > 0) {
+      for (a in names(argsAllPrefix)) {
+        funcArg <- gsub('all', type[[i]], a, fixed=TRUE)
+        if (funcArg %in% names(funcArgs)) {
+          args[[funcArg]] <- args[[a]]
+        }
+      }
+    }
+
+    # See if this check expects target variables and if they were provided, if not add all variables
+    if (paste0(type[[i]], '.target') %in% names(funcArgs) && !paste0(type[[i]], '.target') %in% names(args)) {
+      args[[ paste0(type[[i]], '.target') ]] <- .unv(names(dataset))
+    } 
+    
+    # Obtain an overview of required and optional check arguments
+    exclude <- c('dataset', '...')
     optArgs <- list()
     reqArgs <- list()
     for (a in 1:length(funcArgs)) {
@@ -158,13 +187,7 @@
       args <- c(args, optArgs[!names(optArgs) %in% names(args)])
     }
     
-    # Find the appropriate variables to perform the check on
-    variables <- .unv(names(dataset))
-    if (!is.null(check[['target']]) && !is.null(args[[ check[['target']] ]])) {
-      variables <- args[[ check[['target']] ]]
-    }
-    
-    checkResult <- base::do.call(check[['callback']], c(list(dataset=dataset, targetVars=variables), args))
+    checkResult <- base::do.call(check[['callback']], c(list(dataset=dataset), args))
     
     # Are there errors
     if (checkResult[['error']] == TRUE) {
@@ -194,7 +217,14 @@
         if (is.null(errors[['message']]) && message != 'short') {
           opening = TRUE
         }
-        errors[['message']] <- base::do.call(.generateErrorMessage, c(list(type=type[[i]], variables=varsToAdd, includeOpening=opening, concatenateWith=errors[['message']]), args))
+
+        grouping <- NULL
+        if (!is.null(args[[ paste0(type[[i]], '.grouping') ]]) && message != 'short') {
+          grouping <- args[[ paste0(type[[i]], '.grouping') ]]
+        }
+        
+        errors[['message']] <- base::do.call(.generateErrorMessage, 
+                                             c(list(type=type[[i]], variables=varsToAdd, groupingVars=grouping, includeOpening=opening, concatenateWith=errors[['message']]), args))
       }
       
       # Add the error (with any offending variables, otherwise TRUE) to the list
@@ -207,7 +237,7 @@
     }
     
   }
-  
+
   # Done with all the checks, time to return...
   if (length(errors) == 1)  {
     return(FALSE)
@@ -221,29 +251,44 @@
 }
 
 
-# Check for infinity, requires no additional arguments.
-.checkInfinity <- function(dataset, targetVars, ...) {
+# Check for infinity, optionally specify grouping with levels (makes no sense to perform a grouped search without levels)
+.checkInfinity <- function(dataset, infinity.target, infinity.grouping=NULL, infinity.groupingLevel=NULL, ...) {
   result <- list(error=FALSE, errorVars=NULL)
-  for (v in targetVars) {
-    data <- dataset[[.v(v)]]
-    if (is.factor(data)) { # coerce factor to numeric
-      data <- as.numeric(as.character(data))
+  
+  for (v in infinity.target) {
+    
+    if (is.factor(dataset[[.v(v)]])) { # Coerce factor to numeric
+      dataset[[.v(v)]] <- as.numeric(as.character(dataset[[.v(v)]]))
     } 
-    if (any(is.infinite(data))) {
+    
+    if (length(infinity.grouping) > 0 && length(infinity.groupingLevel) > 0) { # There are specific grouping vars
+      expr <- paste(infinity.grouping, infinity.groupingLevel, sep='==', collapse='&') # Create a subset expression
+      df <- subset(dataset, eval(parse(text=expr)))
+      hasInf <- any(is.infinite(df[[.v(v)]]))
+      
+    } else { # No specific subgroup to check
+      
+      hasInf <- any(is.infinite(dataset[[.v(v)]]))
+      
+    }
+    
+    if (hasInf) {
       result$error <- TRUE
       result$errorVars <- c(result$errorVars, v)
     }
     
   }
+  
   return(result)
 }
 
 
 # Check for the amount of factor levels, required arguments are an amount (numeric) to check and its operator (string) (e.g. '!=' 2 or '>' 1)
-.checkFactorLevels <- function(dataset, targetVars, factorLevels.amount, factorLevels.operator, ...) {
+.checkFactorLevels <- function(dataset, factorLevels.target, factorLevels.amount, factorLevels.operator, ...) {
   result <- list(error=FALSE, errorVars=NULL)
-  for (v in targetVars) {
-
+  
+  for (v in factorLevels.target) {
+    
     levelsOfVar <- length(unique(dataset[[.v(v)]]))
     expr <- paste(levelsOfVar, factorLevels.operator, factorLevels.amount) # Build the expression to check for
     if (eval(parse(text=expr)) == TRUE) { # See if this expression is true
@@ -252,70 +297,84 @@
     }
     
   }
+  
   return(result)
 }
 
 
-# Check for variance in the data. Optionally specify the variance amount to check and if the dependent should be grouped.
-.checkVariance <- function(dataset, targetVars, variance.equalTo=0, variance.grouping=NULL, ...) {
+# Check for variance in the data. Optionally specify the variance amount to check and grouping (possibly with levels)
+.checkVariance <- function(dataset, variance.target, variance.grouping=NULL, variance.groupingLevel=NULL, variance.equalTo=0, ...) {
   result <- list(error=FALSE, errorVars=NULL)
-  for (v in targetVars) {
+  
+  getVariance <- function(df, target) {
+    validValues <- df[[target]][is.finite(df[[target]])]
+    variance <- -1 # Prevents the function from returning NA's
+    if (length(validValues) > 1) {
+      variance <- stats::var(validValues)
+    }
+    return(variance)
+  }
+  
+  for (v in variance.target) {
     
     if (length(variance.grouping) > 0) { # There are grouping vars
-      # ddply groups the dataset and performs a function on each subgroup, returns a dataframe with the subgroups and the function results
-      variances <- plyr::ddply(dataset, .v(variance.grouping),
-                               function(x, col) {
-                                 validValues <- x[[col]][is.finite(x[[col]])]
-                                 variance <- -1 # Prevents the function from returning NA's
-                                 if (length(validValues) > 1) {
-                                   variance <- stats::var(validValues)
-                                 }
-                                 return(variance)
-                               }, .v(v))
-      if (any(variances[, ncol(variances)] == variance.equalTo)) { # check the last column with the function results
-        result$error <- TRUE
-        result$errorVars <- c(result$errorVars, v)
+      
+      if (length(variance.groupingLevel) > 0) { # We only need to check a specific level
+        expr <- paste(variance.grouping, variance.groupingLevel, sep='==', collapse='&') # Create a subset expression
+        variance <- getVariance(subset(dataset, eval(parse(text=expr))), .v(v))
+      } else { # Check all levels
+        # ddply groups the dataset and performs a function on each subgroup, returns a dataframe with the subgroups and the function results
+        variance <- plyr::ddply(dataset, .v(variance.grouping), getVariance, .v(v))
       }
       
     } else { # no grouping vars
       
-      validValues <- dataset[[.v(v)]][is.finite(dataset[[.v(v)]])]
-      if (length(validValues) > 1) {
-        variance <- stats::var(validValues)
-        if (variance == variance.equalTo) {
-          result$error <- TRUE
-          result$errorVars <- c(result$errorVars, v)
-        }
-      }
+      variance <- getVariance(dataset, .v(v))
       
     }
     
-  }
-  return(result)
-}
-
-
-# check for the number of observations in the dependent(s). Requires the minimum possible value to be supplied, optionally specify if the dependent should be grouped.
-.checkObservations <- function(dataset, targetVars, observations.lessThan, observations.grouping=NULL, ...) {
-  result <- list(error=FALSE, errorVars=NULL)
-  for (v in targetVars) {
-    
-    if (length(observations.grouping) > 0) { # there are grouping vars
-      # ddply groups the dataset and performs a function on each subgroup, returns a dataframe with the subgroups and the function results
-      obs <- plyr::ddply(dataset, .v(observations.grouping),
-                         function(x, col) {
-                           length(na.omit(x[[col]]))
-                         }, .v(v))
-      if (any(obs[, ncol(obs)] < observations.lessThan)) { # check the last column with the function results
-        result$error <- TRUE
-        result$errorVars <- c(result$errorVars, v)
-      }
-      
-    } else if (length(na.omit(dataset[[.v(v)]])) < observations.lessThan) {
+    if ((is.data.frame(variance) && any(variance[, ncol(variance)] == variance.equalTo)) || # Check the last column with the function results
+        (is.numeric(variance) && variance == variance.equalTo)) { # Or the scalar
       result$error <- TRUE
       result$errorVars <- c(result$errorVars, v)
     }
     
   }
+  
+  return(result)
+}
+
+
+# check for the number of observations in the dependent(s). Requires the minimum possible value to be supplied, optionally grouping (possibly with levels)
+.checkObservations <- function(dataset, observations.target, observations.grouping=NULL, observations.groupingLevel=NULL, observations.lessThan, ...) {
+  result <- list(error=FALSE, errorVars=NULL)
+  
+  for (v in observations.target) {
+    
+    if (length(observations.grouping) > 0) { # there are grouping vars
+      
+      if (length(observations.groupingLevel) > 0) { # We only need to check a specific level
+        expr <- paste(observations.grouping, observations.groupingLevel, sep='==', collapse='&') # Create a subset expression
+        df <- subset(dataset, eval(parse(text=expr)))
+        obs <- length(na.omit(df[[.v(v)]]))
+      } else {
+        # ddply groups the dataset and performs a function on each subgroup, returns a dataframe with the subgroups and the function results
+        obs <- plyr::ddply(dataset, .v(observations.grouping), function(df, target) length(na.omit(df[[target]])), .v(v))
+      }
+      
+    } else { # no grouping vars
+      
+      obs <- length(na.omit(dataset[[.v(v)]]))
+      
+    }
+    
+    if ((is.data.frame(obs) && any(obs[, ncol(obs)] < observations.lessThan)) || # Check the last column with the function results
+        (is.numeric(obs) && obs < observations.lessThan)) { # Or the scalar
+      result$error <- TRUE
+      result$errorVars <- c(result$errorVars, v)
+    }
+    
+  }
+  
   return(result)
 }
