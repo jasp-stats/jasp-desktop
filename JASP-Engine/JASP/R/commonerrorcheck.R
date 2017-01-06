@@ -126,10 +126,10 @@
   
   # Error checks definition
   checks <- list()
-  checks[['infinity']] <- list(callback=.checkInfinity)
-  checks[['factorLevels']] <- list(callback=.checkFactorLevels)
-  checks[['variance']] <- list(callback=.checkVariance)
-  checks[['observations']] <- list(callback=.checkObservations)
+  checks[['infinity']] <- list(callback=.checkInfinity, addGrouping=FALSE)
+  checks[['factorLevels']] <- list(callback=.checkFactorLevels, addGrouping=FALSE)
+  checks[['variance']] <- list(callback=.checkVariance, addGrouping=TRUE)
+  checks[['observations']] <- list(callback=.checkObservations, addGrouping=TRUE)
   
   args <- list(...)
   errors <- list(message=NULL)
@@ -219,7 +219,7 @@
         }
 
         grouping <- NULL
-        if (!is.null(args[[ paste0(type[[i]], '.grouping') ]]) && message != 'short') {
+        if (!is.null(args[[ paste0(type[[i]], '.grouping') ]]) && check[['addGrouping']] == TRUE) {
           grouping <- args[[ paste0(type[[i]], '.grouping') ]]
         }
         
