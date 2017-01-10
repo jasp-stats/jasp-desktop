@@ -56,6 +56,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/ribbons/ribbonsem.cpp \
         $$PWD/ribbons/ribbonanalysis.cpp \
         $$PWD/ribbons/ribbonhome.cpp \
+        $$PWD/ribbons/ribbonbasregression.cpp \
         $$PWD/widgets/boundtextedit.cpp \
         $$PWD/widgets/stealthbutton.cpp \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.cpp \
@@ -180,6 +181,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
+        $$PWD/analysisforms/BASRegression/basregressionlinearlinkform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
 		$$PWD/simplecrypt.cpp \
 		$$PWD/importers/convertedstringcontainer.cpp \
@@ -248,6 +250,7 @@ HEADERS  += \
         $$PWD/ribbons/ribbonsem.h \
         $$PWD/ribbons/ribbonanalysis.h \
         $$PWD/ribbons/ribbonhome.h \
+        $$PWD/ribbons/ribbonbasregression.h \
         $$PWD/widgets/boundtextedit.h \
         $$PWD/widgets/stealthbutton.h \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.h \
@@ -416,6 +419,7 @@ FORMS += \
         $$PWD/ribbons/ribbonhome.ui \
         $$PWD/ribbons/ribbonsem.ui \
         $$PWD/ribbons/ribbonanalysis.ui \
+        $$PWD/ribbons/ribbonbasregression.ui \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/ttestbayesianpairedsamplesform.ui \
         $$PWD/analysisforms/ancovabayesianform.ui \
@@ -446,7 +450,8 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
-        $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
+        $$PWD/analysisforms/R11tLearn/r11tlearnform.ui \
+        $$PWD/analysisforms/BASRegression/basregressionlinearlinkform.ui
 
 RESOURCES += \
         $$PWD/backstage/backstage.qrc \

@@ -135,13 +135,13 @@
 		&& perform == "run"
 		&& (length (dataset[[.v(options$dependent)]]) <= (1 + length (options$modelTerms))))
 		error.message <- "Bayes factor is undefined -- too few observations (possibly only after rows with missing values are excluded)"
-	
+
 	if (!exists ("error.message")) {
 		max.no.components <- max (sapply (options$modelTerms, function(term){length (term$components)}))
 		if (max.no.components > 1) {
 			for (term in options$modelTerms) {
 				if (exists ("error.message"))
-					break		
+					break
 				components <- term$components
 				if (length (components) > 1) {
 					no.children <- 2^length (components) - 1
@@ -189,33 +189,33 @@
 .updateResultsBayesianLinearModels <- function (results, model.object, effects.matrix, interactions.matrix, neverExclude, null.model, options, status) {
 	results [["model comparison"]] <- .theBayesianLinearModelsComparison (
 		list (
-			models = model.object, 
+			models = model.object,
 			effects = effects.matrix,
-			interactions.matrix = interactions.matrix, 
+			interactions.matrix = interactions.matrix,
 			nuisance = neverExclude,
-			null.model = null.model), 
+			null.model = null.model),
 		options, perform = "run", status, populate = TRUE)$modelTable
 
 	results [["effects"]] <- .theBayesianLinearModelsEffects (
 		list (
-			models = model.object, 
+			models = model.object,
 			effects = effects.matrix,
-			interactions.matrix = interactions.matrix, 
+			interactions.matrix = interactions.matrix,
 			nuisance = neverExclude,
-			null.model = null.model), 
+			null.model = null.model),
 		options, perform = "run", status, populate = TRUE)
-	
+
 	if (options$posteriorEstimates) {
 		results [["effects"]] <- .theBayesianLinearModelEstimates (
 			list (
-				models = model.object, 
+				models = model.object,
 				effects = effects.matrix,
-				interactions.matrix = interactions.matrix, 
+				interactions.matrix = interactions.matrix,
 				nuisance = neverExclude,
-				null.model = null.model), 
+				null.model = null.model),
 			options, perform = "init", status, populate = TRUE)
 	}
-	
+
 	return(results)
 }
 
@@ -223,12 +223,12 @@
 									  status = list (), .callbackBayesianLinearModels,
 									  .callbackBFpackage, results = list(),
 									  analysisType = "") {
-	
+
 	# priors
 	rscaleFixed <- "medium"     # 1/2
 	rscaleRandom <- "nuisance"  # 1
 	rscaleCont <- "medium"      # sqrt(2)/4
-	
+
 	# MCMC iterations
 	if (analysisType != "Regression") {
 		if (options$sampleMode == "auto") {
@@ -239,7 +239,7 @@
 	} else {
 		iter <- NA
 	}
-	
+
 	if (analysisType == "ANOVA") {
 		rscaleFixed <- options$priorFixedEffects
 		rscaleRandom <- options$priorRandomEffects
@@ -250,7 +250,7 @@
 	} else if (analysisType == "Regression") {
 		rscaleCont <- options$priorCovariates
 	}
-	
+
 	if (!status$ready && is.null (status$error.message))
 		return (list (model =  list (models = NULL, effects = NULL), status = status))
 
@@ -284,14 +284,14 @@
 	}
 
 	#Make a list of models to compare
-	model.list <- try (BayesFactor::enumerateGeneralModels (model.formula, 
-		whichModels = "withmain", neverExclude = paste ("^", neverExclude, "$", sep = "")), 
+	model.list <- try (BayesFactor::enumerateGeneralModels (model.formula,
+		whichModels = "withmain", neverExclude = paste ("^", neverExclude, "$", sep = "")),
 		silent = TRUE)
 	if (class (model.list) == "try-error") {
 		if (is.null (status$error.message)) {
 			status$ready <- FALSE
 			status$error.message <- "An unknown error occured. Please contact the authors."
-			return (list (model =  list (models = NULL, effects = NULL, interactions.matrix = NULL, 
+			return (list (model =  list (models = NULL, effects = NULL, interactions.matrix = NULL,
 				nuisance = neverExclude, null.model = NULL), status = status))
 		}
 		model.list <- list (model.formula)
@@ -310,7 +310,7 @@
 	null.model <- list ()
 	if (!is.null (neverExclude)) {
 		for (m in 1:length (model.list)){
-			model.title <- base::strsplit(x = as.character (model.list [[m]]) [[3]], 
+			model.title <- base::strsplit(x = as.character (model.list [[m]]) [[3]],
 				split = "+", fixed = TRUE) [[1]]
 			model.title <- stringr::str_trim (model.title)
 			model.title <- model.title [model.title != ""]
@@ -325,9 +325,9 @@
 				progress = FALSE, posterior = FALSE, callback = .callbackBFpackage,
 				rscaleFixed = rscaleFixed, rscaleRandom = rscaleRandom, rscaleCont = rscaleCont,
 				iterations = iter))
-			
+
 			null.model$bf <- bf
-			
+
 			if (inherits (bf, "try-error")) {
 				message <- .extractErrorMessage (bf)
 				if (message == "Operation cancelled by callback function.")
@@ -364,7 +364,7 @@
 		model.object <- list()
 		for (m in 1:no.models) {
 			model.object [[m]] <- list ("ready" = TRUE)
-			model.effects <- base::strsplit (x = as.character (model.list [[m]]) [[3]], 
+			model.effects <- base::strsplit (x = as.character (model.list [[m]]) [[3]],
 				split = "+", fixed = TRUE) [[1]]
 			model.effects <- stringr::str_trim (model.effects)
 
@@ -388,18 +388,23 @@
 				effects.matrix [1,1] <- TRUE
 			}
 
-			model.title <- base::strsplit (x = as.character (model.list [[m]]) [[3]], 
+			model.title <- base::strsplit (x = as.character (model.list [[m]]) [[3]],
 				split = "+", fixed = TRUE) [[1]]
 			model.title <- stringr::str_trim (model.title)
 			model.title <- model.title [model.title != ""]
 			model.title <- model.title [!(model.title %in% neverExclude)]
 			model.object [[m]]$title <- .unvf (paste (model.title, collapse = " + "))
-			
+
 			model.object [[m]]$ready <- FALSE #to ensure that intermediate results can be called
 		}
-		
+		print("------------------------------------------------")
+		print(model.object)
+		print(length(model.object))
+		print(model.object[1])
+		print(summary(model.object[1]))
+		print("------------------------------------------------")
 		#Create empty tables
-		results <- .updateResultsBayesianLinearModels (results, model.object, 
+		results <- .updateResultsBayesianLinearModels (results, model.object,
 			effects.matrix, interactions.matrix, neverExclude, null.model, options, status)
 
 		#Intermediate Callback
@@ -434,9 +439,9 @@
 					model.object [[m]]$bf <- model.object [[m]]$bf / null.model$bf
 				}
 			}
-			
+
 			#Create empty tables
-			results <- .updateResultsBayesianLinearModels (results, model.object, 
+			results <- .updateResultsBayesianLinearModels (results, model.object,
 				effects.matrix, interactions.matrix, neverExclude, null.model, options, status)
 
 			#Intermediate Callback
@@ -454,11 +459,11 @@
 			m <- which (complexity == max (complexity))
 			chains <- try (BayesFactor::lmBF (model.list [[m]],
 					data = dataset, whichRandom = .v (unlist (options$randomFactors)),
-					progress = FALSE, posterior = TRUE, callback = .callbackBFpackage, 
+					progress = FALSE, posterior = TRUE, callback = .callbackBFpackage,
 					iterations = options$posteriorEstimatesMCMCIterations,
 					rscaleFixed = rscaleFixed, rscaleRandom = rscaleRandom, rscaleCont = rscaleCont,
 					iterations = iter))
-			
+
 			if (inherits (bf, "try-error")) {
 				message <- .extractErrorMessage (bf)
 				if (message == "Operation cancelled by callback function.")
@@ -467,8 +472,8 @@
 				return (list (model =  list (models = model.object, effects = effects.matrix,
 					interactions.matrix = interactions.matrix, nuisance = neverExclude,
 					null.model = null.model), status = status))
-			} 		
-			
+			}
+
 			model.object [[m]]$chains <- chains
 			return (list (model =  list (models = model.object, effects = effects.matrix,
 				interactions.matrix = interactions.matrix, nuisance = neverExclude,
@@ -477,13 +482,13 @@
 		return (list (model = list (models = model.object, effects = effects.matrix,
 			interactions.matrix = interactions.matrix, nuisance = neverExclude,
 			null.model = null.model), status = status))
-	} 
+	}
 
 	if (is.null (status$error.message)){
 			status$ready <- FALSE
 			status$error.message <- "An unknown error occured. Please contact the authors."
 	}
-	return (list (model =  list (models = NULL, effects = NULL, interactions.matrix = NULL, 
+	return (list (model =  list (models = NULL, effects = NULL, interactions.matrix = NULL,
 		nuisance = neverExclude, null.model = NULL), status = status))
 }
 
@@ -576,9 +581,9 @@
 			rows [[1]] [["P(M)"]] <- .clean (1 / (no.models + 1))
 			rows [[1]] [["P(M|data)"]] <- .clean (ln.prob [1] / log (10))
 		}#end populate == FALSE
-		
+
 		if (populate == FALSE) {
-			if (options$bayesFactorType == "LogBF10") { 
+			if (options$bayesFactorType == "LogBF10") {
 				rows [[1]] [["BFM"]] <- .clean (ln.BF.model [1])
 			} else {
 				rows [[1]] [["BFM"]] <- .clean (ln.BF.model [1] / log (10))
@@ -589,7 +594,7 @@
 
 		for (m in 1:no.models) {
 			if (model$models [[m]]$ready) {
-				if (populate == FALSE) { 
+				if (populate == FALSE) {
 					#This is set for intermediate populating of tables
 					rows [[m+1]] [["P(M)"]] <- .clean (1 / (no.models + 1))
 					rows [[m+1]] [["P(M|data)"]] <- .clean (ln.prob [m + 1] / log (10))
@@ -617,7 +622,7 @@
 			}
 		}
 	}
-	
+
 	if (is.null(status$analysis.type) || status$analysis.type != "rmANOVA") {
 		modelTable [["title"]] <- paste ("Model Comparison - ", options$dependent, sep = "")
 	}
@@ -626,7 +631,7 @@
 
 	if (!status$ready)
 		modelTable [["error"]] <- list (errorType = "badData", errorMessage = status$error.message)
-	
+
 	return (list (modelTable = modelTable, model = model))
 }
 
@@ -659,12 +664,12 @@
 				list (name = "Effects", type = "string"),
 				list (name = "P(incl)", type = "number", format = "sf:4;dp:3"),
 				list (name = "P(incl|data)", type = "number", format = "sf:4;dp:3"),
-				list (name = "BF<sub>Inclusion</sub>", type="number", format = "sf:4;dp:3", 
+				list (name = "BF<sub>Inclusion</sub>", type="number", format = "sf:4;dp:3",
 					title = paste (inclusion.title, sep = "")),
-				list (name = "BF<sub>Backward</sub>", type="number", format = "sf:4;dp:3", 
+				list (name = "BF<sub>Backward</sub>", type="number", format = "sf:4;dp:3",
 					title = paste (backward.title, sep = "")),
 				list (name = "% errorB", type = "number", format = "sf:4;dp:3"),
-				list (name = "BF<sub>Forward</sub>", type = "number", format = "sf:4;dp:3", 
+				list (name = "BF<sub>Forward</sub>", type = "number", format = "sf:4;dp:3",
 					title = paste (forward.title, sep = "")),
 				list (name = "% errorF", type = "number", format = "sf:4;dp:3")
 			)
@@ -674,7 +679,7 @@
 				list (name = "Effects", type = "string"),
 				list (name = "P(incl)", type = "number", format = "sf:4;dp:3"),
 				list (name = "P(incl|data)", type = "number", format = "sf:4;dp:3"),
-				list (name = "BF<sub>Inclusion</sub>", type = "number", format = "sf:4;dp:3", 
+				list (name = "BF<sub>Inclusion</sub>", type = "number", format = "sf:4;dp:3",
 					title = paste (inclusion.title, sep = ""))
 			)
 	}
@@ -805,7 +810,7 @@
 			"Morey, R. D. & Rouder, J. N. (2015). BayesFactor (Version 0.9.10-2)[Computer software].",
 			"Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012) Default Bayes Factors for ANOVA Designs. Journal of Mathematical Psychology. 56. p. 356-374."
 		)
-	
+
 	alpha <- (1 - options$posteriorEstimatesCredibleIntervalInterval) / 2
 	fields <-
 		list (
@@ -819,7 +824,7 @@
 
 	if ( !status$ready && is.null (status$error.message))
 		return (estimatesTable)
-	
+
 	if ( perform == "init" && ! populate)
 		return (estimatesTable)
 
@@ -834,20 +839,20 @@
 		complexity <- rowSums (effects.matrix)
 		m <- which (complexity == max (complexity))
 	}
-	
-	
+
+
 	if (! populate && is.null (model$models[[m]]$error.message)) {
 		chains <- model$models[[m]]$chains
 		parameters <- colnames (chains)
 		if (length (options$randomFactors) > 0) {
 			rfnames <- .v (unlist (options$randomFactors))
 			remove <- NULL
-			for (name in rfnames) 
+			for (name in rfnames)
 				remove <- c (remove, base::grep (x = parameters, pattern = name, fixed = TRUE, ignore.case = TRUE))
 			chains <- chains [, - remove]
 			parameters <- colnames (chains)
 		}
-	
+
 		estimates <- matrix (0, nrow = length (parameters), ncol = 4)
 		for (e in 1:length (parameters)) {
 			estimates [e, 1] <- median (chains[, e])
@@ -855,7 +860,7 @@
 			estimates [e, 3] <- quantile (chains [, e], alpha)
 			estimates [e, 4] <- quantile (chains [, e], 1-alpha)
 		}
-		
+
 		for (parameter in 1:length (parameters)) {
 			name <- stringr::str_trim (parameters [parameter])
 			name <- base::strsplit (name, split = "-", fixed = TRUE) [[1]]
@@ -937,6 +942,6 @@
 		estimatesTable [["error"]] <- list (errorType = "badData")
 
  	estimatesTable [["title"]] <- paste ("Parameter Estimates - ", options$dependent, sep = "")
-	
+
 	return (estimatesTable)
 }
