@@ -25,6 +25,7 @@
 
 #include <QFile>
 #include <QTimer>
+#include <QDebug>
 
 #include "utils.h"
 
@@ -217,8 +218,3 @@ void Analyses::analysisOptionsChangedHandler(Analysis *analysis)
 
 	analysisOptionsChanged(analysis);
 }
-
-
-
-
-

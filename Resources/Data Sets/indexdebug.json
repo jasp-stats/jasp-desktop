@@ -28,6 +28,11 @@
 		"name" : "Debug Dataset (JASP Team, 2016)",
 		"path" : "debug.csv",
 		"description" : "For testing. Readme: is.gd/jaspdata"
+	},
+	{
+		"name": "Swiss Fertility",
+		"path": "swiss.csv",
+		"description": "Swiss Fertility and Socioeconomic Indicators (1888) Data"
 	}
 
 ]

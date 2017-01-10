@@ -130,6 +130,7 @@ void TabBar::addHelpTab()
 	QAction *sem = new QAction("SEM",optionmenu);
 	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
 	QAction *summaryStats = new QAction("Summary Stats",optionmenu);
+	QAction *basRegression = new QAction("BAS Regression", optionmenu);
 
 	//SEM
 	QVariant sem_setting = _settings.value("plugins/sem", false);
@@ -150,10 +151,17 @@ void TabBar::addHelpTab()
 	summaryStats->setCheckable(true);
 	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
 
+	// BAS (Bayesian Adaptive Sampling) Regression
+	QVariant basRegression_setting = _settings.value("toolboxes/basRegression", false);
+	basRegression->setObjectName("BAS Regression");
+	basRegression->setCheckable(true);
+	basRegression->setChecked(basRegression_setting.canConvert(QVariant::Bool) && basRegression_setting.toBool());
+
 #ifdef QT_DEBUG
 	optionmenu->addAction(rei);
 #endif
-    optionmenu->addAction(summaryStats);
+	optionmenu->addAction(summaryStats);
+	optionmenu->addAction(basRegression);
 
 	optionmenu->acceptDrops();
 	helpmenu->acceptDrops();
@@ -170,6 +178,7 @@ void TabBar::addHelpTab()
 	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
 	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
+	connect(basRegression, SIGNAL(triggered()), this, SLOT(toggleBASRegression()));
 }
 
 void TabBar::showAbout()
@@ -213,16 +222,31 @@ void TabBar::toggleSummaryStats()
 	QVariant sumStats_setting = _settings.value("toolboxes/summaryStatistics", false);
 	static bool on = (sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
 	on = ! on;
-    if (on)
-    {
+	if (on)
+	{
 		this->addTab("Summary Stats");
-    }
+	}
 	else
-    {
+	{
 		this->removeTab("Summary Stats");
-    }
+	}
 }
 
+void TabBar::toggleBASRegression()
+{
+	QVariant basRegression_setting = _settings.value("toolboxes/basRegression", false);
+	static bool on = (basRegression_setting.canConvert(QVariant::Bool) && basRegression_setting.toBool());
+	on = ! on;
+
+	if (on)
+	{
+		this->addTab("BAS Regression");
+	}
+	else
+	{
+		this->removeTab("BAS Regression");
+	}
+}
 
 int TabBar::count() const
 {

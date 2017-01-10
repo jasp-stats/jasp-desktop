@@ -85,6 +85,7 @@
           <widget class="RibbonSEM" name="ribbonSEM"/>
           <widget class="RibbonR11tLearn" name="ribbonR11tLearn"/>
           <widget class="RibbonSummaryStatistics" name="ribbonSummaryStatistics"/>
+          <widget class="RibbonBASRegression" name="ribbonBASRegression"/>
          </widget>
         </item>
         <item>
@@ -532,6 +533,12 @@ QPushButton#first:checked {
    <class>RibbonSummaryStatistics</class>
    <extends>QWidget</extends>
    <header>ribbons/ribbonsummarystatistics.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RibbonBASRegression</class>
+   <extends>QWidget</extends>
+   <header>ribbons/ribbonbasregression.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

@@ -54,12 +54,15 @@
 #include "analysisforms/binomialtestform.h"
 #include "analysisforms/binomialtestbayesianform.h"
 #include "analysisforms/bffromtform.h"
+
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h"
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h"
 #include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
+
+#include "analysisforms/BASRegression/basregressionlinearlinkform.h"
 
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
@@ -149,6 +152,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonSEM->setDataSetLoaded(false);
 	ui->ribbonR11tLearn->setDataSetLoaded(false);
 	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
+	ui->ribbonBASRegression->setDataSetLoaded(false);
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -196,6 +200,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonBASRegression, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
 
@@ -564,9 +569,9 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	else if (name == "ReliabilityAnalysis")
 		form = new ReliabilityAnalysisForm(contentArea);
 	else if (name == "ExploratoryFactorAnalysis")
-    form = new ExploratoryFactorAnalysisForm(contentArea);
-  else if (name == "PrincipalComponentAnalysis")
-    form = new PrincipalComponentAnalysisForm(contentArea);
+		form = new ExploratoryFactorAnalysisForm(contentArea);
+	else if (name == "PrincipalComponentAnalysis")
+		form = new PrincipalComponentAnalysisForm(contentArea);
 	else if (name == "SummaryStatsTTestBayesianOneSample")
 		form = new SummaryStatsTTestBayesianOneSampleForm(contentArea);
 	else if (name == "SummaryStatsTTestBayesianIndependentSamples")
@@ -579,6 +584,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
 	else if (name == "SummaryStatsCorrelationBayesianPairs")
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
+	else if (name == "BASRegressionLinearLink")
+		form = new BASRegressionLinearLinkForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -743,6 +750,10 @@ void MainWindow::tabChanged(int index)
 		{
 			ui->ribbon->setCurrentIndex(3);
 		}
+		else if (currentActiveTab == "BAS Regression")
+		{
+			ui->ribbon->setCurrentIndex(4);
+		}
 	}
 }
 
@@ -802,7 +813,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 #endif
 	}
 	else if (event->operation() == FileEvent::FileSave)
-	{		
+	{
 		if (_analyses->count() > 0)
 		{
 			_package->setWaitingForReady();
@@ -1064,6 +1075,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonSEM->setDataSetLoaded(loaded);
 	ui->ribbonR11tLearn->setDataSetLoaded(loaded);
+	ui->ribbonBASRegression->setDataSetLoaded(loaded);
 }
 
 void MainWindow::updateUIFromOptions()
@@ -1090,6 +1102,11 @@ void MainWindow::updateUIFromOptions()
 	else
 		ui->tabBar->removeTab("Summary Stats");
 
+	QVariant basRegression = _settings.value("toolboxes/basRegression", false);
+	if (basRegression.canConvert(QVariant::Bool) && basRegression.toBool())
+		ui->tabBar->addTab("BAS Regression");
+	else
+		ui->tabBar->removeTab("BAS Regression");
 }
 
 void MainWindow::resultsPageLoaded(bool success)
