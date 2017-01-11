@@ -22,6 +22,10 @@
 #include <QDialog>
 #include <QAbstractButton>
 #include <QWebView>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QUrl>
 
 namespace Ui {
 class AboutDialog;
@@ -38,10 +42,15 @@ public:
 private slots:
 	void on_buttonBox_clicked(QAbstractButton *button);
 	void aboutPageLoaded(bool success);
+	void downloadFinished();
 
 private:
+	void checkForJaspUpdate();
 	Ui::AboutDialog *ui;
 	QWebView *_aboutWebView;
+	QNetworkAccessManager *m_network_manager;	// make the HTTP GET request
+	QNetworkReply *m_network_reply;
+	QByteArray *m_pBuffer;
 };
 
 #endif // ABOUTDIALOG_H
