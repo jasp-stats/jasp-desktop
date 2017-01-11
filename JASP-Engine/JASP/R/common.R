@@ -72,7 +72,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		stackTrace <- paste(stackTrace, collapse="<br>")
 		
 		errorMessage <- .generateErrorMessage(type='unexpected', error=error, stackTrace=stackTrace)
-		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
+		errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 		
 		errorResponse
 		
