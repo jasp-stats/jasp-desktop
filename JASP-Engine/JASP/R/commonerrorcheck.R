@@ -10,7 +10,7 @@
   if (!is.null(sys.calls()) && length(sys.calls()) > 10) {
     
     stack <- sys.calls()  
-    stack <- head(stack[8:length(stack)], -2) # The first 7 and last 2 calls provide no information
+    stack <- head(stack[7:length(stack)], -2) # The first 6 and last 2 calls provide no information
     if (length(stack) > 10) {
       stack <- tail(stack, 10) # Show at most the final 10 calls before the error
     }

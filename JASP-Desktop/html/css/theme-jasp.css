@@ -371,6 +371,28 @@ div.image-status.waiting {
 
 }
 
+.stack-trace-selector div,
+.stack-trace-selector span {
+	
+  cursor: pointer ;
+  display: inline-block ;
+  vertical-align: middle ;
+}
+
+.stack-trace-arrow {
+	
+  background: center no-repeat url("images/expand.png") ;
+  background-size: 70% ;
+	width: 16px ;
+  height: 16px ;
+  margin-left: 2px ;
+}
+
+.stack-trace {
+	
+  display: none ;
+}
+
 td.squash-left
 {
 	width: 99% ;
