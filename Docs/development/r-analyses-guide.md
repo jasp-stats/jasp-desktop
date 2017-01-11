@@ -447,3 +447,105 @@ It will return a named list with TRUE/FALSE values indicating which options have
     }
     
     # otherwise continue
+
+### Error handling
+
+#### Checking for errors
+
+There are situations where you know an analysis cannot be performed. For example if an independent samples t-test is run with a grouping variable that only has one level, or when the data in a regression analysis has infinite values. To prevent an analysis from crashing we need to check the data and options beforehand. This can be done with the `.hasErrors()` function.
+
+##### Calling the error check function
+
+By finetuning the arguments given to `.hasErrors()` it can be used in a variety of situations. The main arguments are:
+
+- `dataset`: JASP dataset. [required]
+- `perform`: 'run' or 'init'. [required]
+- `type`: character vector containing any of the following: 'infinity', 'factorLevels', 'variance', 'observations'. [required]
+- `message`: 'short', 'default' [the default], or 'verbose'. [optional]
+- `exitAnalysisIfErrors`: TRUE or FALSE [the default]. [optional]
+
+The optional argument `message` is used to specify what sort of error message should be returned. When it is set to `short` (for use in footnotes) only the first error encountered will be included in the message, without the opening statement "The following problem(s) occurred while running the analysis:". When it is set to `default` on the other hand it does include this opening statement and also includes all checks that fail, however it will only mention variables once. This is to prevent cases when one issue with a variable makes it fail multiple checks. `verbose` mentions variables in all checks they fail without any limitations, this should only be used for testing purposes. 
+
+The argument `exitAnalysisIfErrors` can be used to prevent the analysis from continuing to run when a check fails. It would be sensible to set this to `TRUE` in the case of the independent samples t-test with the single level grouping variable. The t-test package will not be able to run and graphs or tables would be nonsensical. When it is set to `FALSE` the function will simply return to the calling environment regardless of whether any checks failed.
+
+Additionally, we can pass arguments that tell the function how to perform the checks listed after `type`.
+These arguments are always prefixed by their type name. So to check if the variance is zero in in the dependent variable 'dependentVar', we would call:
+
+`.hasErrors(dataset=dataset, perform=perform, type='variance', variance.target='dependentVar')`
+
+All check arguments:
+
+| type         | argument      | description                                        |
+|--------------|---------------|----------------------------------------------------|
+| infinity     | dataset       | JASP dataset                                       |
+|              | target        | character vector of variable names                 |
+|              | grouping      | character vector of variable names                 |
+|              | groupingLevel | vector with levels for the grouping                |
+| factorLevels | dataset       | JASP dataset                                       |
+|              | target        | character vector of variable names                 |
+|              | amount\*      | (vector of) string(s) (e.g. "!= 2")                |
+| variance     | dataset       | JASP dataset                                       |
+|              | target        | character vector of variable names                 |
+|              | grouping      | character vector of variable names                 |
+|              | groupingLevel | vector with levels for the grouping                |
+|              | equalTo       | numeric value to compare for equality [default: 0] |
+| observations | dataset       | JASP dataset                                       |
+|              | target        | character vector of variable names                 |
+|              | grouping      | character vector of variable names                 |
+|              | groupingLevel | vector with levels for the grouping                |
+|              | amount\*      | (vector of) string(s) (e.g. "> 5000")              |
+\* = required argument
+
+Note that when no target is provided for an error check, it will by default go over every variable in the dataset.
+
+To prevent very long function calls, we can also prefix arguments by `all.` (e.g. all.grouping=options$fixedFactor). When this prefix is used `hasErrors()` will call each check with that specific grouping variable. Granted the check actually needs that parameter.
+
+##### The return value
+
+`hasErrors()` will return a named list if any errors were encountered in the data (given `exitAnalysisIfErrors` is not `TRUE`). Each type of check that fails, will be included in the list as `checkName=varsThatFailed`, so in our previous example this would be `variance='dependentVar'`. In addition it will include a `message='...'` entry with the error message. If no errors were encountered it simply returns `FALSE`.
+
+##### General use
+
+The function could be included at the start of the analysis if there are any 'dealbreakers', so to say; problems with the data (or selected options) that would render the output completely useless. The argument `exitAnalysisIfErrors` should be set to `TRUE` and for the remainder of the analysis you will not have to worry about implications of the 'dealbreakers' any longer.
+In addition, the function may be used when data errors only have a local effect. For example in an independent samples t-test with multiple dependent variables, if only one of the dependent variables contains infinity, the t-test for the other dependent variable can still be performed. `.hasErrors()` can be run multiple times in this case with `message` set to `short`. Alternatively, the function could be called just once for all variables and the named list it returns can be queried. The message can then be build by directly calling the function  `.generateErrorMessage()`.
+
+`.generateErrorMessage()` takes the arguments:
+
+- `type`: single character string containing one of the `.hasError()` types. [required]
+- `variables`: character vector of variables that failed the check. [optional]
+- `groupingVars`: character vector of variables that were used to group the dependent variables on. [optional]
+- `includeOpening`: TRUE or FALSE [the default]. [optional]
+
+#### Adding new error checks
+
+It is possible you want to check something that is not implemented. To prevent everyone from reinventing the wheel, it should be added to `hasErrors()`, so others may use it in the future. There are 3 steps to implementing a new check:
+
+1. Write a function that can perform the check and place it at the bottom of the file `commonerrorcheck.R`. Try to make it as generic as possible so it could also be applied in other situations than your own. Some things to bear in mind:
+  * Its name could, in principle, be whatever you like. But to be consistent and avoid masking, start with .check followed by some short statement in camelCase. 
+  * It may take as many or as few arguments as you like. They can be optional or required, if they are optional they may be omitted in the call to `.hasErrors()`. The only requirement is that the check function takes `...` because every check will be called with all available arguments. Note that although `.hasErrors()` requires arguments to be prefixed, they do not need to be prefixed in the actual function definition.
+  * It must return a named list with at bare minimum the entry `error`. If your check determines there is an error it should be set to `TRUE` and otherwise to `FALSE`. If your function performs a check on the data (rather than on options), it should also have the entry `errorVars` which contains the variable names that failed your check.
+  An example:
+  
+  ```
+  # This is a short description of my check
+  .checkImaginary <- function(dataset, target, someArg=NULL, ...) {
+      result <- list(error=FALSE, errorVars=NULL)
+      
+      for (v in target) {
+      
+          *[some code]*
+        
+          if (imaginaryError) {
+              result$error <- TRUE
+              result$errorVars <- c(result$errorVars, v)
+          }
+        
+      }
+      
+      return(result)
+      
+  }
+  ```
+2. Add a new entry to the `checks` list found at the top of `hasErrors()`. The index name is how your error check can be called from an analysis. The entry has a `callback` which is the name of your function and the option `addGrouping` which specifies if your check allows grouping and if this should be reflected in the error message.
+
+3. Create a message in `.messages()`, this function can be found in `commonmessages.R`. Variables must be put between {{}}. These will be automatically parsed.
