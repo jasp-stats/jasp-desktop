@@ -7,7 +7,7 @@
   messages$error$factorLevels <- "Number of factor levels {{factorLevels.operator}} {{factorLevels.amount}} in {{variables}}"
   messages$error$variance <- "Variance = {{variance.equalTo}} in {{variables}}"
   messages$error$observations <- "Number of observations < {{observations.lessThan}} in {{variables}}"
-  messages$error$unexpected <- "This analysis terminated unexpectedly.<br><br>Error in {{error}}<br><br><div class=stack-trace-selector>Stack trace:</div><div class=stack-trace>{{stackTrace}}</div><br>To receive assistence with this problem, please report the message above at: https://jasp-stats.org/bug-reports"
+  messages$error$exception <- "This analysis terminated unexpectedly.<br><br>{{error}}<br><div class=stack-trace-selector><span>Stack trace</span><div class=stack-trace-arrow></div></div><div class=stack-trace>{{stackTrace}}</div><br>To receive assistence with this problem, please report the message above at: https://jasp-stats.org/bug-reports"
   
   return(messages[[type]][[id]])
 }

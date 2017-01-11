@@ -24,7 +24,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	results <- init[["results"]]
 	dataset <- init[["dataset"]]
 	
-	if (perform == 'run' && length(options$variables) != 0 && options$groupingVariable != '') {
+	if (length(options$variables) != 0 && options$groupingVariable != '') {
 		errors <- .hasErrors(dataset, perform, type = 'factorLevels',
 												factorLevels.target = options$groupingVariable, factorLevels.operator='!=', factorLevels.amount = 2,
 												exitAnalysisIfErrors = TRUE)
