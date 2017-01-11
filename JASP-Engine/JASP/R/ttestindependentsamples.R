@@ -23,6 +23,12 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 	results <- init[["results"]]
 	dataset <- init[["dataset"]]
+	
+	if (perform == 'run' && length(options$variables) != 0 && options$groupingVariable != '') {
+		errors <- .hasErrors(dataset, perform, type = 'factorLevels',
+												factorLevels.target = options$groupingVariable, factorLevels.operator='!=', factorLevels.amount = 2,
+												exitAnalysisIfErrors = TRUE)
+	}
 
 	## call the specific independent T-Test functions
 	results[["ttest"]] <- .ttestIndependentSamplesTTest(dataset, options, perform)
@@ -111,7 +117,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
   ## add max(BF_10) from commonBF
 	if (options$VovkSellkeMPR){
 		.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-		<em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
+	  <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value, the maximum
 		possible odds in favor of H\u2081 over H\u2080 equals
 		1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
 		(Sellke, Bayarri, & Berger, 2001).")
@@ -215,108 +221,121 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				if (!currentTest) {
 					next
 				}
+				
+				errorMessage <- NULL
+				row.footnotes <- NULL
+				
+				errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+														all.target = variable, all.grouping = options$groupingVariable,
+														observations.lessThan = 1)
 
-				## try to run the test, catching eventual errors
-				row <- try(silent = FALSE, expr = {
+				if (!identical(errors, FALSE)) {
+					errorMessage <- errors$message
+				} else {
+					## try to run the test, catching eventual errors
+					row <- try(silent = FALSE, expr = {
 
-					row.footnotes <- NULL
-					ci <- options$confidenceIntervalInterval # what a mouthful!
-					f <- as.formula(paste(.v(variable), "~",
-										  .v(options$groupingVariable)))
+						
+						ci <- options$confidenceIntervalInterval # what a mouthful!
+						f <- as.formula(paste(.v(variable), "~",
+											  .v(options$groupingVariable)))
 
-					if (test == 3) {
-						whatTest <- "Mann-Whitney"
-						r <- stats::wilcox.test(f, data = dataset,
-												alternative = direction,
-												conf.int = TRUE, conf.level = ci, paired = FALSE)
-						df <- ""
-						m <- as.numeric(r$estimate)
+						if (test == 3) {
+							whatTest <- "Mann-Whitney"
+							r <- stats::wilcox.test(f, data = dataset,
+													alternative = direction,
+													conf.int = TRUE, conf.level = ci, paired = FALSE)
+							df <- ""
+							m <- as.numeric(r$estimate)
 
-					} else {
-						whatTest <- ifelse(test == 2, "Welch's", "Student's")
-						r <- stats::t.test(f, data = dataset, alternative = direction,
-										   var.equal = test != 2, conf.level = ci, paired = FALSE)
+						} else {
+							whatTest <- ifelse(test == 2, "Welch's", "Student's")
+							r <- stats::t.test(f, data = dataset, alternative = direction,
+											   var.equal = test != 2, conf.level = ci, paired = FALSE)
 
-						df <- as.numeric(r$parameter)
-						m <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
-					}
-
-					## if the user doesn't want a Welch's t-test,
-					## give a footnote indicating if the equality of variance
-					## assumption is met; seems like in this setting there is no
-					## sampling plan, thus the p-value is not defined. haha!
-					if (!wantsWelchs && wantsStudents) {
-						levene <- car::leveneTest(variableData, groupingData, "mean")
-
-						## arbitrary cut-offs are arbitrary
-						if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
-							error <- paste0("Levene's test is significant (p < .05), ",
-											"suggesting a violation of the equal ",
-											"variance assumption")
-							foot.index <- .addFootnote(footnotes, error)
-							row.footnotes <- list(p = list(foot.index))
-
+							df <- as.numeric(r$parameter)
+							m <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
 						}
+
+						## if the user doesn't want a Welch's t-test,
+						## give a footnote indicating if the equality of variance
+						## assumption is met; seems like in this setting there is no
+						## sampling plan, thus the p-value is not defined. haha!
+						if (!wantsWelchs && wantsStudents) {
+							levene <- car::leveneTest(variableData, groupingData, "mean")
+
+							## arbitrary cut-offs are arbitrary
+							if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
+								error <- paste0("Levene's test is significant (p < .05), ",
+												"suggesting a violation of the equal ",
+												"variance assumption")
+								foot.index <- .addFootnote(footnotes, error)
+								row.footnotes <- list(p = list(foot.index))
+
+							}
+						}
+
+						## same for all t-tests
+						p <- as.numeric(r$p.value)
+						stat <- as.numeric(r$statistic)
+						y <- dataset[[ .v(variable) ]]
+						groups <- dataset[[ .v(options$groupingVariable) ]]
+
+						sds <- tapply(y, groups, sd, na.rm = TRUE)
+						ms <- tapply(y, groups, mean, na.rm = TRUE)
+						ns <- tapply(y, groups, function(x) length(na.omit(x)))
+
+						num <- (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
+						sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
+						d <- as.numeric((ms[1] - ms[2]) / sdPooled) # Cohen's d
+
+						sed <- .clean(as.numeric(sqrt(sds[1]^2 / ns[1] + sds[2]^2 / ns[2])))
+						ciLow <- .clean(r$conf.int[1])
+						ciUp <- .clean(r$conf.int[2])
+
+						# this will be the results object
+						res <- list(v = variable, test = whatTest, df = df, p = p,
+												md = m, d = d, lowerCI = ciLow,
+												upperCI = ciUp, sed = sed, .footnotes = row.footnotes)
+						res[[testStat]] <- stat
+						if (options$VovkSellkeMPR){
+							res[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
+						}
+						res
+					 })
+					 
+					## if there has been an error in computing the test, log it as footnote
+					if (class(row) == "try-error") {
+						errorMessage <- .extractErrorMessage(row)
+
+						if (errorMessage == "missing value where TRUE/FALSE needed" &&
+							any(is.finite(variableData) == FALSE)) {
+
+							err <- "t-statistic is undefined - the dependent variable contains infinity"
+
+						} else if (errorMessage == "grouping factor must have exactly 2 levels") {
+
+							# We know that the grouping factor *does* have two levels,
+							# because we've checked this earlier on. This error means
+							# that all of one factor has been excluded
+							# because of missing values in the dependent
+							err <- paste0("t-statistic is undefined - the grouping ",
+										  "variable contains less than two levels once ",
+										  "missing values in the dependent are excluded")
+
+						} else if (errorMessage == "data are essentially constant") {
+						  errorMessage <- paste0("t-statistic is undefined - one or both ",
+												 "levels of the dependent contains all the ",
+												 "same value (zero variance)")
+
+						} else if (errorMessage == "not enough observations") {
+						  errorMessage <- paste0("t-statistic is undefined - one or both levels ",
+												" of the dependent contain too few observations")
+						}
+						
 					}
-
-					## same for all t-tests
-					p <- as.numeric(r$p.value)
-					stat <- as.numeric(r$statistic)
-					y <- dataset[[ .v(variable) ]]
-					groups <- dataset[[ .v(options$groupingVariable) ]]
-
-					sds <- tapply(y, groups, sd, na.rm = TRUE)
-					ms <- tapply(y, groups, mean, na.rm = TRUE)
-					ns <- tapply(y, groups, function(x) length(na.omit(x)))
-
-					num <- (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
-					sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
-					d <- as.numeric((ms[1] - ms[2]) / sdPooled) # Cohen's d
-
-					sed <- .clean(as.numeric(sqrt(sds[1]^2 / ns[1] + sds[2]^2 / ns[2])))
-					ciLow <- .clean(r$conf.int[1])
-					ciUp <- .clean(r$conf.int[2])
-
-					# this will be the results object
-					res <- list(v = variable, test = whatTest, df = df, p = p,
-											md = m, d = d, lowerCI = ciLow,
-											upperCI = ciUp, sed = sed, .footnotes = row.footnotes)
-					res[[testStat]] <- stat
-					if (options$VovkSellkeMPR){
-						res[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
-					}
-					res
-				 })
-
-				## if there has been an error in computing the test, log it as footnote
-				if (class(row) == "try-error") {
-					errorMessage <- .extractErrorMessage(row)
-
-					if (errorMessage == "missing value where TRUE/FALSE needed" &&
-						any(is.finite(variableData) == FALSE)) {
-
-						err <- "t-statistic is undefined - the dependent variable contains infinity"
-
-					} else if (errorMessage == "grouping factor must have exactly 2 levels") {
-
-						# We know that the grouping factor *does* have two levels,
-						# because we've checked this earlier on. This error means
-						# that all of one factor has been excluded
-						# because of missing values in the dependent
-						err <- paste0("t-statistic is undefined - the grouping ",
-									  "variable contains less than two levels once ",
-									  "missing values in the dependent are excluded")
-
-					} else if (errorMessage == "data are essentially constant") {
-					  errorMessage <- paste0("t-statistic is undefined - one or both ",
-											 "levels of the dependent contains all the ",
-											 "same value (zero variance)")
-
-					} else if (errorMessage == "not enough observations") {
-					  errorMessage <- paste0("t-statistic is undefined - one or both levels ",
-											" of the dependent contain too few observations")
-					}
-
+				}
+				if (!is.null(errorMessage)) {
 					## log the error in a footnote
 					index <- .addFootnote(footnotes, errorMessage)
 					row.footnotes <- list(t = list(index))
