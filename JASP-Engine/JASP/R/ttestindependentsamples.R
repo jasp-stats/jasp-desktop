@@ -26,7 +26,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	
 	if (length(options$variables) != 0 && options$groupingVariable != '') {
 		errors <- .hasErrors(dataset, perform, type = 'factorLevels',
-												factorLevels.target = options$groupingVariable, factorLevels.operator='!=', factorLevels.amount = 2,
+												factorLevels.target = options$groupingVariable, factorLevels.amount = '!= 2',
 												exitAnalysisIfErrors = TRUE)
 	}
 
@@ -175,14 +175,6 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	if (ready) {
 		levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
 
-		## if there aren't exactly two levels, abort the mission
-		if (length(levels) != 2) {
-			error <- "The Grouping Variable must have 2 levels"
-			ttest[["error"]] <- list(errorType = "badData", errorMessage = error)
-			ttest[["data"]] <- ttest.rows
-			return(ttest)
-		}
-
 		## does the user have a direction in mind?
 		if (options$hypothesis == "groupOneGreater") {
 
@@ -209,6 +201,10 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 		## for each variable specified, run each test that the user wants
 		for (variable in options$variables) {
+			
+			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
+													all.target = variable, all.grouping = options$groupingVariable,
+													observations.amount = '< 1')
 
 			variableData <- dataset[[ .v(variable) ]]
 
@@ -224,10 +220,6 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				
 				errorMessage <- NULL
 				row.footnotes <- NULL
-				
-				errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-														all.target = variable, all.grouping = options$groupingVariable,
-														observations.lessThan = 1)
 
 				if (!identical(errors, FALSE)) {
 					errorMessage <- errors$message
@@ -266,9 +258,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 							## arbitrary cut-offs are arbitrary
 							if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
-								error <- paste0("Levene's test is significant (p < .05), ",
-												"suggesting a violation of the equal ",
-												"variance assumption")
+								error <- .messages('notes', 'leveneSign')
 								foot.index <- .addFootnote(footnotes, error)
 								row.footnotes <- list(p = list(foot.index))
 
@@ -307,34 +297,9 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 					## if there has been an error in computing the test, log it as footnote
 					if (class(row) == "try-error") {
 						errorMessage <- .extractErrorMessage(row)
-
-						if (errorMessage == "missing value where TRUE/FALSE needed" &&
-							any(is.finite(variableData) == FALSE)) {
-
-							err <- "t-statistic is undefined - the dependent variable contains infinity"
-
-						} else if (errorMessage == "grouping factor must have exactly 2 levels") {
-
-							# We know that the grouping factor *does* have two levels,
-							# because we've checked this earlier on. This error means
-							# that all of one factor has been excluded
-							# because of missing values in the dependent
-							err <- paste0("t-statistic is undefined - the grouping ",
-										  "variable contains less than two levels once ",
-										  "missing values in the dependent are excluded")
-
-						} else if (errorMessage == "data are essentially constant") {
-						  errorMessage <- paste0("t-statistic is undefined - one or both ",
-												 "levels of the dependent contains all the ",
-												 "same value (zero variance)")
-
-						} else if (errorMessage == "not enough observations") {
-						  errorMessage <- paste0("t-statistic is undefined - one or both levels ",
-												" of the dependent contain too few observations")
-						}
-						
 					}
 				}
+				
 				if (!is.null(errorMessage)) {
 					## log the error in a footnote
 					index <- .addFootnote(footnotes, errorMessage)
@@ -434,68 +399,61 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	if (perform == "run" && groups != "") {
 		levels <- base::levels(dataset[[ .v(groups) ]])
 
-		## if people don't know what a t-test is...
-		if (length(levels) != 2) {
-			descriptives[["error"]] <- list(errorType = "badData")
+		rowNo <- 1
+		groupingData <- dataset[[.v(groups)]]
 
-		} else {
+		## do the whole loop as above again
+		for (variable in variables) {
 
-			rowNo <- 1
-			groupingData <- dataset[[.v(groups)]]
+			# if everything is alright, add stuff to data
+			if (isAllright(variable, options, state, diff)) {
 
-			## do the whole loop as above again
-			for (variable in variables) {
+				stateDat <- state$results$descriptives$data
+				descriptivesVariables <- as.character(length(stateDat))
 
-				# if everything is alright, add stuff to data
-				if (isAllright(variable, options, state, diff)) {
+				for (i in seq_along(stateDat))
+					descriptivesVariables[i] <- stateDat[[i]]$variable
 
-					stateDat <- state$results$descriptives$data
-					descriptivesVariables <- as.character(length(stateDat))
+				indices <- which(descriptivesVariables == variable)
 
-					for (i in seq_along(stateDat))
-						descriptivesVariables[i] <- stateDat[[i]]$variable
+				data[[rowNo]] <- stateDat[[indices[1]]]
+				data[[rowNo]] <- stateDat[[indices[2]]]
 
-					indices <- which(descriptivesVariables == variable)
+				rowNo <- rowNo + 2
 
-					data[[rowNo]] <- stateDat[[indices[1]]]
-					data[[rowNo]] <- stateDat[[indices[2]]]
+			} else {
 
-					rowNo <- rowNo + 2
+				for (i in 1:2) {
 
-				} else {
+				  level <- levels[i]
+				  variableData <- dataset[[.v(variable)]]
 
-					for (i in 1:2) {
+				  groupData <- variableData[groupingData == level]
+				  groupDataOm <- na.omit(groupData)
 
-					  level <- levels[i]
-					  variableData <- dataset[[.v(variable)]]
+				  if (class(groupDataOm) != "factor") {
 
-					  groupData <- variableData[groupingData == level]
-					  groupDataOm <- na.omit(groupData)
+					  n <- .clean(length(groupDataOm))
+					  mean <- .clean(mean(groupDataOm))
+					  std <- .clean(sd(groupDataOm))
+					  sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
 
-					  if (class(groupDataOm) != "factor") {
+					  result <- list(variable = variable, group = level,
+									 N = n, mean = mean, sd = std, se = sem)
 
-						  n <- .clean(length(groupDataOm))
-						  mean <- .clean(mean(groupDataOm))
-						  std <- .clean(sd(groupDataOm))
-						  sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
+				  } else {
 
-						  result <- list(variable = variable, group = level,
-										 N = n, mean = mean, sd = std, se = sem)
+					n <- .clean(length(groupDataOm))
+					result <- list(variable = variable, group = "",
+								   N = n, mean = "", sd = "", se = "")
+				}
 
-					  } else {
+				if (i == 1) {
+					result[[".isNewGroup"]] <- TRUE
+				}
 
-						n <- .clean(length(groupDataOm))
-						result <- list(variable = variable, group = "",
-									   N = n, mean = "", sd = "", se = "")
-					}
-
-					if (i == 1) {
-						result[[".isNewGroup"]] <- TRUE
-					}
-
-					data[[rowNo]] <- result
-					rowNo <- rowNo + 1
-					}
+				data[[rowNo]] <- result
+				rowNo <- rowNo + 1
 				}
 			}
 		}
@@ -534,42 +492,36 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 		levels <- base::levels(dataset[[ .v(groups) ]])
 
-		if (length(levels) != 2) {
-			levenes[["error"]] <- list(errorType = "badData")
+		rowNo <- 1
 
-		} else {
+		for (variable in variables) {
 
-			rowNo <- 1
+			result <- try(silent = TRUE, expr = {
 
-			for (variable in variables) {
+			  levene <- car::leveneTest(dataset[[ .v(variable) ]],
+										dataset[[ .v(groups) ]], "mean")
 
-				result <- try(silent = TRUE, expr = {
+			  F <- .clean(levene[1, "F value"])
+			  df <- .clean(levene[1, "Df"])
+			  p <- .clean(levene[1, "Pr(>F)"])
 
-				  levene <- car::leveneTest(dataset[[ .v(variable) ]],
-											dataset[[ .v(groups) ]], "mean")
+			  row <- list(variable = variable, F = F, df = df, p = p)
 
-				  F <- .clean(levene[1, "F value"])
-				  df <- .clean(levene[1, "Df"])
-				  p <- .clean(levene[1, "Pr(>F)"])
+			  if (is.na(levene[1, "F value"])) {
+				  note <- "F-statistic could not be calculated"
+				  index <- .addFootnote(footnotes, note)
+				  row[[".footnotes"]] <- list(F = list(index))
+			  }
 
-				  row <- list(variable = variable, F = F, df = df, p = p)
+			  row
+			})
 
-				  if (is.na(levene[1, "F value"])) {
-					  note <- "F-statistic could not be calculated"
-					  index <- .addFootnote(footnotes, note)
-					  row[[".footnotes"]] <- list(F = list(index))
-				  }
-
-				  row
-				})
-
-				if (class(result) == "try-error") {
-				  result <- list(variable = variable, F = "", df = "", p = "")
-				}
-
-				data[[rowNo]] <- result
-				rowNo <- rowNo + 1
+			if (class(result) == "try-error") {
+			  result <- list(variable = variable, F = "", df = "", p = "")
 			}
+
+			data[[rowNo]] <- result
+			rowNo <- rowNo + 1
 		}
 	}
 	levenes[["data"]] <- data
@@ -624,13 +576,13 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				error <- FALSE
 
 				if (length(data) < 3) {
-					err <- "Too few observations (N < 3) to compute statistic reliably."
+					err <- .generateErrorMessage(type='levene', observations.amount='< 3', variables=variable, groupingVars=factor)
 					foot.index <- .addFootnote(footnotes, err)
 					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 					error <- TRUE
 
 				} else if (length(data) > 5000) {
-					err <- "Too many observations (N > 5000) to compute statistic reliably."
+					err <- .generateErrorMessage(type='levene', observations.amount='> 5000', variables=variable, groupingVars=factor)
 					foot.index <- .addFootnote(footnotes, err)
 					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 					error <- TRUE

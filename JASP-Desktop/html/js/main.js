@@ -26,8 +26,9 @@ $(document).ready(function () {
 	var showInstructions = false;
 	
 	$("#results").on("click", ".stack-trace-selector", function(e) {
-		e.stopImmediatePropagation();
+		e.stopPropagation();
 		$(this).next(".stack-trace").slideToggle();
+		return false;
 	});
 
 
