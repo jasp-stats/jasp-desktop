@@ -473,6 +473,15 @@ These arguments are always prefixed by their type name. So to check if the varia
 
 `.hasErrors(dataset=dataset, perform=perform, type='variance', variance.target='dependentVar')`
 
+If we would also like to know if the grouping variable had exactly two factor levels and we wanted to exit if we found zero variance or something other than two levels:
+
+```
+.hasErrors(dataset=dataset, perform=perform, type=c('factorLevels', 'variance'), 
+	factorLevels.target='groupingVar', factorLevels.amount='!= 2', 
+	variance.target='dependentVar', 
+	exitAnalysisIfErrors=TRUE)`
+```
+
 All check arguments:
 
 | type         | argument      | description                                        |
@@ -496,13 +505,13 @@ All check arguments:
 |              | amount\*      | (vector of) string(s) (e.g. "> 5000")              |
 \* = required argument
 
-Note that when no target is provided for an error check, it will by default go over every variable in the dataset.
+Note that when no target is provided to an error check, it will by default go over every variable in the dataset.
 
-To prevent very long function calls, we can also prefix arguments by `all.` (e.g. all.grouping=options$fixedFactor). When this prefix is used `hasErrors()` will call each check with that specific grouping variable. Granted the check actually needs that parameter.
+To prevent very long function calls, we can also prefix arguments by `all.` (e.g. all.grouping=options$fixedFactor). When this prefix is used `.hasErrors()` will call each check with that specific grouping variable. Granted the check actually needs that parameter.
 
 ##### The return value
 
-`hasErrors()` will return a named list if any errors were encountered in the data (given `exitAnalysisIfErrors` is not `TRUE`). Each type of check that fails, will be included in the list as `checkName=varsThatFailed`, so in our previous example this would be `variance='dependentVar'`. In addition it will include a `message='...'` entry with the error message. If no errors were encountered it simply returns `FALSE`.
+`.hasErrors()` will return a named list if any errors were encountered in the data (given `exitAnalysisIfErrors` is not `TRUE`). Each type of check that fails, will be included in the list as `checkName=varsThatFailed`, so in our previous example this would be `variance='dependentVar'`. In addition it will include a `message='...'` entry with the error message. If no errors were encountered it simply returns `FALSE`.
 
 ##### General use
 
@@ -511,14 +520,14 @@ In addition, the function may be used when data errors only have a local effect.
 
 `.generateErrorMessage()` takes the arguments:
 
-- `type`: single character string containing one of the `.hasError()` types. [required]
+- `type`: single character string containing one of the `.hasErrors()` types. [required]
 - `variables`: character vector of variables that failed the check. [optional]
-- `groupingVars`: character vector of variables that were used to group the dependent variables on. [optional]
+- `grouping`: character vector of variables that were used to group the dependent variables on. [optional]
 - `includeOpening`: TRUE or FALSE [the default]. [optional]
 
 #### Adding new error checks
 
-It is possible you want to check something that is not implemented. To prevent everyone from reinventing the wheel, it should be added to `hasErrors()`, so others may use it in the future. There are 3 steps to implementing a new check:
+It is possible you want to check something that is not implemented. To prevent everyone from reinventing the wheel, it should be added to `.hasErrors()`, so others may use it in the future. There are 3 steps to implementing a new check:
 
 1. Write a function that can perform the check and place it at the bottom of the file `commonerrorcheck.R`. Try to make it as generic as possible so it could also be applied in other situations than your own. Some things to bear in mind:
   * Its name could, in principle, be whatever you like. But to be consistent and avoid masking, start with .check followed by some short statement in camelCase. 
@@ -546,6 +555,6 @@ It is possible you want to check something that is not implemented. To prevent e
       
   }
   ```
-2. Add a new entry to the `checks` list found at the top of `hasErrors()`. The index name is how your error check can be called from an analysis. The entry has a `callback` which is the name of your function and the option `addGrouping` which specifies if your check allows grouping and if this should be reflected in the error message.
+2. Add a new entry to the `checks` list found at the top of `hasErrors()`. The index name determines how your error check can be called from an analysis. The entry needs a named list with `callback` which should be assigned the name of the function you just created. It should also have the option `addGroupingMsg` if your check allows grouping; this option adds the line "after grouping on {{grouping}}" when set to `TRUE` and grouping variables are found.
 
-3. Create a message in `.messages()`, this function can be found in `commonmessages.R`. Variables must be put between {{}}. These will be automatically parsed.
+3. Create a message in `.messages()`, this function can be found in `commonmessages.R`. Variables must be put between {{}}. These will be automatically parsed in `.generateErrorMessage()`.
