@@ -54,7 +54,7 @@ Column::Column(managed_shared_memory *mem) :
 	id = ++count;
 	_mem = mem;
 	_rowCount = 0;
-	_columnType = Column::ColumnTypeNominal;	
+	_columnType = Column::ColumnTypeNominal;
 }
 
 Column::Column(const Column &col) :
@@ -243,12 +243,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 
 void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
 {
-	_labels.clear();
-
-	BOOST_FOREACH(int value, uniqueValues)
-	{
-		_labels.add(value);
-	}
+	_labels.sync(uniqueValues);
 
 	Ints::iterator intInputItr = AsInts.begin();
 
@@ -294,10 +289,7 @@ void Column::setColumnAsNominalString(const vector<string> &values)
 		}
 	}
 
-	_labels.clear();
-
-	BOOST_FOREACH (string &value, cases)
-		_labels.add(value);
+	std::map<string, int> map = _labels.syncStrings(cases);
 
 	Column::Ints::iterator intInputItr = AsInts.begin();
 
@@ -306,8 +298,7 @@ void Column::setColumnAsNominalString(const vector<string> &values)
 		if (value == "" || value == " ")
 			*intInputItr = INT_MIN;
 		else
-			*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
-
+			*intInputItr = map[value];
 		intInputItr++;
 	}
 
