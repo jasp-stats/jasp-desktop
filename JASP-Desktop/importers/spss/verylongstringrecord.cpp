@@ -18,7 +18,7 @@
 #include "verylongstringrecord.h"
 #include "spssimportdataset.h"
 
-#include "spssutils.h"
+#include "../importerutils.h"
 
 using namespace std;
 using namespace spss;

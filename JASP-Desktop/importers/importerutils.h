@@ -15,8 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef SPSSUTILS_H
-#define SPSSUTILS_H
+#ifndef IMPORTERUTILS_H
+#define IMPORTERUTILS_H 1
 
 /*
  * Macros to build attriutes of a class.

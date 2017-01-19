@@ -17,8 +17,8 @@
 
 #include "spssimportdataset.h"
 #include "fileheaderrecord.h"
-#include "spssutils.h"
-#include "stringutils.h"
+#include "../importerutils.h"
+#include "../importerutils.h"
 #include <math.h>
 #include <QDateTime>
 

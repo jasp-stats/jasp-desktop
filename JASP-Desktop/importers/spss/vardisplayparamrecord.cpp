@@ -17,7 +17,7 @@
 
 
 #include "vardisplayparamrecord.h"
-#include "spssutils.h"
+#include "../importerutils.h"
 #include "spssimportdataset.h"
 
 using namespace std;

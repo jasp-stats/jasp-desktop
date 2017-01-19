@@ -20,7 +20,7 @@
 
 
 #include "systemfileformat.h"
-#include "spssutils.h"
+#include "../importerutils.h"
 #include "numericconverter.h"
 #include "../spssimporter.h"
 
