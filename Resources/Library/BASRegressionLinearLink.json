@@ -31,26 +31,14 @@
 			"type": "Boolean"
 		},
 		{
-			"name": "effectsStepwise",
-			"type": "Boolean"
-		},
-		{
-			"name": "posteriorEstimates",
-			"type": "Boolean"
-		},
-		{
-			"name": "posteriorDistributions",
-			"type": "Boolean"
-		},
-		{
 			"options": [ "BF10", "BF01", "LogBF10" ],
 			"default": "BF10",
 			"name": "bayesFactorType",
 			"type": "List"
 		},
 		{
-			"options": ["AIC", "BIC", "g_prior", "zs_null", "zs_full", "hyper_g", "hyper_g_laplace", "hyper_g_n", "eb_local", "eb_global"],
-			"default": "zs_null",
+			"options": ["AIC", "BIC", "EB-global", "EB-local", "g-prior", "hyper-g", "hyper-g-laplace", "hyper-g-n", "ZS-full", "ZS-null"],
+			"default": "BIC",
 			"name": "priorRegressionCoefficients",
 			"type": "List"
 		},
@@ -70,29 +58,10 @@
 			"default": 0
 		},
 		{
-			"options": ["uniform", "beta.binomial"],
-			"default": "beta.binomial",
+			"options": ["beta.binomial", "uniform"],
+			"default": "uniform",
 			"name": "modelPrior",
 			"type": "List"
-		},
-		{
-			"name": "posteriorEstimates",
-			"type": "Boolean"
-		},
-		{
-			"name": "posteriorEstimatesCredibleIntervalInterval",
-			"type": "Number",
-			"format": "%",
-			"value": 0.95,
-			"min": 0.5,
-			"max": 0.999
-		},
-		{
-			"name": "posteriorEstimatesMCMCIterations",
-			"type": "Number",
-			"value": 10000,
-			"min": 1,
-			"max": 1000000
 		},
 		{
 			"name": "priorCovariates",
@@ -100,6 +69,23 @@
 			"value": 0.354,
 			"min": 0,
 			"max": 2
+		},
+		{
+			"name": "gPriorParameter",
+			"type": "Number",
+			"value": 3,
+		},
+		{
+			"name": "betaBinomialParamA",
+			"type": "Number",
+			"value": 1.000,
+			"min": 0
+		},
+		{
+			"name": "betaBinomialParamB",
+			"type": "Number",
+			"value": 1.000,
+			"min": 0
 		}
 	]
 }

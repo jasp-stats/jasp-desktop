@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016 University of Amsterdam
+# Copyright (C) 2017 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,9 +17,6 @@
 
 BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 									callback = function(...) list(status = "ok"), ...) {
-	print("________________________________________")
-	print("BAS REgression")
-	print("________________________________________")
 	# dependent <- unlist(options$dependent)
 	# covariates <- unlist(options$covariates)
 	#
@@ -41,27 +38,33 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	# 	}
 	# }
 	run <- (perform == "run")
-	state <- .retrieveState ()
-	if (!is.null (state)) {
+	state <- .retrieveState()
+	if (!is.null(state)) {
 		change <- .diff(options, state$options)
-		if (!base::identical(change, FALSE) && (change$dependent || change$modelTerms ||
-			change$priorCovariates)) {
+		if (!base::identical(change, FALSE) && (change$dependent || change$priorCovariates)) {
 			state <- NULL
 		} else {
 			perform <- "run"
 		}
 	}
+
 	# data
-	if (is.null(state)) {
+	# if (is.null(state)) {
+	# 	dataset <- .readBayesianLinearModelData(dataset, options, perform)
+	# }
+	if (length(options$covariates) > 0 && options$dependent != "") {
+		# FIXME: this is inefficient. Read only the new columns.
 		dataset <- .readBayesianLinearModelData(dataset, options, perform)
 	}
 
 	if (length(options$covariates) > 0 && options$dependent != "" && perform == "run") {
-		a <- .v(options$covariates)
-		b <- .v(options$dependent)
-		p <- as.formula(paste(b, "~", paste(a, collapse="+")))
-
-		bas_lm <- BAS::bas.lm(formula = p, data = dataset, prior='BIC', modelprior = BAS::beta.binomial(1,1))
+		bas_lm <- .calculateBASRegressionLinear(
+			run = run,
+			state = state,
+			diff = diff,
+			options = options,
+			dataset = dataset
+		)
 	}
 
 	# Populate the output table
@@ -131,4 +134,83 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 				state = state,
 				keep = keep)
 			)
+}
+
+
+.calculateBASRegressionLinear <- function(run, state, diff, options, dataset) {
+	# Bayesian Adaptive Sampling without replacement for Variable selection
+	# in Linear Models
+	#
+	# Args:
+	#   run: state of analysis - init or run
+	#   options: a list of user options
+	#   state: previous options state
+	#   diff: diff between previous and current options
+	#   dataset: dataset input by user
+	#
+	# Return:
+	#
+
+	# generate the formula
+	covariates <- .v(options$covariates)
+	dependent <- .v(options$dependent)
+	formula <- as.formula(paste(dependent, "~", paste(covariates, collapse="+")))
+
+	# FIXME: betaBinomialParamA and B are NULL
+	# select the type of model prior
+	if (options$modelPrior == "beta.binomial") {
+		modelPrior = BAS::beta.binomial(options$betaBinomialParamA, options$betaBinomialParamB)
+	} else if (options$modelPrior == "uniform") {
+		modelPrior = BAS::uniform()
+	}
+
+	# iterations for MCMC
+	MCMC.iterations <- NULL
+	if (grepl("MCMC", options$samplingMethod, fixed = TRUE)) {
+		MCMC.iterations <- options$posteriorEstimatesMCMCIterations
+		# if iterations is not set by user
+		if (MCMC.iterations == 0 || is.null(MCMC.iterations)) {
+			MCMC.iterations <- options$numberOfModels * 10
+		}
+	}
+
+	# hyper parameter for g-prior
+	alpha <- switch(
+		options$priorRegressionCoefficients,
+		g_prior =,
+		hyper_g =,
+		hyper_g_laplace =,
+		zs_null =,
+		zs_full = options$gPriorParameter,
+		NULL
+	)
+
+	# print(formula)
+	# print(options$priorRegressionCoefficients)
+	# print(dataset)
+	# print(alpha)
+	# print(modelPrior)
+	# print(options$samplingMethod)
+
+	print(options$betaBinomialParamB)
+	print(options$betaBinomialParamA)
+
+	# FIXME: sampling method currently does not allow specification of MCMC+BAS
+	# FIXME: bestmodel is not given as a choice
+
+	# Bayesian Adaptive Sampling
+	bas_lm <- BAS::bas.lm(
+		formula = formula,
+		data = dataset,
+		prior = options$priorRegressionCoefficients,
+		alpha = alpha,
+		modelprior = modelPrior,
+		n.models = options$numberOfModels,
+		method = options$samplingMethod,
+		MCMC.iterations = options$iterationsMCMC
+	)
+
+	print(bas_lm)
+
+	return (bas_lm)
 }

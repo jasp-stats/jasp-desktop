@@ -49,8 +49,6 @@ private:
 	TableModelVariablesAssigned *_covariatesListModel;
 	TableModelVariablesAssigned *_wlsWeightsListModel;
 
-	TableModelAnovaModel *_anovaModel;
-
 	TableModelVariablesAvailable *_factorsAvailableListModel;
 };
 

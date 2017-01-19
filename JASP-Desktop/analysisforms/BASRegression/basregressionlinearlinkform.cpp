@@ -19,6 +19,7 @@
 #include "basregressionlinearlinkform.h"
 #include "ui_basregressionlinearlinkform.h"
 
+
 BASRegressionLinearLinkForm::BASRegressionLinearLinkForm(QWidget *parent) :
 	AnalysisForm("BASRegressionLinearLinkForm", parent),
 	ui(new Ui::BASRegressionLinearLinkForm)
@@ -44,19 +45,10 @@ BASRegressionLinearLinkForm::BASRegressionLinearLinkForm(QWidget *parent) :
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
-	_anovaModel = new TableModelAnovaModel(this);
-	_anovaModel->setPiecesCanBeAssigned(false);
-	ui->modelTerms->setModel(_anovaModel);
-	ui->modelTerms->hide();
-
 	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
 	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_covariatesListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
-	connect(_covariatesListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	ui->advancedOptions->hide();
-
-	ui->priorCovariates->setLabel("r scale covariates");
 }
 
 BASRegressionLinearLinkForm::~BASRegressionLinearLinkForm()
@@ -67,12 +59,6 @@ BASRegressionLinearLinkForm::~BASRegressionLinearLinkForm()
 void BASRegressionLinearLinkForm:: bindTo(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::bindTo(options, dataSet);
-
-	factorsChanging();
-
-	_anovaModel->setVariables(Terms(), Terms(), _covariatesListModel->assigned());
-
-	factorsChanged();
 }
 
 void BASRegressionLinearLinkForm::factorsChanging()
