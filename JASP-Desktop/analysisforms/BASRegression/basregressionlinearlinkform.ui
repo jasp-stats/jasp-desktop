@@ -372,18 +372,11 @@
       <property name="rightMargin">
        <number>0</number>
       </property>
-      <item row="0" column="0" rowspan="2" colspan="2">
-       <widget class="ExpanderButton" name="expanderAdvanced">
-        <property name="text">
-         <string>Advanced Options</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="0" rowspan="2" colspan="2">
        <widget class="QWidget" name="advancedOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_7">
          <item row="0" column="0">
-          <widget class="GroupBox" name="priorRegressionCoefficients">
+          <widget class="BoundGroupBox" name="priorRegressionCoefficients">
            <property name="maximumSize">
             <size>
              <width>300</width>
@@ -394,37 +387,77 @@
             <string>Prior</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
-            <item row="8" column="0">
+            <item row="4" column="0">
+             <widget class="QRadioButton" name="g_prior">
+              <property name="text">
+               <string>g-prior</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0">
+             <widget class="QRadioButton" name="zs_null">
+              <property name="text">
+               <string>ZS-null</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QRadioButton" name="hyper_g_laplace">
+              <property name="text">
+               <string>hyper-g-laplace</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QRadioButton" name="hyper_g_n">
+              <property name="text">
+               <string>hyper-g-n</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="eb_global">
+              <property name="text">
+               <string>EB-global</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
              <widget class="QRadioButton" name="eb_local">
               <property name="text">
                <string>EB-local</string>
               </property>
              </widget>
             </item>
-            <item row="10" column="1">
-             <widget class="BoundTextBox" name="priorCovariates">
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="10" column="0">
-             <widget class="QLabel" name="label_5">
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="bic">
               <property name="text">
-               <string>r scale covariates</string>
+               <string>BIC</string>
               </property>
              </widget>
             </item>
-            <item row="10" column="2">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="aic">
+              <property name="text">
+               <string>AIC</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QRadioButton" name="hyper_g">
+              <property name="text">
+               <string>hyper-g</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
+             <widget class="QRadioButton" name="zs_full">
+              <property name="text">
+               <string>ZS-full</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="3">
              <spacer name="horizontalSpacer">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -437,68 +470,28 @@
               </property>
              </spacer>
             </item>
-            <item row="3" column="0">
-             <widget class="QRadioButton" name="zs_null">
+            <item row="4" column="3">
+             <widget class="BoundTextBox" name="gPriorParameter"/>
+            </item>
+            <item row="4" column="2">
+             <widget class="QLabel" name="label_7">
               <property name="text">
-               <string>ZS-null</string>
+               <string>alpha:</string>
               </property>
              </widget>
             </item>
-            <item row="7" column="0">
-             <widget class="QRadioButton" name="hyper_g_n">
-              <property name="text">
-               <string>hyper-g-n</string>
+            <item row="4" column="1">
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="QRadioButton" name="hyper_g">
-              <property name="text">
-               <string>hyper-g</string>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
               </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="aic">
-              <property name="text">
-               <string>AIC</string>
-              </property>
-             </widget>
-            </item>
-            <item row="9" column="0">
-             <widget class="QRadioButton" name="eb_global">
-              <property name="text">
-               <string>EB-global</string>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
-             <widget class="QRadioButton" name="hyper_g_laplace">
-              <property name="text">
-               <string>hyper-g-laplace</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QRadioButton" name="zs_full">
-              <property name="text">
-               <string>ZS-full</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="bic">
-              <property name="text">
-               <string>BIC</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QRadioButton" name="g_prior">
-              <property name="text">
-               <string>g-prior</string>
-              </property>
-             </widget>
+             </spacer>
             </item>
            </layout>
           </widget>
@@ -507,7 +500,7 @@
           <widget class="QWidget" name="widget" native="true">
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
-             <widget class="GroupBox" name="samplingMethod">
+             <widget class="BoundGroupBox" name="samplingMethod">
               <property name="maximumSize">
                <size>
                 <width>300</width>
@@ -546,7 +539,7 @@
              </widget>
             </item>
             <item>
-             <widget class="GroupBox" name="modelprior">
+             <widget class="BoundGroupBox" name="modelPrior">
               <property name="maximumSize">
                <size>
                 <width>300</width>
@@ -564,22 +557,12 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QRadioButton" name="uniformPrior">
-                 <property name="text">
-                  <string>uniform</string>
-                 </property>
-                </widget>
-               </item>
                <item row="1" column="0">
-                <widget class="QRadioButton" name="betaBinomialPrior">
+                <widget class="QRadioButton" name="betaBinomial">
                  <property name="text">
                   <string>Beta binomial</string>
                  </property>
                 </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="BoundTextBox" name="betaParamA"/>
                </item>
                <item row="1" column="3">
                 <widget class="QLabel" name="label_6">
@@ -588,8 +571,43 @@
                  </property>
                 </widget>
                </item>
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="uniformPrior">
+                 <property name="text">
+                  <string>uniform</string>
+                 </property>
+                </widget>
+               </item>
                <item row="1" column="4">
-                <widget class="BoundTextBox" name="betaParamB"/>
+                <widget class="BoundTextBox" name="betaBinomialParamB"/>
+               </item>
+               <item row="1" column="2">
+                <widget class="BoundTextBox" name="betaBinomialParamA"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="BoundGroupBox" name="modelPrior_2">
+              <property name="maximumSize">
+               <size>
+                <width>300</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="title">
+               <string>Additional Info</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_14">
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Number of models:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="BoundTextBox" name="numberOfModels"/>
                </item>
               </layout>
              </widget>
@@ -598,6 +616,13 @@
           </widget>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item row="0" column="0" rowspan="2" colspan="2">
+       <widget class="ExpanderButton" name="expanderAdvanced">
+        <property name="text">
+         <string>Advanced Options</string>
+        </property>
        </widget>
       </item>
      </layout>

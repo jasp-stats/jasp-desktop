@@ -176,4 +176,3 @@ void AnalysisForm::illegalValueHandler(Bound *source)
 {
 	updateIllegalStatus();
 }
-
