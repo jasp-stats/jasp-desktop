@@ -60,10 +60,9 @@ int Labels::add(int raw, const std::string &display)
 
 void Labels::sync(const std::set<int> &values)
 {
-	std::set<Labels::const_iterator> labelsToRemove;
 	std::set<int> valuesToAdd = values;
 
-	for (Labels::const_iterator it = begin(); it != end(); ++it)
+	for (LabelVector::iterator it = _labels.begin(); it != _labels.end(); /*++it*/)
 	{
 		const LabelEntry &entry = *it;
 		int value = entry.second.value();
@@ -72,17 +71,14 @@ void Labels::sync(const std::set<int> &values)
 			std::set<int>::iterator value_it = std::find(valuesToAdd.begin(), valuesToAdd.end(), value);
 			if (value_it != valuesToAdd.end())
 				valuesToAdd.erase(value_it);
+			++it;
 		}
 		else
 		{
-			labelsToRemove.insert(it);
+			std::cout << "Remove label " << entry.second.text() << std::endl;
+			std::cout.flush();
+			_labels.erase(it);
 		}
-	}
-
-	for (std::set<Labels::const_iterator>::iterator it = labelsToRemove.begin(); it != labelsToRemove.end(); ++it)
-	{
-		Labels::const_iterator label_it = *it;
-		_labels.erase(label_it);
 	}
 
 	for (std::set<int>::iterator it = valuesToAdd.begin(); it != valuesToAdd.end(); ++it)
@@ -94,13 +90,12 @@ void Labels::sync(const std::set<int> &values)
 
 std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &values)
 {
-	std::set<Labels::const_iterator> labelsToRemove;
 	std::vector<std::string> valuesToAdd = values;
 	std::map<std::string, int> result;
 
 
 	int maxLabelIndex = 0;
-	for (Labels::const_iterator it = begin(); it != end(); ++it)
+	for (Labels::const_iterator it = begin(); it != end(); /*++it*/)
 	{
 		const LabelEntry &entry = *it;
 		if (entry.first > maxLabelIndex)
@@ -114,20 +109,14 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &v
 			std::vector<std::string>::iterator value_it = std::find(valuesToAdd.begin(), valuesToAdd.end(), value);
 			if (value_it != valuesToAdd.end())
 				valuesToAdd.erase(value_it);
+			++it;
 		}
 		else
 		{
-			labelsToRemove.insert(it);
+			std::cout << "Remove Label " << entry.second.text() << std::endl;
+			std::cout.flush();
+			_labels.erase(it);
 		}
-	}
-
-	for (std::set<Labels::const_iterator>::iterator it = labelsToRemove.begin(); it != labelsToRemove.end(); ++it)
-	{
-		Labels::const_iterator label_it = *it;
-		const LabelEntry &entry = *label_it;
-		std::cout << "Remove Label " << entry.first << ", Value:" << entry.second.value() << ", text: " << entry.second.text() << std::endl;
-		std::cout.flush();
-		_labels.erase(label_it);
 	}
 
 	for (std::vector<std::string>::iterator it = valuesToAdd.begin(); it != valuesToAdd.end(); ++it)
@@ -146,6 +135,15 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &v
 const std::map<int, std::string> &Labels::getOrgValues()
 {
 	return _orgValues;
+}
+
+std::string Labels::getOrgValue(int rawValue)
+{
+	std::map<int, std::string>::const_iterator it = _orgValues.find(rawValue);
+	if (it == _orgValues.end())
+		return labelFor(rawValue).text();
+	else
+		return it->second;
 }
 
 void Labels::setOrgValue(int key, std::string value)
