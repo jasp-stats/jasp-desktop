@@ -452,9 +452,7 @@ bool Column::isValueEqual(int rowIndex, const string &value)
 		return str == value;
 	}
 
-	const string& displayValue = ((value == "" || value == " ") ? _emptyValue : value);
-	int intIndex = AsInts[rowIndex];
-	return stringFromRaw(intIndex) == displayValue;
+	return _labels.getOrgValue(AsInts[rowIndex]) == ((value == "" || value == " ") ? _emptyValue : value);
 }
 
 string Column::operator [](int index)

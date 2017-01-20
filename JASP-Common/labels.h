@@ -62,6 +62,7 @@ public:
 	const_iterator end() const;
 
 	const std::map<int, std::string> &getOrgValues();
+	std::string getOrgValue(int);
 	void setOrgValue(int key, std::string value);
 
 private:
