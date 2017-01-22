@@ -57,6 +57,9 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 		dataset <- .readBayesianLinearModelData(dataset, options, perform)
 	}
 
+	# initialize
+	rowsBASRegressionLinearLink <- list()
+
 	if (length(options$covariates) > 0 && options$dependent != "" && perform == "run") {
 		bas_lm <- .calculateBASRegressionLinear(
 			run = run,
@@ -65,6 +68,8 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 			options = options,
 			dataset = dataset
 		)
+
+		rowsBASRegressionLinearLink <- bas_lm$rows
 	}
 
 	# Populate the output table
@@ -87,19 +92,24 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	}
 
 	fields <- list(
-				list(name = "Models", type = "string"),
-				list(name = "P(M)", type = "number", format = "sf:4;dp:3"),
-				list(name = "P(M|data)", type = "number", format = "sf:4;dp:3;log10"),
-				list(name = "BFM", type = "number", format = "sf:4;dp:3;log10",
-						title = paste (bfm.title, sep = "")),
-				list(name = "BF10", type = "number", format = "sf:4;dp:3;log10",
-						title = paste (bf.title, sep = "")),
-				list(name = "error %", type="number", format="sf:4;dp:3")
-			)
-	if (options$bayesFactorType == "LogBF10") {
-		fields[[4]] <- list(name = "BFM", type = "number", format = "sf:4;dp:3", title = paste (bfm.title, sep = ""))
-		fields[[5]] <- list(name = "BF10", type = "number", format = "sf:4;dp:3", title = paste (bf.title, sep = ""))
-	}
+		list(name = "model", type = "string", title = "Model"),
+		list(name = "bf", type = "number", format = "sf:4;dp:3", title = "BF")
+	)
+
+	# fields <- list(
+	# 			list(name = "model", type = "string"),
+	# 			list(name = "P(M)", type = "number", format = "sf:4;dp:3"),
+	# 			list(name = "P(M|data)", type = "number", format = "sf:4;dp:3;log10"),
+	# 			list(name = "BFM", type = "number", format = "sf:4;dp:3;log10",
+	# 					title = paste (bfm.title, sep = "")),
+	# 			list(name = "bf", type = "number", format = "sf:4;dp:3;log10",
+	# 					title = paste (bf.title, sep = "")),
+	# 			list(name = "error %", type="number", format="sf:4;dp:3")
+	# 		)
+	# if (options$bayesFactorType == "LogBF10") {
+	# 	fields[[4]] <- list(name = "BFM", type = "number", format = "sf:4;dp:3", title = paste (bfm.title, sep = ""))
+	# 	fields[[5]] <- list(name = "BF10", type = "number", format = "sf:4;dp:3", title = paste (bf.title, sep = ""))
+	# }
 
 	# # add footnotes to the analysis result
 	# footnotes <- .newFootnotes()
@@ -113,7 +123,9 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
 		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
 	table[["schema"]] <- list(fields = fields)
-	table[["data"]] <- list()
+	table[["data"]] <- rowsBASRegressionLinearLink
+
+	# print(rowsBASRegressionLinearLink)
 
 	results <- list()
 	results[[".meta"]] <- meta
@@ -185,32 +197,102 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 		NULL
 	)
 
-	# print(formula)
-	# print(options$priorRegressionCoefficients)
-	# print(dataset)
-	# print(alpha)
-	# print(modelPrior)
-	# print(options$samplingMethod)
-
 	print(options$betaBinomialParamB)
 	print(options$betaBinomialParamA)
 
 	# FIXME: sampling method currently does not allow specification of MCMC+BAS
 	# FIXME: bestmodel is not given as a choice
 
+	# print(options)
+
 	# Bayesian Adaptive Sampling
 	bas_lm <- BAS::bas.lm(
 		formula = formula,
 		data = dataset,
-		prior = options$priorRegressionCoefficients,
-		alpha = alpha,
-		modelprior = modelPrior,
-		n.models = options$numberOfModels,
-		method = options$samplingMethod,
-		MCMC.iterations = options$iterationsMCMC
+		# prior = options$priorRegressionCoefficients,
+		# alpha = alpha,
+		# modelprior = modelPrior,
+		# n.models = options$numberOfModels,
+		# method = options$samplingMethod,
+		# MCMC.iterations = options$iterationsMCMC
 	)
 
-	print(bas_lm)
+	rowsBASRegressionLinearLink <- .getOutputRowBASLinearLink(
+		bas_obj = bas_lm,
+		options = options,
+		state = state,
+		dataset = dataset
+	)
 
-	return (bas_lm)
+	return (list(bas_obj = bas_lm, rows = rowsBASRegressionLinearLink))
+}
+
+
+.getOutputRowBASLinearLink <- function(bas_obj, options, state, dataset) {
+	# Return the output row
+	# Args:
+	#    - bas_obj: bas object
+	#
+	# Return:
+	#    - list containing row/s
+
+	# default number of models to be shown
+	models.number = 5  # FIXME: get number of models from user-input
+
+	if (models.number > length(bas_obj$which)) {
+		models.number <- length(bas_obj$which)
+	}
+
+	# ordered indices based on posterior probabilities of the models
+	models.ordered <- base::order(bas_obj$postprobs, decreasing = TRUE)[1:models.number]
+	models <- bas_obj$which[models.ordered]
+
+
+	print("=--------=")
+	print(.unv(colnames(dataset)))
+	print(options$covariates)
+	print(models[[1]])
+	print(.unv(bas_obj$namesx[2:length(bas_obj$namesx)]))
+	print("=--------=")
+
+	# generate the model names
+	models.names <- base::lapply(
+		models,
+		function(x) {
+			return (paste(.unv(bas_obj$namesx[2:length(bas_obj$namesx)])[x[2:length(x)]],
+					collapse = " + "))
+		}
+	)
+
+	# get the Bayes factors for the models
+	models.bf <- exp(bas_obj$logmarg[models.ordered] -
+						max(bas_obj$logmarg[models.ordered]))
+
+	# print(models.names)
+
+	output.rows <- vector("list", models.number)
+
+	# TODO: microbenchmark - compare this against using mapply
+	for (i in 1:models.number) {
+		output.rows[[i]] <- list(model = models.names[[i]], bf = models.bf[[i]])
+	}
+	# output.list <- as.list(data.frame(mapply(c, models.names, models.bf)))
+	#
+	# # Generate the output row
+	# output.rows <- vector("list", length(output.list))
+	# row.number <- 1
+	#
+	# for (row in output.list) {
+	# 	output.rows
+	# }
+	#
+	# output.row <- base::lapply(
+	# 	output.list,
+	# 	function(x) {
+	# 		names(x) <- c("model", "bf")
+	# 		return (as.list(x))
+	# 	}
+	# )
+
+	return (output.rows)
 }
