@@ -26,6 +26,7 @@
 #include "importers/csvimporter.h"
 #include "importers/spssimporter.h"
 #include "importers/jaspimporter.h"
+#include "importers/odsimporter.h"
 
 #include <QFileInfo>
 #include <QSettings>
@@ -51,6 +52,8 @@ Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &
 		result = new CSVImporter(packageData);
 	else if (boost::iequals(ext,".sav"))
 		result = new SPSSImporter(packageData);
+	else if (boost::iequals(ext,".ods"))
+		result = new ODSImporter(packageData);
 
 	return result;
 }
