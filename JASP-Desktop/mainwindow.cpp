@@ -131,7 +131,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->setupUi(this);
 
-	int initalTableWidth = 530;
+	int initalTableWidth = 575;
 
 	QList<int> sizes = QList<int>();
 	sizes.append(initalTableWidth);
@@ -139,13 +139,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->tabBar->setFocusPolicy(Qt::NoFocus);
 	ui->tabBar->addTab("File");
-#ifdef QT_DEBUG
-	ui->tabBar->addTab("Variables"); // variables view
-#endif
 	ui->tabBar->addTab("Common");
-#ifndef __linux__
-	ui->tabBar->addOptionsTab(); // no SEM under linux for now
-#endif
+
 	ui->tabBar->addHelpTab();
 
 	connect(ui->tabBar, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
@@ -180,12 +175,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	_tableModel = new DataSetTableModel();
 	ui->tableView->setModel(_tableModel);
+	ui->tableView->setVariablesView(ui->variablesPage);
+	ui->variablesPage->hide();
 
-#ifdef QT_DEBUG  // variables view
-	ui->tabBar->setCurrentIndex(2);
-#else
 	ui->tabBar->setCurrentIndex(1);
-#endif
 
 	ui->tableView->setVerticalScrollMode(QTableView::ScrollPerPixel);
 	ui->tableView->setHorizontalScrollMode(QTableView::ScrollPerPixel);
@@ -204,6 +197,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
+	connect(ui->variablesPage, SIGNAL(reRun()), this, SLOT(refreshCurrentAnalysis()));
+	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
+	connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
 
 	_progressIndicator = new ProgressWidget(ui->tableView);
 	_progressIndicator->setAutoFillBackground(true);
@@ -233,7 +229,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	_scrollbarWidth = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent);
 #endif
 
-	_buttonPanel = new QWidget(ui->panelMid);
+	_buttonPanel = new QWidget(ui->panel_2_Options);
 	_buttonPanelLayout = new QVBoxLayout(_buttonPanel);
 	_buttonPanelLayout->setSpacing(6);
 	_buttonPanelLayout->setContentsMargins(0, _buttonPanelLayout->contentsMargins().top(), _buttonPanelLayout->contentsMargins().right(), 0);
@@ -254,12 +250,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	_buttonPanelLayout->addStretch();
 
 	_buttonPanel->resize(_buttonPanel->sizeHint());
-	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
+	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 
 	connect(_okButton, SIGNAL(clicked()), this, SLOT(analysisOKed()));
 	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
+	connect(ui->data_splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(data_splitterMovedHandler(int,int)));
 
 	_analysisMenu = new QMenu(this);
 	connect(_analysisMenu, SIGNAL(aboutToHide()), this, SLOT(menuHidding()));
@@ -271,7 +268,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QUrl userGuide = QUrl::fromLocalFile(AppDirs::help() + "/index.html");
 	ui->webViewHelp->setUrl(userGuide);
 	connect(ui->webViewHelp, SIGNAL(loadFinished(bool)), this, SLOT(helpFirstLoaded(bool)));
-	ui->panelHelp->hide();
+	ui->panel_4_Help->hide();
 
 	setAcceptDrops(true);
 
@@ -279,9 +276,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	QApplication::setFont(ui->tableView->font());
 #endif
 
-	setupOptionPanelSize();
+	ui->panel_1_Data->show();
+	ui->panel_2_Options->hide();
 
-	ui->panelMid->hide();
 }
 
 void MainWindow::open(QString filepath)
@@ -336,7 +333,6 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-
 	_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
 
 	if (_applicationExiting)
@@ -683,17 +679,6 @@ AnalysisForm* MainWindow::loadForm(const string name)
 	return form;
 }
 
-void MainWindow::setupOptionPanelSize()
-{
-	//AnalysisForm* form = loadForm("Descriptives");
-
-	//int width = form->sizeHint().width() + _scrollbarWidth;// form->fontMetrics().width("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
-	//QList<int> sizes = ui->splitter->sizes();
-	//sizes[0] = width;
-	//ui->splitter->setSizes(sizes);
-}
-
 void MainWindow::showForm(Analysis *analysis)
 {
 	closeCurrentOptionsWidget();
@@ -703,7 +688,7 @@ void MainWindow::showForm(Analysis *analysis)
 	if (_currentOptionsWidget != NULL)
 	{
 
-//sizing of options widget and panel to fit buttons and conform to largest size for consistency
+		//sizing of options widget and panel to fit buttons and conform to largest size for consistency
 
 		QObjectList siblings = _currentOptionsWidget->children();
 		for (QObjectList::Iterator itr = siblings.begin(); itr != siblings.end(); itr++) {
@@ -715,13 +700,14 @@ void MainWindow::showForm(Analysis *analysis)
 		}
 
 		int requiredSize = _currentOptionsWidget->sizeHint().width();
-		int currentOptionSpace = ui->panelMid->minimumWidth() - _scrollbarWidth;
+		int currentOptionSpace = ui->panel_2_Options->minimumWidth() - _scrollbarWidth;
 		if (requiredSize > currentOptionSpace) {
-			ui->panelMid->setMinimumWidth(requiredSize + _scrollbarWidth);
-			_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
+			ui->panel_2_Options->setMinimumWidth(requiredSize + _scrollbarWidth);
+			_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 		}
-		_currentOptionsWidget->setMinimumWidth(ui->panelMid->minimumWidth() - _scrollbarWidth);
-//#########################
+		_currentOptionsWidget->setMinimumWidth(ui->panel_2_Options->minimumWidth() - _scrollbarWidth);
+
+		//#########################
 
 		Options *options = analysis->options();
 		DataSet *dataSet = _package->dataSet;
@@ -733,7 +719,7 @@ void MainWindow::showForm(Analysis *analysis)
 		_currentOptionsWidget->show();
 		ui->optionsContentAreaLayout->addWidget(_currentOptionsWidget,0, 0, Qt::AlignRight | Qt::AlignTop);
 
-		if (ui->panelMid->isVisible() == false)
+		if (ui->panel_2_Options->isVisible() == false)
 			showOptionsPanel();
 
 		_okButton->setVisible(_currentAnalysis->useData());
@@ -798,28 +784,9 @@ void MainWindow::tabChanged(int index)
 	{
 		ui->topLevelWidgets->setCurrentIndex(0);
 	}
-#ifdef QT_DEBUG  // if variables tab enabled
-	else if (index == 1)
-	{
-		ui->topLevelWidgets->setCurrentIndex(1);
-	}
-#endif
-#ifndef __linux__
-	else if (index == ui->tabBar->count() - 1)
-	{
-		if (_optionsForm == NULL)
-		{
-			_optionsForm = new OptionsForm(this);
-			ui->topLevelWidgets->addWidget(_optionsForm);
-			connect(_optionsForm, SIGNAL(optionsChanged()), this, SLOT(updateUIFromOptions()));
-		}
-
-		ui->topLevelWidgets->setCurrentWidget(_optionsForm);
-	}
-#endif
 	else
 	{
-		ui->topLevelWidgets->setCurrentIndex(2);
+		ui->topLevelWidgets->setCurrentIndex(1); //Should be a reference to the mainPage
 
 		QString currentActiveTab = ui->tabBar->getCurrentActiveTab();
 		if(currentActiveTab == "Common")
@@ -860,13 +827,13 @@ void MainWindow::helpToggled(bool on)
 		sizes[2] = resultsWidth;
 		sizes[3] = helpWidth;
 
-		ui->panelHelp->show();
+		ui->panel_4_Help->show();
 		ui->splitter->setSizes(sizes);
 	}
 	else
 	{
-		helpWidth = ui->panelHelp->width();
-		ui->panelHelp->hide();
+		helpWidth = ui->panel_4_Help->width();
+		ui->panel_4_Help->hide();
 	}
 }
 
@@ -890,11 +857,8 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			_progressIndicator->show();
 		}
 
-#ifdef QT_DEBUG // variables view
-		ui->tabBar->setCurrentIndex(2);
-#else
 		ui->tabBar->setCurrentIndex(1);
-#endif
+
 	}
 	else if (event->operation() == FileEvent::FileSave)
 	{		
@@ -1077,11 +1041,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 	if (showAnalysis)
 	{
-#ifdef QT_DEBUG // variables view
-		ui->tabBar->setCurrentIndex(2);
-#else
 		ui->tabBar->setCurrentIndex(1);
-#endif
 
 	}
 }
@@ -1090,6 +1050,7 @@ void MainWindow::populateUIfromDataSet()
 {
 	_tableModel->setDataSet(_package->dataSet);
 	ui->variablesPage->setDataSet(_package->dataSet);
+
 
 	_analyses->clear();
 
@@ -1211,7 +1172,6 @@ void MainWindow::updateUIFromOptions()
 		ui->tabBar->addTab("Summary Stats");
 	else
 		ui->tabBar->removeTab("Summary Stats");
-
 }
 
 void MainWindow::resultsPageLoaded(bool success)
@@ -1353,23 +1313,21 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 
 void MainWindow::exportSelected(const QString &filename)
 {
-	//_loader.exportData("C:\\test.csv", _package);
-
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.exportHTML('" + filename + "');");
 }
 
 void MainWindow::adjustOptionsPanelWidth()
 {
-	if (ui->panelMid->width() == ui->panelMid->maximumWidth() && ui->tableView->isHidden())
+	if (ui->panel_2_Options->width() == ui->panel_2_Options->maximumWidth() && ui->panel_1_Data->isHidden())
 	{
-		showTableView();
+		showDataPanel();
 	}
-	else if (ui->tableView->width() == ui->tableView->minimumWidth() && ui->tableView->isVisible() && ui->panelMid->isVisible())
+	else if (ui->panel_1_Data->width() == ui->panel_1_Data->minimumWidth() && ui->panel_1_Data->isVisible() && ui->panel_2_Options->isVisible())
 	{
-		hideTableView();
+		hideDataPanel();
 	}
 
-	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
+	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 }
 
 void MainWindow::splitterMovedHandler(int, int)
@@ -1377,6 +1335,18 @@ void MainWindow::splitterMovedHandler(int, int)
 	adjustOptionsPanelWidth();
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 }
+
+void MainWindow::data_splitterMovedHandler(int pos, int index)
+{
+	int p = pos;
+	int i = index;
+	//if (p < 150)
+	//	ui->variablesPage->hide();
+
+	qDebug() << " Pos = " << pos;
+	qDebug() << " Index = " << index;
+}
+
 
 void MainWindow::hideOptionsPanel()
 {
@@ -1392,7 +1362,7 @@ void MainWindow::hideOptionsPanel()
 	{
 		newTableWidth += sizes.at(0);
 
-		if (ui->tableView->isVisible())
+		if (ui->panel_1_Data->isVisible())
 			newTableWidth += ui->splitter->handleWidth() + 2;
 
 		newTableWidth += sizes.at(1);
@@ -1401,8 +1371,8 @@ void MainWindow::hideOptionsPanel()
 	sizes[0] = newTableWidth;
 	sizes[1] = 0;
 
-	ui->panelMid->hide();
-	ui->tableView->show();
+	ui->panel_2_Options->hide();
+	ui->panel_1_Data->show();
 	ui->splitter->setSizes(sizes);
 }
 
@@ -1412,27 +1382,27 @@ void MainWindow::showOptionsPanel()
 
 	int tableWidth = sizes.at(0);
 	int newTableWidth = tableWidth;
-	newTableWidth -= ui->panelMid->minimumWidth();
+	newTableWidth -= ui->panel_2_Options->minimumWidth();
 	newTableWidth -= ui->splitter->handleWidth();
 
-	ui->panelMid->show();
+	ui->panel_2_Options->show();
 
-	if (newTableWidth < ui->tableView->minimumWidth())
+	if (newTableWidth < ui->panel_1_Data->minimumWidth())
 	{
 		int midPanelWidth = tableWidth;
-		if (midPanelWidth < ui->panelMid->minimumWidth())
+		if (midPanelWidth < ui->panel_2_Options->minimumWidth())
 		{
 			_tableViewWidthBeforeOptionsMadeVisible = midPanelWidth;
-			midPanelWidth = ui->panelMid->minimumWidth();
+			midPanelWidth = ui->panel_2_Options->minimumWidth();
 		}
 
 		int w = 0;
-		w += ui->panelMid->minimumWidth();
-		w += ui->tableView->minimumWidth();
+		w += ui->panel_2_Options->minimumWidth();
+		w += ui->panel_1_Data->minimumWidth();
 		w += ui->splitter->handleWidth();
 
-		ui->panelMid->setMaximumWidth(w+8);
-		ui->tableView->hide();
+		ui->panel_2_Options->setMaximumWidth(w+8);
+		ui->panel_1_Data->hide();
 
 		sizes[0] = 0;
 		sizes[1] = midPanelWidth;
@@ -1441,46 +1411,60 @@ void MainWindow::showOptionsPanel()
 	}
 	else
 	{
-		ui->panelMid->setMaximumWidth(ui->panelMid->minimumWidth());
+		ui->panel_2_Options->setMaximumWidth(ui->panel_2_Options->minimumWidth());
 
 		sizes[0] = newTableWidth - 2;
-		sizes[1] = ui->panelMid->minimumWidth();
+		sizes[1] = ui->panel_2_Options->minimumWidth();
 
 		ui->splitter->setSizes(sizes);
 	}
 
-	_buttonPanel->move(ui->panelMid->width() - _buttonPanel->width() - _scrollbarWidth, 0);
+	_buttonPanel->move(ui->panel_2_Options->width() - _buttonPanel->width() - _scrollbarWidth, 0);
 }
 
-void MainWindow::showTableView()
+void MainWindow::showDataPanel()
 {
 	QList<int> sizes = ui->splitter->sizes();
 
-	sizes[0] = ui->tableView->minimumWidth()+8;
-	sizes[1] = ui->panelMid->minimumWidth();
+	sizes[0] = ui->panel_1_Data->minimumWidth()+8;
+	sizes[1] = ui->panel_2_Options->minimumWidth();
 
 	ui->splitter->setSizes(sizes);
 
-	ui->panelMid->setMaximumWidth(ui->panelMid->minimumWidth());
-	ui->tableView->show();
+	ui->panel_2_Options->setMaximumWidth(ui->panel_2_Options->minimumWidth());
+	ui->panel_1_Data->show();
 }
 
-void MainWindow::hideTableView()
+void MainWindow::hideDataPanel()
 {
 	QList<int> sizes = ui->splitter->sizes();
 
 	int w = 0;
-	w += ui->panelMid->minimumWidth();
-	w += ui->tableView->minimumWidth();
+	w += ui->panel_2_Options->minimumWidth();
+	w += ui->panel_1_Data->minimumWidth();
 	w += ui->splitter->handleWidth();
 
-	ui->panelMid->setMaximumWidth(w+8);
-	ui->tableView->hide();
+	ui->panel_2_Options->setMaximumWidth(w+8);
+	ui->panel_1_Data->hide();
 
 	sizes[0] = 0;
 	sizes[1] = w;
 
 	ui->splitter->setSizes(sizes);
+}
+
+void MainWindow::showVariablesPage()
+{
+	QList<int> datacurrentSizes = ui->data_splitter->sizes();
+
+	ui->variablesPage->show();
+
+	if (datacurrentSizes[0] < 1)
+	{
+		datacurrentSizes[0]+=250;
+		datacurrentSizes[1]-=250;
+		ui->data_splitter->setSizes(datacurrentSizes);
+	}
 }
 
 void MainWindow::analysisOKed()
@@ -1570,6 +1554,17 @@ void MainWindow::refreshAllAnalyses()
 		if (analysis == NULL) continue;
 		analysis->refresh();
 	}
+}
+
+void MainWindow::refreshCurrentAnalysis()
+{
+	if (_currentAnalysis != NULL)
+		_currentAnalysis->refresh();
+}
+
+void MainWindow::resetTableView()
+{
+	ui->tableView->reset();
 }
 
 void MainWindow::pushToClipboardHandler(const QString &mimeType, const QString &data, const QString &html)
@@ -1732,8 +1727,6 @@ void MainWindow::showAnalysesMenuHandler(QString options)
 	_analysisMenu->show();
 }
 
-
-
 void MainWindow::removeAnalysisRequestHandler(int id)
 {
 	Analysis *analysis = _analyses->get(id);
@@ -1817,40 +1810,30 @@ void MainWindow::updateUserDataHandler(int id, QString key)
 
 void MainWindow::collapseSelected()
 {
-
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.collapseMenuClicked();");
-
 }
 
 void MainWindow::removeSelected()
 {
-
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.removeMenuClicked();");
-
 }
 
 void MainWindow::editTitleSelected()
 {
-
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.editTitleMenuClicked();");
 	_package->setModified(true);
-
 }
 
 void MainWindow::copySelected()
 {
-
 	tempfiles_purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.copyMenuClicked();");
-
 }
 
 void MainWindow::citeSelected()
 {
-
 	tempfiles_purgeClipboard();
 	ui->webViewResults->page()->mainFrame()->evaluateJavaScript("window.citeMenuClicked();");
-
 }
 
 void MainWindow::noteSelected()
@@ -1895,15 +1878,12 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	parser.parse(utf8, root);
 
 	analysis->options()->set(root);
-
-
 }
 
 void MainWindow::showAbout()
 {
-
 	AboutDialog aboutdialog;
 	aboutdialog.setModal(true);
 	aboutdialog.exec();
-
 }
+

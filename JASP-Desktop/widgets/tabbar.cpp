@@ -24,7 +24,7 @@
 TabBar::TabBar(QWidget *parent) :
 	QWidget(parent)
 {
-	_optionsTab = NULL;
+
 	_helpTab = NULL;
 
 	_background = new QWidget(this);
@@ -52,13 +52,13 @@ void TabBar::addTab(QString tabName)
 	}
 
 	QPushButton *button = new QPushButton(tabName, this);
-	button->setStyleSheet("border-top-left-radius:0px;border-top-right-radius:0px;");
+	button->setStyleSheet("border-top-left-radius:4px;border-top-right-radius:4px;");
 	button->setObjectName(tabName);
 	button->setCheckable(true);
 	connect(button, SIGNAL(clicked()), this, SLOT(tabSelectedHandler()));
 
 	if (_tabButtons.size() == 0)
-		button->setObjectName("first");
+		button->setObjectName("first"); //just to give it the proper (blue) stylesheet
 
 	_layout->insertWidget(_tabButtons.size(), button);
 	_tabButtons.append(button);
@@ -89,13 +89,6 @@ void TabBar::removeTab(QString tabName)
 	}
 }
 
-void TabBar::addOptionsTab()
-{
-	_optionsTab = new QPushButton("", this);
-
-	_layout->addWidget(_optionsTab);
-
-}
 
 void TabBar::addHelpTab()
 {
@@ -226,7 +219,7 @@ void TabBar::toggleSummaryStats()
 
 int TabBar::count() const
 {
-	return _tabButtons.length() + (_optionsTab != NULL ? 1 : 0);
+	return _tabButtons.length();
 }
 
 void TabBar::setCurrentIndex(int index)
@@ -239,9 +232,6 @@ void TabBar::setCurrentIndex(int index)
         if (i == index) _currentActiveTab = button->objectName();
 		i++;
 	}
-
-	if (_optionsTab != NULL)
-		_optionsTab->setChecked(i == index);
 
 	emit currentChanged(index);
 }
@@ -261,9 +251,6 @@ void TabBar::tabSelectedHandler()
 		}
 		i++;
 	}
-
-	if (source == _optionsTab)
-		setCurrentIndex(i);
 }
 
 QString TabBar::getCurrentActiveTab()
