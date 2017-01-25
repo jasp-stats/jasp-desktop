@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
  */
 
 #include "fileheaderrecord.h"
+#include "spssimportdataset.h"
 
 #include <assert.h>
 
@@ -43,7 +44,7 @@ const double FileHeaderRecord::_bias_good_vals[2] = { 100.0, 0.0 };
  */
 FileHeaderRecord::FileHeaderRecord(NumericConverter &fixer, RecordTypes fileType, SPSSStream &from, double expectedBias)
 	: ReadableRecord(fixer, fileType, from)
-	, _varRecordCount(0)
+	, _rawVariableCount(0)
 {
 	// Go through the fields, just fetching as we go..
 	_SPSSIMPORTER_READ_VAR(_prod_name, from);
@@ -75,15 +76,15 @@ FileHeaderRecord::~FileHeaderRecord()
  * @brief Clears the columns.
  *
  */
-void FileHeaderRecord::process(SPSSColumns &columns)
+void FileHeaderRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
-	if (columns.size() != 0)
+	if (dataset->columnCount() != 0)
 	{
 		cout << "This file appears to have more than one file header record.\n"
 				"  Only the last one found will be used." << endl;
 		cout.flush();
+		dataset->clear();
 	}
-	columns.clear();
 
 	// Check compression type.
 	switch(compressed())
@@ -98,7 +99,7 @@ void FileHeaderRecord::process(SPSSColumns &columns)
 
 	// Extract the number of cases.
 	if (ncases() != -1)
-		columns.numCases(ncases());
+		dataset->numCases(ncases());
 }
 
 /**

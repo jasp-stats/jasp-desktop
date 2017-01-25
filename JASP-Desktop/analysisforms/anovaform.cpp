@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -108,10 +108,12 @@ AnovaForm::AnovaForm(QWidget *parent) :
 	ui->randomFactors->hide();
 	ui->label_3->hide();
 	ui->buttonAssignRandom->hide();
+	ui->VovkSellkeMPR->hide();
 #else
 	ui->randomFactors->setStyleSheet("background-color: pink ;");
 	ui->label_3->setStyleSheet("background-color: pink ;");
 	ui->buttonAssignRandom->setStyleSheet("background-color: pink ;");
+	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
 #endif
 
 }

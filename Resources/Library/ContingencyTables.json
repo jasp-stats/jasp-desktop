@@ -151,6 +151,11 @@
 			"type": "Boolean"
 		},
 		{
+		  "name": "VovkSellkeMPR",
+		  "type": "Boolean",
+		  "default": false
+		},
+		{
 			"name": "rowOrder",
 			"type": "List",
 			"options": [ "ascending", "descending" ],

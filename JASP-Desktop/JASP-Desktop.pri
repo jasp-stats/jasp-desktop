@@ -110,8 +110,9 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/backstage/fsbmexamples.cpp \
         $$PWD/backstage/fsbmodel.cpp \
         $$PWD/backstage/fsbmcomputer.cpp \
-        $$PWD/backstage/fsbmrecent.cpp \
-        $$PWD/backstage/fsbmrecentfolders.cpp \
+		$$PWD/backstage/fsbmrecent.cpp \
+		$$PWD/backstage/fsbmcurrent.cpp \
+		$$PWD/backstage/fsbmrecentfolders.cpp \
         $$PWD/fileevent.cpp \
         $$PWD/widgets/boundsingleitemview.cpp \
         $$PWD/analysisforms/binomialtestform.cpp \
@@ -149,7 +150,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/importers/spss/missingvaluechecker.cpp \
         $$PWD/importers/spss/numericconvertor.cpp \
         $$PWD/importers/spss/readablerecord.cpp \
-        $$PWD/importers/spss/spssrecinter.cpp \
         $$PWD/importers/spss/stringutils.cpp \
         $$PWD/importers/spss/valuelabelvarsrecord.cpp \
         $$PWD/importers/spss/vardisplayparamrecord.cpp \
@@ -171,7 +171,14 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
-		$$PWD/simplecrypt.cpp
+		$$PWD/simplecrypt.cpp \
+		$$PWD/importers/convertedstringcontainer.cpp \
+		$$PWD/importers/importer.cpp \
+		$$PWD/importers/importdataset.cpp \
+		$$PWD/importers/importcolumn.cpp \
+		$$PWD/importers/csvimportcolumn.cpp \
+    $$PWD/importers/spss/spssimportcolumn.cpp \
+    $$PWD/importers/spss/spssimportdataset.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -289,8 +296,9 @@ HEADERS  += \
         $$PWD/backstage/fsbmexamples.h \
         $$PWD/backstage/fsbmodel.h \
         $$PWD/backstage/fsbmcomputer.h \
-        $$PWD/backstage/fsbmrecent.h \
-        $$PWD/backstage/fsbmrecentfolders.h \
+		$$PWD/backstage/fsbmrecent.h \
+		$$PWD/backstage/fsbmcurrent.h \
+		$$PWD/backstage/fsbmrecentfolders.h \
         $$PWD/fileevent.h \
         $$PWD/widgets/boundsingleitemview.h \
         $$PWD/analysisforms/binomialtestform.h \
@@ -318,7 +326,6 @@ HEADERS  += \
         $$PWD/importers/spss/cpconverter.h \
         $$PWD/importers/spss/datainforecord.h \
         $$PWD/importers/spss/datarecords.h \
-        $$PWD/importers/spss/debug_cout.h \
         $$PWD/importers/spss/dictionaryterminationrecord.h \
         $$PWD/importers/spss/documentrecord.h \
         $$PWD/importers/spss/extnumbercasesrecord.h \
@@ -331,7 +338,6 @@ HEADERS  += \
         $$PWD/importers/spss/missingvaluechecker.h \
         $$PWD/importers/spss/numericconverter.h \
         $$PWD/importers/spss/readablerecord.h \
-        $$PWD/importers/spss/spssrecinter.h \
         $$PWD/importers/spss/spssstream.h \
         $$PWD/importers/spss/stringutils.h \
         $$PWD/importers/spss/systemfileformat.h \
@@ -344,9 +350,9 @@ HEADERS  += \
         $$PWD/importers/csvimporter.h \
         $$PWD/importers/jaspimporter.h \
         $$PWD/importers/spssimporter.h \
-        $$PWD/analysisforms/exploratoryfactoranalysisform.h \
+		$$PWD/importers/spss/spssformattype.h \
+		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
-        $$PWD/importers/spss/spssformattype.h \
         $$PWD/analysisforms/reliabilityanalysisform.h \
         $$PWD/analysisforms/SEM/semsimpleform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h \
@@ -357,7 +363,15 @@ HEADERS  += \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
 		$$PWD/simplecrypt.h \
-		$$PWD/simplecryptkey.h
+		$$PWD/simplecryptkey.h \
+		$$PWD/importers/convertedstringcontainer.h \
+		$$PWD/importers/importer.h \
+		$$PWD/importers/importdataset.h \
+		$$PWD/importers/importcolumn.h \
+		$$PWD/importers/csvimportcolumn.h \
+    $$PWD/importers/spss/spssimportcolumn.h \
+    $$PWD/importers/spss/spssimportdataset.h \
+    $$PWD/importers/spss/spssutils.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -385,7 +399,6 @@ FORMS += \
         $$PWD/ribbons/ribbonanalysis.ui \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/ttestbayesianpairedsamplesform.ui \
-        $$PWD/optionsform.ui \
         $$PWD/analysisforms/ancovabayesianform.ui \
         $$PWD/analysisforms/anovarepeatedmeasuresbayesianform.ui \
         $$PWD/analysisforms/correlationbayesianform.ui \

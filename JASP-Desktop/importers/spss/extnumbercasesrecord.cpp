@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 
 
 #include "extnumbercasesrecord.h"
+#include "spssimportdataset.h"
 
 
 using namespace std;
@@ -39,10 +40,10 @@ ExtNumberCasesRecord::ExtNumberCasesRecord(const NumericConverter &fixer, Record
 };
 
 
-void ExtNumberCasesRecord::process(SPSSColumns &columns)
+void ExtNumberCasesRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 
 	// Extract the number of cases.
 	if (ncases64() != -1L)
-		columns.numCases(ncases64());
+		dataset->numCases(ncases64());
 }

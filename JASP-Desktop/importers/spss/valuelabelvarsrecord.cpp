@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 //
 
 #include "valuelabelvarsrecord.h"
+#include "spssimportdataset.h"
 
 
 using namespace std;
@@ -74,7 +75,7 @@ ValueLabelVarsRecord::ValueLabelVarsRecord(const NumericConverter &fixer, Record
 		int32_t indx;
 		_SPSSIMPORTER_READ_VAR(indx, from);
 		fixer.fixup(&indx);
-		_vars.push_back(indx);
+		_vars.push_back(indx - 1);
 	}
 }
 
@@ -84,23 +85,23 @@ ValueLabelVarsRecord::~ValueLabelVarsRecord()
 }
 
 /**
- * @brief Does nothing
+ * @brief Add labels
  *
  */
-void ValueLabelVarsRecord::process(SPSSColumns & /* columns */)
+void ValueLabelVarsRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
-}
+	for (size_t i = 0; i < _vars.size(); ++i)
+	{
+		// Get the next applicable column.
+		SPSSImportColumn* column = dataset->getColumn(_vars[i]);
+		// Iterate over all the found labels meta.
+		for (size_t j = 0; j < _Labels.size(); ++j)
+		{
+			LabelMeta &meta = _Labels[j];
+			SPSSImportColumn::LabelByValueDictEntry entry(meta.value, meta.label);
+			column->spssLables.insert( entry );
+		}
+	}
 
-/**
- * @brief processStrings Converts any strings in the data fields.
- * @param dictData The
- *
- * Should be implemented in classes where holdStrings maybe or is true.
- *
- */
-void ValueLabelVarsRecord::processStrings(const CodePageConvert &converter)
-{
-	for (size_t i = 0; i < _Labels.size(); ++i)
-		_Labels[i].label = converter.convertCodePage(_Labels[i].label);
 }
 

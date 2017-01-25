@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -72,6 +72,12 @@ private:
 	EngineSync* _engineSync;
 
 	void packageChanged(DataSetPackage *package);
+	void packageDataChanged(DataSetPackage *package
+							, std::vector<std::string> &changedColumns
+							, std::vector<std::string> &missingColumns
+							, std::map<std::string, std::string> &changeNameColumns
+							);
+
 
 	bool closeRequestCheck(bool &isSaving);
 
@@ -86,8 +92,6 @@ private:
 	void showForm(Analysis *analysis);
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
-
-	void setupOptionPanelSize();
 
 	QWidget *_buttonPanel;
 	QVBoxLayout *_buttonPanelLayout;
@@ -129,7 +133,6 @@ signals:
 	void resultsDocumentChanged();
 
 private slots:
-
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisUserDataLoadedHandler(Analysis *analysis);
 	void analysisSelectedHandler(int id);
@@ -146,6 +149,9 @@ private slots:
 	void updateUserDataHandler(int id, QString key);
 	void removeAnalysisRequestHandler(int id);
 	void removeAllAnalyses();
+	void refreshAllAnalyses();
+	void refreshCurrentAnalysis();
+	void resetTableView();
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
 	void collapseSelected();
@@ -165,11 +171,13 @@ private slots:
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);
+	void data_splitterMovedHandler(int, int);
 
 	void hideOptionsPanel();
 	void showOptionsPanel();
-	void showTableView();
-	void hideTableView();
+	void showDataPanel();
+	void hideDataPanel();
+	void showVariablesPage();
 
 	void analysisOKed();
 	void analysisRunned();
@@ -182,6 +190,8 @@ private slots:
 
 	void saveKeysSelected();
 	void openKeysSelected();
+	void syncKeysSelected();
+	void refreshKeysSelected();
 
 	void illegalOptionStateChanged();
 	void fatalError();

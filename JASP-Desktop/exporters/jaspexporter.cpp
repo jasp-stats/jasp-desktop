@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -87,6 +87,8 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	Json::Value metaData = Json::objectValue;
 
 	Json::Value &dataSet = metaData["dataSet"];
+	metaData["dataFilePath"] = Json::Value(package->dataFilePath);
+	metaData["dataFileTimestamp"] = Json::Value(package->dataFileTimestamp);
 	dataSet["rowCount"] = Json::Value(dataset ? dataset->rowCount() : 0);
 	dataSet["columnCount"] = Json::Value(dataset ? dataset->columnCount(): 0);
 	Json::Value columnsData = Json::arrayValue;
@@ -130,6 +132,17 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 					keyValuePair.append(pair.second.text());
 					labelsMetaData.append(keyValuePair);
 					labelIndex += 1;
+				}
+
+				Json::Value &orgValuesMetaData = columnLabelData["orgValues"];
+				const std::map<int, std::string> &orgValues = labels.getOrgValues();
+				for (std::map<int, std::string>::const_iterator iter = orgValues.begin(); iter != orgValues.end(); ++iter)
+				{
+					const std::pair<int, std::string> &pair = *iter;
+					Json::Value keyValuePair = Json::arrayValue;
+					keyValuePair.append(pair.first);
+					keyValuePair.append(pair.second);
+					orgValuesMetaData.append(keyValuePair);
 				}
 			}
 		}

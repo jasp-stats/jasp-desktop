@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,20 +29,49 @@ using namespace boost::interprocess;
 using namespace boost;
 using namespace std;
 
+int Column::count = 0;
+
+const string Column::_emptyValue = ".";
+const string Column::_emptyValues[] = {"NaN", "nan", "", " ", "."};
+const int Column::_emptyValuesCount = sizeof(_emptyValues) /sizeof(_emptyValues[0]);
+
+bool Column::isEmptyValue(const string& val)
+{
+
+	for (int i = 0; i < _emptyValuesCount; ++i)
+	{
+		if (_emptyValues[i] == val)
+			return true;
+	}
+	return false;
+}
+
 Column::Column(managed_shared_memory *mem) :
 	_name(mem->get_segment_manager()),
 	_blocks(std::less<ull>(), mem->get_segment_manager()),
 	_labels(mem)
 {
+	id = ++count;
 	_mem = mem;
 	_rowCount = 0;
 	_columnType = Column::ColumnTypeNominal;
 }
 
+Column::Column(const Column &col) :
+	_name(col._name),
+	_blocks(col._blocks),
+	_labels(col._labels)
+{
+	id = ++count;
+	_mem = col._mem;
+	_rowCount = col._rowCount;
+	_columnType = col._columnType;
+}
+
 Column::~Column()
 {
-	BOOST_FOREACH(BlockEntry &entry, _blocks)
-		_mem->destroy_ptr(&*entry.second);
+	//BOOST_FOREACH(BlockEntry &entry, _blocks)
+		//_mem->destroy_ptr(&*entry.second);
 }
 
 Labels &Column::labels()
@@ -80,141 +109,200 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 	if (newColumnType == _columnType)
 		return;
 
+	bool success = true;
 	if (newColumnType == ColumnTypeOrdinal || newColumnType == ColumnTypeNominal)
 	{
 		if (_columnType == ColumnTypeNominal || _columnType == ColumnTypeOrdinal)
 		{
 			_columnType = newColumnType;
 		}
-		else if (_columnType == ColumnTypeNominalText)
+		else
 		{
-			Labels& labels = this->labels();
-			labels.clear();
-
-			map<int, int> oldIndexToNewIndex;
-
-			for (size_t i = 0; i < labels.size(); i++)
+			vector<int> values;
+			set<int> uniqueValues;
+			if (_columnType == ColumnTypeNominalText)
 			{
-				try
+				Ints::iterator intIterator = AsInts.begin();
+				for (; intIterator != AsInts.end(); intIterator++)
 				{
-					std::string text = labels.labelFor(i).text();
-					int value = lexical_cast<int>(text);
-					int raw = labels.add(value);
-					oldIndexToNewIndex[i] = raw;
+					int value = *intIterator;
+					string display = stringFromRaw(value);
+					try
+					{
+						if (isEmptyValue(display))
+						{
+							values.push_back(INT_MIN);
+						}
+						else
+						{
+							int value = lexical_cast<int>(display);
+							values.push_back(value);
+							uniqueValues.insert(value);
+						}
+					}
+					catch (...)
+					{
+						success = false;
+						break;
+					}
 				}
-				catch (...)
+			}
+			else if (_columnType == ColumnTypeScale)
+			{
+				Doubles::iterator doubles = this->AsDoubles.begin();
+				for (; doubles != this->AsDoubles.end(); doubles++)
 				{
-				}
-			}
-
-			Ints::iterator intIterator = AsInts.begin();
-			for (; intIterator != AsInts.end(); intIterator++)
-			{
-				int value = *intIterator;
-				map<int, int>::iterator itr = oldIndexToNewIndex.find(value);
-				if (itr != oldIndexToNewIndex.end())
-					*intIterator = itr->second;
-				else
-					*intIterator = INT_MIN;
-
-			}
-
-			_columnType = newColumnType;
-		}
-		else if (_columnType == ColumnTypeScale)
-		{
-			std::set<int> uniqueValues;
-
-			Doubles::iterator doubles = this->AsDoubles.begin();
-			for (; doubles != this->AsDoubles.end(); doubles++)
-			{
-				int v = (int)*doubles;
-				if ( ! std::isnan(v))
-					uniqueValues.insert(v);
-			}
-
-			Labels& labels = this->labels();
-			map<int, int> valueToIndex;
-
-			set<int>::iterator itr = uniqueValues.begin();
-			for (; itr != uniqueValues.end(); itr++)
-			{
-				int v = *itr;
-				int raw = labels.add(v);
-				valueToIndex[v] = raw;
-			}
-
-			Ints::iterator ints = this->AsInts.begin();
-			Ints::iterator end = this->AsInts.end();
-			doubles = this->AsDoubles.begin();
-
-			for (; ints != end; ints++, doubles++)
-			{
-				double value = *doubles;
-				if (std::isnan(value))
-				{
-					*ints = INT_MIN;
-				}
-				else
-				{
-					int v = (int)*doubles;
-					int index = valueToIndex[v];
-					*ints = index;
+					try
+					{
+						if (*doubles != NAN)
+						{
+							int v = lexical_cast<int>(*doubles);
+							uniqueValues.insert(v);
+							values.push_back(v);
+						}
+						else
+						{
+							values.push_back(INT_MIN);
+						}
+					}
+					catch (...)
+					{
+						success = false;
+						break;
+					}
 				}
 			}
 
-			_columnType = newColumnType;
+			if (success)
+			{
+				setColumnAsNominalOrOrdinal(values, uniqueValues, newColumnType == ColumnTypeOrdinal);
+			}
+			else if (_columnType == ColumnTypeScale && newColumnType == ColumnTypeNominal) // set the column as ColumnTypeNominalText
+			{
+				vector<string> values;
+				Doubles::iterator doubles = this->AsDoubles.begin();
+				for (; doubles != this->AsDoubles.end(); doubles++)
+				{
+					std::ostringstream strs;
+					strs << *doubles;
+					values.push_back(strs.str());
+				}
+				setColumnAsNominalString(values);
+			}
 		}
 	}
 	else if (newColumnType == Column::ColumnTypeScale)
 	{
-		if (_columnType == Column::ColumnTypeNominal || _columnType == ColumnTypeOrdinal)
+		vector<double> values;
+		Ints::iterator ints = AsInts.begin();
+		Ints::iterator end = AsInts.end();
+
+		if (_columnType == Column::ColumnTypeNominal || _columnType == Column::ColumnTypeOrdinal)
 		{
-			Ints::iterator ints = this->AsInts.begin();
-			Ints::iterator end = this->AsInts.end();
-			Doubles::iterator doubles = this->AsDoubles.begin();
-
-			for (; ints != end; ints++, doubles++)
+			for (; ints != end; ints++)
 			{
-				int value = *ints;
-				string display = stringFromRaw(value);
-				double newValue;
+				int intValue = *ints;
+				double doubleValue;
 
-				try
-				{
-					newValue = lexical_cast<double>(display);
-				}
-				catch (...)
-				{
-					newValue = NAN;
-				}
+				if (intValue == INT_MIN)
+					doubleValue = NAN;
+				else
+					doubleValue = (double)intValue;
 
-				*doubles = newValue;
+				values.push_back(doubleValue);
 			}
-
-			_columnType = newColumnType;
 		}
 		else if (_columnType == ColumnTypeNominalText)
 		{
-			Ints::iterator ints = AsInts.begin();
-			Ints::iterator end = AsInts.end();
-			Doubles::iterator doubles = AsDoubles.begin();
-
-			for (; ints != end; ints++, doubles++)
+			for (; ints != end; ints++)
 			{
 				try
 				{
-					*doubles = lexical_cast<double>(this->stringFromRaw(*ints));
+					string value = this->stringFromRaw(*ints);
+					double doubleValue;
+
+					if (isEmptyValue(value))
+						doubleValue = NAN;
+					else
+						doubleValue = lexical_cast<double>(value);
+
+					values.push_back(doubleValue);
 				}
 				catch (...)
 				{
-					*doubles = NAN;
+					success = false;
+					break;
 				}
 			}
+		}
 
-			_columnType = newColumnType;
+		if (success)
+			setColumnAsScale(values);
+	}
+}
+
+void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
+{
+	_labels.sync(uniqueValues);
+
+	Ints::iterator intInputItr = AsInts.begin();
+
+	BOOST_FOREACH(int value, values)
+	{
+		*intInputItr = value;
+		intInputItr++;
+	}
+
+	setColumnType(is_ordinal ? Column::ColumnTypeOrdinal : Column::ColumnTypeNominal);
+
+}
+
+void Column::setColumnAsScale(const std::vector<double> &values)
+{
+	_labels.clear();
+	Doubles::iterator doubleInputItr = AsDoubles.begin();
+
+	BOOST_FOREACH(double value, values)
+	{
+		*doubleInputItr = value;
+		doubleInputItr++;
+	}
+
+	setColumnType(Column::ColumnTypeScale);
+
+}
+
+void Column::setColumnAsNominalString(const vector<string> &values)
+{
+	vector<string> sorted = values;
+	sort(sorted.begin(), sorted.end());
+	vector<string> cases;
+	unique_copy(sorted.begin(), sorted.end(), back_inserter(cases));
+	sort(cases.begin(), cases.end());
+
+	for (vector<string>::iterator itr = cases.begin(); itr != cases.end(); itr++)
+	{
+		if (*itr == "" || *itr == " ") // remove empty string
+		{
+			cases.erase(itr);
+			break;
 		}
 	}
+
+	std::map<string, int> map = _labels.syncStrings(cases);
+
+	Column::Ints::iterator intInputItr = AsInts.begin();
+
+	BOOST_FOREACH (const string &value, values)
+	{
+		if (value == "" || value == " ")
+			*intInputItr = INT_MIN;
+		else
+			*intInputItr = map[value];
+		intInputItr++;
+	}
+
+	setColumnType(Column::ColumnTypeNominalText);
 
 }
 
@@ -226,7 +314,7 @@ int Column::rowCount() const
 string Column::stringFromRaw(int value) const
 {
 	if (value == INT_MIN)
-		return ".";
+		return _emptyValue;
 
 	if (_labels.size() > 0)
 		return _labels.labelFor(value).text();
@@ -312,38 +400,100 @@ void Column::setValue(int rowIndex, double value)
 	block->Data[blockIndex].d = value;
 }
 
-string Column::operator [](int index)
+bool Column::isValueEqual(int rowIndex, double value)
 {
+	if (rowIndex >= _rowCount)
+		return false;
+
 	if (_columnType == Column::ColumnTypeScale)
 	{
-		double v = AsDoubles[index];
+		double d = AsDoubles[rowIndex];
+		if (std::isnan(value))
+			return std::isnan(d);
+		else
+			return d == value;
+	}
 
-		if (v > DBL_MAX)
+	return false;
+}
+
+bool Column::isValueEqual(int rowIndex, int value)
+{
+	if (rowIndex >= _rowCount)
+		return false;
+
+	if (_columnType == Column::ColumnTypeScale)
+		return AsDoubles[rowIndex] == value;
+
+	int intValue = AsInts[rowIndex];
+	if (intValue == INT_MIN)
+		return value == INT_MIN;
+
+	if (_labels.size() > 0)
+	{
+		Label label = _labels.labelFor(intValue);
+		if (label.hasIntValue())
+			return label.value() == value;
+	}
+	return false;
+}
+
+bool Column::isValueEqual(int rowIndex, const string &value)
+{
+	if (rowIndex >= _rowCount)
+		return false;
+
+	if (_columnType == Column::ColumnTypeScale)
+	{
+		double v = AsDoubles[rowIndex];
+		stringstream s;
+		s << v;
+		string str = s.str();
+		return str == value;
+	}
+
+	return _labels.getOrgValue(AsInts[rowIndex]) == ((value == "" || value == " ") ? _emptyValue : value);
+}
+
+string Column::operator [](int index)
+{
+	string result = _emptyValue;
+
+	if (index < _rowCount)
+	{
+		if (_columnType == Column::ColumnTypeScale)
 		{
-			char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
-			return string(inf);
-		}
-		else if (v < -DBL_MAX)
-		{
-			char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
-			return string(ninf);
-		}
-		else if (std::isnan(v))
-		{
-			return ".";
+			double v = AsDoubles[index];
+
+			if (v > DBL_MAX)
+			{
+				char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
+				result = string(inf);
+			}
+			else if (v < -DBL_MAX)
+			{
+				char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
+				return string(ninf);
+			}
+			else if (std::isnan(v))
+			{
+				result = _emptyValue;
+			}
+			else
+			{
+				stringstream s;
+				s << v;
+				result = s.str();
+			}
 		}
 		else
 		{
-			stringstream s;
-			s << v;
-			return s.str();
+			int value = AsInts[index];
+			result = stringFromRaw(value);
 		}
 	}
-	else
-	{
-		int value = AsInts[index];
-		return stringFromRaw(value);
-	}
+
+	return result;
 }
 
 void Column::append(int rows)
@@ -370,12 +520,12 @@ void Column::append(int rows)
 	int rowsLeft = rows - room;
 	if (rowsLeft <= 0)
 	{
-		block->insert(block->rowCount(), rows);
+		block->insert(rows);
 		_rowCount += rows;
 		return;
 	}
 
-	block->insert(block->rowCount(), room);
+	block->insert(room);
 	_rowCount += room;
 
 	int newBlocksRequired = rowsLeft / DataBlock::capacity();
@@ -389,7 +539,7 @@ void Column::append(int rows)
 		DataBlock *newBlock = _mem->construct<DataBlock>(anonymous_instance)();
 
 		int toInsert = std::min(rowsLeft, DataBlock::capacity());
-		newBlock->insert(0, toInsert);
+		newBlock->insert(toInsert);
 		rowsLeft -= toInsert;
 
 		id += DataBlock::capacity();
@@ -407,6 +557,48 @@ void Column::append(int rows)
 	}
 }
 
+void Column::truncate(int rows)
+{
+	if (rows <= 0) return;
+
+	BlockMap::reverse_iterator itr = _blocks.rbegin();
+	DataBlock *block = itr->second.get();
+
+	int rowsToDelete = rows;
+
+	if (rowsToDelete > _rowCount)
+		rowsToDelete = _rowCount;
+
+	while (rowsToDelete > 0)
+	{
+		if (block->rowCount() >= rowsToDelete)
+		{
+			block->erase(rowsToDelete);
+			_rowCount -= rowsToDelete;
+			rowsToDelete = 0;
+		}
+		else
+		{
+			rowsToDelete -= block->rowCount();
+			_rowCount -= block->rowCount();
+			block->erase(block->rowCount());
+			//_mem->destroy_ptr<DataBlock>(block);
+			itr++;
+			if (itr == _blocks.rend())
+			{
+				std::cout << "Try to erase more blocks than existing!!" << std::endl;
+				std::cout.flush();
+				rowsToDelete = 0;
+				_rowCount = 0;
+			}
+			else
+			{
+				block = itr->second.get();
+			}
+		}
+	}
+}
+
 void Column::setColumnType(Column::ColumnType columnType)
 {
 	_columnType = columnType;
@@ -414,39 +606,10 @@ void Column::setColumnType(Column::ColumnType columnType)
 
 void Column::setRowCount(int rowCount)
 {
-	//std::cout << "setting row count, old " << _rowCount << " new " << rowCount << "\n";
-	//std::cout.flush();
-
-	if (rowCount == this->rowCount())
-		return;
-
 	if (rowCount > this->rowCount())
-	{
 		append(rowCount - this->rowCount());
-		return;
-	}
-
-	_rowCount = rowCount;
-
-	for (BlockMap::iterator itr = _blocks.upper_bound(rowCount); itr != _blocks.end(); itr++)
-	{
-		BlockEntry &entry = *itr;
-		DataBlock *block = entry.second.get();
-		_mem->destroy_ptr<DataBlock>(block);
-		entry.second = NULL;
-	}
-
-	_blocks.erase(_blocks.upper_bound(rowCount), _blocks.end());
-
-}
-
-void Column::insert(int rowCount, int index)
-{
-	//BlockMap::iterator itr = _blocks.lower_bound(index);
-
-	// should check that itr != end()
-
-
+	else if (rowCount < this->rowCount())
+		truncate(this->rowCount() - rowCount);
 }
 
 Column::Ints::IntsStruct()
@@ -471,7 +634,9 @@ int& Column::IntsStruct::operator [](int rowIndex)
 
 	if (itr == parent->_blocks.end())
 	{
-		//qDebug() << "Column::Ints[], bad rowIndex";
+		std::cout << "Column::Ints[], bad rowIndex: " << rowIndex << std::endl;
+		std::cout << "Nb of blocks: " << parent->_blocks.size() << std::endl;
+		std::cout.flush();
 	}
 
 	int blockId = itr->first;

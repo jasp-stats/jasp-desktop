@@ -1,6 +1,7 @@
 {
 	"name": "SummaryStatsTTestBayesianPairedSamples",
 	"autorun": true,
+	"usedata": false,
 	"version": "1.0",
 	"options": [
 		{
@@ -47,6 +48,11 @@
 		{
 			"default": false,
 			"name": "plotBayesFactorRobustness",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotBayesFactorRobustnessAdditionalInfo",
 			"type": "Boolean"
 		}
 	]

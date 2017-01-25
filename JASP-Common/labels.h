@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,7 +19,9 @@
 #define LABELS_H
 
 #include "label.h"
+#include <map>
 #include <vector>
+#include <set>
 
 #include <boost/container/vector.hpp>
 
@@ -43,9 +45,10 @@ public:
 	int add(const std::string &display);
 	int add(int raw, const std::string &display);
 	int add(int raw, int display);
+	void sync(const std::set<int> &values);
+	std::map<std::string, int> syncStrings(const std::vector<std::string> &values);
 
 	const Label &labelFor(int raw) const;
-	const LabelEntry &at(int index) const;
     void setLabel(int index, const std::string &display);
 	void set(std::vector<LabelEntry> &labels);
 	size_t size() const;
@@ -58,9 +61,14 @@ public:
 	const_iterator begin() const;
 	const_iterator end() const;
 
+	const std::map<int, std::string> &getOrgValues();
+	std::string getOrgValue(int);
+	void setOrgValue(int key, std::string value);
+
 private:
 	boost::interprocess::managed_shared_memory *_mem;
 	LabelVector _labels;
+	std::map<int, std::string> _orgValues; // Original value associated with the label: used only when value is a string and when the label has been changed.
 };
 
 namespace boost

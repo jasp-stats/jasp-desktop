@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,54 +20,23 @@
 
 
 #include "systemfileformat.h"
-#include "debug_cout.h"
+#include "spssutils.h"
 #include "numericconverter.h"
-#include "spssrecinter.h"
+#include "../spssimporter.h"
 
 #include <set>
 
+
 namespace spss
 {
-
-	class RecordRoot
-	{
-	public:
-
-		/**
-		  * @brief RecordRoot default Ctor
-		  *
-		  * When Constructing a FileHeaderRecord fileHEader is 0.
-		  */
-		RecordRoot();
-
-		~RecordRoot();
-
-		/**
-		 * @brief processStrings Converts any strings in the data fields.
-		 * @param dictData The
-		 *
-		 * Should be implemented in classes where holdStrings maybe or is true.
-		 *
-		 */
-		virtual void processStrings(const CodePageConvert &converter) {};
-
-		/**
-		 * @brief processAllStrings Calls processStrings(const SpssCPConvert) on all memeber of _stringholders.
-		 * @param converter The convertor to pass on.
-		 */
-		static void processAllStrings(const CodePageConvert &converter);
-
-	protected:
-		static std::set<RecordRoot *> * _pRecords; /** < Holds all instances where holdsStrings == true */
-	};
+class SPSSImportDataSet;
 
 /**
   * @brief The ReadableRecord class: Base class for readable objects.
   *
   */
 
-template <RecordTypes recType>
-class ReadableRecord : public RecordRoot
+template <RecordTypes recType> class ReadableRecord
 {
 public:
 
@@ -96,7 +65,7 @@ public:
 	 *
 	 * Implematations should examine columns to determine the record history.
 	 */
-	virtual void process(SPSSColumns & columns) = 0;\
+	virtual void process(SPSSImporter* importer, SPSSImportDataSet* dataset) = 0;
 
 	static const RecordTypes RECORD_TYPE = recType;
 
@@ -138,7 +107,6 @@ ReadableRecord<rT>::ReadableRecord(RecordTypes fileType)
 
 template <RecordTypes rT>
 ReadableRecord<rT>::ReadableRecord(const NumericConverter &, RecordTypes fileType, SPSSStream &from)
-	: RecordRoot()
 {
 	if (!from.good())
 	{
@@ -164,6 +132,7 @@ ReadableRecord<rT>::ReadableRecord(const NumericConverter &, RecordTypes fileTyp
 	__BUILD_BUG_ON(sizeof(Char_60) != 60);
 	__BUILD_BUG_ON(sizeof(Char_64) != 64);
 	__BUILD_BUG_ON(sizeof(Char_80) != 80);
+	__BUILD_BUG_ON(sizeof(SpssDataCell) != 8);
 }
 
 #undef BUILD_BUG_ON

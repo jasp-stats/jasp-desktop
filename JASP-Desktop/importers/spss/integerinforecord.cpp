@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 //
 
 #include "integerinforecord.h"
+#include "spssimportdataset.h"
 
 
 using namespace std;
@@ -97,8 +98,8 @@ IntegerInfoRecord::~IntegerInfoRecord()
 }
 
 
-void IntegerInfoRecord::process(SPSSColumns &columns)
+void IntegerInfoRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	// Build a string convertor based on the charactor code.
-	columns.setStrCnvrtr( new CodePageConvert(CodePageConvert::findIANANameFromSPSS(character_code())));
+	dataset->setStrCnvrtr( new CodePageConvert(CodePageConvert::findIANANameFromSPSS(character_code())));
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -21,6 +21,11 @@
 
 #include <QDialog>
 #include <QAbstractButton>
+#include <QWebView>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QUrl>
 
 namespace Ui {
 class AboutDialog;
@@ -37,9 +42,15 @@ public:
 private slots:
 	void on_buttonBox_clicked(QAbstractButton *button);
 	void aboutPageLoaded(bool success);
+	void downloadFinished();
 
 private:
+	void checkForJaspUpdate();
 	Ui::AboutDialog *ui;
+	QWebView *_aboutWebView;
+	QNetworkAccessManager *m_network_manager;	// make the HTTP GET request
+	QNetworkReply *m_network_reply;
+	QByteArray *m_pBuffer;
 };
 
 #endif // ABOUTDIALOG_H

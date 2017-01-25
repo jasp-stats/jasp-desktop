@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -76,6 +76,8 @@ ContingencyTablesForm::ContingencyTablesForm(QWidget *parent) :
 
 	ui->groupCochrans->hide();
 	ui->groupNominalByInterval->hide();
+
+	ui->VovkSellkeMPR->hide();
 #else
 	ui->lambda->setStyleSheet("background-color: pink;");
 	ui->uncertaintyCoefficient->setStyleSheet("background-color: pink;");
@@ -95,6 +97,9 @@ ContingencyTablesForm::ContingencyTablesForm(QWidget *parent) :
 
 	ui->groupCochrans->setStyleSheet("background-color: pink;");
 	ui->groupNominalByInterval->setStyleSheet("background-color: pink;");
+
+	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
+
 #endif
 
 	ui->oddsRatioConfidenceIntervalInterval->setLabel("Confidence interval");

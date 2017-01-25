@@ -514,7 +514,7 @@
 			list (name = "P(M|data)", type = "number", format = "sf:4;dp:3;log10"),
 			list (name = "BFM", type = "number", format = "sf:4;dp:3;log10", title = paste (bfm.title, sep = "")),
 			list (name = "BF10", type = "number", format = "sf:4;dp:3;log10", title = paste (bf.title, sep = "")),
-			list (name = "% error", type="number", format="sf:4;dp:3")
+			list (name = "error %", type="number", format="sf:4;dp:3")
 		)
 	if (options$bayesFactorType == "LogBF10") {
 		fields[[4]] <- list (name = "BFM", type = "number", format = "sf:4;dp:3", title = paste (bfm.title, sep = ""))
@@ -585,7 +585,7 @@
 			}
 		}
 		rows [[1]] [["BF10"]] <- 0
-		rows [[1]] [["% error"]] <- ""
+		rows [[1]] [["error %"]] <- ""
 
 		for (m in 1:no.models) {
 			if (model$models [[m]]$ready) {
@@ -607,7 +607,7 @@
 						rows [[m+1]] [["BF10"]] <- .clean (- bayes.factors [m + 1] / log (10))
 					}
 				}
-				rows [[m+1]] [["% error"]] <- .clean (100*numerical.error [m + 1])
+				rows [[m+1]] [["error %"]] <- .clean (100*numerical.error [m + 1])
 			} else {
 				if (populate == FALSE) {
 					index <- .addFootnote (footnotes, text = model$models [[m]]$error.message)
@@ -617,7 +617,10 @@
 			}
 		}
 	}
-	modelTable [["title"]] <- paste ("Model Comparison - ", options$dependent, sep = "")
+	
+	if (is.null(status$analysis.type) || status$analysis.type != "rmANOVA") {
+		modelTable [["title"]] <- paste ("Model Comparison - ", options$dependent, sep = "")
+	}
 	modelTable [["data"]] <- rows
 	modelTable [["footnotes"]] <- as.list (footnotes)
 
@@ -781,7 +784,9 @@
 		effectsTable [["data"]] <- rows
 	}
 
- 	effectsTable [["title"]] <- paste ("Analysis of Effects - ", options$dependent, sep = "")
+	if (is.null(status$analysis.type) || status$analysis.type != "rmANOVA") {
+		effectsTable [["title"]] <- paste ("Analysis of Effects - ", options$dependent, sep = "")
+	}
 
 	if (!status$ready)
 		effectsTable [["error"]] <- list (errorType = "badData")

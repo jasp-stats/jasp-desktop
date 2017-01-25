@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>710</width>
-    <height>2464</height>
+    <height>3012</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1137,14 +1137,14 @@
                 <number>9</number>
                </property>
                <item row="2" column="0">
-                <widget class="QRadioButton" name="standardError">
+                <widget class="QRadioButton" name="_2standardError">
                  <property name="text">
                   <string>Standard error</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QRadioButton" name="confidenceInterval">
+                <widget class="QRadioButton" name="_1confidenceInterval">
                  <property name="text">
                   <string>Confidence interval</string>
                  </property>
@@ -1211,8 +1211,8 @@
                 </widget>
                </item>
               </layout>
-              <zorder>confidenceInterval</zorder>
-              <zorder>standardError</zorder>
+              <zorder>_1confidenceInterval</zorder>
+              <zorder>_2standardError</zorder>
               <zorder>widgetConfidenceIntervalInterval</zorder>
              </widget>
             </item>
@@ -1412,8 +1412,8 @@
            <property name="title">
             <string>Display</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_10">
-            <item row="2" column="0">
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="2" column="0" rowspan="2" colspan="2">
              <widget class="QWidget" name="widgetEffectSizeTypes" native="true">
               <property name="enabled">
                <bool>false</bool>
@@ -1428,6 +1428,13 @@
                <property name="bottomMargin">
                 <number>0</number>
                </property>
+               <item row="0" column="1">
+                <widget class="BoundCheckBox" name="effectSizePartialEtaSquared">
+                 <property name="text">
+                  <string>partial η²</string>
+                 </property>
+                </widget>
+               </item>
                <item row="0" column="2">
                 <widget class="BoundCheckBox" name="effectSizeOmegaSquared">
                  <property name="text">
@@ -1442,13 +1449,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="1">
-                <widget class="BoundCheckBox" name="effectSizePartialEtaSquared">
-                 <property name="text">
-                  <string>partial η²</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>
@@ -1459,7 +1459,14 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="3">
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="effectSizeEstimates">
+              <property name="text">
+               <string>Estimates of effect size</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
              <spacer name="horizontalSpacer_5">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1472,10 +1479,16 @@
               </property>
              </spacer>
             </item>
-            <item row="1" column="0">
-             <widget class="BoundCheckBox" name="effectSizeEstimates">
+            <item row="4" column="0">
+             <widget class="BoundCheckBox" name="VovkSellkeMPR">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
-               <string>Estimates of effect size</string>
+               <string>Vovk-Sellke Maximum p-Ratio</string>
               </property>
              </widget>
             </item>
@@ -1521,7 +1534,6 @@
   <zorder>widget_10</zorder>
   <zorder>groupAssumptions</zorder>
   <zorder>profilePlot</zorder>
-  <zorder>verticalSpacer_3</zorder>
   <zorder>topWidget</zorder>
  </widget>
  <customwidgets>
@@ -1534,11 +1546,6 @@
    <class>AvailableFieldsListView</class>
    <extends>QListView</extends>
    <header>widgets/availablefieldslistview.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>GroupBox</class>
@@ -1563,6 +1570,11 @@
    <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
+  </customwidget>
+  <customwidget>
    <class>boundSingleItemView</class>
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
@@ -1573,15 +1585,15 @@
    <header>widgets/expanderbutton.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
+  <customwidget>
    <class>AnovaModelWidget</class>
    <extends>QWidget</extends>
    <header>widgets/anovamodelwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundComboBox</class>
-   <extends>QComboBox</extends>
-   <header>widgets/boundcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>BoundTableView</class>
@@ -1630,7 +1642,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>confidenceInterval</sender>
+   <sender>_1confidenceInterval</sender>
    <signal>toggled(bool)</signal>
    <receiver>widgetConfidenceIntervalInterval</receiver>
    <slot>setEnabled(bool)</slot>

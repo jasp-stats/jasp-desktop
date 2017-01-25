@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -28,11 +28,13 @@
 class MainTableHorizontalHeader : public QHeaderView
 {
 	Q_OBJECT
+
 public:
 	explicit MainTableHorizontalHeader(QWidget *parent = 0);
 
 signals:
 	void columnTypeChanged(int columnIndex, Column::ColumnType newColumnType);
+	void columnNamePressed(int columnIndex);
 
 public slots:
 

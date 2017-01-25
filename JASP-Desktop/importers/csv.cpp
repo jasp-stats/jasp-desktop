@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -511,7 +511,7 @@ bool CSV::utf16to32(uint32_t &out, char *in, int inSize, int& bytesRead, bool bi
 	}
 
 
-	if (*in >= UNI_SUR_HIGH_START && *in <= UNI_SUR_LOW_START)
+	if ((uint32_t)(*in) >= UNI_SUR_HIGH_START && (uint32_t)(*in) <= UNI_SUR_LOW_START)
 	{
 		if (inSize < 4)
 			return false;

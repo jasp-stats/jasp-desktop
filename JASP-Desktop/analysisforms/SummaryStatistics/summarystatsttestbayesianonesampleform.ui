@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>422</height>
+    <height>431</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,18 +20,12 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="1">
-    <spacer name="horizontalSpacer_2">
+   <item row="1" column="0" colspan="2">
+    <widget class="Line" name="line">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
+    </widget>
    </item>
    <item row="0" column="0">
     <widget class="BoundGroupBox" name="missingValues">
@@ -103,12 +97,18 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
-    <widget class="Line" name="line">
+   <item row="0" column="1">
+    <spacer name="horizontalSpacer_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-    </widget>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item row="2" column="0" colspan="2">
     <widget class="QWidget" name="gridWidget" native="true">
@@ -386,6 +386,19 @@
          <string>Plots</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
+         <item row="3" column="0" colspan="3">
+          <widget class="BoundCheckBox" name="plotBayesFactorRobustness">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Bayes factor robustness check</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0" colspan="3">
           <widget class="BoundCheckBox" name="plotPriorAndPosterior">
            <property name="enabled">
@@ -399,6 +412,16 @@
            </property>
            <property name="text">
             <string>Prior and posterior</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QWidget" name="widget_4" native="true">
+           <property name="maximumSize">
+            <size>
+             <width>16</width>
+             <height>16777215</height>
+            </size>
            </property>
           </widget>
          </item>
@@ -418,8 +441,21 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0" colspan="3">
-          <widget class="BoundCheckBox" name="plotBayesFactorRobustness">
+         <item row="4" column="0">
+          <widget class="QWidget" name="widget_5" native="true">
+           <property name="maximumSize">
+            <size>
+             <width>16</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="BoundCheckBox" name="plotBayesFactorRobustnessAdditionalInfo">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -427,17 +463,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Bayes factor robustness check</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QWidget" name="widget_4" native="true">
-           <property name="maximumSize">
-            <size>
-             <width>16</width>
-             <height>16777215</height>
-            </size>
+            <string>Additional info</string>
            </property>
           </widget>
          </item>
@@ -473,6 +499,22 @@
    <sender>plotPriorAndPosterior</sender>
    <signal>toggled(bool)</signal>
    <receiver>plotPriorAndPosteriorAdditionalInfo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>318</x>
+     <y>588</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>611</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotBayesFactorRobustness</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>plotBayesFactorRobustnessAdditionalInfo</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">

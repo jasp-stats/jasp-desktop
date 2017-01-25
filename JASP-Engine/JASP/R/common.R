@@ -51,8 +51,10 @@ run <- function(name, options.as.json.string, perform="run") {
 	
 	if (class(results) == "try-error") {
 
-		error <- gsub("\n", "\\\\n", as.character(results), fixed=TRUE)
-		errorMessage <- paste("This analysis terminated unexpectedly. Please contact its author.", error, sep="\\\\n\\\\n")
+		error <- gsub("\n", "<br>", as.character(results), fixed=TRUE)
+		error <- gsub("\"", "", error, fixed=TRUE)
+		
+		errorMessage <- paste("This analysis terminated unexpectedly.<br>", error, "To receive assistence with this problem, please report the message above at: https://jasp-stats.org/bug-reports", sep="<br>")
 	
 		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 		
@@ -787,7 +789,7 @@ as.list.footnotes <- function(footnotes) {
 				item1 <- one[[name]]
 				item2 <- two[[name]]
 				
-				if (identical(item1, item2) == FALSE) {
+				if (base::identical(item1, item2) == FALSE) {
 				
 					changed[[name]] <- TRUE
 					
@@ -795,7 +797,13 @@ as.list.footnotes <- function(footnotes) {
 				
 					changed[[name]] <- FALSE
 				}
+				
+			} else {
+				
+				changed[[name]] <- TRUE
+				
 			}
+			
 		}
 		
 		for (name in names2) {
@@ -804,7 +812,7 @@ as.list.footnotes <- function(footnotes) {
 				changed[[name]] <- TRUE
 		}
 		
-	} else if (base::indentical(one, two)) {
+	} else if (base::identical(one, two)) {
 		
 		return(FALSE)
 		

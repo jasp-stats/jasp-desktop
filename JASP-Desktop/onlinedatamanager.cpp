@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -179,7 +179,7 @@ void OnlineDataManager::setNetworkAccessManager(OnlineDataManager::Provider prov
 
 QNetworkAccessManager* OnlineDataManager::getNetworkAccessManager(OnlineDataManager::Provider provider) const
 {
-	return _providers[provider];
+	return _providers.find(provider)->second;
 }
 
 

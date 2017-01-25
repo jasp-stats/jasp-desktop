@@ -119,6 +119,7 @@ AnovaRepeatedMeasuresBayesian <- function (dataset = NULL, options, perform = "r
 if (is.null(state)) {
 ##STATUS (INITIAL)
 	status <- .setBayesianLinearModelStatus (dataset, options, perform)
+	status$analysis.type <- 'rmANOVA'
 
 ## MODEL
 	model.object <- .theBayesianLinearModels (dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results = results, analysisType = "RM-ANOVA")

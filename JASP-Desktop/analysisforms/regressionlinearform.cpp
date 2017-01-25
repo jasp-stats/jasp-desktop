@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -84,11 +84,13 @@ RegressionLinearForm::RegressionLinearForm(QWidget *parent) :
 	ui->factors->hide();
 	ui->buttonAssignFactors->hide();
 	ui->label_13->hide();
+	ui->VovkSellkeMPR->hide();
 #else
     ui->missingValues->setStyleSheet("background-color: pink ;");
 	ui->factors->setStyleSheet("background-color: pink ;");
 	ui->buttonAssignFactors->setStyleSheet("background-color: pink ;");
 	ui->label_13->setStyleSheet("background-color: pink ;");
+	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
 #endif
 
 }

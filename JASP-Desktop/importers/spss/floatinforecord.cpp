@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "float.h"
 #include "floatinforecord.h"
 
 using namespace std;
@@ -52,7 +53,7 @@ FloatInfoRecord::~FloatInfoRecord()
 
 }
 
-void FloatInfoRecord::process(SPSSColumns &columns)
+void FloatInfoRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	// Do Nohting.
 }

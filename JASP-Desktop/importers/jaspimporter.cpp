@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -80,9 +80,11 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	parseJsonEntry(xData, path, "xdata.json", false);
 
 	Json::Value &dataSetDesc = metaData["dataSet"];
+
+	packageData->dataFilePath = metaData["dataFilePath"].isNull() ? std::string() : metaData["dataFilePath"].asString();
+	packageData->dataFileTimestamp = metaData["dataFileTimestamp"].isNull() ? 0 : metaData["dataFileTimestamp"].asInt();
 	columnCount = dataSetDesc["columnCount"].asInt();
 	rowCount = dataSetDesc["rowCount"].asInt();
-
 	if (rowCount < 0 || columnCount < 0)
 		throw runtime_error("Data size has been corrupted.");
 
@@ -133,6 +135,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 
 		string name = columnDesc["name"].asString();
 
+		Json::Value &orgValuesDesc = columnDesc["orgValues"];
 		Json::Value &labelsDesc = columnDesc["labels"];
 		if (labelsDesc.isNull() &&  ! xData.isNull())
 		{
@@ -140,6 +143,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 			if ( ! columnlabelData.isNull())
 			{
 				labelsDesc = columnlabelData["labels"];
+				orgValuesDesc = columnlabelData["orgValues"];
 			}
 		}
 
@@ -161,6 +165,17 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 					labels.add(key, keyValuePair.get(1, Json::nullValue).asString());
 
 					k++;
+				}
+
+				if (!orgValuesDesc.isNull())
+				{
+					for (Json::Value::iterator iter = orgValuesDesc.begin(); iter != orgValuesDesc.end(); ++iter)
+					{
+						Json::Value keyValuePair = *iter;
+						int zero = 0;
+						int key = keyValuePair.get(zero, Json::nullValue).asInt();
+						labels.setOrgValue(key, keyValuePair.get(1, Json::nullValue).asString());
+					}
 				}
 				success = true;
 			}

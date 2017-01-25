@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 #include "optioni.h"
 #include <list>
-#include "common.h"
+#include "../common.h"
 
 class OptionTerms : public OptionI<std::vector<std::vector<std::string> > >
 {

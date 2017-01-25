@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 void TextFileReadTest::initTestCase()
 {
-  if(boost::filesystem::exists("Resources/TestFiles/textfileread_test"))
+  if(boost::filesystem::exists(TESTFILE_FOLDER "textfileread_test"))
   {
     folderPathFound = true;
   }
@@ -60,7 +60,7 @@ void TextFileReadTest::asyncloaderTester_data()
   if(folderPathFound)
   {
     QTest::addColumn<QString>("filename");
-    boost::filesystem::path _path("Resources/TestFiles/textfileread_test");
+    boost::filesystem::path _path(TESTFILE_FOLDER "textfileread_test");
 
     //add files to be tested in a folder "Resources/TestFiles/spssimporter_test/spss_files"
     for (auto i = boost::filesystem::directory_iterator(_path); i != boost::filesystem::directory_iterator(); i++)
@@ -76,7 +76,6 @@ void TextFileReadTest::asyncloaderTester_data()
 
 void TextFileReadTest::asyncloaderTester()
 {
-  QString folderPath = "Resources/TestFiles/textfileread_test/";
 
   if(folderPathFound)
   {
@@ -84,7 +83,7 @@ void TextFileReadTest::asyncloaderTester()
     qDebug() << "File: " << filename;
 
     //text file open
-    QString folderPath = "Resources/TestFiles/textfileread_test/";
+    QString folderPath = TESTFILE_FOLDER "textfileread_test/";
     QString _path = folderPath.append(filename);
 
     struct fileContent fc;

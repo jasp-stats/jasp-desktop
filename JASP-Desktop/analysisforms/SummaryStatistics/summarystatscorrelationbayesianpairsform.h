@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,10 @@
 #ifndef SUMMARYSTATSCORRELATIONBAYESIANPAIRS_H
 #define SUMMARYSTATSCORRELATIONBAYESIANPAIRS_H
 
+#include <QSizePolicy>
+
 #include "../analysisform.h"
+
 
 namespace Ui {
 class SummaryStatsCorrelationBayesianPairsForm;
@@ -32,6 +35,11 @@ class SummaryStatsCorrelationBayesianPairsForm : public AnalysisForm
 public:
 	explicit SummaryStatsCorrelationBayesianPairsForm(QWidget *parent = 0);
 	~SummaryStatsCorrelationBayesianPairsForm();
+
+private slots:
+	void on_pearsonRho_clicked(bool checked);
+
+	void on_kendallTau_clicked(bool checked);
 
 private:
 	Ui::SummaryStatsCorrelationBayesianPairsForm *ui;

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,12 +26,13 @@ using namespace boost::uuids;
 using namespace boost;
 using namespace std;
 
-Analysis::Analysis(int id, string name, Options *options, Version version, bool autorun)
+Analysis::Analysis(int id, string name, Options *options, Version version, bool autorun, bool usedata)
 {
 	_id = id;
 	_name = name;
 	_options = options;
 	_autorun = autorun;
+	_usedata = usedata;
 	_version = version;
 
 	_revision = 0;
@@ -39,6 +40,14 @@ Analysis::Analysis(int id, string name, Options *options, Version version, bool 
 	_options->changed.connect(boost::bind(&Analysis::optionsChangedHandler, this, _1));
 
 	_status = Empty;
+
+	for (size_t i = 0; i < _options->size(); ++i)
+	{
+		Option *option = _options->get(i);
+		OptionVariables *variable = dynamic_cast<OptionVariables *>(option);
+		if (variable != NULL)
+			_variables.push_back(variable);
+	}
 }
 
 Analysis::~Analysis()
@@ -82,6 +91,13 @@ const Json::Value &Analysis::results() const
 const Json::Value &Analysis::userData() const
 {
 	return _userData;
+}
+
+void Analysis::refresh()
+{
+	_status = Empty;
+	_revision++;
+	toRefresh(this);
 }
 
 Analysis::Status Analysis::parseStatus(string name)
@@ -153,6 +169,16 @@ bool Analysis::isVisible()
 	return _visible;
 }
 
+bool Analysis::isRefreshBlocked()
+{
+	return _refreshBlocked;
+}
+
+void Analysis::setRefreshBlocked(bool block)
+{
+	_refreshBlocked = block;
+}
+
 Analysis::Status Analysis::status() const
 {
 	return _status;
@@ -178,6 +204,11 @@ bool Analysis::isAutorun() const
 	return _autorun;
 }
 
+bool Analysis::useData() const
+{
+	return _usedata;
+}
+
 Options *Analysis::options() const
 {
 	return _options;
@@ -185,6 +216,9 @@ Options *Analysis::options() const
 
 void Analysis::optionsChangedHandler(Option *option)
 {
+	if (_refreshBlocked)
+		return;
+
 	_status = Empty;
 	_revision++;
 	optionsChanged(this);
@@ -205,5 +239,10 @@ int Analysis::callback(Json::Value results)
 	{
 		return 1;
 	}
+}
+
+const std::vector<OptionVariables *> &Analysis::getVariables() const
+{
+	return _variables;
 }
 

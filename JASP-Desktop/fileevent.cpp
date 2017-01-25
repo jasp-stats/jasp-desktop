@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -51,6 +51,11 @@ FileEvent::~FileEvent()
 	if (_exporter != NULL) {
 		delete _exporter;
 	}
+}
+
+void FileEvent::setDataFilePath(const QString &path)
+{
+	_dataFilePath = path;
 }
 
 bool FileEvent::setPath(const QString &path)
@@ -124,6 +129,11 @@ const QString &FileEvent::path() const
 	return _path;
 }
 
+const QString &FileEvent::dataFilePath() const
+{
+	return _dataFilePath;
+}
+
 bool FileEvent::isReadOnly() const
 {
 	return _readOnly;
@@ -157,11 +167,6 @@ void FileEvent::chain(FileEvent *event)
 {
 	_chainedTo = event;
 	connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(chainedComplete(FileEvent*)));
-}
-
-void FileEvent::emitComplete()
-{
-	emit completed(this);
 }
 
 void FileEvent::chainedComplete(FileEvent *event)

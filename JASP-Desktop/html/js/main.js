@@ -44,6 +44,12 @@ $(document).ready(function () {
 		}
 	}
 
+	window.setAppYear = function () {
+		var d = new Date();
+		var year = d.getFullYear();
+		$(".app-year").text(year);
+	}
+
 	window.setAppVersion = function (version) {
 		$(".app-version").text("Version " + version);
 	}
