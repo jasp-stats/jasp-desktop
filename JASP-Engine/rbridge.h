@@ -49,6 +49,8 @@
 	void rbridge_setStateFileSource(boost::function<void(std::string &, std::string &)> source);
 	void rbridge_setDataSetSource(boost::function<DataSet *()> source);
 	std::string rbridge_run(const std::string &name, const std::string &options, const std::string &perform = "run", int ppi = 96, RCallback callback = NULL);
+	std::string rbridge_saveImage(const std::string &name, const std::string &type);
+	//std::string rbridge_saveImage(const std::string &name, const std::string &type, const std::string &height, const std::string &width);
 	std::string rbridge_check();
 
 

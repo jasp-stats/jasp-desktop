@@ -588,26 +588,25 @@ callback <- function(results=NULL) {
 
 .beginSaveImage <- function(width=320, height=320) {
 
-	#filename <- .requestTempFileNameNative("svg")
-	#grDevices::svg(filename=filename, width=width/72, height=height/72, bg="transparent")
-	
 	type <- "cairo"
 	
 	if (Sys.info()["sysname"]=="Darwin")  # OS X
 		type <- "quartz"
 	
-	multip <- .ppi / 96
-	
+	pngMultip <- .ppi / 96
+		
+	# create png file location
 	location <- .requestTempFileNameNative("png")
-	
 	relativePath <- location$relativePath
 	base::Encoding(relativePath) <- "UTF-8"
 	
-	fullPath <- paste(location$root, location$relativePath, sep="/")
-	base::Encoding(fullPath) <- "UTF-8"
+	fullPathpng <- paste(location$root, location$relativePath, sep="/")
+	base::Encoding(fullPathpng) <- "UTF-8"
 	
-	grDevices::png(filename=fullPath, width=width * multip, height=height * multip, bg="transparent", res=72 * multip, type=type)
-	
+	grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+								height=height * pngMultip, bg="transparent", 
+								res=72 * pngMultip, type=type)
+		
 	relativePath
 }
 
@@ -616,6 +615,142 @@ callback <- function(results=NULL) {
 	grDevices::dev.off()
 	
 	filename
+}
+
+.writeImage <- function(width=320, height=320, plot, 
+												format = "png", relpath = NULL){
+	# initialise output object
+	paths <- list()
+	
+	# Operating System information
+	type <- "cairo"  
+  if (Sys.info()["sysname"]=="Darwin")
+    type <- "quartz"
+  
+  # Calculate pixel multiplier
+  pngMultip <- .ppi / 96
+  
+  # Create png file location
+  location <- .requestTempFileNameNative("png")
+  if (!is.null(relpath) && is.character(relpath)){
+		relativePathpng <- relpath
+	} else {
+		relativePathpng <- location$relativePath
+	}	
+  fullPathpng <- paste(location$root, relativePathpng, sep="/")
+	base::Encoding(relativePathpng) <- "UTF-8"
+  base::Encoding(fullPathpng) <- "UTF-8"
+  
+
+	
+	if (class(plot) ==  "function" || "png" %in% format){
+		# Open graphics device and plot
+	  grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+	                 height=height * pngMultip, bg="transparent", 
+	                 res=72 * pngMultip, type=type)
+		if (class(plot) ==  "function"){
+	 		dev.control('enable')
+	 		eval(plot())
+	 		plot <- recordPlot() # save plot to R object
+	 	} else {
+			print(plot)
+		}
+	  dev.off()
+	}
+	
+	# Save path to output object
+	paths[["png"]] <- relativePathpng
+	paths[["obj"]] <- plot
+	
+  # Alternative formats
+  if ("eps" %in% format){
+    # Calculate eps pixel->inch multiplier
+    epsMultip <- .ppi / 2.4
+    
+    # Create eps file location
+    relativePatheps <- paste0(base::substr(relativePathpng, start = 1, 
+                                           stop = nchar(relativePathpng)-3),	
+															"eps")
+    base::Encoding(relativePatheps) <- "UTF-8"
+    fullPatheps <- paste0(base::substr(fullPathpng, start = 1, 
+                                       stop = nchar(fullPathpng)-3), 
+													"eps")
+    base::Encoding(fullPatheps) <- "UTF-8"
+    
+    # Open graphics device and plot
+    grDevices::cairo_ps(filename=fullPatheps, width=width/epsMultip, 
+                        height=height/epsMultip, bg="transparent")
+    print(plot)
+    dev.off()
+    
+    # Save path to output object
+    paths[["eps"]] <- relativePatheps
+  }
+  
+  # Return relative paths in list
+  paths
+}
+
+
+saveImage <- function(plotName, format, height, width){
+	state <- .retrieveState()
+	height <- state[["options"]][["plotHeight"]]
+	width <- state[["options"]][["plotWidth"]]
+	print("TEST1")
+	# Operating System information
+	type <- "cairo"  
+  if (Sys.info()["sysname"]=="Darwin")
+    type <- "quartz"
+		  
+	print("TEST2")
+  # request file location
+  location <- .requestTempFileNameNative("png")
+	relativePath <- plotName
+  fullPath <- paste(location$root, relativePath, sep="/")
+	base::Encoding(relativePath) <- "UTF-8"
+  base::Encoding(fullPath) <- "UTF-8"
+  print("TEST3")
+
+	if ("eps" %in% format){
+    # Calculate eps pixel->inch multiplier
+	print("TEST4")
+	epsMultip <- .ppi / 2.4
+	print("TEST5")
+	print(version)
+
+    # Create eps file location
+    relativePatheps <- paste0(base::substr(relativePath, start = 1, 
+                                           stop = nchar(relativePath)-3),	
+															"eps")
+    base::Encoding(relativePath) <- "UTF-8"
+    fullPatheps <- paste0(base::substr(fullPath, start = 1, 
+                                       stop = nchar(fullPath)-3), 
+													"eps")
+    base::Encoding(fullPath) <- "UTF-8"
+    
+	print(fullPatheps)
+	# Open graphics device and plot
+    grDevices::cairo_ps(filename=fullPatheps, width=width/epsMultip, 
+                        height=height/epsMultip, bg="transparent")
+	print("TEST68")
+	print(packageVersion("grDevices"))
+	plt <- state[["figures"]][[plotName]][-3]
+	class(plt) <- "recordedplot"
+	print("CLASS")
+	print(class(plt))
+	print("LENGTH")
+	print(length(plt))
+	print(str(plt))
+	grDevices::replayPlot(plt)
+	print("TEST7")
+	dev.off()
+	print("TEST8")
+  }
+  print("TEST9")
+
+	result <- paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"", relativePatheps , "\" } }")
+	print(result)
+	return(result)
 }
 
 .extractErrorMessage <- function(error) {
@@ -789,7 +924,7 @@ as.list.footnotes <- function(footnotes) {
 				item1 <- one[[name]]
 				item2 <- two[[name]]
 				
-				if (base::identical(item1, item2) == FALSE) {
+				if (identical(item1, item2) == FALSE) {
 				
 					changed[[name]] <- TRUE
 					
@@ -797,13 +932,7 @@ as.list.footnotes <- function(footnotes) {
 				
 					changed[[name]] <- FALSE
 				}
-				
-			} else {
-				
-				changed[[name]] <- TRUE
-				
 			}
-			
 		}
 		
 		for (name in names2) {
@@ -812,7 +941,7 @@ as.list.footnotes <- function(footnotes) {
 				changed[[name]] <- TRUE
 		}
 		
-	} else if (base::identical(one, two)) {
+	} else if (base::indentical(one, two)) {
 		
 		return(FALSE)
 		
@@ -822,4 +951,123 @@ as.list.footnotes <- function(footnotes) {
 	}
 	
 	changed
+}
+
+
+.writeImage <- function(width=320, height=320, plot, obj = TRUE){
+	# Initialise output object
+	image <- list()
+
+	# Operating System information
+	type <- "cairo"  
+  if (Sys.info()["sysname"]=="Darwin")
+    type <- "quartz"
+  
+  # Calculate pixel multiplier
+  pngMultip <- .ppi / 96
+  
+  # Create png file location
+  location <- .requestTempFileNameNative("png")
+	relativePathpng <- location$relativePath
+  fullPathpng <- paste(location$root, relativePathpng, sep="/")
+	base::Encoding(relativePathpng) <- "UTF-8"
+  base::Encoding(fullPathpng) <- "UTF-8"
+
+	# Open graphics device and plot
+  grDevices::png(filename=fullPathpng, width=width * pngMultip, 
+                 height=height * pngMultip, bg="transparent", 
+                 res=72 * pngMultip, type=type)
+	if (class(plot) ==  "function"){
+		if (obj) dev.control('enable') # enable plot recording
+		eval(plot())
+		if (obj) plot <- recordPlot() # save plot to R object
+	} else {
+		print(plot)
+	}
+	dev.off()
+	
+	# Save path & plot object to output
+	image[["png"]] <- relativePathpng
+	if (obj) image[["obj"]] <- plot
+	
+	# Return relative paths in list
+	image
+}
+
+
+
+saveImage <- function(plotName, format){
+	# Retrieve plot object from state
+	state <- .retrieveState()
+	width <- state$options$plotWidth
+	height <- state$options$plotHeight
+
+	print("Length of the recorded plot:")
+	print(length(state[["figures"]][[plotName]]))
+	
+	print("Info of recorded plot:")
+	
+	cat(as.character(state[["figures"]][[plotName]]))
+	
+	# Hacky solution to problem with last element being NULL
+	if (class(state[["figures"]][[plotName]]) == "recordedplot"){
+				print("HACK FOR RECORDEDPLOT CLASS")
+				plt <- state[["figures"]][[plotName]][-length(state[["figures"]][[plotName]])]
+				class(plt) <- "recordedplot"
+				print("assigned class")
+	} else {
+		plt <- state[["figures"]][[plotName]]
+	}
+	
+	# Operating System information
+	type <- "cairo"  
+  if (Sys.info()["sysname"]=="Darwin")
+    type <- "quartz"
+
+  # create file location
+  location <- .requestTempFileNameNative("png") # to extract the root location
+	relativePath <- paste0(base::substr(plotName, start = 1, 
+																			stop = nchar(plotName)-3), format)
+  fullPath <- paste(location$root, relativePath, sep="/")
+	base::Encoding(relativePath) <- "UTF-8"
+  base::Encoding(fullPath) <- "UTF-8"
+	print(fullPath)
+	
+
+	if (format == "eps"){
+  	# Calculate eps pixel->inch multiplier
+		epsMultip <- .ppi / 2.4
+
+		# Open graphics device and plot
+    grDevices::cairo_ps(filename=fullPath, width=width/epsMultip, 
+                        height=height/epsMultip, bg="transparent")
+
+		print("Device opened")
+		if (class(plt) == "recordedplot"){
+			print("replaying recorded plot ...")
+			grDevices::replayPlot(plt)
+			print("plot replayed")
+		} else if ("gg" %in% tolower(class(plt))){
+			print("printing ggplot")
+			print(plt)
+			print("plot printed")
+		}
+		dev.off()
+		print("plot saved")
+		
+  } else { # add optional other formats here in else if statement
+		
+		stop("Format incorrectly specified")
+		
+	}
+	
+	# Create JSON string for interpretation by JASP front-end
+	result <- paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"", 
+									relativePath , "\" } }")
+
+	print("Returning json string...")
+	print(result)								
+
+	# Return result
+	result
 }
