@@ -67,38 +67,29 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
   
   results[[".meta"]] <- meta
   
-  errorList = NULL
+  errorList <- NULL
   
   if (is.null(resultsAlpha)) {
     
     # check for errors
-    errCheck <- .reliabilityErrCheck(
-      dataset, variables, perform,
-      checks = c("var(x) > 0", "!is.na(x)")
-    )
+    anyErrors <- .hasErrors(dataset = dataset, perform = "run", 
+                            type = c("infinity", "variance"))
     
-    doUpdate <- errCheck$go
+    doUpdate <- base::identical(anyErrors, FALSE)
     
-    if (doUpdate) {
+    if (doUpdate) { # actually do reliability analysis
       
       resultsAlpha <- .reliabilityResults(dataset, options, variables, perform)
       
-    } else if (!is.null(errCheck$checkMat)) { # if true implies that checkData was actually run
+    } else { # show error message
       
-      # generate eror message
-      errMessage <- .reliabilityMakeErrorMessage(
-        checkMat = errCheck$checkMat, 
-        messages = c("has 0 variance.", "contains missing values."),
-        variables = variables
-      )
-      
-      errorList = list(errorType = "badData", errorMessage = errMessage)
+      errorList <- list(errorType = "badData", errorMessage = anyErrors$message)
       
     }
     
-  } else { # if previous data is retrieved from the state
+  } else { # implies results are retrieved from state
     
-    doUpdate = TRUE
+    doUpdate <- TRUE
     
   }
   
@@ -125,47 +116,6 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
     return(list(results=results, status="complete", state=state))
     
   }
-}
-
-.reliabilityErrCheck <- function(dataset, variables, perform, checks) {
-  
-  output <- list(go = FALSE, checkMat = NULL)
-  
-  if (perform == "run" && !is.null(variables) && length(variables) > 1) {
-    
-    d1 <- as.matrix(dataset)
-    
-    checks <- lapply(checks, function(x) c(is.numeric, list(x)))
-    d2 <- .reliabalityCheckData(d1, delete = FALSE, checks)
-    
-    output$go <- all(d2$checkVec)
-    output$checkMat <- d2$checkMat
-    
-  } 
-  
-  return(output)
-  
-}
-
-.reliabilityMakeErrorMessage <- function(checkMat, messages, variables) {
-  
-  # ensure that variable names in options match columns names of data
-  varV <- sapply(variables, .v)
-  index <- sapply(varV, function(x, checkMat) which(x == colnames(checkMat)), checkMat = checkMat)
-  
-  idx <- which(!checkMat, arr.ind = TRUE) # find error/ column match
-  varNames <- names(index[match(idx[, 2], index)]) # correct variable names of found errors
-  varNames <- paste0("'", varNames, "'")
-  addMsg <- paste("Variable", varNames, messages[idx[, 1]], collapse = '\n')
-  
-  # subject to change
-  if (nrow(idx) == 1) {
-    defMsg <- "The following error was encountered:\n"
-  } else {
-    defMsg <- "The following errors were encountered:\n"
-  }
-  
-  return(paste0(defMsg, addMsg, collapse = ''))
 }
 
 .reliabilityResults <- function (dataset, options, variables, perform) {
@@ -236,7 +186,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
     message <- sprintf("Of the observations, %d were used, %d were excluded%s, and %d were provided.",
                        nValid, nExcluded, exclwise, nObs)
     
-    .addFootnote(footnotes, symbol = "<em>Note.</em>", text=message)
+    .addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
     
     table[["footnotes"]] <- as.list(footnotes)
     
@@ -390,78 +340,3 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
   
 }
 
-
-# function for generic error checking -- perhaps move to common?
-# returns a list of indices of columns that remain and a matrix with which column
-# passed/failed which check. The former is for checking is there an error, the latter
-# for checking where is the error.
-.reliabalityCheckData <- function(data, delete = FALSE, ...) {
-  # helpfunction: executes check y on data x, returns list of TRUE/ FALSE
-  doCheck <- function(x, y) {
-    if (is.character(y)) {
-      f <- function(x, y) all(eval(parse(text = y))) 
-    } else {
-      f <- function(x, y) all(do.call(y, list(x)))
-    }
-    return(lapply(x, f, y))
-  }
-  
-  # cast to dataframe in order for sapply to work on columns
-  if (!is.data.frame(data)) data <- as.data.frame(data)
-  dots <- list(...)
-  # every element in dots should be a list with as element 1 a column identifier
-  # (indices or function) and as element 2 a list of checks for that those columns.
-  if (is.list(dots[[1]][[1]])) dots <- dots[[1]]
-  # instead of using passing multiple checks as multiple arguments,
-  # they can also be passed as multiple checks in one list
-  omit <- rep(TRUE, ncol(data))
-  # omit is a vector with initialy true for each column.
-  # everytime checks are done, omit & check gets executed.
-  # if a check it not met the given column value will be FALSE (indicating delete)
-  omitMat <- matrix(TRUE, length(dots), ncol(data))
-  colnames(omitMat) <- colnames(data)
-  rownames(omitMat) <- unlist(lapply(dots, `[[`, 2))
-  # a matrix where checks are stored
-  for (i in seq_along(dots)) { # loop over checks
-    lst <- dots[[i]]
-    # find columns by function
-    if (is.function(lst[[1]])) {
-      ind <- unname(sapply(data, lst[[1]]))
-    } else { # find columns by given index
-      ind <- rep(FALSE, ncol(data))
-      ind[lst[[1]]] <- TRUE
-    }
-    # ind is a logical vector indicating column indices to do the check on 
-    # checking here which of ind & omit match avoids doing multiple checks on columns
-    # that are already set to FALSE (indicating delete).
-    ind <- ind & omit
-    if (!any(ind)) next() # If no indices remain to be checked goto next check
-    # Map over each column of data and do checks in lst - returns list
-    checks <- Map(doCheck, 
-                  x = list(data[, ind, drop = FALSE]), # data
-                  y = lst[[2]]) # list of checks
-    # Make checks a matrix - length(checks) corresponds to the number of done on the data
-    checks <- matrix(unlist(checks, use.names = FALSE), ncol = length(checks))
-    # evaluate per row if all checks are met
-    checks <- apply(checks, 1, all)
-    # isTRUE() turns potential logical(0), NA, and NaN to FALSE
-    checks <- sapply(checks, isTRUE)
-    # evaluate checks with prior values of omit
-    omit[ind] <- omit[ind] & checks
-    # update omit matrix
-    omitMat[i, ind] <- omit[ind]
-  }
-  if (delete) {
-    # if all columns failed the checks
-    if (sum(omit) == ncol(data)) {
-      return(NULL)
-    } else { # return data without said columns
-      return(data[, omit, drop = FALSE])
-    }
-  } else { # return logical matrix with columns that passed/ failed checks
-    # omit: logical vector with columns that passed checks
-    # omitMat: logical matrix where columns correspond to columns of the data
-    # and rows correspond to checks
-    return(list(checkVec = omit, checkMat = omitMat))
-  }
-}

@@ -159,7 +159,7 @@
          <item row="4" column="0">
           <widget class="BoundCheckBox" name="averageInterItemCor">
            <property name="text">
-            <string>Average interitem Correlation</string>
+            <string>Average interitem correlation</string>
            </property>
           </widget>
          </item>
@@ -313,11 +313,6 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
-   <class>BoundListView</class>
-   <extends>QListView</extends>
-   <header>widgets/boundlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>BoundGroupBox</class>
    <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
@@ -327,6 +322,11 @@
    <class>BoundCheckBox</class>
    <extends>QCheckBox</extends>
    <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BoundListView</class>
+   <extends>QListView</extends>
+   <header>widgets/boundlistview.h</header>
   </customwidget>
   <customwidget>
    <class>ExpanderButton</class>
