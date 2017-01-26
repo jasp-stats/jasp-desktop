@@ -120,24 +120,44 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 .reliabilityResults <- function (dataset, options, variables, perform) {
 	
+	r <- NULL
+	
 	if (perform == "run" && !is.null(variables) && length(variables) > 1) {
 		
-		d <- as.matrix(dataset)
+		d <- as.matrix(dataset[complete.cases(dataset), ])
 		
-		if (all(options$variables %in% options$reverseScaledItems)) {
-			r <- psych::alpha(d)
-		} else {
-			r <- psych::alpha(d, key = .v(unlist(options$reverseScaledItems)))
+		# generate key for reverse scaled items
+		key <- NULL
+		if (length(options$reverseScaledItems) > 0) {
+			
+			key <- .v(unlist(options$reverseScaledItems))
+			
 		}
 		
-	} else {
+		# calculate chronbach alpha and gutmanns lambda6
+		r <- psych::alpha(d, key = key)
 		
-		r <- NULL
+		# calculate McDonalds omega
+		omega <- psych::omega(d, 1, flip = FALSE)[["omega.tot"]]
 		
-	}
+		# calculate McDonalds omega if item dropped
+		omegaDropped <- NULL
+		if (ncol(d) > 2) {
+			omegaDropped = numeric(length = ncol(d))
+			for (i in 1:ncol(d)) {
+				omegaDropped[i] <- psych::omega(d[, -i], 1, flip = FALSE)$omega.tot
+			}
+		}
+		
+		r[["omega"]] <- omega
+		r[["omegaDropped"]] <- omegaDropped
+		
+	} 
 	
 	return(r)
+	
 }
+
 
 .reliabalityScaleTable <- function (r, dataset, options, variables, perform) {
 	
@@ -159,6 +179,9 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	if (options$gutmannScale)
 		fields[[length(fields) + 1]] <- list(name="lambda", title="Gutmann's \u03BB6", type="number", format="sf:4;dp:3")
 	
+	if (options[["mcDonaldScale"]])
+		fields[[length(fields) + 1]] <- list(name="omega", title="McDonalds' \u03C9", type="number", format="sf:4;dp:3")
+	
 	if (options[["averageInterItemCor"]])
 		fields[[length(fields) + 1]] <- list(name="rho", title="Average interitem correlation", type="number", format="sf:4;dp:3")
 	
@@ -179,7 +202,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		}
 		
 		nObs = nrow(dataset)
-		nExcluded = 0L
+		nExcluded = sum(!complete.cases(dataset))
 		nValid = nObs - nExcluded
 		
 		# message <- paste("Scale consists of items ", paste0(variables, collapse = ", "))
@@ -196,6 +219,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		mu <- NULL
 		sd <- NULL
 		rho <- NULL
+		omega <- NULL
 		
 		if (options$alphaScale)
 			alpha <- .clean(r$total$raw_alpha)
@@ -212,13 +236,16 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		if (options[["averageInterItemCor"]])
 			rho <- .clean(r[["total"]][["average_r"]])
 		
-		data[[1]] <- list(case="scale", alpha=alpha, lambda=lambda, rho=rho, mu=mu, sd=sd)
+		if (options[["mcDonaldScale"]])
+			omega <- .clean(r[["omega"]])
+		
+		data[[1]] <- list(case="scale", alpha=alpha, lambda=lambda, omega = omega, rho=rho, mu=mu, sd=sd)
 		
 		table[["status"]] <- "complete"
 		
 	} else {
 		
-		data[[1]] <- list(case="scale", alpha=".", lambda=".", rho =".", mean=".", sd=".")
+		data[[1]] <- list(case="scale", alpha=".", lambda=".", omega = ".", rho =".", mean=".", sd=".")
 		
 	}
 	
@@ -252,6 +279,9 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	
 	if (options$gutmannItem)
 		fields[[length(fields) + 1]] <- list(name="lambda", title="Gutmann's \u03BB6", type="number", format="sf:4;dp:3", overTitle = overTitle)
+	
+	if (options[["mcDonaldItem"]])
+		fields[[length(fields) + 1]] <- list(name="omega", title="McDonalds' \u03C9", type="number", format="sf:4;dp:3", overTitle = overTitle)
 	
 	table[["schema"]] <- list(fields = fields)
 	
@@ -291,6 +321,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			itemRestCor <- NULL
 			mu <- NULL
 			sd <- NULL
+			omega <- NULL
 			
 			if (var %in% options$reverseScaledItems) {
 				case <- paste0(var,"\u207B")
@@ -313,7 +344,10 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 			if (options$sdItem)
 				sd <- .clean(r$item.stats[index,"sd"])
 			
-			data[[length(data) + 1]] <- list(case=case, alpha=alpha, lambda=lambda, itemRestCor=itemRestCor, mu=mu, sd=sd)
+			if (options[["mcDonaldItem"]])
+				omega <- .clean(r[["omegaDropped"]][index])
+			
+			data[[length(data) + 1]] <- list(case=case, alpha=alpha, lambda=lambda, omega = omega, itemRestCor=itemRestCor, mu=mu, sd=sd)
 		}
 		
 		table[["status"]] <- "complete"
@@ -327,7 +361,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 		
 		for (var in variablesTemp) {
 			
-			data[[length(data) + 1]] <- list(case=var, alpha=".", lambda=".", itemRestCor=".", mu=".", sd=".")
+			data[[length(data) + 1]] <- list(case=var, alpha=".", lambda=".", omega = ".", itemRestCor=".", mu=".", sd=".")
 			
 		}
 	}
