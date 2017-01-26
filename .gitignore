@@ -30,8 +30,12 @@ JASP-Engine/R-*
 # .exe
 *.exe
 
+# diff ORIG files.
+*.orig
+
 # .nsi
 Tools/deleteFiles*.nsi
 Tools/includeFiles*.nsi
 JASP.pro.user.b601785
 .Rproj.user
+
