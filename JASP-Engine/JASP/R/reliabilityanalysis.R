@@ -296,25 +296,12 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	
 	rowNames <- gsub("-","", rownames(r$alpha.drop))
 	
-	# print("rowNames = ")
-	# print(rowNames)
-	
-	
 	if (!is.null(r)) {
-		
-		# print("variables = ")
-		# print(variables)
 		
 		for (var in variables) {
 			
 			varV <- .v(var)
 			index <- which(varV == rowNames)
-			
-			# print("varV = ")
-			# print(varV)
-			# print("index = ")
-			# print(index)
-			
 			
 			alpha <- NULL
 			lambda <- NULL
