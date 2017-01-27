@@ -34,7 +34,7 @@ using namespace ods;
 
 
 ODSImportColumn::ODSImportColumn(int columnNumber)
-	: ImportColumn(_colNumberAsExcel(columnNumber), string())
+	: ImportColumn(_colNumberAsExcel(columnNumber))
 	, _columnNumber(columnNumber)
 	, _columnType(Column::ColumnTypeUnknown)
 {
@@ -168,7 +168,8 @@ void ODSImportColumn::postLoadProcess()
 	}
 
 	// Get the long name, rename this column, and erase the first cell.
-	setLongName(_rows[0]._string);
+//	setLongName(_rows[0]._string);
+	setName(_rows[0]._string);
 	_rows.erase(_rows.begin());
 
 	// Collect data over all the rows.

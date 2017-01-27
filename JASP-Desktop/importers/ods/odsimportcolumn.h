@@ -44,10 +44,11 @@ public:
 	virtual ~ODSImportColumn();
 
 	/**
-	 * @brief setLongName Setter for long name (label).
+	 * @brief setName Setter for long name (label).
 	 * @param longname The long name (label) to set.
 	 */
-	void setLongName(const string &longname) { _longName = longname; }
+//	void setLongName(const string &longname) { _longName = longname; }
+	void setName(const string &name) { _name = name; }
 
 
 	// ImportColumn interface
