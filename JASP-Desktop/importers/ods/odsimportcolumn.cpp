@@ -25,6 +25,7 @@
 #include "../importerutils.h"
 
 #include "odstypes.h"
+#include "odsimportdataset.h"
 
 #include <set>
 
@@ -33,13 +34,10 @@ using namespace ods;
 
 
 ODSImportColumn::ODSImportColumn(int columnNumber)
-	: ImportColumn(string(), string())
+	: ImportColumn(_colNumberAsExcel(columnNumber), string())
 	, _columnNumber(columnNumber)
 	, _columnType(Column::ColumnTypeUnknown)
 {
-	// The short name is the same
-	// as Excel Column heading.
-	setName(_colNumberAsExcel());
 }
 
 ODSImportColumn::~ODSImportColumn()
@@ -152,6 +150,7 @@ void ODSImportColumn::setValue(int row, const QString& data)
 
 /**
  * @brief postLoadProcess Performs posy load processing.
+ * @param dataSet Dataset we are a member of.
  *
  * This includes finding the long column name,
  * and the type of the column, and converting all
@@ -163,12 +162,12 @@ void ODSImportColumn::postLoadProcess()
 	if ((_rows.size() == 0) || (_rows[0].xmlType() != odsType_string))
 	{
 		string msg("No column header found in sheet row 1, column ");
-		msg.append(_colNumberAsExcel());
+		msg.append(_colNumberAsExcel(_columnNumber));
 		msg.append(".");
 		throw runtime_error(msg);
 	}
 
-	// Get the long name and erase the first cell.
+	// Get the long name, rename this column, and erase the first cell.
 	setLongName(_rows[0]._string);
 	_rows.erase(_rows.begin());
 
@@ -221,7 +220,7 @@ void ODSImportColumn::postLoadProcess()
 		{
 			// How did we get here? Something odd is going on.
 			stringstream str;
-			str << "Cannot find a suitable type for column " << _colNumberAsExcel() << '.';
+			str << "Cannot find a suitable type for column " << _colNumberAsExcel(_columnNumber) << '.';
 			throw runtime_error(str.str());
 		}
 		break;
@@ -292,26 +291,25 @@ void ODSImportColumn::_forceToType(Column::ColumnType type)
 
 /**
  * @brief colNumberAsExcel Returns the column number as a string (base 26 digits A-Z).
+ * @param column Column number
  * @return
  */
-string ODSImportColumn::_colNumberAsExcel()
-const
+string ODSImportColumn::_colNumberAsExcel(int column)
 {
 	string result;
 	int divisor = 26 * 26 * 26 * 26 * 26 * 26;	// give up after col ZZZZZZ
-	int col = _columnNumber;
 
 	// In essence, the the classic number base conversion.
 	bool found = false;
 	while(divisor > 0)
 	{
-		int c = col / divisor;
+		int c = column / divisor;
 		// supress leading zeros (i.e. 'A')
 		if ((c > 0) || (divisor == 1))
 			found = true;
 		if (found)
 			result.push_back((char) (c + 'A'));
-		col = col % divisor;
+		column = column % divisor;
 		divisor = divisor / 26;
 	}
 
