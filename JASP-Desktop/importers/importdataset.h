@@ -28,6 +28,11 @@ public:
 	void clear();
 	void erase(ImportColumns::iterator it);
 
+	/**
+	 * @brief buildDictionary Build the dictiontary/mapping.
+	 */
+	void buildDictionary();
+
 protected:
 	ImportColumns _columns;
 	map<string, ImportColumn*> _nameToColMap;

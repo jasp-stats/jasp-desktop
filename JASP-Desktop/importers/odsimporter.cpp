@@ -189,6 +189,9 @@ ImportDataSet* ODSImporter::loadFile(const string &locator, boost::function<void
 	progressCallback("Processing.", 60);
 	result->postLoadProcess();
 
+	// Build the dictionary for sync.
+	result->buildDictionary();
+
 	return result;
 }
 
