@@ -24,6 +24,7 @@
 using namespace std;
 using namespace ods;
 
+#ifndef QT_NO_DEBUG
 const char * const ods::ODSTYPE_STR[] =
 {
 	"odsType_unknown",
@@ -35,4 +36,4 @@ const char * const ods::ODSTYPE_STR[] =
 	"odsType_date",
 	"odsType_time"
 };
-
+#endif
