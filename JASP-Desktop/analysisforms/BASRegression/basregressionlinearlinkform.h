@@ -38,10 +38,6 @@ public:
 
 	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
 
-private slots:
-	void factorsChanging();
-	void factorsChanged();
-
 private:
 	Ui::BASRegressionLinearLinkForm *ui;
 

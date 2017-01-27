@@ -45,30 +45,18 @@ BASRegressionLinearLinkForm::BASRegressionLinearLinkForm(QWidget *parent) :
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
 
-	connect(_covariatesListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_covariatesListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-
+	ui->plotOptions->hide();
 	ui->advancedOptions->hide();
 }
+
 
 BASRegressionLinearLinkForm::~BASRegressionLinearLinkForm()
 {
 	delete ui;
 }
 
+
 void BASRegressionLinearLinkForm:: bindTo(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::bindTo(options, dataSet);
-}
-
-void BASRegressionLinearLinkForm::factorsChanging()
-{
-	if (_options != NULL)
-		_options->blockSignals(true);
-}
-
-void BASRegressionLinearLinkForm::factorsChanged()
-{
-	if (_options != NULL)
-		_options->blockSignals(false);
 }

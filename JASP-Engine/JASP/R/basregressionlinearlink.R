@@ -17,26 +17,7 @@
 
 BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 									callback = function(...) list(status = "ok"), ...) {
-	# dependent <- unlist(options$dependent)
-	# covariates <- unlist(options$covariates)
-	#
-	# if (covariates == "") {
-	# 	covariates <- NULL
-	# }
-	#
-	# if (is.null(dataset)) {
-	# 	if (perform == "run") {
-	# 		if (options$missingValues == "excludeListwise") {
-	# 			dataset <- .readDataSetToEnd(columns.as.numeric = dependent, columns.as.factor = covariates,
-	# 										exclude.na.listwise = c(dependent, covariates))
-	# 		} else {
-	# 			dataset <- .readDataSetToEnd(columns.as.numeric = dependent, columns.as.factor = covariates,
-	# 										exclude.na.listwise = covariates)
-	# 		}
-	# 	} else {
-	# 		dataset <- .readDataSetHeader(columns.as.numeric = dependent, columns.as.factor = covariates)
-	# 	}
-	# }
+
 	run <- (perform == "run")
 	state <- .retrieveState()
 	if (!is.null(state)) {
@@ -53,14 +34,16 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	# 	dataset <- .readBayesianLinearModelData(dataset, options, perform)
 	# }
 	if (length(options$covariates) > 0 && options$dependent != "") {
-		# FIXME: this is inefficient. Read only the new columns.
+		# FIXME: this function is inefficient. Read only the new columns.
 		dataset <- .readBayesianLinearModelData(dataset, options, perform)
 	}
 
 	# initialize
 	rowsBASRegressionLinearLink <- list()
-	plot <- NULL
+	plotPosteriorLogOdds <- NULL
+	plotCoefficientsPosterior <- NULL
 
+	# get the bas lm object
 	if (length(options$covariates) > 0 && options$dependent != "" && perform == "run") {
 		bas_lm <- .calculateBASRegressionLinear(
 			run = run,
@@ -72,15 +55,55 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 
 		rowsBASRegressionLinearLink <- bas_lm$rows
 
-		plot <- .plotPosterior.models.basRegression.linear(bas_lm$bas_obj)
+		bas_obj <- bas_lm$bas_obj
+
+		len.bas_obj <- length(bas_obj$namesx)
+		# use the actual column names
+		bas_obj$namesx[2:len.bas_obj] <- .unv(bas_obj$namesx[2:len.bas_obj])
+
+		if (options$plotLogPosteriorOdds) {
+			plotPosteriorLogOdds <- .plotPosterior.models.basRegression.linear(
+				bas_obj
+			)
+		}
+
+		if (options$plotCoefficientsPosterior) {
+			plotCoefficientsPosterior <- .plotPosterior.coefficents.basRegression.linear(
+				bas_obj, options, state
+			)
+		}
 	}
 
 	# Populate the output table
 	meta <- list()
 	meta[[1]] <- list(name = "table", type = "table")
-	meta[[2]] <- list(name = "inferentialPlots", type = "object",
-						meta = list(list(name = "PosteriorPlotModels", type = "image"))
+	# meta[[2]] <- list(
+	# 	name = "inferentialPlots",
+	# 	type = "object",
+	# 	meta = list(
+	# 		list(name = "PosteriorPlotModels", type = "image"),
+	# 		list(name = "PosteriorCoefficients", type = "image")
+	# 	)
+	# )
+
+	meta[[2]] <- list(
+		name="inferentialPlots",
+		type="object",
+		meta=list(
+			list(name = "PosteriorPlotModels", type = "image"),
+			list(
+				name = "coefficentsPlots",
+				type = "collection",
+				meta = list(
+					name = "plotGroups",
+					type = "object",
+					meta = list(
+						list(name = "PosteriorCoefficients", type = "image")
 					)
+				)
+			)
+		)
+	)
 
 	if (options$bayesFactorType == "BF10") {
 		bfm.title <- "BF<sub>M</sub>"
@@ -95,7 +118,9 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 
 	fields <- list(
 		list(name = "model", type = "string", title = "Model"),
-		list(name = "bf", type = "number", format = "sf:4;dp:3", title = "BF")
+		list(name = "bf", type = "number", format = "sf:4;dp:3", title = "BF"),
+		list(name = "postprobs", type = "number", format = "sf:4;dp:3", title = "Posterior"),
+		list(name = "R2", type = "number", format = "sf:4;dp:3", title = "R2")
 	)
 
 	# fields <- list(
@@ -134,11 +159,15 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	results[["title"]] <- "Bayesian Adaptive Sampling"
 	results[["table"]] <- table
 
-	if (!is.null(plot)) {
+	if (options$plotLogPosteriorOdds || options$plotCoefficientsPosterior) {
 		results[["inferentialPlots"]] <- list(
-										title = "Inferential Plot",
-										PosteriorPlotModels = plot
-								)
+			title = "Inferential Plots",
+			PosteriorPlotModels = plotPosteriorLogOdds,
+			coefficentsPlots = list(
+				title = "Coefficent plots",
+				collection = plotCoefficientsPosterior
+			)
+		)
 	}
 
 	keep <- NULL
@@ -170,14 +199,13 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	#   dataset: dataset input by user
 	#
 	# Return:
-	#
+	#   list containing the bas_lm object and the output rows
 
 	# generate the formula
 	covariates <- .v(options$covariates)
 	dependent <- .v(options$dependent)
 	formula <- as.formula(paste(dependent, "~", paste(covariates, collapse="+")))
 
-	# FIXME: betaBinomialParamA and B are NULL
 	# select the type of model prior
 	if (options$modelPrior == "beta.binomial") {
 		modelPrior = BAS::beta.binomial(options$betaBinomialParamA, options$betaBinomialParamB)
@@ -206,23 +234,18 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 		NULL
 	)
 
-	print(options$betaBinomialParamB)
-	print(options$betaBinomialParamA)
-
 	# FIXME: sampling method currently does not allow specification of MCMC+BAS
 	# FIXME: bestmodel is not given as a choice
-
-	# print(options)
 
 	# Bayesian Adaptive Sampling
 	bas_lm <- BAS::bas.lm(
 		formula = formula,
 		data = dataset,
-		# prior = options$priorRegressionCoefficients,
+		prior = options$priorRegressionCoefficients,
 		# alpha = alpha,
-		# modelprior = modelPrior,
+		modelprior = modelPrior,
 		# n.models = options$numberOfModels,
-		# method = options$samplingMethod,
+		method = options$samplingMethod
 		# MCMC.iterations = options$iterationsMCMC
 	)
 
@@ -258,14 +281,6 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	models.ordered <- base::order(bas_obj$postprobs, decreasing = TRUE)[1:models.number]
 	models <- bas_obj$which[models.ordered]
 
-
-	# print("=--------=")
-	# print(.unv(colnames(dataset)))
-	# print(options$covariates)
-	# print(models[[1]])
-	# print(.unv(bas_obj$namesx[2:length(bas_obj$namesx)]))
-	# print("=--------=")
-
 	# generate the model names
 	models.names <- base::lapply(
 		models,
@@ -279,13 +294,13 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	models.bf <- exp(bas_obj$logmarg[models.ordered] -
 						max(bas_obj$logmarg[models.ordered]))
 
-	# print(models.names)
-
 	output.rows <- vector("list", models.number)
 
-	# TODO: microbenchmark - compare this against using mapply
+	# TODO: microbenchmark - compare for loop against using mapply
 	for (i in 1:models.number) {
-		output.rows[[i]] <- list(model = models.names[[i]], bf = models.bf[[i]])
+		output.rows[[i]] <- list(model = models.names[[i]], bf = models.bf[[i]],
+								postprobs = bas_obj$postprobs[[models.ordered[i]]],
+								R2 = bas_obj$R2[[models.ordered[i]]])
 	}
 	# output.list <- as.list(data.frame(mapply(c, models.names, models.bf)))
 	#
@@ -310,37 +325,67 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 
 
 .plotPosterior.models.basRegression.linear <- function(bas_obj) {
-	#
-
-	len.bas_obj <- length(bas_obj)
-	# use the actual column names
-	# bas_obj$namesx[2:len.bas_obj] <- .unv(bas_obj$namesx[2:len.bas_obj])
-	print(bas_obj$namesx)
-
-	width  <- 530
-	height <- 400
+	# Plot the posterior log odds for different models
 
 	plot <- list()
-	plot[["title"]]  <- "Bayes Factor Robustness Check"
-	plot[["width"]]  <- width
-	plot[["height"]] <- height
+	plot[["title"]] <- "Posterior Log Odds"
+	plot[["width"]] <- 530
+	plot[["height"]] <- 400
 	plot[["status"]] <- "waiting"
 
 	p <- try(silent = FALSE, expr = {
-		image <- .beginSaveImage(width, height)
-
+		image <- .beginSaveImage(530, 400)
 		BAS::image.bas(bas_obj, rotate = FALSE)
-
 		plot[["data"]] <- .endSaveImage(image)
 	})
 
 	if (class(p) == "try-error") {
 		errorMessage <- .extractErrorMessage(p)
-		plot[["error"]] <- list(error="badData",
-						errorMessage = paste("Plotting is not possible: ", errorMessage))
+		plot[["error"]] <- list(
+			error = "badData",
+			errorMessage = paste("Plotting is not possible: ", errorMessage)
+		)
 	}
-
 	plot[["status"]] <- "complete"
 
 	return (plot)
+}
+
+
+.plotPosterior.coefficents.basRegression.linear <- function(bas_obj, options, state) {
+	# Plot the posterior of the beta coefficent posterior distribution
+
+	number.parameters <- length(bas_obj$namesx)
+	returnPlots <- list()
+
+	for (i in 1:number.parameters) {
+		plot <- list()
+		plot[["title"]] <- "Posterior distribution"
+		plot[["width"]] <- 530
+		plot[["height"]] <- 400
+		plot[["status"]] <- "waiting"
+
+		p <- try(silent = FALSE, expr = {
+			image <- .beginSaveImage(530, 400)
+			BAS::plot.coef.bas(BAS::coef.bas(bas_obj), subset = list(i), ask = FALSE)
+			plot[["data"]] <- .endSaveImage(image)
+		})
+
+		if (class(p) == "try-error") {
+			errorMessage <- .extractErrorMessage(p)
+			plot[["error"]] <- list(
+				error = "badData",
+				errorMessage = paste("Plotting is not possible: ", errorMessage)
+			)
+		}
+		plot[["status"]] <- "complete"
+
+		returnPlots[[i]] <- list(
+			title = bas_obj$namesx[i],
+			name = bas_obj$namesx[i],
+			PosteriorCoefficients = plot
+		)
+	}
+
+	return (returnPlots)
 }
