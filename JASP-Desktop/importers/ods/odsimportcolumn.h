@@ -25,13 +25,10 @@
 #include "../importcolumn.h"
 #include "odssheetcell.h"
 
-
 #include <set>
 
 namespace ods
 {
-
-
 
 class ODSImportColumn : public ImportColumn
 {
@@ -45,6 +42,13 @@ public:
 
 	ODSImportColumn(int columnNumber);
 	virtual ~ODSImportColumn();
+
+	/**
+	 * @brief setLongName Setter for long name (label).
+	 * @param longname The long name (label) to set.
+	 */
+	void setLongName(const string &longname) { _longName = longname; }
+
 
 	// ImportColumn interface
 	/**
@@ -60,17 +64,6 @@ public:
 	 * @return true if equal.
 	 */
 	virtual bool isValueEqual(Column &col, size_t row) const;
-
-	/**
-	 * @brief setLongName Setter for long name (label).
-	 * @param longname The long name (label) to set.
-	 */
-	void setLongName(const string &longname) { _name = _longName = longname; }
-	/**
-	 * @brief setName Setter for long name.
-	 * @param name The name  to set.
-	 */
-	void setName(const string &name) { _name = name; }
 
 	/**
 	 * @brief hasCall Checks for presence of a cell at row.
@@ -121,6 +114,7 @@ public:
 	 * This includes finding the long column name,
 	 * and the type of the column, and converting all
 	 * the cells to the same type.
+	 *
 	 */
 	void postLoadProcess();
 
@@ -150,9 +144,10 @@ private:
 
 	/**
 	 * @brief colNumberAsExcel Returns the column number as a string (base 26 A-Z).
+	 * @param column Column number
 	 * @return
 	 */
-	std::string _colNumberAsExcel() const;
+	static std::string _colNumberAsExcel(int column);
 
 	/**
 	 * @brief setColumnConvertStringData Sets String data into the column, after doing a code page convert.
