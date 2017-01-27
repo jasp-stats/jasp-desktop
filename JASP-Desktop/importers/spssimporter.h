@@ -28,7 +28,9 @@
 #include "column.h"
 #include "spss/spssimportcolumn.h"
 
-using namespace spss;
+namespace spss
+{
+
 /*
  * built with information from
  *
@@ -67,7 +69,7 @@ public:
 	bool isSpaning() const { return _isSpaning; }
 
 protected:
-	virtual ImportDataSet* loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback);
+	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback);
 	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column);
 
 private:
@@ -83,5 +85,7 @@ private:
 	void _processStringsPostLoad(SPSSImportDataSet* dataset, boost::function<void (const std::string &, int)> progress);
 
 };
+
+} // end namespace
 
 #endif // SPSSIMPORTER_H

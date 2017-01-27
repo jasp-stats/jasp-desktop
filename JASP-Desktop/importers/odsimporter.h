@@ -35,7 +35,7 @@ public:
 
 protected:
 	// Implmemtation of Inporter base class.
-	virtual ImportDataSet* loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback);
+	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback);
 	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column);
 
 private:

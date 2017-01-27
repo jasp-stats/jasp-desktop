@@ -2,6 +2,8 @@
 #include "sharedmemory.h"
 #include <iostream>
 
+using namespace std;
+
 Importer::Importer(DataSetPackage *packageData)
 {
 	_packageData = packageData;

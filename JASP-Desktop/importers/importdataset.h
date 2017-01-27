@@ -4,9 +4,7 @@
 
 #include "importcolumn.h"
 
-using namespace std;
-
-typedef vector<ImportColumn *> ImportColumns;
+typedef std::vector<ImportColumn *> ImportColumns;
 
 class ImportDataSet
 {
@@ -20,7 +18,7 @@ public:
 	virtual int rowCount() const;
 	virtual int columnCount() const;
 
-	ImportColumn *getColumn(string name) const;
+	ImportColumn *getColumn(std::string name) const;
 	ImportColumns::iterator begin();
 	ImportColumns::iterator end();
 	ImportColumns::reverse_iterator rbegin();
@@ -35,7 +33,7 @@ public:
 
 protected:
 	ImportColumns _columns;
-	map<string, ImportColumn*> _nameToColMap;
+	std::map<std::string, ImportColumn*> _nameToColMap;
 };
 
 #endif // IMPORTDATASET_H

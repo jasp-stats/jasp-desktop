@@ -7,20 +7,18 @@
 
 #include "column.h"
 
-using namespace std;
-
 class ImportColumn
 {
 public:
-	ImportColumn(string name);
+	ImportColumn(std::string name);
 	virtual ~ImportColumn();
 	virtual size_t size() const = 0;
 	virtual bool isValueEqual(Column &col, size_t row) const = 0;
 
-	virtual string getName() const;
+	virtual std::string getName() const;
 
 protected:
-	string _name;
+	std::string _name;
 };
 
 #endif // IMPORTCOLUMN_H

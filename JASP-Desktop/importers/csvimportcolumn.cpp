@@ -1,6 +1,8 @@
 #include "csvimportcolumn.h"
 #include <boost/lexical_cast.hpp>
 
+using namespace std;
+
 CSVImportColumn::CSVImportColumn(string name) : ImportColumn(name)
 {
 }

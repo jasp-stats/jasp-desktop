@@ -23,6 +23,8 @@
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodelnuisancefactors.h"
 
+using namespace std;
+
 AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	AnalysisForm("AnovaRepeatedMeasuresForm", parent),
 	ui(new Ui::AnovaRepeatedMeasuresForm)

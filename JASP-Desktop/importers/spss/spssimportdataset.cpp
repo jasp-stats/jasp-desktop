@@ -22,6 +22,7 @@
 #include <math.h>
 #include <QDateTime>
 
+using namespace std;
 using namespace spss;
 
 /*********************************************************************

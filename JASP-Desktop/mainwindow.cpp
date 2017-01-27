@@ -102,6 +102,8 @@
 #include <boost/filesystem.hpp>
 #include "dirs.h"
 
+using namespace std;
+
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
@@ -408,35 +410,35 @@ void MainWindow::packageChanged(DataSetPackage *package)
 }
 
 void MainWindow::packageDataChanged(DataSetPackage *package
-									, std::vector<std::string> &changedColumns
-									, std::vector<std::string> &missingColumns
-									, std::map<std::string, std::string> &changeNameColumns)
+									, vector<string> &changedColumns
+									, vector<string> &missingColumns
+									, map<string, string> &changeNameColumns)
 {
-	std::vector<std::string> oldColumnNames;
-	for (std::map<std::string, std::string>::iterator it = changeNameColumns.begin(); it != changeNameColumns.end(); ++it)
+	vector<string> oldColumnNames;
+	for (map<string, string>::iterator it = changeNameColumns.begin(); it != changeNameColumns.end(); ++it)
 		oldColumnNames.push_back(it->first);
-	std::sort(changedColumns.begin(), changedColumns.end());
-	std::sort(missingColumns.begin(), missingColumns.end());
-	std::sort(oldColumnNames.begin(), oldColumnNames.end());
+	sort(changedColumns.begin(), changedColumns.end());
+	sort(missingColumns.begin(), missingColumns.end());
+	sort(oldColumnNames.begin(), oldColumnNames.end());
 
-	std::vector<Analysis *> analyses_to_refresh;
+	vector<Analysis *> analyses_to_refresh;
 	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
 	{
 		Analysis* analysis = *analysis_it;
 		bool analyse_to_refresh = false;
-		const std::vector<OptionVariables *> &analysis_variables = analysis->getVariables();
-		for (std::vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
+		const vector<OptionVariables *> &analysis_variables = analysis->getVariables();
+		for (vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
 			 var_it != analysis_variables.end();
 			 ++var_it)
 		{
 			OptionVariables *option_variables = *var_it;
-			std::vector<std::string> variables = option_variables->variables();
-			std::vector<std::string> variables_sorted = variables;
-			std::sort(variables_sorted.begin(), variables_sorted.end());
-			std::vector<std::string> inter_changecol, inter_changename, inter_missingcol;
-			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), std::back_inserter(inter_changecol));
-			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), std::back_inserter(inter_changename));
-			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), std::back_inserter(inter_missingcol));
+			vector<string> variables = option_variables->variables();
+			vector<string> variables_sorted = variables;
+			sort(variables_sorted.begin(), variables_sorted.end());
+			vector<string> inter_changecol, inter_changename, inter_missingcol;
+			set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), back_inserter(inter_changecol));
+			set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(inter_changename));
+			set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), back_inserter(inter_missingcol));
 
 			if (inter_changecol.size() > 0 && !analyse_to_refresh)
 			{
@@ -446,11 +448,11 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 
 			if (inter_changename.size() > 0)
 			{
-				for (std::vector<std::string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
+				for (vector<string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
 				{
-					std::string varname = *varname_it;
-					std::string newname = changeNameColumns[varname];
-					std::replace(variables.begin(), variables.end(), varname, newname);
+					string varname = *varname_it;
+					string newname = changeNameColumns[varname];
+					replace(variables.begin(), variables.end(), varname, newname);
 				}
 				analysis->setRefreshBlocked(true);
 				option_variables->setValue(variables);
@@ -463,10 +465,10 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 
 			if (inter_missingcol.size() > 0)
 			{
-				for (std::vector<std::string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
+				for (vector<string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
 				{
-					std::string varname = *varname_it;
-					variables.erase(std::remove(variables.begin(), variables.end(), varname), variables.end());
+					string varname = *varname_it;
+					variables.erase(remove(variables.begin(), variables.end(), varname), variables.end());
 				}
 				analysis->setRefreshBlocked(true);
 				option_variables->setValue(variables);
@@ -482,7 +484,7 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 	_tableModel->setDataSet(package->dataSet);
 	ui->variablesPage->setDataSet(package->dataSet);
 
-	for (std::vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
+	for (vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
 	{
 		Analysis *analysis = *it;
 		analysis->setRefreshBlocked(false);
@@ -1284,7 +1286,7 @@ void MainWindow::itemSelected(const QString &item)
 		if (_log != NULL)
 			_log->log("Analysis Created", info);
 	}
-	catch (std::runtime_error& e)
+	catch (runtime_error& e)
 	{
 		_fatalError = tq(e.what());
 		fatalError();

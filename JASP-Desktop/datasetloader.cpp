@@ -31,9 +31,10 @@
 #include <QFileInfo>
 #include <QSettings>
 
+using namespace std;
+using namespace spss;
 using namespace boost::interprocess;
 using namespace boost;
-using namespace std;
 
 string DataSetLoader::getExtension(const string &locator, const string &extension) {
 	filesystem::path path(locator);
