@@ -118,7 +118,7 @@ void AboutDialog::downloadFinished()
 #endif
 
 #ifdef __linux__ //No installer download
-		QString innerHtml = "<html><head/><body><span style='font-size:16pt; font-weight:600; color:green;'><br/>New Version Available</span><span style='font-size:14pt;'><br/>Version " + version + " " + releasedate </body></html>";
+		QString innerHtml = "<html><head/><body><span style='font-size:16pt; font-weight:600; color:green;'><br/>New Version Available</span><span style='font-size:14pt;'><br/>Version " + version + " " + releasedate + "</body></html>";
 #else
 		QString innerHtml = "<html><head/><body><span style='font-size:16pt; font-weight:600; color:green;'><br/>New Version Available</span><span style='font-size:14pt;'><br/>Version " + version + " " + releasedate + "<br/>Download new version: </span><a href='" + downloadfile + "'><span style='text-decoration: underline; color:#0000ff;'>here</span></a><span style='font-size:14pt;'><br/></span></body></html>";
 #endif
