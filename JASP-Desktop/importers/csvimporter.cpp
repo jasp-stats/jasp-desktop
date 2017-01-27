@@ -103,6 +103,9 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 	for (vector<CSVImportColumn *>::iterator it = importColumns.begin(); it != importColumns.end(); ++it)
 		result->addColumn(*it);
 
+	// Build dictionary for sync.
+	result->buildDictionary();
+
 	return result;
 }
 
