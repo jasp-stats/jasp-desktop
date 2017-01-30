@@ -96,7 +96,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	results[["reliabilityScale"]] <- .reliabalityScaleTable(resultsAlpha, dataset, options, variables, perform)
 	results[["reliabilityScale"]][["error"]] <- errorList
 
-	if (doUpdate && options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem) {
+	if (doUpdate && options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem || options[["mcDonaldItem"]]) {
 		results[["reliabilityItemsObj"]] <- list(title="Item Statistics", reliabilityItems=.reliabalityItemsTable(resultsAlpha, options, variables, perform))
 	} else {
 		results[["reliabilityItemsObj"]] <- NULL
@@ -360,4 +360,3 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	return(table)
 
 }
-
