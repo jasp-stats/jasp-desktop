@@ -182,7 +182,9 @@
 
 	if (!exists ("error.message"))
 		return (list (ready = TRUE, error = FALSE, error.message = NULL))
-	if (exists ("error.message"))
+	if (is.null(error.message))
+		return (list (ready = FALSE, error = FALSE, error.message = NULL))
+	if (!is.null(error.message))
 		return (list (ready = FALSE, error = TRUE, error.message = error.message))
 }
 

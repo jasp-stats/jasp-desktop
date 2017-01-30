@@ -85,7 +85,7 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	meta [[3]] <- list (name = "effects", type = "table")
 	meta [[4]] <- list (name = "estimates", type = "table")
 	
-	if (options$plotSeparatePlots != "") {
+	if (options$plotSeparatePlots == "") {
 		meta [[5]] <- list(name="descriptivesObj", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name="descriptivesPlot", type="image")))
 	} else {
 		meta [[5]] <- list(name="descriptivesObj", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name="descriptivesPlot", type="collection", meta="image")))	
@@ -95,9 +95,9 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	results [["title"]] <- "Bayesian ANOVA"
 
 ## DATA
+	dataset <- .readBayesianLinearModelData (dataset, options, perform)
+	
 	if (is.null(state)) {
-		dataset <- .readBayesianLinearModelData (dataset, options, perform)
-
 ##STATUS (INITIAL)
 		status <- .setBayesianLinearModelStatus (dataset, options, perform)
 
