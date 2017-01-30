@@ -84,6 +84,13 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	meta [[2]] <- list (name = "model comparison", type = "table")
 	meta [[3]] <- list (name = "effects", type = "table")
 	meta [[4]] <- list (name = "estimates", type = "table")
+	
+	if (options$plotSeparatePlots != "") {
+		meta [[5]] <- list(name="descriptivesObj", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name="descriptivesPlot", type="image")))
+	} else {
+		meta [[5]] <- list(name="descriptivesObj", type="object", meta=list(list(name="descriptivesTable", type="table"), list(name="descriptivesPlot", type="collection", meta="image")))	
+	}
+	
 	results [[".meta"]] <- meta
 	results [["title"]] <- "Bayesian ANOVA"
 
@@ -120,7 +127,24 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 ## Posterior Estimates
 	results [["estimates"]] <- .theBayesianLinearModelEstimates (model, options, perform, status)
 
-	new.state <- list (options = options, model = model, status = status)
+## Descriptives Table
+	descriptivesTable <- .anovaDescriptivesTable(dataset, options, perform, status, NULL)[["result"]]
+
+## Descriptives Plot
+	options$plotErrorBars <- options$plotCredibleInterval
+	options$errorBarType <- "confidenceInterval"
+	options$confidenceIntervalInterval <- options$plotCredibleIntervalInterval
+	descriptivesPlot <- .anovaDescriptivesPlot(dataset, options, perform, status, NULL)[["result"]]
+	
+	if (length(descriptivesPlot) == 1) {
+		results[["descriptivesObj"]] <- list(title="Descriptives", descriptivesTable=descriptivesTable, descriptivesPlot=descriptivesPlot[[1]])
+	} else {	
+		results[["descriptivesObj"]] <- list(title="Descriptives", descriptivesTable=descriptivesTable, descriptivesPlot=list(collection=descriptivesPlot, title="Descriptives Plots"))
+	}
+
+	keepDescriptivesPlot <- lapply(descriptivesPlot, function(x) x$data)
+	
+	new.state <- list (options = options, model = model, status = status, keep = keepDescriptivesPlot)
 	
 	if (perform == "run" || !status$ready || ! is.null (state)) {
 		return (list (results = results, status = "complete", state = new.state))
