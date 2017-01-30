@@ -45,130 +45,6 @@ ODSImporter::~ODSImporter()
 }
 
 
-/* Redundant, 11-01-2017
-void ODSImporter::loadDataSet(
-	DataSetPackage *packageData,
-	const string &locator,
-	boost::function<void (const string &, int)> progress
-)
-{
-	packageData->isArchive = false;	// Spreadsheet files are never JASP archives.
-
-	// Build our data collection object.
-	try
-	{
-		if (_dta != 0)
-			delete _dta;
-		_dta = new Data();
-
-		// Check mnaifest for the contents file.
-		progress("Reading ODS manifest.", 0);
-		readManifest(packageData, locator);
-
-		// Read the sheet contents.
-		progress("Reading ODS contents.", 2);
-		readContents(locator);
-
-		// Process and pass to app.
-		progress("Reading ODS contents.", 80);
-		vector<Data::JaspColumn> colMeta = _dta->process();
-
-		// Importing
-		// Init the data set
-		bool success = false;
-		packageData->dataSet = SharedMemory::createDataSet();
-		do
-		{
-			try
-			{
-				success = true;
-				packageData->dataSet->setColumnCount(_dta->sheet().numColumns());
-				packageData->dataSet->setRowCount(_dta->sheet().numRows());
-			}
-			catch (boost::interprocess::bad_alloc &e)
-			{
-				try {
-
-					packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
-					success = false;
-				}
-				catch (std::exception &e)
-				{
-					throw runtime_error("Out of memory: This data set is too large for your computer's available memory.");
-				}
-			}
-			catch (std::exception &e)
-			{
-				cout << "n " << e.what() << "\n";
-				cout.flush();
-			}
-			catch (...)
-			{
-				cout << "something else\n ";
-				cout.flush();
-			}
-		}
-		while (success == false);
-
-		// Got enough memory, set up the colums and data.
-		const Data::Sheet &sheet = _dta->sheet();
-		for (int columnNumber = 0; columnNumber < sheet.numColumns(); columnNumber++)
-		{
-			Column &jaspCol = packageData->dataSet->column(columnNumber);
-			jaspCol.labels().clear();
-			jaspCol.setName(colMeta[columnNumber].lable());
-			jaspCol.setColumnType(colMeta[columnNumber].type());
-
-			const Data::SheetColumn &sheetCol = sheet[columnNumber];
-
-			switch(colMeta[columnNumber].type())
-			{
-			case Column::ColumnTypeNominalText:
-				// insert all the strings as labels.
-				for (int i = 0; i < sheetCol.numberLabels(); i++)
-					jaspCol.labels().add(sheetCol.labelAt(i));
-				// Drop through!
-			case Column::ColumnTypeNominal:
-			case Column::ColumnTypeOrdinal:
-			{
-				// Insert integer values, inserting empty where the column has no rows.
-				Column::Ints::iterator addIter = jaspCol.AsInts.begin();
-				for (int rowCnt = 1; rowCnt <= sheet.maxRow(); rowCnt++)
-				{
-					if ((rowCnt < sheetCol.minRow()) || (rowCnt > sheetCol.maxRow()))
-						*addIter = Data::SheetCellLong::EmptyInt;
-					else
-						*addIter = _dta->sheet()[columnNumber].valueAsInt(rowCnt);\
-					addIter++;
-				}
-			}
-				break;
-
-			case Column::ColumnTypeScale:
-			{
-				// Insert double values, inserting empty where the column has no rows.
-				Column::Doubles::iterator addIter = jaspCol.AsDoubles.begin();
-				for (int rowCnt = 1; rowCnt <= sheet.maxRow(); rowCnt++)
-				{
-					if ((rowCnt < sheetCol.minRow()) || (rowCnt > sheetCol.maxRow()))
-						*addIter = Data::SheetCellLong::EmptyDouble;
-					else
-						*addIter = _dta->sheet()[columnNumber].valueAsDouble(rowCnt);
-					addIter++;
-				}
-			}
-			case Column::ColumnTypeUnknown:
-				break;
-			}
-		}
-	}
-	catch(...)
-	{
-		delete _dta;
-		_dta = 0;
-		throw;
-	}
-} */
 
 
 // Implmemtation of Inporter base class.
@@ -205,7 +81,6 @@ void ODSImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &col
 	impCol.fillSharedMemoryColumn(column);
 
 }
-
 
 void ODSImporter::readManifest(const string &path, ODSImportDataSet *dataset)
 {
