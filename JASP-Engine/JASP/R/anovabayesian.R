@@ -87,13 +87,15 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	meta[[4]] <- list(name = "estimates", type = "table")
 	
 	if (options$plotSeparatePlots == "") {
-		meta[[5]] <- list(name = "descriptivesObj", type = "object", 
-											meta = list(list(name = "descriptivesTable", type = "table"), 
-																	list(name = "descriptivesPlot", type = "image")))
+		meta[[5]] <- list(
+			name = "descriptivesObj", type = "object", 
+			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "image"))
+			)
 	} else {
-		meta[[5]] <- list(name = "descriptivesObj", type = "object", 
-											meta = list(list(name = "descriptivesTable", type = "table"), 
-																	list(name = "descriptivesPlot", type = "collection", meta = "image")))	
+		meta[[5]] <- list(
+			name = "descriptivesObj", type = "object", 
+			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "collection", meta = "image"))
+			)	
 	}
 	
 	results[[".meta"]] <- meta
@@ -107,8 +109,7 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 		status <- .setBayesianLinearModelStatus(dataset, options, perform)
 
 ## MODEL
-		model.object <- .theBayesianLinearModels(dataset, options, perform, status, 
-																						.callbackBayesianLinearModels, .callbackBFpackage, results, analysisType = "ANOVA")
+		model.object <- .theBayesianLinearModels(dataset, options, perform, status, .callbackBayesianLinearModels, .callbackBFpackage, results, analysisType = "ANOVA")
 	
 		if (is.null(model.object))
 			return()
@@ -143,11 +144,15 @@ AnovaBayesian <- function (dataset = NULL, options, perform = "run", callback = 
 	descriptivesPlot <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot = NULL)[["result"]]
 	
 	if (length(descriptivesPlot) == 1) {
-		results[["descriptivesObj"]] <- list(title = "Descriptives", descriptivesTable = descriptivesTable, 
-																				descriptivesPlot = descriptivesPlot[[1]])
+		results[["descriptivesObj"]] <- list(
+			title = "Descriptives", descriptivesTable = descriptivesTable, 
+			descriptivesPlot = descriptivesPlot[[1]]
+			)
 	} else {	
-		results[["descriptivesObj"]] <- list(title = "Descriptives", descriptivesTable = descriptivesTable, 
-																				descriptivesPlot = list(collection = descriptivesPlot, title = "Descriptives Plots"))
+		results[["descriptivesObj"]] <- list(
+			title = "Descriptives", descriptivesTable = descriptivesTable, 
+			descriptivesPlot = list(collection = descriptivesPlot, title = "Descriptives Plots")
+			)
 	}
 
 	keepDescriptivesPlot <- lapply(descriptivesPlot, function(x) x$data)
