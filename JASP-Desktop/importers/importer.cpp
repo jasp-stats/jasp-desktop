@@ -139,6 +139,9 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 		{
 			try {
 
+				cout << "Enlarge dataset " << std::endl;
+				cout.flush();
+
 				dataSet = SharedMemory::enlargeDataSet(dataSet);
 				success = false;
 			}
@@ -149,7 +152,7 @@ DataSet* Importer::setDataSetSize(int columnCount, int rowCount)
 		}
 		catch (exception &e)
 		{
-			cout << "n " << e.what() << "\n";
+			cout << "Exception " << e.what() << "\n";
 			cout.flush();
 		}
 		catch (...)

@@ -171,7 +171,6 @@ private slots:
 
 	void adjustOptionsPanelWidth();
 	void splitterMovedHandler(int, int);
-	void data_splitterMovedHandler(int, int);
 
 	void hideOptionsPanel();
 	void showOptionsPanel();

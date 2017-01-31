@@ -21,10 +21,18 @@
 
 using namespace std;
 
+map<int, map<int, string> > Labels::_orgStringValues;
+int Labels::_counter = 0;
+
 Labels::Labels(boost::interprocess::managed_shared_memory *mem)
 	: _labels(mem->get_segment_manager())
 {
+	 _id = ++Labels::_counter;
 	_mem = mem;
+}
+
+Labels::~Labels()
+{
 }
 
 void Labels::clear()
@@ -34,7 +42,10 @@ void Labels::clear()
 
 int Labels::add(int display)
 {
-	return add(display, display);
+	Label label(display);
+	_labels.push_back(label);
+
+	return display;
 }
 
 int Labels::add(const std::string &display)
@@ -42,30 +53,22 @@ int Labels::add(const std::string &display)
 	return add(_labels.size(), display);
 }
 
-int Labels::add(int raw, int display)
+int Labels::add(int index, const std::string &display)
 {
-	LabelEntry entry(raw, Label(display));
-	_labels.push_back(entry);
+	Label label(display, index);
+	_labels.push_back(label);
 
-	return display;
+	return index;
 }
 
-int Labels::add(int raw, const std::string &display)
-{
-	LabelEntry entry(raw, Label(display, raw));
-	_labels.push_back(entry);
-
-	return raw;
-}
-
-void Labels::sync(const std::set<int> &values)
+void Labels::syncInts(const std::set<int> &values)
 {
 	std::set<int> valuesToAdd = values;
 
-	for (LabelVector::iterator it = _labels.begin(); it != _labels.end(); /*++it*/)
+	for (LabelVector::const_iterator it = _labels.begin(); it != _labels.end(); /*++it*/)
 	{
-		const LabelEntry &entry = *it;
-		int value = entry.second.value();
+		const Label &label = *it;
+		int value = label.value();
 		if (std::find(values.begin(), values.end(), value) != values.end())
 		{
 			std::set<int>::iterator value_it = std::find(valuesToAdd.begin(), valuesToAdd.end(), value);
@@ -75,7 +78,7 @@ void Labels::sync(const std::set<int> &values)
 		}
 		else
 		{
-			std::cout << "Remove label " << entry.second.text() << std::endl;
+			std::cout << "Remove label " << label.text() << std::endl;
 			std::cout.flush();
 			_labels.erase(it);
 		}
@@ -88,41 +91,45 @@ void Labels::sync(const std::set<int> &values)
 	}
 }
 
-std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &values)
+map<string, int> Labels::syncStrings(const vector<string> &values)
 {
-	std::vector<std::string> valuesToAdd = values;
-	std::map<std::string, int> result;
+	const map<int, string> &orgStringValues = getOrgStringValues();
+	vector<string> valuesToAdd = values;
+	map<string, int> result;
 
 
 	int maxLabelIndex = 0;
 	for (Labels::const_iterator it = begin(); it != end(); /*++it*/)
 	{
-		const LabelEntry &entry = *it;
-		if (entry.first > maxLabelIndex)
-			maxLabelIndex = entry.first;
+		const Label &label = *it;
+		if (label.value() > maxLabelIndex)
+			maxLabelIndex = label.value();
 
-		std::map<int, std::string>::iterator orgValueIt = _orgValues.find(entry.first);
-		std::string value = orgValueIt == _orgValues.end() ? entry.second.text() : orgValueIt->second;
+		string value = label.text();
+
+		map<int, string>::const_iterator orgStringValuesIt = orgStringValues.find(label.value());
+		if (orgStringValuesIt != orgStringValues.end()) value = orgStringValuesIt->second;
+
 		if (std::find(values.begin(), values.end(), value) != values.end())
 		{
-			result[value] = entry.first;
-			std::vector<std::string>::iterator value_it = std::find(valuesToAdd.begin(), valuesToAdd.end(), value);
+			result[value] = label.value();
+			vector<string>::iterator value_it = std::find(valuesToAdd.begin(), valuesToAdd.end(), value);
 			if (value_it != valuesToAdd.end())
 				valuesToAdd.erase(value_it);
 			++it;
 		}
 		else
 		{
-			std::cout << "Remove Label " << entry.second.text() << std::endl;
+			std::cout << "Remove Label " << label.text() << std::endl;
 			std::cout.flush();
 			_labels.erase(it);
 		}
 	}
 
-	for (std::vector<std::string>::iterator it = valuesToAdd.begin(); it != valuesToAdd.end(); ++it)
+	for (vector<string>::iterator it = valuesToAdd.begin(); it != valuesToAdd.end(); ++it)
 	{
-		std::string value = *it;
-		std::cout << "Add value " << value << std::endl;
+		string value = *it;
+		std::cout << "Add Label " << value << std::endl;
 		std::cout.flush();
 		maxLabelIndex++;
 		add(maxLabelIndex,value);
@@ -132,59 +139,110 @@ std::map<std::string, int> Labels::syncStrings(const std::vector<std::string> &v
 	return result;
 }
 
-const std::map<int, std::string> &Labels::getOrgValues()
+map<int, string> &Labels::getOrgStringValues()
 {
-	return _orgValues;
+	return Labels::_orgStringValues[_id];
 }
 
-std::string Labels::getOrgValue(int rawValue)
+void Labels::setOrgStringValues(int key, std::string value)
 {
-	std::map<int, std::string>::const_iterator it = _orgValues.find(rawValue);
-	if (it == _orgValues.end())
-		return labelFor(rawValue).text();
-	else
-		return it->second;
+	map<int, string> &orgStringValues = getOrgStringValues();
+	orgStringValues[key] = value;
 }
 
-void Labels::setOrgValue(int key, std::string value)
-{
-	_orgValues[key] = value;
-}
+const Label &Labels::labelFor(int index) const
 
-const Label &Labels::labelFor(int raw) const
 {
-	BOOST_FOREACH(const LabelEntry &entry, _labels)
+	BOOST_FOREACH(const Label &label, _labels)
 	{
-		if (entry.first == raw)
-			return entry.second;
+		if (label.value() == index)
+			return label;
 	}
 
-	std::cout << "Cannot find entry " << raw << std::endl;
-	BOOST_FOREACH(const LabelEntry &entry, _labels)
+	std::cout << "Cannot find entry " << index << std::endl;
+	BOOST_FOREACH(const Label &label, _labels)
 	{
-		std::cout << "Label " << entry.first << ", " << "Value: " << entry.second.value() << ", Text: " << entry.second.text() << std::endl;
-		if (entry.first == raw)
-			return entry.second;
+		std::cout << "Label Value: " << label.value() << ", Text: " << label.text() << std::endl;
 	}
 	std::cout.flush();
 	throw runtime_error("Cannot find this entry");
 }
 
-void Labels::setLabel(int index, const std::string &display)
+void Labels::setLabelFromRow(int row, const std::string &display)
 {
-    LabelEntry &label_entry = _labels.at(index);
-	if (_orgValues.find(label_entry.first) == _orgValues.end())
-		_orgValues[label_entry.first] = label_entry.second.text();
+	if (row >= (int)_labels.size())
+	{
+		std::cout << "Set label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
+		std::cout.flush();
+		return;
+	}
+	Label &label = _labels.at(row);
+	string label_string = label.text();
+	int label_value = label.value();
+	if (label_string == display)
+		return;
 
-    label_entry.second.setLabel(display);
+	map<int, string> &orgStringValues = getOrgStringValues();
+	if (orgStringValues.find(label_value) == orgStringValues.end())
+		orgStringValues[label_value] = label_string;
+	label.setLabel(display);
 }
 
-void Labels::set(vector<LabelEntry> &labels)
+string Labels::_getValueFromLabel(const Label &label)
+{
+	if (label.hasIntValue())
+	{
+		std::ostringstream ss;
+		ss << label.value();
+		return ss.str();
+	}
+	else
+	{
+		map<int, string> &orgStringValues = getOrgStringValues();
+		map<int, string>::const_iterator it = orgStringValues.find(label.value());
+		if (it == orgStringValues.end())
+			return label.text();
+		else
+			return it->second;
+	}
+}
+
+string Labels::getValueFromIndex(int index)
+{
+	const Label &label = labelFor(index);
+	return _getValueFromLabel(label);
+}
+
+string Labels::getValueFromRow(int row)
+{
+	if (row >= (int)_labels.size())
+	{
+		std::cout << "Get value with wrong row: " << row << ", size: " << _labels.size() << std::endl;
+		std::cout.flush();
+		return "";
+	}
+	const Label &label = _labels.at(row);
+	return _getValueFromLabel(label);
+}
+
+std::string Labels::getLabelFromRow(int row)
+{
+	if (row >= (int)_labels.size())
+	{
+		std::cout << "Get label with wrong row: " << row << ", size: " << _labels.size() << std::endl;
+		std::cout.flush();
+		return "";
+	}
+	Label &label = _labels.at(row);
+	return label.text();
+}
+
+void Labels::set(vector<Label> &labels)
 {
 	clear();
-	BOOST_FOREACH(LabelEntry &label, labels)
+	BOOST_FOREACH(Label &label, labels)
 	{
-		add(label.first, label.second.text());
+		_labels.push_back(label);
 	}
 }
 
