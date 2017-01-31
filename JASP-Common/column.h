@@ -136,7 +136,8 @@ public:
 	bool isValueEqual(int rowIndex, double value);
 	bool isValueEqual(int rowIndex, const std::string &value);
 
-	std::string operator[](int index);
+	std::string operator[](int row);
+	std::string getOriginalValue(int row);
 
 	void append(int rows);
 	void truncate(int rows);
@@ -180,9 +181,9 @@ private:
 	static const std::string _emptyValues[];
 	static const int _emptyValuesCount;
 
-	void setRowCount(int rowCount);
-	std::string stringFromRaw(int value) const;
-
+	void _setRowCount(int rowCount);
+	std::string _labelFromIndex(int index) const;
+	std::string _getScaleValue(int row);
 };
 
 namespace boost

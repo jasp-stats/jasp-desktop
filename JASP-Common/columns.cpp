@@ -46,7 +46,7 @@ Column &Columns::get(string name)
 void Columns::setRowCount(int rowCount)
 {
 	BOOST_FOREACH(Column &column, *this)
-		column.setRowCount(rowCount);
+		column._setRowCount(rowCount);
 }
 
 void Columns::setColumnCount(int columnCount)

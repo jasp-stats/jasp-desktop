@@ -65,7 +65,7 @@ void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 		{
 			Column &column = dataset->column(i);
 
-			string value = column[r];
+			string value = column.getOriginalValue(r);
 			if (value != ".")
 			{
 				if (escapeValue(value))
