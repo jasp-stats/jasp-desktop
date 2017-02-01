@@ -521,7 +521,6 @@ string rbridge_check()
 		return "null";
 }
 
-
 //string rbridge_saveImage(const string &name, const string &type, const string &height, const string &width)
 string rbridge_saveImage(const string &name, const string &type)
 

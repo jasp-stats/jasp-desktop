@@ -753,6 +753,7 @@ saveImage <- function(plotName, format, height, width){
 	return(result)
 }
 
+
 .extractErrorMessage <- function(error) {
 
 	split <- base::strsplit(as.character(error), ":")[[1]]
@@ -1015,6 +1016,7 @@ saveImage <- function(plotName, format){
 				plt <- state[["figures"]][[plotName]][-length(state[["figures"]][[plotName]])]
 				class(plt) <- "recordedplot"
 				print("assigned class")
+
 	} else {
 		plt <- state[["figures"]][[plotName]]
 	}
@@ -1032,7 +1034,7 @@ saveImage <- function(plotName, format){
 	base::Encoding(relativePath) <- "UTF-8"
   base::Encoding(fullPath) <- "UTF-8"
 	print(fullPath)
-	
+
 
 	if (format == "eps"){
   	# Calculate eps pixel->inch multiplier
@@ -1058,7 +1060,6 @@ saveImage <- function(plotName, format){
   } else { # add optional other formats here in else if statement
 		
 		stop("Format incorrectly specified")
-		
 	}
 	
 	# Create JSON string for interpretation by JASP front-end

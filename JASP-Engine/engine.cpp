@@ -80,6 +80,7 @@ void Engine::saveImage()
 	std::string result = rbridge_saveImage(name, type);
 	//std::string result = rbridge_saveImage(name, type, height, width);
 
+
 	_status = complete;
 	Json::Reader parser;
 	parser.parse(result, _analysisResults, false);

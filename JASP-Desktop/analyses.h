@@ -52,6 +52,8 @@ signals:
 	void analysisInitialised(Analysis *source);
 	void analysisOptionsChanged(Analysis *source);
 	void analysisToRefresh(Analysis *source);
+	void analysisSaveImage(Analysis *source);
+	void analysisImageSaved(Analysis *source);
 	void analysisResultsChanged(Analysis *source);
 	void analysisUserDataLoaded(Analysis *source);
 	void analysisAdded(Analysis *source);
@@ -71,6 +73,8 @@ private:
 
 	void analysisOptionsChangedHandler(Analysis *analysis);
 	void analysisToRefreshHandler(Analysis *analysis);
+	void analysisSaveImageHandler(Analysis *analysis, Json::Value &options);
+	void analysisImageSavedHandler(Analysis *analysis);
 	void analysisResultsChangedHandler(Analysis *analysis);
 	void analysisUserDataLoadedHandler(Analysis *analysis);
 
