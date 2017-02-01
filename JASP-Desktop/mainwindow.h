@@ -97,8 +97,6 @@ private:
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
 	QPushButton *_runButton;
-	QTabBar *_mTabBar;
-
 	OptionsForm *_optionsForm;
 
 	std::map<std::string, AnalysisForm *> _analysisForms;

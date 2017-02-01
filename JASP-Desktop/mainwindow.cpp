@@ -947,6 +947,8 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			event->setComplete();
 			dataSetIOCompleted(event);
 		}
+		
+		ui->variablesPage->close();
 	}
 }
 
