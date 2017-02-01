@@ -25,9 +25,8 @@ VariablesWidget::VariablesWidget(QWidget *parent) :
 
 	connect(ui->moveUpButton, SIGNAL(clicked()), this, SLOT(moveUpClicked()));
     connect(ui->moveDownButton, SIGNAL(clicked()), this, SLOT(moveDownClicked()));
-	connect(ui->reverseButton, SIGNAL(clicked()), this, SLOT(reverseClicked()));\
+	connect(ui->reverseButton, SIGNAL(clicked()), this, SLOT(reverseClicked()));
 	connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(close()));
-	connect(this, SIGNAL(dataTableColumnSelected(int, QString)), this, SLOT(tableColumnSelected(int, QString)));
 	connect(_levelsTableModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this, SLOT(labelDataChanged(QModelIndex, QModelIndex)));
 
 }
@@ -40,24 +39,13 @@ VariablesWidget::~VariablesWidget()
 void VariablesWidget::setDataSet(DataSet *dataSet)
 {
 	_dataSet = dataSet;
+	_levelsTableModel->refresh();
 }
 
 void VariablesWidget::clearDataSet()
 {
 	_dataSet = NULL;
 	_currentColumn = NULL;
-}
-
-void VariablesWidget::selectedVariableChanged(QModelIndex selection, QModelIndex old)
-{
-	Q_UNUSED(old);
-
-	int columnIndex = selection.row();
-	_currentColumn = &_dataSet->columns().at(columnIndex);
-
-	_levelsTableModel->setColumn(_currentColumn);
-
-	emit(reRun());
 }
 
 void VariablesWidget::moveUpClicked()
@@ -87,7 +75,8 @@ void VariablesWidget::moveUpClicked()
 	//ui->labelsView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	ui->labelsView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-	emit(reRun());
+	if (_currentColumn != NULL)
+		emit(columnChanged(QString::fromStdString(_currentColumn->name())));
 
 }
 
@@ -118,7 +107,8 @@ void VariablesWidget::moveDownClicked()
 	//ui->labelsView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	ui->labelsView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-	emit(reRun());
+	if (_currentColumn != NULL)
+		emit(columnChanged(QString::fromStdString(_currentColumn->name())));
 
 }
 
@@ -129,7 +119,8 @@ void VariablesWidget::reverseClicked()
 	ui->labelsView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	ui->labelsView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
-	emit(reRun());
+	if (_currentColumn != NULL)
+		emit(columnChanged(QString::fromStdString(_currentColumn->name())));
 }
 
 void VariablesWidget::setCurrentColumn(int columnnumber)
@@ -144,19 +135,9 @@ void VariablesWidget::setCurrentColumn(int columnnumber)
 
 }
 
-void VariablesWidget::tableColumnSelected(int columnnumber, QString columnheader)
-{
-	_currentColumn = &_dataSet->columns().at(columnnumber);
-	std::string name = _currentColumn->name();
-
-	_levelsTableModel->setColumn(_currentColumn);
-
-	ui->columnheader->setText("<b>" + columnheader + "</b>");
-
-}
-
 void VariablesWidget::labelDataChanged(QModelIndex m1, QModelIndex m2)
 {
-	emit(reRun());
+	if (_currentColumn != NULL)
+		emit(columnChanged(QString::fromStdString(_currentColumn->name())));
 	emit(resetTableView());
 }

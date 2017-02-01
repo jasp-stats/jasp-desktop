@@ -197,7 +197,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
-	connect(ui->variablesPage, SIGNAL(reRun()), this, SLOT(refreshCurrentAnalysis()));
+	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
 	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
 	connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
 
@@ -406,10 +406,9 @@ void MainWindow::packageChanged(DataSetPackage *package)
 	}
 }
 
-void MainWindow::packageDataChanged(DataSetPackage *package
-									, std::vector<std::string> &changedColumns
-									, std::vector<std::string> &missingColumns
-									, std::map<std::string, std::string> &changeNameColumns)
+void MainWindow::refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
+											, std::vector<std::string> &missingColumns
+											, std::map<std::string, std::string> &changeNameColumns)
 {
 	std::vector<std::string> oldColumnNames;
 	for (std::map<std::string, std::string>::iterator it = changeNameColumns.begin(); it != changeNameColumns.end(); ++it)
@@ -478,15 +477,23 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 		}
 	}
 
-	_tableModel->setDataSet(package->dataSet);
-	ui->variablesPage->setDataSet(package->dataSet);
-
 	for (std::vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
 	{
 		Analysis *analysis = *it;
 		analysis->setRefreshBlocked(false);
 		analysis->refresh();
 	}
+}
+
+void MainWindow::packageDataChanged(DataSetPackage *package
+									, std::vector<std::string> &changedColumns
+									, std::vector<std::string> &missingColumns
+									, std::map<std::string, std::string> &changeNameColumns)
+{
+	_tableModel->setDataSet(_package->dataSet);
+	ui->variablesPage->setDataSet(_package->dataSet);
+
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
 }
 
 
@@ -913,6 +920,9 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
+		if (_package->dataSet == NULL)
+			return;
+
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
 		_progressIndicator->show();
@@ -1009,6 +1019,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
+		_package->setModified(true);
 		showAnalysis = true;
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults)
@@ -1543,10 +1554,14 @@ void MainWindow::refreshAllAnalyses()
 	}
 }
 
-void MainWindow::refreshCurrentAnalysis()
+void MainWindow::refreshAnalysesUsingColumn(QString col)
 {
-	if (_currentAnalysis != NULL)
-		_currentAnalysis->refresh();
+	std::vector<std::string> changedColumns, missingColumns;
+	std::map<std::string, std::string> changeNameColumns;
+	changedColumns.push_back(col.toStdString());
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
+
+	_package->setModified(false);
 }
 
 void MainWindow::resetTableView()
