@@ -47,10 +47,10 @@ TTestOneSampleForm::TTestOneSampleForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	// temporarily hides until the appropriate R code is implemented
-	ui->VovkSellkeMPR->hide();
+
 
 #else
-	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
+
 
 #endif
 

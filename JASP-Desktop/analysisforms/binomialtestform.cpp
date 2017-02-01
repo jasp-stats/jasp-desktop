@@ -39,9 +39,9 @@ BinomialTestForm::BinomialTestForm(QWidget *parent) :
 	ui->testValue->setLabel("Test value");
 
 #ifdef QT_NO_DEBUG
-	ui->VovkSellkeMPR->hide();
+
 #else
-	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
+
 #endif
 
 

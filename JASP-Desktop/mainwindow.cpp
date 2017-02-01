@@ -258,7 +258,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
-	connect(ui->data_splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(data_splitterMovedHandler(int,int)));
 
 	_analysisMenu = new QMenu(this);
 	connect(_analysisMenu, SIGNAL(aboutToHide()), this, SLOT(menuHidding()));
@@ -1386,18 +1385,6 @@ void MainWindow::splitterMovedHandler(int, int)
 	adjustOptionsPanelWidth();
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 }
-
-void MainWindow::data_splitterMovedHandler(int pos, int index)
-{
-	int p = pos;
-	int i = index;
-	//if (p < 150)
-	//	ui->variablesPage->hide();
-
-	qDebug() << " Pos = " << pos;
-	qDebug() << " Index = " << index;
-}
-
 
 void MainWindow::hideOptionsPanel()
 {

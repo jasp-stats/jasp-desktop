@@ -1,7 +1,7 @@
 QT_DIR=~/Qt/5.5
 R_FRAMEWORK=~/Jasp/Build/Frameworks/R.framework
 JASP_DESKTOP=~/Jasp/Build/jasp-desktop
-JASP_VERSION=0.7.5.6
+JASP_VERSION=0.8.1.0
 
 # This script builds the JASP.dmg installer
 # Run this script from the build-jasp-desktop-Release folder 
