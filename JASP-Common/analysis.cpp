@@ -112,6 +112,8 @@ Analysis::Status Analysis::parseStatus(string name)
 		return Analysis::Complete;
 	else if (name == "aborted")
 		return Analysis::Aborted;
+	else if (name == "exception")
+		return Analysis::Exception;
 	else
 		return Analysis::Error;
 }
@@ -143,6 +145,9 @@ Json::Value Analysis::asJSON() const
 		break;
 	case Analysis::Aborted:
 		status = "aborted";
+		break;
+	case Analysis::Exception:
+		status = "exception";
 		break;
 	default:
 		status = "error";
