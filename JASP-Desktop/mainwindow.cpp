@@ -122,10 +122,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
 	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
 	QObject::connect(openShortcut, SIGNAL(activated()), this, SLOT(openKeysSelected()));
-#ifdef QT_DEBUG
 	QShortcut *syncShortcut = new QShortcut(QKeySequence("Ctrl+Y"), this);
 	QObject::connect(syncShortcut, SIGNAL(activated()), this, SLOT(syncKeysSelected()));
-#endif
 	QShortcut *refreshShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
 	QObject::connect(refreshShortcut, SIGNAL(activated()), this, SLOT(refreshKeysSelected()));
 

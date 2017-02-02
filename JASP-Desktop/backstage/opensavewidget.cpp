@@ -84,11 +84,9 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_tabWidget->hideTab(_bsCurrent);
 
 	connect(_bsRecent, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenRequestHandler(QString)));
-#ifdef QT_DEBUG
 	connect(_bsCurrent, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenCurrentRequestHandler(QString)));
 	connect(_bsCurrent, SIGNAL(dataSynchronization(bool)), this, SLOT(setDataFileWatcher(bool)));
 	connect(&_watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(dataFileModifiedHandler(const QString&)));
-#endif
 	connect(_bsComputer, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
 	connect(_bsOSF, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
 	connect(_bsExamples, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenExampleRequestHandler(QString)));
