@@ -71,6 +71,11 @@ private:
 	Analyses *_analyses;
 	EngineSync* _engineSync;
 
+	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
+									, std::vector<std::string> &missingColumns
+									, std::map<std::string, std::string> &changeNameColumns);
+
+
 	void packageChanged(DataSetPackage *package);
 	void packageDataChanged(DataSetPackage *package
 							, std::vector<std::string> &changedColumns
@@ -150,7 +155,7 @@ private slots:
 	void removeAnalysisRequestHandler(int id);
 	void removeAllAnalyses();
 	void refreshAllAnalyses();
-	void refreshCurrentAnalysis();
+	void refreshAnalysesUsingColumn(QString col);
 	void resetTableView();
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();

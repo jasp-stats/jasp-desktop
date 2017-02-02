@@ -278,6 +278,7 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 	{
 		_bsComputer->clearFileName();
 
+		setDataFileWatcher(false);
 		_currentFileHasPath = false;
 		_currentFilePath = "";
 	}
