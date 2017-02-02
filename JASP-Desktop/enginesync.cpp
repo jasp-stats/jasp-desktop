@@ -32,6 +32,7 @@
 
 #include "processinfo.h"
 #include "common.h"
+#include "appinfo.h"
 #include "qutils.h"
 #include "tempfiles.h"
 
@@ -348,7 +349,7 @@ void EngineSync::startSlaveProcess(int no)
 #ifdef __WIN32__
 	QString rHomePath = programDir.absoluteFilePath("R");
 #elif __APPLE__
-	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/3.1/Resources");
+	QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(CURRENT_R_VERSION) + "/Resources");
 #else //linux
 
 #ifndef R_HOME
