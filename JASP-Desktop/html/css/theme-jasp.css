@@ -177,10 +177,19 @@ tbody tr:first-child td {
 
 tbody tr:nth-last-child(2) td.last-group-row,
 tbody tr:nth-last-child(2) td,
-tbody tr:nth-last-child(2) th
-{
+tbody tr:nth-last-child(2) th {
 
-	padding-bottom: .8em ;
+	margin-bottom: .8em ;
+}
+
+tbody tr:nth-child(even) th,
+tbody tr:nth-child(even) td {
+	background: rgb(245, 245, 245)
+}
+
+tbody tr:nth-child(odd) th,
+tbody tr:nth-child(odd) td {
+	background: #FFF
 }
 
 td.text {
@@ -256,6 +265,7 @@ svg > text
 
 	margin: 0 .7em .7em .7em ;
 	padding: 0 1em 1em 1em ;
+	position: relative;
 }
 
 #instructions {
@@ -331,6 +341,15 @@ div.image-status.waiting {
 .error-state {
 
 	color: silver ;
+}
+
+.analysis-error {
+	position: absolute;
+	top: 40%;
+}
+
+.analysis-error.analysis-error-top-max {
+	top: 200px;
 }
 
 .error-message-positioner {
