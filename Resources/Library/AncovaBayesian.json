@@ -104,10 +104,6 @@
 			"default": "BF10"
 		},
 		{
-			"name": "posteriorEstimates",
-			"type": "Boolean"
-		},
-		{
 			"name": "posteriorEstimatesCredibleIntervalInterval",
 			"type": "Number",
 			"format": "%",
