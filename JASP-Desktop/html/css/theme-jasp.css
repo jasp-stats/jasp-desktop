@@ -182,13 +182,13 @@ tbody tr:nth-last-child(2) th {
 	margin-bottom: .8em ;
 }
 
-tbody tr:nth-child(even) th,
-tbody tr:nth-child(even) td {
+.jasp-analysis.selected tbody tr:nth-child(even) th,
+.jasp-analysis.selected tbody tr:nth-child(even) td {
 	background: rgb(245, 245, 245)
 }
 
-tbody tr:nth-child(odd) th,
-tbody tr:nth-child(odd) td {
+.jasp-analysis.selected tbody tr:nth-child(odd) th,
+.jasp-analysis.selected tbody tr:nth-child(odd) td {
 	background: #FFF
 }
 
@@ -338,8 +338,12 @@ div.image-status.waiting {
 }
 
 .error-state {
-
 	color: silver ;
+}
+
+.exception .error-message-box {
+	border-width: 3px;
+	border-style: double;
 }
 
 .analysis-error {
