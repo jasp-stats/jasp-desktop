@@ -20,6 +20,23 @@
 			"min": 0
 		},
 		{
+			"name": "bernoulliParam",
+			"type": "Number",
+			"value": 0.5,
+			"min": 0,
+			"max": 1
+		},
+		{
+			"name": "priorprobs",
+			"type": "Boolean",
+			"default": false
+		},
+		{
+			"name": "logmarg",
+			"type": "Boolean",
+			"default": false
+		},
+		{
 			"name": "covariates",
 			"type": "Variables"
 		},
@@ -46,10 +63,14 @@
 			"type": "List"
 		},
 		{
-			"options": ["BAS", "MCMC"],
-			"default": "BAS",
-			"name": "samplingMethod",
-			"type": "List"
+			"default": true,
+			"name": "BAS",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "MCMC",
+			"type": "Boolean"
 		},
 		{
 			"name": "numberOfModels",
@@ -61,8 +82,8 @@
 			"default": 0
 		},
 		{
-			"options": ["beta.binomial", "uniform"],
-			"default": "uniform",
+			"options": ["Bernoulli", "beta.binomial", "uniform"],
+			"default": "beta.binomial",
 			"name": "modelPrior",
 			"type": "List"
 		},

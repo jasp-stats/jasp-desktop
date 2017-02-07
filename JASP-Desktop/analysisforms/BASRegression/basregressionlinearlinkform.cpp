@@ -47,6 +47,25 @@ BASRegressionLinearLinkForm::BASRegressionLinearLinkForm(QWidget *parent) :
 
 	ui->plotOptions->hide();
 	ui->advancedOptions->hide();
+
+	// retain widget sizes when hidden
+	QSizePolicy retain = ui->iterationsMCMC->sizePolicy();
+	retain.setRetainSizeWhenHidden(true);
+	ui->iterationsMCMC->setSizePolicy(retain);
+
+	retain = ui->betaBinomialParamA->sizePolicy();
+	retain.setRetainSizeWhenHidden(true);
+	ui->betaBinomialParamA->setSizePolicy(retain);
+
+	retain = ui->betaBinomialParamB->sizePolicy();
+	retain.setRetainSizeWhenHidden(true);
+	ui->betaBinomialParamB->setSizePolicy(retain);
+
+	retain = ui->bernoulliParam->sizePolicy();
+	retain.setRetainSizeWhenHidden(true);
+	ui->bernoulliParam->setSizePolicy(retain);
+
+	defaultOptions();
 }
 
 
@@ -56,7 +75,95 @@ BASRegressionLinearLinkForm::~BASRegressionLinearLinkForm()
 }
 
 
+void BASRegressionLinearLinkForm::defaultOptions()
+{
+	// default behaviour: hide the number of iterations for MCMC
+	ui->label_iterationsMCMC->hide();
+	ui->iterationsMCMC->hide();
+
+	// default behaviour: show beta binomial parameters, hide bernoulli params
+	defaultOptionsModelPrior();
+}
+
+
+void BASRegressionLinearLinkForm::defaultOptionsModelPrior()
+{
+	ui->label_betaBinomialParamA->show();
+	ui->label_betaBinomialParamB->show();
+	ui->betaBinomialParamA->show();
+	ui->betaBinomialParamB->show();
+	ui->label_bernoulliParam->hide();
+	ui->bernoulliParam->hide();
+}
+
+
 void BASRegressionLinearLinkForm:: bindTo(Options *options, DataSet *dataSet)
 {
 	AnalysisForm::bindTo(options, dataSet);
+}
+
+
+void BASRegressionLinearLinkForm::on_MCMC_clicked()
+{
+	if (!ui->BAS->isChecked() && !ui->MCMC->isChecked())
+	{
+		ui->MCMC->setChecked(true);
+	}
+
+	if (ui->MCMC->isChecked())
+	{
+		ui->label_iterationsMCMC->show();
+		ui->iterationsMCMC->show();
+	}
+	else
+	{
+		ui->label_iterationsMCMC->hide();
+		ui->iterationsMCMC->hide();
+	}
+}
+
+
+void BASRegressionLinearLinkForm::on_BAS_clicked()
+{
+	if (!ui->BAS->isChecked() && !ui->MCMC->isChecked())
+	{
+		ui->BAS->setChecked(true);
+	}
+}
+
+
+void BASRegressionLinearLinkForm::on_betaBinomial_clicked()
+{
+	if (ui->betaBinomial->isChecked())
+	{
+		defaultOptionsModelPrior();
+	}
+}
+
+
+void BASRegressionLinearLinkForm::on_Bernoulli_clicked()
+{
+	if (ui->Bernoulli->isChecked())
+	{
+		ui->label_betaBinomialParamA->hide();
+		ui->label_betaBinomialParamB->hide();
+		ui->betaBinomialParamA->hide();
+		ui->betaBinomialParamB->hide();
+		ui->label_bernoulliParam->show();
+		ui->bernoulliParam->show();
+	}
+}
+
+
+void BASRegressionLinearLinkForm::on_uniformPrior_clicked()
+{
+	if (ui->uniformPrior->isChecked())
+	{
+		ui->label_betaBinomialParamA->hide();
+		ui->label_betaBinomialParamB->hide();
+		ui->betaBinomialParamA->hide();
+		ui->betaBinomialParamB->hide();
+		ui->label_bernoulliParam->hide();
+		ui->bernoulliParam->hide();
+	}
 }

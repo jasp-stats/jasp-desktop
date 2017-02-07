@@ -45,32 +45,34 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 
 	# get the bas lm object
 	if (length(options$covariates) > 0 && options$dependent != "" && perform == "run") {
-		bas_lm <- .calculateBASRegressionLinear(
-			run = run,
-			state = state,
-			diff = diff,
-			options = options,
-			dataset = dataset
-		)
-
-		rowsBASRegressionLinearLink <- bas_lm$rows
-
-		bas_obj <- bas_lm$bas_obj
-
-		len.bas_obj <- length(bas_obj$namesx)
-		# use the actual column names
-		bas_obj$namesx[2:len.bas_obj] <- .unv(bas_obj$namesx[2:len.bas_obj])
-
-		if (options$plotLogPosteriorOdds) {
-			plotPosteriorLogOdds <- .plotPosterior.models.basRegression.linear(
-				bas_obj
+		# FIXME: if empty, fetch from previous state
+		if (options$BAS || options$MCMC) {
+			bas_lm <- .calculateBASRegressionLinear(
+				run = run,
+				state = state,
+				diff = diff,
+				options = options,
+				dataset = dataset
 			)
-		}
+			rowsBASRegressionLinearLink <- bas_lm$rows
 
-		if (options$plotCoefficientsPosterior) {
-			plotCoefficientsPosterior <- .plotPosterior.coefficents.basRegression.linear(
-				bas_obj, options, state
-			)
+			bas_obj <- bas_lm$bas_obj
+
+			len.bas_obj <- length(bas_obj$namesx)
+			# use the actual column names
+			bas_obj$namesx[2:len.bas_obj] <- .unv(bas_obj$namesx[2:len.bas_obj])
+
+			if (options$plotLogPosteriorOdds) {
+				plotPosteriorLogOdds <- .plotPosterior.models.basRegression.linear(
+					bas_obj
+				)
+			}
+
+			if (options$plotCoefficientsPosterior) {
+				plotCoefficientsPosterior <- .plotPosterior.coefficents.basRegression.linear(
+					bas_obj, options, state
+				)
+			}
 		}
 	}
 
@@ -119,9 +121,18 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	fields <- list(
 		list(name = "model", type = "string", title = "Model"),
 		list(name = "bf", type = "number", format = "sf:4;dp:3", title = "BF"),
-		list(name = "postprobs", type = "number", format = "sf:4;dp:3", title = "Posterior"),
 		list(name = "R2", type = "number", format = "sf:4;dp:3", title = "R2")
 	)
+
+	if (options$priorprobs) {
+		fields[[length(fields)+1]] <- list(name = "priorprobs", type = "number", format = "sf:4;dp:3", title = "Prior")
+	}
+
+	fields[[length(fields)+1]] <- list(name = "postprobs", type = "number", format = "sf:4;dp:3", title = "Posterior")
+
+	if (options$logmarg) {
+		fields[[length(fields)+1]] <- list(name = "logmarg", type = "number", format = "sf:4;dp:3", title = "Log likelihood")
+	}
 
 	# fields <- list(
 	# 			list(name = "model", type = "string"),
@@ -206,19 +217,42 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	dependent <- .v(options$dependent)
 	formula <- as.formula(paste(dependent, "~", paste(covariates, collapse="+")))
 
+	# sampling method
+	samplingMethod <- NULL
+	if (options$MCMC && options$BAS) {
+		samplingMethod <- "MCMC+BAS"
+	} else if (options$MCMC) {
+		samplingMethod <- "MCMC"
+	} else if (options$BAS) {
+		samplingMethod <- "BAS"
+	}
+
 	# select the type of model prior
 	if (options$modelPrior == "beta.binomial") {
 		modelPrior = BAS::beta.binomial(options$betaBinomialParamA, options$betaBinomialParamB)
 	} else if (options$modelPrior == "uniform") {
 		modelPrior = BAS::uniform()
+	} else if (options$modelPrior == "Bernoulli") {
+		modelPrior = BAS::Bernoulli(options$bernoulliParam)
+	}
+
+	# number of models
+	n.models <- options$numberOfModels
+	if (n.models == 0) {
+		n.models <- NULL
 	}
 
 	# iterations for MCMC
-	MCMC.iterations <- NULL
-	if (grepl("MCMC", options$samplingMethod, fixed = TRUE)) {
-		MCMC.iterations <- options$posteriorEstimatesMCMCIterations
+	MCMC.iterations <- options$iterationsMCMC
+	if (grepl("MCMC", samplingMethod, fixed = TRUE)) {
 		# if iterations is not set by user
-		if (MCMC.iterations == 0 || is.null(MCMC.iterations)) {
+		if (MCMC.iterations == 0) {
+			MCMC.iterations <- NULL
+		}
+
+		if (is.null(n.models)) {
+			MCMC.iterations <- NULL
+		} else {
 			MCMC.iterations <- options$numberOfModels * 10
 		}
 	}
@@ -234,7 +268,6 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 		NULL
 	)
 
-	# FIXME: sampling method currently does not allow specification of MCMC+BAS
 	# FIXME: bestmodel is not given as a choice
 
 	# Bayesian Adaptive Sampling
@@ -242,11 +275,11 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 		formula = formula,
 		data = dataset,
 		prior = options$priorRegressionCoefficients,
-		# alpha = alpha,
+		alpha = alpha,
 		modelprior = modelPrior,
-		# n.models = options$numberOfModels,
-		method = options$samplingMethod
-		# MCMC.iterations = options$iterationsMCMC
+		n.models = n.models,
+		method = samplingMethod,
+		MCMC.iterations = MCMC.iterations
 	)
 
 	rowsBASRegressionLinearLink <- .getOutputRowBASLinearLink(
@@ -300,7 +333,9 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	for (i in 1:models.number) {
 		output.rows[[i]] <- list(model = models.names[[i]], bf = models.bf[[i]],
 								postprobs = bas_obj$postprobs[[models.ordered[i]]],
-								R2 = bas_obj$R2[[models.ordered[i]]])
+								R2 = bas_obj$R2[[models.ordered[i]]],
+								priorprobs = bas_obj$priorprobs[[models.ordered[i]]],
+								logmarg = bas_obj$logmarg[[models.ordered[i]]])
 	}
 	# output.list <- as.list(data.frame(mapply(c, models.names, models.bf)))
 	#

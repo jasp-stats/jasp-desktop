@@ -24,6 +24,8 @@
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodel.h"
 
+#include <QSizePolicy>
+
 namespace Ui {
 class BASRegressionLinearLinkForm;
 }
@@ -36,7 +38,17 @@ public:
 	explicit BASRegressionLinearLinkForm(QWidget *parent = 0);
 	~BASRegressionLinearLinkForm();
 
+	void defaultOptions();
+	void defaultOptionsModelPrior();
+
 	virtual void bindTo(Options *options, DataSet *dataSet) OVERRIDE;
+
+private slots:
+	void on_MCMC_clicked();
+	void on_BAS_clicked();
+	void on_betaBinomial_clicked();
+	void on_Bernoulli_clicked();
+	void on_uniformPrior_clicked();
 
 private:
 	Ui::BASRegressionLinearLinkForm *ui;
