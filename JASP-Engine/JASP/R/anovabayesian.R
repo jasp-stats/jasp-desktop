@@ -86,7 +86,8 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 	meta[[3]] <- list(name = "effects", type = "table")
 	meta[[4]] <- list(name = "estimates", type = "table")
 	
-	if (options$plotSeparatePlots == "") {
+	wantsTwoPlots <- options$plotSeparatePlots
+	if (wantsTwoPlots == "") {
 		meta[[5]] <- list(
 			name = "descriptivesObj", type = "object", 
 			meta = list(list(name = "descriptivesTable", type = "table"), list(name = "descriptivesPlot", type = "image"))
@@ -141,6 +142,7 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 	options$plotErrorBars <- options$plotCredibleInterval
 	options$errorBarType <- "confidenceInterval"
 	options$confidenceIntervalInterval <- options$plotCredibleIntervalInterval
+	plotOptionsChanged <- isTRUE( identical(wantsTwoPlots, options$plotSeparatePlots) == FALSE )
 	descriptivesPlot <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot = NULL)[["result"]]
 	
 	if (length(descriptivesPlot) == 1) {
@@ -148,11 +150,19 @@ AnovaBayesian <- function(dataset = NULL, options, perform = "run", callback = f
 			title = "Descriptives", descriptivesTable = descriptivesTable, 
 			descriptivesPlot = descriptivesPlot[[1]]
 			)
+			
+		if (plotOptionsChanged) 
+			results[[".meta"]][[5]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "image")
+			
 	} else {	
 		results[["descriptivesObj"]] <- list(
 			title = "Descriptives", descriptivesTable = descriptivesTable, 
 			descriptivesPlot = list(collection = descriptivesPlot, title = "Descriptives Plots")
 			)
+			
+		if (plotOptionsChanged)
+			results[[".meta"]][[5]][["meta"]][[2]] <- list(name = "descriptivesPlot", type = "collection", meta = "image")
+			
 	}
 
 	keepDescriptivesPlot <- lapply(descriptivesPlot, function(x) x$data)

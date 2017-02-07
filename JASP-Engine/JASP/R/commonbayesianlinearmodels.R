@@ -76,6 +76,23 @@
 	}
 }
 
+.readBayesianRepeatedMeasuresShortData <- function (options = list (), perform = "init") {
+	numeric.vars <- c (unlist (options$repeatedMeasuresCells), unlist (options$covariates))
+	numeric.vars <- numeric.vars [numeric.vars != ""]
+	
+	factor.vars <- c (unlist (options$betweenSubjectFactors))
+	factor.vars <- factor.vars [factor.vars != ""]
+
+	if (perform == "run") {
+		dataset <- .readDataSetToEnd (columns.as.numeric = numeric.vars, columns.as.factor = factor.vars, 
+			exclude.na.listwise = c (numeric.vars, factor.vars))
+	} else {
+		dataset <- .readDataSetHeader (columns.as.numeric = numeric.vars, columns.as.factor = factor.vars)
+	}
+	
+	return (dataset)
+}
+
 .readBayesianLinearModelData <- function (dataset = NULL, options = list (), perform = "init") {
 	numeric.vars <- c (unlist (options$covariates), unlist (options$dependent))
 	numeric.vars <- numeric.vars [numeric.vars != ""]
