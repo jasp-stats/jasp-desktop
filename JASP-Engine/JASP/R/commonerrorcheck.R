@@ -278,14 +278,16 @@
       stop('Each grouping variable must have a level specified')
     }
     
-    # The levels vector may be a 'mix' of numeric and characters, we need to add additional quotation marks around characters
-    levels <- vapply(levels, function(x) {
-      if (suppressWarnings(is.na(as.numeric(x)))) {
-        paste0("\"", x, "\"")
-      } else {
-        x
-      }
-    }, character(1))
+	# The levels vector may be a 'mix' of numeric and characters, we need to add additional quotation marks around characters
+	if (is.character(levels)) {
+		levels <- vapply(levels, function(x) {
+			if (suppressWarnings(is.na(as.numeric(x)))) {
+				paste0("\"", x, "\"")
+			} else {
+				x
+			}
+		}, character(1))
+	}
     
     # Subset based on an expression
     expr <- paste(.v(grouping), levels, sep='==', collapse='&')
