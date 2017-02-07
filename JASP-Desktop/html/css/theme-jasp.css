@@ -348,7 +348,11 @@ div.image-status.waiting {
 
 .analysis-error {
 	position: absolute;
-	top: 40%;
+	top: 60px;
+	left: 40px;
+	right: 40px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .analysis-error.analysis-error-top-max {
@@ -384,9 +388,8 @@ div.image-status.waiting {
 	z-index: 100 ;
 	padding: 1em ;
 	border-radius: .4em ;
-	min-width: 200px ;
+	min-width: 300px ;
 	white-space: normal;
-	margin-left: 50px ;
 }
 
 .error-message-message {

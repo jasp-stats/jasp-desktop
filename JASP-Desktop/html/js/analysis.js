@@ -492,7 +492,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
             if (status === "exception") $innerElement.addClass("exception");
             $innerElement.find(".status").removeClass("waiting");
 
-            $innerElement.append('<div class="analysis-error error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
+            $innerElement.append('<div class="analysis-error error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "exception" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + error + '</div>')
             if ($innerElement.find('.jasp-display-item').length > 3) {
                 $innerElement.find('.analysis-error').addClass('analysis-error-top-max');
             }
