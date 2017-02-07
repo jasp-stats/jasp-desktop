@@ -94,17 +94,17 @@
                   <string/>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_10">
-                  <item row="0" column="0" colspan="2">
-                   <widget class="BoundCheckBox" name="plotLogPosteriorOdds">
-                    <property name="text">
-                     <string>Log Posterior odds</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="1" column="0">
                    <widget class="BoundCheckBox" name="plotCoefficientsPosterior">
                     <property name="text">
                      <string>Coefficient posterior distributions</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="2">
+                   <widget class="BoundCheckBox" name="plotLogPosteriorOdds">
+                    <property name="text">
+                     <string>Log Posterior odds</string>
                     </property>
                    </widget>
                   </item>
@@ -334,39 +334,6 @@
        <number>0</number>
       </property>
       <item row="0" column="0">
-       <widget class="BoundGroupBox" name="bayesFactorType">
-        <property name="title">
-         <string>Bayes Factor</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_13">
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="_2">
-           <property name="text">
-            <string>BF₀₁</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QRadioButton" name="_1">
-           <property name="text">
-            <string>BF₁₀</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QRadioButton" name="_3">
-           <property name="text">
-            <string>&amp;Log( BF₁₀ )</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="0" column="1">
        <widget class="GroupBox" name="groupBox_3">
         <property name="title">
          <string>Output</string>

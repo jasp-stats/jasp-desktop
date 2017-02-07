@@ -25,6 +25,8 @@
 #include "widgets/tablemodelanovamodel.h"
 
 #include <QSizePolicy>
+#include <QDebug>
+
 
 namespace Ui {
 class BASRegressionLinearLinkForm;
@@ -49,6 +51,11 @@ private slots:
 	void on_betaBinomial_clicked();
 	void on_Bernoulli_clicked();
 	void on_uniformPrior_clicked();
+	void on_g_prior_clicked();
+	void on_hyper_g_clicked();
+	void on_hyper_g_laplace_clicked();
+	void on_hyper_g_n_clicked();
+	void on_priorRegressionCoefficients_clicked();
 
 private:
 	Ui::BASRegressionLinearLinkForm *ui;

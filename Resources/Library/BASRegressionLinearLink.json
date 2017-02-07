@@ -51,14 +51,8 @@
 			"type": "Boolean"
 		},
 		{
-			"options": [ "BF10", "BF01", "LogBF10" ],
-			"default": "BF10",
-			"name": "bayesFactorType",
-			"type": "List"
-		},
-		{
 			"options": ["AIC", "BIC", "EB-global", "EB-local", "g-prior", "hyper-g", "hyper-g-laplace", "hyper-g-n", "ZS-full", "ZS-null"],
-			"default": "BIC",
+			"default": "ZS-null",
 			"name": "priorRegressionCoefficients",
 			"type": "List"
 		},

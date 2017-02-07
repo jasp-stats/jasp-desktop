@@ -77,98 +77,8 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	}
 
 	# Populate the output table
-	meta <- list()
-	meta[[1]] <- list(name = "table", type = "table")
-	# meta[[2]] <- list(
-	# 	name = "inferentialPlots",
-	# 	type = "object",
-	# 	meta = list(
-	# 		list(name = "PosteriorPlotModels", type = "image"),
-	# 		list(name = "PosteriorCoefficients", type = "image")
-	# 	)
-	# )
-
-	meta[[2]] <- list(
-		name="inferentialPlots",
-		type="object",
-		meta=list(
-			list(name = "PosteriorPlotModels", type = "image"),
-			list(
-				name = "coefficentsPlots",
-				type = "collection",
-				meta = list(
-					name = "plotGroups",
-					type = "object",
-					meta = list(
-						list(name = "PosteriorCoefficients", type = "image")
-					)
-				)
-			)
-		)
-	)
-
-	if (options$bayesFactorType == "BF10") {
-		bfm.title <- "BF<sub>M</sub>"
-		bf.title <- "BF<sub>10</sub>"
-	} else if (options$bayesFactorType == "BF01") {
-		bfm.title <- "BF<sub>M</sub>"
-		bf.title <- "BF<sub>01</sub>"
-	} else if (options$bayesFactorType == "LogBF10") {
-		bfm.title <- "Log(BF<sub>M</sub>)"
-		bf.title <- "Log(BF<sub>10</sub>)"
-	}
-
-	fields <- list(
-		list(name = "model", type = "string", title = "Model"),
-		list(name = "bf", type = "number", format = "sf:4;dp:3", title = "BF"),
-		list(name = "R2", type = "number", format = "sf:4;dp:3", title = "R2")
-	)
-
-	if (options$priorprobs) {
-		fields[[length(fields)+1]] <- list(name = "priorprobs", type = "number", format = "sf:4;dp:3", title = "Prior")
-	}
-
-	fields[[length(fields)+1]] <- list(name = "postprobs", type = "number", format = "sf:4;dp:3", title = "Posterior")
-
-	if (options$logmarg) {
-		fields[[length(fields)+1]] <- list(name = "logmarg", type = "number", format = "sf:4;dp:3", title = "Log likelihood")
-	}
-
-	# fields <- list(
-	# 			list(name = "model", type = "string"),
-	# 			list(name = "P(M)", type = "number", format = "sf:4;dp:3"),
-	# 			list(name = "P(M|data)", type = "number", format = "sf:4;dp:3;log10"),
-	# 			list(name = "BFM", type = "number", format = "sf:4;dp:3;log10",
-	# 					title = paste (bfm.title, sep = "")),
-	# 			list(name = "bf", type = "number", format = "sf:4;dp:3;log10",
-	# 					title = paste (bf.title, sep = "")),
-	# 			list(name = "error %", type="number", format="sf:4;dp:3")
-	# 		)
-	# if (options$bayesFactorType == "LogBF10") {
-	# 	fields[[4]] <- list(name = "BFM", type = "number", format = "sf:4;dp:3", title = paste (bfm.title, sep = ""))
-	# 	fields[[5]] <- list(name = "BF10", type = "number", format = "sf:4;dp:3", title = paste (bf.title, sep = ""))
-	# }
-
-	# # add footnotes to the analysis result
-	# footnotes <- .newFootnotes()
-	# if (options$hypothesis != "notEqualToTestValue") {
-	# 	.addFootnote(footnotes, symbol = "<em>Note.</em>", text = hypothesis.variables$message)
-	# }
-
-	table <- list()
-	table[["title"]] <- "Model comparison"
-	table[["citation"]] <- list(
-		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
-	table[["schema"]] <- list(fields = fields)
-	table[["data"]] <- rowsBASRegressionLinearLink
-
-	# print(rowsBASRegressionLinearLink)
-
-	results <- list()
-	results[[".meta"]] <- meta
-	results[["title"]] <- "Bayesian Adaptive Sampling"
-	results[["table"]] <- table
+	results <- .populateOutputTable.bas.linearlink(options=options)
+	results$table$data <- rowsBASRegressionLinearLink
 
 	if (options$plotLogPosteriorOdds || options$plotCoefficientsPosterior) {
 		results[["inferentialPlots"]] <- list(
@@ -190,11 +100,70 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 		status <- "inited"
 	}
 
-	return (list(results = results,
-				status = status,
-				state = state,
-				keep = keep)
-			)
+	return (list(
+		keep = keep,
+		results = results,
+		status = status,
+		state = state)
+	)
+}
+
+
+.populateOutputTable.bas.linearlink <- function(options) {
+	# Creates and returns the 'results' list required to populate
+	# the output table
+
+	meta <- list()
+	meta[[1]] <- list(name = "table", type = "table")
+	meta[[2]] <- list(
+		name="inferentialPlots",
+		type="object",
+		meta=list(
+			list(name = "PosteriorPlotModels", type = "image"),
+			list(
+				name = "coefficentsPlots",
+				type = "collection",
+				meta = list(
+					name = "plotGroups",
+					type = "object",
+					meta = list(
+						list(name = "PosteriorCoefficients", type = "image"))
+		)))
+	)
+
+	fields <- list(
+		list(name = "model", type = "string", title = "Model"),
+		list(name = "bf", type = "number", format = "sf:4;dp:3", title = "BF"),
+		list(name = "R2", type = "number", format = "sf:4;dp:3", title = "R2")
+	)
+	if (options$priorprobs) {
+		fields[[length(fields)+1]] <- list(name = "priorprobs", type = "number", format = "sf:4;dp:3", title = "Prior")
+	}
+	fields[[length(fields)+1]] <- list(name = "postprobs", type = "number", format = "sf:4;dp:3", title = "Posterior")
+	if (options$logmarg) {
+		fields[[length(fields)+1]] <- list(name = "logmarg", type = "number", format = "sf:4;dp:3", title = "Log likelihood")
+	}
+
+	# # add footnotes to the analysis result
+	# footnotes <- .newFootnotes()
+	# if (options$hypothesis != "notEqualToTestValue") {
+	# 	.addFootnote(footnotes, symbol = "<em>Note.</em>", text = hypothesis.variables$message)
+	# }
+
+	table <- list()
+	table[["title"]] <- "Model comparison"
+	table[["citation"]] <- list(
+		"Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+		"Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.")
+	table[["schema"]] <- list(fields = fields)
+	# table[["data"]] <- rowsBASRegressionLinearLink
+
+	results <- list()
+	results[[".meta"]] <- meta
+	results[["title"]] <- "Bayesian Adaptive Sampling"
+	results[["table"]] <- table
+
+	return (results)
 }
 
 
