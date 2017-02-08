@@ -886,33 +886,9 @@ as.list.footnotes <- function(footnotes) {
 saveImage <- function(plotName, format, height, width){
 	# Retrieve plot object from state
 	state <- .retrieveState()
-
-	print("Length of the recorded plot:")
-	print(length(state[["figures"]][[plotName]]))
-	
-	print("Info of recorded plot:")
-	
-	cat(as.character(state[["figures"]][[plotName]]), "\n")
-	
-	# Hacky solution to problem with last element being NULL
-	# if (class(state[["figures"]][[plotName]]) == "recordedplot"){
-	# 			print("HACK FOR RECORDEDPLOT CLASS")
-	# 			plt <- state[["figures"]][[plotName]][-length(state[["figures"]][[plotName]])]
-	# 			class(plt) <- "recordedplot"
-	# 			print("assigned class")
-	# 			
-	# 
-	# } else {
-	# 	plt <- state[["figures"]][[plotName]]
-	# }
-	
 	plt <- state[["figures"]][[plotName]]
-	# Operating System information
-	type <- "cairo"  
-  if (Sys.info()["sysname"]=="Darwin")
-    type <- "quartz"
 
-  # create file location
+  # create file location string
   location <- .requestTempFileNameNative("png") # to extract the root location
 	relativePath <- paste0(base::substr(plotName, start = 1, 
 																			stop = nchar(plotName)-3), format)
@@ -920,85 +896,63 @@ saveImage <- function(plotName, format, height, width){
 	base::Encoding(relativePath) <- "UTF-8"
   base::Encoding(fullPath) <- "UTF-8"
 	print(fullPath)
-
-
+	
+	# Open correct graphics device
 	if (format == "eps"){
-  	# Calculate eps pixel->inch multiplier
-		#epsMultip <- .ppi / 2.4
-		epsMultip <- .ppi
-		print(.ppi)
 		
-		# Open graphics device and plot
-    grDevices::cairo_ps(filename=fullPath, width=width/epsMultip, 
-                        height=height/epsMultip, bg="transparent")
-
-		print("Device opened")
-		if (class(plt) == "recordedplot"){
-			print("replaying recorded plot ...")
-			.redrawPlot(plt)
-			print("plot replayed")
-		} else if ("gg" %in% tolower(class(plt))){
-			print("printing ggplot")
-			print(plt)
-			print("plot printed")
-		}
-		dev.off()
-		print("plot saved")
+		grDevices::cairo_ps(filename=fullPath, width=width/.ppi, 
+												height=height/.ppi, bg="transparent")
 		
-  } else { # add optional other formats here in else if statement
-		
+  } else { # add optional other formats here in "else if"-statements
 		stop("Format incorrectly specified")
 	}
+	
+	# Plot and close graphics device
+	if (class(plt) == "recordedplot"){
+		.redrawPlot(plt) #(see below)
+	} else if ("gg" %in% tolower(class(plt))){
+		print(plt) #ggplots
+	}
+	dev.off()
 	
 	# Create JSON string for interpretation by JASP front-end
 	result <- paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"", 
 									relativePath , "\" } }")
-
-	print("Returning json string...")
-	print(result)								
 
 	# Return result
 	result
 }
 
 # Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
-# THANK YOU
+# THANK YOU FOR THIS FUNCTION!
 .redrawPlot <- function(rec_plot) {
-    ## this allows us to deal with trellis/grid/ggplot objects as well ...
-    if (!is(rec_plot, 'recordedplot')) {
-        res <- try(print(rec_plot))
-        if (is(res, 'error')) {
-            stop(res)
-        }
-    } else {
-        if (getRversion() < '3.0.0') {
-            for (i in 1:length(rec_plot[[1]])) {
-                #@jeroenooms
-                if ('NativeSymbolInfo' %in% class(rec_plot[[1]][[i]][[2]][[1]])) {
-                    rec_plot[[1]][[i]][[2]][[1]] <- getNativeSymbolInfo(rec_plot[[1]][[i]][[2]][[1]]$name)
-                }
-            }
+	if (getRversion() < '3.0.0') {
+	  for (i in 1:length(rec_plot[[1]])) {
+	    #@jeroenooms
+	    if ('NativeSymbolInfo' %in% class(rec_plot[[1]][[i]][[2]][[1]])) {
+	        rec_plot[[1]][[i]][[2]][[1]] <- getNativeSymbolInfo(rec_plot[[1]][[i]][[2]][[1]]$name)
+	    }
+	  }
+	} else {
+    for (i in 1:length(rec_plot[[1]])) {
+      #@jjallaire
+      symbol <- rec_plot[[1]][[i]][[2]][[1]]
+      if ('NativeSymbolInfo' %in% class(symbol)) {
+        if (!is.null(symbol$package)) {
+            name <- symbol$package[['name']]
         } else {
-            for (i in 1:length(rec_plot[[1]])) {
-                #@jjallaire
-                symbol <- rec_plot[[1]][[i]][[2]][[1]]
-                if ('NativeSymbolInfo' %in% class(symbol)) {
-                    if (!is.null(symbol$package)) {
-                        name <- symbol$package[['name']]
-                    } else {
-                        name <- symbol$dll[['name']]
-                    }
-                    pkg_dll <- getLoadedDLLs()[[name]]
-                    native_sumbol <- getNativeSymbolInfo(name = symbol$name,
-                                                        PACKAGE = pkg_dll, withRegistrationInfo = TRUE)
-                    rec_plot[[1]][[i]][[2]][[1]] <- native_sumbol
-                }
-            }
+            name <- symbol$dll[['name']]
         }
-        if (is.null(attr(rec_plot, 'pid')) || attr(rec_plot, 'pid') != Sys.getpid()) {
-            warning('Loading plot snapshot from a different session with possible side effects or errors.')
-            attr(rec_plot, 'pid') <- Sys.getpid()
-        }
-        suppressWarnings(grDevices::replayPlot(rec_plot))
+        pkg_dll <- getLoadedDLLs()[[name]]
+        native_sumbol <- getNativeSymbolInfo(name = symbol$name,
+                                            PACKAGE = pkg_dll, withRegistrationInfo = TRUE)
+        rec_plot[[1]][[i]][[2]][[1]] <- native_sumbol
+      }
     }
+	}
+	if (is.null(attr(rec_plot, 'pid')) || attr(rec_plot, 'pid') != Sys.getpid()) {
+    warning('Loading plot snapshot from a different session with possible side effects or errors.')
+    attr(rec_plot, 'pid') <- Sys.getpid()
+	}
+	suppressWarnings(grDevices::replayPlot(rec_plot))
 }

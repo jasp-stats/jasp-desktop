@@ -64,9 +64,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	meta <- list()
 
 	plotsMeta <- list(
-								list(name="distributionPlots", type="collection", meta="image"),
-								list(name="matrixPlot", type="image"),
-								list(name="splitPlots", type="collection", meta="image")
+								list(name="distributionPlots", type="collection", convertible="true", meta="image"),
+								list(name="matrixPlot", type="image", convertible="true"),
+								list(name="splitPlots", type="collection", convertible="true", meta="image")
 							 )
 
 	meta[[1]] <- list(name="title", type="title")
@@ -120,8 +120,19 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 		distrPlotsTitle <- "Distribution Plot"
 	}
-
-	distrPlots <- list(collection=.descriptivesFrequencyPlots(dataset.factors, options, run, last.plots), title=distrPlotsTitle)
+	
+	freqPltColl <- .descriptivesFrequencyPlots(dataset.factors, options, run, last.plots)
+	
+	if (!is.null(freqPltColl[[1]][["obj"]])){
+		# Extract plot objects and save to state
+		spltPltObjects <- lapply(freqPltColl, function(x) x[["obj"]])
+		names(spltPltObjects) <- unlist(lapply(freqPltColl, function(x) x[["data"]]))
+		figstate <- append(figstate, spltPltObjects)
+		# remove objects from collection
+		freqPltColl <- lapply(freqPltColl, function(x) x[names(x)!="obj"])
+	}
+	
+	distrPlots <- list(collection=freqPltColl, title=distrPlotsTitle)
 
 	#### SPLIT PLOTS
 	last.splitPlots <- NULL
@@ -766,19 +777,24 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 
 			} else if (run == FALSE) {
 
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-				.barplotJASP(variable=variable, dontPlotData=TRUE)
-
-				plot[["data"]] <- .endSaveImage(image)
-
+				plotFunc <- function(){
+					.barplotJASP(variable=variable, dontPlotData=TRUE)
+				}
+				imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc)
+																
+				plot[["data"]] <- imageObj[["png"]]
+				plot[["obj"]] <- imageObj[["obj"]]
+				
 			} else if (any(is.infinite(column))) {
 
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-				.barplotJASP(variable=variable, dontPlotData=TRUE)
-
-				plot[["data"]] <- .endSaveImage(image)
+				plotFunc <- function(){
+					.barplotJASP(variable=variable, dontPlotData=TRUE)
+				}
+				imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc,
+																obj = FALSE)
+																
+				plot[["data"]] <- imageObj[["png"]]
+				plot[["obj"]] <- imageObj[["obj"]]
 				plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
 				plot[["status"]] <- "complete"
 
@@ -789,32 +805,40 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 					column <- as.factor(column)
 				}
 
-				image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-				.barplotJASP(column, variable)
-
-				plot[["data"]] <- .endSaveImage(image)
+				plotFunc <- function(){
+					.barplotJASP(column, variable)
+				}
+				imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc)
+																
+				plot[["data"]] <- imageObj[["png"]]
+				plot[["obj"]] <- imageObj[["obj"]]
 				plot[["status"]] <- "complete"
 
 			} else if (length(column) > 0 && !is.factor(column)) {
 
 				if (any(is.infinite(column))) {
 
-					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-					.barplotJASP(variable=variable, dontPlotData=TRUE)
-
-					plot[["data"]] <- .endSaveImage(image)
+					plotFunc <- function(){
+						.barplotJASP(variable=variable, dontPlotData=TRUE)
+					}
+					imageObj <- .writeImage(options$plotWidth, options$plotHeight, plotFunc,
+																	obj = FALSE)
+																	
+					plot[["data"]] <- imageObj[["png"]]
+					plot[["obj"]] <- imageObj[["obj"]]
 					plot[["error"]] <- list(error="badData", errorMessage="Plotting is not possible: Variable contains infinity")
 					plot[["status"]] <- "complete"
 
 				} else {
 
-					image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-
-					.plotMarginal(column, variableName=variable)
-
-					plot[["data"]] <- .endSaveImage(image)
+					plotFunc <- function(){
+						.plotMarginal(column, variableName=variable)
+					}
+					imageObj <- .writeImage(options$plotWidth, options$plotHeight, 
+																	plotFunc)
+																	
+					plot[["data"]] <- imageObj[["png"]]
+					plot[["obj"]] <- imageObj[["obj"]]
 					plot[["status"]] <- "complete"
 				}
 
@@ -1214,11 +1238,11 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				}
 			}
 
-			imgPaths <- .writeImage(width, height, plot=.matrixPlotFunc)
+			imgObj <- .writeImage(width, height, plot=.matrixPlotFunc)
 
 			plot <- matrix.plot
-			plot[["data"]]  <- imgPaths[["png"]]
-			plot[["obj"]] <- imgPaths[["obj"]]
+			plot[["data"]]  <- imgObj[["png"]]
+			plot[["obj"]] <- imgObj[["obj"]]
 			
 			matrix.plot <- plot
 
