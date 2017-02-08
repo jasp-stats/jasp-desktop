@@ -520,8 +520,7 @@ string rbridge_check()
 		return "null";
 }
 
-//string rbridge_saveImage(const string &name, const string &type, const string &height, const string &width)
-string rbridge_saveImage(const string &name, const string &type)
+string rbridge_saveImage(const string &name, const string &type, const int &height, const int &width)
 
 {
 	RInside &rInside = rbridge_rinside->instance();
@@ -529,11 +528,10 @@ string rbridge_saveImage(const string &name, const string &type)
 	rInside["plotName"] = name;
 	rInside["format"] = type;
 
-	//rInside["height"] = height;
-	//rInside["width"] = width;
+	rInside["height"] = height;
+	rInside["width"] = width;
 
-	SEXP result = rbridge_rinside->parseEvalNT("saveImage(plotName,format)");
-	//SEXP result = rbridge_rinside->parseEvalNT("saveImage(plotName,format,height,width)");
+	SEXP result = rbridge_rinside->parseEvalNT("saveImage(plotName,format,height,width)");
 
 	if (Rf_isString(result))
 		return Rcpp::as<string>(result);

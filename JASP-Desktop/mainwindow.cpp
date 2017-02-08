@@ -622,6 +622,10 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 	{
 		std::cout << "analysisImageSavedHandler, imagePath: " << imagePath.toStdString() << ", finalPath: " << finalPath.toStdString() << std::endl;
 		std::cout.flush();
+		if (QFile::exists(finalPath))
+		{
+			QFile::remove(finalPath);
+		}
 		QFile::copy(imagePath, finalPath);
 	}
 }

@@ -691,120 +691,6 @@ callback <- function(results=NULL) {
   paths
 }
 
-
-saveImage <- function(plotName, format, height, width){
-	state <- .retrieveState()
-	height <- state[["options"]][["plotHeight"]]
-	width <- state[["options"]][["plotWidth"]]
-	print("TEST1")
-	# Operating System information
-	type <- "cairo"  
-  if (Sys.info()["sysname"]=="Darwin")
-    type <- "quartz"
-		  
-	print("TEST2")
-  # request file location
-  location <- .requestTempFileNameNative("png")
-	relativePath <- plotName
-  fullPath <- paste(location$root, relativePath, sep="/")
-	base::Encoding(relativePath) <- "UTF-8"
-  base::Encoding(fullPath) <- "UTF-8"
-  print("TEST3")
-
-	if ("eps" %in% format){
-    # Calculate eps pixel->inch multiplier
-	print("TEST4")
-	epsMultip <- .ppi / 2.4
-	print("TEST5")
-	print(version)
-
-    # Create eps file location
-    relativePatheps <- paste0(base::substr(relativePath, start = 1, 
-                                           stop = nchar(relativePath)-3),	
-															"eps")
-    base::Encoding(relativePath) <- "UTF-8"
-    fullPatheps <- paste0(base::substr(fullPath, start = 1, 
-                                       stop = nchar(fullPath)-3), 
-													"eps")
-    base::Encoding(fullPath) <- "UTF-8"
-    
-	print(fullPatheps)
-	# Open graphics device and plot
-    grDevices::cairo_ps(filename=fullPatheps, width=width/epsMultip, 
-                        height=height/epsMultip, bg="transparent")
-	print("TEST68")
-	print(packageVersion("grDevices"))
-	plt <- state[["figures"]][[plotName]][-3]
-	class(plt) <- "recordedplot"
-	print("CLASS")
-	print(class(plt))
-	print("LENGTH")
-	print(length(plt))
-	print(str(plt))
-	grDevices::replayPlot(plt)
-	print("TEST7")
-	dev.off()
-	print("TEST8")
-  }
-  print("TEST9")
-
-	result <- paste0("{ \"status\" : \"imageSaved\", \"results\" : { \"name\" : \"", relativePatheps , "\" } }")
-	print(result)
-	return(result)
-}
-
-
-.extractErrorMessage <- function(error) {
-
-	split <- base::strsplit(as.character(error), ":")[[1]]
-	last <- split[[length(split)]]
-	stringr::str_trim(last)
-}
-
-.addFootnote <- function(footnotes, message, symbol=NULL) {
-	
-	if (length(footnotes) == 0) {
-		
-		if (is.null(symbol)) {
-			
-			footnotes <- list(message)
-			
-		} else {
-			
-			footnotes <- list(symbol=symbol, text=message)
-		}
-		
-		return(list(footnotes=footnotes, index=0))
-		
-	} else {
-		
-		for (i in 1:length(footnotes)) {
-			
-			footnote <- footnotes[[i]]
-			
-			if ("text" %in% names(footnote)) {
-				existingMessage <- footnote$text
-			} else {
-				existingMessage <- footnote
-			}
-				
-			if (existingMessage == message)
-				return(list(footnotes=footnotes, index=i-1))
-		}
-		
-		if (is.null(symbol)) {
-			new.footnote <- message
-		} else {
-			new.footnote <- list(symbol=symbol, message=message)
-		}
-	
-		index <- length(footnotes)+1
-		footnotes[[index]] <- new.footnote
-		
-		return(list(footnotes=footnotes, index=index-1))
-	}
-}
-
 .clean <- function(value) {
 
 	if (is.list(value)) {
@@ -996,12 +882,10 @@ as.list.footnotes <- function(footnotes) {
 }
 
 
-
-saveImage <- function(plotName, format){
+# not .saveImage() because RInside (interface to CPP) cannot handle that
+saveImage <- function(plotName, format, height, width){
 	# Retrieve plot object from state
 	state <- .retrieveState()
-	width <- state$options$plotWidth
-	height <- state$options$plotHeight
 
 	print("Length of the recorded plot:")
 	print(length(state[["figures"]][[plotName]]))
@@ -1040,8 +924,10 @@ saveImage <- function(plotName, format){
 
 	if (format == "eps"){
   	# Calculate eps pixel->inch multiplier
-		epsMultip <- .ppi / 2.4
-
+		#epsMultip <- .ppi / 2.4
+		epsMultip <- .ppi
+		print(.ppi)
+		
 		# Open graphics device and plot
     grDevices::cairo_ps(filename=fullPath, width=width/epsMultip, 
                         height=height/epsMultip, bg="transparent")
@@ -1049,7 +935,7 @@ saveImage <- function(plotName, format){
 		print("Device opened")
 		if (class(plt) == "recordedplot"){
 			print("replaying recorded plot ...")
-			redrawPlot(plt)
+			.redrawPlot(plt)
 			print("plot replayed")
 		} else if ("gg" %in% tolower(class(plt))){
 			print("printing ggplot")
@@ -1077,7 +963,7 @@ saveImage <- function(plotName, format){
 
 # Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
 # THANK YOU
-redrawPlot <- function(rec_plot) {
+.redrawPlot <- function(rec_plot) {
     ## this allows us to deal with trellis/grid/ggplot objects as well ...
     if (!is(rec_plot, 'recordedplot')) {
         res <- try(print(rec_plot))
