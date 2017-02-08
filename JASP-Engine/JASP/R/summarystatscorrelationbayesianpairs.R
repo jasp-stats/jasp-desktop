@@ -101,7 +101,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	if (options$correlationCoefficient == "pearsonRho") {
 		correlation.title <- "r"
 	} else if (options$correlationCoefficient == "kendallTau") {
-		correlation.title <- "t"
+		correlation.title <- "tau"
 	}
 
 	# populate the output table
@@ -118,6 +118,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 																	title = correlation.title)
 	fields[[length(fields)+1]] <- list(name = "BF", type = "number", format = "sf:4;dp:3",
 																			title = bf.title)
+	fields[[length(fields)+1]] <- list(name = "pValue", type = "number", format = "sf:4;dp:3", title = "p")
 
 	table <- list()
 	table[["title"]] <- "Bayesian Pearson Correlation"
@@ -228,10 +229,20 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 
 		p <- try(silent = FALSE, expr = {
 			image <- .beginSaveImage(width, height)
+			
+			# TODO: fix .plotPosterior.correlation take in bfObject and have switch bayesFactorObject$bf 
+			allBfs <- bayesFactorObject$bf
+			
+			someBf <- switch(options$hypothesis,
+			                 correlated = allBfs$bf10, 
+			                 correlatedPositively = allBfs$bfPlus0, 
+			                 correlatedNegatively =allBfs$bfMin0
+			)
+			
 			.plotPosterior.correlation(
 						r = cor.value, n = options$sampleSize, oneSided = oneSided,
 						corCoefficient = cor.coefficient, dontPlotData = dontPlotData,
-						kappa = options$priorWidth, BFH1H0 = BFH1H0, BF = bayesFactorObject$bf,
+						kappa = options$priorWidth, BFH1H0 = BFH1H0, BF = someBf,
 						addInformation = options$plotPriorAndPosteriorAdditionalInfo
 					)
 			plot[["data"]] <- .endSaveImage(image)
@@ -322,10 +333,17 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 			dontPlotData <- FALSE
 
 			if (!is.null(bayesFactorObject)) {
-				BF10post <- ifelse(BFH1H0,
-								bayesFactorObject$bf,
-								1 / bayesFactorObject$bf
-							)
+			  
+			  # TODO: fix .plotPosterior.correlation take in bfObject and have switch bayesFactorObject$bf 
+			  allBfs <- bayesFactorObject$bf
+			  
+			  someBf <- switch(options$hypothesis,
+			                   correlated = allBfs$bf10, 
+			                   correlatedPositively = allBfs$bfPlus0, 
+			                   correlatedNegatively =allBfs$bfMin0
+			  )
+			  
+				BF10post <- ifelse(BFH1H0, someBf, 1/someBf)
 			}
 		} else {
 			dontPlotData <- TRUE
@@ -422,16 +440,18 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	#
 	# Ouput:
 	#     list containing -
-	#         bf: the required Bayes factor value
-	#         tooPeaked: whether it is too peaked to plot
+	#         bf: three Bayes factors
+	#         pValues: three p-values
 
 	some.n <- options$sampleSize
 	all.bfs <- list(bf10 = NA, bfPlus0 = NA, bfMin0 = NA)
 
 	if (options$correlationCoefficient == "pearsonRho") {
 		some.r <- options$pearsonRhoValue
+		all.pValues <- .pValueFromCor(corrie=some.r, n=some.n, method="pearson")
+		
 		method.number <- 1
-
+		
 		while (any(is.na(c(all.bfs$bf10, all.bfs$bfPlus0, all.bfs$bfMin0))) && method.number <= 4) {
 			# Note: Try all normal methods
 			all.bfs <- .bfCorrieKernel(n = some.n, r = some.r, kappa = options$priorWidth,
@@ -448,28 +468,13 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 		some.r <- options$kendallTauValue
 		all.bfs <- .bfCorrieKernelKendallTau(tau = some.r, n = some.n, kappa = options$priorWidth,
 											var = 1)
+		all.pValues <- .pValueFromCor(corrie=some.r, n=some.n, method="kendall")
+	} else if (options$correlationCoefficient == "spearman"){
+	  # TODO: Johnny
+	  some.r <- "error"
+	  all.bfs <- "error"
 	}
-
-	some.bf10 <- all.bfs$bf10
-	some.bfPlus0 <- all.bfs$bfPlus0
-	some.bfMin0 <- all.bfs$bfMin0
-
-	switch(options$hypothesis,
-		correlated = {
-			some.bf <- some.bf10
-			tooPeaked <- all.bfs$twoSidedTooPeaked
-		},
-		correlatedPositively = {
-			some.bf <- some.bfPlus0
-			tooPeaked <- all.bfs$plusSidedTooPeaked
-		},
-		correlatedNegatively = {
-			some.bf <- some.bfMin0
-			tooPeaked <- all.bfs$minSidedTooPeaked
-		}
-	)
-
-	return(list(bf = some.bf, peaked = tooPeaked))
+	return(list(bf = all.bfs, pValue=all.pValues))
 }
 
 
@@ -508,17 +513,38 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 
 		if (run) {
 			if (status$ready) {
+			  # Calculate BF object
 				bayesFactorObject <- .calculateBF.summarystats.correlation(
 																options = options,
 																state = state,
 																diff = diff
 															)
-				BF <- switch(options$bayesFactorType,
-							BF10 = .clean(bayesFactorObject$bf),
-							BF01 = .clean(1 / bayesFactorObject$bf),
-							LogBF10 = .clean(log(bayesFactorObject$bf))
-						)
-				rowsCorrelationBayesianPairs$BF <- BF
+				# Note: allBfs contains infor about whether the posteriors are too peaked
+				allBfs <- bayesFactorObject$bf
+				allPValues <- bayesFactorObject$pValue
+				
+				# Note: Choose the right side of the Bfs and pValue 
+				switch(options$hypothesis,
+				       correlated = {
+				         someBf <- allBfs$bf10
+				         rowsCorrelationBayesianPairs$pValue <- .clean(allPValues$twoSided)
+				       },
+				       correlatedPositively = {
+				         someBf <- allBfs$bfPlus0
+				         rowsCorrelationBayesianPairs$pValue <- .clean(allPValues$plusSided)
+				       },
+				       correlatedNegatively = {
+				         someBf <- allBfs$bfMin0
+				         rowsCorrelationBayesianPairs$pValue <- .clean(allPValues$minSided)
+				       }
+				)
+				
+				# Note: Choose the display mode for Bf
+				rowsCorrelationBayesianPairs$BF <- switch(options$bayesFactorType,
+				                                          BF10 = .clean(someBf), 
+				                                          BF01 = .clean(1 / someBf), 
+				                                          LogBF10 = .clean(log(someBf))
+				)
 			}
 		}
 	}
