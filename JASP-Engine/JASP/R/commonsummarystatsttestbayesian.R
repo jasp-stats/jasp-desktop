@@ -126,16 +126,16 @@
     result <- .pValueFromT(t=t, n1=n-1, n2=0, var.equal=TRUE)
   } else if (method == "kendall"){
     # TODO: Add support for SuppDists 
-    if (n > 2 && n < 50) {
-      # Exact sampling distribution
-      # tau neq 0
-      result$twoSided <- 2*SuppDists::pKendall(-abs(corrie), N=n)
-      # tau < 0
-      result$minSided <- SuppDists::pKendall(corrie, N=n)
-      # tau > 0
-      result$plusSided <- SuppDists::pKendall(corrie, N=n, lower.tail = FALSE)
-
-    } else if (n >= 50){
+    # if (n > 2 && n < 50) {
+    #   # Exact sampling distribution
+    #   # tau neq 0
+    #   result$twoSided <- 2*SuppDists::pKendall(-abs(corrie), N=n)
+    #   # tau < 0
+    #   result$minSided <- SuppDists::pKendall(corrie, N=n)
+    #   # tau > 0
+    #   result$plusSided <- SuppDists::pKendall(corrie, N=n, lower.tail = FALSE)
+    # 
+    # } else if (n >= 50){
       # normal approximation 
       #
       someSd <- sqrt(2*(2*n+5)/(9*n*(n-1)))
@@ -146,7 +146,7 @@
       result$minSided <- pnorm(corrie, sd=someSd)
       # tau > 0
       result$plusSided <- pnorm(corrie, sd=someSd, lower.tail = FALSE)
-    }
+    # }
   } else if (method == "spearman"){
     # TODO: Johnny
   }
