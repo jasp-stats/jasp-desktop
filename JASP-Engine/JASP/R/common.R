@@ -1008,19 +1008,21 @@ saveImage <- function(plotName, format){
 	
 	print("Info of recorded plot:")
 	
-	cat(as.character(state[["figures"]][[plotName]]))
+	cat(as.character(state[["figures"]][[plotName]]), "\n")
 	
 	# Hacky solution to problem with last element being NULL
-	if (class(state[["figures"]][[plotName]]) == "recordedplot"){
-				print("HACK FOR RECORDEDPLOT CLASS")
-				plt <- state[["figures"]][[plotName]][-length(state[["figures"]][[plotName]])]
-				class(plt) <- "recordedplot"
-				print("assigned class")
-
-	} else {
-		plt <- state[["figures"]][[plotName]]
-	}
+	# if (class(state[["figures"]][[plotName]]) == "recordedplot"){
+	# 			print("HACK FOR RECORDEDPLOT CLASS")
+	# 			plt <- state[["figures"]][[plotName]][-length(state[["figures"]][[plotName]])]
+	# 			class(plt) <- "recordedplot"
+	# 			print("assigned class")
+	# 			
+	# 
+	# } else {
+	# 	plt <- state[["figures"]][[plotName]]
+	# }
 	
+	plt <- state[["figures"]][[plotName]]
 	# Operating System information
 	type <- "cairo"  
   if (Sys.info()["sysname"]=="Darwin")
@@ -1047,7 +1049,7 @@ saveImage <- function(plotName, format){
 		print("Device opened")
 		if (class(plt) == "recordedplot"){
 			print("replaying recorded plot ...")
-			grDevices::replayPlot(plt)
+			redrawPlot(plt)
 			print("plot replayed")
 		} else if ("gg" %in% tolower(class(plt))){
 			print("printing ggplot")
@@ -1071,4 +1073,46 @@ saveImage <- function(plotName, format){
 
 	# Return result
 	result
+}
+
+# Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
+# THANK YOU
+redrawPlot <- function(rec_plot) {
+    ## this allows us to deal with trellis/grid/ggplot objects as well ...
+    if (!is(rec_plot, 'recordedplot')) {
+        res <- try(print(rec_plot))
+        if (is(res, 'error')) {
+            stop(res)
+        }
+    } else {
+        if (getRversion() < '3.0.0') {
+            for (i in 1:length(rec_plot[[1]])) {
+                #@jeroenooms
+                if ('NativeSymbolInfo' %in% class(rec_plot[[1]][[i]][[2]][[1]])) {
+                    rec_plot[[1]][[i]][[2]][[1]] <- getNativeSymbolInfo(rec_plot[[1]][[i]][[2]][[1]]$name)
+                }
+            }
+        } else {
+            for (i in 1:length(rec_plot[[1]])) {
+                #@jjallaire
+                symbol <- rec_plot[[1]][[i]][[2]][[1]]
+                if ('NativeSymbolInfo' %in% class(symbol)) {
+                    if (!is.null(symbol$package)) {
+                        name <- symbol$package[['name']]
+                    } else {
+                        name <- symbol$dll[['name']]
+                    }
+                    pkg_dll <- getLoadedDLLs()[[name]]
+                    native_sumbol <- getNativeSymbolInfo(name = symbol$name,
+                                                        PACKAGE = pkg_dll, withRegistrationInfo = TRUE)
+                    rec_plot[[1]][[i]][[2]][[1]] <- native_sumbol
+                }
+            }
+        }
+        if (is.null(attr(rec_plot, 'pid')) || attr(rec_plot, 'pid') != Sys.getpid()) {
+            warning('Loading plot snapshot from a different session with possible side effects or errors.')
+            attr(rec_plot, 'pid') <- Sys.getpid()
+        }
+        suppressWarnings(grDevices::replayPlot(rec_plot))
+    }
 }
