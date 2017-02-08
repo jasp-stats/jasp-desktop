@@ -785,31 +785,31 @@
             <string>Correction</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_6">
-            <item row="2" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
-              <property name="text">
-               <string>Bonferroni</string>
-              </property>
-             </widget>
-            </item>
             <item row="3" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsHolm">
+             <widget class="BoundCheckBox" name="postHocTestsTukey">
               <property name="text">
-               <string>Holm</string>
+               <string>Tukey</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="5" column="0">
              <widget class="BoundCheckBox" name="postHocTestsScheffe">
               <property name="text">
                <string>Scheffe</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="BoundCheckBox" name="postHocTestsTukey">
+            <item row="1" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsBonferroni">
               <property name="text">
-               <string>Tukey</string>
+               <string>Bonferroni</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="BoundCheckBox" name="postHocTestsHolm">
+              <property name="text">
+               <string>Holm</string>
               </property>
              </widget>
             </item>
