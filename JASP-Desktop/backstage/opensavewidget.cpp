@@ -304,7 +304,7 @@ bool OpenSaveWidget::checkSyncFileExists(const QString &path)
 		_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
 		_tabWidget->tabBar()->click(FileLocation::Computer);
 
-		QMessageBox::warning(this, QString("Data Synchronization"), QString("The associated data file (") + path + ") does not exist. If you want to synchronize your data with another file, click on the 'File/Sync Data' menu.");
+		//QMessageBox::warning(this, QString("Data Synchronization"), QString("The associated data file (") + path + ") does not exist. If you want to synchronize your data with another file, click on the 'File/Sync Data' menu.");
 	}
 
     return exists;
