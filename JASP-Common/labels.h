@@ -46,7 +46,8 @@ public:
 	int add(const std::string &display);
 	int add(int index, const std::string &display);
 	void syncInts(const std::set<int> &values);
-	std::map<std::string, int> syncStrings(const std::vector<std::string> &values);
+	void syncInts(std::map<int, std::string> &values);
+	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels);
 
 	const Label &labelFor(int index) const;
 	void set(std::vector<Label> &labels);
@@ -64,11 +65,13 @@ public:
 	void setOrgStringValues(int key, std::string value);
 
 	void setLabelFromRow(int row, const std::string &display);
+	void setLabelFromValue(int value, const std::string &display);
 	std::string getLabelFromRow(int);
 	std::string getValueFromRow(int);
 	std::string getValueFromIndex(int);
 
 private:
+	void _setNewStringForLabel(Label &label, const std::string &display);
 	std::string _getValueFromLabel(const Label &label);
 
 	boost::interprocess::managed_shared_memory *_mem;

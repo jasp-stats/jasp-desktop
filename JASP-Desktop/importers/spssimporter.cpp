@@ -327,10 +327,7 @@ void SPSSImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &co
 {
 	SPSSImportColumn* spssCol = dynamic_cast<SPSSImportColumn*>(importColumn);
 
-	column.setColumnType( spssCol->getJaspColumnType() );
-	column.labels().clear();
-
-	switch(column.columnType())
+	switch(spssCol->getJaspColumnType())
 	{
 	default:	// Skip unknown columns
 		break;
@@ -340,7 +337,7 @@ void SPSSImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &co
 
 	case Column::ColumnTypeNominal:
 	case Column::ColumnTypeOrdinal:
-		spssCol->setColumnLabeledData(column);
+		spssCol->setColumnAsNominalOrOrdinal(column, spssCol->getJaspColumnType());
 		break;
 
 	case Column::ColumnTypeNominalText:
