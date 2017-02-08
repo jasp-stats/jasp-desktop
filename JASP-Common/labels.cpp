@@ -61,6 +61,26 @@ int Labels::add(int index, const std::string &display)
 	return index;
 }
 
+void Labels::syncInts(map<int, string> &values)
+{
+	std::set<int> keys;
+	for (map<int, string>::const_iterator it = values.begin(); it != values.end(); ++it)
+		keys.insert(it->first);
+
+	syncInts(keys);
+
+	for (LabelVector::iterator it = _labels.begin(); it != _labels.end(); ++it)
+	{
+		Label &label = *it;
+		int value = label.value();
+		string &new_string_label = values[value];
+		string old_string_label = label.text();
+		if (new_string_label != old_string_label)
+			_setNewStringForLabel(label, new_string_label);
+	}
+
+}
+
 void Labels::syncInts(const std::set<int> &values)
 {
 	std::set<int> valuesToAdd = values;
@@ -91,10 +111,10 @@ void Labels::syncInts(const std::set<int> &values)
 	}
 }
 
-map<string, int> Labels::syncStrings(const vector<string> &values)
+map<string, int> Labels::syncStrings(const vector<string> &new_values, const map<string, string> &new_labels)
 {
 	const map<int, string> &orgStringValues = getOrgStringValues();
-	vector<string> valuesToAdd = values;
+	vector<string> valuesToAdd = new_values;
 	map<string, int> result;
 
 
@@ -110,7 +130,7 @@ map<string, int> Labels::syncStrings(const vector<string> &values)
 		map<int, string>::const_iterator orgStringValuesIt = orgStringValues.find(label.value());
 		if (orgStringValuesIt != orgStringValues.end()) value = orgStringValuesIt->second;
 
-		if (std::find(values.begin(), values.end(), value) != values.end())
+		if (std::find(new_values.begin(), new_values.end(), value) != new_values.end())
 		{
 			result[value] = label.value();
 			vector<string>::iterator value_it = std::find(valuesToAdd.begin(), valuesToAdd.end(), value);
@@ -120,8 +140,6 @@ map<string, int> Labels::syncStrings(const vector<string> &values)
 		}
 		else
 		{
-			std::cout << "Remove Label " << label.text() << std::endl;
-			std::cout.flush();
 			_labels.erase(it);
 		}
 	}
@@ -129,11 +147,22 @@ map<string, int> Labels::syncStrings(const vector<string> &values)
 	for (vector<string>::iterator it = valuesToAdd.begin(); it != valuesToAdd.end(); ++it)
 	{
 		string value = *it;
-		std::cout << "Add Label " << value << std::endl;
-		std::cout.flush();
 		maxLabelIndex++;
 		add(maxLabelIndex,value);
 		result[value] = maxLabelIndex;
+	}
+
+	for (LabelVector::iterator it = _labels.begin(); it != _labels.end(); ++it)
+	{
+		Label &label = *it;
+		string string_label = label.text();
+		map<string, string>::const_iterator new_labels_it = new_labels.find(string_label);
+		if (new_labels_it != new_labels.end())
+		{
+			string new_string_label = new_labels_it->second;
+			if (string_label != new_string_label)
+				_setNewStringForLabel(label, new_string_label);
+		}
 	}
 
 	return result;
@@ -168,7 +197,7 @@ const Label &Labels::labelFor(int index) const
 	throw runtime_error("Cannot find this entry");
 }
 
-void Labels::setLabelFromRow(int row, const std::string &display)
+void Labels::setLabelFromRow(int row, const string &display)
 {
 	if (row >= (int)_labels.size())
 	{
@@ -177,11 +206,15 @@ void Labels::setLabelFromRow(int row, const std::string &display)
 		return;
 	}
 	Label &label = _labels.at(row);
-	string label_string = label.text();
-	int label_value = label.value();
-	if (label_string == display)
+	if (label.text() == display)
 		return;
+	_setNewStringForLabel(label, display);
+}
 
+void Labels::_setNewStringForLabel(Label &label, const string &display)
+{
+	int label_value = label.value();
+	string label_string = label.text();
 	map<int, string> &orgStringValues = getOrgStringValues();
 	if (orgStringValues.find(label_value) == orgStringValues.end())
 		orgStringValues[label_value] = label_string;

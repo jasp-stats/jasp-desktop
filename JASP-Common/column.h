@@ -160,10 +160,13 @@ public:
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
 	void setColumnAsNominalString(const std::vector<std::string> &values);
+	void setColumnAsNominalString(const std::vector<std::string> &values, const std::map<std::string, std::string> &labels);
 	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, const std::set<int> &uniqueValues, bool is_ordinal = false);
+	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, std::map<int, std::string> &uniqueValues, bool is_ordinal = false);
 	void setColumnAsScale(const std::vector<double> &values);
 
 private:
+	void _setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);
 
 	boost::interprocess::managed_shared_memory *_mem;
 

@@ -241,10 +241,20 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 	}
 }
 
+void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> &uniqueValues, bool is_ordinal)
+{
+	_labels.syncInts(uniqueValues);
+	_setColumnAsNominalOrOrdinal(values, is_ordinal);
+}
+
 void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
 {
 	_labels.syncInts(uniqueValues);
+	_setColumnAsNominalOrOrdinal(values, is_ordinal);
+}
 
+void Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ordinal)
+{
 	Ints::iterator intInputItr = AsInts.begin();
 	int nb_values = 0;
 
@@ -283,6 +293,11 @@ void Column::setColumnAsScale(const std::vector<double> &values)
 
 void Column::setColumnAsNominalString(const vector<string> &values)
 {
+	setColumnAsNominalString(values, map<string, string>());
+}
+
+void Column::setColumnAsNominalString(const vector<string> &values, const map<string, string>&labels)
+{
 	vector<string> sorted = values;
 	sort(sorted.begin(), sorted.end());
 	vector<string> cases;
@@ -298,7 +313,7 @@ void Column::setColumnAsNominalString(const vector<string> &values)
 		}
 	}
 
-	std::map<string, int> map = _labels.syncStrings(cases);
+	std::map<string, int> map = _labels.syncStrings(cases, labels);
 
 	Column::Ints::iterator intInputItr = AsInts.begin();
 	int nb_values = 0;

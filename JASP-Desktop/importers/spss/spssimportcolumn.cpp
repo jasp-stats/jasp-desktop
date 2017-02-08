@@ -486,94 +486,72 @@ void SPSSImportColumn::setColumnScaleData(Column &column)
  */
 void SPSSImportColumn::setColumnConvertStringData(Column &column)
 {
+	map<string, string> labels;
 	CodePageConvert &strConvertor = _dataset->stringsConv();
 	// Code page convert all strings.
 	for (size_t i = 0; i < strings.size(); ++i)
 		strings[i] = strConvertor.convertCodePage(strings[i]);
 
-	column.setColumnAsNominalString(strings);
+	for (SPSSImportColumn::LabelByValueDict::const_iterator it = spssLables.begin();
+			it != spssLables.end(); ++it)
+	{
+		SpssDataCell cell = it->first;
+		string value = string(cell.chars, sizeof(cell.chars));
+		StrUtils::rTrimWSIP(value);
+		labels[value] = it->second;
+	}
+
+	column.setColumnAsNominalString(strings, labels);
 }
 
 void SPSSImportColumn::setColumnConvertDblToString(Column &column)
 {
+	map<string, string> labels;
 	strings.clear();
 	for (size_t i = 0; i < numerics.size(); i++)
 		strings.push_back( format(numerics[i], _dataset->getFloatInfo()));
-	column.setColumnAsNominalString(strings);
-}
 
-void SPSSImportColumn::setColumnLabeledData(Column &column)
-{
-	size_t numCases = _dataset->numCases();
-	column.labels().clear();
-
-	// Add lables from the SPSS file first.
-	map<double, string> lbs;
 	for (SPSSImportColumn::LabelByValueDict::const_iterator it = spssLables.begin();
 			it != spssLables.end(); ++it)
-		lbs.insert( pair<double, string>(it->first.dbl, it->second) );
-
-	// Add labels for numeric values (if not already present)..
-	vector<bool> isMissing(numCases);
-	for (size_t i = 0; i < numCases; ++i)
 	{
-		if (missingChecker().isMissingValue(_dataset->getFloatInfo(), numerics[i]) == false)
-		{
-			isMissing[i] = false;
-			if (lbs.find(numerics[i]) == lbs.end())
-				lbs.insert( pair<double, string>( numerics[i], format(numerics[i], _dataset->getFloatInfo() )));
-		}
-		else
-			isMissing[i] = true;
+		labels[format(it->first.dbl, _dataset->getFloatInfo())] = it->second;
 	}
 
-	// Extract the data were are going to use.
-	vector<int> dataToInsert;
+	column.setColumnAsNominalString(strings, labels);
+}
+
+void SPSSImportColumn::setColumnAsNominalOrOrdinal(Column &column, Column::ColumnType columnType)
+{
+	size_t numCases = _dataset->numCases();
+
+	// Add lables from the SPSS file first.
 	map<int, string> labels;
-	// We cannot insert doubles as data valuesm and get labels
-	// for them to work (JASP limitation).
+	vector<int> dataToInsert;
 	if (containsFraction())
 	{
-		// Generate an index value for each data point.
-		for (size_t i = 0; i < numCases; ++i)
-		{
-			// Find insert the index as a data point, if not missing value.
-			if (isMissing[i])
-				dataToInsert.push_back(INT_MIN);
-			else
-			{
-				map<double, string>::iterator fltLabeI = lbs.find(numerics[i]);
-				dataToInsert.push_back( distance(lbs.begin(), fltLabeI) );
-				// Pair the inserted value with a lable string.
-				labels.insert(pair<int, string>(dataToInsert.back(), fltLabeI->second));
-			}
-		}
+		setColumnConvertDblToString(column);
 	}
 	else
 	{
-		// Use the raw data as the index to labels.
+		for (SPSSImportColumn::LabelByValueDict::const_iterator it = spssLables.begin();
+				it != spssLables.end(); ++it)
+			labels[static_cast<int>(it->first.dbl)] = it->second;
+
+		// Add labels for numeric values (if not already present)..
 		for (size_t i = 0; i < numCases; ++i)
 		{
-			// insert the (rounded) value as the data point.
-			if (isMissing[i])
-				dataToInsert.push_back(INT_MIN);
-			else
+			if (missingChecker().isMissingValue(_dataset->getFloatInfo(), numerics[i]) == false)
 			{
-				dataToInsert.push_back( static_cast<int>(numerics[i]) );
-				map<double, string>::iterator fltLabeI = lbs.find(numerics[i]);
-				// pair the inserted value with a lable string.
-				labels.insert(pair<int, string>( static_cast<int>(fltLabeI->first), fltLabeI->second));
+				int value = static_cast<int>(numerics[i]);
+				dataToInsert.push_back(value);
+				if (labels.find(value) == labels.end())
+					labels.insert( pair<int, string>( value, format(numerics[i], _dataset->getFloatInfo() )));
 			}
+			else
+				dataToInsert.push_back(INT_MIN);
 		}
+
+		column.setColumnAsNominalOrOrdinal(dataToInsert, labels, columnType);
 	}
-
-	// Insert the labels into the JASP data set.
-	for (map<int, string>::const_iterator it = labels.begin(); it != labels.end(); ++it)
-		column.labels().add(it->first, it->second);
-
-	// Insert the data into the data set.
-	Column::Ints::iterator intInputItr = column.AsInts.begin();
-	for (size_t i = 0; i < dataToInsert.size(); ++i, ++intInputItr)
-		*intInputItr = dataToInsert[i];
 }
 
