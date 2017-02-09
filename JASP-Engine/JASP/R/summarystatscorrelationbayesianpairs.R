@@ -471,8 +471,7 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 		all.pValues <- .pValueFromCor(corrie=some.r, n=some.n, method="kendall")
 	} else if (options$correlationCoefficient == "spearman"){
 	  # TODO: Johnny
-	  some.r <- "error"
-	  all.bfs <- "error"
+	  # Without code this will print a NULL, if we go through here 
 	}
 	return(list(bf = all.bfs, pValue=all.pValues))
 }

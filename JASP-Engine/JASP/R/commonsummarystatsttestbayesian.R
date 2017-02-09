@@ -86,11 +86,11 @@
 	}
 	
 	# mu \neq 0
-	result$twoSided <- 2 * pt(-abs(t), df = someDf)
+	result$twoSided <- 2 * stats::pt(-abs(t), df = someDf)
 	# mu < 0
-	result$minSided <- pt(t, df = someDf)
+	result$minSided <- stats::pt(t, df = someDf)
 	# mu > 0
-	result$plusSided <- pt(t, df = someDf, lower.tail = FALSE)
+	result$plusSided <- stats::pt(t, df = someDf, lower.tail = FALSE)
 	
 	return(result)
 }
@@ -141,14 +141,15 @@
       someSd <- sqrt(2*(2*n+5)/(9*n*(n-1)))
       
       # tau neq 0
-      result$twoSided <- 2*pnorm(-abs(corrie), sd=someSd)
+      result$twoSided <- 2 * stats::pnorm(-abs(corrie), sd=someSd)
       # tau < 0
-      result$minSided <- pnorm(corrie, sd=someSd)
+      result$minSided <- stats::pnorm(corrie, sd=someSd)
       # tau > 0
-      result$plusSided <- pnorm(corrie, sd=someSd, lower.tail = FALSE)
+      result$plusSided <- stats::pnorm(corrie, sd=someSd, lower.tail = FALSE)
     # }
   } else if (method == "spearman"){
     # TODO: Johnny
+    # Without code this will print a NULL, if we go through here 
   }
   
   return(result)
