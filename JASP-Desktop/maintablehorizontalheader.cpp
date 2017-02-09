@@ -57,7 +57,11 @@ void MainTableHorizontalHeader::mousePressEvent(QMouseEvent *event)
 		_menu->show();
 	}
 	else
-		emit columnNamePressed(_columnSelected);
+	{
+		//Check for non-valid column 
+		if (_columnSelected >= 0) 
+			emit columnNamePressed(_columnSelected);
+	}
 
 	QHeaderView::mousePressEvent(event);
 }
