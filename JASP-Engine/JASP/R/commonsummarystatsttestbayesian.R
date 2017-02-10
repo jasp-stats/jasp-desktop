@@ -54,8 +54,7 @@
 		pValue <- .pValueFromT(
 								t = options$tStatistic,
 								n1 = options$n1Size,
-								n2 = n2Value,
-								oneSided = hypothesis.variables$oneSided
+								n2 = n2Value
 						)
 	}
 
@@ -63,21 +62,20 @@
 }
 
 
-.pValueFromT <- function(t, n1, n2 = 0, oneSided = FALSE, var.equal = TRUE) {
+.pValueFromT <- function(t, n1, n2 = 0, var.equal = TRUE) {
 	# Function returns the p value from t statistic
 	#
 	# Args:
 	#   t: t value input by user
 	#   n1: sample size of group 1
 	#   n2: sample size of group 2 (Note the hack by setting n2 = 0)
-	#   oneSided: hypothesis type
 	#   var.equal: Note: always true: var.equal, we do not have enough info for different
 	#              variances. In that case we also need s1 and s2
 	#
 	# Output:
 	#   number in [0, 1] which is the p value
 
-	result <- NA
+	result <- list()
 
 	if (n2 > 0) {
 		# If n2 > 0, then two-sample
@@ -86,21 +84,76 @@
 		# If n2 <= 0, then one-sample
 		someDf <- n1 - 1
 	}
-
-	if (oneSided == FALSE) {
-		# mu \neq 0
-		result <- 2 * pt(-abs(t), df = someDf)
-	} else if (oneSided == "left") {
-		# mu < 0
-		result <- pt(t, df = someDf)
-	} else if (oneSided == "right") {
-		# mu > 0
-		result <- pt(t, df = someDf, lower.tail = FALSE)
-	}
-
+	
+	# mu \neq 0
+	result$twoSided <- 2 * stats::pt(-abs(t), df = someDf)
+	# mu < 0
+	result$minSided <- stats::pt(t, df = someDf)
+	# mu > 0
+	result$plusSided <- stats::pt(t, df = someDf, lower.tail = FALSE)
+	
 	return(result)
 }
 
+.pValueFromCor <- function(corrie, n, method="pearson") {
+  # Function returns the p value from correlation, thus,
+  ##  corrie = r    when  method = "pearson"
+  #   corrie = tau  when  method = "kendall"
+  #   corrie = rho  when  method = "spearman"
+  #
+  # Args:
+  #   corrie: correlation input by user
+  #   n: sample size
+  #   oneSided: hypothesis type: left or right
+  #   method: pearson, kenall, or spearman
+  #
+  # Output:
+  #   list of three p-values
+  
+  result <- list()
+  
+  if (method == "pearson"){
+    # Use t-distribution based on bivariate normal assumption using r to t transformation
+    #
+    if (n > 2 ){
+      df <- n - 2
+    } else {
+      # TODO return error, n needs to be larger than 2
+      df <- 1
+    }
+    
+    t <- corrie*sqrt(df/(1-corrie^2))
+    result <- .pValueFromT(t=t, n1=n-1, n2=0, var.equal=TRUE)
+  } else if (method == "kendall"){
+    # TODO: Add support for SuppDists 
+    # if (n > 2 && n < 50) {
+    #   # Exact sampling distribution
+    #   # tau neq 0
+    #   result$twoSided <- 2*SuppDists::pKendall(-abs(corrie), N=n)
+    #   # tau < 0
+    #   result$minSided <- SuppDists::pKendall(corrie, N=n)
+    #   # tau > 0
+    #   result$plusSided <- SuppDists::pKendall(corrie, N=n, lower.tail = FALSE)
+    # 
+    # } else if (n >= 50){
+      # normal approximation 
+      #
+      someSd <- sqrt(2*(2*n+5)/(9*n*(n-1)))
+      
+      # tau neq 0
+      result$twoSided <- 2 * stats::pnorm(-abs(corrie), sd=someSd)
+      # tau < 0
+      result$minSided <- stats::pnorm(corrie, sd=someSd)
+      # tau > 0
+      result$plusSided <- stats::pnorm(corrie, sd=someSd, lower.tail = FALSE)
+    # }
+  } else if (method == "spearman"){
+    # TODO: Johnny
+    # Without code this will print a NULL, if we go through here 
+  }
+  
+  return(result)
+}
 
 .isInputValid.summarystats.ttest <- function(options, independent) {
 	# Checks if the input given is valid

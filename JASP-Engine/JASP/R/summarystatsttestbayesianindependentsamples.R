@@ -214,7 +214,17 @@ SummaryStatsTTestBayesianIndependentSamples <- function(dataset = NULL, options,
 
 				rowsTTestBayesianIndependentSamples$BF <- BF
 				rowsTTestBayesianIndependentSamples$errorEstimate <- .clean(bayesFactorObject$properror)
-				rowsTTestBayesianIndependentSamples$pValue <- .clean(bayesFactorObject$pValue)
+				
+				allPValues <- bayesFactorObject$pValue
+				
+				# TODO: switch function? 
+				if (hypothesis.variables$oneSided == FALSE){
+				  rowsTTestBayesianIndependentSamples$pValue <- .clean(allPValues$twoSided)
+				} else if (hypothesis.variables$oneSided == "left") {
+				  rowsTTestBayesianIndependentSamples$pValue <- .clean(allPValues$minSided)
+				} else if (hypothesis.variables$oneSided == "right") {
+				  rowsTTestBayesianIndependentSamples$pValue <- .clean(allPValues$plusSided)
+				}
 			}
 		}
 	}
