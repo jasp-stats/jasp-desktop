@@ -20,6 +20,8 @@
 #define TTESTBAYESONESAMPLEFORM_H
 
 #include "analysisform.h"
+#include <QSizePolicy>
+
 
 namespace Ui {
 class TTestBayesianOneSampleForm;
@@ -28,11 +30,23 @@ class TTestBayesianOneSampleForm;
 class TTestBayesianOneSampleForm : public AnalysisForm
 {
 	Q_OBJECT
-	
+
 public:
 	explicit TTestBayesianOneSampleForm(QWidget *parent = 0);
 	~TTestBayesianOneSampleForm();
-	
+
+private slots:
+	void on__1standardizedEffectSize_clicked(bool checked);
+	void on__2dienesRawEffectSize_clicked(bool checked);
+	void on_defaultStandardEffectSize_clicked(bool checked);
+	void on_informativeStandardEffectSize_clicked(bool checked);
+	void on_cauchyInformative_clicked();
+	void on_normalInformative_clicked();
+	void on_tInformative_clicked();
+	void on_halfNormalDienes_clicked();
+	void on_normalDienes_clicked();
+	void on_uniformDienes_clicked();
+
 private:
 	Ui::TTestBayesianOneSampleForm *ui;
 };
