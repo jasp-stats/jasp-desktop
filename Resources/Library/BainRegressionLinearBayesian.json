@@ -1,0 +1,78 @@
+{
+	"name": "BainRegressionLinearBayesian",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "dependent",
+			"type": "Variable"
+		},
+		{
+			"name": "covariates",
+			"type": "Variables"
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				},
+				{
+					"default": false,
+					"name": "isNuisance",
+					"type": "Boolean"
+				}
+			],
+			"type": "Table"
+		},
+		{
+			"name": "effects",
+			"type": "Boolean"
+		},
+		{
+			"name": "effectsStepwise",
+			"type": "Boolean"
+		},
+		{
+			"name": "posteriorEstimates",
+			"type": "Boolean"
+		},
+		{
+			"name": "posteriorDistributions",
+			"type": "Boolean"
+		},
+		{
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"name": "bayesFactorType",
+			"type": "List"
+		},
+		{
+			"name": "posteriorEstimates",
+			"type": "Boolean"
+		},
+		{
+			"name": "posteriorEstimatesCredibleIntervalInterval",
+			"type": "Number",
+			"format": "%",
+			"value": 0.95,
+			"min": 0.5,
+			"max": 0.999
+		},
+		{
+			"name": "posteriorEstimatesMCMCIterations",
+			"type": "Number",
+			"value": 10000,
+			"min": 1,
+			"max": 1000000
+		},
+		{
+			"name": "priorCovariates",
+			"type": "Number",
+			"value": 0.354,
+			"min": 0,
+			"max": 2
+		}
+	]
+}

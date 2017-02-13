@@ -131,6 +131,7 @@ void TabBar::addHelpTab()
 	QAction *sem = new QAction("SEM",optionmenu);
 	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
 	QAction *summaryStats = new QAction("Summary Stats",optionmenu);
+	QAction *bain = new QAction("Bain", optionmenu);
 
 	//SEM
 	QVariant sem_setting = _settings.value("plugins/sem", false);
@@ -150,11 +151,18 @@ void TabBar::addHelpTab()
 	summaryStats->setObjectName("Summary Stats");
 	summaryStats->setCheckable(true);
 	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
+	optionmenu->addAction(summaryStats);
+
+	//bain
+	QVariant bain_setting = _settings.value("toolboxes/bain", false);
+	bain->setObjectName("Bain");
+	bain->setCheckable(true);
+	bain->setChecked(bain_setting.canConvert(QVariant::Bool) && bain_setting.toBool());
+	optionmenu->addAction(bain);
 
 #ifdef QT_DEBUG
 	optionmenu->addAction(rei);
 #endif
-    optionmenu->addAction(summaryStats);
 
 	optionmenu->acceptDrops();
 	helpmenu->acceptDrops();
@@ -172,6 +180,7 @@ void TabBar::addHelpTab()
 	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
 	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
+	connect(bain, SIGNAL(triggered()), this, SLOT(toggleBain()));
 }
 
 void TabBar::showAbout()
@@ -234,6 +243,17 @@ void TabBar::toggleSummaryStats()
     }
 }
 
+void TabBar::toggleBain()
+{
+	QVariant bain_setting = _settings.value("toolboxes/bain", false);
+	static bool on = (bain_setting.canConvert(QVariant::Bool) && bain_setting.toBool());
+	on = ! on;
+	if (on) {
+		this->addTab("Bain");
+	} else {
+		this->removeTab("Bain");
+	}
+}
 
 int TabBar::count() const
 {

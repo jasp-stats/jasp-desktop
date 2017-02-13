@@ -1,0 +1,95 @@
+{
+	"name": "BainTTestBayesianOneSample",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "variables",
+			"type": "Variables"
+		},
+		{
+			"name": "hypothesis",
+			"options": [ "notEqualToTestValue", "greaterThanTestValue", "lessThanTestValue" ],
+			"default": "notEqualToTestValue",
+			"type": "List"
+		},
+		{
+			"name": "missingValues",
+			"options": [ "excludeAnalysisByAnalysis", "excludeListwise" ],
+			"default": "excludeAnalysisByAnalysis",
+			"type": "List"
+		},
+		{
+			"format": "",
+			"name": "priorWidth",
+			"type": "Number",
+			"value": 0.7070,
+			"min": 0,
+			"max": 2
+		},
+		{
+			"default": false,
+			"name": "plotPriorAndPosterior",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotPriorAndPosteriorAdditionalInfo",
+			"type": "Boolean"
+		},
+		{
+			"format": "",
+			"name": "testValue",
+			"type": "Number",
+			"value": 0.0
+		},
+		{
+			"name": "descriptives",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotBayesFactorRobustness",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotSequentialAnalysis",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "plotSequentialAnalysisRobustness",
+			"type": "Boolean"
+		},
+		{
+			"default": false,
+			"name": "descriptivesPlots",
+			"type": "Boolean"
+		},
+		{
+			"format": "%",
+			"max": 0.999,
+			"min": 0.000,
+			"name": "descriptivesPlotsCredibleInterval",
+			"type": "Number",
+			"value": 0.950
+		},
+		{
+			"default": 320,
+			"name": "plotWidth",
+			"type": "Integer"
+		},
+		{
+			"default": 240,
+			"name": "plotHeight",
+			"type": "Integer"
+		},
+		{
+			"name": "bayesFactorType",
+			"options": [ "BF10", "BF01", "LogBF10" ],
+			"default": "BF10",
+			"type": "List"
+		}
+	]
+}

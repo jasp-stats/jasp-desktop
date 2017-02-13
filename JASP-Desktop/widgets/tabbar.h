@@ -72,6 +72,7 @@ private slots:
 	void toggleSEM();
 	void toggleReinforcement();
 	void toggleSummaryStats();
+	void toggleBain();
 
 private:
 

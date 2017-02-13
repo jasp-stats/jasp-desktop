@@ -153,7 +153,7 @@ QPushButton#first:checked {
 }</string>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>4</number>
           </property>
           <widget class="RibbonAnalysis" name="ribbonAnalysis">
            <property name="sizePolicy">
@@ -166,6 +166,7 @@ QPushButton#first:checked {
           <widget class="RibbonSEM" name="ribbonSEM"/>
           <widget class="RibbonR11tLearn" name="ribbonR11tLearn"/>
           <widget class="RibbonSummaryStatistics" name="ribbonSummaryStatistics"/>
+          <widget class="RibbonBain" name="ribbonBain"/>
          </widget>
         </item>
         <item>
@@ -427,7 +428,7 @@ QTableView::item::last
                     <widget class="QWidget" name="optionsContentArea">
                      <property name="geometry">
                       <rect>
-                       <x>0</x>
+                       <x>16</x>
                        <y>0</y>
                        <width>240</width>
                        <height>721</height>
@@ -648,6 +649,12 @@ QTableView::item::last
    <class>VariablesWidget</class>
    <extends>QWidget</extends>
    <header>variableswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RibbonBain</class>
+   <extends>QWidget</extends>
+   <header location="global">ribbons/ribbonbain.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

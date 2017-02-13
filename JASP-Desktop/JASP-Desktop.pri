@@ -57,6 +57,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/ribbons/ribbonsem.cpp \
         $$PWD/ribbons/ribbonanalysis.cpp \
         $$PWD/ribbons/ribbonhome.cpp \
+        $$PWD/ribbons/ribbonbain.cpp \
         $$PWD/widgets/boundtextedit.cpp \
         $$PWD/widgets/stealthbutton.cpp \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.cpp \
@@ -181,6 +182,14 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
+        $$PWD/analysisforms/Bain/bainancovabayesianform.cpp \
+        $$PWD/analysisforms/Bain/bainanovabayesianform.cpp \
+        $$PWD/analysisforms/Bain/bainanovarepeatedmeasuresbayesianform.cpp \
+        $$PWD/analysisforms/Bain/baincorrelationbayesianform.cpp \
+        $$PWD/analysisforms/Bain/bainregressionlinearbayesianform.cpp \
+        $$PWD/analysisforms/Bain/bainttestbayesianindependentsamplesform.cpp \
+        $$PWD/analysisforms/Bain/bainttestbayesianonesampleform.cpp \
+        $$PWD/analysisforms/Bain/bainttestbayesianpairedsamplesform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
 		$$PWD/simplecrypt.cpp \
 		$$PWD/importers/convertedstringcontainer.cpp \
@@ -251,6 +260,7 @@ HEADERS  += \
         $$PWD/ribbons/ribbonsem.h \
         $$PWD/ribbons/ribbonanalysis.h \
         $$PWD/ribbons/ribbonhome.h \
+        $$PWD/ribbons/ribbonbain.h \
         $$PWD/widgets/boundtextedit.h \
         $$PWD/widgets/stealthbutton.h \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.h \
@@ -373,6 +383,14 @@ HEADERS  += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h \
+        $$PWD/analysisforms/Bain/bainancovabayesianform.h \
+        $$PWD/analysisforms/Bain/bainanovabayesianform.h \
+        $$PWD/analysisforms/Bain/bainanovarepeatedmeasuresbayesianform.h \
+        $$PWD/analysisforms/Bain/baincorrelationbayesianform.h \
+        $$PWD/analysisforms/Bain/bainregressionlinearbayesianform.h \
+        $$PWD/analysisforms/Bain/bainttestbayesianindependentsamplesform.h \
+        $$PWD/analysisforms/Bain/bainttestbayesianonesampleform.h \
+        $$PWD/analysisforms/Bain/bainttestbayesianpairedsamplesform.h \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h \
@@ -420,6 +438,7 @@ FORMS += \
         $$PWD/ribbons/ribbonhome.ui \
         $$PWD/ribbons/ribbonsem.ui \
         $$PWD/ribbons/ribbonanalysis.ui \
+        $$PWD/ribbons/ribbonbain.ui \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/ttestbayesianpairedsamplesform.ui \
         $$PWD/analysisforms/ancovabayesianform.ui \
@@ -451,8 +470,16 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
+        $$PWD/analysisforms/Bain/bainancovabayesianform.ui \
+        $$PWD/analysisforms/Bain/bainanovabayesianform.ui \
+        $$PWD/analysisforms/Bain/bainanovarepeatedmeasuresbayesianform.ui \
+        $$PWD/analysisforms/Bain/baincorrelationbayesianform.ui \
+        $$PWD/analysisforms/Bain/bainregressionlinearbayesianform.ui \
+        $$PWD/analysisforms/Bain/bainttestbayesianindependentsamplesform.ui \
+        $$PWD/analysisforms/Bain/bainttestbayesianonesampleform.ui \
+        $$PWD/analysisforms/Bain/bainttestbayesianpairedsamplesform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui \
-    $$PWD/analysisforms/regressionlogisticform.ui
+	$$PWD/analysisforms/regressionlogisticform.ui
 
 RESOURCES += \
         $$PWD/backstage/backstage.qrc \
