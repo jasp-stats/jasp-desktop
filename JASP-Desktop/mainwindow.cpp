@@ -100,6 +100,7 @@
 #include "lrnam.h"
 #include "activitylog.h"
 #include "aboutdialog.h"
+#include "preferencesdialog.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
 
@@ -1884,12 +1885,6 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	analysis->options()->set(root);
 }
 
-void MainWindow::showAbout()
-{
-	AboutDialog aboutdialog;
-	aboutdialog.setModal(true);
-	aboutdialog.exec();
-}
 
 void MainWindow::startDataEditorHandler()
 {
