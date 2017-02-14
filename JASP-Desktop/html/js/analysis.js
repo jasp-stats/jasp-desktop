@@ -488,6 +488,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			error = error.replace(/  /g, '&nbsp;&nbsp;')
 
             $innerElement.append($tempClone.clone());
+            $innerElement.find('.analysis-error').remove();
             $innerElement.addClass('error-state');
             if (status === "exception") $innerElement.addClass("exception");
             $innerElement.find(".status").removeClass("waiting");
