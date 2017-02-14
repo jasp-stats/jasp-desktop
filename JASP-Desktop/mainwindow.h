@@ -204,7 +204,7 @@ private slots:
 
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);
-	void showAbout();
+
 };
 
 #endif // MAINWIDGET_H

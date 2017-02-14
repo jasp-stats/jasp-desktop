@@ -57,6 +57,7 @@ private slots:
 	void tabSelectedHandler();
 	void helpToggledHandler(bool on);
 	void showAbout();
+	void showPreferences();
 	void toggleHelp();
 	void toggleSEM();
 	void toggleReinforcement();
