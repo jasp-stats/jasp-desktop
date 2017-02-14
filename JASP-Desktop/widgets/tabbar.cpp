@@ -129,6 +129,7 @@ void TabBar::addHelpTab()
 	QAction *sem = new QAction("SEM",optionmenu);
 	QAction *rei = new QAction("Reinforcement Learning",optionmenu);
 	QAction *summaryStats = new QAction("Summary Stats",optionmenu);
+	QAction *machineLearning = new QAction("Machine Learning", optionmenu);
 
 	//SEM
 	QVariant sem_setting = _settings.value("plugins/sem", false);
@@ -148,11 +149,18 @@ void TabBar::addHelpTab()
 	summaryStats->setObjectName("Summary Stats");
 	summaryStats->setCheckable(true);
 	summaryStats->setChecked(sumStats_setting.canConvert(QVariant::Bool) && sumStats_setting.toBool());
+	optionmenu->addAction(summaryStats);
+
+	//Machine Learning
+	QVariant machineLearning_setting = _settings.value("toolboxes/machineLearning", false);
+	machineLearning->setObjectName("Machine Learning");
+	machineLearning->setCheckable(true);
+	machineLearning->setChecked(machineLearning_setting.canConvert(QVariant::Bool) && machineLearning_setting.toBool());
+	optionmenu->addAction(machineLearning);
 
 #ifdef QT_DEBUG
 	optionmenu->addAction(rei);
 #endif
-    optionmenu->addAction(summaryStats);
 
 	optionmenu->acceptDrops();
 	helpmenu->acceptDrops();
@@ -170,6 +178,7 @@ void TabBar::addHelpTab()
 	connect(sem, SIGNAL(triggered()), this, SLOT(toggleSEM()));
 	connect(rei, SIGNAL(triggered()), this, SLOT(toggleReinforcement()));
 	connect(summaryStats, SIGNAL(triggered()), this, SLOT(toggleSummaryStats()));
+	connect(machineLearning, SIGNAL(triggered()), this, SLOT(toggleMachineLearning()));
 }
 
 void TabBar::showAbout()
@@ -230,6 +239,20 @@ void TabBar::toggleSummaryStats()
     }
 }
 
+void TabBar::toggleMachineLearning()
+{
+	QVariant machineLearning_setting = _settings.value("toolboxes/machineLearning", false);
+	static bool on = (machineLearning_setting.canConvert(QVariant::Bool) && machineLearning_setting.toBool());
+	on = !on;
+	if (on)
+	{
+		this->addTab("Machine Learning");
+	}
+	else
+	{
+		this->removeTab("Machine Learning");
+	}
+}
 
 int TabBar::count() const
 {
