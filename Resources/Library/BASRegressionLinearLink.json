@@ -8,6 +8,10 @@
 			"type": "Variable"
 		},
 		{
+			"name": "wlsWeights",
+			"type": "Variable"
+		},
+		{
 			"name": "betaBinomialParamA",
 			"type": "Number",
 			"value": 1.000,
@@ -48,6 +52,26 @@
 		{
 			"default": false,
 			"name": "plotCoefficientsPosterior",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotResidualsVsFitted",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotModelProbabilities",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotModelComplexity",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotInclusionProbabilites",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotRobustnessCheck",
 			"type": "Boolean"
 		},
 		{

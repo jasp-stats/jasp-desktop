@@ -111,9 +111,9 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/backstage/fsbmexamples.cpp \
         $$PWD/backstage/fsbmodel.cpp \
         $$PWD/backstage/fsbmcomputer.cpp \
-        $$PWD/backstage/fsbmrecent.cpp \
-        $$PWD/backstage/fsbmcurrent.cpp \
-        $$PWD/backstage/fsbmrecentfolders.cpp \
+		$$PWD/backstage/fsbmrecent.cpp \
+		$$PWD/backstage/fsbmcurrent.cpp \
+		$$PWD/backstage/fsbmrecentfolders.cpp \
         $$PWD/fileevent.cpp \
         $$PWD/widgets/boundsingleitemview.cpp \
         $$PWD/analysisforms/binomialtestform.cpp \
@@ -181,16 +181,15 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
-        $$PWD/analysisforms/BASRegression/basregressionlinearlinkform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
-        $$PWD/simplecrypt.cpp \
-        $$PWD/importers/convertedstringcontainer.cpp \
-        $$PWD/importers/importer.cpp \
-        $$PWD/importers/importdataset.cpp \
-        $$PWD/importers/importcolumn.cpp \
-        $$PWD/importers/csvimportcolumn.cpp \
-        $$PWD/importers/spss/spssimportcolumn.cpp \
-        $$PWD/importers/spss/spssimportdataset.cpp
+        $$PWD/analysisforms/BASRegression/basregressionlinearlinkform.cpp \
+		$$PWD/simplecrypt.cpp \
+		$$PWD/importers/convertedstringcontainer.cpp \
+		$$PWD/importers/importer.cpp \
+		$$PWD/importers/importdataset.cpp \
+		$$PWD/importers/importcolumn.cpp \
+		$$PWD/importers/csvimportcolumn.cpp \
+		$$PWD/preferencesdialog.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -309,9 +308,9 @@ HEADERS  += \
         $$PWD/backstage/fsbmexamples.h \
         $$PWD/backstage/fsbmodel.h \
         $$PWD/backstage/fsbmcomputer.h \
-        $$PWD/backstage/fsbmrecent.h \
-        $$PWD/backstage/fsbmcurrent.h \
-        $$PWD/backstage/fsbmrecentfolders.h \
+		$$PWD/backstage/fsbmrecent.h \
+		$$PWD/backstage/fsbmcurrent.h \
+		$$PWD/backstage/fsbmrecentfolders.h \
         $$PWD/fileevent.h \
         $$PWD/widgets/boundsingleitemview.h \
         $$PWD/analysisforms/binomialtestform.h \
@@ -363,8 +362,8 @@ HEADERS  += \
         $$PWD/importers/csvimporter.h \
         $$PWD/importers/jaspimporter.h \
         $$PWD/importers/spssimporter.h \
-        $$PWD/importers/spss/spssformattype.h \
-        $$PWD/analysisforms/exploratoryfactoranalysisform.h \
+		$$PWD/importers/spss/spssformattype.h \
+		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
         $$PWD/analysisforms/reliabilityanalysisform.h \
         $$PWD/analysisforms/SEM/semsimpleform.h \
@@ -375,6 +374,7 @@ HEADERS  += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
+        $$PWD/analysisforms/BASRegression/basregressionlinearlinkform.h \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h \
 		$$PWD/importers/convertedstringcontainer.h \
@@ -392,7 +392,6 @@ HEADERS  += \
 		$$PWD/importers/ods/odssheetcell.h \
 		$$PWD/importers/ods/odstypes.h \
 		$$PWD/importers/ods/odsxmlcontentshandler.h \
-		$$PWD/importers/ods/odsxmlcontentshandler.h.orig \
 		$$PWD/importers/ods/odsxmlhandler.h \
 		$$PWD/importers/ods/odsxmlmanifesthandler.h
 

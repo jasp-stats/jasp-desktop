@@ -42,8 +42,15 @@ BASRegressionLinearLinkForm::BASRegressionLinearLinkForm(QWidget *parent) :
 	_covariatesListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->covariates->setModel(_covariatesListModel);
 
+	_wlsWeightsListModel = new TableModelVariablesAssigned();
+	_wlsWeightsListModel->setSource(&_availableVariablesModel);
+	_wlsWeightsListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
+	_wlsWeightsListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
+	ui->wlsWeights->setModel(_wlsWeightsListModel);
+
 	ui->buttonAssignDependent->setSourceAndTarget(ui->listAvailableFields, ui->dependent);
 	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->covariates);
+	ui->buttonAssignWlsWeights->setSourceAndTarget(ui->listAvailableFields, ui->wlsWeights);
 
 	ui->plotOptions->hide();
 	ui->advancedOptions->hide();

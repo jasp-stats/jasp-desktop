@@ -42,6 +42,10 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	rowsBASRegressionLinearLink <- list()
 	plotPosteriorLogOdds <- NULL
 	plotCoefficientsPosterior <- NULL
+	plotResidualsVsFitted <- NULL
+	plotModelProbabilities <- NULL
+	plotModelComplexity <- NULL
+	plotInclusionProbabilites <- NULL
 
 	# get the bas lm object
 	if (length(options$covariates) > 0 && options$dependent != "" && perform == "run") {
@@ -73,6 +77,30 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 					bas_obj, options, state
 				)
 			}
+
+			if (options$plotResidualsVsFitted) {
+				plotResidualsVsFitted <- .plotResidualsVsFitted.basRegression.linear(
+					bas_obj, options, state, 1
+				)
+			}
+
+			if (options$plotModelProbabilities) {
+				plotModelProbabilities <- .plotResidualsVsFitted.basRegression.linear(
+					bas_obj, options, state, 2
+				)
+			}
+
+			if (options$plotModelComplexity) {
+				plotModelComplexity <- .plotResidualsVsFitted.basRegression.linear(
+					bas_obj, options, state, 3
+				)
+			}
+
+			if (options$plotInclusionProbabilites) {
+				plotInclusionProbabilites <- .plotResidualsVsFitted.basRegression.linear(
+					bas_obj, options, state, 4
+				)
+			}
 		}
 	}
 
@@ -80,10 +108,16 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	results <- .populateOutputTable.bas.linearlink(options=options)
 	results$table$data <- rowsBASRegressionLinearLink
 
-	if (options$plotLogPosteriorOdds || options$plotCoefficientsPosterior) {
+	if (options$plotLogPosteriorOdds || options$plotCoefficientsPosterior ||
+		options$plotResidualsVsFitted || options$plotModelProbabilities ||
+		options$plotModelComplexity || options$plotInclusionProbabilites) {
 		results[["inferentialPlots"]] <- list(
 			title = "Inferential Plots",
 			PosteriorPlotModels = plotPosteriorLogOdds,
+			ResidualsVsFittedPlot = plotResidualsVsFitted,
+			ModelProbabilitiesPlot = plotModelProbabilities,
+			ModelComplexityPlot = plotModelComplexity,
+			InclusionProbabilitiesPlot = plotInclusionProbabilites,
 			coefficentsPlots = list(
 				title = "Coefficent plots",
 				collection = plotCoefficientsPosterior
@@ -120,6 +154,10 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 		type="object",
 		meta=list(
 			list(name = "PosteriorPlotModels", type = "image"),
+			list(name = "ResidualsVsFittedPlot", type = "image"),
+			list(name = "ModelProbabilitiesPlot", type = "image"),
+			list(name = "ModelComplexityPlot", type = "image"),
+			list(name = "InclusionProbabilitiesPlot", type = "image"),
 			list(
 				name = "coefficentsPlots",
 				type = "collection",
@@ -392,4 +430,31 @@ BASRegressionLinearLink <- function (dataset = NULL, options, perform = "run",
 	}
 
 	return (returnPlots)
+}
+
+
+.plotResidualsVsFitted.basRegression.linear <- function(bas_obj, state, options, number) {
+
+	plot <- list()
+	plot[["title"]] <- "Residuals Vs Fitted"
+	plot[["width"]] <- 530
+	plot[["height"]] <- 400
+	plot[["status"]] <- "waiting"
+
+	p <- try(silent = FALSE, expr = {
+		image <- .beginSaveImage(530, 400)
+		BAS::plot.bas(bas_obj, ask = FALSE, which = c(number))
+		plot[["data"]] <- .endSaveImage(image)
+	})
+
+	if (class(p) == "try-error") {
+		errorMessage <- .extractErrorMessage(p)
+		plot[["error"]] <- list(
+			error = "badData",
+			errorMessage = paste("Plotting is not possible: ", errorMessage)
+		)
+	}
+	plot[["status"]] <- "complete"
+
+	return (plot)
 }
