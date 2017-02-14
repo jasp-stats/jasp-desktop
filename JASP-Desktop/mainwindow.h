@@ -119,6 +119,8 @@ private:
 	void getAnalysesUserData();
 	Json::Value getResultsMeta();
 
+	void startDataEditor(QString path);
+
 signals:
 	void analysisSelected(int id);
 	void analysisUnselected();
@@ -180,6 +182,8 @@ private slots:
 	void showDataPanel();
 	void hideDataPanel();
 	void showVariablesPage();
+	void startDataEditorHandler();
+	void startDataEditorEventCompleted(FileEvent *event);
 
 	void analysisOKed();
 	void analysisRunned();

@@ -148,3 +148,7 @@ void MainTableView::setVariablesView(VariablesWidget *variablesPage)
 	_variablesPage = variablesPage;
 }
 
+void MainTableView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	emit dataTableDoubleClicked();
+}

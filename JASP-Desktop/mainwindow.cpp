@@ -86,6 +86,7 @@
 #include <QTabBar>
 #include <QMenuBar>
 #include <QDir>
+#include <QFileDialog>
 
 #include "analysisloader.h"
 
@@ -198,6 +199,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
 	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
 	connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
+	connect(ui->tableView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
 
 	_progressIndicator = new ProgressWidget(ui->tableView);
 	_progressIndicator->setAutoFillBackground(true);
@@ -1889,3 +1891,103 @@ void MainWindow::showAbout()
 	aboutdialog.exec();
 }
 
+void MainWindow::startDataEditorHandler()
+{
+	QString path = QString::fromStdString(_package->dataFilePath);
+	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0)
+	{
+		QMessageBox msgBox(QMessageBox::Question, QString("Start Spreadsheet Editor"), QString("JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?"),
+						   QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+		msgBox.setButtonText(QMessageBox::Yes, QString("Generate Data File"));
+		msgBox.setButtonText(QMessageBox::No, QString("Find Data File"));
+		int reply = msgBox.exec();
+		if (reply == QMessageBox::Cancel)
+			return;
+
+		FileEvent *event = NULL;
+		if (reply == QMessageBox::Yes)
+		{
+			QString caption = "Generate Data File as CSV";
+			QString filter = "CSV Files (*.csv)";
+
+			path = QFileDialog::getSaveFileName(this, caption, "", filter);
+			if (path == "")
+				return;
+
+			if (!path.endsWith(".csv", Qt::CaseInsensitive))
+				path.append(".csv");
+
+			event = new FileEvent(this, FileEvent::FileExportData);
+			connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
+		}
+		else
+		{
+			QString caption = "Find Data File";
+			QString filter = "Data File (*.csv *.txt *.sav *.ods)";
+
+			path = QFileDialog::getOpenFileName(this, caption, "", filter);
+			if (path == "")
+				return;
+
+			event = new FileEvent(this, FileEvent::FileSyncData);
+		}
+
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(startDataEditorEventCompleted(FileEvent*)));
+		connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
+		event->setPath(path);
+		_loader.io(event, _package);
+		_progressIndicator->show();
+	}
+	else
+		startDataEditor(path);
+
+}
+
+void MainWindow::startDataEditorEventCompleted(FileEvent* event)
+{
+	_progressIndicator->hide();
+
+	if (event->successful())
+	{
+		_package->setModified(true);
+		startDataEditor(event->path());
+	}
+}
+
+void MainWindow::startDataEditor(QString path)
+{
+	int useDefaultSpreadsheetEditor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
+	if (path.endsWith(".sav"))
+		useDefaultSpreadsheetEditor = 1;
+
+	QString appname = _settings.value("spreadsheetEditorName", "").toString();
+	if (appname.isEmpty())
+		useDefaultSpreadsheetEditor = 1;
+
+	QString startProcess;
+	if (useDefaultSpreadsheetEditor == 0)
+	{
+#ifdef __APPLE__
+		startProcess = appname.mid(appname.lastIndexOf('/') + 1);
+		startProcess = "open -a \"" + startProcess + "\" \"" + path + "\"";
+#else
+		startProcess = "\"" + appname + "\" \"" + path + "\"";
+#endif
+	}
+	else
+	{
+#ifdef __APPLE__
+		startProcess = "open \"" + path + "\"";
+#elif __linux__
+		startProcess = "xdg-open \"" + path + "\"";
+#else
+		startProcess = "start \"" + path + "\"";
+#endif
+	}
+	std::cout << "Open : " << startProcess.toStdString() << std::endl;
+	std::cout.flush();
+	bool result = QProcess::startDetached(startProcess);
+	std::cout << "Result: " << result << std::endl;
+	std::cout.flush();
+
+}

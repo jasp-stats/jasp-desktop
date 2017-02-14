@@ -53,7 +53,10 @@ public:
 	FileEvent* open(const QString &path);
 	FileEvent* save();
 	void sync();
-	FileEvent *close();	
+	FileEvent *close();
+
+	void setCurrentDataFile(const QString &path);
+
 public slots:
 	void dataSetIOCompleted(FileEvent *event);
 
@@ -72,7 +75,6 @@ private slots:
 	void tabWidgetChanging(int index, bool &cancel);
 
 private:
-	void setCurrentDataFile(const QString &path);
 	bool checkSyncFileExists(const QString &path);
 	static bool clearOSFFromRecentList(QString path);
 	OnlineDataManager *_odm = NULL;
