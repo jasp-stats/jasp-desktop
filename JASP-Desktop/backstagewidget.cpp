@@ -206,3 +206,11 @@ void BackStageWidget::tabPageChanging(int index, bool &cancel)
 		break;
 	}
 }
+
+void BackStageWidget::setSyncFile(FileEvent *event)
+{
+	if (event->successful())
+	{
+		_openAndSaveWidget->setCurrentDataFile(event->path());
+	}
+}

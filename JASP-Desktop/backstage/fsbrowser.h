@@ -47,13 +47,11 @@ public:
 	void setViewType(ViewType viewType);
 	void StartProcessing();
 	void StopProcessing();
-	void setSynchronizationCheckedButton(bool checked);
 
 signals:
 
 	void entryOpened(QString path);
 	void entrySelected(QString path);
-	void dataSynchronization(bool checked);
 
 public slots:
 
@@ -66,7 +64,6 @@ private slots:
 	void entryOpenedHandler();
 	void authenticationFailed(QString message);
 	void hideAuthentication();
-	void dataAutoSynchronization(int state);
 
 private:
 
@@ -80,8 +77,6 @@ private:
 	QButtonGroup *_buttonGroup;
 	QLabel *_processLabel;
 	VerticalScrollArea *_scrollArea;
-
-	QCheckBox *_syncAutoCheckBox;
 
 	FSBModel *_model;
 

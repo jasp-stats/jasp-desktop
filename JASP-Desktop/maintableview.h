@@ -42,10 +42,11 @@ public:
 protected:
 	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) OVERRIDE;
 	virtual void verticalScrollbarValueChanged(int value) OVERRIDE;
-
+	virtual void mouseDoubleClickEvent(QMouseEvent *event) OVERRIDE;
 
 signals:
 	void dataTableColumnSelected();
+	void dataTableDoubleClicked();
 	
 public slots:
 
