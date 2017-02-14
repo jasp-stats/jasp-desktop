@@ -64,6 +64,7 @@ private slots:
 	void toggleSEM();
 	void toggleReinforcement();
 	void toggleSummaryStats();
+	void toggleMachineLearning();
 
 private:
 
