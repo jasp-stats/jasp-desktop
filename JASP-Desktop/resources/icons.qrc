@@ -55,6 +55,9 @@
         <file>icons/analysis-bayesian-crosstabs.svg</file>
         <file>icons/analysis-classical-crosstabs.svg</file>
         <file>icons/analysis-bayesian-regression.svg</file>
+        <file>icons/analysis-ml-regression.svg</file>
+        <file>icons/analysis-ml-classification.svg</file>
+        <file>icons/analysis-ml-clustering.svg</file>
         <file>icons/toolbutton-menu-indicator.svg</file>
         <file>icons/variable-scale-inactive.svg</file>
         <file>icons/variable-ordinal-inactive.svg</file>
