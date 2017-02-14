@@ -64,6 +64,8 @@
 #include "analysisforms/SEM/semsimpleform.h"
 #include "analysisforms/R11tLearn/r11tlearnform.h"
 
+#include "analysisforms/MachineLearning/mlregressionrandomforestform.h"
+
 #include "analysisforms/reliabilityanalysisform.h"
 #include "analysisforms/exploratoryfactoranalysisform.h"
 #include "analysisforms/principalcomponentanalysisform.h"
@@ -151,6 +153,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->ribbonSEM->setDataSetLoaded(false);
 	ui->ribbonR11tLearn->setDataSetLoaded(false);
 	ui->ribbonSummaryStatistics->setDataSetLoaded(false);
+	ui->ribbonMachineLearning->setDataSetLoaded(false);
 
 #ifdef QT_DEBUG
 	ui->webViewResults->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -196,6 +199,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSEM, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonR11tLearn, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
+	connect(ui->ribbonMachineLearning, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
 	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
@@ -681,6 +685,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new SummaryStatsRegressionLinearBayesianForm(contentArea);
 	else if (name == "SummaryStatsCorrelationBayesianPairs")
 		form = new SummaryStatsCorrelationBayesianPairsForm(contentArea);
+	else if (name == "MLRegressionRandomForest")
+		form = new MLRegressionRandomForestForm(contentArea);
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
 
@@ -816,6 +822,10 @@ void MainWindow::tabChanged(int index)
 		{
 			ui->ribbon->setCurrentIndex(3);
 		}
+		else if(currentActiveTab == "Machine Learning")
+		{
+			ui->ribbon->setCurrentIndex(4);
+		}
 	}
 }
 
@@ -872,7 +882,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 	}
 	else if (event->operation() == FileEvent::FileSave)
-	{		
+	{
 		if (_analyses->count() > 0)
 		{
 			_package->setWaitingForReady();
@@ -962,7 +972,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			event->setComplete();
 			dataSetIOCompleted(event);
 		}
-		
+
 		ui->variablesPage->close();
 	}
 }
@@ -1165,6 +1175,7 @@ void MainWindow::updateMenuEnabledDisabledStatus()
 	ui->ribbonAnalysis->setDataSetLoaded(loaded);
 	ui->ribbonSEM->setDataSetLoaded(loaded);
 	ui->ribbonR11tLearn->setDataSetLoaded(loaded);
+	ui->ribbonMachineLearning->setDataSetLoaded(loaded);
 }
 
 void MainWindow::updateUIFromOptions()
@@ -1190,6 +1201,12 @@ void MainWindow::updateUIFromOptions()
 		ui->tabBar->addTab("Summary Stats");
 	else
 		ui->tabBar->removeTab("Summary Stats");
+
+	QVariant machineLearning = _settings.value("toolboxes/machineLearning", false);
+	if (machineLearning.canConvert(QVariant::Bool) && machineLearning.toBool())
+		ui->tabBar->addTab("Machine Learning");
+	else
+	ui->tabBar->removeTab("Machine Learning");
 }
 
 void MainWindow::resultsPageLoaded(bool success)
