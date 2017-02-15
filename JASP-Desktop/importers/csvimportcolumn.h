@@ -6,23 +6,23 @@
 class CSVImportColumn : public ImportColumn
 {
 public:
-	CSVImportColumn(string name);
+	CSVImportColumn(std::string name);
 	virtual ~CSVImportColumn();
 
 	virtual size_t size() const;
 	virtual bool isValueEqual(Column &col, size_t row) const;
 
-	void addValue(const string &value);
-	const vector<string>& getValues() const;
-	bool convertToInt(vector<int> &intValues, set<int> &uniqueValues) const;
-	bool convertToDouble(vector<double> &doubleValues) const;
+	void addValue(const std::string &value);
+	const std::vector<std::string>& getValues() const;
+	bool convertToInt(std::vector<int> &intValues, std::set<int> &uniqueValues) const;
+	bool convertToDouble(std::vector<double> &doubleValues) const;
 
 private:
-	vector<string> _data;
+	std::vector<std::string> _data;
 
-	string _deEuropeanise(const string &value) const;
-	bool _convertValueToInt(const string &strValue, int &intValue) const;
-	bool _convertValueToDouble(const string &strValue, double &doubleValue) const;
+	std::string _deEuropeanise(const std::string &value) const;
+	bool _convertValueToInt(const std::string &strValue, int &intValue) const;
+	bool _convertValueToDouble(const std::string &strValue, double &doubleValue) const;
 
 };
 

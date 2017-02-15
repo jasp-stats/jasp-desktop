@@ -20,6 +20,12 @@ void LevelsTableModel::setColumn(Column *column)
 	endResetModel();
 }
 
+void LevelsTableModel::refresh()
+{
+	beginResetModel();
+	endResetModel();
+}
+
 void LevelsTableModel::clearColumn()
 {
 	setColumn(NULL);
@@ -48,23 +54,12 @@ QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 		return QVariant();
 
 	Labels &labels = _column->labels();
-	Labels::const_iterator itr = labels.begin();
-
-	for (int i = 0; i < index.row(); i++)
-		itr++;
-
-	const LabelEntry &entry = *itr;
+	int row = index.row();
 
 	if (index.column() == 0)
-	{
-		int raw = entry.first;
-		return raw;
-	}
+		return tq(labels.getValueFromRow(row));
 	else
-	{
-		const Label &label = entry.second;
-		return tq(label.text());
-	}
+		return tq(labels.getLabelFromRow(row));
 }
 
 QVariant LevelsTableModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -86,7 +81,7 @@ void LevelsTableModel::_moveRows(QModelIndexList &selection, bool up) {
 		return;
 
 	Labels &labels = _column->labels();
-	std::vector<LabelEntry> new_labels(labels.begin(), labels.end());
+	std::vector<Label> new_labels(labels.begin(), labels.end());
 
 	BOOST_FOREACH (QModelIndex &index, selection)
 	{
@@ -115,7 +110,7 @@ void LevelsTableModel::reverse() {
         return;
 
     Labels &labels = _column->labels();
-    std::vector<LabelEntry> new_labels(labels.begin(), labels.end());
+	std::vector<Label> new_labels(labels.begin(), labels.end());
 
     std::reverse(new_labels.begin(), new_labels.end());
 
@@ -146,7 +141,7 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
         const std::string &new_label = value.toString().toStdString();
         if (new_label != "") {
             Labels &labels = _column->labels();
-            labels.setLabel(index.row(), new_label);
+			labels.setLabelFromRow(index.row(), new_label);
         }
     }
 

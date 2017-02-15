@@ -84,11 +84,8 @@ OpenSaveWidget::OpenSaveWidget(QWidget *parent) : QWidget(parent)
 	_tabWidget->hideTab(_bsCurrent);
 
 	connect(_bsRecent, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenRequestHandler(QString)));
-#ifdef QT_DEBUG
 	connect(_bsCurrent, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenCurrentRequestHandler(QString)));
-	connect(_bsCurrent, SIGNAL(dataSynchronization(bool)), this, SLOT(setDataFileWatcher(bool)));
 	connect(&_watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(dataFileModifiedHandler(const QString&)));
-#endif
 	connect(_bsComputer, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
 	connect(_bsOSF, SIGNAL(dataSetIORequest(FileEvent *)), this, SLOT(dataSetIORequestHandler(FileEvent *)));
 	connect(_bsExamples, SIGNAL(entryOpened(QString)), this, SLOT(dataSetOpenExampleRequestHandler(QString)));
@@ -278,6 +275,7 @@ void OpenSaveWidget::dataSetIOCompleted(FileEvent *event)
 	{
 		_bsComputer->clearFileName();
 
+		setDataFileWatcher(false);
 		_currentFileHasPath = false;
 		_currentFilePath = "";
 	}
@@ -305,7 +303,7 @@ bool OpenSaveWidget::checkSyncFileExists(const QString &path)
 		_tabWidget->tabBar()->setTabEnabled(FileLocation::Current, false);
 		_tabWidget->tabBar()->click(FileLocation::Computer);
 
-		QMessageBox::warning(this, QString("Data Synchronization"), QString("The associated data file (") + path + ") does not exist. If you want to synchronize your data with another file, click on the 'File/Sync Data' menu.");
+		//QMessageBox::warning(this, QString("Data Synchronization"), QString("The associated data file (") + path + ") does not exist. If you want to synchronize your data with another file, click on the 'File/Sync Data' menu.");
 	}
 
     return exists;
@@ -361,29 +359,6 @@ void OpenSaveWidget::dataSetOpenExampleRequestHandler(QString path)
 void OpenSaveWidget::dataFileModifiedHandler(QString path)
 {
 	int autoSync = _settings.value("dataAutoSynchronization", 1).toInt();
-	if (autoSync == 1)
-	{
-		QMessageBox msgBox(QMessageBox::Question, QString("Data Synchronization"), QString("The associated data file has been modified. Do you want to synchronize the data?"),
-						   QMessageBox::Yes|QMessageBox::No|QMessageBox::YesToAll);
-		msgBox.setButtonText(QMessageBox::YesToAll, QString("Always"));
-		int reply = msgBox.exec();
-		if (reply == QMessageBox::Yes)
-			autoSync = 1;
-		else if (reply == QMessageBox::YesToAll)
-			autoSync = 2;
-		else
-			autoSync = 0;
-
-		_settings.setValue("dataAutoSynchronization", autoSync);
-		_settings.sync();
-
-		if (autoSync == 0)
-		{
-			_bsCurrent->setSynchronizationCheckedButton(false);
-			setDataFileWatcher(false);
-		}
-	}
-
 	if (autoSync > 0)
 		dataSetOpenCurrentRequestHandler(path);
 }

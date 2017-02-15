@@ -23,6 +23,8 @@
 #include "widgets/tablemodelvariablesassigned.h"
 #include "widgets/tablemodelanovamodelnuisancefactors.h"
 
+using namespace std;
+
 AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 	AnalysisForm("AnovaRepeatedMeasuresForm", parent),
 	ui(new Ui::AnovaRepeatedMeasuresForm)
@@ -124,11 +126,9 @@ AnovaRepeatedMeasuresForm::AnovaRepeatedMeasuresForm(QWidget *parent) :
 
 #ifdef QT_NO_DEBUG
 	ui->groupCompareMainEffects->hide();
-	ui->VovkSellkeMPR->hide();
 
 #else
 	ui->groupCompareMainEffects->setStyleSheet("background-color: pink ;");
-	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
 
 #endif
 }

@@ -86,6 +86,8 @@
 #include <QTabBar>
 #include <QMenuBar>
 #include <QDir>
+#include <QFileDialog>
+#include <QDesktopServices>
 
 #include "analysisloader.h"
 
@@ -99,8 +101,11 @@
 #include "lrnam.h"
 #include "activitylog.h"
 #include "aboutdialog.h"
+#include "preferencesdialog.h"
 #include <boost/filesystem.hpp>
 #include "dirs.h"
+
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -122,10 +127,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	QObject::connect(saveShortcut, SIGNAL(activated()), this, SLOT(saveKeysSelected()));
 	QShortcut *openShortcut = new QShortcut(QKeySequence("Ctrl+O"), this);
 	QObject::connect(openShortcut, SIGNAL(activated()), this, SLOT(openKeysSelected()));
-#ifdef QT_DEBUG
 	QShortcut *syncShortcut = new QShortcut(QKeySequence("Ctrl+Y"), this);
 	QObject::connect(syncShortcut, SIGNAL(activated()), this, SLOT(syncKeysSelected()));
-#endif
 	QShortcut *refreshShortcut = new QShortcut(QKeySequence("Ctrl+R"), this);
 	QObject::connect(refreshShortcut, SIGNAL(activated()), this, SLOT(refreshKeysSelected()));
 
@@ -197,9 +200,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->ribbonSummaryStatistics, SIGNAL(itemSelected(QString)), this, SLOT(itemSelected(QString)));
 	connect(ui->backStage, SIGNAL(dataSetIORequest(FileEvent*)), this, SLOT(dataSetIORequest(FileEvent*)));
 	connect(ui->backStage, SIGNAL(exportSelected(QString)), this, SLOT(exportSelected(QString)));
-	connect(ui->variablesPage, SIGNAL(reRun()), this, SLOT(refreshCurrentAnalysis()));
+	connect(ui->variablesPage, SIGNAL(columnChanged(QString)), this, SLOT(refreshAnalysesUsingColumn(QString)));
 	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
 	connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
+	connect(ui->tableView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
+	connect(ui->tabBar, SIGNAL(dataAutoSynchronizationChanged(bool)), ui->backStage, SLOT(dataAutoSynchronizationChanged(bool)));
 
 	_progressIndicator = new ProgressWidget(ui->tableView);
 	_progressIndicator->setAutoFillBackground(true);
@@ -256,7 +261,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(_runButton, SIGNAL(clicked()), this, SLOT(analysisRunned()));
 
 	connect(ui->splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterMovedHandler(int,int)));
-	connect(ui->data_splitter, SIGNAL(splitterMoved(int,int)), this, SLOT(data_splitterMovedHandler(int,int)));
 
 	_analysisMenu = new QMenu(this);
 	connect(_analysisMenu, SIGNAL(aboutToHide()), this, SLOT(menuHidding()));
@@ -407,36 +411,35 @@ void MainWindow::packageChanged(DataSetPackage *package)
 	}
 }
 
-void MainWindow::packageDataChanged(DataSetPackage *package
-									, std::vector<std::string> &changedColumns
-									, std::vector<std::string> &missingColumns
-									, std::map<std::string, std::string> &changeNameColumns)
+void MainWindow::refreshAnalysesUsingColumns(vector<string> &changedColumns
+											, vector<string> &missingColumns
+											, map<string, string> &changeNameColumns)
 {
-	std::vector<std::string> oldColumnNames;
-	for (std::map<std::string, std::string>::iterator it = changeNameColumns.begin(); it != changeNameColumns.end(); ++it)
+	vector<string> oldColumnNames;
+	for (map<string, string>::iterator it = changeNameColumns.begin(); it != changeNameColumns.end(); ++it)
 		oldColumnNames.push_back(it->first);
-	std::sort(changedColumns.begin(), changedColumns.end());
-	std::sort(missingColumns.begin(), missingColumns.end());
-	std::sort(oldColumnNames.begin(), oldColumnNames.end());
+	sort(changedColumns.begin(), changedColumns.end());
+	sort(missingColumns.begin(), missingColumns.end());
+	sort(oldColumnNames.begin(), oldColumnNames.end());
 
-	std::vector<Analysis *> analyses_to_refresh;
+	vector<Analysis *> analyses_to_refresh;
 	for (Analyses::iterator analysis_it = _analyses->begin(); analysis_it != _analyses->end(); ++analysis_it)
 	{
 		Analysis* analysis = *analysis_it;
 		bool analyse_to_refresh = false;
-		const std::vector<OptionVariables *> &analysis_variables = analysis->getVariables();
-		for (std::vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
+		const vector<OptionVariables *> &analysis_variables = analysis->getVariables();
+		for (vector<OptionVariables *>::const_iterator var_it = analysis_variables.begin();
 			 var_it != analysis_variables.end();
 			 ++var_it)
 		{
 			OptionVariables *option_variables = *var_it;
-			std::vector<std::string> variables = option_variables->variables();
-			std::vector<std::string> variables_sorted = variables;
-			std::sort(variables_sorted.begin(), variables_sorted.end());
-			std::vector<std::string> inter_changecol, inter_changename, inter_missingcol;
-			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), std::back_inserter(inter_changecol));
-			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), std::back_inserter(inter_changename));
-			std::set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), std::back_inserter(inter_missingcol));
+			vector<string> variables = option_variables->variables();
+			vector<string> variables_sorted = variables;
+			sort(variables_sorted.begin(), variables_sorted.end());
+			vector<string> inter_changecol, inter_changename, inter_missingcol;
+			set_intersection(variables_sorted.begin(), variables_sorted.end(), changedColumns.begin(), changedColumns.end(), back_inserter(inter_changecol));
+			set_intersection(variables_sorted.begin(), variables_sorted.end(), oldColumnNames.begin(), oldColumnNames.end(), back_inserter(inter_changename));
+			set_intersection(variables_sorted.begin(), variables_sorted.end(), missingColumns.begin(), missingColumns.end(), back_inserter(inter_missingcol));
 
 			if (inter_changecol.size() > 0 && !analyse_to_refresh)
 			{
@@ -446,11 +449,11 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 
 			if (inter_changename.size() > 0)
 			{
-				for (std::vector<std::string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
+				for (vector<string>::iterator varname_it = inter_changename.begin(); varname_it != inter_changename.end(); ++varname_it)
 				{
-					std::string varname = *varname_it;
-					std::string newname = changeNameColumns[varname];
-					std::replace(variables.begin(), variables.end(), varname, newname);
+					string varname = *varname_it;
+					string newname = changeNameColumns[varname];
+					replace(variables.begin(), variables.end(), varname, newname);
 				}
 				analysis->setRefreshBlocked(true);
 				option_variables->setValue(variables);
@@ -463,10 +466,10 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 
 			if (inter_missingcol.size() > 0)
 			{
-				for (std::vector<std::string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
+				for (vector<string>::iterator varname_it = inter_missingcol.begin(); varname_it != inter_missingcol.end(); ++varname_it)
 				{
-					std::string varname = *varname_it;
-					variables.erase(std::remove(variables.begin(), variables.end(), varname), variables.end());
+					string varname = *varname_it;
+					variables.erase(remove(variables.begin(), variables.end(), varname), variables.end());
 				}
 				analysis->setRefreshBlocked(true);
 				option_variables->setValue(variables);
@@ -479,15 +482,23 @@ void MainWindow::packageDataChanged(DataSetPackage *package
 		}
 	}
 
-	_tableModel->setDataSet(package->dataSet);
-	ui->variablesPage->setDataSet(package->dataSet);
-
-	for (std::vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
+	for (vector<Analysis *>::iterator it = analyses_to_refresh.begin(); it != analyses_to_refresh.end(); ++it)
 	{
 		Analysis *analysis = *it;
 		analysis->setRefreshBlocked(false);
 		analysis->refresh();
 	}
+}
+
+void MainWindow::packageDataChanged(DataSetPackage *package
+									, std::vector<std::string> &changedColumns
+									, std::vector<std::string> &missingColumns
+									, std::map<std::string, std::string> &changeNameColumns)
+{
+	_tableModel->setDataSet(_package->dataSet);
+	ui->variablesPage->setDataSet(_package->dataSet);
+
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
 }
 
 
@@ -914,6 +925,9 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
+		if (_package->dataSet == NULL)
+			return;
+
 		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(dataSetIOCompleted(FileEvent*)));
 		_loader.io(event, _package);
 		_progressIndicator->show();
@@ -948,6 +962,8 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			event->setComplete();
 			dataSetIOCompleted(event);
 		}
+		
+		ui->variablesPage->close();
 	}
 }
 
@@ -1010,6 +1026,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
+		_package->setModified(true);
 		showAnalysis = true;
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileExportResults)
@@ -1284,7 +1301,7 @@ void MainWindow::itemSelected(const QString &item)
 		if (_log != NULL)
 			_log->log("Analysis Created", info);
 	}
-	catch (std::runtime_error& e)
+	catch (runtime_error& e)
 	{
 		_fatalError = tq(e.what());
 		fatalError();
@@ -1335,18 +1352,6 @@ void MainWindow::splitterMovedHandler(int, int)
 	adjustOptionsPanelWidth();
 	_tableViewWidthBeforeOptionsMadeVisible = -1;
 }
-
-void MainWindow::data_splitterMovedHandler(int pos, int index)
-{
-	int p = pos;
-	int i = index;
-	//if (p < 150)
-	//	ui->variablesPage->hide();
-
-	qDebug() << " Pos = " << pos;
-	qDebug() << " Index = " << index;
-}
-
 
 void MainWindow::hideOptionsPanel()
 {
@@ -1556,10 +1561,14 @@ void MainWindow::refreshAllAnalyses()
 	}
 }
 
-void MainWindow::refreshCurrentAnalysis()
+void MainWindow::refreshAnalysesUsingColumn(QString col)
 {
-	if (_currentAnalysis != NULL)
-		_currentAnalysis->refresh();
+	std::vector<std::string> changedColumns, missingColumns;
+	std::map<std::string, std::string> changeNameColumns;
+	changedColumns.push_back(col.toStdString());
+	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns);
+
+	_package->setModified(false);
 }
 
 void MainWindow::resetTableView()
@@ -1880,10 +1889,93 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	analysis->options()->set(root);
 }
 
-void MainWindow::showAbout()
+
+void MainWindow::startDataEditorHandler()
 {
-	AboutDialog aboutdialog;
-	aboutdialog.setModal(true);
-	aboutdialog.exec();
+	QString path = QString::fromStdString(_package->dataFilePath);
+	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0)
+	{
+		QMessageBox msgBox(QMessageBox::Question, QString("Start Spreadsheet Editor"), QString("JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?"),
+						   QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+		msgBox.setButtonText(QMessageBox::Yes, QString("Generate Data File"));
+		msgBox.setButtonText(QMessageBox::No, QString("Find Data File"));
+		int reply = msgBox.exec();
+		if (reply == QMessageBox::Cancel)
+			return;
+
+		FileEvent *event = NULL;
+		if (reply == QMessageBox::Yes)
+		{
+			QString caption = "Generate Data File as CSV";
+			QString filter = "CSV Files (*.csv)";
+
+			path = QFileDialog::getSaveFileName(this, caption, "", filter);
+			if (path == "")
+				return;
+
+			if (!path.endsWith(".csv", Qt::CaseInsensitive))
+				path.append(".csv");
+
+			event = new FileEvent(this, FileEvent::FileExportData);
+			connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
+		}
+		else
+		{
+			QString caption = "Find Data File";
+			QString filter = "Data File (*.csv *.txt *.sav *.ods)";
+
+			path = QFileDialog::getOpenFileName(this, caption, "", filter);
+			if (path == "")
+				return;
+
+			event = new FileEvent(this, FileEvent::FileSyncData);
+		}
+
+		connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(startDataEditorEventCompleted(FileEvent*)));
+		connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
+		event->setPath(path);
+		_loader.io(event, _package);
+		_progressIndicator->show();
+	}
+	else
+		startDataEditor(path);
+
 }
 
+void MainWindow::startDataEditorEventCompleted(FileEvent* event)
+{
+	_progressIndicator->hide();
+
+	if (event->successful())
+	{
+		_package->setModified(true);
+		startDataEditor(event->path());
+	}
+}
+
+void MainWindow::startDataEditor(QString path)
+{
+	int useDefaultSpreadsheetEditor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
+	if (path.endsWith(".sav"))
+		useDefaultSpreadsheetEditor = 1;
+
+	QString appname = _settings.value("spreadsheetEditorName", "").toString();
+	if (appname.isEmpty())
+		useDefaultSpreadsheetEditor = 1;
+
+	QString startProcess;
+	if (useDefaultSpreadsheetEditor == 0)
+	{
+#ifdef __APPLE__
+		startProcess = appname.mid(appname.lastIndexOf('/') + 1);
+		startProcess = "open -a \"" + startProcess + "\" \"" + path + "\"";
+#else
+		startProcess = "\"" + appname + "\" \"" + path + "\"";
+#endif
+		QProcess::startDetached(startProcess);
+	}
+	else
+	{
+		QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode));
+	}
+}

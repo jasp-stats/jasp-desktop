@@ -31,7 +31,7 @@ void Label::_setLabel(const std::string &label) {
 Label::Label(const std::string &label, int value)
 {
     _setLabel(label);
-	_hasIntValue = true;
+	_hasIntValue = false;
 	_intValue = value;
 }
 

@@ -136,7 +136,8 @@ public:
 	bool isValueEqual(int rowIndex, double value);
 	bool isValueEqual(int rowIndex, const std::string &value);
 
-	std::string operator[](int index);
+	std::string operator[](int row);
+	std::string getOriginalValue(int row);
 
 	void append(int rows);
 	void truncate(int rows);
@@ -159,10 +160,13 @@ public:
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
 	void setColumnAsNominalString(const std::vector<std::string> &values);
+	void setColumnAsNominalString(const std::vector<std::string> &values, const std::map<std::string, std::string> &labels);
 	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, const std::set<int> &uniqueValues, bool is_ordinal = false);
+	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, std::map<int, std::string> &uniqueValues, bool is_ordinal = false);
 	void setColumnAsScale(const std::vector<double> &values);
 
 private:
+	void _setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);
 
 	boost::interprocess::managed_shared_memory *_mem;
 
@@ -180,9 +184,9 @@ private:
 	static const std::string _emptyValues[];
 	static const int _emptyValuesCount;
 
-	void setRowCount(int rowCount);
-	std::string stringFromRaw(int value) const;
-
+	void _setRowCount(int rowCount);
+	std::string _labelFromIndex(int index) const;
+	std::string _getScaleValue(int row);
 };
 
 namespace boost

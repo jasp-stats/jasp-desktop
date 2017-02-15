@@ -126,7 +126,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 				for (; intIterator != AsInts.end(); intIterator++)
 				{
 					int value = *intIterator;
-					string display = stringFromRaw(value);
+					string display = _labelFromIndex(value);
 					try
 					{
 						if (isEmptyValue(display))
@@ -218,7 +218,7 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			{
 				try
 				{
-					string value = this->stringFromRaw(*ints);
+					string value = this->_labelFromIndex(*ints);
 					double doubleValue;
 
 					if (isEmptyValue(value))
@@ -241,16 +241,35 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 	}
 }
 
+void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> &uniqueValues, bool is_ordinal)
+{
+	_labels.syncInts(uniqueValues);
+	_setColumnAsNominalOrOrdinal(values, is_ordinal);
+}
+
 void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
 {
-	_labels.sync(uniqueValues);
+	_labels.syncInts(uniqueValues);
+	_setColumnAsNominalOrOrdinal(values, is_ordinal);
+}
 
+void Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ordinal)
+{
 	Ints::iterator intInputItr = AsInts.begin();
+	int nb_values = 0;
 
 	BOOST_FOREACH(int value, values)
 	{
 		*intInputItr = value;
 		intInputItr++;
+		nb_values++;
+	}
+
+	while (nb_values < _rowCount)
+	{
+		*intInputItr = INT_MIN;
+		intInputItr++;
+		nb_values++;
 	}
 
 	setColumnType(is_ordinal ? Column::ColumnTypeOrdinal : Column::ColumnTypeNominal);
@@ -274,6 +293,11 @@ void Column::setColumnAsScale(const std::vector<double> &values)
 
 void Column::setColumnAsNominalString(const vector<string> &values)
 {
+	setColumnAsNominalString(values, map<string, string>());
+}
+
+void Column::setColumnAsNominalString(const vector<string> &values, const map<string, string>&labels)
+{
 	vector<string> sorted = values;
 	sort(sorted.begin(), sorted.end());
 	vector<string> cases;
@@ -289,17 +313,27 @@ void Column::setColumnAsNominalString(const vector<string> &values)
 		}
 	}
 
-	std::map<string, int> map = _labels.syncStrings(cases);
+	std::map<string, int> map = _labels.syncStrings(cases, labels);
 
 	Column::Ints::iterator intInputItr = AsInts.begin();
+	int nb_values = 0;
 
 	BOOST_FOREACH (const string &value, values)
 	{
 		if (value == "" || value == " ")
 			*intInputItr = INT_MIN;
 		else
+			//*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
 			*intInputItr = map[value];
 		intInputItr++;
+		nb_values++;
+	}
+
+	while (nb_values < _rowCount)
+	{
+		*intInputItr = INT_MIN;
+		intInputItr++;
+		nb_values++;
 	}
 
 	setColumnType(Column::ColumnTypeNominalText);
@@ -311,7 +345,7 @@ int Column::rowCount() const
 	return _rowCount;
 }
 
-string Column::stringFromRaw(int value) const
+string Column::_labelFromIndex(int value) const
 {
 	if (value == INT_MIN)
 		return _emptyValue;
@@ -443,53 +477,111 @@ bool Column::isValueEqual(int rowIndex, const string &value)
 	if (rowIndex >= _rowCount)
 		return false;
 
-	if (_columnType == Column::ColumnTypeScale)
+	bool result = false;
+	switch (_columnType)
 	{
-		double v = AsDoubles[rowIndex];
-		stringstream s;
-		s << v;
-		string str = s.str();
-		return str == value;
-	}
-
-	return _labels.getOrgValue(AsInts[rowIndex]) == ((value == "" || value == " ") ? _emptyValue : value);
-}
-
-string Column::operator [](int index)
-{
-	string result = _emptyValue;
-
-	if (index < _rowCount)
-	{
-		if (_columnType == Column::ColumnTypeScale)
+		case Column::ColumnTypeScale:
 		{
-			double v = AsDoubles[index];
+			double v = AsDoubles[rowIndex];
+			stringstream s;
+			s << v;
+			string str = s.str();
+			result = (str == value);
+			break;
+		}
 
-			if (v > DBL_MAX)
+		case Column::ColumnTypeNominal:
+		case Column::ColumnTypeOrdinal:
+		{
+			int v = AsInts[rowIndex];
+			stringstream s;
+			s << v;
+			string str = s.str();
+			result = (str == value);
+			break;
+		}
+		default:
+		{
+			int index = AsInts[rowIndex];
+			if (index == INT_MIN)
 			{
-				char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
-				result = string(inf);
-			}
-			else if (v < -DBL_MAX)
-			{
-				char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
-				return string(ninf);
-			}
-			else if (std::isnan(v))
-			{
-				result = _emptyValue;
+				result = (value == "" || value == " " || value == _emptyValue);
 			}
 			else
 			{
-				stringstream s;
-				s << v;
-				result = s.str();
+				result = (value == _labels.getValueFromIndex(index));
 			}
+		}
+
+	}
+
+	return result;
+}
+
+string Column::_getScaleValue(int row)
+{
+	double v = AsDoubles[row];
+
+	if (v > DBL_MAX)
+	{
+		char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
+		return string(inf);
+	}
+	else if (v < -DBL_MAX)
+	{
+		char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
+		return string(ninf);
+	}
+	else if (std::isnan(v))
+	{
+		return _emptyValue;
+	}
+	else
+	{
+		stringstream s;
+		s << v;
+		return s.str();
+	}
+}
+
+string Column::getOriginalValue(int row)
+{
+	string result = _emptyValue;
+
+	if (row < _rowCount)
+	{
+		if (_columnType == Column::ColumnTypeScale)
+		{
+			result = _getScaleValue(row);
 		}
 		else
 		{
-			int value = AsInts[index];
-			result = stringFromRaw(value);
+			int index = AsInts[row];
+			if (index == INT_MIN)
+				result = _emptyValue;
+			else
+				result = _labels.getValueFromIndex(index);
+		}
+	}
+
+	return result;
+}
+
+
+string Column::operator [](int row)
+{
+	string result = _emptyValue;
+
+	if (row < _rowCount)
+	{
+		if (_columnType == Column::ColumnTypeScale)
+		{
+			result = _getScaleValue(row);
+		}
+		else
+		{
+			int value = AsInts[row];
+			result = _labelFromIndex(value);
 		}
 	}
 
@@ -550,9 +642,9 @@ void Column::append(int rows)
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
-			cout << e.what();
-			cout << "setRowCount" << _rowCount << "\n";
-			throw;
+			cout << e.what() << " ";
+			cout << "append column " << name() << ", append: " << rows << ", rowCount: " << _rowCount << std::endl;
+			throw e;
 		}
 	}
 }
@@ -604,7 +696,7 @@ void Column::setColumnType(Column::ColumnType columnType)
 	_columnType = columnType;
 }
 
-void Column::setRowCount(int rowCount)
+void Column::_setRowCount(int rowCount)
 {
 	if (rowCount > this->rowCount())
 		append(rowCount - this->rowCount());

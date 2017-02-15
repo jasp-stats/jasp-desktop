@@ -23,8 +23,6 @@
 
 #include "analysisform.h"
 
-using namespace std;
-
 namespace Ui {
 class DescriptivesForm;
 }

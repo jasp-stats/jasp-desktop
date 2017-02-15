@@ -24,13 +24,13 @@
 #include <set>
 
 #include <boost/container/vector.hpp>
+#include <boost/container/map.hpp>
 
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/segment_manager.hpp>
 
-typedef std::pair<int, Label> LabelEntry;
-typedef boost::interprocess::allocator<LabelEntry, boost::interprocess::managed_shared_memory::segment_manager> LabelEntryAllocator;
-typedef boost::container::vector<LabelEntry, LabelEntryAllocator> LabelVector;
+typedef boost::interprocess::allocator<Label, boost::interprocess::managed_shared_memory::segment_manager> LabelAllocator;
+typedef boost::container::vector<Label, LabelAllocator> LabelVector;
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range/const_iterator.hpp>
@@ -39,18 +39,18 @@ class Labels
 {
 public:
 	Labels(boost::interprocess::managed_shared_memory *mem);
+	virtual ~Labels();
 
 	void clear();
 	int add(int display);
 	int add(const std::string &display);
-	int add(int raw, const std::string &display);
-	int add(int raw, int display);
-	void sync(const std::set<int> &values);
-	std::map<std::string, int> syncStrings(const std::vector<std::string> &values);
+	int add(int index, const std::string &display);
+	void syncInts(const std::set<int> &values);
+	void syncInts(std::map<int, std::string> &values);
+	std::map<std::string, int> syncStrings(const std::vector<std::string> &new_values, const std::map<std::string, std::string> &new_labels);
 
-	const Label &labelFor(int raw) const;
-    void setLabel(int index, const std::string &display);
-	void set(std::vector<LabelEntry> &labels);
+	const Label &labelFor(int index) const;
+	void set(std::vector<Label> &labels);
 	size_t size() const;
 
 	Labels& operator=(const Labels& labels);
@@ -61,14 +61,27 @@ public:
 	const_iterator begin() const;
 	const_iterator end() const;
 
-	const std::map<int, std::string> &getOrgValues();
-	std::string getOrgValue(int);
-	void setOrgValue(int key, std::string value);
+	std::map<int, std::string> &getOrgStringValues();
+	void setOrgStringValues(int key, std::string value);
+
+	void setLabelFromRow(int row, const std::string &display);
+	void setLabelFromValue(int value, const std::string &display);
+	std::string getLabelFromRow(int);
+	std::string getValueFromRow(int);
+	std::string getValueFromIndex(int);
 
 private:
+	void _setNewStringForLabel(Label &label, const std::string &display);
+	std::string _getValueFromLabel(const Label &label);
+
 	boost::interprocess::managed_shared_memory *_mem;
 	LabelVector _labels;
-	std::map<int, std::string> _orgValues; // Original value associated with the label: used only when value is a string and when the label has been changed.
+	int _id;
+	static int _counter;
+	// Original string values: used only when value is a string and when the label has been changed
+	// This map is not in the shared memory (it's only used by the JASP-Desktop): this allows this map to grow
+	// without risking to fill up the shared memory.
+	static std::map<int, std::map<int, std::string> > _orgStringValues;
 };
 
 namespace boost

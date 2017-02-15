@@ -82,6 +82,8 @@ void Analyses::clear()
 		if (analysis != NULL && analysis->status() != Analysis::Complete)
 			analysis->setStatus(Analysis::Aborted);
 	}
+
+	_defaults.clear();
 }
 
 Analysis *Analyses::get(int id) const

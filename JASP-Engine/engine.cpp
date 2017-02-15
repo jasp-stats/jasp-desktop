@@ -91,7 +91,7 @@ void Engine::runAnalysis()
 	if (_status == initing || _status == running)  // if status hasn't changed
 		receiveMessages();
 
-	if (_status == toInit || _status == aborted || _status == error)
+	if (_status == toInit || _status == aborted || _status == error || _status == exception)
 	{
 		// analysis was aborted, and we shouldn't send the results
 	}
