@@ -33,10 +33,10 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		return true;
 	},
 
-    saveImageClicked: function(){
-        var options = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")};
-        this.model.trigger("SaveImage:clicked", options);
-    },
+
+	isConvertible: function() {
+		return this.model.get("convertible") != null;
+	},
 
 	hasNotes: function () {
 		return this.$el.hasClass('jasp-collection-item') === false;
@@ -84,6 +84,7 @@ JASPWidgets.imagePrimative= JASPWidgets.View.extend({
 			var custom = self.model.get("custom");
 			return custom === null;
 		};
+		
 	},
 
 	onResized: function (w, h) {
@@ -94,7 +95,7 @@ JASPWidgets.imagePrimative= JASPWidgets.View.extend({
 				options[custom.width] = w;
 			if (_.has(custom, "height"))
 				options[custom.height] = h;
-		}
+		};
 
 		this.model.trigger("CustomOptions:changed", options);
 	},

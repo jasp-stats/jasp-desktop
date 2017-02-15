@@ -64,9 +64,9 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	meta <- list()
 
 	plotsMeta <- list(
-								list(name="distributionPlots", type="collection", convertible="true", meta="image"),
-								list(name="matrixPlot", type="image", convertible="true"),
-								list(name="splitPlots", type="collection", convertible="true", meta="image")
+								list(name="distributionPlots", type="collection", meta="image"),
+								list(name="matrixPlot", type="image"),
+								list(name="splitPlots", type="collection", meta="image")
 							 )
 
 	meta[[1]] <- list(name="title", type="title")
@@ -1243,6 +1243,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			plot <- matrix.plot
 			plot[["data"]]  <- imgObj[["png"]]
 			plot[["obj"]] <- imgObj[["obj"]]
+			plot[["convertible"]] <- TRUE
 			
 			matrix.plot <- plot
 
@@ -1479,4 +1480,5 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	}
 
   splitPlots
+	
 }
