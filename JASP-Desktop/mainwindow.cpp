@@ -1911,11 +1911,14 @@ void MainWindow::startDataEditorHandler()
 			QString filter = "CSV Files (*.csv)";
 			QString name = windowTitle();
 			if (name.endsWith("*"))
+			{
 				name.truncate(name.length() - 1);
+				name = name.replace('#', '_');
+			}
 			if (!_currentFilePath.isEmpty())
 			{
 				QFileInfo file(_currentFilePath);
-				name = file.absolutePath() + QDir::separator() + file.baseName() + ".csv";
+				name = file.absolutePath() + QDir::separator() + file.baseName().replace('#', '_') + ".csv";
 			}
 
 			path = QFileDialog::getSaveFileName(this, caption, name, filter);
