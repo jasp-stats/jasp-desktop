@@ -90,7 +90,7 @@
         </size>
        </property>
        <property name="text">
-        <string>Choose prefered spreadsheet editor</string>
+        <string>Choose preferred spreadsheet editor</string>
        </property>
       </widget>
      </item>
