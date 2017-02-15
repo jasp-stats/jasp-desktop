@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>669</width>
+    <width>653</width>
     <height>1577</height>
    </rect>
   </property>
@@ -66,7 +66,7 @@
       <item row="3" column="0" rowspan="2" colspan="2">
        <widget class="QWidget" name="advancedOptions" native="true">
         <layout class="QGridLayout" name="gridLayout_7">
-         <item row="4" column="0">
+         <item row="5" column="0">
           <widget class="QWidget" name="widget_3" native="true">
            <widget class="QWidget" name="widget_4" native="true">
             <property name="geometry">
@@ -102,145 +102,17 @@
            </widget>
           </widget>
          </item>
-         <item row="3" column="1">
-          <widget class="BoundGroupBox" name="bayesFactorType_3">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="title">
-            <string/>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_17">
-            <property name="leftMargin">
-             <number>13</number>
-            </property>
-            <item row="1" column="0">
-             <widget class="BoundGroupBox" name="noOfTrees_3">
-              <property name="title">
-               <string/>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_19">
-               <item row="0" column="1">
-                <widget class="QRadioButton" name="auto_6">
-                 <property name="text">
-                  <string>Auto</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="BoundTextBox" name="seed_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>60</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_15">
-                 <property name="text">
-                  <string>Seed</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QRadioButton" name="manual_6">
-                 <property name="text">
-                  <string>Manual</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="BoundGroupBox" name="noOfTrees_2">
-              <property name="title">
-               <string/>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_10">
-               <item row="0" column="1">
-                <widget class="QRadioButton" name="auto_5">
-                 <property name="text">
-                  <string>Auto</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <widget class="BoundTextBox" name="seed">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>60</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>60</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_14">
-                 <property name="text">
-                  <string>No. of cores</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QRadioButton" name="manual_5">
-                 <property name="text">
-                  <string>Manual</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
          <item row="2" column="0">
-          <widget class="GroupBox" name="plotsGroup_2">
+          <widget class="BoundGroupBox" name="validationMethods">
            <property name="title">
             <string>Validation methods</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_13">
             <item row="2" column="1" colspan="2">
-             <widget class="QRadioButton" name="radioButton">
+             <widget class="QRadioButton" name="outOfBagManual">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Manual % training data</string>
               </property>
@@ -263,7 +135,7 @@
              </widget>
             </item>
             <item row="10" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotPredictivePerformance_2">
+             <widget class="BoundCheckBox" name="crossValidation">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -311,7 +183,7 @@
              </widget>
             </item>
             <item row="9" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotTreesVsModelError_2">
+             <widget class="BoundCheckBox" name="testValidationSet">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -324,7 +196,7 @@
              </widget>
             </item>
             <item row="0" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotVariableImportance_2">
+             <widget class="BoundCheckBox" name="validationOutOfBag">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -337,21 +209,30 @@
              </widget>
             </item>
             <item row="5" column="2">
-             <widget class="QLabel" name="label_7">
+             <widget class="QLabel" name="percentageLabel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Percentage</string>
               </property>
              </widget>
             </item>
             <item row="7" column="2">
-             <widget class="QLabel" name="label_8">
+             <widget class="QLabel" name="casesLabel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>No. of cases</string>
               </property>
              </widget>
             </item>
             <item row="8" column="2" colspan="2">
-             <widget class="BoundCheckBox" name="plotVariableImportance_3">
+             <widget class="BoundCheckBox" name="stratifiedClassLevel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -359,19 +240,25 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Stratefied to class level</string>
+               <string>Stratified to class level</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1" colspan="2">
-             <widget class="QRadioButton" name="radioButton_2">
+             <widget class="QRadioButton" name="outOfBagAuto">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Auto % training data</string>
               </property>
              </widget>
             </item>
             <item row="5" column="3">
-             <widget class="BoundTextBox" name="modelMaximumTerminalNode_2">
+             <widget class="BoundTextBox" name="manualOutOfBagPercentage">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -393,7 +280,10 @@
              </widget>
             </item>
             <item row="7" column="3">
-             <widget class="BoundTextBox" name="modelMaximumTerminalNode_3">
+             <widget class="BoundTextBox" name="manualOutOfBagCases">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -415,7 +305,10 @@
              </widget>
             </item>
             <item row="11" column="2">
-             <widget class="BoundTextBox" name="modelMaximumTerminalNode_4">
+             <widget class="BoundTextBox" name="crossValidationFolds">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -437,7 +330,10 @@
              </widget>
             </item>
             <item row="11" column="1">
-             <widget class="QLabel" name="label_9">
+             <widget class="QLabel" name="noOfFoldsLabel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>No. of folds</string>
               </property>
@@ -447,7 +343,7 @@
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="BoundGroupBox" name="maximumTerminalNodeSize">
+          <widget class="BoundGroupBox" name="subSampleRatioBox">
            <property name="title">
             <string/>
            </property>
@@ -456,7 +352,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_21">
             <item row="1" column="1">
-             <widget class="QRadioButton" name="auto_7">
+             <widget class="QRadioButton" name="subSampleRatioAuto">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -468,6 +364,28 @@
               </property>
              </widget>
             </item>
+            <item row="2" column="2">
+             <widget class="BoundTextBox" name="subSampleRatio">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>60</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_10">
               <property name="text">
@@ -476,7 +394,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QRadioButton" name="manual_7">
+             <widget class="QRadioButton" name="subSampleRatioManual">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -488,52 +406,20 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="2">
-             <widget class="BoundTextBox" name="modelMaximumTerminalNode">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>60</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <spacer name="verticalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
            </layout>
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="GroupBox" name="plotsGroup_3">
+          <widget class="BoundGroupBox" name="treeStructure">
            <property name="title">
             <string>Tree structure</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_14">
-            <item row="4" column="3">
-             <widget class="BoundTextBox" name="modelMaximumTerminalNode_8">
+            <item row="3" column="3">
+             <widget class="BoundTextBox" name="treeDepth">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -554,49 +440,14 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0" colspan="2">
-             <widget class="QRadioButton" name="radioButton_7">
+            <item row="2" column="0" colspan="2">
+             <widget class="QRadioButton" name="treeManual">
               <property name="text">
                <string>Manual</string>
               </property>
              </widget>
             </item>
-            <item row="9" column="1">
-             <widget class="QWidget" name="widget_9" native="true">
-              <property name="minimumSize">
-               <size>
-                <width>10</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>10</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="12" column="0">
-             <widget class="QLabel" name="label_19">
-              <property name="minimumSize">
-               <size>
-                <width>10</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>10</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
+            <item row="3" column="0">
              <widget class="QWidget" name="widget_7" native="true">
               <property name="minimumSize">
                <size>
@@ -612,8 +463,8 @@
               </property>
              </widget>
             </item>
-            <item row="11" column="0" colspan="3">
-             <widget class="BoundCheckBox" name="plotTreesVsModelError_3">
+            <item row="9" column="0" colspan="3">
+             <widget class="BoundCheckBox" name="displayInteractionTable">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -621,19 +472,22 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Display interation table</string>
+               <string>Display interaction table</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="0" colspan="2">
-             <widget class="QRadioButton" name="radioButton_6">
+            <item row="1" column="0" colspan="2">
+             <widget class="QRadioButton" name="treeOptimized">
               <property name="text">
                <string>Optimized</string>
               </property>
              </widget>
             </item>
-            <item row="6" column="3">
-             <widget class="BoundTextBox" name="modelMaximumTerminalNode_5">
+            <item row="5" column="3">
+             <widget class="BoundTextBox" name="treeMinimumTerminalNodeSize">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -655,50 +509,91 @@
              </widget>
             </item>
             <item row="0" column="0" colspan="2">
-             <widget class="QRadioButton" name="radioButton_5">
+             <widget class="QRadioButton" name="treeAuto">
               <property name="text">
                <string>Auto</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="1" colspan="2">
-             <widget class="QLabel" name="label_16">
+            <item row="3" column="1" colspan="2">
+             <widget class="QLabel" name="treeDepthLabel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Depth of tree</string>
               </property>
              </widget>
             </item>
-            <item row="12" column="2">
-             <spacer name="verticalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
+            <item row="5" column="1" colspan="2">
+             <widget class="QLabel" name="minTerminalSizeLabel">
+              <property name="enabled">
+               <bool>false</bool>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="6" column="1" colspan="2">
-             <widget class="QLabel" name="label_20">
               <property name="text">
                <string>Minimum terminal node size</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="radioButton_3">
-              <property name="text">
-               <string>newone</string>
+            <item row="10" column="0" colspan="4">
+             <widget class="BoundGroupBox" name="noOfCores">
+              <property name="title">
+               <string/>
               </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_10">
+               <item row="0" column="1">
+                <widget class="QRadioButton" name="noOfCoresAuto">
+                 <property name="text">
+                  <string>Auto</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="BoundTextBox" name="numberCores">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>60</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>60</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>No. of cores</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QRadioButton" name="noOfCoresManual">
+                 <property name="text">
+                  <string>Manual</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
           </widget>
          </item>
-         <item row="4" column="1">
+         <item row="5" column="1">
           <spacer name="verticalSpacer_6">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -710,6 +605,61 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="3" column="1">
+          <widget class="BoundGroupBox" name="seed">
+           <property name="title">
+            <string/>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_19">
+            <item row="1" column="1">
+             <widget class="QRadioButton" name="seedManual">
+              <property name="text">
+               <string>Manual</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="BoundTextBox" name="seedManualSize">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>60</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>60</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QRadioButton" name="seedAuto">
+              <property name="text">
+               <string>Auto</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_15">
+              <property name="text">
+               <string>Seed</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -1009,6 +959,9 @@
         </property>
        </widget>
       </item>
+      <item row="13" column="2">
+       <widget class="QWidget" name="widget_9" native="true"/>
+      </item>
      </layout>
     </widget>
    </item>
@@ -1022,7 +975,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
          <item row="2" column="1">
-          <widget class="BoundCheckBox" name="plotVariableImportanceShowValues_2">
+          <widget class="BoundCheckBox" name="plotModelPerformanceAUC">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -1038,7 +991,7 @@
           </widget>
          </item>
          <item row="3" column="0" colspan="3">
-          <widget class="BoundCheckBox" name="plotTreesVsModelError">
+          <widget class="BoundCheckBox" name="plotVariableImportance">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -1051,7 +1004,7 @@
           </widget>
          </item>
          <item row="1" column="1" colspan="3">
-          <widget class="BoundCheckBox" name="plotVariableImportanceShowValues">
+          <widget class="BoundCheckBox" name="plotModelPerformanceError">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -1067,7 +1020,7 @@
           </widget>
          </item>
          <item row="0" column="0" colspan="3">
-          <widget class="BoundCheckBox" name="plotVariableImportance">
+          <widget class="BoundCheckBox" name="plotModelPerformance">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -1099,7 +1052,7 @@
           </widget>
          </item>
          <item row="4" column="0" colspan="3">
-          <widget class="BoundCheckBox" name="marginalDependencyPlot">
+          <widget class="BoundCheckBox" name="plotMarginalDependency">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -1128,7 +1081,7 @@
           </widget>
          </item>
          <item row="7" column="1">
-          <widget class="BoundCheckBox" name="plotVariableImportanceShowValues_4">
+          <widget class="BoundCheckBox" name="plotMarginalDependencyTwoWay">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -1144,7 +1097,7 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="BoundCheckBox" name="oneWay">
+          <widget class="BoundCheckBox" name="plotMarginalDependencyOneWay">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -1162,10 +1115,7 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="1" rowspan="2">
-       <widget class="QWidget" name="widget_2" native="true"/>
-      </item>
-      <item row="0" column="0" rowspan="3">
+      <item row="0" column="0" rowspan="4">
        <widget class="BoundGroupBox" name="bayesFactorType_2">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
@@ -1193,14 +1143,14 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_12">
             <item row="0" column="0">
-             <widget class="BoundCheckBox" name="tableVariableImportance_3">
+             <widget class="BoundCheckBox" name="tableRelativeInfluence">
               <property name="text">
                <string>Relative influence</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="BoundCheckBox" name="tableVariableImportance_2">
+             <widget class="BoundCheckBox" name="tableChiSquaredTest">
               <property name="text">
                <string>Chi squared test</string>
               </property>
@@ -1211,6 +1161,12 @@
          </item>
          <item row="0" column="0">
           <widget class="BoundGroupBox" name="noOfTrees">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="title">
             <string>Model input</string>
            </property>
@@ -1219,7 +1175,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_9">
             <item row="1" column="1">
-             <widget class="BoundTextBox" name="numberOfTrees">
+             <widget class="BoundTextBox" name="modelShrinkage">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1248,7 +1204,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="BoundTextBox" name="numberOfTrees_2">
+             <widget class="BoundTextBox" name="modelIterations">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1276,18 +1232,67 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
+            <item row="3" column="0">
              <widget class="QLabel" name="label_6">
               <property name="text">
                <string>Loss function</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
-             <widget class="QComboBox" name="comboBox">
+            <item row="3" column="1">
+             <widget class="BoundComboBox" name="lossFunction">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <item>
                <property name="text">
                 <string>Default</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Binary: Logistic</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Binary: Exponential</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Multi-class: Multinomial logistic</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Continue: Squared error</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Continue:: Absolute error</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Continue: Huber</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Continue: Poisson</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Continue: Coxph</string>
                </property>
               </item>
              </widget>
@@ -1298,17 +1303,15 @@
         </layout>
        </widget>
       </item>
+      <item row="1" column="1">
+       <widget class="QWidget" name="widget_2" native="true"/>
+      </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>ExpanderButton</class>
-   <extends>QPushButton</extends>
-   <header>widgets/expanderbutton.h</header>
-  </customwidget>
   <customwidget>
    <class>BoundTextBox</class>
    <extends>QLineEdit</extends>
@@ -1332,6 +1335,11 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ExpanderButton</class>
+   <extends>QPushButton</extends>
+   <header>widgets/expanderbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>AssignButton</class>
    <extends>QPushButton</extends>
    <header>widgets/assignbutton.h</header>
@@ -1339,7 +1347,7 @@
   <customwidget>
    <class>AvailableFieldsListView</class>
    <extends>QListView</extends>
-   <header>widgets/availablefieldslistview.h</header>
+   <header location="global">widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
    <class>BoundListView</class>
@@ -1351,13 +1359,18 @@
    <extends>QListView</extends>
    <header>widgets/boundsingleitemview.h</header>
   </customwidget>
+  <customwidget>
+   <class>BoundComboBox</class>
+   <extends>QComboBox</extends>
+   <header>widgets/boundcombobox.h</header>
+  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
   <connection>
-   <sender>plotVariableImportance</sender>
+   <sender>plotModelPerformance</sender>
    <signal>clicked(bool)</signal>
-   <receiver>plotVariableImportanceShowValues</receiver>
+   <receiver>plotModelPerformanceError</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1371,9 +1384,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>marginalDependencyPlot</sender>
+   <sender>plotMarginalDependency</sender>
    <signal>clicked(bool)</signal>
-   <receiver>oneWay</receiver>
+   <receiver>plotMarginalDependencyOneWay</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1383,6 +1396,294 @@
     <hint type="destinationlabel">
      <x>375</x>
      <y>827</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotMarginalDependency</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>plotMarginalDependencyTwoWay</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>408</x>
+     <y>801</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>376</x>
+     <y>850</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plotModelPerformance</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>plotModelPerformanceAUC</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>388</x>
+     <y>709</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>363</x>
+     <y>755</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>validationOutOfBag</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>outOfBagAuto</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>1143</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>151</x>
+     <y>1167</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>validationOutOfBag</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>outOfBagManual</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>1143</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>151</x>
+     <y>1191</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>validationOutOfBag</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>casesLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>1143</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>195</x>
+     <y>1257</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>validationOutOfBag</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>percentageLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>1143</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>195</x>
+     <y>1221</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>outOfBagManual</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>manualOutOfBagPercentage</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>1191</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>276</x>
+     <y>1221</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>outOfBagManual</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>manualOutOfBagCases</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>1191</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>276</x>
+     <y>1257</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>validationOutOfBag</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>stratifiedClassLevel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>1143</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>235</x>
+     <y>1287</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>crossValidation</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>noOfFoldsLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>105</x>
+     <y>1333</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>107</x>
+     <y>1363</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>crossValidation</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>crossValidationFolds</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>105</x>
+     <y>1333</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>185</x>
+     <y>1363</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>treeManual</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>treeDepthLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>408</x>
+     <y>1192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>465</x>
+     <y>1219</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>treeManual</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>treeDepth</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>408</x>
+     <y>1192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>593</x>
+     <y>1219</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>treeManual</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>minTerminalSizeLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>408</x>
+     <y>1192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>465</x>
+     <y>1250</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>treeManual</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>treeMinimumTerminalNodeSize</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>408</x>
+     <y>1192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>593</x>
+     <y>1250</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>noOfCoresManual</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>numberCores</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>499</x>
+     <y>1351</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>578</x>
+     <y>1351</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>subSampleRatioManual</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>subSampleRatio</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>197</x>
+     <y>1459</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>271</x>
+     <y>1459</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>seedManual</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>seedManualSize</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>492</x>
+     <y>1459</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>577</x>
+     <y>1459</y>
     </hint>
    </hints>
   </connection>
