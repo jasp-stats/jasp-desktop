@@ -1,0 +1,99 @@
+{
+	"name": "MLRegressionBoosting",
+	"autorun": true,
+	"version": "1.00",
+	"options": [
+		{
+			"name": "target",
+			"type": "Variable"
+		},
+		{
+			"name": "predictors",
+			"type": "Variables"
+		},
+		{
+			"name": "indicator",
+			"type": "Variable"
+		},
+		{
+			"name": "modelTerms",
+			"template": [
+				{
+					"name": "components",
+					"type": "Term"
+				},
+				{
+					"name": "isNuisance",
+					"type": "Boolean"
+				}
+			],
+			"type": "Table"
+		},
+		{
+			"name": "plotVariableImportance",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotVariableImportanceShowValues",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotPredictivePerformance",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableVariableImportance",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableConfusion",
+			"type": "Boolean"
+		},
+		{
+			"name": "calculateProximityMatrix",
+			"type": "Boolean"
+		},
+		{
+			"name": "noOfTrees",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "noOfPredictors",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "minimumTerminalNodeSize",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "dataBootstrapModel",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "dataTrainingModel",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "maximumTerminalNodeSize",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "seedBox",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		}
+	]
+}
