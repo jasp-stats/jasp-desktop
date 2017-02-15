@@ -27,6 +27,7 @@
 #include <column.h>
 
 #include <QString>
+#include <QRegExp>
 
 namespace ods
 {
