@@ -76,8 +76,17 @@ void PreferencesDialog::getSpreadsheetEditor()
 {
 	
 	QString filter = "File Description (*.*)";
+	QString applicationfolder;
 
-	QString filename = QFileDialog::getOpenFileName(this, "Select a file...", "/Applications", filter);
+#ifdef __WIN32__
+	applicationfolder = "c:\\Program Files";
+#elif __APPLE__
+	applicationfolder = "/Applications";
+#else
+	applicationfolder = "/usr/bin";
+#endif
+
+	QString filename = QFileDialog::getOpenFileName(this, "Select a file...", applicationfolder, filter);
 	if (filename != "")
 		ui->spreadsheetEditorName->setText(filename);
 	
