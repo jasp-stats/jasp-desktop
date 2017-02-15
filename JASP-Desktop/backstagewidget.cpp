@@ -214,3 +214,8 @@ void BackStageWidget::setSyncFile(FileEvent *event)
 		_openAndSaveWidget->setCurrentDataFile(event->path());
 	}
 }
+
+void BackStageWidget::dataAutoSynchronizationChanged(bool on)
+{
+	_openAndSaveWidget->setDataFileWatcher(on);
+}

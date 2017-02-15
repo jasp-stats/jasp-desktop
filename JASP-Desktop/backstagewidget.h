@@ -52,6 +52,7 @@ signals:
 public slots:
 	void analysisAdded(Analysis *analysis);
 	void setSyncFile(FileEvent *event);
+	void dataAutoSynchronizationChanged(bool on);
 
 private slots:
 	void tabPageChanging(int index, bool &cancel);

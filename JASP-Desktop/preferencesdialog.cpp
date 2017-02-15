@@ -2,12 +2,12 @@
 #include "ui_preferencesdialog.h"
 
 PreferencesDialog::PreferencesDialog(QWidget *parent) :
-	QDialog(parent),
+	QDialog(),
 	ui(new Ui::PreferencesDialog)
 {
-	
 	ui->setupUi(this);
-	
+	_tabBar = dynamic_cast<TabBar *>(parent);
+
 	//Auto Sync
 	int check_data_sync = _settings.value("dataAutoSynchronization", 1).toInt();
 	ui->syncAutoCheckBox->setChecked(check_data_sync > 0);
@@ -36,12 +36,13 @@ PreferencesDialog::~PreferencesDialog()
 
 void PreferencesDialog::savePreferences()
 {
-	
-	int checked;
-	
+		
 	//Auto Sync Switch
-	checked = (ui->syncAutoCheckBox->checkState()==Qt::Checked) ? 1 : 0;
+	int checked = (ui->syncAutoCheckBox->checkState()==Qt::Checked) ? 1 : 0;
+	int dataAutoSynchronization = _settings.value("dataAutoSynchronization", 1).toInt();
 	_settings.setValue("dataAutoSynchronization", checked);
+	if (checked != dataAutoSynchronization)
+		emit _tabBar->dataAutoSynchronizationChanged(checked);
 	
 	//Use Default Editor Switch
 	checked = (ui->useDefaultSpreadsheetEditor->checkState()==Qt::Checked) ? 1 : 0;

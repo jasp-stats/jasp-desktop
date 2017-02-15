@@ -56,6 +56,7 @@ public:
 	FileEvent *close();
 
 	void setCurrentDataFile(const QString &path);
+	void setDataFileWatcher(bool watch);
 
 public slots:
 	void dataSetIOCompleted(FileEvent *event);
@@ -68,7 +69,6 @@ private slots:
 	void dataSetOpenRequestHandler(QString path);
 	void dataSetOpenExampleRequestHandler(QString path);
 	void dataSetOpenCurrentRequestHandler(QString path);
-	void setDataFileWatcher(bool watch);
 	void dataFileModifiedHandler(QString path);
 	void clearOnlineDataFromRecentList(int provider);
 	void tabWidgetChanged(int id);

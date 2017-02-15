@@ -46,9 +46,11 @@ public:
 
 	int count() const;
 
+
 signals:
 	void currentChanged(int index);
 	void helpToggled(bool on);
+	void dataAutoSynchronizationChanged(bool on);
 
 public slots:
 	void setCurrentIndex(int index);

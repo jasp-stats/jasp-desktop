@@ -87,6 +87,7 @@
 #include <QMenuBar>
 #include <QDir>
 #include <QFileDialog>
+#include <QDesktopServices>
 
 #include "analysisloader.h"
 
@@ -201,6 +202,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->variablesPage, SIGNAL(resetTableView()), this, SLOT(resetTableView()));
 	connect(ui->tableView, SIGNAL(dataTableColumnSelected()), this, SLOT(showVariablesPage()));
 	connect(ui->tableView, SIGNAL(dataTableDoubleClicked()), this, SLOT(startDataEditorHandler()));
+	connect(ui->tabBar, SIGNAL(dataAutoSynchronizationChanged(bool)), ui->backStage, SLOT(dataAutoSynchronizationChanged(bool)));
 
 	_progressIndicator = new ProgressWidget(ui->tableView);
 	_progressIndicator->setAutoFillBackground(true);
@@ -1968,21 +1970,10 @@ void MainWindow::startDataEditor(QString path)
 #else
 		startProcess = "\"" + appname + "\" \"" + path + "\"";
 #endif
+		QProcess::startDetached(startProcess);
 	}
 	else
 	{
-#ifdef __APPLE__
-		startProcess = "open \"" + path + "\"";
-#elif __linux__
-		startProcess = "xdg-open \"" + path + "\"";
-#else
-		startProcess = "start \"" + path + "\"";
-#endif
+		QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode));
 	}
-	std::cout << "Open : " << startProcess.toStdString() << std::endl;
-	std::cout.flush();
-	bool result = QProcess::startDetached(startProcess);
-	std::cout << "Result: " << result << std::endl;
-	std::cout.flush();
-
 }
