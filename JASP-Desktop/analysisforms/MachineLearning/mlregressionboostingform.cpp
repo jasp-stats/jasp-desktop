@@ -68,7 +68,17 @@ MLRegressionBoostingForm::~MLRegressionBoostingForm()
 
 void MLRegressionBoostingForm::defaultOptions()
 {
+	QSizePolicy retain = ui->numberCores->sizePolicy();
+	retain.setRetainSizeWhenHidden(true);
 
+	ui->numberCores->setSizePolicy(retain);
+	ui->numberCores->hide();
+
+	ui->subSampleRatio->setSizePolicy(retain);
+	ui->subSampleRatio->hide();
+
+	ui->seedManualSize->setSizePolicy(retain);
+	ui->seedManualSize->hide();
 }
 
 void MLRegressionBoostingForm::bindTo(Options *options, DataSet *dataSet)
@@ -92,7 +102,44 @@ void MLRegressionBoostingForm::factorsChanged()
 		_options->blockSignals(false);
 }
 
-void MLRegressionBoostingForm::on_plotPredictivePerformance_clicked(bool checked)
+void MLRegressionBoostingForm::on_subSampleRatioManual_clicked(bool checked)
 {
-        ui->oneWay->setEnabled(true);
+    if (checked) {
+        ui->subSampleRatio->show();
+    }
+}
+
+void MLRegressionBoostingForm::on_subSampleRatioAuto_clicked(bool checked)
+{
+    if (checked) {
+        ui->subSampleRatio->hide();
+    }
+}
+
+void MLRegressionBoostingForm::on_seedManual_clicked(bool checked)
+{
+    if (checked) {
+        ui->seedManualSize->show();
+    }
+}
+
+void MLRegressionBoostingForm::on_seedAuto_clicked(bool checked)
+{
+    if (checked) {
+        ui->seedManualSize->hide();
+    }
+}
+
+void MLRegressionBoostingForm::on_noOfCoresManual_clicked(bool checked)
+{
+    if (checked) {
+        ui->numberCores->show();
+    }
+}
+
+void MLRegressionBoostingForm::on_noOfCoresAuto_clicked(bool checked)
+{
+    if (checked) {
+        ui->numberCores->hide();
+    }
 }
