@@ -181,7 +181,7 @@ void TabBar::showAbout()
 
 void TabBar::showPreferences()
 {
-	PreferencesDialog preferencesdialog;
+	PreferencesDialog preferencesdialog(this);
 	preferencesdialog.setModal(true);
 	preferencesdialog.exec();
 }
