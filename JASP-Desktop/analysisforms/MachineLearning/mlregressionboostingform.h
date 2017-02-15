@@ -53,8 +53,12 @@ private:
 private slots:
 	void factorsChanging();
 	void factorsChanged();
-
-    void on_plotPredictivePerformance_clicked(bool checked);
+    void on_subSampleRatioManual_clicked(bool checked);
+    void on_subSampleRatioAuto_clicked(bool checked);
+    void on_seedManual_clicked(bool checked);
+    void on_seedAuto_clicked(bool checked);
+    void on_noOfCoresManual_clicked(bool checked);
+    void on_noOfCoresAuto_clicked(bool checked);
 };
 
 #endif // MLREGRESSIONBOOSTINGFORM_H
