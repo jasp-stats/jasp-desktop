@@ -76,6 +76,12 @@ void Analysis::setResults(Json::Value results)
 	resultsChanged(this);
 }
 
+void Analysis::setImageResults(Json::Value results)
+{
+	_results = results;
+	imageSaved(this);
+}
+
 void Analysis::setUserData(Json::Value userData, bool silient)
 {
 	_userData = userData;
@@ -112,6 +118,8 @@ Analysis::Status Analysis::parseStatus(string name)
 		return Analysis::Complete;
 	else if (name == "aborted")
 		return Analysis::Aborted;
+	else if (name == "SaveImg")
+		return Analysis::SaveImg;
 	else if (name == "exception")
 		return Analysis::Exception;
 	else
@@ -146,6 +154,8 @@ Json::Value Analysis::asJSON() const
 	case Analysis::Aborted:
 		status = "aborted";
 		break;
+	case Analysis::SaveImg:
+		status = "SaveImg";
 	case Analysis::Exception:
 		status = "exception";
 		break;
@@ -251,3 +261,12 @@ const std::vector<OptionVariables *> &Analysis::getVariables() const
 	return _variables;
 }
 
+void Analysis::setSaveImgOptions(Json::Value &options)
+{
+	_saveImgOptions = options;
+}
+
+Json::Value Analysis::getSaveImgOptions()
+{
+	return _saveImgOptions;
+}
