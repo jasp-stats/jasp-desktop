@@ -33,6 +33,10 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		return true;
 	},
 
+	saveImageClicked: function(){
+	    var options = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")};
+	    this.model.trigger("SaveImage:clicked", options);
+	},
 
 	isConvertible: function() {
 		return this.model.get("convertible") != null;
