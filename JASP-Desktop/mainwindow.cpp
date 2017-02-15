@@ -980,6 +980,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			populateUIfromDataSet();
 			QString name =  QFileInfo(event->path()).baseName();
 			setWindowTitle(name);
+			_currentFilePath = event->path();
 
 			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty())
 			{
@@ -1908,8 +1909,16 @@ void MainWindow::startDataEditorHandler()
 		{
 			QString caption = "Generate Data File as CSV";
 			QString filter = "CSV Files (*.csv)";
+			QString name = windowTitle();
+			if (name.endsWith("*"))
+				name.truncate(name.length() - 1);
+			if (!_currentFilePath.isEmpty())
+			{
+				QFileInfo file(_currentFilePath);
+				name = file.absolutePath() + QDir::separator() + file.baseName() + ".csv";
+			}
 
-			path = QFileDialog::getSaveFileName(this, caption, "", filter);
+			path = QFileDialog::getSaveFileName(this, caption, name, filter);
 			if (path == "")
 				return;
 
