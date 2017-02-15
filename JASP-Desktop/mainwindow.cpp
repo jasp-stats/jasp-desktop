@@ -69,6 +69,7 @@
 #include "analysisforms/R11tLearn/r11tlearnform.h"
 
 #include "analysisforms/MachineLearning/mlregressionrandomforestform.h"
+#include "analysisforms/MachineLearning/mlregressionboostingform.h"
 
 #include "analysisforms/reliabilityanalysisform.h"
 #include "analysisforms/exploratoryfactoranalysisform.h"
@@ -758,6 +759,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new BASRegressionLinearLinkForm(contentArea);
 	else if (name == "MLRegressionRandomForest")
 		form = new MLRegressionRandomForestForm(contentArea);
+	else if (name == "MLRegressionBoosting")
+		form = new MLRegressionBoostingForm(contentArea);
 #endif
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
