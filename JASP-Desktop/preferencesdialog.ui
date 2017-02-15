@@ -29,7 +29,7 @@
      <item>
       <widget class="QCheckBox" name="useDefaultSpreadsheetEditor">
        <property name="text">
-        <string> Use Prefered Spreadsheet Editor</string>
+        <string> Use default spreadsheet editor</string>
        </property>
       </widget>
      </item>
@@ -90,7 +90,7 @@
         </size>
        </property>
        <property name="text">
-        <string>Choose Default Spreadsheet Editor</string>
+        <string>Choose prefered spreadsheet editor</string>
        </property>
       </widget>
      </item>
