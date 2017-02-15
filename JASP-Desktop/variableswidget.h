@@ -25,16 +25,13 @@ public:
 	void setCurrentColumn(int columnindex);
 
 signals:
-	void dataTableColumnSelected(int columnselected, QString headername);
-	void reRun();
+	void columnChanged(QString col);
 	void resetTableView();
 
 private slots:
-	void selectedVariableChanged(QModelIndex selection, QModelIndex old);
 	void moveUpClicked();
 	void moveDownClicked();
     void reverseClicked();
-	void tableColumnSelected(int columnselected, QString columnheader);
 	void labelDataChanged(QModelIndex m1, QModelIndex m2);
 
 private:

@@ -25,6 +25,11 @@ $(document).ready(function () {
 	var $instructions = $("#instructions")
 	var showInstructions = false;
 	
+	$("#results").on("click", ".stack-trace-selector", function(e) {
+		e.stopPropagation();
+		$(this).next(".stack-trace").slideToggle();
+		return false;
+	});
 
 
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });

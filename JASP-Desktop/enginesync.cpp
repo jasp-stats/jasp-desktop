@@ -220,9 +220,9 @@ void EngineSync::process()
 			if (analysis->id() != id || analysis->revision() != revision)
 				continue;
 
-			if (status == "error")
+			if (status == "error" || status == "exception")
 			{
-				analysis->setStatus(Analysis::Complete);
+				analysis->setStatus(status == "error" ? Analysis::Error : Analysis::Exception);
 				analysis->setResults(results);
 				_analysesInProgress[i] = NULL;
 				sendMessages();

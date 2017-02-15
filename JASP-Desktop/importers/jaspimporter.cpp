@@ -135,7 +135,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 
 		string name = columnDesc["name"].asString();
 
-		Json::Value &orgValuesDesc = columnDesc["orgValues"];
+		Json::Value &orgStringValuesDesc = columnDesc["orgStringValues"];
 		Json::Value &labelsDesc = columnDesc["labels"];
 		if (labelsDesc.isNull() &&  ! xData.isNull())
 		{
@@ -143,7 +143,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 			if ( ! columnlabelData.isNull())
 			{
 				labelsDesc = columnlabelData["labels"];
-				orgValuesDesc = columnlabelData["orgValues"];
+				orgStringValuesDesc = columnlabelData["orgStringValues"];
 			}
 		}
 
@@ -167,14 +167,14 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 					k++;
 				}
 
-				if (!orgValuesDesc.isNull())
+				if (!orgStringValuesDesc.isNull())
 				{
-					for (Json::Value::iterator iter = orgValuesDesc.begin(); iter != orgValuesDesc.end(); ++iter)
+					for (Json::Value::iterator iter = orgStringValuesDesc.begin(); iter != orgStringValuesDesc.end(); ++iter)
 					{
 						Json::Value keyValuePair = *iter;
 						int zero = 0;
 						int key = keyValuePair.get(zero, Json::nullValue).asInt();
-						labels.setOrgValue(key, keyValuePair.get(1, Json::nullValue).asString());
+						labels.setOrgStringValues(key, keyValuePair.get(1, Json::nullValue).asString());
 					}
 				}
 				success = true;

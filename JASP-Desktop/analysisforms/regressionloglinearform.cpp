@@ -52,9 +52,9 @@ RegressionLogLinearForm::RegressionLogLinearForm(QWidget *parent) :
 	ui->panelStatistics->hide();
 
 #ifdef QT_NO_DEBUG
-	ui->VovkSellkeMPR->hide();
+
 #else
-	ui->VovkSellkeMPR->setStyleSheet("background-color: pink;");
+
 #endif
 }
 

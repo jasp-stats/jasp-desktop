@@ -177,8 +177,9 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/importers/importdataset.cpp \
 		$$PWD/importers/importcolumn.cpp \
 		$$PWD/importers/csvimportcolumn.cpp \
-    $$PWD/importers/spss/spssimportcolumn.cpp \
-    $$PWD/importers/spss/spssimportdataset.cpp
+		$$PWD/importers/spss/spssimportcolumn.cpp \
+		$$PWD/importers/spss/spssimportdataset.cpp \
+		$$PWD/preferencesdialog.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -369,9 +370,10 @@ HEADERS  += \
 		$$PWD/importers/importdataset.h \
 		$$PWD/importers/importcolumn.h \
 		$$PWD/importers/csvimportcolumn.h \
-    $$PWD/importers/spss/spssimportcolumn.h \
-    $$PWD/importers/spss/spssimportdataset.h \
-    $$PWD/importers/spss/spssutils.h
+		$$PWD/importers/spss/spssimportcolumn.h \
+		$$PWD/importers/spss/spssimportdataset.h \
+		$$PWD/importers/spss/spssutils.h \
+		$$PWD/preferencesdialog.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -416,7 +418,8 @@ FORMS += \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
         $$PWD/aboutdialog.ui \
-        $$PWD/analysisforms/exploratoryfactoranalysisform.ui \
+		$$PWD/preferencesdialog.ui \
+		$$PWD/analysisforms/exploratoryfactoranalysisform.ui \
         $$PWD/analysisforms/principalcomponentanalysisform.ui \
         $$PWD/analysisforms/reliabilityanalysisform.ui \
         $$PWD/analysisforms/SEM/semsimpleform.ui \
@@ -427,8 +430,6 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
-
-
 
 RESOURCES += \
         $$PWD/backstage/backstage.qrc \
