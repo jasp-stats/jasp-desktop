@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>625</width>
-    <height>616</height>
+    <width>638</width>
+    <height>690</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -142,10 +142,10 @@
          <bool>false</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="1" column="0">
-          <widget class="BoundCheckBox" name="gutmannScale">
+         <item row="5" column="0">
+          <widget class="BoundCheckBox" name="averageInterItemCor">
            <property name="text">
-            <string>Gutmann's λ6</string>
+            <string>Average interitem correlation</string>
            </property>
           </widget>
          </item>
@@ -156,24 +156,31 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="9" column="0">
           <widget class="BoundCheckBox" name="sdScale">
            <property name="text">
             <string>Standard deviation</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="8" column="0">
           <widget class="BoundCheckBox" name="meanScale">
            <property name="text">
             <string>Mean</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label">
+         <item row="1" column="0">
+          <widget class="BoundCheckBox" name="gutmannScale">
            <property name="text">
-            <string/>
+            <string>Gutmann's λ6</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="BoundCheckBox" name="mcDonaldScale">
+           <property name="text">
+            <string>McDonalds' ω</string>
            </property>
           </widget>
          </item>
@@ -186,7 +193,7 @@
          <string>Individual Item Statistics</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
-         <item row="4" column="0">
+         <item row="5" column="0">
           <widget class="BoundCheckBox" name="itemRestCor">
            <property name="text">
             <string>Item-rest correlation</string>
@@ -200,7 +207,7 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="4" column="0">
           <widget class="BoundCheckBox" name="sdItem">
            <property name="text">
             <string>Standard deviation</string>
@@ -214,10 +221,17 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="3" column="0">
           <widget class="BoundCheckBox" name="meanItem">
            <property name="text">
             <string>Mean</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="BoundCheckBox" name="mcDonaldItem">
+           <property name="text">
+            <string>McDonalds' ω (if item dropped)</string>
            </property>
           </widget>
          </item>
@@ -313,6 +327,11 @@
    <header>widgets/availablefieldslistview.h</header>
   </customwidget>
   <customwidget>
+   <class>BoundCheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>widgets/boundcheckbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>BoundListView</class>
    <extends>QListView</extends>
    <header>widgets/boundlistview.h</header>
@@ -322,11 +341,6 @@
    <extends>QGroupBox</extends>
    <header>widgets/boundgroupbox.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>BoundCheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>widgets/boundcheckbox.h</header>
   </customwidget>
   <customwidget>
    <class>ExpanderButton</class>

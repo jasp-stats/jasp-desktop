@@ -120,6 +120,8 @@ Analysis::Status Analysis::parseStatus(string name)
 		return Analysis::Aborted;
 	else if (name == "SaveImg")
 		return Analysis::SaveImg;
+	else if (name == "exception")
+		return Analysis::Exception;
 	else
 		return Analysis::Error;
 }
@@ -154,6 +156,8 @@ Json::Value Analysis::asJSON() const
 		break;
 	case Analysis::SaveImg:
 		status = "SaveImg";
+	case Analysis::Exception:
+		status = "exception";
 		break;
 	default:
 		status = "error";

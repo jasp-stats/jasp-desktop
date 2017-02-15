@@ -43,20 +43,35 @@ run <- function(name, options.as.json.string, perform="run") {
 			return(env$callback(...))
 		}
 	}
-	
-	results <- try (silent = TRUE, expr = {
-	
-		analysis(dataset=NULL, options=options, perform=perform, callback=the.callback)
-	})
-	
-	if (class(results) == "try-error") {
 
-		error <- gsub("\n", "<br>", as.character(results), fixed=TRUE)
-		error <- gsub("\"", "", error, fixed=TRUE)
+	results <- tryCatch(expr={
 		
-		errorMessage <- paste("This analysis terminated unexpectedly.<br>", error, "To receive assistence with this problem, please report the message above at: https://jasp-stats.org/bug-reports", sep="<br>")
+				withCallingHandlers(expr={
+					
+					analysis(dataset=NULL, options=options, perform=perform, callback=the.callback)
+					
+				}, 
+				error=.addStackTrace)
+				
+	},
+	error=function(e) e)
 	
-		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
+	if (inherits(results, "expectedError")) {
+		
+		errorResponse <- paste("{ \"status\" : \"error\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", results$message, "\" } }", sep="")
+		
+		errorResponse
+		
+	} else if (inherits(results, "error")) {
+		
+		error <- gsub("\"", "'", as.character(results), fixed=TRUE)
+		
+		stackTrace <- as.character(results$stackTrace)
+		stackTrace <- gsub("\"", "'", stackTrace, fixed=TRUE)
+		stackTrace <- paste(stackTrace, collapse="<br><br>")
+		
+		errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)
+		errorResponse <- paste("{ \"status\" : \"exception\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep="")
 		
 		errorResponse
 		

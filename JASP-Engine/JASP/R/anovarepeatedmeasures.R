@@ -16,7 +16,6 @@
 #
 
 AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-
 	numeric.variables <- c(unlist(options$repeatedMeasuresCells), unlist(options$covariates))
 	numeric.variables <- numeric.variables[numeric.variables != ""]
 	factor.variables <- c(unlist(options$betweenSubjectFactors))
@@ -72,8 +71,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		if (is.list(diff) && diff[['plotHorizontalAxis']] == FALSE && diff[['plotSeparateLines']] == FALSE && diff[['plotSeparatePlots']] == FALSE &&
 			diff[['plotErrorBars']] == FALSE && !(diff[['errorBarType']] == TRUE && options$plotErrorBars == TRUE) &&
 			!(diff[['confidenceIntervalInterval']] == TRUE && options$errorBarType == "confidenceInterval" && options$plotErrorBars == TRUE) &&
-			diff[['plotWidthDescriptivesPlotLegend']] == FALSE && diff[['plotWidthDescriptivesPlotLegend']] == FALSE &&
-			diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE && diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE &&
+			diff[['plotWidthDescriptivesPlotLegend']] == FALSE && diff[['plotHeightDescriptivesPlotLegend']] == FALSE &&
+			diff[['plotWidthDescriptivesPlotNoLegend']] == FALSE && diff[['plotHeightDescriptivesPlotNoLegend']] == FALSE &&
 			diff[['repeatedMeasuresFactors']] == FALSE && diff[['repeatedMeasuresCells']] == FALSE) {
 
 			# old descriptives plots can be used
@@ -136,7 +135,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			} else {
 
 				referenceGrid <- .referenceGrid(options, fullModel)
-				statePostHoc <- .resultsPostHoc(referenceGrid, options)
+				statePostHoc <- .resultsPostHoc(referenceGrid, options, dataset, fullModel)
 				stateContrasts <- .resultsContrasts(dataset, options, referenceGrid)
 				stateSphericity <- .resultsSphericity(options, epsilon, mauchly)
 
@@ -162,12 +161,12 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 
 	## Create Between Subjects Effects Table
-
+  if(length(unique(unlist(options$betweenSubjectFactors))) > 0 ){
 	result <- .rmAnovaBetweenSubjectsTable(dataset, options, perform, model, status)
 
 	results[["betweenSubjectsEffects"]] <- result$result
 	status <- result$status
-
+  }
 
 
 	## Create Sphericity Assumption Table
@@ -219,7 +218,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 
 
 	## Create Post Hoc Tables
-
 	result <- .rmAnovaPostHocTable(dataset, options, perform, status, statePostHoc)
 
 	results[["posthoc"]] <- list(collection=result$result, title = "Post Hoc Tests")
@@ -572,11 +570,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 }
 
 .referenceGrid <- function (options, fullModel) {
-
 		referenceGridList <- list()
-
 		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
-
 		for (var in variables) {
 
 			formula <- as.formula(paste("~", .v(var)))
@@ -589,35 +584,76 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		return(referenceGridList)
 }
 
-.resultsPostHoc <- function (referenceGrid, options) {
+.resultsPostHoc <- function (referenceGrid, options, dataset, fullModel) {
 
-		resultsPostHoc <- list()
-
+    resultsPostHoc <- list()
+  
 		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
-
+		
+		postHocData <- fullModel$data$wide
+		factorNamesV <- colnames(postHocData) # Names to use to refer to variables in data
+    # Because there are multiple names for each variable in JASP, one of the things the following code does is make sure to get the correct naming
+		# and refer to the correct actual variable. The different names are the actual name of the variable, the name the user gives in jasp for the lvel and factor, 
+		# and also the name that JASP gives to it, which is a concatenation of "Level#_Level#', where the first refers to the factor and second to the level. 
+		
+		rmFactorIndex <- 1
+		allNames <- unlist(lapply(options$repeatedMeasuresFactors, function(x) x$name)) # Factornames 
 		for (var in variables) {
 
-			# Results using the Tukey method
+		  # Results using the Tukey method
+		  resultTukey <- summary(pairs(referenceGrid[[var]], adjust="tukey"))
+		  
+		  # Results using the Scheffe method
+		  resultScheffe <- summary(pairs(referenceGrid[[var]], adjust="scheffe"))
+		  
+		  # Results using the Bonferroni method
+		  resultBonf <- summary(pairs(referenceGrid[[var]], adjust="bonferroni"), infer = TRUE)
+		  comparisons <- strsplit(as.character(resultBonf$contrast), " - ")
+		  
+		  # Results using the Holm method
+		  resultHolm <- summary(pairs(referenceGrid[[var]], adjust="holm"))
+	
+		  
+		  if(any(var == allNames)){     ## If the variable is a repeated measures factor
+		    
+		    
+		    levelsOfThisFactor <- unlist(lapply(options$repeatedMeasuresFactors[rmFactorIndex], function(x) x$levels)) # Levels within Factor
+		    numberOfLevels <- length(unique(levelsOfThisFactor))
+		    splitNames <- unlist(lapply(strsplit(factorNamesV,  split = "_"), function(x) x[rmFactorIndex]))
+		    
+		    listVarNamesToLevel <- list()  # create a list of vectors of variable names, used to group the dataset for the post-hoc t-tests
+		    for(i in 1:numberOfLevels){
+		      listVarNamesToLevel[[i]] <- factorNamesV[grep(splitNames, pattern = .v(levelsOfThisFactor[i]))]  
+		    }
+		    
+  		  countr <- 1
+  		  allEstimates <- allTees <- allSE <- allPees <- numeric() 
+  		  for (k in 1:numberOfLevels) {  ### Loop over all the levels within factor and do pairwise t.tests on them
+  		    for (i in .seqx(k+1, numberOfLevels)) {
+  		      tResult <- t.test(unlist(postHocData[listVarNamesToLevel[[k]]]),unlist(postHocData[listVarNamesToLevel[[i]]]), paired= T, var.equal = F)
+  		      allEstimates[countr] <- tResult$estimate
+  		      allTees[countr] <- tResult$statistic
+  		      allSE[countr] <- tResult$estimate / tResult$statistic
+  		      allPees[countr] <- tResult$p.value
+  		      countr <- countr + 1
+  		    }
+  		  }
+  		  bonferPvals <- p.adjust(allPees, method = "bonferroni")  # correct all pvalues according to bonf
+  		  resultGeneral <- list(estimate = allEstimates, t.ratio = allTees, SE = allSE, p.value = bonferPvals )
+  		  resultBonf['t.ratio'] <- allTees
+  		  resultBonf['p.value'] <- bonferPvals
+  		  resultBonf['SE'] <- allSE
+  		  resultBonf['estimate'] <- allEstimates 
+  		  resultHolm['p.value'] <- p.adjust(allPees, method = "holm")  # correct all pvalues according to holm
+  		  resultScheffe['p.value'] <- rep("-", length(allPees))
+  		  resultTukey['p.value'] <- rep("-", length(allPees))
+  		  rmFactorIndex <- rmFactorIndex + 1
+  		  }
 
-			resultTukey <- summary(pairs(referenceGrid[[var]], adjust="tukey"))
-
-			# Results using the Scheffe method
-
-			resultScheffe <- summary(pairs(referenceGrid[[var]], adjust="scheffe"))
-
-			# Results using the Bonferroni method
-
-			resultBonf <- summary(pairs(referenceGrid[[var]], adjust="bonferroni"))
-
-			# Results using the Holm method
-
-			resultHolm <- summary(pairs(referenceGrid[[var]], adjust="holm"))
-
-			comparisons <- strsplit(as.character(resultBonf$contrast), " - ")
 
 			resultsPostHoc[[var]] <- list(resultBonf = resultBonf, resultHolm = resultHolm, resultTukey = resultTukey, resultScheffe = resultScheffe,
 										  comparisons = comparisons)
-
+			
 		}
 
 		return(resultsPostHoc)
@@ -1758,7 +1794,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		  
 		  #r <- car::leveneTest(levene.formula, dataset, center = "mean")
 		  r <- summary(aov(levene.formula, dataset))
-		  #print(r)
 		  error <- base::tryCatch(summary(aov(levene.formula, dataset)),error=function(e) e, warning=function(w) w)
 			
 			row <- list("case"=options$repeatedMeasuresCells[i],"F"=.clean(r[[1]]$`F value`[1]), "df1"=r[[1]]$Df[1], "df2"=r[[1]]$Df[2], "p"=.clean(r[[1]]$`Pr(>F)`[1]), ".isNewGroup"=newGroup)
@@ -1885,7 +1920,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 .rmAnovaPostHocTable <- function(dataset, options, perform, status, statePostHoc) {
 
 	posthoc.variables <- unlist(options$postHocTestsVariables)
-
+ 
 	posthoc.tables <- list()
 
 	for (posthoc.var in posthoc.variables) {
@@ -1927,9 +1962,8 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 			variable.levels <- options$repeatedMeasuresFactors[[which(lapply(options$repeatedMeasuresFactors, function(x) x$name) == posthoc.var)]]$levels
 
 		}
-
+		# index <- 0
 		for (i in 1:length(variable.levels)) {
-
 			for (j in .seqx(i+1, length(variable.levels))) {
 
 				row <- list("(I)"=variable.levels[[i]], "(J)"=variable.levels[[j]])
@@ -1953,16 +1987,19 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 					} else {
 
 						for (c in 1:length(statePostHoc[[posthoc.var]]$comparisons)) {
-
 							if (all(statePostHoc[[posthoc.var]]$comparisons[[c]] %in% c(.v(variable.levels[[i]]), .v(variable.levels[[j]])))) {
-								index <- c
-
+							  index <- c
+							  
 								reverse <- TRUE
+			
 								if (statePostHoc[[posthoc.var]]$comparisons[[c]][1] == .v(variable.levels[[i]]))
 									reverse <- FALSE
 							}
 						}
-
+					  # index <- index + 1
+					  
+					  
+					  
 						if (reverse) {
 							md <- .clean(-as.numeric(statePostHoc[[posthoc.var]]$resultBonf$estimate[index]))
 						} else {
@@ -1977,11 +2014,22 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 							t <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$t.ratio[index]))
 						}
 
-						if (options$postHocTestsTukey)
+						if (options$postHocTestsTukey){
 							pTukey <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultTukey$p.value[index]))
+							if(!is.numeric(statePostHoc[[posthoc.var]]$resultTukey$p.value[index])){
+							  posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", 
+							                                            text="Tukey corrected p-values are not appropriate for repeated measures post-hoc tests (Maxwell, 1980; Field, 2012)."))
+							  }
+						}
 
-						if (options$postHocTestsScheffe)
+						if (options$postHocTestsScheffe){
 							pScheffe <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultScheffe$p.value[index]))
+							if(!is.numeric(statePostHoc[[posthoc.var]]$resultScheffe$p.value[index])){
+							  posthoc.table[["footnotes"]] <- list(list(symbol="<i>Note.</i>", 
+							                                            text="Scheffe corrected p-values are not appropriate for repeated measures post-hoc tests (Maxwell, 1980; Field, 2012)."))}
+							  
+						}
+							
 
 						if (options$postHocTestsBonferroni)
 							pBonf <- .clean(as.numeric(statePostHoc[[posthoc.var]]$resultBonf$p.value[index]))

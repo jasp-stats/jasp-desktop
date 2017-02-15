@@ -214,7 +214,16 @@ SummaryStatsTTestBayesianPairedSamples <- function(dataset = NULL, options, perf
 
 				rowsTTestBayesianPairedSamples$BF <- BF
 				rowsTTestBayesianPairedSamples$errorEstimate <- .clean(bayesFactorObject$properror)
-				rowsTTestBayesianPairedSamples$pValue <- .clean(bayesFactorObject$pValue)
+				
+				allPValues <- bayesFactorObject$pValue
+				
+				if (hypothesis.variables$oneSided == FALSE){
+				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$twoSided)
+				} else if (hypothesis.variables$oneSided == "left") {
+				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$minSided)
+				} else if (hypothesis.variables$oneSided == "right") {
+				  rowsTTestBayesianPairedSamples$pValue <- .clean(allPValues$plusSided)
+				}
 			}
 		}
 	}

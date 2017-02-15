@@ -20,6 +20,12 @@ void LevelsTableModel::setColumn(Column *column)
 	endResetModel();
 }
 
+void LevelsTableModel::refresh()
+{
+	beginResetModel();
+	endResetModel();
+}
+
 void LevelsTableModel::clearColumn()
 {
 	setColumn(NULL);

@@ -71,6 +71,11 @@ private:
 	Analyses *_analyses;
 	EngineSync* _engineSync;
 
+	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
+									, std::vector<std::string> &missingColumns
+									, std::map<std::string, std::string> &changeNameColumns);
+
+
 	void packageChanged(DataSetPackage *package);
 	void packageDataChanged(DataSetPackage *package
 							, std::vector<std::string> &changedColumns
@@ -97,8 +102,6 @@ private:
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
 	QPushButton *_runButton;
-	QTabBar *_mTabBar;
-
 	OptionsForm *_optionsForm;
 
 	std::map<std::string, AnalysisForm *> _analysisForms;
@@ -115,6 +118,8 @@ private:
 	QString escapeJavascriptString(const QString &str);
 	void getAnalysesUserData();
 	Json::Value getResultsMeta();
+
+	void startDataEditor(QString path);
 
 signals:
 	void analysisSelected(int id);
@@ -154,7 +159,7 @@ private slots:
 	void removeAnalysisRequestHandler(int id);
 	void removeAllAnalyses();
 	void refreshAllAnalyses();
-	void refreshCurrentAnalysis();
+	void refreshAnalysesUsingColumn(QString col);
 	void resetTableView();
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
@@ -182,6 +187,8 @@ private slots:
 	void showDataPanel();
 	void hideDataPanel();
 	void showVariablesPage();
+	void startDataEditorHandler();
+	void startDataEditorEventCompleted(FileEvent *event);
 
 	void analysisOKed();
 	void analysisRunned();
@@ -202,7 +209,7 @@ private slots:
 
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);
-	void showAbout();
+
 };
 
 #endif // MAINWIDGET_H

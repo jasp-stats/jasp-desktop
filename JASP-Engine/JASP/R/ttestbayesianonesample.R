@@ -3780,7 +3780,7 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	
 	df <- length(variable) - 1
 	location <- mean(variable)
-	scale <- sqrt( (df-2)/df * var(variable)/length(variable) )
+	scale <- sd(variable) / sqrt(length(variable))
 	
 	outTmp <- .qt.shiftedT(c(ciLower, .5, ciUpper), parameters=c(location, scale, df))
 	out <- list(ciLower=outTmp[1], median=outTmp[2], ciUpper=outTmp[3])

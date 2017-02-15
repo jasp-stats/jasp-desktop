@@ -19,6 +19,7 @@
 #include "tabbar.h"
 #include <QMessageBox>
 #include "aboutdialog.h"
+#include "preferencesdialog.h"
 #include "widgets/ribbonbutton.h"
 
 TabBar::TabBar(QWidget *parent) :
@@ -104,18 +105,23 @@ void TabBar::addHelpTab()
 
 	QAction *act_about = new QAction("About",helpmenu);
 	QAction *act_extrahelp = new QAction("Help",helpmenu);
+	QAction *act_preferences = new QAction("Preferences",helpmenu);
 
 	// About
 	act_about->setObjectName("About");
 	helpmenu->addAction(act_about);
 	helpmenu->addSeparator();
-	//helpmenu->setLayoutDirection(Qt::RightToLeft);
 
 	//Special Help
 	act_extrahelp->setObjectName("Special Help");
 	act_extrahelp->setCheckable(true);
 	act_extrahelp->setChecked(false);
 	helpmenu->addAction(act_extrahelp);
+	helpmenu->addSeparator();
+
+	// Preferences
+	act_preferences->setObjectName("Preferences");
+	helpmenu->addAction(act_preferences);
 	helpmenu->addSeparator();
 
 	//Options
@@ -157,6 +163,7 @@ void TabBar::addHelpTab()
 
 	//Slots helpmenu
 	connect(act_about, SIGNAL(triggered()), this, SLOT(showAbout()));
+	connect(act_preferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
 	connect(act_extrahelp, SIGNAL(triggered()), this, SLOT(toggleHelp()));
 
 	// Slots options
@@ -170,6 +177,13 @@ void TabBar::showAbout()
 	AboutDialog aboutdialog;
 	aboutdialog.setModal(true);
 	aboutdialog.exec();
+}
+
+void TabBar::showPreferences()
+{
+	PreferencesDialog preferencesdialog(this);
+	preferencesdialog.setModal(true);
+	preferencesdialog.exec();
 }
 
 void TabBar::toggleHelp()

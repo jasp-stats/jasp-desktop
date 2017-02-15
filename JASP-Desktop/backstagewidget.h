@@ -34,11 +34,7 @@ class BackStageWidget : public QWidget
 {
 	Q_OBJECT
 public:
-#ifdef QT_DEBUG
 	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close};
-#else
-	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, Close};
-#endif
 	explicit BackStageWidget(QWidget *parent = NULL);
 	void setOnlineDataManager(OnlineDataManager *odm);
 
@@ -55,6 +51,9 @@ signals:
 
 public slots:
 	void analysisAdded(Analysis *analysis);
+	void setSyncFile(FileEvent *event);
+	void dataAutoSynchronizationChanged(bool on);
+
 private slots:
 	void tabPageChanging(int index, bool &cancel);
 
