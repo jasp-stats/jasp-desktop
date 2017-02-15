@@ -26,13 +26,15 @@
 #include "importers/csvimporter.h"
 #include "importers/spssimporter.h"
 #include "importers/jaspimporter.h"
+#include "importers/odsimporter.h"
 
 #include <QFileInfo>
 #include <QSettings>
 
+using namespace std;
+using namespace spss;
 using namespace boost::interprocess;
 using namespace boost;
-using namespace std;
 
 string DataSetLoader::getExtension(const string &locator, const string &extension) {
 	filesystem::path path(locator);
@@ -51,6 +53,8 @@ Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string &
 		result = new CSVImporter(packageData);
 	else if (boost::iequals(ext,".sav"))
 		result = new SPSSImporter(packageData);
+	else if (boost::iequals(ext,".ods"))
+		result = new ODSImporter(packageData);
 
 	return result;
 }

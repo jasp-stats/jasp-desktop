@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2017 University of Amsterdam
+// Copyright (C) 2016 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,21 +15,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef CSVIMPORTER_H
-#define CSVIMPORTER_H
+#include "odsxmlhandler.h"
 
-#include "importer.h"
+using namespace std;
+using namespace ods;
 
-
-class CSVImporter : public Importer
+XmlHandler::XmlHandler(ODSImportDataSet *data)
+	: _dataSet(data)
 {
-public:
-	CSVImporter(DataSetPackage *packageData);
 
-protected:
-	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback);
-	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column);
+}
 
-};
+XmlHandler::~XmlHandler()
+{
 
-#endif // CSVIMPORTER_H
+}
