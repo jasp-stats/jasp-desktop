@@ -114,6 +114,7 @@ private:
 	QSettings _settings;
 	ActivityLog *_log;
 	QString _fatalError;
+	QString _currentFilePath;
 
 	QString escapeJavascriptString(const QString &str);
 	void getAnalysesUserData();

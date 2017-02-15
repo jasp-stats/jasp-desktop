@@ -43,6 +43,7 @@ MainTableView::MainTableView(QWidget *parent) :
 	connect(_header, SIGNAL(columnTypeChanged(int,Column::ColumnType)), this, SLOT(columnTypeChanged(int,Column::ColumnType)));
 	connect(_header, SIGNAL(columnNamePressed(int)), this, SLOT(showLabelView(int)));
 	setHorizontalHeader(_header);
+	setToolTip("Double-click to edit");
 }
 
 void MainTableView::setModel(QAbstractItemModel *model)

@@ -19,7 +19,7 @@
 
 #include "../spssimporter.h"
 #include "spssimportdataset.h"
-#include "spssutils.h"
+#include "../importerutils.h"
 #include <cmath>
 
 using namespace std;
