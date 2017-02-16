@@ -71,7 +71,7 @@
 	expected <- rbind(expected, c("plyr", "1.8.1"))
 	expected <- rbind(expected, c("png", "0.1-7"))
 	expected <- rbind(expected, c("proto", "0.3-10"))
-	expected <- rbind(expected, c("psych", "1.4.8.11"))
+	expected <- rbind(expected, c("psych", "1.6.12"))
 	expected <- rbind(expected, c("qgraph", "1.3"))
 	expected <- rbind(expected, c("quadprog", "1.5-5"))
 	expected <- rbind(expected, c("qvcalc", "0.8-8"))

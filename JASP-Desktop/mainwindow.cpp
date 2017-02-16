@@ -1967,11 +1967,17 @@ void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 
 void MainWindow::startDataEditor(QString path)
 {
-	int useDefaultSpreadsheetEditor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
-	if (path.endsWith(".sav"))
-		useDefaultSpreadsheetEditor = 1;
+	QFileInfo fileInfo(path);
 
+	int useDefaultSpreadsheetEditor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
 	QString appname = _settings.value("spreadsheetEditorName", "").toString();
+
+	if (QString::compare(fileInfo.suffix(), "sav", Qt::CaseInsensitive) == 0)
+	{
+		if (useDefaultSpreadsheetEditor == 0 && !appname.contains("SPSS", Qt::CaseInsensitive))
+			useDefaultSpreadsheetEditor = 1;
+	}
+
 	if (appname.isEmpty())
 		useDefaultSpreadsheetEditor = 1;
 
