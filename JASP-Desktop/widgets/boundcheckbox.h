@@ -24,7 +24,6 @@
 #include "bound.h"
 #include "options/optionboolean.h"
 
-using namespace std;
 
 class BoundCheckBox : public QCheckBox, public Bound
 {

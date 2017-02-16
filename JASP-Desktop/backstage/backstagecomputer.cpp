@@ -57,9 +57,9 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 	else
 		browsePath = path;
 
-	QString filter = "Data Sets (*.jasp *.csv *.txt *.sav)";
+	QString filter = "Data Sets (*.jasp *.csv *.txt *.sav *.ods)";
 	if (_mode == FileEvent::FileSyncData)
-		filter = "Data Sets (*.csv *.txt *.sav *.ods)";
+		filter = "Data Sets (*.csv *.txt *.sav *.ods *.ods)";
 	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, filter);
 
 	FileEvent *event = new FileEvent(this, _mode);

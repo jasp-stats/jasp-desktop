@@ -1,7 +1,7 @@
 #ifndef SPSSIMPORTCOLUMN_H
 #define SPSSIMPORTCOLUMN_H
 
-#include "spssutils.h"
+#include "../importerutils.h"
 #include "../convertedstringcontainer.h"
 #include "../importcolumn.h"
 #include "spssformattype.h"

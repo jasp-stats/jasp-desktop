@@ -18,7 +18,7 @@
 #ifndef SPSSIMPORTDATASET_H
 #define SPSSIMPORTDATASET_H
 
-#include "spssutils.h"
+#include "../importerutils.h"
 #include "numericconverter.h"
 #include "spssimportcolumn.h"
 #include "importers/importdataset.h"

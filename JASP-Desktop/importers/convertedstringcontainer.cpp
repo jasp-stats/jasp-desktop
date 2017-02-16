@@ -23,7 +23,7 @@
 
 #include "convertedstringcontainer.h"
 
-#include "spss/spssutils.h"
+#include "importerutils.h"
 
 using namespace std;
 
