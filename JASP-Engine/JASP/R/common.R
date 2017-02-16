@@ -838,3 +838,42 @@ as.list.footnotes <- function(footnotes) {
 	
 	changed
 }
+
+.optionsChanged <- function(dependence, optionsOld, optionsNew) {
+	
+  change <- .diff(optionsOld, optionsNew)
+  if (! is.list(change)) {
+    return(TRUE)
+  }
+	
+  relevantOpts <- change[names(change) %in% dependence]
+  if (sum(sapply(relevantOpts, isTRUE)) > 0) {
+    return(TRUE)
+  }
+	
+  return(FALSE)
+}
+
+.getStateItems <- function(state, dependence, optionsOld, optionsNew) {
+	
+  if (is.null(names(dependence)) || is.null(names(state))) {
+    return(list())
+  }
+  
+  result <- list()
+  for (i in 1:length(dependence)) {
+		
+    item <- names(dependence)[i]
+    if (item %in% names(state) == FALSE) {
+      next
+    }
+		
+    changed <- .optionsChanged(optionsOld, optionsNew, dependence[[i]])
+    if (changed == FALSE) {
+      result[[item]] <- state[[item]]
+    }
+		
+  }
+	
+  return(result)
+}
