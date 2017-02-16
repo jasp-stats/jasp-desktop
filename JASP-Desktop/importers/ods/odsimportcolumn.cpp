@@ -250,7 +250,8 @@ const
 		{
 			int val = i->valueAsInt();
 			values.push_back(val);
-			uValues.insert(val);
+			if (val != INT_MIN)
+				uValues.insert(val);
 		}
 		column.setColumnAsNominalOrOrdinal(values, uValues, isOrdinal);
 	}
