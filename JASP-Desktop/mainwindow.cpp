@@ -980,6 +980,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			populateUIfromDataSet();
 			QString name =  QFileInfo(event->path()).baseName();
 			setWindowTitle(name);
+			_currentFilePath = event->path();
 
 			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty())
 			{
@@ -1046,6 +1047,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
+			ui->tableView->adjustAfterDataLoad(false);
 
 			if (_applicationExiting)
 				QApplication::exit();
@@ -1071,8 +1073,7 @@ void MainWindow::populateUIfromDataSet()
 
 	_analyses->clear();
 
-	ui->tableView->horizontalHeader()->setResizeContentsPrecision(50);
-	ui->tableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+	ui->tableView->adjustAfterDataLoad(true);
 
 	_progressIndicator->hide();
 
@@ -1908,8 +1909,19 @@ void MainWindow::startDataEditorHandler()
 		{
 			QString caption = "Generate Data File as CSV";
 			QString filter = "CSV Files (*.csv)";
+			QString name = windowTitle();
+			if (name.endsWith("*"))
+			{
+				name.truncate(name.length() - 1);
+				name = name.replace('#', '_');
+			}
+			if (!_currentFilePath.isEmpty())
+			{
+				QFileInfo file(_currentFilePath);
+				name = file.absolutePath() + QDir::separator() + file.baseName().replace('#', '_') + ".csv";
+			}
 
-			path = QFileDialog::getSaveFileName(this, caption, "", filter);
+			path = QFileDialog::getSaveFileName(this, caption, name, filter);
 			if (path == "")
 				return;
 
@@ -1955,11 +1967,17 @@ void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 
 void MainWindow::startDataEditor(QString path)
 {
-	int useDefaultSpreadsheetEditor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
-	if (path.endsWith(".sav"))
-		useDefaultSpreadsheetEditor = 1;
+	QFileInfo fileInfo(path);
 
+	int useDefaultSpreadsheetEditor = _settings.value("useDefaultSpreadsheetEditor", 1).toInt();
 	QString appname = _settings.value("spreadsheetEditorName", "").toString();
+
+	if (QString::compare(fileInfo.suffix(), "sav", Qt::CaseInsensitive) == 0)
+	{
+		if (useDefaultSpreadsheetEditor == 0 && !appname.contains("SPSS", Qt::CaseInsensitive))
+			useDefaultSpreadsheetEditor = 1;
+	}
+
 	if (appname.isEmpty())
 		useDefaultSpreadsheetEditor = 1;
 
@@ -1976,6 +1994,9 @@ void MainWindow::startDataEditor(QString path)
 	}
 	else
 	{
-		QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode));
+		if (!QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode)))
+		{
+			QMessageBox::warning(this, QString("Start Spreadsheet Editor"), QString("No default spreadsheet editor for file ") + fileInfo.completeBaseName() + QString(". Use Preferences to set the right editor."), QMessageBox::Cancel);
+		}
 	}
 }

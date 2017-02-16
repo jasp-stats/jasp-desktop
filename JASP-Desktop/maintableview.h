@@ -38,6 +38,7 @@ public:
 
 	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
 	void setVariablesView(VariablesWidget *variablesPage);
+	void adjustAfterDataLoad(bool dataLoaded);
 
 protected:
 	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) OVERRIDE;
@@ -69,6 +70,7 @@ private:
 	void hideInfoPopup();
 
 	MainTableHorizontalHeader *_header;
+	bool _dataLoaded;
 	
 };
 

@@ -50,6 +50,11 @@ private:
 
 	TableModelVariablesAvailable *_factorsAvailableListModel;
 
+  TableModelVariablesAvailable *_plotFactorsAvailableTableModel;
+  TableModelVariablesAssigned *_horizontalAxisTableModel;
+  TableModelVariablesAssigned *_seperateLinesTableModel;
+  TableModelVariablesAssigned *_seperatePlotsTableModel;
+
 private slots:
 	void factorsChanging();
 	void factorsChanged();
