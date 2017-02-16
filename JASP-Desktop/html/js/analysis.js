@@ -544,6 +544,12 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		$tempClone.replaceWith($innerElement);
 		$tempClone.empty();
+		
+		var errorBoxHeight = $innerElement.find(".analysis-error").outerHeight(true);
+		var $selectedAnalysis = $innerElement.find(".jasp-analysis");
+		if ($selectedAnalysis.height() < errorBoxHeight) {
+			$selectedAnalysis.height(errorBoxHeight);
+		}
 
 		return this;
 	},
