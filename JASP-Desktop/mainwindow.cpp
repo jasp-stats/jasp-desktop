@@ -1994,6 +1994,9 @@ void MainWindow::startDataEditor(QString path)
 	}
 	else
 	{
-		QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode));
+		if (!QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode)))
+		{
+			QMessageBox::warning(this, QString("Start Spreadsheet Editor"), QString("No default spreadsheet editor for file ") + fileInfo.completeBaseName() + QString(". Use Preferences to set the right editor."), QMessageBox::Cancel);
+		}
 	}
 }
