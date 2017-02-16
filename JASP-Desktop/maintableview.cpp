@@ -30,6 +30,7 @@ MainTableView::MainTableView(QWidget *parent) :
 {
 	_dataSetModel = NULL;
 	_variablesPage = NULL;
+	_dataLoaded = false;
 
 	_infoPopup = new InfoPopup(this);
 	_infoPopup->setVisible(false);
@@ -43,7 +44,6 @@ MainTableView::MainTableView(QWidget *parent) :
 	connect(_header, SIGNAL(columnTypeChanged(int,Column::ColumnType)), this, SLOT(columnTypeChanged(int,Column::ColumnType)));
 	connect(_header, SIGNAL(columnNamePressed(int)), this, SLOT(showLabelView(int)));
 	setHorizontalHeader(_header);
-	setToolTip("Double-click to edit");
 }
 
 void MainTableView::setModel(QAbstractItemModel *model)
@@ -149,7 +149,20 @@ void MainTableView::setVariablesView(VariablesWidget *variablesPage)
 	_variablesPage = variablesPage;
 }
 
+void MainTableView::adjustAfterDataLoad(bool dataLoaded)
+{
+	if (dataLoaded)
+	{
+		horizontalHeader()->setResizeContentsPrecision(50);
+		horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+	}
+	_dataLoaded = dataLoaded;
+	setToolTip(dataLoaded ? "Double-click to edit" : "");
+
+}
+
 void MainTableView::mouseDoubleClickEvent(QMouseEvent *event)
 {
-	emit dataTableDoubleClicked();
+	if (_dataLoaded)
+		emit dataTableDoubleClicked();
 }
