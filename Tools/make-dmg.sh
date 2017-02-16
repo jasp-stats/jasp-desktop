@@ -1,10 +1,11 @@
 QT_DIR=~/Qt/5.5
-R_FRAMEWORK=~/Jasp/Build/Frameworks/R.framework
-JASP_DESKTOP=~/Jasp/Build/jasp-desktop
+R_FRAMEWORK=~/JASP/Build/Frameworks/R.framework
+JASP_DESKTOP=~/JASP/Build
 JASP_VERSION=0.8.1.0
 
 # This script builds the JASP.dmg installer
-# Run this script from the build-jasp-desktop-Release folder 
+# Copy the info.plist.template to the build-jasp-desktop-Release folder
+# Then run this script from the build-jasp-desktop-Release folder 
 
 # Remove from last time
 
@@ -60,7 +61,7 @@ cp $QT_DIR/../Qt\ Creator.app/Contents/Frameworks/libssl.1.0.0.dylib app/JASP.ap
 
 cp $JASP_DESKTOP/Tools/icon.icns app/JASP.app/Contents/Resources
 cp $JASP_DESKTOP/Tools/Info.plist.template app/JASP.app/Contents/Info.plist
-sed -ie s/JASP_VERSION/$JASP_VERSION/gQt Star app/JASP.app/Contents/Info.plist
+sed -ie s/JASP_VERSION/$JASP_VERSION/g app/JASP.app/Contents/Info.plist
 cp $JASP_DESKTOP/Tools/Info.plist app/JASP.app/Contents
 
 # Create the .dmg

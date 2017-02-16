@@ -1047,6 +1047,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			updateMenuEnabledDisabledStatus();
 			ui->webViewResults->reload();
 			setWindowTitle("JASP");
+			ui->tableView->adjustAfterDataLoad(false);
 
 			if (_applicationExiting)
 				QApplication::exit();
@@ -1072,8 +1073,7 @@ void MainWindow::populateUIfromDataSet()
 
 	_analyses->clear();
 
-	ui->tableView->horizontalHeader()->setResizeContentsPrecision(50);
-	ui->tableView->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
+	ui->tableView->adjustAfterDataLoad(true);
 
 	_progressIndicator->hide();
 
@@ -1994,6 +1994,9 @@ void MainWindow::startDataEditor(QString path)
 	}
 	else
 	{
-		QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode));
+		if (!QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode)))
+		{
+			QMessageBox::warning(this, QString("Start Spreadsheet Editor"), QString("No default spreadsheet editor for file ") + fileInfo.completeBaseName() + QString(". Use Preferences to set the right editor."), QMessageBox::Cancel);
+		}
 	}
 }
