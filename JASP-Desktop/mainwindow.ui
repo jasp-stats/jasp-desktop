@@ -211,8 +211,7 @@ QPushButton#first:checked {
                </size>
               </property>
               <property name="styleSheet">
-               <string notr="true">QWidget#panel_1_Data
-{	border: 1px solid #929292 }</string>
+               <string notr="true"/>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout">
                <property name="leftMargin">
@@ -234,7 +233,17 @@ QPushButton#first:checked {
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QSplitter#data_splitter::handle
-{	border-top: 1px solid #929292 }</string>
+{	border-right: 0px; 
+	border-left: 0px; 
+	border-top: 1px solid #929292;
+	border-bottom: 1px solid #929292;
+}
+QSplitter#data_splitter
+{	border-right: 0px; 
+	border-left: 0px; 
+	border-top: 1px solid #929292;
+	border-bottom: 1px solid #929292; 
+}</string>
                  </property>
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -250,7 +259,7 @@ QPushButton#first:checked {
                  </property>
                  <widget class="VariablesWidget" name="variablesPage" native="true">
                   <property name="styleSheet">
-                   <string notr="true">QWidget#variablesPage {border: 1px solid #929292;}</string>
+                   <string notr="true"/>
                   </property>
                  </widget>
                  <widget class="MainTableView" name="tableView">
@@ -284,7 +293,10 @@ QHeaderView::section::last {
 }
 
 QTableView {
-	border: 1px solid #929292 ;
+	border-top: 0px solid #929292 ;
+	border-bottom: 1px solid #929292 ;
+	border-right: 1px solid #929292 ;
+	border-left: 1px solid #929292 ;
 	selection-background-color: rgb(60, 170, 231) ;
 	/*border-top: 1px solid #929292 ; */
 	/*border-right: 1px solid #929292 ;*/
@@ -417,7 +429,7 @@ QTableView::item::last
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>299</width>
+                       <width>300</width>
                        <height>587</height>
                       </rect>
                      </property>
