@@ -25,13 +25,6 @@ $(document).ready(function () {
 	var $instructions = $("#instructions")
 	var showInstructions = false;
 	
-	$("#results").on("click", ".stack-trace-selector", function(e) {
-		e.stopPropagation();
-		$(this).next(".stack-trace").slideToggle();
-		return false;
-	});
-
-
 	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
 
 	window.select = function (id) {
@@ -490,6 +483,19 @@ $(document).ready(function () {
 		if (selectedAnalysisId === analysis.id)
 			window.scrollIntoView(jaspWidget.$el);
 	}
+	
+	$("#results").on("click", ".stack-trace-selector", function(e) {
+		$(this).next(".stack-trace").slideToggle(function() {
+			var $selectedInner = $(this).parent().siblings(".jasp-analysis");
+			var errorBoxHeight = $(this).parent(".analysis-error").outerHeight(true);
+			if ($(this).next(".stack-trace").is(":hidden")) {
+				$selectedInner.css("height", "");
+			}
+			if ($selectedInner.height() < errorBoxHeight) {
+				$selectedInner.height(errorBoxHeight)
+			}
+		}.bind(this))
+	});
 
 	$("body").click(window.unselectByClickingBody)
 
