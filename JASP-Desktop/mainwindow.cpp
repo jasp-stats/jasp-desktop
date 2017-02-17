@@ -71,6 +71,7 @@
 #include "analysisforms/MachineLearning/mlregressionrandomforestform.h"
 #include "analysisforms/MachineLearning/mlregressionboostingform.h"
 #include "analysisforms/MachineLearning/mlregressionknnform.h"
+#include "analysisforms/MachineLearning/mlclusteringkmeansform.h"
 
 #include "analysisforms/reliabilityanalysisform.h"
 #include "analysisforms/exploratoryfactoranalysisform.h"
@@ -764,6 +765,8 @@ AnalysisForm* MainWindow::loadForm(const string name)
 		form = new MLRegressionBoostingForm(contentArea);
 	else if (name == "MLRegressionKNN")
 		form = new MLRegressionKNNForm(contentArea);
+	else if (name == "MLClusteringKMeans")
+		form = new MLClusteringKMeansForm(contentArea);
 #endif
 	else
 		qDebug() << "MainWindow::loadForm(); form not found : " << name.c_str();
