@@ -58,16 +58,10 @@ private slots:
 	void on_auto_1_clicked(bool);
 	void on_manual_2_clicked(bool);
 	void on_auto_2_clicked(bool);
+	void on_optimized_2_clicked(bool);
 	void on_manual_3_clicked(bool);
 	void on_auto_3_clicked(bool);
-	void on_manual_4_clicked(bool);
-	void on_auto_4_clicked(bool);
-	void on_manual_5_clicked(bool);
-	void on_auto_5_clicked(bool);
-	void on_manual_6_clicked(bool);
-	void on_auto_6_clicked(bool);
-	void on_manual_7_clicked(bool);
-	void on_auto_7_clicked(bool);
+	void on_optimized_3_clicked(bool);
 };
 
 #endif // MLREGRESSIONKNNFORM_H
