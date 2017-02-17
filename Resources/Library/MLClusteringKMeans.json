@@ -4,45 +4,29 @@
 	"version": "1.00",
 	"options": [
 		{
-			"name": "target",
-			"type": "Variable"
-		},
-		{
 			"name": "predictors",
 			"type": "Variables"
 		},
 		{
-			"name": "indicator",
-			"type": "Variable"
+			"name": "noOfClusters",
+			"type": "List",
+			"options": [ "auto", "manual", "optimized", "robust" ],
+			"default": "auto"
 		},
 		{
-			"name": "modelTerms",
-			"template": [
-				{
-					"name": "components",
-					"type": "Term"
-				},
-				{
-					"name": "isNuisance",
-					"type": "Boolean"
-				}
-			],
-			"type": "Table"
+			"name": "clusterSize",
+			"type": "Integer"
 		},
 		{
-			"name": "percentageTrainingData",
+			"name": "noOfIterations",
 			"type": "List",
 			"options": [ "auto", "manual" ],
 			"default": "auto"
 		},
 		{
-			"name": "trainingDataManual",
-			"type": "Integer"
-		},
-		{
-			"name": "noOfNearestNeighbours",
+			"name": "noOfRandomSets",
 			"type": "List",
-			"options": [ "auto", "manual", "optimized" ],
+			"options": [ "auto", "manual" ],
 			"default": "auto"
 		},
 		{
@@ -58,23 +42,67 @@
 			"type": "Integer"
 		},
 		{
+			"name": "robustFrom",
+			"type": "Integer"
+		},
+		{
+			"name": "robustTo",
+			"type": "Integer"
+		},
+		{
+			"name": "iterationsCount",
+			"type": "Integer"
+		},
+		{
+			"name": "randomSetCount",
+			"type": "Integer"
+		},
+		{
+			"name": "plot2dCluster",
+			"type": "Boolean"
+		},
+		{
+			"name": "plot2dClusterCentroids",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotCriterionVsClusters",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotPCACluster",
+			"type": "Boolean"
+		},
+		{
+			"name": "plotPCAClusterSquares",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableClusterInformation",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableClusterInfoSize",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableClusterInfoCentroids",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableClusterInfoSumSquares",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableClusterInfoTotalSumSquares",
+			"type": "Boolean"
+		},
+		{
+			"name": "tableClusterInfoBetweenSumSquares",
+			"type": "Boolean"
+		},
+		{
 			"name": "tablePredictions",
-			"type": "Boolean"
-		},
-		{
-			"name": "tablePredictionsConfidence",
-			"type": "Boolean"
-		},
-		{
-			"name": "tableDistances",
-			"type": "Boolean"
-		},
-		{
-			"name": "tableWeights",
-			"type": "Boolean"
-		},
-		{
-			"name": "plotErrorVsK",
 			"type": "Boolean"
 		},
 		{
@@ -84,30 +112,15 @@
 			"default": "deleteListwise"
 		},
 		{
-			"name": "distanceParameter",
+			"name": "algorithm",
 			"type": "List",
-			"options": [ "auto", "manual", "optimized" ],
-			"default": "auto"
+			"options": [ "hartiganWong", "lloyd", "macQueen" ],
+			"default": "hartiganWong"
 		},
 		{
-			"name": "scaleEqualSD",
-			"type": "Boolean"
-		},
-		{
-			"name": "validationLeaveOneOut",
-			"type": "Boolean"
-		},
-		{
-			"name": "maxK",
-			"type": "Integer"
-		},
-		{
-			"name": "validationKFold",
-			"type": "Boolean"
-		},
-		{
-			"name": "noOfFolds",
-			"type": "Integer"
+			"name": "criterion",
+			"options": [ "silhoutteLength" ],
+			"type": "List"
 		}
 	]
 }
