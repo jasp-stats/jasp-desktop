@@ -183,6 +183,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
         $$PWD/analysisforms/MachineLearning/mlregressionrandomforestform.cpp \
         $$PWD/analysisforms/MachineLearning/mlregressionboostingform.cpp \
+        $$PWD/analysisforms/MachineLearning/mlregressionknnform.cpp \
 		$$PWD/simplecrypt.cpp \
 		$$PWD/importers/convertedstringcontainer.cpp \
 		$$PWD/importers/importer.cpp \
@@ -375,6 +376,7 @@ HEADERS  += \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
         $$PWD/analysisforms/MachineLearning/mlregressionrandomforestform.h \
         $$PWD/analysisforms/MachineLearning/mlregressionboostingform.h \
+        $$PWD/analysisforms/MachineLearning/mlregressionknnform.h \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h \
 		$$PWD/importers/convertedstringcontainer.h \
@@ -452,6 +454,7 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
         $$PWD/analysisforms/MachineLearning/mlregressionrandomforestform.ui \
         $$PWD/analysisforms/MachineLearning/mlregressionboostingform.ui \
+        $$PWD/analysisforms/MachineLearning/mlregressionknnform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
 
 RESOURCES += \
