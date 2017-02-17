@@ -79,37 +79,28 @@ MLRegressionKNNForm::~MLRegressionKNNForm()
 
 void MLRegressionKNNForm::defaultOptions()
 {
-	ui->auto_1->setChecked(true);
-	ui->auto_2->setChecked(true);
-	ui->auto_3->setChecked(true);
-	ui->auto_4->setChecked(true);
-	ui->auto_5->setChecked(true);
-	ui->auto_6->setChecked(true);
-	ui->auto_7->setChecked(true);
-
-	QSizePolicy retain = ui->numberOfTrees->sizePolicy();
+	QSizePolicy retain = ui->trainingDataManual->sizePolicy();
 	retain.setRetainSizeWhenHidden(true);
-	ui->numberOfTrees->setSizePolicy(retain);
 
-	ui->numberOfTrees->hide();
+	ui->trainingDataManual->setSizePolicy(retain);
+	ui->trainingDataManual->hide();
 
-	ui->numberOfPredictors->setSizePolicy(retain);
-	ui->numberOfPredictors->hide();
+	ui->nearestNeighboursCount->setSizePolicy(retain);
+	ui->nearestNeighboursCount->hide();
 
-	ui->percentageDataBootstrap->setSizePolicy(retain);
-	ui->percentageDataBootstrap->hide();
+	ui->optimizedFrom->setSizePolicy(retain);
+	ui->optimizedFrom->hide();
 
-	ui->percentageDataTraining->setSizePolicy(retain);
-	ui->percentageDataTraining->hide();
+	ui->optimizedTo->setSizePolicy(retain);
+	ui->optimizedTo->hide();
 
-	ui->modelMinimumTerminalNode->setSizePolicy(retain);
-	ui->modelMinimumTerminalNode->hide();
+	ui->distanceParameterManual->setSizePolicy(retain);
+	ui->distanceParameterManual->hide();
 
-	ui->modelMaximumTerminalNode->setSizePolicy(retain);
-	ui->modelMaximumTerminalNode->hide();
-
-	ui->seed->setSizePolicy(retain);
-	ui->seed->hide();
+	retain = ui->label_to->sizePolicy();
+	retain.setRetainSizeWhenHidden(true);
+	ui->label_to->setSizePolicy(retain);
+	ui->label_to->hide();
 }
 
 void MLRegressionKNNForm::bindTo(Options *options, DataSet *dataSet)
@@ -138,97 +129,64 @@ void MLRegressionKNNForm::factorsChanged()
 void MLRegressionKNNForm::on_manual_1_clicked(bool checked)
 {
 	if (checked) {
-		ui->numberOfTrees->show();
+		ui->trainingDataManual->show();
 	}
 }
 
 void MLRegressionKNNForm::on_auto_1_clicked(bool checked)
 {
 	if (checked) {
-		ui->numberOfTrees->hide();
+		ui->trainingDataManual->hide();
 	}
 }
 
 void MLRegressionKNNForm::on_manual_2_clicked(bool checked)
 {
 	if (checked) {
-		ui->numberOfPredictors->show();
+		ui->nearestNeighboursCount->show();
+		ui->optimizedFrom->hide();
+		ui->optimizedTo->hide();
+		ui->label_to->hide();
 	}
 }
 
 void MLRegressionKNNForm::on_auto_2_clicked(bool checked)
 {
 	if (checked) {
-		ui->numberOfPredictors->hide();
+		ui->nearestNeighboursCount->hide();
+		ui->optimizedFrom->hide();
+		ui->optimizedTo->hide();
+		ui->label_to->hide();
+	}
+}
+
+void MLRegressionKNNForm::on_optimized_2_clicked(bool checked)
+{
+	if (checked) {
+		ui->nearestNeighboursCount->hide();
+		ui->optimizedFrom->show();
+		ui->optimizedTo->show();
+		ui->label_to->show();
 	}
 }
 
 void MLRegressionKNNForm::on_manual_3_clicked(bool checked)
 {
 	if (checked) {
-		ui->percentageDataBootstrap->show();
+		ui->distanceParameterManual->show();
 	}
 }
 
 void MLRegressionKNNForm::on_auto_3_clicked(bool checked)
 {
 	if (checked) {
-		ui->percentageDataBootstrap->hide();
+		ui->distanceParameterManual->hide();
 	}
 }
 
-void MLRegressionKNNForm::on_manual_4_clicked(bool checked)
+void MLRegressionKNNForm::on_optimized_3_clicked(bool checked)
 {
 	if (checked) {
-		ui->percentageDataTraining->show();
-	}
-}
-
-void MLRegressionKNNForm::on_auto_4_clicked(bool checked)
-{
-	if (checked) {
-		ui->percentageDataTraining->hide();
-	}
-}
-
-void MLRegressionKNNForm::on_manual_5_clicked(bool checked)
-{
-	if (checked) {
-		ui->seed->show();
-	}
-}
-
-void MLRegressionKNNForm::on_auto_5_clicked(bool checked)
-{
-	if (checked) {
-		ui->seed->hide();
-	}
-}
-
-void MLRegressionKNNForm::on_manual_6_clicked(bool checked)
-{
-	if (checked) {
-		ui->modelMinimumTerminalNode->show();
-	}
-}
-
-void MLRegressionKNNForm::on_auto_6_clicked(bool checked)
-{
-	if (checked) {
-		ui->modelMinimumTerminalNode->hide();
-	}
-}
-
-void MLRegressionKNNForm::on_manual_7_clicked(bool checked)
-{
-	if (checked) {
-		ui->modelMaximumTerminalNode->show();
-	}
-}
-
-void MLRegressionKNNForm::on_auto_7_clicked(bool checked)
-{
-	if (checked) {
-		ui->modelMaximumTerminalNode->hide();
+		ui->distanceParameterManual->hide();
 	}
 }

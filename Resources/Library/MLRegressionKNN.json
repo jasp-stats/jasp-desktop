@@ -30,70 +30,84 @@
 			"type": "Table"
 		},
 		{
-			"name": "plotVariableImportance",
+			"name": "percentageTrainingData",
+			"type": "List",
+			"options": [ "auto", "manual" ],
+			"default": "auto"
+		},
+		{
+			"name": "trainingDataManual",
+			"type": "Integer"
+		},
+		{
+			"name": "noOfNearestNeighbours",
+			"type": "List",
+			"options": [ "auto", "manual", "optimized" ],
+			"default": "auto"
+		},
+		{
+			"name": "nearestNeighboursCount",
+			"type": "Integer"
+		},
+		{
+			"name": "optimizedFrom",
+			"type": "Integer"
+		},
+		{
+			"name": "optimizedTo",
+			"type": "Integer"
+		},
+		{
+			"name": "tablePredictions",
 			"type": "Boolean"
 		},
 		{
-			"name": "plotVariableImportanceShowValues",
+			"name": "tablePredictionsConfidence",
 			"type": "Boolean"
 		},
 		{
-			"name": "plotPredictivePerformance",
+			"name": "tableDistances",
 			"type": "Boolean"
 		},
 		{
-			"name": "tableVariableImportance",
+			"name": "tableWeights",
 			"type": "Boolean"
 		},
 		{
-			"name": "tableConfusion",
+			"name": "plotErrorVsK",
 			"type": "Boolean"
 		},
 		{
-			"name": "calculateProximityMatrix",
+			"name": "naAction",
+			"type": "List",
+			"options": [ "deleteListwise", "predict", "roughFix" ],
+			"default": "deleteListwise"
+		},
+		{
+			"name": "distanceParameter",
+			"type": "List",
+			"options": [ "auto", "manual", "optimized" ],
+			"default": "auto"
+		},
+		{
+			"name": "scaleEqualSD",
 			"type": "Boolean"
 		},
 		{
-			"name": "noOfTrees",
-			"type": "List",
-			"options": [ "auto", "manual" ],
-			"default": "auto"
+			"name": "validationLeaveOneOut",
+			"type": "Boolean"
 		},
 		{
-			"name": "noOfPredictors",
-			"type": "List",
-			"options": [ "auto", "manual" ],
-			"default": "auto"
+			"name": "maxK",
+			"type": "Integer"
 		},
 		{
-			"name": "minimumTerminalNodeSize",
-			"type": "List",
-			"options": [ "auto", "manual" ],
-			"default": "auto"
+			"name": "validationKFold",
+			"type": "Boolean"
 		},
 		{
-			"name": "dataBootstrapModel",
-			"type": "List",
-			"options": [ "auto", "manual" ],
-			"default": "auto"
-		},
-		{
-			"name": "dataTrainingModel",
-			"type": "List",
-			"options": [ "auto", "manual" ],
-			"default": "auto"
-		},
-		{
-			"name": "maximumTerminalNodeSize",
-			"type": "List",
-			"options": [ "auto", "manual" ],
-			"default": "auto"
-		},
-		{
-			"name": "seedBox",
-			"type": "List",
-			"options": [ "auto", "manual" ],
-			"default": "auto"
+			"name": "noOfFolds",
+			"type": "Integer"
 		}
 	]
 }
