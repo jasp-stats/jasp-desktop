@@ -4,7 +4,9 @@ JASP_DESKTOP=~/JASP/Build
 JASP_VERSION=0.8.1.0
 
 # This script builds the JASP.dmg installer
-# Copy the info.plist.template to the build-jasp-desktop-Release folder
+# Copy the info.plist.template & icon.icns to the build-jasp-desktop-Release folder
+# Check that you R.framework is unique (no other test versions).
+# Check also that the right dylib are placed in the build-jasp-desktop-Release folder
 # Then run this script from the build-jasp-desktop-Release folder 
 
 # Remove from last time
@@ -56,13 +58,13 @@ cp -r $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
 cp -r R           app/JASP.app/Contents/MacOS
 
 #Copy the Openssl from Qt to our Framework because OSF no longer supports tlsv1 traffic
-cp $QT_DIR/../Qt\ Creator.app/Contents/Frameworks/libcrypto.1.0.0.dylib app/JASP.app/Contents/Frameworks
-cp $QT_DIR/../Qt\ Creator.app/Contents/Frameworks/libssl.1.0.0.dylib app/JASP.app/Contents/Frameworks
+cp libcrypto.1.0.0.dylib app/JASP.app/Contents/Frameworks
+cp libssl.1.0.0.dylib app/JASP.app/Contents/Frameworks
 
-cp $JASP_DESKTOP/Tools/icon.icns app/JASP.app/Contents/Resources
-cp $JASP_DESKTOP/Tools/Info.plist.template app/JASP.app/Contents/Info.plist
-sed -ie s/JASP_VERSION/$JASP_VERSION/g app/JASP.app/Contents/Info.plist
-cp $JASP_DESKTOP/Tools/Info.plist app/JASP.app/Contents
+cp icon.icns app/JASP.app/Contents/Resources
+cp Info.plist.template Info.plist
+sed -ie s/JASP_VERSION/$JASP_VERSION/g Info.plist
+cp Info.plist app/JASP.app/Contents
 
 # Create the .dmg
 hdiutil create -size 800m tmp.dmg -ov -volname "JASP" -fs HFS+ -srcfolder "app"
