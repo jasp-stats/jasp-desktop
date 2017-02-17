@@ -27,45 +27,12 @@ MLClusteringKMeansForm::MLClusteringKMeansForm(QWidget *parent) :
 
 	ui->listAvailableFields->setModel(&_availableVariablesModel);
 
-	_targetListModel = new TableModelVariablesAssigned(this);
-	_targetListModel->setSource(&_availableVariablesModel);
-	_targetListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->target->setModel(_targetListModel);
-
 	_predictorsListModel = new TableModelVariablesAssigned(this);
 	_predictorsListModel->setSource(&_availableVariablesModel);
 	_predictorsListModel->setVariableTypesSuggested(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
 	ui->predictors->setModel(_predictorsListModel);
 
-	_indicatorListModel = new TableModelVariablesAssigned(this);
-	_indicatorListModel->setSource(&_availableVariablesModel);
-	_indicatorListModel->setVariableTypesSuggested(Column::ColumnTypeScale);
-	_indicatorListModel->setVariableTypesAllowed(Column::ColumnTypeScale | Column::ColumnTypeNominal | Column::ColumnTypeOrdinal);
-	ui->indicator->setModel(_indicatorListModel);
-
-	ui->buttonAssignFixed->setSourceAndTarget(ui->listAvailableFields, ui->target);
 	ui->buttonAssignRandom->setSourceAndTarget(ui->listAvailableFields, ui->predictors);
-	ui->buttonAssignCovariates->setSourceAndTarget(ui->listAvailableFields, ui->indicator);
-
-	_anovaModel = new TableModelAnovaModel(this);
-	_anovaModel->setPiecesCanBeAssigned(false);
-	ui->modelTerms->setModel(_anovaModel);
-	ui->modelTerms->hide();
-
-	connect(_targetListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_targetListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_targetListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addFixedFactors(Terms)));
-	connect(_targetListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
-
-	connect(_predictorsListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_predictorsListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_predictorsListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addRandomFactors(Terms)));
-	connect(_predictorsListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
-
-	connect(_indicatorListModel, SIGNAL(assignmentsChanging()), this, SLOT(factorsChanging()));
-	connect(_indicatorListModel, SIGNAL(assignmentsChanged()), this, SLOT(factorsChanged()));
-	connect(_indicatorListModel, SIGNAL(assignedTo(Terms)), _anovaModel, SLOT(addCovariates(Terms)));
-	connect(_indicatorListModel, SIGNAL(unassigned(Terms)), _anovaModel, SLOT(removeVariables(Terms)));
 
 	ui->advancedOptions->hide();
 
@@ -79,14 +46,11 @@ MLClusteringKMeansForm::~MLClusteringKMeansForm()
 
 void MLClusteringKMeansForm::defaultOptions()
 {
-	QSizePolicy retain = ui->trainingDataManual->sizePolicy();
+	QSizePolicy retain = ui->clusterSize->sizePolicy();
 	retain.setRetainSizeWhenHidden(true);
 
-	ui->trainingDataManual->setSizePolicy(retain);
-	ui->trainingDataManual->hide();
-
-	ui->nearestNeighboursCount->setSizePolicy(retain);
-	ui->nearestNeighboursCount->hide();
+	ui->clusterSize->setSizePolicy(retain);
+	ui->clusterSize->hide();
 
 	ui->optimizedFrom->setSizePolicy(retain);
 	ui->optimizedFrom->hide();
@@ -94,13 +58,25 @@ void MLClusteringKMeansForm::defaultOptions()
 	ui->optimizedTo->setSizePolicy(retain);
 	ui->optimizedTo->hide();
 
-	ui->distanceParameterManual->setSizePolicy(retain);
-	ui->distanceParameterManual->hide();
+	ui->robustFrom->setSizePolicy(retain);
+	ui->robustFrom->hide();
 
-	retain = ui->label_to->sizePolicy();
+	ui->robustTo->setSizePolicy(retain);
+	ui->robustTo->hide();
+
+	ui->iterationsCount->setSizePolicy(retain);
+	ui->iterationsCount->hide();
+
+	ui->randomSetCount->setSizePolicy(retain);
+	ui->randomSetCount->hide();
+
+	retain = ui->label_to_1->sizePolicy();
 	retain.setRetainSizeWhenHidden(true);
-	ui->label_to->setSizePolicy(retain);
-	ui->label_to->hide();
+	ui->label_to_1->setSizePolicy(retain);
+	ui->label_to_1->hide();
+
+	ui->label_to_2->setSizePolicy(retain);
+	ui->label_to_2->hide();
 }
 
 void MLClusteringKMeansForm::bindTo(Options *options, DataSet *dataSet)
@@ -108,8 +84,6 @@ void MLClusteringKMeansForm::bindTo(Options *options, DataSet *dataSet)
 	AnalysisForm::bindTo(options, dataSet);
 
 	factorsChanging();
-
-	_anovaModel->setVariables(_targetListModel->assigned(), _predictorsListModel->assigned(), _indicatorListModel->assigned());
 
 	factorsChanged();
 }
@@ -129,64 +103,79 @@ void MLClusteringKMeansForm::factorsChanged()
 void MLClusteringKMeansForm::on_manual_1_clicked(bool checked)
 {
 	if (checked) {
-		ui->trainingDataManual->show();
+		ui->clusterSize->show();
+		ui->optimizedFrom->hide();
+		ui->optimizedTo->hide();
+		ui->robustFrom->hide();
+		ui->robustTo->hide();
+		ui->label_to_1->hide();
+		ui->label_to_2->hide();
 	}
 }
 
 void MLClusteringKMeansForm::on_auto_1_clicked(bool checked)
 {
 	if (checked) {
-		ui->trainingDataManual->hide();
+		ui->clusterSize->hide();
+		ui->optimizedFrom->hide();
+		ui->optimizedTo->hide();
+		ui->robustFrom->hide();
+		ui->robustTo->hide();
+		ui->label_to_1->hide();
+		ui->label_to_2->hide();
+	}
+}
+
+void MLClusteringKMeansForm::on_optimized_1_clicked(bool checked)
+{
+	if (checked) {
+		ui->clusterSize->hide();
+		ui->optimizedFrom->show();
+		ui->optimizedTo->show();
+		ui->robustFrom->hide();
+		ui->robustTo->hide();
+		ui->label_to_1->show();
+		ui->label_to_2->hide();
+	}
+}
+
+void MLClusteringKMeansForm::on_robust_1_clicked(bool checked)
+{
+	if (checked) {
+		ui->clusterSize->hide();
+		ui->optimizedFrom->hide();
+		ui->optimizedTo->hide();
+		ui->robustFrom->show();
+		ui->robustTo->show();
+		ui->label_to_1->hide();
+		ui->label_to_2->show();
 	}
 }
 
 void MLClusteringKMeansForm::on_manual_2_clicked(bool checked)
 {
 	if (checked) {
-		ui->nearestNeighboursCount->show();
-		ui->optimizedFrom->hide();
-		ui->optimizedTo->hide();
-		ui->label_to->hide();
+		ui->iterationsCount->show();
 	}
 }
 
 void MLClusteringKMeansForm::on_auto_2_clicked(bool checked)
 {
 	if (checked) {
-		ui->nearestNeighboursCount->hide();
-		ui->optimizedFrom->hide();
-		ui->optimizedTo->hide();
-		ui->label_to->hide();
-	}
-}
-
-void MLClusteringKMeansForm::on_optimized_2_clicked(bool checked)
-{
-	if (checked) {
-		ui->nearestNeighboursCount->hide();
-		ui->optimizedFrom->show();
-		ui->optimizedTo->show();
-		ui->label_to->show();
+		ui->iterationsCount->hide();
 	}
 }
 
 void MLClusteringKMeansForm::on_manual_3_clicked(bool checked)
 {
 	if (checked) {
-		ui->distanceParameterManual->show();
+		ui->randomSetCount->show();
 	}
 }
 
 void MLClusteringKMeansForm::on_auto_3_clicked(bool checked)
 {
 	if (checked) {
-		ui->distanceParameterManual->hide();
-	}
-}
-
-void MLClusteringKMeansForm::on_optimized_3_clicked(bool checked)
-{
-	if (checked) {
-		ui->distanceParameterManual->hide();
+		ui->randomSetCount->hide();
 	}
 }
