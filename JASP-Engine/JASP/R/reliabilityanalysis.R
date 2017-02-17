@@ -296,11 +296,11 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	rowNames <- gsub("-","", rownames(r$alpha.drop))
 
-	# if all items are reverse scaled psych pastes then for some reason
-	# psych::alpha pastes the first character of variable name to the end of the string
+	# if all items are reverse scaled then for some reason psych::alpha()
+	# pastes the first character of variable name to the end of the string
 	if (length(options$reverseScaledItems) == length(rowNames)) {
 
-		for (i in seq_along(rowNames)) {
+		for (i in seq_along(rowNames)) { # removes the added characters
 			rowNames[i] <- substr(rowNames[i], 1, nchar(rowNames[i]) - 1)
 		}
 
