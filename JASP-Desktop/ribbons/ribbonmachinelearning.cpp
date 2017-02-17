@@ -40,7 +40,7 @@ RibbonMachineLearning::RibbonMachineLearning(QWidget *parent) :
 
 	menu = new QMenu(this);
 	menu->addAction(QString("Boosting"), this, SLOT(itemSelected()))->setObjectName("MLRegressionBoosting");
-	menu->addAction(QString("k nearest neighbours"), this, SLOT(itemSelected()))->setObjectName("SummaryStatsTTestBayesianPairedSamples");
+	menu->addAction(QString("k nearest neighbours"), this, SLOT(itemSelected()))->setObjectName("MLRegressionKNN");
 	menu->addAction(QString("Random forest"), this, SLOT(itemSelected()))->setObjectName("MLRegressionRandomForest");
 
 	ui->regressionButton->setMenu(menu);
