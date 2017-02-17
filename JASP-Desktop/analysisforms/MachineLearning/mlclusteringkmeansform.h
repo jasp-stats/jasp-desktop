@@ -44,24 +44,19 @@ public:
 private:
 	Ui::MLClusteringKMeansForm *ui;
 
-	TableModelVariablesAssigned *_targetListModel;
 	TableModelVariablesAssigned *_predictorsListModel;
-	TableModelVariablesAssigned *_indicatorListModel;
-	TableModelVariablesAssigned *_wlsWeightsListModel;
-	TableModelAnovaModel *_anovaModel;
-	TableModelVariablesAvailable *_factorsAvailableListModel;
 
 private slots:
 	void factorsChanging();
 	void factorsChanged();
 	void on_manual_1_clicked(bool);
 	void on_auto_1_clicked(bool);
+	void on_optimized_1_clicked(bool);
+	void on_robust_1_clicked(bool);
 	void on_manual_2_clicked(bool);
 	void on_auto_2_clicked(bool);
-	void on_optimized_2_clicked(bool);
 	void on_manual_3_clicked(bool);
 	void on_auto_3_clicked(bool);
-	void on_optimized_3_clicked(bool);
 };
 
 #endif // MLCLUSTERINGKMEANSFORM_H
