@@ -19,54 +19,49 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "analysisforms/descriptivesform.h"
+#include "analysisforms/Common/anovaonewayform.h"
+#include "analysisforms/Common/anovaform.h"
+#include "analysisforms/Common/anovarepeatedmeasuresform.h"
+#include "analysisforms/Common/ancovaform.h"
+#include "analysisforms/Common/anovamultivariateform.h"
+#include "analysisforms/Common/ancovamultivariateform.h"
+#include "analysisforms/Common/anovabayesianform.h"
+#include "analysisforms/Common/ancovabayesianform.h"
+#include "analysisforms/Common/anovarepeatedmeasuresbayesianform.h"
+#include "analysisforms/Common/binomialtestform.h"
+#include "analysisforms/Common/binomialtestbayesianform.h"
+#include "analysisforms/Common/bffromtform.h"
+#include "analysisforms/Common/correlationform.h"
+#include "analysisforms/Common/correlationbayesianform.h"
+#include "analysisforms/Common/correlationbayesianpairsform.h"
+#include "analysisforms/Common/correlationpartialform.h"
+#include "analysisforms/Common/contingencytablesform.h"
+#include "analysisforms/Common/contingencytablesbayesianform.h"
+#include "analysisforms/Common/descriptivesform.h"
+#include "analysisforms/Common/exploratoryfactoranalysisform.h"
+#include "analysisforms/Common/principalcomponentanalysisform.h"
+#include "analysisforms/Common/regressionlinearform.h"
+#include "analysisforms/Common/regressionlinearbayesianform.h"
+#include "analysisforms/Common/regressionloglinearform.h"
+#include "analysisforms/Common/regressionloglinearbayesianform.h"
+#include "analysisforms/Common/reliabilityanalysisform.h"
+#include "analysisforms/Common/ttestbayesianindependentsamplesform.h"
+#include "analysisforms/Common/ttestbayesianpairedsamplesform.h"
+#include "analysisforms/Common/ttestbayesianonesampleform.h"
+#include "analysisforms/Common/ttestindependentsamplesform.h"
+#include "analysisforms/Common/ttestpairedsamplesform.h"
+#include "analysisforms/Common/ttestonesampleform.h"
 
-#include "analysisforms/ttestbayesianindependentsamplesform.h"
-#include "analysisforms/ttestbayesianpairedsamplesform.h"
-#include "analysisforms/ttestbayesianonesampleform.h"
-#include "analysisforms/ttestindependentsamplesform.h"
-#include "analysisforms/ttestpairedsamplesform.h"
-#include "analysisforms/ttestonesampleform.h"
+#include "analysisforms/R11tLearn/r11tlearnform.h"
 
+#include "analysisforms/SEM/semsimpleform.h"
 
-#include "analysisforms/anovaonewayform.h"
-#include "analysisforms/anovaform.h"
-#include "analysisforms/anovarepeatedmeasuresform.h"
-#include "analysisforms/ancovaform.h"
-#include "analysisforms/anovamultivariateform.h"
-#include "analysisforms/ancovamultivariateform.h"
-
-#include "analysisforms/anovabayesianform.h"
-#include "analysisforms/ancovabayesianform.h"
-#include "analysisforms/anovarepeatedmeasuresbayesianform.h"
-
-#include "analysisforms/regressionlinearform.h"
-#include "analysisforms/regressionlinearbayesianform.h"
-#include "analysisforms/regressionloglinearform.h"
-#include "analysisforms/regressionloglinearbayesianform.h"
-#include "analysisforms/correlationform.h"
-#include "analysisforms/correlationbayesianform.h"
-#include "analysisforms/correlationbayesianpairsform.h"
-#include "analysisforms/correlationpartialform.h"
-#include "analysisforms/contingencytablesform.h"
-#include "analysisforms/contingencytablesbayesianform.h"
-
-#include "analysisforms/binomialtestform.h"
-#include "analysisforms/binomialtestbayesianform.h"
-#include "analysisforms/bffromtform.h"
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h"
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h"
 #include "analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h"
 #include "analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h"
 #include "analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h"
-
-#include "analysisforms/SEM/semsimpleform.h"
-#include "analysisforms/R11tLearn/r11tlearnform.h"
-
-#include "analysisforms/reliabilityanalysisform.h"
-#include "analysisforms/exploratoryfactoranalysisform.h"
-#include "analysisforms/principalcomponentanalysisform.h"
 
 #include <QDebug>
 #include <QWebFrame>
@@ -96,7 +91,6 @@
 #include "processinfo.h"
 #include "appinfo.h"
 
-
 #include "lrnam.h"
 #include "activitylog.h"
 #include "aboutdialog.h"
@@ -105,6 +99,7 @@
 #include "dirs.h"
 
 using namespace std;
+
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -936,7 +931,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 
 	}
 	else if (event->operation() == FileEvent::FileSave)
-	{		
+	{
 		if (_analyses->count() > 0)
 		{
 			_package->setWaitingForReady();
@@ -1026,7 +1021,7 @@ void MainWindow::dataSetIORequest(FileEvent *event)
 			event->setComplete();
 			dataSetIOCompleted(event);
 		}
-		
+
 		ui->variablesPage->close();
 	}
 }
