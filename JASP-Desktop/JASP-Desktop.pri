@@ -53,7 +53,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/contingencytablesform.cpp \
         $$PWD/analysisforms/correlationpartialform.cpp \
         $$PWD/ribbons/ribbonwidget.cpp \
-        $$PWD/ribbons/ribbonsem.cpp \
         $$PWD/ribbons/ribbonanalysis.cpp \
         $$PWD/ribbons/ribbonhome.cpp \
         $$PWD/widgets/boundtextedit.cpp \
@@ -91,7 +90,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/lrnam.cpp \
         $$PWD/widgets/webview.cpp \
         $$PWD/widgets/button.cpp \
-        $$PWD/ribbons/ribbonr11tlearn.cpp \
         $$PWD/backstage/breadcrumbs.cpp \
         $$PWD/backstage/verticaltabbar.cpp \
         $$PWD/backstage/verticaltabwidget.cpp \
@@ -117,7 +115,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/binomialtestform.cpp \
         $$PWD/analysisforms/binomialtestbayesianform.cpp \
         $$PWD/analysisforms/bffromtform.cpp \
-        $$PWD/ribbons/ribbonsummarystatistics.cpp \
         $$PWD/variableswidget.cpp \
         $$PWD/variablespage/levelstablemodel.cpp \
         $$PWD/variablespage/variablestablemodel.cpp \
@@ -172,14 +169,6 @@ SOURCES += $$PWD/main.cpp \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.cpp \
         $$PWD/analysisforms/principalcomponentanalysisform.cpp \
         $$PWD/analysisforms/reliabilityanalysisform.cpp \
-        $$PWD/analysisforms/SEM/semsimpleform.cpp \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.cpp \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.cpp \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.cpp \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.cpp \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.cpp \
-        $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
-        $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
 		$$PWD/simplecrypt.cpp \
 		$$PWD/importers/convertedstringcontainer.cpp \
 		$$PWD/importers/importer.cpp \
@@ -244,7 +233,6 @@ HEADERS  += \
         $$PWD/analysisforms/contingencytablesform.h \
         $$PWD/analysisforms/correlationpartialform.h \
         $$PWD/ribbons/ribbonwidget.h \
-        $$PWD/ribbons/ribbonsem.h \
         $$PWD/ribbons/ribbonanalysis.h \
         $$PWD/ribbons/ribbonhome.h \
         $$PWD/widgets/boundtextedit.h \
@@ -284,7 +272,6 @@ HEADERS  += \
         $$PWD/widgets/groupbox.h \
         $$PWD/widgets/button.h \
         $$PWD/widgets/webview.h \
-        $$PWD/ribbons/ribbonr11tlearn.h \
         $$PWD/backstage/breadcrumbs.h \
         $$PWD/backstage/verticaltabbar.h \
         $$PWD/backstage/verticaltabwidget.h \
@@ -311,7 +298,6 @@ HEADERS  += \
         $$PWD/analysisforms/binomialtestform.h \
         $$PWD/analysisforms/binomialtestbayesianform.h \
         $$PWD/analysisforms/bffromtform.h \
-        $$PWD/ribbons/ribbonsummarystatistics.h \
         $$PWD/variableswidget.h \
         $$PWD/variablespage/levelstablemodel.h \
         $$PWD/variablespage/variablestablemodel.h \
@@ -361,14 +347,6 @@ HEADERS  += \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.h \
         $$PWD/analysisforms/principalcomponentanalysisform.h \
         $$PWD/analysisforms/reliabilityanalysisform.h \
-        $$PWD/analysisforms/SEM/semsimpleform.h \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.h \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.h \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.h \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.h \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.h \
-        $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.h \
-        $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h \
 		$$PWD/importers/convertedstringcontainer.h \
@@ -411,7 +389,6 @@ FORMS += \
         $$PWD/analysisforms/contingencytablesform.ui \
         $$PWD/analysisforms/correlationpartialform.ui \
         $$PWD/ribbons/ribbonhome.ui \
-        $$PWD/ribbons/ribbonsem.ui \
         $$PWD/ribbons/ribbonanalysis.ui \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/ttestbayesianpairedsamplesform.ui \
@@ -421,29 +398,19 @@ FORMS += \
         $$PWD/analysisforms/correlationbayesianpairsform.ui \
         $$PWD/analysisforms/contingencytablesbayesianform.ui \
         $$PWD/analysisforms/regressionlinearbayesianform.ui \
-        $$PWD/ribbons/ribbonr11tlearn.ui \
         $$PWD/backstage/backstagecomputer.ui \
         $$PWD/analysisforms/regressionloglinearform.ui \
         $$PWD/analysisforms/regressionloglinearbayesianform.ui \
         $$PWD/analysisforms/binomialtestform.ui \
         $$PWD/analysisforms/binomialtestbayesianform.ui \
         $$PWD/analysisforms/bffromtform.ui \
-        $$PWD/ribbons/ribbonsummarystatistics.ui \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
         $$PWD/aboutdialog.ui \
 		$$PWD/preferencesdialog.ui \
 		$$PWD/analysisforms/exploratoryfactoranalysisform.ui \
         $$PWD/analysisforms/principalcomponentanalysisform.ui \
-        $$PWD/analysisforms/reliabilityanalysisform.ui \
-        $$PWD/analysisforms/SEM/semsimpleform.ui \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianindependentsamplesform.ui \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianonesampleform.ui \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsttestbayesianpairedsamplesform.ui \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsbinomialtestbayesianform.ui \
-        $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
-        $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
-        $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
+        $$PWD/analysisforms/reliabilityanalysisform.ui
 
 RESOURCES += \
         $$PWD/backstage/backstage.qrc \

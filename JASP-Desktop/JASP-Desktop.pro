@@ -50,6 +50,26 @@ linux {
 
 include(JASP-Desktop.pri)
 
-HEADERS +=
+# List all pri files in the analysis
+defineReplace(list_pri_files) {
+    FILES = $$files($$1)
+    PRI_FILES =
+    for(file, $$list($$FILES)) {
+        exists($$file)
+        {
+            PRI_FILES *= $$find(file, .*\.pri)
+            PRI_FILES *= $$list_pri_files($$file/*)
+        }
+    }
+    return($$PRI_FILES)
+}
 
-SOURCES +=
+# Directory containing the analysis forms
+ANALYSIS_DIR = $$PWD/analysisforms
+# Directory containing the modules
+MODULES_DIR = $$list_pri_files($$ANALYSIS_DIR)
+
+# Include all the module pri files
+for(file, $$list($$MODULES_DIR)) {
+    include($$file)
+}
