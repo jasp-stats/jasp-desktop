@@ -1,5 +1,7 @@
 #include "importdataset.h"
 
+using namespace std;
+
 ImportDataSet::ImportDataSet()
 {
 }
@@ -13,7 +15,6 @@ ImportDataSet::~ImportDataSet()
 void ImportDataSet::addColumn(ImportColumn *column)
 {
 	_columns.push_back(column);
-	_nameToColMap.insert(make_pair(column->getName(), column));
 }
 
 int ImportDataSet::columnCount() const
@@ -34,7 +35,10 @@ int ImportDataSet::rowCount() const
 
 ImportColumn* ImportDataSet::getColumn(string name) const
 {
-	return _nameToColMap.find(name)->second;
+	if (_nameToColMap.empty())
+		throw runtime_error("Cannot call ImportDataSet::getColumn() before ImportDataSet::buildDictionary()");
+	else
+		return _nameToColMap.find(name)->second;
 }
 
 ImportColumns::iterator ImportDataSet::begin()
@@ -60,9 +64,21 @@ ImportColumns::reverse_iterator ImportDataSet::rend()
 void ImportDataSet::clear()
 {
 	_columns.clear();
+	_nameToColMap.clear();
 }
 
 void ImportDataSet::erase(ImportColumns::iterator it)
 {
 	_columns.erase(it);
 }
+
+/**
+ * @brief buildDictionary Build the dictiontary/mapping.
+ */
+void ImportDataSet::buildDictionary()
+{
+	_nameToColMap.clear();
+	for (ImportColumns::iterator colIt = begin(); colIt != end(); ++colIt)
+		_nameToColMap.insert(make_pair((*colIt)->getName(), *colIt));
+}
+

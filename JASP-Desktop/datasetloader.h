@@ -32,7 +32,7 @@ public:
 
 private:
 	static std::string getExtension(const std::string &locator, const std::string &extension);
-	static Importer* getImporter(DataSetPackage *packageData, const string &locator, const string &extension);
+	static Importer* getImporter(DataSetPackage *packageData, const std::string &locator, const std::string &extension);
 };
 
 #endif // DATASETLOADER_H
