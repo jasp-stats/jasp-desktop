@@ -69,7 +69,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	errorList <- NULL
 
-	if (is.null(resultsAlpha) && !is.null(variables) && length(variables) > 1) {
+	if (is.null(resultsAlpha) && !is.null(variables) && length(variables) > 0) {
 
 		# check for errors
 		anyErrors <- .hasErrors(dataset = dataset, perform = perform,
