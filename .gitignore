@@ -39,3 +39,6 @@ Tools/includeFiles*.nsi
 JASP.pro.user.b601785
 .Rproj.user
 
+#Extracted testfiles 
+Resources/TestFiles
+
