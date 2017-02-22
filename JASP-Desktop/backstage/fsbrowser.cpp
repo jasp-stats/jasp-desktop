@@ -36,6 +36,16 @@ FSBrowser::FSBrowser(QWidget *parent, FSBrowser::BrowseMode mode) : QWidget(pare
 	layout->setContentsMargins(10, 10, 0, 0);
 	setLayout(layout);
 
+	if (mode == FSBrowser::BrowseCurrent)
+	{
+#ifdef __APPLE__
+		QString shortCutKey = "\u2318";
+#else
+		QString shortCutKey = "Ctrl";
+#endif
+		layout->addWidget(new QLabel(QString("Double-click on the file below to synchronize or use ") + shortCutKey + "-Y"));
+	}
+
 	_scrollArea = new VerticalScrollArea(this);
 	_scrollArea->setFrameShape(QScrollArea::NoFrame);
 	layout->addWidget(_scrollArea);
