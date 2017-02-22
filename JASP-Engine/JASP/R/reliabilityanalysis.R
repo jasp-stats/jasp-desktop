@@ -69,10 +69,10 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 
 	errorList <- NULL
 
-	if (is.null(resultsAlpha)) {
+	if (is.null(resultsAlpha) && !is.null(variables) && length(variables) > 0) {
 
 		# check for errors
-		anyErrors <- .hasErrors(dataset = dataset, perform = "run",
+		anyErrors <- .hasErrors(dataset = dataset, perform = perform,
 								type = c("infinity", "variance"))
 
 		doUpdate <- base::identical(anyErrors, FALSE)
@@ -96,7 +96,7 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	results[["reliabilityScale"]] <- .reliabalityScaleTable(resultsAlpha, dataset, options, variables, perform)
 	results[["reliabilityScale"]][["error"]] <- errorList
 
-	if (doUpdate && options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem || options[["mcDonaldItem"]]) {
+	if (options$alphaItem || options$gutmannItem || options$itemRestCor || options$meanItem || options$sdItem || options[["mcDonaldItem"]]) {
 		results[["reliabilityItemsObj"]] <- list(title="Item Statistics", reliabilityItems=.reliabalityItemsTable(resultsAlpha, options, variables, perform))
 	} else {
 		results[["reliabilityItemsObj"]] <- NULL
@@ -295,6 +295,19 @@ ReliabilityAnalysis <- function(dataset = NULL, options, perform = "run",
 	}
 
 	rowNames <- gsub("-","", rownames(r$alpha.drop))
+
+	# if all items are reverse scaled then for some reason psych::alpha()
+	# pastes the first character of variable name to the end of the string
+	if (length(options$reverseScaledItems) == length(rowNames)) {
+
+		for (i in seq_along(rowNames)) { # removes the added characters
+			rowNames[i] <- substr(rowNames[i], 1, nchar(rowNames[i]) - 1)
+		}
+
+		# regex version of the above loop -- perhaps useful in the future
+		# rowNames = gsub('.{1}$', '', rowNames)
+
+	}
 
 	if (!is.null(r)) {
 
