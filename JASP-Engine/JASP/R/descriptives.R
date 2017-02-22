@@ -784,7 +784,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 																
 				plot[["data"]] <- imageObj[["png"]]
 				plot[["obj"]] <- imageObj[["obj"]]
-				
+								
 			} else if (any(is.infinite(column))) {
 
 				plotFunc <- function(){
@@ -812,6 +812,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 																
 				plot[["data"]] <- imageObj[["png"]]
 				plot[["obj"]] <- imageObj[["obj"]]
+				plot[["convertible"]] <- FALSE
 				plot[["status"]] <- "complete"
 
 			} else if (length(column) > 0 && !is.factor(column)) {
@@ -839,6 +840,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 																	
 					plot[["data"]] <- imageObj[["png"]]
 					plot[["obj"]] <- imageObj[["obj"]]
+					plot[["convertible"]] <- FALSE
 					plot[["status"]] <- "complete"
 				}
 
@@ -1470,6 +1472,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				
 				splitPlot[["data"]] <- image[["png"]]
 				splitPlot[["obj"]] <- image[["obj"]]
+				splitPlot[["convertible"]] <- FALSE
 				splitPlot[["status"]] <- "complete"
 
 			}

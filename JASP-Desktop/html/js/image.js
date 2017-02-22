@@ -39,7 +39,7 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	},
 
 	isConvertible: function() {
-		return this.model.get("convertible") != null;
+		return this.model.get("convertible") == true;
 	},
 
 	hasNotes: function () {
