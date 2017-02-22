@@ -1,41 +1,63 @@
-# Function to gracefully exit an analysis when continuing to run is nonsensical.
-# Comparable to stop(message), except does not raise an exception.
+#
+# Copyright (C) 2013-2017 University of Amsterdam
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
 .quitAnalysis <- function(message) {
+  # Function to gracefully exit an analysis when continuing to run is nonsensical.
+  # Comparable to stop(message), except this does not raise an exception.
+  # Arg message: String with the reason why the analysis has ended.
+  
   e <- structure(class = c('expectedError', 'error', 'condition'),
                  list(message=message, call=sys.call(-1)))
   stop(e)
 }
 
-# Adds a stacktrace when an exception is encountered.
-# Includes up to the latest 10 system calls before the analysis encountered an error.
+
 .addStackTrace <- function(e) {
+  # Adds a stacktrace to the error object when an exception is encountered.
+  # Includes up to the latest 10 system calls; the non-informational system calls are omitted.
+  # Arg e: error object.
+
   stack <- ''
-  if (!is.null(sys.calls()) && length(sys.calls()) > 10) {
+  if (! is.null(sys.calls()) && length(sys.calls()) >= 9) {
     
     stack <- sys.calls()  
-    stack <- head(stack[7:length(stack)], -2) # The first 6 and last 2 calls provide no information
+    stack <- head(stack[7:length(stack)], -2)
     if (length(stack) > 10) {
-      stack <- tail(stack, 10) # Show at most the final 10 calls before the error
+      stack <- tail(stack, 10)
     }
     
   }
   e$stackTrace <- stack
-  signalCondition(e) # Signal the modified error object
+  signalCondition(e)
 }
 
 
-# Generic function to create an error message (mostly used with .hasErrors()).
-# Args:
-#   type: String containing check type.
-#   variables: Vector of dependent variables/single string indicating what did not pass the check.
-#   grouping: Vector of grouping variables/single string indicating what the dependents were grouped on.
-#   includeOpening: Boolean, should there be a general opening line (TRUE) or only the one-line, specific error message (FALSE).
-#   concatenateWith: String, include if you want to append the error message to an already existing message [Should only be used from hasErrors()].
-#   ...: Each error message can have any number of variables, denoted by {{}}'s. Add these as arg=val pairs.
-#
-# Returns:
-#   String containing the error message.
 .generateErrorMessage <- function(type, variables=NULL, grouping=NULL, includeOpening=FALSE, concatenateWith=NULL, ...) {
+  # Generic function to create an error message (mostly used by .hasErrors() but it can be directly called).
+  # Args:
+  #   type: String containing check type consistent with a message type in commmonmessages.R.
+  #   variables: Vector of dependent variables indicating those that did not pass the check.
+  #   grouping: Vector of grouping variables indicating what the dependents were grouped on.
+  #   includeOpening: Boolean, indicate if there should be a general opening statement (TRUE) or only the specific error message (FALSE).
+  #   concatenateWith: String, include if you want to append the error message to an already existing message [Should only be used by hasErrors()].
+  #   ...: Each error message can have any number of variables, denoted by {{}}'s. Add these as arg=val pairs.
+  #
+  # Returns:
+  #   String containing the error message.
   
   if (length(type) == 0) {
     stop('Non-valid type argument provided')
@@ -49,13 +71,13 @@
     stop('Could not find error message for "', type, '"')
   }
   
-  # See if we need to add a grouping line
+  # See if we need to add a grouping line.
   if (length(grouping) > 0) {
     message <- paste(message, .messages('error', 'grouping'))
     message <- gsub('{{grouping}}', paste(grouping, collapse=', '), message, fixed=TRUE)
   }
   
-  # See if we need to specify variables
+  # See if we need to specify variables.
   if (grepl('{{variables}}', message, fixed=TRUE)) {
     if (is.null(variables)) {
       stop('This error message requires the offending variables to be specified')
@@ -63,16 +85,16 @@
     message <- gsub('{{variables}}', paste(variables, collapse=', '), message, fixed=TRUE)
   }
   
-  # Find all {{string}}'s that needs to be replaced by values
+  # Find all {{string}}'s that needs to be replaced by values.
   toBeReplaced <- regmatches(message, gregexpr("(?<=\\{{)\\S*?(?=\\}})", message, perl=TRUE))[[1]]
   if (base::identical(toBeReplaced, character(0)) == FALSE) { # Were there any {{string}}'s?
     if (all(toBeReplaced %in% names(args)) == FALSE) { # Were all replacements provided in the arguments?
-      missingReplacements <- toBeReplaced[!toBeReplaced %in% names(args)]
+      missingReplacements <- toBeReplaced[! toBeReplaced %in% names(args)]
       stop('Missing required replacement(s): "', paste(missingReplacements, collapse=','), '"')
     }
     for (i in 1:length(toBeReplaced)) {
       value <- args[[ toBeReplaced[i] ]]
-      if (length(value) > 1) { # Some arguments may have multiple values, e.g. c('< 3', '> 5000')
+      if (length(value) > 1) { # Some arguments may have multiple values, e.g. amount = c('< 3', '> 5000').
         value <- paste(value, collapse=' or ')
       }
       message <- gsub(paste0('{{', toBeReplaced[i], '}}'), value, message, fixed=TRUE)
@@ -86,21 +108,21 @@
     }
   }
   
-  # Add line indicator
-  if (!is.null(concatenateWith) || includeOpening == TRUE) {
+  # Add line indicator.
+  if (! is.null(concatenateWith) || includeOpening == TRUE) {
     message <- paste0('<li>', message, '</li></ul>')
   }
   
-  # See if we should concatenate it with something
-  if (!is.null(concatenateWith)) {
+  # See if we should concatenate it with something.
+  if (! is.null(concatenateWith)) {
     endOfString <- substr(concatenateWith, nchar(concatenateWith)-4, nchar(concatenateWith))
-    if (endOfString == '</ul>') { # Check if we need to remove a closing </ul>
+    if (endOfString == '</ul>') {
       concatenateWith <- substr(concatenateWith, 1, nchar(concatenateWith)-5)
     }
     message <- paste0(concatenateWith, message)
   }
   
-  # See if we should add an opening line
+  # See if we should add an opening line.
   if (includeOpening == TRUE) {
     message <- paste0(.messages('error', 'opening'), '<ul>', message)
   }
@@ -109,21 +131,20 @@
 }
 
 
-# Generic error checking function.
-# Args:
-#   dataset: Normal JASP dataset.
-#   perform: 'run' or 'init'.
-#   type: List/vector/character containing check type(s).
-#   message: 'short', 'default' or 'verbose', should only the first failure of a check be reported in single line form ('short'), or should every check be mentioned in multi-line form;
-#             in which case, should variables be mentioned multiple times in multiple checks ('verbose'), or only for the first failure ('default'). (In any case a full error list is generated)
-#   exitAnalysisIfErrors: Boolean, should the function simply return its results, or abort the entire analysis when a failing check is encountered.
-#   ...: Each check may have required and optional arguments, they are specified in the error check subfunctions.
-#        E.g. to perform a check only on certain variables instead of all, include a target (e.g. variance.target=options$dependent).
-#
-# Returns:
-#   FALSE if no errors were found or a named list specifying for each check which variables violated it as well as a general error message.
 .hasErrors <- function(dataset, perform, type, message='default', exitAnalysisIfErrors=FALSE, ...) {
-  
+  # Generic error checking function.
+  # Args:
+  #   dataset: Normal JASP dataset.
+  #   perform: 'run' or 'init'.
+  #   type: List/vector containing check type(s).
+  #   message: 'short', 'default' or 'verbose', should only the first failure of a check be reported in footnote style ('short'), or should every check be mentioned in multi-line form;
+  #             in which case, are variables allowed to be mentioned as failing multiple checks ('verbose') or only the first check they fail ('default').
+  #   exitAnalysisIfErrors: Boolean, should the function simply return its results (FALSE), or abort the entire analysis when a failing check is encountered (TRUE).
+  #   ...: Each check may have required and optional arguments, they are specified in the error check subfunctions.
+  #
+  # Returns:
+  #   FALSE if no errors were found or a named list specifying for each check which variables violated it as well as a general error message.
+
   if (is.null(dataset) || perform != 'run' || length(type) == 0) {
     return(FALSE)
   }
@@ -132,7 +153,7 @@
     message <- 'default'
   }
   
-  # Error checks definition
+  # Error checks definition.
   checks <- list()
   checks[['infinity']] <- list(callback=.checkInfinity, addGroupingMsg=FALSE)
   checks[['factorLevels']] <- list(callback=.checkFactorLevels)
@@ -144,13 +165,12 @@
   
   for (i in 1:length(type)) {
     
-    # See if the specified check exists
     check <- checks[[ type[[i]] ]]
     if (is.null(check)) {
       stop('Unknown check type provided: "', type[[i]], '"')
     }
 
-    # Obtain the arguments this specific callback uses, attach the check specific prefix
+    # Obtain the arguments this specific callback uses, attach the check specific prefix.
     funcArgs <- base::formals(check[['callback']])
     funcArgs[c('dataset', '...')] <- NULL
     names(funcArgs) <- paste0(type[[i]], '.', names(funcArgs))
@@ -167,53 +187,48 @@
       }
     }
     
-    # See if this check expects target variables and if they were provided, if not add all variables
-    if (paste0(type[[i]], '.target') %in% names(funcArgs) && !paste0(type[[i]], '.target') %in% names(args)) {
+    # See if this check expects target variables and if they were provided, if not add all variables.
+    if (paste0(type[[i]], '.target') %in% names(funcArgs) && ! paste0(type[[i]], '.target') %in% names(args)) {
       args[[ paste0(type[[i]], '.target') ]] <- .unv(names(dataset))
     } 
     
-    # Obtain an overview of required and optional check arguments
+    # Obtain an overview of required and optional check arguments.
     optArgs <- list()
     reqArgs <- list()
     for (a in 1:length(funcArgs)) {
-      if (is.symbol(funcArgs[[a]])) { # required args' value is symbol
+      if (is.symbol(funcArgs[[a]])) { # Required args' value is symbol.
         reqArgs <- c(reqArgs, funcArgs[a])
       } else {
         optArgs <- c(optArgs, funcArgs[a])
       }
     }
     
-    # See if all required arguments are provided
     if (length(reqArgs) > 0 && all(names(reqArgs) %in% names(args)) == FALSE) {
-      missingArgs <- reqArgs[!names(reqArgs) %in% names(args)]
+      missingArgs <- reqArgs[! names(reqArgs) %in% names(args)]
       stop('Missing required argument(s): "', paste(names(missingArgs), collapse=','), '"')
     }
     
-    # See if optional arguments are provided, if not, add default values to args so we can use them in the error message
     if (length(optArgs) > 0 && all(names(optArgs) %in% names(args)) == FALSE) {
-      args <- c(args, optArgs[!names(optArgs) %in% names(args)])
+      args <- c(args, optArgs[! names(optArgs) %in% names(args)])
     }
     
-    # Call the function with arguments sanse the prefix (e.g. variance.target = target)
+    # Call the function with arguments sans the prefix (e.g. variance.target becomes target).
     callingArgs <- c(list(dataset=dataset), args)
     names(callingArgs) <- gsub(paste0(type[[i]], '.'), '', names(callingArgs), fixed=TRUE)
     checkResult <- base::do.call(check[['callback']], callingArgs)
     
-    # Are there errors
     if (checkResult[['error']] == TRUE) {
       
       createMessage <- TRUE
       varsToAdd <- checkResult[['errorVars']]
       
-      # In case we want a single line message
       if (message == 'short' && length(errors) > 1) {
         createMessage <- FALSE
       } 
       
-      # Or multi-line but with single variable mentions
-      if (message == 'default' && length(errors) > 1 && !is.null(varsToAdd)) {
-        for (e in 2:length(errors)) { # first element is the error message
-          varsToAdd <- varsToAdd[ !varsToAdd %in% errors[[e]] ]
+      if (message == 'default' && length(errors) > 1 && ! is.null(varsToAdd)) {
+        for (e in 2:length(errors)) { # First element is the error message.
+          varsToAdd <- varsToAdd[! varsToAdd %in% errors[[e]] ]
           if (length(varsToAdd) == 0) {
             createMessage <- FALSE
             break
@@ -221,7 +236,6 @@
         }
       }
       
-      # If it's all good create/expand the error message
       if (createMessage == TRUE) {
         opening = FALSE
         if (is.null(errors[['message']]) && message != 'short') {
@@ -229,15 +243,18 @@
         }
         
         grouping <- NULL
-        if (!is.null(check[['addGroupingMsg']]) && !is.null(args[[ paste0(type[[i]], '.grouping') ]]) && check[['addGroupingMsg']] == TRUE) {
+        if (! is.null(check[['addGroupingMsg']]) && check[['addGroupingMsg']] == TRUE && 
+          ! is.null(args[[ paste0(type[[i]], '.grouping') ]]) ) {
           grouping <- args[[ paste0(type[[i]], '.grouping') ]]
         }
         
         errors[['message']] <- base::do.call(.generateErrorMessage, 
-                                             c(list(type=type[[i]], variables=varsToAdd, grouping=grouping, includeOpening=opening, concatenateWith=errors[['message']]), args))
+                                             c(list(type=type[[i]], variables=varsToAdd, 
+                                               grouping=grouping, includeOpening=opening, 
+                                               concatenateWith=errors[['message']]), args))
       }
       
-      # Add the error (with any offending variables, otherwise TRUE) to the list
+      # Add the error (with any offending variables, or TRUE if there were no variables) to the list.
       if (is.null(checkResult[['errorVars']])) {
         errors[[ type[[i]] ]] <- TRUE
       } else {
@@ -246,9 +263,8 @@
       
     }
     
-  }
+  } # End for-loop.
   
-  # Done with all the checks, time to return...
   if (length(errors) == 1)  {
     return(FALSE)
   } 
@@ -260,17 +276,19 @@
   return(errors) 
 }
 
-# Convenience function to apply a check on a specific level of the dependent, or on all subgroups.
-# Args:
-#   func: Function to perform on the subgroup(s).
-#   dataset: JASP dataset.
-#   target: String: single dependent variable
-#   grouping: Vector of strings or single string indicating the grouping variables
-#   levels: Vector of strings/numerics or single string/numeric indicating the level of each of the grouping variables
-#
-# Returns:
-#   Result of the func in vector form when no levels were supplied, otherwise as a single value.
+
 .applyOnGroups <- function(func, dataset, target, grouping, levels=NULL) {
+  # Convenience function to apply a check on a specific level of the dependent, or on all subgroups.
+  # Args:
+  #   func: Function to perform on the subgroup(s).
+  #   dataset: JASP dataset.
+  #   target: Single string with the dependent variable.
+  #   grouping: String vector indicating the grouping variables.
+  #   levels: Vector indicating the level of each of the grouping variables.
+  #
+  # Returns:
+  #   Result of the func in vector form when no levels were supplied, otherwise as a single value.
+
   
   if (length(levels) > 0) {
     
@@ -278,18 +296,17 @@
       stop('Each grouping variable must have a level specified')
     }
     
-	# The levels vector may be a 'mix' of numeric and characters, we need to add additional quotation marks around characters
-	if (is.character(levels)) {
-		levels <- vapply(levels, function(x) {
-			if (suppressWarnings(is.na(as.numeric(x)))) {
-				paste0("\"", x, "\"")
-			} else {
-				x
-			}
-		}, character(1))
-	}
+  	# The levels vector may be a 'mix' of numeric and characters, we need to add additional quotation marks around characters.
+  	if (is.character(levels)) {
+  		levels <- vapply(levels, function(x) {
+  			if (suppressWarnings(is.na(as.numeric(x)))) {
+  				paste0("\"", x, "\"")
+  			} else {
+  				x
+  			}
+  		}, character(1))
+  	}
     
-    # Subset based on an expression
     expr <- paste(.v(grouping), levels, sep='==', collapse='&')
     dataset <- subset(dataset, eval(parse(text=expr)))
     result <- func(dataset[[.v(target)]])
@@ -297,7 +314,7 @@
   } else {
     
     result <- plyr::ddply(dataset, .v(grouping), function(data, target) func(data[[.v(target)]]), target)
-    result <- result[[ncol(result)]] # The last column holds the func results
+    result <- result[[ncol(result)]] # The last column holds the func results.
     
   }
   
@@ -305,8 +322,14 @@
 }
 
 
-# Check for infinity, optionally specify grouping with levels (makes no sense to perform a grouped search without levels)
 .checkInfinity <- function(dataset, target, grouping=NULL, groupingLevel=NULL, ...) {
+  # Check for infinity in the dataset. 
+  # Args:
+  #   dataset: JASP dataset.
+  #   target: String vector indicating the target variables.
+  #   grouping: String vector indicating the grouping variables.
+  #   groupingLevel: Vector indicating the level of each of the grouping variables.
+  
   result <- list(error=FALSE, errorVars=NULL)
   
   findInf <- function(x) {
@@ -315,13 +338,13 @@
   
   for (v in target) {
     
-    if (is.factor(dataset[[.v(v)]])) { # Coerce factor to numeric
+    if (is.factor(dataset[[.v(v)]])) { # Coerce factor to numeric.
       dataset[[.v(v)]] <- as.numeric(as.character(dataset[[.v(v)]]))
     } 
     
-    if (length(grouping) > 0 && length(groupingLevel) > 0) { # Should the data be grouped?
+    if (length(grouping) > 0 && length(groupingLevel) > 0) { 
       hasInf <- .applyOnGroups(findInf, dataset, v, grouping, groupingLevel)
-    } else {
+    } else { # Makes no sense to check all subgroups for infinity rather than the entire variable at once.
       hasInf <- findInf(dataset[[.v(v)]])
     }
     
@@ -335,16 +358,21 @@
 }
 
 
-# Check for the amount of factor levels, required argument is an amount (string) to check (e.g. '!= 2')
 .checkFactorLevels <- function(dataset, target, amount, ...) {
+  # Check if there are the required amount of levels in factors.
+  # Args:
+  #   dataset: JASP dataset.
+  #   target: String vector indicating the target variables.
+  #   amount: String vector indicating the amount to check for (e.g. '< 2', or '!= 2').
+  
   result <- list(error=FALSE, errorVars=NULL)
 
   for (v in target) {
     
     levelsOfVar <- length(unique(dataset[[.v(v)]]))
-    for (amount in amount) {
-      expr <- paste(levelsOfVar, amount) # Build the expression to check for
-      if (eval(parse(text=expr))) { # See if this expression is true
+    for (checkAmount in amount) {
+      expr <- paste(levelsOfVar, checkAmount)
+      if (eval(parse(text=expr))) {
         result$error <- TRUE
         result$errorVars <- c(result$errorVars, v)
         break
@@ -356,8 +384,15 @@
 }
 
 
-# Check for variance in the data. Optionally specify the variance amount which equates an error and grouping (possibly with levels)
-.checkVariance <- function(dataset, target, grouping=NULL, groupingLevel=NULL, equalTo=0, ...) {
+.checkVariance <- function(dataset, target, equalTo=0, grouping=NULL, groupingLevel=NULL, ...) {
+  # Check for a certain variance in the dataset. 
+  # Args:
+  #   dataset: JASP dataset.
+  #   target: String vector indicating the target variables.
+  #   equalTo: Single numeric.
+  #   grouping: String vector indicating the grouping variables.
+  #   groupingLevel: Vector indicating the level of each of the grouping variables.
+  
   result <- list(error=FALSE, errorVars=NULL)
   
   getVariance <- function(x) {
@@ -371,13 +406,13 @@
   
   for (v in target) {
     
-    if (length(grouping) > 0) { # There are grouping vars
+    if (length(grouping) > 0) {
       variance <- .applyOnGroups(getVariance, dataset, v, grouping, groupingLevel)
     } else {
       variance <- getVariance(dataset[[.v(v)]])
     }
     
-    if (any(variance == equalTo)) { # Check the function results
+    if (any(variance == equalTo)) {
       result$error <- TRUE
       result$errorVars <- c(result$errorVars, v)
     }
@@ -387,8 +422,15 @@
 }
 
 
-# Check for the number of observations in the dependent(s). Required argument is an amount (string) to check (e.g. '< 1'), optionally grouping (possibly with levels)
-.checkObservations <- function(dataset, target, grouping=NULL, groupingLevel=NULL, amount, ...) {
+.checkObservations <- function(dataset, target, amount, grouping=NULL, groupingLevel=NULL, ...) {
+  # Check the number of observations in the dependent(s).
+  # Args:
+  #   dataset: JASP dataset.
+  #   target: String vector indicating the target variables.
+  #   amount: String vector indicating the amount to check for (e.g. '< 2', or '> 4000').
+  #   grouping: String vector indicating the grouping variables.
+  #   groupingLevel: Vector indicating the level of each of the grouping variables.
+  
   result <- list(error=FALSE, errorVars=NULL)
   
   getObservations <- function(x) {
@@ -397,15 +439,15 @@
   
   for (v in target) {
     
-    if (length(grouping) > 0) { # There are grouping vars
+    if (length(grouping) > 0) {
       obs <- .applyOnGroups(getObservations, dataset, v, grouping, groupingLevel)
     } else {
       obs <- getObservations(dataset[[.v(v)]])
     }
     
-    for (amount in amount) {
-      expr <- paste(obs, amount) # Build the expression to check for
-      if (any(sapply(expr, function(x) eval(parse(text=x))))) { # See if any of the expressions is true
+    for (checkAmount in amount) {
+      expr <- paste(obs, checkAmount)
+      if (any(sapply(expr, function(x) eval(parse(text=x))))) { # See if any of the expressions is true.
         result$error <- TRUE
         result$errorVars <- c(result$errorVars, v)
         break
@@ -413,13 +455,5 @@
     }
     
   }
-  return(result)
-}
-
-
-.checkInputs <- function(inputs.group1, inputs.group2=NULL, inputs.operator, ...) {
-  result <- list(error=FALSE)
-  
-  
   return(result)
 }
