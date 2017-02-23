@@ -40,6 +40,7 @@ public slots:
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event) OVERRIDE;
+	virtual void mouseMoveEvent(QMouseEvent *event) OVERRIDE;
 
 private slots:
 	void nominalSelected();
