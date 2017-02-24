@@ -27,6 +27,9 @@
   messages$error$observations <- "Number of observations {{observations.amount}} in {{variables}}"
   messages$error$levene <- "Cannot compute statistic reliably: number of observations {{observations.amount}} in {{variables}}"
   
+  messages$error$varCovMatrix <- "Dataset is not a proper variance-covariance matrix. Please load only a positive definite symmetrical matrix as your dataset."
+  
+  
   messages$notes$leveneSign <- "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"
   return(messages[[type]][[id]])
 }

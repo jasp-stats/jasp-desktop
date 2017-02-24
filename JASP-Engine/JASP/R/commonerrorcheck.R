@@ -84,7 +84,7 @@
     }
     message <- gsub('{{variables}}', paste(variables, collapse=', '), message, fixed=TRUE)
   }
-  
+
   # Find all {{string}}'s that needs to be replaced by values.
   toBeReplaced <- regmatches(message, gregexpr("(?<=\\{{)\\S*?(?=\\}})", message, perl=TRUE))[[1]]
   if (base::identical(toBeReplaced, character(0)) == FALSE) { # Were there any {{string}}'s?
@@ -159,6 +159,7 @@
   checks[['factorLevels']] <- list(callback=.checkFactorLevels)
   checks[['variance']] <- list(callback=.checkVariance, addGroupingMsg=TRUE)
   checks[['observations']] <- list(callback=.checkObservations, addGroupingMsg=TRUE)
+  checks[['varCovMatrix']] <- list(callback=.checkVarCovMatrix, addGroupingMsg=FALSE)
   
   args <- list(...)
   errors <- list(message=NULL)
@@ -456,4 +457,28 @@
     
   }
   return(result)
+}
+
+# Check if data set is variance-covariance matrix
+.checkVarCovMatrix <- function(dataset,nrow=TRUE,symm=TRUE,posdef=TRUE,...){
+
+  # as matrix:
+  dataMatrix <- as.matrix(dataset)
+  
+  # number of rows equal to number of columns?
+  if (nrow && nrow(dataset) != ncol(dataset)){
+    return(list(error=TRUE,reason="Dataset is not a square matrix"))
+  }
+  
+  # Symmetrical?
+  if (symm && !all(round(dataset,10) == t(round(dataset,10)))){
+    return(list(error=TRUE,reason="Matrix is not symmetrical"))
+  }
+  
+  # Positive-definite?
+  if (posdef && any(round(eigen(dataset)$values,10) < 0)){
+    return(list(error=TRUE,reason="Matrix is not positive-definite"))
+  }
+  
+  return(list(error=FALSE, reason = ""))
 }
