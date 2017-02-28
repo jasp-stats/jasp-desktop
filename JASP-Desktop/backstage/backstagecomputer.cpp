@@ -59,7 +59,7 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 
 	QString filter = "Data Sets (*.jasp *.csv *.txt *.sav *.ods)";
 	if (_mode == FileEvent::FileSyncData)
-		filter = "Data Sets (*.csv *.txt *.sav *.ods *.ods)";
+		filter = "Data Sets (*.csv *.txt *.sav *.ods)";
 	QString finalPath = QFileDialog::getOpenFileName(this, "Open", browsePath, filter);
 
 	FileEvent *event = new FileEvent(this, _mode);
@@ -67,10 +67,6 @@ FileEvent *BackstageComputer::browseOpen(const QString &path)
 	if (finalPath != "")
 	{
 		event->setPath(finalPath);
-
-		if ( ! path.endsWith(".jasp", Qt::CaseInsensitive) && _mode != FileEvent::FileSyncData)
-			event->setReadOnly();
-
 		emit dataSetIORequest(event);
 	}
 	else

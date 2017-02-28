@@ -82,6 +82,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const strin
 	Json::Value &dataSetDesc = metaData["dataSet"];
 
 	packageData->dataFilePath = metaData["dataFilePath"].isNull() ? std::string() : metaData["dataFilePath"].asString();
+	packageData->dataFileReadOnly = metaData["dataFileReadOnly"].isNull() ? false : metaData["dataFileReadOnly"].asBool();
 	packageData->dataFileTimestamp = metaData["dataFileTimestamp"].isNull() ? 0 : metaData["dataFileTimestamp"].asInt();
 	columnCount = dataSetDesc["columnCount"].asInt();
 	rowCount = dataSetDesc["rowCount"].asInt();
