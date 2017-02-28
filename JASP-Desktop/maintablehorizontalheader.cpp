@@ -39,26 +39,46 @@ MainTableHorizontalHeader::MainTableHorizontalHeader(QWidget *parent) :
 	_convertToNominal = _menu->addAction(_nominalIcon, "", this, SLOT(nominalSelected()));
 }
 
+void MainTableHorizontalHeader::mouseMoveEvent(QMouseEvent *event)
+{
+	QPoint pos = event->pos();
+	int index = logicalIndexAt(pos);
+	int itemPos = sectionViewportPosition(index);
+	_columnSelected = index;
+	int x = pos.x() - itemPos;
+	
+	this->setToolTip("No valid column to change");
+	
+	if (x >= 4 && x <= 24)
+	{
+		this->setToolTip("Click on icon to change measurement level");
+	}
+	else
+	{
+		//Check for valid column 
+		if (_columnSelected >= 0) 
+			this->setToolTip("Click on column name to change labels");		
+	}					
+}
+
+
 void MainTableHorizontalHeader::mousePressEvent(QMouseEvent *event)
 {
 	QPoint pos = event->pos();
 	int index = logicalIndexAt(pos);
-
 	int itemPos = sectionViewportPosition(index);
 	_columnSelected = index;
-
 	int x = pos.x() - itemPos;
+	
 	if (x >= 4 && x <= 24)
 	{
-
 		QPoint menuPos = this->mapToGlobal(QPoint(itemPos, this->height()));
-
 		_menu->move(menuPos);
 		_menu->show();
 	}
 	else
 	{
-		//Check for non-valid column 
+		//Check for valid column 
 		if (_columnSelected >= 0) 
 			emit columnNamePressed(_columnSelected);
 	}
