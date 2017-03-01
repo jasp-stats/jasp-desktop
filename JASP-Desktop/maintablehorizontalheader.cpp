@@ -26,6 +26,7 @@ MainTableHorizontalHeader::MainTableHorizontalHeader(QWidget *parent) :
 {
 	_menu = new QMenu(this);
 	_columnSelected = 0;
+	_dataSetModel = NULL;
 
 	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
@@ -37,6 +38,12 @@ MainTableHorizontalHeader::MainTableHorizontalHeader(QWidget *parent) :
 	_convertToScale = _menu->addAction(_scaleIcon, "", this, SLOT(scaleSelected()));
 	_convertToOrdinal = _menu->addAction(_ordinalIcon, "", this, SLOT(ordinalSelected()));
 	_convertToNominal = _menu->addAction(_nominalIcon, "", this, SLOT(nominalSelected()));
+}
+
+void MainTableHorizontalHeader::setModel(QAbstractItemModel *model)
+{
+	_dataSetModel = dynamic_cast<DataSetTableModel *>(model);
+	QHeaderView::setModel(model);
 }
 
 void MainTableHorizontalHeader::mouseMoveEvent(QMouseEvent *event)
@@ -56,8 +63,13 @@ void MainTableHorizontalHeader::mouseMoveEvent(QMouseEvent *event)
 	else
 	{
 		//Check for valid column 
-		if (_columnSelected >= 0) 
-			this->setToolTip("Click on column name to change labels");		
+		if (_columnSelected >= 0)
+		{
+			if (_dataSetModel->getColumnType(_columnSelected) == Column::ColumnTypeScale)
+				this->setToolTip("Scale column does not have labels. Click on the icon if you want to change the measurement level");
+			else
+				this->setToolTip("Click on column name to change labels");
+		}
 	}					
 }
 
@@ -79,7 +91,7 @@ void MainTableHorizontalHeader::mousePressEvent(QMouseEvent *event)
 	else
 	{
 		//Check for valid column 
-		if (_columnSelected >= 0) 
+		if (_columnSelected >= 0 && _dataSetModel->getColumnType(_columnSelected) != Column::ColumnTypeScale)
 			emit columnNamePressed(_columnSelected);
 	}
 
