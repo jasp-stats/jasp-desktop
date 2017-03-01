@@ -585,7 +585,6 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 }
 
 .resultsPostHoc <- function (referenceGrid, options, dataset, fullModel) {
-
     resultsPostHoc <- list()
   
 		variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
@@ -605,7 +604,7 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		  
 		  # Results using the Scheffe method
 		  resultScheffe <- summary(pairs(referenceGrid[[var]], adjust="scheffe"))
-		  
+		   
 		  # Results using the Bonferroni method
 		  resultBonf <- summary(pairs(referenceGrid[[var]], adjust="bonferroni"), infer = TRUE)
 		  comparisons <- strsplit(as.character(resultBonf$contrast), " - ")
@@ -613,13 +612,14 @@ AnovaRepeatedMeasures <- function(dataset=NULL, options, perform="run", callback
 		  # Results using the Holm method
 		  resultHolm <- summary(pairs(referenceGrid[[var]], adjust="holm"))
 	
+		  orderOfTerms <- unlist(options$withinModelTerms[[length(options$withinModelTerms)]]$components)
+		  indexofOrderFactors <- match(allNames,orderOfTerms)
 		  
 		  if(any(var == allNames)){     ## If the variable is a repeated measures factor
 		    
-		    
 		    levelsOfThisFactor <- unlist(lapply(options$repeatedMeasuresFactors[rmFactorIndex], function(x) x$levels)) # Levels within Factor
 		    numberOfLevels <- length(unique(levelsOfThisFactor))
-		    splitNames <- unlist(lapply(strsplit(factorNamesV,  split = "_"), function(x) x[rmFactorIndex]))
+		    splitNames <- unlist(lapply(strsplit(factorNamesV,  split = "_"), function(x) x[indexofOrderFactors[rmFactorIndex]]))
 		    
 		    listVarNamesToLevel <- list()  # create a list of vectors of variable names, used to group the dataset for the post-hoc t-tests
 		    for(i in 1:numberOfLevels){
