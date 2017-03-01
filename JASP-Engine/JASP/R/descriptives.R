@@ -1245,7 +1245,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			plot <- matrix.plot
 			plot[["data"]]  <- imgObj[["png"]]
 			plot[["obj"]] <- imgObj[["obj"]]
-			plot[["convertible"]] <- TRUE
+			plot[["convertible"]] <- FALSE
 			
 			matrix.plot <- plot
 
