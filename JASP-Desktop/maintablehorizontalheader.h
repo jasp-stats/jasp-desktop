@@ -24,6 +24,7 @@
 
 #include "column.h"
 #include "common.h"
+#include "datasettablemodel.h"
 
 class MainTableHorizontalHeader : public QHeaderView
 {
@@ -31,6 +32,8 @@ class MainTableHorizontalHeader : public QHeaderView
 
 public:
 	explicit MainTableHorizontalHeader(QWidget *parent = 0);
+
+	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
 
 signals:
 	void columnTypeChanged(int columnIndex, Column::ColumnType newColumnType);
@@ -49,6 +52,7 @@ private slots:
 
 private:
 	int _columnSelected;
+	DataSetTableModel *_dataSetModel;
 
 	QMenu *_menu;
 
