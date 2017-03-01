@@ -202,5 +202,12 @@ Next, we need to make the plot objects available to be retrieved by the javascri
               keep=keep))
   ```
 
+
+## Notes
+
+Note that this last step makes the "keep" object in the results redundant, as the names of the elements to be kept are already in the figures. Once properly implemented, this keep functionality will therefore be removed.
+
+In addition, the saveimage function depends on the `.ppi` value as calculated in JavaScript. This is unfortunate, as this value does not seem to be exactly correct. After implementation, we should look at the exact pixels per logical inch (ppi) values for the program, possibly through Qt rather than JavaScript.
+
 ---
 <a id="outputpane">1</a>. Remember that the output pane is simply a stripped-down webbrowser. Web-browsers easily incorporate `png` and `jpg` in the html page, but not `eps`!	[&#8629;](#outputpaneref)

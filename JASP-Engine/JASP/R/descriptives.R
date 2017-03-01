@@ -174,7 +174,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 														 splitPlots=splitPlots, title="Plots")
 
 	keep <- NULL
-
+	
 	for (plot in results$plots$distributionPlots$collection)
 		keep <- c(keep, plot$data)
 	for (plot in results$plots$splitPlots$collection)
@@ -1472,7 +1472,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 				
 				splitPlot[["data"]] <- image[["png"]]
 				splitPlot[["obj"]] <- image[["obj"]]
-				splitPlot[["convertible"]] <- FALSE
+				splitPlot[["convertible"]] <- TRUE
 				splitPlot[["status"]] <- "complete"
 
 			}

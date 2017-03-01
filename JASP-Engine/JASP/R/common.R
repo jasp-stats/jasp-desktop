@@ -632,80 +632,6 @@ callback <- function(results=NULL) {
 	filename
 }
 
-.writeImage <- function(width=320, height=320, plot, 
-												format = "png", relpath = NULL){
-	# initialise output object
-	paths <- list()
-	
-	# Operating System information
-	type <- "cairo"  
-  if (Sys.info()["sysname"]=="Darwin")
-    type <- "quartz"
-  
-  # Calculate pixel multiplier
-  pngMultip <- .ppi / 96
-  
-  # Create png file location
-  location <- .requestTempFileNameNative("png")
-  if (!is.null(relpath) && is.character(relpath)){
-		relativePathpng <- relpath
-	} else {
-		relativePathpng <- location$relativePath
-	}	
-  fullPathpng <- paste(location$root, relativePathpng, sep="/")
-	base::Encoding(relativePathpng) <- "UTF-8"
-  base::Encoding(fullPathpng) <- "UTF-8"
-  
-
-	
-	if (class(plot) ==  "function" || "png" %in% format){
-		# Open graphics device and plot
-	  grDevices::png(filename=fullPathpng, width=width * pngMultip, 
-	                 height=height * pngMultip, bg="transparent", 
-	                 res=72 * pngMultip, type=type)
-		if (class(plot) ==  "function"){
-	 		dev.control('enable')
-	 		eval(plot())
-	 		plot <- recordPlot() # save plot to R object
-	 	} else {
-			print(plot)
-		}
-	  dev.off()
-	}
-	
-	# Save path to output object
-	paths[["png"]] <- relativePathpng
-	paths[["obj"]] <- plot
-	
-  # Alternative formats
-  if ("eps" %in% format){
-    # Calculate eps pixel->inch multiplier
-    epsMultip <- .ppi / 2.4
-    
-    # Create eps file location
-    relativePatheps <- paste0(base::substr(relativePathpng, start = 1, 
-                                           stop = nchar(relativePathpng)-3),	
-															"eps")
-    base::Encoding(relativePatheps) <- "UTF-8"
-    fullPatheps <- paste0(base::substr(fullPathpng, start = 1, 
-                                       stop = nchar(fullPathpng)-3), 
-													"eps")
-    base::Encoding(fullPatheps) <- "UTF-8"
-    
-    # Open graphics device and plot
-    grDevices::cairo_ps(filename=fullPatheps, width=width/epsMultip, 
-                        height=height/epsMultip, bg="transparent")
-    print(plot)
-    dev.off()
-    
-    # Save path to output object
-    paths[["eps"]] <- relativePatheps
-  }
-  
-  # Return relative paths in list
-  paths
-}
-
 .clean <- function(value) {
 
 	if (is.list(value)) {
@@ -915,8 +841,8 @@ saveImage <- function(plotName, format, height, width){
 	# Open correct graphics device
 	if (format == "eps"){
 		
-		grDevices::cairo_ps(filename=fullPath, width=width/.ppi, 
-												height=height/.ppi, bg="transparent")
+		grDevices::cairo_ps(filename=fullPath, width=width/.ppi*1.25, 
+												height=height/.ppi*1.25, bg="transparent")
 		
   } else { # add optional other formats here in "else if"-statements
 		stop("Format incorrectly specified")

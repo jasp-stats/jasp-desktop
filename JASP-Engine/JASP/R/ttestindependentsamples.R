@@ -17,9 +17,15 @@
 
 TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 									callback = function(...) 0, ...) {
-
+	
+	state <- .retrieveState()
+  figstate <- try(state[["figures"]], silent = TRUE)
+  if (class(figstate) == "try-error") figstate <- list()
+	
 	## call the common initialization function
 	init <- .initializeTTest(dataset, options, perform, type = "independent-samples")
+
+
 
 	results <- init[["results"]]
 	dataset <- init[["dataset"]]
@@ -37,20 +43,40 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	shapiroWilk <- .ttestIndependentSamplesNormalityTest(dataset, options, perform)
 	results[["assumptionChecks"]] <- list(shapiroWilk = shapiroWilk, levene = levene, title = "Assumption Checks")
 
+
+	keep <- NULL
+	figstate <- list()
 	## if the user wants descriptive plots, s/he shall get them!
 	if (options$descriptivesPlots) {
 
 		plotTitle <- ifelse(length(options$variables) > 1, "Descriptives Plots", "Descriptives Plot")
 		descriptivesPlots <- .independentSamplesTTestDescriptivesPlot(dataset, options, perform)
+		if (!is.null(descriptivesPlots[[1]][["obj"]])){
+			# Extract plot objects and save to state
+			descrPlotsObj <- lapply(descriptivesPlots, function(x) x[["obj"]])
+			names(descrPlotsObj) <- unlist(lapply(descriptivesPlots, function(x) x[["data"]]))
+			figstate <- append(figstate, descrPlotsObj)
+			# remove objects from collection
+			descriptivesPlots <- lapply(descriptivesPlots, function(x) x[names(x)!="obj"])
+			keep <- unlist(lapply(descriptivesPlots, function(x) x[["data"]]),NULL)
+		}
 		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives", descriptivesPlots = list(collection = descriptivesPlots, title = plotTitle))
 
 	} else {
 
 		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
+	
 	}
-
+	
 	## return the results object
-	results
+	if (perform == "init") {
+		return(list(results=results, status="inited"))
+	} else {
+		return(list(results=results, status="complete", 
+								state = list(options = options, results = results, 
+														figures = figstate),
+								keep = keep))
+	}
 }
 
 
@@ -686,11 +712,14 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 					"mm"), plot.margin = grid::unit(c(0.5, 0, 0.5, 0.5), "cm")) +
 				base_breaks_y(summaryStat) + base_breaks_x(summaryStat$groupingVariable)
 
-			image <- .beginSaveImage(options$plotWidth, options$plotHeight)
-			print(p)
-			content <- .endSaveImage(image)
+			imgObj <- .writeImage(width = options$plotWidth, 
+                    			height = options$plotHeight, 
+                        	plot = p)
 
-			descriptivesPlot[["data"]] <- content
+			descriptivesPlot[["data"]] <- imgObj[["png"]]
+			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
+			descriptivesPlot[["convertible"]] <- TRUE
+			descriptivesPlot[["status"]] <- "complete"
 			descriptivesPlotList[[var]] <- descriptivesPlot
 
 		}
