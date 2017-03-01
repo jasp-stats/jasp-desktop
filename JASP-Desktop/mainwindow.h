@@ -30,7 +30,6 @@
 
 #include "analysisforms/analysisform.h"
 #include "asyncloader.h"
-#include "optionsform.h"
 #include "activitylog.h"
 #include "fileevent.h"
 
@@ -102,7 +101,6 @@ private:
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
 	QPushButton *_runButton;
-	OptionsForm *_optionsForm;
 
 	std::map<std::string, AnalysisForm *> _analysisForms;
 
