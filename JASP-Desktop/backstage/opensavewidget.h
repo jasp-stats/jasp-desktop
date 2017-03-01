@@ -58,6 +58,8 @@ public:
 	void setCurrentDataFile(const QString &path);
 	void setDataFileWatcher(bool watch);
 
+	Utils::FileType getCurrentFileType();
+
 public slots:
 	void dataSetIOCompleted(FileEvent *event);
 
@@ -76,12 +78,13 @@ private slots:
 
 private:
 	bool checkSyncFileExists(const QString &path);
+	void clearSyncData();
+
 	static bool clearOSFFromRecentList(QString path);
 	OnlineDataManager *_odm = NULL;
 
-	bool _currentFileHasPath;
 	QString _currentFilePath;
-	bool _currentFileReadOnly;
+	Utils::FileType _currentFileType;
 
 	FileEvent::FileMode _mode;
 

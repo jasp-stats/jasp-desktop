@@ -332,9 +332,10 @@ $(document).ready(function () {
 	window.unselectByClickingBody = function (event) {
 
 		var target = event.target || event.srcElement;
-
+		
+		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
-		var ignoreSelectionProcess = wasLastClickNote === true && noteClicked === false;
+		var ignoreSelectionProcess = (wasLastClickNote === true && noteClicked === false) || stacktraceClicked === true;
 		wasLastClickNote = noteClicked;
 		if (ignoreSelectionProcess)
 			return;
@@ -354,9 +355,11 @@ $(document).ready(function () {
 	var selectedHandler = function (event) {
 
 		var target = event.target || event.srcElement;
+		
+		var stacktraceClicked = $(target).is(".stack-trace-span, .stack-trace-arrow, .stack-trace-selector");
 		var noteClicked = $(target).is(".jasp-notes, .jasp-notes *");
 
-		var ignoreSelectionProcess = wasLastClickNote === true && noteClicked === false;
+		var ignoreSelectionProcess = (wasLastClickNote === true && noteClicked === false) || stacktraceClicked === true;
 
 		wasLastClickNote = noteClicked;
 
@@ -497,7 +500,7 @@ $(document).ready(function () {
 			window.scrollIntoView(jaspWidget.$el);
 	}
 	
-	$("#results").on("click", ".stack-trace-selector", function(e) {
+	$("#results").on("click", ".stack-trace-selector", function() {
 		$(this).next(".stack-trace").slideToggle(function() {
 			var $selectedInner = $(this).parent().siblings(".jasp-analysis");
 			var errorBoxHeight = $(this).parent(".analysis-error").outerHeight(true);
@@ -505,7 +508,7 @@ $(document).ready(function () {
 				$selectedInner.css("height", "");
 			}
 			if ($selectedInner.height() < errorBoxHeight) {
-				$selectedInner.height(errorBoxHeight)
+				$selectedInner.height(errorBoxHeight);
 			}
 		}.bind(this))
 	});

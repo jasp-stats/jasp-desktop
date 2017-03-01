@@ -63,7 +63,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/widgets/itemmodelselectitem.cpp \
         $$PWD/widgets/itemmodelselectvariable.cpp \
         $$PWD/widgets/tabbar.cpp \
-        $$PWD/optionsform.cpp \
         $$PWD/widgets/textmodellavaan.cpp \
         $$PWD/terms.cpp \
         $$PWD/term.cpp \
@@ -255,7 +254,6 @@ HEADERS  += \
         $$PWD/widgets/itemmodelselectitem.h \
         $$PWD/widgets/itemmodelselectvariable.h \
         $$PWD/widgets/tabbar.h \
-        $$PWD/optionsform.h \
         $$PWD/widgets/textmodellavaan.h \
         $$PWD/term.h \
         $$PWD/terms.h \

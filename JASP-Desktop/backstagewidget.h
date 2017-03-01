@@ -65,8 +65,6 @@ private:
 	QStackedWidget *_tabPages;
 
 	OpenSaveWidget *_openAndSaveWidget;
-
-	bool _dataSetHasPathAndIsntReadOnly;	
 };
 
 #endif // BACKSTAGEWIDGET_H
