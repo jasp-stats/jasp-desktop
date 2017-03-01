@@ -116,8 +116,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
 
-	_optionsForm = NULL;
-
 	_package = new DataSetPackage();
 
 	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged, this, _1));
