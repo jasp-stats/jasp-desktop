@@ -258,7 +258,7 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 
 							## arbitrary cut-offs are arbitrary
 							if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
-								error <- .messages('notes', 'leveneSign')
+								error <- .messages('footnote', 'leveneSign')
 								foot.index <- .addFootnote(footnotes, error)
 								row.footnotes <- list(p = list(foot.index))
 
@@ -576,13 +576,13 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				error <- FALSE
 
 				if (length(data) < 3) {
-					err <- .generateErrorMessage(type='levene', observations.amount='< 3', variables=variable, groupingVars=factor)
+					err <- .generateErrorMessage(type='levene', observations.amount='< 3', variables=variable, grouping=factor)
 					foot.index <- .addFootnote(footnotes, err)
 					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 					error <- TRUE
 
 				} else if (length(data) > 5000) {
-					err <- .generateErrorMessage(type='levene', observations.amount='> 5000', variables=variable, groupingVars=factor)
+					err <- .generateErrorMessage(type='levene', observations.amount='> 5000', variables=variable, grouping=factor)
 					foot.index <- .addFootnote(footnotes, err)
 					row.footnotes <- list(W = list(foot.index), p = list(foot.index))
 					error <- TRUE
