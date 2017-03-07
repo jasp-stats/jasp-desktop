@@ -1,10 +1,9 @@
 QT_DIR=~/Qt/5.5
 R_FRAMEWORK=~/JASP/Build/Frameworks/R.framework
-JASP_DESKTOP=~/JASP/Build
+JASP_DESKTOP=~/JASP/Build/jasp-desktop
 JASP_VERSION=0.8.1.0
 
 # This script builds the JASP.dmg installer
-# Copy the info.plist.template & icon.icns to the build-jasp-desktop-Release folder
 # Check that you R.framework is unique (no other test versions).
 # Check also that the right dylib are placed in the build-jasp-desktop-Release folder
 # Then run this script from the build-jasp-desktop-Release folder 
@@ -61,10 +60,9 @@ cp -r R           app/JASP.app/Contents/MacOS
 cp libcrypto.1.0.0.dylib app/JASP.app/Contents/Frameworks
 cp libssl.1.0.0.dylib app/JASP.app/Contents/Frameworks
 
-cp icon.icns app/JASP.app/Contents/Resources
-cp Info.plist.template Info.plist
-sed -ie s/JASP_VERSION/$JASP_VERSION/g Info.plist
-cp Info.plist app/JASP.app/Contents
+cp $JASP_DESKTOP/Tools/icon.icns app/JASP.app/Contents/Resources
+cp $JASP_DESKTOP/Tools/Info.plist.template app/JASP.app/Contents/Info.plist
+sed -ie s/JASP_VERSION/$JASP_VERSION/g app/JASP.app/Contents/Info.plist
 
 # Create the .dmg
 hdiutil create -size 800m tmp.dmg -ov -volname "JASP" -fs HFS+ -srcfolder "app"
