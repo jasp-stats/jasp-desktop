@@ -176,38 +176,28 @@ Let's take a simple hypothetical histogram plot function example in `JASP`:
 
 With minimal changes, we have now implemented image saving functionality into the plots of this analysis.
 
-Next, we need to make the plot objects available to be retrieved by the javascript app.
+Next, we need to go back to the main function to return the results and to make the plot objects available to be retrieved by the javascript app. I have written two convenience functions for this purpose: `.imgToResults()` converts an image object as returned by the functions above to a results object, and `.imgToState()` converts the same image object to a named list for saving in the state. These functions can also handle collections and collections of collections etc. recursively.
 
-4. We are going to add the state objects to a new element of the state that is returned, which will have the name "figures". `state[["figures"]]` is a list where each element is a plot object with as its name the original path of the plot, i.e., `plot[["data"]]`.
-  ```r
-  # Initialise figstate
-  state <- .retrieveState()
-	figstate <- try(state[["figures"]], silent = TRUE)
-	if (class(figstate) == "try-error") figstate <- list()
-  
-  # Save the correlation plot object (if it exists)
-  if (!is.null(corrPlot[["obj"]])){
-		figstate[[corrPlot[["data"]]]] <- corrPlot[["obj"]]
-    
-    # remove the corrplot "object" from the returned plot variable so it remains small
-		corrPlot <- corrPlot[names(corrPlot)!="obj"] 
-	}
-  
-  results[["plots"]] <- list(distributionPlots=distrPlots, matrixPlot=corrPlot,
-														 splitPlots=splitPlots, title="Plots")
-  
-  # Return the figstate along with the other state objects and results
-  return(list(results=results, status="complete", 
-              state=list(options=options, results=results, figures=figstate), 
-              keep=keep))
-  ```
+We are going to add the state objects to a new element of the state that is returned, which will have the name "figures". `state[["figures"]]` is a list where each element is a plot object with as its name the original path of the plot, i.e., `plot[["data"]]`.
 
+```r
+# Initialise figstate
+state <- .retrieveState()
+figstate <- try(state[["figures"]], silent = TRUE)
+if (class(figstate) == "try-error") figstate <- list()
 
-## Notes
+# Save the correlation plot object (if it exists)
+if (!is.null(corrPlot[["obj"]])){
+  figstate <- append(figstate, .imgToState(corrplot))
+}
 
-Note that this last step makes the "keep" object in the results redundant, as the names of the elements to be kept are already in the figures. Once properly implemented, this keep functionality will therefore be removed.
+results[["plots"]] <- .imgToResult(corrplot)
 
-In addition, the saveimage function depends on the `.ppi` value as calculated in JavaScript. This is unfortunate, as this value does not seem to be exactly correct. After implementation, we should look at the exact pixels per logical inch (ppi) values for the program, possibly through Qt rather than JavaScript.
+# Return the figstate along with the other state objects and results
+return(list(results=results, status="complete", 
+      state=list(options=options, results=results, figures=figstate), 
+      keep=keep))
+```
 
 ---
 <a id="outputpane">1</a>. Remember that the output pane is simply a stripped-down webbrowser. Web-browsers easily incorporate `png` and `jpg` in the html page, but not `eps`!	[&#8629;](#outputpaneref)
