@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -37,8 +37,10 @@ using namespace boost;
 const char* Utils::getFileTypeString(const Utils::FileType &fileType) {
 	switch (fileType) {
         case Utils::csv: return "csv";
-        case Utils::txt: return "txt";
-        case Utils::jasp: return "jasp";
+		case Utils::txt: return "txt";
+		case Utils::sav: return "sav";
+		case Utils::ods: return "ods";
+		case Utils::jasp: return "jasp";
         case Utils::html: return "html";
         case Utils::pdf: return "pdf";
 		default: return "";

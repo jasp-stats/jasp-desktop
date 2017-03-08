@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,8 @@
 #include "datarecords.h"
 
 #include "../spssimporter.h"
-#include "debug_cout.h"
+#include "spssimportdataset.h"
+#include "../importerutils.h"
 #include <cmath>
 
 using namespace std;
@@ -32,11 +33,12 @@ using namespace spss;
  * @param columns The columns data we collected readling the headers.
  * @param fromStream The stream to read.
  */
-DataRecords::DataRecords(const NumericConverter &fixer, const FileHeaderRecord &fileHeader,
-						 SPSSColumns &columns, SPSSStream &fromStream,
+DataRecords::DataRecords(SPSSImporter* importer, SPSSImportDataSet *dataset, const NumericConverter &fixer, const FileHeaderRecord &fileHeader,
+						 SPSSStream &fromStream,
 						 boost::function<void (const std::string &, int)> &progress)
- : _fileHeader(fileHeader)
- , _cols(columns)
+ : _importer(importer)
+ , _dataset(dataset)
+ , _fileHeader(fileHeader)
  , _from(fromStream)
  , _progress(progress)
  , _fixer(fixer)
@@ -47,30 +49,28 @@ DataRecords::DataRecords(const NumericConverter &fixer, const FileHeaderRecord &
 
 /**
  * @brief read Reads the values to the dataset.
- * @param dataSet The data set to write.
  */
-void DataRecords::read(/* OUT */ DataSetPackage *dataSet)
+void DataRecords::read()
 {
 
 	if (_fileHeader.compressed() == 0)
-		readUncompressed(dataSet);
+		readUncompressed();
 	else
-		readCompressed(dataSet);
+		readCompressed();
 }
 
 
 /**
- * @brief readCompressed - Reads compressed data,
- * @param dataSet The data set to write.
+ * @brief readCompressed - Reads compressed data
  */
-void DataRecords::readCompressed(/* OUT */ DataSetPackage *dataSet)
+void DataRecords::readCompressed()
 {
 	unsigned char codes[ sizeof(Char_8) ];
 
 	bool eofFlag = false;
 	while (_from.good() && !eofFlag)
 	{
-		SPSSImporter::reportFileProgress(_from.tellg(), _progress);
+		_importer->reportFileProgress(_from.tellg(), _progress);
 		memset(codes, code_eof, sizeof(codes));
 
 		_SPSSIMPORTER_READ_VAR(codes, _from);
@@ -83,7 +83,7 @@ void DataRecords::readCompressed(/* OUT */ DataSetPackage *dataSet)
 			case code_ignore: break;
 
 			default: // A compressed data value.
-				insertToCol(_cols.getNextColumn(), static_cast<double>(codes[cnt]) - _fileHeader.bias());
+				insertToCol(_importer->getNextColumn(_dataset), static_cast<double>(codes[cnt]) - _fileHeader.bias());
 				break;
 
 			case code_eof: // end of file found.
@@ -92,16 +92,16 @@ void DataRecords::readCompressed(/* OUT */ DataSetPackage *dataSet)
 
 			case code_notCompressed:
 				// Uncompressed data values follows..
-				readUnCompVal(_cols.getNextColumn());
+				readUnCompVal(_importer->getNextColumn(_dataset));
 				break;
 
 			case code_allSpaces:
-				insertToCol(_cols.getNextColumn(), string(sizeof(Char_8), ' '));
+				insertToCol(_importer->getNextColumn(_dataset), string(sizeof(Char_8), ' '));
 				break;
 
 			case code_systmMissing:
 				// system missing value follows.
-				insertToCol(_cols.getNextColumn(), NAN);
+				insertToCol(_importer->getNextColumn(_dataset), NAN);
 				break;
 
 			}
@@ -111,16 +111,14 @@ void DataRecords::readCompressed(/* OUT */ DataSetPackage *dataSet)
 
 
 /**
- * @brief readUncompressed - Reads uncompressed data,
- * @param dataSet The data set to write.
+ * @brief readUncompressed - Reads uncompressed data
  */
-void DataRecords::readUncompressed(/* OUT */ DataSetPackage *dataSet)
+void DataRecords::readUncompressed()
 {
-//	DEBUG_COUT1("Reading UNCOMPRESSED data..");
 	while (_from.good())
 	{
-		SPSSImporter::reportFileProgress(_from.tellg(), _progress);
-		readUnCompVal(_cols.getNextColumn());
+		_importer->reportFileProgress(_from.tellg(), _progress);
+		readUnCompVal(_importer->getNextColumn(_dataset));
 	}
 }
 
@@ -129,11 +127,11 @@ void DataRecords::readUncompressed(/* OUT */ DataSetPackage *dataSet)
  * @brief insertToCol Insrts a string into the (next) column.
  * @param str The string value to insert / append.
  */
-void DataRecords::insertToCol(SPSSColumn &col, const string &str)
+void DataRecords::insertToCol(SPSSImportColumn &col, const string &str)
 {
-	if (col.cellType() == SPSSColumn::cellString)
+	if (col.cellType() == SPSSImportColumn::cellString)
 	{
-		if (_cols.isSpaning())
+		if (_importer->isSpaning())
 		{
 			col.append(str);
 //			DEBUG_COUT5("Appended string \"", str, "\" into column ", col.spssRawColName(), ".");
@@ -153,13 +151,13 @@ void DataRecords::insertToCol(SPSSColumn &col, const string &str)
  * @brief insertToCol Insrts a string into the (next) column.
  * @param value The value to insert
  */
-void DataRecords::insertToCol(SPSSColumn &col, double value)
+void DataRecords::insertToCol(SPSSImportColumn &col, double value)
 {
-	if (col.cellType() == SPSSColumn::cellDouble)
+	if (col.cellType() == SPSSImportColumn::cellDouble)
 	{
 		col.numerics.push_back(value);
 		_numDbls++;
-//		DEBUG_COUT5("Inserted double ", value, " into column ", col.spssRawColName()(), ".");
+//		DEBUG_COUT5("Inserted double ", value, " into column ", col.spssRawColName(), ".");
 	}
 	else
 		DEBUG_COUT5("FAILED TO INSERT double ", value, " into column ", col.spssRawColName(), ".");
@@ -170,11 +168,11 @@ void DataRecords::insertToCol(SPSSColumn &col, double value)
  * @brief readUnCompVal Reads in and stores a single data value
  * @param col the column to insert into.
  */
-void DataRecords::readUnCompVal(SPSSColumn &col)
+void DataRecords::readUnCompVal(SPSSImportColumn &col)
 {
 	SpssDataCell dta;
 	_SPSSIMPORTER_READ_VAR(dta, _from);
-	if (col.cellType() == SPSSColumn::cellString)
+	if (col.cellType() == SPSSImportColumn::cellString)
 		insertToCol(col, string(dta.chars, sizeof(dta.chars)));
 	else
 	{

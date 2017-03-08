@@ -46,6 +46,11 @@
 			"value": 0.950
 		},
 		{
+		  "name": "VovkSellkeMPR",
+		  "type": "Boolean",
+		  "default": false
+		},
+		{
 			"name": "plotWidth",
 			"type": "Integer",
 			"default": 160

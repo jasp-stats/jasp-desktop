@@ -63,7 +63,6 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/widgets/itemmodelselectitem.cpp \
         $$PWD/widgets/itemmodelselectvariable.cpp \
         $$PWD/widgets/tabbar.cpp \
-        $$PWD/optionsform.cpp \
         $$PWD/widgets/textmodellavaan.cpp \
         $$PWD/terms.cpp \
         $$PWD/term.cpp \
@@ -110,8 +109,9 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/backstage/fsbmexamples.cpp \
         $$PWD/backstage/fsbmodel.cpp \
         $$PWD/backstage/fsbmcomputer.cpp \
-        $$PWD/backstage/fsbmrecent.cpp \
-        $$PWD/backstage/fsbmrecentfolders.cpp \
+		$$PWD/backstage/fsbmrecent.cpp \
+		$$PWD/backstage/fsbmcurrent.cpp \
+		$$PWD/backstage/fsbmrecentfolders.cpp \
         $$PWD/fileevent.cpp \
         $$PWD/widgets/boundsingleitemview.cpp \
         $$PWD/analysisforms/binomialtestform.cpp \
@@ -149,18 +149,27 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/importers/spss/missingvaluechecker.cpp \
         $$PWD/importers/spss/numericconvertor.cpp \
         $$PWD/importers/spss/readablerecord.cpp \
-        $$PWD/importers/spss/spssrecinter.cpp \
         $$PWD/importers/spss/stringutils.cpp \
         $$PWD/importers/spss/valuelabelvarsrecord.cpp \
         $$PWD/importers/spss/vardisplayparamrecord.cpp \
         $$PWD/importers/spss/variablerecord.cpp \
         $$PWD/importers/spss/verylongstringrecord.cpp \
-        $$PWD/importers/codepageconvert.cpp \
-        $$PWD/importers/csv.cpp \
-        $$PWD/importers/csvimporter.cpp \
-        $$PWD/importers/jaspimporter.cpp \
-        $$PWD/importers/spssimporter.cpp \
-        $$PWD/analysisforms/exploratoryfactoranalysisform.cpp \
+		$$PWD/importers/spss/spssimportcolumn.cpp \
+		$$PWD/importers/spss/spssimportdataset.cpp \
+		$$PWD/importers/ods/odsimportcolumn.cpp \
+		$$PWD/importers/ods/odsimportdataset.cpp \
+		$$PWD/importers/ods/odssheetcell.cpp \
+		$$PWD/importers/ods/odstypes.cpp \
+		$$PWD/importers/ods/odsxmlcontentshandler.cpp \
+		$$PWD/importers/ods/odsxmlhandler.cpp \
+		$$PWD/importers/ods/odsxmlmanifesthandler.cpp \
+		$$PWD/importers/odsimporter.cpp \
+		$$PWD/importers/csv.cpp \
+		$$PWD/importers/csvimporter.cpp \
+		$$PWD/importers/jaspimporter.cpp \
+		$$PWD/importers/spssimporter.cpp \
+		$$PWD/importers/codepageconvert.cpp \
+		$$PWD/analysisforms/exploratoryfactoranalysisform.cpp \
         $$PWD/analysisforms/principalcomponentanalysisform.cpp \
         $$PWD/analysisforms/reliabilityanalysisform.cpp \
         $$PWD/analysisforms/SEM/semsimpleform.cpp \
@@ -172,7 +181,12 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.cpp \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.cpp \
 		$$PWD/simplecrypt.cpp \
-    $$PWD/importers/convertedstringcontainer.cpp
+		$$PWD/importers/convertedstringcontainer.cpp \
+		$$PWD/importers/importer.cpp \
+		$$PWD/importers/importdataset.cpp \
+		$$PWD/importers/importcolumn.cpp \
+		$$PWD/importers/csvimportcolumn.cpp \
+		$$PWD/preferencesdialog.cpp
 
 HEADERS  += \
         $$PWD/aboutdialog.h \
@@ -240,7 +254,6 @@ HEADERS  += \
         $$PWD/widgets/itemmodelselectitem.h \
         $$PWD/widgets/itemmodelselectvariable.h \
         $$PWD/widgets/tabbar.h \
-        $$PWD/optionsform.h \
         $$PWD/widgets/textmodellavaan.h \
         $$PWD/term.h \
         $$PWD/terms.h \
@@ -290,8 +303,9 @@ HEADERS  += \
         $$PWD/backstage/fsbmexamples.h \
         $$PWD/backstage/fsbmodel.h \
         $$PWD/backstage/fsbmcomputer.h \
-        $$PWD/backstage/fsbmrecent.h \
-        $$PWD/backstage/fsbmrecentfolders.h \
+		$$PWD/backstage/fsbmrecent.h \
+		$$PWD/backstage/fsbmcurrent.h \
+		$$PWD/backstage/fsbmrecentfolders.h \
         $$PWD/fileevent.h \
         $$PWD/widgets/boundsingleitemview.h \
         $$PWD/analysisforms/binomialtestform.h \
@@ -319,7 +333,6 @@ HEADERS  += \
         $$PWD/importers/spss/cpconverter.h \
         $$PWD/importers/spss/datainforecord.h \
         $$PWD/importers/spss/datarecords.h \
-        $$PWD/importers/spss/debug_cout.h \
         $$PWD/importers/spss/dictionaryterminationrecord.h \
         $$PWD/importers/spss/documentrecord.h \
         $$PWD/importers/spss/extnumbercasesrecord.h \
@@ -332,7 +345,6 @@ HEADERS  += \
         $$PWD/importers/spss/missingvaluechecker.h \
         $$PWD/importers/spss/numericconverter.h \
         $$PWD/importers/spss/readablerecord.h \
-        $$PWD/importers/spss/spssrecinter.h \
         $$PWD/importers/spss/spssstream.h \
         $$PWD/importers/spss/stringutils.h \
         $$PWD/importers/spss/systemfileformat.h \
@@ -359,7 +371,23 @@ HEADERS  += \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.h \
 		$$PWD/simplecrypt.h \
 		$$PWD/simplecryptkey.h \
-    $$PWD/importers/convertedstringcontainer.h
+		$$PWD/importers/convertedstringcontainer.h \
+		$$PWD/importers/importer.h \
+		$$PWD/importers/importdataset.h \
+		$$PWD/importers/importcolumn.h \
+		$$PWD/importers/importerutils.h \
+		$$PWD/importers/odsimporter.h \
+		$$PWD/importers/csvimportcolumn.h \
+		$$PWD/importers/spss/spssimportcolumn.h \
+		$$PWD/importers/spss/spssimportdataset.h \
+		$$PWD/preferencesdialog.h \
+		$$PWD/importers/ods/odsimportcolumn.h \
+		$$PWD/importers/ods/odsimportdataset.h \
+		$$PWD/importers/ods/odssheetcell.h \
+		$$PWD/importers/ods/odstypes.h \
+		$$PWD/importers/ods/odsxmlcontentshandler.h \
+		$$PWD/importers/ods/odsxmlhandler.h \
+		$$PWD/importers/ods/odsxmlmanifesthandler.h
 
 FORMS += \
         $$PWD/analysisforms/anovabayesianform.ui \
@@ -387,7 +415,6 @@ FORMS += \
         $$PWD/ribbons/ribbonanalysis.ui \
         $$PWD/analysisforms/ttestbayesianindependentsamplesform.ui \
         $$PWD/analysisforms/ttestbayesianpairedsamplesform.ui \
-        $$PWD/optionsform.ui \
         $$PWD/analysisforms/ancovabayesianform.ui \
         $$PWD/analysisforms/anovarepeatedmeasuresbayesianform.ui \
         $$PWD/analysisforms/correlationbayesianform.ui \
@@ -405,7 +432,8 @@ FORMS += \
         $$PWD/variableswidget.ui \
         $$PWD/backstage/authwidget.ui\
         $$PWD/aboutdialog.ui \
-        $$PWD/analysisforms/exploratoryfactoranalysisform.ui \
+		$$PWD/preferencesdialog.ui \
+		$$PWD/analysisforms/exploratoryfactoranalysisform.ui \
         $$PWD/analysisforms/principalcomponentanalysisform.ui \
         $$PWD/analysisforms/reliabilityanalysisform.ui \
         $$PWD/analysisforms/SEM/semsimpleform.ui \
@@ -416,8 +444,6 @@ FORMS += \
         $$PWD/analysisforms/SummaryStatistics/summarystatsregressionlinearbayesianform.ui \
         $$PWD/analysisforms/SummaryStatistics/summarystatscorrelationbayesianpairsform.ui \
         $$PWD/analysisforms/R11tLearn/r11tlearnform.ui
-
-
 
 RESOURCES += \
         $$PWD/backstage/backstage.qrc \

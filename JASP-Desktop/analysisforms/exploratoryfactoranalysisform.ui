@@ -241,7 +241,6 @@
            </layout>
            <zorder>highlightText</zorder>
            <zorder>highlightSlider</zorder>
-           <zorder>verticalSpacer</zorder>
           </widget>
          </item>
          <item row="0" column="1">

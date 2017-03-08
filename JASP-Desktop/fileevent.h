@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,13 +29,14 @@ class FileEvent : public QObject
 	Q_OBJECT
 
 public:
-	enum FileMode { FileSave, FileOpen, FileExportResults, FileExportData, FileClose };
+	enum FileMode { FileSave, FileOpen, FileExportResults, FileExportData, FileSyncData, FileClose };
 
     FileEvent(QObject *parent = NULL, FileMode fileMode = FileEvent::FileOpen);
 	virtual ~FileEvent();
 	FileEvent(const FileEvent&) = default;
 
 	bool setPath(const QString &path);
+	void setDataFilePath(const QString &path);
 	void setReadOnly();
 	Exporter *getExporter() const {return _exporter;}
 	QString getLastError() const;
@@ -45,6 +46,7 @@ public:
 	FileMode operation() const;
 	Utils::FileType type() const;
 	const QString &path() const;
+	const QString &dataFilePath() const;
 	bool isReadOnly() const;
 
 	void setComplete(bool success = true, const QString &message = "");
@@ -57,15 +59,16 @@ public:
 
 signals:
 	void completed(FileEvent *event);
+	void dataFileChanged(QString dataFilePath);
 
 private slots:
-	void emitComplete();
 	void chainedComplete(FileEvent *event);
 
 private:
 	FileMode _operation;
 	Utils::FileType _type;
 	QString _path;
+	QString _dataFilePath;
 	QString _last_error;
 	bool _readOnly;
 

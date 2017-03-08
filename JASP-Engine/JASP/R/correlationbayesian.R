@@ -157,9 +157,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	#
 	#
 	correlation.table <- list()
-	correlation.table[["citation"]] <- list(
-		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2015). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
-	)
+	if(pearson & kendallsTauB){
+	  correlation.table[["citation"]] <- list(
+		  "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2015). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication.\n \nvan Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	  )} else if(pearson){
+	    correlation.table[["citation"]] <- list(
+	      "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2015). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
+    )} else if(kendallsTauB){
+	    correlation.table[["citation"]] <- list(
+	    "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	  )}
 	
 	if (perform == "init") {
 		if (length(variables) < 2)
@@ -1589,13 +1596,27 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 .posteriorRhoMin <- function(n, r, rho, kappa=1){
-	if (!is.na(r) && !r==0){
+	if (!is.na(r) && !r==0){.approximatePosteriorRho
 		return(1/.bfCorrieKernel(n, r, kappa, method="exact")$bfMin0*.hFunction(n, r, rho)*.priorRhoMin(rho, kappa))
 	} else if (!is.na(r) && r==0){
 		return(1/.bfCorrieKernel(n, r, kappa, method="jeffreysIntegrate")$bfMin0*.jeffreysApproxH(n, r, rho)*.priorRhoMin(rho, kappa))
 	}	
 	
 }
+
+
+.approximatePosteriorRho <- function(rho, n, r) {
+  1/(1-rho^2)*dnorm(atanh(rho), mean=atanh(r), sd=1/sqrt(n))
+}
+
+.approximatePosteriorRhoPlus <- function(rho, n, r) {
+  (.approximatePosteriorRho(rho,n,r) * (rho>0)) / (pnorm(0,mean=atanh(r),sd=1/sqrt(n),lower.tail = FALSE))
+}
+
+.approximatePosteriorRhoMin <- function(rho, n, r) {
+    (.approximatePosteriorRho(rho,n,r) * (rho<0)) / (pnorm(0,mean=atanh(r),sd=1/sqrt(n)))
+}
+  
 
 
 # 4.2 
@@ -1924,6 +1945,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 		priorLine <- .priorRho(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRho(rho=rho, n=n, r=r, kappa=kappa)
+		try(silent=TRUE, expr = {
+		  numIntegrate <- integrate(function(x){.posteriorRho(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
+		  if(round(numIntegrate,digits=2) != 1){posteriorLine <- .approximatePosteriorRho(rho = rho, n = n, r = r)}
+		  })
 		posteriorLineTau <- .posteriorTau(delta=rho, kentau=tau, n=n, kappa=kappa, var=1, test="two-sided")
 		legendPosition <- c("topright","topleft")[ (which(posteriorLine == max(posteriorLine))>500)+1 ]
 		
@@ -1944,6 +1969,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 		priorLine <- .priorRhoPlus(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRhoPlus(rho=rho, n=n, r=r, kappa= kappa)
+		try(silent=TRUE, expr = {
+		  numIntegrate <- integrate(function(x){.posteriorRhoPlus(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
+		  if(round(numIntegrate,digits=2) != 1){posteriorLine <- .approximatePosteriorRhoPlus(rho = rho, n = n, r = r)}
+		})
 		posteriorLineTau <- .posteriorTau(delta=rho, kentau=tau, n=n, kappa=kappa, var=1, test="positive")
 		legendPosition <- "topleft"
 		
@@ -1966,6 +1995,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 		priorLine <- .priorRhoMin(rho=rho, kappa=kappa)
 		posteriorLine <- .posteriorRhoMin(rho=rho, n=n, r=r, kappa=kappa)
+		try(silent=TRUE, expr = {
+		  numIntegrate <- integrate(function(x){.posteriorRhoMin(x, n=n, r=r, kappa=kappa)},lower = -1,upper=1)$value
+		  if(round(numIntegrate,digits=2) != 1){posteriorLine <- .approximatePosteriorRhoMin(rho = rho, n = n, r = r)}
+		})
 		posteriorLineTau <- .posteriorTau(delta=rho, kentau=tau, n=n, kappa=kappa, var=1, test="negative")
 		legendPosition <- "topright"
 		

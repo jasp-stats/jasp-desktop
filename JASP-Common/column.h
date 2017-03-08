@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ class Column
 	typedef boost::interprocess::allocator<String, boost::interprocess::managed_shared_memory::segment_manager> StringAllocator;
 
 public:
+	static bool isEmptyValue(const std::string& val);
 
 	typedef struct IntsStruct
 	{
@@ -121,6 +122,7 @@ public:
 	} Doubles;
 
 	Column(boost::interprocess::managed_shared_memory *mem);
+	Column(const Column& col);
 	~Column();
 
 	std::string name() const;
@@ -130,9 +132,15 @@ public:
 	void setValue(int rowIndex, double value);
 	void setValue(int rowIndex, std::string value);
 
-	std::string operator[](int index);
+	bool isValueEqual(int rowIndex, int value);
+	bool isValueEqual(int rowIndex, double value);
+	bool isValueEqual(int rowIndex, const std::string &value);
+
+	std::string operator[](int row);
+	std::string getOriginalValue(int row);
 
 	void append(int rows);
+	void truncate(int rows);
 
 	Doubles AsDoubles;
 	Ints AsInts;
@@ -152,10 +160,13 @@ public:
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
 	void setColumnAsNominalString(const std::vector<std::string> &values);
+	void setColumnAsNominalString(const std::vector<std::string> &values, const std::map<std::string, std::string> &labels);
 	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, const std::set<int> &uniqueValues, bool is_ordinal = false);
+	void setColumnAsNominalOrOrdinal(const std::vector<int> &values, std::map<int, std::string> &uniqueValues, bool is_ordinal = false);
 	void setColumnAsScale(const std::vector<double> &values);
 
 private:
+	void _setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is_ordinal = false);
 
 	boost::interprocess::managed_shared_memory *_mem;
 
@@ -166,9 +177,16 @@ private:
 	BlockMap _blocks;
 	Labels _labels;
 
-	void setRowCount(int rowCount);
-	std::string stringFromRaw(int value) const;
+	int id;
+	static int count;
 
+	static const std::string _emptyValue;
+	static const std::string _emptyValues[];
+	static const int _emptyValuesCount;
+
+	void _setRowCount(int rowCount);
+	std::string _labelFromIndex(int index) const;
+	std::string _getScaleValue(int row);
 };
 
 namespace boost

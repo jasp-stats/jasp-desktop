@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,7 +26,8 @@ class DataBlock
 public:
 	DataBlock();
 
-	bool insert(int position, int rows);
+	bool insert(int rows);
+	bool erase(int rows);
 
 	int _rowCount;
 
@@ -34,10 +35,6 @@ public:
 
 	int rowCount();
 	static int capacity();
-
-	double take(int position);
-
-	void moveTo(DataBlock *dest, int position, int rows);
 };
 
 #endif // DATABLOCK_H

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 #ifndef FILEPACKAGE_H
 #define FILEPACKAGE_H
 
+#include "common.h"
 #include "dataset.h"
 #include "version.h"
 #include "lib_json/json.h"
@@ -40,6 +41,10 @@ public:
 	std::string id;
 	std::string initalMD5;
 
+	std::string dataFilePath;
+	uint dataFileTimestamp;
+	bool dataFileReadOnly;
+
 	bool hasAnalyses;
 
 	void reset();
@@ -52,6 +57,11 @@ public:
 	void setAnalysesHTMLReady();
 
 	boost::signals2::signal<void (DataSetPackage *source)> isModifiedChanged;
+	boost::signals2::signal<void (DataSetPackage *source
+								  , std::vector<std::string> &changedColumns
+								  , std::vector<std::string> &missingColumns
+								  , std::map<std::string, std::string> &changeNameColumns
+								  )> dataChanged;
 
 private:
 	bool _isModified = false;

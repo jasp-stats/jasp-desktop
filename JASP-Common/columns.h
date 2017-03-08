@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ public:
 
 	Column& at(int index);
 	Column& get(std::string name);
+	void removeColumn(int index);
 
 	ColumnVector _columnStore;
 

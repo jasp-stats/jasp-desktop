@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,8 +16,9 @@
 //
 
 #include "verylongstringrecord.h"
+#include "spssimportdataset.h"
 
-#include "debug_cout.h"
+#include "../importerutils.h"
 
 using namespace std;
 using namespace spss;
@@ -47,20 +48,19 @@ VeryLongStringRecord::VeryLongStringRecord(const NumericConverter &fixer, Record
 
 /**
  * @brief process Manipulates columns by adding the contents of thie record.
- * @param columns
  *
  * Implematations should examine columns to determine the record history.
  */
-void VeryLongStringRecord::process(SPSSColumns & columns)
+void VeryLongStringRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
-	SPSSColumns::LongColsData strLengths;
+	SPSSImportDataSet::LongColsData strLengths;
 
 	{
 		Tuples strLens = breakNamePairs(_string_lengths);
 		for (Tuples::const_iterator i = strLens.begin(); i != strLens.end(); i++)
 			strLengths.insert(pair<string, size_t>(i->first, atol(i->second.c_str())));
 	}
-	columns.veryLongColsDat(strLengths);
+	dataset->veryLongColsDat(strLengths);
 
 #ifndef QT_NO_DEBUG
 //	DEBUG_COUT3("Found ", strLengths.size(), " tuples:");

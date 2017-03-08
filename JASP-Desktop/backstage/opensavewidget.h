@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -22,9 +22,12 @@
 #include <QWidget>
 
 #include <QWebView>
+#include <QFileSystemWatcher>
+#include <QSettings>
 
 #include "verticaltabwidget.h"
 #include "fsbmrecent.h"
+#include "fsbmcurrent.h"
 #include "fsbmexamples.h"
 #include "fsbrowser.h"
 
@@ -37,16 +40,25 @@ class OpenSaveWidget : public QWidget
 {
 	Q_OBJECT
 public:
+	enum FileLocation {Recent = 0, Current, Computer, OSF, Examples};
+
 	explicit OpenSaveWidget(QWidget *parent = 0);
 
 	VerticalTabWidget *tabWidget();
 	void setSaveMode(FileEvent::FileMode mode);
 	void setOnlineDataManager(OnlineDataManager *odm);
+	bool changeTabIfCurrentFileEmpty();
 
 	FileEvent* open();
 	FileEvent* open(const QString &path);
 	FileEvent* save();
+	void sync();
 	FileEvent *close();
+
+	void setCurrentDataFile(const QString &path);
+	void setDataFileWatcher(bool watch);
+
+	Utils::FileType getCurrentFileType();
 
 public slots:
 	void dataSetIOCompleted(FileEvent *event);
@@ -58,30 +70,38 @@ private slots:
 	void dataSetIORequestHandler(FileEvent *event);
 	void dataSetOpenRequestHandler(QString path);
 	void dataSetOpenExampleRequestHandler(QString path);
+	void dataSetOpenCurrentRequestHandler(QString path);
+	void dataFileModifiedHandler(QString path);
 	void clearOnlineDataFromRecentList(int provider);
 	void tabWidgetChanged(int id);
+	void tabWidgetChanging(int index, bool &cancel);
 
 private:
+	bool checkSyncFileExists(const QString &path);
+	void clearSyncData();
 
 	static bool clearOSFFromRecentList(QString path);
 	OnlineDataManager *_odm = NULL;
 
-	bool _currentFileHasPath;
 	QString _currentFilePath;
-	bool _currentFileReadOnly;
+	Utils::FileType _currentFileType;
 
 	FileEvent::FileMode _mode;
 
 	VerticalTabWidget *_tabWidget;
 
 	FSBMRecent   *_fsmRecent;
+	FSBMCurrent   *_fsmCurrent;
 	FSBMExamples *_fsmExamples;
 
 	FSBrowser *_bsRecent;
+	FSBrowser *_bsCurrent;
 	BackstageComputer *_bsComputer;
 	BackstageOSF *_bsOSF;
 	FSBrowser *_bsExamples;
 
+	QFileSystemWatcher _watcher;
+	QSettings _settings;
 };
 
 #endif // OPENWIDGET_H

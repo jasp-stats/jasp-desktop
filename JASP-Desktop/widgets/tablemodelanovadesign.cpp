@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -364,7 +364,7 @@ void TableModelAnovaDesign::changeRow(int rowNo, string value)
 		{
 			bool unique = true;
 
-			for (size_t i = 0; i < levels.size(); i++)
+			for (int i = 0; i < (int)(levels.size()); i++)
 			{
 				if (i == row.subIndex)
 					continue;

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,27 +20,29 @@
 
 #include <boost/uuid/uuid.hpp>
 
-#include <map>
-#include <list>
-
-#include "options/options.h"
+#include <vector>
 
 #include "common.h"
 #include "version.h"
 
+#include "options/options.h"
+#include "options/optionvariables.h"
 
 class Analysis
 {
 public:
 
-	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error };
+	enum Status { Empty, Initing, Inited, InitedAndWaiting, Running, Complete, Aborting, Aborted, Error, Exception };
 
 	Analysis(int id, std::string name, Options *options, Version version, bool isAutorun = true, bool usedata = true);
 	virtual ~Analysis();
 
 	Options *options() const;
 
+	const std::vector<OptionVariables *> &getVariables() const;
+
 	boost::signals2::signal<void (Analysis *source)> optionsChanged;
+	boost::signals2::signal<void (Analysis *source)> toRefresh;
 	boost::signals2::signal<void (Analysis *source)> resultsChanged;
 	boost::signals2::signal<void (Analysis *source)> userDataLoaded;
 
@@ -55,7 +57,7 @@ public:
 	bool isAutorun() const;
 	bool useData() const;
 
-	void reRun();
+	void refresh();
 
 	virtual void abort();
 	void scheduleRun();
@@ -66,6 +68,9 @@ public:
 	bool isVisible();
 	void setVisible(bool visible);
 
+	bool isRefreshBlocked();
+	void setRefreshBlocked(bool block);
+
 	int revision();
 
 	static Status parseStatus(std::string name);
@@ -74,8 +79,10 @@ protected:
 
 	Status _status;
 	bool _visible = true;
+	bool _refreshBlocked = false;
 
 	Options* _options;
+	std::vector<OptionVariables *> _variables;
 
 	Json::Value _results;
 	Json::Value _userData;

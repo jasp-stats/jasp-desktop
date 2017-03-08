@@ -4,6 +4,7 @@
 #include <boost/container/vector.hpp>
 #include <algorithm>
 #include <QDebug>
+#include <QColor>
 
 #include "qutils.h"
 
@@ -17,6 +18,12 @@ void LevelsTableModel::setColumn(Column *column)
 {
 	beginResetModel();
 	_column = column;
+	endResetModel();
+}
+
+void LevelsTableModel::refresh()
+{
+	beginResetModel();
 	endResetModel();
 }
 
@@ -44,27 +51,19 @@ int LevelsTableModel::columnCount(const QModelIndex &parent) const
 
 QVariant LevelsTableModel::data(const QModelIndex &index, int role) const
 {
-	if (role != Qt::DisplayRole)
+	if (role == Qt::BackgroundColorRole && index.column() == 0)
+		return QColor(0xf6,0xf6,0xf6);
+
+	if (role != Qt::DisplayRole && role != Qt::EditRole)
 		return QVariant();
 
 	Labels &labels = _column->labels();
-	Labels::const_iterator itr = labels.begin();
-
-	for (int i = 0; i < index.row(); i++)
-		itr++;
-
-	const LabelEntry &entry = *itr;
+	int row = index.row();
 
 	if (index.column() == 0)
-	{
-		const Label &label = entry.second;
-		return tq(label.text());
-	}
+		return tq(labels.getValueFromRow(row));
 	else
-	{
-		int raw = entry.first;
-		return raw;
-	}
+		return tq(labels.getLabelFromRow(row));
 }
 
 QVariant LevelsTableModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -76,9 +75,9 @@ QVariant LevelsTableModel::headerData(int section, Qt::Orientation orientation, 
 		return QVariant();
 
 	if (section == 0)
-		return "Labels";
-	else
 		return "Value";
+	else
+		return "Label";
 }
 
 void LevelsTableModel::_moveRows(QModelIndexList &selection, bool up) {
@@ -86,7 +85,7 @@ void LevelsTableModel::_moveRows(QModelIndexList &selection, bool up) {
 		return;
 
 	Labels &labels = _column->labels();
-	std::vector<LabelEntry> new_labels(labels.begin(), labels.end());
+	std::vector<Label> new_labels(labels.begin(), labels.end());
 
 	BOOST_FOREACH (QModelIndex &index, selection)
 	{
@@ -115,7 +114,7 @@ void LevelsTableModel::reverse() {
         return;
 
     Labels &labels = _column->labels();
-    std::vector<LabelEntry> new_labels(labels.begin(), labels.end());
+	std::vector<Label> new_labels(labels.begin(), labels.end());
 
     std::reverse(new_labels.begin(), new_labels.end());
 
@@ -129,7 +128,7 @@ void LevelsTableModel::reverse() {
 
 Qt::ItemFlags LevelsTableModel::flags(const QModelIndex &index) const
 {
-    if (index.column() == 0) {
+	if (index.column() == 1) {
         return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
     } else {
         return QAbstractTableModel::flags(index);
@@ -146,8 +145,10 @@ bool LevelsTableModel::setData(const QModelIndex & index, const QVariant & value
         const std::string &new_label = value.toString().toStdString();
         if (new_label != "") {
             Labels &labels = _column->labels();
-            labels.setLabel(index.row(), new_label);
-        }
+			if (labels.setLabelFromRow(index.row(), new_label))
+				emit dataChanged(index, index);
+		}
     }
+
     return true;
 }

@@ -447,6 +447,18 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 			list(name="sd",   title="SD", type="number",   format="sf:4;dp:3"),
 			list(name="se",   title="SE", type="number",   format="sf:4;dp:3"))
 		
+			## add credible interval values if asked for in plot
+			if (options$descriptivesPlots) {
+				interval <- 100 * options$descriptivesPlotsCredibleInterval
+				title <- paste0(interval, "% Credible Interval")
+				fields[[length(fields) + 1]] <- list(name = "lowerCI", type = "number",
+													 format = "sf:4;dp:3", title = "Lower",
+													 overTitle = title)
+				fields[[length(fields) + 1]] <- list(name = "upperCI", type = "number",
+													 format = "sf:4;dp:3", title = "Upper",
+													 overTitle = title)
+			}
+			
 		descriptives[["schema"]] <- list(fields=fields)
 		descriptives.results <- list()
 		
@@ -462,23 +474,27 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 				
 				if (class(data) != "factor") {
 					
+					posteriorSummary <- .posteriorSummaryGroupMean(variable=data, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+					ciLower <- .clean(posteriorSummary$ciLower)
+					ciUpper <- .clean(posteriorSummary$ciUpper)
+					
 					n    <- .clean(length(data))
 					mean <- .clean(mean(data))
 					stdDeviation <- .clean(sd(data))
 					stdErrorMean <- .clean(sd(data)/sqrt(length(data)))
 					
-					result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean)
+					result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean, lowerCI = ciLower, upperCI = ciUpper)
 				} else {
 					
 					n <- .clean(length(data))
-					result <- list(v=variable, N=n, mean="", sd="", se="")
+					result <- list(v=variable, N=n, mean="", sd="", se="", lowerCI="", upperCI="")
 				}
 				
 				descriptivesComplete <- TRUE
 			
 			} else {
 				
-				result <- list(v=variable, N=".", mean=".", sd= ".", se=".")
+				result <- list(v=variable, N=".", mean=".", sd= ".", se=".", lowerCI=".", upperCI=".")
 				
 			}
 			
@@ -3757,13 +3773,14 @@ TTestBayesianOneSample <- function(dataset=NULL, options, perform="run", callbac
 	# Assumes that data are normally distributed
 	# Jeffreys prior on mu and sigma: p(mu, sigma) proportional to 1/sigma
 	# Compare Gelman et al. "Bayesian Data Analysis" for derivation of marginal posterior distribution of mu (inference for unknown mean and variance of a normal distribution)
+	if (is.null(variable)) return(NULL)
 	
 	ciLower <- (1 - descriptivesPlotsCredibleInterval) / 2
 	ciUpper <- ciLower + descriptivesPlotsCredibleInterval
 	
 	df <- length(variable) - 1
 	location <- mean(variable)
-	scale <- sqrt( (df-2)/df * var(variable)/length(variable) )
+	scale <- sd(variable) / sqrt(length(variable))
 	
 	outTmp <- .qt.shiftedT(c(ciLower, .5, ciUpper), parameters=c(location, scale, df))
 	out <- list(ciLower=outTmp[1], median=outTmp[2], ciUpper=outTmp[3])

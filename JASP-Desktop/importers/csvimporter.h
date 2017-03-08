@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,22 +18,18 @@
 #ifndef CSVIMPORTER_H
 #define CSVIMPORTER_H
 
-#include "datasetpackage.h"
+#include "importer.h"
 
-#include <boost/function.hpp>
 
-#include <string>
-#include <vector>
-
-class CSVImporter
+class CSVImporter : public Importer
 {
 public:
+	CSVImporter(DataSetPackage *packageData);
 
-	static void loadDataSet(DataSetPackage *packageData, const std::string &locator, boost::function<void (const std::string &, int)> progressCallback);
+protected:
+	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback);
+	virtual void fillSharedMemoryColumn(ImportColumn *importColumn, Column &column);
 
-private:
-	static void initColumn(Column &column, const std::string &name, const std::vector<std::string> &cells);
-	static std::string deEuropeanise(const std::string &value);
 };
 
 #endif // CSVIMPORTER_H

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -167,4 +167,9 @@ void DataSetTableModel::setColumnType(int columnIndex, Column::ColumnType newCol
 	_dataSet->column(columnIndex).changeColumnType(newColumnType);
 
 	emit headerDataChanged(Qt::Horizontal, columnIndex, columnIndex);
+}
+
+Column::ColumnType DataSetTableModel::getColumnType(int columnIndex)
+{
+	return _dataSet->column(columnIndex).columnType();
 }

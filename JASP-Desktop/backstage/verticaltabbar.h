@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -40,6 +40,7 @@ public:
 	void setTabEnabled(int index, bool enable);
 
 	void setCurrentIndex(int index);
+	void click(int index);
 	int currentIndex() const;
 	int count() const;
 

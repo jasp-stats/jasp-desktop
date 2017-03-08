@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ std::string tempfiles_sessionDirName();
 
 void tempfiles_deleteList(const std::vector<std::string> &files);
 
-void tempfiles_deleteAll();
+void tempfiles_deleteAll(int id = -1);
 void tempfiles_deleteOrphans();
 
 

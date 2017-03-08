@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -34,6 +34,7 @@ class BackStageWidget : public QWidget
 {
 	Q_OBJECT
 public:
+	enum FileOperation {Open = 0, Save, SaveAs, ExportResults, ExportData, SyncData, Close};
 	explicit BackStageWidget(QWidget *parent = NULL);
 	void setOnlineDataManager(OnlineDataManager *odm);
 
@@ -41,6 +42,7 @@ public:
 	FileEvent *open();
 	FileEvent *open(const QString &filepath);
 	FileEvent *save();
+	void sync();
 	FileEvent *close();
 
 signals:
@@ -49,6 +51,9 @@ signals:
 
 public slots:
 	void analysisAdded(Analysis *analysis);
+	void setSyncFile(FileEvent *event);
+	void dataAutoSynchronizationChanged(bool on);
+
 private slots:
 	void tabPageChanging(int index, bool &cancel);
 
@@ -60,8 +65,6 @@ private:
 	QStackedWidget *_tabPages;
 
 	OpenSaveWidget *_openAndSaveWidget;
-
-	bool _dataSetHasPathAndIsntReadOnly;
 };
 
 #endif // BACKSTAGEWIDGET_H

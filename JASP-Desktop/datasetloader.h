@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,15 +21,18 @@
 #include "dataset.h"
 #include <boost/function.hpp>
 #include "datasetpackage.h"
+#include "importers/importer.h"
 
 class DataSetLoader
 {
 public:
-
 	static void loadPackage(DataSetPackage *packageData, const std::string &locator, const std::string &extension, boost::function<void (const std::string &stage, int progress)> progress = NULL);
-	static DataSet *getDataSet();
+	static void syncPackage(DataSetPackage *packageData, const std::string &locator, const std::string &extension, boost::function<void (const std::string &, int)> progress = NULL);
 	static void freeDataSet(DataSet *dataSet);
 
+private:
+	static std::string getExtension(const std::string &locator, const std::string &extension);
+	static Importer* getImporter(DataSetPackage *packageData, const std::string &locator, const std::string &extension);
 };
 
 #endif // DATASETLOADER_H

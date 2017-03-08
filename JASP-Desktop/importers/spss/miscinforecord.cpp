@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -47,11 +47,10 @@ MiscInfoRecord::MiscInfoRecord(const NumericConverter &fixer, int32_t fileSubTyp
 
 /**
  * @brief process Manipulates columns by adding the contents of thie record.
- * @param columns
  *
  * Implematations should examine columns to determine the record history.
  */
-void MiscInfoRecord::process(SPSSColumns & /* columns */)
+void MiscInfoRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -30,7 +30,6 @@
 
 #include "analysisforms/analysisform.h"
 #include "asyncloader.h"
-#include "optionsform.h"
 #include "activitylog.h"
 #include "fileevent.h"
 
@@ -71,7 +70,18 @@ private:
 	Analyses *_analyses;
 	EngineSync* _engineSync;
 
+	void refreshAnalysesUsingColumns(std::vector<std::string> &changedColumns
+									, std::vector<std::string> &missingColumns
+									, std::map<std::string, std::string> &changeNameColumns);
+
+
 	void packageChanged(DataSetPackage *package);
+	void packageDataChanged(DataSetPackage *package
+							, std::vector<std::string> &changedColumns
+							, std::vector<std::string> &missingColumns
+							, std::map<std::string, std::string> &changeNameColumns
+							);
+
 
 	bool closeRequestCheck(bool &isSaving);
 
@@ -87,15 +97,10 @@ private:
 	void closeCurrentOptionsWidget();
 	void removeAnalysis(Analysis *analysis);
 
-	void setupOptionPanelSize();
-
 	QWidget *_buttonPanel;
 	QVBoxLayout *_buttonPanelLayout;
 	QPushButton *_okButton;
 	QPushButton *_runButton;
-	QTabBar *_mTabBar;
-
-	OptionsForm *_optionsForm;
 
 	std::map<std::string, AnalysisForm *> _analysisForms;
 
@@ -107,10 +112,13 @@ private:
 	QSettings _settings;
 	ActivityLog *_log;
 	QString _fatalError;
+	QString _currentFilePath;
 
 	QString escapeJavascriptString(const QString &str);
 	void getAnalysesUserData();
 	Json::Value getResultsMeta();
+
+	void startDataEditor(QString path);
 
 signals:
 	void analysisSelected(int id);
@@ -129,7 +137,6 @@ signals:
 	void resultsDocumentChanged();
 
 private slots:
-
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisUserDataLoadedHandler(Analysis *analysis);
 	void analysisSelectedHandler(int id);
@@ -147,6 +154,8 @@ private slots:
 	void removeAnalysisRequestHandler(int id);
 	void removeAllAnalyses();
 	void refreshAllAnalyses();
+	void refreshAnalysesUsingColumn(QString col);
+	void resetTableView();
 	void showAnalysesMenuHandler(QString options);
 	void removeSelected();
 	void collapseSelected();
@@ -169,8 +178,11 @@ private slots:
 
 	void hideOptionsPanel();
 	void showOptionsPanel();
-	void showTableView();
-	void hideTableView();
+	void showDataPanel();
+	void hideDataPanel();
+	void showVariablesPage();
+	void startDataEditorHandler();
+	void startDataEditorEventCompleted(FileEvent *event);
 
 	void analysisOKed();
 	void analysisRunned();
@@ -183,6 +195,7 @@ private slots:
 
 	void saveKeysSelected();
 	void openKeysSelected();
+	void syncKeysSelected();
 	void refreshKeysSelected();
 
 	void illegalOptionStateChanged();
@@ -190,7 +203,7 @@ private slots:
 
 	void helpFirstLoaded(bool ok);
 	void requestHelpPage(const QString &pageName);
-	void showAbout();
+
 };
 
 #endif // MAINWIDGET_H

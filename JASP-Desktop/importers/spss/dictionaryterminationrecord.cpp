@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,8 +41,8 @@ DictionaryTermination::~DictionaryTermination()
  * @brief Does nothing
  *
  */
-void DictionaryTermination::process(SPSSColumns &columns)
+void DictionaryTermination::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	// inin the columns iterator.
-	columns.resetCols();
+	importer->resetNextCol(dataset);
 }

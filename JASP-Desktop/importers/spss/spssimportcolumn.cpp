@@ -1,52 +1,27 @@
-//
-// Copyright (C) 2015-2016 University of Amsterdam
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
-#include "fileheaderrecord.h"
-#include "spssrecinter.h"
-#include "debug_cout.h"
-#include "stringutils.h"
-#include <assert.h>
-#include <algorithm>
-
-#include <math.h>
-
-
-#include <QDateTime>
+#include "spssimportcolumn.h"
+#include "spssimportdataset.h"
 
 using namespace std;
 using namespace spss;
 
-const QDate SPSSColumn::_beginEpoch(1582, 10, 14);
+const QDate SPSSImportColumn::_beginEpoch(1582, 10, 14);
 
 /*********************************************************************
  *
- * class SPSSColumn
+ * class SPSSImportColumn
  *
  *********************************************************************/
 /**
- * @brief SPSSColumn Ctor
+ * @brief SPSSImportColumn Ctor
  * @param name SPSS column name (short form)
  * @param label Column label.
  * @param stringLen String length or zero.
  * @param formattype The format Type from the variable record.
  * @param missingChecker Check for missing value with this.
  */
-SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long stringLen, FormatTypes formattype, const spss::MissingValueChecker &missingChecker)
-	: _spssColumnLabel(label)
+SPSSImportColumn::SPSSImportColumn(SPSSImportDataSet *spssdataset, const std::string &name, const std::string &label, long stringLen, FormatTypes formattype, const spss::MissingValueChecker &missingChecker)
+	: ImportColumn(label)
+	, _spssColumnLabel(label)
 	, _spssRawColName(name)
 	, _spssStringLen(stringLen)
 	, _columnSpan(1)
@@ -54,30 +29,95 @@ SPSSColumn::SPSSColumn(const std::string &name, const std::string &label, long s
 	, _spssFormatType(formattype)
 	, _missingChecker(missingChecker)
 	, _charsRemaining(stringLen)
+	, _dataset(spssdataset)
 {
 
 }
 
-SPSSColumn::~SPSSColumn()
+SPSSImportColumn::~SPSSImportColumn()
 {
 
 }
 
-const string &SPSSColumn::spssColumnLabel() const
+size_t SPSSImportColumn::size() const
 {
-	if (_spssColumnLabel.length() > 0)
-		return _spssColumnLabel;
-	else if (_spssLongColName.length() > 0)
-		return _spssLongColName;
+	if (cellType() == cellString)
+		return strings.size();
 	else
-		return _spssRawColName;
+		return numerics.size();
+}
+
+bool SPSSImportColumn::isValueEqual(Column &col, size_t row) const
+{
+	if (row >= size())
+		return false;
+
+	bool result = false;
+	switch (col.columnType())
+	{
+		case Column::ColumnTypeScale:
+			if (row < numerics.size())
+			{
+				double doubleValue = missingChecker().processMissingValue(_dataset->getFloatInfo(), numerics.at(row));
+				result = col.isValueEqual(row, doubleValue);
+			}
+			break;
+
+		case Column::ColumnTypeNominal:
+		case Column::ColumnTypeOrdinal:
+			if (row < numerics.size())
+			{
+				double index = numerics[row];
+				SpssDataCell cell;
+				cell.dbl = index;
+				LabelByValueDict::const_iterator it = spssLables.find(cell);
+				if (it == spssLables.end())
+					result = col.isValueEqual(row, (int)index);
+				else
+					result = col.isValueEqual(row, it->second);
+			}
+			break;
+		default:
+			if (cellType() == cellString)
+			{
+				if (row < strings.size())
+				{
+					CodePageConvert &strConvertor = _dataset->stringsConv();
+					string strValue = strConvertor.convertCodePage(strings[row]);
+					result = col.isValueEqual(row, strValue);
+				}
+			}
+			else
+			{
+				if (row < numerics.size())
+				{
+					string strValue = format(numerics[row], _dataset->getFloatInfo());
+					result = col.isValueEqual(row, strValue);
+				}
+			}
+			break;
+	}
+
+	return result;
+}
+
+const string& SPSSImportColumn::setSuitableName()
+{
+    if (_spssLongColName.length() > 0)
+		_name = _spssLongColName;
+    else if (_spssColumnLabel.length() > 0)
+        _name = _spssColumnLabel;
+    else
+		_name = _spssRawColName;
+
+	return _name;
 }
 
 /**
  * @brief spssStringLen Find the length of the string (in column).
  * @param value Value to set.
  */
-void SPSSColumn::spssStringLen(size_t value)
+void SPSSImportColumn::spssStringLen(size_t value)
 {
 	_spssStringLen = value;
 	_charsRemaining = value;
@@ -89,7 +129,7 @@ void SPSSColumn::spssStringLen(size_t value)
  * @param bufferSzie The size of the buffer.
  * @return Value
  */
-long SPSSColumn::cellCharsRemaining(size_t bufferSize)
+long SPSSImportColumn::cellCharsRemaining(size_t bufferSize)
 {
 	return (_charsRemaining > bufferSize) ? bufferSize : _charsRemaining;
 }
@@ -99,7 +139,7 @@ long SPSSColumn::cellCharsRemaining(size_t bufferSize)
  * @return A column type.
  *
  */
-Column::ColumnType SPSSColumn::getJaspColumnType() const
+Column::ColumnType SPSSImportColumn::getJaspColumnType() const
 {
 	switch(spssFormatType())
 	{
@@ -150,7 +190,7 @@ Column::ColumnType SPSSColumn::getJaspColumnType() const
  * @param seconds Number of seconds since start of SPSS epoch.
  * @return void
  */
-QDateTime* SPSSColumn::_asDateTime(double seconds)
+QDateTime* SPSSImportColumn::_asDateTime(double seconds)
 {
 	qint64 totalSecs = floor(seconds);
 	qint64 days = totalSecs / (24*3600);
@@ -168,7 +208,7 @@ QDateTime* SPSSColumn::_asDateTime(double seconds)
 }
 
 
-QString SPSSColumn::_weekday(unsigned short int wd)
+QString SPSSImportColumn::_weekday(unsigned short int wd)
 const
 {
 	switch(wd)
@@ -192,7 +232,7 @@ const
 	}
 }
 
-QString SPSSColumn::_month(unsigned short int mnth)
+QString SPSSImportColumn::_month(unsigned short int mnth)
 const
 {
 	switch(mnth)
@@ -233,7 +273,7 @@ const
  * @param floatInfo The float info record we have.
  * @return Formatted date, or "" (string empty) for no value (0)
  */
-string SPSSColumn::format(double value, const FloatInfoRecord &floatInfo) const
+string SPSSImportColumn::format(double value, const FloatInfoRecord &floatInfo) const
 {
 	QString result;
 	if (!std::isnan(value))
@@ -325,7 +365,7 @@ string SPSSColumn::format(double value, const FloatInfoRecord &floatInfo) const
  * Should be implemented in classes where holdStrings maybe or is true.
  *
  */
-void SPSSColumn::processStrings(const CodePageConvert &converter)
+void SPSSImportColumn::processStrings(const CodePageConvert &converter)
 {
 	_spssColumnLabel = converter.convertCodePage(_spssColumnLabel);
 	_spssRawColName = converter.convertCodePage(_spssRawColName);
@@ -348,7 +388,7 @@ void SPSSColumn::processStrings(const CodePageConvert &converter)
  * @param values VAlues to check
  * @return true if a fractional part found.
  */
-bool SPSSColumn::_containsFraction(const std::vector<double> &values)
+bool SPSSImportColumn::_containsFraction(const std::vector<double> &values)
 {
 	for (std::vector<double>::const_iterator i = values.begin();
 		 i != values.end();
@@ -370,7 +410,7 @@ bool SPSSColumn::_containsFraction(const std::vector<double> &values)
  * @brief cellType Gets the cell data type we expect to read for this coloumn.
  * @return
  */
-enum SPSSColumn::e_celTypeReturn SPSSColumn::cellType() const
+enum SPSSImportColumn::e_celTypeReturn SPSSImportColumn::cellType() const
 {
 	switch(_spssFormatType)
 	{
@@ -388,7 +428,7 @@ enum SPSSColumn::e_celTypeReturn SPSSColumn::cellType() const
  * @param str
  * @return The index of the inserted string.
  */
-size_t SPSSColumn::insert(const string &str)
+size_t SPSSImportColumn::insert(const string &str)
 {
 	if (cellType() == cellString)
 	{
@@ -405,7 +445,7 @@ size_t SPSSColumn::insert(const string &str)
  * @param str The string to append.
  * @return index of the string.
  */
-size_t SPSSColumn::append(const std::string &str)
+size_t SPSSImportColumn::append(const std::string &str)
 {
 	if (cellType() == cellString)
 	{
@@ -422,186 +462,96 @@ size_t SPSSColumn::append(const std::string &str)
 }
 
 /**
- * @brief get Gets the string at index.
- * @param index
- * @return
+ * @brief setColumnScaleData Sets floating point data into the column.
+ * @param column The columns to insert into.
  */
-const std::string &SPSSColumn::getString(size_t index)
-const
+void SPSSImportColumn::setColumnScaleData(Column &column)
 {
-	static const string empty;
+	vector<double> values = numerics;
+	size_t numCases = _dataset->numCases();
+	if (values.size() > numCases)
+		values.resize(numCases);
+	// Process any NAN values.
+	for (size_t i = 0; i < values.size(); i++)
+		values[i] = missingChecker().processMissingValue(_dataset->getFloatInfo(), values[i]);
+	while (values.size() < numCases)
+		values.push_back(NAN);
+	// Have the columns do most of the work.
+	column.setColumnAsScale(values);
+}
 
-	if (cellType() == cellString)
-		return strings.at(index);
+/**
+ * @brief setColumnConvrtStringData Sets String data into the column.
+ * @param column The columns to insert into.
+ */
+void SPSSImportColumn::setColumnConvertStringData(Column &column)
+{
+	map<string, string> labels;
+	CodePageConvert &strConvertor = _dataset->stringsConv();
+	// Code page convert all strings.
+	for (size_t i = 0; i < strings.size(); ++i)
+		strings[i] = strConvertor.convertCodePage(strings[i]);
+
+	for (SPSSImportColumn::LabelByValueDict::const_iterator it = spssLables.begin();
+			it != spssLables.end(); ++it)
+	{
+		SpssDataCell cell = it->first;
+		string value = string(cell.chars, sizeof(cell.chars));
+		StrUtils::rTrimWSIP(value);
+		labels[value] = it->second;
+	}
+
+	column.setColumnAsNominalString(strings, labels);
+}
+
+void SPSSImportColumn::setColumnConvertDblToString(Column &column)
+{
+	map<string, string> labels;
+	strings.clear();
+	for (size_t i = 0; i < numerics.size(); i++)
+		strings.push_back( format(numerics[i], _dataset->getFloatInfo()));
+
+	for (SPSSImportColumn::LabelByValueDict::const_iterator it = spssLables.begin();
+			it != spssLables.end(); ++it)
+	{
+		labels[format(it->first.dbl, _dataset->getFloatInfo())] = it->second;
+	}
+
+	column.setColumnAsNominalString(strings, labels);
+}
+
+void SPSSImportColumn::setColumnAsNominalOrOrdinal(Column &column, Column::ColumnType columnType)
+{
+	size_t numCases = _dataset->numCases();
+
+	// Add lables from the SPSS file first.
+	map<int, string> labels;
+	vector<int> dataToInsert;
+	if (containsFraction())
+	{
+		setColumnConvertDblToString(column);
+	}
 	else
-		return empty;
-}
-
-
-/*********************************************************************
- *
- * class SPSSColumns
- *
- *********************************************************************/
-
-SPSSColumns::SPSSColumns()
-	: _numCases(-1L)
-	, _currentColIter(SPSSDictionary::end())
-	, _remainingColSpan(0)
-	, _isSpaning(false)
-{
-}
-
-
-/**
- * @brief resetCols Used after vect::push_back() or similar, reset the next col iterator
- *
- */
-void SPSSColumns::resetCols()
-{
-	_currentColIter = SPSSDictionary::begin();
-	_remainingColSpan = _currentColIter->second.columnSpan();
-}
-
-
-/**
- * @brief getColumn Get next column wrapping as required.
- * @return
- */
-SPSSColumn& SPSSColumns::getNextColumn()
-{
-	// Grab what will be the result.
-	SPSSColumn &result = _currentColIter->second;
-
-	// Set the spaning var.
-	_isSpaning = result.columnSpan() != _remainingColSpan;
-
-//	DEBUG_COUT11("Returning col. \"", result.spssColumnLabel(), "\"/\"", result.spssColumnName(), "\", spanning ", ((_isSpaning) ? "true" : "false"), " ", result.columnSpan(), ", with ", _remainingColSpan, " remaining.");
-
-	// Anthing left (for next time)?
-	if (--_remainingColSpan == 0)
 	{
-		// Go to next column.
-		++_currentColIter;
-		// Dropped off end?
-		if (_currentColIter == SPSSDictionary::end())
-			resetCols();
-		else
-			_remainingColSpan = _currentColIter->second.columnSpan();
-	}
-	return result;
-}
+		for (SPSSImportColumn::LabelByValueDict::const_iterator it = spssLables.begin();
+				it != spssLables.end(); ++it)
+			labels[static_cast<int>(it->first.dbl)] = it->second;
 
-
-/**
- * @brief numCases Set the number of cases.
- * @param num Number of cases to set.
- */
-void SPSSColumns::numCases(int32_t num)
-{
-	if (_numCases == -1L)
-		_numCases = num;
-}
-
-void SPSSColumns::numCases(int64_t num)
-{
-	if (_numCases == -1L)
-		_numCases = num;
-}
-
-/**
- * @brief processStringsPostLoad - Deals with very Long strings (len > 255) and CP processes all strings.
- * Call after the data is loaded!.
- */
-void SPSSColumns::processStringsPostLoad(boost::function<void (const std::string &, int)> progress)
-{
-	// For every found very long string.
-	const LongColsData &strLens = veryLongColsDat();
-	float numStrlens = distance(strLens.begin(), strLens.end());
-	for (map<string, size_t>::const_iterator ituple = strLens.begin(); ituple != strLens.end(); ituple++)
-	{
-		{ // report progress
-			float prog = 100.0 * ((float) distance(strLens.begin(), ituple)) / numStrlens;
-			static float lastProg = -1.0;
-			if ((prog - lastProg) >= 1.0)
-			{
-				progress("Processing long strings.", (int) (prog + 0.5));
-				lastProg = prog;
-			}
-
-		}
-		// find the root col...
-		SPSSColumns::iterator rootIter;
-		for (rootIter = begin(); rootIter != end(); rootIter++)
+		// Add labels for numeric values (if not already present)..
+		for (size_t i = 0; i < numCases; ++i)
 		{
-			DEBUG_COUT7("Matching '", ituple->first, "' against '", rootIter->second.spssRawColName(), "' size ", ituple->second, ".");
-			if (rootIter->second.spssRawColName() == ituple->first)
-					break;
-		}
-
-		const long mergedStrlen = 252;
-		// Shouldn't happen..
-		if (rootIter == end())
-			throw runtime_error("Failed to process a very long string value.");
-
-		// merged strings are slightly shorter than what is in the file.
-		// See Appendix B System File Format, PSPP devloper's Guide, release 0.10.2 pp69
-		if (rootIter->second.spssStringLen() == 255)
-			rootIter->second.spssStringLen(mergedStrlen);
-
-		// Chop the length of the strings in the root col.
-		for (size_t cse  = 0; cse < rootIter->second.strings.size(); cse++)
-		{
-			string str = rootIter->second.strings[cse].substr(0, rootIter->second.spssStringLen());
-			rootIter->second.strings[cse] = str;
-		}
-
-		while (rootIter->second.spssStringLen() < ituple->second)
-		{
-			// Find the next segment, (Should be next one along)
-			SPSSColumns::iterator ncol = rootIter;
-			++ncol;
-
-			// How much to fetch?
-			long needed = min(ituple->second - rootIter->second.spssStringLen(), rootIter->second.spssStringLen());
-			needed = min(mergedStrlen, needed);
-
-			// Concatinate all the strings, going down the cases.
-			for (size_t cse  = 0; cse < rootIter->second.strings.size(); cse++)
+			if (missingChecker().isMissingValue(_dataset->getFloatInfo(), numerics[i]) == false)
 			{
-				if (needed > 0)
-					rootIter->second.strings[cse].append(ncol->second.strings[cse], 0, needed);
+				int value = static_cast<int>(numerics[i]);
+				dataToInsert.push_back(value);
+				if (labels.find(value) == labels.end())
+					labels.insert( pair<int, string>( value, format(numerics[i], _dataset->getFloatInfo() )));
 			}
-			// Advance the string length.
-			rootIter->second.spssStringLen( rootIter->second.spssStringLen() + needed );
-			// Dump the column.
-			erase(ncol);
-		}
-	}
-
-	// Trim trialing spaces for all strings in the data set.
-	size_t numCols = distance(begin(), end());
-	for (SPSSDictionary::iterator iCol = begin(); iCol != end(); ++iCol)
-	{
-		{ // report progress
-			float prog = 100.0 * ((float) distance(begin(), iCol)) / numCols;
-			static float lastProg = -1.0;
-			if ((prog - lastProg) >= 1.0)
-			{
-				progress("Processing strings.", (int) (prog + 0.5));
-				lastProg = prog;
-			}
+			else
+				dataToInsert.push_back(INT_MIN);
 		}
 
-		if (iCol->second.cellType() == SPSSColumn::cellString)
-		{
-			DEBUG_COUT3("Dumping column '", iCol->second.spssRawColName(), "'.");
-			for (size_t cse  = 0; cse < iCol->second.strings.size(); cse++)
-			{
-				// Trim left and right.
-				StrUtils::lTrimWSIP(iCol->second.strings[cse]);
-				StrUtils::rTrimWSIP(iCol->second.strings[cse]);
-			}
-		}
+		column.setColumnAsNominalOrOrdinal(dataToInsert, labels, columnType);
 	}
 }
+

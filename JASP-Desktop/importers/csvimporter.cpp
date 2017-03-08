@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,38 +16,66 @@
 //
 
 #include "csvimporter.h"
-
+#include "csvimportcolumn.h"
+#include "csv.h"
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
-#include <iostream>
 
-#include "sharedmemory.h"
-#include "dataset.h"
-#include "csv.h"
-
-using boost::lexical_cast;
-using namespace boost::interprocess;
 using namespace std;
+using boost::lexical_cast;
 
-void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator, boost::function<void(const string &, int)> progressCallback)
+CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
 {
-	packageData->isArchive = false;
+	_packageData->isArchive = false;
+}
 
+ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)
+{
+	ImportDataSet* result = new ImportDataSet();
+	vector<string> colNames;
 	CSV csv(locator);
 	csv.open();
 
-	vector<string> columns = vector<string>();
-	vector<vector<string> > cells = vector<vector<string> >();
+	csv.readLine(colNames);
+	vector<CSVImportColumn *> importColumns;
+	importColumns.reserve(colNames.size());
 
-	csv.readLine(columns);
+	int colNo = 0;
+	for (vector<string>::iterator it = colNames.begin(); it != colNames.end(); ++it, ++colNo)
+	{
+		string colName = *it;
+		if (colName == "")
+		{
+			stringstream ss;
+			ss << "V";
+			ss << (colNo + 1);
+			colName = ss.str();
+		}
+
+		if (it != colNames.begin())
+		{
+			// col name must be unique
+			if (std::find(colNames.begin(), it, colName) != it)
+			{
+				stringstream ss;
+				ss << colName;
+				ss << "_";
+				ss << (colNo + 1);
+				colName = ss.str();
+				colNames[colNo] = colName;
+			}
+		}
+
+		importColumns.push_back(new CSVImportColumn(colName));
+	}
 
 	unsigned long long progress;
 	unsigned long long lastProgress = -1;
 
-	size_t columnCount = columns.size();
+	size_t columnCount = colNames.size();
 
-	for (size_t i = 0; i < columnCount; i++)  // columns
-		cells.push_back(vector<string>());
+//	for (size_t i = 0; i < columnCount; i++)  // columns
+//		cells.push_back(vector<string>());
 
 	vector<string> line;
 	bool success = csv.readLine(line);
@@ -61,244 +89,59 @@ void CSVImporter::loadDataSet(DataSetPackage *packageData, const string &locator
 			lastProgress = progress;
 		}
 
-        if (line.size() != 0) {
+		if (line.size() != 0) {
 			size_t i = 0;
-            for (; i < line.size() && i < columnCount; i++)
-                cells[i].push_back(line[i]);
-            for (; i < columnCount; i++)
-                cells[i].push_back(string());
-        }
+			for (; i < line.size() && i < columnCount; i++)
+				importColumns.at(i)->addValue(line[i]);
+			for (; i < columnCount; i++)
+				importColumns.at(i)->addValue(string());
+		}
 
 		line.clear();
 		success = csv.readLine(line);
 	}
 
-	packageData->dataSet = SharedMemory::createDataSet(); // this is required incase the loading of the data fails so that the SharedMemory::createDataSet() can be later freed.
+	for (vector<CSVImportColumn *>::iterator it = importColumns.begin(); it != importColumns.end(); ++it)
+		result->addColumn(*it);
 
-	do
-	{
-		try {
+	// Build dictionary for sync.
+	result->buildDictionary();
 
-			success = true;
-
-			DataSet *dataSet = packageData->dataSet;
-			dataSet->setColumnCount(columnCount);
-			if (cells.size() > 0)
-				dataSet->setRowCount(cells.at(0).size());
-
-		}
-		catch (boost::interprocess::bad_alloc &e)
-		{
-			try {
-
-				packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
-				success = false;
-			}
-			catch (exception &e)
-			{
-				throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
-			}
-		}
-		catch (exception &e)
-		{
-			cout << "n " << e.what() << "\n";
-			cout.flush();
-		}
-		catch (...)
-		{
-			cout << "something else\n ";
-			cout.flush();
-		}
-	}
-	while ( ! success);
-
-
-	for (int colNo = 0; colNo < packageData->dataSet->columnCount(); colNo++)
-	{
-		bool success;
-
-		do {
-
-			success = true;
-
-			try {
-				DataSet *dataSet = packageData->dataSet;
-
-				progressCallback("Loading Data Set", 50 + 50 * colNo / dataSet->columnCount());
-
-				string columnName = columns.at(colNo);
-
-				if (columnName == "")
-				{
-					stringstream ss;
-					ss << "V";
-					ss << (colNo + 1);
-					columnName = ss.str();
-				}
-
-				Column &column = dataSet->column(colNo);
-				initColumn(column, columnName, cells.at(colNo));
-
-			}
-			catch (boost::interprocess::bad_alloc &e)
-			{
-				try {
-
-					packageData->dataSet = SharedMemory::enlargeDataSet(packageData->dataSet);
-					success = false;
-				}
-				catch (exception &e)
-				{
-					throw runtime_error("Out of memory: this data set is too large for your computer's available memory");
-				}
-			}
-			catch (exception e)
-			{
-				cout << "n " << e.what();
-				cout.flush();
-			}
-			catch (...)
-			{
-				cout << "something else\n ";
-				cout.flush();
-			}
-
-		} while (success == false);
-	}
+	return result;
 }
 
 
-void CSVImporter::initColumn(Column &column, const string &name, const vector<string> &cells)
+void CSVImporter::fillSharedMemoryColumn(ImportColumn *importColumn, Column &column)
 {
-	// we treat single spaces as missing values, because SPSS saves missing values as a single space in CSV files
-
-	column.setName(name);
-
 	// try to make the column nominal
 
 	bool success = true;
 	set<int> uniqueValues;
 	std::vector<int> intValues;
-	intValues.reserve(cells.size());
+	intValues.reserve(importColumn->size());
+	CSVImportColumn *csvColumn = dynamic_cast<CSVImportColumn *>(importColumn);
 
-	BOOST_FOREACH(const string &value, cells)
+	if (csvColumn->convertToInt(intValues, uniqueValues))
 	{
-		if (value != "NaN" && value != "nan" && value != "" && value != " ")
+		if (uniqueValues.size() <= 24)
 		{
-			try
-			{
-				int v = lexical_cast<int>(value);
-				uniqueValues.insert(v);
-				intValues.push_back(v);
-			}
-			catch (...)
-			{
-				// column can't be made nominal numeric
-
-				success = false;
-				break;
-			}
+			column.setColumnAsNominalOrOrdinal(intValues, uniqueValues);
+			return;
 		}
-		else
-		{
-			intValues.push_back(INT_MIN);
-		}
-	}
-
-	if (success && uniqueValues.size() <= 24)
-	{
-		column.setColumnAsNominalOrOrdinal(intValues, uniqueValues);
-		return;
 	}
 
 	// try to make the column scale
 	success = true;
 	vector<double> doubleValues;
-	doubleValues.reserve(cells.size());
+	doubleValues.reserve(importColumn->size());
 
-	BOOST_FOREACH(const string &value, cells)
-	{
-		string v = deEuropeanise(value);
-		double doubleValue;
-
-		if (v != "" && v != " ")
-		{
-			try
-			{
-				doubleValue = lexical_cast<double>(v);
-			}
-			catch (...)
-			{
-				// column can't be made scale
-				success = false;
-				break;
-			}
-		}
-		else
-		{
-			doubleValue = NAN;
-		}
-
-		doubleValues.push_back(doubleValue);
-	}
-
-	if (success)
+	if (csvColumn->convertToDouble(doubleValues))
 	{
 		column.setColumnAsScale(doubleValues);
 		return;
 	}
 
 	// if it can't be made nominal numeric or scale, make it nominal-text
-	column.setColumnAsNominalString(cells);
-}
-
-
-string CSVImporter::deEuropeanise(const string &value)
-{
-	int dots = 0;
-	int commas = 0;
-
-	for (size_t i = 0; i < value.length(); i++)
-	{
-		if (value[i] == '.')
-			dots++;
-		else if (value[i] == ',')
-			commas++;
-	}
-
-	if (commas > 0)
-	{
-		string uneurope = value;
-
-		if (dots > 0)
-		{
-			size_t i = 0;
-			size_t j = 0;
-
-			for (;i < value.size(); i++)
-			{
-				if (value[i] == '.')
-					continue;
-				uneurope[j] = value[i];
-
-				j++;
-			}
-
-			uneurope.resize(j);
-		}
-
-		for (size_t i = 0; i < uneurope.length(); i++)
-		{
-			if (uneurope[i] == ',')
-			{
-				uneurope[i] = '.';
-				break;
-			}
-		}
-
-		return uneurope;
-	}
-
-	return value;
+	column.setColumnAsNominalString(csvColumn->getValues());
 }
 

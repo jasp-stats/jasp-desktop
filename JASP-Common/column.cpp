@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,14 +29,43 @@ using namespace boost::interprocess;
 using namespace boost;
 using namespace std;
 
+int Column::count = 0;
+
+const string Column::_emptyValue = ".";
+const string Column::_emptyValues[] = {"NaN", "nan", "", " ", "."};
+const int Column::_emptyValuesCount = sizeof(_emptyValues) /sizeof(_emptyValues[0]);
+
+bool Column::isEmptyValue(const string& val)
+{
+
+	for (int i = 0; i < _emptyValuesCount; ++i)
+	{
+		if (_emptyValues[i] == val)
+			return true;
+	}
+	return false;
+}
+
 Column::Column(managed_shared_memory *mem) :
 	_name(mem->get_segment_manager()),
 	_blocks(std::less<ull>(), mem->get_segment_manager()),
 	_labels(mem)
 {
+	id = ++count;
 	_mem = mem;
 	_rowCount = 0;
 	_columnType = Column::ColumnTypeNominal;
+}
+
+Column::Column(const Column &col) :
+	_name(col._name),
+	_blocks(col._blocks),
+	_labels(col._labels)
+{
+	id = ++count;
+	_mem = col._mem;
+	_rowCount = col._rowCount;
+	_columnType = col._columnType;
 }
 
 Column::~Column()
@@ -97,10 +126,10 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 				for (; intIterator != AsInts.end(); intIterator++)
 				{
 					int value = *intIterator;
-					string display = stringFromRaw(value);
+					string display = _labelFromIndex(value);
 					try
 					{
-						if (display == "NaN" || display == "nan" || display == "" || display == " " || display == ".")
+						if (isEmptyValue(display))
 						{
 							values.push_back(INT_MIN);
 						}
@@ -189,10 +218,10 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 			{
 				try
 				{
-					string value = this->stringFromRaw(*ints);
+					string value = this->_labelFromIndex(*ints);
 					double doubleValue;
 
-					if (value == "NaN" || value == "nan" || value == "" || value == " " || value == ".")
+					if (isEmptyValue(value))
 						doubleValue = NAN;
 					else
 						doubleValue = lexical_cast<double>(value);
@@ -212,21 +241,35 @@ void Column::changeColumnType(Column::ColumnType newColumnType)
 	}
 }
 
+void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> &uniqueValues, bool is_ordinal)
+{
+	_labels.syncInts(uniqueValues);
+	_setColumnAsNominalOrOrdinal(values, is_ordinal);
+}
+
 void Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
 {
-	_labels.clear();
+	_labels.syncInts(uniqueValues);
+	_setColumnAsNominalOrOrdinal(values, is_ordinal);
+}
 
-	BOOST_FOREACH(int value, uniqueValues)
-	{
-		_labels.add(value);
-	}
-
+void Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ordinal)
+{
 	Ints::iterator intInputItr = AsInts.begin();
+	int nb_values = 0;
 
 	BOOST_FOREACH(int value, values)
 	{
 		*intInputItr = value;
 		intInputItr++;
+		nb_values++;
+	}
+
+	while (nb_values < _rowCount)
+	{
+		*intInputItr = INT_MIN;
+		intInputItr++;
+		nb_values++;
 	}
 
 	setColumnType(is_ordinal ? Column::ColumnTypeOrdinal : Column::ColumnTypeNominal);
@@ -250,6 +293,11 @@ void Column::setColumnAsScale(const std::vector<double> &values)
 
 void Column::setColumnAsNominalString(const vector<string> &values)
 {
+	setColumnAsNominalString(values, map<string, string>());
+}
+
+void Column::setColumnAsNominalString(const vector<string> &values, const map<string, string>&labels)
+{
 	vector<string> sorted = values;
 	sort(sorted.begin(), sorted.end());
 	vector<string> cases;
@@ -265,21 +313,27 @@ void Column::setColumnAsNominalString(const vector<string> &values)
 		}
 	}
 
-	_labels.clear();
-
-	BOOST_FOREACH (string &value, cases)
-		_labels.add(value);
+	std::map<string, int> map = _labels.syncStrings(cases, labels);
 
 	Column::Ints::iterator intInputItr = AsInts.begin();
+	int nb_values = 0;
 
 	BOOST_FOREACH (const string &value, values)
 	{
 		if (value == "" || value == " ")
 			*intInputItr = INT_MIN;
 		else
-			*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
-
+			//*intInputItr = distance(cases.begin(), find(cases.begin(), cases.end(), value));
+			*intInputItr = map[value];
 		intInputItr++;
+		nb_values++;
+	}
+
+	while (nb_values < _rowCount)
+	{
+		*intInputItr = INT_MIN;
+		intInputItr++;
+		nb_values++;
 	}
 
 	setColumnType(Column::ColumnTypeNominalText);
@@ -291,10 +345,10 @@ int Column::rowCount() const
 	return _rowCount;
 }
 
-string Column::stringFromRaw(int value) const
+string Column::_labelFromIndex(int value) const
 {
 	if (value == INT_MIN)
-		return ".";
+		return _emptyValue;
 
 	if (_labels.size() > 0)
 		return _labels.labelFor(value).text();
@@ -380,38 +434,158 @@ void Column::setValue(int rowIndex, double value)
 	block->Data[blockIndex].d = value;
 }
 
-string Column::operator [](int index)
+bool Column::isValueEqual(int rowIndex, double value)
 {
+	if (rowIndex >= _rowCount)
+		return false;
+
 	if (_columnType == Column::ColumnTypeScale)
 	{
-		double v = AsDoubles[index];
-
-		if (v > DBL_MAX)
-		{
-			char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
-			return string(inf);
-		}
-		else if (v < -DBL_MAX)
-		{
-			char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
-			return string(ninf);
-		}
-		else if (std::isnan(v))
-		{
-			return ".";
-		}
+		double d = AsDoubles[rowIndex];
+		if (std::isnan(value))
+			return std::isnan(d);
 		else
+			return d == value;
+	}
+
+	return false;
+}
+
+bool Column::isValueEqual(int rowIndex, int value)
+{
+	if (rowIndex >= _rowCount)
+		return false;
+
+	if (_columnType == Column::ColumnTypeScale)
+		return AsDoubles[rowIndex] == value;
+
+	int intValue = AsInts[rowIndex];
+	if (intValue == INT_MIN)
+		return value == INT_MIN;
+
+	if (_labels.size() > 0)
+	{
+		Label label = _labels.labelFor(intValue);
+		if (label.hasIntValue())
+			return label.value() == value;
+	}
+	return false;
+}
+
+bool Column::isValueEqual(int rowIndex, const string &value)
+{
+	if (rowIndex >= _rowCount)
+		return false;
+
+	bool result = false;
+	switch (_columnType)
+	{
+		case Column::ColumnTypeScale:
 		{
+			double v = AsDoubles[rowIndex];
 			stringstream s;
 			s << v;
-			return s.str();
+			string str = s.str();
+			result = (str == value);
+			break;
 		}
+
+		case Column::ColumnTypeNominal:
+		case Column::ColumnTypeOrdinal:
+		{
+			int v = AsInts[rowIndex];
+			stringstream s;
+			s << v;
+			string str = s.str();
+			result = (str == value);
+			break;
+		}
+		default:
+		{
+			int index = AsInts[rowIndex];
+			if (index == INT_MIN)
+			{
+				result = (value == "" || value == " " || value == _emptyValue);
+			}
+			else
+			{
+				result = (value == _labels.getValueFromIndex(index));
+			}
+		}
+
+	}
+
+	return result;
+}
+
+string Column::_getScaleValue(int row)
+{
+	double v = AsDoubles[row];
+
+	if (v > DBL_MAX)
+	{
+		char inf[] = { (char)0xE2, (char)0x88, (char)0x9E, 0 };
+		return string(inf);
+	}
+	else if (v < -DBL_MAX)
+	{
+		char ninf[] = { (char)0x2D, (char)0xE2, (char)0x88, (char)0x9E, 0 };
+		return string(ninf);
+	}
+	else if (std::isnan(v))
+	{
+		return _emptyValue;
 	}
 	else
 	{
-		int value = AsInts[index];
-		return stringFromRaw(value);
+		stringstream s;
+		s << v;
+		return s.str();
 	}
+}
+
+string Column::getOriginalValue(int row)
+{
+	string result = _emptyValue;
+
+	if (row < _rowCount)
+	{
+		if (_columnType == Column::ColumnTypeScale)
+		{
+			result = _getScaleValue(row);
+		}
+		else
+		{
+			int index = AsInts[row];
+			if (index == INT_MIN)
+				result = _emptyValue;
+			else
+				result = _labels.getValueFromIndex(index);
+		}
+	}
+
+	return result;
+}
+
+
+string Column::operator [](int row)
+{
+	string result = _emptyValue;
+
+	if (row < _rowCount)
+	{
+		if (_columnType == Column::ColumnTypeScale)
+		{
+			result = _getScaleValue(row);
+		}
+		else
+		{
+			int value = AsInts[row];
+			result = _labelFromIndex(value);
+		}
+	}
+
+	return result;
 }
 
 void Column::append(int rows)
@@ -438,12 +612,12 @@ void Column::append(int rows)
 	int rowsLeft = rows - room;
 	if (rowsLeft <= 0)
 	{
-		block->insert(block->rowCount(), rows);
+		block->insert(rows);
 		_rowCount += rows;
 		return;
 	}
 
-	block->insert(block->rowCount(), room);
+	block->insert(room);
 	_rowCount += room;
 
 	int newBlocksRequired = rowsLeft / DataBlock::capacity();
@@ -457,7 +631,7 @@ void Column::append(int rows)
 		DataBlock *newBlock = _mem->construct<DataBlock>(anonymous_instance)();
 
 		int toInsert = std::min(rowsLeft, DataBlock::capacity());
-		newBlock->insert(0, toInsert);
+		newBlock->insert(toInsert);
 		rowsLeft -= toInsert;
 
 		id += DataBlock::capacity();
@@ -468,9 +642,51 @@ void Column::append(int rows)
 		}
 		catch (boost::interprocess::bad_alloc &e)
 		{
-			cout << e.what();
-			cout << "setRowCount" << _rowCount << "\n";
-			throw;
+			cout << e.what() << " ";
+			cout << "append column " << name() << ", append: " << rows << ", rowCount: " << _rowCount << std::endl;
+			throw e;
+		}
+	}
+}
+
+void Column::truncate(int rows)
+{
+	if (rows <= 0) return;
+
+	BlockMap::reverse_iterator itr = _blocks.rbegin();
+	DataBlock *block = itr->second.get();
+
+	int rowsToDelete = rows;
+
+	if (rowsToDelete > _rowCount)
+		rowsToDelete = _rowCount;
+
+	while (rowsToDelete > 0)
+	{
+		if (block->rowCount() >= rowsToDelete)
+		{
+			block->erase(rowsToDelete);
+			_rowCount -= rowsToDelete;
+			rowsToDelete = 0;
+		}
+		else
+		{
+			rowsToDelete -= block->rowCount();
+			_rowCount -= block->rowCount();
+			block->erase(block->rowCount());
+			//_mem->destroy_ptr<DataBlock>(block);
+			itr++;
+			if (itr == _blocks.rend())
+			{
+				std::cout << "Try to erase more blocks than existing!!" << std::endl;
+				std::cout.flush();
+				rowsToDelete = 0;
+				_rowCount = 0;
+			}
+			else
+			{
+				block = itr->second.get();
+			}
 		}
 	}
 }
@@ -480,32 +696,12 @@ void Column::setColumnType(Column::ColumnType columnType)
 	_columnType = columnType;
 }
 
-void Column::setRowCount(int rowCount)
+void Column::_setRowCount(int rowCount)
 {
-	//std::cout << "setting row count, old " << _rowCount << " new " << rowCount << "\n";
-	//std::cout.flush();
-
-	if (rowCount == this->rowCount())
-		return;
-
 	if (rowCount > this->rowCount())
-	{
 		append(rowCount - this->rowCount());
-		return;
-	}
-
-	_rowCount = rowCount;
-
-	for (BlockMap::iterator itr = _blocks.upper_bound(rowCount); itr != _blocks.end(); itr++)
-	{
-		BlockEntry &entry = *itr;
-		DataBlock *block = entry.second.get();
-		_mem->destroy_ptr<DataBlock>(block);
-		entry.second = NULL;
-	}
-
-	_blocks.erase(_blocks.upper_bound(rowCount), _blocks.end());
-
+	else if (rowCount < this->rowCount())
+		truncate(this->rowCount() - rowCount);
 }
 
 Column::Ints::IntsStruct()
@@ -530,7 +726,9 @@ int& Column::IntsStruct::operator [](int rowIndex)
 
 	if (itr == parent->_blocks.end())
 	{
-		//qDebug() << "Column::Ints[], bad rowIndex";
+		std::cout << "Column::Ints[], bad rowIndex: " << rowIndex << std::endl;
+		std::cout << "Nb of blocks: " << parent->_blocks.size() << std::endl;
+		std::cout.flush();
 	}
 
 	int blockId = itr->first;

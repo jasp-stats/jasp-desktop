@@ -13,6 +13,7 @@ public:
 	LevelsTableModel(QObject *parent = 0);
 
 	void setColumn(Column *column);
+	void refresh();
 	void clearColumn();
 
 	int rowCount(const QModelIndex &parent) const OVERRIDE;

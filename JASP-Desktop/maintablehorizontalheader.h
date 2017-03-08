@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -24,20 +24,26 @@
 
 #include "column.h"
 #include "common.h"
+#include "datasettablemodel.h"
 
 class MainTableHorizontalHeader : public QHeaderView
 {
 	Q_OBJECT
+
 public:
 	explicit MainTableHorizontalHeader(QWidget *parent = 0);
 
+	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
+
 signals:
 	void columnTypeChanged(int columnIndex, Column::ColumnType newColumnType);
+	void columnNamePressed(int columnIndex);
 
 public slots:
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event) OVERRIDE;
+	virtual void mouseMoveEvent(QMouseEvent *event) OVERRIDE;
 
 private slots:
 	void nominalSelected();
@@ -46,6 +52,7 @@ private slots:
 
 private:
 	int _columnSelected;
+	DataSetTableModel *_dataSetModel;
 
 	QMenu *_menu;
 

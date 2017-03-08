@@ -5,7 +5,7 @@
 !include "nsProcess.nsh"
 !include "x64.nsh"
 
-!define MAIN_VERSION "0.8.0"
+!define MAIN_VERSION "0.8.1"
 !define PATCH_NUM "0"
 !define VERSION "${MAIN_VERSION}.${PATCH_NUM}"
 !define BETA ""
@@ -15,7 +15,7 @@
 !define APP_DISPLAY_NAME "${APP_NAME} ${VERSION}"
 !define COMP_NAME "The ${APP_NAME} Statistics Project"
 !define WEB_SITE "https://jasp-stats.org"
-!define COPYRIGHT "${APP_NAME} © 2016"
+!define COPYRIGHT "${APP_NAME} © 2017"
 !define DESCRIPTION "${APP_NAME} - A Fresh Way to Do Statistics"
 !define LICENSE_TXT "${CONTENTS_DIR}\AGPL.txt"
 !define MAIN_APP_EXE "${APP_NAME}.exe"

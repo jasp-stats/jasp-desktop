@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -50,6 +50,12 @@ RegressionLogLinearForm::RegressionLogLinearForm(QWidget *parent) :
 	connect(_factorsModel, SIGNAL(unassigned(Terms)), _model, SLOT(removeVariables(Terms)));
 
 	ui->panelStatistics->hide();
+
+#ifdef QT_NO_DEBUG
+
+#else
+
+#endif
 }
 
 RegressionLogLinearForm::~RegressionLogLinearForm()

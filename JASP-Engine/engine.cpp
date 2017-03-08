@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 
 #include "engine.h"
 
-#include <strstream>
 #include <sstream>
 #include <cstdio>
 
@@ -92,7 +91,7 @@ void Engine::runAnalysis()
 	if (_status == initing || _status == running)  // if status hasn't changed
 		receiveMessages();
 
-	if (_status == toInit || _status == aborted || _status == error)
+	if (_status == toInit || _status == aborted || _status == error || _status == exception)
 	{
 		// analysis was aborted, and we shouldn't send the results
 	}

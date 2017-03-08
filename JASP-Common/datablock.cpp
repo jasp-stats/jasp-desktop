@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,15 +24,22 @@ DataBlock::DataBlock()
 	_rowCount = 0;
 }
 
-bool DataBlock::insert(int position, int rows)
+bool DataBlock::insert(int rows)
 {
 	if (_rowCount + rows > BLOCK_SIZE)
 		return false;
 
 	_rowCount += rows;
 
-	for (int i = _rowCount - 1; i >= position + rows; i--)
-		Data[i].d = Data[i - rows].d;
+	return true;
+}
+
+bool DataBlock::erase(int rows)
+{
+	if (_rowCount - rows < 0)
+		return false;
+
+	_rowCount -= rows;
 
 	return true;
 }
@@ -46,14 +53,3 @@ int DataBlock::capacity()
 {
 	return BLOCK_SIZE;
 }
-
-void DataBlock::moveTo(DataBlock *dest, int position, int rows)
-{
-	if (dest->insert(position, rows) == false)
-	{
-        //qDebug() << "could not move!";
-		return;
-	}
-
-}
-

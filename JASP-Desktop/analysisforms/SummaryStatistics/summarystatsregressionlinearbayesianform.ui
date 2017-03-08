@@ -146,7 +146,6 @@
         </layout>
         <zorder>widget_12</zorder>
         <zorder>topWidget</zorder>
-        <zorder>horizontalSpacer_5</zorder>
        </widget>
       </item>
      </layout>

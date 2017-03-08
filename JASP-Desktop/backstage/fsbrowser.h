@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016 University of Amsterdam
+// Copyright (C) 2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -23,6 +23,8 @@
 #include <QGridLayout>
 #include <QButtonGroup>
 #include <QLabel>
+#include <QSettings>
+#include <QCheckBox>
 
 #include "fsbmodel.h"
 #include "breadcrumbs.h"
@@ -33,12 +35,13 @@ class FSBrowser : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit FSBrowser(QWidget *parent = 0);
+	enum BrowseMode { BrowseOpenFile, BrowseOpenFolder, BrowseSaveFile, BrowseExportFile, BrowseCurrent};
+	enum ViewType   { IconView, ListView };
+
+	explicit FSBrowser(QWidget *parent = 0, BrowseMode mode = BrowseOpenFile);
 
 	void setFSModel(FSBModel *model);
 
-	enum BrowseMode { BrowseOpenFile, BrowseOpenFolder, BrowseSaveFile, BrowseExportFile};
-	enum ViewType   { IconView, ListView };
 
 	void setBrowseMode(BrowseMode mode);
 	void setViewType(ViewType viewType);
@@ -78,6 +81,7 @@ private:
 	FSBModel *_model;
 
 	AuthWidget *_authWidget;
+	QSettings _settings;
 
 };
 

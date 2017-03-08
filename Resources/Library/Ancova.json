@@ -178,6 +178,11 @@
 			"value": 0.95
 		},
 		{
+		  "name": "VovkSellkeMPR",
+		  "type": "Boolean",
+		  "default": false
+		},
+		{
 			"name": "qqPlot",
 			"type": "Boolean"
 		},
@@ -193,4 +198,3 @@
 		}
 	]
 }
-

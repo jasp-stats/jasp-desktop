@@ -22,20 +22,23 @@ public:
 
 	void setDataSet(DataSet *dataSet);
 	void clearDataSet();
+	void setCurrentColumn(int columnindex);
+signals:
+	void columnChanged(QString col);
+	void resetTableView();
 
 private slots:
-	void selectedVariableChanged(QModelIndex selection, QModelIndex old);
 	void moveUpClicked();
 	void moveDownClicked();
     void reverseClicked();
+	void labelDataChanged(QModelIndex m1, QModelIndex m2);
 
 private:
 	Ui::VariablesWidget *ui;
-
 	DataSet *_dataSet;
-	VariablesTableModel *_variablesTableModel;
 	LevelsTableModel *_levelsTableModel;
 	Column *_currentColumn;
+
 };
 
 #endif // VARIABLESWIDGET_H

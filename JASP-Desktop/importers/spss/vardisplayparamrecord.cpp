@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,8 @@
 
 
 #include "vardisplayparamrecord.h"
-#include "debug_cout.h"
+#include "../importerutils.h"
+#include "spssimportdataset.h"
 
 using namespace std;
 using namespace boost;
@@ -68,20 +69,19 @@ VarDisplayParamRecord::VarDisplayParamRecord(const NumericConverter &fixer, Reco
 
 /**
  * @brief process Manipulates columns by adding the contents of thie record.
- * @param columns
  *
  * Implematations should examine columns to determine the record history.
  */
-void VarDisplayParamRecord::process(SPSSColumns &columns)
+void VarDisplayParamRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	// String continuation columns do not have a display params entry.
 	size_t i = 0;
-	for (SPSSDictionary::iterator iter = columns.begin();
-		 (iter != columns.end()) && (i < _displayParams.size());
+	for (ImportColumns::iterator iter = dataset->begin();
+		 (iter != dataset->end()) && (i < _displayParams.size());
 		 ++iter, ++i)
 	{
+		SPSSImportColumn *col = dynamic_cast<SPSSImportColumn*>(*iter);
 		// place measure in this col.
-		iter->second.spssMeasure( static_cast<Measure>( _displayParams[i].measure()) );
-//		DEBUG_COUT6("Measure for col :\"", columns[colCount].spssLabel(), "\" (", columns[colCount].spssName(), "\") set to ", columns[colCount].spssMeasure());
+		col->spssMeasure( static_cast<Measure>( _displayParams[i].measure()) );
 	}
 }

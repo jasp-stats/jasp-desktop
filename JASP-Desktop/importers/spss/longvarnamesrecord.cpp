@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "longvarnamesrecord.h"
+#include "spssimportdataset.h"
 
 using namespace std;
 using namespace boost;
@@ -38,19 +39,19 @@ LongVarNamesRecord::LongVarNamesRecord(const NumericConverter &fixer, RecordSubT
 
 /**
  * @brief process Manipulates columns by adding the contents of thie record.
- * @param columns
  *
  * Implematations should examine columns to determine the record history.
  */
-void LongVarNamesRecord::process(SPSSColumns & columns)
+void LongVarNamesRecord::process(SPSSImporter* importer, SPSSImportDataSet *dataset)
 {
 	// Get the name to search for.
 	map<string, string> nameVals = breakNamePairs(_var_name_pairs);
 
 	// Find and replace the names in the columns.
-	for (SPSSColumns::iterator colI = columns.begin(); colI != columns.end(); colI++)
+	for (ImportColumns::iterator colI = dataset->begin(); colI != dataset->end(); colI++)
 	{
-		string srchName = colI->second.spssRawColName();
+		SPSSImportColumn* col = dynamic_cast<SPSSImportColumn*>(*colI);
+		string srchName = col->spssRawColName();
 		// Chop trailing spaces.
 		if (srchName.length() > 0)
 		{
@@ -61,9 +62,9 @@ void LongVarNamesRecord::process(SPSSColumns & columns)
 		map<string, string>::const_iterator nv = nameVals.find(srchName);
 		if (nv != nameVals.end())
 		{
-			string nm = columns.stringsConv().convertCodePage(nv->second);
-			DEBUG_COUT4("Added long name to ", colI->second.spssRawColName(), " value: ", nv->second);
-			colI->second.spssLongColName(nm);
+			string nm = dataset->stringsConv().convertCodePage(nv->second);
+			//DEBUG_COUT4("Added long name to ", col->spssRawColName(), " value: ", nv->second);
+			col->spssLongColName(nm);
 		}
 
 	}

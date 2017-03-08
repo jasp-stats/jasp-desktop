@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016 University of Amsterdam
+# Copyright (C) 2017 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -79,6 +79,7 @@ SummaryStatsBinomialTestBayesian <- function(dataset = NULL, options, perform = 
 	fields[[length(fields)+1]] <- list(name = "failures", type = "integer", title = "Failures")
 	fields[[length(fields)+1]] <- list(name = "testValue", type = "number", title = "Test value")
 	fields[[length(fields)+1]] <- list(name = "BF", type = "number", format = "sf:4;dp:3", title = bf.title)
+	fields[[length(fields)+1]] <- list(name = "pValue", type = "number", format = "sf:4;dp:3", title = "p")
 
 	table <- list()
 	table[["title"]] <- "Bayesian Binomial Test"
@@ -249,6 +250,8 @@ SummaryStatsBinomialTestBayesian <- function(dataset = NULL, options, perform = 
 				}
 
 				rowsBinomialTest$BF <- .clean(BF)
+				rowsBinomialTest$pValue <- .clean(stats::binom.test(x=c(options$successes, options$failures), 
+				                                                    p=options$testValue, alternative=hyp)$p.value)
 			}
 		}
 	}

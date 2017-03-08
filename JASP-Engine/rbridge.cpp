@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -230,10 +230,9 @@ Rcpp::DataFrame rbridge_readDataSet(const std::map<std::string, Column::ColumnTy
 
 				const Labels &labels = column.labels();
 
-				BOOST_FOREACH(const LabelEntry &labelEntry, labels)
+				BOOST_FOREACH(const Label &label, labels)
 				{
-					(void)labels;
-					indices[labelEntry.first] = i++;
+					indices[label.value()] = i++;
 				}
 
 				BOOST_FOREACH(int value, column.AsInts)
@@ -405,8 +404,8 @@ void rbridge_makeFactor(Rcpp::IntegerVector &v, const Labels &levels, bool ordin
 	}
 	else
 	{
-		BOOST_FOREACH(const LabelEntry &level, levels)
-			labels.push_back(level.second.text());
+		BOOST_FOREACH(const Label &level, levels)
+			labels.push_back(level.text());
 	}
 
 	v.attr("levels") = labels;

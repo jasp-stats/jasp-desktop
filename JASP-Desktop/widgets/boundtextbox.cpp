@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -42,7 +42,6 @@ void BoundTextBox::bindTo(Option *option)
 
 	if (_integer != NULL)
 	{
-		int v = _integer->value();
 		int min = _integer->min();
 		int max = _integer->max();
 

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2016 University of Amsterdam
+// Copyright (C) 2015-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
 
 #ifndef _NUMERICCONVERTER_H__
 #define _NUMERICCONVERTER_H__
+
+#include "systemfileformat.h"
 
 #include <stdint.h>
 #include <stddef.h>

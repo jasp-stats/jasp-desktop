@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -26,37 +26,74 @@ MainTableHorizontalHeader::MainTableHorizontalHeader(QWidget *parent) :
 {
 	_menu = new QMenu(this);
 	_columnSelected = 0;
+	_dataSetModel = NULL;
 
 	_nominalTextIcon = QIcon(":/icons/variable-nominal-text.svg");
 	_nominalIcon = QIcon(":/icons/variable-nominal.svg");
 	_ordinalIcon = QIcon(":/icons/variable-ordinal.svg");
 	_scaleIcon = QIcon(":/icons/variable-scale.svg");
 
+	this->setToolTip("Click on column name to change labels.");
+
 	_convertToScale = _menu->addAction(_scaleIcon, "", this, SLOT(scaleSelected()));
 	_convertToOrdinal = _menu->addAction(_ordinalIcon, "", this, SLOT(ordinalSelected()));
 	_convertToNominal = _menu->addAction(_nominalIcon, "", this, SLOT(nominalSelected()));
-
 }
+
+void MainTableHorizontalHeader::setModel(QAbstractItemModel *model)
+{
+	_dataSetModel = dynamic_cast<DataSetTableModel *>(model);
+	QHeaderView::setModel(model);
+}
+
+void MainTableHorizontalHeader::mouseMoveEvent(QMouseEvent *event)
+{
+	QPoint pos = event->pos();
+	int index = logicalIndexAt(pos);
+	int itemPos = sectionViewportPosition(index);
+	_columnSelected = index;
+	int x = pos.x() - itemPos;
+	
+	this->setToolTip("No valid column to change");
+	
+	if (x >= 4 && x <= 24)
+	{
+		this->setToolTip("Click on icon to change measurement level");
+	}
+	else
+	{
+		//Check for valid column 
+		if (_columnSelected >= 0)
+		{
+			if (_dataSetModel->getColumnType(_columnSelected) == Column::ColumnTypeScale)
+				this->setToolTip("Scale column does not have labels. Click on the icon if you want to change the measurement level");
+			else
+				this->setToolTip("Click on column name to change labels");
+		}
+	}					
+}
+
 
 void MainTableHorizontalHeader::mousePressEvent(QMouseEvent *event)
 {
 	QPoint pos = event->pos();
 	int index = logicalIndexAt(pos);
-
 	int itemPos = sectionViewportPosition(index);
-
+	_columnSelected = index;
 	int x = pos.x() - itemPos;
-
+	
 	if (x >= 4 && x <= 24)
 	{
-		_columnSelected = index;
-
 		QPoint menuPos = this->mapToGlobal(QPoint(itemPos, this->height()));
-
 		_menu->move(menuPos);
 		_menu->show();
 	}
-
+	else
+	{
+		//Check for valid column 
+		if (_columnSelected >= 0 && _dataSetModel->getColumnType(_columnSelected) != Column::ColumnTypeScale)
+			emit columnNamePressed(_columnSelected);
+	}
 
 	QHeaderView::mousePressEvent(event);
 }

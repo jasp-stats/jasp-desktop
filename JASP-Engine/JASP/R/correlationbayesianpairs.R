@@ -76,10 +76,14 @@ CorrelationBayesianPairs <- function(dataset=NULL, options, perform="run", callb
 	correlation[["title"]] <- "Bayesian Pearson Correlation"
 	if(useKendall){correlation[["title"]] <- "Bayesian Kendall Correlation"}
 	
-	correlation[["citation"]] <- list(
-		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
-		)
-	
+	if(usePearson){
+  	correlation[["citation"]] <- list(
+  		"Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2014). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Manuscript submitted for publication."
+  	)} else if(useKendall){
+  	  correlation[["citation"]] <- list(
+  	    "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
+	  )}
+  	
 	bf.type <- options$bayesFactorType
 	
 	if (bf.type == "BF10") {

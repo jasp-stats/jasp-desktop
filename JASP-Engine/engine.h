@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ private:
 	void provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath);
 	void provideStateFileName(std::string &root, std::string &relativePath);
 
-	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, aborted, stopped } Status;
+	typedef enum { empty, toInit, initing, inited, toRun, running, changed, complete, error, exception, aborted, stopped } Status;
 
 	Status _status;
 

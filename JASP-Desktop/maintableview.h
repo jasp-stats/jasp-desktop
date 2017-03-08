@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2016 University of Amsterdam
+// Copyright (C) 2013-2017 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -25,31 +25,41 @@
 
 #include "datasettablemodel.h"
 #include "maintablehorizontalheader.h"
+#include "variableswidget.h"
+
+#include <QPushButton>
 
 class MainTableView : public QTableView
 {
 	Q_OBJECT
+
 public:
 	explicit MainTableView(QWidget *parent = 0);
 
 	virtual void setModel(QAbstractItemModel *model) OVERRIDE;
+	void setVariablesView(VariablesWidget *variablesPage);
+	void adjustAfterDataLoad(bool dataLoaded);
 
 protected:
 	virtual void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) OVERRIDE;
 	virtual void verticalScrollbarValueChanged(int value) OVERRIDE;
-
+	virtual void mouseDoubleClickEvent(QMouseEvent *event) OVERRIDE;
 
 signals:
+	void dataTableColumnSelected();
+	void dataTableDoubleClicked();
 	
 public slots:
 
 private slots:
 	void badDataEnteredHandler(QModelIndex index);
 	void columnTypeChanged(int columnIndex, Column::ColumnType newColumnType);
+	void showLabelView(int columnIndex);
 
 private:
-
 	DataSetTableModel *_dataSetModel;
+	VariablesWidget *_variablesPage;
+
 
 	bool _infoPopupVisible;
 	QModelIndex _infoPopupIndex;
@@ -60,6 +70,7 @@ private:
 	void hideInfoPopup();
 
 	MainTableHorizontalHeader *_header;
+	bool _dataLoaded;
 	
 };
 
