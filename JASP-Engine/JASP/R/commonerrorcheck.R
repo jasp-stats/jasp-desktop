@@ -46,59 +46,61 @@
 }
 
 
-.generateErrorMessage <- function(type, variables=NULL, grouping=NULL, includeOpening=FALSE, concatenateWith=NULL, ...) {
-  # Generic function to create an error message (mostly used by .hasErrors() but it can be directly called).
+.generateErrorMessage <- function(type, opening=FALSE, concatenate=NULL, grouping=NULL, ...) {
+  # Generic function to create an error message (mostly used by .hasErrors() but it can be called directly).
   # Args:
-  #   type: String containing check type consistent with a message type in commmonmessages.R.
-  #   variables: Vector of dependent variables indicating those that did not pass the check.
-  #   grouping: Vector of grouping variables indicating what the dependents were grouped on.
-  #   includeOpening: Boolean, indicate if there should be a general opening statement (TRUE) or only the specific error message (FALSE).
-  #   concatenateWith: String, include if you want to append the error message to an already existing message [Should only be used by hasErrors()].
+  #   type: String containing either (1) check type consistent with a message type in commmonmessages.R, or (2) an error message.
+  #   opening: Boolean, indicate if there should be a general opening statement (TRUE) or only the specific error message (FALSE).
+  #   concatenate: String, include if you want to append the error message to an already existing message.
+  #   grouping: String vector indicating the grouping variables. This will add the line 'after grouping on...' to the message.
   #   ...: Each error message can have any number of variables, denoted by {{}}'s. Add these as arg=val pairs.
   #
   # Returns:
   #   String containing the error message.
   
-  if (length(type) == 0) {
+  if (! is.character(type) || length(type) == 0) {
     stop('Non-valid type argument provided')
   }
   
   replaceInMessage <- list('!=' = '≠', '==' = '=')
-  args <- list(...)
+  args <- c(list(grouping=grouping), list(...))
   
-  message <- .messages('error', type)
-  if (is.null(message)) {
-    stop('Could not find error message for "', type, '"')
-  }
-  
-  # See if we need to add a grouping line.
-  if (length(grouping) > 0) {
-    message <- paste(message, .messages('error', 'grouping'))
-    message <- gsub('{{grouping}}', paste(grouping, collapse=', '), message, fixed=TRUE)
-  }
-  
-  # See if we need to specify variables.
-  if (grepl('{{variables}}', message, fixed=TRUE)) {
-    if (is.null(variables)) {
-      stop('This error message requires the offending variables to be specified')
+  # Retrieve the error message; spaces indicate that it is already an error message.
+  if (grepl(' ', type, fixed=TRUE) == TRUE) {
+    message <- type
+  } else {
+    message <- .messages('error', type)
+    if (is.null(message)) {
+      stop('Could not find error message for "', type, '" (if you were trying to pass on a message, note that it must be a complete sentence)')
     }
-    message <- gsub('{{variables}}', paste(variables, collapse=', '), message, fixed=TRUE)
+  }
+  
+  # If a grouping argument is added, the message 'after grouping on {{}}' is automatically included.
+  if (! is.null(args[['grouping']])) {
+    message <- paste(message, .messages('error', 'grouping'))
   }
   
   # Find all {{string}}'s that needs to be replaced by values.
   toBeReplaced <- regmatches(message, gregexpr("(?<=\\{{)\\S*?(?=\\}})", message, perl=TRUE))[[1]]
   if (base::identical(toBeReplaced, character(0)) == FALSE) { # Were there any {{string}}'s?
+    
     if (all(toBeReplaced %in% names(args)) == FALSE) { # Were all replacements provided in the arguments?
       missingReplacements <- toBeReplaced[! toBeReplaced %in% names(args)]
       stop('Missing required replacement(s): "', paste(missingReplacements, collapse=','), '"')
     }
+    
     for (i in 1:length(toBeReplaced)) {
       value <- args[[ toBeReplaced[i] ]]
       if (length(value) > 1) { # Some arguments may have multiple values, e.g. amount = c('< 3', '> 5000').
-        value <- paste(value, collapse=' or ')
+        if (toBeReplaced[i] %in% c('variables', 'grouping')) {
+          value <- paste(value, collapse=', ')
+        } else {
+          value <- paste(value, collapse=' or ')
+        }
       }
       message <- gsub(paste0('{{', toBeReplaced[i], '}}'), value, message, fixed=TRUE)
     }
+    
   }
   
   # Find all values we do not want in the output, e.g. we do not want to show !=
@@ -108,44 +110,47 @@
     }
   }
   
-  # Add line indicator.
-  if (! is.null(concatenateWith) || includeOpening == TRUE) {
+  # Turn the message in a html list item
+  if (! is.null(concatenate) || opening == TRUE) {
     message <- paste0('<li>', message, '</li></ul>')
   }
   
   # See if we should concatenate it with something.
-  if (! is.null(concatenateWith)) {
-    endOfString <- substr(concatenateWith, nchar(concatenateWith)-4, nchar(concatenateWith))
+  if (is.character(concatenate) && length(concatenate) == 1) {
+    endOfString <- substr(concatenate, nchar(concatenate)-4, nchar(concatenate))
     if (endOfString == '</ul>') {
-      concatenateWith <- substr(concatenateWith, 1, nchar(concatenateWith)-5)
+      concatenate <- substr(concatenate, 1, nchar(concatenate)-5)
     }
-    message <- paste0(concatenateWith, message)
+    message <- paste0(concatenate, message)
   }
   
   # See if we should add an opening line.
-  if (includeOpening == TRUE) {
-    message <- paste0(.messages('error', 'opening'), '<ul>', message)
+  if (opening == TRUE) {
+    openingMsg <- .messages('error', 'opening')
+    if (grepl(openingMsg, message, fixed=TRUE) == FALSE) {
+      message <- paste0(openingMsg, '<ul>', message)
+    }
   }
   
   return(message)
 }
 
 
-.hasErrors <- function(dataset, perform, type, message='default', exitAnalysisIfErrors=FALSE, ...) {
+.hasErrors <- function(dataset, perform, type, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
   # Generic error checking function.
   # Args:
   #   dataset: Normal JASP dataset.
   #   perform: 'run' or 'init'.
-  #   type: List/vector containing check type(s).
-  #   message: 'short', 'default' or 'verbose', should only the first failure of a check be reported in footnote style ('short'), or should every check be mentioned in multi-line form;
-  #             in which case, are variables allowed to be mentioned as failing multiple checks ('verbose') or only the first check they fail ('default').
+  #   type: List/vector of strings containing check types.
+  #   message: 'short' or 'default' should only the first failure of a check be reported in footnote style ('short'), or should every check failure be mentioned in multi-line form.
   #   exitAnalysisIfErrors: Boolean, should the function simply return its results (FALSE), or abort the entire analysis when a failing check is encountered (TRUE).
+  #   custom: A function that performs some check and returns an error message, or a list containing multiple (named) check functions.
   #   ...: Each check may have required and optional arguments, they are specified in the error check subfunctions.
   #
   # Returns:
   #   FALSE if no errors were found or a named list specifying for each check which variables violated it as well as a general error message.
-
-  if (is.null(dataset) || perform != 'run' || length(type) == 0) {
+  
+  if (! isTRUE(nrow(dataset) > 0) || perform != 'run' || length(type) == 0) {
     return(FALSE)
   }
   
@@ -160,8 +165,32 @@
   checks[['variance']] <- list(callback=.checkVariance, addGroupingMsg=TRUE)
   checks[['observations']] <- list(callback=.checkObservations, addGroupingMsg=TRUE)
   
-  args <- list(...)
+  args <- c(list(dataset=dataset), list(...))
   errors <- list(message=NULL)
+  
+  # Add info about the custom check functions to the type and checks objects.
+  if (length(custom) > 0) {
+    if (is.function(custom)) {
+      checks[['_custom']] <- list(callback=custom, isCustom=TRUE, hasNamespace=FALSE)
+      type <- c(type, '_custom')
+    } else if (is.list(custom)) {
+      
+      if (is.null(names(custom))) {
+        names(custom) <- paste0('_custom', seq(length(custom)))
+        namespace <- FALSE
+      } else {
+        namespace <- TRUE
+      }
+      
+      for (i in 1:length(custom)) {
+        if (is.function(custom[[i]])) {
+          checks[[ names(custom)[i] ]] <- list(callback=custom[[i]], isCustom=TRUE, hasNamespace=namespace)
+          type <- c(type, names(custom)[i])
+        }
+      }
+      
+    }
+  }
   
   for (i in 1:length(type)) {
     
@@ -169,103 +198,115 @@
     if (is.null(check)) {
       stop('Unknown check type provided: "', type[[i]], '"')
     }
-
-    # Obtain the arguments this specific callback uses, attach the check specific prefix.
-    funcArgs <- base::formals(check[['callback']])
-    funcArgs[c('dataset', '...')] <- NULL
-    names(funcArgs) <- paste0(type[[i]], '.', names(funcArgs))
     
-    # Fill in the 'all.*' arguments for this check
-    # TODO when R version 3.3 is installed we can use: argsWithAll <- args[startsWith(names(args), 'all.')]
-    argsAllPrefix <- args[substring(names(args), 1, 4) == 'all.']
-    if (length(argsAllPrefix) > 0) {
-      for (a in names(argsAllPrefix)) {
-        funcArg <- gsub('all', type[[i]], a, fixed=TRUE)
-        if (funcArg %in% names(funcArgs)) {
-          args[[funcArg]] <- args[[a]]
-        }
-      }
-    }
+    isCustom <- ! is.null(check[['isCustom']]) # Is it an analysis-specific check?
+    hasNamespace <- ! isCustom || check[['hasNamespace']] == TRUE # Is it a named check?
     
-    # See if this check expects target variables and if they were provided, if not add all variables.
-    if (paste0(type[[i]], '.target') %in% names(funcArgs) && ! paste0(type[[i]], '.target') %in% names(args)) {
-      args[[ paste0(type[[i]], '.target') ]] <- .unv(names(dataset))
-    } 
-    
-    # Obtain an overview of required and optional check arguments.
-    optArgs <- list()
-    reqArgs <- list()
-    for (a in 1:length(funcArgs)) {
-      if (is.symbol(funcArgs[[a]])) { # Required args' value is symbol.
-        reqArgs <- c(reqArgs, funcArgs[a])
-      } else {
-        optArgs <- c(optArgs, funcArgs[a])
-      }
-    }
-    
-    if (length(reqArgs) > 0 && all(names(reqArgs) %in% names(args)) == FALSE) {
-      missingArgs <- reqArgs[! names(reqArgs) %in% names(args)]
-      stop('Missing required argument(s): "', paste(names(missingArgs), collapse=','), '"')
-    }
-    
-    if (length(optArgs) > 0 && all(names(optArgs) %in% names(args)) == FALSE) {
-      args <- c(args, optArgs[! names(optArgs) %in% names(args)])
-    }
-    
-    # Call the function with arguments sans the prefix (e.g. variance.target becomes target).
-    callingArgs <- c(list(dataset=dataset), args)
-    names(callingArgs) <- gsub(paste0(type[[i]], '.'), '', names(callingArgs), fixed=TRUE)
-    checkResult <- base::do.call(check[['callback']], callingArgs)
-    
-    if (checkResult[['error']] == TRUE) {
-      
-      createMessage <- TRUE
-      varsToAdd <- checkResult[['errorVars']]
-      
-      if (message == 'short' && length(errors) > 1) {
-        createMessage <- FALSE
-      } 
-      
-      if (message == 'default' && length(errors) > 1 && ! is.null(varsToAdd)) {
-        for (e in 2:length(errors)) { # First element is the error message.
-          varsToAdd <- varsToAdd[! varsToAdd %in% errors[[e]] ]
-          if (length(varsToAdd) == 0) {
-            createMessage <- FALSE
-            break
+    # Check the arguments provided/required for this specific check.
+    funcArgs <- NULL
+    if (hasNamespace) {
+      funcArgs <- base::formals(check[['callback']])
+      funcArgs['...'] <- NULL
+      if (length(funcArgs) > 0) {
+        # Attach the check specific prefix, except for the dataset arg.
+        names(funcArgs)[names(funcArgs) != 'dataset'] <- paste0(type[[i]], '.', names(funcArgs)[names(funcArgs) != 'dataset'])
+        
+        # Fill in the 'all.*' arguments for this check
+        # TODO when R version 3.3 is installed we can use: argsAllPrefix <- args[startsWith(names(args), 'all.')]
+        argsAllPrefix <- args[substring(names(args), 1, 4) == 'all.']
+        if (length(argsAllPrefix) > 0) {
+          for (a in names(argsAllPrefix)) {
+            funcArg <- gsub('all', type[[i]], a, fixed=TRUE)
+            if (funcArg %in% names(funcArgs)) {
+              args[[funcArg]] <- args[[a]]
+            }
           }
         }
-      }
-      
-      if (createMessage == TRUE) {
-        opening = FALSE
-        if (is.null(errors[['message']]) && message != 'short') {
-          opening = TRUE
+        
+        # See if this check expects target variables and if they were provided, if not add all variables.
+        if (paste0(type[[i]], '.target') %in% names(funcArgs) && ! paste0(type[[i]], '.target') %in% names(args)) {
+          args[[ paste0(type[[i]], '.target') ]] <- .unv(names(dataset))
+        } 
+        
+        # Obtain an overview of required and optional check arguments.
+        optArgs <- list()
+        reqArgs <- list()
+        for (a in 1:length(funcArgs)) {
+          if (is.symbol(funcArgs[[a]])) { # Required args' value is symbol.
+            reqArgs <- c(reqArgs, funcArgs[a])
+          } else {
+            optArgs <- c(optArgs, funcArgs[a])
+          }
         }
         
-        grouping <- NULL
-        if (! is.null(check[['addGroupingMsg']]) && check[['addGroupingMsg']] == TRUE && 
+        if (length(reqArgs) > 0 && all(names(reqArgs) %in% names(args)) == FALSE) {
+          missingArgs <- reqArgs[! names(reqArgs) %in% names(args)]
+          stop('Missing required argument(s): "', paste(names(missingArgs), collapse=','), '"')
+        }
+        
+        if (length(optArgs) > 0 && all(names(optArgs) %in% names(args)) == FALSE) {
+          args <- c(args, optArgs[! names(optArgs) %in% names(args)])
+        }
+      }
+      
+    }
+    
+    # Perform the actual error check.
+    if (hasNamespace && length(funcArgs) > 0) {
+      callingArgs <- args[names(funcArgs)]
+      names(callingArgs) <- gsub(paste0(type[[i]], '.'), '', names(callingArgs), fixed=TRUE)
+      checkResult <- base::do.call(check[['callback']], callingArgs)
+    } else {
+      checkResult <- check[['callback']]()
+    }
+    
+    # If we don't have an error we can go to the next check.
+    if ((! isCustom && checkResult[['error']] != TRUE) || (isCustom && (! is.character(checkResult) || checkResult == ''))) {
+      next
+    }
+    
+    # Create the error message.
+    if (! (message == 'short' && ! is.null(errors[['message']]))) {
+      opening <- FALSE
+      if (is.null(errors[['message']]) && message != 'short') {
+        opening <- TRUE
+      }
+      
+      varsToAdd <- NULL
+      if (! isCustom) {
+        varsToAdd <- checkResult[['errorVars']]
+      }
+      
+      grouping <- NULL
+      if (! is.null(check[['addGroupingMsg']]) && check[['addGroupingMsg']] == TRUE && 
           ! is.null(args[[ paste0(type[[i]], '.grouping') ]]) ) {
-          grouping <- args[[ paste0(type[[i]], '.grouping') ]]
-        }
-        
-        errors[['message']] <- base::do.call(.generateErrorMessage, 
-                                             c(list(type=type[[i]], variables=varsToAdd, 
-                                               grouping=grouping, includeOpening=opening, 
-                                               concatenateWith=errors[['message']]), args))
+        grouping <- args[[ paste0(type[[i]], '.grouping') ]]
       }
       
-      # Add the error (with any offending variables, or TRUE if there were no variables) to the list.
-      if (is.null(checkResult[['errorVars']])) {
-        errors[[ type[[i]] ]] <- TRUE
-      } else {
-        errors[[ type[[i]] ]] <- checkResult[['errorVars']]
+      msgType <- type[[i]]
+      if (isCustom) {
+        msgType <- checkResult
       }
       
+      errors[['message']] <- base::do.call(.generateErrorMessage, c(list(type=msgType, 
+        opening=opening, concatenate=errors[['message']], variables=varsToAdd, grouping=grouping), 
+        args))
+    }
+    
+    if (! hasNamespace) {
+      next  # We won't add info of the error to the list if we don't have a name.
+    }
+    
+    # Add the error (with any offending variables, or TRUE if there were no variables) to the list.
+    if (is.list(checkResult) && ! is.null(checkResult[['errorVars']])) {
+      errors[[ type[[i]] ]] <- checkResult[['errorVars']]
+    } else {
+      errors[[ type[[i]] ]] <- TRUE
     }
     
   } # End for-loop.
   
-  if (length(errors) == 1)  {
+  if (is.null(errors[['message']]))  {
     return(FALSE)
   } 
   
@@ -296,16 +337,16 @@
       stop('Each grouping variable must have a level specified')
     }
     
-  	# The levels vector may be a 'mix' of numeric and characters, we need to add additional quotation marks around characters.
-  	if (is.character(levels)) {
-  		levels <- vapply(levels, function(x) {
-  			if (suppressWarnings(is.na(as.numeric(x)))) {
-  				paste0("\"", x, "\"")
-  			} else {
-  				x
-  			}
-  		}, character(1))
-  	}
+    # The levels vector may be a 'mix' of numeric and characters, we need to add additional quotation marks around characters.
+    if (is.character(levels)) {
+      levels <- vapply(levels, function(x) {
+        if (suppressWarnings(is.na(as.numeric(x)))) {
+          paste0("\"", x, "\"")
+        } else {
+          x
+        }
+      }, character(1))
+    }
     
     expr <- paste(.v(grouping), levels, sep='==', collapse='&')
     dataset <- subset(dataset, eval(parse(text=expr)))
@@ -322,7 +363,7 @@
 }
 
 
-.checkInfinity <- function(dataset, target, grouping=NULL, groupingLevel=NULL, ...) {
+.checkInfinity <- function(dataset, target, grouping=NULL, groupingLevel=NULL) {
   # Check for infinity in the dataset. 
   # Args:
   #   dataset: JASP dataset.
@@ -358,7 +399,7 @@
 }
 
 
-.checkFactorLevels <- function(dataset, target, amount, ...) {
+.checkFactorLevels <- function(dataset, target, amount) {
   # Check if there are the required amount of levels in factors.
   # Args:
   #   dataset: JASP dataset.
@@ -384,7 +425,7 @@
 }
 
 
-.checkVariance <- function(dataset, target, equalTo=0, grouping=NULL, groupingLevel=NULL, ...) {
+.checkVariance <- function(dataset, target, equalTo=0, grouping=NULL, groupingLevel=NULL) {
   # Check for a certain variance in the dataset. 
   # Args:
   #   dataset: JASP dataset.
@@ -422,7 +463,7 @@
 }
 
 
-.checkObservations <- function(dataset, target, amount, grouping=NULL, groupingLevel=NULL, ...) {
+.checkObservations <- function(dataset, target, amount, grouping=NULL, groupingLevel=NULL) {
   # Check the number of observations in the dependent(s).
   # Args:
   #   dataset: JASP dataset.
