@@ -124,15 +124,12 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	freqPltColl <- .descriptivesFrequencyPlots(dataset.factors, options, run, last.plots)
 	
 	if (!is.null(freqPltColl[[1]][["obj"]])){
-		# Extract plot objects and save to state
-		spltPltObjects <- lapply(freqPltColl, function(x) x[["obj"]])
-		names(spltPltObjects) <- unlist(lapply(freqPltColl, function(x) x[["data"]]))
-		figstate <- append(figstate, spltPltObjects)
-		# remove objects from collection
-		freqPltColl <- lapply(freqPltColl, function(x) x[names(x)!="obj"])
+		# Save plot objects to figstate
+		figstate <- append(figstate, .imgToState(freqPltColl))
 	}
-	
-	distrPlots <- list(collection=freqPltColl, title=distrPlotsTitle)
+
+	distrPlots <- list(collection=.imgToResults(freqPltColl), 
+										 title=distrPlotsTitle)
 
 	#### SPLIT PLOTS
 	last.splitPlots <- NULL
@@ -149,28 +146,24 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 	splPltColl <- .descriptivesSplitPlots(dataset, options, run, last.splitPlots)
 	
 	if (!is.null(splPltColl[[1]][["obj"]])){
-		# Extract plot objects and save to state
-		spltPltObjects <- lapply(splPltColl, function(x) x[["obj"]])
-		names(spltPltObjects) <- unlist(lapply(splPltColl, function(x) x[["data"]]))
-		figstate <- append(figstate, spltPltObjects)
-		# remove objects from collection
-		splPltColl <- lapply(splPltColl, function(x) x[names(x)!="obj"])
+		# Save plot objects to state
+		figstate <- append(figstate, .imgToState(splPltColl))
 	}
 	
-	splitPlots <- list(collection=splPltColl,
+	splitPlots <- list(collection=.imgToResults(splPltColl),
 										 title=splitPlotsTitle)
 
 
-	####  MATRIX PLOT
+####  MATRIX PLOT
 
 	corrPlot <- .descriptivesMatrixPlot(dataset, options, run)
 	if (!is.null(corrPlot[["obj"]])){
-		figstate[[corrPlot[["data"]]]] <- corrPlot[["obj"]]
-		corrPlot <- corrPlot[names(corrPlot)!="obj"]
+		figstate <- append(figstate, .imgToState(corrPlot))
 	}
 	
-	
-	results[["plots"]] <- list(distributionPlots=distrPlots, matrixPlot=corrPlot,
+		
+	results[["plots"]] <- list(distributionPlots=distrPlots, 
+														 matrixPlot=.imgToResults(corrPlot),
 														 splitPlots=splitPlots, title="Plots")
 
 	keep <- NULL
@@ -812,7 +805,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 																
 				plot[["data"]] <- imageObj[["png"]]
 				plot[["obj"]] <- imageObj[["obj"]]
-				plot[["convertible"]] <- FALSE
+				plot[["convertible"]] <- TRUE
 				plot[["status"]] <- "complete"
 
 			} else if (length(column) > 0 && !is.factor(column)) {
@@ -840,7 +833,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 																	
 					plot[["data"]] <- imageObj[["png"]]
 					plot[["obj"]] <- imageObj[["obj"]]
-					plot[["convertible"]] <- FALSE
+					plot[["convertible"]] <- TRUE
 					plot[["status"]] <- "complete"
 				}
 
@@ -1245,7 +1238,7 @@ Descriptives <- function(dataset=NULL, options, perform="run", callback=function
 			plot <- matrix.plot
 			plot[["data"]]  <- imgObj[["png"]]
 			plot[["obj"]] <- imgObj[["obj"]]
-			plot[["convertible"]] <- FALSE
+			plot[["convertible"]] <- TRUE
 			
 			matrix.plot <- plot
 

@@ -47,20 +47,19 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	keep <- NULL
 	figstate <- list()
 	## if the user wants descriptive plots, s/he shall get them!
-	if (options$descriptivesPlots) {
+	if (options$descriptivesPlots && length(options$variables) > 0) {
 
 		plotTitle <- ifelse(length(options$variables) > 1, "Descriptives Plots", "Descriptives Plot")
 		descriptivesPlots <- .independentSamplesTTestDescriptivesPlot(dataset, options, perform)
 		if (!is.null(descriptivesPlots[[1]][["obj"]])){
 			# Extract plot objects and save to state
-			descrPlotsObj <- lapply(descriptivesPlots, function(x) x[["obj"]])
-			names(descrPlotsObj) <- unlist(lapply(descriptivesPlots, function(x) x[["data"]]))
-			figstate <- append(figstate, descrPlotsObj)
-			# remove objects from collection
-			descriptivesPlots <- lapply(descriptivesPlots, function(x) x[names(x)!="obj"])
+			figstate <- append(figstate, .imgToState(descriptivesPlots))
 			keep <- unlist(lapply(descriptivesPlots, function(x) x[["data"]]),NULL)
 		}
-		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives", descriptivesPlots = list(collection = descriptivesPlots, title = plotTitle))
+		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, 
+																			title = "Descriptives", 
+																			descriptivesPlots = list(collection = .imgToResults(descriptivesPlots), 
+																															 title = plotTitle))
 
 	} else {
 
