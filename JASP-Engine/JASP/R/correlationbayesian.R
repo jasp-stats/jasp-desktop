@@ -762,7 +762,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 }
 
 .hFunctionCombined <- function(nOri, rOri, nRep, rRep, rho){
-    result <- .aFunction(n=nOri, r=rOri, rho)*.aFunction(n=nRep, r=rRep, rho)+
+    result <- .hFunction(n=nOri, r=rOri, rho)*.hFunction(n=nRep, r=rRep, rho) 
+    return(result)
+}
+
+.hFunctionCombinedTwoSided <- function(nOri, rOri, nRep, rRep, rho){
+    result <- .aFunction(n=nOri, r=rOri, rho)*.aFunction(n=nRep, r=rRep, rho) +
         .bFunction(n=nOri, r=rOri, rho)*.bFunction(n=nRep, r=rRep, rho)
     return(result)
 }
@@ -1686,11 +1691,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         repObj <- .bfCorrieKernel(n=nRep, r=rRep, method=methodNumber, kappa=kappa)
         result$rep <- repObj
     }
-    
+
     if (methodNumber=="exact" || methodNumber==1) {
-        twoSidedIntegrand <- function(x){.hFunctionCombined(nOri, rOri, nRep, rRep, x)*.priorRho(x, kappa=kappa)}
-        plusSidedIntegrand <- function(x){.hFunctionCombined(nOri, rOri, nRep, rRep, x)*.priorRhoPlus(x, kappa=kappa)}
-        minSidedIntegrand <- function(x){.hFunctionCombined(nOri, rOri, nRep, rRep, x)*.priorRhoMin(x, kappa=kappa)}
+        twoSidedIntegrand <- function(x){.hFunctionCombinedTwoSided(nOri=nOri, rOri=rOri, nRep=nRep, rRep=rRep, x)*.priorRho(x, kappa=kappa)}
+        plusSidedIntegrand <- function(x){.hFunctionCombined(nOri=nOri, rOri=rOri, nRep=nRep, rRep=rRep, x)*.priorRhoPlus(x, kappa=kappa)}
+        minSidedIntegrand <- function(x){.hFunctionCombined(nOri=nOri, rOri=rOri, nRep=nRep, rRep=rRep, x)*.priorRhoMin(x, kappa=kappa)}
     } else if (methodNumber=="jeffreysIntegrate" || methodNumber==2) {
         twoSidedIntegrand <- function(x){.hJeffreysApprox(nRep, rRep, x)*.hJeffreysApprox(nOri, rOri, x)*.priorRho(x, kappa=kappa)}
         plusSidedIntegrand <- function(x){.hJeffreysApprox(nRep, rRep, x)*.hJeffreysApprox(nOri, rOri, x)*.priorRhoPlus(x, kappa=kappa)}
@@ -1737,7 +1742,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         if (is.finite(bf10Combined)){
             # Total winner, real great, it's the best
             
-            
             result$combined$bf10 <- bf10Combined
             result$repGivenOri$bf10 <- bf10Combined/oriObj$bf10
             
@@ -1763,12 +1767,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
                     return(result)
                 }
                 
-                if (is.na(bfPlus0Combined) || is.na(bfMin0Combined) || is.infinite(bfPlus0Combined) || is.infinite(bfMin0Combined) ){
+                if (is.na(bfPlus0Combined) || is.na(bfMin0Combined) || 
+                    is.infinite(bfPlus0Combined) || is.infinite(bfMin0Combined) || 
+                    (bfPlus0Combined > 1 && bfMin0Combined > 1) || 
+                    (bfPlus0Combined < 1 && bfMin0Combined < 1) ){
                     tempList <- .bfSavageDickeyOneSidedAdapt(bf10Combined, a=result$combined$betaA, b=result$combined$betaB, kappa=kappa)
                     
                     result$combined$bfPlus0 <- tempList$bfPlus0
                     result$combined$bfMin0 <- tempList$bfMin0
                 } else{
+                    # All good, store numerically calculated one-sided bfs
+                    
                     result$combined$bfPlus0 <- bfPlus0Combined
                     result$combined$bfMin0 <- bfMin0Combined
                 }
