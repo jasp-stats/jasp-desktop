@@ -130,6 +130,14 @@ checkPackages <- function() {
 	rjson::toJSON(.checkPackages())
 }
 
+isTryError <- function(obj){
+    if (is.list(obj)){
+        return(any(sapply(obj, function(obj){isTRUE(class(obj)=="try-error")})))
+    } else {
+        return(any(sapply(list(obj), function(obj){isTRUE(class(obj)=="try-error")})))
+    }
+}
+
 .addCitationToTable <- function(table) {
 
 	if ("citation" %in% names(table) ) {
