@@ -44,9 +44,12 @@ run <- function(name, options.as.json.string, perform="run") {
 		}
 	}
 	
-	state <- .retrieveState()
-	if (! is.null(state) && 'dependence' %in% names(attributes(state))) {
-		state <- .getStateItems(state=state, options=options, dependence=attributes(state)$dependence, alwaysKeep=attributes(state)$alwaysKeep)
+	state <- NULL
+	if ('state' %in% names(formals(analysis))) {
+		state <- .retrieveState()
+		if (! is.null(state) && 'key' %in% names(attributes(state))) {
+			state <- .getStateItems(state=state, options=options, key=attributes(state)$key, keep=attributes(state)$keep)
+		}
 	}
 	
 	results <- tryCatch(expr={
@@ -845,17 +848,19 @@ as.list.footnotes <- function(footnotes) {
 	changed
 }
 
-.optionsChanged <- function(opts1, opts2, dependence) {
+.optionsChanged <- function(opts1, opts2, subset=NULL) {
 	
   changed <- .diff(opts1, opts2)
   if (! is.list(changed)) {
     return(TRUE)
   }
   
-  changed <- changed[names(changed) %in% dependence]
-  if (length(changed) == 0) {
-    stop(paste0("None of the dependent gui options (", paste(dependence, collapse=", "), ") is in the options list."))
-  }
+	if (! is.null(subset)) {
+	  changed <- changed[names(changed) %in% subset]
+	  if (length(changed) == 0) {
+	    stop(paste0("None of the gui options (", paste(subset, collapse=", "), ") is in the options list."))
+	  }
+	}
   
   if (sum(sapply(changed, isTRUE)) > 0) {
     return(TRUE)
@@ -864,26 +869,26 @@ as.list.footnotes <- function(footnotes) {
   return(FALSE)
 }
 
-.getStateItems <- function(state, options, dependence, alwaysKeep=NULL) {
+.getStateItems <- function(state, options, key, keep=NULL) {
 	
   if (is.null(names(state)) || is.null(names(state$options)) || 
-      is.null(names(options)) || is.null(names(dependence))) {
+      is.null(names(options)) || is.null(names(key))) {
     return(NULL)
   }
 
   result <- list()
   for (item in names(state)) {
     
-		if (! is.null(alwaysKeep) && item %in% alwaysKeep) {
+		if (! is.null(keep) && item %in% keep) {
 			result[[item]] <- state[[item]]
 			next
 	  } 
 		
-		if (item %in% names(dependence) == FALSE) {
+		if (item %in% names(key) == FALSE) {
       next
     }
     
-    change <- .optionsChanged(state$options, options, dependence[[item]])
+    change <- .optionsChanged(state$options, options, key[[item]])
     if (change == FALSE) {
       result[[item]] <- state[[item]]
 		}
