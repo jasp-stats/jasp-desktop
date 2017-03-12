@@ -88,6 +88,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 	Json::Value &dataSet = metaData["dataSet"];
 	metaData["dataFilePath"] = Json::Value(package->dataFilePath);
+	metaData["dataFileReadOnly"] = Json::Value(package->dataFileReadOnly);
 	metaData["dataFileTimestamp"] = Json::Value(package->dataFileTimestamp);
 	dataSet["rowCount"] = Json::Value(dataset ? dataset->rowCount() : 0);
 	dataSet["columnCount"] = Json::Value(dataset ? dataset->columnCount(): 0);

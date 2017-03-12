@@ -23,7 +23,6 @@ public:
 	void setDataSet(DataSet *dataSet);
 	void clearDataSet();
 	void setCurrentColumn(int columnindex);
-
 signals:
 	void columnChanged(QString col);
 	void resetTableView();

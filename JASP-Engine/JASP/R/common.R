@@ -68,6 +68,7 @@ run <- function(name, options.as.json.string, perform="run") {
 		
 		stackTrace <- as.character(results$stackTrace)
 		stackTrace <- gsub("\"", "'", stackTrace, fixed=TRUE)
+		stackTrace <- gsub("\\\\", "", stackTrace)
 		stackTrace <- paste(stackTrace, collapse="<br><br>")
 		
 		errorMessage <- .generateErrorMessage(type='exception', error=error, stackTrace=stackTrace)

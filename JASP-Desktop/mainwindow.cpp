@@ -116,8 +116,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	_currentOptionsWidget = NULL;
 	_currentAnalysis = NULL;
 
-	_optionsForm = NULL;
-
 	_package = new DataSetPackage();
 
 	_package->isModifiedChanged.connect(boost::bind(&MainWindow::packageChanged, this, _1));
@@ -982,7 +980,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			setWindowTitle(name);
 			_currentFilePath = event->path();
 
-			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty())
+			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath.empty() && !_package->dataFileReadOnly && strncmp("http", _package->dataFilePath.c_str(), 4) != 0)
 			{
 				QString dataFilePath = QString::fromStdString(_package->dataFilePath);
 				if (QFileInfo::exists(dataFilePath))
@@ -1894,9 +1892,15 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 void MainWindow::startDataEditorHandler()
 {
 	QString path = QString::fromStdString(_package->dataFilePath);
-	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0)
+	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0 || _package->dataFileReadOnly)
 	{
-		QMessageBox msgBox(QMessageBox::Question, QString("Start Spreadsheet Editor"), QString("JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?"),
+		QString message = "JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?";
+		if (path.startsWith("http"))
+			message = "JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?";
+		else if (_package->dataFileReadOnly)
+			message = "JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?";
+
+		QMessageBox msgBox(QMessageBox::Question, QString("Start Spreadsheet Editor"), message,
 						   QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
 		msgBox.setButtonText(QMessageBox::Yes, QString("Generate Data File"));
 		msgBox.setButtonText(QMessageBox::No, QString("Find Data File"));
@@ -1929,7 +1933,6 @@ void MainWindow::startDataEditorHandler()
 				path.append(".csv");
 
 			event = new FileEvent(this, FileEvent::FileExportData);
-			connect(event, SIGNAL(completed(FileEvent*)), ui->backStage, SLOT(setSyncFile(FileEvent*)));
 		}
 		else
 		{
@@ -1960,6 +1963,8 @@ void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 
 	if (event->successful())
 	{
+		_package->dataFilePath = event->path().toStdString();
+		_package->dataFileReadOnly = false;
 		_package->setModified(true);
 		startDataEditor(event->path());
 	}

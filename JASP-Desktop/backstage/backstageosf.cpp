@@ -329,9 +329,6 @@ void BackstageOSF::openSaveFile(const QString &nodePath, const QString &filename
 
 	if (event->setPath(nodePath + "#file://" + filename))
 	{
-
-		if ( event->type() == Utils::jasp)
-			event->setReadOnly();
 		if (storedata)
 		{
 			_breadCrumbs->setEnabled(false);
