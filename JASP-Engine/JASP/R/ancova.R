@@ -1738,27 +1738,18 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				descriptivesPlot[["title"]] <- "Descriptives Plot"
 			}
 
-			# if (options$plotSeparateLines != "") {
-			# 
-			# 	image <- .beginSaveImage(options$plotWidthDescriptivesPlotLegend, options$plotHeightDescriptivesPlotLegend)
-			# 
-			# } else {
-			# 
-			# 	image <- .beginSaveImage(options$plotWidthDescriptivesPlotNoLegend, options$plotHeightDescriptivesPlotNoLegend)
-			# 
-			# }
-			# 
-			# print(p)
-			# content <- .endSaveImage(image)
-			
 			if (options$plotSeparateLines != "") {
+				
 				content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend, 
 									   height = options$plotHeightDescriptivesPlotLegend,
 									   plot = p, obj = FALSE)
+				
 			} else {
+				
 				content <- .writeImage(width = options$plotWidthDescriptivesPlotNoLegend, 
 									   height = options$plotHeightDescriptivesPlotNoLegend,
 									   plot = p, obj = FALSE)
+				
 			}
 			
 			descriptivesPlot[["data"]] <- content[["png"]]
