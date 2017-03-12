@@ -1848,10 +1848,6 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(0,0,.5,.5), "cm"))
 
-		# image <- .beginSaveImage(options$plotWidthQQPlot, options$plotHeightQQPlot)
-		# print(p)
-		# content <- .endSaveImage(image)
-		
 		content <- .writeImage(width = options$plotWidthQQPlot, 
 									   height = options$plotHeightQQPlot,
 									   plot = p, obj = FALSE)
