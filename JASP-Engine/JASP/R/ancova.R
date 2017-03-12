@@ -1738,20 +1738,34 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 				descriptivesPlot[["title"]] <- "Descriptives Plot"
 			}
 
+			# if (options$plotSeparateLines != "") {
+			# 
+			# 	image <- .beginSaveImage(options$plotWidthDescriptivesPlotLegend, options$plotHeightDescriptivesPlotLegend)
+			# 
+			# } else {
+			# 
+			# 	image <- .beginSaveImage(options$plotWidthDescriptivesPlotNoLegend, options$plotHeightDescriptivesPlotNoLegend)
+			# 
+			# }
+			# 
+			# print(p)
+			# content <- .endSaveImage(image)
+			
 			if (options$plotSeparateLines != "") {
-
-				image <- .beginSaveImage(options$plotWidthDescriptivesPlotLegend, options$plotHeightDescriptivesPlotLegend)
-
+				content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend, 
+									   height = options$plotHeightDescriptivesPlotLegend,
+									   plot = p, obj = FALSE)
 			} else {
-
-				image <- .beginSaveImage(options$plotWidthDescriptivesPlotNoLegend, options$plotHeightDescriptivesPlotNoLegend)
-
+				content <- .writeImage(width = options$plotWidthDescriptivesPlotNoLegend, 
+									   height = options$plotHeightDescriptivesPlotNoLegend,
+									   plot = p, obj = FALSE)
 			}
+			
+			descriptivesPlot[["data"]] <- content[["png"]]
+			descriptivesPlot[["obj"]] <- content[["obj"]]
+			descriptivesPlot[["convertible"]] <- FALSE
 
-			print(p)
-			content <- .endSaveImage(image)
-
-			descriptivesPlot[["data"]] <- content
+			#descriptivesPlot[["data"]] <- content
 			descriptivesPlot[["status"]] <- "complete"
 
 			descriptivesPlotList[[i]] <- descriptivesPlot
@@ -1843,11 +1857,17 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(0,0,.5,.5), "cm"))
 
-		image <- .beginSaveImage(options$plotWidthQQPlot, options$plotHeightQQPlot)
-		print(p)
-		content <- .endSaveImage(image)
-
-		qqPlot$data <- content
+		# image <- .beginSaveImage(options$plotWidthQQPlot, options$plotHeightQQPlot)
+		# print(p)
+		# content <- .endSaveImage(image)
+		
+		content <- .writeImage(width = options$plotWidthQQPlot, 
+									   height = options$plotHeightQQPlot,
+									   plot = p, obj = FALSE)
+		
+		qqPlot[["convertible"]] <- FALSE
+		qqPlot[["obj"]] <- content[["obj"]]
+		qqPlot$data <- content[["png"]]
 		qqPlot$status <- "complete"
 
 		stateqqPlot <- qqPlot
