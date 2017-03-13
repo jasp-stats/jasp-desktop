@@ -1320,8 +1320,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     #	methodNumber=2: semi-exact result, based on approximation of the likelihood JeffreysExact, see Wagenmakers et al (2015) bathing
     #	methodNumber=3: Savage Dickey beta approximation 
     #	methodNumber=4: Marsman's IMH sampler and report a posterior beta fit summarised by betaA, betaB
-    # methodNumber=5: Jeffreys asymptotic approximation of the BF 
-    # methodNumber=6: invalid data, or point prior
+    #   methodNumber=5: Jeffreys asymptotic approximation of the BF 
+    #   methodNumber=6: invalid data, or point prior
     #   
     #   hyperGeoOverFlowThreshold=25 implies that if log(bf10) > 24 that we use Savage-Dickey adaptation
     #   for the one-sided bfs. 
@@ -1359,7 +1359,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     
     # Note: If log(bf10) then use beta fit for the one sided bfs
     # The 24 is based on n=30, r=-0.3500786
-    hyperGeoOverFlowThreshold <- 24
+    # hyperGeoOverFlowThreshold <- 24
     
     # Note: Data check
     #
@@ -1514,7 +1514,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
     return(result)
 }
 
-.bfPearsonCorrelation <- function(n, r, kappa=1, ciValue=0.95){
+.bfPearsonCorrelation <- function(n, r, kappa=1, ciValue=0.95, hyperGeoOverFlowThreshold=24){
     # Wrapper around .bfCorrieKernel
     #
     result <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
@@ -1529,7 +1529,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         # 3. Savage-Dickey beta approximation
         # 4. Marsman sampler
         
-        result <- .bfCorrieKernel(n=n, r=r, kappa=kappa, method=methodNumber, ciValue=ciValue)
+        result <- .bfCorrieKernel(n=n, r=r, kappa=kappa, method=methodNumber, ciValue=ciValue, hyperGeoOverFlowThreshold=hyperGeoOverFlowThreshold)
         #}
         methodNumber <- methodNumber+1
     }
@@ -1542,7 +1542,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         result <- .bfCorrieKernel(n=n, r=r, kappa=kappa, method="jeffreysApprox")
     }
     
-    result$call <- paste0(".bfPearsonCorrelation(n=", n, ", r=", r, ", kappa=", kappa, ", ciValue=", ciValue, ")")
+    result$call <- paste0(".bfPearsonCorrelation(n=", n, ", r=", r, ", kappa=", kappa, ", ciValue=", ciValue, ", hyperGeoOverFlowThreshold=", hyperGeoOverFlowThreshold, ")")
     return(result)
 }
 
