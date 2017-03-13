@@ -372,7 +372,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						
 						if (!is.null(retrievedBFs)){
 							# State: Retrieval
-							obsR <- unlist(rValuesListExcludePairwise[[variableName]][[columnName]])
+							rObs <- unlist(rValuesListExcludePairwise[[variableName]][[columnName]])
 							bfObject <- retrievedBFs
 							
 							retrievedFootnote <- footnotesListExcludePairwise[[variableName]][[columnName]]
@@ -422,12 +422,12 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						if (!is.null(v1) && !is.null(v2)){
 							# Note: Data: PREPARE
 							#
-							obsN <- length(v1)
-							obsR <- cor(v1, v2)
+							nObs <- length(v1)
+							rObs <- cor(v1, v2)
 							
 							# For stateRetrieval
-							nLabel <- as.character(round(obsR, 5))
-							rLabel <- as.character(round(obsR, 5))
+							nLabel <- as.character(round(rObs, 5))
+							rLabel <- as.character(round(rObs, 5))
 							
 							# Try state retrieval
 							#
@@ -435,7 +435,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							
 							if (!is.null(retrievedBFs)){
 								# State: Retrieval
-								obsR <- obsR
+								rObs <- rObs
 								bfObject <- retrievedBFs
 								
 								retrievedFootnote <- footnotesListExcludeListwise[[nLabel]][[rLabel]]
@@ -501,11 +501,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							# Note: Data: PREPARE
 							#
 							# TODO (Johnny): Thus, always calculate "kendall" use switch or if else if 
-							obsR <- cor(v1, v2)
-							obsN <- length(v1)
+							rObs <- cor(v1, v2)
+							nObs <- length(v1)
 							
 							if (test == "kendall"){
-							    obsR <- cor(v1, v2, method = "kendall")
+							    rObs <- cor(v1, v2, method = "kendall")
 							}
 							
 							# Initialise output
@@ -513,10 +513,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							#methodNumber <- 1
 							
 							# Note: Data and bfs check [start]
-							if (is.na(obsR) || obsN <= 1) {
+							if (is.na(rObs) || nObs <= 1) {
 								# Note: Data: NOT ok, 
 								# 		bf10: can't
-								if (obsN <= 1){
+								if (nObs <= 1){
 									obsFootnote <- "Pearson's sample correlation coefficient r is undefined -- too few observations"
 									index <- .addFootnote(footnotes, obsFootnote)
 								} else if (any(is.infinite(v1)) || any(is.infinite(v2))) {
@@ -527,7 +527,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 									index <- .addFootnote(footnotes, obsFootnote)
 								}
 								
-								obsR <- NA
+								rObs <- NA
 								
 								# Store in state
 								#
@@ -535,15 +535,15 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 									footnotesListExcludePairwise[[variableName]][[columnName]] <- list(obsFootnote)
 								} else if (missingValues=="excludeListwise"){
 									# TODO: these should be defined above in the retrieval block
-									nLabel <- as.character(round(obsN))
-									rLabel <- as.character(round(obsR))
+									nLabel <- as.character(round(nObs))
+									rLabel <- as.character(round(rObs))
 									footnotesListExcludeListwise[[nLabel]][[rLabel]] <- list(obsFootnote)
 								}
 								
 								#rowFootnotes[[variable2Name]] <- c(rowFootnotes[[variableName]], list(index))
 								rowFootnotes[[columnName]] <- c(rowFootnotes[[columnName]], list(index))
 								
-								if (obsN==1){
+								if (nObs==1){
 									bfObject$bf10 <- 1
 								}
 							} else {
@@ -551,17 +551,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								# Try: bfs
 							  
 							  # TODO (Johnny): without a test=="kendall" we always calculate Pearson
-							  bfObject <- .bfPearsonCorrelation(n=obsN, r=obsR, kappa=priorWidth, ciValue=credibleIntervalsInterval)
+							  bfObject <- .bfPearsonCorrelation(n=nObs, r=rObs, kappa=priorWidth, ciValue=credibleIntervalsInterval)
 								
 							  if(test == "kendall"){
-							    bfObject <- .bfCorrieKernelKendallTau(n=obsN, tau=obsR, kappa = priorWidth, var = 1)
+							    bfObject <- .bfCorrieKernelKendallTau(n=nObs, tau=rObs, kappa = priorWidth, var = 1)
 							  }
 							}
 							
 							# Store in State
 							#
 							if (missingValues=="excludePairwise"){
-								rValuesListExcludePairwise[[variableName]][[columnName]] <- list(obsR)
+								rValuesListExcludePairwise[[variableName]][[columnName]] <- list(rObs)
 								bfValuesListExcludePairwise[[priorLabel]][[variableName]][[columnName]] <- bfObject
 							} else if (missingValues=="excludeListwise"){
 								bfValuesListExcludeListwise[[priorLabel]][[nLabel]][[rLabel]] <- bfObject
@@ -575,7 +575,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						# Note: Result reporting: sample r
 						# TODO: also for other kappas and find place to report the credible interval
 						
-						reportR <- obsR
+						reportR <- rObs
 						row[[length(row)+1]] <- .clean(reportR)
 						
 						
@@ -1542,6 +1542,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
         result <- .bfCorrieKernel(n=n, r=r, kappa=kappa, method="jeffreysApprox")
     }
     
+    result$call <- paste0(".bfPearsonCorrelation(n=", n, ", r=", r, ", kappa=", kappa, ", ciValue=", ciValue, ")")
     return(result)
 }
 
@@ -1592,8 +1593,25 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 
 
 # Replication Bayes factors
-# 
-.bfCorrieRepJosine <- function(nOri, rOri, nRep, rRep, kappa=1, methodNumber=1, hyperGeoOverFlowThreshold=24){
+#
+
+.bfCorrieRepJosine <- function(nOri, rOri, nRep, rRep, kappa=1, hyperGeoOverFlowThreshold=24){
+    result <- list(combined=list(bf10=NA, bfPlus0=NA, bfMin0=NA))
+    
+    methodNumber <- 1
+    while (methodNumber <= 4 && any(is.na(c(result$combined$bf10, result$combined$bfPlus0, result$combined$bfMin0)), 
+                                            is.infinite(result$combined$bf10))) {
+        result <- .bfCorrieRepJosineKernel(nOri=nOri, rOri=rOri, nRep=nRep, rRep=rRep, kappa=kappa, methodNumber=methodNumber, hyperGeoOverFlowThreshold=hyperGeoOverFlowThreshold)
+        methodNumber <- methodNumber+1
+    }
+    
+    result$call <- 
+        paste0(".bfCorrieRepJosine(nOri=", nOri, ", rOri=", rOri, ", nRep=", nRep, ", rRep=", rRep, ", kappa=", kappa, ", hyperGeoOverFlowThreshold=", hyperGeoOverFlowThreshold, ")")
+    
+    return(result)
+}
+
+.bfCorrieRepJosineKernel <- function(nOri, rOri, nRep, rRep, kappa=1, methodNumber=1, hyperGeoOverFlowThreshold=24){
     # 
     #  Ly, A., Etz, A., Marsman, M., & Wagenmakers, E.--J. (2017) Replication Bayes factors. Manuscript in preparation
     #  Ly, A., Marsman, M., & Wagenmakers, E.-J. (2017) Analytic Posteriors for Pearson’s Correlation Coefficient. Under review
