@@ -168,11 +168,13 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	    "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
 	  )}
 	
+	numberOfVariables <- length(variables)
+	
 	if (perform == "init") {
-		if (length(variables) < 2)
+		if (numberOfVariables < 2)
 			variables <- c(variables, "...")
-		if (length(variables) < 2)
-			variables <- c(variables, "... ")
+		# if (numberOfVariables < 2)
+		# 	variables <- c(variables, "... ")
 	}
 	if (hypothesis == "correlated") {
 		if (bayesFactorType=="BF10"){
@@ -243,9 +245,6 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		}
 	}
 	
-	# Note: Go over each variable
-	v.c <- length(variables)
-	
 	# State:
 	#
 	if (!is.null(state)){
@@ -289,7 +288,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	priorLabel <- as.character(round(priorWidth, 5))
 	
-	if (v.c > 0) {
+	if (numberOfVariables > 0) {
 		# Note: There are variables: 
 		testNames <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau")
 		columnNames <- c()
@@ -321,7 +320,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			}
 		}
 		
-		for (i in 1:v.c) {
+		for (i in 1:numberOfVariables) {
 			# Note: Create row given a column
 			row <- list()
 			rowFootnotes <- list()
@@ -349,7 +348,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				row[[length(row)+1]] <- "\u2014" # em-dash # Note: Fill in blanks
 				bayesFactorsList[[length(bayesFactorsList)+1]] <- "\u2014"
 				
-				for (j in .seqx(i+1, v.c)) {
+				for (j in .seqx(i+1, numberOfVariables)) {
 					# Note: fill in blanks in table upper left-hand off diaganols
 					variable2Name <- variables[[j]]
 					columnName <- paste(variable2Name, "[", test, "]", sep="")

@@ -64,12 +64,13 @@ Good Practice
 							keep = keep)
 				)
 ````
+1. Remove trailing white space. In RStudio choose: Tools - Global options - Code - Saving and tick "Strip trailing horizontal whitespace when saving"
 1. Suggest a reviewer for your code, after you submitted a pull request.
 
 
 Style
 -----
-The JASP style guide is based on the [google style guide](https://google-styleguide.googlecode.com/svn/trunk/Rguide.xml).
+The JASP style guide is based on the [google style guide](https://google.github.io/styleguide/Rguide.xml).
 
 1. General style: camelCasing
   - no underscores, no full stops, no hyphens between variables names and function names. Use verbs for functions and nouns for variables
@@ -129,9 +130,14 @@ The JASP style guide is based on the [google style guide](https://google-stylegu
     ```
     BayesFactor::ttest.tstat(t=7, n1=3)
     ```    
+1. Function output:
+  - Lists are R's standard
+  - When calling a named column in a list always use the full name.
+  - Don't merge lists using append as this can result in lists with the same names for different columns. Instead use `utils::modifyList`
 1. Assignment:
   - use `<-`, not `=` (The "=" sign is reserved for arguments in a function call)
   - Don't use global assignment operator <<-
+  - Don't use the right assignment operator `3 -> a`.
 1. Semicolons:
   - Don't use them
     * bad:
@@ -182,7 +188,7 @@ The JASP style guide is based on the [google style guide](https://google-stylegu
         result <- computeBf(r=r)
       }
       ```
-1. Commenting Guidelines: all comments begin with # followed by a space; inline comments need two spaces before the #.
+1. Commenting Guidelines: all comments begin with # followed by a space; inline comments need four spaces before the #.
 1. TODO Style: TODO(username)
 
 
