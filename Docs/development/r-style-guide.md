@@ -7,20 +7,21 @@ Good Practice
 -------------
 
 1. Do not use global variables, as this causes namespace problems.
-1. functions from outside the JASP package must always be called with their full namespace, like these:
+2. functions from outside the JASP package must always be called with their full namespace, like these:
     * `stats::anova()`
     * `base::options()`
-1. do not use:
+3. do not use:
     * `library()` (causes namespace problems)
     * `require()` (causes namespace problems)
     * `exists()`
     * `attach()` (causes namespace problems)
     * `assign()` (causes namespace problems)
     * `<<-` (This assigns to a global variable)
-1. Write code to be readable. It is common in the R programming community to do many things in a single line of code. This is either because it is less lines of code to write, or because it improves performance (or because it looks clever). Best practice is to only optimise code once performance has been demonstrated to be a problem. Start by writing code that is understandable. For instance, a for-loop is easier to read than an `lapply()`. When you do use an apply, please add a comment.
-1. Do not mix functions for mark-up with functions that are used for the computations.
-1. Try to save the output of the computations in a list and include the function call.
-1. Use dividers to make your code more readable.
+    * `append()` (This causes lists to have different columns with the same name)
+4. Write code to be readable. It is common in the R programming community to do many things in a single line of code. This is either because it is less lines of code to write, or because it improves performance (or because it looks clever). Best practice is to only optimise code once performance has been demonstrated to be a problem. Start by writing code that is understandable. For instance, a for-loop is easier to read than an `lapply()`. When you do use an apply, please add a comment.
+5. Do not mix functions for mark-up with functions that are used for the computations.
+6. Try to save the output of the computations in a list and include the function call.
+7. Use dividers to make your code more readable.
 ````
 	## Data screening -----------------------------------------------
   # Tim's error handling
@@ -46,26 +47,22 @@ Good Practice
   ## State save ----------------------------------------------------
   #
   for (plot in plotsCorrelationMatrix) {
-		keep <- c(keep, plot$data)
-	}
+      keep <- c(keep, plot$data)
+  }
 
-	if (run) {
-	   status <- "complete"
-		state <- list(options = options, bayesFactorObject = bayesFactorObject,
-								rowsCorrelationMatrix = rowsCorrelationMatrix,
-								plotsCorrelationMatrix = plotsCorrelationMatrix, plotTypes = plotTypes)
-	} else {
-		status <- "inited"
-	}
-
-	return(list(results = results,
-							status = status,
-							state = state,
-							keep = keep)
-				)
+  if (run) {
+      status <- "complete"
+      state <- list(options = options, bayesFactorObject = bayesFactorObject,
+      		    rowsCorrelationMatrix = rowsCorrelationMatrix,
+		    plotsCorrelationMatrix = plotsCorrelationMatrix, plotTypes = plotTypes)
+  } else {
+      status <- "inited"
+  }
+  
+  return(list(results = results, status = status, state = state,keep = keep)
 ````
-1. Remove trailing white space. In RStudio choose: Tools - Global options - Code - Saving and tick "Strip trailing horizontal whitespace when saving"
-1. Suggest a reviewer for your code, after you submitted a pull request.
+8. Remove trailing white space. In RStudio choose: Tools - Global options - Code - Saving and tick "Strip trailing horizontal whitespace when saving"
+9. Suggest a reviewer for your code, after you submitted a pull request.
 
 
 Style
@@ -74,9 +71,9 @@ The JASP style guide is based on the [google style guide](https://google.github.
 
 1. General style: camelCasing
   - no underscores, no full stops, no hyphens between variables names and function names. Use verbs for functions and nouns for variables
-    * bad: this_variable.x
-    * GOOD: firstVariable
-1. Defining functions:
+    * bad: `this_variable.x`
+    * GOOD: `firstVariable`
+2. Defining functions:
   -  function names that aren't the name of an analysis (i.e. those privately used by the JASP R package) begin with a . and lowercase.
     * bad:
     ```
@@ -96,21 +93,21 @@ The JASP style guide is based on the [google style guide](https://google.github.
     ```
     firstVariable <- 5
     .takeSquareRoot <- function(x){
-      sqrt(x)
+        sqrt(x)
     }
     ```
   - Function definitions should first list arguments without default values, followed by those with default values. In both function definitions and function calls, multiple arguments per line are allowed; line breaks are only allowed between assignments.
     * bad:
     ```
     .bfPearsonCorrelation <- function(kappa=1, n, r, hyperGeoOverFlowThreshold=24, ciValue =
-      0.95)
+		      		      0.95) 
     ```
     * GOOD:
     ```
     .bfPearsonCorrelation <- function(n, r, kappa=1, hyperGeoOverFlowThreshold=24,
-      ciValue = 0.95)
+      				      ciValue = 0.95)
     ```     
-1. Using functions:   
+3. Using functions:   
   - Use the full name space for functions outside of base.
     * bad: <br>
     ```
@@ -119,6 +116,8 @@ The JASP style guide is based on the [google style guide](https://google.github.
     ```
     * GOOD:
     ```
+    # Please mention the names that are updated in result
+    # betaA, betaB
     result <- utils::modifyList(x=result, val=tempResult)
     ```    
   - Pass arguments through a function by their argument name when possible.
@@ -130,15 +129,15 @@ The JASP style guide is based on the [google style guide](https://google.github.
     ```
     BayesFactor::ttest.tstat(t=7, n1=3)
     ```    
-1. Function output:
-  - Lists are R's standard
+4. Function output:
+  - Lists are R's work horses 
   - When calling a named column in a list always use the full name.
   - Don't merge lists using append as this can result in lists with the same names for different columns. Instead use `utils::modifyList`
-1. Assignment:
+5. Assignment:
   - use `<-`, not `=` (The "=" sign is reserved for arguments in a function call)
   - Don't use global assignment operator <<-
   - Don't use the right assignment operator `3 -> a`.
-1. Semicolons:
+6. Semicolons:
   - Don't use them
     * bad:
     ```
@@ -149,29 +148,29 @@ The JASP style guide is based on the [google style guide](https://google.github.
         x <- 3
         y <- 4
         ```
-1. Indentations:
+8. Indentations:
   - Use four spaces (Insert spaces for tab [tab width=4])
-1. Spacing
+9. Spacing
   - Spaces: Between binary operators (e.g., `+`, `*`, `||`, `<-`, commas.
-	   * BAD:
+    * BAD:
      ```
      displayEstimate <-bfObject$x+bfObject$y
      correlationMatrix[1 ,2]
      correlationMatrix[1,]
      ```
-	   * GOOD:
+    * GOOD:
      ```
      displayEstimate <- bfObject$x + bfObject$y
      correlationMatrix[1, 2]
      correlationMatrix[1, ]
      ```
-1. Spacing Curly Braces:
+10. Spacing Curly Braces:
   - first on same line, last on own line.
   - Surround else with braces
     * bad:
     ```
     if (is.null(r))
-      return(NA)
+        return(NA)
     else if (is.na(r))  {return(NA)}
     else
     {
@@ -181,15 +180,15 @@ The JASP style guide is based on the [google style guide](https://google.github.
     * GOOD:
       ```
       if (is.null(r)) {
-        return(NA)
+          return(NA)
       } else if {
-        return(NA)
+          return(NA)
       } else {
-        result <- computeBf(r=r)
+          result <- computeBf(r=r)
       }
       ```
-1. Commenting Guidelines: all comments begin with # followed by a space; inline comments need four spaces before the #.
-1. TODO Style: TODO(username)
+11. Commenting Guidelines: all comments begin with # followed by a space; inline comments need four spaces before the #.
+12. TODO Style: TODO(username)
 
 
 Analysis Design
