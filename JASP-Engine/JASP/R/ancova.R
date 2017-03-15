@@ -45,6 +45,10 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	## Retrieve State
 
 	state <- .retrieveState()
+
+	figstate <- try(state[["figures"]], silent = TRUE)
+	if (class(figstate) == "try-error") figstate <- list()
+
 	anovaModel <- NULL
 	statePostHoc <- NULL
 	stateqqPlot <- NULL
@@ -197,9 +201,9 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if (is.null(stateqqPlot)) {
 
 		result <- .qqPlot(model, options, perform, status, stateqqPlot)
-		resultQQplot <- result$result
+		resultQQplot <- .imgToResults(result$result)
 		status <- result$status
-		stateqqPlot <- result$stateqqPlot
+		stateqqPlot <- .imgToResults(result$stateqqPlot)
 
 	} else {
 
@@ -207,6 +211,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 
 	}
 
+	if (perform != "init") {
+
+		figstate <- append(figstate, .imgToState(result$result))
+
+	}
 
 
 	## Create Assumption Check Object
@@ -283,15 +292,22 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	if (is.null(stateDescriptivesPlot)) {
 
 		result <- .anovaDescriptivesPlot(dataset, options, perform, status, stateDescriptivesPlot)
-		descriptivesPlot <- result$result
+		descriptivesPlot <- .imgToResults(result$result)
 		status <- result$status
-		stateDescriptivesPlot <- result$stateDescriptivesPlot
+		stateDescriptivesPlot <- .imgToResults(result$stateDescriptivesPlot)
 
 	} else {
 
 		descriptivesPlot <- stateDescriptivesPlot
 
 	}
+
+	if (perform != "init") {
+
+		figstate <- append(figstate, .imgToState(result$result))
+
+	}
+
 
 	if (length(descriptivesPlot) == 1) {
 
@@ -337,7 +353,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 	state[["stateLevene"]] <- stateLevene
 	state[["stateDescriptivesTable"]] <- stateDescriptivesTable
 	state[["stateMarginalMeans"]] <- stateMarginalMeans
-
+	state[["figures"]] <- figstate
 
 	if (perform == "init" && status$ready && status$error == FALSE) {
 
@@ -1366,7 +1382,7 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 		resids <- abs(model$residuals)
 		levene.def <- paste("resids", "~", interaction)
 		levene.formula <- as.formula(levene.def)
-    
+
 		#r <- car::leveneTest(levene.formula, dataset, center = "mean")
 		r <- summary(aov(levene.formula, dataset))
 		error <- base::tryCatch(summary(aov(levene.formula, dataset)),error=function(e) e, warning=function(w) w)
@@ -1739,22 +1755,22 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 			}
 
 			if (options$plotSeparateLines != "") {
-				
-				content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend, 
+
+				content <- .writeImage(width = options$plotWidthDescriptivesPlotLegend,
 									   height = options$plotHeightDescriptivesPlotLegend,
-									   plot = p, obj = FALSE)
-				
+									   plot = p, obj = TRUE)
+
 			} else {
-				
-				content <- .writeImage(width = options$plotWidthDescriptivesPlotNoLegend, 
+
+				content <- .writeImage(width = options$plotWidthDescriptivesPlotNoLegend,
 									   height = options$plotHeightDescriptivesPlotNoLegend,
-									   plot = p, obj = FALSE)
-				
+									   plot = p, obj = TRUE)
+
 			}
 			
 			descriptivesPlot[["data"]] <- content[["png"]]
 			descriptivesPlot[["obj"]] <- content[["obj"]]
-			descriptivesPlot[["convertible"]] <- FALSE
+			descriptivesPlot[["convertible"]] <- TRUE
 
 			#descriptivesPlot[["data"]] <- content
 			descriptivesPlot[["status"]] <- "complete"
@@ -1848,11 +1864,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
 					axis.ticks.length = grid::unit(3, "mm"),
 					plot.margin = grid::unit(c(0,0,.5,.5), "cm"))
 
-		content <- .writeImage(width = options$plotWidthQQPlot, 
+		content <- .writeImage(width = options$plotWidthQQPlot,
 									   height = options$plotHeightQQPlot,
-									   plot = p, obj = FALSE)
-		
-		qqPlot[["convertible"]] <- FALSE
+									   plot = p, obj = TRUE)
+
+		qqPlot[["convertible"]] <- TRUE
 		qqPlot[["obj"]] <- content[["obj"]]
 		qqPlot$data <- content[["png"]]
 		qqPlot$status <- "complete"
