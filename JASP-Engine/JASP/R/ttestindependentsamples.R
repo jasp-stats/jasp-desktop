@@ -25,8 +25,6 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 	## call the common initialization function
 	init <- .initializeTTest(dataset, options, perform, type = "independent-samples")
 
-
-
 	results <- init[["results"]]
 	dataset <- init[["dataset"]]
 	
@@ -712,8 +710,8 @@ TTestIndependentSamples <- function(dataset = NULL, options, perform = "run",
 				base_breaks_y(summaryStat) + base_breaks_x(summaryStat$groupingVariable)
 
 			imgObj <- .writeImage(width = options$plotWidth, 
-                    			height = options$plotHeight, 
-                        	plot = p)
+														height = options$plotHeight, 
+														plot = p)
 
 			descriptivesPlot[["data"]] <- imgObj[["png"]]
 			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
