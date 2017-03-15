@@ -169,16 +169,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	  )}
 	
 	
-	if (perform == "init") {
-	    # If numberOfVariables == 0 Then do both of these ifs
-	    # If numberOfVariables == 1 Then only first of these ifs
-	    
-	    if (length(variables) < 2)
-	        variables <- c(variables, "...")
-	    if (length(variables) < 2)
-	        variables <- c(variables, "... ")
-	}
-	
+	# MarkUp: General: Choose BF type to report
+	#
 	if (hypothesis == "correlated") {
 		if (bayesFactorType=="BF10"){
 			bfTitle <- "BF\u2081\u2080"
@@ -204,6 +196,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 			bfTitle <- "log(BF\u208B\u2080)"
 		}
 	}
+	
+	# MarkUp: General: Make table and the column folding here
+	#
 	# Note: test contains the tests that are performed
 	tests <- c()
 	if (pearson)
@@ -212,6 +207,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		tests <- c(tests, "spearman")
 	if (kendallsTauB)
 		tests <- c(tests, "kendall")
+	
+	# MarkUp: General: Assign name to table
+	#
 	# Note: Naming of the table
 	if (length(tests) != 1) {
 		correlationTable[["title"]] <- paste("Bayesian Correlation Table")
@@ -225,10 +223,14 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		correlationTable[["title"]] <- paste("Bayesian Correlation Table")
 	}
 	
+	# MarkUp: General: initialise column names
+	#
 	# Note: Describe column names to the returned object
 	fields <- list(list(name=".variable", title="", type="string"))
-	rows <- list()
+	allRows <- list()
 	
+	# MarkUp: General: footnote for the whole table
+	#
 	# Note: create footnote function
 	footnotes <- .newFootnotes()
 	
@@ -248,7 +250,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		}
 	}
 	
-	# State:
+	# State: Processing
 	#
 	if (!is.null(state)){
 		# Retrieve from state, I could have done this directly on state$footnotes etc, 
@@ -264,7 +266,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		bfValuesListExcludeListwise <- state$bfValuesExcludeListwise
 		footnotesListExcludeListwise <- state$footnotesExcludeListwise
 	} else {
-		# Initialise if there is no state
+		# State: Create the hierarchical structure of the state object
+	    # Initialise if there is no state
 		temp <- list()
 		for (levels in 1:3){
 			temp <- list(temp)
@@ -293,10 +296,32 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	numberOfVariables <- length(variables)
 	
+	if (perform == "init") {
+	    if (numberOfVariables == 0){
+	        variables <- c(variables, "...", "... ")
+	    } else if (numberOfVariables == 1){
+	        variables <- c(variables, "... ")
+	    }
+	}
+	
+	# update number of variables, hence it's always >= 2, thus, outputting a table of 2 by 2
+	#
+	numberOfVariables <- length(variables)
+	
+	
+	# Filling in goes row wise and fill in each column with an entry
+	#
 	if (numberOfVariables > 0) {
-		# Note: There are variables: 
+	    # MarkUp: Per row (variable): Create column names so the table can find it later. 
+	    #
 		testNames <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau")
 		columnNames <- c()
+		
+		# MarkUp: Per row (variable): Create names for the rows below and create identifiers for each row
+		# 
+		# Column folding: create multiple colums to be folded into rows later 
+		# #   Nest it by tests and if reportBayesFactors=TRUE then add bf title for each test
+		#
 		for (test in tests) {
 			# Note: create columns per test
 			if (length(tests) > 1 || reportBayesFactors) {
@@ -326,15 +351,28 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 		}
 		
 		for (i in 1:numberOfVariables) {
+		    # MarkUp: Per row (variable): Initialise a row and the footnote per row
+		    #
 			# Note: Create row given a column
+		    # This row will be filled in from left to right
 			row <- list()
 			rowFootnotes <- list()
 			
 			variableName <- variables[[i]]
 			
+			# MarkUp: Per row (variable): Column folding: create multiple rows per variable by folding the columns
+			#
 			for (test in tests) {
-				# Note: For each test create list of Bayes factors
-				bayesFactorsList <- list()
+			    # MarkUp: Per row (variable): Per test: Create a list of Bayes factors 
+			    #   This list of Bayes factors will be filled in from left to right. 
+			    #   Say i = 5 and numberOfVariables = 8, then first 
+			    #       1. fill in blanks between for variable 1, 2, 3, 4. 
+			    #       2. Fill in dash for variable 5
+			    #       3. Retrieve BFs from state, or compute them
+			    #       4. Fill in the bf from bayesFactorsList in the right row
+			    #           thus, bayesFactorsList should contain the bfs for 6,7,8 and is of length 3
+			    #
+			    bayesFactorsList <- list()
 				
 				if (length(tests) > 1 || reportBayesFactors)
 					# Note: Create test name for each test row given a column
@@ -344,6 +382,9 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					# Note: Create bf row each test given each column (variable)
 					bayesFactorsList[[length(bayesFactorsList)+1]] <- bfTitle
 				
+				# Reporting: For this row, create blanks for everything before the current variable i
+				#   this yields an empty lower triangle. Left down is empty
+				#
 				for (j in .seqx(1, i-1)) {
 					# Note: Fill in blanks
 					row[[length(row)+1]] <- ""
@@ -353,8 +394,10 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 				row[[length(row)+1]] <- "\u2014" # em-dash # Note: Fill in blanks
 				bayesFactorsList[[length(bayesFactorsList)+1]] <- "\u2014"
 				
+				# Reporting: For each next variable find the values
+				#
 				for (j in .seqx(i+1, numberOfVariables)) {
-					# Note: fill in blanks in table upper left-hand off diaganols
+					# Note: fill in blanks in table upper right-hand off diaganols
 					variable2Name <- variables[[j]]
 					columnName <- paste(variable2Name, "[", test, "]", sep="")
 					
@@ -486,7 +529,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						}
 					} # Close state retrieval block ---- 
 					
-					# No retrieval: if perform==run, run the analysis ---
+					# State: No retrieval: if perform==run, run the analysis ---
+					# Compute: 
 					if (retrievalFailure) {
 						# Results cannot be retrieved from state
 						
@@ -504,18 +548,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							
 							# Note: Data: PREPARE
 							#
-							# TODO (Johnny): Thus, always calculate "kendall" use switch or if else if 
-							rObs <- cor(v1, v2)
-							nObs <- length(v1)
+							# TODO (Johnny): add switch for test==pearson 
+							# Thus, always calculate pearson's r and "kendall" use switch or if else if 
 							
-							if (test == "kendall"){
-							    rObs <- cor(v1, v2, method = "kendall")
-							}
+							rObs <- cor(v1, v2, method = test)
+							nObs <- length(v1)
 							
 							# Initialise output
 							bfObject <- list(bf10=NA, bfPlus0=NA, bfMin0=NA)
-							#methodNumber <- 1
 							
+							# Data screening block ---- 
+							#
 							# Note: Data and bfs check [start]
 							if (is.na(rObs) || nObs <= 1) {
 								# Note: Data: NOT ok, 
@@ -533,7 +576,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								
 								rObs <- NA
 								
-								# Store in state
+								# Store: Store in state
 								#
 								if (missingValues=="excludePairwise"){
 									footnotesListExcludePairwise[[variableName]][[columnName]] <- list(obsFootnote)
@@ -552,14 +595,16 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								}
 							} else {
 								# Data: OK
-								# Try: bfs
-							  
-							  # TODO (Johnny): without a test=="kendall" we always calculate Pearson
-							  bfObject <- .bfPearsonCorrelation(n=nObs, r=rObs, kappa=priorWidth, ciValue=credibleIntervalsInterval)
-								
-							  if(test == "kendall"){
-							    bfObject <- .bfCorrieKernelKendallTau(n=nObs, tau=rObs, kappa = priorWidth, var = 1)
-							  }
+								# Try: Calculte bfs
+							    
+							    if (test == "pearson"){
+							        # TODO: perhaps call this .bfCorrelation(, method=..), where method="pearson", "kendall" or "spearman"
+							        bfObject <- .bfPearsonCorrelation(n=nObs, r=rObs, kappa=priorWidth, ciValue=credibleIntervalsInterval)
+							    } else if(test == "kendall"){
+							        bfObject <- .bfCorrieKernelKendallTau(n=nObs, tau=rObs, kappa = priorWidth, var = 1)
+							    } else {
+							        
+							    }
 							}
 							
 							# Store in State
@@ -571,10 +616,11 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 								bfValuesListExcludeListwise[[priorLabel]][[nLabel]][[rLabel]] <- bfObject
 							}
 							resultProcessing <- TRUE
-						}
-					}
+						} # Close perform == "run"
+					} # Close retrievalFailure==TRUE
 						
 					# Processing and reporting ---
+					# 
 					if (resultProcessing){
 						# Note: Result reporting: sample r
 						# TODO: also for other kappas and find place to report the credible interval
@@ -582,8 +628,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						reportR <- rObs
 						row[[length(row)+1]] <- .clean(reportR)
 						
-						
-						# Note: Result processing: bf
+						# MarkUp per variable: 
+						# Note: Result processing: decide which BF to report
 						# 
 						if (hypothesis == "correlated") {
 							reportBf <- bfObject$bf10
@@ -607,6 +653,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 							}
 						} 
 						
+						# MarkUp: Per row (variable): add footnote per row
+						#
 						# Note: Flagging at the data [report]
 						if (flagSupported && is.na(reportBf) == FALSE) {
 							if (reportBf > 100) {
@@ -629,7 +677,7 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 					} # Close: Results reporting from 1 retrieved or 2 performed
 					
 					
-					# No retrieval and no performance:
+					# Note: No retrieval and no performance. Thus fill in full stops
 					#
 					if (retrievalFailure && perform!="run"){
 						# No data retrieved from state and nothing run
@@ -637,28 +685,37 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 						bayesFactorsList[[length(bayesFactorsList)+1]] <- "."
 					} # Close: Results reporting from initialisation
 				} # Close loop: each column
-				if (reportBayesFactors) {
+				#
+				# Hence, we now have all the information to fill in the rest of the table 
+				
+				# Reporting: Take each bf in the list i+1, i+2, .. numberOfVariables and fill in
+				#
+				if (reportBayesFactors){
 					for (bf in bayesFactorsList){
 						row[[length(row)+1]] <- bf
 					}
 				}
 			} # Close loop: each test	
+			
+			# MarkUp: Per row (variable) Design 
 			names(row) <- columnNames
 			row[[".variable"]] <- variableName
 			if (length(rowFootnotes) > 0)
 				row[[".footnotes"]] <- rowFootnotes
-			rows[[i]] <- row
-		} # Note: close each variable
-	}
+			allRows[[i]] <- row
+		} # Note: close what goes each row 
+	} # Close: the naming and initialisation of structure of each row
+	
+	# Give the column names to 
 	schema <- list(fields=fields)
 	correlationTable[["schema"]] <- schema
-	correlationTable[["data"]] <- rows
+	correlationTable[["data"]] <- allRows
 	correlationTable[["footnotes"]] <- as.list(footnotes)
 	
 	return(list(correlationTable=correlationTable, 
 				test=tests, 
 				variables=variables, 
-				rows=rows, 
+				rows=allRows, 
 				rValuesExcludePairwise=rValuesListExcludePairwise,
 				bfValuesExcludePairwise=bfValuesListExcludePairwise,
 				footnotesExcludePairwise=footnotesListExcludePairwise,
