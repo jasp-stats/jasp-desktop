@@ -168,14 +168,17 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	    "van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2016). Bayesian Inference for Kendall’s Rank Correlation Coefficient. Manuscript submitted for publication."
 	  )}
 	
-	numberOfVariables <- length(variables)
 	
 	if (perform == "init") {
-		if (numberOfVariables < 2)
-			variables <- c(variables, "...")
-		# if (numberOfVariables < 2)
-		# 	variables <- c(variables, "... ")
+	    # If numberOfVariables == 0 Then do both of these ifs
+	    # If numberOfVariables == 1 Then only first of these ifs
+	    
+	    if (length(variables) < 2)
+	        variables <- c(variables, "...")
+	    if (length(variables) < 2)
+	        variables <- c(variables, "... ")
 	}
+	
 	if (hypothesis == "correlated") {
 		if (bayesFactorType=="BF10"){
 			bfTitle <- "BF\u2081\u2080"
@@ -287,6 +290,8 @@ CorrelationBayesian <- function(dataset=NULL, options, perform="run",
 	
 	
 	priorLabel <- as.character(round(priorWidth, 5))
+	
+	numberOfVariables <- length(variables)
 	
 	if (numberOfVariables > 0) {
 		# Note: There are variables: 
