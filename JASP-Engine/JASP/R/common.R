@@ -901,21 +901,29 @@ saveImage <- function(plotName, format, height, width){
 .imgToResults <- function(imgobj){
   # Recursive function to return result with same structure as imgobj
   result <- list()
-  if (is.list(imgobj[[1]])){
-    result <- lapply(imgobj, .imgToResults)
+  if (length(imgobj) != 0) {
+  	if (is.list(imgobj[[1]])) {
+  		result <- lapply(imgobj, .imgToResults)
+  	} else {
+  		result <- imgobj[names(imgobj)!="obj"]
+  	}
+  	return(result)
   } else {
-    result <- imgobj[names(imgobj)!="obj"]
+  	return(imgobj)
   }
-  return(result)
 }
 
 .imgToState <- function(imgobj){
   # Recursive function to save named list of image-objects to state
   result <- list()
-  if (is.list(imgobj[[1]])){
-    result <- unlist(lapply(imgobj, .imgToState), recursive = FALSE)
+  if (length(imgobj) != 0) {
+  	if (is.list(imgobj[[1]])){
+  		result <- unlist(lapply(imgobj, .imgToState), recursive = FALSE)
+  	} else {
+  		result[[imgobj[["data"]]]] <- imgobj[["obj"]]
+  	}
+  	return(result)
   } else {
-    result[[imgobj[["data"]]]] <- imgobj[["obj"]]
+  	return(imgobj)
   }
-  return(result)
 }
