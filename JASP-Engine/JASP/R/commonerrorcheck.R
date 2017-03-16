@@ -410,7 +410,7 @@
 
   for (v in target) {
     
-    levelsOfVar <- length(unique(dataset[[.v(v)]]))
+    levelsOfVar <- length(unique(na.omit(dataset[[.v(v)]])))
     for (checkAmount in amount) {
       expr <- paste(levelsOfVar, checkAmount)
       if (eval(parse(text=expr))) {
