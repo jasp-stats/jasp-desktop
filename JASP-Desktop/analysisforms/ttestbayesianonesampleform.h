@@ -20,7 +20,6 @@
 #define TTESTBAYESONESAMPLEFORM_H
 
 #include "analysisform.h"
-#include <QSizePolicy>
 
 
 namespace Ui {
