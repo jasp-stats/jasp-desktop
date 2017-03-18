@@ -6,8 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
+<<<<<<< HEAD
     <width>606</width>
     <height>739</height>
+=======
+    <width>635</width>
+    <height>658</height>
+>>>>>>> Added subjective priors to Bayesian TTests
    </rect>
   </property>
   <property name="sizePolicy">
@@ -129,6 +134,7 @@
         </property>
        </widget>
       </item>
+<<<<<<< HEAD
       <item row="0" column="0" rowspan="3">
        <widget class="AvailableFieldsListView" name="listAvailableFields">
         <property name="sizePolicy">
@@ -154,6 +160,8 @@
         </property>
        </widget>
       </item>
+=======
+>>>>>>> Added subjective priors to Bayesian TTests
      </layout>
     </widget>
    </item>
