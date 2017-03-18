@@ -25,6 +25,7 @@ SOURCES += $$PWD/main.cpp \
         $$PWD/widgets/boundgroupbox.cpp \
         $$PWD/widgets/progresswidget.cpp \
         $$PWD/widgets/anovamodelwidget.cpp \
+        $$PWD/widgets/subjectivepriorswidget.cpp \
         $$PWD/widgets/listview.cpp \
         $$PWD/widgets/draganddrop.cpp \
         $$PWD/widgets/assignbuttonmenu.cpp \
@@ -214,6 +215,7 @@ HEADERS  += \
         $$PWD/asyncloader.h \
         $$PWD/widgets/progresswidget.h \
         $$PWD/widgets/anovamodelwidget.h \
+        $$PWD/widgets/subjectivepriorswidget.h \
         $$PWD/bound.h \
         $$PWD/widgets/boundmodel.h \
         $$PWD/widgets/listview.h \
@@ -396,6 +398,7 @@ FORMS += \
         $$PWD/analysisforms/ttestbayesianonesampleform.ui \
         $$PWD/widgets/progresswidget.ui \
         $$PWD/widgets/anovamodelwidget.ui \
+        $$PWD/widgets/subjectivepriorswidget.ui \
         $$PWD/analysisforms/ancovaform.ui \
         $$PWD/analysisforms/anovaform.ui \
         $$PWD/analysisforms/descriptivesform.ui \
