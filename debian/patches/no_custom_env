@@ -6,7 +6,7 @@ manager in the HOME directory (default location).
 
 --- a/JASP-Desktop/enginesync.cpp
 +++ b/JASP-Desktop/enginesync.cpp
-@@ -406,9 +406,13 @@
+@@ -407,9 +407,13 @@
  
  #else  // linux
  

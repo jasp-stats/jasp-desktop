@@ -1,31 +1,14 @@
-diff --git a/JASP-Common/filereader.cpp b/JASP-Common/filereader.cpp
-index 0981c91..3ba0a47 100644
 --- a/JASP-Common/filereader.cpp
 +++ b/JASP-Common/filereader.cpp
-@@ -20,7 +20,7 @@
- #include <boost/filesystem.hpp>
- #include <boost/algorithm/string/predicate.hpp>
+@@ -22,7 +22,7 @@
+ 
+ #include <sstream>
  
 -#include "libzip/archive_entry.h"
 +#include "archive_entry.h"
  
  using namespace std;
  
-diff --git a/JASP-Common/filereader.h b/JASP-Common/filereader.h
-index a885848..f1ba8f4 100644
---- a/JASP-Common/filereader.h
-+++ b/JASP-Common/filereader.h
-@@ -24,7 +24,7 @@
- #include <stdlib.h>
- #include <boost/nowide/fstream.hpp>
- 
--#include "libzip/archive.h"
-+#include "archive.h"
- 
- class FileReader
- {
-diff --git a/JASP-Desktop/exporters/jaspexporter.cpp b/JASP-Desktop/exporters/jaspexporter.cpp
-index d86648e..101c2d0 100644
 --- a/JASP-Desktop/exporters/jaspexporter.cpp
 +++ b/JASP-Desktop/exporters/jaspexporter.cpp
 @@ -24,8 +24,8 @@
@@ -39,8 +22,6 @@ index d86648e..101c2d0 100644
  #include "lib_json/json.h"
  #include "filereader.h"
  #include "version.h"
-diff --git a/JASP-Desktop/exporters/jaspexporter.h b/JASP-Desktop/exporters/jaspexporter.h
-index 197bcfc..7ec538d 100644
 --- a/JASP-Desktop/exporters/jaspexporter.h
 +++ b/JASP-Desktop/exporters/jaspexporter.h
 @@ -20,7 +20,7 @@
@@ -52,8 +33,6 @@ index 197bcfc..7ec538d 100644
  
  class JASPExporter: public Exporter
  {
-diff --git a/JASP-Desktop/importers/jaspimporter.cpp b/JASP-Desktop/importers/jaspimporter.cpp
-index 100bec2..ec232b9 100644
 --- a/JASP-Desktop/importers/jaspimporter.cpp
 +++ b/JASP-Desktop/importers/jaspimporter.cpp
 @@ -28,8 +28,8 @@
